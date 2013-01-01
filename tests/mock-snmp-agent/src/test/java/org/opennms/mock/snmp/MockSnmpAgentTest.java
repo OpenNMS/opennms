@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,7 +26,6 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-
 package org.opennms.mock.snmp;
 
 import static org.junit.Assert.*;
@@ -44,6 +43,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+import org.opennms.mock.snmp.responder.Sleeper;
 import org.snmp4j.CommunityTarget;
 import org.snmp4j.PDU;
 import org.snmp4j.ScopedPDU;
@@ -86,6 +86,8 @@ public class MockSnmpAgentTest  {
     private USM m_usm;
 	private ArrayList<AnticipatedRequest> m_requestedVarbinds;
 	private int m_version;
+	
+	private static long DEFAULT_TIMEOUT = 5000;
 	
 	public MockSnmpAgentTest(int version) {
 		m_version = version;
@@ -300,6 +302,77 @@ public class MockSnmpAgentTest  {
         request("1.3.5.1.1.3.0").andExpect("1.3.5.1.1.3.0", SMIConstants.SYNTAX_INTEGER, new Integer32(42));
 		doGet();
     }
+    
+    @Test
+    public void testSineWaveResponder() throws Exception {
+    	String oid = "1.3.5.1.1.10.0";
+        request(oid).andExpect(oid, SMIConstants.SYNTAX_INTEGER, new Integer32(0));
+        doGet();
+        
+    	oid = "1.3.5.1.1.10.30";
+        request(oid).andExpect(oid, SMIConstants.SYNTAX_INTEGER, new Integer32(50));
+        doGet();
+        
+    	oid = "1.3.5.1.1.10.45";
+        request(oid).andExpect(oid, SMIConstants.SYNTAX_INTEGER, new Integer32(71));
+        doGet();
+        
+    	oid = "1.3.5.1.1.10.90";
+        request(oid).andExpect(oid, SMIConstants.SYNTAX_INTEGER, new Integer32(100));
+        doGet();
+    }
+    
+    @Test
+    public void testSleeperResponder() throws Exception {
+    	final String myOid = "1.3.5.1.1.11.0";
+    	
+    	// Verify that the sleeper responds correctly
+    	Sleeper.getInstance().setVariable(new Integer32(1));
+    	request(myOid).andExpect(myOid, SMIConstants.SYNTAX_INTEGER, new Integer32(1));
+    	doGet();
+    	
+        // Set the timeout
+        Sleeper.getInstance().setSleepTime(DEFAULT_TIMEOUT + 1000);
+
+        // Make another request
+        PDU pdu = createPDU(m_version);
+        OID oid = new OID(myOid);
+        pdu.add(new VariableBinding(oid));
+        pdu.setType(PDU.GET);
+
+        PDU response = sendRequest(pdu,m_version);
+        // Verify that the request does in fact timeout
+        assertNull("request timed out", response);
+
+        // Clear the timeout
+        Sleeper.getInstance().setSleepTime(0);
+        
+        // Update the variable
+        Sleeper.getInstance().setVariable(new OctetString("Bingo!"));
+    	request(myOid).andExpect(myOid, SMIConstants.SYNTAX_OCTET_STRING, new OctetString("Bingo!"));
+    	doGet();
+    }
+
+    @Test
+    public void testDynamicVariableCacheAfterUpdateFromFile() throws Exception {
+    	final String oid = "1.3.5.1.1.10.0";
+        request(oid).andExpect(oid, SMIConstants.SYNTAX_INTEGER, new Integer32(0));
+        doGet();
+        
+        m_agent.updateValuesFromResource(classPathResource("differentSnmpData.properties"));
+        
+        Sleeper.getInstance().resetWithVariable(new Integer32(42));
+        request(oid).andExpect(oid, SMIConstants.SYNTAX_INTEGER, new Integer32(42));
+        doGet();
+    }
+
+    public void testSnmpWalkWithStringQuotes() throws Exception {
+        // alternate property file
+        m_agent.shutDownAndWait();
+        m_agent = MockSnmpAgent.createAgentAndRun(classPathResource("walk-with-quotes.properties"), "127.0.0.1/1691");
+
+        request("1.3.6.1.4.1.9.9.23.1.2.1.1.7.52.1").andExpect("1.3.6.1.4.1.9.9.23.1.2.1.1.7.52.1", SMIConstants.SYNTAX_OCTET_STRING, new OctetString("FastEthernet2"));
+    }
 
     private void doGet() throws Exception {
     	requestAndVerifyResponse(PDU.GET, m_version);
@@ -389,7 +462,7 @@ public class MockSnmpAgentTest  {
         target.setSecurityName(userId);
         target.setAddress(new UdpAddress(InetAddress.getByName("127.0.0.1"), 1691));
         target.setVersion(SnmpConstants.version3);
-        target.setTimeout(5000);
+        target.setTimeout(DEFAULT_TIMEOUT);
         
         TransportMapping transport = null;
         try {

@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.11.0-SNAPSHOT</version>
+    <version>1.11.4-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-base-assembly</artifactId>
@@ -290,6 +290,11 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.notifications</groupId>
+      <artifactId>org.opennms.features.notifications.ticket-strategy</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.system-report</artifactId>
       <scope>compile</scope>
@@ -297,6 +302,18 @@
     <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.jdbc-collector</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.ticketing</groupId>
+      <artifactId>org.opennms.features.ticketing.drools-integration</artifactId>
+      <version>${project.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.access-point-monitor</artifactId>
+      <version>${project.version}</version>
       <scope>compile</scope>
     </dependency>
     <!-- webapp dependencies -->
@@ -334,9 +351,9 @@
       <type>pom</type>
     </dependency>
     <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>jaxb-dependencies</artifactId>
-      <type>pom</type>
+      <groupId>com.sun.xml</groupId>
+      <artifactId>com.springsource.com.sun.xml.bind</artifactId>
+      <version>${jaxbVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
@@ -466,10 +483,6 @@
       <artifactId>commons-lang</artifactId>
     </dependency>
     <dependency>
-      <groupId>taglibs</groupId>
-      <artifactId>standard</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.request-tracker</artifactId>
     </dependency>
@@ -490,4 +503,19 @@
       <type>pom</type>
     </dependency>
   </dependencies>
+  <repositories>
+    <repository>
+      <snapshots>
+        <enabled>false</enabled>
+        <updatePolicy>${updatePolicy}</updatePolicy>
+      </snapshots>
+      <releases>
+        <enabled>true</enabled>
+        <updatePolicy>${updatePolicy}</updatePolicy>
+      </releases>
+      <id>com.springsource.repository.bundles</id>
+      <name>SpringSource Enterprise Bundle Repository</name>
+      <url>http://maven.opennms.org/content/groups/springsource.com-release</url>
+    </repository>
+  </repositories>
 </project>

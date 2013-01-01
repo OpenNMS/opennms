@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -40,12 +40,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.provision.DetectFuture;
 import org.opennms.netmgt.provision.detector.simple.MemcachedDetector;
 import org.opennms.netmgt.provision.server.SimpleServer;
 import org.opennms.netmgt.provision.server.exchange.RequestHandler;
-import org.opennms.test.mock.MockLogAppender;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,7 +82,7 @@ public class MemcachedDetectorTest implements InitializingBean {
         }
     }
 
-    @Test
+    @Test(timeout=90000)
     public void testServerSuccess() throws Exception{
         m_server  = new SimpleServer() {
             public void onInit() {
@@ -99,7 +99,7 @@ public class MemcachedDetectorTest implements InitializingBean {
         Thread.sleep(100); // make sure the server is really started
         try {
             m_detector.setPort(m_server.getLocalPort());
-            m_detector.setIdleTime(100);
+            m_detector.setIdleTime(1000);
             DetectFuture future = m_detector.isServiceDetected(m_server.getInetAddress());
             assertNotNull(future);
             future.awaitForUninterruptibly();
@@ -109,7 +109,7 @@ public class MemcachedDetectorTest implements InitializingBean {
         }
     }
 
-    @Test
+    @Test(timeout=90000)
     public void testServerFail() throws Exception{
         m_server  = new SimpleServer() {
             public void onInit() {
@@ -126,7 +126,7 @@ public class MemcachedDetectorTest implements InitializingBean {
         Thread.sleep(100); // make sure the server is really started
         try {
             m_detector.setPort(m_server.getLocalPort());
-            m_detector.setIdleTime(100);
+            m_detector.setIdleTime(1000);
             DetectFuture future = m_detector.isServiceDetected(m_server.getInetAddress());
             assertNotNull(future);
             future.awaitForUninterruptibly();

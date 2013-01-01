@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -34,7 +34,7 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
-import org.opennms.test.mock.MockLogAppender;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
 import org.snmp4j.CommunityTarget;
 import org.snmp4j.PDU;
@@ -127,6 +127,7 @@ public class MockAgentTest extends TestCase {
         target.setTimeout(3000);
         target.setRetries(3);
         
+        // Implements snmp4j API
         @SuppressWarnings("unchecked")
         List results = walker.getTable(target, new OID[] {new OID("1.3.6.1.2.1.1")}, null, null);
         

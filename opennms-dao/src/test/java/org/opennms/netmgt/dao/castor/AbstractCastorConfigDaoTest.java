@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -32,9 +32,9 @@ import java.io.InputStream;
 
 import junit.framework.TestCase;
 
+import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.xml.MarshallingResourceFailureException;
 import org.opennms.netmgt.config.users.Userinfo;
-import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.test.ThrowableAnticipator;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.InputStreamResource;

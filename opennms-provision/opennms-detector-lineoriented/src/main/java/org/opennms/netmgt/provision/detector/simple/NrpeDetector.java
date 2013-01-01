@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -32,7 +32,7 @@ import org.opennms.netmgt.provision.detector.simple.client.NrpeClient;
 import org.opennms.netmgt.provision.detector.simple.request.NrpeRequest;
 import org.opennms.netmgt.provision.support.BasicDetector;
 import org.opennms.netmgt.provision.support.Client;
-import org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator;
+import org.opennms.netmgt.provision.support.ResponseValidator;
 import org.opennms.netmgt.provision.support.nrpe.NrpePacket;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -83,10 +83,10 @@ public class NrpeDetector extends BasicDetector<NrpeRequest, NrpePacket> {
         send(request(m_command), resultCodeEquals(0));
     }
     
-    private ResponseValidator<NrpePacket> resultCodeEquals(final int desiredResultCode){
+    private static ResponseValidator<NrpePacket> resultCodeEquals(final int desiredResultCode){
         return new ResponseValidator<NrpePacket>() {
 
-            public boolean validate(final NrpePacket response) throws Exception {
+            public boolean validate(final NrpePacket response) {
                 if(response.getResultCode() == desiredResultCode) {
                     return true;
                 }

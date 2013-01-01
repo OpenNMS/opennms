@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -91,7 +91,15 @@ public class NtpMessage {
     
     private static final DecimalFormat NTP_FRACTION_FORMAT = new DecimalFormat(".000000");
 
-    private static final SimpleDateFormat NTP_DATE_FORMAT = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss");
+    /**
+     *  Use ThreadLocal SimpleDateFormat instances because SimpleDateFormat is not thread-safe.
+     */
+    private static final ThreadLocal<SimpleDateFormat> NTP_DATE_FORMAT = new ThreadLocal<SimpleDateFormat>() {
+        @Override
+        protected SimpleDateFormat initialValue() {
+            return new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss");
+        }
+    };
 
     /**
      * This is a two-bit code warning of an impending leap second to be
@@ -422,7 +430,7 @@ public class NtpMessage {
         final long ms = (long) (utc * 1000.0);
 
         // date/time
-        final String date = NTP_DATE_FORMAT.format(new Date(ms));
+        final String date = NTP_DATE_FORMAT.get().format(new Date(ms));
 
         // fraction
         final double fraction = timestamp - ((long) timestamp);

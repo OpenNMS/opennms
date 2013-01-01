@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,12 +29,16 @@
 package org.opennms.web.springframework.security;
 
 import org.opennms.netmgt.model.OnmsUser;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 /**
  * <p>SpringSecurityUserDao interface.</p>
  */
 public interface SpringSecurityUserDao {
-	/**
+	public static final GrantedAuthority ROLE_USER = new SimpleGrantedAuthority(Authentication.ROLE_USER);
+
+    /**
 	 * <p>getByUsername</p>
 	 *
 	 * @param username a {@link java.lang.String} object.

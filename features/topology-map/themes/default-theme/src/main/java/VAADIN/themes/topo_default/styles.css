@@ -1,0 +1,69 @@
+@CHARSET "UTF-8";
+@import "../reindeer/styles.css";
+
+/*** Vertex Styles ***/
+.vertex:hover{
+	opacity: 0.8;
+}
+
+.vertex .highlight{
+	opacity: 0;
+	fill: #00ffff;
+}
+
+.vertex.selected .highlight{
+    opacity: 1;
+}
+
+/*** End Vertex Styles***/
+
+.toolbar-button{
+	
+}
+
+.v-toolbar-button .v-button-wrap{
+    padding: 4px 4px 0 1px;
+}
+
+/**
+ * SPC-506: Get rid of P tag margins to tighten up tooltip display
+ */
+.v-tooltip P {
+    margin: 0px;
+}
+
+div.v-button.v-button-toolbar-button.toolbar-button > span {
+	padding: 4px 4px 0 1px;
+}
+
+div.v-button-down{
+	background-image: url(../reindeer/button/img/button-sprites.png);
+	background-position: left -208px;
+}
+
+div.v-button-down .v-button-wrap{
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-position: 100% -234px;
+    background-image: url(../reindeer/button/img/button-sprites.png);
+}
+
+.semantic-zoom-button .v-button-wrap{
+	padding: 7px 4px 0 1px;
+}
+
+.edge {
+	stroke: #ccc;
+}
+
+.edge.selected {
+	stroke: #00ffff;
+}
+
+.edge.ncs {
+	stroke: #4D6C80;
+}
+
+.edge.ncs.selected {
+	stroke: #00ffff;
+}

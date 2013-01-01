@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -126,12 +126,14 @@ public class SnmpUtilsTest extends MockSnmpAgentTestCase implements TrapProcesso
     String m_strategyClass;
     int m_snmpVersion;
     boolean m_trapsSupported;
+    String m_oldProperty;
     
     public SnmpUtilsTest(String strategyClass, int snmpVersion, boolean trapsSupported) {
     	m_strategyClass = strategyClass;
     	m_snmpVersion = snmpVersion;
     	m_trapsSupported = trapsSupported;
     	
+    	m_oldProperty = System.getProperty("org.opennms.snmp.strategyClass");
     	System.setProperty("org.opennms.snmp.strategyClass", m_strategyClass);
     	
         setPropertiesResource(new ClassPathResource("snmpTestData1.properties"));
@@ -142,6 +144,12 @@ public class SnmpUtilsTest extends MockSnmpAgentTestCase implements TrapProcesso
     public void cleanupTrapListener() throws Exception {
     	if (m_trapListener != null) {
     		SnmpUtils.unregisterForTraps(m_trapListener, null, 9162);
+    	}
+    	
+    	if (m_oldProperty == null) {
+    		System.getProperties().remove("org.opennms.snmp.strategyClass");
+    	} else {
+    		System.setProperty("org.opennms.snmp.strategyClass", m_oldProperty);
     	}
     }
     

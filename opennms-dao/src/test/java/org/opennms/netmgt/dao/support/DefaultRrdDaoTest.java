@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -36,12 +36,15 @@ import java.util.HashSet;
 
 import junit.framework.TestCase;
 
+import org.opennms.netmgt.mock.MockResourceType;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.netmgt.rrd.DefaultRrdGraphDetails;
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdStrategy;
+import org.opennms.netmgt.rrd.RrdUtils;
+import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
 import org.opennms.test.ThrowableAnticipator;
 import org.opennms.test.mock.EasyMockUtils;
 import org.springframework.dao.DataAccessResourceFailureException;
@@ -60,7 +63,7 @@ public class DefaultRrdDaoTest extends TestCase {
     public void setUp() throws Exception {
         super.setUp();
         
-        RrdTestUtils.initialize();
+        RrdUtils.setStrategy(new JRobinRrdStrategy());
         
         m_dao = new DefaultRrdDao();
         m_dao.setRrdStrategy(m_rrdStrategy);
@@ -149,20 +152,25 @@ public class DefaultRrdDaoTest extends TestCase {
     }
 
     private OnmsResource preparePrintValueTest(long start, long end, String printLine) throws IOException, RrdException {
-        String rrdDir = "snmp/1/eth0";
+        String rrdDir = "snmp" + File.separator + "1" + File.separator + "eth0";
         String rrdFile = "ifInOctets.jrb";
         
+        String escapedFile = rrdDir + File.separator + rrdFile;
+        if  (File.separatorChar == '\\') {
+        	escapedFile = escapedFile.replace("\\", "\\\\");
+        }
+
         String[] command = new String[] {
                 m_dao.getRrdBinaryPath(),
                 "graph",
                 "-",
                 "--start=" + (start / 1000),
                 "--end=" + (end / 1000),
-                "DEF:ds=" + rrdDir + File.separator + rrdFile + ":ifInOctets:AVERAGE",
+                "DEF:ds=" + escapedFile + ":ifInOctets:AVERAGE",
                 "PRINT:ds:AVERAGE:\"%le\""
         };
         String commandString = StringUtils.arrayToDelimitedString(command, " ");
-        
+
         OnmsResource topResource = new OnmsResource("1", "Node One", new MockResourceType(), new HashSet<OnmsAttribute>(0));
 
         OnmsAttribute attribute = new RrdGraphAttribute("ifInOctets", rrdDir, rrdFile);
@@ -181,7 +189,7 @@ public class DefaultRrdDaoTest extends TestCase {
     }
     
     public void testFetchLastValue() throws Exception {
-        String rrdDir = "snmp/1/eth0";
+        String rrdDir = "snmp" + File.separator + "1" + File.separator + "eth0";
         String rrdFile = "ifInOctets.jrb";
 
         OnmsResource topResource = new OnmsResource("1", "Node One", new MockResourceType(), new HashSet<OnmsAttribute>(0));
@@ -209,7 +217,7 @@ public class DefaultRrdDaoTest extends TestCase {
     }
     
     public void testFetchLastValueInRange() throws Exception {
-        String rrdDir = "snmp/1/eth0";
+        String rrdDir = "snmp" + File.separator + "1" + File.separator + "eth0";
         String rrdFile = "ifInOctets.jrb";
 
         OnmsResource topResource = new OnmsResource("1", "Node One", new MockResourceType(), new HashSet<OnmsAttribute>(0));

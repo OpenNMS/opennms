@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,13 +28,14 @@
  *******************************************************************************/
 
 --%>
+
 <%@page language="java"
         contentType="text/html"
         session="true"
         import="java.util.*,
         org.opennms.netmgt.config.*,
         org.opennms.netmgt.config.poller.*,
-        org.opennms.web.WebSecurityUtils,
+        org.opennms.core.utils.WebSecurityUtils,
         org.opennms.web.element.*,
         org.opennms.netmgt.EventConstants,
         org.opennms.netmgt.xml.event.Event,

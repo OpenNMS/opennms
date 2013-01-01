@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -49,9 +49,9 @@ import javax.servlet.http.HttpSession;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
-import org.opennms.web.WebSecurityUtils;
 
 /**
  * <p>ManageSnmpIntfServlet class.</p>
@@ -111,19 +111,19 @@ public final class ManageSnmpIntfServlet extends HttpServlet {
 
         String nodeIdString = request.getParameter("node");
         if (nodeIdString == null) {
-            throw new org.opennms.web.MissingParameterException("node");
+            throw new org.opennms.web.servlet.MissingParameterException("node");
         }
         int nodeId = WebSecurityUtils.safeParseInt(nodeIdString);
 
         String intfIdString = request.getParameter("intf");
         if (intfIdString == null) {
-            throw new org.opennms.web.MissingParameterException("intf");
+            throw new org.opennms.web.servlet.MissingParameterException("intf");
         }
         int intfId = WebSecurityUtils.safeParseInt(intfIdString);
 
         String statusString = request.getParameter("status");
         if (statusString == null) {
-            throw new org.opennms.web.MissingParameterException("status");
+            throw new org.opennms.web.servlet.MissingParameterException("status");
         }
         int status = WebSecurityUtils.safeParseInt(statusString);
 

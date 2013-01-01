@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -74,16 +74,27 @@ public class AtInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsAtInterfac
 	}
 
     @Override
-    public void deactivateForNodeIdIfOlderThan(final int nodeid, final Timestamp scanTime) {
+    public void deactivateForSourceNodeIdIfOlderThan(final int nodeid, final Timestamp scanTime) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsAtInterface.class);
-        criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
-        criteria.add(Restrictions.eq("node.id", nodeid));
+        criteria.add(Restrictions.eq("sourceNodeId", nodeid));
         criteria.add(Restrictions.lt("lastPollTime", scanTime));
         criteria.add(Restrictions.eq("status", "A"));
         
         for (final OnmsAtInterface iface : findMatching(criteria)) {
             iface.setStatus('N');
             saveOrUpdate(iface);
+        }
+    }
+
+    @Override
+    public void deleteForNodeSourceIdIfOlderThan(final int nodeid, final Timestamp scanTime) {
+        OnmsCriteria criteria = new OnmsCriteria(OnmsAtInterface.class);
+        criteria.add(Restrictions.eq("sourceNodeId", nodeid));
+        criteria.add(Restrictions.lt("lastPollTime", scanTime));
+        criteria.add(Restrictions.not(Restrictions.eq("status", "A")));
+        
+        for (final OnmsAtInterface iface : findMatching(criteria)) {
+            delete(iface);
         }
     }
 
@@ -214,33 +225,6 @@ public class AtInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsAtInterfac
         List<OnmsAtInterface> interfaces = findMatching(criteria);
 
         if (interfaces.isEmpty()) {
-            return new UpsertTemplate<OnmsAtInterface, AtInterfaceDao>(m_transactionManager, this) {
-                @Override
-                protected OnmsAtInterface query() {
-                    // See if we have an existing version of this OnmsAtInterface first
-                    final OnmsCriteria criteria = new OnmsCriteria(OnmsAtInterface.class);
-                    criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
-                    criteria.add(Restrictions.eq("node.type", "A"));
-                    criteria.add(Restrictions.eq("ipAddress", addressString));
-                    List<OnmsAtInterface> interfaces = findMatching(criteria);
-                    if (interfaces.isEmpty()) {
-                        return null;
-                    } else {
-                        if (interfaces.size() > 1) {
-                            LogUtils.debugf(this, "getAtInterfaceForAddress: More than one AtInterface matched address %s!", addressString);
-                        }
-                        return interfaces.get(0);
-                    }
-                }
-
-                @Override
-                protected OnmsAtInterface doUpdate(OnmsAtInterface dbObj) {
-                    // Do nothing... all we care about is that there is an object in the database
-                    return dbObj;
-                }
-
-                @Override
-                protected OnmsAtInterface doInsert() {
                     final List<OnmsIpInterface> ifaces = m_ipInterfaceDao.findByIpAddress(addressString);
                     if (ifaces.isEmpty()) {
                         return null;
@@ -256,8 +240,6 @@ public class AtInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsAtInterfac
                         save(retval);
                         return retval;
                     }
-                }
-            }.execute();
         } else {
             if (interfaces.size() > 1) {
                 LogUtils.debugf(this, "getAtInterfaceForAddress: More than one AtInterface matched address %s!", addressString);

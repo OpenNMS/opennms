@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -46,11 +46,11 @@ import org.springframework.osgi.context.BundleContextAware;
 public class OsgiGatewayGroupRegistrar implements GatewayGroupRegistrar, BundleContextAware, DisposableBean {
 	
 	private BundleContext m_context;
-	private final List<ServiceRegistration> m_registrations = new ArrayList<ServiceRegistration>();
+	private final List<ServiceRegistration<GatewayGroup>> m_registrations = new ArrayList<ServiceRegistration<GatewayGroup>>();
 
 	/** {@inheritDoc} */
 	public void registerGatewayGroup( GatewayGroup gatewayGroup ) {
-		m_registrations.add(m_context.registerService(GatewayGroup.class.getName(), gatewayGroup, null));
+		m_registrations.add(m_context.registerService(GatewayGroup.class, gatewayGroup, null));
 	}
 
 	/** {@inheritDoc} */
@@ -65,7 +65,7 @@ public class OsgiGatewayGroupRegistrar implements GatewayGroupRegistrar, BundleC
 	 * @throws java.lang.Exception if any.
 	 */
 	public void destroy() throws Exception {
-		for(ServiceRegistration registration : m_registrations) {
+		for(ServiceRegistration<GatewayGroup> registration : m_registrations) {
             registration.unregister();
         }
 	}

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -45,15 +45,15 @@ import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.config.GroupManager;
 import org.opennms.netmgt.config.UserManager;
-import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
-import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.model.OnmsUser;
 import org.opennms.test.FileAnticipator;
-import org.opennms.test.mock.MockLogAppender;
+import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -62,6 +62,7 @@ import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
+        "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
@@ -98,7 +99,7 @@ public class SpringSecurityUserDaoImplTest extends TestCase implements Initializ
 
     @Test
     public void testGetByUsernameAdmin() {
-        OnmsUser user = ((SpringSecurityUserDaoImpl) m_springSecurityDao).getByUsername("admin");
+        OnmsUser user = ((SpringSecurityUserDao) m_springSecurityDao).getByUsername("admin");
         assertNotNull("user object should not be null", user);
         assertEquals("OnmsUser name", "admin", user.getUsername());
         assertEquals("Full name", "Administrator", user.getFullName());
@@ -125,7 +126,7 @@ public class SpringSecurityUserDaoImplTest extends TestCase implements Initializ
         assertEquals("OnmsUser name", "rtc", user.getUsername());
         assertEquals("Full name", null, user.getFullName());
         assertEquals("Comments", null, user.getComments());
-        assertEquals("Password", "68154466F81BFB532CD70F8C71426356", user.getPassword());
+        assertTrue("Password", m_userManager.checkSaltedPassword("rtc", user.getPassword()));
 
         Collection<? extends GrantedAuthority> authorities = user.getAuthorities();
         assertNotNull("authorities should not be null", authorities);
@@ -140,7 +141,7 @@ public class SpringSecurityUserDaoImplTest extends TestCase implements Initializ
         newUser.setPassword("18126E7BD3F84B3F3E4DF094DEF5B7DE");
         m_userManager.save(newUser);
 
-        final OnmsUser user = ((SpringSecurityUserDaoImpl) m_springSecurityDao).getByUsername("tempuser");
+        final OnmsUser user = ((SpringSecurityUserDao) m_springSecurityDao).getByUsername("tempuser");
         assertNotNull("user object should not be null", user);
         assertEquals("OnmsUser name", "tempuser", user.getUsername());
         assertEquals("Full name", null, user.getFullName());
@@ -160,7 +161,7 @@ public class SpringSecurityUserDaoImplTest extends TestCase implements Initializ
         newUser.setPassword("DC7161BE3DBF2250C8954E560CC35060");
         m_userManager.save(newUser);
 
-        OnmsUser user = ((SpringSecurityUserDaoImpl) m_springSecurityDao).getByUsername("dashboard");
+        OnmsUser user = ((SpringSecurityUserDao) m_springSecurityDao).getByUsername("dashboard");
         assertNotNull("user object should not be null", user);
         assertEquals("OnmsUser name", "dashboard", user.getUsername());
         assertEquals("Full name", null, user.getFullName());
@@ -199,7 +200,7 @@ public class SpringSecurityUserDaoImplTest extends TestCase implements Initializ
             OnmsUser user;
             Collection<? extends GrantedAuthority> authorities;
             
-            user = ((SpringSecurityUserDaoImpl) m_springSecurityDao).getByUsername("dashboard");
+            user = ((SpringSecurityUserDao) m_springSecurityDao).getByUsername("dashboard");
             assertNotNull("dashboard user should exist and the object should not be null", user);
             authorities = user.getAuthorities(); 
             assertNotNull("user GrantedAuthorities[] object should not be null", authorities);
@@ -216,7 +217,7 @@ public class SpringSecurityUserDaoImplTest extends TestCase implements Initializ
 
             writeTemporaryFile(magicUsers, getMagicUsersContents().replace("role.dashboard.users=dashboard", "role.dashboard.users="));
 
-            user = ((SpringSecurityUserDaoImpl) m_springSecurityDao).getByUsername("dashboard");
+            user = ((SpringSecurityUserDao) m_springSecurityDao).getByUsername("dashboard");
             assertNotNull("dashboard user should exist and the object should not be null", user);
             authorities = user.getAuthorities(); 
             assertNotNull("user GrantedAuthorities[] object should not be null", authorities);
@@ -234,7 +235,7 @@ public class SpringSecurityUserDaoImplTest extends TestCase implements Initializ
      * <li>Both users and magic users files are loaded</li>
      * <li>Magic users file is changed</li>
      * <li>Magic users file is reloaded on the next call to getByUsername</li>
-     * <li>Subsequent calls to getByUsername call caues a reload because the
+     * <li>Subsequent calls to getByUsername call causes a reload because the
      *     last update time for the users file is stored when magic users is
      *     reloaded</li>
      * </ol>
@@ -269,7 +270,7 @@ public class SpringSecurityUserDaoImplTest extends TestCase implements Initializ
             OnmsUser user;
             Collection<? extends GrantedAuthority> authorities;
             
-            user = ((SpringSecurityUserDaoImpl) m_springSecurityDao).getByUsername("dashboard");
+            user = ((SpringSecurityUserDao) m_springSecurityDao).getByUsername("dashboard");
             assertNotNull("dashboard user should exist and the object should not be null", user);
             authorities = user.getAuthorities(); 
             assertNotNull("user GrantedAuthorities[] object should not be null", authorities);
@@ -286,7 +287,7 @@ public class SpringSecurityUserDaoImplTest extends TestCase implements Initializ
 
             writeTemporaryFile(magicUsers, getMagicUsersContents().replace("role.dashboard.users=dashboard", "role.dashboard.users="));
 
-            user = ((SpringSecurityUserDaoImpl) m_springSecurityDao).getByUsername("dashboard");
+            user = ((SpringSecurityUserDao) m_springSecurityDao).getByUsername("dashboard");
             assertNotNull("dashboard user should exist and the object should not be null", user);
             authorities = user.getAuthorities(); 
             assertNotNull("user GrantedAuthorities[] object should not be null", authorities);

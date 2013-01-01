@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -38,17 +38,6 @@
 		org.opennms.netmgt.config.*,
 		org.opennms.netmgt.config.notifications.*
 	"
-%>
-
-<%!
-    public void init() throws ServletException {
-        try {
-            EventconfFactory.init();
-        }
-        catch( Exception e ) {
-            throw new ServletException( "Cannot load configuration file", e );
-        }
-    }
 %>
 
 <%

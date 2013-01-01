@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -36,11 +36,11 @@ import java.net.UnknownHostException;
 
 import org.junit.After;
 import org.junit.Before;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.mock.snmp.MockSnmpAgent;
 import org.opennms.netmgt.snmp.SnmpAgentAddress;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.mock.MockSnmpStrategy;
-import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.core.io.ClassPathResource;
 
@@ -84,21 +84,21 @@ public abstract class MockSnmpAgentTestCase {
 
 	@After
     public void tearDown() throws Exception {
-        MockLogAppender.assertNoWarningsOrGreater();
 
         agentCleanup();
     
+        //MockLogAppender.assertNoWarningsOrGreater();
+
         MockUtil.println("------------ End Test --------------------------");
     }
 
 	protected void agentCleanup() throws InterruptedException {
-		if (usingMockStrategy()) {
-			MockSnmpStrategy.removeHost(new SnmpAgentAddress(m_agentAddress, m_agentPort));
-		} else {
-			if (m_agent != null) {
-				m_agent.shutDownAndWait();
-			}
+		MockSnmpStrategy.removeHost(new SnmpAgentAddress(m_agentAddress, m_agentPort));
+
+		if (m_agent != null) {
+			m_agent.shutDownAndWait();
 		}
+		
 	}
 
     protected SnmpAgentConfig getAgentConfig() {
@@ -113,7 +113,7 @@ public abstract class MockSnmpAgentTestCase {
         return m_agentAddress;
     }
 
-    public void setAgentAddress(InetAddress agentAddress) {
+    private void setAgentAddress(InetAddress agentAddress) {
         m_agentAddress = agentAddress;
     }
 
@@ -121,7 +121,7 @@ public abstract class MockSnmpAgentTestCase {
         return m_agentPort;
     }
 
-    public void setAgentPort(int agentPort) {
+    private void setAgentPort(int agentPort) {
         m_agentPort = agentPort;
     }
 

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -115,14 +115,14 @@ public class IpListFromUrl extends Object {
                 buffer.close();
             } else {
                 // log something
-                log().warn("URL does not exist: " + url.toString());
+                log().warn("URL does not exist: " + url);
             }
         } catch (MalformedURLException e) {
-            log().error("Error reading URL: " + url.toString() + ": " + e.getLocalizedMessage());
+            log().error("Error reading URL: " + url + ": " + e.getLocalizedMessage());
         } catch (FileNotFoundException e) {
-            log().error("Error reading URL: " + url.toString() + ": " + e.getLocalizedMessage());
+            log().error("Error reading URL: " + url + ": " + e.getLocalizedMessage());
         } catch (IOException e) {
-            log().error("Error reading URL: " + url.toString() + ": " + e.getLocalizedMessage());
+            log().error("Error reading URL: " + url + ": " + e.getLocalizedMessage());
         }
 
         return iplist;

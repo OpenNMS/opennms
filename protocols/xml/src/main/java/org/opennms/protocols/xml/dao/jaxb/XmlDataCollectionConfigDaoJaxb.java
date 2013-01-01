@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,8 +31,8 @@ package org.opennms.protocols.xml.dao.jaxb;
 import java.io.File;
 
 import org.opennms.core.utils.ConfigFileConstants;
+import org.opennms.core.xml.AbstractJaxbConfigDao;
 import org.opennms.core.xml.JaxbUtils;
-import org.opennms.netmgt.dao.AbstractJaxbConfigDao;
 import org.opennms.protocols.xml.config.XmlDataCollection;
 import org.opennms.protocols.xml.config.XmlDataCollectionConfig;
 import org.opennms.protocols.xml.config.XmlGroups;
@@ -86,7 +86,7 @@ public class XmlDataCollectionConfigDaoJaxb extends AbstractJaxbConfigDao<XmlDat
      * @see org.opennms.protocols.xml.dao.jaxb.AbstractJaxbConfigDao#translateConfig(java.lang.Object)
      */
     @Override
-    public XmlDataCollectionConfig translateConfig(XmlDataCollectionConfig config) {
+    protected XmlDataCollectionConfig translateConfig(XmlDataCollectionConfig config) {
         for (XmlDataCollection collection : config.getXmlDataCollections()) {
             for (XmlSource source : collection.getXmlSources()) {
                 parseXmlGroups(source);

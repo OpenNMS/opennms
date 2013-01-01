@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -44,9 +44,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.DBUtils;
-import org.opennms.netmgt.config.DataSourceFactory;
-import org.opennms.web.WebSecurityUtils;
+import org.opennms.core.utils.WebSecurityUtils;
 
 /**
  * A servlet that handles querying the database for node, interface, service
@@ -93,7 +93,7 @@ public class SnmpGetInterfacesServlet extends HttpServlet {
         String nodeIdString = request.getParameter( "node" );
 
         if( nodeIdString == null ) {
-            throw new org.opennms.web.MissingParameterException( "node" );
+            throw new org.opennms.web.servlet.MissingParameterException( "node" );
         }
 
         int nodeid = WebSecurityUtils.safeParseInt( nodeIdString );

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -36,11 +36,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.provision.DetectFuture;
 import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.detector.simple.Pop3Detector;
 import org.opennms.netmgt.provision.server.SimpleServer;
-import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -78,15 +78,15 @@ public class Pop3DetectorTest implements ApplicationContextAware {
         }
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testSuccess() throws Exception {
         
         m_detector = createDetector(m_server.getLocalPort());
-        m_detector.setIdleTime(100);
+        m_detector.setIdleTime(1000);
         assertTrue( doCheck( m_detector.isServiceDetected(m_server.getInetAddress())));
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testFailureWithBogusResponse() throws Exception {
         m_server.setBanner("Oh Henry");
         
@@ -96,7 +96,7 @@ public class Pop3DetectorTest implements ApplicationContextAware {
         
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testMonitorFailureWithNoResponse() throws Exception {
         m_server.setBanner(null);
         m_detector = createDetector(m_server.getLocalPort());
@@ -105,7 +105,7 @@ public class Pop3DetectorTest implements ApplicationContextAware {
         
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectorFailWrongPort() throws Exception{
         
         m_detector = createDetector(9000);

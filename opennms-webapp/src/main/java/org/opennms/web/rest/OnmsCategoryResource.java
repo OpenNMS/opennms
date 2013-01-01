@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -36,9 +36,11 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriInfo;
 
 import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.NodeDao;
@@ -67,6 +69,9 @@ import com.sun.jersey.spi.resource.PerRequest;
 @Path("categories")
 @Transactional
 public class OnmsCategoryResource extends OnmsRestService {
+    @Context 
+    UriInfo m_uriInfo;
+
     @Autowired
     private NodeDao m_nodeDao;
     
@@ -146,7 +151,7 @@ public class OnmsCategoryResource extends OnmsRestService {
             log().debug("addCategory: Adding category " + category + " to node " + nodeCriteria);
             node.addCategory(category);
             m_nodeDao.save(node);
-            return Response.ok().build();
+            return Response.seeOther(getRedirectUri(m_uriInfo, category.getName())).build();
         } finally {
             writeUnlock();
         }
@@ -186,7 +191,7 @@ public class OnmsCategoryResource extends OnmsRestService {
             }
             log().debug("updateCategory: category " + category + " updated");
             m_nodeDao.saveOrUpdate(node);
-            return Response.ok().build();
+            return Response.seeOther(getRedirectUri(m_uriInfo)).build();
         } finally {
             writeUnlock();
         }

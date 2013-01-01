@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -124,5 +124,21 @@ public interface ServiceRegistry {
      * @param <T> a T object.
      */
     public <T> void removeListener(Class<T> service, RegistrationListener<T> listener);
+    
+
+    /**
+     * <p>addRegistrationHook</p>
+     *
+     * @param hook a {@link org.opennms.core.soa.RegistrationHook} object.
+     * @param notifyForExistingProviders a boolean.
+     */
+    public void addRegistrationHook(RegistrationHook hook, boolean notifyForExistingProviders);
+    
+    /**
+     * <p>removeRegistrationHook</p>
+     *
+     * @param hook a {@link org.opennms.core.soa.RegistrationHook} object.
+     */
+    public void removeRegistrationHook(RegistrationHook hook);
     
 }

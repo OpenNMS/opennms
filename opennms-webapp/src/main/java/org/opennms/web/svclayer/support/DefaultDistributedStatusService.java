@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -47,6 +47,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.dao.ApplicationDao;
 import org.opennms.netmgt.dao.GraphDao;
 import org.opennms.netmgt.dao.LocationMonitorDao;
@@ -61,7 +62,6 @@ import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.model.PrefabGraph;
 import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
-import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.api.Util;
 import org.opennms.web.command.DistributedStatusDetailsCommand;
 import org.opennms.web.graph.RelativeTimePeriod;

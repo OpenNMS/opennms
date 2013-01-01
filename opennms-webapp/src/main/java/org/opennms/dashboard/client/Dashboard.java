@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -163,10 +163,9 @@ public class Dashboard implements EntryPoint, ErrorHandler {
      */
     public void add(Widget widget, String elementId) {
         RootPanel panel = RootPanel.get(elementId);
-        if (panel == null) {
-            throw new IllegalArgumentException("element with id '"+elementId+"' not found!");
+        if (panel != null) {
+            panel.add(widget);
         }
-        panel.add(widget);
     }
 
     /** {@inheritDoc} */

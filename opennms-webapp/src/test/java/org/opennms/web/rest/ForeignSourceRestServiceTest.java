@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -32,8 +32,9 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.test.JUnitConfigurationEnvironment;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
 
 
@@ -52,12 +53,12 @@ public class ForeignSourceRestServiceTest extends AbstractSpringJerseyRestTestCa
         assertTrue(xml.contains("ICMP"));
         
         url = "/foreignSources/test";
-        sendPut(url, "scanInterval=1h");
+        sendPut(url, "scanInterval=1h", 303, "/foreignSources/test");
         xml = sendRequest(GET, url, 200);
         assertTrue(xml.contains("<scan-interval>1h</scan-interval>"));
         
         url = "/foreignSources/test";
-        sendPut(url, "scanInterval=1h");
+        sendPut(url, "scanInterval=1h", 303, "/foreignSources/test");
         sendRequest(DELETE, url, 200);
         xml = sendRequest(GET, url, 200);
         assertTrue(xml.contains("<scan-interval>1d</scan-interval>"));
@@ -122,7 +123,8 @@ public class ForeignSourceRestServiceTest extends AbstractSpringJerseyRestTestCa
                     "<policy name=\"all-ipinterfaces\" class=\"org.opennms.netmgt.provision.persist.policies.InclusiveInterfacePolicy\" />" +
                 "</policies>" +
             "</foreign-source>";
-        sendPost("/foreignSources", fs);
+        MockHttpServletResponse response = sendPost("/foreignSources", fs, 303, "/foreignSources/test");
+        System.err.println("response = " + stringifyResponse(response));
     }
     
 }

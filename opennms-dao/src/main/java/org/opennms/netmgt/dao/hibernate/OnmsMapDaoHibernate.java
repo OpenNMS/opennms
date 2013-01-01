@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,16 +28,16 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Date;
+
+import org.hibernate.HibernateException;
+import org.hibernate.Query;
+import org.hibernate.Session;
 import org.opennms.netmgt.dao.OnmsMapDao;
 import org.opennms.netmgt.model.OnmsMap;
 import org.springframework.orm.hibernate3.HibernateCallback;
-import org.hibernate.Query;
-import org.hibernate.Session;
-import org.hibernate.HibernateException;
-
-import java.util.Collection;
-import java.util.Date;
-import java.sql.SQLException;
 
 /**
  * <p>OnmsMapDaoHibernate class.</p>

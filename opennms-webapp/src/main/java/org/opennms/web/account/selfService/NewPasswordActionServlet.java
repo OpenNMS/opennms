@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -39,6 +39,7 @@ import javax.servlet.http.HttpSession;
 
 import org.opennms.netmgt.config.UserFactory;
 import org.opennms.netmgt.config.UserManager;
+import org.opennms.netmgt.config.users.Password;
 import org.opennms.netmgt.config.users.User;
 import org.opennms.web.springframework.security.Authentication;
 
@@ -77,7 +78,10 @@ public class NewPasswordActionServlet extends HttpServlet {
             RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/account/selfService/newPassword.jsp?action=redo");
             dispatcher.forward(request, response);
         } else {
-            user.setPassword(UserFactory.getInstance().encryptedPassword(newPassword));
+            final Password pass = new Password();
+            pass.setContent(UserFactory.getInstance().encryptedPassword(newPassword, true));
+            pass.setSalt(true);
+            user.setPassword(pass);
 
             userSession.setAttribute("user.newPassword.jsp", user);
             try {

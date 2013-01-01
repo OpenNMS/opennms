@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,17 +28,18 @@
 
 package org.opennms.netmgt.provision.persist;
 
+import java.io.File;
 import java.net.URL;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
-import org.opennms.core.utils.BeanUtils;
+import org.apache.commons.io.FileUtils;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.Resource;
+import org.springframework.util.Assert;
 
 /**
  * <p>
@@ -53,17 +54,29 @@ import org.springframework.core.io.Resource;
  * </p>
  */
 public class FusedForeignSourceRepository extends AbstractForeignSourceRepository implements ForeignSourceRepository, InitializingBean {
-    @Autowired
-    @Qualifier("pending")
-    private FilesystemForeignSourceRepository m_pendingForeignSourceRepository;
-    
-    @Autowired
-    @Qualifier("deployed")
-    private FilesystemForeignSourceRepository m_deployedForeignSourceRepository;
+    private ForeignSourceRepository m_pendingForeignSourceRepository;
+    private ForeignSourceRepository m_deployedForeignSourceRepository;
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
+        Assert.notNull(m_pendingForeignSourceRepository, "Pending foreign source repository must not be null.");
+        Assert.notNull(m_deployedForeignSourceRepository, "Deployed foreign source repository must not be null.");
+    }
+
+    public ForeignSourceRepository getPendingForeignSourceRepository() {
+        return m_pendingForeignSourceRepository;
+    }
+    
+    public void setPendingForeignSourceRepository(final ForeignSourceRepository fsr) {
+        m_pendingForeignSourceRepository = fsr;
+    }
+
+    public ForeignSourceRepository getDeployedForeignSourceRepository() {
+        return m_deployedForeignSourceRepository;
+    }
+    
+    public void setDeployedForeignSourceRepository(final ForeignSourceRepository fsr) {
+        m_deployedForeignSourceRepository = fsr;
     }
 
     /**
@@ -193,9 +206,47 @@ public class FusedForeignSourceRepository extends AbstractForeignSourceRepositor
      * @param requisition a {@link org.opennms.netmgt.provision.persist.requisition.Requisition} object.
      * @throws org.opennms.netmgt.provision.persist.ForeignSourceRepositoryException if any.
      */
-    public synchronized void save(Requisition requisition) throws ForeignSourceRepositoryException {
-        m_pendingForeignSourceRepository.delete(requisition);
+    public synchronized void save(final Requisition requisition) throws ForeignSourceRepositoryException {
+        final String foreignSource = requisition.getForeignSource();
+
+        final URL pendingUrl = m_pendingForeignSourceRepository.getRequisitionURL(foreignSource);
+        final File pendingFile = pendingUrl == null? null : new File(pendingUrl.getFile());
+
+        /*
+        final URL deployedUrl = m_deployedForeignSourceRepository.getRequisitionURL(foreignSource);
+        final File deployedFile = deployedUrl == null? null : new File(deployedUrl.getFile());
+        */
+
+        final List<File> pendingSnapshots = RequisitionFileUtils.findSnapshots(m_pendingForeignSourceRepository, foreignSource);
+
+        /* determine whether to delete the pending requisition */
+        boolean deletePendingRequisition = true;
+        if (pendingSnapshots.size() > 0) {
+            for (final File snap : pendingSnapshots) {
+                if (FileUtils.isFileNewer(pendingFile, snap)) {
+                    // the pending file is newer than an in-process snapshot, don't delete it
+                    deletePendingRequisition = false;
+                    break;
+                } else if (snap.lastModified() == pendingFile.lastModified() && snap.length() != pendingFile.length()) {
+                    // if the dates are the same, but they're different lengths, err on the side of caution and leave the pending file
+                    deletePendingRequisition = false;
+                    break;
+                }
+            }
+        }
+        if (deletePendingRequisition) {
+            m_pendingForeignSourceRepository.delete(requisition);
+        }
+
+        /* determine whether this requisition was imported from a snapshot, and if so, delete its snapshot file */
+        RequisitionFileUtils.deleteResourceIfSnapshot(requisition);
+ 
         m_deployedForeignSourceRepository.save(requisition);
+    }
+
+    @Override
+    public void flush() throws ForeignSourceRepositoryException {
+        // Unnecessary, there is no caching/delayed writes in FusedForeignSourceRepository
     }
 
 }

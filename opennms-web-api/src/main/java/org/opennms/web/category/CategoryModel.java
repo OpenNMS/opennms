@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -48,9 +48,10 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.resource.Vault;
 import org.opennms.core.utils.DBUtils;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.CatFactory;
 import org.opennms.netmgt.config.CategoryFactory;
+import org.opennms.netmgt.config.categories.CatFactory;
 
 /**
  * <p>CategoryModel class.</p>
@@ -270,6 +271,8 @@ public class CategoryModel extends Object {
             if (rs.next()) {
                 avail = rs.getDouble("avail");
             }
+        } catch (final SQLException e) {
+            LogUtils.warnf(this, e, "Failed to get node availability for nodeId %d", nodeId);
         } finally {
             d.cleanUp();
         }
@@ -353,6 +356,8 @@ public class CategoryModel extends Object {
                 avail = rs.getDouble(2);
                 retMap.put(new Integer(nodeid), new Double(avail));
             }
+        } catch (final SQLException e) {
+            LogUtils.warnf(this, e, "Failed to get node availability for nodeIds %s", nodeIds);
         } finally {
             d.cleanUp();
         }
@@ -431,6 +436,8 @@ public class CategoryModel extends Object {
             if (rs.next()) {
                 avail = rs.getDouble("avail");
             }
+        } catch (final SQLException e) {
+            LogUtils.warnf(this, e, "Failed to get interface availability for nodeId %d, interface %s", nodeId, ipAddr);
         } finally {
             d.cleanUp();
         }
@@ -513,6 +520,8 @@ public class CategoryModel extends Object {
             if (rs.next()) {
                 avail = rs.getDouble("avail");
             }
+        } catch (final SQLException e) {
+            LogUtils.warnf(this, e, "Failed to get service availability for nodeId %d, interface %s, serviceId %d", nodeId, ipAddr, serviceId);
         } finally {
             d.cleanUp();
         }

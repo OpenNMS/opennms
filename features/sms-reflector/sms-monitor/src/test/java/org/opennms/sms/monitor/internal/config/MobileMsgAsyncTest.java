@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -38,6 +38,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.tasks.DefaultTaskCoordinator;
 import org.opennms.sms.monitor.MobileSequenceSession;
 import org.opennms.sms.monitor.TestMessenger;
@@ -125,7 +126,9 @@ public class MobileMsgAsyncTest {
         m_tracker = new MobileMsgTrackerImpl("test", m_messenger);
         m_tracker.start();
         
-        m_coordinator = new DefaultTaskCoordinator("MobileMsgAsyncTest", Executors.newSingleThreadExecutor());
+        m_coordinator = new DefaultTaskCoordinator("MobileMsgAsyncTest", Executors.newSingleThreadExecutor(
+            new LogPreservingThreadFactory("MobileMsgAsyncTest", 1, false)
+        ));
 
         System.err.println("=== STARTING TEST ===");
     }

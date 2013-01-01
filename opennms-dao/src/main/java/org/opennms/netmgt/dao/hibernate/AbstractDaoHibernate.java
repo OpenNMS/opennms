@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -341,7 +341,8 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
                 return (Integer)hibernateCriteria.uniqueResult();
             }
         };
-        return getHibernateTemplate().execute(callback).intValue();
+        Integer retval = getHibernateTemplate().execute(callback);
+        return retval == null ? 0 : retval.intValue();
     }
 
     /** {@inheritDoc} */
@@ -368,7 +369,8 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
                 return (Integer)attachedCrit.uniqueResult();
             }
         };
-        return getHibernateTemplate().execute(callback).intValue();
+        Integer retval = getHibernateTemplate().execute(callback);
+        return retval == null ? 0 : retval.intValue();
     }
     
     /**

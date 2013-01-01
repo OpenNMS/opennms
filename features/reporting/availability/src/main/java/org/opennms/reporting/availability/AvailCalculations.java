@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -1274,14 +1274,14 @@ public class AvailCalculations extends Object {
      * Format the number (String) and return 6 digits of the number
      */
     private String formatNumber(String num) {
-        if (num.indexOf(".") == 0) {
+        if (num.indexOf('.') == 0) {
             num = "0" + num;
         }
-        if (num.indexOf(".") == -1) {
+        if (num.indexOf('.') == -1) {
             num = num + ".0";
         }
         num = num + "000000";
-        return (num.substring(0, num.indexOf(".") + 6));
+        return (num.substring(0, num.indexOf('.') + 6));
     }
 
 }

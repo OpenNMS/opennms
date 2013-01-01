@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -43,6 +43,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
 
 import org.apache.commons.io.IOUtils;
+import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.fiber.Fiber;
 import org.opennms.core.utils.HttpUtils;
 import org.opennms.core.utils.ThreadCategory;
@@ -144,7 +145,10 @@ final class DataSender implements Fiber {
         m_catUrlMap = new HashMap<String, Set<HttpPostInfo>>();
 
         // create and start the data sender pool
-        m_dsrPool = Executors.newFixedThreadPool(numSenders);
+        m_dsrPool = Executors.newFixedThreadPool(
+            numSenders,
+            new LogPreservingThreadFactory(getClass().getSimpleName(), numSenders, false)
+        );
 
         // create category converter
         m_euiMapper = new EuiLevelMapper();

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -126,6 +126,11 @@ public class LatencyCollectionAttribute implements CollectionAttribute {
 
     /** {@inheritDoc} */
     public void visit(CollectionSetVisitor visitor) {
+    }
+
+    @Override
+    public String getMetricIdentifier() {
+        return "Not_Supported_Yet_Poller_Latency_"+getName();
     }
 
 }

@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -192,7 +192,7 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
             } catch (final EventProxyException ex) {
                 throw getException(Status.BAD_REQUEST, ex.getMessage());
             }
-            return Response.ok().build();
+            return Response.seeOther(getRedirectUri(m_uriInfo, InetAddressUtils.str(ipInterface.getIpAddress()))).build();
         } finally {
             writeUnlock();
         }
@@ -234,7 +234,7 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
             }
             LogUtils.debugf(this, "updateIpInterface: ip interface %s updated", ipInterface);
             m_ipInterfaceDao.saveOrUpdate(ipInterface);
-            return Response.ok().build();
+            return Response.seeOther(getRedirectUri(m_uriInfo)).build();
         } finally {
             writeUnlock();
         }

@@ -95,7 +95,7 @@ reset_opennms() {
 	banner "Resetting OpenNMS Installation"
 
 	do_log "opennms stop"
-	/etc/init.d/opennms stop
+	ps auxwww | grep opennms_bootstrap | awk '{ print $2 }' | xargs kill -9
 
 	do_log "clean_yum"
 	clean_yum || die "Unable to clean up old RPM files."
@@ -192,8 +192,8 @@ run_tests() {
 stop_opennms() {
 	banner "Stopping OpenNMS"
 
-	do_log "opennms stop"
-	/etc/init.d/opennms stop
+	do_log "opennms kill"
+	/etc/init.d/opennms kill
 
 	#do_log "yum clean all"
 	#yum clean all || :

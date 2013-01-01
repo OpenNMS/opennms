@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -47,11 +47,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.opennms.core.tasks.BatchTask;
-import org.opennms.core.tasks.ContainerTask;
-import org.opennms.core.tasks.DefaultTaskCoordinator;
-import org.opennms.core.tasks.SequenceTask;
-import org.opennms.core.tasks.Task;
+import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.utils.LogUtils;
 
 
@@ -67,7 +63,9 @@ public class TaskTest {
     
     @Before
     public void setUp() {
-        m_executor = Executors.newFixedThreadPool(50);
+        m_executor = Executors.newFixedThreadPool(50,
+            new LogPreservingThreadFactory(getClass().getSimpleName(), 50, false)
+        );
         m_coordinator = new DefaultTaskCoordinator("TaskTest", m_executor);
     }
     

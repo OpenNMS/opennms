@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -40,8 +40,8 @@ import java.util.Map;
 import junit.framework.TestCase;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.mock.MockMonitoredService;
 import org.opennms.netmgt.model.PollStatus;
+import org.opennms.netmgt.poller.mock.MockMonitoredService;
 
 public class FtpMonitorTest extends TestCase {
     private FtpMonitor m_monitor = new FtpMonitor();

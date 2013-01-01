@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -36,11 +36,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.provision.DetectFuture;
 import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.detector.simple.ImapDetector;
 import org.opennms.netmgt.provision.server.SimpleServer;
-import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -72,7 +72,7 @@ public class ImapDetectorTest implements ApplicationContextAware {
         }
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testServerSuccess() throws Exception{
         m_server  = new SimpleServer() {
             
@@ -89,7 +89,7 @@ public class ImapDetectorTest implements ApplicationContextAware {
         
         try {
             m_detector.setPort(m_server.getLocalPort());
-            m_detector.setIdleTime(100);
+            m_detector.setIdleTime(1000);
             
             //assertTrue(m_detector.isServiceDetected(m_server.getInetAddress()));
             DetectFuture future = m_detector.isServiceDetected(m_server.getInetAddress());
@@ -104,7 +104,7 @@ public class ImapDetectorTest implements ApplicationContextAware {
         }
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectorFailUnexpectedBanner() throws Exception{
         m_server  = new SimpleServer() {
             
@@ -132,7 +132,7 @@ public class ImapDetectorTest implements ApplicationContextAware {
         }
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectorFailUnexpectedLogoutResponse() throws Exception{
         m_server  = new SimpleServer() {
             

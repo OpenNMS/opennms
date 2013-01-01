@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -128,6 +128,7 @@ public class NotificationTask extends Thread {
             for (Command command : m_commands) {
                 buffer.append((command == null ? "null" : command.getName()));
                 buffer.append("/");
+                buffer.append("[#" + m_notifyId + "]");
             }
         }
         buffer.append(" to " + m_user.getUserId() + " at " + new Date(m_sendTime));

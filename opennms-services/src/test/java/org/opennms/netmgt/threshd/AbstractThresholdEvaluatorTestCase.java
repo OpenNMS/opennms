@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,16 +28,18 @@
 
 package org.opennms.netmgt.threshd;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
-
-import junit.framework.TestCase;
 
 /**
  * @author jeffg
  *
  */
-public abstract class AbstractThresholdEvaluatorTestCase extends TestCase {
+public abstract class AbstractThresholdEvaluatorTestCase {
     protected static void parmPresentAndValueNonNull(Event event, String parmName) {
         boolean parmPresent = false;
         
@@ -64,9 +66,5 @@ public abstract class AbstractThresholdEvaluatorTestCase extends TestCase {
             }
         }
         assertTrue("Parm '" + parmName + "' present", parmPresent);
-    }
-
-    /* just here to make surefire happy */
-    public void testDoNothing() {
     }
 }

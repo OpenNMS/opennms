@@ -5,7 +5,6 @@
 target
 .classpath
 .externalToolBuilders
-.gitignore
 .project
 .settings
 .springBeans
@@ -16,5 +15,6 @@ build.properties
 *.ipr
 .launch
 .*launch
-bin/
-
+nb-configuration.xml
+.idea
+features/topology-map/org.opennms.features.topology.app/www-test/

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -39,6 +39,7 @@ import javax.servlet.http.HttpSession;
 
 import org.opennms.netmgt.config.UserFactory;
 import org.opennms.netmgt.config.UserManager;
+import org.opennms.netmgt.config.users.Password;
 import org.opennms.netmgt.config.users.User;
 
 /**
@@ -80,11 +81,15 @@ public class AddNewUserServlet extends HttpServlet {
             RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/admin/userGroupView/users/newUser.jsp?action=redo");
             dispatcher.forward(request, response);
         } else {
-            User newUser = new User();
-            newUser.setUserId(userID);
-            newUser.setPassword(UserFactory.getInstance().encryptedPassword(password));
+            final Password pass = new Password();
+            pass.setContent(UserFactory.getInstance().encryptedPassword(password, true));
+            pass.setSalt(true);
 
-            HttpSession userSession = request.getSession(false);
+            final User newUser = new User();
+            newUser.setUserId(userID);
+            newUser.setPassword(pass);
+
+            final HttpSession userSession = request.getSession(false);
             userSession.setAttribute("user.modifyUser.jsp", newUser);
 
             // forward the request for proper display

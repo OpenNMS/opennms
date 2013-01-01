@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -127,5 +127,10 @@ public class WmiCollectionAttribute extends AbstractCollectionAttribute implemen
          */
         public String toString() {
             return "WmiCollectionAttribute " + m_alias+"=" + m_value;
+        }
+
+        @Override
+        public String getMetricIdentifier() {
+            return "Not supported yet._" + "WMI_" + getName();
         }
 }

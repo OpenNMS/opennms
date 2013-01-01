@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -34,14 +34,18 @@ import static org.junit.Assert.assertNotNull;
 import java.io.File;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.ConfigurationTestUtils;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.core.test.annotations.JUnitHttpServer;
+import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.core.test.http.annotations.JUnitHttpServer;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.CollectdConfigFactory;
@@ -54,17 +58,14 @@ import org.opennms.netmgt.config.collector.CollectionSet;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.ServiceTypeDao;
-import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
-import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.rrd.RrdUtils;
-import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.test.FileAnticipator;
-import org.opennms.test.mock.MockLogAppender;
+import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -82,6 +83,7 @@ import org.springframework.transaction.PlatformTransactionManager;
     JUnitCollectorExecutionListener.class
 })
 @ContextConfiguration(locations={
+        "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
@@ -278,14 +280,17 @@ public class HttpCollectorTest implements TestContextAware, InitializingBean {
         File nodeDir = CollectorTestUtils.anticipatePath(anticipator, snmpRrdDirectory, "1");
 
         File documentCountRrdFile = new File(nodeDir, CollectorTestUtils.rrd("TotalAccesses"));
-        File someNumberRrdFile = new File(nodeDir, CollectorTestUtils.rrd("IdleWorkers"));
+        File someNumberRrdFile    = new File(nodeDir, CollectorTestUtils.rrd("IdleWorkers"));
+        File cpuLoadRrdFile       = new File(nodeDir, CollectorTestUtils.rrd("CPULoad"));
 
         // Total Accesses: 175483
-        assertEquals("documentCount", Double.valueOf(175483.0), RrdUtils.fetchLastValueInRange(documentCountRrdFile.getAbsolutePath(), "TotalAccesses", stepSizeInMillis, stepSizeInMillis));
+        assertEquals("TotalAccesses", Double.valueOf(175483.0), RrdUtils.fetchLastValueInRange(documentCountRrdFile.getAbsolutePath(), "TotalAccesses", stepSizeInMillis, stepSizeInMillis));
 
         // IdleWorkers: 12
-        assertEquals("documentType", Double.valueOf(12.0), RrdUtils.fetchLastValueInRange(someNumberRrdFile.getAbsolutePath(), "IdleWorkers", stepSizeInMillis, stepSizeInMillis));
+        assertEquals("IdleWorkers", Double.valueOf(12.0), RrdUtils.fetchLastValueInRange(someNumberRrdFile.getAbsolutePath(), "IdleWorkers", stepSizeInMillis, stepSizeInMillis));
 
+        // CPU Load: .497069
+        assertEquals("CPULoad", Double.valueOf(0.497069), RrdUtils.fetchLastValueInRange(cpuLoadRrdFile.getAbsolutePath(), "CPULoad", stepSizeInMillis, stepSizeInMillis));
         m_collectionSpecification.release(m_collectionAgent);
     }
 
@@ -334,6 +339,45 @@ public class HttpCollectorTest implements TestContextAware, InitializingBean {
         m_collectd.start();
         Thread.sleep(10000);
         m_collectd.stop();
+    }
+
+    public final void testPersistApacheStatsAlternateLocale() throws Exception {
+        final Locale defaultLocale = Locale.getDefault();
+
+        try {
+            Locale.setDefault(Locale.FRANCE);
+
+            File snmpRrdDirectory = (File)m_context.getAttribute("rrdDirectory");
+            FileAnticipator anticipator = (FileAnticipator)m_context.getAttribute("fileAnticipator");
+    
+            int numUpdates = 2;
+            int stepSizeInSecs = 1;
+            
+            int stepSizeInMillis = stepSizeInSecs*1000;
+    
+            m_collectionSpecification.initialize(m_collectionAgent);
+            
+            CollectorTestUtils.collectNTimes(m_collectionSpecification, m_collectionAgent, numUpdates);
+            
+            // node level collection
+            File nodeDir = CollectorTestUtils.anticipatePath(anticipator, snmpRrdDirectory, "1");
+    
+            File documentCountRrdFile = new File(nodeDir, CollectorTestUtils.rrd("TotalAccesses"));
+            File someNumberRrdFile    = new File(nodeDir, CollectorTestUtils.rrd("IdleWorkers"));
+            File cpuLoadRrdFile       = new File(nodeDir, CollectorTestUtils.rrd("CPULoad"));
+    
+            // Total Accesses: 175483
+            assertEquals("TotalAccesses", Double.valueOf(175483.0), RrdUtils.fetchLastValueInRange(documentCountRrdFile.getAbsolutePath(), "TotalAccesses", stepSizeInMillis, stepSizeInMillis));
+    
+            // IdleWorkers: 12
+            assertEquals("IdleWorkers", Double.valueOf(12.0), RrdUtils.fetchLastValueInRange(someNumberRrdFile.getAbsolutePath(), "IdleWorkers", stepSizeInMillis, stepSizeInMillis));
+    
+            // CPU Load: .497069
+            assertEquals("CPULoad", Double.valueOf(0.497069), RrdUtils.fetchLastValueInRange(cpuLoadRrdFile.getAbsolutePath(), "CPULoad", stepSizeInMillis, stepSizeInMillis));
+            m_collectionSpecification.release(m_collectionAgent);
+        } finally {
+            Locale.setDefault(defaultLocale);
+        }
     }
 
     @Test

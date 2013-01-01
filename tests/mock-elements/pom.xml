@@ -3,13 +3,29 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.tests</artifactId>
-    <version>1.11.0-SNAPSHOT</version>
+    <version>1.11.4-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.tests</groupId>
   <artifactId>org.opennms.tests.mock-elements</artifactId>
-  <packaging>jar</packaging>
   <name>OpenNMS Mock Elements</name>
+  <packaging>bundle</packaging>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+          <instructions>
+            <Bundle-RequiredExecutionEnvironment>JavaSE-1.6</Bundle-RequiredExecutionEnvironment>
+            <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+            <Bundle-Version>${project.version}</Bundle-Version>
+          </instructions>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
   <dependencies>
     <dependency>
       <groupId>org.opennms.features.poller</groupId>
@@ -17,11 +33,11 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-config</artifactId>
+      <artifactId>opennms-model</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-model</artifactId>
+      <artifactId>opennms-config-model</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -31,6 +47,12 @@
     <dependency>
       <groupId>org.easymock</groupId>
       <artifactId>easymock</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>compile</scope>
     </dependency>
   </dependencies>
 </project>

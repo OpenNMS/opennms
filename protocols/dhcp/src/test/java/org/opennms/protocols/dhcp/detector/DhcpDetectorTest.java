@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -42,11 +42,11 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dhcpd.Dhcpd;
-import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -88,12 +88,12 @@ public class DhcpDetectorTest implements InitializingBean {
         // m_dhcpd.stop();
     }
     
-	@Test
+	@Test(timeout=90000)
 	public void testDetectorWired() {
 	   assertNotNull(m_detector);
 	}
 	
-	@Test
+	@Test(timeout=90000)
 	@Ignore
 	public void testDetectorSuccess() throws  IOException, MarshalException, ValidationException{
 	    m_detector.setTimeout(5000);
@@ -102,7 +102,7 @@ public class DhcpDetectorTest implements InitializingBean {
 	    
 	}
 	
-	@Test
+	@Test(timeout=90000)
 	@Ignore
 	public void testJdhcp() throws IOException{
 	    DHCPSocket mySocket = new DHCPSocket(68);

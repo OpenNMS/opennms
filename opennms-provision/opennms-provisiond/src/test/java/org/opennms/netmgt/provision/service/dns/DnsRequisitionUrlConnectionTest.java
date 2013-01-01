@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,35 +28,34 @@
 
 package org.opennms.netmgt.provision.service.dns;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-
 import junit.framework.Assert;
-
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.core.test.JUnitDNSServerExecutionListener;
-import org.opennms.core.test.annotations.DNSEntry;
-import org.opennms.core.test.annotations.DNSZone;
-import org.opennms.core.test.annotations.JUnitDNSServer;
+import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.test.dns.JUnitDNSServerExecutionListener;
+import org.opennms.core.test.dns.annotations.DNSEntry;
+import org.opennms.core.test.dns.annotations.DNSZone;
+import org.opennms.core.test.dns.annotations.JUnitDNSServer;
+import org.opennms.core.utils.url.GenericURLFactory;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
-import org.opennms.test.mock.MockLogAppender;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 
 /**
  * This class tests the new "dns" protocol handling created for the Provisioner.
@@ -80,13 +79,7 @@ public class DnsRequisitionUrlConnectionTest {
 
     @Before
     public void registerFactory() {
-        
-        try {
-            new URL(TEST_URL);
-        } catch (MalformedURLException e) {
-            URL.setURLStreamHandlerFactory(new DnsUrlFactory());
-        }
-        
+        GenericURLFactory.initialize();
     }
     
     @Test

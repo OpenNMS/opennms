@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -96,7 +96,7 @@ public class TcaCollectionResource extends AbstractCollectionResource {
 	 */
 	@Override
 	public String getParent() {
-		return Integer.toString(m_agent.getNodeId());
+		return m_agent.getStorageDir().toString();
 	}
 
 	/* (non-Javadoc)
@@ -179,7 +179,7 @@ public class TcaCollectionResource extends AbstractCollectionResource {
      * @param type the type
      * @param value the value
      */
-    public void setAttributeValue(CollectionAttributeType type, String value) {
+    public void setAttributeValue(TcaCollectionAttributeType type, String value) {
         TcaCollectionAttribute attr = new TcaCollectionAttribute(this, type, type.getName(), value);
         addAttribute(attr);
     }

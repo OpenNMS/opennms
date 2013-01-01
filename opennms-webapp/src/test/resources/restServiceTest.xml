@@ -3,7 +3,7 @@
   xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
   
-  <bean name="mockEventIpcManager" class="org.opennms.netmgt.mock.MockEventIpcManager">
+  <bean name="mockEventIpcManager" class="org.opennms.netmgt.eventd.mock.MockEventIpcManager">
     <property name="eventIpcManagerProxy" ref="eventIpcManager" />
   </bean>
 

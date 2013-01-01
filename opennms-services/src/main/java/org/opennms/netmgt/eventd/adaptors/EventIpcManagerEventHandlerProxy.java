@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.eventd.adaptors;
 
-import org.opennms.netmgt.eventd.EventIpcManager;
+import org.opennms.netmgt.model.events.EventIpcManager;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.EventReceipt;
 import org.springframework.beans.factory.InitializingBean;
@@ -63,7 +63,7 @@ public class EventIpcManagerEventHandlerProxy implements EventHandler, Initializ
     /**
      * <p>getEventIpcManager</p>
      *
-     * @return a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+     * @return a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
      */
     public EventIpcManager getEventIpcManager() {
         return m_eventIpcManager;
@@ -72,7 +72,7 @@ public class EventIpcManagerEventHandlerProxy implements EventHandler, Initializ
     /**
      * <p>setEventIpcManager</p>
      *
-     * @param eventIpcManager a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+     * @param eventIpcManager a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
      */
     public void setEventIpcManager(EventIpcManager eventIpcManager) {
         m_eventIpcManager = eventIpcManager;

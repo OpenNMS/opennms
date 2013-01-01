@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -67,6 +67,20 @@ public class IpRouteInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpRou
             saveOrUpdate(item);
         }
     }
+
+    @Override
+    public void deleteForNodeIdIfOlderThan(final int nodeid, final Timestamp scanTime) {
+        final OnmsCriteria criteria = new OnmsCriteria(OnmsIpRouteInterface.class);
+        criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
+        criteria.add(Restrictions.eq("node.id", nodeid));
+        criteria.add(Restrictions.lt("lastPollTime", scanTime));
+        criteria.add(Restrictions.not(Restrictions.eq("status", "A")));
+        
+        for (final OnmsIpRouteInterface item : findMatching(criteria)) {
+            delete(item);
+        }
+    }
+
 
     @Override
     public void setStatusForNode(final Integer nodeid, final Character action) {

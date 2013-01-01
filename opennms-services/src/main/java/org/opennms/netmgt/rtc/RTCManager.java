@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -38,6 +38,7 @@ import java.util.concurrent.Executors;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.RTCConfigFactory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
@@ -511,7 +512,10 @@ public final class RTCManager extends AbstractServiceDaemon {
             throw new UndeclaredThrowableException(ex);
         }
 
-        m_updaterPool = Executors.newFixedThreadPool(rFactory.getUpdaters());
+        m_updaterPool = Executors.newFixedThreadPool(
+            rFactory.getUpdaters(),
+            new LogPreservingThreadFactory(getClass().getSimpleName(), rFactory.getUpdaters(), false)
+        );
 
         if (log().isDebugEnabled())
             log().debug("Created updater pool");
@@ -535,7 +539,7 @@ public final class RTCManager extends AbstractServiceDaemon {
     /**
      * <p>onStart</p>
      */
-    protected void onStart() {
+    protected synchronized void onStart() {
 		//
         // Start all the threads
         //
@@ -585,7 +589,7 @@ public final class RTCManager extends AbstractServiceDaemon {
     /**
      * <p>onStop</p>
      */
-    protected void onStop() {
+    protected synchronized void onStop() {
 		try {
             if (log().isDebugEnabled())
                 log().debug("Beginning shutdown process");

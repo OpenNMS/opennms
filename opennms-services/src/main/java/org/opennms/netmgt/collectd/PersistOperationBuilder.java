@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -30,11 +30,7 @@ package org.opennms.netmgt.collectd;
 
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 import org.opennms.core.utils.DefaultTimeKeeper;
 import org.opennms.core.utils.StringUtils;
@@ -59,6 +55,7 @@ public class PersistOperationBuilder {
     private String m_rrdName;
     private ResourceIdentifier m_resource;
     private Map<AttributeDefinition, String> m_declarations = new TreeMap<AttributeDefinition, String>(new ByNameComparator());
+    private Map<String, String> m_metaData = new LinkedHashMap<String, String>();
     private TimeKeeper m_timeKeeper = new DefaultTimeKeeper();
     
     /**
@@ -114,6 +111,10 @@ public class PersistOperationBuilder {
     public void setAttributeValue(AttributeDefinition attrType, String value) {
         m_declarations.put(attrType, value);
     }
+    
+    public void setAttributeMetadata(String metricIdentifier, String name) {
+        m_metaData.put(metricIdentifier, name);
+    }
 
     /**
      * Static method which takes a MIB object type (counter, counter32,
@@ -145,8 +146,9 @@ public class PersistOperationBuilder {
             return;
         }
         
-        RrdUtils.createRRD(m_resource.getOwnerName(), getResourceDir(m_resource).getAbsolutePath(), m_rrdName, getRepository().getStep(), getDataSources(), getRepository().getRraList());
+        RrdUtils.createRRD(m_resource.getOwnerName(), getResourceDir(m_resource).getAbsolutePath(), m_rrdName, getRepository().getStep(), getDataSources(), getRepository().getRraList(), getAttributeMappings());
         RrdUtils.updateRRD(m_resource.getOwnerName(), getResourceDir(m_resource).getAbsolutePath(), m_rrdName, m_timeKeeper.getCurrentTime(), getValues());
+        RrdUtils.createMetaDataFile(getResourceDir(m_resource).getAbsolutePath(), m_rrdName, m_metaData);
     }
 
     private String getValues() {
@@ -163,9 +165,12 @@ public class PersistOperationBuilder {
             values.append(value);
         }
         return values.toString();
-
     }
 
+    private Map<String, String> getAttributeMappings() {
+        return null;
+    }
+    
     private List<RrdDataSource> getDataSources() {
         List<RrdDataSource> dataSources = new ArrayList<RrdDataSource>(m_declarations.size());
         for (AttributeDefinition attrDef : m_declarations.keySet()) {

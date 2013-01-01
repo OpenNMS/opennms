@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -36,6 +36,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -43,11 +44,11 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.model.events.EventProxyException;
 import org.opennms.netmgt.utils.NodeLabel;
-import org.opennms.web.MissingParameterException;
-import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.api.Util;
+import org.opennms.web.element.NetworkElementFactory;
 import org.opennms.web.rest.MultivaluedMapImpl;
 import org.opennms.web.rest.RequisitionRestService;
+import org.opennms.web.servlet.MissingParameterException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -100,7 +101,8 @@ public class NodeLabelChangeServlet extends HttpServlet {
 
         try {
             final int nodeId = WebSecurityUtils.safeParseInt(nodeIdString);
-            NodeLabel oldLabel = NodeLabel.retrieveLabel(nodeId);
+            OnmsNode node = NetworkElementFactory.getInstance(getServletContext()).getNode(nodeId);
+            NodeLabel oldLabel = new NodeLabel(node.getLabel(), node.getLabelSource());
             NodeLabel newLabel = null;
 
             if (labelType.equals("auto")) {

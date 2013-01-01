@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,9 +28,7 @@
 
 package org.opennms.netmgt.poller.pollables;
 
-import java.util.Collections;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 
 import org.opennms.core.utils.ThreadCategory;
@@ -87,7 +85,7 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
      * @param pkg
      * @return
      */
-    private Service findService(Package pkg) {
+    private synchronized Service findService(Package pkg) {
         for (Service s : m_pkg.getServiceCollection()) {
             if (s.getName().equalsIgnoreCase(m_service.getSvcName())) {
                 return s;
@@ -104,11 +102,15 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
      * @return a {@link org.opennms.netmgt.model.PollStatus} object.
      */
     public PollStatus poll() {
+        String packageName = null;
+        synchronized(this) {
+            packageName = m_pkg.getName();
+        }
         try {
             ServiceMonitor monitor = getServiceMonitor();
-            ThreadCategory.getInstance(getClass()).debug("Polling "+m_service+" using pkg "+m_pkg.getName());
+            ThreadCategory.getInstance(getClass()).debug("Polling "+m_service+" using pkg " + packageName);
             PollStatus result = monitor.poll(m_service, getParameters());
-            ThreadCategory.getInstance(getClass()).debug("Finish polling "+m_service+" using pkg "+m_pkg.getName()+" result = "+result);
+            ThreadCategory.getInstance(getClass()).debug("Finish polling "+m_service+" using pkg " + packageName + " result = "+result);
             return result;
         } catch (Throwable e) {
             ThreadCategory.getInstance(getClass()).error("Unexpected exception while polling "+m_service+". Marking service as DOWN", e);
@@ -116,7 +118,7 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
         }
     }
 
-	private ServiceMonitor getServiceMonitor() {
+	private synchronized ServiceMonitor getServiceMonitor() {
 		if (m_serviceMonitor == null) {
 			ServiceMonitor monitor = m_pollerConfig.getServiceMonitor(m_service.getSvcName());
 			m_serviceMonitor = new LatencyStoringServiceMonitorAdaptor(monitor, m_pollerConfig, m_pkg);
@@ -187,7 +189,7 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
      *
      * @return a long.
      */
-    public long getInterval() {
+    public synchronized long getInterval() {
         
         if (m_service.isDeleted())
             return -1;
@@ -235,7 +237,7 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
      *
      * @return a boolean.
      */
-    public boolean scheduledSuspension() {
+    public synchronized boolean scheduledSuspension() {
         long nodeId=m_service.getNodeId();
         for (String outageName : m_pkg.getOutageCalendarCollection()) {
             // Does the outage apply to the current time?

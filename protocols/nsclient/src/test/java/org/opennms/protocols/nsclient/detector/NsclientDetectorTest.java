@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -38,10 +38,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.provision.server.SimpleServer;
 import org.opennms.netmgt.provision.server.exchange.RequestHandler;
-import org.opennms.test.mock.MockLogAppender;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -100,21 +100,21 @@ public class NsclientDetectorTest implements InitializingBean {
         m_detector.setRetries(3);
     }
 
-    @Test
+    @Test(timeout=90000)
     public void testServerSuccess() throws Exception{
         m_detector.setCommand("CLIENTVERSION");
         m_detector.init();
         Assert.assertTrue(m_detector.isServiceDetected(m_server.getInetAddress()));
     }
 
-    @Test
+    @Test(timeout=90000)
     public void testBadCommand() throws Exception{
         m_detector.setCommand("UNKNOWN");
         m_detector.init();
         Assert.assertFalse(m_detector.isServiceDetected(m_server.getInetAddress()));
     }
 
-    @Test
+    @Test(timeout=90000)
     public void testNoCommand() throws Exception{
         m_detector.init(); // Assumes CLIENTVERSION
         Assert.assertTrue(m_detector.isServiceDetected(m_server.getInetAddress()));

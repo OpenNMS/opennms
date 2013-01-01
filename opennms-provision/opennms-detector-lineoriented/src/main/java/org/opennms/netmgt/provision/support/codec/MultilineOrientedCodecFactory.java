@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -43,8 +43,8 @@ import org.apache.mina.filter.codec.ProtocolEncoder;
  */
 public class MultilineOrientedCodecFactory implements ProtocolCodecFactory {
     
-    private LineOrientedEncoder m_encoder;
-    private MultiLineDecoder m_decoder;
+    private final LineOrientedEncoder m_encoder;
+    private final MultiLineDecoder m_decoder;
     
     /**
      * <p>Constructor for MultilineOrientedCodecFactory.</p>
@@ -65,11 +65,13 @@ public class MultilineOrientedCodecFactory implements ProtocolCodecFactory {
     }
     
     /** {@inheritDoc} */
+    @Override
     public ProtocolDecoder getDecoder(final IoSession session) throws Exception {
         return m_decoder;
     }
 
     /** {@inheritDoc} */
+    @Override
     public ProtocolEncoder getEncoder(final IoSession session) throws Exception {
         return m_encoder;
     }

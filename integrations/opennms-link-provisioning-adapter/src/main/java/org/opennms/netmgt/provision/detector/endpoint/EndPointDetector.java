@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -36,7 +36,7 @@ import org.opennms.netmgt.config.SnmpAgentConfigFactory;
 import org.opennms.netmgt.provision.adapters.link.EndPointImpl;
 import org.opennms.netmgt.provision.adapters.link.endpoint.EndPointTypeValidator;
 import org.opennms.netmgt.provision.adapters.link.endpoint.dao.EndPointConfigurationDao;
-import org.opennms.netmgt.provision.support.AbstractDetector;
+import org.opennms.netmgt.provision.support.SyncAbstractDetector;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
@@ -46,15 +46,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-@Component
 /**
  * <p>EndPointDetector class.</p>
  *
  * @author ranger
  * @version $Id: $
  */
+@Component
 @Scope("prototype")
-public class EndPointDetector extends AbstractDetector implements InitializingBean {
+public class EndPointDetector extends SyncAbstractDetector implements InitializingBean {
     
     /** Constant <code>DEFAULT_SERVICE_NAME="EndPoint"</code> */
     protected static final String DEFAULT_SERVICE_NAME = "EndPoint";
@@ -98,10 +98,6 @@ public class EndPointDetector extends AbstractDetector implements InitializingBe
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
     }
-
-    /** {@inheritDoc} */
-    @Override
-    public void init() {}
 
     /** {@inheritDoc} */
     @Override

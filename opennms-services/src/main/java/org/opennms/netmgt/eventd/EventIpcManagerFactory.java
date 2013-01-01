@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.eventd;
 
+import org.opennms.netmgt.model.events.EventIpcManager;
 import org.springframework.util.Assert;
 
 /**
@@ -51,7 +52,7 @@ public abstract class EventIpcManagerFactory {
     /**
      * Returns an implementation of the default EventIpcManager class
      *
-     * @return a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+     * @return a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
      */
     public static EventIpcManager getIpcManager() {
         Assert.state(m_ipcManager != null, "this factory has not been initialized");
@@ -61,7 +62,7 @@ public abstract class EventIpcManagerFactory {
     /**
      * <p>setIpcManager</p>
      *
-     * @param ipcManager a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+     * @param ipcManager a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
      */
     public static void setIpcManager(EventIpcManager ipcManager) {
         Assert.notNull(ipcManager, "argument ipcManager must not be null");

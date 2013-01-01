@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -43,21 +43,21 @@ import javax.servlet.ServletException;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.opennms.netmgt.config.DataSourceFactory;
+import org.opennms.core.db.DataSourceFactory;
+import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.test.db.MockDatabase;
+import org.opennms.core.test.db.TemporaryDatabase;
 import org.opennms.netmgt.dao.ApplicationDao;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.LocationMonitorDao;
 import org.opennms.netmgt.dao.MonitoredServiceDao;
-import org.opennms.netmgt.dao.db.TemporaryDatabase;
-import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
-import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.PollStatus;
+import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.opennms.test.DaoTestConfigBean;
-import org.opennms.test.mock.MockLogAppender;
 import org.opennms.web.rest.AvailCalculator.UptimeCalculator;
 import org.opennms.web.rest.support.TimeChunker;
 import org.opennms.web.rest.support.TimeChunker.TimeChunk;

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -42,6 +42,7 @@ import org.opennms.netmgt.config.collector.ServiceParameters;
 public abstract class WmiCollectionResource extends AbstractCollectionResource {
     
     protected int m_nodeId;
+    protected CollectionAgent m_agent;
 
     /**
      * <p>Constructor for WmiCollectionResource.</p>
@@ -50,6 +51,7 @@ public abstract class WmiCollectionResource extends AbstractCollectionResource {
      */
     public WmiCollectionResource(CollectionAgent agent) {
         super(agent);
+        m_agent = agent;
         m_nodeId = agent.getNodeId();
     }
 
@@ -104,6 +106,6 @@ public abstract class WmiCollectionResource extends AbstractCollectionResource {
     public abstract String getInstance();
     
     public String getParent() {
-        return Integer.toString(m_nodeId);
+        return m_agent.getStorageDir().toString();
     }
 }

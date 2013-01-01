@@ -42,7 +42,7 @@
 			<defaultValueExpression><![CDATA[new java.util.Date(new java.util.Date().getTime() - (86400 * 7 * 1000))]]></defaultValueExpression>
 		</parameter>
 		<parameter name="DS_START_TIME_STRING" class="java.lang.String" isForPrompting="false">
-			<defaultValueExpression><![CDATA["EEE MMM d HH:mm:ss Z yyyy"]]></defaultValueExpression>
+			<defaultValueExpression><![CDATA["yyyy-MM-d HH:mm:ss Z"]]></defaultValueExpression>
 		</parameter>
 		<queryString>
 			<![CDATA[SELECT
@@ -211,7 +211,7 @@ ORDER BY
 		<defaultValueExpression><![CDATA[new Double("98.0")]]></defaultValueExpression>
 	</parameter>
 	<parameter name="AVAILABILITY_CRITICAL" class="java.lang.Double">
-		<parameterDescription><![CDATA[Availability Critial]]></parameterDescription>
+		<parameterDescription><![CDATA[Availability Critical]]></parameterDescription>
 		<defaultValueExpression><![CDATA[new Double("97.0")]]></defaultValueExpression>
 	</parameter>
 	<parameter name="TIME_RANGE_NUMBER" class="java.lang.Integer">
@@ -231,7 +231,7 @@ ORDER BY
 		<defaultValueExpression><![CDATA[$P{TIME_RANGE} + " from " + $P{START_TIME}]]></defaultValueExpression>
 	</parameter>
 	<parameter name="START_TIME_STRING" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA[new SimpleDateFormat("EEE MMM d HH:mm:ss Z yyyy").format($P{START_TIME})]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA[new SimpleDateFormat("yyyy-MM-d HH:mm:ss Z").format($P{START_TIME})]]></defaultValueExpression>
 	</parameter>
 	<queryString>
 		<![CDATA[SELECT
@@ -612,7 +612,7 @@ ORDER BY
 			<textField evaluationTime="Page">
 				<reportElement style="Body" x="254" y="16" width="131" height="14"/>
 				<textElement/>
-				<textFieldExpression class="java.util.Date"><![CDATA[new Date($P{START_TIME}.getTime() + (86400000 * $P{TIME_RANGE_NUMBER}))]]></textFieldExpression>
+				<textFieldExpression class="java.util.Date"><![CDATA[new Date($P{START_TIME}.getTime() + (86400000L * $P{TIME_RANGE_NUMBER}))]]></textFieldExpression>
 			</textField>
 		</band>
 	</pageFooter>

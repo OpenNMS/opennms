@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,7 +29,7 @@
 package org.opennms.netmgt.provision.detector.jmx;
 
 import org.opennms.netmgt.provision.support.BasicDetector;
-import org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator;
+import org.opennms.netmgt.provision.support.ResponseValidator;
 import org.opennms.netmgt.provision.support.jmx.connectors.ConnectionWrapper;
 
 
@@ -66,7 +66,7 @@ public abstract class JMXDetector extends BasicDetector<ConnectionWrapper, Integ
     /**
      * <p>expectBeanCount</p>
      *
-     * @param bannerValidator a {@link org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator} object.
+     * @param bannerValidator a {@link org.opennms.netmgt.provision.support.ResponseValidator} object.
      */
     protected final void expectBeanCount(ResponseValidator<Integer> bannerValidator) {
         getConversation().expectBanner(bannerValidator);
@@ -76,12 +76,12 @@ public abstract class JMXDetector extends BasicDetector<ConnectionWrapper, Integ
      * <p>greatThan</p>
      *
      * @param count a int.
-     * @return a {@link org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator} object.
+     * @return a {@link org.opennms.netmgt.provision.support.ResponseValidator} object.
      */
     protected static final ResponseValidator<Integer> greatThan(final int count){
         return new ResponseValidator<Integer>() {
 
-            public boolean validate(Integer response) throws Exception {
+            public boolean validate(Integer response) {
                 
                 return (response >= count);
             }

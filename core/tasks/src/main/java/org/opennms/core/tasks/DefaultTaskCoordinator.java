@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -41,6 +41,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.utils.ThreadCategory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
@@ -109,7 +110,9 @@ public class DefaultTaskCoordinator implements InitializingBean {
     public DefaultTaskCoordinator(String name) {
         m_queue = new LinkedBlockingQueue<Future<Runnable>>();
         m_actor = new RunnableActor(name+"-TaskScheduler", m_queue);
-        addExecutor(SyncTask.ADMIN_EXECUTOR, Executors.newSingleThreadExecutor());
+        addExecutor(SyncTask.ADMIN_EXECUTOR, Executors.newSingleThreadExecutor(
+            new LogPreservingThreadFactory(SyncTask.ADMIN_EXECUTOR, 1, false)
+        ));
     }
     
     /**

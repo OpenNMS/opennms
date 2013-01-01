@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,6 +28,7 @@
  *******************************************************************************/
 
 --%>
+
 <%@page language="java" contentType="text/html" session="true"
 	import="
 	java.util.*,
@@ -111,7 +112,14 @@
 		value="<a href='admin/index.jsp'>Admin</a>" />
 	<jsp:param name="breadcrumb" value="Scheduled Outages" />
 </jsp:include>
-
+<style type="text/css">
+div.nodeintbox {
+  white-space: nowrap;
+  max-height: 196px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+</style>
 
 <table id="outages" border="1" cellpadding="5">
 	<tr>
@@ -181,7 +189,7 @@
 	<tr valign="top">
 		<td><%=outageName%></td>
 		<td><%=pollFactory.getOutageType(outageName)%></td>
-		<td>
+		<td><div class="nodeintbox">
 		<%
 			org.opennms.netmgt.config.poller.Node[] nodeList = pollFactory.getNodeIds(outageName);
 				for (int j = 0; j < nodeList.length; j++) {
@@ -222,9 +230,9 @@
 		%><%=display%>
 		<%
 			}
-		%>
+		%></div>
 		</td>
-		<td noWrap>
+		<td><div class="nodeintbox">
 		<%
 			org.opennms.netmgt.config.poller.Time[] outageTimes = pollFactory.getOutageTimes(outageName);
 				for (int j = 0; j < outageTimes.length; j++) {
@@ -241,7 +249,7 @@
 		<%=thisOutageTime.getEnds()%><br/>
 		<%
 			}
-		%>
+		%></div>
 		</td>
 		<td align="center"><img
 			src="<%=(notificationOutages.contains(outageName))?outageOnImageUrl:outageOffImageUrl%>"></td>

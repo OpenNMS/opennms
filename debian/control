@@ -58,7 +58,7 @@ Description: Enterprise-grade Open-source Network Management Platform (Daemon)
 Package: opennms-remote-poller
 Architecture: all
 Conflicts: opennms-server
-Depends: sun-java6-jre
+Depends: sun-java6-jre | openjdk-6-jre (>= 6b11-9.1)
 Description: Enterprise-grade Open-source Network Management Platform (Remote Poller)
  OpenNMS is an enterprise-grade network management system written in Java.
  .
@@ -120,7 +120,7 @@ Description: Enterprise-grade Open-source Network Management Platform (Common Fi
 
 Package: libopennms-java
 Architecture: all
-Depends: sun-java6-jre | openjdk-6-jre (>= 6b11-9.1), libpg-java (>= 8.1), jicmp, jicmp6
+Depends: sun-java6-jre | openjdk-6-jre (>= 6b11-9.1), jicmp, jicmp6
 Replaces: opennms-common (<< 1.3.0), libicmp-jni (<< 1.3.0)
 Description: Enterprise-grade Open-source Network Management Platform (OpenNMS Libraries)
  OpenNMS is an enterprise-grade network management system written in Java.

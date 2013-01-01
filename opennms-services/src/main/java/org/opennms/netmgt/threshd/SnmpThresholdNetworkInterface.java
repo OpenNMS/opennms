@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -25,7 +25,6 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-
 
 /**
  * Container for all state needed by the SnmpThresholder for a
@@ -175,7 +174,8 @@ public class SnmpThresholdNetworkInterface {
      * @param ifLabel a {@link java.lang.String} object.
      * @return a {@link java.util.Map} object.
      */
-    public Map<String, Set<ThresholdEntity>> getInterfaceThresholdMap(String ifLabel) {
+    @SuppressWarnings("deprecation")
+	public Map<String, Set<ThresholdEntity>> getInterfaceThresholdMap(String ifLabel) {
         ThresholdResourceType resourceType = getThresholdConfiguration().getIfResourceType();
 
         // Attempt to retrieve the threshold map for this interface using the ifLabel for the interface

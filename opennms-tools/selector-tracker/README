@@ -1,0 +1,10 @@
+TO use this aspect we need to do the following
+
+add -javaavent:$HOME/.m2/repository/org/aspectj/aspectjweaver/1.6.8/aspectjweaver-1.6.8.jar to the java comman line
+
+you may also want to add -Daj.weaving.verbose=true
+
+it may be necessary to make sure aspectjrt-1.6.8.jar is in the boot classpath rather than loaded by another classloader
+
+then make sure that this aspect's jar is in the classpath
+NOTE: you must use the jar because META-INF/aop.xml is in the jar and configures the aspect

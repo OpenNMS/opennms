@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -39,13 +39,13 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.provision.DetectFuture;
 import org.opennms.netmgt.provision.DetectFutureListener;
 import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.detector.simple.TcpDetector;
 import org.opennms.netmgt.provision.server.SimpleServer;
-import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -67,7 +67,7 @@ public class TcpDetectorTest implements ApplicationContextAware {
     }
 
     private void initializeDetector() {
-        m_detector  = getDetector(TcpDetector.class);
+        m_detector = getDetector(TcpDetector.class);
         m_detector.setServiceName(getServiceName());
         m_detector.setTimeout(getTimeout());
         m_detector.setBanner(getBanner());
@@ -99,8 +99,8 @@ public class TcpDetectorTest implements ApplicationContextAware {
     }
     
     
-    @Test
-    public void testSucessServer() throws Exception {
+    @Test(timeout=90000)
+    public void testSuccessServer() throws Exception {
         initializeDefaultDetector();
         
         m_server = new SimpleServer() {
@@ -125,14 +125,14 @@ public class TcpDetectorTest implements ApplicationContextAware {
             
         });
         
-        future.awaitForUninterruptibly();
         assertNotNull(future);
+        future.awaitForUninterruptibly();
         assertTrue(future.isServiceDetected());
     }
 
     
     
-    @Test
+    @Test(timeout=90000)
     public void testFailureNoBannerSentWhenExpectingABanner() throws Exception {
         initializeDefaultDetector();
         
@@ -155,7 +155,30 @@ public class TcpDetectorTest implements ApplicationContextAware {
     
     }
     
-    @Test
+    @Test(timeout=90000)
+    public void testFailureConnectionTimesOutWhenExpectingABanner() throws Exception {
+        initializeDefaultDetector();
+        
+        m_server = new SimpleServer() {
+            
+            public void onInit() {
+                setTimeout(3000);
+            }
+            
+        };
+        m_server.init();
+        m_server.startServer();
+        
+        m_detector.setPort(m_server.getLocalPort());
+
+        DetectFuture future = m_detector.isServiceDetected(m_server.getInetAddress());
+        assertNotNull(future);
+        future.awaitForUninterruptibly();
+        assertFalse("Test should fail because no banner was sent when expecting a banner to be sent",future.isServiceDetected());
+    
+    }
+    
+    @Test(timeout=90000)
     public void testSuccessNotExpectingBannerNoBannerSent() throws Exception {
         intializeNullBannerDetector();
         
@@ -181,7 +204,7 @@ public class TcpDetectorTest implements ApplicationContextAware {
 
     
     
-    @Test
+    @Test(timeout=90000)
     public void testFailureClosedPort() throws Exception {
         initializeDefaultDetector();
         
@@ -193,6 +216,7 @@ public class TcpDetectorTest implements ApplicationContextAware {
             
         };
         m_server.init();
+        //m_server.startServer();
         m_detector.setPort(m_server.getLocalPort());
         
         //assertFalse("Test should fail because the server closes before detection takes place", m_detector.isServiceDetected(m_server.getInetAddress()));
@@ -203,8 +227,12 @@ public class TcpDetectorTest implements ApplicationContextAware {
         assertFalse(future.isServiceDetected());
     
     }
-    
-    @Test
+
+    /**
+     * I think that this test is redundant with {@link #testFailureClosedPort()} since neither
+     * server is actually started. The detector just times out on both connections.
+     */
+    @Test(timeout=90000)
     public void testServerCloses() throws Exception{
         initializeDefaultDetector();
         
@@ -227,7 +255,7 @@ public class TcpDetectorTest implements ApplicationContextAware {
         assertFalse(future.isServiceDetected());
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testNoServerPresent() throws Exception {
         initializeDefaultDetector();
         
@@ -246,15 +274,12 @@ public class TcpDetectorTest implements ApplicationContextAware {
         assertNotNull(future);
         future.awaitForUninterruptibly();
         assertFalse(future.isServiceDetected());
-        
-        
-        
-        System.err.println("Finish test");
     }
 
     /* (non-Javadoc)
      * @see org.springframework.context.ApplicationContextAware#setApplicationContext(org.springframework.context.ApplicationContext)
      */
+    @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         m_applicationContext = applicationContext;
     }

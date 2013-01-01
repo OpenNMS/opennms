@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -33,12 +33,10 @@ import java.io.InterruptedIOException;
 import java.net.ConnectException;
 import java.net.InetAddress;
 import java.net.NoRouteToHostException;
+import java.net.PortUnreachableException;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
-import org.opennms.netmgt.provision.SyncServiceDetector;
-import org.opennms.netmgt.provision.support.ClientConversation.RequestBuilder;
-import org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator;
 
 /**
  * <p>Abstract BasicDetector class.</p>
@@ -46,7 +44,7 @@ import org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator
  * @author <a href=mailto:desloge@opennms.com>Donald Desloge</a>
  * @version $Id: $
  */
-public abstract class BasicDetector<Request, Response> extends AbstractDetector implements SyncServiceDetector {
+public abstract class BasicDetector<Request, Response> extends SyncAbstractDetector {
     
     private ClientConversation<Request, Response> m_conversation = new ClientConversation<Request, Response>();
     
@@ -100,9 +98,12 @@ public abstract class BasicDetector<Request, Response> extends AbstractDetector 
             } catch (NoRouteToHostException e) {
                 // No Route to host!!!
                 LogUtils.infof(this, e, "isServiceDetected: %s: No route to address %s was available", getServiceName(), ipAddr);
+            } catch (final PortUnreachableException e) {
+                // Port unreachable
+                LogUtils.infof(this, e, "isServiceDetected: %s: Port unreachable while connecting to address %s port %d within timeout: %d attempt: %d", getServiceName(), ipAddr, port, timeout, attempts);
             } catch (InterruptedIOException e) {
                 // Expected exception
-                LogUtils.infof(this, e, "isServiceDetected: %s: Did not connect to to address %s port %d within timeout: %d attempt: %d", getServiceName(), ipAddr, port, timeout, attempts);
+                LogUtils.infof(this, e, "isServiceDetected: %s: Did not connect to address %s port %d within timeout: %d attempt: %d", getServiceName(), ipAddr, port, timeout, attempts);
             } catch (IOException e) {
                 LogUtils.errorf(this, e, "isServiceDetected: %s: An unexpected I/O exception occured contacting address %s port %d",getServiceName(), ipAddr, port);
             } catch (Throwable t) {
@@ -136,7 +137,7 @@ public abstract class BasicDetector<Request, Response> extends AbstractDetector 
     /**
      * <p>expectBanner</p>
      *
-     * @param bannerValidator a {@link org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator} object.
+     * @param bannerValidator a {@link org.opennms.netmgt.provision.support.ResponseValidator} object.
      */
     protected final void expectBanner(ResponseValidator<Response> bannerValidator) {
         getConversation().expectBanner(bannerValidator);
@@ -145,8 +146,8 @@ public abstract class BasicDetector<Request, Response> extends AbstractDetector 
     /**
      * <p>send</p>
      *
-     * @param requestBuilder a {@link org.opennms.netmgt.provision.support.ClientConversation.RequestBuilder} object.
-     * @param responseValidator a {@link org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator} object.
+     * @param requestBuilder a {@link org.opennms.netmgt.provision.support.RequestBuilder} object.
+     * @param responseValidator a {@link org.opennms.netmgt.provision.support.ResponseValidator} object.
      */
     protected final void send(RequestBuilder<Request> requestBuilder, ResponseValidator<Response> responseValidator) {
         getConversation().addExchange(requestBuilder, responseValidator);
@@ -155,7 +156,7 @@ public abstract class BasicDetector<Request, Response> extends AbstractDetector 
      * <p>send</p>
      *
      * @param request a Request object.
-     * @param responseValidator a {@link org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator} object.
+     * @param responseValidator a {@link org.opennms.netmgt.provision.support.ResponseValidator} object.
      */
     protected void send(Request request, ResponseValidator<Response> responseValidator) {
         getConversation().addExchange(request, responseValidator);

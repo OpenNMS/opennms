@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <parent>
+    <relativePath>../poms/compiled/</relativePath>
+    <groupId>org.opennms.features.topology.build</groupId>
+    <artifactId>compiled-bundle-settings</artifactId>
+    <version>1.11.4-SNAPSHOT</version>
+  </parent>
+
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.opennms.features.topology</groupId>
+  <artifactId>app</artifactId>
+
+  <name>${bundle.symbolicName}</name>
+
+  <packaging>bundle</packaging>
+  
+  <properties>
+    <bundle.symbolicName>org.opennms.features.topology.app</bundle.symbolicName>
+    <bundle.namespace>org.opennms.features.topology.app</bundle.namespace>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+  
+  <build>
+    <resources>
+        <resource>
+            <directory>src/main/java</directory>
+        </resource>
+        <resource>
+            <directory>src/main/resources</directory>
+        </resource>
+    </resources>
+    <plugins>
+        <plugin>
+		    <artifactId>maven-surefire-plugin</artifactId>
+		    <version>2.6</version>
+		    <configuration>
+		      <excludes>
+		        <exclude>**/*GwtTest.java</exclude>
+		      </excludes>
+		    </configuration>
+		</plugin>
+<!--       <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>gwt-maven-plugin</artifactId>
+        <version>2.5.0-rc2</version>
+        <configuration>
+              <includes>**/*GwtTest.java</includes>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>test</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+-->
+    </plugins>
+  </build>
+
+
+  <dependencies>
+    <dependency>
+      <groupId>org.opennms.osgi.features.topology</groupId>
+      <artifactId>vaadin</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.topology</groupId>
+      <artifactId>api</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.topology.plugins.topo</groupId>
+      <artifactId>adapter</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    
+    <dependency>
+      <groupId>com.google.gwt</groupId>
+      <artifactId>gwt-user</artifactId>
+      <optional>true</optional>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>net.sf.jung</groupId>
+      <artifactId>jung-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>net.sf.jung</groupId>
+      <artifactId>jung-graph-impl</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>net.sf.jung</groupId>
+      <artifactId>jung-algorithms</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>net.sf.jung</groupId>
+      <artifactId>jung-visualization</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>javax.validation</groupId>
+      <artifactId>validation-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.validation</groupId>
+      <artifactId>validation-api</artifactId>
+      <classifier>sources</classifier>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.easymock</groupId>
+      <artifactId>easymock</artifactId>
+    </dependency>
+    
+    <dependency>
+	   <groupId>org.osgi</groupId>
+	   <artifactId>org.osgi.core</artifactId>
+	   <scope>provided</scope>
+	</dependency>
+	
+    <dependency>
+	   <groupId>org.osgi</groupId>
+	   <artifactId>org.osgi.compendium</artifactId>
+	   <scope>provided</scope>
+	</dependency>
+	
+    <dependency>
+   	   <groupId>org.vaadin.addons</groupId>
+   	   <artifactId>contextmenu</artifactId>
+   	   <version>3.1.0</version>
+	   <scope>provided</scope>
+	</dependency>
+
+  </dependencies>
+  
+  <repositories>
+      
+    <repository>
+   	  <id>vaadin-addons</id>
+   	  <url>http://maven.vaadin.com/vaadin-addons</url>
+	</repository>
+	
+  </repositories>
+  
+</project>

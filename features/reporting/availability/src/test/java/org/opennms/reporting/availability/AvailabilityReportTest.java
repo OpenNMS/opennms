@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -36,14 +36,14 @@ import java.util.Locale;
 
 import junit.framework.TestCase;
 
+import org.opennms.core.db.DataSourceFactory;
+import org.opennms.core.test.ConfigurationTestUtils;
+import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.test.db.MockDatabase;
 import org.opennms.netmgt.config.CategoryFactory;
-import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.mock.MockCategoryFactory;
-import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.reporting.availability.svclayer.LegacyAvailabilityDataService;
-import org.opennms.test.ConfigurationTestUtils;
-import org.opennms.test.mock.MockLogAppender;
 
 public class AvailabilityReportTest extends TestCase {
 

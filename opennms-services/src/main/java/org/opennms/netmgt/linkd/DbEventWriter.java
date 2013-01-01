@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -45,6 +45,7 @@ import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.dao.AtInterfaceDao;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.SnmpInterfaceDao;
 import org.opennms.netmgt.model.OnmsIpRouteInterface;
 import org.opennms.netmgt.model.OnmsStpInterface;
 import org.opennms.netmgt.model.OnmsStpNode;
@@ -71,6 +72,8 @@ public class DbEventWriter extends AbstractQueryManager {
     private NodeDao m_nodeDao;
 
     private IpInterfaceDao m_ipInterfaceDao;
+    
+    private SnmpInterfaceDao m_snmpInterfaceDao;
 
     private AtInterfaceDao m_atInterfaceDao;
 
@@ -85,15 +88,27 @@ public class DbEventWriter extends AbstractQueryManager {
 
     private static final String SQL_UPDATE_DATALINKINTERFACE = "UPDATE datalinkinterface set status = 'N'  WHERE lastpolltime < ? AND status = 'A'";
 
+    private static final String SQL_DELETE_DATALINKINTERFACE = "DELETE from datalinkinterface WHERE lastpolltime < ? AND status <> 'A'";
+
     private static final String SQL_UPDATE_ATINTERFACE = "UPDATE atinterface set status = 'N'  WHERE sourcenodeid = ? AND lastpolltime < ? AND status = 'A'";
+
+    private static final String SQL_DELETE_ATINTERFACE = "DELETE from atinterface WHERE sourcenodeid = ? AND lastpolltime < ? AND status <> 'A'";
 
     private static final String SQL_UPDATE_IPROUTEINTERFACE = "UPDATE iprouteinterface set status = 'N'  WHERE nodeid = ? AND lastpolltime < ? AND status = 'A'";
 
+    private static final String SQL_DELETE_IPROUTEINTERFACE = "DELETE from iprouteinterface WHERE nodeid = ? AND lastpolltime < ? AND status <> 'A'";
+
     private static final String SQL_UPDATE_STPNODE = "UPDATE stpnode set status = 'N'  WHERE nodeid = ? AND lastpolltime < ? AND status = 'A'";
+
+    private static final String SQL_DELETE_STPNODE = "DELETE from stpnode WHERE nodeid = ? AND lastpolltime < ? AND status <> 'A'";
 
     private static final String SQL_UPDATE_STPINTERFACE = "UPDATE stpinterface set status = 'N'  WHERE nodeid = ? AND lastpolltime < ? AND status = 'A'";
 
+    private static final String SQL_DELETE_STPINTERFACE = "DELETE from stpinterface WHERE nodeid = ? AND lastpolltime < ? AND status = 'A'";
+
     private static final String SQL_UPDATE_VLAN = "UPDATE vlan set status = 'N'  WHERE nodeid =? AND lastpolltime < ? AND status = 'A'";
+
+    private static final String SQL_DELETE_VLAN = "DELETE from vlan WHERE nodeid =? AND lastpolltime < ? AND status = 'A'";
 
     private static final String SQL_UPDATE_ATINTERFACE_STATUS = "UPDATE atinterface set status = ?  WHERE sourcenodeid = ? OR nodeid = ?";
 
@@ -135,6 +150,7 @@ public class DbEventWriter extends AbstractQueryManager {
 
     private static final String SQL_UPDATE_DATALINKINTERFACE_D = "UPDATE datalinkinterface set status = 'D' WHERE (nodeid IN (SELECT nodeid from node WHERE nodetype = 'D' ) OR nodeparentid IN (SELECT nodeid from node WHERE nodetype = 'D' )) AND status <> 'D'";
 
+    private static final String SQL_GET_IFINDEX_FROM_SYSNAME_IPADDRESS = "SELECT ifindex FROM ipinterface ip LEFT JOIN node n ON n.nodeid=ip.nodeid WHERE n.nodesysname = ? AND ip.ipaddr = ?";
     /**
      * <p>Constructor for DbEventWriter.</p>
      */
@@ -267,6 +283,13 @@ public class DbEventWriter extends AbstractQueryManager {
     
             int i = stmt.executeUpdate();
             LogUtils.debugf(this, "storelink: datalinkinterface - updated to NOT ACTIVE status " + i + " rows ");
+            
+            stmt = dbConn.prepareStatement(SQL_DELETE_DATALINKINTERFACE);
+            d.watch(stmt);
+            stmt.setTimestamp(1, new Timestamp(now.getTime()-3*discovery.getSnmpPollInterval()));
+    
+            int j = stmt.executeUpdate();
+            LogUtils.debugf(this, "storelink: datalinkinterface - delete old db entries:" + j + " rows ");
         } finally {
             d.cleanUp();
         }
@@ -282,6 +305,13 @@ public class DbEventWriter extends AbstractQueryManager {
             d.watch(dbConn);
             Timestamp scanTime = new Timestamp(System.currentTimeMillis());
     
+            if (snmpcoll.hasOspfGeneralGroup() && snmpcoll.hasOspfNbrTable()) {
+                processOspf(node,snmpcoll,dbConn,scanTime);
+            }
+            if (snmpcoll.hasLldpLocalGroup()) {
+                processLldp(node,snmpcoll,dbConn,scanTime);
+            }
+            
             if (snmpcoll.hasIpNetToMediaTable()) {
                 processIpNetToMediaTable(node, snmpcoll, dbConn, scanTime);
             }
@@ -312,6 +342,7 @@ public class DbEventWriter extends AbstractQueryManager {
             }
 
             markOldDataInactive(dbConn, scanTime, node.getNodeId());
+            deleteOlderData(dbConn, new Timestamp(scanTime.getTime()-3*snmpcoll.getPollInterval()), node.getNodeId());
     
             return node;
         } catch (Throwable e) {
@@ -371,6 +402,59 @@ public class DbEventWriter extends AbstractQueryManager {
     
             i = stmt.executeUpdate();
             LogUtils.debugf(this, "store: SQL statement " + SQL_UPDATE_STPINTERFACE + ". " + i + " rows UPDATED for nodeid=" + nodeid + ".");
+        } finally {
+            d.cleanUp();
+        }
+    }
+
+    @Override
+    protected void deleteOlderData(final Connection dbConn, final Timestamp now, final int nodeid) throws SQLException {
+
+        final DBUtils d = new DBUtils(getClass());
+
+        try {
+            PreparedStatement stmt = null;
+    
+            int i = 0;
+            stmt = dbConn.prepareStatement(SQL_DELETE_ATINTERFACE);
+            d.watch(stmt);
+            stmt.setInt(1, nodeid);
+            stmt.setTimestamp(2, now);
+    
+            i = stmt.executeUpdate();
+            LogUtils.debugf(this, "store: SQL statement " + SQL_DELETE_ATINTERFACE + ". " + i + " rows DELETED for nodeid=" + nodeid + ".");
+    
+            stmt = dbConn.prepareStatement(SQL_DELETE_VLAN);
+            d.watch(stmt);
+            stmt.setInt(1, nodeid);
+            stmt.setTimestamp(2, now);
+    
+            i = stmt.executeUpdate();
+            LogUtils.debugf(this, "store: SQL statement " + SQL_DELETE_VLAN + ". " + i + " rows DELETED for nodeid=" + nodeid + ".");
+    
+            stmt = dbConn.prepareStatement(SQL_DELETE_IPROUTEINTERFACE);
+            d.watch(stmt);
+            stmt.setInt(1, nodeid);
+            stmt.setTimestamp(2, now);
+    
+            i = stmt.executeUpdate();
+            LogUtils.debugf(this, "store: SQL statement " + SQL_DELETE_IPROUTEINTERFACE + ". " + i + " rows DELETED for nodeid=" + nodeid + ".");
+    
+            stmt = dbConn.prepareStatement(SQL_DELETE_STPNODE);
+            d.watch(stmt);
+            stmt.setInt(1, nodeid);
+            stmt.setTimestamp(2, now);
+    
+            i = stmt.executeUpdate();
+            LogUtils.debugf(this, "store: SQL statement " + SQL_DELETE_STPNODE + ". " + i + " rows DELETED for nodeid=" + nodeid + ".");
+    
+            stmt = dbConn.prepareStatement(SQL_DELETE_STPINTERFACE);
+            d.watch(stmt);
+            stmt.setInt(1, nodeid);
+            stmt.setTimestamp(2, now);
+    
+            i = stmt.executeUpdate();
+            LogUtils.debugf(this, "store: SQL statement " + SQL_DELETE_STPINTERFACE + ". " + i + " rows DELETED for nodeid=" + nodeid + ".");
         } finally {
             d.cleanUp();
         }
@@ -444,9 +528,9 @@ public class DbEventWriter extends AbstractQueryManager {
     }
 
     @Override
-    protected int getNodeidFromIp(Connection dbConn, InetAddress ipaddr) throws SQLException {
+    protected List<Integer> getNodeidFromIp(Connection dbConn, InetAddress ipaddr) throws SQLException {
 
-        int nodeid = -1;
+        List<Integer> nodeids = new ArrayList<Integer>();
 
         final String hostAddress = str(ipaddr);
         final DBUtils d = new DBUtils(getClass());
@@ -462,23 +546,23 @@ public class DbEventWriter extends AbstractQueryManager {
     
             if (!rs.next()) {
                 LogUtils.debugf(this, "getNodeidFromIp: no entries found in ipinterface");
-                return -1;
+                return nodeids;
             }
             // extract the values.
             //
-            int ndx = 1;
-    
+            while (rs.next()) {                    
             // get the node id
             //
-            nodeid = rs.getInt(ndx++);
-            if (rs.wasNull()) nodeid = -1;
+                int nodeid = rs.getInt("nodeid");
+                nodeids.add(nodeid);
     
-            LogUtils.debugf(this, "getNodeidFromIp: found nodeid " + nodeid);
+                LogUtils.debugf(this, "getNodeidFromIp: found nodeid " + nodeid);
+            }
         } finally {
             d.cleanUp();
         }
 
-        return nodeid;
+        return nodeids;
 
     }
 
@@ -886,6 +970,16 @@ public class DbEventWriter extends AbstractQueryManager {
     }
 
     @Override
+    public SnmpInterfaceDao getSnmpInterfaceDao() {
+        return m_snmpInterfaceDao;
+    }
+
+    public void setSnmpInterfaceDao(SnmpInterfaceDao snmpInterfaceDao) {
+        m_snmpInterfaceDao = snmpInterfaceDao;
+    }
+
+
+    @Override
     public AtInterfaceDao getAtInterfaceDao() {
         return m_atInterfaceDao;
     }
@@ -1014,4 +1108,49 @@ public class DbEventWriter extends AbstractQueryManager {
         return physaddrs;
     }
 
+    @Override
+    protected Integer getFromSysnameIpAddress(String lldpRemSysname,
+            InetAddress lldpRemPortid) {
+        final DBUtils d = new DBUtils(getClass());
+        int ifindex = -1;
+        try {
+            Connection dbConn = getConnection();
+            PreparedStatement stmt = null;
+            stmt = dbConn.prepareStatement(SQL_GET_IFINDEX_FROM_SYSNAME_IPADDRESS);
+            d.watch(stmt);
+            stmt.setString(1, lldpRemSysname);
+            stmt.setString(2, lldpRemPortid.getHostAddress());
+    
+            LogUtils.debugf(this, "getFromSysnameIpAddress: executing query" + SQL_GET_IFINDEX_FROM_SYSNAME_IPADDRESS + " nodeSysname=" + lldpRemSysname + "and ipAddr=" + lldpRemPortid);
+    
+            ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
+    
+            if (!rs.next()) {
+                LogUtils.debugf(this, "getFromSysnameIpAddress: no entries found in ipinterface");
+                return -1;
+            }
+    
+            // extract the values.
+            //
+            int ndx = 1;
+    
+            if (rs.wasNull()) {
+    
+                LogUtils.debugf(this, "getFromSysnameIpAddress: no entries found in snmpinterface");
+                return -1;
+    
+            }
+    
+            ifindex = rs.getInt(ndx++);
+    
+            LogUtils.debugf(this, "getFromSysnameIpAddress: found ifindex=" + ifindex);
+    
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            d.cleanUp();
+        }
+        return Integer.valueOf(ifindex);
+    }
 }

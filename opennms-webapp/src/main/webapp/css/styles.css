@@ -61,6 +61,10 @@
 	    line-height: 1.25em;
 	}
     
+    li li { 
+   	font-size: 100%; 
+    }
+ 
     p {
         margin: 0 0 7px 0;
     }
@@ -654,14 +658,22 @@
         clear: both;
         height: 1px;
     }
+
+/* --------------------------------------------------
+    :: Style for notification status
+    -------------------------------------------------- */
+#notificationOff{
+	color: #ef2929;
+}
+
+#notificationOn{
+	color: #73d216;
+}
 	
 /* --------------------------------------------------
     :: Deprecated Styles, Please do not uncomment, these
        will eventually be removed after testing.
     -------------------------------------------------- */
-/* li li { */
-/* 	font-size: 100%; */
-/* } */
 
 /* td th { */
 /* 	font-size: 100%; */

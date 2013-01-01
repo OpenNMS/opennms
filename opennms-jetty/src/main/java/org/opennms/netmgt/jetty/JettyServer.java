@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -35,7 +35,7 @@ import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jetty.ajp.Ajp13SocketConnector;
-import org.eclipse.jetty.http.ssl.SslContextFactory;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.HandlerCollection;
@@ -96,7 +96,7 @@ public class JettyServer extends AbstractServiceDaemon {
             Ajp13SocketConnector ajpConnector = new Ajp13SocketConnector();
             ajpConnector.setPort(ajp_port);
             // Apache AJP connector freaks out with anything larger
-            ajpConnector.setHeaderBufferSize(8096);
+            ajpConnector.setRequestHeaderSize(8096);
             m_server.addConnector(ajpConnector);
         }
         
@@ -106,10 +106,14 @@ public class JettyServer extends AbstractServiceDaemon {
             String keyStorePath = System.getProperty("org.opennms.netmgt.jetty.https-keystore", homeDir+File.separator+"etc"+File.separator+"examples"+File.separator+"jetty.keystore");
             String keyStorePassword = System.getProperty("org.opennms.netmgt.jetty.https-keystorepassword", "changeit");
             String keyManagerPassword = System.getProperty("org.opennms.netmgt.jetty.https-keypassword", "changeit");
+            String certificateAlias = System.getProperty("org.opennms.netmgt.jetty.https-cert-alias", null);
 
             SslContextFactory contextFactory = new SslContextFactory(keyStorePath);
             contextFactory.setKeyStorePassword(keyStorePassword);
             contextFactory.setKeyManagerPassword(keyManagerPassword);
+            if (certificateAlias != null && !"".equals(certificateAlias.trim())) {
+                contextFactory.setCertAlias(certificateAlias);
+            }
 
         	excludeCipherSuites(contextFactory, https_port);
 

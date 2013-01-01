@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,8 +26,6 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-
-
 package org.opennms.netmgt.snmp;
 
 import static org.junit.Assert.assertEquals;
@@ -36,12 +34,13 @@ import static org.opennms.core.utils.InetAddressUtils.addr;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.ConfigurationTestUtils;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.snmp.JUnitSnmpAgentExecutionListener;
+import org.opennms.core.test.snmp.ProxySnmpAgentConfigFactory;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.netmgt.config.SnmpPeerFactory;
-import org.opennms.netmgt.dao.support.ProxySnmpAgentConfigFactory;
-import org.opennms.test.mock.MockLogAppender;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -58,7 +57,7 @@ public class JUnitSnmpAgentExecutionListenerTest {
     @Before
     public void setUp() throws Exception {
     	MockLogAppender.setupLogging();
-    	SnmpPeerFactory.setInstance(new ProxySnmpAgentConfigFactory());
+    	SnmpPeerFactory.setInstance(new ProxySnmpAgentConfigFactory(ConfigurationTestUtils.getInputStreamForConfigFile("snmp-config.xml")));
     }
 
     @Test

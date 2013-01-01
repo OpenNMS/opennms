@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -57,9 +57,9 @@ import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.title.TextTitle;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.jdbc.JDBCCategoryDataset;
+import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.ChartConfigFactory;
-import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.charts.BarChart;
 import org.opennms.netmgt.config.charts.Blue;
 import org.opennms.netmgt.config.charts.Green;
@@ -76,7 +76,7 @@ import org.opennms.netmgt.config.charts.Title;
  * @author <a href="david@opennms.org">David Hustace</a>
  * @version $Id: $
  */
-public class ChartUtils {
+public abstract class ChartUtils {
     
     /**
      * Use this it initialize required factories so that the WebUI doesn't

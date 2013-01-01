@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -135,6 +135,15 @@ public class DefaultResourceService implements ResourceService, InitializingBean
     public List<OnmsResource> findDomainResources() {
         return m_resourceDao.findDomainResources();
     }
+    
+    /**
+     * <p>findNodeSourceResources</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
+    public List<OnmsResource> findNodeSourceResources() {
+        return m_resourceDao.findNodeSourceResources();
+    }
 
     /**
      * <p>findNodeResources</p>
@@ -169,6 +178,17 @@ public class DefaultResourceService implements ResourceService, InitializingBean
     public List<OnmsResource> findDomainChildResources(String domain) {
         List<OnmsResource> resources = new ArrayList<OnmsResource>();
         OnmsResource resource = m_resourceDao.getResourceById(OnmsResource.createResourceId("domain", domain));
+        if (resource != null) {
+            resources = resource.getChildResources();
+            resources.size(); // Get the size to force the list to be loaded
+        }
+        return resources;
+    }
+    
+    /** {@inheritDoc} */
+    public List<OnmsResource> findNodeSourceChildResources(String nodeSource) {
+        List<OnmsResource> resources = new ArrayList<OnmsResource>();
+        OnmsResource resource = m_resourceDao.getResourceById(OnmsResource.createResourceId("nodeSource", nodeSource));
         if (resource != null) {
             resources = resource.getChildResources();
             resources.size(); // Get the size to force the list to be loaded

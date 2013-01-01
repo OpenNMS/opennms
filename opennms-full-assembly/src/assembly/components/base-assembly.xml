@@ -12,6 +12,20 @@
     </dependencySet>
     <dependencySet>
       <unpack>true</unpack>
+      <useProjectArtifact>false</useProjectArtifact>
+      <useTransitiveDependencies>false</useTransitiveDependencies>
+      <outputDirectory>/</outputDirectory>
+      <includes>
+        <include>org.opennms.container:karaf:tar.gz:${project.version}</include>
+      </includes>
+      <unpackOptions>
+        <excludes>
+          <exclude>etc/org.apache.karaf.features.cfg</exclude>
+        </excludes>
+      </unpackOptions>
+    </dependencySet>
+    <dependencySet>
+      <unpack>true</unpack>
       <unpackOptions><filtered>true</filtered></unpackOptions>
       <useProjectArtifact>false</useProjectArtifact>
       <useTransitiveDependencies>false</useTransitiveDependencies>

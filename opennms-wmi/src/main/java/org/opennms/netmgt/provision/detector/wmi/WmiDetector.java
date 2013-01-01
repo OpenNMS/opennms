@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -32,8 +32,8 @@ import java.net.InetAddress;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.WmiPeerFactory;
-import org.opennms.netmgt.provision.support.AbstractDetector;
-import org.opennms.protocols.wmi.WmiAgentConfig;
+import org.opennms.netmgt.config.wmi.WmiAgentConfig;
+import org.opennms.netmgt.provision.support.SyncAbstractDetector;
 import org.opennms.protocols.wmi.WmiException;
 import org.opennms.protocols.wmi.WmiManager;
 import org.opennms.protocols.wmi.WmiParams;
@@ -43,7 +43,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Scope("prototype")
-public class WmiDetector extends AbstractDetector {
+public class WmiDetector extends SyncAbstractDetector {
     
     private final static String PROTOCOL_NAME = "WMI";
 

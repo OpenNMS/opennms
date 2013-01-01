@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.core</artifactId>
-    <version>1.11.0-SNAPSHOT</version>
+    <version>1.11.4-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core</groupId>
@@ -11,9 +11,11 @@
   <name>OpenNMS Core Test APIs</name>
   <packaging>pom</packaging>
   <modules>
+    <module>db</module>
     <module>dns</module>
     <module>lib</module>
     <module>http</module>
+    <module>services</module>
     <module>schema</module>
     <module>snmp</module>
     <module>xml</module>

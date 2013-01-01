@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -37,7 +37,7 @@ import java.text.DecimalFormat;
  * @author djgregor
  * @link http://www.physics.nist.gov/cuu/Units/
  */
-public class SIUtils {
+public abstract class SIUtils {
     /**
      * Always print at least one digit after the decimal point,
      * and at most three digits after the decimal point.

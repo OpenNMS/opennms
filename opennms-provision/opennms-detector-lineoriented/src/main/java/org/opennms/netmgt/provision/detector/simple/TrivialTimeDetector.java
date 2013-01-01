@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -33,7 +33,7 @@ import org.opennms.netmgt.provision.detector.simple.request.TrivialTimeRequest;
 import org.opennms.netmgt.provision.detector.simple.response.TrivialTimeResponse;
 import org.opennms.netmgt.provision.support.BasicDetector;
 import org.opennms.netmgt.provision.support.Client;
-import org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator;
+import org.opennms.netmgt.provision.support.ResponseValidator;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -94,9 +94,9 @@ public class TrivialTimeDetector extends BasicDetector<TrivialTimeRequest, Trivi
         return new TrivialTimeRequest();
     }
 
-    private ResponseValidator<TrivialTimeResponse> validate() {
+    private static ResponseValidator<TrivialTimeResponse> validate() {
         return new ResponseValidator<TrivialTimeResponse>() {
-            public boolean validate(final TrivialTimeResponse response) throws Exception {
+            public boolean validate(final TrivialTimeResponse response) {
                 return response.isAvailable();
             }
         };

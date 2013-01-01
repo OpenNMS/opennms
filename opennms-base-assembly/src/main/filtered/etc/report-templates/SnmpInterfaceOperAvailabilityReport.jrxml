@@ -22,7 +22,7 @@
 		<defaultValueExpression><![CDATA[new Double("98.0")]]></defaultValueExpression>
 	</parameter>
 	<parameter name="AVAILABILITY_CRITICAL" class="java.lang.Double">
-		<parameterDescription><![CDATA[Availability Critial]]></parameterDescription>
+		<parameterDescription><![CDATA[Availability Critical]]></parameterDescription>
 		<defaultValueExpression><![CDATA[new Double("97.0")]]></defaultValueExpression>
 	</parameter>
 	<parameter name="TIME_RANGE_NUMBER" class="java.lang.Integer">

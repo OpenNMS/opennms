@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -143,26 +143,31 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
     }
 
     private void applyThresholds(String rrdPath, MonitoredService service, String dsName, LinkedHashMap<String, Number> entries) {
-	try {
-        if (m_thresholdingSet == null) {
-            RrdRepository repository = new RrdRepository();
-            repository.setRrdBaseDir(new File(rrdPath));
-            // Interval does not make sense for Latency Thresholding, because all values are gauge.
-            m_thresholdingSet = new LatencyThresholdingSet(service.getNodeId(), service.getIpAddr(), service.getSvcName(), repository);
-        }
-        LinkedHashMap<String, Double> attributes = new LinkedHashMap<String, Double>();
-        for (String ds : entries.keySet()) {
-            attributes.put(ds, entries.get(ds).doubleValue());
-        }
-        if (m_thresholdingSet.hasThresholds(attributes)) {
-            List<Event> events = m_thresholdingSet.applyThresholds(dsName, attributes);
-            if (events.size() > 0) {
-                ThresholdingEventProxy proxy = new ThresholdingEventProxy();
-                proxy.add(events);
-                proxy.sendAllEvents();
+        try {
+            if (m_thresholdingSet == null) {
+                RrdRepository repository = new RrdRepository();
+                repository.setRrdBaseDir(new File(rrdPath));
+                m_thresholdingSet = new LatencyThresholdingSet(service.getNodeId(), service.getIpAddr(), service.getSvcName(), repository);
             }
-        }
-
+            LinkedHashMap<String, Double> attributes = new LinkedHashMap<String, Double>();
+            for (String ds : entries.keySet()) {
+                Number sampleValue = entries.get(ds);
+                if (sampleValue == null) {
+                    attributes.put(ds, Double.NaN);
+                } else {
+                    attributes.put(ds, sampleValue.doubleValue());
+                }
+            }
+            if (m_thresholdingSet.isNodeInOutage()) {
+                log().info("applyThresholds: the threshold processing will be skipped because the service " + service + " is on a scheduled outage.");
+            } else if (m_thresholdingSet.hasThresholds(attributes)) {
+                List<Event> events = m_thresholdingSet.applyThresholds(dsName, attributes);
+                if (events.size() > 0) {
+                    ThresholdingEventProxy proxy = new ThresholdingEventProxy();
+                    proxy.add(events);
+                    proxy.sendAllEvents();
+                }
+            }
 	} catch(Throwable e) {
 	    log().error("Failed to threshold on " + service + " for " + dsName + " because of an exception", e);
 	}

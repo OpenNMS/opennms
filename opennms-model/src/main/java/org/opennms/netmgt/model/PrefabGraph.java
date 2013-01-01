@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -39,7 +39,7 @@ public class PrefabGraph extends Object implements Comparable<PrefabGraph> {
     private String m_title;
 
     private String[] m_columns;
-
+    
     private String m_command;
 
     private String[] m_externalValues;
@@ -227,13 +227,14 @@ public class PrefabGraph extends Object implements Comparable<PrefabGraph> {
     public String[] getSuppress() {
         return m_suppress;
     }
-
+    
     /**
      * <p>compareTo</p>
      *
      * @param other a {@link org.opennms.netmgt.model.PrefabGraph} object.
      * @return a int.
      */
+    @Override
     public int compareTo(PrefabGraph other) {
         if (other == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");

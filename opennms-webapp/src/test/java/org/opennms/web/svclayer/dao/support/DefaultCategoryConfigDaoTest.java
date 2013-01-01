@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -33,10 +33,11 @@ package org.opennms.web.svclayer.dao.support;
 
 import java.util.Collection;
 import java.util.Iterator;
+
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.config.CategoryFactory;
 import org.opennms.netmgt.config.categories.Category;
 import org.opennms.netmgt.mock.MockCategoryFactory;
-import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
 
 import junit.framework.TestCase;

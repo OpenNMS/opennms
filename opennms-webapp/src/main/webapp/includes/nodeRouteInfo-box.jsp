@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,6 +28,7 @@
  *******************************************************************************/
 
 --%>
+
 <%--
 
 //
@@ -66,7 +67,7 @@
 
 <%@page language="java" contentType="text/html" session="true" import="
   java.util.List,
-  org.opennms.web.WebSecurityUtils,
+  org.opennms.core.utils.WebSecurityUtils,
   org.opennms.web.element.*,
   org.opennms.netmgt.model.OnmsNode
 "%>
@@ -77,7 +78,7 @@
     final String nodeIdString = request.getParameter("node");
 
     if( nodeIdString == null ) {
-        throw new org.opennms.web.MissingParameterException("node");
+        throw new org.opennms.web.servlet.MissingParameterException("node");
     }
         
     final int nodeId = WebSecurityUtils.safeParseInt(nodeIdString);

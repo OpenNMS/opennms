@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/bash
 
 MYDIR=`dirname $0`
 BINDIR=`cd "$MYDIR"; pwd`
@@ -63,16 +63,16 @@ rm -rf "${HOME}"/.m2/repository/org/opennms
 RELEASE=`cat "$TOPDIR"/.nightly | grep -E '^repo:' | awk '{ print $2 }'`
 
 # create the RPM
-./makerpm.sh -a -s "$PASSWORD" -m "$TIMESTAMP" -u "$REVISION"
+./makerpm.sh -a -s "$PASSWORD" -m "$TIMESTAMP" -u "$REVISION" || exit 1
 
 # copy the source to SourceForge
 echo $UPDATE_SF_REPO "$RELEASE" target/rpm/SOURCES/opennms-source*.tar.gz
-$UPDATE_SF_REPO "$RELEASE" target/rpm/SOURCES/opennms-source*.tar.gz
+$UPDATE_SF_REPO "$RELEASE" target/rpm/SOURCES/opennms-source*.tar.gz || exit 1
 
 # update the $RELEASE repo, and sync it to anything later in the hierarchy
 # ./bin/update-yum-repo.pl [-g gpg_id] -s "$PASSWORD" "$RELEASE" "common" "opennms" target/rpms/RPMS/noarch/*.rpm
-$UPDATE_REPO -s "$PASSWORD" "$YUMDIR" "$RELEASE" "common" "opennms" target/rpm/RPMS/noarch/*.rpm
+$UPDATE_REPO -s "$PASSWORD" "$YUMDIR" "$RELEASE" "common" "opennms" target/rpm/RPMS/noarch/*.rpm || exit 1
 
-$GENERATE "$YUMDIR"
+$GENERATE "$YUMDIR" || exit 1
 
 $BUILDTOOL nightly-rpm save

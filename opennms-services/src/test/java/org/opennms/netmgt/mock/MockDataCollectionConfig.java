@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -35,6 +35,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.opennms.netmgt.collectd.SnmpCollector;
+import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
 import org.opennms.netmgt.config.DataCollectionConfigDao;
 import org.opennms.netmgt.config.MibObject;
 import org.opennms.netmgt.config.datacollection.ResourceType;
@@ -200,6 +201,22 @@ public class MockDataCollectionConfig implements DataCollectionConfigDao {
         repo.setStep(getStep(collectionName));
         repo.setHeartBeat((2 * getStep(collectionName)));
         return repo;
+    }
+
+    public DatacollectionConfig getRootDataCollection() {
+        return new DatacollectionConfig();
+    }
+
+    public List<String> getAvailableDataCollectionGroups() {
+        return null;
+    }
+
+    public List<String> getAvailableSystemDefs() {
+        return null;
+    }
+
+    public List<String> getAvailableMibGroups() {
+        return null;
     }
 
 }

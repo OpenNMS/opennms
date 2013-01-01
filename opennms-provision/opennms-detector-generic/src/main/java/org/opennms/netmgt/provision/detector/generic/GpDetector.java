@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -33,7 +33,7 @@ import org.opennms.netmgt.provision.detector.generic.request.GpRequest;
 import org.opennms.netmgt.provision.detector.generic.response.GpResponse;
 import org.opennms.netmgt.provision.support.BasicDetector;
 import org.opennms.netmgt.provision.support.Client;
-import org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator;
+import org.opennms.netmgt.provision.support.ResponseValidator;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -83,10 +83,10 @@ public class GpDetector extends BasicDetector<GpRequest, GpResponse>{
         expectBanner(responseMatches(getBanner()));
     }
 
-    private ResponseValidator<GpResponse> responseMatches(final String banner) {
+    private static ResponseValidator<GpResponse> responseMatches(final String banner) {
         return new ResponseValidator<GpResponse>(){
 
-            public boolean validate(final GpResponse response) throws Exception {
+            public boolean validate(final GpResponse response) {
                 return response.validate(banner);
             }
             

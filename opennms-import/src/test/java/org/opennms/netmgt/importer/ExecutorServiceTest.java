@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -37,6 +37,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
+import org.opennms.core.concurrent.LogPreservingThreadFactory;
 
 public class ExecutorServiceTest {
 
@@ -56,7 +57,7 @@ public class ExecutorServiceTest {
 
 	@Test
 	public void testThreadPool() throws Exception {
-		ExecutorService threadPool = Executors.newFixedThreadPool(11);
+		ExecutorService pool = Executors.newFixedThreadPool(11, new LogPreservingThreadFactory(getClass().getSimpleName() + ".testThreadPool", 11, false));
 
 		for(int i = 1; i <= 100; i++) {
 			final int index = i;
@@ -67,11 +68,11 @@ public class ExecutorServiceTest {
 					incr();
 				}
 			};
-			threadPool.execute(r);
+			pool.execute(r);
 		}
 		
 
-		shutdownAndWaitForCompletion(threadPool);
+		shutdownAndWaitForCompletion(pool);
 		
 		assertEquals(100, getRuns());
 	}

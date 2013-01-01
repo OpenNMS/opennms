@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <parent>
+    <artifactId>dependencies</artifactId>
+    <groupId>org.opennms</groupId>
+    <version>1.11.4-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.opennms.dependencies</groupId>
+  <artifactId>pax-exam-dependencies</artifactId>
+  <packaging>pom</packaging>
+  <name>OpenNMS Apache Pax Exam Dependencies</name>
+  <dependencies>
+    <!--
+    <dependency>
+      <groupId>org.ops4j.pax.exam</groupId>
+      <artifactId>pax-exam-container-native</artifactId>
+      <version>${paxExamVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.ops4j.pax.exam</groupId>
+      <artifactId>pax-exam-container-forked</artifactId>
+      <version>${paxExamVersion}</version>
+    </dependency>
+    -->
+    <dependency>
+      <groupId>org.ops4j.pax.exam</groupId>
+      <artifactId>pax-exam-junit4</artifactId>
+      <version>${paxExamVersion}</version>
+    </dependency>
+    <!--
+    <dependency>
+      <groupId>org.ops4j.pax.exam</groupId>
+      <artifactId>pax-exam-link-mvn</artifactId>
+      <version>${paxExamVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.ops4j.pax.url</groupId>
+      <artifactId>pax-url-aether</artifactId>
+      <version>1.5.0</version>
+    </dependency>
+    -->
+    <!--
+      Declare the version of the Karaf container so that it is available inside
+      unit tests.
+    -->
+    <dependency>
+      <groupId>org.apache.karaf</groupId>
+      <artifactId>apache-karaf</artifactId>
+      <version>${karafVersion}</version>
+      <type>tar.gz</type>
+    </dependency>
+    <!-- 
+      This test-jar contains the org.apache.karaf.itests.KarafTestSupport class
+      which provides useful utility functions when running Pax Exam testing inside
+      Karaf.
+    -->
+    <dependency>
+      <groupId>org.apache.karaf.itests</groupId>
+      <artifactId>itests</artifactId>
+      <version>${karafVersion}</version>
+      <classifier>tests</classifier>
+    </dependency>
+    <!-- 
+      This JAR provides a org.ops4j.pax.exam.TestContainerFactory that will launch
+      a Karaf container to perform unit tests.
+    -->
+    <dependency>
+      <groupId>org.apache.karaf.tooling.exam</groupId>
+      <artifactId>org.apache.karaf.tooling.exam.container</artifactId>
+      <version>${karafVersion}</version>
+    </dependency>
+  </dependencies>
+</project>

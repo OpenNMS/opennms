@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -95,25 +95,25 @@ public class MX4JDetectorTest implements InitializingBean {
         m_connectorServer.stop();
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectoredWired(){
         assertNotNull(m_detector);
     }
    
-    @Test
+    @Test(timeout=90000)
     public void testDetectorSuccess() throws IOException{
         m_detector.init();
         assertTrue(m_detector.isServiceDetected(InetAddress.getLocalHost()));
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectorWrongPort() throws UnknownHostException{
         m_detector.setPort(9000);
         m_detector.init();
         assertFalse(m_detector.isServiceDetected(InetAddress.getLocalHost()));
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectorWrongUrlPath() throws UnknownHostException{
         m_detector.setUrlPath("wrongpath");
         m_detector.init();

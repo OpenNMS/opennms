@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -172,11 +172,11 @@ public class NodeRestService extends OnmsRestService {
             LogUtils.debugf(this, "addNode: Adding node %s", node);
             m_nodeDao.save(node);
             try {
-                sendEvent(EventConstants.NODE_ADDED_EVENT_UEI, node.getId());
+                sendEvent(EventConstants.NODE_ADDED_EVENT_UEI, node.getId(), node.getLabel());
             } catch (EventProxyException ex) {
                 throw getException(Status.BAD_REQUEST, ex.getMessage());
             }
-            return Response.ok(node).build();
+            return Response.seeOther(m_uriInfo.getRequestUriBuilder().path(node.getNodeId()).build()).build();
         } finally {
             writeUnlock();
         }
@@ -212,7 +212,8 @@ public class NodeRestService extends OnmsRestService {
     
             LogUtils.debugf(this, "updateNode: node %s updated", node);
             m_nodeDao.saveOrUpdate(node);
-            return Response.ok(node).build();
+            return Response.seeOther(getRedirectUri(m_uriInfo)).build();
+            // return Response.ok(node).build();
         } finally {
             writeUnlock();
         }
@@ -236,7 +237,7 @@ public class NodeRestService extends OnmsRestService {
             LogUtils.debugf(this, "deleteNode: deleting node %s", nodeCriteria);
             m_nodeDao.delete(node);
             try {
-                sendEvent(EventConstants.NODE_DELETED_EVENT_UEI, node.getId());
+                sendEvent(EventConstants.NODE_DELETED_EVENT_UEI, node.getId(), node.getLabel());
             } catch (final EventProxyException ex) {
                 throw getException(Status.BAD_REQUEST, ex.getMessage());
             }
@@ -286,9 +287,10 @@ public class NodeRestService extends OnmsRestService {
         return m_context.getResource(AssetRecordResource.class);
     }
     
-    private void sendEvent(final String uei, final int nodeId) throws EventProxyException {
+    private void sendEvent(final String uei, final int nodeId, String nodeLabel) throws EventProxyException {
         final EventBuilder bldr = new EventBuilder(uei, getClass().getName());
         bldr.setNodeid(nodeId);
+        bldr.addParam("nodelabel", nodeLabel);
         m_eventProxy.send(bldr.getEvent());
     }
     

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -62,7 +62,7 @@ public class WmiAgentConfigTest  extends TestCase {
 	 * "all", "none", "some" and "one" but does not work for other arbitrary values.
 	 *
 	 * Test method for
-	 * {@link org.opennms.protocols.wmi.WmiAgentConfig#isValidMatchType(java.lang.String)}.
+	 * {@link org.opennms.netmgt.config.wmi.WmiAgentConfig#isValidMatchType(java.lang.String)}.
 	 */
 	public final void testIsValidMatchType() {
 

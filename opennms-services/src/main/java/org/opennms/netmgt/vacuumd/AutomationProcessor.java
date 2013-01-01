@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,7 +26,6 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-
 package org.opennms.netmgt.vacuumd;
 
 import java.sql.Connection;
@@ -43,8 +42,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.opennms.core.utils.PropertiesUtils;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.utils.PropertiesUtils.SymbolTable;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.VacuumdConfigFactory;
 import org.opennms.netmgt.config.vacuumd.Action;
 import org.opennms.netmgt.config.vacuumd.ActionEvent;
@@ -652,7 +651,8 @@ public class AutomationProcessor implements ReadyRunnable {
      *
      * @param automation a {@link org.opennms.netmgt.config.vacuumd.Automation} object.
      */
-    public AutomationProcessor(Automation automation) {
+    @SuppressWarnings("deprecation")
+	public AutomationProcessor(Automation automation) {
         m_ready = true;
         m_automation = automation;
         m_trigger = new TriggerProcessor(m_automation.getName(), VacuumdConfigFactory.getInstance().getTrigger(m_automation.getTriggerName()));

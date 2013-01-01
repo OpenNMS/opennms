@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -47,15 +47,16 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
 import org.opennms.netmgt.config.kscReports.Graph;
 import org.opennms.netmgt.config.kscReports.Report;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.PrefabGraph;
-import org.opennms.web.MissingParameterException;
-import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.graph.KscResultSet;
+import org.opennms.web.servlet.MissingParameterException;
 import org.opennms.web.springframework.security.Authentication;
 import org.opennms.web.svclayer.KscReportService;
 import org.opennms.web.svclayer.ResourceService;
@@ -124,6 +125,9 @@ public class CustomViewController extends AbstractController implements Initiali
         if ("node".equals(reportType)) {
             log().debug("handleRequestInternal: buildNodeReport(reportId) " + reportId);
             report = getKscReportService().buildNodeReport(reportId);
+        } else if ("nodeSource".equals(reportType)) {
+            log().debug("handleRequestInternal: buildNodeSourceReport(nodeSource) " + reportIdString);
+            report = getKscReportService().buildNodeSourceReport(reportIdString);
         } else if ("domain".equals(reportType)) {
             log().debug("handleRequestInternal: buildDomainReport(reportIdString) " + reportIdString);
             report = getKscReportService().buildDomainReport(reportIdString);
@@ -134,7 +138,7 @@ public class CustomViewController extends AbstractController implements Initiali
                 throw new ServletException("Report could not be found in config file for index '" + reportId + "'");
             }
         } else {
-            throw new IllegalArgumentException("value to 'type' parameter of '" + reportType + "' is not supported.  Must be one of: node, domain, or custom");
+            throw new IllegalArgumentException("value to 'type' parameter of '" + reportType + "' is not supported.  Must be one of: node, nodeSource, domain, or custom");
         }
       
         // Get the list of available prefabricated graph options 
@@ -165,7 +169,7 @@ public class CustomViewController extends AbstractController implements Initiali
       
             // Get default graph type from first element of graph_options
             // XXX Do we care about the tests on reportType?
-            if (("node".equals(reportType) || "domain".equals(reportType))
+            if (("node".equals(reportType) || "nodeSource".equals(reportType) || "domain".equals(reportType))
                     && overrideGraphType == null
                     && !prefabGraphs.isEmpty()) {
                 // Get the name of the first item.  prefabGraphs is sorted.
@@ -404,7 +408,9 @@ public class CustomViewController extends AbstractController implements Initiali
         Assert.state(m_resourceService != null, "property resourceService must be set");
         Assert.state(m_defaultGraphsPerLine != 0, "property defaultGraphsPerLine must be set");
         
-        m_executor = Executors.newSingleThreadExecutor();
+        m_executor = Executors.newSingleThreadExecutor(
+            new LogPreservingThreadFactory(getClass().getSimpleName(), 1, false)
+        );
     }
 
 }

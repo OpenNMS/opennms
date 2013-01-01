@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -35,7 +35,9 @@
 	import="org.opennms.netmgt.config.UserFactory,
 	org.opennms.netmgt.config.UserManager,
 	org.opennms.netmgt.config.users.User,
-	org.opennms.web.springframework.security.Authentication"
+    org.springframework.web.context.WebApplicationContext,
+    org.springframework.web.context.support.WebApplicationContextUtils,
+    org.opennms.web.springframework.security.Authentication"
 %>
 
 <%
@@ -45,7 +47,8 @@
         canEdit = true;
     } else {
 	    try {
-       		UserManager userFactory = UserFactory.getInstance();
+            final WebApplicationContext webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
+            final UserManager userFactory = webAppContext.getBean("userManager", org.opennms.netmgt.config.UserManager.class);
        		User user = userFactory.getUser(userid);
        		if (!user.isReadOnly()) {
        		    canEdit = true;

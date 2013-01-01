@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -41,6 +41,7 @@ import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLServerSocketFactory;
 
+import org.apache.commons.io.IOUtils;
 import org.opennms.core.utils.LogUtils;
 
 /**
@@ -114,19 +115,26 @@ public class SSLServer extends SimpleServer{
             
             public void run(){
                 try{
-                    getServerSocket().setSoTimeout(getTimeout());
-                    setSocket(getServerSocket().accept());
-                    
-                    if(getThreadSleepLength() > 0) { Thread.sleep(getThreadSleepLength()); }
-                    getSocket().setSoTimeout(getTimeout());
-                    
-                    OutputStream out = getSocket().getOutputStream();
-                    if(getBanner() != null){sendBanner(out);};
-                    
-                    
-                    BufferedReader in = new BufferedReader(new InputStreamReader(getSocket().getInputStream()));
-                    attemptConversation(in, out);
-
+                    OutputStream out = null;
+                    BufferedReader in = null;
+                    try {
+                        getServerSocket().setSoTimeout(getTimeout());
+                        setSocket(getServerSocket().accept());
+                        
+                        if(getThreadSleepLength() > 0) { Thread.sleep(getThreadSleepLength()); }
+                        getSocket().setSoTimeout(getTimeout());
+                        
+                        out = getSocket().getOutputStream();
+                        if(getBanner() != null){sendBanner(out);};
+                        
+                        
+                        in = new BufferedReader(new InputStreamReader(getSocket().getInputStream()));
+                        attemptConversation(in, out);
+                    } finally {
+                        IOUtils.closeQuietly(in);
+                        IOUtils.closeQuietly(out);
+                        getSocket().close();
+                    }
                 }catch(Throwable e){
                     throw new UndeclaredThrowableException(e);
                 } finally {

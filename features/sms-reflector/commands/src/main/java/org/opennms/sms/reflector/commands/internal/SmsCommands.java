@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,8 +31,8 @@ package org.opennms.sms.reflector.commands.internal;
 import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.Enumeration;
+import java.util.Hashtable;
 import java.util.List;
-import java.util.Properties;
 
 import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
@@ -44,19 +44,19 @@ import org.osgi.framework.BundleContext;
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.smslib.AGateway;
-import org.smslib.AGateway.GatewayStatuses;
-import org.smslib.AGateway.Protocols;
 import org.smslib.ICallNotification;
 import org.smslib.IGatewayStatusNotification;
 import org.smslib.IInboundMessageNotification;
 import org.smslib.IOutboundMessageNotification;
 import org.smslib.InboundMessage;
-import org.smslib.InboundMessage.MessageClasses;
 import org.smslib.Library;
-import org.smslib.Message.MessageTypes;
 import org.smslib.OutboundMessage;
 import org.smslib.Service;
 import org.smslib.USSDRequest;
+import org.smslib.AGateway.GatewayStatuses;
+import org.smslib.AGateway.Protocols;
+import org.smslib.InboundMessage.MessageClasses;
+import org.smslib.Message.MessageTypes;
 import org.smslib.helper.CommPortIdentifier;
 import org.smslib.modem.ModemGateway;
 import org.smslib.modem.SerialModemGateway;
@@ -70,13 +70,7 @@ import org.springframework.osgi.context.BundleContextAware;
  */
 public class SmsCommands implements CommandProvider, BundleContextAware
 {
-    // Unused?
-    private String m_port;
     private Service m_service;
-    private OutboundNotification m_outboundNotification;
-    private InboundNotification m_inboundNotification;
-    private CallNotification m_callNotification;
-    private GatewayStatusNotification m_gatewayStatusNotification;
     private ConfigurationAdmin m_configAdmin;
     private BundleContext m_context;
 
@@ -300,10 +294,10 @@ public class SmsCommands implements CommandProvider, BundleContextAware
         }
 
         try{
-            m_outboundNotification = new OutboundNotification();
-            m_inboundNotification = new InboundNotification();
-            m_callNotification = new CallNotification();
-            m_gatewayStatusNotification = new GatewayStatusNotification();
+            OutboundNotification m_outboundNotification = new OutboundNotification();
+            InboundNotification m_inboundNotification = new InboundNotification();
+            CallNotification m_callNotification = new CallNotification();
+            GatewayStatusNotification m_gatewayStatusNotification = new GatewayStatusNotification();
 
             m_service = new Service();
             SerialModemGateway gateway = new SerialModemGateway("modem."+ port, port, 57600, "SonyEricsson", "W760");
@@ -320,7 +314,6 @@ public class SmsCommands implements CommandProvider, BundleContextAware
             m_service.startService();
 
             printGatewayInfo(gateway, intp);
-            m_port = port;
 
         }catch(Throwable e){
             intp.printStackTrace(e);
@@ -397,10 +390,10 @@ public class SmsCommands implements CommandProvider, BundleContextAware
 
             gatewayGroup.setGateways(gateways.toArray(new AGateway[0]));
 
-            Properties properties = new Properties();
+            Dictionary<String,String> properties = new Hashtable<String,String>();
             properties.put("gatewayUsageType", usage);
 
-            getBundleContext().registerService(GatewayGroup.class.getName(), gatewayGroup, properties);
+            getBundleContext().registerService(GatewayGroup.class, gatewayGroup, properties);
         }
         catch(Throwable e) {
             intp.printStackTrace(e);
@@ -425,9 +418,7 @@ public class SmsCommands implements CommandProvider, BundleContextAware
 
             Configuration config = m_configAdmin.getConfiguration("org.ops4j.pax.logging", null);
             
-            // Unavoidable due to OSGi Configuration API
-            @SuppressWarnings("unchecked")
-            Dictionary<Object,Object> properties = config.getProperties();
+            Dictionary<String,Object> properties = config.getProperties();
             if (level == null) {
                 if (properties == null) {
                     intp.println("Not current configuration");
@@ -439,7 +430,7 @@ public class SmsCommands implements CommandProvider, BundleContextAware
 
             if (properties == null) {
                 intp.println("Creating a new configuraiton");
-                properties = new Properties();
+                properties = new Hashtable<String,Object>();
                 properties.put("log4j.rootLogger", "DEBUG, A1");
                 properties.put("log4j.appender.A1", "org.apache.log4j.ConsoleAppender");
                 properties.put("log4j.appender.A1.layout", "org.apache.log4j.PatternLayout");

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -45,17 +45,17 @@ import org.springframework.osgi.context.BundleContextAware;
 public class OsgiSmsServiceRegistrar implements SmsServiceRegistrar, BundleContextAware {
 
 	private BundleContext m_bundleContext;
-	private Map<SmsService, ServiceRegistration> m_registrationMap = new HashMap<SmsService, ServiceRegistration>();
+	private Map<SmsService, ServiceRegistration<SmsService>> m_registrationMap = new HashMap<SmsService, ServiceRegistration<SmsService>>();
 
 	/** {@inheritDoc} */
 	public void registerSmsService(SmsService service) {
-	    ServiceRegistration registration = m_bundleContext.registerService(SmsService.class.getName(), service, null);
+	    ServiceRegistration<SmsService> registration = m_bundleContext.registerService(SmsService.class, service, null);
 	    m_registrationMap.put(service, registration);
 	}
 	
 	/** {@inheritDoc} */
 	public void unregisterSmsService(SmsService smsService) {
-	    ServiceRegistration registration = m_registrationMap.remove(smsService);
+	    ServiceRegistration<SmsService> registration = m_registrationMap.remove(smsService);
 	    registration.unregister();
 	}
 	

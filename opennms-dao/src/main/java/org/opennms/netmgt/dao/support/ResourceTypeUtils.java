@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -269,5 +269,15 @@ public abstract class ResourceTypeUtils {
             log().warn(message, e);
             throw new DataAccessResourceFailureException(message, e);
         }
+    }
+    
+    /**
+     * 
+     * @param nodeSource a {@link java.lang.String} object.
+     * @return a {@link java.io.File} object.
+     */
+    public static File getRelativeNodeSourceDirectory(String nodeSource) {
+        String[] ident = nodeSource.split(":");
+        return new File(DefaultResourceDao.FOREIGN_SOURCE_DIRECTORY, File.separator + ident[0] + File.separator + ident[1]);
     }
 }

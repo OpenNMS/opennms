@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -36,14 +36,15 @@ import java.io.IOException;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.detector.datagram.NtpDetector;
 import org.opennms.netmgt.provision.server.SimpleUDPServer;
 import org.opennms.netmgt.provision.support.ntp.NtpMessage;
-import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -71,6 +72,16 @@ public class NtpDetectorTest implements ApplicationContextAware {
             @Override
             public void onInit(){
                 NtpMessage message = new NtpMessage();
+                message.version = 3;
+                message.mode = 4;
+                message.stratum = 3;
+                message.precision = 24;
+                message.rootDelay = 24.17;
+                message.rootDispersion = 56.82;
+                message.referenceTimestamp = message.transmitTimestamp;
+                message.originateTimestamp = message.transmitTimestamp;
+                message.receiveTimestamp = message.transmitTimestamp;
+                message.transmitTimestamp = message.transmitTimestamp;
                 byte[] response = message.toByteArray();
                 
                 addRequestResponse(null, response);
@@ -87,7 +98,7 @@ public class NtpDetectorTest implements ApplicationContextAware {
         m_server = null;
     }
      
-    @Test
+    @Test(timeout=90000)
     public void testDetectorSuccess() throws Exception{
         m_server.onInit();
         m_server.startServer();
@@ -98,7 +109,7 @@ public class NtpDetectorTest implements ApplicationContextAware {
         assertTrue("Testing for NTP service, got false when true is supposed to be returned", m_detector.isServiceDetected(m_server.getInetAddress()));
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectorFailWrongPort() throws Exception{
         m_server.onInit();
         m_server.startServer();
@@ -109,7 +120,9 @@ public class NtpDetectorTest implements ApplicationContextAware {
         assertFalse(m_detector.isServiceDetected(m_server.getInetAddress()));
     }
     
-    @Test
+    // This test is no longer valid because setIpToValidate is no longer needed.
+    @Ignore
+    @Test(timeout=90000)
     public void testDetectorFailIncorrectIp() throws Exception{
         m_server.onInit();
         m_server.startServer();

@@ -1,10 +1,9 @@
-<%
-
+<%--
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,7 +27,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-%>
+--%>
 
 <%@page language="java" contentType="text/html" session="true" import="org.opennms.netmgt.config.discovery.*, org.opennms.web.admin.discovery.ActionDiscoveryServlet,org.opennms.protocols.snmp.SnmpPeer" %>
 <% 
@@ -68,12 +67,12 @@ function checkIpRange(ip1, ip2){
     if (verifyIPv4Address(ip1) && verifyIPv4Address(ip2)) {
         var a = v4BigInteger(ip1);
         var b = v4BigInteger(ip2);
-        return b > a;
+        return b >= a;
     }
     if (verifyIPv6Address(ip1) && verifyIPv6Address(ip2)) {
         var a = new v6.Address(ip1).bigInteger();
         var b = new v6.Address(ip2).bigInteger();
-        return b.compareTo(a) > 0;
+        return b.compareTo(a) >= 0;
     }
     return false;
 }

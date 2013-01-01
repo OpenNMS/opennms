@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -35,6 +35,7 @@ import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.queue.FifoQueueImpl;
 import org.opennms.core.utils.LogUtils;
@@ -113,7 +114,10 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 	 */
 	public Scheduler(String parent, int maxSize) {
 		m_status = START_PENDING;
-		m_runner = Executors.newFixedThreadPool(maxSize);
+		m_runner = Executors.newFixedThreadPool(
+			maxSize,
+			new LogPreservingThreadFactory(getClass().getSimpleName(), maxSize, false)
+		);
 		m_queues = new ConcurrentSkipListMap<Long,PeekableFifoQueue<ReadyRunnable>>();
 		m_scheduled = 0;
 		m_worker = null;
@@ -138,11 +142,7 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 	 *            threads are started.
 	 */
 	public Scheduler(String parent, int maxSize, float lowMark, float hiMark) {
-		m_status = START_PENDING;
-		m_runner = Executors.newFixedThreadPool(maxSize);
-		m_queues = new ConcurrentSkipListMap<Long,PeekableFifoQueue<ReadyRunnable>>();
-		m_scheduled = 0;
-		m_worker = null;
+		this(parent, maxSize);
 	}
 
 	/**

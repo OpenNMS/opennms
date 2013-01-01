@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -38,11 +38,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.provision.DetectFuture;
 import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.detector.simple.HttpDetector;
 import org.opennms.netmgt.provision.server.SimpleServer;
-import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -111,7 +111,7 @@ public class HttpDetectorTest implements ApplicationContextAware {
        } 
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectorFailNotAServerResponse() throws Exception {
         m_detector.init();
         m_server = createServer(notAServerResponse);
@@ -120,7 +120,7 @@ public class HttpDetectorTest implements ApplicationContextAware {
        assertFalse(doCheck(m_detector.isServiceDetected(m_server.getInetAddress())));
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectorFailNotFoundResponseMaxRetCode399() throws Exception {
         m_detector.setCheckRetCode(true);
         m_detector.setUrl("/blog");
@@ -133,7 +133,7 @@ public class HttpDetectorTest implements ApplicationContextAware {
        assertFalse(doCheck(m_detector.isServiceDetected(m_server.getInetAddress())));
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectorSucessMaxRetCode399() throws Exception {
         m_detector.setCheckRetCode(true);
         m_detector.setUrl("/blog");
@@ -146,7 +146,7 @@ public class HttpDetectorTest implements ApplicationContextAware {
        assertTrue(doCheck(m_detector.isServiceDetected(m_server.getInetAddress())));
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectorFailMaxRetCodeBelow200() throws Exception {
         m_detector.setCheckRetCode(true);
         m_detector.setUrl("/blog");
@@ -159,7 +159,7 @@ public class HttpDetectorTest implements ApplicationContextAware {
        assertFalse(doCheck(m_detector.isServiceDetected(m_server.getInetAddress())));
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectorMaxRetCode600() throws Exception {
         m_detector.setCheckRetCode(true);
         m_detector.setMaxRetCode(600);
@@ -172,7 +172,7 @@ public class HttpDetectorTest implements ApplicationContextAware {
     }
     
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectorSucessCheckCodeTrue() throws Exception {
         m_detector.setCheckRetCode(true);
         m_detector.setUrl("http://localhost/");
@@ -183,7 +183,7 @@ public class HttpDetectorTest implements ApplicationContextAware {
        assertTrue(doCheck(m_detector.isServiceDetected(m_server.getInetAddress())));
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectorSuccessCheckCodeFalse() throws Exception {
         m_detector.setCheckRetCode(false);
         m_detector.init();

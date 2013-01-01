@@ -1,3 +1,31 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.netmgt.model.ncs;
 
 import java.util.LinkedHashMap;
@@ -15,8 +43,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
-import javax.persistence.JoinTable;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
@@ -28,8 +56,6 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
-
 
 import org.hibernate.annotations.CollectionOfElements;
 import org.hibernate.annotations.MapKey;
@@ -57,6 +83,10 @@ public class NCSComponent {
 	    public NodeIdentification() {
 		}
 	    
+	    /**
+	     * @param nodeForeignSource
+	     * @param nodeForeignId
+	     */
 	    public NodeIdentification(String nodeForeignSource, String nodeForeignId) {
 	    	m_foreignSource = nodeForeignSource;
 	    	m_foreignId = nodeForeignId;
@@ -160,6 +190,11 @@ public class NCSComponent {
     @XmlTransient
 	private Set<NCSComponent> m_parents = new LinkedHashSet<NCSComponent>();
     
+    /**
+     * @param type
+     * @param foreignSource
+     * @param foreignId
+     */
     public NCSComponent(final String type, final String foreignSource, final String foreignId) {
     	this();
     	m_type = type;
@@ -259,11 +294,11 @@ public class NCSComponent {
 
 	@ManyToMany
 	@JoinTable(name="subcomponents", joinColumns = { @JoinColumn(name="subcomponent_id") }, inverseJoinColumns = { @JoinColumn(name="component_id") })
-	public Set<NCSComponent> getParentcomponents() {
+	public Set<NCSComponent> getParentComponents() {
 		return m_parents ;
 	}
 
-	public void setParentcomponents(final Set<NCSComponent> parents) {
+	public void setParentComponents(final Set<NCSComponent> parents) {
 		m_parents = parents;
 	}
 
@@ -285,6 +320,10 @@ public class NCSComponent {
 		getSubcomponents().remove(subComponent);
 	}
 	
+	/**
+	 * @param foreignSource
+	 * @param foreignId
+	 */
 	public NCSComponent getSubcomponent(String foreignSource, String foreignId) {
 		for(NCSComponent subcomponent : getSubcomponents()) {
 			if (subcomponent.hasIdentity(foreignSource, foreignId)) {
@@ -294,6 +333,10 @@ public class NCSComponent {
 		return null;
 	}
 	
+	/**
+	 * @param foreignSource
+	 * @param foreignId
+	 */
 	public boolean hasIdentity(String foreignSource, String foreignId) {
 		return m_foreignSource.equals(foreignSource) && m_foreignId.equals(foreignId);
 	}

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,12 +28,7 @@
 
 package org.opennms.netmgt.dao.support;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -48,6 +43,8 @@ import java.util.Map.Entry;
 
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.utils.BundleLists;
+import org.opennms.core.utils.FileReloadCallback;
+import org.opennms.core.utils.FileReloadContainer;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.GraphDao;
 import org.opennms.netmgt.model.AdhocGraphType;
@@ -682,6 +679,7 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
 
     private class PrefabGraphTypeCallback implements
             FileReloadCallback<PrefabGraphTypeDao> {
+        @Override
         public PrefabGraphTypeDao reload(PrefabGraphTypeDao object,
                 Resource resource) {
             try {
@@ -752,6 +750,7 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
     }
 
     /** {@inheritDoc} */
+    @Override
     public PrefabGraph getPrefabGraph(String name) {
         for (FileReloadContainer<PrefabGraphTypeDao> container : m_types.values()) {
             PrefabGraphTypeDao type = container.getObject();
@@ -1075,6 +1074,10 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
             if (container == null) {
                 return null;
             }
+            //TODO check all columns against meta files and add metricIds to prefabgraph
+            /*TODO maybe a later point in the process could be an option for the metricId matching, 
+            /*if we have more infromation about the folder to look into.
+             */
             return container.getObject();
         }
 

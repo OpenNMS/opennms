@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -40,17 +40,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentSkipListMap;
 
+import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.Querier;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.capsd.DbIfServiceEntry;
-import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.ThreshdConfigManager;
 import org.opennms.netmgt.config.threshd.Package;
 import org.opennms.netmgt.config.threshd.Thresholder;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
+import org.opennms.netmgt.model.capsd.DbIfServiceEntry;
 import org.opennms.netmgt.scheduler.LegacyScheduler;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
-import org.opennms.netmgt.utils.Querier;
 import org.springframework.dao.DataRetrievalFailureException;
 
 /**
@@ -96,7 +96,7 @@ public final class Threshd extends AbstractServiceDaemon {
     /**
      * Map of all available ServiceThresholder objects indexed by service name
      */
-    private static volatile Map<String, ServiceThresholder> m_svcThresholders;
+    private static volatile Map<String, ServiceThresholder> m_svcThresholders = new ConcurrentSkipListMap<String, ServiceThresholder>();
 
     private ThreshdConfigManager m_threshdConfig;
 
@@ -106,7 +106,6 @@ public final class Threshd extends AbstractServiceDaemon {
     Threshd() {
     	super("OpenNMS.Threshd");
         m_scheduler = null;
-        m_svcThresholders = new ConcurrentSkipListMap<String, ServiceThresholder>();
         m_thresholdableServices = Collections.synchronizedList(new LinkedList<ThresholdableService>());
     }
 
@@ -308,7 +307,7 @@ public final class Threshd extends AbstractServiceDaemon {
      * @return ServiceThresholder responsible for performing thresholding on the
      *         specified service.
      */
-    public ServiceThresholder getServiceThresholder(String svcName) {
+    public static ServiceThresholder getServiceThresholder(String svcName) {
         return m_svcThresholders.get(svcName);
     }
 
@@ -427,7 +426,7 @@ public final class Threshd extends AbstractServiceDaemon {
 
                 // Initialize the thresholder with the service.
                 //
-                ServiceThresholder thresholder = this.getServiceThresholder(svcName);
+                ServiceThresholder thresholder = Threshd.getServiceThresholder(svcName);
                 if (thresholder == null) {
                     // no thresholder exists for this service so go on to the next one
                     log().warn("Unable to find a Thresholder for service "+svcName+"! But it is configured for Thresholding!");

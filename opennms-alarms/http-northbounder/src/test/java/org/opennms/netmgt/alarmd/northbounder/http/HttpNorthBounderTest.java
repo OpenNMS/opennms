@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,10 +31,8 @@ package org.opennms.netmgt.alarmd.northbounder.http;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.core.test.annotations.JUnitHttpServer;
+import org.opennms.core.test.http.annotations.JUnitHttpServer;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
-import org.opennms.netmgt.alarmd.northbounder.http.HttpNorthbounder;
-import org.opennms.netmgt.alarmd.northbounder.http.HttpNorthbounderConfig;
 import org.opennms.netmgt.alarmd.northbounder.http.HttpNorthbounderConfig.HttpMethod;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.springframework.test.context.ContextConfiguration;

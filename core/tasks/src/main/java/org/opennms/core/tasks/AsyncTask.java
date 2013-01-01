@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -88,19 +88,24 @@ public class AsyncTask<T> extends Task {
     private Callback<T> callback() {
         return new Callback<T>() {
             public void complete(T t) {
-                if (m_callback != null) {
-                    m_callback.complete(t);
-                }
-                markTaskAsCompleted();
+		try {
+		    if (m_callback != null) {
+			m_callback.complete(t);
+		    }
+		} finally {
+		    markTaskAsCompleted();
+		}
             }
             public void handleException(Throwable t) {
-                if (m_callback != null) {
-                    m_callback.handleException(t);
-                }
-                markTaskAsCompleted();
+		try {
+		    if (m_callback != null) {
+			m_callback.handleException(t);
+		    }
+		} finally {
+		    markTaskAsCompleted();
+		}
             }
         };
     }
-    
     
 }

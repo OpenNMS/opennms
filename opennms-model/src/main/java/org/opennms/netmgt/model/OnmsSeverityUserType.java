@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -87,7 +87,7 @@ public class OnmsSeverityUserType implements UserType {
             st.setInt(index,((OnmsSeverity)value).getId());
         } else if (value instanceof String) {
             try {
-                st.setInt(index, ((OnmsSeverity)value).getId());
+                st.setInt(index, Integer.parseInt((String)value));
             } catch (final IllegalArgumentException e) {
                 throw new HibernateException("unable to set severity " + value, e);
             }

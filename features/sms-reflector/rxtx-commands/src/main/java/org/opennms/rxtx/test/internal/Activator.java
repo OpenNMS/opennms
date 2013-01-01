@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -43,7 +43,7 @@ public final class Activator
     implements BundleActivator
 {
 	
-	ServiceRegistration m_registration;
+	ServiceRegistration<CommandProvider> m_registration;
 	RxtxCommands m_commands;
 	
     /**
@@ -58,7 +58,7 @@ public final class Activator
     	m_commands = new RxtxCommands();
     	
         // Register our example service implementation in the OSGi service registry
-        m_registration = bc.registerService( CommandProvider.class.getName(), m_commands, null );
+        m_registration = bc.registerService( CommandProvider.class, m_commands, null );
     }
 
     /**

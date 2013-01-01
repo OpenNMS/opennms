@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -43,9 +43,9 @@ import org.apache.log4j.BasicConfigurator;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.core.test.JUnitHttpServerExecutionListener;
-import org.opennms.core.test.annotations.JUnitHttpServer;
-import org.opennms.core.test.annotations.Webapp;
+import org.opennms.core.test.http.JUnitHttpServerExecutionListener;
+import org.opennms.core.test.http.annotations.JUnitHttpServer;
+import org.opennms.core.test.http.annotations.Webapp;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.ncs.northbounder.NCSNorthbounderConfig.HttpMethod;

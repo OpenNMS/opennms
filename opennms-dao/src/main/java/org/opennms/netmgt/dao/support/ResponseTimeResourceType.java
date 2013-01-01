@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -163,5 +163,15 @@ public class ResponseTimeResourceType implements OnmsResourceType {
     /** {@inheritDoc} */
     public String getLinkForResource(final OnmsResource resource) {
         return "element/interface.jsp?node=" + resource.getParent().getName() + "&intf=" + resource.getName();
+    }
+    
+    /** {@inheritDoc} */
+    public boolean isResourceTypeOnNodeSource(String nodeSource, int nodeId) {
+        return getResourcesForNodeSource(nodeSource, nodeId).size() > 0;
+    }
+    
+    /** {@inheritDoc} */
+    public List<OnmsResource> getResourcesForNodeSource(String nodeSource, int nodeId) {
+        return getResourcesForNode(nodeId);
     }
 }

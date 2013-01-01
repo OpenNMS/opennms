@@ -62,7 +62,7 @@ START_TIMEOUT=10
 STATUS_WAIT=5
 
 # Value of the -Xmx<size>m option passed to Java.
-JAVA_HEAP_SIZE=256
+JAVA_HEAP_SIZE=512
 
 # Additional options that should be passed to Java when starting OpenNMS.
 ADDITIONAL_MANAGER_OPTIONS=""
@@ -513,7 +513,7 @@ fi
 if echo "$ADDITIONAL_MANAGER_OPTIONS" | grep MaxPermSize > /dev/null ; then
 	true # do nothing
 else
-	ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -XX:MaxPermSize=128m"
+	ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -XX:MaxPermSize=256m"
 fi
 
 if [ x"$ADDITIONAL_MANAGER_OPTIONS" != x"" ]; then

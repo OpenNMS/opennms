@@ -15,6 +15,7 @@
     </bean>
        
     <bean id="daemon" class="org.opennms.netmgt.statsd.Statsd">
+      <property name="nodeDao" ref="nodeDao"/>
       <property name="resourceDao" ref="resourceDao"/>
       <property name="rrdDao" ref="rrdDao"/>
       <property name="filterDao" ref="filterDao"/>

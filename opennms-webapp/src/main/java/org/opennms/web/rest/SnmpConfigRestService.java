@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -37,8 +37,10 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SnmpEventInfo;
@@ -94,7 +96,9 @@ import com.sun.jersey.spi.resource.PerRequest;
 @Path("snmpConfig")
 @Transactional
 public class SnmpConfigRestService extends OnmsRestService {
-    
+    @Context 
+    UriInfo m_uriInfo;
+
     @Autowired
     private SnmpPeerFactory m_snmpPeerFactory;
     
@@ -124,21 +128,21 @@ public class SnmpConfigRestService extends OnmsRestService {
     /**
      * <p>setSnmpInfo</p>
      *
-     * @param ipAddr a {@link java.lang.String} object.
+     * @param ipAddress a {@link java.lang.String} object.
      * @param snmpInfo a {@link org.opennms.web.snmpinfo.SnmpInfo} object.
      * @return a {@link javax.ws.rs.core.Response} object.
      */
     @PUT
     @Consumes(MediaType.APPLICATION_XML)
     @Path("{ipAddr}")
-    public Response setSnmpInfo(@PathParam("ipAddr") final String ipAddr, final SnmpInfo snmpInfo) {
+    public Response setSnmpInfo(@PathParam("ipAddr") final String ipAddress, final SnmpInfo snmpInfo) {
         writeLock();
         try {
-        	final SnmpEventInfo eventInfo = snmpInfo.createEventInfo(ipAddr);
+            final SnmpEventInfo eventInfo = snmpInfo.createEventInfo(ipAddress);
             m_snmpPeerFactory.define(eventInfo);
             //TODO: this shouldn't be a static call
             SnmpPeerFactory.saveCurrent();
-            return Response.ok().build();
+            return Response.seeOther(getRedirectUri(m_uriInfo)).build();
         } catch (final Throwable e) {
             return Response.serverError().build();
         } finally {
@@ -160,12 +164,12 @@ public class SnmpConfigRestService extends OnmsRestService {
     public Response updateInterface(@PathParam("ipAddr") final String ipAddress, final MultivaluedMapImpl params) {
         writeLock();
         try {
-        	final SnmpInfo info = new SnmpInfo();
+            final SnmpInfo info = new SnmpInfo();
             setProperties(params, info);
             final SnmpEventInfo eventInfo = info.createEventInfo(ipAddress);
             m_snmpPeerFactory.define(eventInfo);
             SnmpPeerFactory.saveCurrent();
-            return Response.ok().build();
+            return Response.seeOther(getRedirectUri(m_uriInfo)).build();
         } catch (final Throwable e) {
             return Response.serverError().build();
         } finally {

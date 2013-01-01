@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,6 +28,7 @@
  *******************************************************************************/
 
 --%>
+
 <%--
 
   Modifications:
@@ -70,13 +71,21 @@
     String noticeStatus;
     try {
         noticeStatus = NotifdConfigFactory.getPrettyStatus();
+        if ("Off".equals(noticeStatus)) {
+          noticeStatus="<b id=\"notificationOff\">Off</b>";
+        } else {
+          noticeStatus="<b id=\"notificationOn\">On</b>";
+        }
     } catch (Throwable t) {
-        noticeStatus = "<font color=\"ff0000\">Unknown</font>";
+        noticeStatus = "<b id=\"notificationOff\">Unknown</b>";
     }
     pageContext.setAttribute("noticeStatus", noticeStatus);
 final String baseHref = Util.calculateUrlBase( request );
 %>
 <c:choose>
+<c:when test="${param.docType == 'html5'}">
+<!DOCTYPE html>
+</c:when>
 <c:when test="${param.docType == 'html'}">
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 </c:when>
@@ -127,8 +136,6 @@ final String baseHref = Util.calculateUrlBase( request );
     <c:if test="${!empty pageContext.request.remoteUser && !param.disableCoreWeb}">
         <script type="text/javascript" src="<%= baseHref %>coreweb/coreweb.nocache.js"></script>
     </c:if>
-
-
 	<c:if test="${param.storageAdmin == 'true'}">
   		<script type='text/javascript' src='<%= baseHref %>js/rwsStorage.js'></script>
 	</c:if>
@@ -136,7 +143,7 @@ final String baseHref = Util.calculateUrlBase( request );
 	<c:if test="${param.enableSpringDojo == 'true'}">	
 		<script type="text/javascript" src='<%= baseHref %>resources/dojo/dojo.js'></script>
    		<script type="text/javascript" src='<%= baseHref %>resources/spring/Spring.js'></script>
-    	<script type="text/javascript" src='<%= baseHref %>resources/spring/Spring-Dojo.js'></script>
+                <script type="text/javascript" src='<%= baseHref %>resources/spring/Spring-Dojo.js'></script>
     </c:if>
 
 <c:forEach var="script" items="${paramValues.script}">
@@ -146,6 +153,14 @@ final String baseHref = Util.calculateUrlBase( request );
 <c:forEach var="extras" items="${paramValues.extras}">
   <c:out value="${extras}" escapeXml="false" />
 </c:forEach>
+
+<c:if test="${param.vaadinEmbeddedStyles == 'true'}">
+  <style type="text/css">
+  div#footer { position:absolute; bottom:0; width:100%; }
+  div#content { position:absolute; top:99px; left:0px; right:0px; bottom:53px; }
+  </style>
+</c:if>
+
 </head>
 
 <%-- The <body> tag is unmatched in this file (its matching tag is in the
@@ -168,7 +183,7 @@ final String baseHref = Util.calculateUrlBase( request );
 			<p align="right">
 				<c:choose>
 					<c:when test="${!empty pageContext.request.remoteUser}">
-						User: <a href="<%= baseHref %>account/selfService/index.jsp" title="Account self-service"><strong>${pageContext.request.remoteUser}</strong></a> (Notices <c:out value="${noticeStatus}" escapeXml="false"/>)
+						User: <a href="<%= baseHref %>account/selfService/index.jsp" title="Account self-service"><strong>${pageContext.request.remoteUser}</strong></a>&nbsp;(Notices <c:out value="${noticeStatus}" escapeXml="false"/>)
 						- <a href="<%= baseHref %>j_spring_security_logout">Log out</a><br/>
 					</c:when>
 					<c:otherwise>

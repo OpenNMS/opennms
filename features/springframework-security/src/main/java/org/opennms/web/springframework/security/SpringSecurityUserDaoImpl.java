@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -69,10 +69,6 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
 
     private GroupManager m_groupManager;
 
-    private static final UpperCaseMd5PasswordEncoder PASSWORD_ENCODER = new UpperCaseMd5PasswordEncoder();
-
-    private static final GrantedAuthority ROLE_USER = new SimpleGrantedAuthority(Authentication.ROLE_USER);
-
     private String m_usersConfigurationFile;
     
     private String m_groupsConfigurationFile;
@@ -83,6 +79,8 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
     private Map<String, OnmsUser> m_users = null;
     
     private long m_usersLastModified;
+
+    private long m_userFileSize;
 
     private String m_magicUsersConfigurationFile;
 	
@@ -125,8 +123,8 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
 
         log().debug("Loaded the users.xml file with " + users.size() + " users");
 
-
-        m_usersLastModified = m_userManager.getLastModified(); 
+        m_usersLastModified = m_userManager.getLastModified();
+        m_userFileSize = m_userManager.getFileSize();
         m_users = users;
     }
     
@@ -192,13 +190,23 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
         // look up users and their passwords
         String[] configuredUsers = BundleLists.parseBundleList(properties.getProperty("users"));
 
-        for (String user : configuredUsers ) {
+        for (String user : configuredUsers) {
             String username = properties.getProperty("user." + user + ".username");
             String password = properties.getProperty("user." + user + ".password");
 
-            OnmsUser newUser = new OnmsUser();
-            newUser.setUsername(username);
-            newUser.setPassword(PASSWORD_ENCODER.encodePassword(password, null));
+            OnmsUser newUser = null;
+            try {
+                newUser = m_userManager.getOnmsUser(user);
+            } catch (final Exception ioe) {
+                throw new DataRetrievalFailureException("Unable to read user " + user + " from users.xml", ioe);
+            }
+            
+            if (newUser == null) {
+                newUser = new OnmsUser();
+                newUser.setUsername(username);
+                newUser.setPassword(m_userManager.encryptedPassword(password, true));
+                newUser.setPasswordSalted(true);
+            }
 
             magicUsers.put(username, newUser);
         }
@@ -302,13 +310,9 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
     private boolean isUsersParseNecessary() {
         if (m_users == null) {
             return true;
+        } else {
+            return m_userManager.isUpdateNeeded();
         }
-
-        if (m_usersLastModified != new File(m_usersConfigurationFile).lastModified()) {
-            return true;
-        }
-
-        return false;
     }
     
     /**
@@ -325,12 +329,11 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
      * </p>
      */
     private boolean isGroupsParseNecessary() {
-
         if (m_groupsLastModified != new File(m_groupsConfigurationFile).lastModified()) {
             return true;
+        } else {
+            return false;
         }
-
-        return false;
     }
 
     /**
@@ -349,13 +352,11 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
     private boolean isMagicUsersParseNecessary() {
         if (m_magicUsers == null) {
             return true;
-        }
-
-        if (m_magicUsersLastModified != new File(m_magicUsersConfigurationFile).lastModified()) {
+        } else if (m_magicUsersLastModified != new File(m_magicUsersConfigurationFile).lastModified()) {
             return true;
+        } else {
+            return false;
         }
-
-        return false;
     }
 
     /**
@@ -415,6 +416,7 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
     }
 
     /** {@inheritDoc} */
+    @Override
     public OnmsUser getByUsername(String username) {
         reloadIfNecessary();
 

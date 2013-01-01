@@ -3,7 +3,7 @@
   <parent>
     <artifactId>dependencies</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.11.0-SNAPSHOT</version>
+    <version>1.11.4-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.dependencies</groupId>
@@ -60,6 +60,18 @@
     <dependency>
       <groupId>commons-digester</groupId>
       <artifactId>commons-digester</artifactId>
+    </dependency>
+    <!-- yes, we really depend on this at runtime, for the compiler stuff -->
+    <dependency>
+      <groupId>org.codehaus.mojo</groupId>
+      <artifactId>jasperreports-maven-plugin</artifactId>
+      <version>1.0-beta-3-OPENNMS-20120424-1</version>
+      <exclusions>
+        <exclusion>
+          <groupId>backport-util-concurrent</groupId>
+          <artifactId>backport-util-concurrent</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
   </dependencies>
 </project>

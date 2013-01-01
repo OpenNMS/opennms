@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -38,6 +38,8 @@ import org.apache.commons.io.FileUtils;
 import org.easymock.EasyMock;
 import org.junit.Assert;
 import org.junit.Test;
+import org.opennms.core.test.ConfigurationTestUtils;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.NotifdConfigFactory;
@@ -45,10 +47,8 @@ import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.PollerConfigFactory;
 import org.opennms.netmgt.config.ThreshdConfigFactory;
 import org.opennms.netmgt.config.poller.Outage;
-import org.opennms.netmgt.dao.FilterDao;
+import org.opennms.netmgt.filter.FilterDao;
 import org.opennms.netmgt.filter.FilterDaoFactory;
-import org.opennms.test.ConfigurationTestUtils;
-import org.opennms.test.mock.MockLogAppender;
 import org.springframework.core.io.FileSystemResource;
 
 public class ScheduledOutagesRestServiceTest extends AbstractSpringJerseyRestTestCase {
@@ -175,7 +175,7 @@ public class ScheduledOutagesRestServiceTest extends AbstractSpringJerseyRestTes
                 "<time begins='17-Feb-2012 19:20:00' ends='18-Feb-2012 22:30:00' />" +
                 "<node id='11' />" +
                 "</outage>";
-        sendPost(url, outage);
+        sendPost(url, outage, 303, "/sched-outages/test-outage");
     }
 
     @Test
@@ -185,25 +185,25 @@ public class ScheduledOutagesRestServiceTest extends AbstractSpringJerseyRestTes
 
     @Test
     public void testUpdateCollectdConfig() throws Exception {
-        sendRequest(PUT, "/sched-outages/my-junit-test/collectd/example1", 200);
+        sendRequest(PUT, "/sched-outages/my-junit-test/collectd/example1", 303);
         sendRequest(DELETE, "/sched-outages/my-junit-test/collectd/example1", 200);
     }
 
     @Test
     public void testUpdatePollerdConfig() throws Exception {
-        sendRequest(PUT, "/sched-outages/my-junit-test/pollerd/example1", 200);
+        sendRequest(PUT, "/sched-outages/my-junit-test/pollerd/example1", 303);
         sendRequest(DELETE, "/sched-outages/my-junit-test/pollerd/example1", 200);
     }
 
     @Test
     public void testUpdateThreshdConfig() throws Exception {
-        sendRequest(PUT, "/sched-outages/my-junit-test/threshd/example1", 200);
+        sendRequest(PUT, "/sched-outages/my-junit-test/threshd/example1", 303);
         sendRequest(DELETE, "/sched-outages/my-junit-test/threshd/example1", 200);
     }
 
     @Test
     public void testUpdateNotifdConfig() throws Exception {
-        sendRequest(PUT, "/sched-outages/my-junit-test/notifd", 200);
+        sendRequest(PUT, "/sched-outages/my-junit-test/notifd", 303);
         sendRequest(DELETE, "/sched-outages/my-junit-test/notifd", 200);
     }
 

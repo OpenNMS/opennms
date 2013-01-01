@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -816,7 +816,7 @@ public class OnmsNode extends OnmsEntity implements Serializable,
         ToStringCreator retval = new ToStringCreator(this);
         retval.append("id", m_id);
         retval.append("label", m_label);
-        retval.append("parent.id", getParent() == null ? "null" : getParent().getId());
+        retval.append("parent.id", getParent() == null ? null : getParent().getId());
         retval.append("createTime", m_createTime);
         // retval.append("distPoller", m_distPoller);
         retval.append("sysObjectId", m_sysObjectId);

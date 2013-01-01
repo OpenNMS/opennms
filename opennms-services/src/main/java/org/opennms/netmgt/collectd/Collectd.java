@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -61,12 +61,12 @@ import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.dao.CollectorConfigDao;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.model.AbstractEntityVisitor;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.model.events.EventIpcManager;
 import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.scheduler.LegacyScheduler;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
@@ -240,7 +240,7 @@ public class Collectd extends AbstractServiceDaemon implements
     /**
      * <p>setEventIpcManager</p>
      *
-     * @param eventIpcManager a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+     * @param eventIpcManager a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
      */
     public void setEventIpcManager(EventIpcManager eventIpcManager) {
         m_eventIpcManager = eventIpcManager;
@@ -249,7 +249,7 @@ public class Collectd extends AbstractServiceDaemon implements
     /**
      * <p>getEventIpcManager</p>
      *
-     * @return a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+     * @return a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
      */
     public EventIpcManager getEventIpcManager() {
         return m_eventIpcManager;
@@ -1023,7 +1023,7 @@ public class Collectd extends AbstractServiceDaemon implements
 
         Long nodeId = event.getNodeid();
 
-        unscheduleNode(nodeId);
+        unscheduleNodeAndMarkForDeletion(nodeId);
 
         if (log.isDebugEnabled())
             log.debug("nodeDeletedHandler: processing of nodeDeleted event for nodeid "
@@ -1037,31 +1037,29 @@ public class Collectd extends AbstractServiceDaemon implements
      *            The event to process.
      * @throws InsufficientInformationException
      */
-    private void handleNodeCategoryMembershipChanged(Event event)
-            throws InsufficientInformationException {
+    private void handleNodeCategoryMembershipChanged(Event event) throws InsufficientInformationException {
         EventUtils.checkNodeId(event);
         
         ThreadCategory log = log();
 
         Long nodeId = event.getNodeid();
 
-        unscheduleNode(nodeId);
+        unscheduleNodeAndMarkForDeletion(nodeId);
 
         if (log.isDebugEnabled()) {
             log.debug("nodeCategoryMembershipChanged: unscheduling nodeid " + nodeId + " completed.");
         }
         
-        scheduleNode(nodeId.intValue(), false);
+        scheduleNode(nodeId.intValue(), true);
         
     }
     
-    
-	private void unscheduleNode(Long nodeId) {
+	private void unscheduleNodeAndMarkForDeletion(Long nodeId) {
 		// Iterate over the collectable service list and mark any entries
         // which match the deleted nodeId for deletion.
         synchronized (getCollectableServices()) {
             CollectableService cSvc = null;
-            ListIterator<CollectableService> liter = getCollectableServices().listIterator();
+            final ListIterator<CollectableService> liter = getCollectableServices().listIterator();
             while (liter.hasNext()) {
                 cSvc = liter.next();
 

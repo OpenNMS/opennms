@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.util.List;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.icmp.LogPrefixPreservingPingResponseCallback;
 import org.opennms.netmgt.icmp.ParallelPingResponseCallback;
 import org.opennms.netmgt.icmp.PingResponseCallback;
@@ -130,7 +131,7 @@ public class JniPinger implements Pinger {
 	 *
 	 * @throws java.io.IOException if any.
 	 */
-	public synchronized void initialize() throws IOException {
+	private synchronized void initialize() throws IOException {
 	    if (s_pingTracker != null) return;
 	    try {
     	    s_pingTracker = new RequestTracker<JniPingRequest, JniPingResponse>("JNI-ICMP-"+m_pingerId, new JniIcmpMessenger(m_pingerId), new IDBasedRequestLocator<JniPingRequestId, JniPingRequest, JniPingResponse>());
@@ -145,11 +146,20 @@ public class JniPinger implements Pinger {
 	        throw rte;
 	    }
 	}
+	
+	public void initialize4() throws Exception {
+	    initialize();
+	}
+
+	public void initialize6() throws Exception {
+	    throw new IllegalStateException("This pinger does not support IPv6.");
+	}
 
 	public boolean isV4Available() {
 	    try {
 	        initialize();
 	    } catch (final Throwable t) {
+            LogUtils.tracef(this, t, "Failed to initialize IPv4");
 	    }
 	    if (s_pingTracker != null && m_error == null) return true;
 	    return false;

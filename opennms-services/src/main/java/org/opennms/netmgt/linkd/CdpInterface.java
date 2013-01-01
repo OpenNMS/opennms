@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -34,6 +34,8 @@
 package org.opennms.netmgt.linkd;
 
 import java.net.InetAddress;
+
+import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
  * <p>CdpInterface class.</p>
@@ -122,7 +124,11 @@ public class CdpInterface {
 	 * @return a {@link java.lang.String} object.
 	 */
 	public String toString() {
-		return "ifindex:"+cdpIfIndex+"TargetIpAddress:"+cdpTargetIpAddr+"targetNodeid:"
-				+cdpTargetNodeId+"cdptargetIfIndex:"+cdpTargetIfIndex;
+	    return new ToStringBuilder(this)
+	                .append("ifindex",cdpIfIndex)
+	                .append("TargetIpAddress",cdpTargetIpAddr)
+	                .append("targetNodeid",cdpTargetNodeId)
+	                .append("cdptargetIfIndex:",cdpTargetIfIndex)
+	                .toString();
 	} 
 }

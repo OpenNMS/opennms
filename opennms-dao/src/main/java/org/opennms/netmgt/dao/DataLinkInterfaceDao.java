@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,10 +28,10 @@
 
 package org.opennms.netmgt.dao;
 
-import org.opennms.netmgt.model.DataLinkInterface;
-
 import java.sql.Timestamp;
 import java.util.Collection;
+
+import org.opennms.netmgt.model.DataLinkInterface;
 
 /**
  * <p>DataLinkInterfaceDao interface.</p>
@@ -71,9 +71,16 @@ public interface DataLinkInterfaceDao extends OnmsDao<DataLinkInterface, Integer
 
     DataLinkInterface findByNodeIdAndIfIndex(Integer nodeId, Integer ifindex);
 
-    void deactivateIfOlderThan(Timestamp now);
+    void deactivateIfOlderThan(Timestamp now, String source);
+
+    void deleteIfOlderThan(Timestamp now, String source);
 
     void setStatusForNode(Integer nodeid, Character action);
 
     void setStatusForNodeAndIfIndex(Integer nodeid, Integer ifIndex, Character action);
+    
+    void setStatusForNode(Integer nodeid, String source, Character action);
+
+    void setStatusForNodeAndIfIndex(Integer nodeid, Integer ifIndex, String source, Character action);
+
 }

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -61,7 +61,7 @@ import org.springframework.core.io.ResourceLoader;
  * @version $Id: $
  */
 public class Migrator {
-    private static final Pattern POSTGRESQL_VERSION_PATTERN = Pattern.compile("^PostgreSQL (\\d+\\.\\d+)");
+    private static final Pattern POSTGRESQL_VERSION_PATTERN = Pattern.compile("^(?:PostgreSQL|EnterpriseDB) (\\d+\\.\\d+)");
     public static final float POSTGRES_MIN_VERSION = 7.4f;
     public static final float POSTGRES_MAX_VERSION_PLUS_ONE = 9.2f;
 

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -32,7 +32,7 @@ import javax.annotation.Resource;
 
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.config.EventConfDao;
-import org.opennms.netmgt.eventd.EventIpcManager;
+import org.opennms.netmgt.model.events.EventIpcManager;
 import org.opennms.netmgt.snmp.TrapNotification;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;

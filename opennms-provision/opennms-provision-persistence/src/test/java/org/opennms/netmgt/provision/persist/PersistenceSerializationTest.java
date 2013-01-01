@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -54,11 +54,11 @@ import org.custommonkey.xmlunit.XMLUnit;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSourceCollection;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.opennms.test.FileAnticipator;
-import org.opennms.test.mock.MockLogAppender;
 import org.xml.sax.SAXException;
 
 public class PersistenceSerializationTest {
@@ -89,6 +89,7 @@ public class PersistenceSerializationTest {
 
         fsr = new MockForeignSourceRepository();
         fsr.save(new ForeignSource("cheese"));
+        fsr.flush();
 
         fs = fsr.getForeignSource("cheese");
 //        fs.setScanInterval(scanInterval)
@@ -174,7 +175,7 @@ public class PersistenceSerializationTest {
     }
 
     @SuppressWarnings("unchecked")
-    private DetailedDiff getDiff(StringWriter objectXML,
+    private static DetailedDiff getDiff(StringWriter objectXML,
             StringBuffer exampleXML) throws SAXException, IOException {
         DetailedDiff myDiff = new DetailedDiff(XMLUnit.compareXML(exampleXML.toString(), objectXML.toString()));
         List<Difference> allDifferences = myDiff.getAllDifferences();

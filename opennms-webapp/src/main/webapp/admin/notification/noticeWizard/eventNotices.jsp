@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -35,35 +35,33 @@
 	import="java.util.*,
 		org.opennms.web.admin.notification.noticeWizard.*,
 		org.opennms.netmgt.config.*,
-		org.opennms.netmgt.config.notifications.*
+		org.opennms.netmgt.config.notifications.*,
+		org.opennms.core.utils.ConfigFileConstants,
+		org.springframework.core.io.FileSystemResource
 	"
 %>
 
 <%!
-    EventConfDao m_eventconfFactory;
-    NotificationFactory m_notificationFactory;
+	private DefaultEventConfDao m_eventconfFactory;
+	private NotificationFactory m_notificationFactory;
 
-    public void init() throws ServletException {
-        try {
-            NotificationFactory.init();
-        } catch (Throwable t) {
-            throw new ServletException("Could not initialize "
-				       + "NotificationFactory: "
-				       + t.getMessage(), t);
-        }
+	public void init() throws ServletException {
+		try {
+			NotificationFactory.init();
+		} catch (Throwable t) {
+			throw new ServletException("Could not initialize NotificationFactory: " + t.getMessage(), t);
+		}
 
-        try {
-            EventconfFactory.init();
-        } catch (Throwable t) {
-            throw new ServletException("Could not initialize "
-				       + "EventconfFactory: "
-				       + t.getMessage(), t);
-        }
+		try {
+			m_eventconfFactory = new DefaultEventConfDao();
+			m_eventconfFactory.setConfigResource(new FileSystemResource(ConfigFileConstants.getFile(ConfigFileConstants.EVENT_CONF_FILE_NAME)));
+			m_eventconfFactory.afterPropertiesSet();
+		} catch (Throwable e) {
+			throw new ServletException("Cannot load configuration file", e);
+		}
 
-        m_eventconfFactory = EventconfFactory.getInstance();
-        m_notificationFactory = NotificationFactory.getInstance();
-    }
-    
+		m_notificationFactory = NotificationFactory.getInstance();
+	}
 %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
@@ -135,6 +133,9 @@
             <td>
               <b>Event</b>
             </td>
+            <td>
+              <b>UEI</b>
+            </td>
           </tr>
           <% Map<String, Notification> noticeMap = new TreeMap<String, Notification>(m_notificationFactory.getNotifications());
              for(String key : noticeMap.keySet()) {
@@ -162,6 +163,9 @@
             </td>
             <td>
               <%=m_eventconfFactory.getEventLabel(curNotif.getUei())%>
+            </td>
+            <td>
+              <%=curNotif.getUei()%>
             </td>
           </tr>
           <% } %>

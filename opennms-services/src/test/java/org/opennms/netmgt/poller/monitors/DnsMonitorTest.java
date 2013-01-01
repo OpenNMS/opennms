@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -40,16 +40,17 @@ import java.util.concurrent.ConcurrentSkipListMap;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.core.test.annotations.DNSEntry;
-import org.opennms.core.test.annotations.DNSZone;
-import org.opennms.core.test.annotations.JUnitDNSServer;
+import org.opennms.core.test.dns.annotations.DNSEntry;
+import org.opennms.core.test.dns.annotations.DNSZone;
+import org.opennms.core.test.dns.annotations.JUnitDNSServer;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.ServiceMonitor;
-import org.opennms.test.mock.MockLogAppender;
+import org.opennms.netmgt.poller.mock.MonitorTestUtils;
+import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.test.context.ContextConfiguration;
 import org.xbill.DNS.Lookup;
@@ -74,7 +75,7 @@ public class DnsMonitorTest {
     
     @Before
     public void setup() throws Exception {
-        MockLogAppender.setupLogging();
+        MockLogAppender.setupLogging(true);
     }
     
     @Test
@@ -100,7 +101,7 @@ public class DnsMonitorTest {
         final Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
 
         final ServiceMonitor monitor = new DnsMonitor();
-        final MonitoredService svc = MonitorTestUtils.getMonitoredService(99, InetAddressUtils.getLocalHostAddress(), "DNS");
+        final MonitoredService svc = MonitorTestUtils.getMonitoredService(99, addr("127.0.0.1"), "DNS");
 
         m.put("port", "9153");
         m.put("retry", "2");
@@ -109,7 +110,7 @@ public class DnsMonitorTest {
         
         final PollStatus status = monitor.poll(svc, m);
         MockUtil.println("Reason: "+status.getReason());
-        assertEquals(PollStatus.SERVICE_AVAILABLE, status.getStatusCode());
+        assertEquals("Expected service to be available", PollStatus.SERVICE_AVAILABLE, status.getStatusCode());
     }
     
     @Test
@@ -118,7 +119,7 @@ public class DnsMonitorTest {
         final Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
 
         final ServiceMonitor monitor = new DnsMonitor();
-        final MonitoredService svc = MonitorTestUtils.getMonitoredService(99, InetAddressUtils.getLocalHostAddress(), "DNS");
+        final MonitoredService svc = MonitorTestUtils.getMonitoredService(99, addr("127.0.0.1"), "DNS");
 
         m.put("port", "9153");
         m.put("retry", "2");
@@ -152,7 +153,7 @@ public class DnsMonitorTest {
         final Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
 
         final ServiceMonitor monitor = new DnsMonitor();
-        final MonitoredService svc = MonitorTestUtils.getMonitoredService(99, InetAddressUtils.getLocalHostAddress(), "DNS");
+        final MonitoredService svc = MonitorTestUtils.getMonitoredService(99, addr("127.0.0.1"), "DNS");
 
         m.put("port", "9153");
         m.put("retry", "1");

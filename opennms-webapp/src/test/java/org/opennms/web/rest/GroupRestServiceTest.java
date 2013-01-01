@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -33,9 +33,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.model.OnmsGroupList;
-import org.opennms.test.mock.MockLogAppender;
 
 public class GroupRestServiceTest extends AbstractSpringJerseyRestTestCase {
 
@@ -66,7 +66,7 @@ public class GroupRestServiceTest extends AbstractSpringJerseyRestTestCase {
         String xml = sendRequest(GET, "/groups/test", 200);
         assertTrue(xml.contains("<group><name>test</name>"));
 
-        sendPut("/groups/test", "comments=MONKEYS");
+        sendPut("/groups/test", "comments=MONKEYS", 303, "/groups/test");
 
         xml = sendRequest(GET, "/groups/test", 200);
         assertTrue(xml.contains(">MONKEYS<"));
@@ -90,7 +90,7 @@ public class GroupRestServiceTest extends AbstractSpringJerseyRestTestCase {
     public void testUsers() throws Exception {
         createGroup("deleteMe");
 
-        sendRequest(PUT, "/groups/deleteMe/users/totallyUniqueUser", 200);
+        sendRequest(PUT, "/groups/deleteMe/users/totallyUniqueUser", 303);
 
         String xml = sendRequest(GET, "/groups/deleteMe", 200);
         assertTrue(xml.contains("totallyUniqueUser"));
@@ -107,7 +107,7 @@ public class GroupRestServiceTest extends AbstractSpringJerseyRestTestCase {
                 "<name>" + groupname + "</name>" +
                 "<comments>" + groupname + "</comments>" +
                 "</group>";
-        sendPost("/groups", group);
+        sendPost("/groups", group, 303, "/groups/" + groupname);
     }
     
 

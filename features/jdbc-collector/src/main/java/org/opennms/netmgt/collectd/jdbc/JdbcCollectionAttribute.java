@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -77,6 +77,11 @@ public class JdbcCollectionAttribute extends AbstractCollectionAttribute impleme
     
     public String toString() {
         return "JdbcCollectionAttribute " + m_alias+"=" + m_value;
+    }
+
+    @Override
+    public String getMetricIdentifier() {
+        return "Not supported yet._" + "JDBC_" + getName();
     }
 
 }

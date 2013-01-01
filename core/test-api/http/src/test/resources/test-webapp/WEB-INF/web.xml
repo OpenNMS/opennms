@@ -6,7 +6,7 @@
 
   <servlet>
     <servlet-name>monkeyServlet</servlet-name>
-    <servlet-class>org.opennms.core.test.servlets.MonkeyServlet</servlet-class>
+    <servlet-class>org.opennms.core.test.http.MonkeyServlet</servlet-class>
     <load-on-startup>1</load-on-startup>
   </servlet>
 

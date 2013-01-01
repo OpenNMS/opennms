@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -32,26 +32,31 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="java.util.*,
+	import="
+		java.io.*,
+		java.util.*,
 		org.opennms.web.admin.notification.noticeWizard.*,
 		org.opennms.netmgt.config.*,
 		org.opennms.netmgt.config.notifications.*,
 		org.opennms.core.utils.BundleLists,
 		org.opennms.core.utils.ConfigFileConstants,
-		java.io.*,
-		org.opennms.netmgt.xml.eventconf.Event
+		org.opennms.netmgt.xml.eventconf.Event,
+		org.springframework.core.io.FileSystemResource
 	"
 %>
 
 <%!
-    public void init() throws ServletException {
-        try {
-            EventconfFactory.init();
-        }
-        catch( Exception e ) {
-            throw new ServletException( "Cannot load configuration file", e );
-        }
-    }
+	private DefaultEventConfDao m_eventConfDao;
+
+	public void init() throws ServletException {
+		try {
+			m_eventConfDao = new DefaultEventConfDao();
+			m_eventConfDao.setConfigResource(new FileSystemResource(ConfigFileConstants.getFile(ConfigFileConstants.EVENT_CONF_FILE_NAME)));
+			m_eventConfDao.afterPropertiesSet();
+		} catch (Throwable e) {
+			throw new ServletException("Cannot load configuration file", e);
+		}
+	}
 %>
 
 <%
@@ -120,7 +125,7 @@
     public String buildEventSelect(Notification notice)
       throws IOException, FileNotFoundException
     {
-        List events = EventconfFactory.getInstance().getEventsByLabel();
+        List events = m_eventConfDao.getEventsByLabel();
         StringBuffer buffer = new StringBuffer();
         
         List excludeList = getExcludeList();

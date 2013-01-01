@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -41,11 +41,13 @@ public class MockThreshdConfigManager extends ThreshdConfigManager {
         super(stream, localServer, verifyServer);
     }
 
+    @Override
     public void reloadXML() throws IOException, MarshalException, ValidationException {
         // TODO Auto-generated method stub
 
     }
 
+    @Override
     protected void saveXML(String xmlString) throws IOException {
         // TODO Auto-generated method stub
 

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -61,6 +61,7 @@ abstract public class SnmpMonitorStrategy extends AbstractServiceMonitor {
     /** Constant <code>MATCHES="~"</code> */
     protected static final String MATCHES = "~";
     
+    boolean hex = false;
     /*
      * TODO: Use it or loose it.
      * Commented out because it is not currently used in this monitor
@@ -70,7 +71,12 @@ abstract public class SnmpMonitorStrategy extends AbstractServiceMonitor {
     /** {@inheritDoc} */
     abstract public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) ;
     
-    
+
+    public String getStringValue(SnmpValue result) {
+    	if (hex)
+    		return result.toHexString();
+    	return result.toString();
+    }
     /**
      * Verifies that the result of the SNMP query meets the criteria specified
      * by the operator and the operand from the configuration file.
@@ -87,7 +93,7 @@ abstract public class SnmpMonitorStrategy extends AbstractServiceMonitor {
         retVal = isCriteriaNull(result, operator, operand);
         
         if (retVal == null) {
-            String value = result.toString();
+        	String value = getStringValue(result);
             retVal = checkStringCriteria(operator, operand, value);
             
             if (retVal == null) {

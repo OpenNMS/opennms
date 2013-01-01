@@ -1,0 +1,11 @@
+#-----------------------------------------------------------------
+# Use this file to add customized Bnd instructions for the bundle
+#-----------------------------------------------------------------
+
+#Bundle-Activator: ${bundle.namespace}.internal.Activator
+
+# Package format version - do not change
+#Export-Package: org.opennms.*
+Embed-Dependency: jsmiparser*
+Embed-Transitive: true
+

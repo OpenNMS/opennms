@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -33,11 +33,11 @@ import org.opennms.api.integration.ticketing.Ticket.State;
 import org.opennms.core.utils.ThreadCategory;
 
 import org.opennms.netmgt.dao.AlarmDao;
-import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.TroubleTicketState;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.model.events.EventIpcManager;
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.orm.ObjectRetrievalFailureException;
@@ -189,7 +189,7 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
 	 * TODO: Add alarmid to Ticket class for ability to reference back to Alarm (waffling on this
 	 * since ticket isn't a persisted object and other reasons)
 	 */
-    private Ticket createTicketFromAlarm(OnmsAlarm alarm) {
+    protected Ticket createTicketFromAlarm(OnmsAlarm alarm) {
         Ticket ticket = new Ticket();
         ticket.setSummary(alarm.getLogMsg());
         ticket.setDetails(alarm.getDescription());
@@ -233,6 +233,15 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
 		m_alarmDao.saveOrUpdate(alarm);
 	}
     
+    /*
+    * (non-Javadoc)
+    * @see org.opennms.netmgt.ticketd.TicketerServiceLayer#reloadTicketer()
+    */
+    /** {@inheritDoc} */
+    public void reloadTicketer() {
+        // Do nothing
+    }
+    
     // TODO what if the alarm doesn't exist?
 	
 	private Event createEvent(String reason) {
@@ -244,7 +253,7 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
 	/**
 	 * <p>getEventIpcManager</p>
 	 *
-	 * @return a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+	 * @return a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
 	 */
 	public EventIpcManager getEventIpcManager() {
         return m_eventIpcManager;
@@ -253,7 +262,7 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
     /**
      * <p>setEventIpcManager</p>
      *
-     * @param ipcManager a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+     * @param ipcManager a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
      */
     public void setEventIpcManager(EventIpcManager ipcManager) {
         m_eventIpcManager = ipcManager;

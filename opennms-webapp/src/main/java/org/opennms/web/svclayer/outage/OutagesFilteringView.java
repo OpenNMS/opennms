@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,8 +26,6 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-
-
 package org.opennms.web.svclayer.outage;
 
 import java.sql.Date;
@@ -39,10 +37,10 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
+import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsOutage;
-import org.opennms.web.WebSecurityUtils;
 
 /**
  * <p>OutagesFilteringView class.</p>

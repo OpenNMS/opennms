@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -52,9 +52,9 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.provision.detector.jmx.Jsr160Detector;
-import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -102,7 +102,7 @@ public class Jsr160DetectorTest implements InitializingBean {
         m_connectorServer.stop();
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectorSuccess() throws IOException, MalformedObjectNameException, NullPointerException, InstanceAlreadyExistsException, MBeanRegistrationException, NotCompliantMBeanException {
         
         m_detector.setPort(9123);
@@ -113,7 +113,7 @@ public class Jsr160DetectorTest implements InitializingBean {
        
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectorWrongPort() throws IOException, MalformedObjectNameException, NullPointerException, InstanceAlreadyExistsException, MBeanRegistrationException, NotCompliantMBeanException {
         
         m_detector.setPort(9000);
@@ -124,7 +124,7 @@ public class Jsr160DetectorTest implements InitializingBean {
         
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectorWrongUrlPath() throws IOException, MalformedObjectNameException, NullPointerException, InstanceAlreadyExistsException, MBeanRegistrationException, NotCompliantMBeanException {
         
         m_detector.setPort(9000);

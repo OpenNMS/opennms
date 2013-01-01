@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -103,7 +103,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
 
     /**
      * minimal constructor
-     *
+     * @deprecated Use the {@link InetAddress} version instead.
      * @param ipAddr a {@link java.lang.String} object.
      * @param node a {@link org.opennms.netmgt.model.OnmsNode} object.
      */

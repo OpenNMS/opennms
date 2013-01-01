@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -321,7 +321,7 @@ public final class ThresholdEntity implements Cloneable {
 
         for (ThresholdEvaluatorState item : defaultList) {
             if (threshold.getType().equals(item.getThresholdConfig().getType())) {
-                throw new IllegalStateException(threshold.getType().toString() + " threshold already set.");
+                throw new IllegalStateException(threshold.getType() + " threshold already set.");
             }
         }
 
@@ -336,7 +336,7 @@ public final class ThresholdEntity implements Cloneable {
         }
 
  
-        String message = "Threshold type '" + threshold.getType().toString() + "' for "+ threshold.getDatasourceExpression() + " is not supported"; 
+        String message = "Threshold type '" + threshold.getType() + "' for "+ threshold.getDatasourceExpression() + " is not supported"; 
         log().warn(message);
         throw new IllegalArgumentException(message);
     }

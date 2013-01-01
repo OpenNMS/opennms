@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -46,12 +46,12 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.LogUtils;
+import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.config.users.DutySchedule;
 import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.OnmsMapDao;
 import org.opennms.netmgt.model.OnmsMap;
-import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.group.WebGroup;
 import org.opennms.web.group.WebGroupRepository;
 import org.springframework.beans.factory.InitializingBean;

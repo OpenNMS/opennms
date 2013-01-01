@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -35,7 +35,7 @@
 <%@page import="java.util.Set"%>
 
 <%@page import="org.opennms.netmgt.provision.persist.foreignsource.ForeignSource" %>
-<%@page import="org.opennms.web.XssRequestWrapper" %>
+<%@page import="org.opennms.web.servlet.XssRequestWrapper" %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
 	<jsp:param name="title" value="Requisition Node" />

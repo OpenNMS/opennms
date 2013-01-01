@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.features</artifactId>
-    <version>1.11.0-SNAPSHOT</version>
+    <version>1.11.4-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features</groupId>
@@ -12,5 +12,6 @@
   <name>OpenNMS Ticketing</name>
   <modules>
     <module>api</module>
+    <module>drools-integration</module>
   </modules>
 </project>

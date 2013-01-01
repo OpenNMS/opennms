@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -239,6 +239,16 @@ public class SnmpObjId implements Comparable<SnmpObjId> {
 
     public int length() {
         return m_ids.length;
+    }
+    
+    public SnmpObjId getPrefix(int length) {
+    	if (length >= length()) {
+    		throw new IllegalArgumentException("Invalid length: " + length +" is longer than length of ObjId");
+    	}
+    	
+    	int[] newIds = cloneIds(m_ids, length);
+        return new SnmpObjId(newIds, false);
+    	
     }
     
     public int getSubIdAt(int index) {

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -35,30 +35,30 @@ import java.util.Date;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.db.DataSourceFactory;
+import org.opennms.core.test.ConfigurationTestUtils;
+import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.utils.TimeConverter;
-import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.NotificationCommandManager;
 import org.opennms.netmgt.config.NotificationManager;
 import org.opennms.netmgt.config.PollOutagesConfigManager;
 import org.opennms.netmgt.config.groups.Group;
+import org.opennms.netmgt.config.mock.MockDestinationPathManager;
+import org.opennms.netmgt.config.mock.MockGroupManager;
+import org.opennms.netmgt.config.mock.MockNotifdConfigManager;
+import org.opennms.netmgt.config.mock.MockNotificationCommandManager;
+import org.opennms.netmgt.config.mock.MockNotificationManager;
+import org.opennms.netmgt.config.mock.MockNotificationStrategy;
+import org.opennms.netmgt.config.mock.MockUserManager;
 import org.opennms.netmgt.config.users.Contact;
 import org.opennms.netmgt.config.users.User;
-import org.opennms.netmgt.mock.MockDatabase;
-import org.opennms.netmgt.mock.MockEventIpcManager;
+import org.opennms.netmgt.eventd.mock.MockEventIpcManager;
 import org.opennms.netmgt.mock.MockNetwork;
+import org.opennms.netmgt.mock.MockNotification;
 import org.opennms.netmgt.mock.MockPollerConfig;
-import org.opennms.netmgt.notifd.mock.MockDestinationPathManager;
-import org.opennms.netmgt.notifd.mock.MockGroupManager;
-import org.opennms.netmgt.notifd.mock.MockNotifdConfigManager;
-import org.opennms.netmgt.notifd.mock.MockNotification;
-import org.opennms.netmgt.notifd.mock.MockNotificationCommandManager;
-import org.opennms.netmgt.notifd.mock.MockNotificationManager;
-import org.opennms.netmgt.notifd.mock.MockNotificationStrategy;
-import org.opennms.netmgt.notifd.mock.MockUserManager;
-import org.opennms.netmgt.notifd.mock.NotificationAnticipator;
-import org.opennms.test.ConfigurationTestUtils;
+import org.opennms.netmgt.mock.NotificationAnticipator;
 import org.opennms.test.DaoTestConfigBean;
-import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
 
 public class NotificationsTestCase {

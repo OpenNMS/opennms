@@ -4,10 +4,13 @@ use strict;
 use Getopt::Long;
 use IO::Socket;
 use POSIX qw(strftime);
+use Sys::Hostname;
+
 use vars qw(
 	$VERSION
 
 	$DESCR
+	$LOGMSG
 	$HOSTNAME
 	$INTERFACE
 	$NODEID
@@ -36,6 +39,7 @@ my $help = 0;
 my $version = 0;
 my $result = GetOptions("help|h" => \$help,
                         "descr|d=s"     => \$DESCR,
+                        "logmsg|l=s"     => \$LOGMSG,
                         "interface|i=s" => \$INTERFACE,
                         "nodeid|n=i"    => \$NODEID,
                         "parm|p=s"      => \@PARMS,
@@ -52,7 +56,7 @@ if ($help)     { print get_help(); exit; }
 # parm array is numerically referenced in OpenNMS' templates
 @PARMS = reverse map { parse_parm($_) } @PARMS;
 
-chomp (my $hostname = `hostname -f`);
+my $hostname = hostname;
 
 ## we'll try turning the hostname into an IP and back, to see if we can get a canonical FQDN
 my @addr = gethostbyname($hostname);
@@ -147,6 +151,10 @@ if (defined $DESCR) {
 	($DESCR) = simple_parse($DESCR);
 }
 
+if (defined $LOGMSG) {
+	($LOGMSG) = simple_parse($LOGMSG);
+}
+
 if (defined $SERVICE) {
 	($SERVICE) = simple_parse($SERVICE);
 }
@@ -199,6 +207,7 @@ END
 }
 
 $event .= "   <descr>$DESCR</descr>\n"             if (defined $DESCR);
+$event .= "   <logmsg>$LOGMSG</logmsg>\n"             if (defined $LOGMSG);
 $event .= "   <severity>$SEVERITY</severity>\n"    if (defined $SEVERITY);
 $event .= "   <operinstruct>$OPERINSTR</operinstruct>\n" if (defined $OPERINSTR);
 $event .= <<END;
@@ -257,6 +266,7 @@ Options:
          --nodeid, -n      node identifier (numeric)
          --interface, -i   IP address of the interface
          --descr, -d       a description for the event browser
+         --logmsg, -l      a logmsg for the event browser (secure field by default)
          --severity, -x    the severity of the event (numeric or name)
                            1 = Indeterminate
                            2 = Cleared (unimplemented at this time)

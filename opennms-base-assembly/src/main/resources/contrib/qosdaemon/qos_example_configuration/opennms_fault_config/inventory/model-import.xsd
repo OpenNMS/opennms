@@ -13,12 +13,6 @@
       <attribute name="date-stamp" type="dateTime" />
       <attribute name="last-import" type="dateTime" />
       <attribute name="foreign-source" type="string" use="optional" default="imported:" />
-      <attribute name="non-ip-interfaces" type="boolean" use="optional" default="false">
-        <annotation><documentation>This attribute is ignored, and kept only to preserve compatibility with old import XML files.</documentation></annotation>
-      </attribute>
-      <attribute name="non-ip-snmp-primary" type="string" use="optional" default="N">
-        <annotation><documentation>This attribute is ignored, and kept only to preserve compatibility with old import XML files.</documentation></annotation>
-      </attribute>
     </complexType>
   </element>
   <element name="node">

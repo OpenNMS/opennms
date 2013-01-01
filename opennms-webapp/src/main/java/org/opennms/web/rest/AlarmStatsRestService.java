@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -76,8 +76,8 @@ public class AlarmStatsRestService extends AlarmRestServiceBase {
 
     private static final String[] EMPTY_STRING_ARRAY = new String[0];
 
-	@Autowired
-	AlarmStatisticsService m_statisticsService;
+    @Autowired
+    AlarmStatisticsService m_statisticsService;
 
     @Context 
     UriInfo m_uriInfo;
@@ -158,7 +158,7 @@ public class AlarmStatsRestService extends AlarmRestServiceBase {
         builder.limit(1);
         final Criteria criteria = builder.toCriteria();
         LogUtils.debugf(this, "getNewestAcknowledged(%s) criteria = %s", severity, criteria);
-		return m_statisticsService.getAcknowledged(criteria);
+        return m_statisticsService.getAcknowledged(criteria);
     }
 
     private OnmsAlarm getNewestUnacknowledged(final OnmsSeverity severity) {
@@ -168,7 +168,7 @@ public class AlarmStatsRestService extends AlarmRestServiceBase {
         builder.limit(1);
         final Criteria criteria = builder.toCriteria();
         LogUtils.debugf(this, "getNewestUnacknowledged(%s) criteria = %s", severity, criteria);
-		return m_statisticsService.getUnacknowledged(criteria);
+        return m_statisticsService.getUnacknowledged(criteria);
     }
 
     protected OnmsAlarm getOldestAcknowledged(final OnmsSeverity severity) {
@@ -178,7 +178,7 @@ public class AlarmStatsRestService extends AlarmRestServiceBase {
         builder.limit(1);
         final Criteria criteria = builder.toCriteria();
         LogUtils.debugf(this, "getOldestAcknowledged(%s) criteria = %s", severity, criteria);
-		return m_statisticsService.getAcknowledged(criteria);
+        return m_statisticsService.getAcknowledged(criteria);
     }
 
     private OnmsAlarm getOldestUnacknowledged(final OnmsSeverity severity) {
@@ -188,13 +188,13 @@ public class AlarmStatsRestService extends AlarmRestServiceBase {
         builder.limit(1);
         final Criteria criteria = builder.toCriteria();
         LogUtils.debugf(this, "getOldestUnacknowledged(%s) criteria = %s", severity, criteria);
-		return m_statisticsService.getUnacknowledged(criteria);
+        return m_statisticsService.getUnacknowledged(criteria);
     }
 
     protected CriteriaBuilder getCriteriaBuilder(final OnmsSeverity severity) {
     	final CriteriaBuilder builder = new CriteriaBuilder(OnmsAlarm.class);
         if (severity != null) {
-        	builder.eq("severity", severity);
+            builder.eq("severity", severity);
         }
 
         builder.fetch("firstEvent", FetchType.EAGER);

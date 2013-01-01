@@ -23,6 +23,7 @@ Source:        centric-troubleticketer.tar.gz
 URL:           http://www.opennms.org/index.php/CentricCRM_Trouble_Ticket_Plugin
 BuildRoot:     %{_tmppath}/%{name}-%{version}-root
 
+Requires(pre): opennms-core >= %{version}-%{release}
 Requires:      opennms-core >= %{version}-%{release}
 BuildRequires: %{jdk}
 

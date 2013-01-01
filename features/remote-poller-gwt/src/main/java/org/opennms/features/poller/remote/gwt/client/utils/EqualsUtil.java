@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -82,7 +82,7 @@ public class EqualsUtil {
 	   * @return a boolean.
 	   */
 	  static public boolean areEqual(float aThis, float aThat){
-		  return Float.valueOf(aThis) == Float.valueOf(aThat);
+		  return areEqual(Float.valueOf(aThis), Float.valueOf(aThat));
 	  }
 
 	  /**
@@ -93,7 +93,7 @@ public class EqualsUtil {
 	   * @return a boolean.
 	   */
 	  static public boolean areEqual(double aThis, double aThat){
-		  return Double.valueOf(aThis) == Double.valueOf(aThat);
+		  return areEqual(Double.valueOf(aThis), Double.valueOf(aThat));
 	  }
 
 	  /**

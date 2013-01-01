@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -1081,7 +1081,7 @@ public class EventConstants {
     /** Constant <code>OID_SNMP_IFINDEX</code> */
     public final static SnmpObjId OID_SNMP_IFINDEX = SnmpObjId.get(".1.3.6.1.2.1.2.2.1.1");
 
-    static final ThreadLocal<DateFormat> FORMATTER_FULL = new ThreadLocal<DateFormat>() {
+    public static final ThreadLocal<DateFormat> FORMATTER_FULL = new ThreadLocal<DateFormat>() {
         protected synchronized DateFormat initialValue() {
             int timeFormat = DateFormat.FULL;
             // The DateFormat.FULL format for France/Germany do not include the seconds digit
@@ -1101,7 +1101,7 @@ public class EventConstants {
         }
     };
 
-    static final ThreadLocal<DateFormat> FORMATTER_LONG = new ThreadLocal<DateFormat>() {
+    public static final ThreadLocal<DateFormat> FORMATTER_LONG = new ThreadLocal<DateFormat>() {
         protected synchronized DateFormat initialValue() {
             final DateFormat formatter = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.LONG);
             formatter.setLenient(true);
@@ -1109,7 +1109,7 @@ public class EventConstants {
         }
     };
     
-    static final ThreadLocal<DateFormat> FORMATTER_FULL_GMT = new ThreadLocal<DateFormat>() {
+    public static final ThreadLocal<DateFormat> FORMATTER_FULL_GMT = new ThreadLocal<DateFormat>() {
         protected synchronized DateFormat initialValue() {
             int timeFormat = DateFormat.FULL;
             // The DateFormat.FULL format for France/Germany do not include the seconds digit
@@ -1130,7 +1130,7 @@ public class EventConstants {
         }
     };
 
-    static final ThreadLocal<DateFormat> FORMATTER_LONG_GMT = new ThreadLocal<DateFormat>() {
+    public static final ThreadLocal<DateFormat> FORMATTER_LONG_GMT = new ThreadLocal<DateFormat>() {
         protected synchronized DateFormat initialValue() {
             final DateFormat formatter = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.LONG);
             formatter.setLenient(true);
@@ -1139,7 +1139,7 @@ public class EventConstants {
         }
     };
 
-    static final ThreadLocal<DateFormat> FORMATTER_CUSTOM = new ThreadLocal<DateFormat>() {
+    public static final ThreadLocal<DateFormat> FORMATTER_CUSTOM = new ThreadLocal<DateFormat>() {
         protected synchronized DateFormat initialValue() {
             final DateFormat formatter = new SimpleDateFormat("EEEEE, d MMMMM yyyy k:mm:ss 'o''clock' z");
             formatter.setLenient(true);
@@ -1147,7 +1147,7 @@ public class EventConstants {
         }
     };
 
-    static final ThreadLocal<DateFormat> FORMATTER_DEFAULT = new ThreadLocal<DateFormat>() {
+    public static final ThreadLocal<DateFormat> FORMATTER_DEFAULT = new ThreadLocal<DateFormat>() {
         protected synchronized DateFormat initialValue() {
             final DateFormat formatter = DateFormat.getDateTimeInstance();
             formatter.setLenient(true);

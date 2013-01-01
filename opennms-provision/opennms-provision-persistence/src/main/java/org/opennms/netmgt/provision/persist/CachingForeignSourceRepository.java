@@ -1,3 +1,31 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.netmgt.provision.persist;
 
 import java.net.URL;
@@ -42,7 +70,6 @@ public class CachingForeignSourceRepository extends AbstractForeignSourceReposit
 		final ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(1);
 		executor.setContinueExistingPeriodicTasksAfterShutdownPolicy(false);
 		executor.setExecuteExistingDelayedTasksAfterShutdownPolicy(false);
-		executor.setMaximumPoolSize(1);
 		m_executor = executor;
 
 		// every refreshInterval milliseconds, save any modifications, and clean out existing cached data
@@ -91,7 +118,7 @@ public class CachingForeignSourceRepository extends AbstractForeignSourceReposit
 					// clear the foreign source cache
 					if (m_dirtyForeignSources.size() > 0) {
 						for (final String dirtyForeignSource : m_dirtyForeignSources) {
-							final ForeignSource fs = m_foreignSources.get(dirtyForeignSource);
+							final ForeignSource fs = getForeignSourceMap().get(dirtyForeignSource);
 							if (fs == null) {
 								m_foreignSourceRepository.delete(fs);
 							} else {
@@ -105,7 +132,7 @@ public class CachingForeignSourceRepository extends AbstractForeignSourceReposit
 					// clear the requisition cache
 					if (m_dirtyRequisitions.size() > 0) {
 						for (final String dirtyRequisition : m_dirtyRequisitions) {
-							final Requisition r = m_requisitions.get(dirtyRequisition);
+							final Requisition r = getRequisitionMap().get(dirtyRequisition);
 							if (r == null) {
 								m_foreignSourceRepository.delete(r);
 							} else {
@@ -386,4 +413,9 @@ public class CachingForeignSourceRepository extends AbstractForeignSourceReposit
 		cleanCache();
 		super.finalize();
 	}
+
+    @Override
+    public void flush() throws ForeignSourceRepositoryException {
+        getRefreshRunnable().run();
+    }
 }

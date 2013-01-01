@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -38,9 +38,8 @@ import java.util.TreeMap;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.capsd.CapsdProtocolInfo.Action;
 import org.opennms.netmgt.config.CapsdConfig;
-import org.opennms.netmgt.config.CapsdProtocolInfo;
-import org.opennms.netmgt.config.CapsdProtocolInfo.Action;
 import org.opennms.netmgt.config.capsd.Property;
 import org.opennms.netmgt.config.capsd.ProtocolConfiguration;
 import org.opennms.netmgt.config.capsd.ProtocolPlugin;

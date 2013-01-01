@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -114,6 +114,114 @@ public enum RelativeTime {
             
             return calendar.getTime();
         }
+    },
+    
+    SLIDINGHOUR {
+       	public Date getStart() {
+           Calendar calendar = new GregorianCalendar(getTimeZone());
+           calendar.setTimeInMillis(getCurrentTime());
+           
+           calendar.set(Calendar.MILLISECOND, 0);
+           calendar.set(Calendar.SECOND, 0);
+           calendar.add(Calendar.HOUR, -1);
+           
+           return calendar.getTime();
+       	}
+        
+       	public Date getEnd() {
+           Calendar calendar = new GregorianCalendar(getTimeZone());
+           calendar.setTimeInMillis(getCurrentTime());
+           
+           calendar.set(Calendar.MILLISECOND, 0);
+           calendar.set(Calendar.SECOND, 0);
+           
+           return calendar.getTime();
+       	}
+    },
+    
+    SLIDING4HOURS {
+       	public Date getStart() {
+           Calendar calendar = new GregorianCalendar(getTimeZone());
+           calendar.setTimeInMillis(getCurrentTime());
+           
+           calendar.set(Calendar.MILLISECOND, 0);
+           calendar.set(Calendar.SECOND, 0);
+           calendar.add(Calendar.HOUR, -4);
+           
+           return calendar.getTime();
+       	}
+        
+       	public Date getEnd() {
+           Calendar calendar = new GregorianCalendar(getTimeZone());
+           calendar.setTimeInMillis(getCurrentTime());
+           
+           calendar.set(Calendar.MILLISECOND, 0);
+           calendar.set(Calendar.SECOND, 0);
+           
+           return calendar.getTime();
+	}
+    },
+    
+    SLIDING8HOURS {
+	public Date getStart() {
+           Calendar calendar = new GregorianCalendar(getTimeZone());
+           calendar.setTimeInMillis(getCurrentTime());
+           
+           calendar.set(Calendar.MILLISECOND, 0);
+           calendar.set(Calendar.SECOND, 0);
+           calendar.add(Calendar.HOUR, -8);
+           
+           return calendar.getTime();
+       }
+        
+       	public Date getEnd() {
+           Calendar calendar = new GregorianCalendar(getTimeZone());
+           calendar.setTimeInMillis(getCurrentTime());
+           
+           calendar.set(Calendar.MILLISECOND, 0);
+           calendar.set(Calendar.SECOND, 0);
+           
+           return calendar.getTime();
+	}
+    },
+    
+    SLIDINGDAY {
+       	public Date getStart() {
+           Calendar calendar = new GregorianCalendar(getTimeZone());
+           calendar.setTimeInMillis(getCurrentTime());
+           
+           calendar.set(Calendar.MILLISECOND, 0);
+           calendar.set(Calendar.SECOND, 0);
+           calendar.add(Calendar.HOUR, -24);
+           
+           return calendar.getTime();
+       	}
+        
+       	public Date getEnd() {
+           Calendar calendar = new GregorianCalendar(getTimeZone());
+           calendar.setTimeInMillis(getCurrentTime());
+       	   
+           calendar.set(Calendar.MILLISECOND, 0);
+           calendar.set(Calendar.SECOND, 0);
+           
+           return calendar.getTime();
+	}
+    },
+    
+    TODAY {
+       	public Date getStart() {
+               return getStartOfToday();
+       	}
+        
+       	public Date getEnd() {
+           Calendar calendar = new GregorianCalendar(getTimeZone());
+           calendar.setTimeInMillis(getCurrentTime());
+           
+           calendar.set(Calendar.MILLISECOND, 0);
+           calendar.set(Calendar.SECOND, 0);
+           
+           return calendar.getTime();
+	}
     };
 
     /**

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -41,16 +41,16 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.dao.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
-import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -58,6 +58,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
+        "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
         "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
@@ -111,6 +112,7 @@ public class DataLinkInterfaceDaoHibernateTest implements InitializingBean {
         assertNotNull(dli);
         assertEquals(m_databasePopulator.getNode1().getId(), dli.getNode().getId());
         assertEquals(Integer.valueOf(1), dli.getIfIndex());
+        assertEquals(dli.getSource(), "linkd");
     }
 
     @Test
@@ -150,5 +152,59 @@ public class DataLinkInterfaceDaoHibernateTest implements InitializingBean {
         assertEquals(dli.getStatus(), dli2.getStatus());
         assertEquals(dli.getLinkTypeId(), dli2.getLinkTypeId());
         assertEquals(dli.getLastPollTime(), dli2.getLastPollTime());
+        assertEquals(dli.getSource(), "linkd");
     }
+    
+    @Test
+    @Transactional // why is this necessary?
+    public void testSaveDataLinkInterface2() {
+        // Create a new data link interface and save it.
+        DataLinkInterface dli = new DataLinkInterface(m_databasePopulator.getNode3(), -1, m_databasePopulator.getNode1().getId(), 3, "?", new Date());
+        dli.setLinkTypeId(101);
+        dli.setSource("rest");
+        m_dataLinkInterfaceDao.save(dli);
+        m_dataLinkInterfaceDao.flush();
+
+        assertNotNull(m_dataLinkInterfaceDao.get(dli.getId()));
+
+        DataLinkInterface dli2 = m_dataLinkInterfaceDao.findById(dli.getId());
+        assertSame(dli, dli2);
+        assertEquals(dli.getId(), dli2.getId());
+        assertEquals(dli.getNode().getId(), dli2.getNode().getId());
+        assertEquals(dli.getIfIndex(), dli2.getIfIndex());
+        assertEquals(dli.getNodeParentId(), dli2.getNodeParentId());
+        assertEquals(dli.getParentIfIndex(), dli2.getParentIfIndex());
+        assertEquals(dli.getStatus(), dli2.getStatus());
+        assertEquals(dli.getLinkTypeId(), dli2.getLinkTypeId());
+        assertEquals(dli.getLastPollTime(), dli2.getLastPollTime());
+        assertEquals(dli.getSource(), "rest");
+    }
+
+    @Test
+    @Transactional // why is this necessary?
+    public void testUpdate() {
+        // Create a new data link interface and save it.
+        DataLinkInterface dli = new DataLinkInterface(m_databasePopulator.getNode4(), -1, m_databasePopulator.getNode1().getId(), 3, "?", new Date());
+        dli.setLinkTypeId(101);
+        dli.setSource("updatetest");
+        m_dataLinkInterfaceDao.save(dli);
+        m_dataLinkInterfaceDao.flush();
+
+        m_dataLinkInterfaceDao.setStatusForNode(m_databasePopulator.getNode4().getId(), "updatetest",'D');
+        
+        assertNotNull(m_dataLinkInterfaceDao.get(dli.getId()));
+
+        DataLinkInterface dli2 = m_dataLinkInterfaceDao.findById(dli.getId());
+        assertSame(dli, dli2);
+        assertEquals(dli.getId(), dli2.getId());
+        assertEquals(dli.getNode().getId(), dli2.getNode().getId());
+        assertEquals(dli.getIfIndex(), dli2.getIfIndex());
+        assertEquals(dli.getNodeParentId(), dli2.getNodeParentId());
+        assertEquals(dli.getParentIfIndex(), dli2.getParentIfIndex());
+        assertEquals("D", dli2.getStatus());
+        assertEquals(dli.getLinkTypeId(), dli2.getLinkTypeId());
+        assertEquals(dli.getLastPollTime(), dli2.getLastPollTime());
+        assertEquals(dli.getSource(), "updatetest");
+    }
+
 }

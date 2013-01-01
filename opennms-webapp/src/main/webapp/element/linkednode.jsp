@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -40,7 +40,7 @@
 		org.springframework.web.context.support.WebApplicationContextUtils,
 		org.opennms.core.utils.InetAddressUtils,
 		org.opennms.netmgt.model.OnmsNode,
-		org.opennms.web.WebSecurityUtils,
+		org.opennms.core.utils.WebSecurityUtils,
 		org.opennms.web.element.*,
 		org.opennms.web.event.*,
 		org.opennms.web.springframework.security.Authentication,
@@ -101,7 +101,7 @@
     String nodeIdString = request.getParameter( "node" );
 
     if( nodeIdString == null ) {
-        throw new org.opennms.web.MissingParameterException( "node" );
+        throw new org.opennms.web.servlet.MissingParameterException( "node" );
     }
 
     int nodeId = WebSecurityUtils.safeParseInt( nodeIdString );

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -69,6 +69,12 @@ public interface ResourceService {
      */
     public List<OnmsResource> findDomainResources();
     /**
+     * <p>findNodeSourceResources</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
+    public List<OnmsResource> findNodeSourceResources();
+    /**
      * <p>findNodeChildResources</p>
      *
      * @param nodeId a int.
@@ -82,6 +88,13 @@ public interface ResourceService {
      * @return a {@link java.util.List} object.
      */
     public List<OnmsResource> findDomainChildResources(String domain);
+    /**
+     * <p>findNodeSourceChildResources</p>
+     *
+     * @param nodeSource a {@link java.lang.String} object.
+     * @return a {@link java.util.List} object.
+     */
+    public List<OnmsResource> findNodeSourceChildResources(String nodeSource);
     /**
      * <p>findChildResources</p>
      *

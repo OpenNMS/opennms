@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -408,12 +408,13 @@ public class JMXDataSource implements Cloneable {
      *
      * @return String which represents the content of this RRDDataSource object
      */
+    @Override
     public String toString() {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
 
         // Build the buffer
         buffer.append("\n   oid:       ").append(m_oid);
-        buffer.append("\n   name: 	 ").append(m_name);
+        buffer.append("\n   name:      ").append(m_name);
         buffer.append("\n   type:      ").append(m_type);
         buffer.append("\n   heartbeat: ").append(m_heartbeat);
         buffer.append("\n   min:       ").append(m_min);

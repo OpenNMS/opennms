@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -43,7 +43,10 @@ import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.resource.Vault;
+import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.test.db.MockDatabase;
 import org.opennms.netmgt.collectd.CollectionAgent;
 import org.opennms.netmgt.collectd.IfInfo;
 import org.opennms.netmgt.collectd.IfResourceType;
@@ -55,20 +58,17 @@ import org.opennms.netmgt.collectd.SnmpAttribute;
 import org.opennms.netmgt.collectd.SnmpAttributeType;
 import org.opennms.netmgt.collectd.SnmpCollectionResource;
 import org.opennms.netmgt.collectd.SnmpIfData;
-import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.MibObject;
 import org.opennms.netmgt.config.collector.AttributeGroupType;
 import org.opennms.netmgt.config.collector.CollectionAttribute;
 import org.opennms.netmgt.config.collector.ServiceParameters;
 import org.opennms.netmgt.mock.MockDataCollectionConfig;
-import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
-import org.opennms.test.mock.MockLogAppender;
 
 /**
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
@@ -112,7 +112,27 @@ public class CollectionResourceWrapperTest {
         EasyMock.verify(agent);
     }
     
-     @Test
+    @Test(expected=IllegalArgumentException.class)
+    public void testBadConstructorCall() throws Throwable {
+        try {
+            new CollectionResourceWrapper(null, 1, "127.0.0.1", "HTTP", null, null, null);
+        } catch (Throwable e) {
+            //e.printStackTrace();
+            throw e;
+        }
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testBadderConstructorCall() throws Throwable {
+        try {
+            new CollectionResourceWrapper(null, -1, null, null, null, null, null);
+        } catch (Throwable e) {
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
+    @Test
     public void testGetCounterValue() throws Exception {
         // Create Resource
         CollectionAgent agent = createCollectionAgent();
@@ -120,7 +140,7 @@ public class CollectionResourceWrapperTest {
 
         // Add Counter Attribute
         String attributeName = "myCounter";
-        String attributeId = "node[1]." + attributeName;
+        String attributeId = "node[1].resourceType[node].instance[null].metric[" + attributeName + "]";
         Map<String, CollectionAttribute> attributes = new HashMap<String, CollectionAttribute>();
         SnmpAttribute attribute = addAttributeToCollectionResource(resource, attributeName, "counter", "0", 1000);
         attributes.put(attribute.getName(), attribute);
@@ -190,7 +210,7 @@ public class CollectionResourceWrapperTest {
 
 		// Add Counter Attribute
 		String attributeName = "myCounter";
-		String attributeId = "node[1]." + attributeName;
+	        String attributeId = "node[1].resourceType[node].instance[null].metric[" + attributeName + "]";
 		Map<String, CollectionAttribute> attributes = new HashMap<String, CollectionAttribute>();
 		SnmpAttribute attribute = addAttributeToCollectionResource(resource,
 				attributeName, "counter", "0", 1000);
@@ -288,7 +308,7 @@ public class CollectionResourceWrapperTest {
 
         // Add Counter Attribute
         String attributeName = "myCounter";
-        String attributeId = "node[1]." + attributeName;
+        String attributeId = "node[1].resourceType[node].instance[null].metric[" + attributeName + "]";
         Map<String, CollectionAttribute> attributes = new HashMap<String, CollectionAttribute>();
         BigInteger initialValue = new BigDecimal(Math.pow(2, 32) - 20000).toBigInteger();
         SnmpAttribute attribute = addAttributeToCollectionResource(resource, attributeName, "counter", "0", initialValue);

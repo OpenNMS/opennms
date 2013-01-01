@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -42,7 +42,7 @@ import org.opennms.features.poller.remote.gwt.client.utils.Interval;
  * @version $Id: $
  * @since 1.8.1
  */
-public class IntervalUtils {
+public abstract class IntervalUtils {
 
     /**
      * <p>invert</p>

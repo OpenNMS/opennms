@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -33,9 +33,9 @@ import java.net.UnknownHostException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.provision.detector.ssh.SshDetector;
-import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,20 +64,20 @@ public class SSHDetectorTest implements ApplicationContextAware, InitializingBea
         m_detector.setTimeout(1);
     }
     
-	@Test
+	@Test(timeout=90000)
 	public void testDetectorSuccess() throws UnknownHostException{
 		//m_detector.init();
 		//assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr("192.168.1.103")));
 	}
 	
-	@Test
+	@Test(timeout=90000)
     public void testDetectorFailWrongPort() throws UnknownHostException{
 	    //m_detector.setPort(30);
         //m_detector.init();
         //assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr("192.168.1.103")));
     }
 	
-	@Test
+	@Test(timeout=90000)
     public void testDetectorFailBanner() throws UnknownHostException{
 	    //m_detector.setBanner("Hello there crazy");
         //m_detector.init();

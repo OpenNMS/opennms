@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -37,12 +37,12 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.icmp.PingerFactory;
 import org.opennms.netmgt.icmp.jna.JnaPinger;
 import org.opennms.netmgt.icmp.jni.JniPinger;
 import org.opennms.netmgt.provision.detector.icmp.IcmpDetector;
-import org.opennms.test.mock.MockLogAppender;
 import org.springframework.test.annotation.IfProfileValue;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -64,7 +64,7 @@ public class IcmpDetectorTest {
         
     }
 
-    @Test
+    @Test(timeout=90000)
     @IfProfileValue(name="runPingTests", value="true")
     public void testDetectorSuccessJni() throws Exception {
         PingerFactory.setInstance(new JniPinger());
@@ -72,7 +72,7 @@ public class IcmpDetectorTest {
         assertTrue("ICMP could not be detected on localhost", m_icmpDetector.isServiceDetected(InetAddress.getLocalHost()));
     }
 
-    @Test
+    @Test(timeout=90000)
     @IfProfileValue(name="runPingTests", value="true")
     public void testDetectorFailJni() throws Exception {
         PingerFactory.setInstance(new JniPinger());
@@ -80,7 +80,7 @@ public class IcmpDetectorTest {
         assertFalse("ICMP was incorrectly identified on " + InetAddressUtils.UNPINGABLE_ADDRESS.getHostAddress(), m_icmpDetector.isServiceDetected(InetAddressUtils.UNPINGABLE_ADDRESS));
     }
 
-    @Test
+    @Test(timeout=90000)
     @IfProfileValue(name="runPingTests", value="true")
     public void testDetectorSuccess() throws Exception {
         PingerFactory.setInstance(new JnaPinger());
@@ -88,7 +88,7 @@ public class IcmpDetectorTest {
         assertTrue("ICMP could not be detected on localhost", m_icmpDetector.isServiceDetected(InetAddress.getLocalHost()));
     }
 
-    @Test
+    @Test(timeout=90000)
     @IfProfileValue(name="runPingTests", value="true")
     public void testDetectorFail() throws Exception {
         PingerFactory.setInstance(new JnaPinger());

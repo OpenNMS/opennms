@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -70,6 +70,9 @@ import com.sun.jersey.spi.container.servlet.ServletContainer;
 import com.sun.jersey.spi.spring.container.servlet.SpringServlet;
 
 /**
+ * @deprecated This class is mostly copied from {@link org.opennms.web.rest.AbstractSpringJerseyRestTestCase}
+ * 
+ * TODO: Deduplicate the class AbstractSpringJerseyRestTestCase classes
  * 
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  *

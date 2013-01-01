@@ -37,10 +37,11 @@
           <include>*remote-poller-gwt*.jar</include>
           <include>gwt*.jar</include>
           <include>extremecomponents-*.jar</include>
+          <!-- Include an implementation of the JSTL tags -->
+          <include>org.apache.taglibs.standard.glassfish-*.jar</include>
         </includes>
         <excludes>
-          <exclude>jsp-api-*.jar</exclude>
-          <exclude>jstl-*.jar</exclude>
+          <exclude>javax.servlet.*.jar</exclude>
           <exclude>servlet-api-*.jar</exclude>
         </excludes>
       </unpackOptions>
@@ -61,8 +62,8 @@
           <exclude>*remote-poller-gwt*.jar</exclude>
           <exclude>gwt*.jar</exclude>
           <exclude>extremecomponents-*.jar</exclude>
-          <exclude>jstl-*.jar</exclude>
-          <exclude>jsp-api-*.jar</exclude>
+          <exclude>org.apache.taglibs.standard.glassfish-*.jar</exclude>
+          <exclude>javax.servlet.*.jar</exclude>
           <exclude>servlet-api-*.jar</exclude>
           <exclude>com.springsource.javax.xml.bind*.jar</exclude>
         </excludes>
@@ -121,10 +122,11 @@
           <include>*remote-poller-gwt*.jar</include>
           <include>gwt*.jar</include>
           <include>extremecomponents-*.jar</include>
+          <!-- Include an implementation of the JSTL tags -->
+          <include>org.apache.taglibs.standard.glassfish-*.jar</include>
         </includes>
         <excludes>
-          <exclude>jsp-api-*.jar</exclude>
-          <exclude>jstl-*.jar</exclude>
+          <exclude>javax.servlet.*.jar</exclude>
           <exclude>servlet-api-*.jar</exclude>
         </excludes>
       </unpackOptions>
@@ -144,8 +146,8 @@
           <exclude>*remote-poller-gwt*.jar</exclude>
           <exclude>gwt*.jar</exclude>
           <exclude>extremecomponents-*.jar</exclude>
-          <exclude>jstl-*.jar</exclude>
-          <exclude>jsp-api-*.jar</exclude>
+          <exclude>org.apache.taglibs.standard.glassfish-*.jar</exclude>
+          <exclude>javax.servlet.*.jar</exclude>
           <exclude>servlet-api-*.jar</exclude>
           <exclude>com.springsource.javax.xml.bind*.jar</exclude>
         </excludes>

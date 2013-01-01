@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -122,7 +122,7 @@ public class DnsRequisitionUrlConnection extends URLConnection {
      * @param url a {@link java.net.URL} object.
      * @throws java.net.MalformedURLException if any.
      */
-    protected DnsRequisitionUrlConnection(URL url) throws MalformedURLException {
+    public DnsRequisitionUrlConnection(URL url) throws MalformedURLException {
         super(url);
         
         m_args = getUrlArgs(url);
@@ -146,7 +146,7 @@ public class DnsRequisitionUrlConnection extends URLConnection {
         m_key = null;
         
     }
-   
+
     /**
      * Determine services to be provisioned from URL
      * 

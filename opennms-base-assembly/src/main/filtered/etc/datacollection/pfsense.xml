@@ -1,0 +1,132 @@
+<?xml version="1.0"?>
+<datacollection-group name="pfSense">
+
+      <resourceType name="pfIfIfIndex" label="pfSense Interface" resourceLabel="${pfIfIfDescr}">
+        <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy" />
+        <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
+          <parameter key="sibling-column-name" value="pfIfIfDescr" />
+        </storageStrategy>
+      </resourceType>
+
+      <resourceType name="pfTablesTblIndex" label="pfSense PF Table" resourceLabel="${pftTblDescr}">
+        <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy" />
+        <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
+          <parameter key="sibling-column-name" value="pftTblDescr" />
+        </storageStrategy>
+      </resourceType>
+
+      <resourceType name="pfLabelsLblIndex" label="pfSense PF Label" resourceLabel="${pfLabelsLblName}">
+        <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy" />
+        <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
+          <parameter key="sibling-column-name" value="pfLabelsLblName" />
+        </storageStrategy>
+      </resourceType>
+
+    <resourceType name="hrStorageFBSD" label="Storage (FreeBSD, MIB-2 Host Resources)"
+                  resourceLabel="${hrStorageDescr}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+        <parameter key="match-expression" value="not(#hrStorageDescr matches '^(MALLOC|UMA):.*')" />
+      </persistenceSelectorStrategy>
+      <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
+          <parameter key="sibling-column-name" value="hrStorageDescr" />
+          <parameter key="replace-first" value="s/^-$/_root_fs/" />
+          <parameter key="replace-all" value="s/^-//" />
+          <parameter key="replace-all" value="s/\s//" />
+          <parameter key="replace-all" value="s/:\\.*//" />
+      </storageStrategy>
+    </resourceType>
+
+      <!-- pfSense MIBs -->
+      <group name="pfsense-system-scalars" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.12325.1.200.1.2.1" instance="0" alias="pfCounterMatch"     type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.12325.1.200.1.2.2" instance="0" alias="pfCounterBadOffset" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.12325.1.200.1.2.3" instance="0" alias="pfCounterFragment"  type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.12325.1.200.1.2.4" instance="0" alias="pfCounterShort"     type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.12325.1.200.1.2.5" instance="0" alias="pfCounterNormalize" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.12325.1.200.1.2.6" instance="0" alias="pfCounterMemDrop"   type="counter" />
+      </group>
+
+      <group name="pfsense-statetable-scalars" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.12325.1.200.1.3.1" instance="0" alias="pfStateTblCount"    type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.12325.1.200.1.3.2" instance="0" alias="pfStateTblSearches" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.12325.1.200.1.3.3" instance="0" alias="pfStateTblInserts"  type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.12325.1.200.1.3.4" instance="0" alias="pfStateTblRemovals" type="counter" />
+      </group>
+
+      <group name="pfsense-srcnode-scalars" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.12325.1.200.1.4.1" instance="0" alias="pfSrcNodesCount"    type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.12325.1.200.1.4.2" instance="0" alias="pfSrcNodesSearches" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.12325.1.200.1.4.3" instance="0" alias="pfSrcNodesInserts"  type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.12325.1.200.1.4.4" instance="0" alias="pfSrcNodesRemovals" type="counter" />
+      </group>
+
+      <group name="pfsense-pfinterfaces" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.12325.1.200.1.8.2.1.2"  instance="pfIfIfIndex" alias="pfIfIfDescr"         type="string" />
+        <mibObj oid=".1.3.6.1.4.1.12325.1.200.1.8.2.1.5"  instance="pfIfIfIndex" alias="pfIfIfRefsState"     type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.12325.1.200.1.8.2.1.6"  instance="pfIfIfIndex" alias="pfIfIfRefsRule"      type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.12325.1.200.1.8.2.1.7"  instance="pfIfIfIndex" alias="pfIfIf4BytesInPass"  type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.12325.1.200.1.8.2.1.8"  instance="pfIfIfIndex" alias="pfIfIf4BytesInBlk"   type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.12325.1.200.1.8.2.1.9"  instance="pfIfIfIndex" alias="pfIfIf4BytesOutPass" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.12325.1.200.1.8.2.1.10" instance="pfIfIfIndex" alias="pfIfIf4BytesOutBlk"  type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.12325.1.200.1.8.2.1.11" instance="pfIfIfIndex" alias="pfIfIf4PktsInPass"   type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.12325.1.200.1.8.2.1.12" instance="pfIfIfIndex" alias="pfIfIf4PktsInBlk"    type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.12325.1.200.1.8.2.1.13" instance="pfIfIfIndex" alias="pfIfIf4PktsOutPass"  type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.12325.1.200.1.8.2.1.14" instance="pfIfIfIndex" alias="pfIfIf4PktsOutBlk"   type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.12325.1.200.1.8.2.1.15" instance="pfIfIfIndex" alias="pfIfIf6BytesInPass"  type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.12325.1.200.1.8.2.1.16" instance="pfIfIfIndex" alias="pfIfIf6BytesInBlk"   type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.12325.1.200.1.8.2.1.17" instance="pfIfIfIndex" alias="pfIfIf6BytesOutPass" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.12325.1.200.1.8.2.1.18" instance="pfIfIfIndex" alias="pfIfIf6BytesOutBlk"  type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.12325.1.200.1.8.2.1.19" instance="pfIfIfIndex" alias="pfIfIf6PktsInPass"   type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.12325.1.200.1.8.2.1.20" instance="pfIfIfIndex" alias="pfIfIf6PktsInBlk"    type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.12325.1.200.1.8.2.1.21" instance="pfIfIfIndex" alias="pfIfIf6PktsOutPass"  type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.12325.1.200.1.8.2.1.22" instance="pfIfIfIndex" alias="pfIfIf6PktsOutBlk"   type="counter" />
+      </group>
+
+      <group name="pfsense-pftables" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.12325.1.200.1.9.2.1.2"  instance="pfTablesTblIndex" alias="pftTblDescr" type="string" />
+        <mibObj oid=".1.3.6.1.4.1.12325.1.200.1.9.2.1.3"  instance="pfTablesTblIndex" alias="pftTblCount" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.12325.1.200.1.9.2.1.5"  instance="pfTablesTblIndex" alias="pftTblRefsAnchor" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.12325.1.200.1.9.2.1.6"  instance="pfTablesTblIndex" alias="pftTblRefsRule" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.12325.1.200.1.9.2.1.7"  instance="pfTablesTblIndex" alias="pftTblEvalMatch" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.12325.1.200.1.9.2.1.8"  instance="pfTablesTblIndex" alias="pftTblEvalNoMatch" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.12325.1.200.1.9.2.1.9"  instance="pfTablesTblIndex" alias="pftTblBytesInPass" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.12325.1.200.1.9.2.1.10" instance="pfTablesTblIndex" alias="pftTblBytesInBlock" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.12325.1.200.1.9.2.1.11" instance="pfTablesTblIndex" alias="pftTblBytesInXPass" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.12325.1.200.1.9.2.1.12" instance="pfTablesTblIndex" alias="pftTblBytesOutPass" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.12325.1.200.1.9.2.1.13" instance="pfTablesTblIndex" alias="pftTblBytesOutBlock" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.12325.1.200.1.9.2.1.14" instance="pfTablesTblIndex" alias="pftTblBytesOutXPass" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.12325.1.200.1.9.2.1.15" instance="pfTablesTblIndex" alias="pftTblPktsInPass" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.12325.1.200.1.9.2.1.16" instance="pfTablesTblIndex" alias="pftTblPktsInBlock" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.12325.1.200.1.9.2.1.17" instance="pfTablesTblIndex" alias="pftTblPktsInXPass" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.12325.1.200.1.9.2.1.18" instance="pfTablesTblIndex" alias="pftTblPktsOutPass" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.12325.1.200.1.9.2.1.19" instance="pfTablesTblIndex" alias="pftTblPktsOutBlock" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.12325.1.200.1.9.2.1.20" instance="pfTablesTblIndex" alias="pftTblPktsOutXPass" type="counter" />
+      </group>
+
+      <group name="pfsense-labels" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.12325.1.200.1.11.2.1.2" instance="pfLabelsLblIndex" alias="pfLabelsLblName" type="string" />
+        <mibObj oid=".1.3.6.1.4.1.12325.1.200.1.11.2.1.3" instance="pfLabelsLblIndex" alias="pfLabelsLblEvals" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.12325.1.200.1.11.2.1.4" instance="pfLabelsLblIndex" alias="pfLabelsLblBytesIn" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.12325.1.200.1.11.2.1.5" instance="pfLabelsLblIndex" alias="pfLabelsLblBytesOut" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.12325.1.200.1.11.2.1.6" instance="pfLabelsLblIndex" alias="pfLabelsLblPktsIn" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.12325.1.200.1.11.2.1.7" instance="pfLabelsLblIndex" alias="pfLabelsLblPktsOut" type="counter" />
+      </group>
+
+      <systemDef name="pfSense">
+        <sysoidMask>.1.3.6.1.4.1.12325.1.1.</sysoidMask>
+        <collect>
+          <includeGroup>mib2-host-resources-system</includeGroup>
+          <includeGroup>mib2-host-resources-memory</includeGroup>
+          <!-- hrStorage is problematic on pfSense, over 200 instances on 2.0.1 -->
+          <!-- <includeGroup>mib2-host-resources-storage</includeGroup> -->
+          <includeGroup>mib2-X-interfaces</includeGroup>
+          <includeGroup>pfsense-system-scalars</includeGroup>
+          <includeGroup>pfsense-statetable-scalars</includeGroup>
+          <includeGroup>pfsense-srcnode-scalars</includeGroup>
+          <includeGroup>pfsense-pfinterfaces</includeGroup>
+          <includeGroup>pfsense-pftables</includeGroup>
+          <!-- Omitting labels since I have no way to test on my instance -->
+          <!-- <includeGroup>pfsense-labels</includeGroup> -->
+        </collect>
+      </systemDef>
+</datacollection-group>

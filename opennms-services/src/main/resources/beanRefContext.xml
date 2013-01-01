@@ -3,16 +3,6 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans-3.0.xsd" default-lazy-init="true">
         
-  <bean id="daemonContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
-     <constructor-arg>
-       <list>
-         <value>META-INF/opennms/applicationContext-daemon.xml</value>
-         <value>META-INF/opennms/applicationContext-pinger.xml</value>
-       </list>
-     </constructor-arg>
-     <constructor-arg ref="daoContext" />
-   </bean>
-   
    <bean id="commonContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
      <constructor-arg>
        <list>

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -52,10 +52,12 @@ public abstract class AbstractForeignSourceRepository implements ForeignSourceRe
     }
 
     /** {@inheritDoc} */
-    public Requisition importResourceRequisition(Resource resource) throws ForeignSourceRepositoryException {
+    public Requisition importResourceRequisition(final Resource resource) throws ForeignSourceRepositoryException {
         Assert.notNull(resource);
  
+        LogUtils.debugf(this, "importing requisition from %s", resource);
         final Requisition requisition = JaxbUtils.unmarshal(Requisition.class, resource);
+        requisition.setResource(resource);
         save(requisition);
         return requisition;
     }

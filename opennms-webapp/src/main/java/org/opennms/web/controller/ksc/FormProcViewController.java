@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -33,13 +33,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
-import org.opennms.netmgt.config.KscReportEditor;
 import org.opennms.netmgt.config.kscReports.Graph;
 import org.opennms.netmgt.config.kscReports.Report;
-import org.opennms.web.MissingParameterException;
-import org.opennms.web.WebSecurityUtils;
+import org.opennms.web.servlet.MissingParameterException;
 import org.opennms.web.svclayer.KscReportService;
+import org.opennms.web.svclayer.support.DefaultKscReportService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
@@ -110,7 +110,10 @@ public class FormProcViewController extends AbstractController implements Initia
                 
                 log().debug("handleRequestInternal: build report for reportType " + reportType);
                 if (reportType.equals("node")) {
-                    editor.loadWorkingReport(m_kscReportService.buildNodeReport(reportId)); 
+                    editor.loadWorkingReport(m_kscReportService.buildNodeReport(reportId));
+                } else if (reportType.equals("nodeSource")) {
+  
+                    editor.loadWorkingReport(m_kscReportService.buildNodeSourceReport(reportIdString));
                 } else if (reportType.equals("domain")) {
                     editor.loadWorkingReport(m_kscReportService.buildDomainReport(reportIdString));
                 } else { 

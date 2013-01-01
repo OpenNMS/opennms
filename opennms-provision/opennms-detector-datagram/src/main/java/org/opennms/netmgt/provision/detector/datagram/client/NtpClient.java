@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -114,7 +114,7 @@ public class NtpClient implements Client<NtpMessage, DatagramPacket> {
      *
      * @return a {@link java.net.InetAddress} object.
      */
-    protected InetAddress getAddress() {
+    public InetAddress getAddress() {
         return m_address;
     }
 
@@ -132,7 +132,7 @@ public class NtpClient implements Client<NtpMessage, DatagramPacket> {
      *
      * @return a int.
      */
-    protected int getPort() {
+    public int getPort() {
         return m_port;
     }
 }

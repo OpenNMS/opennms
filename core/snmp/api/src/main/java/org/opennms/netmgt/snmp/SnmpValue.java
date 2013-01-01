@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -30,7 +30,6 @@ package org.opennms.netmgt.snmp;
 
 import java.math.BigInteger;
 import java.net.InetAddress;
-
 
 public interface SnmpValue {
     // These values match the ASN.1 constants
@@ -60,33 +59,31 @@ public interface SnmpValue {
 
     public final static int SNMP_END_OF_MIB = (0x82); // 8*16 + 2 = 130
     
-    public abstract boolean isEndOfMib();
+    boolean isEndOfMib();
     
-    public abstract boolean isError();
+    boolean isError();
 
-    public abstract boolean isNull();
+    boolean isNull();
 
-    public abstract boolean isDisplayable();
+    boolean isDisplayable();
 
-    public abstract boolean isNumeric();
+    boolean isNumeric();
 
-    public abstract int toInt();
+    int toInt();
 
-    public abstract String toDisplayString();
+    String toDisplayString();
 
-    public abstract InetAddress toInetAddress();
+    InetAddress toInetAddress();
 
-    public abstract long toLong();
+    long toLong();
     
-    public abstract BigInteger toBigInteger();
+    BigInteger toBigInteger();
 
-    public abstract String toHexString();
+    String toHexString();
     
-    public abstract int getType();
+    int getType();
     
-    public abstract byte[] getBytes();
+    byte[] getBytes();
 
-    public abstract SnmpObjId toSnmpObjId();
-
-
+    SnmpObjId toSnmpObjId();
 }

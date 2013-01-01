@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,6 +29,7 @@
 package org.opennms.netmgt.provision.service;
 
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -116,8 +117,13 @@ public class IPInterfaceTableTracker extends TableTracker {
             iface.setSnmpInterface(snmpIface);
             
             iface.setIfIndex(ifIndex);
-        	final String hostName = InetAddressUtils.normalize(ipAddr);
-        	iface.setIpHostName(hostName == null? ipAddr : hostName);
+            String hostName;
+            try {
+                hostName = InetAddress.getByName(ipAddr).getHostName();
+            } catch (final UnknownHostException e) {
+                hostName = InetAddressUtils.normalize(ipAddr);
+            }
+            iface.setIpHostName(hostName == null? ipAddr : hostName);
             
             return iface;
         }

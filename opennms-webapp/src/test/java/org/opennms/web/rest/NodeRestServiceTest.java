@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -44,11 +44,11 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
 
 import org.junit.Test;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNodeList;
-import org.opennms.test.mock.MockLogAppender;
 import org.springframework.mock.web.MockHttpServletRequest;
 
 /*
@@ -115,7 +115,7 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
 
         // Testing PUT
         url += "/1";
-        sendPut(url, "sysContact=OpenNMS&assetRecord.manufacturer=Apple&assetRecord.operatingSystem=MacOSX Leopard");
+        sendPut(url, "sysContact=OpenNMS&assetRecord.manufacturer=Apple&assetRecord.operatingSystem=MacOSX Leopard", 303, "/nodes/1");
 
         // Testing GET Single Object
         xml = sendRequest(GET, url, 200);
@@ -145,7 +145,7 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
 
         // Testing PUT
         url += "/1";
-        sendPut(url, "sysContact=OpenNMS&assetRecord.manufacturer=Apple&assetRecord.operatingSystem=MacOSX Leopard");
+        sendPut(url, "sysContact=OpenNMS&assetRecord.manufacturer=Apple&assetRecord.operatingSystem=MacOSX Leopard", 303, "/nodes/1");
 
         // Testing GET Single Object to make sure that the parameters changed
         xml = sendRequest(GET, url, 200);
@@ -217,7 +217,7 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
         String xml = sendRequest(GET, url, 200);
         assertTrue(xml.contains("<ipAddress>10.10.10.10</ipAddress>"));
         url += "/10.10.10.10";
-        sendPut(url, "isManaged=U");
+        sendPut(url, "isManaged=U", 303, "/nodes/1/ipinterfaces/10.10.10.10");
         xml = sendRequest(GET, url, 200);
         assertTrue(xml.contains("isManaged=\"U\""));
         sendRequest(DELETE, url, 200);
@@ -232,7 +232,7 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
         assertTrue(xml.contains("count=\"1\""));
         
         url += "/10.10.10.10";
-        sendPut(url, "isManaged=U");
+        sendPut(url, "isManaged=U", 303, "/nodes/1/ipinterfaces/10.10.10.10");
         xml = sendRequest(GET, url, 200);
         assertTrue(xml.contains("isManaged=\"U\""));
         sendRequest(DELETE, url, 200);
@@ -264,7 +264,7 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
         String xml = sendRequest(GET, url, 200);
         assertTrue(xml.contains("ifIndex=\"6\""));
         url += "/6";
-        sendPut(url, "ifName=eth0");
+        sendPut(url, "ifName=eth0", 303, "/nodes/1/snmpinterfaces/6");
         xml = sendRequest(GET, url, 200);
         assertTrue(xml.contains("<ifName>eth0</ifName>"));
         sendRequest(DELETE, url, 200);
@@ -278,7 +278,7 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
         String xml = sendRequest(GET, url, 200);
         assertTrue(xml.contains("<name>ICMP</name>"));
         url += "/ICMP";
-        sendPut(url, "status=A");
+        sendPut(url, "status=A", 303, "/nodes/1/ipinterfaces/10.10.10.10/services/ICMP");
         xml = sendRequest(GET, url, 200);
         assertTrue(xml.contains("status=\"A\""));
         sendRequest(DELETE, url, 200);
@@ -292,7 +292,7 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
         String xml = sendRequest(GET, url, 200);
         assertTrue(xml.contains("name=\"Routers\""));
         url += "/Routers";
-        sendPut(url, "description=My Equipment");
+        sendPut(url, "description=My Equipment", 303, "/nodes/1/categories/Routers");
         xml = sendRequest(GET, url, 200);
         assertTrue(xml.contains("<description>My Equipment</description>"));
         sendRequest(DELETE, url, 200);
@@ -337,7 +337,7 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
         "<sysName>TestMachine" + m_nodeCounter + "</sysName>" +
         "<sysObjectId>.1.3.6.1.4.1.8072.3.2.255</sysObjectId>" +
         "</node>";
-        sendPost("/nodes", node);
+        sendPost("/nodes", node, 303, null);
     }
 
     @Override
@@ -347,7 +347,7 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
         "<ipAddress>10.10.10.10</ipAddress>" +
         "<hostName>TestMachine" + m_nodeCounter + "</hostName>" +
         "</ipInterface>";
-        sendPost("/nodes/1/ipinterfaces", ipInterface);
+        sendPost("/nodes/1/ipinterfaces", ipInterface, 303, "/nodes/1/ipinterfaces/10.10.10.10");
     }
     
     
@@ -357,13 +357,13 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
         "<ipAddress>10.10.10.10</ipAddress>" +
         "<hostName>TestMachine" + m_nodeCounter + "</hostName>" +
         "</ipInterface>";
-        sendPost("/nodes/1/ipinterfaces", ipInterface);
+        sendPost("/nodes/1/ipinterfaces", ipInterface, 303, "/nodes/1/ipinterfaces/10.10.10.10");
         
         String ipInterface2 = "<ipInterface isManaged=\"M\" snmpPrimary=\"P\">" +
         "<ipAddress>10.10.10.11</ipAddress>" +
         "<hostName>TestMachine" + (m_nodeCounter + 1) + "</hostName>" +
         "</ipInterface>";
-        sendPost("/nodes/1/ipinterfaces", ipInterface2);
+        sendPost("/nodes/1/ipinterfaces", ipInterface2, 303, "/nodes/1/ipinterfaces/10.10.10.11");
         
     }
 

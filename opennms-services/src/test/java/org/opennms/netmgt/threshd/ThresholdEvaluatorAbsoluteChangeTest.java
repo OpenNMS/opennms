@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,11 +26,15 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-
 package org.opennms.netmgt.threshd;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.util.Date;
 
+import org.junit.Test;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.threshd.Threshold;
 import org.opennms.netmgt.threshd.ThresholdEvaluatorAbsoluteChange.ThresholdEvaluatorStateAbsoluteChange;
@@ -40,6 +44,7 @@ import org.opennms.test.ThrowableAnticipator;
 
 public class ThresholdEvaluatorAbsoluteChangeTest extends AbstractThresholdEvaluatorTestCase {
 
+    @Test
     public void testConstructor() {
         Threshold threshold = new Threshold();
         threshold.setType("absoluteChange");
@@ -52,6 +57,7 @@ public class ThresholdEvaluatorAbsoluteChangeTest extends AbstractThresholdEvalu
        new ThresholdEvaluatorStateAbsoluteChange(wrapper);
     }
     
+    @Test
     public void testConstructorThresholdNull() {
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new IllegalArgumentException("threshold argument cannot be null"));
@@ -64,6 +70,7 @@ public class ThresholdEvaluatorAbsoluteChangeTest extends AbstractThresholdEvalu
         ta.verifyAnticipated();
     }
     
+    @Test
     public void testEvaluateOnce() {
         Threshold threshold = new Threshold();
         threshold.setType("absoluteChange");
@@ -78,6 +85,7 @@ public class ThresholdEvaluatorAbsoluteChangeTest extends AbstractThresholdEvalu
         assertEquals("should not trigger", Status.NO_CHANGE, evaluator.evaluate(10.0));
     }
     
+    @Test
     public void testEvaluateTwiceNoTrigger() {
         Threshold threshold = new Threshold();
         threshold.setType("absoluteChange");
@@ -93,6 +101,7 @@ public class ThresholdEvaluatorAbsoluteChangeTest extends AbstractThresholdEvalu
         assertEquals("should not trigger", Status.NO_CHANGE, evaluator.evaluate(10.0));
     }
     
+    @Test
     public void testEvaluateTwiceTriggerLowBelow() {
         Threshold threshold = new Threshold();
         threshold.setType("absoluteChange");
@@ -108,6 +117,7 @@ public class ThresholdEvaluatorAbsoluteChangeTest extends AbstractThresholdEvalu
         assertEquals("should trigger", Status.TRIGGERED, evaluator.evaluate(8.0));
     }
     
+    @Test
     public void testEvaluateTwiceTriggerLowEqual() {
         Threshold threshold = new Threshold();
         threshold.setType("absoluteChange");
@@ -123,6 +133,7 @@ public class ThresholdEvaluatorAbsoluteChangeTest extends AbstractThresholdEvalu
         assertEquals("should trigger", Status.TRIGGERED, evaluator.evaluate(9.0));
     }
     
+    @Test
     public void testEvaluateTwiceNoTriggerLowAbove() {
         Threshold threshold = new Threshold();
         threshold.setType("absoluteChange");
@@ -138,6 +149,7 @@ public class ThresholdEvaluatorAbsoluteChangeTest extends AbstractThresholdEvalu
         assertEquals("should not trigger", Status.NO_CHANGE, evaluator.evaluate(9.5));
     }
     
+    @Test
     public void testEvaluateTwiceTriggerHighAbove() {
         Threshold threshold = new Threshold();
         threshold.setType("absoluteChange");
@@ -153,6 +165,7 @@ public class ThresholdEvaluatorAbsoluteChangeTest extends AbstractThresholdEvalu
         assertEquals("should trigger", Status.TRIGGERED, evaluator.evaluate(12.0));
     }
     
+    @Test
     public void testEvaluateTwiceTriggerHighEqual() {
         Threshold threshold = new Threshold();
         threshold.setType("absoluteChange");
@@ -168,6 +181,7 @@ public class ThresholdEvaluatorAbsoluteChangeTest extends AbstractThresholdEvalu
         assertEquals("should trigger", Status.TRIGGERED, evaluator.evaluate(11.0));
     }
     
+    @Test
     public void testEvaluateTwiceNoTriggerHighBelow() {
         Threshold threshold = new Threshold();
         threshold.setType("absoluteChange");
@@ -183,6 +197,7 @@ public class ThresholdEvaluatorAbsoluteChangeTest extends AbstractThresholdEvalu
         assertEquals("should not trigger", Status.NO_CHANGE, evaluator.evaluate(10.5));
     }
     
+    @Test
     public void testGetEventForStateNoChange() {
         Threshold threshold = new Threshold();
         threshold.setType("absoluteChange");
@@ -197,6 +212,7 @@ public class ThresholdEvaluatorAbsoluteChangeTest extends AbstractThresholdEvalu
         assertNull("should not have created an event", evaluator.getEventForState(Status.NO_CHANGE, new Date(), 10.0, null));
     }
     
+    @Test
     public void testGetEventForStateTriggered() {
         Threshold threshold = new Threshold();
         threshold.setType("absoluteChange");
@@ -235,6 +251,7 @@ public class ThresholdEvaluatorAbsoluteChangeTest extends AbstractThresholdEvalu
         parmPresentWithValue(event, "changeThreshold", "1.0");
     }
     
+    @Test
     public void testGetEventForStateDefaultUEIS() {
         Threshold threshold = new Threshold();
         threshold.setType("absoluteChange");
@@ -250,6 +267,7 @@ public class ThresholdEvaluatorAbsoluteChangeTest extends AbstractThresholdEvalu
         assertEquals("UEI should be the absoluteChangeThresholdTriggered", EventConstants.ABSOLUTE_CHANGE_THRESHOLD_EVENT_UEI, event.getUei());
     }
 
+    @Test
     public void testGetEventForStateCustomUEIS() {
         String triggeredUEI="uei.opennms.org/custom/absoluteChangeThresholdTriggered";
         Threshold threshold = new Threshold();

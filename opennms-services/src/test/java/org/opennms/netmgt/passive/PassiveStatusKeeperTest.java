@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -42,25 +42,25 @@ import org.exolab.castor.xml.ValidationException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.db.DataSourceFactory;
+import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.config.DataSourceFactory;
-import org.opennms.netmgt.mock.EventAnticipator;
-import org.opennms.netmgt.mock.MockDatabase;
-import org.opennms.netmgt.mock.MockEventIpcManager;
+import org.opennms.netmgt.eventd.mock.EventAnticipator;
+import org.opennms.netmgt.eventd.mock.MockEventIpcManager;
 import org.opennms.netmgt.mock.MockEventUtil;
-import org.opennms.netmgt.mock.MockMonitoredService;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockService;
 import org.opennms.netmgt.mock.OutageAnticipator;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitor;
+import org.opennms.netmgt.poller.mock.MockMonitoredService;
 import org.opennms.netmgt.poller.monitors.PassiveServiceMonitor;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Logmsg;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Value;
-import org.opennms.test.mock.MockLogAppender;
 
 public class PassiveStatusKeeperTest {
     

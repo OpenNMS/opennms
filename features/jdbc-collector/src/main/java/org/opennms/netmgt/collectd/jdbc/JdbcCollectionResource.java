@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -63,7 +63,7 @@ public abstract class JdbcCollectionResource extends AbstractCollectionResource 
     public abstract String getInstance();
     
     public String getParent() {
-        return Integer.toString(m_agent.getNodeId());
+        return m_agent.getStorageDir().toString();
     }
 
     public TimeKeeper getTimeKeeper() {

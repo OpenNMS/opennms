@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -44,6 +44,6 @@ public interface SyncServiceDetector extends ServiceDetector {
      * @param address a {@link java.net.InetAddress} object.
      * @return a boolean.
      */
-    public boolean isServiceDetected(InetAddress address);
+    boolean isServiceDetected(InetAddress address);
 
 }

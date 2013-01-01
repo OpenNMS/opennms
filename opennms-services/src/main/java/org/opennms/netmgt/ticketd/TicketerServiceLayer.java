@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -72,5 +72,10 @@ public interface TicketerServiceLayer {
 	 * @param ticketId a {@link java.lang.String} object.
 	 */
 	public void cancelTicketForAlarm(int alarmId, String ticketId);
-
+    
+	/**
+	 * Implement to reload ticketer when requested.
+	 *
+	 */
+	public void reloadTicketer();
 }

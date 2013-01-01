@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -89,7 +89,7 @@ public class SingleInstanceTracker extends CollectionTracker {
                 } else if (errorStatus == TOO_BIG_ERR) {
                     throw new IllegalArgumentException("Unable to handle tooBigError for oid request "+m_oid.decrement());
                 } else if (errorStatus == GEN_ERR) {
-                    reportGenErr("Received genErr reqeusting oid "+m_oid.decrement()+". Marking column is finished.");
+                    reportGenErr("Received genErr requesting oid "+m_oid.decrement()+". Marking column is finished.");
                     errorOccurred();
                     return true;
                 } else if (errorStatus == NO_SUCH_NAME_ERR) {

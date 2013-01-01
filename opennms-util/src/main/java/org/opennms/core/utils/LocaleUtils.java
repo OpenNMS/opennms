@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -33,7 +33,7 @@ import java.util.Locale;
 /**
  * @author Seth
  */
-abstract public class LocaleUtils {
+public abstract class LocaleUtils {
 
     public static final Locale DEFAULT_LOCALE = new Locale(Locale.ENGLISH.getLanguage(), Locale.US.getCountry());
 

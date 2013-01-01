@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,14 +28,10 @@
 
 package org.opennms.netmgt.collectd;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Collections;
-import java.util.HashMap;
-
 import junit.framework.TestCase;
-
 import org.easymock.EasyMock;
+import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.test.MockPlatformTransactionManager;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.MibObject;
 import org.opennms.netmgt.config.collector.AttributeGroupType;
@@ -43,15 +39,25 @@ import org.opennms.netmgt.config.collector.CollectionResource;
 import org.opennms.netmgt.config.collector.ServiceParameters;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.mock.MockDataCollectionConfig;
-import org.opennms.netmgt.mock.MockPlatformTransactionManager;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.rrd.RrdUtils;
+import org.opennms.netmgt.snmp.SnmpInstId;
+import org.opennms.netmgt.snmp.SnmpObjId;
+import org.opennms.netmgt.snmp.SnmpResult;
+import org.opennms.netmgt.snmp.SnmpUtils;
+import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.test.FileAnticipator;
-import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.transaction.PlatformTransactionManager;
+
+import java.io.File;
+import java.io.IOException;
+import java.math.BigInteger;
+import java.net.InetAddress;
+import java.util.Collections;
+import java.util.HashMap;
 
 /**
  * JUnit TestCase for PersistOperationBuilder.
@@ -129,6 +135,7 @@ public class PersistOperationBuilderTest extends TestCase {
     public void testCommitWithDeclaredAttribute() throws Exception {
         File nodeDir = m_fileAnticipator.expecting(getSnmpRrdDirectory(), m_node.getId().toString());
         m_fileAnticipator.expecting(nodeDir, "rrdName" + RrdUtils.getExtension());
+        m_fileAnticipator.expecting(nodeDir, "rrdName" + ".meta");
         
         RrdRepository repository = createRrdRepository();
 
@@ -150,7 +157,10 @@ public class PersistOperationBuilderTest extends TestCase {
         mibObject.setMaxval(null);
         mibObject.setMinval(null);
         
+        SnmpCollectionSet collectionSet = new SnmpCollectionSet(agent, collection);
+        
         SnmpAttributeType attributeType = new StringAttributeType(resourceType, "some-collection", mibObject, new AttributeGroupType("mibGroup", "ignore"));
+        attributeType.storeResult(collectionSet, null, new SnmpResult(mibObject.getSnmpObjId(), new SnmpInstId(mibObject.getInstance()), SnmpUtils.getValueFactory().getOctetString("hello".getBytes())));
           
         PersistOperationBuilder builder = new PersistOperationBuilder(repository, resource, "rrdName");
         builder.declareAttribute(attributeType);
@@ -161,6 +171,7 @@ public class PersistOperationBuilderTest extends TestCase {
     public void testCommitWithDeclaredAttributeAndValue() throws Exception {
         File nodeDir = m_fileAnticipator.expecting(getSnmpRrdDirectory(), m_node.getId().toString());
         m_fileAnticipator.expecting(nodeDir, "rrdName" + RrdUtils.getExtension());
+        m_fileAnticipator.expecting(nodeDir, "rrdName" + ".meta");
         
         RrdRepository repository = createRrdRepository();
 
@@ -182,7 +193,10 @@ public class PersistOperationBuilderTest extends TestCase {
         mibObject.setMaxval(null);
         mibObject.setMinval(null);
         
+        SnmpCollectionSet collectionSet = new SnmpCollectionSet(agent, collection);
+        
         SnmpAttributeType attributeType = new StringAttributeType(resourceType, "some-collection", mibObject, new AttributeGroupType("mibGroup", "ignore"));
+        attributeType.storeResult(collectionSet, null, new SnmpResult(mibObject.getSnmpObjId(), new SnmpInstId(mibObject.getInstance()), SnmpUtils.getValueFactory().getOctetString("hello".getBytes())));
           
         PersistOperationBuilder builder = new PersistOperationBuilder(repository, resource, "rrdName");
         builder.declareAttribute(attributeType);

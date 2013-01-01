@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,12 +29,13 @@
 package org.opennms.web.alarm;
 
 import java.util.Date;
+import java.util.List;
 
+import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.web.alarm.filter.AlarmCriteria;
 
 /*
- * WebAlarmRepository
- * @author brozow
+ * WebAlarmRepository @author brozow
  */
 /**
  * <p>WebAlarmRepository interface.</p>
@@ -48,7 +49,8 @@ public interface WebAlarmRepository {
     /**
      * <p>countMatchingAlarms</p>
      *
-     * @param criteria a {@link org.opennms.web.alarm.filter.AlarmCriteria} object.
+     * @param criteria a {@link org.opennms.web.alarm.filter.AlarmCriteria}
+     * object.
      * @return a int.
      */
     public abstract int countMatchingAlarms(AlarmCriteria criteria);
@@ -56,7 +58,8 @@ public interface WebAlarmRepository {
     /**
      * <p>countMatchingAlarmsBySeverity</p>
      *
-     * @param criteria a {@link org.opennms.web.alarm.filter.AlarmCriteria} object.
+     * @param criteria a {@link org.opennms.web.alarm.filter.AlarmCriteria}
+     * object.
      * @return an array of int.
      */
     public abstract int[] countMatchingAlarmsBySeverity(AlarmCriteria criteria);
@@ -72,7 +75,8 @@ public interface WebAlarmRepository {
     /**
      * <p>getMatchingAlarms</p>
      *
-     * @param criteria a {@link org.opennms.web.alarm.filter.AlarmCriteria} object.
+     * @param criteria a {@link org.opennms.web.alarm.filter.AlarmCriteria}
+     * object.
      * @return an array of {@link org.opennms.web.alarm.Alarm} objects.
      */
     public abstract Alarm[] getMatchingAlarms(AlarmCriteria criteria);
@@ -82,11 +86,12 @@ public interface WebAlarmRepository {
      *
      * @param user a {@link java.lang.String} object.
      * @param timestamp a java$util$Date object.
-     * @param criteria a {@link org.opennms.web.alarm.filter.AlarmCriteria} object.
+     * @param criteria a {@link org.opennms.web.alarm.filter.AlarmCriteria}
+     * object.
      */
     public abstract void acknowledgeMatchingAlarms(String user,
             Date timestamp, AlarmCriteria criteria);
-    
+
     /**
      * <p>acknowledgeAlarms</p>
      *
@@ -107,7 +112,8 @@ public interface WebAlarmRepository {
     /**
      * <p>unacknowledgeMatchingAlarms</p>
      *
-     * @param criteria a {@link org.opennms.web.alarm.filter.AlarmCriteria} object.
+     * @param criteria a {@link org.opennms.web.alarm.filter.AlarmCriteria}
+     * object.
      * @param user a {@link java.lang.String} object.
      */
     public abstract void unacknowledgeMatchingAlarms(AlarmCriteria criteria, String user);
@@ -126,7 +132,7 @@ public interface WebAlarmRepository {
      * @param user a {@link java.lang.String} object.
      */
     public abstract void unacknowledgeAll(String user);
-    
+
     /**
      * <p>escalateAlarms</p>
      *
@@ -135,7 +141,7 @@ public interface WebAlarmRepository {
      * @param timestamp a java$util$Date object.
      */
     public abstract void escalateAlarms(int[] alarmIds, String user, Date timestamp);
-    
+
     /**
      * <p>clearAlarms</p>
      *
@@ -145,4 +151,21 @@ public interface WebAlarmRepository {
      */
     public abstract void clearAlarms(int[] alamrIds, String user, Date timestamp);
 
+    /**
+     * Updates the StickyMemo of the alarm to persistence
+     * @param alarmId the alarmId of the alarm where the StickyMemo has to be persisted.
+     */
+    public void updateStickyMemo(Integer alarmId, String body, String user);
+
+    /**
+     * Updates the ReductionKeyMemo of the alarm to persistence.
+     * ReductionKeyMemo aka JournalMemo
+     */
+    public void updateReductionKeyMemo(Integer alarmId, String body, String user);
+
+    public void removeStickyMemo(Integer alarmId);
+
+    public void removeReductionKeyMemo(int alarmId);
+    
+    public List<OnmsAcknowledgment> getAcknowledgments(int alarmId);
 }

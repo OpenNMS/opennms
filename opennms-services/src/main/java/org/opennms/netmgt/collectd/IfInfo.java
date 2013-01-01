@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -219,9 +219,8 @@ public final class IfInfo extends SnmpCollectionResource {
     /** {@inheritDoc} */
     public File getResourceDir(RrdRepository repository) {
         File rrdBaseDir = repository.getRrdBaseDir();
-        File nodeDir = new File(rrdBaseDir, String.valueOf(getNodeId()));
-        File ifDir = new File(nodeDir, getLabel());
-        return ifDir;
+        File dir = new File (rrdBaseDir, getCollectionAgent().getStorageDir().toString());
+        return new File(dir, getLabel());
     }
 
     /**
@@ -268,6 +267,6 @@ public final class IfInfo extends SnmpCollectionResource {
     }
 
     public String getParent() {
-        return Integer.toString(getNodeId());
+        return getCollectionAgent().getStorageDir().toString();
     }
 } // end class

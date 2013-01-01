@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -125,7 +125,7 @@ public class UserRestService extends OnmsRestService {
         try {
             log().debug("addUser: Adding user " + user);
             m_userManager.save(user);
-            return Response.ok(user).build();
+            return Response.seeOther(getRedirectUri(m_uriInfo, user.getUsername())).build();
         } catch (final Throwable t) {
             throw getException(Status.BAD_REQUEST, t);
         } finally {
@@ -162,7 +162,7 @@ public class UserRestService extends OnmsRestService {
             } catch (final Throwable t) {
                 throw getException(Status.INTERNAL_SERVER_ERROR, t);
             }
-            return Response.ok(user).build();
+            return Response.seeOther(getRedirectUri(m_uriInfo)).build();
         } finally {
             writeUnlock();
         }

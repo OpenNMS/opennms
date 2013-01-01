@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" 
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd
+       http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
+       ">
+
+  <context:annotation-config />
+ 
+  <bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+    <property name="dataSource" ref="dataSource" />
+    <property name="packagesToScan">
+      <list>
+        <value>org.opennms.netmgt.dao</value>
+        <value>org.opennms.netmgt.model</value>
+      </list>
+    </property>
+    <property name="hibernateProperties">
+      <value>
+        hibernate.dialect=org.hibernate.dialect.HSQLDialect
+      <!-- 
+        hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+      -->
+        hibernate.cache.use_second_level_cache=false
+        hibernate.cache=false
+        hibernate.cache.use_query_cache=false
+        hibernate.jdbc.batch_size=0
+        hibernate.format_sql=true
+        hibernate.hbm2ddl.auto=create
+      </value>
+    </property>
+  </bean>
+
+  <bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+    <property name="sessionFactory" ref="sessionFactory" />
+    <property name="nestedTransactionAllowed" value="true"/>
+  </bean>
+
+  <bean id="transactionTemplate" class="org.springframework.transaction.support.TransactionTemplate">
+    <property name="transactionManager" ref="transactionManager" />
+  </bean>
+  
+  <bean id="distPollerDao" class="org.opennms.netmgt.dao.hibernate.DistPollerDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory"/>
+  </bean>
+  
+  <bean id="nodeDao" class="org.opennms.netmgt.dao.hibernate.NodeDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory"/>
+  </bean>
+  
+  <bean id="eventDao" class="org.opennms.netmgt.dao.hibernate.EventDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory"/>
+  </bean>
+  
+  <bean id="alarmDao" class="org.opennms.netmgt.dao.hibernate.AlarmDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory"/>
+  </bean>
+  
+  <bean id="ipInterfaceDao" class="org.opennms.netmgt.dao.hibernate.IpInterfaceDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory"/>
+  </bean>
+  
+  <bean name="eventProxy" class="org.opennms.netmgt.eventd.mock.MockEventIpcManager">
+    <qualifier value="mock" />
+    <property name="eventIpcManagerProxy" ref="eventIpcManager" />
+  </bean>
+  
+</beans>

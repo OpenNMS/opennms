@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,8 +28,21 @@
 
 package org.opennms.core.utils;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
+
+import javax.swing.filechooser.FileSystemView;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
 /**
  * <p>StringUtils class.</p>
@@ -37,7 +50,7 @@ import java.util.StringTokenizer;
  * @author ranger
  * @version $Id: $
  */
-public class StringUtils {
+public abstract class StringUtils {
 
     /**
      * Convenience method for creating arrays of strings suitable for use as
@@ -126,4 +139,45 @@ public class StringUtils {
         return name.substring(0, length);
     }
 
+    public static boolean isLocalWindowsPath(final String path) {
+    	if (File.separatorChar != '\\') return false;
+    	if (path.length() < 3) return false;
+
+    	final char colon = path.charAt(1);
+    	final char slash = path.charAt(2);
+    	
+    	if (colon != ':') return false;
+    	if (slash != '\\' && slash != '/') return false;
+
+    	final File file = new File(path.substring(0, 3));
+    	System.err.println("file = " + file);
+		if (FileSystemView.getFileSystemView().isFileSystemRoot(file)) return true;
+
+    	return false;
+    }
+
+    /**
+     * Uses the Xalan javax.transform classes to indent an XML string properly
+     * so that it is easier to read.
+     */
+    public static String prettyXml(String xml) throws UnsupportedEncodingException, TransformerException {
+        StringWriter out = new StringWriter();
+
+        TransformerFactory transFactory = TransformerFactory.newInstance();
+        Transformer transformer  = transFactory.newTransformer();
+
+        // Set options on the transformer so that it will indent the XML properly
+        transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+        transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
+        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+        transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+
+        StreamResult result = new StreamResult(out);
+        Source source = new StreamSource(new ByteArrayInputStream(xml.getBytes("UTF-8")));
+
+        // Run the transformer to put the XML into the StringWriter
+        transformer.transform(source, result);
+
+        return out.toString().trim();
+    }
 }

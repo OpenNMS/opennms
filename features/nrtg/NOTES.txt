@@ -1,0 +1,39 @@
+protocolcollector JMS independent
+nrtcollect JMS dependent currently
+web depends on an nrtbroker impl
+jms impl
+local impl
+
+bundles:
+api
+protocolcollector-snmp
+web
+
+nrtcollector
+nrtg-broker (activemq broker)
+
+nrtbroker-local OR nrtbroker-jms + nrtg-broker
+
+
+api
+web
+protocolcollector-snmp
+<!-- local request transport and brokering -->
+nrtbroker-local     -- could be combined since its all local
+nrtcollector-local
+
+
+OR
+
+api
+web
+protocolcollector-snmp
+<!-- remote request transport and brokering -->
+nrtbroker-jms
+nrtcollector-jms
+nrtg-broker
+
+
+
+<-- single node deployment -->
+

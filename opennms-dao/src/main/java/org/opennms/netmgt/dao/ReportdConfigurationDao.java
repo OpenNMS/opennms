@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -30,8 +30,8 @@ package org.opennms.netmgt.dao;
 
 import java.util.List;
 
-import org.opennms.netmgt.config.reportd.ReportdConfiguration;
 import org.opennms.netmgt.config.reportd.Report;
+import org.opennms.netmgt.config.reportd.ReportdConfiguration;
 import org.springframework.dao.DataAccessResourceFailureException;
 
 /**

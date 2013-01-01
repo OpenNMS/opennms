@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -32,7 +32,7 @@ import org.opennms.netmgt.provision.detector.simple.client.MultilineOrientedClie
 import org.opennms.netmgt.provision.detector.simple.response.MultilineOrientedResponse;
 import org.opennms.netmgt.provision.support.BasicDetector;
 import org.opennms.netmgt.provision.support.Client;
-import org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator;
+import org.opennms.netmgt.provision.support.ResponseValidator;
 
 /**
  * <p>Abstract MultilineOrientedDetector class.</p>
@@ -86,9 +86,9 @@ public abstract class MultilineOrientedDetector extends BasicDetector<LineOrient
      * <p>equals</p>
      *
      * @param pattern a {@link java.lang.String} object.
-     * @return a {@link org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator} object.
+     * @return a {@link org.opennms.netmgt.provision.support.ResponseValidator} object.
      */
-    public ResponseValidator<MultilineOrientedResponse> equals(final String pattern) {
+    public static ResponseValidator<MultilineOrientedResponse> equals(final String pattern) {
         return new ResponseValidator<MultilineOrientedResponse>() {
             
             public boolean validate(final MultilineOrientedResponse response) {
@@ -102,9 +102,9 @@ public abstract class MultilineOrientedDetector extends BasicDetector<LineOrient
      * <p>startsWith</p>
      *
      * @param pattern a {@link java.lang.String} object.
-     * @return a {@link org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator} object.
+     * @return a {@link org.opennms.netmgt.provision.support.ResponseValidator} object.
      */
-    public ResponseValidator<MultilineOrientedResponse> startsWith(final String pattern){
+    public static ResponseValidator<MultilineOrientedResponse> startsWith(final String pattern){
         return new ResponseValidator<MultilineOrientedResponse>(){
 
             public boolean validate(final MultilineOrientedResponse response) {

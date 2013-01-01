@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -25,7 +25,6 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-
 
 /*
 * OCA CONTRIBUTION ACKNOWLEDGEMENT - NOT PART OF LEGAL BOILERPLATE
@@ -134,7 +133,7 @@ class XmpCollectionResource extends AbstractCollectionResource
         // return what our super class would return
 
         if (nodeTypeName.equalsIgnoreCase("node")) {
-            return new File(repository.getRrdBaseDir(), Integer.toString(agent.getNodeId()));
+            return new File(repository.getRrdBaseDir(), getParent());
         }
 
         // we are a collection resource for tabular data
@@ -150,7 +149,7 @@ class XmpCollectionResource extends AbstractCollectionResource
         File instDir, rtDir;
 
         File rrdBaseDir = repository.getRrdBaseDir();
-        File nodeDir = new File(rrdBaseDir,String.valueOf(agent.getNodeId()));
+        File nodeDir = new File(rrdBaseDir, getParent());
 
         // if we have a resourceType, put instances under it
         if (resourceType != null) {
@@ -264,7 +263,7 @@ class XmpCollectionResource extends AbstractCollectionResource
     } /* visit */
 
     public String getParent() {
-        return Integer.toString(agent.getNodeId());
+        return agent.getStorageDir().toString();
     }
 
 } /* class XmpCollectionResource */

@@ -29,11 +29,11 @@
   </context-param>
 
   <listener>
-    <listener-class>org.opennms.web.InitializerServletContextListener</listener-class>
+    <listener-class>org.opennms.web.servlet.InitializerServletContextListener</listener-class>
   </listener>
 
   <listener>
-    <listener-class>org.opennms.web.DependencyCheckingContextListener</listener-class>
+    <listener-class>org.opennms.web.servlet.DependencyCheckingContextListener</listener-class>
   </listener>
 
   <listener>

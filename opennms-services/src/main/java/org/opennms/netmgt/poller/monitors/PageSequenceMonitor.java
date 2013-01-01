@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -582,7 +582,7 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
     public static class PageSequenceMonitorParameters {
         public static final String KEY = PageSequenceMonitorParameters.class.getName();
 
-        @SuppressWarnings("unchecked")
+        @SuppressWarnings({ "unchecked" })
         static synchronized PageSequenceMonitorParameters get(Map paramterMap) {
             PageSequenceMonitorParameters parms = (PageSequenceMonitorParameters) paramterMap.get(KEY);
             if (parms == null) {

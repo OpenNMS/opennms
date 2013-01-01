@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -27,6 +27,8 @@
  *******************************************************************************/
 
 package org.opennms.netmgt.dao.support;
+
+import java.io.File;
 
 import junit.framework.Assert;
 
@@ -69,7 +71,7 @@ public class FrameRelayStorageStrategyTest {
         Assert.assertEquals("2.100", strategy.getResourceNameFromIndex(resource));
 
         // Test RelativePath
-        Assert.assertEquals("1/frCircuitIfIndex/Se0_0.100", strategy.getRelativePathForAttribute(parentResource, resourceName, null));
+        Assert.assertEquals("1" + File.separator + "frCircuitIfIndex" + File.separator + "Se0_0.100", strategy.getRelativePathForAttribute(parentResource, resourceName, null));
         
         EasyMock.verify(service);
     }

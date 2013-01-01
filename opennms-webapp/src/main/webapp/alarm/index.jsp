@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -50,7 +50,7 @@
       <h3>Alarm Queries</h3>
       <div class="boxWrapper">
        <%-- <jsp:include page="/includes/alarm-querypanel.jsp" flush="false" />--%>
-        <form action="alarm/detail.jsp" method="get">
+        <form action="alarm/detail.htm" method="get">
           <p align="right">Alarm ID:          
             <input type="TEXT" NAME="id" />
             <input type="submit" value="Get details"/></p>                

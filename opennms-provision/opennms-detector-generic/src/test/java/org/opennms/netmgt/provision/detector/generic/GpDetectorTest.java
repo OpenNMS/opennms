@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -38,8 +38,8 @@ import java.net.UnknownHostException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.BeanUtils;
-import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -62,12 +62,12 @@ public class GpDetectorTest implements InitializingBean {
         MockLogAppender.setupLogging();
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectorWired(){
         assertNotNull(m_detector);
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectorSuccess() throws UnknownHostException{
         m_detector.setScript(System.getProperty("user.dir") + "/src/test/resources/TestBashScript.sh");
         m_detector.setBanner("hello\n");
@@ -75,7 +75,7 @@ public class GpDetectorTest implements InitializingBean {
         assertTrue(m_detector.isServiceDetected(InetAddress.getLocalHost()));
     }
     
-    @Test 
+    @Test(timeout=90000) 
     public void testDetectorWrongBanner() throws UnknownHostException{
         m_detector.setScript(System.getProperty("user.dir") + "/src/test/resources/TestBashScript.sh");
         m_detector.setBanner("world");

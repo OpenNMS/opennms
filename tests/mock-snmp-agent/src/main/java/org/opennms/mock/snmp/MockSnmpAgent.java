@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -25,7 +25,6 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-
 
 package org.opennms.mock.snmp;
 
@@ -205,8 +204,9 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
         try {
             while (!agent.isRunning() && thread.isAlive()) {
                 Thread.sleep(10);
-            } 
+            }
         } catch (final InterruptedException e) {
+            s_log.warn("Agent interrupted while starting: " + e.getLocalizedMessage());
             agent.shutDownAndWait();
             throw e;
         }
@@ -374,11 +374,12 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
         	s_log.error("An error occurred while initializing.", t);
         }
 
+        boolean interrupted = false;
         while (m_running) {
             try {
                 Thread.sleep(10); // fast, Fast, FAST, *FAST*!!!
             } catch (final InterruptedException e) {
-                Thread.currentThread().interrupt();
+                interrupted = true;
                 break;
             }
         }
@@ -386,12 +387,15 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
         for (final TransportMapping transportMapping : transportMappings) {
             try {
                 if (transportMapping != null) transportMapping.close();
-            } catch (final Throwable t) {
+            } catch (final IOException t) {
             	s_log.error("an error occurred while closing the transport mapping", t);
             }
         }
 
         m_stopped = true;
+        
+        s_log.debug("Agent is no longer running.");
+        if (interrupted) Thread.currentThread().interrupt();
     }
 
     /*
@@ -498,13 +502,13 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
                        new OctetString("testNotifyView"),
                        StorageType.nonVolatile);
 
-        vacm.addViewTreeFamily(new OctetString("fullReadView"), new OID("1.3"),
+        vacm.addViewTreeFamily(new OctetString("fullReadView"), new OID("1"),
                                new OctetString(), VacmMIB.vacmViewIncluded,
                                StorageType.nonVolatile);
-        vacm.addViewTreeFamily(new OctetString("fullWriteView"), new OID("1.3"),
+        vacm.addViewTreeFamily(new OctetString("fullWriteView"), new OID("1"),
                                new OctetString(), VacmMIB.vacmViewIncluded,
                                StorageType.nonVolatile);
-        vacm.addViewTreeFamily(new OctetString("fullNotifyView"), new OID("1.3"),
+        vacm.addViewTreeFamily(new OctetString("fullNotifyView"), new OID("1"),
                                new OctetString(), VacmMIB.vacmViewIncluded,
                                StorageType.nonVolatile);
 

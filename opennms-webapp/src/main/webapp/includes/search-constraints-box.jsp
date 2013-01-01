@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -32,8 +32,8 @@
 <%@page language="java"	contentType="text/html"	session="true" %>
 
 <%@page import="org.opennms.web.api.Util"%>
-<%@page import="org.opennms.web.WebSecurityUtils"%>
-<%@page import="org.opennms.web.XssRequestWrapper"%>
+<%@page import="org.opennms.core.utils.WebSecurityUtils"%>
+<%@page import="org.opennms.web.servlet.XssRequestWrapper"%>
 <%@page import="org.opennms.web.filter.Filter"%>
 <%@page import="org.opennms.web.outage.OutageQueryParms"%>
 <%@page import="org.opennms.web.outage.OutageType"%>

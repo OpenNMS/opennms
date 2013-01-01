@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -50,12 +50,12 @@ import org.jrobin.data.DataProcessor;
 import org.jrobin.data.Plottable;
 import org.jrobin.graph.RrdGraph;
 import org.jrobin.graph.RrdGraphDef;
-import org.opennms.core.utils.StringUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdGraphDetails;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.RrdUtils;
+
 
 /**
  * Provides a JRobin based implementation of RrdStrategy. It uses JRobin 1.4 in
@@ -144,13 +144,18 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
     }
 
     /** {@inheritDoc} */
-    public RrdDef createDefinition(final String creator, final String directory, final String rrdName, int step, final List<RrdDataSource> dataSources, final List<String> rraList) throws Exception {
+	public RrdDef createDefinition(final String creator,
+			final String directory, final String rrdName, int step,
+			final List<RrdDataSource> dataSources, final List<String> rraList) throws Exception {
         File f = new File(directory);
         f.mkdirs();
 
         String fileName = directory + File.separator + rrdName + RrdUtils.getExtension();
         
         if (new File(fileName).exists()) {
+			log().debug(
+					"createDefinition: filename [" + fileName
+							+ "] already exists returning null as definition");
             return null;
         }
 
@@ -178,19 +183,28 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
 
     /**
      * Creates the JRobin RrdDb from the def by opening the file and then
-     * closing. TODO: Change the interface here to create the file and return it
-     * opened.
+     * closing.
      *
      * @param rrdDef a {@link org.jrobin.core.RrdDef} object.
      * @throws java.lang.Exception if any.
      */
-    public void createFile(final RrdDef rrdDef) throws Exception {
+    public void createFile(final RrdDef rrdDef,  Map<String, String> attributeMappings) throws Exception {
         if (rrdDef == null) {
+        	log().debug("createRRD: skipping RRD file");
             return;
         }
+        log().info("createRRD: creating RRD file " + rrdDef.getPath());
         
         RrdDb rrd = new RrdDb(rrdDef);
         rrd.close();
+        
+        String filenameWithoutExtension = rrdDef.getPath().replace(RrdUtils.getExtension(), "");
+        int lastIndexOfSeparator = filenameWithoutExtension.lastIndexOf(File.separator);
+        
+		RrdUtils.createMetaDataFile(
+				filenameWithoutExtension.substring(0, lastIndexOfSeparator),
+				filenameWithoutExtension.substring(lastIndexOfSeparator),
+				attributeMappings);
     }
 
     /**
@@ -314,8 +328,15 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
     }
 
     private Color getColor(final String colorValue) {
-        int colorVal = Integer.parseInt(colorValue, 16);
-        return new Color(colorVal);
+        int rVal = Integer.parseInt(colorValue.substring(0, 2), 16);
+        int gVal = Integer.parseInt(colorValue.substring(2, 4), 16);
+        int bVal = Integer.parseInt(colorValue.substring(4, 6), 16);
+        if (colorValue.length() == 6) {
+            return new Color(rVal, gVal, bVal);
+        }
+
+        int aVal = Integer.parseInt(colorValue.substring(6, 8), 16);
+        return new Color(rVal, gVal, bVal, aVal);
     }
 
     // For compatibility with RRDtool defs, the colour value for
@@ -404,6 +425,9 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
         } else {
         	commandArray = inputArray;
         }
+        
+        log().debug("command array = " + Arrays.toString(commandArray));
+
         for (int i = 0; i < commandArray.length; i++) {
             String arg = commandArray[i];
             if (arg.startsWith("--start=")) {
@@ -556,10 +580,25 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
                 String definition = arg.substring("DEF:".length());
                 String[] def = splitDef(definition);
                 String[] ds = def[0].split("=");
-                File dsFile = new File(workDir, ds[1].replace("\\", ""));
-                graphDef.datasource(ds[0], dsFile.getAbsolutePath(), def[1], def[2]);
+                // log().debug("ds = " + Arrays.toString(ds));
+                final String replaced = ds[1].replaceAll("\\\\(.)", "$1");
+                // log().debug("replaced = " + replaced);
+                
+                final File dsFile;
+                File rawPathFile = new File(replaced);
+                if (rawPathFile.isAbsolute()) {
+                	dsFile = rawPathFile;
+                } else {
+                	dsFile = new File(workDir, replaced);
+                }
+                // log().debug("dsFile = " + dsFile + ", ds[1] = " + ds[1]);
+                
+                final String absolutePath = (File.separatorChar == '\\')? dsFile.getAbsolutePath().replace("\\", "\\\\") : dsFile.getAbsolutePath();
+                // log().debug("absolutePath = " + absolutePath);
+                graphDef.datasource(ds[0], absolutePath, def[1], def[2]);
+
                 List<String> defBits = new ArrayList<String>();
-                defBits.add(dsFile.getAbsolutePath());
+                defBits.add(absolutePath);
                 defBits.add(def[1]);
                 defBits.add(def[2]);
                 defs.put(ds[0], defBits);
@@ -659,7 +698,29 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
     }
 
 	private String[] splitDef(final String definition) {
-		return definition.split("(?<!\\\\):");
+		// log().debug("splitDef(" + definition + ")");
+		final String[] def;
+		if (File.separatorChar == '\\') {
+			// log().debug("windows");
+			// Windows, make sure the beginning isn't eg: C:\\foo\\bar
+			if (definition.matches("[^=]*=[a-zA-Z]:.*")) {
+				final String[] tempDef = definition.split("(?<!\\\\):");
+				def = new String[tempDef.length - 1];
+				def[0] = tempDef[0] + ':' + tempDef[1];
+				if (tempDef.length > 2) {
+					for (int i = 2; i < tempDef.length; i++) {
+						def[i-1] = tempDef[i];
+					}
+				}
+			} else {
+				// log().debug("no match");
+				def = definition.split("(?<!\\\\):");
+			}
+		} else {
+			def = definition.split("(?<!\\\\):");
+		}
+		// log().debug("returning: " + Arrays.toString(def));
+		return def;
 	}
 
 	private void processRrdFontArgument(RrdGraphDef graphDef, String argParm) {
@@ -688,22 +749,22 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
     }
 
     /**
-     * @param colorArg Should have the form COLORTAG#RRGGBB
+     * @param colorArg Should have the form COLORTAG#RRGGBB[AA]
      * @see http://www.jrobin.org/support/man/rrdgraph.html
      */
     private void parseGraphColor(final RrdGraphDef graphDef, final String colorArg) throws IllegalArgumentException {
-        // Parse for format COLORTAG#RRGGBB
+        // Parse for format COLORTAG#RRGGBB[AA]
         String[] colorArgParts = tokenize(colorArg, "#", false);
         if (colorArgParts.length != 2) {
-            throw new IllegalArgumentException("--color must be followed by value with format COLORTAG#RRGGBB");
+            throw new IllegalArgumentException("--color must be followed by value with format COLORTAG#RRGGBB[AA]");
         }
 
         String colorTag = colorArgParts[0].toUpperCase();
         String colorHex = colorArgParts[1].toUpperCase();
 
         // validate hex color input is actually an RGB hex color value
-        if (colorHex.length() != 6) {
-            throw new IllegalArgumentException("--color must be followed by value with format COLORTAG#RRGGBB");
+        if (colorHex.length() != 6 && colorHex.length() != 8) {
+            throw new IllegalArgumentException("--color must be followed by value with format COLORTAG#RRGGBB[AA]");
         }
 
         // this might throw NumberFormatException, but whoever wrote
@@ -827,7 +888,7 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
      * @return an array of {@link java.lang.String} objects.
      */
     public static String[] tokenizeWithQuotingAndEscapes(final String line, final String delims, final boolean processQuoted, final String tokens) {
-        ThreadCategory log = ThreadCategory.getInstance(StringUtils.class);
+        ThreadCategory log = ThreadCategory.getInstance(JRobinRrdStrategy.class);
         List<String> tokenList = new LinkedList<String>();
     
         StringBuffer currToken = new StringBuffer();

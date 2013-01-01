@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -47,6 +47,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
+
+import org.apache.commons.lang.builder.CompareToBuilder;
 
 
 /**
@@ -194,13 +196,44 @@ public class RequisitionMonitoredService implements Comparable<RequisitionMonito
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (o instanceof RequisitionMonitoredService) {
-            return this.compareTo((RequisitionMonitoredService)o) == 0;
-        } else return false;
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((m_categories == null) ? 0 : m_categories.hashCode());
+        result = prime * result + ((m_serviceName == null) ? 0 : m_serviceName.hashCode());
+        return result;
     }
 
-    public int compareTo(RequisitionMonitoredService o) {
-        return this.m_serviceName.compareTo(o.getServiceName());
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (!(obj instanceof RequisitionMonitoredService)) return false;
+        final RequisitionMonitoredService other = (RequisitionMonitoredService) obj;
+        if (m_categories == null) {
+            if (other.m_categories != null) return false;
+        } else if (!m_categories.equals(other.m_categories)) {
+            return false;
+        }
+        if (m_serviceName == null) {
+            if (other.m_serviceName != null) return false;
+        } else if (!m_serviceName.equals(other.m_serviceName)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "RequisitionMonitoredService [categories=" + m_categories
+                + ", serviceName=" + m_serviceName + "]";
+    }
+
+    @Override
+    public int compareTo(final RequisitionMonitoredService other) {
+        return new CompareToBuilder()
+            .append(m_serviceName, other.m_serviceName)
+            .append(m_categories, other.m_categories)
+            .toComparison();
     }
 }

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -32,21 +32,22 @@ import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.opennms.netmgt.provision.detector.simple.request.LineOrientedRequest;
 import org.opennms.netmgt.provision.detector.simple.response.LineOrientedResponse;
 import org.opennms.netmgt.provision.detector.simple.support.TcpDetectorHandler;
-import org.opennms.netmgt.provision.support.AsyncClientConversation.AsyncExchange;
-import org.opennms.netmgt.provision.support.AsyncClientConversation.ResponseValidator;
+import org.opennms.netmgt.provision.support.ConversationExchange;
+import org.opennms.netmgt.provision.support.ResponseValidator;
 import org.opennms.netmgt.provision.support.codec.TcpCodecFactory;
+import org.opennms.netmgt.provision.support.codec.TcpLineDecoder;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-@Component
 /**
  * <p>TcpDetector class.</p>
  *
  * @author ranger
  * @version $Id: $
  */
+@Component
 @Scope("prototype")
-public class TcpDetector extends AsyncLineOrientedDetector {
+public class TcpDetector extends AsyncLineOrientedDetectorMinaImpl {
     
     private static final String DEFAULT_SERVICE_NAME = "TCP";
     private static final int DEFAULT_PORT = 23;
@@ -57,9 +58,7 @@ public class TcpDetector extends AsyncLineOrientedDetector {
      * Default constructor
      */
     public TcpDetector() {
-        super(DEFAULT_SERVICE_NAME, DEFAULT_PORT);
-        setDetectorHandler(new TcpDetectorHandler());
-        setProtocolCodecFilter(new ProtocolCodecFilter(new TcpCodecFactory(CHARSET_UTF8)));
+        this(DEFAULT_SERVICE_NAME, DEFAULT_PORT);
     }
     
     /**
@@ -70,6 +69,8 @@ public class TcpDetector extends AsyncLineOrientedDetector {
      */
     public TcpDetector(final String serviceName, final int port) {
         super(serviceName, port);
+        setDetectorHandler(new TcpDetectorHandler());
+        setProtocolCodecFilter(new ProtocolCodecFilter(new TcpCodecFactory(CHARSET_UTF8)));
     }
 
     /**
@@ -82,20 +83,22 @@ public class TcpDetector extends AsyncLineOrientedDetector {
         }else {
             getConversation().addExchange(testBannerlessConnection());
         }
-            
     }
     
-    private static AsyncExchange<LineOrientedRequest, LineOrientedResponse> testBannerlessConnection() {
-        
-        return new AsyncExchange<LineOrientedRequest, LineOrientedResponse>(){
+    private static ConversationExchange<LineOrientedRequest, LineOrientedResponse> testBannerlessConnection() {
 
-            public boolean validateResponse(final LineOrientedResponse response) {
-                return response.equals("TCP Failed to send Banner");
+        return new ConversationExchange<LineOrientedRequest, LineOrientedResponse>() {
+
+            @Override
+            public boolean validate(final LineOrientedResponse response) {
+                return response.equals(TcpLineDecoder.NO_MESSAGES_RECEIVED);
             }
 
+            @Override
             public LineOrientedRequest getRequest() {
                 return null;
-            }};
+            }
+        };
     }
 
     /**
@@ -108,9 +111,11 @@ public class TcpDetector extends AsyncLineOrientedDetector {
         return new ResponseValidator<LineOrientedResponse>() {
 
             public boolean validate(final LineOrientedResponse response) {
-                
-                return response.matches(regex);
+                // Make sure that the response matches the regex and that it is not an instance of the
+                // special token that represents that no banner was received.
+                return response.matches(regex) && !response.equals(TcpLineDecoder.NO_MESSAGES_RECEIVED);
             }
+
         };
     }
 

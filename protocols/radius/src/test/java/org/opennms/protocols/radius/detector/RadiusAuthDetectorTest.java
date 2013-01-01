@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -37,9 +37,9 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,7 +65,7 @@ public class RadiusAuthDetectorTest implements ApplicationContextAware, Initiali
          MockLogAppender.setupLogging();
     }
     
-	@Test
+	@Test(timeout=90000)
 	public void testDetectorFail() throws UnknownHostException{
 	    m_detector.setTimeout(1);
 	    m_detector.setNasID("asdfjlaks;dfjklas;dfj");
@@ -77,7 +77,26 @@ public class RadiusAuthDetectorTest implements ApplicationContextAware, Initiali
 		assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr("192.168.1.100")));
 	}
 
-	@Test
+	@Test(timeout=90000)
+	@Ignore
+	public void testRunDetectorInTempThread() throws InterruptedException {
+		for(int i = 0; i < 1000; i++) {
+			Thread t = new Thread() {
+				public void run() {
+					try {
+						testDetectorFail();
+					} catch (UnknownHostException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			};
+			t.start();
+			t.join();
+		}
+	}
+
+	@Test(timeout=90000)
 	@Ignore("have to have a radius server set up")
 	public void testDetectorPass() throws UnknownHostException{
 	    m_detector.setTimeout(1);
@@ -95,4 +114,5 @@ public class RadiusAuthDetectorTest implements ApplicationContextAware, Initiali
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         
     }
+	
 }

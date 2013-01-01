@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -69,13 +69,13 @@ public class MatchingSnmpInterfacePolicy extends BasePolicy<OnmsSnmpInterface> i
      * @param action a {@link java.lang.String} object.
      */
     public void setAction(String action) {
-        if (action != null && action.toUpperCase().equals("ENABLE_COLLECTION")) {
+        if (action != null && action.equalsIgnoreCase("ENABLE_COLLECTION")) {
             m_action = Action.ENABLE_COLLECTION;
-        } else if (action != null && action.toUpperCase().equals("DISABLE_COLLECTION")) {
+        } else if (action != null && action.equalsIgnoreCase("DISABLE_COLLECTION")) {
             m_action = Action.DISABLE_COLLECTION;
-        } else if (action != null && action.toUpperCase().equals("ENABLE_POLLING")) {
+        } else if (action != null && action.equalsIgnoreCase("ENABLE_POLLING")) {
             m_action = Action.ENABLE_POLLING;
-        } else if (action != null && action.toUpperCase().equals("DISABLE_POLLING")) {
+        } else if (action != null && action.equalsIgnoreCase("DISABLE_POLLING")) {
             m_action = Action.DISABLE_POLLING;
         } else {
             m_action = Action.DO_NOT_PERSIST;

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -92,6 +92,21 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
         m_network = network;
         setConfigResource(new ByteArrayResource("<outages></outages>".getBytes()));
         afterPropertiesSet();
+    }
+
+    /**
+     * <p>parameters</p>
+     *
+     * @param svc a {@link org.opennms.netmgt.config.poller.Service} object.
+     * @return a {@link java.lang.Iterable} object.
+     */
+    public Iterable<Parameter> parameters(final Service svc) {
+        getReadLock().lock();
+        try {
+            return svc.getParameterCollection();
+        } finally {
+            getReadLock().unlock();
+        }
     }
 
     public void addDowntime(long interval, long begin, long end, boolean delete) {

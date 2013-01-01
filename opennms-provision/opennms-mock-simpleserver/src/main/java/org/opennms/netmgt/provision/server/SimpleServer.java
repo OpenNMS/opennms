@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -77,6 +77,7 @@ public class SimpleServer extends SimpleConversationEndPoint {
     private int m_threadSleepLength = 0;
     private Socket m_socket;
     private String m_banner;
+    private int m_bannerDelay = 0;
     protected volatile boolean m_stopped = false;
 
     /**
@@ -95,6 +96,13 @@ public class SimpleServer extends SimpleConversationEndPoint {
      */
     public String getBanner() {
         return m_banner;
+    }
+    
+    /**
+     * Slow down transmission of the banner by a specified number of milliseconds.
+     */
+    public void setBannerDelay(final int delay){
+        m_bannerDelay = delay;
     }
     
     /**
@@ -213,20 +221,37 @@ public class SimpleServer extends SimpleConversationEndPoint {
                         getServerSocket().setSoTimeout(getTimeout());
                     }
                     while (!m_stopped && getServerThread() != null) {
-                        setSocket(getServerSocket().accept());
-                        if (m_threadSleepLength > 0) {
-                            Thread.sleep(m_threadSleepLength);
+                        long startTime = 0;
+                        try {
+                            setSocket(getServerSocket().accept());
+                            if (getTimeout() > 0) {
+                                getSocket().setSoTimeout(getTimeout());
+                            }
+                            out = getSocket().getOutputStream();
+                            startTime = System.currentTimeMillis();
+                            if (m_threadSleepLength > 0) {
+                                Thread.sleep(m_threadSleepLength);
+                            }
+                            if (getBanner() != null) {
+                                sendBanner(out);
+                            }
+                            isr = new InputStreamReader(getSocket().getInputStream());
+                            in = new BufferedReader(isr);
+                            attemptConversation(in, out);
+                        } finally {
+                            // Sleep to make sure we connect at least as long as the timeout that is set
+                            long sleepMore = startTime + getTimeout() - System.currentTimeMillis();
+                            if (sleepMore > 0) {
+                                try { Thread.sleep(sleepMore); } catch (InterruptedException e) {}
+                            }
+                            
+                            IOUtils.closeQuietly(in);
+                            IOUtils.closeQuietly(isr);
+                            IOUtils.closeQuietly(out);
+                            // TODO: Upgrade IOUtils so that we can use this function
+                            // IOUtils.closeQuietly(getSocket());
+                            getSocket().close();
                         }
-                        if (getTimeout() > 0) {
-                            getSocket().setSoTimeout(getTimeout());
-                        }
-                        out = getSocket().getOutputStream();
-                        if (getBanner() != null) {
-                            sendBanner(out);
-                        }
-                        isr = new InputStreamReader(getSocket().getInputStream());
-                        in = new BufferedReader(isr);
-                        attemptConversation(in, out);
                     }
                 } catch (final InterruptedException e) {
                     if (m_stopped) {
@@ -244,9 +269,6 @@ public class SimpleServer extends SimpleConversationEndPoint {
                         LogUtils.infof(this, e, "error during conversation");
                     }
                 } finally {
-                    IOUtils.closeQuietly(in);
-                    IOUtils.closeQuietly(isr);
-                    IOUtils.closeQuietly(out);
                     try {
                         // just in case we're stopping because of an exception
                         stopServer();
@@ -266,7 +288,18 @@ public class SimpleServer extends SimpleConversationEndPoint {
      * @throws java.io.IOException if any.
      */
     protected void sendBanner(final OutputStream out) throws IOException {
-        out.write(String.format("%s\r\n", getBanner()).getBytes());        
+        byte[] bannerBytes = getBanner().getBytes();
+        if (m_bannerDelay > 0) {
+            int delayPerByte = (int)Math.ceil((float)m_bannerDelay / (float)bannerBytes.length);
+            System.out.println("DELAY PER BYTE: " + delayPerByte);
+            for (byte bannerByte : bannerBytes) {
+                out.write(bannerByte);
+                try { Thread.sleep(delayPerByte); } catch (InterruptedException e) {}
+            }
+        } else {
+            out.write(bannerBytes);
+        }
+        out.write("\r\n".getBytes());
     }
     
     /**

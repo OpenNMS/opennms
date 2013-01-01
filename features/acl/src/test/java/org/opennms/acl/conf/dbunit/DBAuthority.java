@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -45,11 +45,11 @@ package org.opennms.acl.conf.dbunit;
 import java.io.FileInputStream;
 
 import org.dbunit.dataset.IDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSet;
+import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 
 public class DBAuthority extends DbUnit {
 
     public IDataSet getDataSet() throws Exception {
-        return new FlatXmlDataSet(new FileInputStream("src/test/resources/org/opennms/acl/conf/dbunit/authority-test.xml"));
+        return new FlatXmlDataSetBuilder().build(new FileInputStream("src/test/resources/org/opennms/acl/conf/dbunit/authority-test.xml"));
     }
 }

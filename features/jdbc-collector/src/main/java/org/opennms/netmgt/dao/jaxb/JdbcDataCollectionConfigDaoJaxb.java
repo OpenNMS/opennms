@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.dao.jaxb;
 
+import org.opennms.core.xml.AbstractJaxbConfigDao;
 import org.opennms.netmgt.config.jdbc.JdbcDataCollection;
 import org.opennms.netmgt.config.jdbc.JdbcDataCollectionConfig;
 import org.opennms.netmgt.dao.JdbcDataCollectionConfigDao;
@@ -59,7 +60,7 @@ public class JdbcDataCollectionConfigDaoJaxb extends AbstractJaxbConfigDao<JdbcD
     }
 
     @Override
-    public JdbcDataCollectionConfig translateConfig(JdbcDataCollectionConfig jaxbConfig) {
+    protected JdbcDataCollectionConfig translateConfig(JdbcDataCollectionConfig jaxbConfig) {
         return jaxbConfig;
     }
 

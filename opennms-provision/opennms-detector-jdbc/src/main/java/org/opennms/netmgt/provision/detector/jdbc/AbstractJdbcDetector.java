@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -34,7 +34,7 @@ import org.opennms.netmgt.provision.detector.jdbc.request.JDBCRequest;
 import org.opennms.netmgt.provision.detector.jdbc.response.JDBCResponse;
 import org.opennms.netmgt.provision.support.BasicDetector;
 import org.opennms.netmgt.provision.support.Client;
-import org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator;
+import org.opennms.netmgt.provision.support.ResponseValidator;
 
 /**
  * <p>Abstract AbstractJdbcDetector class.</p>
@@ -66,12 +66,12 @@ public abstract class AbstractJdbcDetector extends BasicDetector<JDBCRequest, JD
     /**
      * <p>resultSetNotNull</p>
      *
-     * @return a {@link org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator} object.
+     * @return a {@link org.opennms.netmgt.provision.support.ResponseValidator} object.
      */
-    protected ResponseValidator<JDBCResponse> resultSetNotNull(){
+    protected static ResponseValidator<JDBCResponse> resultSetNotNull(){
         return new ResponseValidator<JDBCResponse>() {
 
-            public boolean validate(JDBCResponse response) throws Exception {
+            public boolean validate(JDBCResponse response) {
                 return response.resultSetNotNull();
             }
         };

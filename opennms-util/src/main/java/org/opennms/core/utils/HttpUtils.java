@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -43,10 +43,7 @@ import org.apache.log4j.Logger;
  *
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
  */
-public final class HttpUtils extends Object {
-    /** Private constructor so this class will not be instantiated. */
-    private HttpUtils() {
-    }
+public abstract class HttpUtils extends Object {
 
     /** Default buffer size for reading data. (Default is one kilobyte.) */
     public final static int DEFAULT_POST_BUFFER_SIZE = 1024;

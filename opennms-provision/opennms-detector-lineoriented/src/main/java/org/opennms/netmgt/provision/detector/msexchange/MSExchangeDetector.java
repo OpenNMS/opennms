@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -33,7 +33,7 @@ import org.opennms.netmgt.provision.detector.msexchange.response.MSExchangeRespo
 import org.opennms.netmgt.provision.detector.simple.request.LineOrientedRequest;
 import org.opennms.netmgt.provision.support.BasicDetector;
 import org.opennms.netmgt.provision.support.Client;
-import org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator;
+import org.opennms.netmgt.provision.support.ResponseValidator;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -84,9 +84,9 @@ public class MSExchangeDetector extends BasicDetector<LineOrientedRequest, MSExc
      * <p>find</p>
      *
      * @param regex a {@link java.lang.String} object.
-     * @return a {@link org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator} object.
+     * @return a {@link org.opennms.netmgt.provision.support.ResponseValidator} object.
      */
-    public ResponseValidator<MSExchangeResponse> find(final String regex){
+    protected static ResponseValidator<MSExchangeResponse> find(final String regex){
         return new ResponseValidator<MSExchangeResponse>() {
 
             public boolean validate(final MSExchangeResponse response) {

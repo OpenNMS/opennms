@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -41,21 +41,19 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.config.UserFactory;
+import org.opennms.netmgt.config.UserManager.ContactType;
 import org.opennms.netmgt.config.users.Contact;
 import org.opennms.netmgt.config.users.DutySchedule;
+import org.opennms.netmgt.config.users.Password;
 import org.opennms.netmgt.config.users.User;
-import org.opennms.web.WebSecurityUtils;
 
 /**
  * A servlet that handles saving a user
  *
  * @author <A HREF="mailto:jason@opennms.org">Jason Johns</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- * @author <A HREF="mailto:jason@opennms.org">Jason Johns</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- * @version $Id: $
- * @since 1.8.1
  */
 public class UpdateUserServlet extends HttpServlet {
     /**
@@ -85,7 +83,10 @@ public class UpdateUserServlet extends HttpServlet {
 
             String password = request.getParameter("password");
             if (password != null && !password.trim().equals("")) {
-                newUser.setPassword(UserFactory.getInstance().encryptedPassword(password));
+                final Password pass = new Password();
+                pass.setContent(UserFactory.getInstance().encryptedPassword(password, true));
+                pass.setSalt(true);
+                newUser.setPassword(pass);
             }
             
             String tuiPin = request.getParameter("tuiPin");
@@ -93,65 +94,65 @@ public class UpdateUserServlet extends HttpServlet {
                 newUser.setTuiPin(tuiPin);
             }
 
-            String email = request.getParameter("email");
+            String email = request.getParameter(ContactType.email.toString());
             String pagerEmail = request.getParameter("pemail");
-            String xmppAddress = request.getParameter("xmppAddress");
-            String microblog = request.getParameter("microblog");
+            String xmppAddress = request.getParameter(ContactType.xmppAddress.toString());
+            String microblog = request.getParameter(ContactType.microblog.toString());
             String numericPage = request.getParameter("numericalService");
             String numericPin = request.getParameter("numericalPin");
             String textPage = request.getParameter("textService");
             String textPin = request.getParameter("textPin");
-            String workPhone = request.getParameter("workPhone");
-            String mobilePhone = request.getParameter("mobilePhone");
-            String homePhone = request.getParameter("homePhone");
+            String workPhone = request.getParameter(ContactType.workPhone.toString());
+            String mobilePhone = request.getParameter(ContactType.mobilePhone.toString());
+            String homePhone = request.getParameter(ContactType.homePhone.toString());
 
             newUser.removeAllContact();
 
             Contact tmpContact = new Contact();
             tmpContact.setInfo(email);
-            tmpContact.setType("email");
+            tmpContact.setType(ContactType.email.toString());
             newUser.addContact(tmpContact);
 
             tmpContact = new Contact();
             tmpContact.setInfo(pagerEmail);
-            tmpContact.setType("pagerEmail");
+            tmpContact.setType(ContactType.pagerEmail.toString());
             newUser.addContact(tmpContact);
 
             tmpContact = new Contact();
             tmpContact.setInfo(xmppAddress);
-            tmpContact.setType("xmppAddress");
+            tmpContact.setType(ContactType.xmppAddress.toString());
             newUser.addContact(tmpContact);
             
             tmpContact = new Contact();
             tmpContact.setInfo(microblog);
-            tmpContact.setType("microblog");
+            tmpContact.setType(ContactType.microblog.toString());
             newUser.addContact(tmpContact);
             
             tmpContact = new Contact();
             tmpContact.setInfo(numericPin);
             tmpContact.setServiceProvider(numericPage);
-            tmpContact.setType("numericPage");
+            tmpContact.setType(ContactType.numericPage.toString());
             newUser.addContact(tmpContact);
 
             tmpContact = new Contact();
             tmpContact.setInfo(textPin);
             tmpContact.setServiceProvider(textPage);
-            tmpContact.setType("textPage");
+            tmpContact.setType(ContactType.textPage.toString());
             newUser.addContact(tmpContact);
             
             tmpContact = new Contact();
             tmpContact.setInfo(workPhone);
-            tmpContact.setType("workPhone");
+            tmpContact.setType(ContactType.workPhone.toString());
             newUser.addContact(tmpContact);
             
             tmpContact = new Contact();
             tmpContact.setInfo(mobilePhone);
-            tmpContact.setType("mobilePhone");
+            tmpContact.setType(ContactType.mobilePhone.toString());
             newUser.addContact(tmpContact);
 
             tmpContact = new Contact();
             tmpContact.setInfo(homePhone);
-            tmpContact.setType("homePhone");
+            tmpContact.setType(ContactType.homePhone.toString());
             newUser.addContact(tmpContact);
 
             // build the duty schedule data structure

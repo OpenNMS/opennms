@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -182,7 +182,7 @@ public class Mib2Events {
         }
     }
 
-    private void printEvents(PrintStream out) throws MarshalException, ValidationException, ParserConfigurationException, SAXException, IOException {
+    public void printEvents(PrintStream out) throws MarshalException, ValidationException, ParserConfigurationException, SAXException, IOException {
         if (m_loader == null) {
             throw new IllegalStateException("convert() must be called first");
         }
@@ -545,7 +545,7 @@ public class Mib2Events {
         return new ArrayList<Varbindsdecode>(decode.values());
     }
 
-    private Events convertMibToEvents(Mib mib, String ueibase) {
+    public Events convertMibToEvents(Mib mib, String ueibase) {
         Events events = new Events();
         for (MibSymbol sym : getAllSymbolsFromMib(mib)) {
             if (!(sym instanceof MibValueSymbol)) {

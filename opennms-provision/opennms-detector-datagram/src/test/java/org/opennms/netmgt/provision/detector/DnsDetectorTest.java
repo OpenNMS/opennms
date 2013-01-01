@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -38,13 +38,13 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.core.test.JUnitDNSServerExecutionListener;
-import org.opennms.core.test.annotations.DNSEntry;
-import org.opennms.core.test.annotations.DNSZone;
-import org.opennms.core.test.annotations.JUnitDNSServer;
+import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.test.dns.JUnitDNSServerExecutionListener;
+import org.opennms.core.test.dns.annotations.DNSEntry;
+import org.opennms.core.test.dns.annotations.DNSZone;
+import org.opennms.core.test.dns.annotations.JUnitDNSServer;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.provision.detector.datagram.DnsDetector;
-import org.opennms.test.mock.MockLogAppender;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -82,7 +82,7 @@ public class DnsDetectorTest {
         //m_serverThread.stop();
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectorSuccess() throws UnknownHostException {
         m_detector.setPort(9153);
         m_detector.setLookup("www.google.com");
@@ -91,7 +91,7 @@ public class DnsDetectorTest {
         assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr("localhost")));
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testDetectorFailWrongPort() throws UnknownHostException {
         m_detector.setPort(5000);
         m_detector.setLookup("www.google.com");

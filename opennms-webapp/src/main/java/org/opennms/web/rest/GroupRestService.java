@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -128,7 +128,7 @@ public class GroupRestService extends OnmsRestService {
         try {
             log().debug("addGroup: Adding group " + group);
             m_groupManager.save(group);
-            return Response.ok(group).build();
+            return Response.seeOther(getRedirectUri(m_uriInfo, group.getName())).build();
         } catch (final Throwable t) {
             throw getException(Status.BAD_REQUEST, t);
         } finally {
@@ -166,7 +166,7 @@ public class GroupRestService extends OnmsRestService {
             } catch (final Throwable t) {
                 throw getException(Status.INTERNAL_SERVER_ERROR, t);
             }
-            return Response.ok(group).build();
+            return Response.seeOther(getRedirectUri(m_uriInfo)).build();
         } finally {
             writeUnlock();
         }
@@ -196,7 +196,7 @@ public class GroupRestService extends OnmsRestService {
             final OnmsGroup group = getOnmsGroup(groupName);
             group.addUser(userName);
             m_groupManager.save(group);
-            return Response.ok().build();
+            return Response.seeOther(getRedirectUri(m_uriInfo)).build();
         } catch (final Throwable t) {
             throw getException(Status.INTERNAL_SERVER_ERROR, t);
         } finally {

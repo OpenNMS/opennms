@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -50,6 +50,7 @@ import java.util.Set;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.opennms.core.utils.BeanUtils;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.CategoryDao;
@@ -84,6 +85,7 @@ import org.opennms.netmgt.provision.SnmpInterfacePolicy;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepositoryException;
 import org.opennms.netmgt.provision.persist.OnmsNodeRequisition;
+import org.opennms.netmgt.provision.persist.RequisitionFileUtils;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
@@ -149,9 +151,13 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     private EventForwarder m_eventForwarder;
     
     @Autowired
-    @Qualifier("fused")
+    @Qualifier("fastFused")
     private ForeignSourceRepository m_foreignSourceRepository;
     
+    @Autowired
+    @Qualifier("fastPending")
+    private ForeignSourceRepository m_pendingForeignSourceRepository;
+
     @Autowired
     private PluginRegistry m_pluginRegistry;
     
@@ -164,6 +170,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
+        RequisitionFileUtils.deleteAllSnapshots(m_pendingForeignSourceRepository);
     }
 
     /**
@@ -635,15 +642,16 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     }
     
     /** {@inheritDoc} */
+    @Override
     @Transactional
-    public void setNodeParentAndDependencies(final String foreignSource, final String foreignId, final String parentForeignId, final String parentNodeLabel) {
+    public void setNodeParentAndDependencies(final String foreignSource, final String foreignId, final String parentForeignSource, final String parentForeignId, final String parentNodeLabel) {
 
         final OnmsNode node = findNodebyForeignId(foreignSource, foreignId);
         if (node == null) {
             return;
         }
         
-        final OnmsNode parent = findParent(foreignSource, parentForeignId, parentNodeLabel);
+        final OnmsNode parent = findParent(parentForeignSource, parentForeignId, parentNodeLabel);
 
         setParent(node, parent);
         setPathDependency(node, parent);
@@ -988,7 +996,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
         for(final PluginConfig config : configs) {
             final T plugin = m_pluginRegistry.getPluginInstance(pluginClass, config);
             if (plugin == null) {
-				debugf(this, "Configured plugin is not appropropriate for policy class %s: %s", pluginClass, config);
+                LogUtils.tracef(this, "Configured plugin is not appropropriate for policy class %s: %s", pluginClass, config);
             } else {
                 plugins.add(plugin);
             }
@@ -1101,7 +1109,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                 node.setType("A");
                 node.setLastCapsdPoll(now);
                 
-                final OnmsIpInterface iface = new OnmsIpInterface(ipAddress, node);
+                final OnmsIpInterface iface = new OnmsIpInterface(InetAddressUtils.addr(ipAddress), node);
                 iface.setIsManaged("M");
                 iface.setIpHostName(hostname);
                 iface.setIsSnmpPrimary(PrimaryType.NOT_ELIGIBLE);

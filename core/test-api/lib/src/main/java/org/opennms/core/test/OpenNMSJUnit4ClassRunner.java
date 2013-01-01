@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -46,11 +46,11 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  */
 public class OpenNMSJUnit4ClassRunner extends SpringJUnit4ClassRunner {
     private static final String[] STANDARD_LISTENER_CLASS_NAMES = new String[] {
-        "org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener",
-        "org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener",
+        "org.opennms.test.OpenNMSConfigurationExecutionListener",
+        "org.opennms.core.test.db.TemporaryDatabaseExecutionListener",
         "org.opennms.core.test.snmp.JUnitSnmpAgentExecutionListener",
-        "org.opennms.core.test.JUnitHttpServerExecutionListener",
-        "org.opennms.core.test.JUnitDNSServerExecutionListener",
+        "org.opennms.core.test.http.JUnitHttpServerExecutionListener",
+        "org.opennms.core.test.dns.JUnitDNSServerExecutionListener",
         "org.opennms.netmgt.collectd.JUnitCollectorExecutionListener",
         "org.springframework.test.context.support.DependencyInjectionTestExecutionListener",
         "org.springframework.test.context.support.DirtiesContextTestExecutionListener",

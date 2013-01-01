@@ -1,0 +1,34 @@
+<assembly>
+
+    <id>karaf</id>
+
+    <formats>
+        <format>dir</format>
+    </formats>
+
+    <includeBaseDirectory>false</includeBaseDirectory>    
+
+    <dependencySets>
+        <dependencySet>
+            <unpack>true</unpack>
+            <outputDirectory>WEB-INF/karaf</outputDirectory>
+            <useProjectArtifact>false</useProjectArtifact>
+            <useTransitiveDependencies>false</useTransitiveDependencies>
+            <scope>provided</scope>
+            <includes>
+                <include>org.opennms.container:karaf:tar.gz:${project.version}</include>
+            </includes>
+        </dependencySet>
+        <dependencySet>
+            <unpack>true</unpack>
+            <outputDirectory>/</outputDirectory>
+            <useProjectArtifact>false</useProjectArtifact>
+            <useTransitiveDependencies>false</useTransitiveDependencies>
+            <scope>provided</scope>
+            <includes>
+                <include>org.opennms.container:servlet:war:${project.version}</include>
+            </includes>
+        </dependencySet>
+    </dependencySets>
+
+</assembly>

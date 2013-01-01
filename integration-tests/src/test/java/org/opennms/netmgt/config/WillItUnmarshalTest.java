@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,21 +26,41 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-
 package org.opennms.netmgt.config;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.io.File;
+import java.io.FileFilter;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import javax.xml.bind.JAXBException;
+
 import junit.framework.AssertionFailedError;
+
 import org.exolab.castor.util.LocalConfiguration;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.test.ConfigurationTestUtils;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.reporting.model.basicreport.LegacyLocalReportsDefinition;
 import org.opennms.features.reporting.model.jasperreport.LocalJasperReports;
 import org.opennms.features.reporting.model.remoterepository.RemoteRepositoryConfig;
+import org.opennms.netmgt.config.accesspointmonitor.AccessPointMonitorConfig;
 import org.opennms.netmgt.config.ackd.AckdConfiguration;
 import org.opennms.netmgt.config.actiond.ActiondConfiguration;
 import org.opennms.netmgt.config.ami.AmiConfig;
@@ -102,21 +122,10 @@ import org.opennms.netmgt.config.wmi.WmiDatacollectionConfig;
 import org.opennms.netmgt.config.xmlrpcd.XmlrpcdConfiguration;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.xml.eventconf.Events;
-import org.opennms.test.ConfigurationTestUtils;
-import org.opennms.test.mock.MockLogAppender;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.StringUtils;
 import org.xml.sax.InputSource;
-
-import javax.xml.bind.JAXBException;
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.util.*;
-
-import static org.junit.Assert.*;
 
 /**
  * The name of this class is a tribute to
@@ -171,6 +180,10 @@ public class WillItUnmarshalTest {
         unmarshalAndAnticipateException("eventconf-bad-element.xml", "Invalid content was found starting with element 'bad-element'.");
     }
 
+    @Test
+    public void testAccessPointMonitorConfiguration() throws Exception {
+        unmarshal("access-point-monitor-configuration.xml", AccessPointMonitorConfig.class);
+    }
     @Test
     public void testActiondConfiguration() throws Exception {
         unmarshal("actiond-configuration.xml", ActiondConfiguration.class);
@@ -278,6 +291,10 @@ public class WillItUnmarshalTest {
     @Test
     public void testLinkdConfiguration() throws Exception {
         unmarshal("linkd-configuration.xml", LinkdConfiguration.class);
+    }
+    @Test
+    public void testExampleLinkdConfiguration() throws Exception {
+        unmarshalExample("linkd-configuration.xml", LinkdConfiguration.class);
     }
     @Test
     public void testExampleMailTransportTest() throws Exception {

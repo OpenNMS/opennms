@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -43,8 +43,8 @@ import java.net.InetAddress;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -59,15 +59,15 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.opennms.bootstrap.Bootstrap;
+import org.opennms.core.db.ConnectionFactoryUtil;
+import org.opennms.core.db.install.InstallerDb;
+import org.opennms.core.db.install.SimpleDataSource;
 import org.opennms.core.schema.ExistingResourceAccessor;
 import org.opennms.core.schema.Migration;
 import org.opennms.core.schema.Migrator;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.ProcessExec;
-import org.opennms.netmgt.config.ConnectionFactoryUtil;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
-import org.opennms.netmgt.dao.db.InstallerDb;
-import org.opennms.netmgt.dao.db.SimpleDataSource;
 import org.opennms.netmgt.icmp.Pinger;
 import org.opennms.netmgt.icmp.PingerFactory;
 import org.springframework.context.support.GenericApplicationContext;
@@ -297,7 +297,6 @@ public class Installer {
 		final IPv6Validator v6Validator = new IPv6Validator();
         if (!v6Validator.isPlatformIPv6Ready()) {
         	System.out.println("Your OS does not support IPv6.");
-        	System.exit(1);
         }
 	}
 
@@ -1204,7 +1203,7 @@ public class Installer {
     /**
      * <p>getInstallerDb</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.db.InstallerDb} object.
+     * @return a {@link org.opennms.install.db.InstallerDb} object.
      */
     public InstallerDb getInstallerDb() {
         return m_installerDb;

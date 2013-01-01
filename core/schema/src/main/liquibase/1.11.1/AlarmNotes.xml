@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <!-- Add fields to alarms table to add sticky notes -->
+    <changeSet author="derTak" id="1.10.3-alarm-note-feature">
+        <preConditions onFail="MARK_RAN">
+          <not><changeSetExecuted author="derTak" id="1.10.3-alarm-note-feature" changeLogFile="1.11.1-SNAPSHOT/AlarmNotes.xml" /></not>
+        </preConditions>
+
+        <createSequence sequenceName="memonxtid"/>
+        <createTable tableName="memos">
+            <column name="id" type="integer"/>
+            <column name="created" type="DATETIME"/>
+            <column name="updated" type="DATETIME"/>
+            <column name="author" type="varchar(256)"/>
+            <column name="body" type="text"/>
+            <column name="reductionkey" type="varchar(256)"/>
+            <column name="type" type="varchar(64)"/>
+        </createTable>
+        <addPrimaryKey tableName="memos" columnNames="id"/>
+        <addColumn tableName="alarms">
+            <column name="stickymemo" type="integer"/>
+        </addColumn>        
+        
+        <addForeignKeyConstraint baseTableName="alarms" baseColumnNames="stickymemo" constraintName="fk_stickyMemo" referencedTableName="memos" referencedColumnNames="id" deleteCascade="true"/>
+         
+        <rollback>
+            <dropSequence sequenceName="memonxtid"/>
+            <dropTable tableName="memos"/>
+            <dropForeignKeyConstraint baseTableName="alarms" constraintName="fk_stickyMemo" />
+            <dropColumn tableName="alarms" columnName="stickymemo" />
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

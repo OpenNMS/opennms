@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -58,27 +58,26 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.CompareToBuilder;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.core.xml.ValidateUsing;
 import org.opennms.netmgt.provision.persist.OnmsNodeRequisition;
 import org.opennms.netmgt.provision.persist.RequisitionVisitor;
+import org.springframework.core.io.Resource;
 
 
 /**
  * <p>Requisition class.</p>
  *
  * @author ranger
- * @version $Id: $
  */
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlRootElement(name="model-import")
 @ValidateUsing("model-import.xsd")
 public class Requisition implements Serializable, Comparable<Requisition> {
+	private static final long serialVersionUID = 1629774241824443273L;
 
-    private static final long serialVersionUID = 2099710942679236239L;
-
-    @XmlTransient
+	@XmlTransient
     private Map<String, OnmsNodeRequisition> m_nodeReqs = new LinkedHashMap<String, OnmsNodeRequisition>();
     
     @XmlElement(name="node")
@@ -92,6 +91,10 @@ public class Requisition implements Serializable, Comparable<Requisition> {
     
     @XmlAttribute(name="last-import")
     protected XMLGregorianCalendar m_lastImport;
+
+    @XmlTransient
+    /** the resource that this requisition was created from **/
+    private Resource m_resource;
 
     /**
      * <p>getNode</p>
@@ -200,7 +203,7 @@ public class Requisition implements Serializable, Comparable<Requisition> {
     public void putNode(final RequisitionNode node) {
         updateNodeCacheIfNecessary();
         if (m_nodeReqs.containsKey(node.getForeignId())) {
-        	final RequisitionNode n = m_nodeReqs.get(node.getForeignId()).getNode();
+            final RequisitionNode n = m_nodeReqs.get(node.getForeignId()).getNode();
             m_nodes.remove(n);
         }
         m_nodes.add(node);
@@ -287,26 +290,6 @@ public class Requisition implements Serializable, Comparable<Requisition> {
         }
     }
 
-    // Exists only to be compatible with old (1.6!) imports XSD
-    @XmlAttribute(name="non-ip-interfaces")
-    public boolean getNonIpInterfaces() {
-        return false;
-    }
-
-    public void setNonIpInterfaces(final boolean nii) {
-        LogUtils.warnf(this, "The non-ip-interfaces field was deprecated in 1.6, and removed in 1.8.  Ignored.");
-    }
-
-    // Exists only to be compatible with old (1.6!) imports XSD
-    @XmlAttribute(name="non-ip-snmp-primary")
-    public String getNonIpSnmpPrimary() {
-        return "N";
-    }
-    
-    public void setNonIpSnmpPrimary(final String nisp) {
-        LogUtils.warnf(this, "The non-ip-snmp-primary field was deprecated in 1.6, and removed in 1.8.  Ignored.");
-    }
-
     /* Start non-JAXB methods */
 
     /**
@@ -326,7 +309,19 @@ public class Requisition implements Serializable, Comparable<Requisition> {
         this();
         m_foreignSource = foreignSource;
     }
+
+    /**
+     * Get the resource (if any) this requisition is associated with.
+     * @return a Resource representing the location of the requisition file
+     */
+    public Resource getResource() {
+        return m_resource;
+    }
     
+    public void setResource(final Resource resource) {
+        m_resource = resource;
+    }
+
     private void updateNodeCache() {
         m_nodeReqs.clear();
         if (m_nodes != null) {
@@ -385,15 +380,53 @@ public class Requisition implements Serializable, Comparable<Requisition> {
         return (m_nodes == null) ? 0 : m_nodes.size();
     }
 
-    /** {@inheritDoc} */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((m_dateStamp == null) ? 0 : m_dateStamp.hashCode());
+        result = prime * result + ((m_foreignSource == null) ? 0 : m_foreignSource.hashCode());
+        result = prime * result + ((m_lastImport == null) ? 0 : m_lastImport.hashCode());
+        result = prime * result + ((m_nodes == null) ? 0 : m_nodes.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (!(obj instanceof Requisition))  return false;
+
+        final Requisition other = (Requisition) obj;
+        if (m_dateStamp == null) {
+            if (other.m_dateStamp != null) return false;
+        } else if (!m_dateStamp.equals(other.m_dateStamp)) {
+            return false;
+        }
+        if (m_foreignSource == null) {
+            if (other.m_foreignSource != null) return false;
+        } else if (!m_foreignSource.equals(other.m_foreignSource)) {
+            return false;
+        }
+        if (m_lastImport == null) {
+            if (other.m_lastImport != null) return false;
+        } else if (!m_lastImport.equals(other.m_lastImport)) {
+            return false;
+        }
+        if (m_nodes == null) {
+            if (other.m_nodes != null) return false;
+        } else if (!m_nodes.equals(other.m_nodes)) {
+            return false;
+        }
+        return true;
+    }
+
     @Override
     public String toString() {
-        return new ToStringBuilder(this)
-            .append("foreign-source", getForeignSource())
-            .append("date-stamp", getDateStamp())
-            .append("last-import", getLastImport())
-            .append("nodes", getNodes())
-            .toString();
+        return "Requisition [nodes="
+                + m_nodes + ", dateStamp=" + m_dateStamp
+                + ", foreignSource=" + m_foreignSource + ", lastImport="
+                + m_lastImport + "]";
     }
 
     /**
@@ -404,25 +437,13 @@ public class Requisition implements Serializable, Comparable<Requisition> {
      */
     @Override
     public int compareTo(final Requisition obj) {
-    	return getForeignSource().compareTo(obj.getForeignSource());
+        return new CompareToBuilder()
+            .append(m_foreignSource, obj.m_foreignSource)
+            .append(m_dateStamp, obj.m_dateStamp)
+            .append(m_lastImport, obj.m_lastImport)
+            .toComparison();
     }
     
-    /** {@inheritDoc} */
-    @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof Requisition) {
-        	final Requisition other = (Requisition) obj;
-        	return getForeignSource().equals(other.getForeignSource());
-        }
-        return false;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public int hashCode() {
-    	return getForeignSource().hashCode();
-      }
-
     /**
      * Make sure that no data in the requisition is inconsistent.  Nodes should be unique,
      * interfaces should be unique per node, etc.

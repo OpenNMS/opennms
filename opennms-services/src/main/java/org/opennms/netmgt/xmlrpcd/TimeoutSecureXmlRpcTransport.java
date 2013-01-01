@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.xmlrpc.DefaultXmlRpcTransport;
 import org.opennms.core.utils.LogUtils;
 
@@ -54,7 +55,8 @@ public class TimeoutSecureXmlRpcTransport extends DefaultXmlRpcTransport {
      * @param url the url to POST XML-RPC requests to.
      * @param timeout a int.
      */
-    public TimeoutSecureXmlRpcTransport(final URL url, final int timeout) {
+    @SuppressWarnings("deprecation")
+	public TimeoutSecureXmlRpcTransport(final URL url, final int timeout) {
         super(url, null);
         this.m_timeout = timeout;
     }
@@ -82,10 +84,15 @@ public class TimeoutSecureXmlRpcTransport extends DefaultXmlRpcTransport {
         if (auth != null) {
             con.setRequestProperty("Authorization", "Basic " + auth);
         }
-        final OutputStream out = con.getOutputStream();
-        out.write(request);
-        out.flush();
-        out.close();
+        OutputStream out = null;
+        try {
+        	out = con.getOutputStream();
+            out.write(request);
+            out.flush();
+        } finally {
+        	IOUtils.closeQuietly(out);
+        	out = null;
+        }
         return con.getInputStream();
     }
 

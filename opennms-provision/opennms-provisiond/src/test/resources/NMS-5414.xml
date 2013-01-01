@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<model-import xmlns="http://xmlns.opennms.org/xsd/config/model-import" date-stamp="2006-03-09T00:03:09" foreign-source="matt:">
+	<node node-label="scrubbed" foreign-id="1">
+		<interface ip-addr="10.7.15.240" snmp-primary="P" descr="two forty">
+			<monitored-service service-name="SNMP"/>
+		</interface>
+		<interface ip-addr="10.7.15.241" snmp-primary="S" descr="two forty one">
+			<monitored-service service-name="SNMP"/>
+		</interface>
+	</node>
+</model-import>

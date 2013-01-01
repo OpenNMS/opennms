@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -36,13 +36,12 @@ import java.io.OutputStream;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.provision.DetectFuture;
-import org.opennms.netmgt.provision.detector.simple.AsyncLineOrientedDetector;
+import org.opennms.netmgt.provision.detector.simple.AsyncLineOrientedDetectorMinaImpl;
 import org.opennms.netmgt.provision.server.SimpleServer;
 import org.opennms.netmgt.provision.server.exchange.RequestHandler;
-import org.opennms.test.mock.MockLogAppender;
 
 /**
  * @author Donald Desloge
@@ -91,7 +90,7 @@ public class LineDecoderTest {
         }
     }
     
-    public static class TestDetector extends AsyncLineOrientedDetector{
+    public static class TestDetector extends AsyncLineOrientedDetectorMinaImpl {
 
         public TestDetector() {
             super("POP3", 110, 5000, 1);
@@ -115,6 +114,7 @@ public class LineDecoderTest {
 
         m_server = new TestServer() {
             
+            @Override
             public void onInit() {
                 setBanner("+OK");
                 addResponseHandler(contains("QUIT"), shutdownServer("+OK"));
@@ -136,12 +136,11 @@ public class LineDecoderTest {
     public void testSuccess() throws Exception {
         
         m_detector = createDetector(m_server.getLocalPort());
-        m_detector.setIdleTime(100);
+        m_detector.setIdleTime(1000);
         assertTrue( doCheck( m_detector.isServiceDetected(m_server.getInetAddress())));
     }
     
     
-    @Ignore
     @Test
     public void testFailureWithBogusResponse() throws Exception {
         m_server.setBanner("Oh Henry");
@@ -152,7 +151,6 @@ public class LineDecoderTest {
         
     }
     
-    @Ignore
     @Test
     public void testMonitorFailureWithNoResponse() throws Exception {
         m_server.setBanner(null);
@@ -162,7 +160,6 @@ public class LineDecoderTest {
         
     }
     
-    @Ignore
     @Test
     public void testDetectorFailWrongPort() throws Exception{
         
@@ -171,7 +168,7 @@ public class LineDecoderTest {
         assertFalse( doCheck( m_detector.isServiceDetected( m_server.getInetAddress())));
     }
     
-    private TestDetector createDetector(int port) {
+    private static TestDetector createDetector(int port) {
         TestDetector detector = new TestDetector();
         detector.setServiceName("TEST");
         detector.setTimeout(1000);
@@ -180,7 +177,7 @@ public class LineDecoderTest {
         return detector;
     }
     
-    private boolean  doCheck(DetectFuture future) throws Exception {
+    private static boolean doCheck(DetectFuture future) throws Exception {
         
         future.awaitFor();
         

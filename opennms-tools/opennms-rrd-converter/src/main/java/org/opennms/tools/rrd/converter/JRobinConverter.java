@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -266,7 +266,7 @@ public class JRobinConverter {
         final long endTime = dataSource.getEndTime();
         // 1 year
         final long startTime = endTime - ONE_YEAR_IN_SECONDS;
-        for (long time = startTime; time <= endTime; time += 300) {
+        for (long time = startTime; time <= endTime; time += dataSource.getNativeStep()) {
             final RrdEntry entry = dataSource.getDataAt(time);
             writer.write(entry);
         }

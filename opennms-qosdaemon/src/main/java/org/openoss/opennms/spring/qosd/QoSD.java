@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,7 +31,7 @@ package org.openoss.opennms.spring.qosd;
 import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.dao.AssetRecordDao;
 import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.eventd.EventIpcManager;
+import org.opennms.netmgt.model.events.EventIpcManager;
 import org.opennms.netmgt.xml.event.Event;
 import org.openoss.opennms.spring.dao.OnmsAlarmOssjMapper;
 import org.openoss.opennms.spring.dao.OssDao;
@@ -78,7 +78,7 @@ public interface QoSD {
 	/**
 	 * Used by Spring Application context to pass in EventIpcManager
 	 *
-	 * @param eventIpcManager a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+	 * @param eventIpcManager a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
 	 */
 	public abstract void setEventIpcManager(EventIpcManager eventIpcManager);
 

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -46,6 +46,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -81,6 +82,7 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.EmptyKeyRelaxedTrustProvider;
 import org.opennms.core.utils.EmptyKeyRelaxedTrustSSLContext;
 import org.opennms.core.utils.InetAddressUtils;
@@ -88,7 +90,6 @@ import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.utils.TimeKeeper;
-import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.HttpCollectionConfigFactory;
 import org.opennms.netmgt.config.collector.AttributeDefinition;
 import org.opennms.netmgt.config.collector.AttributeGroup;
@@ -221,6 +222,7 @@ public class HttpCollector implements ServiceCollector {
             m_parameters = parameters;
         }
 
+        @Override
         public int getStatus() {
             return m_status;
         }
@@ -229,6 +231,7 @@ public class HttpCollector implements ServiceCollector {
             collectionResource.storeResults(results);
         }
 
+        @Override
         public void visit(CollectionSetVisitor visitor) {
             visitor.visitCollectionSet(this);
             for (HttpCollectionResource collectionResource : m_collectionResourceList) {
@@ -237,6 +240,7 @@ public class HttpCollector implements ServiceCollector {
             visitor.completeCollectionSet(this);
         }
 
+        @Override
 		public boolean ignorePersist() {
 			return false;
 		}       
@@ -353,10 +357,12 @@ public class HttpCollector implements ServiceCollector {
             m_value = value;
         }
 
+        @Override
         public String getName() {
             return m_alias;
         }
 
+        @Override
         public String getType() {
             return m_type;
         }
@@ -365,6 +371,7 @@ public class HttpCollector implements ServiceCollector {
             return m_value;
         }
 
+        @Override
         public String getNumericValue() {
             Object val = getValue();
             if (val instanceof Number) {
@@ -380,6 +387,7 @@ public class HttpCollector implements ServiceCollector {
             return null;
         }
 
+        @Override
         public String getStringValue() {
             return getValue().toString();
         }
@@ -400,14 +408,17 @@ public class HttpCollector implements ServiceCollector {
             }
             return false;
         }
+        @Override
         public CollectionAttributeType getAttributeType() {
             return m_attribType;
         }
 
+        @Override
         public CollectionResource getResource() {
             return m_resource;
         }
 
+        @Override
         public boolean shouldPersist(ServiceParameters params) {
             return true;
         }
@@ -429,30 +440,43 @@ public class HttpCollector implements ServiceCollector {
             return buffer.toString();
         }
 
+        @Override
+        public String getMetricIdentifier() {
+            return "Not_Supported_Yet_HTTP_"+getAttributeType().getName();
+        }
+
     }
 
-    private List<HttpCollectionAttribute> processResponse(final String responseBodyAsString, final HttpCollectionSet collectionSet, HttpCollectionResource collectionResource) {
+    private List<HttpCollectionAttribute> processResponse(final Locale responseLocale, final String responseBodyAsString, final HttpCollectionSet collectionSet, HttpCollectionResource collectionResource) {
         log().debug("processResponse:");
         log().debug("responseBody = " + responseBodyAsString);
         log().debug("getmatches = " + collectionSet.getUriDef().getUrl().getMatches());
         List<HttpCollectionAttribute> butes = new LinkedList<HttpCollectionAttribute>();
         int flags = 0;
-        if (collectionSet.getUriDef().getUrl().getCanonicalEquivalence())
+        if (collectionSet.getUriDef().getUrl().getCanonicalEquivalence()) {
             flags |= Pattern.CANON_EQ;
-        if (collectionSet.getUriDef().getUrl().getCaseInsensitive())
+        }
+        if (collectionSet.getUriDef().getUrl().getCaseInsensitive()) {
             flags |= Pattern.CASE_INSENSITIVE;
-        if (collectionSet.getUriDef().getUrl().getComments())
+        }
+        if (collectionSet.getUriDef().getUrl().getComments()) {
             flags |= Pattern.COMMENTS;
-        if (collectionSet.getUriDef().getUrl().getDotall())
+        }
+        if (collectionSet.getUriDef().getUrl().getDotall()) {
             flags |= Pattern.DOTALL;
-        if (collectionSet.getUriDef().getUrl().getLiteral())
+        }
+        if (collectionSet.getUriDef().getUrl().getLiteral()) {
             flags |= Pattern.LITERAL;
-        if (collectionSet.getUriDef().getUrl().getMultiline())
+        }
+        if (collectionSet.getUriDef().getUrl().getMultiline()) {
             flags |= Pattern.MULTILINE;
-        if (collectionSet.getUriDef().getUrl().getUnicodeCase())
+        }
+        if (collectionSet.getUriDef().getUrl().getUnicodeCase()) {
             flags |= Pattern.UNICODE_CASE;
-        if (collectionSet.getUriDef().getUrl().getUnixLines())
+        }
+        if (collectionSet.getUriDef().getUrl().getUnixLines()) {
             flags |= Pattern.UNIX_LINES;
+        }
         log().debug("flags = " + flags);
         Pattern p = Pattern.compile(collectionSet.getUriDef().getUrl().getMatches(), flags);
         Matcher m = p.matcher(responseBodyAsString);
@@ -460,36 +484,60 @@ public class HttpCollector implements ServiceCollector {
         final boolean matches = m.matches();
         if (matches) {
             log().debug("processResponse: found matching attributes: "+matches);
-            List<Attrib> attribDefs = collectionSet.getUriDef().getAttributes().getAttribCollection();
-            AttributeGroupType groupType = new AttributeGroupType(collectionSet.getUriDef().getName(),"all");
+            final List<Attrib> attribDefs = collectionSet.getUriDef().getAttributes().getAttribCollection();
+            final AttributeGroupType groupType = new AttributeGroupType(collectionSet.getUriDef().getName(),"all");
 
-            for (Attrib attribDef : attribDefs) {
-                if (! attribDef.getType().matches("^([Oo](ctet|CTET)[Ss](tring|TRING))|([Ss](tring|TRING))$")) {
-                    try {
-                        Number num = NumberFormat.getNumberInstance().parse(m.group(attribDef.getMatchGroup()));
-                        HttpCollectionAttribute bute = 
-                            new HttpCollectionAttribute(
-                                                        collectionResource,
-                                                        new HttpCollectionAttributeType(attribDef, groupType), 
-                                                        attribDef.getAlias(),
-                                                        attribDef.getType(), 
-                                                        num);
-                        log().debug("processResponse: adding found numeric attribute: "+bute);
-                        butes.add(bute);
-                    } catch (IndexOutOfBoundsException e) {
-                        log().error("IndexOutOfBoundsException thrown while trying to find regex group, your regex does not contain the following group index: " + attribDef.getMatchGroup());
-                        log().error("Regex statement: " + collectionSet.getUriDef().getUrl().getMatches());
-                    } catch (ParseException e) {
-                        log().error("attribute "+attribDef.getAlias()+" failed to match a parsable number! Matched \""+m.group(attribDef.getMatchGroup())+"\" instead.");
+            final List<Locale> locales = new ArrayList<Locale>();
+            locales.add(responseLocale);
+            locales.add(Locale.getDefault());
+            if (Locale.getDefault() != Locale.ENGLISH) {
+                locales.add(Locale.ENGLISH);
+            }
+
+            for (final Attrib attribDef : attribDefs) {
+                final String type = attribDef.getType();
+                String value = null;
+                try {
+                    value = m.group(attribDef.getMatchGroup());
+                } catch (final IndexOutOfBoundsException e) {
+                    log().error("IndexOutOfBoundsException thrown while trying to find regex group, your regex does not contain the following group index: " + attribDef.getMatchGroup());
+                    log().error("Regex statement: " + collectionSet.getUriDef().getUrl().getMatches());
+                    continue;
+                }
+
+                if (! type.matches("^([Oo](ctet|CTET)[Ss](tring|TRING))|([Ss](tring|TRING))$")) {
+                    Number num = null;
+                    for (final Locale locale : locales) {
+                        try {
+                            num = NumberFormat.getNumberInstance(locale).parse(value);
+                            break;
+                        } catch (final ParseException e) {
+                            log().error("attribute "+attribDef.getAlias()+" failed to match a parsable number with locale \"" + locale + "\"! Matched \""+value+"\" instead.");
+                        }
                     }
+
+                    if (num == null) {
+                        log().error("processResponse: gave up attempting to parse numeric value, skipping group " + attribDef.getMatchGroup());
+                        continue;
+                    }
+                    
+                    final HttpCollectionAttribute bute = new HttpCollectionAttribute(
+                         collectionResource,
+                         new HttpCollectionAttributeType(attribDef, groupType), 
+                         attribDef.getAlias(),
+                         type, 
+                         num
+                     );
+                     log().debug("processResponse: adding found numeric attribute: "+bute);
+                     butes.add(bute);
                 } else {
                     HttpCollectionAttribute bute =
                         new HttpCollectionAttribute(
                                                     collectionResource,
                                                     new HttpCollectionAttributeType(attribDef, groupType),
                                                     attribDef.getAlias(),
-                                                    attribDef.getType(),
-                                                    m.group(attribDef.getMatchGroup()));
+                                                    type,
+                                                    value);
                     log().debug("processResponse: adding found string attribute: " + bute);
                     butes.add(bute);
                 }
@@ -521,10 +569,10 @@ public class HttpCollector implements ServiceCollector {
         }
     }
 
-    private void persistResponse(final HttpCollectionSet collectionSet, HttpCollectionResource collectionResource, final HttpClient client, final HttpResponse method) throws IOException {
-        String responseString = EntityUtils.toString(method.getEntity());
+    private void persistResponse(final HttpCollectionSet collectionSet, HttpCollectionResource collectionResource, final HttpClient client, final HttpResponse response) throws IOException {
+        String responseString = EntityUtils.toString(response.getEntity());
         if (responseString != null && !"".equals(responseString)) {
-            List<HttpCollectionAttribute> attributes = processResponse(responseString, collectionSet, collectionResource);
+            List<HttpCollectionAttribute> attributes = processResponse(response.getLocale(), responseString, collectionSet, collectionResource);
 
             if (attributes.isEmpty()) {
                 log().warn("doCollection: no attributes defined by the response: " + responseString.trim());
@@ -632,8 +680,9 @@ public class HttpCollector implements ServiceCollector {
 
     private static List<NameValuePair> buildRequestParameters(final HttpCollectionSet collectionSet) {
         List<NameValuePair> retval = new ArrayList<NameValuePair>();
-        if (collectionSet.getUriDef().getUrl().getParameters() == null)
+        if (collectionSet.getUriDef().getUrl().getParameters() == null) {
             return retval;
+        }
         List<Parameter> parameters = collectionSet.getUriDef().getUrl().getParameters().getParameterCollection();
         for (Parameter p : parameters) {
             retval.add(new BasicNameValuePair(p.getKey(), p.getValue()));
@@ -787,48 +836,59 @@ public class HttpCollector implements ServiceCollector {
         }
 
         //A rescan is never needed for the HttpCollector
+        @Override
         public boolean rescanNeeded() {
             return false;
         }
 
+        @Override
         public boolean shouldPersist(ServiceParameters params) {
             return true;
         }
 
+        @Override
         public String getOwnerName() {
             return m_agent.getHostAddress();
         }
 
+        @Override
         public File getResourceDir(RrdRepository repository) {
-            return new File(repository.getRrdBaseDir(), Integer.toString(m_agent.getNodeId()));
+            return new File(repository.getRrdBaseDir(), getParent());
         }
 
+        @Override
         public void visit(CollectionSetVisitor visitor) {
             visitor.visitResource(this);
             m_attribGroup.visit(visitor);
             visitor.completeResource(this);
         }
 
+        @Override
         public int getType() {
             return -1; //Is this right?
         }
 
+        @Override
         public String getResourceTypeName() {
             return "node"; //All node resources for HTTP; nothing of interface or "indexed resource" type
         }
 
+        @Override
         public String getInstance() {
             return null;
         }
 
+        @Override
         public String getLabel() {
             return null;
         }
 
+        @Override
         public String getParent() {
-            return Integer.toString(m_agent.getNodeId());
+            return m_agent.getStorageDir().toString();
         }
 
+        @Override
         public TimeKeeper getTimeKeeper() {
             return null;
         }
@@ -843,10 +903,12 @@ public class HttpCollector implements ServiceCollector {
             m_attribute=attribute;
         }
 
+        @Override
         public AttributeGroupType getGroupType() {
             return m_groupType;
         }
 
+        @Override
         public void storeAttribute(CollectionAttribute attribute, Persister persister) {
             if(m_attribute.getType().equals("string")) {
                 persister.persistStringAttribute(attribute);
@@ -855,10 +917,12 @@ public class HttpCollector implements ServiceCollector {
             }
         }
 
+        @Override
         public String getName() {
             return m_attribute.getAlias();
         }
 
+        @Override
         public String getType() {
             return m_attribute.getType();
         }
@@ -866,6 +930,7 @@ public class HttpCollector implements ServiceCollector {
     }
 
     /** {@inheritDoc} */
+    @Override
     public RrdRepository getRrdRepository(String collectionName) {
         return HttpCollectionConfigFactory.getInstance().getRrdRepository(collectionName);
     }

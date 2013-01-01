@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -46,10 +46,10 @@ import java.util.ListIterator;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.CatFactory;
 import org.opennms.netmgt.config.CategoryFactory;
-import org.opennms.netmgt.config.DataSourceFactory;
+import org.opennms.netmgt.config.categories.CatFactory;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.reporting.availability.AvailabilityConstants;
 import org.opennms.reporting.datablock.Node;

@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -28,9 +28,9 @@
 
 package org.opennms.netmgt.collectd.tca.dao.jaxb;
 
+import org.opennms.core.xml.AbstractJaxbConfigDao;
 import org.opennms.netmgt.collectd.tca.config.TcaDataCollectionConfig;
 import org.opennms.netmgt.collectd.tca.dao.TcaDataCollectionConfigDao;
-import org.opennms.netmgt.dao.AbstractJaxbConfigDao;
 
 /**
  * The Class TcaDataCollectionConfigDaoJaxb.
@@ -58,7 +58,7 @@ public class TcaDataCollectionConfigDaoJaxb  extends AbstractJaxbConfigDao<TcaDa
 	 * @see org.opennms.netmgt.dao.AbstractJaxbConfigDao#translateConfig(java.lang.Object)
 	 */
 	@Override
-	public TcaDataCollectionConfig translateConfig(TcaDataCollectionConfig castorConfig) {
+	protected TcaDataCollectionConfig translateConfig(TcaDataCollectionConfig castorConfig) {
 		return castorConfig;
 	}
 

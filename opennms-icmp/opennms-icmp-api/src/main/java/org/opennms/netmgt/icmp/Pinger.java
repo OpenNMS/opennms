@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -117,6 +117,18 @@ public interface Pinger {
 	 *     echo reply, it will contain a number, otherwise a null value.
 	 */
 	public List<Number> parallelPing(InetAddress host, int count, long timeout, long pingInterval) throws Exception;
+	
+	/**
+	 * Initialize IPv4 in this Pinger implementation.  If unable to do so, implementations should throw an exception.
+	 * @throws Exception
+	 */
+	public void initialize4() throws Exception;
+
+	/**
+	 * Initialize IPv6 in this Pinger implementation.  If unable to do so, implementations should throw an exception.
+	 * @throws Exception
+	 */
+	public void initialize6() throws Exception;
 	
 	/**
 	 * Whether or not IPv4 is initialized and available for this implementation.

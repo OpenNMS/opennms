@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -33,7 +33,7 @@ import org.opennms.netmgt.provision.detector.web.request.WebRequest;
 import org.opennms.netmgt.provision.detector.web.response.WebResponse;
 import org.opennms.netmgt.provision.support.BasicDetector;
 import org.opennms.netmgt.provision.support.Client;
-import org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator;
+import org.opennms.netmgt.provision.support.ResponseValidator;
 
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -106,7 +106,7 @@ public class WebDetector extends BasicDetector<WebRequest, WebResponse> {
         return request;
     }
 
-    private ResponseValidator<WebResponse> getWebValidator() {
+    private static ResponseValidator<WebResponse> getWebValidator() {
         return new ResponseValidator<WebResponse>() {
             @Override
             public boolean validate(final WebResponse pack) {

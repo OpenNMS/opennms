@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -120,8 +120,12 @@ public class Reportd implements SpringServiceDaemon {
             ThreadCategory.setPrefix(NAME);
             LogUtils.debugf(this, "reportd -- running job %s", report.getReportName() );
             String fileName = m_reportService.runReport(report,reportDirectory);
-            LogUtils.debugf(this,"reportd -- delivering report %s", report.getReportName());
-            m_reportDeliveryService.deliverReport(report, fileName);
+            if (report.getRecipientCount() > 0) {
+                LogUtils.debugf(this,"reportd -- delivering report %s to %d recipients", report.getReportName(), report.getRecipientCount());
+                m_reportDeliveryService.deliverReport(report, fileName);
+            } else {
+                LogUtils.infof(this, "Skipped delivery of report %s because it has no recipients", report.getReportName());
+            }
             LogUtils.debugf(this,"reportd -- done running job %s",report.getReportName() );
         } catch (ReportRunException e) {
             createAndSendReportingEvent(EventConstants.REPORT_RUN_FAILED_UEI, report.getReportName(), e.getMessage());

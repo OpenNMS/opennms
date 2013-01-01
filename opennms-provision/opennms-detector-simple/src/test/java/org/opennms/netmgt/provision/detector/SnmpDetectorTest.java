@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -37,12 +37,12 @@ import java.net.UnknownHostException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.detector.snmp.SnmpDetector;
-import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -74,25 +74,25 @@ public class SnmpDetectorTest implements ApplicationContextAware {
         }
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testIsForcedV1ProtocolSupported() throws UnknownHostException {
         m_detector.setVbvalue("\\.1\\.3\\.6\\.1\\.4\\.1.*");
         m_detector.setForceVersion("snmpv1");
         assertTrue(m_detector.isServiceDetected(m_testIpAddress));
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testIsExpectedValue() throws UnknownHostException {
         m_detector.setVbvalue("\\.1\\.3\\.6\\.1\\.4\\.1.*");
         assertTrue("protocol is not supported", m_detector.isServiceDetected(m_testIpAddress));
     }
     
-    @Test
+    @Test(timeout=90000)
     public void testIsExpectedValueNoVbValue() throws UnknownHostException {
         assertTrue("protocol is not supported", m_detector.isServiceDetected(m_testIpAddress));
     }
     
-    @Test
+    @Test(timeout=90000)
      public void testIsProtocolSupportedInetAddress() throws UnknownHostException {
          assertTrue("protocol is not supported", m_detector.isServiceDetected(m_testIpAddress));
          

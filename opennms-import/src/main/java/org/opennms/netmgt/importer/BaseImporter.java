@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -36,7 +36,6 @@ import java.util.Map;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.importer.config.Node;
 import org.opennms.netmgt.dao.AssetRecordDao;
 import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.DistPollerDao;
@@ -44,7 +43,8 @@ import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.MonitoredServiceDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.ServiceTypeDao;
-import org.opennms.netmgt.eventd.EventUtil;
+import org.opennms.netmgt.eventd.datablock.EventUtil;
+import org.opennms.netmgt.importer.config.Node;
 import org.opennms.netmgt.importer.operations.DefaultImportStatistics;
 import org.opennms.netmgt.importer.operations.DeleteOperation;
 import org.opennms.netmgt.importer.operations.ImportOperationFactory;

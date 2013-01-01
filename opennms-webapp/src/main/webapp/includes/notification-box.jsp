@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -37,7 +37,15 @@
   that directs all URLs to be relative to the servlet context.
 --%>
 
-<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.notification.*" %>
+<%@page language="java" contentType="text/html" session="true" import="
+	org.opennms.web.notification.*,
+	org.opennms.netmgt.config.NotifdConfigFactory"
+%>
+
+<%!
+	protected NotificationModel model = new NotificationModel();
+	protected java.text.ChoiceFormat formatter = new java.text.ChoiceFormat( "0#No outstanding notices|1#1 outstanding notice|2#{0} outstanding notices" );
+%>
 
 <%
     //optional parameter: node
@@ -48,12 +56,17 @@
     if( nodeIdString != null ) {
         nodeFilter = "&amp;filter=node%3D" + nodeIdString;
     }
+
+		// @i18n
+		String status = "Unknown";
+		try {
+				NotifdConfigFactory.init();
+				status = NotifdConfigFactory.getInstance().getPrettyStatus();
+		} catch (Throwable e) { 
+			// If factory can't be initialized, status is already 'Unknown'
+		}
 %>
 
-<%!
-    protected NotificationModel model = new NotificationModel();
-    protected java.text.ChoiceFormat formatter = new java.text.ChoiceFormat( "0#No outstanding notices|1#1 outstanding notice|2#{0} outstanding notices" );
-%>
 <h3 class="o-box"><a href="notification/index.jsp">Notification</a></h3>
 <div class="boxWrapper">
 	<ul class="plain o-box">

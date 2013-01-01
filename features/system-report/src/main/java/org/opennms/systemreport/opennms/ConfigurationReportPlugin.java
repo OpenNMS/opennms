@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -65,9 +65,13 @@ public class ConfigurationReportPlugin extends AbstractSystemReportPlugin {
         } else {
             String filename = file.getPath();
             filename = filename.replaceFirst("^" + System.getProperty("opennms.home") + File.separator + "etc" + File.separator + "?", "");
-            if ((!filename.contains(File.separator + "examples" + File.separator)) && file.length() > 0) {
-                map.put(filename, new FileSystemResource(file));
-            }
+
+            // skip examples, .git directories, and empty files
+            if (filename.contains(File.separator + "examples" + File.separator)) { return; }
+            if (filename.contains(File.separator + ".git" + File.separator)) { return; }
+            if (file.length() < 1) { return; }
+
+            map.put(filename, new FileSystemResource(file));
         }
     }
 }

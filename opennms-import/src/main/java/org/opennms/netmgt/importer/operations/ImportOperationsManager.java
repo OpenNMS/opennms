@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -39,9 +39,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.OnmsDao;
-import org.opennms.netmgt.eventd.EventIpcManager;
+import org.opennms.netmgt.model.events.EventIpcManager;
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -242,11 +243,11 @@ public class ImportOperationsManager {
     	m_stats.setDeleteCount(getDeleteCount());
     	m_stats.setInsertCount(getInsertCount());
     	m_stats.setUpdateCount(getUpdateCount());
-    	ExecutorService dbPool = Executors.newFixedThreadPool(m_writeThreads);
+    	ExecutorService pool = Executors.newFixedThreadPool(m_writeThreads, new LogPreservingThreadFactory(getClass().getSimpleName() + ".persistOperations", m_writeThreads, false));
 
-		preprocessOperations(template, dao, new OperationIterator(), dbPool);
+		preprocessOperations(template, dao, new OperationIterator(), pool);
 
-		shutdownAndWaitForCompletion(dbPool, "persister interrupted!");
+		shutdownAndWaitForCompletion(pool, "persister interrupted!");
 
 		m_stats.finishProcessingOps();
     	
@@ -256,7 +257,7 @@ public class ImportOperationsManager {
 		
 		m_stats.beginPreprocessingOps();
 		
-		ExecutorService threadPool = Executors.newFixedThreadPool(m_scanThreads);
+		ExecutorService pool = Executors.newFixedThreadPool(m_scanThreads, new LogPreservingThreadFactory(getClass().getSimpleName() + ".preprocessOperations", m_scanThreads, false));
 		for (Iterator<ImportOperation> it = iterator; it.hasNext();) {
     		final ImportOperation oper = it.next();
     		Runnable r = new Runnable() {
@@ -264,11 +265,11 @@ public class ImportOperationsManager {
     				preprocessOperation(oper, template, dao, dbPool);
     			}
     		};
-    		threadPool.execute(r);
+    		pool.execute(r);
 
     	}
 		
-		shutdownAndWaitForCompletion(threadPool, "preprocessor interrupted!");
+		shutdownAndWaitForCompletion(pool, "preprocessor interrupted!");
 		
 		m_stats.finishPreprocessingOps();
 	}
@@ -372,7 +373,7 @@ public class ImportOperationsManager {
 	/**
 	 * <p>getEventMgr</p>
 	 *
-	 * @return a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+	 * @return a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
 	 */
 	public EventIpcManager getEventMgr() {
 		return m_eventMgr;
@@ -383,7 +384,7 @@ public class ImportOperationsManager {
 	/**
 	 * <p>setEventMgr</p>
 	 *
-	 * @param eventMgr a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+	 * @param eventMgr a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
 	 */
 	public void setEventMgr(EventIpcManager eventMgr) {
 		m_eventMgr = eventMgr;

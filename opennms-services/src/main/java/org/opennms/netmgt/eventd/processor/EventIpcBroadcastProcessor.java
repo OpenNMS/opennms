@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,7 +29,8 @@
 package org.opennms.netmgt.eventd.processor;
 
 import org.opennms.core.utils.LogUtils;
-import org.opennms.netmgt.eventd.EventIpcBroadcaster;
+import org.opennms.netmgt.model.events.EventIpcBroadcaster;
+import org.opennms.netmgt.model.events.EventProcessor;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Header;
 import org.springframework.beans.factory.InitializingBean;
@@ -67,7 +68,7 @@ public class EventIpcBroadcastProcessor implements EventProcessor, InitializingB
     /**
      * <p>getEventIpcBroadcaster</p>
      *
-     * @return a {@link org.opennms.netmgt.eventd.EventIpcBroadcaster} object.
+     * @return a {@link org.opennms.netmgt.model.events.EventIpcBroadcaster} object.
      */
     public EventIpcBroadcaster getEventIpcBroadcaster() {
         return m_eventIpcBroadcaster;
@@ -76,7 +77,7 @@ public class EventIpcBroadcastProcessor implements EventProcessor, InitializingB
     /**
      * <p>setEventIpcBroadcaster</p>
      *
-     * @param eventIpcManager a {@link org.opennms.netmgt.eventd.EventIpcBroadcaster} object.
+     * @param eventIpcManager a {@link org.opennms.netmgt.model.events.EventIpcBroadcaster} object.
      */
     public void setEventIpcBroadcaster(EventIpcBroadcaster eventIpcManager) {
         m_eventIpcBroadcaster = eventIpcManager;

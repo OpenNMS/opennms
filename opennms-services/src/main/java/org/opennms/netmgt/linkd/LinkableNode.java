@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,7 +26,6 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-
 package org.opennms.netmgt.linkd;
 
 import static org.opennms.core.utils.InetAddressUtils.str;
@@ -40,7 +39,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.opennms.netmgt.model.OnmsAtInterface;
 import org.opennms.netmgt.model.OnmsStpInterface;
 import org.opennms.netmgt.model.OnmsVlan;
 import org.springframework.util.Assert;
@@ -58,19 +56,53 @@ public class LinkableNode {
     private final InetAddress m_snmpprimaryaddr;
 	
     private final String m_sysoid;
+    
+    private String m_lldpSysname;
+    
+    private String m_lldpChassisId;
+    
+    private Integer m_lldpChassisIdSubtype;
+    
+    private InetAddress m_ospfRouterId;
+    
+    public InetAddress getOspfRouterId() {
+        return m_ospfRouterId;
+    }
+    public void setOspfRouterId(InetAddress ospfRouterId) {
+        m_ospfRouterId = ospfRouterId;
+    }
+    
+    public void setLldpSysname(String lldpSysname) {
+        m_lldpSysname = lldpSysname;
+    }
+    public void setLldpChassisId(String lldpChassisId) {
+        m_lldpChassisId = lldpChassisId;
+    }
+    public void setLldpChassisIdSubtype(Integer lldpChassisIdSubtype) {
+        m_lldpChassisIdSubtype = lldpChassisIdSubtype;
+    }
+    public String getLldpSysname() {
+        return m_lldpSysname;
+    }
+    public String getLldpChassisId() {
+        return m_lldpChassisId;
+    }
+    public Integer getLldpChassisIdSubtype() {
+        return m_lldpChassisIdSubtype;
+    }
 
     private List<CdpInterface> m_cdpinterfaces = new ArrayList<CdpInterface>();
-	
+
+    private List<LldpRemInterface> m_lldpreminterfaces = new ArrayList<LldpRemInterface>();
+
     private boolean m_hascdpinterfaces = false;
 
     private List<RouterInterface> m_routeinterfaces = new ArrayList<RouterInterface>();
-	
+
+    private List<OspfNbrInterface> m_ospfinterfaces = new ArrayList<OspfNbrInterface>();
+        
     private boolean m_hasrouteinterfaces = false;
-
-    private List<OnmsAtInterface> m_atinterfaces = new ArrayList<OnmsAtInterface>();
 	
-    private boolean m_hasatinterfaces = false;
-
     private boolean m_isBridgeNode = false;
 	
 	/**
@@ -130,6 +162,22 @@ public class LinkableNode {
 		return m_snmpprimaryaddr;
 	}
 
+	    public List<LldpRemInterface> getLldpRemInterfaces() {
+	        return m_lldpreminterfaces;
+	    }
+	    
+	    public void setLldpRemInterfaces(List<LldpRemInterface> lldpreminterfaces) {
+	        m_lldpreminterfaces = lldpreminterfaces;
+	    }
+	    
+	    public List<OspfNbrInterface> getOspfinterfaces() {
+	        return m_ospfinterfaces;
+	    }
+
+	    public void setOspfinterfaces(List<OspfNbrInterface> ospfinterfaces) {
+	        m_ospfinterfaces = ospfinterfaces;
+	    }
+	    
 	/**
 	 * <p>getCdpInterfaces</p>
 	 *
@@ -175,34 +223,6 @@ public class LinkableNode {
 		if (routeinterfaces == null || routeinterfaces.isEmpty()) return;
 		m_hasrouteinterfaces = true;
 		m_routeinterfaces = routeinterfaces;
-	}
-	
-	/**
-	 * <p>hasAtInterfaces</p>
-	 *
-	 * @return Returns the m_hasatinterfaces.
-	 */
-	public boolean hasAtInterfaces() {
-		return m_hasatinterfaces;
-	}
-
-	/**
-	 * <p>getAtInterfaces</p>
-	 *
-	 * @return Returns the m_routeinterfaces.
-	 */
-	public List<OnmsAtInterface> getAtInterfaces() {
-		return m_atinterfaces;
-	}
-	/**
-	 * <p>setAtInterfaces</p>
-	 *
-	 * @param m_atinterfaces a {@link java.util.List} object.
-	 */
-	public void setAtInterfaces(List<OnmsAtInterface> atinterfaces) {
-		if (atinterfaces == null || atinterfaces.isEmpty()) return;
-		m_hasatinterfaces = true;
-		m_atinterfaces = atinterfaces;
 	}
 	
 	/**
@@ -276,9 +296,7 @@ public class LinkableNode {
 
 	public void addBridgeIdentifier(final String bridge, final String vlan) {
 		m_vlanBridgeIdentifiers.put(vlan, bridge);
-		if (m_bridgeIdentifiers.contains(bridge)) return;
-		m_bridgeIdentifiers.add(bridge);
-		m_isBridgeNode = true;
+		addBridgeIdentifier(bridge);
 	}
 
 	public boolean isBridgeIdentifier(final String bridge) {

@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -41,13 +41,13 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="org.opennms.web.WebSecurityUtils,
+	import="org.opennms.core.utils.WebSecurityUtils,
 		org.opennms.web.category.*,
 		org.opennms.web.element.*,
 		org.opennms.netmgt.model.OnmsNode,
 		java.util.*,
         org.springframework.util.Assert,
-        org.opennms.web.MissingParameterException
+        org.opennms.web.servlet.MissingParameterException
 	"
 %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>

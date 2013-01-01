@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -35,7 +35,7 @@ import java.sql.Statement;
 import javax.sql.DataSource;
 
 import org.easymock.EasyMock;
-import org.opennms.netmgt.config.DataSourceFactory;
+import org.opennms.core.db.DataSourceFactory;
 import org.opennms.test.mock.EasyMockUtils;
 
 import junit.framework.TestCase;

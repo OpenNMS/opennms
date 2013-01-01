@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -167,7 +167,7 @@ public class LegacyLocalReportRepository implements ReportRepository {
      */
     @Override
     public String getReportService(String id) {
-        id = id.substring(id.indexOf("_") + 1);
+        id = id.substring(id.indexOf('_') + 1);
         return m_localReportsDao.getReportService(id);
     }
 
@@ -176,7 +176,7 @@ public class LegacyLocalReportRepository implements ReportRepository {
      */
     @Override
     public String getDisplayName(String id) {
-        id = id.substring(id.indexOf("_") + 1);
+        id = id.substring(id.indexOf('_') + 1);
         return m_localReportsDao.getDisplayName(id);
     }
 
@@ -185,7 +185,7 @@ public class LegacyLocalReportRepository implements ReportRepository {
      */
     @Override
     public String getEngine(String id) {
-        id = id.substring(id.indexOf("_") + 1);
+        id = id.substring(id.indexOf('_') + 1);
         return m_localJasperReportsDao.getEngine(id);
     }
 
@@ -194,7 +194,7 @@ public class LegacyLocalReportRepository implements ReportRepository {
      */
     @Override
     public InputStream getTemplateStream(String id) {
-        id = id.substring(id.indexOf("_") + 1);
+        id = id.substring(id.indexOf('_') + 1);
         InputStream result = null;
         try {
             result = m_localJasperReportsDao.getTemplateStream(id);

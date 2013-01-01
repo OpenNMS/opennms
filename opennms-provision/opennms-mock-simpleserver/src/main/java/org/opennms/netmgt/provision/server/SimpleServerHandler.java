@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -78,7 +78,9 @@ public class SimpleServerHandler extends IoHandlerAdapter {
             if(m_conversation.getExpectedCloseResponse() != null) {
                 session.write(m_conversation.getExpectedCloseResponse());
             }
-            session.close(false);
+            if (!session.close(false).await(500)) { 
+                LogUtils.warnf(this, "Conversation did not complete promptly in 500ms");
+            }
             return;
         }
         

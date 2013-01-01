@@ -4,7 +4,136 @@
 
 	<subtitle>About This Release</subtitle>
 
+	<!-- Start 1.11 -->
+
+	<section id="introduction-1.11.3">
+		<title>Release 1.11.3</title>
+
+		<para>
+			Release 1.11.3 is the latest in the unstable series of OpenNMS.
+			It contains what will eventually be a part of the OpenNMS 1.12.x stable
+			releases.
+		</para>
+		<para>
+			The codename for 1.11.3 is <emphasis>Jonathan Coulton</emphasis>
+		</para>
+	</section>
+
+	<section id="introduction-1.11.2">
+		<title>Release 1.11.2</title>
+
+		<para>
+			Release 1.11.2 is the latest in the unstable series of OpenNMS.
+			It contains what will eventually be a part of the OpenNMS 1.12.x stable
+			releases.
+		</para>
+		<para>
+			The codename for 1.11.2 is <emphasis>Damian Hess</emphasis>
+		</para>
+	</section>
+
+	<section id="introduction-1.11.1">
+		<title>Release 1.11.1</title>
+
+		<para>
+			Release 1.11.1 is the latest in the unstable series of OpenNMS.
+			It contains what will eventually be a part of the OpenNMS 1.12.x stable
+			releases.
+		</para>
+		<para>
+			The codename for 1.11.1 is <emphasis>Mike Doughty</emphasis>
+		</para>
+	</section>
+
+	<section id="introduction-1.11.0">
+		<title>Release 1.11.0</title>
+
+		<para>
+			Release 1.11.0 is the first in the latest unstable series of OpenNMS.
+			It contains what will eventually be a part of the OpenNMS 1.12.x stable
+			releases.
+		</para>
+		<para>
+			The codename for 1.11.0 is <emphasis>MCA</emphasis>
+		</para>
+	</section>
+
+
 	<!-- Start 1.10 -->
+
+	<section id="introduction-1.10.7">
+		<title>Release 1.10.7</title>
+
+		<para>
+			Release 1.10.7 is the latest in the stable series of OpenNMS releases.
+			It contains a number of bugfixes and enhancements.
+		</para>
+		<para>
+			The codename for 1.10.7 is <emphasis>Buccina</emphasis>
+		</para>
+	</section>
+
+	<section id="introduction-1.10.6">
+		<title>Release 1.10.6</title>
+
+		<para>
+			Release 1.10.6 is the latest in the stable series of OpenNMS releases.
+			It contains a number of bugfixes and enhancements.
+		</para>
+		<para>
+			The codename for 1.10.6 is <emphasis>Cornamuse</emphasis>
+		</para>
+	</section>
+
+	<section id="introduction-1.10.5">
+		<title>Release 1.10.5</title>
+
+		<para>
+			Release 1.10.5 is the latest in the stable series of OpenNMS releases.
+			It contains a few minor bugfixes and enhancements.
+		</para>
+		<para>
+			The codename for 1.10.5 is <emphasis>Tromboon</emphasis>
+		</para>
+	</section>
+
+	<section id="introduction-1.10.4">
+		<title>Release 1.10.4</title>
+
+		<para>
+			Release 1.10.4 is the latest in the stable series of OpenNMS releases.
+			It contains a few minor bugfixes and enhancements.
+		</para>
+		<para>
+			The codename for 1.10.4 is <emphasis>Archlute</emphasis>
+		</para>
+	</section>
+
+	<section id="introduction-1.10.3">
+		<title>Release 1.10.3</title>
+
+		<para>
+			Release 1.10.3 is the latest in the stable series of OpenNMS releases.
+			It contains a few bugfixes, most notably an important deadlock fix when
+			using provisiond.
+		</para>
+		<para>
+			The codename for 1.10.3 is <emphasis>Fiscorn</emphasis>
+		</para>
+	</section>
+
+	<section id="introduction-1.10.2">
+		<title>Release 1.10.2</title>
+
+		<para>
+			Release 1.10.2 is the latest in the stable series of OpenNMS releases.
+			It contains bugfixes, including a fix for a filehandle leak regression,
+         Windows installer fixes, and some minor enhancements.
+		</para>
+		<para>
+			The codename for 1.10.2 is <emphasis>Charango</emphasis>
+		</para>
+	</section>
 
 	<section id="introduction-1.10.1">
 		<title>Release 1.10.1</title>

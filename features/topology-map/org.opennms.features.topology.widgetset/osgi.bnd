@@ -1,0 +1,10 @@
+#-----------------------------------------------------------------
+# Use this file to add customized Bnd instructions for the bundle
+#-----------------------------------------------------------------
+
+#Bundle-Activator: ${bundle.namespace}.internal.Activator
+
+# Package format version - do not change
+Vaadin-Package-Version: 1
+Vaadin-Widgetsets: org.opennms.features.topology.widgetset.gwt.TopologyWidgetset
+Include-Resource: {maven-resources},target/gwt/

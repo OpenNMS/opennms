@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -100,16 +100,13 @@ public class SnmpConfigRestServiceTest extends AbstractSpringJerseyRestTestCase 
         config.setTimeout(1000);
         config.setCommunity("new");
         
-        putXmlObject(m_jaxbContext, url, 200, config);
-        
+        putXmlObject(m_jaxbContext, url, 303, config, "/snmpConfig/1.1.1.1");
         
         SnmpInfo newConfig = getXmlObject(m_jaxbContext, url, 200, SnmpInfo.class);
         
         assertConfiguration(newConfig, 9161, 1, 1000, "new", "v2c");
         
         dumpConfig();
-        
-        
     }
     
     private void dumpConfig() throws Exception {

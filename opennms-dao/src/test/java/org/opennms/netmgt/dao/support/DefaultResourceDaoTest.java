@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -41,18 +41,20 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import junit.framework.TestCase;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.DataCollectionConfigDao;
 import org.opennms.netmgt.config.datacollection.ResourceType;
-import org.opennms.netmgt.dao.FilterDao;
 import org.opennms.netmgt.dao.LocationMonitorDao;
 import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.filter.FilterDao;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.model.LocationMonitorIpInterface;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -60,7 +62,7 @@ import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.rrd.RrdUtils;
-import org.opennms.test.ConfigurationTestUtils;
+import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
 import org.opennms.test.FileAnticipator;
 import org.opennms.test.ThrowableAnticipator;
 import org.opennms.test.mock.EasyMockUtils;
@@ -106,7 +108,7 @@ public class DefaultResourceDaoTest extends TestCase {
         m_resourceDao.setRrdDirectory(m_fileAnticipator.getTempDir());
         m_resourceDao.setDataCollectionConfigDao(m_dataCollectionConfigDao);
         
-        RrdTestUtils.initialize();
+        RrdUtils.setStrategy(new JRobinRrdStrategy());
         
         expect(m_dataCollectionConfigDao.getConfiguredResourceTypes()).andReturn(new HashMap<String, ResourceType>());
         
@@ -183,6 +185,23 @@ public class DefaultResourceDaoTest extends TestCase {
         assertNotNull("Resource should not be null", resource);
     }
     
+    public void testGetTopLevelResourceNodeSourceExists() throws Exception {
+        OnmsNode node = createNode();
+        expect(m_nodeDao.findByForeignId("source1", "123")).andReturn(node).times(1);
+
+        File responseDir = m_fileAnticipator.tempDir("snmp");
+        File forSrcDir = m_fileAnticipator.tempDir(responseDir, "fs");
+        File sourceDir = m_fileAnticipator.tempDir(forSrcDir, "source1");
+        File idDir = m_fileAnticipator.tempDir(sourceDir, "123");
+        m_fileAnticipator.tempFile(idDir, "foo" + RrdUtils.getExtension());
+
+        m_easyMockUtils.replayAll();
+        OnmsResource resource = m_resourceDao.getTopLevelResource("nodeSource", "source1:123");
+        m_easyMockUtils.verifyAll();
+
+        assertNotNull("Resource should not be null", resource);
+    }
+    
     public void testGetTopLevelResourceNodeDoesNotExist() {
         expect(m_nodeDao.get(2)).andReturn(null);
         ThrowableAnticipator ta = new ThrowableAnticipator();
@@ -242,7 +261,7 @@ public class DefaultResourceDaoTest extends TestCase {
     
     public void testGetTopLevelResourceDomainDoesNotExistInCollectdConfig() {
         ThrowableAnticipator ta = new ThrowableAnticipator();
-        ta.anticipate(new ObjectRetrievalFailureException(OnmsResource.class, "bogus", "Domain not found due to domain RRD directory not existing or not a directory: " + m_fileAnticipator.getTempDir() + "/snmp/bogus", null));
+        ta.anticipate(new ObjectRetrievalFailureException(OnmsResource.class, "bogus", "Domain not found due to domain RRD directory not existing or not a directory: " + m_fileAnticipator.getTempDir() + File.separator + "snmp" + File.separator + "bogus", null));
         
         m_easyMockUtils.replayAll();
         try {
@@ -537,6 +556,37 @@ public class DefaultResourceDaoTest extends TestCase {
         m_easyMockUtils.verifyAll();
         
         assertNotNull("Resource should exist", resource);
+    }
+    
+    public void testFindNodeSourceDirectoriesExist() throws Exception {
+
+        File responseDir = m_fileAnticipator.tempDir("snmp");
+        File forSrcDir = m_fileAnticipator.tempDir(responseDir, "fs");
+        File sourceDir = m_fileAnticipator.tempDir(forSrcDir, "source1");
+        File idDir = m_fileAnticipator.tempDir(sourceDir, "123");
+        m_fileAnticipator.tempFile(idDir, "foo" + RrdUtils.getExtension());
+
+        m_easyMockUtils.replayAll();
+        Set<String> directories = m_resourceDao.findNodeSourceDirectories();
+        m_easyMockUtils.verifyAll();
+
+        assertNotNull("Directories should not be null", directories);
+        assertEquals("Directories set size is 1", 1, directories.size());
+    }
+    
+    public void testFindNodeSourceDirectoriesNoRrdFiles() throws Exception {
+        File responseDir = m_fileAnticipator.tempDir("snmp");
+        File forSrcDir = m_fileAnticipator.tempDir(responseDir, "fs");
+        File sourceDir = m_fileAnticipator.tempDir(forSrcDir, "source1");
+        File idDir = m_fileAnticipator.tempDir(sourceDir, "123");
+        m_fileAnticipator.tempFile(idDir, "foo");
+
+        m_easyMockUtils.replayAll();
+        Set<String> directories = m_resourceDao.findNodeSourceDirectories();
+        m_easyMockUtils.verifyAll();
+
+        assertNotNull("Directories should not be null", directories);
+        assertEquals("Directories set size is 0", 0, directories.size());
     }
 
     public void testGetResourceForNodeNoData() {

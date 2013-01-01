@@ -1,27 +1,24 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <linkd-configuration threads="5" initial_sleep_time="3600000"
-                     snmp_poll_interval="18000000" discovery_link_interval="300000">
+                     snmp_poll_interval="18000000" discovery_link_interval="1800000">
     
 
     <iproutes>
-        <vendor vendor_name="cisco" sysoidRootMask=".1.3.6.1.4.1.9"
-                class-name="org.opennms.netmgt.linkd.snmp.IpCidrRouteTable">
-       		<specific>1.658</specific>
+        <vendor vendor_name="netscreen" sysoidRootMask=".1.3.6.1.4.1.3224"
+                class-name="org.opennms.netmgt.linkd.snmp.IpRouteTable">
+       		<specific>1.51</specific>
+       </vendor>
+       <vendor vendor_name="cisco" sysoidRootMask=".1.3.6.1.4.1.9"
+                class-name="org.opennms.netmgt.linkd.snmp.IpRouteTable">
+       		<specific>1.569</specific>
+       		<specific>5.42</specific>
+       </vendor>
+       <vendor vendor_name="darwin" sysoidRootMask=".1.3.6.1.4.1.8072.3"
+                class-name="org.opennms.netmgt.linkd.snmp.IpRouteTable">
+       		<specific>2.255</specific>
        </vendor>
     </iproutes>    
 
-    <!--
-    
-    Here is a list of sys oids and corresponding classes to get 
-    SNMP vlan info from nodes.  
-    Verify that your switch devices sys oids are in the following lists
-    if you want to get informations on Vlans!
-    Otherwise:
-    Put your own sys oids in the proper vendor tag and specify sys oid
-    using <specific> and <include-range> tags 
-    
-    -->
-    
     <vlans>
 
         <vendor vendor_name="3Com" sysoidRootMask=".1.3.6.1.4.1.43"
@@ -75,6 +72,7 @@
 
         <vendor vendor_name="cisco" sysoidRootMask=".1.3.6.1.4.1.9"
                 class-name="org.opennms.netmgt.linkd.snmp.CiscoVlanTable">
+            <specific>1.122</specific>
             <specific>1.209</specific>
             <specific>1.217</specific>
             <specific>1.218</specific>
@@ -160,51 +158,9 @@
 
     </vlans>
 
-    <!--
-    It's possible in packages to overwrite all properties - (thread and initial_sleep_time) 
-    in the linkd-configuration
-    -->
-    
     <package name="example1">
 		<filter>IPADDR != '0.0.0.0'</filter>
 		<include-range begin="1.1.1.1" end="254.254.254.254"/>
     </package>
     
-    <!-- Use more packages with huge network-->
-
-    <!-- here is a configuration that is valid on ethernet LANs -->
-    <!-- 
-    <package name="LAN" use-ip-route-discovery="false">
-		<filter>IPADDR != '0.0.0.0'</filter>
-		<include-range begin="10.1.1.1" end="10.1.1.254"/>
-    </package>
-	-->
-
-	<!-- here is a configuration valid on WAN where linkd try to get
-	     links using cisco discovery protolol first and then routers ip route tables -->
-	 <!--
-    <package name="WAN" use-bridge-discovery="false">
-		<filter>IPADDR != '0.0.0.0'</filter>
-		<include-range begin="10.1.1.1" end="10.1.1.254"/>
-    </package>
-	-->
-	<!-- here is a configuration in which you have to find links when using cross ethernet cables 
-		among router. Linkd by default finds links on LAN using bridge forwarding table becouse it 
-		guess that the node is linked to a switch port. By the way there are situations in which
-		you can have some routers connected via cross ethernet cables. So this is a way to find that links.
-	-->
-	<!--
-    <package name="LINUX-ETHERNET-ROUTERS" force-ip-route-discovery-on-ethernet="true">
-		<filter>IPADDR != '0.0.0.0'</filter>
-		<include-range begin="10.1.1.1" end="10.1.1.254"/>
-    </package>
-  	-->
-    <!-- do you want that linkd send a new suspect event for each ip address found on devices? -->
-    <!-- 
-    <package name="AUTODISCOVERY" auto-discovery="true">
-		<filter>IPADDR != '0.0.0.0'</filter>
-		<include-range begin="10.1.1.1" end="10.1.1.254"/>
-    </package>
-    
-     -->    
 </linkd-configuration>

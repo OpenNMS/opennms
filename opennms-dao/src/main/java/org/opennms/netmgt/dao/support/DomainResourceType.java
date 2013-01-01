@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -77,12 +77,17 @@ public class DomainResourceType implements OnmsResourceType {
 
     /** {@inheritDoc} */
     public List<OnmsResource> getResourcesForDomain(String domain) {
-        throw new UnsupportedOperationException("method not implemented");
+        return null;
     }
 
     /** {@inheritDoc} */
     public List<OnmsResource> getResourcesForNode(int nodeId) {
-        throw new UnsupportedOperationException("method not implemented");
+        return null;
+    }
+    
+    /** {@inheritDoc} */
+    public List<OnmsResource> getResourcesForNodeSource(String nodeSource, int nodeId) {
+        return null;
     }
 
     /** {@inheritDoc} */
@@ -92,6 +97,11 @@ public class DomainResourceType implements OnmsResourceType {
 
     /** {@inheritDoc} */
     public boolean isResourceTypeOnNode(int nodeId) {
+        return false;
+    }
+    
+    /** {@inheritDoc} */
+    public boolean isResourceTypeOnNodeSource(String nodeSource, int nodeId) {
         return false;
     }
 

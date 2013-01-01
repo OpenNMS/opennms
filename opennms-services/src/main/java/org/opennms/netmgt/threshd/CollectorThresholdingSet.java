@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -51,6 +51,7 @@ public class CollectorThresholdingSet extends ThresholdingSet {
     
     // CollectionSpecification parameters
     boolean storeByIfAlias = false;
+    boolean storeByForeignSource = false;
     
     /**
      * <p>Constructor for CollectorThresholdingSet.</p>
@@ -64,6 +65,12 @@ public class CollectorThresholdingSet extends ThresholdingSet {
         super(nodeId, hostAddress, serviceName, repository);
         String storeByIfAliasString = ParameterMap.getKeyedString(roProps, "storeByIfAlias", null);
         storeByIfAlias = storeByIfAliasString != null && storeByIfAliasString.toLowerCase().equals("true");
+        storeByForeignSource = isStoreByForeignSource();
+        log().debug("storeByForeignSource = " + storeByForeignSource);
+    }
+    
+    public static boolean isStoreByForeignSource() {
+       return Boolean.getBoolean("org.opennms.rrd.storeByForeignSource");
     }
     
     /*

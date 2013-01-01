@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,15 +31,15 @@ package org.opennms.netmgt.provision.detector.simple;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-@Component
 /**
  * <p>MemcachedDetector class.</p>
  *
  * @author agalue
  * @version $Id: $
  */
+@Component
 @Scope("prototype")
-public class MemcachedDetector extends AsyncLineOrientedDetector {
+public class MemcachedDetector extends AsyncLineOrientedDetectorMinaImpl {
 
     private static final String DEFAULT_SERVICE_NAME = "Memcached";
     private static final int DEFAULT_PORT = 11211;

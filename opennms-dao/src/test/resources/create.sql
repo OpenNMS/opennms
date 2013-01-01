@@ -33,6 +33,7 @@
 --#
 
 drop table accessLocks cascade;
+drop table accesspoints cascade;
 drop table category_node cascade;
 drop table categories cascade;
 drop table assets cascade;
@@ -43,6 +44,7 @@ drop table ifServices cascade;
 drop table snmpInterface cascade;
 drop table ipInterface cascade;
 drop table alarms cascade;
+drop table memos cascade;
 drop table node cascade;
 drop table service cascade;
 drop table distPoller cascade;
@@ -81,6 +83,7 @@ drop sequence nodeNxtId;
 drop sequence serviceNxtId;
 drop sequence eventsNxtId;
 drop sequence alarmsNxtId;
+drop sequence memoNxtId;
 drop sequence outageNxtId;
 drop sequence notifyNxtId;
 drop sequence userNotifNxtId;
@@ -148,6 +151,11 @@ create sequence eventsNxtId minvalue 1;
 --#          sequence,   column, table
 --# install: alarmsNxtId alarmId alarms
 create sequence alarmsNxtId minvalue 1;
+
+--# Sequence for the id column in the memos table
+--#          sequence,   column, table
+--# install: memoNxtId id memos
+create sequence memoNxtId minvalue 1;
 
 --# Sequence for the outageID column in the outages table
 --#          sequence,   column,  table
@@ -950,6 +958,18 @@ create table usersNotified (
 
 create index userid_notifyid_idx on usersNotified(userID, notifyID);
 
+--#################################
+--# This table contains memos used by alarms to represent StickyMemos and Journal / ReductionKeyMemos
+create table memos (
+  id integer NOT NULL,
+  created timestamp with time zone,
+  updated timestamp with time zone,
+  author character varying(256),
+  body text,
+  reductionkey character varying(256),
+  type character varying(64),
+  CONSTRAINT memos_pkey PRIMARY KEY (id)
+);
 --########################################################################
 --#
 --# This table contains the following fields:
@@ -985,6 +1005,7 @@ create index userid_notifyid_idx on usersNotified(userID, notifyID);
 --# suppressedTime : time the alarm was suppressed
 --# alarmAckUser : user that acknowledged the alarm
 --# alarmAckTime : time user Ack'd the alarm
+--# stickymemo  : reference to the memo table
 --########################################################################
 
 create table alarms (
@@ -996,7 +1017,7 @@ create table alarms (
 	serviceID               INTEGER,
 	reductionKey            VARCHAR(256),
 	alarmType               INTEGER,
-    counter                 INTEGER NOT NULL,
+        counter                 INTEGER NOT NULL,
 	severity                INTEGER NOT NULL,
 	lastEventID             INTEGER, CONSTRAINT fk_eventIDak2 FOREIGN KEY (lastEventID)  REFERENCES events (eventID) ON DELETE CASCADE,
 	firstEventTime          timestamp with time zone,
@@ -1021,10 +1042,10 @@ create table alarms (
 	x733AlarmType           VARCHAR(31),
 	x733ProbableCause       INTEGER default 0 not null,
 	qosAlarmState           VARCHAR(31),
-    ifIndex                 integer,
-    clearKey				VARCHAR(256),
-    eventParms              text
-	
+        ifIndex                 INTEGER,
+        clearKey                VARCHAR(256),
+        eventParms              text,
+        stickymemo              INTEGER, CONSTRAINT fk_stickyMemo FOREIGN KEY (stickymemo) REFERENCES memos (id) ON DELETE CASCADE
 );
 
 CREATE INDEX alarm_uei_idx ON alarms(eventUei);
@@ -2364,4 +2385,16 @@ insert into qrtz_locks values('STATE_ACCESS');
 insert into qrtz_locks values('MISFIRE_ACCESS');
 
 --# End Quartz persistence tables
+
+create table accesspoints (
+  physaddr varchar(32) NOT NULL UNIQUE,
+  nodeid integer NOT NULL,
+  pollingpackage varchar(256) NOT NULL,
+  status integer,
+  controlleripaddr varchar(40),
+
+  CONSTRAINT pk_physaddr primary key (physaddr)
+);
+
+create index accesspoint_package_idx on accesspoints(pollingpackage);
 

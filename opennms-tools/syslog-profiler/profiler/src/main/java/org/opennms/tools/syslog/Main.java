@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -45,10 +45,10 @@ import org.apache.commons.cli.Options;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.opennms.core.utils.LogUtils;
+import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.config.service.Invoke;
 import org.opennms.netmgt.config.service.Service;
 import org.opennms.netmgt.config.service.types.InvokeAtType;
-import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.opennms.netmgt.vmmgr.Invoker;
 import org.opennms.netmgt.vmmgr.InvokerService;
 

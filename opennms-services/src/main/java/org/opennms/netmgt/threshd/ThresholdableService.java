@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -151,7 +151,7 @@ final class ThresholdableService extends InetNetworkInterface implements Thresho
         m_threshd = threshd;
         m_proxy = EventIpcManagerFactory.getIpcManager();
         m_scheduler = threshd.getScheduler();
-        m_thresholder = threshd.getServiceThresholder(svcName);
+        m_thresholder = Threshd.getServiceThresholder(svcName);
         m_updates = new ThresholderUpdates();
 
         // Initialize last scheduled threshold check and last threshold

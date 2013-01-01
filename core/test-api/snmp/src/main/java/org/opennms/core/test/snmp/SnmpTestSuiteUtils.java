@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -43,7 +43,7 @@ import org.opennms.test.VersionSettingTestSuite;
  * 
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
-public class SnmpTestSuiteUtils {
+public abstract class SnmpTestSuiteUtils {
     private static final String STRATEGY_CLASS_PROPERTY_NAME = "org.opennms.snmp.strategyClass";
 
     private SnmpTestSuiteUtils() {

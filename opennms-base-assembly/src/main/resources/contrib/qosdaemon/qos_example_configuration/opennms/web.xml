@@ -73,7 +73,7 @@
   <filter>
     <description>Adds the refresh HTTP header to a servlet's or JSP's output so it will be automatically reloaded.</description>
     <filter-name>AddRefreshHeader-300</filter-name>
-    <filter-class>org.opennms.web.AddRefreshHeaderFilter</filter-class>
+    <filter-class>org.opennms.web.servlet.AddRefreshHeaderFilter</filter-class>
     <init-param>
       <description>This parameter specifies how often to refresh the page.</description>
       <param-name>seconds</param-name>
@@ -84,7 +84,7 @@
   <filter>
     <description>Adds the refresh HTTP header to a servlet's or JSP's output so it will be automatically reloaded.</description>
     <filter-name>AddRefreshHeader-120</filter-name>
-    <filter-class>org.opennms.web.AddRefreshHeaderFilter</filter-class>
+    <filter-class>org.opennms.web.servlet.AddRefreshHeaderFilter</filter-class>
     <init-param>
       <description>This parameter specifies how often to refresh the page.</description>
       <param-name>seconds</param-name>
@@ -96,7 +96,7 @@
   <filter>
     <description>Adds the refresh HTTP header to a servlet's or JSP's output so it will be automatically reloaded.</description>
     <filter-name>AddRefreshHeader-10</filter-name>
-    <filter-class>org.opennms.web.AddRefreshHeaderFilter</filter-class>
+    <filter-class>org.opennms.web.servlet.AddRefreshHeaderFilter</filter-class>
     <init-param>
       <description>This parameter specifies how often to refresh the page.</description>
       <param-name>seconds</param-name>
@@ -108,7 +108,7 @@
   <filter>
     <description>Stores HTTP request parameters in request attributes for later access</description>
     <filter-name>StoreRequestProperties</filter-name>
-    <filter-class>org.opennms.web.StoreRequestPropertiesFilter</filter-class>
+    <filter-class>org.opennms.web.servlet.StoreRequestPropertiesFilter</filter-class>
     <init-param>
       <description>Into which request attribute the value of HttpServletRequest.getServletPath() is stored</description>
       <param-name>relativeServletPathAttribute</param-name>
@@ -178,7 +178,7 @@
 
   <listener>
     <!-- This listener handles our custom startup/shutdown behavior. -->
-    <listener-class>org.opennms.web.InitializerServletContextListener</listener-class>
+    <listener-class>org.opennms.web.servlet.InitializerServletContextListener</listener-class>
   </listener>
 
   <listener>

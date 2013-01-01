@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -37,8 +37,8 @@
 <%@page import="java.util.List" %>
 
 <%@page import="org.opennms.web.api.Util"%>
-<%@page import="org.opennms.web.WebSecurityUtils" %>
-<%@page import="org.opennms.web.XssRequestWrapper" %>
+<%@page import="org.opennms.core.utils.WebSecurityUtils" %>
+<%@page import="org.opennms.web.servlet.XssRequestWrapper" %>
 <%@page import="org.opennms.web.springframework.security.Authentication" %>
 
 <%@page import="org.opennms.web.controller.alarm.AcknowledgeAlarmController" %>
@@ -359,7 +359,7 @@
           
           <td class="divider bright" valign="middle" rowspan="1">
             
-            <a href="<%= Util.calculateUrlBase(request, "alarm/detail.jsp?id=" + alarms[i].getId()) %>"><%=alarms[i].getId()%></a>
+            <a href="<%= Util.calculateUrlBase(request, "alarm/detail.htm?id=" + alarms[i].getId()) %>"><%=alarms[i].getId()%></a>
           <c:if test="${param.display == 'long'}">
             <% if(alarms[i].getUei() != null) { %>
               <% Filter exactUEIFilter = new ExactUEIFilter(alarms[i].getUei()); %>

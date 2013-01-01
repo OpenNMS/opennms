@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -36,10 +36,12 @@
 		org.opennms.web.category.*,
 		org.opennms.web.api.Util,
 		org.opennms.web.element.NetworkElementFactory,
-		org.opennms.web.MissingParameterException,
+		org.opennms.web.servlet.MissingParameterException,
 		java.util.*,
 		org.opennms.netmgt.xml.rtc.Node,
-		org.opennms.web.XssRequestWrapper,
+		org.opennms.web.servlet.XssRequestWrapper,
+		org.opennms.web.springframework.security.AclUtils,
+		org.opennms.web.springframework.security.AclUtils.NodeAccessChecker,
 		org.springframework.security.core.context.SecurityContextHolder
 		"
 %>
@@ -110,8 +112,7 @@
 %>
 
 
-<%@page import="org.opennms.web.AclUtils"%>
-<%@page import="org.opennms.web.AclUtils.NodeAccessChecker"%><jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Category Service Level Monitoring" />
   <jsp:param name="headTitle" value="<%=category.getName()%>" />
   <jsp:param name="headTitle" value="Category" />

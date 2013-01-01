@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -30,6 +30,7 @@ package org.opennms.netmgt.collectd.tca;
 
 import org.opennms.netmgt.capsd.snmp.NamedSnmpVar;
 import org.opennms.netmgt.capsd.snmp.SnmpStore;
+import org.opennms.netmgt.snmp.SnmpInstId;
 
 /**
  * The Class TcaDataEntry.
@@ -49,12 +50,20 @@ public final class TcaDataEntry extends SnmpStore {
 		new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, TCA_PEER_ADDRESS, ".1.3.6.1.4.1.27091.3.1.6.1.1", 1),
 		new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, TCA_RAW_DATA, ".1.3.6.1.4.1.27091.3.1.6.1.2", 2),
 	};
+	
+	private final SnmpInstId m_instance;
 
 	/**
 	 * Instantiates a new TCA data entry.
 	 */
-	public TcaDataEntry() {
+	public TcaDataEntry(SnmpInstId instance) {
 		super(tca_elemList);
+		m_instance = instance;
+	}
+	
+	
+	public SnmpInstId getInstance() {
+		return m_instance;
 	}
 
 	/**

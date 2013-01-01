@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -129,7 +129,8 @@ public class OnmsMapRestService extends OnmsRestService {
         try {
             LogUtils.debugf(this, "addMap: Adding map %s", map);
             m_mapDao.save(map);
-            return Response.ok(map).build();
+            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass()).path(this.getClass(), "getMap").build(map.getId())).build();
+            // return Response.ok(map).build();
         } finally {
             writeUnlock();
         }
@@ -179,14 +180,15 @@ public class OnmsMapRestService extends OnmsRestService {
             for(final String key : params.keySet()) {
                 if (wrapper.isWritableProperty(key)) {
                     final String stringValue = params.getFirst(key);
-    				final Object value = wrapper.convertIfNecessary(stringValue, (Class<?>)wrapper.getPropertyType(key));
+                    final Object value = wrapper.convertIfNecessary(stringValue, (Class<?>)wrapper.getPropertyType(key));
                     wrapper.setPropertyValue(key, value);
                 }
             }
     
             LogUtils.debugf(this, "updateMap: map %s updated", map);
             m_mapDao.saveOrUpdate(map);
-            return Response.ok(map).build();
+            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass()).path(this.getClass(), "getMap").build(mapId)).build();
+            // return Response.ok(map).build();
         } finally {
             writeUnlock();
         }

@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -33,7 +33,7 @@
 	contentType="text/html"
 	session="true"
 	import="java.util.*,
-		org.opennms.web.WebSecurityUtils,
+		org.opennms.core.utils.WebSecurityUtils,
 		org.opennms.web.notification.*,
 		org.opennms.web.element.*,
                 org.opennms.web.event.*
@@ -173,7 +173,7 @@
       </tr>
 
       <tr class="<%=eventSeverity%>">
-        <td><%=notice.getTextMessage()%></td>
+        <td><pre><%=notice.getTextMessage()%></pre></td>
       </tr>
     <% } %>
   </table>

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -43,12 +43,12 @@ import javax.servlet.http.HttpSession;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.config.DestinationPathFactory;
 import org.opennms.netmgt.config.destinationPaths.Escalate;
 import org.opennms.netmgt.config.destinationPaths.Path;
 import org.opennms.netmgt.config.destinationPaths.Target;
 import org.opennms.web.api.Util;
-import org.opennms.web.WebSecurityUtils;
 
 /**
  * A servlet that handles the data comming in from the destination wizard jsps.
@@ -140,49 +140,55 @@ public class DestinationWizardServlet extends HttpServlet {
             String action = request.getParameter("userAction");
             Path path = (Path) user.getAttribute(SESSION_ATTRIBUTE_NEW_PATH);
 
-            // load all changeable values from the outline page into the editing
-            // path
-            saveOutlineForm(path, request);
+            // If the session has expired then just redirect back to the top page
+            // http://issues.opennms.org/browse/NMS-5269
+            if (path == null) {
+                redirectString.append(SOURCE_PAGE_PATHS);
+            } else {
+                // load all changeable values from the outline page into the editing
+                // path
+                saveOutlineForm(path, request);
 
-            if (action.equals("add")) {
-                int index = WebSecurityUtils.safeParseInt(request.getParameter("index"));
-                Escalate newEscalate = new Escalate();
-                path.addEscalate(index, newEscalate);
+                if (action.equals("add")) {
+                    int index = WebSecurityUtils.safeParseInt(request.getParameter("index"));
+                    Escalate newEscalate = new Escalate();
+                    path.addEscalate(index, newEscalate);
 
-                Map<String, String> requestParams = new HashMap<String, String>();
-                requestParams.put("targetIndex", request.getParameter("index"));
-                redirectString.append(SOURCE_PAGE_TARGETS).append(makeQueryString(requestParams));
-            } else if (action.equals("remove")) {
-                int index = WebSecurityUtils.safeParseInt(request.getParameter("index"));
-                removeEscalation(path, index);
-                redirectString.append(SOURCE_PAGE_OUTLINE);
-            } else if (action.equals("edit")) {
-                Map<String, String> requestParams = new HashMap<String, String>();
-                requestParams.put("targetIndex", request.getParameter("index"));
-                redirectString.append(SOURCE_PAGE_TARGETS).append(makeQueryString(requestParams));
-            } else if (action.equals("finish")) {
-                String oldName = (String) user.getAttribute(SESSION_ATTRIBUTE_OLD_PATH_NAME);
-                path.setName(request.getParameter("name"));
-                path.setInitialDelay(request.getParameter("initialDelay"));
+                    Map<String, String> requestParams = new HashMap<String, String>();
+                    requestParams.put("targetIndex", request.getParameter("index"));
+                    redirectString.append(SOURCE_PAGE_TARGETS).append(makeQueryString(requestParams));
+                } else if (action.equals("remove")) {
+                    int index = WebSecurityUtils.safeParseInt(request.getParameter("index"));
+                    removeEscalation(path, index);
+                    redirectString.append(SOURCE_PAGE_OUTLINE);
+                } else if (action.equals("edit")) {
+                    Map<String, String> requestParams = new HashMap<String, String>();
+                    requestParams.put("targetIndex", request.getParameter("index"));
+                    redirectString.append(SOURCE_PAGE_TARGETS).append(makeQueryString(requestParams));
+                } else if (action.equals("finish")) {
+                    String oldName = (String) user.getAttribute(SESSION_ATTRIBUTE_OLD_PATH_NAME);
+                    path.setName(request.getParameter("name"));
+                    path.setInitialDelay(request.getParameter("initialDelay"));
 
-                try {
-                    if (oldName != null && !oldName.equals(path.getName())) {
-                        // replacing a path with a new name
-                        DestinationPathFactory.getInstance().replacePath(oldName, path);
-                    } else {
-                        DestinationPathFactory.getInstance().addPath(path);
+                    try {
+                        if (oldName != null && !oldName.equals(path.getName())) {
+                            // replacing a path with a new name
+                            DestinationPathFactory.getInstance().replacePath(oldName, path);
+                        } else {
+                            DestinationPathFactory.getInstance().addPath(path);
+                        }
+                    } catch (Throwable e) {
+
+                        throw new ServletException("Couldn't save/reload destination path configuration file.", e);
                     }
-                } catch (Throwable e) {
+                    // Must clear out this attribute for later edits
+                    user.removeAttribute(SESSION_ATTRIBUTE_OLD_PATH);
+                    user.removeAttribute(SESSION_ATTRIBUTE_OLD_PATH_NAME);
 
-                    throw new ServletException("Couldn't save/reload destination path configuration file.", e);
+                    redirectString.append(SOURCE_PAGE_PATHS);
+                } else if (action.equals("cancel")) {
+                    redirectString.append(SOURCE_PAGE_PATHS);
                 }
-                // Must clear out this attribute for later edits
-                user.removeAttribute(SESSION_ATTRIBUTE_OLD_PATH);
-                user.removeAttribute(SESSION_ATTRIBUTE_OLD_PATH_NAME);
-
-                redirectString.append(SOURCE_PAGE_PATHS);
-            } else if (action.equals("cancel")) {
-                redirectString.append(SOURCE_PAGE_PATHS);
             }
         } else if (sourcePage.equals(SOURCE_PAGE_TARGETS)) {
             // compare the list of targets chosen to the existing targets,

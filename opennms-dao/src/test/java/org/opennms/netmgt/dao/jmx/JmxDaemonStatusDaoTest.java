@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -38,6 +38,7 @@ import javax.management.ObjectName;
 import junit.framework.TestCase;
 
 import org.opennms.netmgt.dao.ServiceInfo;
+import org.opennms.netmgt.model.MockServiceDaemon;
 
 public class JmxDaemonStatusDaoTest extends TestCase {
     static private MBeanServer mBeanServer;
@@ -62,7 +63,7 @@ public class JmxDaemonStatusDaoTest extends TestCase {
 	protected void setUp() throws Exception {
 		super.setUp();
 		for(int i = 0; i < 4; i++){
-		  ServiceDaemonStub serviceDaemonStub = new ServiceDaemonStub(names[i]);
+		  MockServiceDaemon serviceDaemonStub = new MockServiceDaemon(names[i]);
 		  serviceDaemonStub.start();
 		  
 		  mBeanServer.registerMBean(serviceDaemonStub, objectName[i]);

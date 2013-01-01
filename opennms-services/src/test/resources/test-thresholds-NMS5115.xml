@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<thresholding-config>
+       <group name="generic-snmp" rrdRepository="${install.share.dir}/rrd/snmp/">
+       <expression type="low" ds-type="node" value="10.0" rearm="15.0" 
+            trigger="1" ds-label="" filterOperator="or" expression="memAvailSwap / memTotalSwap * 100.0"> 
+            <resource-filter field="memTotalSwap">^[1-9]+[.0-9]*$</resource-filter> 
+        </expression>
+       </group>
+</thresholding-config>

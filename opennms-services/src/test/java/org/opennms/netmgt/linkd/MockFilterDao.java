@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -36,9 +36,8 @@ import java.util.Set;
 import java.util.SortedMap;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.dao.FilterDao;
+import org.opennms.netmgt.filter.FilterDao;
 import org.opennms.netmgt.filter.FilterParseException;
-import org.opennms.netmgt.model.EntityVisitor;
 
 public class MockFilterDao implements FilterDao {
     private final List<InetAddress> m_activeAddresses;
@@ -49,11 +48,6 @@ public class MockFilterDao implements FilterDao {
         m_activeAddresses.add(InetAddressUtils.addr("192.168.160.250"));
         m_activeAddresses.add(InetAddressUtils.addr("192.168.160.251"));
         m_activeAddresses.add(InetAddressUtils.addr("192.168.160.253"));
-    }
-
-    @Override
-    public void walkMatchingNodes(final String rule, final EntityVisitor visitor) {
-        throw new UnsupportedOperationException("Not yet implemented!");
     }
 
     @Override

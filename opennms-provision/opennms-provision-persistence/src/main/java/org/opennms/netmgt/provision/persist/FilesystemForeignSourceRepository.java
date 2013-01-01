@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -42,9 +42,12 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.commons.io.IOUtils;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.util.Assert;
 
 /**
  * <p>FilesystemForeignSourceRepository class.</p>
@@ -52,7 +55,7 @@ import org.opennms.netmgt.provision.persist.requisition.Requisition;
  * @author ranger
  * @version $Id: $
  */
-public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepository {
+public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepository implements InitializingBean {
     private String m_requisitionPath;
     private String m_foreignSourcePath;
     private boolean m_updateDateStamps = true;
@@ -68,6 +71,12 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
      */
     public FilesystemForeignSourceRepository() throws ForeignSourceRepositoryException {
         super();
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        Assert.notNull(m_requisitionPath, "Requisition path must not be empty.");
+        Assert.notNull(m_foreignSourcePath, "Foreign source path must not be empty.");
     }
 
     /**
@@ -144,7 +153,7 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
             if (directory.exists()) {
                 for (final File file : directory.listFiles()) {
                     if (file.getName().endsWith(".xml")) {
-                        foreignSources.add(get(file));
+                        foreignSources.add(RequisitionFileUtils.getForeignSourceFromFile(file));
                     }
                 }
             }
@@ -161,9 +170,9 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
         }
         m_readLock.lock();
         try {
-            final File inputFile = encodeFileName(m_foreignSourcePath, foreignSourceName);
+            final File inputFile = RequisitionFileUtils.encodeFileName(m_foreignSourcePath, foreignSourceName);
             if (inputFile != null && inputFile.exists()) {
-                return get(inputFile);
+                return RequisitionFileUtils.getForeignSourceFromFile(inputFile);
             } else {
                 final ForeignSource fs = getDefaultForeignSource();
                 fs.setName(foreignSourceName);
@@ -180,6 +189,7 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
             throw new ForeignSourceRepositoryException("can't save a null foreign source!");
         }
 
+    	LogUtils.debugf(this, "Writing foreign source %s to %s", foreignSource.getName(), m_foreignSourcePath);
     	validate(foreignSource);
 
         m_writeLock.lock();
@@ -188,7 +198,7 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
                 putDefaultForeignSource(foreignSource);
                 return;
             }
-            final File outputFile = getOutputFileForForeignSource(foreignSource);
+            final File outputFile = RequisitionFileUtils.getOutputFileForForeignSource(m_foreignSourcePath, foreignSource);
             OutputStream outputStream = null;
             Writer writer = null;
             try {
@@ -213,7 +223,8 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
     public void delete(final ForeignSource foreignSource) throws ForeignSourceRepositoryException {
         m_writeLock.lock();
         try {
-            final File deleteFile = getOutputFileForForeignSource(foreignSource);
+            LogUtils.debugf(this, "Deleting foreign source %s from %s (if necessary)", foreignSource.getName(), m_foreignSourcePath);
+            final File deleteFile = RequisitionFileUtils.getOutputFileForForeignSource(m_foreignSourcePath, foreignSource);
             if (deleteFile.exists()) {
                 if (!deleteFile.delete()) {
                     throw new ForeignSourceRepositoryException("unable to delete foreign source file " + deleteFile);
@@ -239,7 +250,7 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
                 for (final File file : directory.listFiles()) {
                     if (file.getName().endsWith(".xml")) {
                         try {  
-                            requisitions.add(getRequisition(file));
+                            requisitions.add(RequisitionFileUtils.getRequisitionFromFile(file));
                         } catch (ForeignSourceRepositoryException e) {
                             // race condition, probably got deleted by the importer as part of moving things
                             // need a better way to handle this; move "pending" to the database?
@@ -260,9 +271,9 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
         }
         m_readLock.lock();
         try {
-            final File inputFile = encodeFileName(m_requisitionPath, foreignSourceName);
+            final File inputFile = RequisitionFileUtils.encodeFileName(m_requisitionPath, foreignSourceName);
             if (inputFile != null && inputFile.exists()) {
-                return getRequisition(inputFile);
+                return RequisitionFileUtils.getRequisitionFromFile(inputFile);
             }
             return null;
         } finally {
@@ -300,11 +311,12 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
             throw new ForeignSourceRepositoryException("can't save a null requisition!");
         }
         
+        LogUtils.debugf(this, "Writing requisition %s to %s", requisition.getForeignSource(), m_requisitionPath);
         validate(requisition);
 
         m_writeLock.lock();
         try {
-            final File outputFile = getOutputFileForRequisition(requisition);
+            final File outputFile = RequisitionFileUtils.getOutputFileForRequisition(m_requisitionPath, requisition);
             Writer writer = null;
             OutputStream outputStream = null;
             try {
@@ -337,7 +349,8 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
         }
         m_writeLock.lock();
         try {
-            final File deleteFile = getOutputFileForRequisition(requisition);
+            LogUtils.debugf(this, "Deleting requisition %s from %s (if necessary)", requisition.getForeignSource(), m_requisitionPath);
+            final File deleteFile = RequisitionFileUtils.getOutputFileForRequisition(m_requisitionPath, requisition);
             if (deleteFile.exists()) {
                 if (!deleteFile.delete()) {
                     throw new ForeignSourceRepositoryException("unable to delete requisition file " + deleteFile);
@@ -379,7 +392,11 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
     public URL getRequisitionURL(final String foreignSource) throws ForeignSourceRepositoryException {
         m_readLock.lock();
         try {
-            return getOutputFileForRequisition(getRequisition(foreignSource)).toURI().toURL();
+            final Requisition requisition = getRequisition(foreignSource);
+            if (requisition == null) {
+                return null;
+            }
+            return RequisitionFileUtils.getOutputFileForRequisition(m_requisitionPath, requisition).toURI().toURL();
         } catch (final MalformedURLException e) {
             throw new ForeignSourceRepositoryException("an error occurred getting the requisition URL", e);
         } finally {
@@ -387,40 +404,9 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
         }
     }
 
-    private ForeignSource get(final File inputFile) throws ForeignSourceRepositoryException {
-    	return JaxbUtils.unmarshal(ForeignSource.class, inputFile);
-    }
-
-    private Requisition getRequisition(final File inputFile) throws ForeignSourceRepositoryException {
-        try {
-        	return JaxbUtils.unmarshal(Requisition.class, inputFile);
-        } catch (final Throwable e) {
-            throw new ForeignSourceRepositoryException("unable to unmarshal " + inputFile.getPath(), e);
-        }
-    }
-
-    private void createPath(final File fsPath) throws ForeignSourceRepositoryException {
-        if (!fsPath.exists()) {
-            if (!fsPath.mkdirs()) {
-                throw new ForeignSourceRepositoryException("unable to create directory " + fsPath.getPath());
-            }
-        }
-    }
-
-    private File encodeFileName(final String path, final String foreignSourceName) {
-//        return new File(path, java.net.URLEncoder.encode(foreignSourceName, "UTF-8") + ".xml");
-          return new File(path, foreignSourceName + ".xml");
-    }
-
-    private File getOutputFileForForeignSource(final ForeignSource foreignSource) {
-        final File fsPath = new File(m_foreignSourcePath);
-        createPath(fsPath);
-        return encodeFileName(m_foreignSourcePath, foreignSource.getName());
-    }
-
-    private File getOutputFileForRequisition(final Requisition requisition) {
-        final File reqPath = new File(m_requisitionPath);
-        createPath(reqPath);
-        return encodeFileName(m_requisitionPath, requisition.getForeignSource());
+    @Override
+    public void flush() throws ForeignSourceRepositoryException {
+        // Unnecessary, there is no caching/delayed writes in FilesystemForeignSourceRepository
+        LogUtils.debugf(this, "flush() called");
     }
 }

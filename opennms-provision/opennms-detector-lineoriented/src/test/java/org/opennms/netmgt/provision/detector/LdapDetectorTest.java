@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -67,18 +67,18 @@ public class LdapDetectorTest implements ApplicationContextAware{
     
     private ApplicationContext m_applicationContext;
 
-    @Test
+    @Test(timeout=90000)
     public void testMyDetector() throws UnknownHostException {
         //assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr(DEFAULT_LOCAL_SERVER_IP)));
     }
 //    
-//    @Test
+//    @Test(timeout=90000)
 //    public void testDetectorFailWrongPort() throws UnknownHostException {
 //        m_detector.setPort(1200);
 //        assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr(DEFAULT_LOCAL_SERVER_IP)));
 //    }
 //    
-//    @Test
+//    @Test(timeout=90000)
 //    public void testDetectorFailNotALdapServer() throws UnknownHostException {
 //        assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr("192.168.1.101")));
 //    }

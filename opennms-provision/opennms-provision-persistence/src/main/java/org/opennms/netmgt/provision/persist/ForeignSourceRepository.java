@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -25,7 +25,6 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-
 
 package org.opennms.netmgt.provision.persist;
 
@@ -175,4 +174,12 @@ public interface ForeignSourceRepository {
     public void validate(ForeignSource foreignSource) throws ForeignSourceRepositoryException;
     
     public void validate(Requisition requisition) throws ForeignSourceRepositoryException;
+    
+    /**
+     * For performance reasons, a get after a save on a ForeignSourceRepository is not guaranteed to
+     * return the latest saved data unless you flush first.
+     * 
+     * @throws ForeignSourceRepositoryException
+     */
+    public void flush() throws ForeignSourceRepositoryException;
 }

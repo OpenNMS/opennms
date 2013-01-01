@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -88,14 +88,13 @@ public class DefaultSurveillanceServiceTest {
         assertEquals("user name", details.getUsername(), user);
     }
     
-    @Test
+    // String Principal is not longer used in opennms
+    @Test(expected=IllegalStateException.class)
     public void testGetUsernameWithStringPrincipal() {
         org.springframework.security.core.Authentication auth = new UsernamePasswordAuthenticationToken("user", null, new ArrayList<GrantedAuthority>());
         SecurityContextHolder.getContext().setAuthentication(auth);
         
         String user = m_service.getUsername();
-        assertNotNull("user should not be null", user);
-        assertEquals("user name", "user", user);
     }
     
     @Test

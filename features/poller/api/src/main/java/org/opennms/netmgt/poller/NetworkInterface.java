@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -32,7 +32,7 @@ package org.opennms.netmgt.poller;
  * <P>
  * The NetworkInterface class is designed to be a well defined front for passing
  * interfaces to a service monitor. There are many different types of network in
- * use today including IPv4, IPv6, IPX, and others. To accomidate the possible
+ * use today including IPv4, IPv6, IPX, and others. To accommodate the possible
  * differences this class provides the basic information that a monitor can use
  * to determine the type of interface and its expected address type.
  * </P>

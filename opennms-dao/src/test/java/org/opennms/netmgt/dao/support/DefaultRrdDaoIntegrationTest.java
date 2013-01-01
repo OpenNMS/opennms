@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -36,6 +36,7 @@ import java.util.HashSet;
 import junit.framework.TestCase;
 
 import org.apache.commons.io.IOUtils;
+import org.opennms.netmgt.mock.MockResourceType;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.RrdGraphAttribute;
@@ -43,6 +44,7 @@ import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdGraphDetails;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.RrdUtils;
+import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
 import org.opennms.test.FileAnticipator;
 
 /**
@@ -59,7 +61,7 @@ public class DefaultRrdDaoIntegrationTest extends TestCase {
     public void setUp() throws Exception {
         super.setUp();
         
-        RrdTestUtils.initialize();
+        RrdUtils.setStrategy(new JRobinRrdStrategy());
         m_rrdStrategy = RrdUtils.getStrategy();
         
         m_fileAnticipator = new FileAnticipator();
@@ -113,7 +115,7 @@ public class DefaultRrdDaoIntegrationTest extends TestCase {
         
         RrdDataSource rrdDataSource = new RrdDataSource(attribute.getName(), "GAUGE", 600, "U", "U");
         Object def = m_rrdStrategy.createDefinition("test", intf.getAbsolutePath(), attribute.getName(), 600, Collections.singletonList(rrdDataSource), Collections.singletonList("RRA:AVERAGE:0.5:1:100"));
-        m_rrdStrategy.createFile(def);
+        m_rrdStrategy.createFile(def, null);
         File rrdFile = m_fileAnticipator.expecting(intf, attribute.getName() + RrdUtils.getExtension());
         
         Object rrdFileObject = m_rrdStrategy.openFile(rrdFile.getAbsolutePath());
@@ -166,9 +168,10 @@ public class DefaultRrdDaoIntegrationTest extends TestCase {
     			" GPRINT:value3:MAX:\"Max \\: %10.2lf\\n\"" + 
     			"";
     	
-    	File workDir = new File("src/test/resources");
-    	RrdGraphDetails details = m_rrdStrategy.createGraphReturnDetails(command, workDir);
-    	IOUtils.copy(details.getInputStream(), new FileOutputStream("/tmp/img.png"));
+    	final File workDir = new File("src/test/resources");
+    	final RrdGraphDetails details = m_rrdStrategy.createGraphReturnDetails(command, workDir);
+    	final File outputFile = File.createTempFile("img", "png");
+    	IOUtils.copy(details.getInputStream(), new FileOutputStream(outputFile));
     	
     	
     }

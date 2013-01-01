@@ -6,7 +6,7 @@
 		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
 
 	<!-- Override the collectd-configuration with one that includes the HttpCollector -->
-	<bean id="collectdConfigStream" class="org.opennms.test.ConfigurationTestUtils" factory-method="getInputStreamForResource">
+	<bean id="collectdConfigStream" class="org.opennms.core.test.ConfigurationTestUtils" factory-method="getInputStreamForResource">
 		<!-- Dummy string value that will fetch the current classloader -->
 		<constructor-arg value="SOME_JAVA_LANG_STRING"/>
 		<!-- Classpath resource that contains a minimal capsd configuration -->

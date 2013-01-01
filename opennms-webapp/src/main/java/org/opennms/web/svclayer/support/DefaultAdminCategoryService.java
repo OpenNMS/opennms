@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -34,6 +34,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.NodeDao;
@@ -43,7 +44,6 @@ import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.model.events.EventProxyException;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.svclayer.AdminCategoryService;
 import org.springframework.jdbc.datasource.lookup.DataSourceLookupFailureException;
 
@@ -298,7 +298,7 @@ public class DefaultAdminCategoryService implements
         OnmsCategory category = findCategory(categoryIdString);
         CategoryAndMemberNodes cat = getCategory(categoryIdString);
         for (OnmsNode adriftNode : cat.getMemberNodes()) {
-        	notifyCategoryChange(adriftNode.getId());
+        	notifyCategoryChange(adriftNode);
         }
         m_categoryDao.delete(category);
     }
@@ -377,7 +377,7 @@ public class DefaultAdminCategoryService implements
             }
             
             getNodeDao().save(node);
-            notifyCategoryChange(WebSecurityUtils.safeParseInt(nodeIdString));
+            notifyCategoryChange(node);
        } else if (editAction.contains("Remove")) { // @i18n
             if (toDelete == null) {
                 return;
@@ -409,7 +409,7 @@ public class DefaultAdminCategoryService implements
             }
 
             getNodeDao().save(node);
-            notifyCategoryChange(WebSecurityUtils.safeParseInt(nodeIdString));
+            notifyCategoryChange(node);
        } else {
            throw new IllegalArgumentException("editAction of '"
                                               + editAction
@@ -429,9 +429,10 @@ public class DefaultAdminCategoryService implements
         return getNodeDao().get(nodeId);
     }
 
-    private void notifyCategoryChange(final int nodeId) {
+    private void notifyCategoryChange(final OnmsNode node) {
         EventBuilder bldr = new EventBuilder(EventConstants.NODE_CATEGORY_MEMBERSHIP_CHANGED_EVENT_UEI, "CategoryUI");
-        bldr.setNodeid(nodeId);
+        bldr.setNode(node);
+        bldr.setParam("nodelabel", node.getLabel());
         send(bldr.getEvent());
     }
     

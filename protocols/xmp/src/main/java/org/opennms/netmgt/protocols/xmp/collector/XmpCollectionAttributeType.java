@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -25,7 +25,6 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-
 
 /*
 * OCA CONTRIBUTION ACKNOWLEDGEMENT - NOT PART OF LEGAL BOILERPLATE
@@ -60,8 +59,7 @@ import org.opennms.netmgt.config.collector.CollectionAttributeType;
 import org.opennms.netmgt.config.collector.Persister;
 
 
-class XmpCollectionAttributeType implements CollectionAttributeType 
-{
+class XmpCollectionAttributeType implements CollectionAttributeType {
     /* class variables and methods *********************** */
 
     /* instance variables ******************************** */
@@ -87,9 +85,11 @@ class XmpCollectionAttributeType implements CollectionAttributeType
      *
      * @return a {@link org.opennms.netmgt.config.collector.AttributeGroupType} object.
      */
+    @Override
     public AttributeGroupType getGroupType() { return groupType; }
 
     /** {@inheritDoc} */
+    @Override
     public void storeAttribute(CollectionAttribute attrib, Persister persister)
     {
         log().debug("XmpCollectionAttributeType: store "+attrib);
@@ -138,12 +138,14 @@ class XmpCollectionAttributeType implements CollectionAttributeType
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getName() { return aVar.getObjName(); }
     /**
      * <p>getType</p>
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getType() { return Xmp.syntaxToString(aVar.getSyntax()); }
 
     /**
@@ -151,6 +153,7 @@ class XmpCollectionAttributeType implements CollectionAttributeType
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() { return "XmpCollectionAttributeType "+Xmp.syntaxToString(aVar.getSyntax()); }
 
 } /* class XmpCollectionAttributeType */

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -74,6 +74,11 @@ public class JRobinFieldsProvider implements FieldsProvider  {
         
         query = reportDataset.getQuery().getText();
         
+        if(query.contains("--step")) {
+            addStepField(fields);
+        }
+        
+        
         Matcher matcher = m_pattern.matcher(query);
         boolean matchFound = matcher.find();
         
@@ -99,7 +104,16 @@ public class JRobinFieldsProvider implements FieldsProvider  {
         return fields.toArray(new JRField[fields.size()]);
     }
 
-    private void addTimestampField(List<JRField> fields) {
+  private void addStepField(List<JRField> fields) {
+        JRDesignField field = new JRDesignField();
+        field.setName("Step");
+        field.setDescription("Step");
+        field.setValueClass(Integer.class);
+        fields.add(field);
+        
+    }
+
+  private void addTimestampField(List<JRField> fields) {
         JRDesignField field = new JRDesignField();
         field.setName("Timestamp");
         field.setDescription("Timestamp");

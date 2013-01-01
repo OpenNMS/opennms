@@ -1,3 +1,31 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.netmgt.collectd.tca;
 
 import org.opennms.netmgt.collectd.AbstractCollectionAttribute;
@@ -23,7 +51,7 @@ public class TcaCollectionAttribute extends AbstractCollectionAttribute implemen
 	private TcaCollectionResource m_resource;
 
 	/** The Attribute Type. */
-	private CollectionAttributeType m_attribType;
+	private TcaCollectionAttributeType m_attribType;
 
 	/**
 	 * Instantiates a new XML collection attribute.
@@ -33,7 +61,7 @@ public class TcaCollectionAttribute extends AbstractCollectionAttribute implemen
 	 * @param name the attribute name
 	 * @param value the attribute value
 	 */
-	public TcaCollectionAttribute(TcaCollectionResource resource, CollectionAttributeType attribType, String name, String value) {
+	public TcaCollectionAttribute(TcaCollectionResource resource, TcaCollectionAttributeType attribType, String name, String value) {
 		m_resource = resource;
 		m_attribType = attribType;
 		m_name = name;
@@ -53,7 +81,7 @@ public class TcaCollectionAttribute extends AbstractCollectionAttribute implemen
 	public String getName() {
 		return m_name;
 	}
-
+	
 	/* (non-Javadoc)
 	 * @see org.opennms.netmgt.collectd.AbstractCollectionAttribute#getNumericValue()
 	 */
@@ -95,5 +123,10 @@ public class TcaCollectionAttribute extends AbstractCollectionAttribute implemen
 	public String toString() {
 		return "TcaCollectionAttribute " + m_name + "=" + m_value;
 	}
+
+    @Override
+    public String getMetricIdentifier() {
+        return "TCA_" + m_attribType.getAttributeObjectId() + '_' + getName();
+    }
 
 }
