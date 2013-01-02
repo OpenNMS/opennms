@@ -829,7 +829,7 @@ public class ThresholdingVisitorTest {
      * - test-thresholds-bug3227.xml
      * 
      * There is no Frame Relay related thresholds definitions on test-thresholds-bug3227.xml.
-     * When visit resources, getEntityMap from ThresholdingSet must null.
+     * When visit resources, getEntityMap from ThresholdingSet must be null.
      * Updated to reflect the fact that counter are treated as rates.
      */
     @Test
@@ -853,9 +853,9 @@ public class ThresholdingVisitorTest {
          * Original code expects WARNs, but this message is now an INFO.
          */
         resource.visit(visitor);
-        LoggingEvent[] events = MockLogAppender.getEventsGreaterOrEqual(Level.INFO);
+        LoggingEvent[] events = MockLogAppender.getEventsGreaterOrEqual(Level.TRACE);
         int count = 0;
-        String expectedMsg = "getEntityMap: No thresholds configured for resource type frCircuitIfIndex in threshold group generic-snmp. Skipping this group.";
+        String expectedMsg = "getEntityMap: No thresholds configured for resource type 'frCircuitIfIndex' in threshold group generic-snmp. Skipping this group.";
         for (LoggingEvent e : events) {
             if (e.getMessage().equals(expectedMsg))
                 count++;
