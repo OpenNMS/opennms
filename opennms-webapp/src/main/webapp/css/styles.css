@@ -18,6 +18,7 @@ a {
 }
 a:hover {
 	text-decoration: underline;
+	cursor: pointer;
 }
 body {
 	margin: 0px;
