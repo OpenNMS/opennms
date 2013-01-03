@@ -121,6 +121,12 @@
       <groupId>org.easymock</groupId>
       <artifactId>easymock</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.features.topology.plugins.topo</groupId>
+      <artifactId>simple</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
     
     <dependency>
 	   <groupId>org.osgi</groupId>

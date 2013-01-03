@@ -36,7 +36,7 @@ import com.vaadin.data.Item;
 public class WrappedLeafVertex extends WrappedVertex {
 
 	public WrappedLeafVertex() {}
-	
+
 	public WrappedLeafVertex(Item vertex) {
 		super(vertex);
 	}
@@ -45,6 +45,4 @@ public class WrappedLeafVertex extends WrappedVertex {
 	public boolean isLeaf() {
 		return true;
 	}
-	
-
 }

@@ -42,8 +42,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.vaadin.data.Item;
-import com.vaadin.data.Property;
-import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.data.util.PropertysetItem;
 import com.vaadin.ui.Button;
@@ -127,7 +125,7 @@ public class AddVertexToGroupOperation implements Constants, Operation {
 				LoggerFactory.getLogger(this.getClass()).debug("Adding item to group: {}", parentId);
 
 				// Link the selected vertex to the parent group
-				graphContainer.getBaseTopology().setParent(currentVertex, parentId);
+				graphContainer.getBaseTopology().setParent(currentVertex, graphContainer.getBaseTopology().getVertex(graphContainer.getBaseTopology().getVertexNamespace(), parentId));
 
 				// Save the topology
 				graphContainer.getBaseTopology().save(null);

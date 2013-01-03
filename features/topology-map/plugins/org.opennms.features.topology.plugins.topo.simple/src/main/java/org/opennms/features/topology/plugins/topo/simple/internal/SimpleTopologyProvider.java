@@ -45,8 +45,8 @@ import org.opennms.features.topology.api.SimpleConnector;
 import org.opennms.features.topology.api.SimpleEdge;
 import org.opennms.features.topology.api.SimpleGroup;
 import org.opennms.features.topology.api.SimpleLeafVertex;
-import org.opennms.features.topology.api.SimpleVertex;
-import org.opennms.features.topology.api.topo.AbstractVertexRef;
+import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
+import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.DelegatingVertexEdgeProvider;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeRef;
@@ -56,7 +56,7 @@ import org.opennms.features.topology.api.topo.VertexRef;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SimpleTopologyProvider extends DelegatingVertexEdgeProvider implements GraphProvider {
+public class SimpleTopologyProvider extends AbstractTopologyProvider implements GraphProvider {
 	
 	private static final String TOPOLOGY_NAMESPACE_SIMPLE = "simple";
 
@@ -105,7 +105,7 @@ public class SimpleTopologyProvider extends DelegatingVertexEdgeProvider impleme
             throw new IllegalArgumentException("A vertex or group with id " + id + " already exists!");
         }
         s_log.debug("Adding a vertex: {}", id);
-        SimpleVertex vertex = new SimpleLeafVertex(TOPOLOGY_NAMESPACE_SIMPLE, id, x, y);
+        AbstractVertex vertex = new SimpleLeafVertex(TOPOLOGY_NAMESPACE_SIMPLE, id, x, y);
         vertex.setIconKey("server");
         vertex.setLabel(label);
         vertex.setIpAddress(ipAddr);
@@ -119,7 +119,7 @@ public class SimpleTopologyProvider extends DelegatingVertexEdgeProvider impleme
             throw new IllegalArgumentException("A vertex or group with id " + groupId + " already exists!");
         }
         s_log.debug("Adding a group: {}", groupId);
-        SimpleVertex vertex = new SimpleGroup(TOPOLOGY_NAMESPACE_SIMPLE, groupId);
+        AbstractVertex vertex = new SimpleGroup(TOPOLOGY_NAMESPACE_SIMPLE, groupId);
         vertex.setLabel(label);
         vertex.setIconKey(iconKey);
         addVertices(vertex);
@@ -135,22 +135,6 @@ public class SimpleTopologyProvider extends DelegatingVertexEdgeProvider impleme
         addEdges(edge);
         
         return edge;
-    }
-    
-    /* (non-Javadoc)
-	 * @see org.opennms.features.topology.plugins.topo.simple.internal.EditableTopologyProvider#removeVertex(java.lang.Object)
-	 */
-    @Override
-	public void removeVertex(VertexRef... vertexId) {
-        for (VertexRef vertex : vertexId) {
-            if (vertex == null) continue;
-            
-            removeVertex(vertexId);
-            
-            for(EdgeRef e : getEdgeIdsForVertex(vertex)) {
-                removeEdges(e);
-            }
-        }
     }
 
     @XmlRootElement(name="graph")
@@ -195,8 +179,7 @@ public class SimpleTopologyProvider extends DelegatingVertexEdgeProvider impleme
         JAXB.marshal(graph, new File(filename));
     }
     
-    @Override
-	public void load(URL url) {
+    private void load(URL url) {
         SimpleGraph graph = JAXB.unmarshal(url, SimpleGraph.class);
         
         clearVertices();
@@ -250,8 +233,7 @@ public class SimpleTopologyProvider extends DelegatingVertexEdgeProvider impleme
 	 */
     @Override
 	public void resetContainer() {
-        clearVertices();
-        clearEdges();
+        super.resetContainer();
         
         m_counter = 0;
         m_edgeCounter = 0;

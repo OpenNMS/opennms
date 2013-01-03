@@ -26,54 +26,33 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.api;
+package org.opennms.features.topology.api.topo;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.bind.annotation.XmlTransient;
-
-import org.opennms.features.topology.api.topo.AbstractVertex;
-import org.opennms.features.topology.api.topo.Edge;
-import org.opennms.features.topology.api.topo.Vertex;
-
-public abstract class SimpleVertex extends AbstractVertex {
-
-	private List<Edge> m_edges = new ArrayList<Edge>();
-
-	/**
-	 * @param namespace
-	 * @param id
-	 */
-	public SimpleVertex(String namespace, String id) {
-		super(namespace, id);
+public abstract class AbstractTopologyProvider extends DelegatingVertexEdgeProvider implements GraphProvider {
+	protected AbstractTopologyProvider(String namespace) {
+		super(namespace);
 	}
+	
+    @Override
+	public final void removeVertex(VertexRef... vertexId) {
+        for (VertexRef vertex : vertexId) {
+            if (vertex == null) continue;
+            
+            removeVertex(vertexId);
+            
+            for(EdgeRef e : getEdgeIdsForVertex(vertex)) {
+                removeEdges(e);
+            }
+        }
+    }
 
-	/**
-	 * @param namespace
-	 * @param id
-	 * @param x
-	 * @param y
-	 */
-	public SimpleVertex(String namespace, String id, int x, int y) {
-		this(namespace, id);
-		setX(x);
-		setY(y);
-	}
+    /* (non-Javadoc)
+     * @see org.opennms.features.topology.plugins.topo.simple.internal.EditableTopologyProvider#resetContainer()
+     */
+    @Override
+    public void resetContainer() {
+        clearVertices();
+        clearEdges();
+    }
 
-	@XmlTransient
-	@Override
-	public List<Edge> getEdges() {
-		return m_edges;
-	}
-
-	@Override
-	public void addEdge(Edge edge) {
-		m_edges.add(edge);
-	}
-
-	@Override
-	public void removeEdge(Edge edge) {
-		m_edges.remove(edge);
-	}
 }

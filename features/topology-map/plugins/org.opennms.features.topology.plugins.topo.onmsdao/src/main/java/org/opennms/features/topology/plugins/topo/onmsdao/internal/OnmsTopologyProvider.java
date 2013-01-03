@@ -35,8 +35,8 @@ import org.opennms.features.topology.api.SimpleConnector;
 import org.opennms.features.topology.api.SimpleEdge;
 import org.opennms.features.topology.api.SimpleGroup;
 import org.opennms.features.topology.api.SimpleLeafVertex;
-import org.opennms.features.topology.api.SimpleVertex;
-import org.opennms.features.topology.api.topo.DelegatingVertexEdgeProvider;
+import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
+import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.GraphProvider;
@@ -50,7 +50,7 @@ import org.opennms.netmgt.model.OnmsMap;
 import org.opennms.netmgt.model.OnmsMapElement;
 import org.slf4j.LoggerFactory;
 
-public class OnmsTopologyProvider extends DelegatingVertexEdgeProvider implements GraphProvider {
+public class OnmsTopologyProvider extends AbstractTopologyProvider implements GraphProvider {
 
     private int m_counter = 0;
     private int m_edgeCounter = 0;
@@ -94,7 +94,7 @@ public class OnmsTopologyProvider extends DelegatingVertexEdgeProvider implement
             throw new IllegalArgumentException("A vertex or group with id " + id + " already exists!");
         }
         LoggerFactory.getLogger(getClass()).debug("Adding a vertex: {}", id);
-        SimpleVertex vertex = new SimpleLeafVertex(TOPOLOGY_NAMESPACE_ONMSDAO, id, x, y);
+        AbstractVertex vertex = new SimpleLeafVertex(TOPOLOGY_NAMESPACE_ONMSDAO, id, x, y);
         vertex.setNodeID(-1);
         vertex.setIconKey(icon);
         addVertices(vertex);
@@ -108,7 +108,7 @@ public class OnmsTopologyProvider extends DelegatingVertexEdgeProvider implement
         }
         LoggerFactory.getLogger(getClass()).debug("Adding a group: {}", groupLabel);
         // TODO: Make a proper incrementing ID
-        SimpleVertex vertex = new SimpleGroup(TOPOLOGY_NAMESPACE_ONMSDAO, "-1");
+        AbstractVertex vertex = new SimpleGroup(TOPOLOGY_NAMESPACE_ONMSDAO, "-1");
         vertex.setIconKey(icon);
         vertex.setLabel(groupLabel);
         addVertices(vertex);
@@ -127,19 +127,6 @@ public class OnmsTopologyProvider extends DelegatingVertexEdgeProvider implement
         return edge;
     }
     
-    @Override
-    public void removeVertex(VertexRef... vertexId) {
-        for (VertexRef vertex : vertexId) {
-            if (vertex == null) return;
-            
-            removeVertex(vertexId);
-            
-            for(EdgeRef e : getEdgeIdsForVertex(vertex)) {
-                removeEdges(e);
-            }
-        }
-    }
-
     private OnmsMap getMap(int mapId) {
         return getOnmsMapDao().findMapById(mapId);
     }

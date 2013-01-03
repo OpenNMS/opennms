@@ -33,42 +33,33 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlTransient;
 
-import org.opennms.features.topology.api.SimpleVertex;
+import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.Edge;
 
-public class LinkdVertex extends SimpleVertex {
+public class LinkdVertex extends AbstractVertex {
 	List<Edge> m_edges = new ArrayList<Edge>();
 	
 	/**
 	 * Only used for unit tests.
 	 */
 	LinkdVertex() {
-		super("linkd", "fakeId", 0, 0);
+		super(LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, "fakeId");
 	}
 
 	public LinkdVertex(String id, String iconKey, String label, String ipAddr) {
-		super("linkd", id);
+		super(LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, id);
 	    setIconKey(iconKey);
 	    setLabel(label);
 	    setIpAddress(ipAddr);
 	}
 	
 	public LinkdVertex(String id, int x, int y, String iconKey, String label, String ipAddr) {
-		super("linkd", id);
+		super(LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, id);
 		setIconKey(iconKey);
 		setLabel(label);
 		setIpAddress(ipAddr);
 		setX(x);
 		setY(y);
-	}
-	
-	public boolean isRoot() {
-		return getParent() == null;
-	}
-
-	@Override
-	public boolean isLeaf() {
-		return true;
 	}
 
 	@XmlTransient

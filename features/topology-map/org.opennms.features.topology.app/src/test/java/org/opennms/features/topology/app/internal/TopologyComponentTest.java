@@ -58,7 +58,7 @@ public class TopologyComponentTest {
         EasyMock.replay(target);
         
         TestTopologyProvider topoProvider = new TestTopologyProvider("test");
-        GraphContainer graphContainer = new SimpleGraphContainer(topoProvider);
+        GraphContainer graphContainer = new VEProviderGraphContainer(topoProvider, new ProviderManager());
 		TopologyComponent topoComponent = getTopologyComponent(graphContainer);
         
         topoComponent.paintContent(target);
@@ -94,7 +94,7 @@ public class TopologyComponentTest {
         EasyMock.replay(target);
         
         TestTopologyProvider topoProvider = new TestTopologyProvider("test");
-        GraphContainer graphContainer = new SimpleGraphContainer(topoProvider);
+        GraphContainer graphContainer = new VEProviderGraphContainer(topoProvider, new ProviderManager());
 		TopologyComponent topoComponent = getTopologyComponent(graphContainer);
         
         topoProvider.addVertex(0, 0);
@@ -134,7 +134,7 @@ public class TopologyComponentTest {
         EasyMock.replay(target);
         
         TestTopologyProvider topologyProvider = new TestTopologyProvider("test");
-        GraphContainer graphContainer = new SimpleGraphContainer(topologyProvider);
+        GraphContainer graphContainer = new VEProviderGraphContainer(topologyProvider, new ProviderManager());
 		TopologyComponent topoComponent = getTopologyComponent(graphContainer);
         
         Collection<Vertex> vertIds = topologyProvider.getVertices();
@@ -162,8 +162,8 @@ public class TopologyComponentTest {
     @Ignore
     public void testTopologyComponentSendCorrectEdgeIds() throws PaintException {
         TestTopologyProvider topoProvider = new TestTopologyProvider("test");
-        GraphContainer graphContainer = new SimpleGraphContainer(topoProvider);
-		TopologyComponent topoComponent = getTopologyComponent(graphContainer);
+        GraphContainer graphContainer = new VEProviderGraphContainer(topoProvider, new ProviderManager());
+        TopologyComponent topoComponent = getTopologyComponent(graphContainer);
         topoComponent.setIconRepoManager(new IconRepositoryManager());
         Graph graph = topoComponent.getGraph();
         

@@ -30,17 +30,14 @@ package org.opennms.features.topology.api;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.opennms.features.topology.api.SimpleVertex;
+import org.opennms.features.topology.api.topo.AbstractVertex;
 
 @XmlRootElement(name="vertex")
-public class SimpleLeafVertex extends SimpleVertex {
+public class SimpleLeafVertex extends AbstractVertex {
 
 	public SimpleLeafVertex(String namespace, String id, int x, int y) {
-		super(namespace, id, x, y);
-	}
-
-	@Override
-	public boolean isLeaf() {
-		return true;
+		super(namespace, id);
+		setX(x);
+		setY(y);
 	}
 }

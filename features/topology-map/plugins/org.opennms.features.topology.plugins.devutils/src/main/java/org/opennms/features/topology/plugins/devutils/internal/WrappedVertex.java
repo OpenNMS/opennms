@@ -41,7 +41,7 @@ import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 
 
-abstract public class WrappedVertex implements Vertex {
+public abstract class WrappedVertex implements Vertex {
 	
 	public static WrappedVertex create(Item vertex) {
 		Property leaf = vertex.getItemProperty("leaf");
@@ -75,101 +75,149 @@ abstract public class WrappedVertex implements Vertex {
 		}
 	}
 	
-	private Object getProperty(String propertyId) {
+	protected final Object getProperty(String propertyId) {
 		Property property = m_vertex.getItemProperty(propertyId);
 		return property == null ? null : property.getValue();
 	}
 	
-	private void setProperty(String propertyId, Object value) {
+	protected final void setProperty(String propertyId, Object value) {
 		Property property = m_vertex.getItemProperty(propertyId);
 		if (property != null) {
 			property.setValue(value);
 		}
 	}
 	
-	public boolean isLocked() {
+	@Override
+	public final boolean isLocked() {
 		return (Boolean) getProperty("locked");
 	}
 
-	public void setLocked(Boolean locked) {
+	public final void setLocked(Boolean locked) {
 		setProperty("locked", locked);
 	}
 
+	@Override
 	public abstract boolean isLeaf();
 	
-	public boolean isRoot() {
+	@Override
+	public final boolean isRoot() {
 		return m_parent == null;
 	}
 
+	@Override
+	public final Item getItem() {
+		return m_vertex;
+	}
+
 	@XmlID
-	public String getId() {
+	@Override
+	public final String getId() {
 		return (String) getProperty("id");
 	}
 
-	public void setId(String id) {
+	public final void setId(String id) {
 		setProperty("id", id);
 	}
 
 	@Override
-	public int getX() {
+	public final int getX() {
 		return (Integer) getProperty("x");
 	}
 
-	public void setX(Integer x) {
+	public final void setX(Integer x) {
 		setProperty("x", x);
 	}
 
 	@Override
-	public int getY() {
+	public final int getY() {
 		return (Integer) getProperty("y");
 	}
 
-	public void setY(Integer y) {
+	public final void setY(Integer y) {
 		setProperty("y", y);
 	}
 
-	public boolean isSelected() {
+	@Override
+	public final boolean isSelected() {
 		return (Boolean) getProperty("selected");
 	}
 
-	public void setSelected(Boolean selected) {
+	public final void setSelected(Boolean selected) {
 		setProperty("selected", selected);
 	}
 
-	public String getLabel() {
+	@Override
+	public final String getLabel() {
 		return (String) getProperty("label");
 	}
 
-	public void setLabel(String label) {
+	public final void setLabel(String label) {
 		setProperty("label", label);
 	}
 	
-	public String getIpAddr() {
+	@Override
+	public final String getIpAddress() {
 		return (String) getProperty("ipAddr");
 	}
 	
-	public void setIpAddr(String ipAddr){
+	public final void setIpAddress(String ipAddr){
 		setProperty("ipAddr", ipAddr);
 	}
 	
-	public int getNodeID() {
+	@Override
+	public final int getNodeID() {
 		return (Integer) getProperty("nodeID");
 	}
 	
-	public void setNodeID(int nodeID) {
+	public final void setNodeID(int nodeID) {
 		setProperty("nodeID", nodeID);
 	}
 
+	@Override
+	public final Vertex getDisplayVertex(int semanticZoomLevel) {
+		throw new UnsupportedOperationException(this.getClass().getName() + ".getDisplayVertex() not implemented");
+	}
+
+	@Override
+	public final String getKey() {
+		return (String) getProperty("key");
+	}
+
+	@Override
+	public final int getSemanticZoomLevel() {
+		return (Integer) getProperty("semanticZoomLevel");
+	}
+
+	@Override
+	public final String getStyleName() {
+		return (String) getProperty("styleName");
+	}
+
+	@Override
+	public final String getTooltipText() {
+		return (String) getProperty("tooltipText");
+	}
+
+	@Override
+	public final void setParent(Vertex parent) {
+		setProperty("tooltipText", parent);
+	}
+
+	@Override
+	public final String getNamespace() {
+		return (String) getProperty("namespace");
+	}
+
 	@XmlTransient
-    public List<WrappedEdge> getEdges() {
+    public final List<WrappedEdge> getEdges() {
 		return m_edges;
 	}
 	
-	void addEdge(WrappedEdge edge) {
+	final void addEdge(WrappedEdge edge) {
 		m_edges.add(edge);
 	}
 	
-	void removeEdge(WrappedEdge edge) {
+	final void removeEdge(WrappedEdge edge) {
 		m_edges.remove(edge);
 	}
 
@@ -202,7 +250,7 @@ abstract public class WrappedVertex implements Vertex {
     public String getIconKey() {
         return (String) getProperty("iconKey");
     }
-	
+
     public void setIconKey(String iconKey) {
     	setProperty("iconKey", iconKey);
     }

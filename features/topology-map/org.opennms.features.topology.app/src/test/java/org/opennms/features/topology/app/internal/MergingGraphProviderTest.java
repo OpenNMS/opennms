@@ -20,7 +20,7 @@ public class MergingGraphProviderTest {
 
 	private GraphProvider m_graphProvider;
 	private EdgeProvider m_edgeProvider;
-	private GraphProvider m_mergedProvider;
+	private MergingGraphProvider m_mergedProvider;
 
 	
 	@Before

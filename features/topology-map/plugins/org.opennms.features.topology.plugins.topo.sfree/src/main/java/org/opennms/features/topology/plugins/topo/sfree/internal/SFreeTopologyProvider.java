@@ -10,12 +10,12 @@ import java.util.Random;
 import org.opennms.features.topology.api.SimpleConnector;
 import org.opennms.features.topology.api.SimpleEdge;
 import org.opennms.features.topology.api.SimpleLeafVertex;
-import org.opennms.features.topology.api.topo.DelegatingVertexEdgeProvider;
+import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 
-public class SFreeTopologyProvider extends DelegatingVertexEdgeProvider implements GraphProvider {
+public class SFreeTopologyProvider extends AbstractTopologyProvider implements GraphProvider {
 
 	private static final String TOPOLOGY_NAMESPACE_SFREE = "sfree";
 	public static final String ERDOS_RENIS = "ErdosReniy";

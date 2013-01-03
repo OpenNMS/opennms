@@ -161,6 +161,12 @@ public class SimpleTopologyProviderTest {
 		throw new UnsupportedOperationException("GraphContainer.getVertexRefForest is not yet implemented.");
 	}
 
+	@Override
+	public void setDataSource(GraphProvider graphProvider) {
+		// TODO Auto-generated method stub
+		
+	}
+
     }
     
     private class TestOperationContext implements OperationContext{
@@ -394,12 +400,12 @@ public class SimpleTopologyProviderTest {
             }
         });
 
-        Object groupId = m_topologyProvider.addGroup("Test Group", "groupIcon.jpg");
+        Vertex groupId = m_topologyProvider.addGroup("Test Group", "groupIcon.jpg");
         assertEquals(1, eventsReceived.get());
         eventsReceived.set(0);
         
-        m_topologyProvider.setParent(vertexId1.getId(), groupId);
-        m_topologyProvider.setParent(vertexId2.getId(), groupId);
+        m_topologyProvider.setParent(vertexId1, groupId);
+        m_topologyProvider.setParent(vertexId2, groupId);
         
         assertEquals(2, eventsReceived.get());
     }

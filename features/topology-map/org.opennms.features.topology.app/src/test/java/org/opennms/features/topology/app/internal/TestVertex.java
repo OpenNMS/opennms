@@ -35,7 +35,7 @@ import javax.xml.bind.annotation.XmlTransient;
 
 import org.opennms.features.topology.api.topo.AbstractVertex;
 
-public abstract class TestVertex extends AbstractVertex {
+public class TestVertex extends AbstractVertex {
 
 	TestGroup m_parent = null;
 	List<TestEdge> m_edges = new ArrayList<TestEdge>();
@@ -49,9 +49,6 @@ public abstract class TestVertex extends AbstractVertex {
 		setX(x);
 		setY(y);
 	}
-
-	@Override
-	public abstract boolean isLeaf();
 
 	public boolean isRoot() {
 		return m_parent == null;

@@ -42,15 +42,12 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.opennms.features.topology.api.topo.DelegatingVertexEdgeProvider;
+import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeProvider;
 import org.opennms.features.topology.api.topo.GraphProvider;
-import org.opennms.features.topology.api.topo.SimpleEdgeProvider;
-import org.opennms.features.topology.api.topo.SimpleVertexProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexProvider;
-import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.dao.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
@@ -61,9 +58,9 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.slf4j.LoggerFactory;
 
-public class LinkdTopologyProvider extends DelegatingVertexEdgeProvider implements GraphProvider {
+public class LinkdTopologyProvider extends AbstractTopologyProvider implements GraphProvider {
 
-    private static final String TOPOLOGY_NAMESPACE_LINKD = "nodes";
+    public static final String TOPOLOGY_NAMESPACE_LINKD = "nodes";
     private static final String LINKD_GROUP_ID_PREFIX = "linkdg";
     public static final String GROUP_ICON_KEY = "linkd:group";
     public static final String SERVER_ICON_KEY = "linkd:system";

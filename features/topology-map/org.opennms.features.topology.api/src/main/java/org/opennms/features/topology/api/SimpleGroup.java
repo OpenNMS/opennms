@@ -34,10 +34,11 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.Vertex;
 
 @XmlRootElement(name="group")
-public class SimpleGroup extends SimpleVertex {
+public class SimpleGroup extends AbstractVertex {
 
 	List<Vertex> m_members = new ArrayList<Vertex>();
 
@@ -70,11 +71,11 @@ public class SimpleGroup extends SimpleVertex {
 		return m_members;
 	}
 
-	public void addMember(SimpleVertex v) {
+	public void addMember(Vertex v) {
 		m_members.add(v);
 	}
 
-	public void removeMember(SimpleVertex v) {
+	public void removeMember(Vertex v) {
 		m_members.remove(v);
 	}
 

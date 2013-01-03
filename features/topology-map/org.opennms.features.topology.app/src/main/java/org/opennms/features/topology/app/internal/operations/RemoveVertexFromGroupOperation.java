@@ -126,7 +126,7 @@ public class RemoveVertexFromGroupOperation implements Constants, Operation {
 				GraphProvider topologyProvider = graphContainer.getBaseTopology();
 
 				// Relink the child to the grandparent group (or null if it is null)
-				topologyProvider.setParent(childId, grandParent);
+				topologyProvider.setParent(graphContainer.getBaseTopology().getVertex(graphContainer.getBaseTopology().getVertexNamespace(), childId), grandParent);
 
 				// Save the topology
 				topologyProvider.save(null);

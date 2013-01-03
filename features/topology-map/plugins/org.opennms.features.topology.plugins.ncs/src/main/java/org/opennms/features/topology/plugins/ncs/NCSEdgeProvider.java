@@ -33,7 +33,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.opennms.features.topology.api.SimpleConnector;
-import org.opennms.features.topology.api.SimpleVertex;
+import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.Connector;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
@@ -133,16 +133,11 @@ public class NCSEdgeProvider implements EdgeProvider {
 		}
 	}
 
-	public static class NCSVertex extends SimpleVertex {
+	public static class NCSVertex extends AbstractVertex {
 
 		public NCSVertex(String id, String label) {
 			super("nodes", id);
 			setLabel(label);
-		}
-
-		@Override
-		public boolean isLeaf() {
-			return true;
 		}
 	}
 

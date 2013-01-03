@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlIDREF;
 
 import com.vaadin.data.Item;
 
-public abstract class AbstractVertex implements Vertex {
+public class AbstractVertex implements Vertex {
 
 	private final String m_namespace;
 	private final String m_id;
@@ -158,7 +158,9 @@ public abstract class AbstractVertex implements Vertex {
 	}
 
 	@Override
-	public abstract boolean isLeaf();
+	public boolean isLeaf() {
+		return true;
+	}
 
 	@Override
 	public boolean isRoot() {

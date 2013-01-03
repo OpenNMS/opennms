@@ -167,6 +167,12 @@ public class SaveToXmlTest {
 							Collection<? extends VertexRef> vertexRefs) {
 						throw new UnsupportedOperationException("GraphContainer.getVertexRefForest is not yet implemented.");
 					}
+
+					@Override
+					public void setDataSource(GraphProvider graphProvider) {
+						// TODO Auto-generated method stub
+						
+					}
 				};
 			}
 		});

@@ -20,6 +20,7 @@ import org.opennms.features.topology.api.topo.VertexListener;
 import org.opennms.features.topology.api.topo.VertexProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.ProviderManager.ProviderListener;
+import org.slf4j.LoggerFactory;
 
 public class MergingGraphProvider implements GraphProvider, VertexListener, EdgeListener, ProviderListener {
 	
@@ -322,6 +323,17 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 		}
 		
 		return edges;
+	}
+	
+	@Override
+	public void clearEdges() {
+		for(EdgeProvider edgeProvider : m_edgeProviders.values()) {
+			try {
+				edgeProvider.clearEdges();
+			} catch (Throwable e) {
+				LoggerFactory.getLogger(this.getClass()).warn("Exception caught while calling clearEdges()", e);
+			}
+		}
 	}
 	
 	private void fireVertexChanged() {

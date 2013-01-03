@@ -28,19 +28,15 @@
 
 package org.opennms.features.topology.app.internal;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import java.util.ArrayList;
 import java.util.List;
 
-import org.opennms.features.topology.api.topo.DelegatingVertexEdgeProvider;
+import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.Vertex;
-import org.opennms.features.topology.api.topo.VertexRef;
 
-public class TestTopologyProvider extends DelegatingVertexEdgeProvider implements GraphProvider {
+public class TestTopologyProvider extends AbstractTopologyProvider implements GraphProvider {
     private int m_vertexCounter = 0;
     private int m_edgeCounter = 0;
     private int m_groupCounter = 0;
@@ -137,9 +133,5 @@ public class TestTopologyProvider extends DelegatingVertexEdgeProvider implement
                  
         addVertices(vertices.toArray(new Vertex[] {}));
         addEdges(edges.toArray(new Edge[] {}));
-    }
-
-    private void assertVertex(Object vertexId) {
-        assertTrue(containsVertexId(vertexId));
     }
 }

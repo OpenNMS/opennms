@@ -65,8 +65,7 @@ public class AddVertexOperation implements Operation{
         Vertex vertId1 = graphContainer.getBaseTopology().addVertex(0, 0);
         // Make the new vertex a root node
         vertId1.setParent(null);
-        graphContainer.getBaseTopology().connectVertices(vertexId, vertId1);
-        
+        graphContainer.getBaseTopology().connectVertices(graphContainer.getBaseTopology().getVertex(graphContainer.getBaseTopology().getVertexNamespace(), vertexId), vertId1);
     }
 
     public String getIconKey() {

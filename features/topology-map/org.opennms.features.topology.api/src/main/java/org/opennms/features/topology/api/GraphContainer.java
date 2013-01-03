@@ -60,4 +60,6 @@ public interface GraphContainer extends DisplayState {
 	public SelectionManager getSelectionManager();
 	
 	public Collection<VertexRef> getVertexRefForest(Collection<? extends VertexRef> vertexRefs);
+
+	void setDataSource(GraphProvider graphProvider);
 }

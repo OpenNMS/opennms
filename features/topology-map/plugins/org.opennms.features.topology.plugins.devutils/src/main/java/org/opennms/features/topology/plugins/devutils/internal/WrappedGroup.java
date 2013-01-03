@@ -40,8 +40,7 @@ import com.vaadin.data.Item;
 public class WrappedGroup extends WrappedVertex {
 
 	List<WrappedVertex> m_members = new ArrayList<WrappedVertex>();
-	
-	
+
 	public WrappedGroup() {}
 	
 	public WrappedGroup(Item group) {

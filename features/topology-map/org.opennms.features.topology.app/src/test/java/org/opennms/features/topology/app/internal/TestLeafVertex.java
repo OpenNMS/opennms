@@ -37,10 +37,4 @@ public class TestLeafVertex extends TestVertex {
 		super(id, x, y);
 	}
 
-	@Override
-	public boolean isLeaf() {
-		return true;
-	}
-	
-
 }

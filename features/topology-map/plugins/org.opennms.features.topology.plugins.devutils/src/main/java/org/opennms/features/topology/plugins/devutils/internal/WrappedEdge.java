@@ -44,20 +44,20 @@ public class WrappedEdge implements Edge {
 	Item m_edge;
 	Connector m_source;
 	Connector m_target;
-	
+
 	public WrappedEdge() {}
-	
+
 	public WrappedEdge(Item edge, WrappedVertex source, WrappedVertex target) {
 		m_edge = edge;
 		setSource(new SimpleConnector("wrapped", source.getId() + "::" + target.getId(), source, this));
 		setTarget(new SimpleConnector("wrapped", target.getId() + "::" + source.getId(), target, this));
 	}
-	
+
 	private Object getProperty(String propertyId) {
 		Property property = m_edge.getItemProperty(propertyId);
 		return property == null ? null : property.getValue();
 	}
-	
+
 	private void setProperty(String propertyId, Object value) {
 		Property property = m_edge.getItemProperty(propertyId);
 		if (property != null) {
@@ -65,8 +65,8 @@ public class WrappedEdge implements Edge {
 		}
 	}
 
-
 	@XmlID
+	@Override
 	public String getId() {
 		return (String) getProperty("id");
 	}
@@ -74,8 +74,9 @@ public class WrappedEdge implements Edge {
 	public void setId(String id) {
 		setProperty("id", id);
 	}
-	
+
 	@XmlIDREF
+	@Override
 	public Connector getSource() {
 		return m_source;
 	}
@@ -85,11 +86,42 @@ public class WrappedEdge implements Edge {
 	}
 
 	@XmlIDREF
+	@Override
 	public Connector getTarget() {
 		return m_target;
 	}
 
 	public void setTarget(Connector target) {
 		m_target = target;
+	}
+
+	@Override
+	public Item getItem() {
+		return m_edge;
+	}
+
+	@Override
+	public String getKey() {
+		return (String) getProperty("key");
+	}
+
+	@Override
+	public String getLabel() {
+		return (String) getProperty("label");
+	}
+
+	@Override
+	public String getStyleName() {
+		return (String) getProperty("styleName");
+	}
+
+	@Override
+	public String getTooltipText() {
+		return (String) getProperty("tooltipText");
+	}
+
+	@Override
+	public String getNamespace() {
+		return (String) getProperty("namespace");
 	}
 }
