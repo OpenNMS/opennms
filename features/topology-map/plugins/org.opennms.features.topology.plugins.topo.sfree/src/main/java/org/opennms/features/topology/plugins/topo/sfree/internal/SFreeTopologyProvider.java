@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import org.opennms.features.topology.api.SimpleConnector;
 import org.opennms.features.topology.api.SimpleEdge;
 import org.opennms.features.topology.api.SimpleLeafVertex;
 import org.opennms.features.topology.api.topo.DelegatingVertexEdgeProvider;
@@ -62,7 +63,10 @@ public class SFreeTopologyProvider extends DelegatingVertexEdgeProvider implemen
 			nodes.put(j, vertexj);
 			System.err.println("Creating First Cluster: " + i);
 			System.err.println("Creating First Cluster: " + j);
-			edges.add(new SimpleEdge(TOPOLOGY_NAMESPACE_SFREE, "link:"+i+"-"+j, nodes.get(i), nodes.get(j)));
+			String edgeId = "link:"+i+"-"+j;
+			SimpleConnector source = new SimpleConnector(TOPOLOGY_NAMESPACE_SFREE, nodes.get(i).getId()+"-"+edgeId+"-connector", nodes.get(i));
+			SimpleConnector target = new SimpleConnector(TOPOLOGY_NAMESPACE_SFREE, nodes.get(j).getId()+"-"+edgeId+"-connector", nodes.get(j));
+			edges.add(new SimpleEdge(TOPOLOGY_NAMESPACE_SFREE, edgeId, source, target));
 		}
 
 		Random r = new Random((new Date()).getTime());
@@ -78,8 +82,11 @@ public class SFreeTopologyProvider extends DelegatingVertexEdgeProvider implemen
 				System.err.println("Generated random position: " + d);
 				Long j = (long)d;
 				System.err.println("Try Adding edge: " + j + "--->" + i);
-				edge = new SimpleEdge(TOPOLOGY_NAMESPACE_SFREE, "link:"+i+"-"+j, nodes.get(i), nodes.get(j.intValue()));
-				if( i==j.intValue() ) continue;
+    			String edgeId = "link:"+i+"-"+j;
+    			SimpleConnector source = new SimpleConnector(TOPOLOGY_NAMESPACE_SFREE, nodes.get(i).getId()+"-"+edgeId+"-connector", nodes.get(i));
+    			SimpleConnector target = new SimpleConnector(TOPOLOGY_NAMESPACE_SFREE, nodes.get(j).getId()+"-"+edgeId+"-connector", nodes.get(j));
+    			edge = new SimpleEdge(TOPOLOGY_NAMESPACE_SFREE, edgeId, source, target);
+				if( i == j.intValue() ) continue;
 				edges.add(edge);
 			}// m links added
 		}
@@ -108,7 +115,10 @@ public class SFreeTopologyProvider extends DelegatingVertexEdgeProvider implemen
 		for (Integer start=0; start < numberOfNodes; start++) {
 			for (Integer end = start+1; end<numberOfNodes;end++) {
 				if (z*r.nextDouble()<averageNumberofNeighboors)  {
-					edges.add(new SimpleEdge(TOPOLOGY_NAMESPACE_SFREE, "link:"+start+"-"+end, nodes.get(start), nodes.get(end)));
+					String edgeId = "link:"+start+"-"+end;
+					SimpleConnector source = new SimpleConnector(TOPOLOGY_NAMESPACE_SFREE, nodes.get(start).getId()+"-"+edgeId+"-connector", nodes.get(start));
+					SimpleConnector target = new SimpleConnector(TOPOLOGY_NAMESPACE_SFREE, nodes.get(end).getId()+"-"+edgeId+"-connector", nodes.get(end));
+					edges.add(new SimpleEdge(TOPOLOGY_NAMESPACE_SFREE, edgeId, source, target));
 				}
 			}
 		}

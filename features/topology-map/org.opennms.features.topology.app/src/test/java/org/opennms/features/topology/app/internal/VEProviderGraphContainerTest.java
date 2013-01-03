@@ -20,6 +20,8 @@ import org.opennms.features.topology.api.topo.EdgeProvider;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.GraphVisitor;
+import org.opennms.features.topology.api.topo.AbstractVertexRef;
+import org.opennms.features.topology.api.topo.AbstractEdgeRef;
 import org.opennms.features.topology.api.topo.SimpleEdgeProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
@@ -158,13 +160,13 @@ public class VEProviderGraphContainerTest {
 	
 
 	private void expectVertex(String namespace, String vertexId, String styles) {
-		LWVertexRef vertexRef = new LWVertexRef(namespace, vertexId);
+		AbstractVertexRef vertexRef = new AbstractVertexRef(namespace, vertexId);
 		m_expectedVertices.add(vertexRef);
 		m_expectedVertexStyles.put(vertexRef, styles);
 	}
 	
 	private void expectEdge(String namespace, String edgeId, String styles) {
-		LWEdgeRef edgeRef = new LWEdgeRef(namespace, edgeId);
+		AbstractEdgeRef edgeRef = new AbstractEdgeRef(namespace, edgeId);
 		m_expectedEdges.add(edgeRef);
 		m_expectedEdgeStyles.put(edgeRef, styles);
 	}

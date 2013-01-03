@@ -24,6 +24,11 @@ public interface VertexProvider {
 	 */
 	public boolean contributesTo(String namespace);
 
+	/**
+	 * @deprecated Use {@link #containsVertexId(VertexRef id)} instead.
+	 */
+	boolean containsVertexId(String id);
+
 	boolean containsVertexId(VertexRef id);
 
 	public Vertex getVertex(String namespace, String id);

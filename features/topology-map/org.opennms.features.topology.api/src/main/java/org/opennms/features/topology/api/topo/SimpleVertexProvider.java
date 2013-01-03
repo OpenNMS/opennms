@@ -200,4 +200,14 @@ public class SimpleVertexProvider implements VertexProvider {
 		fireVerticesRemoved(all);
 	}
 
+	@Override
+	public boolean containsVertexId(String id) {
+		return containsVertexId(new AbstractVertexRef(getVertexNamespace(), id));
+	}
+
+	@Override
+	public boolean containsVertexId(VertexRef id) {
+		return getVertex(id) == null;
+	}
+
 }

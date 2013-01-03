@@ -30,32 +30,25 @@ package org.opennms.features.topology.plugins.topo.simple.internal.operations;
 
 import java.util.List;
 
-import org.opennms.features.topology.api.DisplayState;
+import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.slf4j.LoggerFactory;
 
 
 public class RemoveVertexOperation implements Operation {
 
-    GraphProvider m_topologyProvider;
-    
-    public RemoveVertexOperation(GraphProvider topologyProvider) {
-        m_topologyProvider = topologyProvider;
-    }
-    
     @Override
     public Undoer execute(List<VertexRef> targets, OperationContext operationContext) {
-        DisplayState graphContainer = operationContext.getGraphContainer();
+        GraphContainer graphContainer = operationContext.getGraphContainer();
         
         if (targets == null) {
             LoggerFactory.getLogger(getClass()).debug("need to handle selection!!!");
         } else {
             for(VertexRef target : targets) {
-            	if (m_topologyProvider.getVertexNamespace().equals(target.getNamespace())) {
-            		m_topologyProvider.removeVertex(target.getId());
+            	if (operationContext.getGraphContainer().getBaseTopology().getVertexNamespace().equals(target.getNamespace())) {
+            		operationContext.getGraphContainer().getBaseTopology().removeVertex(target);
             	}
             }
             
@@ -74,7 +67,7 @@ public class RemoveVertexOperation implements Operation {
     public boolean enabled(List<VertexRef> targets, OperationContext operationContext) {
         if(targets != null) {
             for(VertexRef target : targets) {
-                if(m_topologyProvider.getVertex(target) == null) return false;
+                if(operationContext.getGraphContainer().getBaseTopology().getVertex(target) == null) return false;
             }
             return true;
         }

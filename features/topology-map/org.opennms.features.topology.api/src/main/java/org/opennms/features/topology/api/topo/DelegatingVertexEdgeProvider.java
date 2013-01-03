@@ -61,6 +61,11 @@ public class DelegatingVertexEdgeProvider implements VertexProvider, EdgeProvide
 	}
 
 	@Override
+	public boolean containsVertexId(String id) {
+		return m_vertexProvider.containsVertexId(id);
+	}
+
+	@Override
 	public boolean containsVertexId(VertexRef id) {
 		return m_vertexProvider.containsVertexId(id);
 	}

@@ -186,6 +186,6 @@ public class RemoveVertexFromGroupOperation implements Constants, Operation {
 
 	@Override
 	public String getId() {
-		return null;
+		return "RemoveVertexFromGroup";
 	}
 }

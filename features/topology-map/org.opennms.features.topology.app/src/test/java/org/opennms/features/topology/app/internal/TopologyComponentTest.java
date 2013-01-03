@@ -97,7 +97,7 @@ public class TopologyComponentTest {
         GraphContainer graphContainer = new SimpleGraphContainer(topoProvider);
 		TopologyComponent topoComponent = getTopologyComponent(graphContainer);
         
-        topoProvider.addVertex();
+        topoProvider.addVertex(0, 0);
         
         topoComponent.paintContent(target);
         
@@ -139,7 +139,7 @@ public class TopologyComponentTest {
         
         Collection<Vertex> vertIds = topologyProvider.getVertices();
         
-        Object groupId = topologyProvider.addGroup(this.getClass().getSimpleName(), "GroupIcon.jpg");
+        Vertex groupId = topologyProvider.addGroup(this.getClass().getSimpleName(), "GroupIcon.jpg");
         
         for(Vertex v : vertIds) {
             if(v.isLeaf()) {
@@ -186,7 +186,7 @@ public class TopologyComponentTest {
         
         Collection<Vertex> vertIds = topoProvider.getVertices();
         
-        Object groupId = topoProvider.addGroup(this.getClass().getSimpleName(), "GroupIcon.jpg");
+        Vertex groupId = topoProvider.addGroup(this.getClass().getSimpleName(), "GroupIcon.jpg");
         
         for(Vertex v: vertIds) {
             if(v.isLeaf()) {
@@ -206,8 +206,8 @@ public class TopologyComponentTest {
         }
         
         for(Edge e: graph.getDisplayEdges()) {
-        	Vertex sourceV = graphContainer.getVertex(e.getSource().getVertex());
-        	Vertex targetV = graphContainer.getVertex(e.getTarget().getVertex());
+        	Vertex sourceV = graphContainer.getBaseTopology().getVertex(e.getSource().getVertex());
+        	Vertex targetV = graphContainer.getBaseTopology().getVertex(e.getTarget().getVertex());
             String sourceKey = sourceV.getKey();
             String targetKey = targetV.getKey();
             mockEdgeWithKeys(target2, e.getKey(), sourceKey, targetKey);

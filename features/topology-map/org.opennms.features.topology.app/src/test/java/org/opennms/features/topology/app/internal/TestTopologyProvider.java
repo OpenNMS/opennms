@@ -139,20 +139,6 @@ public class TestTopologyProvider extends DelegatingVertexEdgeProvider implement
         addEdges(edges.toArray(new Edge[] {}));
     }
 
-    private Vertex getVertex(VertexRef vertexId, boolean required) {
-        Vertex item = getVertex(vertexId);
-        if(required && item == null) {
-            throw new IllegalArgumentException("required vertex " + vertexId + " not found");
-        }
-        return item;
-    }
-    
-    private void assertGroup(VertexRef parentId) {
-        assertTrue(containsVertexId(parentId));
-        Vertex parentItem = getVertex(parentId);
-        assertFalse(parentItem.isLeaf());
-    }
-
     private void assertVertex(Object vertexId) {
         assertTrue(containsVertexId(vertexId));
     }

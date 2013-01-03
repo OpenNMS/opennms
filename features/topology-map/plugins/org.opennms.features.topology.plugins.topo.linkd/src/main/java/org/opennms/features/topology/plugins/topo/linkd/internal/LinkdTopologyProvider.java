@@ -62,6 +62,8 @@ import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.slf4j.LoggerFactory;
 
 public class LinkdTopologyProvider extends DelegatingVertexEdgeProvider implements GraphProvider {
+
+    private static final String TOPOLOGY_NAMESPACE_LINKD = "nodes";
     private static final String LINKD_GROUP_ID_PREFIX = "linkdg";
     public static final String GROUP_ICON_KEY = "linkd:group";
     public static final String SERVER_ICON_KEY = "linkd:system";
@@ -159,14 +161,16 @@ public class LinkdTopologyProvider extends DelegatingVertexEdgeProvider implemen
         m_dataLinkInterfaceDao = dataLinkInterfaceDao;
     }
 
-    @Override
+    /**
+     * Used as an init-method in the OSGi blueprint
+     */
     public void onInit() {
         log("init: loading topology v1.3");
         loadtopology();
     }
     
     public LinkdTopologyProvider() {
-    	super("nodes");
+    	super(TOPOLOGY_NAMESPACE_LINKD);
     }
 
     @Override

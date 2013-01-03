@@ -26,63 +26,28 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.api;
+package org.opennms.features.topology.api.topo;
 
-import org.opennms.features.topology.api.topo.Connector;
-import org.opennms.features.topology.api.topo.EdgeRef;
-import org.opennms.features.topology.api.topo.VertexRef;
+public class AbstractVertexRef extends AbstractRef implements VertexRef {
 
-public class SimpleConnector implements Connector {
-
-	private final String m_namespace;
-	private final String m_id;
-	private final VertexRef m_vertex;
-	private EdgeRef m_edge;
-
-	/**
-	 * @param namespace
-	 * @param id
-	 * @param vertex
-	 */
-	public SimpleConnector(String namespace, String id, VertexRef vertex) {
-		m_namespace = namespace;
-		m_id = id;
-		m_vertex = vertex;
+	public AbstractVertexRef(VertexRef ref) {
+		super(ref);
 	}
 
-	/**
-	 * @param namespace
-	 * @param id
-	 * @param vertex
-	 * @param edge
-	 */
-	public SimpleConnector(String namespace, String id, VertexRef vertex, EdgeRef edge) {
-		this(namespace, id, vertex);
-		m_edge = edge;
+	public AbstractVertexRef(String namespace, String id) {
+		super(namespace, id);
 	}
 
 	@Override
-	public String getNamespace() {
-		return m_namespace;
+	public boolean equals(Object obj) {
+		if (obj instanceof VertexRef) {
+			return super.equals(obj);
+		}
+		return false;
 	}
 
+	
 	@Override
-	public String getId() {
-		return m_id;
-	}
-
-	@Override
-	public EdgeRef getEdge() {
-		return m_edge;
-	}
-
-	public void setEdge(EdgeRef edgeRef) {
-		m_edge = edgeRef;
-	}
-
-	@Override
-	public VertexRef getVertex() {
-		return m_vertex;
-	}
+	public String toString() { return "VertexRef:"+getNamespace()+":"+getId(); } 
 
 }

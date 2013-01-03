@@ -31,6 +31,7 @@ package org.opennms.features.topology.plugins.topo.onmsdao.internal;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.opennms.features.topology.api.SimpleConnector;
 import org.opennms.features.topology.api.SimpleEdge;
 import org.opennms.features.topology.api.SimpleGroup;
 import org.opennms.features.topology.api.SimpleLeafVertex;
@@ -54,6 +55,7 @@ public class OnmsTopologyProvider extends DelegatingVertexEdgeProvider implement
     private int m_counter = 0;
     private int m_edgeCounter = 0;
 
+    private static final String TOPOLOGY_NAMESPACE_ONMSDAO = "onmsdao";
     private OnmsMapDao m_onmsMapDao;
     private OnmsMapElementDao m_onmsMapElementDao;
     private DataLinkInterfaceDao m_dataLinkInterfaceDao;
@@ -84,7 +86,7 @@ public class OnmsTopologyProvider extends DelegatingVertexEdgeProvider implement
     }
 
     public OnmsTopologyProvider() {
-        super("onmsdao");
+        super(TOPOLOGY_NAMESPACE_ONMSDAO);
     }
 
     private Vertex addVertex(String id, int x, int y, String icon) {
@@ -92,7 +94,7 @@ public class OnmsTopologyProvider extends DelegatingVertexEdgeProvider implement
             throw new IllegalArgumentException("A vertex or group with id " + id + " already exists!");
         }
         LoggerFactory.getLogger(getClass()).debug("Adding a vertex: {}", id);
-        SimpleVertex vertex = new SimpleLeafVertex(id, x, y);
+        SimpleVertex vertex = new SimpleLeafVertex(TOPOLOGY_NAMESPACE_ONMSDAO, id, x, y);
         vertex.setNodeID(-1);
         vertex.setIconKey(icon);
         addVertices(vertex);
@@ -105,15 +107,20 @@ public class OnmsTopologyProvider extends DelegatingVertexEdgeProvider implement
             throw new IllegalArgumentException("A vertex or group with id " + groupLabel + " already exists!");
         }
         LoggerFactory.getLogger(getClass()).debug("Adding a group: {}", groupLabel);
-        SimpleVertex vertex = new SimpleGroup(groupLabel, -1);
+        // TODO: Make a proper incrementing ID
+        SimpleVertex vertex = new SimpleGroup(TOPOLOGY_NAMESPACE_ONMSDAO, "-1");
         vertex.setIconKey(icon);
+        vertex.setLabel(groupLabel);
         addVertices(vertex);
         return vertex;
     }
 
-    private Edge connectVertices(String id, VertexRef sourceVertextId, VertexRef targetVertextId) {
+    private Edge connectVertices(String id, VertexRef sourceId, VertexRef targetId) {
 
-        SimpleEdge edge = new SimpleEdge(id, sourceVertextId, targetVertextId);
+        SimpleConnector source = new SimpleConnector(TOPOLOGY_NAMESPACE_ONMSDAO, sourceId.getId()+"-"+id+"-connector", sourceId);
+        SimpleConnector target = new SimpleConnector(TOPOLOGY_NAMESPACE_ONMSDAO, targetId.getId()+"-"+id+"-connector", targetId);
+
+        SimpleEdge edge = new SimpleEdge(TOPOLOGY_NAMESPACE_ONMSDAO, id, source, target);
         
         addEdges(edge);
         
@@ -131,15 +138,6 @@ public class OnmsTopologyProvider extends DelegatingVertexEdgeProvider implement
                 removeEdges(e);
             }
         }
-    }
-
-    private Vertex getVertex(VertexRef vertexId, boolean required) {
-        Vertex item = getVertex(vertexId);
-        if (required && item == null) {
-            throw new IllegalArgumentException("required vertex " + vertexId + " not found.");
-        }
-        
-        return item;
     }
 
     private OnmsMap getMap(int mapId) {
@@ -166,17 +164,18 @@ public class OnmsTopologyProvider extends DelegatingVertexEdgeProvider implement
             Integer id;
             String type;
             if (vertex.isLeaf()) {
-                id = ((SimpleLeafVertex)vertex).getNodeid();
+                id = ((SimpleLeafVertex)vertex).getNodeID();
                 type=OnmsMapElement.NODE_TYPE;
             } else {
                 id = ((SimpleGroup)vertex).getMapid();
                 type=OnmsMapElement.MAP_TYPE;
             }
-            VertexRef parent = vertex.getParent();
+            VertexRef parentRef = vertex.getParent();
+            Vertex parent = getParent(parentRef);
             if (parent == null) {
                 mapid = rootMapid;
             } else {
-                mapid = parent.getMapid();
+                mapid = ((SimpleGroup)parent).getMapid();
             }
             OnmsMap map = getMap(mapid);
             getOnmsMapElementDao().save(new OnmsMapElement(map, id, type, "Here is the label", vertex.getIconKey(), vertex.getX(), vertex.getY()));
@@ -231,10 +230,12 @@ public class OnmsTopologyProvider extends DelegatingVertexEdgeProvider implement
         }
         
         for (Vertex target: leafs){
-            for (DataLinkInterface link: getDataLinkInterfaceDao().findByNodeParentId(target.getNodeid())) {
+            for (DataLinkInterface link: getDataLinkInterfaceDao().findByNodeParentId(((SimpleLeafVertex)target).getNodeID())) {
                 for (Vertex source: leafs) {
-                   if ( link.getNode().getId() == source.getNodeid() ) {
-                       SimpleEdge edge = new SimpleEdge("onmsdao", link.getId().toString(), source, target);
+                   if ( link.getNode().getId() == ((SimpleLeafVertex)source).getNodeID() ) {
+                       SimpleConnector sourceConnector = new SimpleConnector(TOPOLOGY_NAMESPACE_ONMSDAO, source.getId()+"-"+link.getId()+"-connector", source);
+                       SimpleConnector targetConnector = new SimpleConnector(TOPOLOGY_NAMESPACE_ONMSDAO, target.getId()+"-"+link.getId()+"-connector", target);
+                       SimpleEdge edge = new SimpleEdge(TOPOLOGY_NAMESPACE_ONMSDAO, link.getId().toString(), sourceConnector, targetConnector);
                        edges.add(edge);
                    }
                 }
@@ -250,7 +251,7 @@ public class OnmsTopologyProvider extends DelegatingVertexEdgeProvider implement
     private String getNextEdgeId() {
         return "e" + m_edgeCounter ++;
     }
-    
+
     @Override
     public void resetContainer() {
         clearVertices();
@@ -261,7 +262,7 @@ public class OnmsTopologyProvider extends DelegatingVertexEdgeProvider implement
     }
 
     @Override
-    public Vertex addVertex(int nodeid, int x, int y, String icon) {
+    public Vertex addVertex(int x, int y, String icon) {
         LoggerFactory.getLogger(getClass()).debug("Adding vertex in {} with icon: {}", getClass().getSimpleName(), icon);
         String nextVertexId = getNextVertexId();
         return addVertex(nextVertexId, x, y, icon);

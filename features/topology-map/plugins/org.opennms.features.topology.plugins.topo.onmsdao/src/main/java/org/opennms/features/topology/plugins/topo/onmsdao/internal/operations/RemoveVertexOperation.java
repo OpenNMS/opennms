@@ -71,7 +71,7 @@ public class RemoveVertexOperation implements Operation {
     @Override
     public boolean enabled(List<VertexRef> targets, OperationContext operationContext) {
         if(targets != null) {
-            for(Object target : targets) {
+            for(VertexRef target : targets) {
                 if(!m_topologyProvider.containsVertexId(target)) return false;
             }
             return true;

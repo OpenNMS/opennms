@@ -26,44 +26,20 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.api;
+package org.opennms.features.topology.api.topo;
 
-import org.opennms.features.topology.api.topo.Connector;
-import org.opennms.features.topology.api.topo.EdgeRef;
-import org.opennms.features.topology.api.topo.VertexRef;
-
-public class SimpleConnector implements Connector {
-
-	private final String m_namespace;
-	private final String m_id;
-	private final VertexRef m_vertex;
-	private EdgeRef m_edge;
-
-	/**
-	 * @param namespace
-	 * @param id
-	 * @param vertex
-	 */
-	public SimpleConnector(String namespace, String id, VertexRef vertex) {
+public class AbstractRef implements Ref {
+	
+	private String m_namespace;
+	private String m_id;
+	
+	protected AbstractRef(String namespace, String id) {
 		m_namespace = namespace;
 		m_id = id;
-		m_vertex = vertex;
 	}
-
-	/**
-	 * @param namespace
-	 * @param id
-	 * @param vertex
-	 * @param edge
-	 */
-	public SimpleConnector(String namespace, String id, VertexRef vertex, EdgeRef edge) {
-		this(namespace, id, vertex);
-		m_edge = edge;
-	}
-
-	@Override
-	public String getNamespace() {
-		return m_namespace;
+	
+	protected AbstractRef(Ref ref) {
+		this(ref.getNamespace(), ref.getId());
 	}
 
 	@Override
@@ -72,17 +48,31 @@ public class SimpleConnector implements Connector {
 	}
 
 	@Override
-	public EdgeRef getEdge() {
-		return m_edge;
-	}
-
-	public void setEdge(EdgeRef edgeRef) {
-		m_edge = edgeRef;
+	public String getNamespace() {
+		return m_namespace;
 	}
 
 	@Override
-	public VertexRef getVertex() {
-		return m_vertex;
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((m_id == null) ? 0 : m_id.hashCode());
+		result = prime * result
+				+ ((m_namespace == null) ? 0 : m_namespace.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (obj == null) return false;
+		
+		if (!(obj instanceof Ref)) return false;
+
+		Ref ref = (Ref)obj;
+		
+		return getNamespace().equals(ref.getNamespace()) && getId().equals(ref.getId());
+
 	}
 
 }

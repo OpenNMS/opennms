@@ -31,7 +31,6 @@ package org.opennms.features.topology.plugins.topo.simple.internal;
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import javax.xml.bind.JAXB;
@@ -42,25 +41,25 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.features.topology.api.SimpleConnector;
 import org.opennms.features.topology.api.SimpleEdge;
 import org.opennms.features.topology.api.SimpleGroup;
 import org.opennms.features.topology.api.SimpleLeafVertex;
 import org.opennms.features.topology.api.SimpleVertex;
+import org.opennms.features.topology.api.topo.AbstractVertexRef;
 import org.opennms.features.topology.api.topo.DelegatingVertexEdgeProvider;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.GraphProvider;
-import org.opennms.features.topology.api.topo.SimpleEdgeProvider;
-import org.opennms.features.topology.api.topo.SimpleVertexProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.vaadin.data.util.BeanContainer;
-
 public class SimpleTopologyProvider extends DelegatingVertexEdgeProvider implements GraphProvider {
 	
+	private static final String TOPOLOGY_NAMESPACE_SIMPLE = "simple";
+
 	private static final Logger s_log = LoggerFactory.getLogger(SimpleTopologyProvider.class);
 
 	private static final String SIMPLE_VERTEX_ID_PREFIX = "v";
@@ -76,7 +75,7 @@ public class SimpleTopologyProvider extends DelegatingVertexEdgeProvider impleme
 	private String m_namespace;
     
     public SimpleTopologyProvider() {
-        super("simple");
+        super(TOPOLOGY_NAMESPACE_SIMPLE);
         s_log.debug("Creating a new SimpleTopologyProvider");
         
         URL defaultGraph = getClass().getResource("/saved-vmware-graph.xml");
@@ -106,7 +105,7 @@ public class SimpleTopologyProvider extends DelegatingVertexEdgeProvider impleme
             throw new IllegalArgumentException("A vertex or group with id " + id + " already exists!");
         }
         s_log.debug("Adding a vertex: {}", id);
-        SimpleVertex vertex = new SimpleLeafVertex(id, x, y);
+        SimpleVertex vertex = new SimpleLeafVertex(TOPOLOGY_NAMESPACE_SIMPLE, id, x, y);
         vertex.setIconKey("server");
         vertex.setLabel(label);
         vertex.setIpAddress(ipAddr);
@@ -115,23 +114,24 @@ public class SimpleTopologyProvider extends DelegatingVertexEdgeProvider impleme
         return vertex;
     }
     
-    @Override
-    public Vertex addGroup(VertexRef groupId, String iconKey, String label) {
+    private Vertex addGroup(String groupId, String iconKey, String label) {
         if (containsVertexId(groupId)) {
             throw new IllegalArgumentException("A vertex or group with id " + groupId + " already exists!");
         }
         s_log.debug("Adding a group: {}", groupId);
-        SimpleVertex vertex = new SimpleGroup(groupId);
+        SimpleVertex vertex = new SimpleGroup(TOPOLOGY_NAMESPACE_SIMPLE, groupId);
         vertex.setLabel(label);
         vertex.setIconKey(iconKey);
         addVertices(vertex);
         return vertex;
     }
 
-    private Edge connectVertices(String id, VertexRef sourceVertexId, VertexRef targetVertexId) {
+    private Edge connectVertices(String id, VertexRef sourceId, VertexRef targetId) {
+        SimpleConnector source = new SimpleConnector(TOPOLOGY_NAMESPACE_SIMPLE, sourceId.getId()+"-"+id+"-connector", sourceId);
+        SimpleConnector target = new SimpleConnector(TOPOLOGY_NAMESPACE_SIMPLE, targetId.getId()+"-"+id+"-connector", targetId);
 
-        SimpleEdge edge = new SimpleEdge("simple", id, sourceVertexId, targetVertexId);
-        
+        SimpleEdge edge = new SimpleEdge(TOPOLOGY_NAMESPACE_SIMPLE, id, source, target);
+
         addEdges(edge);
         
         return edge;

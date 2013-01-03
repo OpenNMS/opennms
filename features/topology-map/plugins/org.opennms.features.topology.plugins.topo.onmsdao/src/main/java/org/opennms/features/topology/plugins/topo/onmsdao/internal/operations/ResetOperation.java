@@ -50,7 +50,7 @@ public class ResetOperation implements Constants, Operation {
         
         m_topologyProvider.resetContainer();
         Vertex groupId = m_topologyProvider.addGroup("Group", GROUP_ICON);
-        Vertex vertexId = m_topologyProvider.addVertex(-1,50, 50, SERVER_ICON);
+        Vertex vertexId = m_topologyProvider.addVertex(50, 50, SERVER_ICON);
         m_topologyProvider.setParent(vertexId, groupId);
         return null;
     }

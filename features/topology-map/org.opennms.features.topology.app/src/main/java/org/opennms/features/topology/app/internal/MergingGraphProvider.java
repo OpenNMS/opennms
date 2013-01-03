@@ -538,6 +538,41 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 		public void save(String filename) {
 			// Do nothing
 		}
+
+		@Override
+		public void addEdges(Edge... edges) {
+			// Do nothing
+		}
+
+		@Override
+		public void addVertices(Vertex... vertices) {
+			// Do nothing
+		}
+
+		@Override
+		public EdgeRef[] getEdgeIdsForVertex(VertexRef vertex) {
+			return new EdgeRef[0];
+		}
+
+		@Override
+		public void removeEdges(EdgeRef... edges) {
+			// Do nothing
+		}
+
+		@Override
+		public boolean containsVertexId(String id) {
+			return false;
+		}
+
+		@Override
+		public boolean containsVertexId(VertexRef id) {
+			return false;
+		}
+
+		@Override
+		public void clearEdges() {
+			// Do nothing
+		}
 	}
 
 	@Override

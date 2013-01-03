@@ -34,11 +34,9 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.plugins.topo.linkd.internal.LinkdTopologyProvider;
+import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.plugins.topo.linkd.internal.operations.RefreshOperation;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -93,7 +91,7 @@ public class LinkdTopologyProviderTest {
 
 	@Test
 	public void testSave() {
-	    m_topologyProvider.save("target/test-map.xml");	    
+	    m_topologyProvider.save("target/test-map.xml");
             m_databasePopulator.check(m_topologyProvider);
 	}
 	
@@ -105,7 +103,7 @@ public class LinkdTopologyProviderTest {
 
 	@Test 
 	public void testAddGroup() {
-	    Object parentId = m_topologyProvider.addGroup("Linkd Group", LinkdTopologyProvider.GROUP_ICON_KEY);
+	    Vertex parentId = m_topologyProvider.addGroup("Linkd Group", LinkdTopologyProvider.GROUP_ICON_KEY);
 	    Assert.assertEquals(true, m_topologyProvider.containsVertexId(parentId));
 	}
 }

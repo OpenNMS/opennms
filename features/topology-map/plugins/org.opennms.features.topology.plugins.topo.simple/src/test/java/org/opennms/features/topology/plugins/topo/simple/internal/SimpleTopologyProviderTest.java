@@ -337,7 +337,7 @@ public class SimpleTopologyProviderTest {
         VertexRef vertexRef = addVertexToTopr();
         
         OperationContext operationContext = getOperationContext(graphContainer);
-        RemoveVertexOperation removeOperation = new RemoveVertexOperation(m_topologyProvider);
+        RemoveVertexOperation removeOperation = new RemoveVertexOperation();
         removeOperation.execute(Arrays.asList(vertexRef), operationContext);
         
         assertEquals(0, m_topologyProvider.getVertices().size());
@@ -350,8 +350,8 @@ public class SimpleTopologyProviderTest {
     @Test
     @Ignore("Since this operation is now interactive, we need to change this unit test")
     public void testCreateGroupOperation() {
-        Object vertexId = addVertexToTopr();
-        Object vertexId2 = addVertexToTopr();
+        VertexRef vertexId = addVertexToTopr();
+        VertexRef vertexId2 = addVertexToTopr();
         
         GraphContainer graphContainer = EasyMock.createMock(GraphContainer.class);
         
