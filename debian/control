@@ -90,7 +90,7 @@ Description: Enterprise-grade Open-source Network Management Platform (Jetty Web
 Package: opennms-common
 Architecture: all
 Depends: ${perl:Depends}, libdbi-perl, libdbd-pg-perl, libgetopt-mixed-perl
-Recommends: libnet-snmp-perl
+Recommends: libnet-snmp-perl, libxml2-utils
 Description: Enterprise-grade Open-source Network Management Platform (Common Files)
  OpenNMS is an enterprise-grade network management system written in Java.
  .
