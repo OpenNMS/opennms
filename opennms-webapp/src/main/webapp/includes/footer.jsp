@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -33,6 +33,7 @@
 
   Modifications:
 
+  2013 Jan 04: Happy new year - jeffg@opennms.org
   2011 Jan 01: Happy new year - jeffg@opennms.org
   2010 Feb 09: Happy new year - jeffg@opennms.org
   2009 Jan 14: Happy new year, copyright update. - jeffg@opennms.org
