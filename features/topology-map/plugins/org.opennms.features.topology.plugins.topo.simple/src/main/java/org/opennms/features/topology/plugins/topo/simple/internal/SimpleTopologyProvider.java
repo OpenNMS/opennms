@@ -57,19 +57,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class SimpleTopologyProvider extends AbstractTopologyProvider implements GraphProvider {
-	
-	private static final String TOPOLOGY_NAMESPACE_SIMPLE = "simple";
+
+	protected static final String TOPOLOGY_NAMESPACE_SIMPLE = "simple";
 
 	private static final Logger s_log = LoggerFactory.getLogger(SimpleTopologyProvider.class);
 
-	private static final String SIMPLE_VERTEX_ID_PREFIX = "v";
-	private static final String SIMPLE_EDGE_ID_PREFIX = "e";
-	private static final String SIMPLE_GROUP_ID_PREFIX = "g";
-
-    private int m_counter = 0;
-    private int m_edgeCounter = 0;
-    private int m_groupCounter = 0;
-    
     private URL m_topologyLocation = null;
 
 	private String m_namespace;
@@ -124,17 +116,6 @@ public class SimpleTopologyProvider extends AbstractTopologyProvider implements 
         vertex.setIconKey(iconKey);
         addVertices(vertex);
         return vertex;
-    }
-
-    private Edge connectVertices(String id, VertexRef sourceId, VertexRef targetId) {
-        SimpleConnector source = new SimpleConnector(TOPOLOGY_NAMESPACE_SIMPLE, sourceId.getId()+"-"+id+"-connector", sourceId);
-        SimpleConnector target = new SimpleConnector(TOPOLOGY_NAMESPACE_SIMPLE, targetId.getId()+"-"+id+"-connector", targetId);
-
-        SimpleEdge edge = new SimpleEdge(TOPOLOGY_NAMESPACE_SIMPLE, id, source, target);
-
-        addEdges(edge);
-        
-        return edge;
     }
 
     @XmlRootElement(name="graph")
@@ -193,9 +174,6 @@ public class SimpleTopologyProvider extends AbstractTopologyProvider implements 
         }
     }
 
-    /* (non-Javadoc)
-	 * @see org.opennms.features.topology.plugins.topo.simple.internal.EditableTopologyProvider#load(java.lang.String)
-	 */
     @Override
 	public void load(String filename) {
         SimpleGraph graph = JAXB.unmarshal(new File(filename), SimpleGraph.class);
@@ -215,56 +193,6 @@ public class SimpleTopologyProvider extends AbstractTopologyProvider implements 
         clearEdges();
         addEdges(graph.m_edges.toArray(new Edge[] {}));
     }
-    
-    protected String getNextVertexId() {
-        return SIMPLE_VERTEX_ID_PREFIX + m_counter++;
-    }
-
-    protected String getNextEdgeId() {
-        return SIMPLE_EDGE_ID_PREFIX + m_edgeCounter ++;
-    }
-    
-    protected String getNextGroupId() {
-        return SIMPLE_GROUP_ID_PREFIX + m_groupCounter++;
-    }
-
-    /* (non-Javadoc)
-	 * @see org.opennms.features.topology.plugins.topo.simple.internal.EditableTopologyProvider#resetContainer()
-	 */
-    @Override
-	public void resetContainer() {
-        super.resetContainer();
-        
-        m_counter = 0;
-        m_edgeCounter = 0;
-    }
-
-    /* (non-Javadoc)
-	 * @see org.opennms.features.topology.plugins.topo.simple.internal.EditableTopologyProvider#addVertex(int, int)
-	 */
-    @Override
-	public Vertex addVertex(int x, int y) {
-        String nextVertexId = getNextVertexId();
-//        addVertex(nextVertexId, x, y, icon, "Vertex " + nextVertexId, "127.0.0.1", -1);
-        /* 
-         * Passing a nodeID of -1 will disable the Events/Alarms, Node Info, and
-         * Resource Graphs windows in the context menus  
-         */
-        return addVertex(nextVertexId, x, y, "Vertex " + nextVertexId, "64.146.64.214", -1);
-    }
-
-    /* (non-Javadoc)
-	 * @see org.opennms.features.topology.plugins.topo.simple.internal.EditableTopologyProvider#connectVertices(java.lang.Object, java.lang.Object)
-	 */
-    @Override
-	public Edge connectVertices(VertexRef sourceVertextId, VertexRef targetVertextId) {
-        String nextEdgeId = getNextEdgeId();
-        return connectVertices(nextEdgeId, sourceVertextId, targetVertextId);
-    }
-
-    /* (non-Javadoc)
-	 * @see org.opennms.features.topology.plugins.topo.simple.internal.EditableTopologyProvider#addGroup(java.lang.String)
-	 */
 
     @Override
     public Vertex addGroup(String groupLabel, String groupIconKey) {

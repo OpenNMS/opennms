@@ -31,10 +31,9 @@ package org.opennms.features.topology.api.topo;
 import java.util.Collection;
 import java.util.List;
 
-
 public class DelegatingVertexEdgeProvider implements VertexProvider, EdgeProvider {
-	private final VertexProvider m_vertexProvider;
-	private final EdgeProvider m_edgeProvider;
+	private final SimpleVertexProvider m_vertexProvider;
+	private final SimpleEdgeProvider m_edgeProvider;
 
 	public DelegatingVertexEdgeProvider(String namespace) {
 		this(namespace, namespace);
@@ -43,6 +42,14 @@ public class DelegatingVertexEdgeProvider implements VertexProvider, EdgeProvide
 	public DelegatingVertexEdgeProvider(String vertexNamespace, String edgeNamespace) {
 		m_vertexProvider = new SimpleVertexProvider(vertexNamespace);
 		m_edgeProvider = new SimpleEdgeProvider(edgeNamespace);
+	}
+
+	protected final SimpleVertexProvider getSimpleVertexProvider() {
+		return m_vertexProvider;
+	}
+
+	protected final SimpleEdgeProvider getSimpleEdgeProvider() {
+		return m_edgeProvider;
 	}
 
 	@Override

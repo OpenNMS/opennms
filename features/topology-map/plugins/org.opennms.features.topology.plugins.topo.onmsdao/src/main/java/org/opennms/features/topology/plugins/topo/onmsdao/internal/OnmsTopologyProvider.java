@@ -38,7 +38,6 @@ import org.opennms.features.topology.api.SimpleLeafVertex;
 import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
 import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.Edge;
-import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
@@ -51,9 +50,6 @@ import org.opennms.netmgt.model.OnmsMapElement;
 import org.slf4j.LoggerFactory;
 
 public class OnmsTopologyProvider extends AbstractTopologyProvider implements GraphProvider {
-
-    private int m_counter = 0;
-    private int m_edgeCounter = 0;
 
     private static final String TOPOLOGY_NAMESPACE_ONMSDAO = "onmsdao";
     private OnmsMapDao m_onmsMapDao;
@@ -187,7 +183,7 @@ public class OnmsTopologyProvider extends AbstractTopologyProvider implements Gr
     private List<Vertex> getVertex(int mapId, SimpleGroup parent) {
         List<Vertex> vertexes = new ArrayList<Vertex>();
         for (OnmsMapElement element: getOnmsMapElementDao().findNodeElementsOnMap(mapId)) {
-            SimpleLeafVertex vertex = new SimpleLeafVertex(element.getElementId(),Integer.toString(element.getId()),element.getX(),element.getY());
+            SimpleLeafVertex vertex = new SimpleLeafVertex(getVertexNamespace(), Integer.toString(element.getId()), element.getX(), element.getY());
             vertex.setLocked(false);
             vertex.setSelected(false);
             vertex.setIconKey(element.getIconName());
@@ -196,7 +192,7 @@ public class OnmsTopologyProvider extends AbstractTopologyProvider implements Gr
         }
         
         for (OnmsMapElement element: getOnmsMapElementDao().findMapElementsOnMap(mapId)) {
-            SimpleGroup vertex = new SimpleGroup(Integer.toString(element.getId()), element.getElementId());
+            SimpleGroup vertex = new SimpleGroup(getVertexNamespace(), Integer.toString(element.getId()));
             vertex.setLocked(false);
             vertex.setSelected(false);
             vertex.setIconKey(element.getIconName());
@@ -229,30 +225,6 @@ public class OnmsTopologyProvider extends AbstractTopologyProvider implements Gr
             }
         }
         return edges;
-    }
-
-    private String getNextVertexId() {
-        return "v" + m_counter++;
-    }
-
-    private String getNextEdgeId() {
-        return "e" + m_edgeCounter ++;
-    }
-
-    @Override
-    public void resetContainer() {
-        clearVertices();
-        clearEdges();
-        
-        m_counter = 0;
-        m_edgeCounter = 0;
-    }
-
-    @Override
-    public Vertex addVertex(int x, int y, String icon) {
-        LoggerFactory.getLogger(getClass()).debug("Adding vertex in {} with icon: {}", getClass().getSimpleName(), icon);
-        String nextVertexId = getNextVertexId();
-        return addVertex(nextVertexId, x, y, icon);
     }
 
     @Override

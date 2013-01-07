@@ -122,9 +122,9 @@ public class SimpleEdgeProvider implements EdgeProvider {
 		}
 	}
 
-	private void fireEdgesRemoved(List<Edge> edges) {
+	private void fireEdgesRemoved(List<? extends EdgeRef> edges) {
 		List<String> ids = new ArrayList<String>(edges.size());
-		for(Edge e : edges) {
+		for(EdgeRef e : edges) {
 			ids.add(e.getId());
 		}
 		for(EdgeListener listener : m_listeners) {
@@ -142,8 +142,8 @@ public class SimpleEdgeProvider implements EdgeProvider {
 		m_listeners.remove(edgeListener);
 	}
 	
-	private void removeEdges(List<Edge> edges) {
-		for(Edge edge : edges) {
+	private void removeEdges(List<? extends EdgeRef> edges) {
+		for(EdgeRef edge : edges) {
 			m_edgeMap.remove(edge.getId());
 		}
 	}
@@ -169,12 +169,12 @@ public class SimpleEdgeProvider implements EdgeProvider {
 		fireEdgesAdded(edges);
 	}
 	
-	public void remove(List<Edge> edges) {
+	public void remove(List<EdgeRef> edges) {
 		removeEdges(edges);
 		fireEdgesRemoved(edges);
 	}
 	
-	public void remove(Edge... edges) {
+	public void remove(EdgeRef... edges) {
 		remove(Arrays.asList(edges));
 	}
 

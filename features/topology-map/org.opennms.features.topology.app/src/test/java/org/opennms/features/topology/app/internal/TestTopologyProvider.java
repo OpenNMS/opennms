@@ -37,12 +37,9 @@ import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 
 public class TestTopologyProvider extends AbstractTopologyProvider implements GraphProvider {
-    private int m_vertexCounter = 0;
-    private int m_edgeCounter = 0;
-    private int m_groupCounter = 0;
-    
+
     public TestTopologyProvider(String namespace) {
-    	super("test");
+        super("test");
         
         String vId1 = getNextVertexId();
         TestVertex v1 = new TestLeafVertex(vId1, 0, 0);
@@ -55,30 +52,9 @@ public class TestTopologyProvider extends AbstractTopologyProvider implements Gr
         v2.setLabel("another leaf");
         addVertices(v2);
         
-        String edgeId = getNextEdgeId();
-        TestEdge edge = new TestEdge(edgeId, v1, v2);
-        addEdges(edge);
-        
+        connectVertices(v1, v2);
     }
     
-    @Override
-    public Vertex addVertex(int x, int y) {
-        String id = getNextVertexId();
-        TestVertex vert = new TestLeafVertex(id, x, y);
-        vert.setLabel("a vertex");
-        addVertices(vert);
-        return vert;
-        
-    }
-    
-    private String getNextEdgeId() {
-        return "e" + m_edgeCounter++;
-    }
-
-    private String getNextVertexId() {
-        return "v" + m_vertexCounter++;
-    }
-
     @Override
     public Vertex addGroup(String groupLabel, String groupIcon) {
         String nextGroupId = getNextGroupId();
@@ -95,10 +71,6 @@ public class TestTopologyProvider extends AbstractTopologyProvider implements Gr
         return vertex;
     }
 
-    private String getNextGroupId() {
-        return "g" + m_groupCounter++;
-    }
-
     @Override
     public void save(String filename) {
         // Do nothing
@@ -106,7 +78,6 @@ public class TestTopologyProvider extends AbstractTopologyProvider implements Gr
 
     @Override
     public void load(String filename) {
-
         clearEdges();
         clearVertices();
         
@@ -126,11 +97,8 @@ public class TestTopologyProvider extends AbstractTopologyProvider implements Gr
         vertices.add(v2);
         //Item beanItem2 = m_vertexContainer.addBean(v2);
         
-        String edgeId = getNextEdgeId();
-        TestEdge edge = new TestEdge(edgeId, v1, v2);
-        edges.add(edge);
-        //m_edgeContainer.addBean(edge);
-                 
+        connectVertices(v1, v2);
+        
         addVertices(vertices.toArray(new Vertex[] {}));
         addEdges(edges.toArray(new Edge[] {}));
     }

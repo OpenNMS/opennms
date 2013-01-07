@@ -187,7 +187,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         return vertex;
     }
     
-    private String getNextGroupId() {
+    protected String getNextGroupId() {
         return LINKD_GROUP_ID_PREFIX + m_groupCounter++;
     }
 

@@ -28,31 +28,112 @@
 
 package org.opennms.features.topology.api.topo;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.opennms.features.topology.api.SimpleConnector;
+import org.opennms.features.topology.api.SimpleEdge;
+import org.opennms.features.topology.api.SimpleLeafVertex;
+import org.slf4j.LoggerFactory;
+
 public abstract class AbstractTopologyProvider extends DelegatingVertexEdgeProvider implements GraphProvider {
-	protected AbstractTopologyProvider(String namespace) {
+
+	protected static final String SIMPLE_VERTEX_ID_PREFIX = "v";
+	protected static final String SIMPLE_GROUP_ID_PREFIX = "g";
+	protected static final String SIMPLE_EDGE_ID_PREFIX = "e";
+
+    private int m_counter = 0;
+    protected int m_groupCounter = 0;
+    private int m_edgeCounter = 0;
+
+    protected AbstractTopologyProvider(String namespace) {
 		super(namespace);
 	}
-	
+
+    protected String getNextVertexId() {
+        return SIMPLE_VERTEX_ID_PREFIX + m_counter++;
+    }
+
+    protected String getNextGroupId() {
+        return SIMPLE_GROUP_ID_PREFIX + m_groupCounter++;
+    }
+
+    protected String getNextEdgeId() {
+        return SIMPLE_EDGE_ID_PREFIX + m_edgeCounter++;
+    }
+    
     @Override
-	public final void removeVertex(VertexRef... vertexId) {
+    public final void removeVertex(VertexRef... vertexId) {
         for (VertexRef vertex : vertexId) {
             if (vertex == null) continue;
             
             removeVertex(vertexId);
             
-            for(EdgeRef e : getEdgeIdsForVertex(vertex)) {
-                removeEdges(e);
-            }
+            removeEdges(getEdgeIdsForVertex(vertex));
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.features.topology.plugins.topo.simple.internal.EditableTopologyProvider#resetContainer()
-     */
+    @Override
+    public final void addVertices(Vertex... vertices) {
+        getSimpleVertexProvider().add(vertices);
+    }
+
+    @Override
+    public final Vertex addVertex(int x, int y) {
+        String id = getNextVertexId();
+        LoggerFactory.getLogger(getClass()).debug("Adding vertex in {} with ID: {}", getClass().getSimpleName(), id);
+        Vertex vertex = new SimpleLeafVertex(getVertexNamespace(), id, x, y);
+        getSimpleVertexProvider().add(vertex);
+        return vertex;
+    }
+
+    @Override
+    public final void addEdges(Edge... edges) {
+        getSimpleEdgeProvider().add(edges);
+    }
+
+    @Override
+    public final void removeEdges(EdgeRef... edge) {
+        getSimpleEdgeProvider().remove(edge);
+    }
+
+    @Override
+    public final EdgeRef[] getEdgeIdsForVertex(VertexRef vertex) {
+        List<EdgeRef> retval = new ArrayList<EdgeRef>();
+        for (Edge edge : getEdges()) {
+            // If the vertex is connected to the edge then add it
+            if (edge.getSource().getVertex().equals(vertex) || edge.getTarget().getVertex().equals(vertex)) {
+                retval.add(edge);
+            }
+        }
+        return retval.toArray(new EdgeRef[0]);
+    }
+
+    @Override
+	public Edge connectVertices(VertexRef sourceVertextId, VertexRef targetVertextId) {
+        String nextEdgeId = getNextEdgeId();
+        return connectVertices(nextEdgeId, sourceVertextId, targetVertextId);
+    }
+
+    private Edge connectVertices(String id, VertexRef sourceId, VertexRef targetId) {
+        SimpleConnector source = new SimpleConnector(getVertexNamespace(), sourceId.getId()+"-"+id+"-connector", sourceId);
+        SimpleConnector target = new SimpleConnector(getVertexNamespace(), targetId.getId()+"-"+id+"-connector", targetId);
+
+        SimpleEdge edge = new SimpleEdge(getVertexNamespace(), id, source, target);
+
+        addEdges(edge);
+        
+        return edge;
+    }
+
     @Override
     public void resetContainer() {
         clearVertices();
         clearEdges();
+
+        m_counter = 0;
+        m_groupCounter = 0;
+        m_edgeCounter = 0;
     }
 
 }
