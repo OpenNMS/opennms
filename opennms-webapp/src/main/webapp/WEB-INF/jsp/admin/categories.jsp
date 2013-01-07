@@ -50,10 +50,10 @@
 		     <c:choose>
 		       <c:when test="${first == true}">
 		         <c:set var="first" value="false" />
-		         ${surveillanceCat}:"${surveillanceCat}"
+		         "${surveillanceCat}":"${surveillanceCat}"
 		       </c:when>
 		       <c:otherwise>
-		         ,${surveillanceCat}:"${surveillanceCat}"
+		         ,"${surveillanceCat}":"${surveillanceCat}"
 		       </c:otherwise>
 		     </c:choose>
 		   </c:forEach>
