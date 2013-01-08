@@ -273,7 +273,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
                 target = getVertex(parentNode);
                 vertexes.put(targetId, target);
             }
-            LinkdEdge edge = new LinkdEdge(link.getDataLinkInterfaceId(),source,target); 
+            AbstractEdge edge = new AbstractEdge(TOPOLOGY_NAMESPACE_LINKD, link.getDataLinkInterfaceId(),source,target); 
             edge.setTooltipText(getEdgeTooltipText(link,source,target));
             edges.add(edge);
         }

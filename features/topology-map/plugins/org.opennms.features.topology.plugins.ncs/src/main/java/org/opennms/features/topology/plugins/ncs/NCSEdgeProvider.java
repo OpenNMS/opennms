@@ -32,10 +32,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.opennms.features.topology.api.SimpleConnector;
 import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.AbstractVertex;
-import org.opennms.features.topology.api.topo.Connector;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeListener;

@@ -63,8 +63,12 @@ public class SimpleTopologyProvider extends AbstractTopologyProvider implements 
 	private String m_namespace;
     
     public SimpleTopologyProvider() {
-        super(TOPOLOGY_NAMESPACE_SIMPLE);
-        s_log.debug("Creating a new SimpleTopologyProvider");
+        this(TOPOLOGY_NAMESPACE_SIMPLE);
+    }
+
+    public SimpleTopologyProvider(String namespace) {
+        super(namespace);
+        s_log.debug("Creating a new SimpleTopologyProvider with namespace {}", namespace);
         
         URL defaultGraph = getClass().getResource("/saved-vmware-graph.xml");
 

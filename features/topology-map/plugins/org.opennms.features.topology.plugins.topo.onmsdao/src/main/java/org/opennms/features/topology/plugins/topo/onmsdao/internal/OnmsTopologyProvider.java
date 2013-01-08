@@ -32,9 +32,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.opennms.features.topology.api.SimpleConnector;
-import org.opennms.features.topology.api.SimpleEdge;
 import org.opennms.features.topology.api.SimpleGroup;
 import org.opennms.features.topology.api.SimpleLeafVertex;
+import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
 import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.Edge;
@@ -85,18 +85,6 @@ public class OnmsTopologyProvider extends AbstractTopologyProvider implements Gr
         super(TOPOLOGY_NAMESPACE_ONMSDAO);
     }
 
-    private Vertex addVertex(String id, int x, int y, String icon) {
-        if (containsVertexId(id)) {
-            throw new IllegalArgumentException("A vertex or group with id " + id + " already exists!");
-        }
-        LoggerFactory.getLogger(getClass()).debug("Adding a vertex: {}", id);
-        AbstractVertex vertex = new SimpleLeafVertex(TOPOLOGY_NAMESPACE_ONMSDAO, id, x, y);
-        vertex.setNodeID(-1);
-        vertex.setIconKey(icon);
-        addVertices(vertex);
-        return vertex;
-    }
-    
     @Override
     public Vertex addGroup(String groupLabel, String icon) {
         if (containsVertexId(groupLabel)) {
@@ -116,7 +104,7 @@ public class OnmsTopologyProvider extends AbstractTopologyProvider implements Gr
         SimpleConnector source = new SimpleConnector(TOPOLOGY_NAMESPACE_ONMSDAO, sourceId.getId()+"-"+id+"-connector", sourceId);
         SimpleConnector target = new SimpleConnector(TOPOLOGY_NAMESPACE_ONMSDAO, targetId.getId()+"-"+id+"-connector", targetId);
 
-        SimpleEdge edge = new SimpleEdge(TOPOLOGY_NAMESPACE_ONMSDAO, id, source, target);
+        AbstractEdge edge = new AbstractEdge(TOPOLOGY_NAMESPACE_ONMSDAO, id, source, target);
         
         addEdges(edge);
         
@@ -218,7 +206,7 @@ public class OnmsTopologyProvider extends AbstractTopologyProvider implements Gr
                    if ( link.getNode().getId() == ((SimpleLeafVertex)source).getNodeID() ) {
                        SimpleConnector sourceConnector = new SimpleConnector(TOPOLOGY_NAMESPACE_ONMSDAO, source.getId()+"-"+link.getId()+"-connector", source);
                        SimpleConnector targetConnector = new SimpleConnector(TOPOLOGY_NAMESPACE_ONMSDAO, target.getId()+"-"+link.getId()+"-connector", target);
-                       SimpleEdge edge = new SimpleEdge(TOPOLOGY_NAMESPACE_ONMSDAO, link.getId().toString(), sourceConnector, targetConnector);
+                       AbstractEdge edge = new AbstractEdge(TOPOLOGY_NAMESPACE_ONMSDAO, link.getId().toString(), sourceConnector, targetConnector);
                        edges.add(edge);
                    }
                 }

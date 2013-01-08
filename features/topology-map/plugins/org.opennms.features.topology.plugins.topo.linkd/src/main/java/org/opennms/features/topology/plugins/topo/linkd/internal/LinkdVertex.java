@@ -33,6 +33,7 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.Edge;
 
@@ -67,11 +68,11 @@ public class LinkdVertex extends AbstractVertex {
 		return m_edges;
 	}
 	
-	public void addEdge(LinkdEdge edge) {
+	public void addEdge(AbstractEdge edge) {
 		m_edges.add(edge);
 	}
 	
-	public void removeEdge(LinkdEdge edge) {
+	public void removeEdge(AbstractEdge edge) {
 		m_edges.remove(edge);
 	}
 }

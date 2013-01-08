@@ -1,7 +1,7 @@
 package org.opennms.features.topology.app.internal;
 
 import org.opennms.features.topology.api.SimpleConnector;
-import org.opennms.features.topology.api.SimpleEdge;
+import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.AbstractVertexRef;
 import org.opennms.features.topology.api.topo.GraphProvider;
@@ -13,10 +13,10 @@ public class SimpleGraphBuilder {
 
 	private final GraphProvider m_graphProvider;
 	private AbstractVertex m_currentVertex;
-	private SimpleEdge m_currentEdge;
+	private AbstractEdge m_currentEdge;
 	
 	public SimpleGraphBuilder(String namespace) {
-		m_graphProvider = new SimpleTopologyProvider();
+		m_graphProvider = new SimpleTopologyProvider(namespace);
 	}
 	
 	public SimpleGraphBuilder vertex(String id) {
@@ -67,7 +67,7 @@ public class SimpleGraphBuilder {
 		SimpleConnector source = new SimpleConnector(ns(), srcId+"-"+id+"-connector", srcVertex);
 		SimpleConnector target = new SimpleConnector(ns(), tgtId+"-"+id+"-connector", tgtVertex);
 		
-		m_currentEdge = new SimpleEdge(ns(), id, source, target);
+		m_currentEdge = new AbstractEdge(ns(), id, source, target);
 		
 		source.setEdge(m_currentEdge);
 		target.setEdge(m_currentEdge);

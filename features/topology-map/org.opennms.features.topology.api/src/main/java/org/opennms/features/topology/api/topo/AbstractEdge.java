@@ -30,12 +30,14 @@ package org.opennms.features.topology.api.topo;
 
 import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlIDREF;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.features.topology.api.SimpleConnector;
 
 import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItem;
 
+@XmlRootElement(name="edge")
 public class AbstractEdge implements Edge {
 
 	// Required

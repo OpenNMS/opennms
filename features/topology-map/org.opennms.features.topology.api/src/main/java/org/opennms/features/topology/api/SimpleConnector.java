@@ -58,6 +58,15 @@ public class SimpleConnector implements Connector {
 	 * @param vertex
 	 */
 	public SimpleConnector(String namespace, String id, String label, VertexRef vertex) {
+		if (namespace == null) {
+			throw new IllegalArgumentException("Namespace is null");
+		} else if (id == null) {
+			throw new IllegalArgumentException("ID is null");
+		} else if (label == null) {
+			throw new IllegalArgumentException("Label is null");
+		} else if (vertex == null) {
+			throw new IllegalArgumentException("Vertex is null");
+		}
 		m_namespace = namespace;
 		m_id = id;
 		m_label = label;

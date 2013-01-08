@@ -8,8 +8,8 @@ import java.util.Map;
 import java.util.Random;
 
 import org.opennms.features.topology.api.SimpleConnector;
-import org.opennms.features.topology.api.SimpleEdge;
 import org.opennms.features.topology.api.SimpleLeafVertex;
+import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.GraphProvider;
@@ -49,7 +49,7 @@ public class SFreeTopologyProvider extends AbstractTopologyProvider implements G
 
 	private void createBARandomTopology(Integer numberOfNodes, Integer averageNumberofNeighboors) {
 		Map<Integer,SimpleLeafVertex> nodes = new HashMap<Integer, SimpleLeafVertex>();
-		List<SimpleEdge> edges = new ArrayList<SimpleEdge>();
+		List<AbstractEdge> edges = new ArrayList<AbstractEdge>();
 
 		for(int i=0; i<2*averageNumberofNeighboors; i++){
 			int j=(i+1)%(2*averageNumberofNeighboors);
@@ -66,7 +66,7 @@ public class SFreeTopologyProvider extends AbstractTopologyProvider implements G
 			String edgeId = "link:"+i+"-"+j;
 			SimpleConnector source = new SimpleConnector(TOPOLOGY_NAMESPACE_SFREE, nodes.get(i).getId()+"-"+edgeId+"-connector", nodes.get(i));
 			SimpleConnector target = new SimpleConnector(TOPOLOGY_NAMESPACE_SFREE, nodes.get(j).getId()+"-"+edgeId+"-connector", nodes.get(j));
-			edges.add(new SimpleEdge(TOPOLOGY_NAMESPACE_SFREE, edgeId, source, target));
+			edges.add(new AbstractEdge(TOPOLOGY_NAMESPACE_SFREE, edgeId, source, target));
 		}
 
 		Random r = new Random((new Date()).getTime());
@@ -77,7 +77,7 @@ public class SFreeTopologyProvider extends AbstractTopologyProvider implements G
 			nodes.put(i, vertexi);
 			System.err.println("Adding Node: " + i);
 			for(int times=0; times<averageNumberofNeighboors; times++){
-				SimpleEdge edge;
+				AbstractEdge edge;
 				double d = r.nextDouble()*nodes.size(); // choose node to attach to
 				System.err.println("Generated random position: " + d);
 				Long j = (long)d;
@@ -85,7 +85,7 @@ public class SFreeTopologyProvider extends AbstractTopologyProvider implements G
     			String edgeId = "link:"+i+"-"+j;
     			SimpleConnector source = new SimpleConnector(TOPOLOGY_NAMESPACE_SFREE, nodes.get(i).getId()+"-"+edgeId+"-connector", nodes.get(i));
     			SimpleConnector target = new SimpleConnector(TOPOLOGY_NAMESPACE_SFREE, nodes.get(j).getId()+"-"+edgeId+"-connector", nodes.get(j));
-    			edge = new SimpleEdge(TOPOLOGY_NAMESPACE_SFREE, edgeId, source, target);
+    			edge = new AbstractEdge(TOPOLOGY_NAMESPACE_SFREE, edgeId, source, target);
 				if( i == j.intValue() ) continue;
 				edges.add(edge);
 			}// m links added
@@ -98,7 +98,7 @@ public class SFreeTopologyProvider extends AbstractTopologyProvider implements G
 
 	private void createERRandomTopology(Integer numberOfNodes, Integer averageNumberofNeighboors) {
 		Map<Integer,SimpleLeafVertex> nodes = new HashMap<Integer, SimpleLeafVertex>();
-		List<SimpleEdge> edges = new ArrayList<SimpleEdge>();
+		List<AbstractEdge> edges = new ArrayList<AbstractEdge>();
 		for (Integer i=0; i< numberOfNodes ;i++) {
 			SimpleLeafVertex vertex = new SimpleLeafVertex(TOPOLOGY_NAMESPACE_SFREE, Integer.toString(i), 0, 0);
 			vertex.setIconKey("sfree:system");
@@ -118,7 +118,7 @@ public class SFreeTopologyProvider extends AbstractTopologyProvider implements G
 					String edgeId = "link:"+start+"-"+end;
 					SimpleConnector source = new SimpleConnector(TOPOLOGY_NAMESPACE_SFREE, nodes.get(start).getId()+"-"+edgeId+"-connector", nodes.get(start));
 					SimpleConnector target = new SimpleConnector(TOPOLOGY_NAMESPACE_SFREE, nodes.get(end).getId()+"-"+edgeId+"-connector", nodes.get(end));
-					edges.add(new SimpleEdge(TOPOLOGY_NAMESPACE_SFREE, edgeId, source, target));
+					edges.add(new AbstractEdge(TOPOLOGY_NAMESPACE_SFREE, edgeId, source, target));
 				}
 			}
 		}

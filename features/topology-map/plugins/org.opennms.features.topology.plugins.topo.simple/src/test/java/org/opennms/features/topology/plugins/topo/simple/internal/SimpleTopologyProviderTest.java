@@ -47,14 +47,10 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.features.topology.api.Constants;
-import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
-import org.opennms.features.topology.api.LayoutAlgorithm;
 import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.SimpleLeafVertex;
 import org.opennms.features.topology.api.topo.AbstractVertexRef;
-import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.GraphProvider;
@@ -69,103 +65,6 @@ import org.opennms.features.topology.plugins.topo.simple.internal.operations.Rem
 import com.vaadin.ui.Window;
 
 public class SimpleTopologyProviderTest {
-
-    private class TestGraphContainer implements GraphContainer {
-
-        @Override
-        public int getSemanticZoomLevel() {
-        	return 0;
-        }
-
-        @Override
-        public void setSemanticZoomLevel(int level) {
-            // TODO Auto-generated method stub
-            
-        }
-
-        @Override
-        public void setLayoutAlgorithm(LayoutAlgorithm layoutAlgorithm) {
-            // TODO Auto-generated method stub
-            
-        }
-
-        @Override
-        public LayoutAlgorithm getLayoutAlgorithm() {
-            // TODO Auto-generated method stub
-            return null;
-        }
-
-        @Override
-        public void redoLayout() {
-            // TODO Auto-generated method stub
-            
-        }
-
-        @Override
-        public GraphProvider getBaseTopology() {
-            throw new UnsupportedOperationException("GraphContainer.getBaseTopology is not yet implemented.");
-        }
-
-        @Override
-        public void setBaseTopology(GraphProvider graphProvider) {
-            throw new UnsupportedOperationException("GraphContainer.setBaseTopology is not yet implemented.");
-        }
-
-        @Override
-        public SelectionManager getSelectionManager() {
-            throw new UnsupportedOperationException("GraphContainer.getSelectionManager is not yet implemented.");
-        }
-
-        @Override
-        public Graph getGraph() {
-            throw new UnsupportedOperationException("GraphContainer.getGraph is not yet implemented.");
-        }
-
-        @Override
-        public Vertex getParent(VertexRef child) {
-            throw new UnsupportedOperationException("GraphContainer.getParent is not yet implemented.");
-        }
-
-        @Override
-        public Criteria getCriteria(String namespace) {
-            throw new UnsupportedOperationException("GraphContainer.getCriteria is not yet implemented.");
-        }
-
-        @Override
-        public void setCriteria(Criteria critiera) {
-            throw new UnsupportedOperationException("GraphContainer.setCriteria is not yet implemented.");
-        }
-
-        @Override
-        public double getScale() {
-            throw new UnsupportedOperationException("DisplayState.getScale is not yet implemented.");
-        }
-
-        @Override
-        public void setScale(double scale) {
-            throw new UnsupportedOperationException("DisplayState.setScale is not yet implemented.");
-        }
-
-        @Override
-        public void addChangeListener(ChangeListener listener) {
-            // TODO Auto-generated method stub
-        }
-
-        @Override
-        public void removeChangeListener(ChangeListener listener) {
-            // TODO Auto-generated method stub
-        }
-
-        @Override
-        public Collection<VertexRef> getVertexRefForest(Collection<? extends VertexRef> vertexRefs) {
-            throw new UnsupportedOperationException("GraphContainer.getVertexRefForest is not yet implemented.");
-        }
-
-        @Override
-        public void setDataSource(GraphProvider graphProvider) {
-            // TODO Auto-generated method stub
-        }
-    }
 
     private class TestOperationContext implements OperationContext{
         

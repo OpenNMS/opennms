@@ -39,6 +39,9 @@ public class AbstractEdgeRef extends AbstractRef implements EdgeRef {
 		super(namespace, id, label);
 	}
 
+	/**
+	 * @deprecated Specify a useful label for the object
+	 */
 	public AbstractEdgeRef(String namespace, String id) {
 		super(namespace, id, namespace + ":" + id);
 	}

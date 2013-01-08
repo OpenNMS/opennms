@@ -32,7 +32,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.opennms.features.topology.api.SimpleConnector;
-import org.opennms.features.topology.api.SimpleEdge;
 import org.opennms.features.topology.api.SimpleLeafVertex;
 import org.slf4j.LoggerFactory;
 
@@ -119,7 +118,7 @@ public abstract class AbstractTopologyProvider extends DelegatingVertexEdgeProvi
         SimpleConnector source = new SimpleConnector(getVertexNamespace(), sourceId.getId()+"-"+id+"-connector", sourceId);
         SimpleConnector target = new SimpleConnector(getVertexNamespace(), targetId.getId()+"-"+id+"-connector", targetId);
 
-        SimpleEdge edge = new SimpleEdge(getVertexNamespace(), id, source, target);
+        AbstractEdge edge = new AbstractEdge(getVertexNamespace(), id, source, target);
 
         addEdges(edge);
         
