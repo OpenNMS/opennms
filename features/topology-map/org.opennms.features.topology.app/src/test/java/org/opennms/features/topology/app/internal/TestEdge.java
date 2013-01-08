@@ -28,47 +28,23 @@
 
 package org.opennms.features.topology.app.internal;
 
-import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.features.topology.api.SimpleConnector;
 import org.opennms.features.topology.api.topo.AbstractEdge;
-import org.opennms.features.topology.api.topo.Connector;
 
 import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItem;
 
 @XmlRootElement(name="edge")
 public class TestEdge extends AbstractEdge {
-	String m_id;
-	Connector m_source;
-	Connector m_target;
 	
-	public TestEdge(String id, Connector source, Connector target) {
-		super("test", id);
-		m_source = source;
-		m_target = target;
+	public TestEdge(String id, SimpleConnector source, SimpleConnector target) {
+		super("test", id, source, target);
 	}
 
 	@Override
 	public Item getItem() {
 		return new BeanItem<TestEdge>(this);
-	}
-
-	@XmlIDREF
-	public Connector getSource() {
-		return m_source;
-	}
-
-	public void setSource(Connector source) {
-		m_source = source;
-	}
-
-	@XmlIDREF
-	public Connector getTarget() {
-		return m_target;
-	}
-
-	public void setTarget(Connector target) {
-		m_target = target;
 	}
 }

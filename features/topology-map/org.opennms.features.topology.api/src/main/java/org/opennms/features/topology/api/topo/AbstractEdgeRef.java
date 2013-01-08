@@ -35,8 +35,12 @@ public class AbstractEdgeRef extends AbstractRef implements EdgeRef {
 		super(ref);
 	}
 
+	public AbstractEdgeRef(String namespace, String id, String label) {
+		super(namespace, id, label);
+	}
+
 	public AbstractEdgeRef(String namespace, String id) {
-		super(namespace, id);
+		super(namespace, id, namespace + ":" + id);
 	}
 
 	@Override

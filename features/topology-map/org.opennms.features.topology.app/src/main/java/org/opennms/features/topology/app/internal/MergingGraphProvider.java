@@ -37,12 +37,15 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
+import org.opennms.features.topology.api.topo.AbstractVertexRef;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeListener;
 import org.opennms.features.topology.api.topo.EdgeProvider;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.GraphProvider;
+import org.opennms.features.topology.api.topo.SimpleEdgeProvider;
+import org.opennms.features.topology.api.topo.SimpleVertexProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexListener;
 import org.opennms.features.topology.api.topo.VertexProvider;
@@ -54,7 +57,14 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 	
 	private static final GraphProvider NULL_PROVIDER = new NullProvider();
 	
+	/**
+	 * This provider is the bottom-level provider that we delegate to.
+	 */
 	private GraphProvider m_baseGraphProvider;
+	
+	/**
+	 * This object relays registration events to update the lists of vertex and edge providers.
+	 */
 	private final ProviderManager m_providerManager;
 	private final Map<String, VertexProvider> m_vertexProviders = new HashMap<String, VertexProvider>();
 	private final Map<String, EdgeProvider> m_edgeProviders = new HashMap<String, EdgeProvider>();
@@ -355,6 +365,7 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 	
 	@Override
 	public void clearEdges() {
+		m_baseGraphProvider.clearEdges();
 		for(EdgeProvider edgeProvider : m_edgeProviders.values()) {
 			try {
 				edgeProvider.clearEdges();
@@ -364,6 +375,138 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 		}
 	}
 	
+	@Override
+	public void addEdges(Edge... edges) {
+		for (Edge edge : edges) {
+			((SimpleEdgeProvider)eProvider(edge)).add(edge);
+		}
+	}
+
+	/**
+	 * TODO Is this going to work properly?
+	 */
+	@Override
+	public Vertex addGroup(String label, String iconKey) {
+		return m_baseGraphProvider.addGroup(label, iconKey);
+	}
+
+	/**
+	 * TODO Is this going to work properly?
+	 */
+	@Override
+	public Vertex addVertex(int x, int y) {
+		return m_baseGraphProvider.addVertex(x, y);
+	}
+
+	@Override
+	public void addVertices(Vertex... vertices) {
+		for (Vertex vertex : vertices) {
+			((SimpleVertexProvider)vProvider(vertex)).add(vertex);
+		}
+	}
+
+	/**
+	 * TODO Is this going to work properly?
+	 */
+	@Override
+	public Edge connectVertices(VertexRef sourceVertextId, VertexRef targetVertextId) {
+		return m_baseGraphProvider.connectVertices(sourceVertextId, targetVertextId);
+	}
+
+	/**
+	 * TODO This will miss edges provided by auxiliary edge providers
+	 */
+	@Override
+	public EdgeRef[] getEdgeIdsForVertex(VertexRef vertex) {
+		return m_baseGraphProvider.getEdgeIdsForVertex(vertex);
+	}
+
+	@Override
+	public void load(String filename) {
+		// Do nothing
+	}
+
+	@Override
+	public void removeEdges(EdgeRef... edges) {
+		for (EdgeRef edge : edges) {
+			((SimpleEdgeProvider)eProvider(edge)).remove(edge);
+		}
+	}
+
+	@Override
+	public void removeVertex(VertexRef... vertexId) {
+		for (VertexRef vertex : vertexId) {
+			((SimpleVertexProvider)vProvider(vertex)).remove(vertex);
+		}
+	}
+
+	@Override
+	public void resetContainer() {
+		m_baseGraphProvider.resetContainer();
+		for (EdgeProvider provider : m_edgeProviders.values()) {
+			provider.clearEdges();
+		}
+		for (VertexProvider provider : m_vertexProviders.values()) {
+			provider.clearVertices();
+		}
+	}
+
+	@Override
+	public void save(String filename) {
+		// TODO Do nothing?
+	}
+
+	/**
+	 * This function will always delegate to the base graph provider. It must be responsible for
+	 * grouping.
+	 */
+	@Override
+	public boolean setParent(VertexRef vertexId, VertexRef parentId) {
+		return m_baseGraphProvider.setParent(vertexId, parentId);
+	}
+
+	@Override
+	public void clearVertices() {
+		m_baseGraphProvider.clearVertices();
+		for (VertexProvider provider : m_vertexProviders.values()) {
+			try {
+				provider.clearVertices();
+			} catch (Throwable e) {
+				LoggerFactory.getLogger(this.getClass()).warn("Exception caught while calling clearVertices()", e);
+			}
+		}
+	}
+
+	/**
+	 * @deprecated Use {@link #containsVertexId(VertexRef id)} instead.
+	 */
+	@Override
+	public boolean containsVertexId(String id) {
+		if (containsVertexId(new AbstractVertexRef(getVertexNamespace(), id))) {
+			return true;
+		}
+		for (VertexProvider provider : m_vertexProviders.values()) {
+			if (containsVertexId(new AbstractVertexRef(provider.getVertexNamespace(), id))) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public boolean containsVertexId(VertexRef id) {
+		if (m_baseGraphProvider.containsVertexId(id)) {
+			return true;
+		} else {
+			for (VertexProvider provider : m_vertexProviders.values()) {
+				if (provider.containsVertexId(id)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
 	private void fireVertexChanged() {
 		for(VertexListener listener : m_vertexListeners) {
 			listener.vertexSetChanged(this);

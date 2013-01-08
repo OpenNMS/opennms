@@ -28,16 +28,41 @@
 
 package org.opennms.features.topology.api;
 
+import javax.xml.bind.annotation.XmlID;
+
+import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.Connector;
-import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.VertexRef;
 
 public class SimpleConnector implements Connector {
 
-	private final String m_namespace;
-	private final String m_id;
-	private final VertexRef m_vertex;
-	private EdgeRef m_edge;
+	// Required
+	private String m_namespace;
+	// Required
+	private String m_id;
+	// Required
+	private String m_label;
+	// Required
+	private VertexRef m_vertex;
+	private AbstractEdge m_edge;
+
+	/**
+	 * No-arg constructor for JAXB.
+	 */
+	public SimpleConnector() {}
+
+	/**
+	 * @param namespace
+	 * @param id
+	 * @param label
+	 * @param vertex
+	 */
+	public SimpleConnector(String namespace, String id, String label, VertexRef vertex) {
+		m_namespace = namespace;
+		m_id = id;
+		m_label = label;
+		m_vertex = vertex;
+	}
 
 	/**
 	 * @param namespace
@@ -45,9 +70,7 @@ public class SimpleConnector implements Connector {
 	 * @param vertex
 	 */
 	public SimpleConnector(String namespace, String id, VertexRef vertex) {
-		m_namespace = namespace;
-		m_id = id;
-		m_vertex = vertex;
+		this(namespace, id, namespace + ":" + id, vertex);
 	}
 
 	/**
@@ -56,9 +79,20 @@ public class SimpleConnector implements Connector {
 	 * @param vertex
 	 * @param edge
 	 */
-	public SimpleConnector(String namespace, String id, VertexRef vertex, EdgeRef edge) {
-		this(namespace, id, vertex);
+	public SimpleConnector(String namespace, String id, String label, VertexRef vertex, AbstractEdge edge) {
+		this(namespace, id, label, vertex);
 		m_edge = edge;
+	}
+
+	/**
+	 * @param namespace
+	 * @param id
+	 * @param label
+	 * @param vertex
+	 * @param edge
+	 */
+	public SimpleConnector(String namespace, String id, VertexRef vertex, AbstractEdge edge) {
+		this(namespace, id, namespace + ":" + id, vertex, edge);
 	}
 
 	@Override
@@ -66,17 +100,23 @@ public class SimpleConnector implements Connector {
 		return m_namespace;
 	}
 
+	@XmlID
 	@Override
 	public String getId() {
 		return m_id;
 	}
 
 	@Override
-	public EdgeRef getEdge() {
+	public String getLabel() {
+		return m_label;
+	}
+
+	@Override
+	public AbstractEdge getEdge() {
 		return m_edge;
 	}
 
-	public void setEdge(EdgeRef edgeRef) {
+	public void setEdge(AbstractEdge edgeRef) {
 		m_edge = edgeRef;
 	}
 

@@ -67,7 +67,7 @@ public abstract class AbstractTopologyProvider extends DelegatingVertexEdgeProvi
         for (VertexRef vertex : vertexId) {
             if (vertex == null) continue;
             
-            removeVertex(vertexId);
+            getSimpleVertexProvider().remove(vertexId);
             
             removeEdges(getEdgeIdsForVertex(vertex));
         }

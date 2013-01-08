@@ -35,6 +35,11 @@ import org.opennms.features.topology.api.topo.AbstractVertex;
 @XmlRootElement(name="vertex")
 public class SimpleLeafVertex extends AbstractVertex {
 
+	/**
+	 * No-arg constructor for JAXB
+	 */
+	public SimpleLeafVertex() {}
+
 	public SimpleLeafVertex(String namespace, String id, int x, int y) {
 		super(namespace, id);
 		setX(x);

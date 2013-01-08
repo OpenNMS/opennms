@@ -42,7 +42,9 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
+import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeProvider;
 import org.opennms.features.topology.api.topo.GraphProvider;
@@ -208,12 +210,12 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
                 @XmlElement(name="vertex", type=Vertex.class),
                 @XmlElement(name="group", type=Vertex.class)
         })
-        List<Vertex> m_vertices = new ArrayList<Vertex>();
+        List<AbstractVertex> m_vertices = new ArrayList<AbstractVertex>();
         
         @XmlElement(name="edge")
-        List<Edge> m_edges = new ArrayList<Edge>();
+        List<AbstractEdge> m_edges = new ArrayList<AbstractEdge>();
         
-        public SimpleGraph(List<Vertex> vertices, List<Edge> edges) {
+        public SimpleGraph(List<AbstractVertex> vertices, List<AbstractEdge> edges) {
             m_vertices = vertices;
             m_edges = edges;
         }
@@ -458,8 +460,14 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     public void save(String filename) {
         if (filename == null) 
             filename=m_configurationFile;
-        List<Vertex> vertices = super.getVertices();
-        List<Edge> edges = super.getEdges();
+        List<AbstractVertex> vertices = new ArrayList<AbstractVertex>();
+        for (Vertex vertex : getVertices()) {
+            vertices.add((AbstractVertex)vertex);
+        }
+        List<AbstractEdge> edges = new ArrayList<AbstractEdge>();
+        for (Edge edge : getEdges()) {
+            edges.add((AbstractEdge)edge);
+        }
 
         SimpleGraph graph = new SimpleGraph(vertices, edges);
         

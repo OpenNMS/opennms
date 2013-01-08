@@ -32,14 +32,16 @@ public class AbstractRef implements Ref {
 	
 	private String m_namespace;
 	private String m_id;
+	private String m_label;
 	
-	protected AbstractRef(String namespace, String id) {
+	protected AbstractRef(String namespace, String id, String label) {
 		m_namespace = namespace;
 		m_id = id;
+		m_label = label;
 	}
 	
 	protected AbstractRef(Ref ref) {
-		this(ref.getNamespace(), ref.getId());
+		this(ref.getNamespace(), ref.getId(), ref.getLabel());
 	}
 
 	@Override
@@ -50,6 +52,11 @@ public class AbstractRef implements Ref {
 	@Override
 	public String getNamespace() {
 		return m_namespace;
+	}
+
+	@Override
+	public String getLabel() {
+		return m_label;
 	}
 
 	@Override

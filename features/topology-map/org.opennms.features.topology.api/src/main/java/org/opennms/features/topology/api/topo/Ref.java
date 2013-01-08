@@ -45,4 +45,9 @@ public interface Ref {
 	 */
 	public String getNamespace();
 	
+	/**
+	 * A human-readable label for the reference.
+	 */
+	public String getLabel();
+
 }

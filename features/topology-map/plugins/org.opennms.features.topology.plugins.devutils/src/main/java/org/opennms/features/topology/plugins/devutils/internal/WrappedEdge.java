@@ -28,19 +28,16 @@
 
 package org.opennms.features.topology.plugins.devutils.internal;
 
-import javax.xml.bind.annotation.XmlID;
-import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.opennms.features.topology.api.SimpleConnector;
+import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.Connector;
-import org.opennms.features.topology.api.topo.Edge;
 
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 
 @XmlRootElement(name="edge")
-public class WrappedEdge implements Edge {
+public class WrappedEdge extends AbstractEdge {
 	Item m_edge;
 	Connector m_source;
 	Connector m_target;
@@ -48,51 +45,13 @@ public class WrappedEdge implements Edge {
 	public WrappedEdge() {}
 
 	public WrappedEdge(Item edge, WrappedVertex source, WrappedVertex target) {
+		super((String)edge.getItemProperty("namespace").getValue(), (String)edge.getItemProperty("id").getValue(), source, target);
 		m_edge = edge;
-		setSource(new SimpleConnector("wrapped", source.getId() + "::" + target.getId(), source, this));
-		setTarget(new SimpleConnector("wrapped", target.getId() + "::" + source.getId(), target, this));
 	}
 
 	private Object getProperty(String propertyId) {
 		Property property = m_edge.getItemProperty(propertyId);
 		return property == null ? null : property.getValue();
-	}
-
-	private void setProperty(String propertyId, Object value) {
-		Property property = m_edge.getItemProperty(propertyId);
-		if (property != null) {
-			property.setValue(value);
-		}
-	}
-
-	@XmlID
-	@Override
-	public String getId() {
-		return (String) getProperty("id");
-	}
-
-	public void setId(String id) {
-		setProperty("id", id);
-	}
-
-	@XmlIDREF
-	@Override
-	public Connector getSource() {
-		return m_source;
-	}
-
-	public void setSource(Connector source) {
-		m_source = source;
-	}
-
-	@XmlIDREF
-	@Override
-	public Connector getTarget() {
-		return m_target;
-	}
-
-	public void setTarget(Connector target) {
-		m_target = target;
 	}
 
 	@Override
@@ -118,10 +77,5 @@ public class WrappedEdge implements Edge {
 	@Override
 	public String getTooltipText() {
 		return (String) getProperty("tooltipText");
-	}
-
-	@Override
-	public String getNamespace() {
-		return (String) getProperty("namespace");
 	}
 }

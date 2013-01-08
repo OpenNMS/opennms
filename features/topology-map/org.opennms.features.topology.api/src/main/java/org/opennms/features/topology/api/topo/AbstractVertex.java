@@ -31,17 +31,22 @@ package org.opennms.features.topology.api.topo;
 import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlIDREF;
 
+import org.slf4j.LoggerFactory;
+
 import com.vaadin.data.Item;
 
 public class AbstractVertex implements Vertex {
 
-	private final String m_namespace;
-	private final String m_id;
+	// Required
+	private String m_namespace;
+	// Required
+	private String m_id;
+
 	private String m_label;
 	private String m_tooltipText;
 	private String m_iconKey;
 	private String m_styleName;
-	private Vertex m_parent;
+	private AbstractVertex m_parent;
 	protected Item m_item;
 	int m_x;
 	int m_y;
@@ -50,6 +55,11 @@ public class AbstractVertex implements Vertex {
 	private String m_ipAddr ="127.0.0.1";
 	private int m_nodeID = -1;
 	private int m_semanticZoomLevel = -1;
+
+	/**
+	 * No-arg constructor for JAXB.
+	 */
+	public AbstractVertex() {}
 
 	public AbstractVertex(String namespace, String id) {
 		m_namespace = namespace;
@@ -136,7 +146,7 @@ public class AbstractVertex implements Vertex {
 	}
 
 	@XmlIDREF
-	public final Vertex getParent() {
+	public final AbstractVertex getParent() {
 		return m_parent;
 	}
 
@@ -145,7 +155,13 @@ public class AbstractVertex implements Vertex {
 	 */
 	@Override
 	public final void setParent(Vertex parent) {
-		this.m_parent = parent;
+		if (parent == null) {
+			m_parent = null;
+		} else if (parent instanceof AbstractVertex) {
+			m_parent = (AbstractVertex)parent;
+		} else {
+			LoggerFactory.getLogger(this.getClass()).warn("Could not set parent to instance of {}", parent.getClass().getName());
+		}
 	}
 
 	@Override

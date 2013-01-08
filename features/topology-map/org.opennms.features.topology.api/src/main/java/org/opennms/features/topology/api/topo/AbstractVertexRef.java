@@ -34,8 +34,12 @@ public class AbstractVertexRef extends AbstractRef implements VertexRef {
 		super(ref);
 	}
 
+	public AbstractVertexRef(String namespace, String id, String label) {
+		super(namespace, id, label);
+	}
+
 	public AbstractVertexRef(String namespace, String id) {
-		super(namespace, id);
+		super(namespace, id, namespace + ":" + id);
 	}
 
 	@Override

@@ -41,18 +41,14 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.opennms.features.topology.api.SimpleConnector;
-import org.opennms.features.topology.api.SimpleEdge;
 import org.opennms.features.topology.api.SimpleGroup;
 import org.opennms.features.topology.api.SimpleLeafVertex;
+import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
 import org.opennms.features.topology.api.topo.AbstractVertex;
-import org.opennms.features.topology.api.topo.DelegatingVertexEdgeProvider;
 import org.opennms.features.topology.api.topo.Edge;
-import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.Vertex;
-import org.opennms.features.topology.api.topo.VertexRef;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -108,7 +104,7 @@ public class SimpleTopologyProvider extends AbstractTopologyProvider implements 
     
     private Vertex addGroup(String groupId, String iconKey, String label) {
         if (containsVertexId(groupId)) {
-            throw new IllegalArgumentException("A vertex or group with id " + groupId + " already exists!");
+            throw new IllegalArgumentException("A vertex or group with id " + groupId + " already exists: " + getVertex(TOPOLOGY_NAMESPACE_SIMPLE, groupId).toString());
         }
         s_log.debug("Adding a group: {}", groupId);
         AbstractVertex vertex = new SimpleGroup(TOPOLOGY_NAMESPACE_SIMPLE, groupId);
@@ -126,10 +122,10 @@ public class SimpleTopologyProvider extends AbstractTopologyProvider implements 
                 @XmlElement(name="vertex", type=SimpleLeafVertex.class),
                 @XmlElement(name="group", type=SimpleGroup.class)
         })
-        List<Vertex> m_vertices = new ArrayList<Vertex>();
+        List<AbstractVertex> m_vertices = new ArrayList<AbstractVertex>();
         
         @XmlElement(name="edge")
-        List<Edge> m_edges = new ArrayList<Edge>();
+        List<AbstractEdge> m_edges = new ArrayList<AbstractEdge>();
         
         @XmlAttribute(name="namespace")
         String m_namespace;
@@ -137,7 +133,7 @@ public class SimpleTopologyProvider extends AbstractTopologyProvider implements 
         @SuppressWarnings("unused") // except by JAXB
         public SimpleGraph() {}
 
-        public SimpleGraph(String namespace, List<Vertex> vertices, List<Edge> edges) {
+        public SimpleGraph(String namespace, List<AbstractVertex> vertices, List<AbstractEdge> edges) {
         	m_namespace = namespace;
             m_vertices = vertices;
             m_edges = edges;
@@ -152,8 +148,14 @@ public class SimpleTopologyProvider extends AbstractTopologyProvider implements 
 	 */
     @Override
 	public void save(String filename) {
-        List<Vertex> vertices = getVertices();
-        List<Edge> edges = getEdges();
+        List<AbstractVertex> vertices = new ArrayList<AbstractVertex>();
+        for (Vertex vertex : getVertices()) {
+            vertices.add((AbstractVertex)vertex);
+        }
+        List<AbstractEdge> edges = new ArrayList<AbstractEdge>();
+        for (Edge edge : getEdges()) {
+            edges.add((AbstractEdge)edge);
+        }
 
         SimpleGraph graph = new SimpleGraph(m_namespace, vertices, edges);
         
@@ -180,7 +182,9 @@ public class SimpleTopologyProvider extends AbstractTopologyProvider implements 
         
         clearVertices();
         for (Vertex vertex : graph.m_vertices) {
-            if (vertex.getId().startsWith(SIMPLE_GROUP_ID_PREFIX)) {
+            if (vertex.getNamespace() == null || vertex.getId() == null) {
+                LoggerFactory.getLogger(this.getClass()).warn("Invalid vertex unmarshalled from {}: {}", filename, vertex);
+            } else if (vertex.getId().startsWith(SIMPLE_GROUP_ID_PREFIX)) {
                 // Find the highest index group number and start the index for new groups above it
                 int groupNumber = Integer.parseInt(vertex.getId().substring(SIMPLE_GROUP_ID_PREFIX.length()));
                 if (m_groupCounter <= groupNumber) {

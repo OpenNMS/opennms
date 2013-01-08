@@ -38,14 +38,10 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     public class PseudoEdge extends AbstractEdge {
 
         private String m_styleName;
-        private Vertex m_source;
-        private Vertex m_target;
         
         public PseudoEdge(String namespace, String id, String styleName, Vertex source, Vertex target) {
-        	super(namespace, id);
-        	m_styleName = styleName;
-            m_source = source;
-            m_target = target;
+            super(namespace, id, source, target);
+            m_styleName = styleName;
         }
 
         @Override
@@ -54,28 +50,13 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
         }
         
         @Override
-        public String getKey() {
-            return getNamespace()+":" + getId();
-        }
-
-        @Override
         public Item getItem() {
             return new BeanItem<PseudoEdge>(this);
         }
 
         @Override
-        public Connector getSource() {
-            return new SimpleConnector(PseudoEdge.this.getNamespace(), PseudoEdge.this.getId()+":source", PseudoEdge.this.m_source, PseudoEdge.this);
-        }
-
-        @Override
-        public Connector getTarget() {
-            return new SimpleConnector(PseudoEdge.this.getNamespace(), PseudoEdge.this.getId()+":target", PseudoEdge.this.m_target, PseudoEdge.this);
-        }
-
-        @Override
         public String getLabel() {
-            return m_source.getLabel()+" :: " + m_target.getLabel();
+            return getSource().getVertex().getLabel()+" :: " + getTarget().getVertex().getLabel();
         }
 
         @Override
@@ -397,7 +378,4 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 			Collection<String> removedVertexIds) {
 		rebuildGraph();
 	}
-
-
-
 }

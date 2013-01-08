@@ -29,23 +29,50 @@
 package org.opennms.features.topology.api.topo;
 
 import javax.xml.bind.annotation.XmlID;
+import javax.xml.bind.annotation.XmlIDREF;
 
-public abstract class AbstractEdge implements Edge {
+import org.opennms.features.topology.api.SimpleConnector;
 
-	private final String m_namespace;
-	private final String m_id;
+import com.vaadin.data.Item;
+import com.vaadin.data.util.BeanItem;
+
+public class AbstractEdge implements Edge {
+
+	// Required
+	private String m_namespace;
+	// Required
+	private String m_id;
+	// Required
+	private SimpleConnector m_source;
+	// Required
+	private SimpleConnector m_target;
+
 	private String m_label;
 	private String m_tooltipText;
 	private String m_styleName;
 
-	public AbstractEdge(String namespace, String id) {
+	/**
+	 * No-arg constructor for JAXB.
+	 */
+	public AbstractEdge() {}
+
+	public AbstractEdge(String namespace, String id, Vertex source, Vertex target) {
 		m_namespace = namespace;
 		m_id = id;
+		m_source = new SimpleConnector(namespace, source.getId() + "::" + target.getId(), source.getLabel() + " Connector", source, this);
+		m_target = new SimpleConnector(namespace, target.getId() + "::" + source.getId(), target.getLabel() + " Connector", target, this);
+	}
+
+	public AbstractEdge(String namespace, String id, SimpleConnector source, SimpleConnector target) {
+		m_namespace = namespace;
+		m_id = id;
+		m_source = source;
+		m_target = target;
 	}
 
 	@Override
 	@XmlID
-	public final String getId() {
+	public String getId() {
 		return m_id;
 	}
 
@@ -84,6 +111,23 @@ public abstract class AbstractEdge implements Edge {
 
 	public final void setStyleName(String styleName) {
 		m_styleName = styleName;
+	}
+
+	@Override
+	public Item getItem() {
+		return new BeanItem<AbstractEdge>(this);
+	}
+
+	@Override
+	@XmlIDREF
+	public final SimpleConnector getSource() {
+		return m_source;
+	}
+
+	@Override
+	@XmlIDREF
+	public final SimpleConnector getTarget() {
+		return m_target;
 	}
 
 	@Override

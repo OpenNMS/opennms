@@ -29,6 +29,7 @@
 package org.opennms.features.topology.plugins.topo.simple.internal;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -44,6 +45,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.features.topology.api.Constants;
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
@@ -51,6 +53,7 @@ import org.opennms.features.topology.api.LayoutAlgorithm;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.SimpleLeafVertex;
+import org.opennms.features.topology.api.topo.AbstractVertexRef;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeRef;
@@ -98,77 +101,72 @@ public class SimpleTopologyProviderTest {
             
         }
 
-	@Override
-	public GraphProvider getBaseTopology() {
-		throw new UnsupportedOperationException("GraphContainer.getBaseTopology is not yet implemented.");
-	}
+        @Override
+        public GraphProvider getBaseTopology() {
+            throw new UnsupportedOperationException("GraphContainer.getBaseTopology is not yet implemented.");
+        }
 
-	@Override
-	public void setBaseTopology(GraphProvider graphProvider) {
-		throw new UnsupportedOperationException("GraphContainer.setBaseTopology is not yet implemented.");
-	}
+        @Override
+        public void setBaseTopology(GraphProvider graphProvider) {
+            throw new UnsupportedOperationException("GraphContainer.setBaseTopology is not yet implemented.");
+        }
 
-	@Override
-	public SelectionManager getSelectionManager() {
-		throw new UnsupportedOperationException("GraphContainer.getSelectionManager is not yet implemented.");
-	}
+        @Override
+        public SelectionManager getSelectionManager() {
+            throw new UnsupportedOperationException("GraphContainer.getSelectionManager is not yet implemented.");
+        }
 
-	@Override
-	public Graph getGraph() {
-		throw new UnsupportedOperationException("GraphContainer.getGraph is not yet implemented.");
-	}
+        @Override
+        public Graph getGraph() {
+            throw new UnsupportedOperationException("GraphContainer.getGraph is not yet implemented.");
+        }
 
-	@Override
-	public Vertex getParent(VertexRef child) {
-		throw new UnsupportedOperationException("GraphContainer.getParent is not yet implemented.");
-	}
+        @Override
+        public Vertex getParent(VertexRef child) {
+            throw new UnsupportedOperationException("GraphContainer.getParent is not yet implemented.");
+        }
 
-	@Override
-	public Criteria getCriteria(String namespace) {
-		throw new UnsupportedOperationException("GraphContainer.getCriteria is not yet implemented.");
-	}
+        @Override
+        public Criteria getCriteria(String namespace) {
+            throw new UnsupportedOperationException("GraphContainer.getCriteria is not yet implemented.");
+        }
 
-	@Override
-	public void setCriteria(Criteria critiera) {
-		throw new UnsupportedOperationException("GraphContainer.setCriteria is not yet implemented.");
-	}
+        @Override
+        public void setCriteria(Criteria critiera) {
+            throw new UnsupportedOperationException("GraphContainer.setCriteria is not yet implemented.");
+        }
 
-	@Override
-	public double getScale() {
-		throw new UnsupportedOperationException("DisplayState.getScale is not yet implemented.");
-	}
+        @Override
+        public double getScale() {
+            throw new UnsupportedOperationException("DisplayState.getScale is not yet implemented.");
+        }
 
-	@Override
-	public void setScale(double scale) {
-		throw new UnsupportedOperationException("DisplayState.setScale is not yet implemented.");
-	}
+        @Override
+        public void setScale(double scale) {
+            throw new UnsupportedOperationException("DisplayState.setScale is not yet implemented.");
+        }
 
-	@Override
-	public void addChangeListener(ChangeListener listener) {
-		// TODO Auto-generated method stub
-		
-	}
+        @Override
+        public void addChangeListener(ChangeListener listener) {
+            // TODO Auto-generated method stub
+        }
 
-	@Override
-	public void removeChangeListener(ChangeListener listener) {
-		// TODO Auto-generated method stub
-		
-	}
+        @Override
+        public void removeChangeListener(ChangeListener listener) {
+            // TODO Auto-generated method stub
+        }
 
-	@Override
-	public Collection<VertexRef> getVertexRefForest(
-			Collection<? extends VertexRef> vertexRefs) {
-		throw new UnsupportedOperationException("GraphContainer.getVertexRefForest is not yet implemented.");
-	}
+        @Override
+        public Collection<VertexRef> getVertexRefForest(Collection<? extends VertexRef> vertexRefs) {
+            throw new UnsupportedOperationException("GraphContainer.getVertexRefForest is not yet implemented.");
+        }
 
-	@Override
-	public void setDataSource(GraphProvider graphProvider) {
-		// TODO Auto-generated method stub
-		
-	}
-
+        @Override
+        public void setDataSource(GraphProvider graphProvider) {
+            // TODO Auto-generated method stub
+        }
     }
-    
+
     private class TestOperationContext implements OperationContext{
         
         private GraphContainer m_graphContainer;
@@ -210,7 +208,7 @@ public class SimpleTopologyProviderTest {
         
 		m_topologyProvider.resetContainer();
 		
-
+		MockLogAppender.setupLogging();
     }
     
     @After
@@ -222,32 +220,51 @@ public class SimpleTopologyProviderTest {
     
 	@Test
 	public void test() {
-		GraphProvider topologyProvider = new SimpleTopologyProvider();
-		topologyProvider.resetContainer();
+		m_topologyProvider.resetContainer();
+
+		assertTrue(m_topologyProvider.getVertices().size() == 0);
+
+		Vertex vertexA = m_topologyProvider.addVertex(50, 100);
+		assertTrue(m_topologyProvider.getVertices().size() == 1);
+		//LoggerFactory.getLogger(this.getClass()).debug(m_topologyProvider.getVertices().get(0).toString());
+		assertTrue(m_topologyProvider.containsVertexId(vertexA));
+		assertTrue(m_topologyProvider.containsVertexId("v0"));
+		assertFalse(m_topologyProvider.containsVertexId("v1"));
+		VertexRef ref0 = new AbstractVertexRef(m_topologyProvider.getVertexNamespace(), "v0");
+		VertexRef ref1 = new AbstractVertexRef(m_topologyProvider.getVertexNamespace(), "v1");
+		assertTrue(m_topologyProvider.getVertices(Arrays.asList(new VertexRef[] {ref0})).size() == 1);
+		assertTrue(m_topologyProvider.getVertices(Arrays.asList(new VertexRef[] {ref1})).size() == 0);
+
+		Vertex vertexB = m_topologyProvider.addVertex(100, 50);
+		assertTrue(m_topologyProvider.containsVertexId(vertexB));
+		assertTrue(m_topologyProvider.containsVertexId("v1"));
+		assertTrue(m_topologyProvider.getVertices(Arrays.asList(new VertexRef[] {ref1})).size() == 1);
+
+		Vertex vertexC = m_topologyProvider.addVertex(100, 150);
+		Vertex vertexD = m_topologyProvider.addVertex(150, 100);
+		Vertex vertexE = m_topologyProvider.addVertex(200, 200);
+		assertTrue(m_topologyProvider.getVertices().size() == 5);
+
+		Vertex group1 = m_topologyProvider.addGroup("Group 1", Constants.GROUP_ICON_KEY);
+		Vertex group2 = m_topologyProvider.addGroup("Group 2", Constants.GROUP_ICON_KEY);
+		assertTrue(m_topologyProvider.getVertices().size() == 7);
+
+		m_topologyProvider.setParent(vertexA, group1);
+		m_topologyProvider.setParent(vertexB, group1);
+		m_topologyProvider.setParent(vertexC, group2);
+		m_topologyProvider.setParent(vertexD, group2);
 		
-		Vertex vertexA = topologyProvider.addVertex(50, 100);
-		Vertex vertexB = topologyProvider.addVertex(100, 50);
-		Vertex vertexC = topologyProvider.addVertex(100, 150);
-		Vertex vertexD = topologyProvider.addVertex(150, 100);
-		Vertex vertexE = topologyProvider.addVertex(200, 200);
-		Vertex group1 = topologyProvider.addGroup("Group 1", Constants.GROUP_ICON_KEY);
-		Vertex group2 = topologyProvider.addGroup("Group 2", Constants.GROUP_ICON_KEY);
-		topologyProvider.setParent(vertexA, group1);
-		topologyProvider.setParent(vertexB, group1);
-		topologyProvider.setParent(vertexC, group2);
-		topologyProvider.setParent(vertexD, group2);
+		m_topologyProvider.connectVertices(vertexA, vertexB);
+		m_topologyProvider.connectVertices(vertexA, vertexC);
+		m_topologyProvider.connectVertices(vertexB, vertexC);
+		m_topologyProvider.connectVertices(vertexB, vertexD);
+		m_topologyProvider.connectVertices(vertexC, vertexD);
+		m_topologyProvider.connectVertices(vertexA, vertexE);
+		m_topologyProvider.connectVertices(vertexD, vertexE);
 		
-		topologyProvider.connectVertices(vertexA, vertexB);
-		topologyProvider.connectVertices(vertexA, vertexC);
-		topologyProvider.connectVertices(vertexB, vertexC);
-		topologyProvider.connectVertices(vertexB, vertexD);
-		topologyProvider.connectVertices(vertexC, vertexD);
-		topologyProvider.connectVertices(vertexA, vertexE);
-		topologyProvider.connectVertices(vertexD, vertexE);
+		m_topologyProvider.save("target/test-classes/test-graph.xml");
 		
-		topologyProvider.save("target/test-classes/test-graph.xml");
-		
-		topologyProvider.load("target/test-classes/test-graph.xml");
+		m_topologyProvider.load("target/test-classes/test-graph.xml");
 		
 	}
 	
@@ -263,8 +280,15 @@ public class SimpleTopologyProviderTest {
 	@Test
 	public void testAddVertexWithOperation() {
 	    
+	    GraphContainer graphContainer = EasyMock.createMock(GraphContainer.class);
+	    
+	    EasyMock.expect(graphContainer.getBaseTopology()).andReturn(m_topologyProvider).anyTimes();
+	    graphContainer.redoLayout();
+	    
+	    EasyMock.replay(graphContainer);
+
 	    List<VertexRef> targets = Collections.emptyList();
-	    OperationContext operationContext = getOperationContext(new TestGraphContainer());
+	    OperationContext operationContext = getOperationContext(graphContainer);
 	    
 	    AddVertexOperation addOperation = new AddVertexOperation(Constants.GROUP_ICON_KEY);
 	    addOperation.execute(targets, operationContext);
@@ -284,6 +308,7 @@ public class SimpleTopologyProviderTest {
 	    
 	    GraphContainer graphContainer = EasyMock.createMock(GraphContainer.class);
 	    
+	    EasyMock.expect(graphContainer.getBaseTopology()).andReturn(m_topologyProvider).anyTimes();
 	    graphContainer.redoLayout();
 	    
 	    EasyMock.replay(graphContainer);
@@ -337,9 +362,13 @@ public class SimpleTopologyProviderTest {
     public void testRemoveVertexOperation() {
 		m_topologyProvider.resetContainer();
 
-    	
-        GraphContainer graphContainer = EasyMock.createMock(GraphContainer.class);
-        
+	    GraphContainer graphContainer = EasyMock.createMock(GraphContainer.class);
+	    
+	    EasyMock.expect(graphContainer.getBaseTopology()).andReturn(m_topologyProvider).anyTimes();
+	    graphContainer.redoLayout();
+	    
+	    EasyMock.replay(graphContainer);
+
         VertexRef vertexRef = addVertexToTopr();
         
         OperationContext operationContext = getOperationContext(graphContainer);
@@ -419,7 +448,9 @@ public class SimpleTopologyProviderTest {
         VertexRef vertexId2 = addVertexToTopr();
         
         GraphContainer graphContainer = EasyMock.createMock(GraphContainer.class);
-        
+
+        EasyMock.expect(graphContainer.getBaseTopology()).andReturn(m_topologyProvider).anyTimes();
+
         EasyMock.replay(graphContainer);
         
         List<VertexRef> targets = new ArrayList<VertexRef>();

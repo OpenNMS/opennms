@@ -36,13 +36,19 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.Vertex;
+import org.slf4j.LoggerFactory;
 
 @XmlRootElement(name="group")
 public class SimpleGroup extends AbstractVertex {
 
-	List<Vertex> m_members = new ArrayList<Vertex>();
+	List<AbstractVertex> m_members = new ArrayList<AbstractVertex>();
 
 	int m_mapid;
+
+	/**
+	 * No-arg constructor for JAXB
+	 */
+	public SimpleGroup() {}
 
 	public SimpleGroup(String namespace, String groupId) {
 		this(namespace, groupId, -1);
@@ -67,12 +73,16 @@ public class SimpleGroup extends AbstractVertex {
 	}
 
 	@XmlIDREF
-	public List<Vertex> getMembers() {
+	public List<AbstractVertex> getMembers() {
 		return m_members;
 	}
 
-	public void addMember(Vertex v) {
-		m_members.add(v);
+	public void addMember(Vertex vertex) {
+		if (vertex instanceof AbstractVertex) {
+			m_members.add((AbstractVertex)vertex);
+		} else {
+			LoggerFactory.getLogger(this.getClass()).warn("Could not add member of type {}", vertex.getClass().getName());
+		}
 	}
 
 	public void removeMember(Vertex v) {

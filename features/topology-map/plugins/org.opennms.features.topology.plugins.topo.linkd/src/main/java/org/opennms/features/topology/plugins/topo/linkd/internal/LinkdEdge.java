@@ -28,12 +28,9 @@
 
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
-import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.opennms.features.topology.api.SimpleConnector;
 import org.opennms.features.topology.api.topo.AbstractEdge;
-import org.opennms.features.topology.api.topo.Connector;
 import org.opennms.features.topology.api.topo.Vertex;
 
 import com.vaadin.data.Item;
@@ -41,38 +38,15 @@ import com.vaadin.data.util.BeanItem;
 
 @XmlRootElement(name="edge")
 public class LinkdEdge extends AbstractEdge {
-	String m_tooltipText;
-	Connector m_source;
-	Connector m_target;
 
 	public LinkdEdge(String id, Vertex source, Vertex target) {
-		super("linkd", id);
-		setSource(new SimpleConnector("linkd", source.getId() + "::" + target.getId(), source, this));
-		setTarget(new SimpleConnector("linkd", target.getId() + "::" + source.getId(), target, this));
+		super(LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, id, source, target);
+		//setSource(new SimpleConnector("linkd", source.getId() + "::" + target.getId(), source, this));
+		//setTarget(new SimpleConnector("linkd", target.getId() + "::" + source.getId(), target, this));
 	}
 
 	@Override
 	public Item getItem() {
 		return new BeanItem<LinkdEdge>(this);
-	}
-
-	@Override
-	@XmlIDREF
-	public Connector getSource() {
-		return m_source;
-	}
-
-	public void setSource(Connector source) {
-		m_source = source;
-	}
-
-	@Override
-	@XmlIDREF
-	public Connector getTarget() {
-		return m_target;
-	}
-
-	public void setTarget(Connector target) {
-		m_target = target;
 	}
 }

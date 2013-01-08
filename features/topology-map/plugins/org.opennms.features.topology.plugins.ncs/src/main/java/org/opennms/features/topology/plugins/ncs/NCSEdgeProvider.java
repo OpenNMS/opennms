@@ -33,6 +33,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.opennms.features.topology.api.SimpleConnector;
+import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.Connector;
 import org.opennms.features.topology.api.topo.Criteria;
@@ -55,40 +56,17 @@ public class NCSEdgeProvider implements EdgeProvider {
 	private static final String HTML_TOOLTIP_TAG_OPEN = "<p>";
 	private static final String HTML_TOOLTIP_TAG_END  = "</p>";
 
-	public static class NCSEdge implements Edge {
+	public static class NCSEdge extends AbstractEdge {
 		private final String m_serviceName;
-		private final NCSConnector m_source;
-		private final NCSConnector m_target;
 
 		public NCSEdge (String serviceName, NCSVertex source, NCSVertex target) {
+			super("ncs", source.getId() + ":::" + target.getId(), source, target);
 			m_serviceName = serviceName;
-			m_source = new NCSConnector(this, source);
-			m_target = new NCSConnector(this, target);
-		}
-
-		@Override
-		public String getKey() {
-			return getNamespace() + ":" + getId();
-		}
-
-		@Override
-		public String getLabel() {
-			return getId();
-		}
-
-		@Override
-		public Connector getSource() {
-			return m_source;
 		}
 
 		@Override
 		public String getStyleName() {
 			return "ncs edge";
-		}
-
-		@Override
-		public Connector getTarget() {
-			return m_target;
 		}
 
 		@Override
@@ -100,37 +78,21 @@ public class NCSEdgeProvider implements EdgeProvider {
 			toolTip.append(HTML_TOOLTIP_TAG_END);
 
 			toolTip.append(HTML_TOOLTIP_TAG_OPEN);
-			toolTip.append("Source: " + m_source.getVertex().getLabel());
+			toolTip.append("Source: " + getSource().getVertex().getLabel());
 			toolTip.append(HTML_TOOLTIP_TAG_END);
 
 			toolTip.append(HTML_TOOLTIP_TAG_OPEN);
-			toolTip.append("Target: " + m_target.getVertex().getLabel());
+			toolTip.append("Target: " + getTarget().getVertex().getLabel());
 			toolTip.append(HTML_TOOLTIP_TAG_END);
 
 			return toolTip.toString();
 		}
 
 		@Override
-		public String getId() {
-			return m_source.getVertex().getId() + ":::" + m_target.getVertex().getId();
-		}
-
-		@Override
-		public String getNamespace() {
-			return "ncs";
-		}
-
-		@Override
 		public Item getItem() {
-			return new BeanItem<Edge>(this);
+			return new BeanItem<NCSEdge>(this);
 		}
 
-	}
-
-	public static class NCSConnector extends SimpleConnector {
-		public NCSConnector(NCSEdge edge, NCSVertex vertex) {
-			super("ncs", edge.getId() + "::" + vertex.getId(), vertex, edge);
-		}
 	}
 
 	public static class NCSVertex extends AbstractVertex {

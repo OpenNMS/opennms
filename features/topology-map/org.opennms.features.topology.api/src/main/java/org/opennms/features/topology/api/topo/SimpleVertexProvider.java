@@ -11,6 +11,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
+import org.slf4j.LoggerFactory;
+
 public class SimpleVertexProvider implements VertexProvider {
 	
 	final String m_namespace;
@@ -48,11 +50,13 @@ public class SimpleVertexProvider implements VertexProvider {
 
 	private Vertex getSimpleVertex(VertexRef reference) {
 		if (getVertexNamespace().equals(reference.getNamespace())) {
+			/*
 			if (reference instanceof Vertex) {
 				return Vertex.class.cast(reference);
 			} else {
+			*/
 				return m_vertexMap.get(reference.getId());
-			}
+			//}
 		} 
 		return null;
 	}
@@ -67,7 +71,7 @@ public class SimpleVertexProvider implements VertexProvider {
 		List<Vertex> vertices = new ArrayList<Vertex>();
 		for(VertexRef ref : references) {
 			Vertex vertex = getSimpleVertex(ref);
-			if (ref != null) {
+			if (vertex != null) {
 				vertices.add(vertex);
 			}
 		}
@@ -105,7 +109,9 @@ public class SimpleVertexProvider implements VertexProvider {
 			children = new ArrayList<VertexRef>();
 			m_children.put(parent, children);
 		}
-		return children.add(child);
+		boolean retval = children.add(child);
+		fireVertexSetChanged();
+		return retval;
 	}
 
 	@Override
@@ -154,6 +160,11 @@ public class SimpleVertexProvider implements VertexProvider {
 	
 	private void addVertices(Collection<Vertex> vertices) {
 		for(Vertex vertex : vertices) {
+			if (vertex.getNamespace() == null || vertex.getId() == null) {
+				LoggerFactory.getLogger(this.getClass()).warn("Discarding invalid vertex: {}", vertex);
+				continue;
+			}
+			LoggerFactory.getLogger(this.getClass()).debug("Adding vertex: {}", vertex);
 			m_vertexMap.put(vertex.getId(), vertex);
 		}
 	}
@@ -207,7 +218,7 @@ public class SimpleVertexProvider implements VertexProvider {
 
 	@Override
 	public boolean containsVertexId(VertexRef id) {
-		return getVertex(id) == null;
+		return getVertex(id) != null;
 	}
 
 }
