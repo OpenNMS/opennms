@@ -37,8 +37,10 @@ import org.easymock.EasyMock;
 import org.junit.Assert;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.AbstractVertexRef;
 import org.opennms.features.topology.api.topo.GraphProvider;
+import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.netmgt.dao.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
@@ -461,14 +463,46 @@ public class EasyMockDataPopulator {
         Assert.assertTrue(topologyProvider.getEdgeIdsForVertex(new AbstractVertexRef(vertexNamespace, "7")).length == 2);
         Assert.assertTrue(topologyProvider.getEdgeIdsForVertex(new AbstractVertexRef(vertexNamespace, "8")).length == 2);
         
-        String[] edgeidsforvertex1 = { "10012","10081" };
-        String[] edgeidsforvertex2 = { "10012","10023" };
-        String[] edgeidsforvertex3 = { "10023", "10034"};
-        String[] edgeidsforvertex4 = { "10034", "10045" };
-        String[] edgeidsforvertex5 = { "10045", "10056" };
-        String[] edgeidsforvertex6 = { "10056","10067" };
-        String[] edgeidsforvertex7 = { "10067","10078" };
-        String[] edgeidsforvertex8 = { "10078","10081" };
+        /**
+         * This is a little hokey because it relies on the fact that edges are only judged to be equal based
+         * on the namespace and id tuple.
+         */
+        Vertex mockVertex = EasyMock.createMock(Vertex.class);
+        EasyMock.expect(mockVertex.getId()).andReturn("1").anyTimes();
+        EasyMock.expect(mockVertex.getLabel()).andReturn(null).anyTimes();
+        EasyMock.replay(mockVertex);
+        AbstractEdge[] edgeidsforvertex1 = {
+            new AbstractEdge("nodes", "10012", mockVertex, mockVertex),
+            new AbstractEdge("nodes", "10081", mockVertex, mockVertex)
+        };
+        AbstractEdge[] edgeidsforvertex2 = {
+            new AbstractEdge("nodes", "10012", mockVertex, mockVertex),
+            new AbstractEdge("nodes", "10023", mockVertex, mockVertex)
+        };
+        AbstractEdge[] edgeidsforvertex3 = {
+            new AbstractEdge("nodes", "10023", mockVertex, mockVertex),
+            new AbstractEdge("nodes", "10034", mockVertex, mockVertex)
+        };
+        AbstractEdge[] edgeidsforvertex4 = {
+            new AbstractEdge("nodes", "10034", mockVertex, mockVertex),
+            new AbstractEdge("nodes", "10045", mockVertex, mockVertex)
+        };
+        AbstractEdge[] edgeidsforvertex5 = {
+            new AbstractEdge("nodes", "10045", mockVertex, mockVertex),
+            new AbstractEdge("nodes", "10056", mockVertex, mockVertex)
+        };
+        AbstractEdge[] edgeidsforvertex6 = {
+            new AbstractEdge("nodes", "10056", mockVertex, mockVertex),
+            new AbstractEdge("nodes", "10067", mockVertex, mockVertex)
+        };
+        AbstractEdge[] edgeidsforvertex7 = {
+            new AbstractEdge("nodes", "10067", mockVertex, mockVertex),
+            new AbstractEdge("nodes", "10078", mockVertex, mockVertex)
+        };
+        AbstractEdge[] edgeidsforvertex8 = {
+            new AbstractEdge("nodes", "10078", mockVertex, mockVertex),
+            new AbstractEdge("nodes", "10081", mockVertex, mockVertex)
+        };
 
         Assert.assertArrayEquals(topologyProvider.getEdgeIdsForVertex(new AbstractVertexRef(vertexNamespace, "1")), edgeidsforvertex1);
         Assert.assertArrayEquals(topologyProvider.getEdgeIdsForVertex(new AbstractVertexRef(vertexNamespace, "2")), edgeidsforvertex2);

@@ -34,6 +34,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.plugins.topo.linkd.internal.operations.RefreshOperation;
@@ -61,6 +62,7 @@ public class LinkdTopologyProviderTest {
     
     @Before
     public void setUp() {
+        MockLogAppender.setupLogging();
         m_databasePopulator.populateDatabase();
         m_databasePopulator.setUpMock();
     }

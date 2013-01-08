@@ -59,6 +59,15 @@ public class AbstractEdge implements Edge {
 	public AbstractEdge() {}
 
 	public AbstractEdge(String namespace, String id, Vertex source, Vertex target) {
+		if (namespace == null) {
+			throw new IllegalArgumentException("Namespace is null");
+		} else if (id == null) {
+			throw new IllegalArgumentException("ID is null");
+		} else if (source == null) {
+			throw new IllegalArgumentException("Source is null");
+		} else if (target == null) {
+			throw new IllegalArgumentException("Target is null");
+		}
 		m_namespace = namespace;
 		m_id = id;
 		m_source = new SimpleConnector(namespace, source.getId() + "::" + target.getId(), source.getLabel() + " Connector", source, this);

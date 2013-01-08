@@ -205,10 +205,15 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     @XmlRootElement(name="graph")
     @XmlAccessorType(XmlAccessType.FIELD)
     private static class SimpleGraph {
+        /**
+         * No-arg constructor for JAXB.
+         */
+        @SuppressWarnings("unused")
+        public SimpleGraph() {}
         
         @XmlElements({
-                @XmlElement(name="vertex", type=Vertex.class),
-                @XmlElement(name="group", type=Vertex.class)
+                @XmlElement(name="vertex", type=AbstractVertex.class),
+                @XmlElement(name="group", type=AbstractVertex.class)
         })
         List<AbstractVertex> m_vertices = new ArrayList<AbstractVertex>();
         
