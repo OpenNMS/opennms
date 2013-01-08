@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeProvider;
 import org.opennms.features.topology.api.topo.GraphProvider;
@@ -25,7 +26,9 @@ public class MergingGraphProviderTest {
 	
 	@Before
 	public void setUp() {
-		
+
+		MockLogAppender.setupLogging();
+
 		m_graphProvider = new SimpleGraphBuilder("nodes")
 			.vertex("g0").vLabel("group0").vIconKey("group").vTooltip("root group").vStyleName("vertex")
 			.vertex("g1").parent("g0").vLabel("group1").vIconKey("group").vTooltip("group 1").vStyleName("vertex")
@@ -49,7 +52,6 @@ public class MergingGraphProviderTest {
 		providerManager.onEdgeProviderBind(m_edgeProvider);
 		
 		m_mergedProvider = new MergingGraphProvider(m_graphProvider, providerManager);
-
 	}
 	
 	@Test

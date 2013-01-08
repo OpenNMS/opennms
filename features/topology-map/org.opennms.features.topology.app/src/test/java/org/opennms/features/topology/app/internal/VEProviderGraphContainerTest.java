@@ -13,6 +13,7 @@ import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.topo.Edge;
@@ -39,7 +40,9 @@ public class VEProviderGraphContainerTest {
 	
 	@Before
 	public void setUp() {
-		
+
+		MockLogAppender.setupLogging();
+
 		m_graphProvider = new SimpleGraphBuilder("nodes")
 			.vertex("g0").vLabel("group0").vIconKey("group").vTooltip("root group").vStyleName("vertex")
 			.vertex("g1").parent("g0").vLabel("group1").vIconKey("group").vTooltip("group 1").vStyleName("vertex")

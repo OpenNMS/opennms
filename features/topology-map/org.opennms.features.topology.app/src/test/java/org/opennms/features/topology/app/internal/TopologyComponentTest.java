@@ -33,8 +33,10 @@ import static org.junit.Assert.assertEquals;
 import java.util.Collection;
 
 import org.easymock.EasyMock;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.topo.Edge;
@@ -46,6 +48,11 @@ import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
 
 public class TopologyComponentTest {
+
+	@Before
+	public void setUp() {
+		MockLogAppender.setupLogging();
+	}
 
     @Test
     public void testTopologyComponentGraph() throws PaintException {
@@ -59,7 +66,7 @@ public class TopologyComponentTest {
         
         TestTopologyProvider topoProvider = new TestTopologyProvider("test");
         GraphContainer graphContainer = new VEProviderGraphContainer(topoProvider, new ProviderManager());
-		TopologyComponent topoComponent = getTopologyComponent(graphContainer);
+        TopologyComponent topoComponent = getTopologyComponent(graphContainer);
         
         topoComponent.paintContent(target);
         
