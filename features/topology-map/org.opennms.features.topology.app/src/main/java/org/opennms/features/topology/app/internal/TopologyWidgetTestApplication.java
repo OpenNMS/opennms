@@ -64,11 +64,14 @@ import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.Slider;
 import com.vaadin.ui.Slider.ValueOutOfBoundsException;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.UriFragmentUtility;
+import com.vaadin.ui.UriFragmentUtility.FragmentChangedEvent;
+import com.vaadin.ui.UriFragmentUtility.FragmentChangedListener;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.VerticalSplitPanel;
 import com.vaadin.ui.Window;
 
-public class TopologyWidgetTestApplication extends Application implements CommandUpdateListener, MenuItemUpdateListener, ContextMenuHandler, WidgetUpdateListener, WidgetContext {
+public class TopologyWidgetTestApplication extends Application implements CommandUpdateListener, MenuItemUpdateListener, ContextMenuHandler, WidgetUpdateListener, WidgetContext, FragmentChangedListener {
     
     
 	private static final long serialVersionUID = 6837501987137310938L;
@@ -90,6 +93,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 	private Accordion m_treeAccordion;
     private HorizontalSplitPanel m_treeMapSplitPanel;
     private VerticalSplitPanel m_bottomLayoutBar;
+    private UriFragmentUtility m_uriFragUtil;
     
 	public TopologyWidgetTestApplication(CommandManager commandManager, TopologyProvider topologyProvider, ProviderManager providerManager, IconRepositoryManager iconRepoManager) {
 		m_commandManager = commandManager;
@@ -111,6 +115,10 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 	    m_window = new Window("OpenNMS Topology");
         m_window.setContent(m_rootLayout);
         setMainWindow(m_window);
+        
+        m_uriFragUtil = new UriFragmentUtility();
+        m_window.addComponent(m_uriFragUtil);
+        m_uriFragUtil.addListener(this);
 	    
 		m_layout = new AbsoluteLayout();
 		m_layout.setSizeFull();
@@ -162,6 +170,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 				zoomLevel.setValue(szl);
 				zoomLevelLabel.setValue(szl);
 				m_graphContainer.redoLayout();
+				m_uriFragUtil.setFragment("szl" + szl);
 			}
 		});
 
@@ -178,6 +187,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 				    zoomLevel.setValue(szl);
 				    zoomLevelLabel.setValue(szl);
 				    m_graphContainer.redoLayout();
+				    m_uriFragUtil.setFragment("szl" + szl);
 				} 
 				
 			}
@@ -514,6 +524,17 @@ public class TopologyWidgetTestApplication extends Application implements Comman
     @Override
     public GraphContainer getGraphContainer() {
         return m_graphContainer;
+    }
+
+
+    @Override
+    public void fragmentChanged(FragmentChangedEvent source) {
+        String fragment = source.getUriFragmentUtility().getFragment();
+        int zoomLevel = Integer.parseInt(fragment.substring(fragment.length() -1));
+        if(m_graphContainer.getSemanticZoomLevel() != zoomLevel) {
+            m_graphContainer.setSemanticZoomLevel(zoomLevel);
+            m_graphContainer.redoLayout();
+        }
     }
 
 }
