@@ -28,8 +28,16 @@
 
 package org.opennms.features.topology.api.topo;
 
+import java.beans.BeanInfo;
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.InvocationTargetException;
+
+import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlIDREF;
+import javax.xml.bind.annotation.XmlTransient;
 
 import org.slf4j.LoggerFactory;
 
@@ -66,17 +74,46 @@ public class AbstractVertex implements Vertex {
 		m_id = id;
 	}
 
+	/**
+	 * This JAXB function is used to set the namespace since we expect it to be set in the parent object.
+	 */
+	public void afterUnmarshal(Unmarshaller u, Object parent) {
+		if (m_namespace == null) {
+			try {
+				BeanInfo info = Introspector.getBeanInfo(parent.getClass());
+				for (PropertyDescriptor descriptor : info.getPropertyDescriptors()) {
+					if ("namespace".equals(descriptor.getName())) {
+						m_namespace = (String)descriptor.getReadMethod().invoke(parent);
+					}
+				}
+			} catch (IntrospectionException e) {
+				LoggerFactory.getLogger(this.getClass()).warn("Exception thrown when trying to fetch namespace from parent class " + parent.getClass(), e);
+			} catch (IllegalArgumentException e) {
+				LoggerFactory.getLogger(this.getClass()).warn("Exception thrown when trying to fetch namespace from parent class " + parent.getClass(), e);
+			} catch (IllegalAccessException e) {
+				LoggerFactory.getLogger(this.getClass()).warn("Exception thrown when trying to fetch namespace from parent class " + parent.getClass(), e);
+			} catch (InvocationTargetException e) {
+				LoggerFactory.getLogger(this.getClass()).warn("Exception thrown when trying to fetch namespace from parent class " + parent.getClass(), e);
+			}
+		}
+	}
+
 	@Override
 	@XmlID
 	public final String getId() {
 		return m_id;
 	}
 
-	public final void setId(String id) {
-		throw new UnsupportedOperationException("Property id is not writable");
+	/**
+	 * This setter is private so that it can only be used by JAXB.
+	 */
+	@SuppressWarnings("unused")
+	private final void setId(String id) {
+		m_id = id;
 	}
 
 	@Override
+	@XmlTransient
 	public final String getNamespace() {
 		return m_namespace;
 	}

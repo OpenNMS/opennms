@@ -44,6 +44,10 @@ public interface Edge extends EdgeRef {
 
 	String getTooltipText();
 
+	void setTooltipText(String tooltipText);
+
 	String getStyleName();
+
+	void setStyleName(String styleName);
 
 }

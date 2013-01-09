@@ -116,10 +116,12 @@ public class AbstractEdge implements Edge {
 		m_label = label;
 	}
 
+	@Override
 	public final void setTooltipText(String tooltipText) {
 		m_tooltipText = tooltipText;
 	}
 
+	@Override
 	public final void setStyleName(String styleName) {
 		m_styleName = styleName;
 	}

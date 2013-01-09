@@ -180,7 +180,4 @@ public class VEProviderGraphContainerTest {
 		m_expectedVertexStyles.clear();
 		m_expectedEdgeStyles.clear();
 	}
-	
-	
-
 }

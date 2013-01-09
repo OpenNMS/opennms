@@ -120,7 +120,7 @@ public class SimpleTopologyProvider extends AbstractTopologyProvider implements 
 
     @XmlRootElement(name="graph")
     @XmlAccessorType(XmlAccessType.FIELD)
-    private static class SimpleGraph {
+    public static class SimpleGraph {
         
         @XmlElements({
                 @XmlElement(name="vertex", type=SimpleLeafVertex.class),
@@ -170,10 +170,10 @@ public class SimpleTopologyProvider extends AbstractTopologyProvider implements 
         SimpleGraph graph = JAXB.unmarshal(url, SimpleGraph.class);
         
         clearVertices();
-        addVertices(graph.m_vertices.toArray(new Vertex[] {}));
+        addVertices(graph.m_vertices.toArray(new Vertex[0]));
         
         clearEdges();
-        addEdges(graph.m_edges.toArray(new Edge[] {}));
+        addEdges(graph.m_edges.toArray(new Edge[0]));
         
         if (graph.getNamespace() != null) {
         	m_namespace = graph.getNamespace();
@@ -196,10 +196,10 @@ public class SimpleTopologyProvider extends AbstractTopologyProvider implements 
                 }
             }
         }
-        addVertices(graph.m_vertices.toArray(new Vertex[] {}));
+        addVertices(graph.m_vertices.toArray(new Vertex[0]));
         
         clearEdges();
-        addEdges(graph.m_edges.toArray(new Edge[] {}));
+        addEdges(graph.m_edges.toArray(new Edge[0]));
     }
 
     @Override

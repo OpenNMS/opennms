@@ -41,6 +41,8 @@ public class TestTopologyProvider extends AbstractTopologyProvider implements Gr
     public TestTopologyProvider(String namespace) {
         super("test");
         
+        resetContainer();
+        
         String vId1 = getNextVertexId();
         TestVertex v1 = new TestLeafVertex(vId1, 0, 0);
         v1.setLabel("a leaf");
@@ -52,7 +54,8 @@ public class TestTopologyProvider extends AbstractTopologyProvider implements Gr
         v2.setLabel("another leaf");
         addVertices(v2);
         
-        connectVertices(v1, v2);
+        Edge edge = connectVertices(v1, v2);
+        edge.setStyleName("default");
     }
     
     @Override

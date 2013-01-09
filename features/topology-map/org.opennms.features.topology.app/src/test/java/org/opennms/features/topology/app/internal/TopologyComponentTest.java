@@ -39,6 +39,7 @@ import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
@@ -65,6 +66,8 @@ public class TopologyComponentTest {
         EasyMock.replay(target);
         
         TestTopologyProvider topoProvider = new TestTopologyProvider("test");
+        assertEquals(2, topoProvider.getVertices().size());
+        assertEquals(1, topoProvider.getEdges().size());
         GraphContainer graphContainer = new VEProviderGraphContainer(topoProvider, new ProviderManager());
         TopologyComponent topoComponent = getTopologyComponent(graphContainer);
         
@@ -101,10 +104,20 @@ public class TopologyComponentTest {
         EasyMock.replay(target);
         
         TestTopologyProvider topoProvider = new TestTopologyProvider("test");
+        assertEquals(2, topoProvider.getVertices().size());
+        assertEquals(1, topoProvider.getEdges().size());
         GraphContainer graphContainer = new VEProviderGraphContainer(topoProvider, new ProviderManager());
-		TopologyComponent topoComponent = getTopologyComponent(graphContainer);
+        TopologyComponent topoComponent = getTopologyComponent(graphContainer);
         
-        topoProvider.addVertex(0, 0);
+        AbstractVertex newVertex = topoProvider.addVertex(0, 0);
+        newVertex.setLabel("New Vertex");
+        assertEquals(3, topoProvider.getVertices().size());
+        assertEquals(1, topoProvider.getEdges().size());
+        /**
+         * TODO This should not be necessary... the container should listen for vertex added events
+         * and redo its own layout.
+         */
+        graphContainer.redoLayout();
         
         topoComponent.paintContent(target);
         
@@ -126,7 +139,9 @@ public class TopologyComponentTest {
         mockGraphTagEnd(target);
         
         // the set the zoomlevel to 1 and we should see two vertices and an edge
-        mockGraphAttrs(target, 1, false);
+        //mockGraphAttrs(target, 1, false);
+        // semantic zoom level changes should trigger a fitToView
+        mockGraphAttrs(target, 1, true);
         
         mockGraphTagStart(target);
         
@@ -142,9 +157,10 @@ public class TopologyComponentTest {
         
         TestTopologyProvider topologyProvider = new TestTopologyProvider("test");
         GraphContainer graphContainer = new VEProviderGraphContainer(topologyProvider, new ProviderManager());
-		TopologyComponent topoComponent = getTopologyComponent(graphContainer);
+        TopologyComponent topoComponent = getTopologyComponent(graphContainer);
         
         Collection<Vertex> vertIds = topologyProvider.getVertices();
+        assertEquals(2, vertIds.size());
         
         Vertex groupId = topologyProvider.addGroup(this.getClass().getSimpleName(), "GroupIcon.jpg");
         
@@ -152,8 +168,16 @@ public class TopologyComponentTest {
             if(v.isLeaf()) {
                 topologyProvider.setParent(v, groupId);
             }
-            
         }
+        
+        assertEquals(3, topologyProvider.getVertices().size());
+        assertEquals(1, topologyProvider.getEdges().size());
+        
+        /**
+         * TODO This should not be necessary... the container should listen for vertex added events
+         * and redo its own layout.
+         */
+        graphContainer.redoLayout();
         
         topoComponent.paintContent(target);
         
@@ -228,7 +252,7 @@ public class TopologyComponentTest {
         EasyMock.verify(target2);
     }
 
-    private void mockedDefaultToprData(PaintTarget target)
+    private static void mockedDefaultToprData(PaintTarget target)
             throws PaintException {
         mockInitialSetup(target);
         
@@ -244,11 +268,11 @@ public class TopologyComponentTest {
         
     }
 
-    private void mockInitialSetup(PaintTarget target) throws PaintException {
+    private static void mockInitialSetup(PaintTarget target) throws PaintException {
     	mockGraphAttrs(target, 0, true);
     }
     
-    private void mockGraphAttrs(PaintTarget target, int semanticZoomLevel, boolean fitToView) throws PaintException {
+    private static void mockGraphAttrs(PaintTarget target, int semanticZoomLevel, boolean fitToView) throws PaintException {
         target.addAttribute("scale", 1.0);
         target.addAttribute("clientX", 0);
         target.addAttribute("clientY", 0);
@@ -258,7 +282,7 @@ public class TopologyComponentTest {
         target.addAttribute("fitToView", fitToView);
     }
 
-    private void mockDefaultGraph(PaintTarget target) throws PaintException {
+    private static void mockDefaultGraph(PaintTarget target) throws PaintException {
         mockGraphTagStart(target);
         mockVertex(target);
         
@@ -269,15 +293,15 @@ public class TopologyComponentTest {
         mockGraphTagEnd(target);
     }
 
-    private void mockGraphTagEnd(PaintTarget target) throws PaintException {
+    private static void mockGraphTagEnd(PaintTarget target) throws PaintException {
         target.endTag("graph");
     }
 
-    private void mockGraphTagStart(PaintTarget target) throws PaintException {
+    private static void mockGraphTagStart(PaintTarget target) throws PaintException {
         target.startTag("graph");
     }
 
-    private void mockEdge(PaintTarget target) throws PaintException {
+    private static void mockEdge(PaintTarget target) throws PaintException {
         target.startTag("edge");
         target.addAttribute(eq("key"), EasyMock.notNull(String.class));
         target.addAttribute(eq("source"), EasyMock.notNull(String.class));
@@ -288,7 +312,7 @@ public class TopologyComponentTest {
         target.endTag("edge");
     }
     
-    private void mockEdgeWithKeys(PaintTarget target, String edgeKey, String sourceId, String targetId) throws PaintException {
+    private static void mockEdgeWithKeys(PaintTarget target, String edgeKey, String sourceId, String targetId) throws PaintException {
         target.startTag("edge");
         target.addAttribute("key", edgeKey);
         target.addAttribute("source", sourceId);
@@ -297,7 +321,7 @@ public class TopologyComponentTest {
         target.endTag("edge");
     }
 
-    private void mockVertex(PaintTarget target) throws PaintException {
+    private static void mockVertex(PaintTarget target) throws PaintException {
         target.startTag("vertex");
         target.addAttribute(EasyMock.eq("key"), EasyMock.notNull(String.class));
         target.addAttribute(eq("initialX"), EasyMock.anyInt());
@@ -312,7 +336,7 @@ public class TopologyComponentTest {
         target.endTag("vertex");
     }
     
-    private void mockVertexWithKey(PaintTarget target, String key) throws PaintException {
+    private static void mockVertexWithKey(PaintTarget target, String key) throws PaintException {
         target.startTag("vertex");
         target.addAttribute("key", key);
         target.addAttribute(eq("x"), EasyMock.anyInt());
@@ -326,7 +350,7 @@ public class TopologyComponentTest {
         target.endTag("vertex");
     }
 
-    private String eq(String arg) {
+    private static String eq(String arg) {
         return EasyMock.eq(arg);
     }
 
