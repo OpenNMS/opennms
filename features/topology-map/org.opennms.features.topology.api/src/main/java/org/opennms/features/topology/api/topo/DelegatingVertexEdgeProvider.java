@@ -32,8 +32,8 @@ import java.util.Collection;
 import java.util.List;
 
 public class DelegatingVertexEdgeProvider implements VertexProvider, EdgeProvider {
-	private final SimpleVertexProvider m_vertexProvider;
-	private final SimpleEdgeProvider m_edgeProvider;
+	protected SimpleVertexProvider m_vertexProvider;
+	protected SimpleEdgeProvider m_edgeProvider;
 
 	public DelegatingVertexEdgeProvider(String namespace) {
 		this(namespace, namespace);

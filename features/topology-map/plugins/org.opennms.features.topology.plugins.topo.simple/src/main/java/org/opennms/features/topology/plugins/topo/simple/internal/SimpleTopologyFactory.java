@@ -28,8 +28,8 @@
 
 package org.opennms.features.topology.plugins.topo.simple.internal;
 
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -65,7 +65,7 @@ public class SimpleTopologyFactory implements ManagedServiceFactory {
 		
 		try {
 			String location = (String)properties.get(TOPOLOGY_LOCATION);
-			URL url = new URL(location);
+			URI url = new URI(location);
 			if (!m_providers.containsKey(pid)) {
 				SimpleTopologyProvider topoProvider = new SimpleTopologyProvider();
 				topoProvider.setTopologyLocation(url);
@@ -98,7 +98,7 @@ public class SimpleTopologyFactory implements ManagedServiceFactory {
 				registration.setProperties(metaData);
 			}
 
-		} catch (MalformedURLException e) {
+		} catch (URISyntaxException e) {
 			throw new ConfigurationException(TOPOLOGY_LOCATION, "Topology location must be a valid url");
 		}
 	}

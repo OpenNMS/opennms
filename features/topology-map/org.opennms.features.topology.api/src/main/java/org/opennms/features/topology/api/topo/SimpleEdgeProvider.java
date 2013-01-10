@@ -10,6 +10,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
+import org.slf4j.LoggerFactory;
+
 public class SimpleEdgeProvider implements EdgeProvider {
 	
 	private static abstract class MatchingCriteria implements Criteria {
@@ -150,6 +152,11 @@ public class SimpleEdgeProvider implements EdgeProvider {
 	
 	private void addEdges(List<Edge> edges) {
 		for(Edge edge : edges) {
+			if (edge.getNamespace() == null || edge.getId() == null) {
+				LoggerFactory.getLogger(this.getClass()).warn("Discarding invalid edge: {}", edge);
+				continue;
+			}
+			LoggerFactory.getLogger(this.getClass()).debug("Adding edge: {}", edge);
 			m_edgeMap.put(edge.getId(), edge);
 		}
 	}

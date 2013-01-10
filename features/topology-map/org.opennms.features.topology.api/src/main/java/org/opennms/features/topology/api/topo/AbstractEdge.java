@@ -28,11 +28,20 @@
 
 package org.opennms.features.topology.api.topo;
 
+import java.beans.BeanInfo;
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.InvocationTargetException;
+
+import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 import org.opennms.features.topology.api.SimpleConnector;
+import org.slf4j.LoggerFactory;
 
 import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItem;
@@ -70,8 +79,8 @@ public class AbstractEdge implements Edge {
 		}
 		m_namespace = namespace;
 		m_id = id;
-		m_source = new SimpleConnector(namespace, source.getId() + "::" + target.getId(), source.getLabel() + " Connector", source, this);
-		m_target = new SimpleConnector(namespace, target.getId() + "::" + source.getId(), target.getLabel() + " Connector", target, this);
+		m_source = new SimpleConnector(namespace, id + "::" + source.getId(), source.getLabel() + " Connector", source, this);
+		m_target = new SimpleConnector(namespace, id + "::" + target.getId(), target.getLabel() + " Connector", target, this);
 	}
 
 	public AbstractEdge(String namespace, String id, SimpleConnector source, SimpleConnector target) {
@@ -81,13 +90,46 @@ public class AbstractEdge implements Edge {
 		m_target = target;
 	}
 
+	/**
+	 * This JAXB function is used to set the namespace since we expect it to be set in the parent object.
+	 */
+	public void afterUnmarshal(Unmarshaller u, Object parent) {
+		if (m_namespace == null) {
+			try {
+				BeanInfo info = Introspector.getBeanInfo(parent.getClass());
+				for (PropertyDescriptor descriptor : info.getPropertyDescriptors()) {
+					if ("namespace".equals(descriptor.getName())) {
+						m_namespace = (String)descriptor.getReadMethod().invoke(parent);
+					}
+				}
+			} catch (IntrospectionException e) {
+				LoggerFactory.getLogger(this.getClass()).warn("Exception thrown when trying to fetch namespace from parent class " + parent.getClass(), e);
+			} catch (IllegalArgumentException e) {
+				LoggerFactory.getLogger(this.getClass()).warn("Exception thrown when trying to fetch namespace from parent class " + parent.getClass(), e);
+			} catch (IllegalAccessException e) {
+				LoggerFactory.getLogger(this.getClass()).warn("Exception thrown when trying to fetch namespace from parent class " + parent.getClass(), e);
+			} catch (InvocationTargetException e) {
+				LoggerFactory.getLogger(this.getClass()).warn("Exception thrown when trying to fetch namespace from parent class " + parent.getClass(), e);
+			}
+		}
+	}
+
 	@Override
 	@XmlID
 	public String getId() {
 		return m_id;
 	}
 
+	/**
+	 * This setter is private so that it can only be used by JAXB.
+	 */
+	@SuppressWarnings("unused")
+	private final void setId(String id) {
+		m_id = id;
+	}
+
 	@Override
+	@XmlTransient
 	public final String getNamespace() {
 		return m_namespace;
 	}
@@ -132,13 +174,11 @@ public class AbstractEdge implements Edge {
 	}
 
 	@Override
-	@XmlIDREF
 	public final SimpleConnector getSource() {
 		return m_source;
 	}
 
 	@Override
-	@XmlIDREF
 	public final SimpleConnector getTarget() {
 		return m_target;
 	}
