@@ -38,22 +38,19 @@ import org.slf4j.LoggerFactory;
 
 public class HideNodesWithoutLinksOperation implements CheckedOperation {
 
-    LinkdTopologyProvider m_topologyProvider;
-    public HideNodesWithoutLinksOperation(LinkdTopologyProvider topologyProvider) {
-        m_topologyProvider=topologyProvider;
-    }
-
     @Override
-    public Undoer execute(List<VertexRef> targets,
-            OperationContext operationContext) {
-        log("executing Hide Nodes Without Link Checked Operation");
-        log("found addNodeWithoutLinks: " + m_topologyProvider.isAddNodeWithoutLink());
-        m_topologyProvider.setAddNodeWithoutLink(!m_topologyProvider.isAddNodeWithoutLink());
-        log("switched addNodeWithoutLinks to: " + m_topologyProvider.isAddNodeWithoutLink());
-        m_topologyProvider.load(null);
-        if (operationContext != null && operationContext.getGraphContainer() != null) {
-            log("operationcontext and GraphContainer not null: executing redoLayout");
-            operationContext.getGraphContainer().redoLayout();
+    public Undoer execute(List<VertexRef> targets, OperationContext operationContext) {
+        if (enabled(targets, operationContext)) {
+            LinkdTopologyProvider provider = (LinkdTopologyProvider)operationContext.getGraphContainer().getBaseTopology();
+            log("executing Hide Nodes Without Link Checked Operation");
+            log("found addNodeWithoutLinks: " + provider.isAddNodeWithoutLink());
+            provider.setAddNodeWithoutLink(!provider.isAddNodeWithoutLink());
+            log("switched addNodeWithoutLinks to: " + provider.isAddNodeWithoutLink());
+            provider.load(null);
+            if (operationContext != null && operationContext.getGraphContainer() != null) {
+                log("operationcontext and GraphContainer not null: executing redoLayout");
+                operationContext.getGraphContainer().redoLayout();
+            }
         }
         return null;
     }
@@ -65,9 +62,12 @@ public class HideNodesWithoutLinksOperation implements CheckedOperation {
     }
 
     @Override
-    public boolean enabled(List<VertexRef> targets,
-            OperationContext operationContext) {
-        return true;
+    public boolean enabled(List<VertexRef> targets, OperationContext operationContext) {
+        if (operationContext.getGraphContainer().getBaseTopology() instanceof LinkdTopologyProvider) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override
@@ -76,9 +76,13 @@ public class HideNodesWithoutLinksOperation implements CheckedOperation {
     }
 
     @Override
-    public boolean isChecked(List<VertexRef> targets,
-            OperationContext operationContext) {
-        return !m_topologyProvider.isAddNodeWithoutLink();
+    public boolean isChecked(List<VertexRef> targets, OperationContext operationContext) {
+        if (enabled(targets, operationContext)) {
+            LinkdTopologyProvider provider = (LinkdTopologyProvider)operationContext.getGraphContainer().getBaseTopology();
+            return !provider.isAddNodeWithoutLink();
+        } else {
+            return false;
+        }
     }
 
     private void log(final String string) {
