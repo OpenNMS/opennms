@@ -1,18 +1,22 @@
 package org.opennms.features.vaadin.nodemaps.gwt.client;
 
+import org.opennms.features.vaadin.nodemaps.gwt.client.openlayers.FeatureCollection;
 import org.opennms.features.vaadin.nodemaps.gwt.client.openlayers.OnmsOpenLayersMap;
+import org.opennms.features.vaadin.nodemaps.gwt.client.openlayers.VectorLayer;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.Widget;
+import com.vaadin.terminal.gwt.client.VConsole;
 
 public class GWTOpenlayersWidget extends Widget {
 	private final DivElement m_div;
 	private OnmsOpenLayersMap m_map;
+	private VectorLayer m_vectorLayer;
+	private FeatureCollection m_features;
 
 	public GWTOpenlayersWidget() {
 		super();
@@ -104,17 +108,11 @@ public class GWTOpenlayersWidget extends Widget {
 
 		// Nodes Layer
 
-		var nodesGml = this.@org.opennms.features.vaadin.nodemaps.gwt.client.GWTOpenlayersWidget::getNodesGml()();
-		$wnd.console.log("nodesGml = " + nodesGml);
-		var nodes = new $wnd.OpenLayers.Layer.Vector("All Nodes", {
+		var nodesLayer = new $wnd.OpenLayers.Layer.Vector("All Nodes", {
 			strategies: [
-				new $wnd.OpenLayers.Strategy.Fixed(),
+				// new $wnd.OpenLayers.Strategy.Fixed(),
 				new $wnd.OpenLayers.Strategy.Cluster()
 			],
-			protocol: new $wnd.OpenLayers.Protocol.HTTP({
-				url: nodesGml,
-				format: new $wnd.OpenLayers.Format.GML()
-			}),
 			styleMap: new $wnd.OpenLayers.StyleMap({
 				'default': style,
 				'select': {
@@ -124,19 +122,22 @@ public class GWTOpenlayersWidget extends Widget {
 			})
 		});
 
+                this.@org.opennms.features.vaadin.nodemaps.gwt.client.GWTOpenlayersWidget::m_vectorLayer = nodesLayer;
+                this.@org.opennms.features.vaadin.nodemaps.gwt.client.GWTOpenlayersWidget::updateFeatureLayer()();
+
 		// Selection Features
 
 		var select = new $wnd.OpenLayers.Control.SelectFeature(
-			nodes, {hover: true}
+			nodesLayer, {hover: true}
 		);
 		map.addControl(select);
 		select.activate();
 
-		nodes.events.on({
+		nodesLayer.events.on({
 			'featureselected': onFeatureSelect,
 			'featureunselected': onFeatureUnselect
 		});
-		map.addLayer(nodes);
+		map.addLayer(nodesLayer);
 
 		map.setCenter(new $wnd.OpenLayers.LonLat(0, 0), 1);
 
@@ -198,9 +199,31 @@ public class GWTOpenlayersWidget extends Widget {
 		function applyFilters(btn) {
 			btn.value = displayAllNodes ? 'Show All Nodes' : 'Show Down Nodes';
 			displayAllNodes = !displayAllNodes; 
-			nodes.refresh();
+			nodesLayer.refresh();
 		}
 	}-*/;
+
+	public void updateFeatureLayer() {
+	    if (m_features == null) {
+	        VConsole.log("features not initialized yet, skipping update");
+	        return;
+	    }
+	    if (m_vectorLayer == null) {
+	        VConsole.log("vector layer not initialized yet, skipping update");
+	        return;
+	    }
+	    VConsole.log("adding features to the node layer");
+            m_vectorLayer.replaceFeatureCollection(m_features);
+            VConsole.log("finished adding features");
+	}
+
+	public FeatureCollection getFeatureCollection() {
+	    return m_features;
+	}
+
+	public void setFeatureCollection(final FeatureCollection collection) {
+            m_features = collection;
+	}
 
 	private final native void destroyMap() /*-{
 		map.destroy();
