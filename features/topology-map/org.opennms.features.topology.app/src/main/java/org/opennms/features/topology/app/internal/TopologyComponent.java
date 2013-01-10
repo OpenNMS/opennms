@@ -35,6 +35,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.opennms.features.topology.api.BoundingBox;
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.GraphContainer.ChangeListener;
@@ -60,8 +61,8 @@ import com.vaadin.ui.ClientWidget;
 public class TopologyComponent extends AbstractComponent implements ChangeListener, ValueChangeListener {
 
     private static final long serialVersionUID = 1L;
-	
-	public class MapManager {
+    
+    public class MapManager {
 
         private int m_clientX = 0;
         private int m_clientY = 0;
@@ -174,6 +175,13 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
         target.addAttribute("semanticZoomLevel", m_graphContainer.getSemanticZoomLevel());
         target.addAttribute("activeTool", m_activeTool);
         
+        BoundingBox boundingBox = getBoundingBox();
+        target.addAttribute("boundX", boundingBox.getX());
+        target.addAttribute("boundY", boundingBox.getY());
+        target.addAttribute("boundWidth", boundingBox.getWidth());
+        target.addAttribute("boundHeight", boundingBox.getHeight());
+        
+        
         boolean panToSelection = getPanToSelection();
         target.addAttribute("panToSelection", panToSelection);
         m_panToManager.reset();
@@ -194,6 +202,11 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
 		}
         
         
+    }
+
+    private BoundingBox getBoundingBox() {
+        m_graphContainer.getGraph().getDisplayVertices();
+        return m_graphContainer.getGraph().getLayout().getBounds();
     }
 
 	public boolean isFitToView() {
@@ -431,6 +444,7 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
         }else {
             setScaleUpdateFromUI(false);
         }
+        
     }
 
     public ContextMenuHandler getContextMenuHandler() {

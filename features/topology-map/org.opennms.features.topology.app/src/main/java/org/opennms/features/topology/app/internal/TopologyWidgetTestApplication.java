@@ -33,6 +33,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.api.HistoryManager;
 import org.opennms.features.topology.api.IViewContribution;
 import org.opennms.features.topology.api.TopologyProvider;
 import org.opennms.features.topology.api.WidgetContext;
@@ -71,7 +72,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.VerticalSplitPanel;
 import com.vaadin.ui.Window;
 
-public class TopologyWidgetTestApplication extends Application implements CommandUpdateListener, MenuItemUpdateListener, ContextMenuHandler, WidgetUpdateListener, WidgetContext, FragmentChangedListener {
+public class TopologyWidgetTestApplication extends Application implements CommandUpdateListener, MenuItemUpdateListener, ContextMenuHandler, WidgetUpdateListener, WidgetContext, FragmentChangedListener, GraphContainer.ChangeListener {
     
     
 	private static final long serialVersionUID = 6837501987137310938L;
@@ -93,12 +94,16 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 	private Accordion m_treeAccordion;
     private HorizontalSplitPanel m_treeMapSplitPanel;
     private VerticalSplitPanel m_bottomLayoutBar;
+    private final Label m_zoomLevelLabel = new Label("0"); 
     private UriFragmentUtility m_uriFragUtil;
+    private HistoryManager m_historyManager;
     
-	public TopologyWidgetTestApplication(CommandManager commandManager, TopologyProvider topologyProvider, ProviderManager providerManager, IconRepositoryManager iconRepoManager) {
+	public TopologyWidgetTestApplication(CommandManager commandManager, HistoryManager historyManager, TopologyProvider topologyProvider, ProviderManager providerManager, IconRepositoryManager iconRepoManager) {
 		m_commandManager = commandManager;
 		m_commandManager.addMenuItemUpdateListener(this);
+		m_historyManager = historyManager;
 		m_graphContainer = new VEProviderGraphContainer(topologyProvider, providerManager);
+		m_graphContainer.addChangeListener(this);
 		m_iconRepositoryManager = iconRepoManager;
 		
 	}
@@ -123,7 +128,6 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 		m_layout = new AbsoluteLayout();
 		m_layout.setSizeFull();
 		m_rootLayout.addComponent(m_layout);
-		
 
 		Refresher refresher = new Refresher();
 		refresher.setRefreshInterval(5000);
@@ -141,6 +145,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 		m_topologyComponent.setContextMenuHandler(this);
 		
 		final Slider slider = new Slider(0, 4);
+		
 		slider.setPropertyDataSource(scale);
 		slider.setResolution(2);
 		slider.setHeight("300px");
@@ -155,22 +160,19 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 
 		final Property zoomLevel = item.getItemProperty("semanticZoomLevel");
 		
-		final Label zoomLevelLabel = new Label("0");
-		
-
 		final Button zoomInBtn = new Button();
 		zoomInBtn.setIcon(new ThemeResource("images/plus.png"));
 		zoomInBtn.setDescription("Expand Semantic Zoom Level");
 		zoomInBtn.setStyleName("semantic-zoom-button");
 		zoomInBtn.addListener(new ClickListener() {
 
-			public void buttonClick(ClickEvent event) {
+            public void buttonClick(ClickEvent event) {
 				int szl = (Integer) zoomLevel.getValue();
 				szl++;
 				zoomLevel.setValue(szl);
-				zoomLevelLabel.setValue(szl);
+				m_zoomLevelLabel.setValue(szl);
 				m_graphContainer.redoLayout();
-				m_uriFragUtil.setFragment("szl" + szl);
+				saveHistory();
 			}
 		});
 
@@ -185,9 +187,9 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 				if(szl > 0) {
 				    szl--;
 				    zoomLevel.setValue(szl);
-				    zoomLevelLabel.setValue(szl);
+				    m_zoomLevelLabel.setValue(szl);
 				    m_graphContainer.redoLayout();
-				    m_uriFragUtil.setFragment("szl" + szl);
+				    saveHistory();
 				} 
 				
 			}
@@ -230,9 +232,9 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 		
 		HorizontalLayout semanticLayout = new HorizontalLayout();
 		semanticLayout.addComponent(zoomInBtn);
-		semanticLayout.addComponent(zoomLevelLabel);
+		semanticLayout.addComponent(m_zoomLevelLabel);
 		semanticLayout.addComponent(zoomOutBtn);
-		semanticLayout.setComponentAlignment(zoomLevelLabel, Alignment.MIDDLE_CENTER);
+		semanticLayout.setComponentAlignment(m_zoomLevelLabel, Alignment.MIDDLE_CENTER);
 		
 		AbsoluteLayout mapLayout = new AbsoluteLayout();
 
@@ -240,8 +242,6 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 		mapLayout.addComponent(slider, "top: 5px; left: 20px; z-index:1000;");
 		mapLayout.addComponent(toolbar, "top: 324px; left: 12px;");
 		mapLayout.addComponent(semanticLayout, "top: 380px; left: 2px;");
-		//mapLayout.addComponent(zoomInBtn, "top: 380px; left: 2px;");
-		//mapLayout.addComponent(zoomOutBtn, "top: 380px; left: 35px");
 		mapLayout.setSizeFull();
 
 		m_treeMapSplitPanel = new HorizontalSplitPanel();
@@ -401,7 +401,6 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 
 		for (Iterator<?> it = tree.rootItemIds().iterator(); it.hasNext();) {
 			Object item = it.next();
-			//System.err.println("Expanding " + item);
 			tree.expandItemsRecursively(item);
 		}
 		
@@ -530,11 +529,20 @@ public class TopologyWidgetTestApplication extends Application implements Comman
     @Override
     public void fragmentChanged(FragmentChangedEvent source) {
         String fragment = source.getUriFragmentUtility().getFragment();
-        int zoomLevel = Integer.parseInt(fragment.substring(fragment.length() -1));
-        if(m_graphContainer.getSemanticZoomLevel() != zoomLevel) {
-            m_graphContainer.setSemanticZoomLevel(zoomLevel);
-            m_graphContainer.redoLayout();
-        }
+        m_historyManager.applyHistory(fragment, m_graphContainer);
     }
+
+
+    private void saveHistory() {
+        String fragment = m_historyManager.create(m_graphContainer);
+        m_uriFragUtil.setFragment(fragment);
+    }
+
+
+    @Override
+    public void graphChanged(GraphContainer graphContainer) {
+        m_zoomLevelLabel.setValue("" + graphContainer.getSemanticZoomLevel());
+    }
+
 
 }

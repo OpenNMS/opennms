@@ -1,10 +1,14 @@
 package org.opennms.features.topology.app.internal;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.opennms.features.topology.api.BoundingBox;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Layout;
+import org.opennms.features.topology.api.Point;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 
@@ -49,5 +53,25 @@ public class DefaultLayout implements Layout {
 	private Point random(int maxX, int maxY) {
 		return new Point(random(maxX), random(maxY));
 	}
+
+    @Override
+    public BoundingBox getBounds() {
+        Collection<? extends Vertex> vertices = m_graphContainer.getGraph().getDisplayVertices();
+        Collection<VertexRef> vRefs = new ArrayList<VertexRef>();
+        for(Vertex v : vertices) {
+            vRefs.add(v);
+        }
+        
+        return computeBoundingBox(vRefs);
+    }
+    
+    public BoundingBox computeBoundingBox(Collection<VertexRef> vertRefs) {
+        BoundingBox boundingBox = new BoundingBox();
+        for(VertexRef vertRef : vertRefs) {
+            boundingBox.addPoint(getLocation(vertRef));
+        }
+        
+        return boundingBox;
+    }
 
 }
