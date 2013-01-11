@@ -33,6 +33,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -174,6 +175,23 @@ public class SimpleTopologyProviderTest {
 		
 		System.err.println("Vertex Count: " + topologyProvider.getVertices().size());
 		System.err.println("Edge Count: " + topologyProvider.getEdges().size());
+	}
+	
+	@Test
+	public void testLoadSimpleGraph() {
+		SimpleTopologyProvider topologyProvider = new SimpleTopologyProvider();
+		topologyProvider.load(URI.create("file:target/test-classes/simple-graph.xml"));
+		
+		assertEquals(7, topologyProvider.getVertices().size());
+		assertEquals(7, topologyProvider.getEdges().size());
+		
+		for (Vertex vertex : topologyProvider.getVertices()) {
+			assertEquals("vertex", vertex.getNamespace());
+			assertTrue("127.0.0.1".equals(vertex.getIpAddress()) || "64.146.64.214".equals(vertex.getIpAddress()));
+		}
+		for (Edge edge : topologyProvider.getEdges()) {
+			assertEquals("vertex", edge.getNamespace());
+		}
 	}
 	
 	@Test

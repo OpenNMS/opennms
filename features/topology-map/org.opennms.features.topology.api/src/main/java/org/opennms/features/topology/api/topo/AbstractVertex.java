@@ -84,6 +84,7 @@ public class AbstractVertex implements Vertex {
 				for (PropertyDescriptor descriptor : info.getPropertyDescriptors()) {
 					if ("namespace".equals(descriptor.getName())) {
 						m_namespace = (String)descriptor.getReadMethod().invoke(parent);
+						LoggerFactory.getLogger(this.getClass()).debug("Setting namespace on {} to {} from parent", this, m_namespace);
 					}
 				}
 			} catch (IntrospectionException e) {

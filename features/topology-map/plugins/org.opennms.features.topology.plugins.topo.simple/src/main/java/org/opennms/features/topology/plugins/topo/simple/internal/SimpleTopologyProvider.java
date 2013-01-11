@@ -298,7 +298,7 @@ public class SimpleTopologyProvider extends AbstractTopologyProvider implements 
         JAXB.marshal(graph, new File(filename));
     }
     
-    private void load(SimpleGraph graph) {
+    private void load(URI source, SimpleGraph graph) {
         String namespace = graph.m_namespace == null ? TOPOLOGY_NAMESPACE_SIMPLE : graph.m_namespace;
         if (getVertexNamespace() != namespace) { 
             m_vertexProvider = new SimpleVertexProvider(namespace);
@@ -310,7 +310,7 @@ public class SimpleTopologyProvider extends AbstractTopologyProvider implements 
         clearVertices();
         for (Vertex vertex : graph.m_vertices) {
             if (vertex.getNamespace() == null || vertex.getId() == null) {
-                LoggerFactory.getLogger(this.getClass()).warn("Invalid vertex unmarshalled from {}: {}", graph, vertex);
+                LoggerFactory.getLogger(this.getClass()).warn("Invalid vertex unmarshalled from {}: {}", source.toString(), vertex);
             } else if (vertex.getId().startsWith(SIMPLE_GROUP_ID_PREFIX)) {
                 try {
                     // Find the highest index group number and start the index for new groups above it
@@ -328,7 +328,7 @@ public class SimpleTopologyProvider extends AbstractTopologyProvider implements 
         clearEdges();
         for (JaxbEdge edge : graph.m_edges) {
             if (edge.getNamespace() == null || edge.getId() == null) {
-                LoggerFactory.getLogger(this.getClass()).warn("Invalid edge unmarshalled from {}: {}", graph, edge);
+                LoggerFactory.getLogger(this.getClass()).warn("Invalid edge unmarshalled from {}: {}", source.toString(), edge);
             } else if (edge.getId().startsWith(SIMPLE_EDGE_ID_PREFIX)) {
                 try {
                     /*
@@ -350,9 +350,9 @@ public class SimpleTopologyProvider extends AbstractTopologyProvider implements 
         }
     }
 
-    private void load(URI url) {
+    void load(URI url) {
         SimpleGraph graph = JAXB.unmarshal(url, SimpleGraph.class);
-        load(graph);
+        load(url, graph);
     }
 
     @Override
