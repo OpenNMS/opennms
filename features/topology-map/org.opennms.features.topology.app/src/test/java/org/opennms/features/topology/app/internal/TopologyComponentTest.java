@@ -280,6 +280,11 @@ public class TopologyComponentTest {
         target.addAttribute("activeTool", "pan");
         target.addAttribute("panToSelection", false);
         target.addAttribute("fitToView", fitToView);
+        
+        target.addAttribute(EasyMock.eq("boundX"), EasyMock.anyInt());
+        target.addAttribute(EasyMock.eq("boundY"), EasyMock.anyInt());
+        target.addAttribute(EasyMock.eq("boundWidth"),EasyMock.anyInt());
+        target.addAttribute(EasyMock.eq("boundHeight"), EasyMock.anyInt());
     }
 
     private static void mockDefaultGraph(PaintTarget target) throws PaintException {
