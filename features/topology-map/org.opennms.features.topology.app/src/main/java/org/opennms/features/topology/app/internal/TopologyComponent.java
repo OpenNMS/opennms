@@ -127,6 +127,7 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
     private boolean m_scaleUpdateFromUI = false;
     private String m_activeTool = "pan";
     private PanToSelectionManager m_panToManager = new PanToSelectionManager();
+    private BoundingBox m_boundingBox = null;
 
 	public TopologyComponent(GraphContainer dataSource, Property scale) {
 		setGraph(dataSource.getGraph());
@@ -137,6 +138,7 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
 			
 			@Override
 			public void selectionChanged(SelectionManager selectionManager) {
+			    //m_boundingBox = m_graphContainer.getGraph().getLayout().computeBoundingBox(selectionManager.getSelectedVertexRefs());
 				requestRepaint();
 			}
 		});
@@ -205,8 +207,11 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
     }
 
     private BoundingBox getBoundingBox() {
-        m_graphContainer.getGraph().getDisplayVertices();
-        return m_graphContainer.getGraph().getLayout().getBounds();
+        if(m_boundingBox  == null) {
+            return m_graphContainer.getGraph().getLayout().getBounds();
+        } else {
+            return m_boundingBox;
+        }
     }
 
 	public boolean isFitToView() {
