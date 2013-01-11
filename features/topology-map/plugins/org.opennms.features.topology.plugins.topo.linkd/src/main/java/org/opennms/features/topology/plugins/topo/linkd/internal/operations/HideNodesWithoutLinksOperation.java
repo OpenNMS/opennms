@@ -47,23 +47,20 @@ public class HideNodesWithoutLinksOperation implements CheckedOperation {
             provider.setAddNodeWithoutLink(!provider.isAddNodeWithoutLink());
             log("switched addNodeWithoutLinks to: " + provider.isAddNodeWithoutLink());
             provider.load(null);
-            if (operationContext != null && operationContext.getGraphContainer() != null) {
-                log("operationcontext and GraphContainer not null: executing redoLayout");
-                operationContext.getGraphContainer().redoLayout();
-            }
+            log("executing redoLayout");
+            operationContext.getGraphContainer().redoLayout();
         }
         return null;
     }
 
     @Override
-    public boolean display(List<VertexRef> targets,
-            OperationContext operationContext) {
+    public boolean display(List<VertexRef> targets, OperationContext operationContext) {
         return true;
     }
 
     @Override
     public boolean enabled(List<VertexRef> targets, OperationContext operationContext) {
-        if (operationContext.getGraphContainer().getBaseTopology() instanceof LinkdTopologyProvider) {
+        if (operationContext != null && operationContext.getGraphContainer() != null && operationContext.getGraphContainer().getBaseTopology() instanceof LinkdTopologyProvider) {
             return true;
         } else {
             return false;

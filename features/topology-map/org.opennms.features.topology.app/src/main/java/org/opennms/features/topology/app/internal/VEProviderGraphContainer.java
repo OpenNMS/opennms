@@ -194,7 +194,7 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 
     @Override
     public GraphProvider getBaseTopology() {
-        return m_mergedGraphProvider;
+        return m_mergedGraphProvider.getBaseGraphProvider();
     }
 
     @Override
