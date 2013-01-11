@@ -17,6 +17,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
 
     <bean id="topologyApplication" class="org.opennms.features.topology.app.internal.TopologyWidgetTestApplication" scope="prototype">
         <argument ref="commandManager"/>
+        <argument ref="historyManager"/>
         <argument ref="topologyProvider"/>
         <argument ref="providerManager" />
         <argument ref="iconRepoManager"/>
@@ -281,5 +282,8 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         </service-properties>
         <bean class="org.opennms.features.topology.app.internal.operations.SpringLayoutOperation"/>
     </service>
+    
+    <reference id="historyManager" interface="org.opennms.features.topology.api.HistoryManager" availability="mandatory">
+    </reference>
 
 </blueprint>

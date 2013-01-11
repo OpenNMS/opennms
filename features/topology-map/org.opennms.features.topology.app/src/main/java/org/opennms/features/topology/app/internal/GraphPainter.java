@@ -3,7 +3,7 @@ package org.opennms.features.topology.app.internal;
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Layout;
-import org.opennms.features.topology.api.Layout.Point;
+import org.opennms.features.topology.api.Point;
 import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.Vertex;

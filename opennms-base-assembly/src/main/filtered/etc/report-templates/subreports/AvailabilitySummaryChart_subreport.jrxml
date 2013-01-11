@@ -15,7 +15,7 @@ new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianC
 )]]></defaultValueExpression>
 	</parameter>
 	<parameter name="TIME_SERIES_START_TIME_STRING" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA[new SimpleDateFormat("EEE MMM d HH:mm:ss Z yyyy").format($P{TIME_SERIES_START_TIMESTAMP})]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA[new SimpleDateFormat("yyyy-MM-d HH:mm:ss Z").format($P{TIME_SERIES_START_TIMESTAMP})]]></defaultValueExpression>
 	</parameter>
 	<queryString>
 		<![CDATA[select

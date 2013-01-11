@@ -265,6 +265,8 @@ public class OnmsAssetRecord implements Serializable {
 
     private String m_managedObjectInstance;
 
+    private String m_geolocation;
+
     /**
      * default constructor
      */
@@ -1510,6 +1512,15 @@ public class OnmsAssetRecord implements Serializable {
      */
     public void setStoragectrl(String storagectrl) {
             m_storagectrl = storagectrl;
+    }
+
+    @Column(name="geolocation", length=32)
+    public String getGeoLocation() {
+        return m_geolocation;
+    }
+
+    public void setGeoLocation(String m_geolocation) {
+        this.m_geolocation = m_geolocation;
     }
 
     /** {@inheritDoc} */

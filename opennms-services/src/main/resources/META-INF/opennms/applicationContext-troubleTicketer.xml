@@ -5,7 +5,13 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
 
-	<bean id="x" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="properties">
+			<props>
+			<prop key="opennms.ticketer.servicelayer">org.opennms.netmgt.ticketd.DefaultTicketerServiceLayer</prop>
+			<prop key="opennms.ticketer.plugin">org.opennms.netmgt.ticketd.NullTicketerPlugin</prop>
+			</props>
+		</property>
 	</bean>
 	
 	<bean name="ticketerPlugin" class="org.opennms.netmgt.ticketd.TicketerPluginFactory">

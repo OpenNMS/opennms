@@ -78,6 +78,36 @@ import com.vaadin.terminal.gwt.client.UIDL;
 
 public class VTopologyComponent extends Composite implements Paintable, SVGTopologyMap, TopologyView.Presenter<TopologyViewRenderer> {
     
+    private class BoundingBox{
+        private int m_x = 0;
+        private int m_y = 0;
+        private int m_width = 0;
+        private int m_height = 0;
+        
+        public BoundingBox(int x, int y, int width, int height) {
+            m_x = x;
+            m_y = y;
+            m_width = width;
+            m_height = height;
+        }
+        
+        public int getX() {
+            return m_x;
+        }
+
+        public int getY() {
+            return m_y;
+        }
+
+        public int getWidth() {
+            return m_width;
+        }
+
+        public int getHeight() {
+            return m_height;
+        }
+    }
+    
     public interface TopologyViewRenderer{
         void updateGraph(GWTGraph graph);
         void draw(GWTGraph graph, TopologyView<TopologyViewRenderer> topologyView);
@@ -410,6 +440,7 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
     
     private TopologyView<TopologyViewRenderer> m_topologyView;
     private List<GraphUpdateListener> m_graphListenerList = new ArrayList<GraphUpdateListener>();
+    private BoundingBox m_boundingBox;
 
 	public VTopologyComponent() {
 		initWidget(uiBinder.createAndBindUi(this));
@@ -752,6 +783,13 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 		    }
 		}
         
+        int x = uidl.getIntAttribute("boundX");
+        int y = uidl.getIntAttribute("boundY");
+        int width = uidl.getIntAttribute("boundWidth");
+        int height = uidl.getIntAttribute("boundHeight");
+        setBoundingBox(x,y,width, height);
+        
+        
         graph.setScale(uidl.getDoubleAttribute("scale"));
         graph.setOldScale(m_graph.getScale());
         graph.setClientX(uidl.getIntAttribute("clientX"));
@@ -762,6 +800,11 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
         
 		
 	}
+
+    private void setBoundingBox(int x, int y, int width, int height) {
+        m_boundingBox = new BoundingBox(x, y, width, height);
+        consoleLog("Bounding box:: x: " + x + " y: " + y + " width: " + width + " height: " + height);
+    }
 
     private String minEndPoint(GWTEdge edge1) {
         String edge1Source = edge1.getSource().getId().compareTo(edge1.getTarget().getId()) < 0 ? edge1.getSource().getId() : edge1.getTarget().getId();

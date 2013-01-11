@@ -34,7 +34,7 @@
 		<defaultValueExpression><![CDATA[95.0]]></defaultValueExpression>
 	</parameter>
 	<parameter name="START_TIME_STRING" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA[new SimpleDateFormat("EEE MMM d HH:mm:ss Z yyyy").format($P{START_TIME})]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA[new SimpleDateFormat("yyyy-MM-d HH:mm:ss Z").format($P{START_TIME})]]></defaultValueExpression>
 	</parameter>
 	<queryString>
 		<![CDATA[SELECT
