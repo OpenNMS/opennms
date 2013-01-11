@@ -31,6 +31,7 @@ package org.opennms.features.topology.app.internal;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Collection;
+
 import org.easymock.EasyMock;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -281,6 +282,11 @@ public class TopologyComponentTest {
         target.addAttribute("activeTool", "pan");
         target.addAttribute("panToSelection", false);
         target.addAttribute("fitToView", fitToView);
+        
+        target.addAttribute(EasyMock.eq("boundX"), EasyMock.anyInt());
+        target.addAttribute(EasyMock.eq("boundY"), EasyMock.anyInt());
+        target.addAttribute(EasyMock.eq("boundWidth"),EasyMock.anyInt());
+        target.addAttribute(EasyMock.eq("boundHeight"), EasyMock.anyInt());
     }
 
     private void mockDefaultGraph(PaintTarget target) throws PaintException {
