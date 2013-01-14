@@ -236,29 +236,20 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 			
             //Scaling and Fit to Zoom transitions
 			SVGMatrix transform = topologyView.calculateNewTransform(graph.getBoundingBox());
-            if(!graph.isFitToView() && !graph.isPanToSelection()) {
-                
-                D3.d3().select(topologyView.getSVGViewPort())
-                .transition().duration(1000)
-                .attr("transform", matrixTransform(transform) )
-                .selectAll(GWTEdge.SVG_EDGE_ELEMENT).style("stroke-width", GWTEdge.EDGE_WIDTH/transform.getA() + "px").transition().delay(750).duration(500).attr("opacity", "1").transition();
+			final double scale = transform.getA();
+            graph.setScale(scale);
             
-            } else {
-                
-                final double scale = transform.getA();
-                graph.setScale(scale);
-                
-                D3.d3().select(topologyView.getSVGViewPort()).transition().duration(2000).attr("transform", matrixTransform(transform)).each("end", new AnonymousFunc() {
-                    
-                    @Override
-                    public void call() {
-                        onScaleUpdate(scale);
-                    }
-                });
-                
-                //D3.d3().selectAll(GWTEdge.SVG_EDGE_ELEMENT).attr("opacity", "0").transition().delay(1000).duration(500).attr("opacity", "1").style("stroke-width", GWTEdge.EDGE_WIDTH / scale + "px");
-                D3.d3().selectAll(GWTEdge.SVG_EDGE_ELEMENT).transition().delay(1000).duration(500).attr("opacity", "1").style("stroke-width", GWTEdge.EDGE_WIDTH / scale + "px");
-            }
+            D3.d3().select(topologyView.getSVGViewPort())
+            .transition().duration(1000)
+            .attr("transform", matrixTransform(transform) ).each("end",new AnonymousFunc() {
+
+                @Override
+                public void call() {
+                    onScaleUpdate(scale);
+                }
+            });
+            
+            D3.d3().selectAll(GWTEdge.SVG_EDGE_ELEMENT).style("stroke-width", GWTEdge.EDGE_WIDTH/transform.getA() + "px").transition().delay(750).duration(500).attr("opacity", "1").transition();
             
 		}
 		
@@ -741,12 +732,8 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
         
         graph.setScale(uidl.getDoubleAttribute("scale"));
         graph.setOldScale(m_graph.getScale());
-        graph.setClientX(uidl.getIntAttribute("clientX"));
-        graph.setClientY(uidl.getIntAttribute("clientY"));
-        //graph.setPanToSelection(uidl.getBooleanAttribute("panToSelection"));
-        graph.setFitToView(uidl.getBooleanAttribute("fitToView"));
         graph.setBoundingBox(GWTBoundingBox.create(x, y, width, height));
-        consoleLog("Bounding box :: x: " + graph.getBoundingBox().getX() + " y: " + graph.getBoundingBox().getY() + " width: " + graph.getBoundingBox().getWidth() + " height: " + graph.getBoundingBox().getHeight());
+        //consoleLog("Bounding box :: x: " + graph.getBoundingBox().getX() + " y: " + graph.getBoundingBox().getY() + " width: " + graph.getBoundingBox().getWidth() + " height: " + graph.getBoundingBox().getHeight());
 		setGraph(graph);
         
 		
