@@ -138,20 +138,7 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
 			
 			@Override
 			public void selectionChanged(SelectionManager selectionManager) {
-			    if(selectionManager.getSelectedVertexRefs().size() > 0) {
-    			    Collection<? extends Vertex> visible = m_graphContainer.getGraph().getDisplayVertices();
-    			    Collection<VertexRef> selected = selectionManager.getSelectedVertexRefs();
-    			    Collection<VertexRef> vRefs = new ArrayList<VertexRef>();
-    			    for(VertexRef vRef : selected) {
-    			        if(visible.contains(vRef)) {
-    			            vRefs.add(vRef);
-    			        }
-    			    }
-    			    m_boundingBox = m_graphContainer.getGraph().getLayout().computeBoundingBox(vRefs);
-    				
-			    }else {
-			        m_boundingBox = null;
-			    }
+			    computeBoundsForSelected(selectionManager);
 			    requestRepaint();
 			}
 			
@@ -448,6 +435,8 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
 	public void graphChanged(GraphContainer container) {
 		setGraph(container.getGraph());
 		setFitToView(true);
+		//re compute bounds when graph has changed if there are selected ones
+		computeBoundsForSelected(container.getSelectionManager());
 		requestRepaint();
 	}
 
@@ -491,6 +480,23 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
 
     public void setPanToSelection(boolean bool) {
         m_panToManager.setPanToSelection(bool);
+    }
+
+    private void computeBoundsForSelected(SelectionManager selectionManager) {
+        if(selectionManager.getSelectedVertexRefs().size() > 0) {
+            Collection<? extends Vertex> visible = m_graphContainer.getGraph().getDisplayVertices();
+            Collection<VertexRef> selected = selectionManager.getSelectedVertexRefs();
+            Collection<VertexRef> vRefs = new ArrayList<VertexRef>();
+            for(VertexRef vRef : selected) {
+                if(visible.contains(vRef)) {
+                    vRefs.add(vRef);
+                }
+            }
+            m_boundingBox = m_graphContainer.getGraph().getLayout().computeBoundingBox(vRefs);
+        	
+        }else {
+            m_boundingBox = null;
+        }
     }
 
 }

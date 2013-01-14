@@ -170,8 +170,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 				int szl = (Integer) zoomLevel.getValue();
 				szl++;
 				zoomLevel.setValue(szl);
-				m_zoomLevelLabel.setValue(szl);
-				m_graphContainer.redoLayout();
+				setSemanticZoomLevel(szl);
 				saveHistory();
 			}
 		});
@@ -187,8 +186,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 				if(szl > 0) {
 				    szl--;
 				    zoomLevel.setValue(szl);
-				    m_zoomLevelLabel.setValue(szl);
-				    m_graphContainer.redoLayout();
+				    setSemanticZoomLevel(szl);
 				    saveHistory();
 				} 
 				
@@ -542,6 +540,12 @@ public class TopologyWidgetTestApplication extends Application implements Comman
     @Override
     public void graphChanged(GraphContainer graphContainer) {
         m_zoomLevelLabel.setValue("" + graphContainer.getSemanticZoomLevel());
+    }
+
+
+    private void setSemanticZoomLevel(int szl) {
+        m_zoomLevelLabel.setValue(szl);
+        m_graphContainer.redoLayout();
     }
 
 

@@ -743,7 +743,7 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
         graph.setOldScale(m_graph.getScale());
         graph.setClientX(uidl.getIntAttribute("clientX"));
         graph.setClientY(uidl.getIntAttribute("clientY"));
-        graph.setPanToSelection(uidl.getBooleanAttribute("panToSelection"));
+        //graph.setPanToSelection(uidl.getBooleanAttribute("panToSelection"));
         graph.setFitToView(uidl.getBooleanAttribute("fitToView"));
         graph.setBoundingBox(GWTBoundingBox.create(x, y, width, height));
         consoleLog("Bounding box :: x: " + graph.getBoundingBox().getX() + " y: " + graph.getBoundingBox().getY() + " width: " + graph.getBoundingBox().getWidth() + " height: " + graph.getBoundingBox().getHeight());
