@@ -1199,6 +1199,7 @@ create table assets (
         admin		varchar(32),
         snmpcommunity		varchar(32),
         rackunitheight		varchar(2),
+        geolocation		varchar(32),
         
     constraint pk_assetID primary key (id),
 	constraint fk_nodeID5 foreign key (nodeID) references node ON DELETE CASCADE
