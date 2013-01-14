@@ -202,6 +202,7 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
     public SVGMatrix calculateNewTransform(GWTBoundingBox bounds) {
         int iconMargin = 50;
         int iconLeftMargin = iconMargin + 50;
+        int topMargin = iconMargin + 50;
         int leftMargin = 60;
         int rightMargin = 21;
         
@@ -209,12 +210,15 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
         final int svgWidth = svg.getParentElement().getOffsetWidth() - (leftMargin + rightMargin); 
         final int svgHeight = svg.getParentElement().getOffsetHeight();
         
-        final double scale = Math.min(svgWidth/((double)bounds.getWidth() + iconLeftMargin), svgHeight/((double)bounds.getHeight()));
+        double scale = Math.min(svgWidth/((double)bounds.getWidth() + iconLeftMargin), svgHeight/((double)bounds.getHeight() + topMargin));
+        scale = scale > 2 ? 2 : scale;
         double translateX =  -bounds.getX() + iconMargin;
         double translateY =  -bounds.getY();
         
+        double calcY = (svgHeight - (bounds.getHeight()* scale))/2;
+        double calcX = (svgWidth - ((bounds.getWidth() + leftMargin)* scale))/2;
         SVGMatrix transform = svg.createSVGMatrix()
-                .translate(leftMargin, (svgHeight - (bounds.getHeight()* scale))/2)
+                .translate(Math.max(leftMargin, calcX), calcY)
                 .scale(scale)
                 .translate(translateX, translateY)
                     ;

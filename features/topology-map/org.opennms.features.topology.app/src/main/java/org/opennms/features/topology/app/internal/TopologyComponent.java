@@ -138,9 +138,23 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
 			
 			@Override
 			public void selectionChanged(SelectionManager selectionManager) {
-			    //m_boundingBox = m_graphContainer.getGraph().getLayout().computeBoundingBox(selectionManager.getSelectedVertexRefs());
-				requestRepaint();
+			    if(selectionManager.getSelectedVertexRefs().size() > 0) {
+    			    Collection<? extends Vertex> visible = m_graphContainer.getGraph().getDisplayVertices();
+    			    Collection<VertexRef> selected = selectionManager.getSelectedVertexRefs();
+    			    Collection<VertexRef> vRefs = new ArrayList<VertexRef>();
+    			    for(VertexRef vRef : selected) {
+    			        if(visible.contains(vRef)) {
+    			            vRefs.add(vRef);
+    			        }
+    			    }
+    			    m_boundingBox = m_graphContainer.getGraph().getLayout().computeBoundingBox(vRefs);
+    				
+			    }else {
+			        m_boundingBox = null;
+			    }
+			    requestRepaint();
 			}
+			
 		});
 
 		m_graphContainer.addChangeListener(this);
