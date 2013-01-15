@@ -216,19 +216,18 @@ public class AssetServiceImpl extends RemoteServiceServlet implements
 
 		// a list of all asset records which contains all distinct asset
 		// properties for suggestion
-		List<OnmsAssetRecord> distinctAssetProperties = this.m_assetRecordDao
-				.getDistinctProperties();
+		List<OnmsAssetRecord> distinctAssetProperties = this.m_assetRecordDao.getDistinctProperties();
 
 		// Map all distinct asset properties
 		for (OnmsAssetRecord asset : distinctAssetProperties) {
 			suggestion.addAdditionalhardware(asset.getAdditionalhardware());
-			suggestion.addAddress1(asset.getAddress1());
-			suggestion.addAddress2(asset.getAddress2());
+			suggestion.addAddress1(asset.getGeolocation().getAddress1());
+			suggestion.addAddress2(asset.getGeolocation().getAddress2());
 			suggestion.addAdmin(asset.getAdmin());
 			suggestion.addBuilding(asset.getBuilding());
 			suggestion.addCategory(asset.getCategory());
 			suggestion.addCircuitId(asset.getCircuitId());
-			suggestion.addCity(asset.getCity());
+			suggestion.addCity(asset.getGeolocation().getCity());
 			suggestion.addCpu(asset.getCpu());
 			suggestion.addDepartment(asset.getDepartment());
 			suggestion.addDescription(asset.getDescription());
@@ -255,14 +254,15 @@ public class AssetServiceImpl extends RemoteServiceServlet implements
 			suggestion.addRegion(asset.getRegion());
 			suggestion.addRoom(asset.getRoom());
 			suggestion.addSnmpcommunity(asset.getSnmpcommunity());
-			suggestion.addState(asset.getState());
+			suggestion.addState(asset.getGeolocation().getState());
 			suggestion.addStoragectrl(asset.getStoragectrl());
 			suggestion.addSupportPhone(asset.getSupportPhone());
 			suggestion.addThresholdCategory(asset.getThresholdCategory());
 			suggestion.addVendor(asset.getVendor());
 			suggestion.addVendorFax(asset.getVendorFax());
 			suggestion.addVendorPhone(asset.getVendorPhone());
-			suggestion.addZip(asset.getZip());
+			suggestion.addZip(asset.getGeolocation().getZip());
+			suggestion.addCoordinates(asset.getGeolocation().getCoordinates());
 		}
 		return suggestion;
 	}

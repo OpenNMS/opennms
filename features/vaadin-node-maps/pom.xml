@@ -78,6 +78,7 @@
 				<configuration>
 					<bundles>
 						<bundle>mvn:org.opennms.features/vaadin-node-maps/${project.version}</bundle>
+						<bundle>mvn:org.opennms.features.geocoder/org.opennms.features.geocoder.google/${project.version}</bundle>
 					</bundles>
 					<features>
 						<feature>vaadin</feature>
@@ -230,6 +231,10 @@
 		<!-- Node Maps Dependencies -->
 
 		<dependency>
+			<groupId>org.opennms.features.geocoder</groupId>
+			<artifactId>org.opennms.features.geocoder.api</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.opennms.dependencies</groupId>
 			<artifactId>spring-dependencies</artifactId>
 			<scope>provided</scope>
@@ -257,6 +262,18 @@
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.opennms.features.geocoder</groupId>
+			<artifactId>org.opennms.features.geocoder.google</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.opennms</groupId>
+			<artifactId>opennms-test</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.opennms.core.test-api</groupId>
+			<artifactId>org.opennms.core.test-api.lib</artifactId>
 		</dependency>
 
 	</dependencies>

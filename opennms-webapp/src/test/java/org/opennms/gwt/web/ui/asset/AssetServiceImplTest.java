@@ -205,7 +205,7 @@ public class AssetServiceImplTest implements InitializingBean {
 		OnmsAssetRecord assetRecord = onmsNode.getAssetRecord();
 		assetRecord.setAssetNumber("imported-id: " + onmsNode.getId());
 		assetRecord.setAdmin("supermario");
-		assetRecord.setZip("myzip");
+		assetRecord.getGeolocation().setZip("myzip");
 		m_assetRecordDao.update(assetRecord);
 		m_assetRecordDao.flush();
 
@@ -215,7 +215,7 @@ public class AssetServiceImplTest implements InitializingBean {
 		assetRecord = onmsNode.getAssetRecord();
 		assetRecord.setAssetNumber("imported-id: 23");
 		assetRecord.setAdmin("mediummario");
-		assetRecord.setZip("yourzip");
+		assetRecord.getGeolocation().setZip("yourzip");
 		m_assetRecordDao.update(assetRecord);
 		m_assetRecordDao.flush();
 
@@ -266,7 +266,7 @@ public class AssetServiceImplTest implements InitializingBean {
 		assetRecord.setAssetNumber("imported-id: " + onmsNode.getId());
 		assetRecord.setAdmin("supermario");
 		assetRecord.setLastModifiedDate(new Date());
-		assetRecord.setZip("myzip");
+		assetRecord.getGeolocation().setZip("myzip");
 		m_assetRecordDao.update(assetRecord);
 		m_assetRecordDao.flush();
 
@@ -293,7 +293,7 @@ public class AssetServiceImplTest implements InitializingBean {
 		assetRecord.setAssetNumber("imported-id: 666");
 		assetRecord.setAdmin("medium mario");
 		assetRecord.setLastModifiedDate(new Date());
-		assetRecord.setZip("his zip");
+		assetRecord.getGeolocation().setZip("his zip");
 		m_assetRecordDao.update(assetRecord);
 		m_assetRecordDao.flush();
 
@@ -304,7 +304,7 @@ public class AssetServiceImplTest implements InitializingBean {
 		assetRecord.setAssetNumber("imported-id: 999");
 		assetRecord.setAdmin("super mario");
 		assetRecord.setLastModifiedDate(new Date());
-		assetRecord.setZip("your zip");
+		assetRecord.getGeolocation().setZip("your zip");
 		m_assetRecordDao.update(assetRecord);
 		m_assetRecordDao.flush();
 

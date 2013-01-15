@@ -32,6 +32,7 @@ import org.opennms.core.utils.LogUtils;
 import org.opennms.features.vaadin.nodemaps.ui.OpenlayersWidgetComponent;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsAssetRecord;
+import org.opennms.netmgt.model.OnmsGeolocation;
 import org.opennms.netmgt.model.OnmsNode;
 
 import com.vaadin.Application;
@@ -262,20 +263,10 @@ public class NodeMapsApplication extends Application {
     private String getNodeAddress(final OnmsNode node) {
         if (node == null || node.getAssetRecord() == null) return null;
         final OnmsAssetRecord assetRecord = node.getAssetRecord();
+        final OnmsGeolocation geolocation = assetRecord.getGeolocation();
 
-        final StringBuffer sb = new StringBuffer();
-
-        if (assetRecord.getAddress1() != null) {
-            sb.append(assetRecord.getAddress1());
-            if (assetRecord.getAddress2() != null) {
-                sb.append(" ").append(assetRecord.getAddress2());
-            }
-        }
-
-        if (sb.length() > 0 && assetRecord.getCity() != null) sb.append(", ").append(assetRecord.getCity());
-        if (sb.length() > 0 && assetRecord.getState() != null) sb.append(", ").append(assetRecord.getState());
-        if (sb.length() > 0 && assetRecord.getZip() != null) sb.append(" ").append(assetRecord.getZip());
-        return sb.toString();
+        if (geolocation == null) return "";
+        return geolocation.asAddressString();
     }
 
 }
