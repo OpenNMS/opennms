@@ -276,12 +276,7 @@ public class TopologyComponentTest {
     
     private void mockGraphAttrs(PaintTarget target, int semanticZoomLevel, boolean fitToView) throws PaintException {
         target.addAttribute("scale", 1.0);
-        target.addAttribute("clientX", 0);
-        target.addAttribute("clientY", 0);
-        target.addAttribute("semanticZoomLevel", semanticZoomLevel);
         target.addAttribute("activeTool", "pan");
-        target.addAttribute("panToSelection", false);
-        target.addAttribute("fitToView", fitToView);
         
         target.addAttribute(EasyMock.eq("boundX"), EasyMock.anyInt());
         target.addAttribute(EasyMock.eq("boundY"), EasyMock.anyInt());
