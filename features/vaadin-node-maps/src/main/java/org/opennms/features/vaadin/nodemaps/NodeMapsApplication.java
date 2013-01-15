@@ -83,7 +83,7 @@ public class NodeMapsApplication extends Application {
     private static final String NODE_STYLE = "nodeCircle";
 
     /** The OpenNMS Node DAO. */
-    private NodeDao nodeDao;
+    private NodeDao m_nodeDao;
 
     private Window m_window;
 
@@ -92,11 +92,11 @@ public class NodeMapsApplication extends Application {
     /**
      * Sets the OpenNMS Node DAO.
      * 
-     * @param nodeDao the new OpenNMS Node DAO
+     * @param m_nodeDao the new OpenNMS Node DAO
      */
 
     public void setNodeDao(NodeDao nodeDao) {
-        this.nodeDao = nodeDao;
+        this.m_nodeDao = nodeDao;
     }
 
     /**
@@ -105,11 +105,11 @@ public class NodeMapsApplication extends Application {
      * @return the OpenNMS Node DAO
      */
     public NodeDao getNodeDao() {
-        if (nodeDao == null) {
+        if (m_nodeDao == null) {
             LogUtils.infof(this, "Initializing NodeDao");
-            nodeDao = BeanUtils.getBean("daoContext", "nodeDao", NodeDao.class);
+            m_nodeDao = BeanUtils.getBean("daoContext", "m_nodeDao", NodeDao.class);
         }
-        return nodeDao;
+        return m_nodeDao;
     }
 
     /*
@@ -119,6 +119,7 @@ public class NodeMapsApplication extends Application {
     @Override
     public void init() {
         final OpenlayersWidgetComponent openlayers = new OpenlayersWidgetComponent();
+        openlayers.setNodeDao(getNodeDao());
         openlayers.setSizeFull();
 
         m_rootLayout = new AbsoluteLayout();

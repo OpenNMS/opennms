@@ -5,10 +5,12 @@ import com.google.gwt.core.client.JavaScriptObject;
 public class VectorLayer extends JavaScriptObject {
     protected VectorLayer() {}
 
-    private static final GeoJSONFormat m_format = GeoJSONFormat.create(Projection.create("EPSG:900913"), Projection.create("EPSG:4326"));
-    
     public final native void replaceFeatureCollection(final FeatureCollection features) /*-{
-        var vectorFeatures = @org.opennms.features.vaadin.nodemaps.gwt.client.openlayers.VectorLayer::m_format.read(features);
+        var geojson_format = new $wnd.OpenLayers.Format.GeoJSON({
+            internalProjection: new $wnd.OpenLayers.Projection("EPSG:900913"),
+            externalProjection: new $wnd.OpenLayers.Projection("EPSG:4326")
+        });
+        var vectorFeatures = geojson_format.read(features);
         this.removeAllFeatures({silent: true});
         this.addFeatures(vectorFeatures);
     }-*/;

@@ -1515,12 +1515,12 @@ public class OnmsAssetRecord implements Serializable {
     }
 
     @Column(name="geolocation", length=32)
-    public String getGeoLocation() {
+    public String getGeolocation() {
         return m_geolocation;
     }
 
-    public void setGeoLocation(String m_geolocation) {
-        this.m_geolocation = m_geolocation;
+    public void setGeolocation(final String geolocation) {
+        m_geolocation = geolocation;
     }
 
     /** {@inheritDoc} */
@@ -1547,6 +1547,7 @@ public class OnmsAssetRecord implements Serializable {
             .append("city", getCity())
             .append("state", getState())
             .append("zip", getZip())
+            .append("geolocation", getGeolocation())
             .append("building", getBuilding())
             .append("floor", getFloor())
             .append("room", getRoom())
