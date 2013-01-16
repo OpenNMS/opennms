@@ -2,7 +2,7 @@
 <graph namespace="vertex">
     <vertex>
         <id>v0</id>
-        <ipAddress>64.146.64.214</ipAddress>
+        <ipAddr>64.146.64.214</ipAddr>
         <label>Vertex v0</label>
         <locked>false</locked>
         <nodeID>-1</nodeID>
@@ -13,7 +13,7 @@
     </vertex>
     <vertex>
         <id>v1</id>
-        <ipAddress>64.146.64.214</ipAddress>
+        <ipAddr>64.146.64.214</ipAddr>
         <label>Vertex v1</label>
         <locked>false</locked>
         <nodeID>-1</nodeID>
@@ -24,7 +24,7 @@
     </vertex>
     <vertex>
         <id>v2</id>
-        <ipAddress>64.146.64.214</ipAddress>
+        <ipAddr>64.146.64.214</ipAddr>
         <label>Vertex v2</label>
         <locked>false</locked>
         <nodeID>-1</nodeID>
@@ -35,7 +35,7 @@
     </vertex>
     <vertex>
         <id>v3</id>
-        <ipAddress>64.146.64.214</ipAddress>
+        <ipAddr>64.146.64.214</ipAddr>
         <label>Vertex v3</label>
         <locked>false</locked>
         <nodeID>-1</nodeID>
@@ -46,7 +46,7 @@
     </vertex>
     <vertex>
         <id>v4</id>
-        <ipAddress>64.146.64.214</ipAddress>
+        <ipAddr>64.146.64.214</ipAddr>
         <label>Vertex v4</label>
         <locked>false</locked>
         <nodeID>-1</nodeID>
@@ -57,7 +57,7 @@
     <group>
         <icon>VAADIN/widgetsets/org.opennms.features.topology.widgetset.gwt.TopologyWidgetset/topologywidget/images/group.png</icon>
         <id>g0</id>
-        <ipAddress>127.0.0.1</ipAddress>
+        <ipAddr>127.0.0.1</ipAddr>
         <label>Group g0</label>
         <locked>false</locked>
         <nodeID>-1</nodeID>
@@ -70,7 +70,7 @@
     <group>
         <icon>VAADIN/widgetsets/org.opennms.features.topology.widgetset.gwt.TopologyWidgetset/topologywidget/images/group.png</icon>
         <id>g1</id>
-        <ipAddress>127.0.0.1</ipAddress>
+        <ipAddr>127.0.0.1</ipAddr>
         <label>Group g1</label>
         <locked>false</locked>
         <nodeID>-1</nodeID>

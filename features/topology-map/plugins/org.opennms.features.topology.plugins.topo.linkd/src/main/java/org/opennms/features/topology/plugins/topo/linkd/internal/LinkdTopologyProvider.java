@@ -36,20 +36,19 @@ import java.util.List;
 import java.util.Map;
 
 import javax.xml.bind.JAXB;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElements;
-import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
-import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeProvider;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexProvider;
+import org.opennms.features.topology.api.topo.WrappedEdge;
+import org.opennms.features.topology.api.topo.WrappedGraph;
+import org.opennms.features.topology.api.topo.WrappedGroup;
+import org.opennms.features.topology.api.topo.WrappedLeafVertex;
+import org.opennms.features.topology.api.topo.WrappedVertex;
 import org.opennms.netmgt.dao.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
@@ -202,39 +201,14 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         }
     }
 
-    @XmlRootElement(name="graph")
-    @XmlAccessorType(XmlAccessType.FIELD)
-    private static class SimpleGraph {
-        /**
-         * No-arg constructor for JAXB.
-         */
-        @SuppressWarnings("unused")
-        public SimpleGraph() {}
-        
-        @XmlElements({
-                @XmlElement(name="vertex", type=AbstractVertex.class),
-                @XmlElement(name="group", type=AbstractVertex.class)
-        })
-        List<AbstractVertex> m_vertices = new ArrayList<AbstractVertex>();
-        
-        @XmlElement(name="edge")
-        List<AbstractEdge> m_edges = new ArrayList<AbstractEdge>();
-        
-        public SimpleGraph(List<AbstractVertex> vertices, List<AbstractEdge> edges) {
-            m_vertices = vertices;
-            m_edges = edges;
-        }
-
-    }
-
-    private SimpleGraph getGraphFromFile(File file) {
-        return JAXB.unmarshal(file, SimpleGraph.class);
+    private WrappedGraph getGraphFromFile(File file) {
+        return JAXB.unmarshal(file, WrappedGraph.class);
     }
 
     private void loadfromfile(String filename) {
         File file = new File(filename);
         if (file.exists() && file.canRead()) {
-            SimpleGraph graph = getGraphFromFile(file);
+            WrappedGraph graph = getGraphFromFile(file);
             addVertices(graph.m_vertices.toArray(new Vertex[] {}));
             addEdges(graph.m_edges.toArray(new Edge[] {}));
         }
@@ -295,8 +269,8 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
             }
         }
         
-        log("Found Vertexes: #" + vertexes.size());        
-        log("Found Edges: #" + edges.size());
+        log("Found " + vertexes.size() + " vertices");
+        log("Found " + edges.size() + " edges");
 
                 
         addVertices(vertexes.values().toArray(new Vertex[] {}));
@@ -304,36 +278,36 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
  
         File configFile = new File(m_configurationFile);
 
+        int numberOfGroups = 0;
         if (configFile.exists() && configFile.canRead()) {
             log("loadtopology: loading topology from configuration file: " + m_configurationFile);
             m_groupCounter = 0;
-            SimpleGraph graph = getGraphFromFile(configFile);
-            for (Vertex vertex: graph.m_vertices) {
-                if (!vertex.isLeaf()) {
-                    log("loadtopology: adding group to topology: " + vertex.getId());
+            WrappedGraph graph = getGraphFromFile(configFile);
+            // Add all groups to the topology
+            for (WrappedVertex vertex: graph.m_vertices) {
+                if (!vertex.leaf) {
+                    log("loadtopology: adding group to topology: " + vertex.id);
                     // Find the highest index group number and start the index for new groups above it
-                    int groupNumber = Integer.parseInt(vertex.getId().substring(LINKD_GROUP_ID_PREFIX.length()));
-                    if (m_groupCounter <= groupNumber) {
-                        m_groupCounter = groupNumber + 1;
+                    try {
+                        int groupNumber = Integer.parseInt(vertex.id.substring(LINKD_GROUP_ID_PREFIX.length()));
+                        if (m_groupCounter <= groupNumber) {
+                            m_groupCounter = groupNumber + 1;
+                        }
+                    } catch (NumberFormatException e) {
+                        // Ignore this group ID since it doesn't conform to our pattern for auto-generated IDs
                     }
-                    addGroup(vertex.getId(), vertex.getIconKey(), vertex.getLabel());
+                    addGroup(vertex.id, vertex.iconKey, vertex.label);
+                    numberOfGroups++;
                 }
             }
             
-            for (Vertex vertex: graph.m_vertices) {
-                log("loadtopology: found vertex: " + vertex.getId());
-                if (vertex.isRoot()) {
-                    if (!vertex.isLeaf())
-                        setParent(vertex, null);
-                } else {
-                    setParent(vertex, vertex.getParent());
-                }
+            for (WrappedVertex vertex: graph.m_vertices) {
+                log("loadtopology: setting parent of " + vertex + " to " + vertex.getParent());
+                setParent(vertex, vertex.getParent());
             }
 
         }
-        log("Found Groups: #" + m_groupCounter);
-
-
+        log("Found " + numberOfGroups + " groups");
     }
 
     private LinkdVertex getVertex(OnmsNode onmsnode) {
@@ -465,16 +439,21 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     public void save(String filename) {
         if (filename == null) 
             filename=m_configurationFile;
-        List<AbstractVertex> vertices = new ArrayList<AbstractVertex>();
+        List<WrappedVertex> vertices = new ArrayList<WrappedVertex>();
         for (Vertex vertex : getVertices()) {
-            vertices.add((AbstractVertex)vertex);
+            if (vertex.isLeaf()) {
+                vertices.add(new WrappedLeafVertex(vertex));
+            } else {
+                vertices.add(new WrappedGroup(vertex));
+            }
         }
-        List<AbstractEdge> edges = new ArrayList<AbstractEdge>();
+        List<WrappedEdge> edges = new ArrayList<WrappedEdge>();
         for (Edge edge : getEdges()) {
-            edges.add((AbstractEdge)edge);
+            WrappedEdge newEdge = new WrappedEdge(edge, new WrappedLeafVertex(m_vertexProvider.getVertex(edge.getSource().getVertex())), new WrappedLeafVertex(m_vertexProvider.getVertex(edge.getTarget().getVertex())));
+            edges.add(newEdge);
         }
 
-        SimpleGraph graph = new SimpleGraph(vertices, edges);
+        WrappedGraph graph = new WrappedGraph(getEdgeNamespace(), vertices, edges);
         
         JAXB.marshal(graph, new File(filename));
     }

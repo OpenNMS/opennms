@@ -4,6 +4,9 @@ import com.vaadin.data.Item;
 
 public interface Vertex extends VertexRef {
 
+	/**
+	 * @deprecated Use namespace/id tuple
+	 */
 	String getKey();
 
 	Item getItem();
@@ -35,8 +38,6 @@ public interface Vertex extends VertexRef {
 	int getY();
 
 	boolean isLocked();
-
-	boolean isRoot();
 
 	boolean isSelected();
 

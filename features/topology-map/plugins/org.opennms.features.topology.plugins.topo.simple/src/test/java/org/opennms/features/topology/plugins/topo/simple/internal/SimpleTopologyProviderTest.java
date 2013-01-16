@@ -33,6 +33,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.ByteArrayInputStream;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,6 +41,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import javax.xml.bind.JAXB;
 
 import org.easymock.EasyMock;
 import org.junit.After;
@@ -51,6 +54,7 @@ import org.opennms.features.topology.api.Constants;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.SimpleLeafVertex;
+import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.AbstractVertexRef;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeRef;
@@ -59,6 +63,9 @@ import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexListener;
 import org.opennms.features.topology.api.topo.VertexProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.api.topo.WrappedGraph;
+import org.opennms.features.topology.api.topo.WrappedLeafVertex;
+import org.opennms.features.topology.api.topo.WrappedVertex;
 import org.opennms.features.topology.plugins.topo.simple.internal.operations.AddVertexOperation;
 import org.opennms.features.topology.plugins.topo.simple.internal.operations.ConnectOperation;
 import org.opennms.features.topology.plugins.topo.simple.internal.operations.RemoveVertexOperation;
@@ -118,36 +125,46 @@ public class SimpleTopologyProviderTest {
         }
     }
     
+    @Test
+    public void testUnmarshallVertex() throws Exception {
+        String vertexString = "<graph namespace=\"blah\"><vertex><id>hello</id></vertex></graph>";
+        WrappedGraph graph = JAXB.unmarshal(new ByteArrayInputStream(vertexString.getBytes()), WrappedGraph.class);
+        assertEquals("blah", graph.m_namespace);
+        assertEquals(1, graph.m_vertices.size());
+        WrappedVertex vertex = graph.m_vertices.get(0);
+        assertEquals("hello", vertex.id);
+        assertEquals("blah", vertex.namespace);
+    }
+    
 	@Test
-	public void test() {
-		m_topologyProvider.resetContainer();
-
+	public void test() throws Exception {
 		assertTrue(m_topologyProvider.getVertices().size() == 0);
 
 		Vertex vertexA = m_topologyProvider.addVertex(50, 100);
-		assertTrue(m_topologyProvider.getVertices().size() == 1);
+		assertEquals(1, m_topologyProvider.getVertices().size());
 		//LoggerFactory.getLogger(this.getClass()).debug(m_topologyProvider.getVertices().get(0).toString());
 		assertTrue(m_topologyProvider.containsVertexId(vertexA));
 		assertTrue(m_topologyProvider.containsVertexId("v0"));
 		assertFalse(m_topologyProvider.containsVertexId("v1"));
+		((AbstractVertex)vertexA).setIpAddress("10.0.0.4");
 		VertexRef ref0 = new AbstractVertexRef(m_topologyProvider.getVertexNamespace(), "v0");
 		VertexRef ref1 = new AbstractVertexRef(m_topologyProvider.getVertexNamespace(), "v1");
-		assertTrue(m_topologyProvider.getVertices(Arrays.asList(new VertexRef[] {ref0})).size() == 1);
-		assertTrue(m_topologyProvider.getVertices(Arrays.asList(new VertexRef[] {ref1})).size() == 0);
+		assertEquals(1, m_topologyProvider.getVertices(Collections.singletonList(ref0)).size());
+		assertEquals(0, m_topologyProvider.getVertices(Collections.singletonList(ref1)).size());
 
 		Vertex vertexB = m_topologyProvider.addVertex(100, 50);
 		assertTrue(m_topologyProvider.containsVertexId(vertexB));
 		assertTrue(m_topologyProvider.containsVertexId("v1"));
-		assertTrue(m_topologyProvider.getVertices(Arrays.asList(new VertexRef[] {ref1})).size() == 1);
+		assertEquals(1, m_topologyProvider.getVertices(Collections.singletonList(ref1)).size());
 
 		Vertex vertexC = m_topologyProvider.addVertex(100, 150);
 		Vertex vertexD = m_topologyProvider.addVertex(150, 100);
 		Vertex vertexE = m_topologyProvider.addVertex(200, 200);
-		assertTrue(m_topologyProvider.getVertices().size() == 5);
+		assertEquals(5, m_topologyProvider.getVertices().size());
 
 		Vertex group1 = m_topologyProvider.addGroup("Group 1", Constants.GROUP_ICON_KEY);
 		Vertex group2 = m_topologyProvider.addGroup("Group 2", Constants.GROUP_ICON_KEY);
-		assertTrue(m_topologyProvider.getVertices().size() == 7);
+		assertEquals(7, m_topologyProvider.getVertices().size());
 
 		m_topologyProvider.setParent(vertexA, group1);
 		m_topologyProvider.setParent(vertexB, group1);
@@ -162,14 +179,27 @@ public class SimpleTopologyProviderTest {
 		m_topologyProvider.connectVertices(vertexA, vertexE);
 		m_topologyProvider.connectVertices(vertexD, vertexE);
 		
+		// Ensure that the WrappedVertex class is working properly 
+		WrappedVertex wrappedVertex = new WrappedLeafVertex(vertexA);
+		assertEquals("v0", wrappedVertex.id);
+		assertEquals("simple", wrappedVertex.namespace);
+		assertEquals("10.0.0.4", wrappedVertex.ipAddr);
+		assertEquals(50, wrappedVertex.x.intValue());
+		assertEquals(100, wrappedVertex.y.intValue());
+		
 		m_topologyProvider.save("target/test-classes/test-graph.xml");
+		
+		m_topologyProvider.resetContainer();
 		
 		m_topologyProvider.load("target/test-classes/test-graph.xml");
 		
+		assertEquals(1, m_topologyProvider.getVertices(Collections.singletonList(ref0)).size());
+		assertEquals(1, m_topologyProvider.getVertices(Collections.singletonList(ref1)).size());
+		assertEquals(7, m_topologyProvider.getVertices().size());
 	}
 	
 	@Test
-	public void loadSampleGraph() {
+	public void loadSampleGraph() throws Exception {
 		GraphProvider topologyProvider = new SimpleTopologyProvider();
 		topologyProvider.load("saved-vmware-graph.xml");
 		
@@ -178,7 +208,7 @@ public class SimpleTopologyProviderTest {
 	}
 	
 	@Test
-	public void testLoadSimpleGraph() {
+	public void testLoadSimpleGraph() throws Exception {
 		SimpleTopologyProvider topologyProvider = new SimpleTopologyProvider();
 		topologyProvider.load(URI.create("file:target/test-classes/simple-graph.xml"));
 		

@@ -31,24 +31,13 @@ package org.opennms.features.topology.api;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlIDREF;
-import javax.xml.bind.annotation.XmlRootElement;
-
 import org.opennms.features.topology.api.topo.AbstractVertex;
-import org.opennms.features.topology.api.topo.Vertex;
-import org.slf4j.LoggerFactory;
 
-@XmlRootElement(name="group")
 public class SimpleGroup extends AbstractVertex {
 
 	List<AbstractVertex> m_members = new ArrayList<AbstractVertex>();
 
 	int m_mapid;
-
-	/**
-	 * No-arg constructor for JAXB
-	 */
-	public SimpleGroup() {}
 
 	public SimpleGroup(String namespace, String groupId) {
 		this(namespace, groupId, -1);
@@ -71,22 +60,4 @@ public class SimpleGroup extends AbstractVertex {
 	public boolean isLeaf() {
 		return false;
 	}
-
-	@XmlIDREF
-	public List<AbstractVertex> getMembers() {
-		return m_members;
-	}
-
-	public void addMember(Vertex vertex) {
-		if (vertex instanceof AbstractVertex) {
-			m_members.add((AbstractVertex)vertex);
-		} else {
-			LoggerFactory.getLogger(this.getClass()).warn("Could not add member of type {}", vertex.getClass().getName());
-		}
-	}
-
-	public void removeMember(Vertex v) {
-		m_members.remove(v);
-	}
-
 }

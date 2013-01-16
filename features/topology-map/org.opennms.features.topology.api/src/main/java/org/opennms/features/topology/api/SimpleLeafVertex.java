@@ -28,21 +28,13 @@
 
 package org.opennms.features.topology.api;
 
-import javax.xml.bind.annotation.XmlRootElement;
-
 import org.opennms.features.topology.api.topo.AbstractVertex;
 
-@XmlRootElement(name="vertex")
 public class SimpleLeafVertex extends AbstractVertex {
 
-	/**
-	 * No-arg constructor for JAXB
-	 */
-	public SimpleLeafVertex() {}
-
-	public SimpleLeafVertex(String namespace, String id, int x, int y) {
+	public SimpleLeafVertex(String namespace, String id, Integer x, Integer y) {
 		super(namespace, id);
-		setX(x);
-		setY(y);
+		if (x != null) setX(x);
+		if (y != null) setY(y);
 	}
 }

@@ -28,11 +28,15 @@
 
 package org.opennms.features.topology.api.topo;
 
+import java.net.MalformedURLException;
+
+import javax.xml.bind.JAXBException;
+
 public interface GraphProvider extends VertexProvider, EdgeProvider {
 
 	void save(String filename);
 
-	void load(String filename);
+	void load(String filename) throws MalformedURLException, JAXBException;
 
 	void resetContainer();
 

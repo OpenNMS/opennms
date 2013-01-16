@@ -42,6 +42,10 @@ import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.api.topo.WrappedEdge;
+import org.opennms.features.topology.api.topo.WrappedGraph;
+import org.opennms.features.topology.api.topo.WrappedGroup;
+import org.opennms.features.topology.api.topo.WrappedVertex;
 
 public class SaveToXmlOperation implements Operation {
 
@@ -55,7 +59,7 @@ public class SaveToXmlOperation implements Operation {
 		// first create all the vertices;
 		List<WrappedVertex> vertices = new ArrayList<WrappedVertex>();
 		for(Vertex vertex : graphProvider.getVertices()) {
-			WrappedVertex wrappedVertex = WrappedVertex.create(vertex.getItem());
+			WrappedVertex wrappedVertex = WrappedVertex.create(vertex);
 			vertices.add(wrappedVertex);
 			idMap.put(vertex.getId(), wrappedVertex);
 		}
@@ -63,10 +67,11 @@ public class SaveToXmlOperation implements Operation {
 		// then set the parents for each
 		for(Vertex vertex : graphProvider.getVertices()) {
 			Vertex parent = graphProvider.getParent(vertex);
-			WrappedVertex wrappedVertex = idMap.get(vertex.getId());
-			WrappedVertex wrappedParent = idMap.get(parent.getId());
-
-			wrappedVertex.setParent((WrappedGroup)wrappedParent);
+			if (parent != null) {
+				WrappedVertex wrappedVertex = idMap.get(vertex.getId());
+				WrappedVertex wrappedParent = idMap.get(parent.getId());
+				wrappedVertex.setParent((WrappedGroup)wrappedParent);
+			}
 		}
 
 		// then create the edges
@@ -74,7 +79,7 @@ public class SaveToXmlOperation implements Operation {
 		for(Edge edge : graphProvider.getEdges()) {
 			WrappedVertex wrappedSource = idMap.get(edge.getSource().getVertex().getId());
 			WrappedVertex wrappedTarget = idMap.get(edge.getTarget().getVertex().getId());
-			edges.add(new WrappedEdge(edge.getItem(), wrappedSource, wrappedTarget));
+			edges.add(new WrappedEdge(edge, wrappedSource, wrappedTarget));
 		}
 
 		WrappedGraph graph = new WrappedGraph(graphProvider.getVertexNamespace(), vertices, edges);

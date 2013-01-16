@@ -62,17 +62,4 @@ public class LinkdVertex extends AbstractVertex {
 		setX(x);
 		setY(y);
 	}
-
-	@XmlTransient
-	public List<Edge> getEdges() {
-		return m_edges;
-	}
-	
-	public void addEdge(AbstractEdge edge) {
-		m_edges.add(edge);
-	}
-	
-	public void removeEdge(AbstractEdge edge) {
-		m_edges.remove(edge);
-	}
 }

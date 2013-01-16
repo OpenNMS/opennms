@@ -33,10 +33,6 @@ import static org.opennms.features.topology.plugins.topo.linkd.internal.LinkdTop
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlIDREF;
-import javax.xml.bind.annotation.XmlRootElement;
-
-@XmlRootElement(name="group")
 public class LinkdGroup extends LinkdVertex {
 
 	List<LinkdVertex> m_members = new ArrayList<LinkdVertex>();
@@ -51,18 +47,4 @@ public class LinkdGroup extends LinkdVertex {
 	public boolean isLeaf() {
 		return false;
 	}
-
-	@XmlIDREF
-	public List<LinkdVertex> getMembers() {
-		return m_members;
-	}
-
-	public void addMember(LinkdVertex v) {
-		m_members.add(v);
-	}
-
-	public void removeMember(LinkdVertex v) {
-		m_members.remove(v);
-	}
-
 }

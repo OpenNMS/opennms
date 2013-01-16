@@ -71,8 +71,7 @@ public class SaveToXmlTest {
 	}
 
 	@Test
-	@Ignore("This test is temporarily broken, wait until saving is reimplemented to fix it")
-	public void testSave() {
+	public void testSave() throws Exception {
 
 		final SimpleTopologyProvider simpleTopo = new SimpleTopologyProvider();
 		simpleTopo.load("test-graph.xml");

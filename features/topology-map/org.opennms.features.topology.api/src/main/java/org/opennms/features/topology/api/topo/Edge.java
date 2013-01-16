@@ -32,6 +32,9 @@ import com.vaadin.data.Item;
 
 public interface Edge extends EdgeRef {
 
+	/**
+	 * @deprecated Use namespace/id tuple
+	 */
 	String getKey();
 
 	Item getItem();

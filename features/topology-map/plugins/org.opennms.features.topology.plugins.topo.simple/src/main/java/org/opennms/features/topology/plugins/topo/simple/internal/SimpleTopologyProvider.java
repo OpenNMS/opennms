@@ -28,27 +28,16 @@
 
 package org.opennms.features.topology.plugins.topo.simple.internal;
 
-import java.beans.BeanInfo;
-import java.beans.IntrospectionException;
-import java.beans.Introspector;
-import java.beans.PropertyDescriptor;
 import java.io.File;
-import java.lang.reflect.InvocationTargetException;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.JAXB;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElements;
-import javax.xml.bind.annotation.XmlID;
-import javax.xml.bind.annotation.XmlIDREF;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 import org.opennms.features.topology.api.SimpleGroup;
 import org.opennms.features.topology.api.SimpleLeafVertex;
@@ -60,6 +49,11 @@ import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.SimpleEdgeProvider;
 import org.opennms.features.topology.api.topo.SimpleVertexProvider;
 import org.opennms.features.topology.api.topo.Vertex;
+import org.opennms.features.topology.api.topo.WrappedEdge;
+import org.opennms.features.topology.api.topo.WrappedGraph;
+import org.opennms.features.topology.api.topo.WrappedGroup;
+import org.opennms.features.topology.api.topo.WrappedLeafVertex;
+import org.opennms.features.topology.api.topo.WrappedVertex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,7 +82,7 @@ public class SimpleTopologyProvider extends AbstractTopologyProvider implements 
 		return m_topologyLocation;
 	}
 
-	public void setTopologyLocation(URI topologyLocation) {
+	public void setTopologyLocation(URI topologyLocation) throws MalformedURLException, JAXBException {
 		m_topologyLocation = topologyLocation;
 		
 		if (m_topologyLocation != null) {
@@ -129,192 +123,55 @@ public class SimpleTopologyProvider extends AbstractTopologyProvider implements 
         return vertex;
     }
 
-    @XmlRootElement(name="graph")
-    @XmlAccessorType(XmlAccessType.FIELD)
-    public static class SimpleGraph {
-
-        @XmlElements({
-            @XmlElement(name="vertex", type=SimpleLeafVertex.class),
-            @XmlElement(name="group", type=SimpleGroup.class)
-        })
-        List<AbstractVertex> m_vertices = new ArrayList<AbstractVertex>();
-
-        @XmlElement(name="edge")
-        List<JaxbEdge> m_edges = new ArrayList<JaxbEdge>();
-
-        private String m_namespace;
-
-        /**
-         * No-arg constructor for JAXB.
-         */
-        public SimpleGraph() {}
-
-        public SimpleGraph(String namespace, List<AbstractVertex> vertices, List<JaxbEdge> edges) {
-            m_namespace = namespace;
-            m_vertices = vertices;
-            m_edges = edges;
-        }
-
-        @XmlAttribute
-        public String getNamespace() { return m_namespace; }
-        public void setNamespace(String namespace) { m_namespace = namespace; }
-    }
-
-    public static class JaxbEdge {
-
-    	// Required
-    	private String m_edgeNamespace;
-    	// Required
-    	private String m_id;
-    	// Required
-    	private AbstractVertex m_source;
-    	// Required
-    	private AbstractVertex m_target;
-
-    	private String m_label;
-    	private String m_tooltipText;
-    	private String m_styleName;
-
-    	/**
-    	 * No-arg constructor for JAXB.
-    	 */
-    	public JaxbEdge() {}
-
-    	/**
-    	 * This JAXB function is used to set the namespace since we expect it to be set in the parent object.
-    	 */
-    	public void afterUnmarshal(Unmarshaller u, Object parent) {
-    		if (m_edgeNamespace == null) {
-    			try {
-    				BeanInfo info = Introspector.getBeanInfo(parent.getClass());
-    				for (PropertyDescriptor descriptor : info.getPropertyDescriptors()) {
-    					if ("namespace".equals(descriptor.getName())) {
-    						m_edgeNamespace = (String)descriptor.getReadMethod().invoke(parent);
-    					}
-    				}
-    			} catch (IntrospectionException e) {
-    				LoggerFactory.getLogger(this.getClass()).warn("Exception thrown when trying to fetch namespace from parent class " + parent.getClass(), e);
-    			} catch (IllegalArgumentException e) {
-    				LoggerFactory.getLogger(this.getClass()).warn("Exception thrown when trying to fetch namespace from parent class " + parent.getClass(), e);
-    			} catch (IllegalAccessException e) {
-    				LoggerFactory.getLogger(this.getClass()).warn("Exception thrown when trying to fetch namespace from parent class " + parent.getClass(), e);
-    			} catch (InvocationTargetException e) {
-    				LoggerFactory.getLogger(this.getClass()).warn("Exception thrown when trying to fetch namespace from parent class " + parent.getClass(), e);
-    			}
-    		}
-    	}
-
-    	@XmlID
-    	public String getId() {
-    		return m_id;
-    	}
-
-    	/**
-    	 * This setter is private so that it can only be used by JAXB.
-    	 */
-    	private final void setId(String id) {
-    		m_id = id;
-    	}
-
-    	@XmlTransient
-    	public final String getNamespace() {
-    		return m_edgeNamespace;
-    	}
-
-    	public final void setNamespace(String namespace) {
-    		m_edgeNamespace = namespace;
-    	}
-
-    	public String getLabel() {
-    		return m_label;
-    	}
-
-    	public String getTooltipText() {
-    		return m_tooltipText;
-    	}
-
-    	public String getStyleName() {
-    		return m_styleName;
-    	}
-
-    	public final void setLabel(String label) {
-    		m_label = label;
-    	}
-
-    	public final void setTooltipText(String tooltipText) {
-    		m_tooltipText = tooltipText;
-    	}
-
-    	public final void setStyleName(String styleName) {
-    		m_styleName = styleName;
-    	}
-
-    	@XmlIDREF
-    	public final AbstractVertex getSource() {
-    		return m_source;
-    	}
-
-    	public void setSource(AbstractVertex source) {
-    		m_source = source;
-    	}
-
-    	@XmlIDREF
-    	public final AbstractVertex getTarget() {
-    		return m_target;
-    	}
-    	
-    	public void setTarget(AbstractVertex target) {
-    		m_target = target;
-    	}
-
-    	@Override
-    	public String toString() { return "JaxbEdge:"+getNamespace()+":"+getId() + "[label="+getLabel()+", styleName="+getStyleName()+"]"; } 
-    }
-
     /* (non-Javadoc)
 	 * @see org.opennms.features.topology.plugins.topo.simple.internal.EditableTopologyProvider#save(java.lang.String)
 	 */
     @Override
 	public void save(String filename) {
-        List<AbstractVertex> vertices = new ArrayList<AbstractVertex>();
+        List<WrappedVertex> vertices = new ArrayList<WrappedVertex>();
         for (Vertex vertex : getVertices()) {
-            vertices.add((AbstractVertex)vertex);
+            if (vertex.isLeaf()) {
+                vertices.add(new WrappedLeafVertex(vertex));
+            } else {
+                vertices.add(new WrappedGroup(vertex));
+            }
         }
-        List<JaxbEdge> edges = new ArrayList<JaxbEdge>();
+        List<WrappedEdge> edges = new ArrayList<WrappedEdge>();
         for (Edge edge : getEdges()) {
-            JaxbEdge newEdge = new JaxbEdge();
-            newEdge.setNamespace(edge.getNamespace());
-            newEdge.setId(edge.getId());
-            newEdge.setLabel(edge.getLabel());
-            newEdge.setTooltipText(edge.getTooltipText());
-            newEdge.setStyleName(edge.getStyleName());
-            newEdge.setSource((AbstractVertex)edge.getSource().getVertex());
-            newEdge.setTarget((AbstractVertex)edge.getTarget().getVertex());
+            WrappedEdge newEdge = new WrappedEdge(edge, new WrappedLeafVertex(m_vertexProvider.getVertex(edge.getSource().getVertex())), new WrappedLeafVertex(m_vertexProvider.getVertex(edge.getTarget().getVertex())));
             edges.add(newEdge);
         }
 
-        SimpleGraph graph = new SimpleGraph(getVertexNamespace(), vertices, edges);
-        
-        JAXB.marshal(graph, new File(filename));
+        WrappedGraph graph = new WrappedGraph(getVertexNamespace(), vertices, edges);
+
+        try {
+        	JAXBContext jc = JAXBContext.newInstance(WrappedGraph.class, WrappedLeafVertex.class, WrappedGroup.class, WrappedEdge.class);
+        	Marshaller u = jc.createMarshaller();
+        	u.marshal(graph, new File(filename));
+        } catch (JAXBException e) {
+        	s_log.error(e.getMessage(), e);
+        }
     }
     
-    private void load(URI source, SimpleGraph graph) {
+    private void load(final URI source, final WrappedGraph graph) {
         String namespace = graph.m_namespace == null ? TOPOLOGY_NAMESPACE_SIMPLE : graph.m_namespace;
         if (getVertexNamespace() != namespace) { 
+            LoggerFactory.getLogger(this.getClass()).info("Creating new vertex provider with namespace {}", namespace);
             m_vertexProvider = new SimpleVertexProvider(namespace);
         }
         if (getEdgeNamespace() != namespace) { 
+            LoggerFactory.getLogger(this.getClass()).info("Creating new edge provider with namespace {}", namespace);
             m_edgeProvider = new SimpleEdgeProvider(namespace);
         }
 
         clearVertices();
-        for (Vertex vertex : graph.m_vertices) {
-            if (vertex.getNamespace() == null || vertex.getId() == null) {
+        for (WrappedVertex vertex : graph.m_vertices) {
+            if (vertex.namespace == null || vertex.id == null) {
                 LoggerFactory.getLogger(this.getClass()).warn("Invalid vertex unmarshalled from {}: {}", source.toString(), vertex);
-            } else if (vertex.getId().startsWith(SIMPLE_GROUP_ID_PREFIX)) {
+            } else if (vertex.id.startsWith(SIMPLE_GROUP_ID_PREFIX)) {
                 try {
                     // Find the highest index group number and start the index for new groups above it
-                    int groupNumber = Integer.parseInt(vertex.getId().substring(SIMPLE_GROUP_ID_PREFIX.length()));
+                    int groupNumber = Integer.parseInt(vertex.id.substring(SIMPLE_GROUP_ID_PREFIX.length()));
                     if (m_groupCounter <= groupNumber) {
                         m_groupCounter = groupNumber + 1;
                     }
@@ -322,14 +179,24 @@ public class SimpleTopologyProvider extends AbstractTopologyProvider implements 
                     continue;
                 }
             }
+            SimpleLeafVertex newVertex = new SimpleLeafVertex(vertex.namespace, vertex.id, vertex.x, vertex.y);
+            newVertex.setIconKey(vertex.iconKey);
+            newVertex.setIpAddress(vertex.ipAddr);
+            newVertex.setLabel(vertex.label);
+            newVertex.setLocked(vertex.locked);
+            if (vertex.nodeID != null) newVertex.setNodeID(vertex.nodeID);
+            //newVertex.setParent(vertex.getParent());
+            newVertex.setSelected(vertex.selected);
+            newVertex.setStyleName(vertex.styleName);
+            newVertex.setTooltipText(vertex.tooltipText);
+            addVertices(newVertex);
         }
-        addVertices(graph.m_vertices.toArray(new Vertex[0]));
         
         clearEdges();
-        for (JaxbEdge edge : graph.m_edges) {
-            if (edge.getNamespace() == null || edge.getId() == null) {
+        for (WrappedEdge edge : graph.m_edges) {
+            if (edge.namespace == null || edge.id == null) {
                 LoggerFactory.getLogger(this.getClass()).warn("Invalid edge unmarshalled from {}: {}", source.toString(), edge);
-            } else if (edge.getId().startsWith(SIMPLE_EDGE_ID_PREFIX)) {
+            } else if (edge.id.startsWith(SIMPLE_EDGE_ID_PREFIX)) {
                 try {
                     /*
                      * This code will be necessary if we allow edges to be created
@@ -345,18 +212,23 @@ public class SimpleTopologyProvider extends AbstractTopologyProvider implements 
                     continue;
                 }
             }
-            Edge newEdge = new AbstractEdge(edge.getNamespace(), edge.getId(), edge.getSource(), edge.getTarget());
+            AbstractEdge newEdge = new AbstractEdge(edge.namespace, edge.id, m_vertexProvider.getVertex(edge.source), m_vertexProvider.getVertex(edge.target));
+            newEdge.setLabel(edge.label);
+            newEdge.setStyleName(edge.styleName);
+            newEdge.setTooltipText(edge.tooltipText);
             addEdges(newEdge);
         }
     }
 
-    void load(URI url) {
-        SimpleGraph graph = JAXB.unmarshal(url, SimpleGraph.class);
-        load(url, graph);
+    void load(URI url) throws JAXBException, MalformedURLException {
+    	JAXBContext jc = JAXBContext.newInstance(WrappedGraph.class);
+    	Unmarshaller u = jc.createUnmarshaller();
+    	WrappedGraph graph = (WrappedGraph) u.unmarshal(url.toURL());
+    	load(url, graph);
     }
 
     @Override
-    public void load(String filename) {
+    public void load(String filename) throws MalformedURLException, JAXBException {
         load(new File(filename).toURI());
     }
 

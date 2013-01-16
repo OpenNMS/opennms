@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.devutils.internal;
+package org.opennms.features.topology.api.topo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,20 +40,23 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name="graph")
 @XmlAccessorType(XmlAccessType.FIELD)
-class WrappedGraph {
+public class WrappedGraph {
     
     @XmlElements({
             @XmlElement(name="vertex", type=WrappedLeafVertex.class),
             @XmlElement(name="group", type=WrappedGroup.class)
     })
-    List<WrappedVertex> m_vertices = new ArrayList<WrappedVertex>();
+    public List<WrappedVertex> m_vertices = new ArrayList<WrappedVertex>();
     
     @XmlElement(name="edge")
-    List<WrappedEdge> m_edges = new ArrayList<WrappedEdge>();
+    public List<WrappedEdge> m_edges = new ArrayList<WrappedEdge>();
     
     @XmlAttribute(name="namespace")
-    String m_namespace;
+    public String m_namespace;
     
+    /**
+     * No-arg constructor for JAXB.
+     */
     public WrappedGraph() {}
 
     public WrappedGraph(String namespace, List<WrappedVertex> vertices, List<WrappedEdge> edges) {
@@ -62,5 +65,11 @@ class WrappedGraph {
         m_edges = edges;
     }
     
+    public String getNamespace() {
+        return m_namespace;
+    }
 
+    public void setNamespace(String namespace) {
+        m_namespace = namespace;
+    }
 }

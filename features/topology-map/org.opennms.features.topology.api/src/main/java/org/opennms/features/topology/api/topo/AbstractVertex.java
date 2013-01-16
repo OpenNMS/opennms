@@ -28,34 +28,17 @@
 
 package org.opennms.features.topology.api.topo;
 
-import java.beans.BeanInfo;
-import java.beans.IntrospectionException;
-import java.beans.Introspector;
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.InvocationTargetException;
-
-import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.annotation.XmlID;
-import javax.xml.bind.annotation.XmlIDREF;
-import javax.xml.bind.annotation.XmlTransient;
-
 import org.slf4j.LoggerFactory;
 
 import com.vaadin.data.Item;
+import com.vaadin.data.util.BeanItem;
 
-public class AbstractVertex implements Vertex {
+public class AbstractVertex extends AbstractVertexRef implements Vertex {
 
-	// Required
-	private String m_namespace;
-	// Required
-	private String m_id;
-
-	private String m_label;
 	private String m_tooltipText;
 	private String m_iconKey;
 	private String m_styleName;
 	private AbstractVertex m_parent;
-	protected Item m_item;
 	int m_x;
 	int m_y;
 	private boolean m_selected;
@@ -64,78 +47,21 @@ public class AbstractVertex implements Vertex {
 	private int m_nodeID = -1;
 	private int m_semanticZoomLevel = -1;
 
-	/**
-	 * No-arg constructor for JAXB.
-	 */
-	public AbstractVertex() {}
-
 	public AbstractVertex(String namespace, String id) {
-		m_namespace = namespace;
-		m_id = id;
+		super(namespace, id);
 	}
 
 	/**
-	 * This JAXB function is used to set the namespace since we expect it to be set in the parent object.
+	 * @deprecated Use namespace/id tuple
 	 */
-	public void afterUnmarshal(Unmarshaller u, Object parent) {
-		if (m_namespace == null) {
-			try {
-				BeanInfo info = Introspector.getBeanInfo(parent.getClass());
-				for (PropertyDescriptor descriptor : info.getPropertyDescriptors()) {
-					if ("namespace".equals(descriptor.getName())) {
-						m_namespace = (String)descriptor.getReadMethod().invoke(parent);
-						LoggerFactory.getLogger(this.getClass()).debug("Setting namespace on {} to {} from parent", this, m_namespace);
-					}
-				}
-			} catch (IntrospectionException e) {
-				LoggerFactory.getLogger(this.getClass()).warn("Exception thrown when trying to fetch namespace from parent class " + parent.getClass(), e);
-			} catch (IllegalArgumentException e) {
-				LoggerFactory.getLogger(this.getClass()).warn("Exception thrown when trying to fetch namespace from parent class " + parent.getClass(), e);
-			} catch (IllegalAccessException e) {
-				LoggerFactory.getLogger(this.getClass()).warn("Exception thrown when trying to fetch namespace from parent class " + parent.getClass(), e);
-			} catch (InvocationTargetException e) {
-				LoggerFactory.getLogger(this.getClass()).warn("Exception thrown when trying to fetch namespace from parent class " + parent.getClass(), e);
-			}
-		}
-	}
-
-	@Override
-	@XmlID
-	public final String getId() {
-		return m_id;
-	}
-
-	/**
-	 * This setter is private so that it can only be used by JAXB.
-	 */
-	@SuppressWarnings("unused")
-	private final void setId(String id) {
-		m_id = id;
-	}
-
-	@Override
-	@XmlTransient
-	public final String getNamespace() {
-		return m_namespace;
-	}
-
 	@Override
 	public final String getKey() {
-		return m_namespace+":"+m_id;
+		return getNamespace() + ":" + getId();
 	}
 
 	@Override
 	public Item getItem() {
-		return m_item;
-	}
-
-	@Override
-	public final String getLabel() {
-		return m_label;
-	}
-
-	public void setLabel(String label) {
-		m_label = label;
+		return new BeanItem<AbstractVertex>(this);
 	}
 
 	@Override
@@ -183,7 +109,6 @@ public class AbstractVertex implements Vertex {
 		m_y = y;
 	}
 
-	@XmlIDREF
 	public final AbstractVertex getParent() {
 		return m_parent;
 	}
@@ -214,11 +139,6 @@ public class AbstractVertex implements Vertex {
 	@Override
 	public boolean isLeaf() {
 		return true;
-	}
-
-	@Override
-	public boolean isRoot() {
-		return getParent() == null;
 	}
 
 	@Override
@@ -271,9 +191,9 @@ public class AbstractVertex implements Vertex {
 	public int hashCode() {
 		 final int prime = 31;
 		 int result = 1;
-		 result = prime * result + ((m_id == null) ? 0 : m_id.hashCode());
+		 result = prime * result + ((getId() == null) ? 0 : getId().hashCode());
 		 result = prime * result
-		 + ((m_namespace == null) ? 0 : m_namespace.hashCode());
+		 + ((getNamespace() == null) ? 0 : getNamespace().hashCode());
 		 return result;
 	 }
 

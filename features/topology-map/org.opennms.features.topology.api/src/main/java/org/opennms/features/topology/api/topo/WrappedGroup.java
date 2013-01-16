@@ -26,23 +26,42 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.devutils.internal;
+package org.opennms.features.topology.api.topo;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import com.vaadin.data.Item;
+@XmlRootElement(name="group")
+public class WrappedGroup extends WrappedVertex {
 
-@XmlRootElement(name="vertex")
-public class WrappedLeafVertex extends WrappedVertex {
+	private final List<WrappedVertex> m_members = new ArrayList<WrappedVertex>();
 
-	public WrappedLeafVertex() {}
+	/**
+	 * No-arg constructor for JAXB.
+	 */
+	public WrappedGroup() {
+		super();
+		leaf = false;
+	}
 
-	public WrappedLeafVertex(Item vertex) {
+	public WrappedGroup(Vertex vertex) {
 		super(vertex);
 	}
 
-	@Override
-	public boolean isLeaf() {
-		return true;
+	@XmlIDREF
+	public List<WrappedVertex> getMembers() {
+		return m_members;
 	}
+
+	public void addMember(WrappedVertex v) {
+		m_members.add(v);
+	}
+
+	public void removeMember(WrappedVertex v) {
+		m_members.remove(v);
+	}
+
 }

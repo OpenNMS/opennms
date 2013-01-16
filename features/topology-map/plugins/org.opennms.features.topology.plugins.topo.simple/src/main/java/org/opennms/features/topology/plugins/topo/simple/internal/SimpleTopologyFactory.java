@@ -28,12 +28,15 @@
 
 package org.opennms.features.topology.plugins.topo.simple.internal;
 
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
+
+import javax.xml.bind.JAXBException;
 
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.osgi.framework.BundleContext;
@@ -99,7 +102,11 @@ public class SimpleTopologyFactory implements ManagedServiceFactory {
 			}
 
 		} catch (URISyntaxException e) {
-			throw new ConfigurationException(TOPOLOGY_LOCATION, "Topology location must be a valid url");
+			throw new ConfigurationException(TOPOLOGY_LOCATION, "Topology location must be a valid URI", e);
+		} catch (MalformedURLException e) {
+			throw new ConfigurationException(TOPOLOGY_LOCATION, "Topology location must be a valid URL", e);
+		} catch (JAXBException e) {
+			throw new ConfigurationException(TOPOLOGY_LOCATION, "Topology location could not be deserialized", e);
 		}
 	}
 

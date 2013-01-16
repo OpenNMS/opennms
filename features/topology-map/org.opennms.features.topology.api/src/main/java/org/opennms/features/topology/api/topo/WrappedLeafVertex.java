@@ -26,56 +26,22 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.devutils.internal;
+package org.opennms.features.topology.api.topo;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.opennms.features.topology.api.topo.AbstractEdge;
-import org.opennms.features.topology.api.topo.Connector;
+@XmlRootElement(name="vertex")
+public class WrappedLeafVertex extends WrappedVertex {
 
-import com.vaadin.data.Item;
-import com.vaadin.data.Property;
-
-@XmlRootElement(name="edge")
-public class WrappedEdge extends AbstractEdge {
-	Item m_edge;
-	Connector m_source;
-	Connector m_target;
-
-	public WrappedEdge() {}
-
-	public WrappedEdge(Item edge, WrappedVertex source, WrappedVertex target) {
-		super((String)edge.getItemProperty("namespace").getValue(), (String)edge.getItemProperty("id").getValue(), source, target);
-		m_edge = edge;
+	/**
+	 * No-arg constructor for JAXB.
+	 */
+	public WrappedLeafVertex() {
+		super();
+		leaf = true;
 	}
 
-	private Object getProperty(String propertyId) {
-		Property property = m_edge.getItemProperty(propertyId);
-		return property == null ? null : property.getValue();
-	}
-
-	@Override
-	public Item getItem() {
-		return m_edge;
-	}
-
-	@Override
-	public String getKey() {
-		return (String) getProperty("key");
-	}
-
-	@Override
-	public String getLabel() {
-		return (String) getProperty("label");
-	}
-
-	@Override
-	public String getStyleName() {
-		return (String) getProperty("styleName");
-	}
-
-	@Override
-	public String getTooltipText() {
-		return (String) getProperty("tooltipText");
+	public WrappedLeafVertex(Vertex vertex) {
+		super(vertex);
 	}
 }

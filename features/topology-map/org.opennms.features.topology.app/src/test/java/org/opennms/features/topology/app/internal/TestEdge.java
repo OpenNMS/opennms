@@ -28,15 +28,12 @@
 
 package org.opennms.features.topology.app.internal;
 
-import javax.xml.bind.annotation.XmlRootElement;
-
 import org.opennms.features.topology.api.SimpleConnector;
 import org.opennms.features.topology.api.topo.AbstractEdge;
 
 import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItem;
 
-@XmlRootElement(name="edge")
 public class TestEdge extends AbstractEdge {
 	
 	public TestEdge(String id, SimpleConnector source, SimpleConnector target) {

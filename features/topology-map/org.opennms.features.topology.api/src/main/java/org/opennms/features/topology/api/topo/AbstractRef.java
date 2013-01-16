@@ -30,8 +30,8 @@ package org.opennms.features.topology.api.topo;
 
 public class AbstractRef implements Ref {
 	
-	private String m_namespace;
-	private String m_id;
+	private final String m_namespace;
+	private final String m_id;
 	private String m_label;
 	
 	protected AbstractRef(String namespace, String id, String label) {
@@ -45,18 +45,22 @@ public class AbstractRef implements Ref {
 	}
 
 	@Override
-	public String getId() {
+	public final String getId() {
 		return m_id;
 	}
 
 	@Override
-	public String getNamespace() {
+	public final String getNamespace() {
 		return m_namespace;
 	}
 
 	@Override
-	public String getLabel() {
+	public final String getLabel() {
 		return m_label;
+	}
+
+	public final void setLabel(String label) {
+		m_label = label;
 	}
 
 	@Override
