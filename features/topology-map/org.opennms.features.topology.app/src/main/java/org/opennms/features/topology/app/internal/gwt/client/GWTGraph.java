@@ -148,32 +148,8 @@ public final class GWTGraph extends JavaScriptObject {
         this.clientY = clientY;
     }-*/;
 
-    public native int getClientX() /*-{
-        return this.clientX;
-    }-*/;
-    
-    public native int getClientY() /*-{
-        return this.clientY;
-    }-*/;
-
     public native void setViewportTransform(SVGMatrix viewportTransform) /*-{
         this.viewTransform = viewportTransform;
-    }-*/;
-
-    public native void setPanToSelection(boolean panToSelection) /*-{
-        this.panToSelection = panToSelection;
-    }-*/;
-    
-    public native boolean isPanToSelection() /*-{
-        return this.panToSelection;
-    }-*/;
-
-    public native void setFitToView(boolean fitToView) /*-{
-        this.fitToView = fitToView;
-    }-*/;
-
-    public native boolean isFitToView() /*-{
-        return this.fitToView;
     }-*/;
 
     public native void setOldScale(double oldScale) /*-{

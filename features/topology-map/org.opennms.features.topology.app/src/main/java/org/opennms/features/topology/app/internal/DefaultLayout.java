@@ -66,12 +66,16 @@ public class DefaultLayout implements Layout {
     }
     
     public BoundingBox computeBoundingBox(Collection<VertexRef> vertRefs) {
-        BoundingBox boundingBox = new BoundingBox();
-        for(VertexRef vertRef : vertRefs) {
-            boundingBox.addPoint(getLocation(vertRef));
+        if(vertRefs.size() > 0) {
+            BoundingBox boundingBox = new BoundingBox();
+            for(VertexRef vertRef : vertRefs) {
+                boundingBox.addPoint(getLocation(vertRef));
+            }
+            return boundingBox;
+        }else {
+            return getBounds();
         }
         
-        return boundingBox;
     }
 
 }

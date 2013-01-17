@@ -28,7 +28,6 @@
 
 package org.opennms.features.topology.app.internal;
 
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -37,7 +36,6 @@ import org.opennms.features.topology.api.HistoryManager;
 import org.opennms.features.topology.api.IViewContribution;
 import org.opennms.features.topology.api.WidgetContext;
 import org.opennms.features.topology.api.topo.GraphProvider;
-import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.TopoContextMenu.TopoContextMenuItem;
 import org.opennms.features.topology.app.internal.jung.FRLayoutAlgorithm;
 import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
@@ -45,8 +43,6 @@ import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
 import com.github.wolfie.refresher.Refresher;
 import com.vaadin.Application;
 import com.vaadin.data.Property;
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.terminal.ThemeResource;
@@ -62,8 +58,6 @@ import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.Slider;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UriFragmentUtility;
-import com.vaadin.ui.UriFragmentUtility.FragmentChangedEvent;
-import com.vaadin.ui.UriFragmentUtility.FragmentChangedListener;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.VerticalSplitPanel;
 import com.vaadin.ui.Window;
@@ -71,6 +65,8 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.Slider.ValueOutOfBoundsException;
+import com.vaadin.ui.UriFragmentUtility.FragmentChangedEvent;
+import com.vaadin.ui.UriFragmentUtility.FragmentChangedListener;
 
 public class TopologyWidgetTestApplication extends Application implements CommandUpdateListener, MenuItemUpdateListener, ContextMenuHandler, WidgetUpdateListener, WidgetContext, FragmentChangedListener, GraphContainer.ChangeListener {
     
@@ -144,7 +140,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 		m_topologyComponent.addMenuItemStateListener(this);
 		m_topologyComponent.setContextMenuHandler(this);
 		
-		final Slider slider = new Slider(0, 4);
+		final Slider slider = new Slider(0, 2);
 		
 		slider.setPropertyDataSource(scale);
 		slider.setResolution(2);
@@ -170,8 +166,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 				int szl = (Integer) zoomLevel.getValue();
 				szl++;
 				zoomLevel.setValue(szl);
-				m_zoomLevelLabel.setValue(szl);
-				m_graphContainer.redoLayout();
+				setSemanticZoomLevel(szl);
 				saveHistory();
 			}
 		});
@@ -187,8 +182,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 				if(szl > 0) {
 				    szl--;
 				    zoomLevel.setValue(szl);
-				    m_zoomLevelLabel.setValue(szl);
-				    m_graphContainer.redoLayout();
+				    setSemanticZoomLevel(szl);
 				    saveHistory();
 				} 
 				
@@ -385,16 +379,6 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 	    //final FilterableHierarchicalContainer container = new FilterableHierarchicalContainer(m_graphContainer.getVertexContainer());
 	    
 		VertexSelectionTree tree = new VertexSelectionTree("Nodes", m_graphContainer);
-		tree.addListener(new ValueChangeListener() {
-
-            @Override
-            public void valueChange(ValueChangeEvent event) {
-                Collection<? extends VertexRef> refs = (Collection<? extends VertexRef>)event.getProperty().getValue();
-                if(refs.size() > 0) {
-                    m_topologyComponent.setPanToSelection(true);
-                }
-            }
-        });
 		tree.setMultiSelect(true);
 		tree.setImmediate(true);
 		tree.setItemCaptionPropertyId(LABEL_PROPERTY);
@@ -542,6 +526,12 @@ public class TopologyWidgetTestApplication extends Application implements Comman
     @Override
     public void graphChanged(GraphContainer graphContainer) {
         m_zoomLevelLabel.setValue("" + graphContainer.getSemanticZoomLevel());
+    }
+
+
+    private void setSemanticZoomLevel(int szl) {
+        m_zoomLevelLabel.setValue(szl);
+        m_graphContainer.redoLayout();
     }
 
 

@@ -52,9 +52,6 @@
       <parameter key="password" value="" />
     </service>
     <service name="SNMP" interval="300000" user-defined="false" status="off">
-      <parameter key="retry" value="2" />
-      <parameter key="timeout" value="3000" />
-      <parameter key="port" value="161" />
       <parameter key="oid" value=".1.3.6.1.2.1.1.2.0" />
     </service>
     <service name="HTTP" interval="300000" user-defined="false" status="on">
@@ -222,9 +219,6 @@
       <parameter key="ds-name" value="nrpe" />
     </service>
     <service name="Windows-Task-Scheduler" interval="300000" user-defined="false" status="on">
-      <parameter key="retry" value="2" />
-      <parameter key="timeout" value="3000" />
-      <parameter key="port" value="161" />
       <parameter key="service-name" value="Task Scheduler" />
     </service>
     <service name="OpenNMS-JVM" interval="300000" user-defined="false" status="on">
@@ -587,72 +581,42 @@
     </rrd>
     <service name="MSExchangeSA" interval="3000000"
       user-defined="false" status="on">
-      <parameter key="retry" value="2" />
-      <parameter key="timeout" value="30000" />
-      <parameter key="port" value="161" />
       <parameter key="service-name" value="MSExchangeSA" />
     </service>
     <service name="MSExchangeIS" interval="3000000"
       user-defined="false" status="on">
-      <parameter key="retry" value="2" />
-      <parameter key="timeout" value="30000000" />
-      <parameter key="port" value="161" />
       <parameter key="service-name" value="MSExchangeIS" />
     </service>
     <service name="MSExchangeMailboxAssistants" interval="3000000"
       user-defined="false" status="on">
-      <parameter key="retry" value="2" />
-      <parameter key="timeout" value="30000" />
-      <parameter key="port" value="161" />
       <parameter key="service-name" value="MSExchangeMailboxAssistants" />
     </service>
     <service name="MSExchangeMailSubmission" interval="3000000"
       user-defined="false" status="on">
-      <parameter key="retry" value="2" />
-      <parameter key="timeout" value="30000" />
-      <parameter key="port" value="161" />
       <parameter key="service-name" value="MSExchangeMailSubmission" />
     </service>
     <service name="MSExchangeADTopology" interval="3000000"
       user-defined="false" status="on">
-      <parameter key="retry" value="2" />
-      <parameter key="timeout" value="30000" />
-      <parameter key="port" value="161" />
       <parameter key="service-name" value="MSExchangeADTopology" />
     </service>
     <service name="MSExchangeAntispamUpdate" interval="3000000"
       user-defined="false" status="on">
-      <parameter key="retry" value="2" />
-      <parameter key="timeout" value="30000" />
-      <parameter key="port" value="161" />
       <parameter key="service-name" value="MSExchangeAntispamUpdate" />
     </service>
     <service name="MSExchangeEdgeSync" interval="3000000"
       user-defined="false" status="on">
-      <parameter key="retry" value="2" />
-      <parameter key="timeout" value="30000" />
-      <parameter key="port" value="161" />
       <parameter key="service-name" value="MSExchangeEdgeSync" />
     </service>
     <service name="MSExchangeFDS" interval="3000000"
       user-defined="false" status="on">
-      <parameter key="retry" value="2" />
-      <parameter key="timeout" value="30000" />
-      <parameter key="port" value="161" />
       <parameter key="service-name" value="MSExchangeFDS" />
     </service>
     <service name="MSExchangeServiceHost" interval="3000000"
       user-defined="false" status="on">
-      <parameter key="retry" value="2" />
-      <parameter key="timeout" value="30000" />
-      <parameter key="port" value="161" />
       <parameter key="service-name" value="MSExchangeServiceHost" />
     </service>
     <service name="MSExchangeTransport" interval="3000000"
       user-defined="false" status="on">
-      <parameter key="retry" value="2" />
-      <parameter key="timeout" value="30000" />
-      <parameter key="port" value="161" />
       <parameter key="service-name" value="MSExchangeTransport" />
     </service>
     <service name="XMP" interval="300000" user-defined="false" status="off">
