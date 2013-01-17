@@ -194,6 +194,9 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
         ticket.setSummary(alarm.getLogMsg());
         ticket.setDetails(alarm.getDescription());
         ticket.setId(alarm.getTTicketId());
+        ticket.setAlarmId(alarm.getId());
+        ticket.setNodeId(alarm.getNodeId());
+        ticket.setIpAddress(alarm.getIpAddr());
         return ticket;
     }
 
