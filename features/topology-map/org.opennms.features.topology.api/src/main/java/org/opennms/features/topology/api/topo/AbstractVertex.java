@@ -28,8 +28,6 @@
 
 package org.opennms.features.topology.api.topo;
 
-import org.slf4j.LoggerFactory;
-
 import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItem;
 
@@ -38,14 +36,13 @@ public class AbstractVertex extends AbstractVertexRef implements Vertex {
 	private String m_tooltipText;
 	private String m_iconKey;
 	private String m_styleName;
-	private AbstractVertex m_parent;
+	private VertexRef m_parent;
 	int m_x;
 	int m_y;
 	private boolean m_selected;
 	private boolean m_locked = false;
 	private String m_ipAddr ="127.0.0.1";
 	private int m_nodeID = -1;
-	private int m_semanticZoomLevel = -1;
 
 	public AbstractVertex(String namespace, String id) {
 		super(namespace, id);
@@ -109,7 +106,7 @@ public class AbstractVertex extends AbstractVertexRef implements Vertex {
 		m_y = y;
 	}
 
-	public final AbstractVertex getParent() {
+	public final VertexRef getParent() {
 		return m_parent;
 	}
 
@@ -117,14 +114,8 @@ public class AbstractVertex extends AbstractVertexRef implements Vertex {
 	 * @param parent
 	 */
 	@Override
-	public final void setParent(Vertex parent) {
-		if (parent == null) {
-			m_parent = null;
-		} else if (parent instanceof AbstractVertex) {
-			m_parent = (AbstractVertex)parent;
-		} else {
-			LoggerFactory.getLogger(this.getClass()).warn("Could not set parent to instance of {}", parent.getClass().getName());
-		}
+	public final void setParent(VertexRef parent) {
+		m_parent = parent;
 	}
 
 	@Override
@@ -166,25 +157,6 @@ public class AbstractVertex extends AbstractVertexRef implements Vertex {
 
 	public final void setNodeID(int nodeID) {
 		m_nodeID = nodeID;
-	}
-
-	@Override
-	public final int getSemanticZoomLevel() {
-		return m_semanticZoomLevel >= 0
-		? m_semanticZoomLevel
-				: getParent() == null 
-				? 0 
-						: getParent().getSemanticZoomLevel() + 1;
-	}
-
-	@Override
-	public Vertex getDisplayVertex(int semanticZoomLevel) {
-		if(getParent() == null || getSemanticZoomLevel() <= semanticZoomLevel) {
-			return this;
-		}else {
-			return getParent().getDisplayVertex(semanticZoomLevel);
-		}
-
 	}
 
 	@Override

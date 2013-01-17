@@ -31,13 +31,13 @@ package org.opennms.features.topology.api.topo;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlIDREF;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name="group")
 public class WrappedGroup extends WrappedVertex {
 
-	private final List<WrappedVertex> m_members = new ArrayList<WrappedVertex>();
+	public List<WrappedVertex> members = new ArrayList<WrappedVertex>();
 
 	/**
 	 * No-arg constructor for JAXB.
@@ -51,17 +51,7 @@ public class WrappedGroup extends WrappedVertex {
 		super(vertex);
 	}
 
-	@XmlIDREF
-	public List<WrappedVertex> getMembers() {
-		return m_members;
+	public void afterUnmarshal(Unmarshaller u, Object parent) {
+		super.afterUnmarshal(u, parent);
 	}
-
-	public void addMember(WrappedVertex v) {
-		m_members.add(v);
-	}
-
-	public void removeMember(WrappedVertex v) {
-		m_members.remove(v);
-	}
-
 }

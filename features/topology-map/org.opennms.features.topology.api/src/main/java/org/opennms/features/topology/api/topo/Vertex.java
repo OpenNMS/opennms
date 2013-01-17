@@ -25,13 +25,13 @@ public interface Vertex extends VertexRef {
 	 * TODO: To support Many-to-Many grouping, this function will need to be
 	 * enhanced add to a list of parents.
 	 */
-	void setParent(Vertex parent);
+	void setParent(VertexRef parent);
 
 	/**
 	 * TODO: To support Many-to-Many grouping, this function will need to be
 	 * enhanced to return an array of vertices.
 	 */
-	Vertex getParent();
+	VertexRef getParent();
 
 	int getX();
 
@@ -44,8 +44,4 @@ public interface Vertex extends VertexRef {
 	String getIpAddress();
 
 	int getNodeID();
-
-	Vertex getDisplayVertex(int semanticZoomLevel);
-
-	int getSemanticZoomLevel();
 }

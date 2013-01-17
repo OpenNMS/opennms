@@ -40,6 +40,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 import org.slf4j.LoggerFactory;
 
@@ -57,6 +58,7 @@ public class WrappedEdge {
 	public WrappedVertex target;
 	@XmlID
 	public String id;
+	@XmlTransient
 	public String namespace;
 
 	/**

@@ -46,10 +46,10 @@ public class SimpleEdgeProvider implements EdgeProvider {
 		}; 
 	}
 	
-	final String m_namespace;
-	final Map<String, Edge> m_edgeMap = new LinkedHashMap<String, Edge>();
-	final Set<EdgeListener> m_listeners = new CopyOnWriteArraySet<EdgeListener>();
-	final String m_contributesTo;
+	private final String m_namespace;
+	private final Map<String, Edge> m_edgeMap = new LinkedHashMap<String, Edge>();
+	private final Set<EdgeListener> m_listeners = new CopyOnWriteArraySet<EdgeListener>();
+	private final String m_contributesTo;
 	
 	public SimpleEdgeProvider(String namespace, String contributesTo) {
 		m_namespace = namespace;

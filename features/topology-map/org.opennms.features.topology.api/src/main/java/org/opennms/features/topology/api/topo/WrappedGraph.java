@@ -65,10 +65,24 @@ public class WrappedGraph {
         m_edges = edges;
     }
     
+    /**
+     * This getter-setter pair is required so that we can use bean introspection to find 
+     * the namespace when we are deserializing child classes.
+     *
+     * @see WrappedVertex#afterUnmarshal(javax.xml.bind.Unmarshaller, Object)
+     * @see WrappedEdge#afterUnmarshal(javax.xml.bind.Unmarshaller, Object)
+     */
     public String getNamespace() {
         return m_namespace;
     }
 
+    /**
+     * This getter-setter pair is required so that we can use bean introspection to find 
+     * the namespace when we are deserializing child classes.
+     *
+     * @see WrappedVertex#afterUnmarshal(javax.xml.bind.Unmarshaller, Object)
+     * @see WrappedEdge#afterUnmarshal(javax.xml.bind.Unmarshaller, Object)
+     */
     public void setNamespace(String namespace) {
         m_namespace = namespace;
     }

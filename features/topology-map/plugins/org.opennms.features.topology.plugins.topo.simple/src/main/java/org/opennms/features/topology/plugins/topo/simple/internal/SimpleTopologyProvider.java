@@ -185,7 +185,7 @@ public class SimpleTopologyProvider extends AbstractTopologyProvider implements 
             newVertex.setLabel(vertex.label);
             newVertex.setLocked(vertex.locked);
             if (vertex.nodeID != null) newVertex.setNodeID(vertex.nodeID);
-            //newVertex.setParent(vertex.getParent());
+            newVertex.setParent(vertex.parent);
             newVertex.setSelected(vertex.selected);
             newVertex.setStyleName(vertex.styleName);
             newVertex.setTooltipText(vertex.tooltipText);
@@ -217,6 +217,11 @@ public class SimpleTopologyProvider extends AbstractTopologyProvider implements 
             newEdge.setStyleName(edge.styleName);
             newEdge.setTooltipText(edge.tooltipText);
             addEdges(newEdge);
+        }
+
+        for (WrappedVertex vertex: graph.m_vertices) {
+            LoggerFactory.getLogger(this.getClass()).debug("Setting parent of " + vertex + " to " + vertex.parent);
+            setParent(vertex, vertex.parent);
         }
     }
 

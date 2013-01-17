@@ -302,8 +302,8 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
             }
             
             for (WrappedVertex vertex: graph.m_vertices) {
-                log("loadtopology: setting parent of " + vertex + " to " + vertex.getParent());
-                setParent(vertex, vertex.getParent());
+                log("loadtopology: setting parent of " + vertex + " to " + vertex.parent);
+                setParent(vertex, vertex.parent);
             }
 
         }

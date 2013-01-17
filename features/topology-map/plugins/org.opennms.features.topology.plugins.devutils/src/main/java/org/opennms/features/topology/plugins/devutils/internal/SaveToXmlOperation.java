@@ -44,7 +44,6 @@ import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.api.topo.WrappedEdge;
 import org.opennms.features.topology.api.topo.WrappedGraph;
-import org.opennms.features.topology.api.topo.WrappedGroup;
 import org.opennms.features.topology.api.topo.WrappedVertex;
 
 public class SaveToXmlOperation implements Operation {
@@ -70,7 +69,7 @@ public class SaveToXmlOperation implements Operation {
 			if (parent != null) {
 				WrappedVertex wrappedVertex = idMap.get(vertex.getId());
 				WrappedVertex wrappedParent = idMap.get(parent.getId());
-				wrappedVertex.setParent((WrappedGroup)wrappedParent);
+				wrappedVertex.parent = wrappedParent;
 			}
 		}
 
@@ -85,7 +84,6 @@ public class SaveToXmlOperation implements Operation {
 		WrappedGraph graph = new WrappedGraph(graphProvider.getVertexNamespace(), vertices, edges);
 
 		JAXB.marshal(graph, new File("/tmp/saved-graph.xml"));
-
 
 		return null;
 	}

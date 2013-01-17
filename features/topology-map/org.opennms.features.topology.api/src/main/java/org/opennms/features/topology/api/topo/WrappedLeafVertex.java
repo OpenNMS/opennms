@@ -28,6 +28,7 @@
 
 package org.opennms.features.topology.api.topo;
 
+import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name="vertex")
@@ -43,5 +44,9 @@ public class WrappedLeafVertex extends WrappedVertex {
 
 	public WrappedLeafVertex(Vertex vertex) {
 		super(vertex);
+	}
+
+	public void afterUnmarshal(Unmarshaller u, Object parent) {
+		super.afterUnmarshal(u, parent);
 	}
 }

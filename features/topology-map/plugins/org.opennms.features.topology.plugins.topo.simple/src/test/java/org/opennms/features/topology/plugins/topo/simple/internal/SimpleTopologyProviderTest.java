@@ -124,7 +124,11 @@ public class SimpleTopologyProviderTest {
             m_topologyProvider.resetContainer();
         }
     }
-    
+
+    /**
+     * This test makes sure that the afterUnmarshall() functions are working on the
+     * {@link WrappedVertex} class.
+     */
     @Test
     public void testUnmarshallVertex() throws Exception {
         String vertexString = "<graph namespace=\"blah\"><vertex><id>hello</id></vertex></graph>";
@@ -215,6 +219,22 @@ public class SimpleTopologyProviderTest {
 		assertEquals(7, topologyProvider.getVertices().size());
 		assertEquals(7, topologyProvider.getEdges().size());
 		
+		Vertex v0 = topologyProvider.getVertex("vertex", "v0");
+		Vertex g0 = topologyProvider.getVertex("vertex", "g0");
+		assertEquals("Vertex v0", v0.getLabel());
+		assertEquals("64.146.64.214", v0.getIpAddress());
+		assertEquals(false, v0.isLocked());
+		assertEquals(-1, v0.getNodeID());
+		assertEquals(false, v0.isSelected());
+		assertEquals(50, v0.getX());
+		assertEquals(100, v0.getY());
+		assertEquals(g0, v0.getParent());
+		
+		assertEquals(2, topologyProvider.getChildren(g0).size());
+		
+		assertEquals(0, topologyProvider.getSemanticZoomLevel(g0));
+		assertEquals(1, topologyProvider.getSemanticZoomLevel(v0));
+
 		for (Vertex vertex : topologyProvider.getVertices()) {
 			assertEquals("vertex", vertex.getNamespace());
 			assertTrue("127.0.0.1".equals(vertex.getIpAddress()) || "64.146.64.214".equals(vertex.getIpAddress()));

@@ -33,8 +33,6 @@ import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -54,9 +52,9 @@ public class WrappedVertex implements VertexRef {
 	public String ipAddr;
 	public String key;
 	public String label;
+	@XmlTransient
 	public String namespace;
 	public Integer nodeID;
-	public Integer semanticZoomLevel;
 	public String styleName;
 	public String tooltipText;
 	public Integer x;
@@ -64,28 +62,31 @@ public class WrappedVertex implements VertexRef {
 	public boolean leaf;
 	public boolean locked;
 	public boolean selected;
+	@XmlIDREF
+	public WrappedVertex parent;
 	
 	public static WrappedVertex create(Vertex vertex) {
 		return (vertex.isLeaf() ? new WrappedLeafVertex(vertex) : new WrappedGroup(vertex));
 	}
 
-	private WrappedGroup m_parent = null;
-	private List<WrappedEdge> m_edges = new ArrayList<WrappedEdge>();
-
 	/**
 	 * No-arg constructor for JAXB.
 	 */
 	public WrappedVertex() {}
-	
-	public WrappedVertex(Vertex vertex) {
-		iconKey = vertex.getIconKey();
+
+	protected WrappedVertex(VertexRef vertex) {
 		id = vertex.getId();
+		label = vertex.getLabel();
+		namespace = vertex.getNamespace();
+	}
+
+	protected WrappedVertex(Vertex vertex) {
+		this((VertexRef)vertex);
+		iconKey = vertex.getIconKey();
 		ipAddr = vertex.getIpAddress();
 		key = vertex.getKey();
-		label = vertex.getKey();
-		namespace = vertex.getNamespace();
 		nodeID = vertex.getNodeID();
-		semanticZoomLevel = vertex.getSemanticZoomLevel();
+		if (vertex.getParent() != null) parent = new WrappedVertex(vertex.getParent());
 		styleName = vertex.getStyleName();
 		tooltipText = vertex.getTooltipText();
 		x = vertex.getX();
@@ -133,34 +134,6 @@ public class WrappedVertex implements VertexRef {
 	@Override
 	public String getLabel() {
 		return label;
-	}
-
-	@XmlIDREF
-	public WrappedGroup getParent() {
-		return m_parent;
-	}
-	
-	public void setParent(WrappedGroup parent) {
-		if (m_parent != null) {
-			m_parent.removeMember(this);
-		}
-		m_parent = parent;
-		if (m_parent != null) {
-			m_parent.addMember(this);
-		}
-	}
-	
-	@XmlTransient
-    public final List<WrappedEdge> getEdges() {
-		return m_edges;
-	}
-	
-	final void addEdge(WrappedEdge edge) {
-		m_edges.add(edge);
-	}
-	
-	final void removeEdge(WrappedEdge edge) {
-		m_edges.remove(edge);
 	}
 
 	@Override

@@ -4,22 +4,81 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.slf4j.LoggerFactory;
 
 public class SimpleVertexProvider implements VertexProvider {
 	
-	final String m_namespace;
-	final Map<String,Vertex> m_vertexMap = new LinkedHashMap<String,Vertex>();
-	final Set<VertexListener> m_listeners = new CopyOnWriteArraySet<VertexListener>();
-	final Map<VertexRef, VertexRef> m_parents= new HashMap<VertexRef, VertexRef>();
-	final Map<VertexRef, List<VertexRef>> m_children = new HashMap<VertexRef, List<VertexRef>>();
+	private final String m_namespace;
+	private final Map<String,Vertex> m_vertexMap = new LinkedHashMap<String,Vertex>();
+	private final Set<VertexListener> m_listeners = new CopyOnWriteArraySet<VertexListener>();
+	private final Map<VertexRef, VertexRef> m_parents= new TreeMap<VertexRef, VertexRef>(new VertexRefComparator());
+	private final Map<VertexRef, List<VertexRef>> m_children = new TreeMap<VertexRef, List<VertexRef>>(new VertexRefComparator());
+
+	/**
+	 * This comparator only cares about the primary key of the Vertex: the tuple of
+	 * namespace and id.
+	 */
+	public static class VertexRefComparator implements Comparator<VertexRef> {
+
+		@Override
+		public int compare(VertexRef a, VertexRef b) {
+			if (a == null) {
+				if (b == null) {
+					return 0;
+				} else {
+					return 1;
+				}
+			} else if (b == null) {
+				return -1;
+			} else {
+				if (a.getNamespace() == null) {
+					if (b.getNamespace() == null) {
+						if (a.getId() == null) {
+							if (b.getId() == null) {
+								return 0;
+							} else {
+								return 1;
+							}
+						} else if (b.getId() == null) {
+							return -1;
+						} else {
+							return a.getId().compareTo(b.getId());
+						}
+					} else {
+						return 1;
+					}
+				} else if (b.getNamespace() == null) {
+					return -1;
+				} else {
+					int comparison = a.getNamespace().compareTo(b.getNamespace());
+					if (comparison == 0) {
+						if (a.getId() == null) {
+							if (b.getId() == null) {
+								return 0;
+							} else {
+								return 1;
+							}
+						} else if (b.getId() == null) {
+							return -1;
+						} else {
+							return a.getId().compareTo(b.getId());
+						}
+					} else {
+						return comparison;
+					}
+				}
+			}
+		}
+
+	}
 	
 	public SimpleVertexProvider(String namespace) {
 		m_namespace = namespace;
@@ -50,13 +109,7 @@ public class SimpleVertexProvider implements VertexProvider {
 
 	private Vertex getSimpleVertex(VertexRef reference) {
 		if (getVertexNamespace().equals(reference.getNamespace())) {
-			/*
-			if (reference instanceof Vertex) {
-				return Vertex.class.cast(reference);
-			} else {
-			*/
-				return m_vertexMap.get(reference.getId());
-			//}
+			return m_vertexMap.get(reference.getId());
 		} 
 		return null;
 	}
