@@ -28,6 +28,7 @@
 
 package org.opennms.api.integration.ticketing;
 
+import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -61,6 +62,9 @@ public class Ticket {
     }
     
     private String m_id;
+    private Integer m_alarmId;
+    private Integer m_nodeId;
+    private InetAddress m_ipAddress;
     private State m_state = State.OPEN;
     private String m_summary;
     private String m_details;
@@ -222,6 +226,60 @@ public class Ticket {
      */
     public void setModificationTimestamp(String modificationTimestamp) {
         m_modificationTimestamp = modificationTimestamp;
+    }
+
+    /**
+     * Returns the ID of the originator alarm
+     *
+     * @return the alarm ID.
+     */
+    public Integer getAlarmId() {
+        return m_alarmId;
+    }
+
+    /**
+     * Sets the ID of the originator alarm.
+     *
+     * @param alarmId a {@link java.lang.Integer} object.
+     */
+    public void setAlarmId(Integer alarmId) {
+        this.m_alarmId = alarmId;
+    }
+
+    /**
+     * Returns the ID of the originator node
+     *
+     * @return the node ID.
+     */
+    public Integer getNodeId() {
+        return m_nodeId;
+    }
+
+    /**
+     * Sets the ID of the originator node.
+     *
+     * @param nodeId a {@link java.lang.Integer} object.
+     */
+    public void setNodeId(Integer nodeId) {
+        this.m_nodeId = nodeId;
+    }
+
+    /**
+     * Returns the IP address of the originator alarm
+     *
+     * @return the IP address.
+     */
+    public InetAddress getIpAddress() {
+        return m_ipAddress;
+    }
+
+    /**
+     * Sets the IP address of the originator alarm.
+     *
+     * @param ipAddress a {@link java.net.InetAddress} object.
+     */
+    public void setIpAddress(InetAddress ipAddress) {
+        this.m_ipAddress = ipAddress;
     }
     
 }
