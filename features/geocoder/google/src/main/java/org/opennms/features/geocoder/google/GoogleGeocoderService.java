@@ -1,6 +1,6 @@
 package org.opennms.features.geocoder.google;
 
-import org.opennms.features.geocoder.CoordinateParseException;
+import org.opennms.features.geocoder.GeocoderException;
 import org.opennms.features.geocoder.Coordinates;
 import org.opennms.features.geocoder.GeocoderService;
 
@@ -13,7 +13,7 @@ public class GoogleGeocoderService implements GeocoderService {
     final private Geocoder m_geocoder = new Geocoder();
 
     @Override
-    public Coordinates getCoordinates(final String address) throws CoordinateParseException {
+    public Coordinates getCoordinates(final String address) throws GeocoderException {
         final GeocoderRequest request = new GeocoderRequestBuilder().setAddress(address).setLanguage("en").getGeocoderRequest();
         final GeocodeResponse response = m_geocoder.geocode(request);
 
@@ -27,7 +27,7 @@ public class GoogleGeocoderService implements GeocoderService {
         case UNKNOWN_ERROR:
         case ZERO_RESULTS:
         default:
-            throw new CoordinateParseException("Failed to get coordinates for " + address + " using Google Geocoder.  Response was: " + response.getStatus().toString());
+            throw new GeocoderException("Failed to get coordinates for " + address + " using Google Geocoder.  Response was: " + response.getStatus().toString());
         }
     }
 }

@@ -13,5 +13,6 @@
   <modules>
     <module>api</module>
     <module>google</module>
+    <module>nominatim</module>
   </modules>
 </project>

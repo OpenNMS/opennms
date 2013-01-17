@@ -27,13 +27,15 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.nodemaps;
 
-import org.opennms.core.utils.BeanUtils;
-import org.opennms.core.utils.LogUtils;
+import org.opennms.features.geocoder.GeocoderService;
 import org.opennms.features.vaadin.nodemaps.ui.OpenlayersWidgetComponent;
+import org.opennms.netmgt.dao.AssetRecordDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsGeolocation;
 import org.opennms.netmgt.model.OnmsNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.vaadin.Application;
 import com.vaadin.ui.AbsoluteLayout;
@@ -83,12 +85,17 @@ public class NodeMapsApplication extends Application {
     /** The Constant NODE_CLASS. */
     private static final String NODE_STYLE = "nodeCircle";
 
-    /** The OpenNMS Node DAO. */
     private NodeDao m_nodeDao;
 
     private Window m_window;
 
     private AbsoluteLayout m_rootLayout;
+
+    private AssetRecordDao m_assetDao;
+
+    private GeocoderService m_geocoderService;
+
+    private Logger m_log = LoggerFactory.getLogger(getClass());
 
     /**
      * Sets the OpenNMS Node DAO.
@@ -96,21 +103,16 @@ public class NodeMapsApplication extends Application {
      * @param m_nodeDao the new OpenNMS Node DAO
      */
 
-    public void setNodeDao(NodeDao nodeDao) {
-        this.m_nodeDao = nodeDao;
+    public void setNodeDao(final NodeDao nodeDao) {
+        m_nodeDao = nodeDao;
     }
 
-    /**
-     * Gets the OpenNMS Node DAO.
-     * 
-     * @return the OpenNMS Node DAO
-     */
-    public NodeDao getNodeDao() {
-        if (m_nodeDao == null) {
-            LogUtils.infof(this, "Initializing NodeDao");
-            m_nodeDao = BeanUtils.getBean("daoContext", "m_nodeDao", NodeDao.class);
-        }
-        return m_nodeDao;
+    public void setAssetRecordDao(final AssetRecordDao assetDao) {
+        m_assetDao = assetDao;
+    }
+
+    public void setGeocoderService(final GeocoderService geocoderService) {
+        m_geocoderService = geocoderService;
     }
 
     /*
@@ -120,7 +122,9 @@ public class NodeMapsApplication extends Application {
     @Override
     public void init() {
         final OpenlayersWidgetComponent openlayers = new OpenlayersWidgetComponent();
-        openlayers.setNodeDao(getNodeDao());
+        openlayers.setNodeDao(m_nodeDao);
+        openlayers.setAssetRecordDao(m_assetDao);
+        openlayers.setGeocoderService(m_geocoderService);
         openlayers.setSizeFull();
 
         m_rootLayout = new AbsoluteLayout();

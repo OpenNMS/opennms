@@ -30,6 +30,8 @@ package org.opennms.features.vaadin.nodemaps;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
+import org.opennms.features.geocoder.GeocoderService;
+import org.opennms.netmgt.dao.AssetRecordDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.ops4j.pax.vaadin.AbstractApplicationFactory;
 
@@ -41,19 +43,22 @@ import com.vaadin.Application;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 public class NodeMapsApplicationFactory extends AbstractApplicationFactory {
-
-    /** The OpenNMS Node DAO. */
-    private NodeDao nodeDao;
+    private NodeDao m_nodeDao;
+    private AssetRecordDao m_assetDao;
+    private GeocoderService m_geocoder;
 
     /* (non-Javadoc)
      * @see org.ops4j.pax.vaadin.ApplicationFactory#createApplication(javax.servlet.http.HttpServletRequest)
      */
     @Override
     public Application createApplication(HttpServletRequest request) throws ServletException {
-        if (nodeDao == null)
-            throw new RuntimeException("nodeDao cannot be null.");
+        if (m_nodeDao == null) {
+            throw new RuntimeException("m_nodeDao cannot be null.");
+        }
         NodeMapsApplication app = new NodeMapsApplication();
-        app.setNodeDao(nodeDao);
+        app.setNodeDao(m_nodeDao);
+        app.setAssetRecordDao(m_assetDao);
+        app.setGeocoderService(m_geocoder);
         return app;
     }
 
@@ -68,10 +73,17 @@ public class NodeMapsApplicationFactory extends AbstractApplicationFactory {
     /**
      * Sets the OpenNMS Node DAO.
      *
-     * @param nodeDao the new OpenNMS Node DAO
+     * @param m_nodeDao the new OpenNMS Node DAO
      */
     public void setNodeDao(NodeDao nodeDao) {
-        this.nodeDao = nodeDao;
+        this.m_nodeDao = nodeDao;
     }
 
+    public void setAssetDao(AssetRecordDao assetDao) {
+        this.m_assetDao = assetDao;
+    }
+
+    public void setGeocoderService(GeocoderService geocoderService) {
+        this.m_geocoder = geocoderService;
+    }
 }

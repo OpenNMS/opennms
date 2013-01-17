@@ -7,14 +7,14 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.geocoder</groupId>
-  <artifactId>org.opennms.features.geocoder.google</artifactId>
+  <artifactId>org.opennms.features.geocoder.nominatim</artifactId>
   <packaging>bundle</packaging>
-  <name>OpenNMS Google Geocoder</name>
+  <name>OpenNMS Nominatim Geocoder</name>
 
-  <description>Google Geocoder implementation</description>
+  <description>Nominatim Geocoder implementation</description>
   <properties>
-    <bundle.symbolicName>org.opennms.features.geocoder.google</bundle.symbolicName>
-    <bundle.namespace>org.opennms.features.geocoder.google</bundle.namespace>
+    <bundle.symbolicName>org.opennms.features.geocoder.nominatim</bundle.symbolicName>
+    <bundle.namespace>org.opennms.features.geocoder.nominatim</bundle.namespace>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
@@ -31,11 +31,35 @@
             <Bundle-Version>${project.version}</Bundle-Version>
             <Export-Package>!${bundle.namespace}.internal.*,${bundle.namespace}.*;version="${project.version}"</Export-Package>
             <Private-Package>${bundle.namespace}.internal.*</Private-Package>
-            <Embed-Dependency>geocoder-java,gson,commons-httpclient</Embed-Dependency>
+            <Embed-Dependency>jelementtree</Embed-Dependency>
             <Embed-Transitive>true</Embed-Transitive>
           </instructions>
         </configuration>
       </plugin>
+<!-- FIXME: WHY DOESN'T THIS ATTACH?!?
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>attach-artifacts</id>
+            <phase>install</phase>
+            <goals>
+              <goal>attach-artifact</goal>
+            </goals>
+            <configuration>
+              <artifacts>
+                <artifact>
+                  <file>${project.build.outputDirectory}/classes/${project.artifactId}.cfg</file>
+                  <type>cfg</type>
+                  <classifier>nominatim</classifier>
+                </artifact>
+              </artifacts>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+-->
     </plugins>
   </build>
 
@@ -44,10 +68,19 @@
       <groupId>org.opennms.features.geocoder</groupId>
       <artifactId>org.opennms.features.geocoder.api</artifactId>
     </dependency>
+      <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpclient</artifactId>
+      </dependency>
     <dependency>
-      <groupId>com.google.code.geocoder-java</groupId>
-      <artifactId>geocoder-java</artifactId>
-      <version>0.11</version>
+      <groupId>net.simon04.jelementtree</groupId>
+      <artifactId>jelementtree</artifactId>
+      <version>20100506</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 </project>

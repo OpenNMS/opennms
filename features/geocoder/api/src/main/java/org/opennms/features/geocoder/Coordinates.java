@@ -8,16 +8,16 @@ public class Coordinates implements Serializable {
     private float m_longitude;
 
     public Coordinates() {}
-    public Coordinates(final String latLng) throws CoordinateParseException {
+    public Coordinates(final String latLng) throws GeocoderException {
         setCoordinates(latLng);
     }
     public Coordinates(final float latitude, final float longitude) {
         setCoordinates(latitude, longitude);
     }
 
-    protected void setCoordinates(final String latLng) throws CoordinateParseException {
+    protected void setCoordinates(final String latLng) throws GeocoderException {
         if (latLng == null) {
-            throw new CoordinateParseException("Attempt to initialize a Coordinate with a null lat/lng string!");
+            throw new GeocoderException("Attempt to initialize a Coordinate with a null lat/lng string!");
         }
 
         final String[] separated = latLng.split(",");
@@ -25,7 +25,7 @@ public class Coordinates implements Serializable {
             m_latitude = Float.valueOf(separated[0]).floatValue();
             m_longitude = Float.valueOf(separated[1]).floatValue();
         } catch (final NumberFormatException e) {
-            throw new CoordinateParseException("Failed to parse lat/lng string '" + latLng + "'", e);
+            throw new GeocoderException("Failed to parse lat/lng string '" + latLng + "'", e);
         }
     }
 
