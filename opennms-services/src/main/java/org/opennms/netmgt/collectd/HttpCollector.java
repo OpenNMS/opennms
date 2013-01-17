@@ -545,35 +545,35 @@ public class HttpCollector implements ServiceCollector {
         }
     }
 
-    private void persistResponse(final HttpCollectionSet collectionSet, HttpCollectionResource collectionResource, final HttpClient client, final HttpResponse response) throws IOException {
-        String responseString = EntityUtils.toString(response.getEntity());
+    private void persistResponse(final HttpCollectionSet collectionSet, final HttpCollectionResource collectionResource, final HttpClient client, final HttpResponse response) throws IOException {
+        final String responseString = EntityUtils.toString(response.getEntity());
         if (responseString != null && !"".equals(responseString)) {
-	    // Get response's locale from the Content-Language header if available
-	    Locale responseLocale = null;
-            Header[] headers = response.getHeaders("Content-Language");
-	    if (headers != null) {
-	        log().debug("doCollection: Trying to devise response's locale from Content-Language header.");
+            // Get response's locale from the Content-Language header if available
+            Locale responseLocale = null;
+            final Header[] headers = response.getHeaders("Content-Language");
+            if (headers != null) {
+                log().debug("doCollection: Trying to devise response's locale from Content-Language header.");
                 if (headers.length == 1) {
                     if (headers[0].getValue().split(",").length == 1) {
-                        String[] values = headers[0].getValue().split("-");
-	                log().debug("doCollection: Found one Content-Language header with value: " + headers[0].getValue());
+                        final String[] values = headers[0].getValue().split("-");
+                        log().debug("doCollection: Found one Content-Language header with value: " + headers[0].getValue());
                         switch (values.length) {
-		            case 1 :
+                            case 1:
                                 responseLocale = new Locale(values[0]);
-		                break;
-		            case 2 : 
-		                responseLocale = new Locale(values[0],values[1]);
-		                break;
-		            default :
-		                log().warn("doCollection: Ignoring Content-Language header with value " + headers[0].getValue() + ". No support for more than 1 language subtag!");
-		        }
+                                break;
+                            case 2:
+                                responseLocale = new Locale(values[0], values[1]);
+                                break;
+                            default:
+                                log().warn("doCollection: Ignoring Content-Language header with value " + headers[0].getValue() + ". No support for more than 1 language subtag!");
+                        }
                     } else {
-	                log().warn("doCollection: Multiple languages specified. That doesn't make sense. Ignoring...");
+                        log().warn("doCollection: Multiple languages specified. That doesn't make sense. Ignoring...");
                     }
                 } else {
-	            log().warn("doCollection: More than 1 Content-Language headers received. Ignoring them!");
+                    log().warn("doCollection: More than 1 Content-Language headers received. Ignoring them!");
                 }
-	    }
+            }
 
             List<HttpCollectionAttribute> attributes = processResponse(responseLocale, responseString, collectionSet, collectionResource);
 
@@ -582,7 +582,7 @@ public class HttpCollector implements ServiceCollector {
                 throw new HttpCollectorException("No attributes specified were found: ");
             }
 
-            //put the results into the collectionset for later
+            // put the results into the collectionset for later
             collectionSet.storeResults(attributes, collectionResource);
         }
     }
