@@ -6,11 +6,9 @@ import java.io.File;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
 
 import org.joda.time.Duration;
 import org.junit.Test;
-import org.opennms.core.utils.FileReloadContainer;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
@@ -129,10 +127,11 @@ public class FasterFilesystemForeignSourceRepositoryTest {
 
 	}
 
-	private FasterFilesystemForeignSourceRepository repo(File foreignSourceDir,	File requisitionDir) {
+	private FasterFilesystemForeignSourceRepository repo(File foreignSourceDir,	File requisitionDir) throws Exception {
 		FasterFilesystemForeignSourceRepository repo = new FasterFilesystemForeignSourceRepository();
 		repo.setForeignSourcePath(foreignSourceDir.getAbsolutePath());
 		repo.setRequisitionPath(requisitionDir.getAbsolutePath());
+		repo.afterPropertiesSet();
 		return repo;
 	}
 	
