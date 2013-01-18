@@ -74,7 +74,7 @@ import com.vaadin.ui.Window;
 
 public class SimpleTopologyProviderTest {
 
-    private class TestOperationContext implements OperationContext{
+    private class TestOperationContext implements OperationContext {
         
         private GraphContainer m_graphContainer;
 
@@ -191,15 +191,31 @@ public class SimpleTopologyProviderTest {
 		assertEquals(50, wrappedVertex.x.intValue());
 		assertEquals(100, wrappedVertex.y.intValue());
 		
+		assertEquals(1, m_topologyProvider.getVertices(Collections.singletonList(ref0)).size());
+		assertEquals(1, m_topologyProvider.getVertices(Collections.singletonList(ref1)).size());
+		assertEquals(7, m_topologyProvider.getVertices().size());
+		assertEquals(3, m_topologyProvider.getEdgeIdsForVertex(m_topologyProvider.getVertex(ref0)).length);
+		assertEquals(3, m_topologyProvider.getEdgeIdsForVertex(m_topologyProvider.getVertex(ref1)).length);
+		
 		m_topologyProvider.save("target/test-classes/test-graph.xml");
 		
 		m_topologyProvider.resetContainer();
 		
+		// Ensure that the topology provider has been erased
+		assertEquals(0, m_topologyProvider.getVertices(Collections.singletonList(ref0)).size());
+		assertEquals(0, m_topologyProvider.getVertices(Collections.singletonList(ref1)).size());
+		assertEquals(0, m_topologyProvider.getVertices().size());
+		assertEquals(0, m_topologyProvider.getEdgeIdsForVertex(m_topologyProvider.getVertex(ref0)).length);
+		assertEquals(0, m_topologyProvider.getEdgeIdsForVertex(m_topologyProvider.getVertex(ref1)).length);
+		
 		m_topologyProvider.load("target/test-classes/test-graph.xml");
 		
+		// Ensure that all of the content has been reloaded properly
 		assertEquals(1, m_topologyProvider.getVertices(Collections.singletonList(ref0)).size());
 		assertEquals(1, m_topologyProvider.getVertices(Collections.singletonList(ref1)).size());
 		assertEquals(7, m_topologyProvider.getVertices().size());
+		assertEquals(3, m_topologyProvider.getEdgeIdsForVertex(m_topologyProvider.getVertex(ref0)).length);
+		assertEquals(3, m_topologyProvider.getEdgeIdsForVertex(m_topologyProvider.getVertex(ref1)).length);
 	}
 	
 	@Test
@@ -220,6 +236,10 @@ public class SimpleTopologyProviderTest {
 		assertEquals(7, topologyProvider.getEdges().size());
 		
 		Vertex v0 = topologyProvider.getVertex("vertex", "v0");
+		Vertex v1 = topologyProvider.getVertex("vertex", "v1");
+		Vertex v2 = topologyProvider.getVertex("vertex", "v2");
+		Vertex v3 = topologyProvider.getVertex("vertex", "v3");
+		Vertex v4 = topologyProvider.getVertex("vertex", "v4");
 		Vertex g0 = topologyProvider.getVertex("vertex", "g0");
 		assertEquals("Vertex v0", v0.getLabel());
 		assertEquals("64.146.64.214", v0.getIpAddress());
@@ -234,6 +254,12 @@ public class SimpleTopologyProviderTest {
 		
 		assertEquals(0, topologyProvider.getSemanticZoomLevel(g0));
 		assertEquals(1, topologyProvider.getSemanticZoomLevel(v0));
+		
+		assertEquals(3, topologyProvider.getEdgeIdsForVertex(v0).length);
+		assertEquals(3, topologyProvider.getEdgeIdsForVertex(v1).length);
+		assertEquals(3, topologyProvider.getEdgeIdsForVertex(v2).length);
+		assertEquals(3, topologyProvider.getEdgeIdsForVertex(v3).length);
+		assertEquals(2, topologyProvider.getEdgeIdsForVertex(v4).length);
 
 		for (Vertex vertex : topologyProvider.getVertices()) {
 			assertEquals("vertex", vertex.getNamespace());

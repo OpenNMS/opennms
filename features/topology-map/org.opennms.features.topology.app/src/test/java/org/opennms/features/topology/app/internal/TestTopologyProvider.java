@@ -57,22 +57,6 @@ public class TestTopologyProvider extends AbstractTopologyProvider implements Gr
         Edge edge = connectVertices(v1, v2);
         edge.setStyleName("default");
     }
-    
-    @Override
-    public Vertex addGroup(String groupLabel, String groupIcon) {
-        String nextGroupId = getNextGroupId();
-        return addGroup(nextGroupId, groupIcon, groupLabel);
-    }
-
-    private Vertex addGroup(String groupId, String groupIcon, String groupLabel) {
-        if(containsVertexId(groupId)) {
-            throw new IllegalArgumentException("A vertex or group with id " + groupId + " already exists!");
-        }
-        TestVertex vertex = new TestGroup(groupId);
-        vertex.setLabel(groupLabel);
-        addVertices(vertex);
-        return vertex;
-    }
 
     @Override
     public void save(String filename) {
@@ -85,24 +69,20 @@ public class TestTopologyProvider extends AbstractTopologyProvider implements Gr
         clearVertices();
         
         List<TestVertex> vertices = new ArrayList<TestVertex>();
-        List<TestEdge> edges = new ArrayList<TestEdge>();
         
         String vId1 = getNextVertexId();
         TestVertex v1 = new TestLeafVertex(vId1, 0, 0);
         v1.setLabel("a leaf vertex");
         
         vertices.add(v1);
-        //Item beanItem = m_vertexContainer.addBean(v1);
         
         String vId2 = getNextVertexId();
         TestVertex v2 = new TestLeafVertex(vId2, 0, 0);
         v2.setLabel("another leaf");
         vertices.add(v2);
-        //Item beanItem2 = m_vertexContainer.addBean(v2);
+        
+        addVertices(vertices.toArray(new Vertex[0]));
         
         connectVertices(v1, v2);
-        
-        addVertices(vertices.toArray(new Vertex[] {}));
-        addEdges(edges.toArray(new Edge[] {}));
     }
 }

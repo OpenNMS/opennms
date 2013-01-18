@@ -85,21 +85,7 @@ public class OnmsTopologyProvider extends AbstractTopologyProvider implements Gr
         super(TOPOLOGY_NAMESPACE_ONMSDAO);
     }
 
-    @Override
-    public Vertex addGroup(String groupLabel, String icon) {
-        if (containsVertexId(groupLabel)) {
-            throw new IllegalArgumentException("A vertex or group with id " + groupLabel + " already exists!");
-        }
-        LoggerFactory.getLogger(getClass()).debug("Adding a group: {}", groupLabel);
-        // TODO: Make a proper incrementing ID
-        AbstractVertex vertex = new SimpleGroup(TOPOLOGY_NAMESPACE_ONMSDAO, "-1");
-        vertex.setIconKey(icon);
-        vertex.setLabel(groupLabel);
-        addVertices(vertex);
-        return vertex;
-    }
-
-    private Edge connectVertices(String id, VertexRef sourceId, VertexRef targetId) {
+    protected Edge connectVertices(String id, VertexRef sourceId, VertexRef targetId) {
 
         SimpleConnector source = new SimpleConnector(TOPOLOGY_NAMESPACE_ONMSDAO, sourceId.getId()+"-"+id+"-connector", sourceId);
         SimpleConnector target = new SimpleConnector(TOPOLOGY_NAMESPACE_ONMSDAO, targetId.getId()+"-"+id+"-connector", targetId);

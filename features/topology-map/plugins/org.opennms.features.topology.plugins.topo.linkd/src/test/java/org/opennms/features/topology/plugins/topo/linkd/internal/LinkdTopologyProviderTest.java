@@ -28,7 +28,6 @@
 
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -44,68 +43,71 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
-        "classpath:/META-INF/opennms/applicationContext-mock.xml"
-        })
-
+		"classpath:/META-INF/opennms/applicationContext-mock.xml"
+})
 public class LinkdTopologyProviderTest {
-    @Autowired
-    private RefreshOperation m_refreshOperation;
-    
-    @Autowired
-    private OperationContext m_operationContext;
+	@Autowired
+	private RefreshOperation m_refreshOperation;
 
-    @Autowired
-    private LinkdTopologyProvider m_topologyProvider;
-    
-    @Autowired
-     private EasyMockDataPopulator m_databasePopulator;
-    
-    @Before
-    public void setUp() {
-        MockLogAppender.setupLogging();
-        m_databasePopulator.populateDatabase();
-        m_databasePopulator.setUpMock();
-    }
+	@Autowired
+	private OperationContext m_operationContext;
 
-    @After
-    public void tearDown() {
-        m_databasePopulator.tearDown();
-    }
-        
-        @Test 
-        public void testGetIcon() {
-            Assert.assertTrue("linkd:system:snmp:1.3.6.1.4.1.5813.1.25".equals(m_topologyProvider.getIconName(m_databasePopulator.getNode1())));
-            Assert.assertTrue(LinkdTopologyProvider.SERVER_ICON_KEY.equals(m_topologyProvider.getIconName(m_databasePopulator.getNode2())));
-            Assert.assertTrue(LinkdTopologyProvider.SERVER_ICON_KEY.equals(m_topologyProvider.getIconName(m_databasePopulator.getNode3())));
-            Assert.assertTrue(LinkdTopologyProvider.SERVER_ICON_KEY.equals(m_topologyProvider.getIconName(m_databasePopulator.getNode4())));
-            Assert.assertTrue(LinkdTopologyProvider.SERVER_ICON_KEY.equals(m_topologyProvider.getIconName(m_databasePopulator.getNode5())));
-            Assert.assertTrue(LinkdTopologyProvider.SERVER_ICON_KEY.equals(m_topologyProvider.getIconName(m_databasePopulator.getNode6())));
-            Assert.assertTrue(LinkdTopologyProvider.SERVER_ICON_KEY.equals(m_topologyProvider.getIconName(m_databasePopulator.getNode7())));
-            Assert.assertTrue(LinkdTopologyProvider.SERVER_ICON_KEY.equals(m_topologyProvider.getIconName(m_databasePopulator.getNode8())));
+	@Autowired
+	private LinkdTopologyProvider m_topologyProvider;
 
-        }
-    
+	@Autowired
+	private EasyMockDataPopulator m_databasePopulator;
+
+	@Before
+	public void setUp() throws Exception {
+		MockLogAppender.setupLogging();
+		m_databasePopulator.populateDatabase();
+		m_databasePopulator.setUpMock();
+
+		m_topologyProvider.load(null);
+	}
+
+	@After
+	public void tearDown() {
+		m_databasePopulator.tearDown();
+		if(m_topologyProvider != null) {
+			m_topologyProvider.resetContainer();
+		}
+	}
+
+	@Test 
+	public void testGetIcon() {
+		Assert.assertTrue("linkd:system:snmp:1.3.6.1.4.1.5813.1.25".equals(m_topologyProvider.getIconName(m_databasePopulator.getNode1())));
+		Assert.assertTrue(LinkdTopologyProvider.SERVER_ICON_KEY.equals(m_topologyProvider.getIconName(m_databasePopulator.getNode2())));
+		Assert.assertTrue(LinkdTopologyProvider.SERVER_ICON_KEY.equals(m_topologyProvider.getIconName(m_databasePopulator.getNode3())));
+		Assert.assertTrue(LinkdTopologyProvider.SERVER_ICON_KEY.equals(m_topologyProvider.getIconName(m_databasePopulator.getNode4())));
+		Assert.assertTrue(LinkdTopologyProvider.SERVER_ICON_KEY.equals(m_topologyProvider.getIconName(m_databasePopulator.getNode5())));
+		Assert.assertTrue(LinkdTopologyProvider.SERVER_ICON_KEY.equals(m_topologyProvider.getIconName(m_databasePopulator.getNode6())));
+		Assert.assertTrue(LinkdTopologyProvider.SERVER_ICON_KEY.equals(m_topologyProvider.getIconName(m_databasePopulator.getNode7())));
+		Assert.assertTrue(LinkdTopologyProvider.SERVER_ICON_KEY.equals(m_topologyProvider.getIconName(m_databasePopulator.getNode8())));
+
+	}
+
 	@Test
 	public void testLoad() {
-		m_topologyProvider.load(null);
 		m_databasePopulator.check(m_topologyProvider);
 	}
 
 	@Test
 	public void testSave() {
-	    m_topologyProvider.save("target/test-map.xml");
-            m_databasePopulator.check(m_topologyProvider);
+		m_topologyProvider.save("target/test-map.xml");
+		m_databasePopulator.check(m_topologyProvider);
 	}
-	
+
 	@Test
 	public void testOperationRefresh() {
-	    m_refreshOperation.execute(null, m_operationContext);
-            m_databasePopulator.check(m_topologyProvider);
+		m_refreshOperation.execute(null, m_operationContext);
+		m_databasePopulator.check(m_topologyProvider);
 	}
 
 	@Test 
 	public void testAddGroup() {
-	    Vertex parentId = m_topologyProvider.addGroup("Linkd Group", LinkdTopologyProvider.GROUP_ICON_KEY);
-	    Assert.assertEquals(true, m_topologyProvider.containsVertexId(parentId));
+		Vertex parentId = m_topologyProvider.addGroup("Linkd Group", LinkdTopologyProvider.GROUP_ICON_KEY);
+		Assert.assertEquals(true, m_topologyProvider.containsVertexId(parentId));
 	}
 }

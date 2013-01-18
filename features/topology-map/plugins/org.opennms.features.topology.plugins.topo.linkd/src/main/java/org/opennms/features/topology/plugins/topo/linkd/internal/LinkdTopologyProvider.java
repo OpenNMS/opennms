@@ -29,6 +29,7 @@
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
 import java.io.File;
+import java.net.MalformedURLException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,12 +37,19 @@ import java.util.List;
 import java.util.Map;
 
 import javax.xml.bind.JAXB;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
 
+import org.opennms.features.topology.api.SimpleLeafVertex;
 import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
+import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeProvider;
 import org.opennms.features.topology.api.topo.GraphProvider;
+import org.opennms.features.topology.api.topo.SimpleEdgeProvider;
+import org.opennms.features.topology.api.topo.SimpleVertexProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexProvider;
 import org.opennms.features.topology.api.topo.WrappedEdge;
@@ -149,8 +157,6 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         this.addNodeWithoutLink = addNodeWithoutLink;
     }
 
-    private int m_groupCounter = 0;
-    
     public DataLinkInterfaceDao getDataLinkInterfaceDao() {
         return m_dataLinkInterfaceDao;
     }
@@ -161,8 +167,10 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
 
     /**
      * Used as an init-method in the OSGi blueprint
+     * @throws JAXBException 
+     * @throws MalformedURLException 
      */
-    public void onInit() {
+    public void onInit() throws MalformedURLException, JAXBException {
         log("init: loading topology v1.3");
         loadtopology();
     }
@@ -172,28 +180,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     }
 
     @Override
-    public Vertex addGroup(String groupName, String groupIconKey) {
-        String nextGroupId = getNextGroupId();
-        return addGroup(nextGroupId, groupIconKey, groupName);
-    }
-
-    private Vertex addGroup(String groupId, String iconKey, String label) {
-        if (containsVertexId(groupId)) {
-            throw new IllegalArgumentException("A vertex or group with id " + groupId + " already exists!");
-        }
-        log("Adding a group: " + groupId);
-        LinkdVertex vertex = new LinkdGroup(groupId, label);
-        vertex.setIconKey(iconKey);
-        addVertices(vertex);
-        return vertex;
-    }
-    
-    protected String getNextGroupId() {
-        return LINKD_GROUP_ID_PREFIX + m_groupCounter++;
-    }
-
-    @Override
-    public void load(String filename) {
+    public void load(String filename) throws MalformedURLException, JAXBException {
         if (filename == null) {
             loadtopology();
         } else {
@@ -201,23 +188,23 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         }
     }
 
-    private WrappedGraph getGraphFromFile(File file) {
-        return JAXB.unmarshal(file, WrappedGraph.class);
+    private static WrappedGraph getGraphFromFile(File file) throws JAXBException, MalformedURLException {
+        JAXBContext jc = JAXBContext.newInstance(WrappedGraph.class);
+        Unmarshaller u = jc.createUnmarshaller();
+        return (WrappedGraph) u.unmarshal(file.toURI().toURL());
     }
 
-    private void loadfromfile(String filename) {
+    private void loadfromfile(String filename) throws MalformedURLException, JAXBException {
         File file = new File(filename);
         if (file.exists() && file.canRead()) {
             WrappedGraph graph = getGraphFromFile(file);
-            addVertices(graph.m_vertices.toArray(new Vertex[] {}));
-            addEdges(graph.m_edges.toArray(new Edge[] {}));
+            addVertices(graph.m_vertices.toArray(new Vertex[0]));
+            addEdges(graph.m_edges.toArray(new Edge[0]));
         }
     }
 
     //@Transactional
-    private void loadtopology() {
-        log("loadtopology: loading topology: configFile:" + m_configurationFile);
-        
+    private void loadtopology() throws MalformedURLException, JAXBException {
         log("loadtopology: Clear " + VertexProvider.class.getSimpleName());
         clearVertices();
         log("loadtopology: Clear " + EdgeProvider.class.getSimpleName());
@@ -272,18 +259,29 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         log("Found " + vertexes.size() + " vertices");
         log("Found " + edges.size() + " edges");
 
-                
-        addVertices(vertexes.values().toArray(new Vertex[] {}));
-        addEdges(edges.toArray(new Edge[] {}));
+        addVertices(vertexes.values().toArray(new Vertex[0]));
+        addEdges(edges.toArray(new Edge[0]));
  
+        log("loadtopology: loading topology: configFile:" + m_configurationFile);
         File configFile = new File(m_configurationFile);
 
-        int numberOfGroups = 0;
         if (configFile.exists() && configFile.canRead()) {
             log("loadtopology: loading topology from configuration file: " + m_configurationFile);
             m_groupCounter = 0;
             WrappedGraph graph = getGraphFromFile(configFile);
+
+            String namespace = graph.m_namespace == null ? TOPOLOGY_NAMESPACE_LINKD : graph.m_namespace;
+            if (getVertexNamespace() != namespace) { 
+                LoggerFactory.getLogger(this.getClass()).info("Creating new vertex provider with namespace {}", namespace);
+                m_vertexProvider = new SimpleVertexProvider(namespace);
+            }
+            if (getEdgeNamespace() != namespace) { 
+                LoggerFactory.getLogger(this.getClass()).info("Creating new edge provider with namespace {}", namespace);
+                m_edgeProvider = new SimpleEdgeProvider(namespace);
+            }
+
             // Add all groups to the topology
+            int numberOfGroups = 0;
             for (WrappedVertex vertex: graph.m_vertices) {
                 if (!vertex.leaf) {
                     log("loadtopology: adding group to topology: " + vertex.id);
@@ -296,23 +294,36 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
                     } catch (NumberFormatException e) {
                         // Ignore this group ID since it doesn't conform to our pattern for auto-generated IDs
                     }
-                    addGroup(vertex.id, vertex.iconKey, vertex.label);
+                    AbstractVertex newVertex = addGroup(vertex.id, vertex.iconKey, vertex.label);
+                    newVertex.setIpAddress(vertex.ipAddr);
+                    newVertex.setLocked(vertex.locked);
+                    if (vertex.nodeID != null) newVertex.setNodeID(vertex.nodeID);
+                    newVertex.setParent(vertex.parent);
+                    newVertex.setSelected(vertex.selected);
+                    newVertex.setStyleName(vertex.styleName);
+                    newVertex.setTooltipText(vertex.tooltipText);
+                    if (vertex.x != null) newVertex.setX(vertex.x);
+                    if (vertex.y != null) newVertex.setY(vertex.y);
                     numberOfGroups++;
                 }
             }
             
-            for (WrappedVertex vertex: graph.m_vertices) {
-                log("loadtopology: setting parent of " + vertex + " to " + vertex.parent);
-                setParent(vertex, vertex.parent);
+            for (Vertex vertex: getVertices()) {
+                if (vertex.getParent() != null) {
+                    log("loadtopology: setting parent of " + vertex + " to " + vertex.getParent());
+                    setParent(vertex, vertex.getParent());
+                }
             }
-
+            log("Found " + numberOfGroups + " groups");
         }
-        log("Found " + numberOfGroups + " groups");
     }
 
-    private LinkdVertex getVertex(OnmsNode onmsnode) {
+    private AbstractVertex getVertex(OnmsNode onmsnode) {
         OnmsIpInterface ip = getAddress(onmsnode);
-        LinkdVertex vertex = new LinkdVertex(onmsnode.getNodeId(), 0, 0, getIconName(onmsnode), onmsnode.getLabel(), ( ip == null ? null : ip.getIpAddress().getHostAddress()));
+        AbstractVertex vertex = new SimpleLeafVertex(TOPOLOGY_NAMESPACE_LINKD, onmsnode.getNodeId(), 0, 0);
+        vertex.setIconKey(getIconName(onmsnode));
+        vertex.setLabel(onmsnode.getLabel());
+        vertex.setIpAddress(ip == null ? null : ip.getIpAddress().getHostAddress());
         vertex.setNodeID(Integer.parseInt(onmsnode.getNodeId()));
         vertex.setTooltipText(getNodeTooltipText(onmsnode, vertex, ip));
         return vertex;
@@ -395,7 +406,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         return tooltipText.toString();
     }
 
-    private String getNodeTooltipText(OnmsNode node, LinkdVertex vertex, OnmsIpInterface ip) {
+    private static String getNodeTooltipText(OnmsNode node, AbstractVertex vertex, OnmsIpInterface ip) {
         StringBuffer tooltipText = new StringBuffer();
 
         /*
@@ -431,7 +442,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
 
     }
     
-    protected String getIconName(OnmsNode node) {
+    public static String getIconName(OnmsNode node) {
         return node.getSysObjectId() == null ? "linkd:system" : "linkd:system:snmp:"+node.getSysObjectId();
     }
     
@@ -473,7 +484,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
      * @param c a char.
      * @return a {@link java.lang.String} object.
      */
-    private String getNodeStatusString(char c) {
+    private static String getNodeStatusString(char c) {
         return m_nodeStatusMap.get(c);
     }
     
@@ -527,8 +538,8 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         return formatter.format(displaySpeed) + " " + units;
     }
 
-    private void log(final String string) {
-        LoggerFactory.getLogger(getClass()).debug(string);
+    private static void log(final String string) {
+        LoggerFactory.getLogger(LinkdTopologyProvider.class).debug(string);
     }
 /*
     public TransactionOperations getTransactionTemplate() {

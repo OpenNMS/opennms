@@ -28,23 +28,15 @@
 
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
-import static org.opennms.features.topology.plugins.topo.linkd.internal.LinkdTopologyProvider.GROUP_ICON_KEY;
+import org.opennms.features.topology.api.topo.AbstractVertex;
 
-import java.util.ArrayList;
-import java.util.List;
+public class LinkdVertex extends AbstractVertex {
 
-public class LinkdGroup extends LinkdVertex {
-
-	List<LinkdVertex> m_members = new ArrayList<LinkdVertex>();
-
-	int m_mapid;
-
-	public LinkdGroup(String groupId, String label) {
-		super(groupId, GROUP_ICON_KEY, label, null);
+	/**
+	 * Only used for unit tests.
+	 */
+	LinkdVertex() {
+		super(LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, "fakeId");
 	}
 
-	@Override
-	public boolean isLeaf() {
-		return false;
-	}
 }

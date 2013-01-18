@@ -37,7 +37,6 @@ import org.opennms.features.topology.api.topo.AbstractVertex;
 
 public class TestVertex extends AbstractVertex {
 
-	TestGroup m_parent = null;
 	List<TestEdge> m_edges = new ArrayList<TestEdge>();
 
 	public TestVertex(String id) {
@@ -48,10 +47,6 @@ public class TestVertex extends AbstractVertex {
 		this(id);
 		setX(x);
 		setY(y);
-	}
-
-	public boolean isRoot() {
-		return m_parent == null;
 	}
 
 	@XmlTransient

@@ -26,11 +26,6 @@ public class SFreeTopologyProvider extends AbstractTopologyProvider implements G
 	}
 
 	@Override
-	public Vertex addGroup(String groupName, String groupIcon) {
-		return null;
-	}
-
-	@Override
 	public void save(String filename) {
 		// Do nothing
 	}

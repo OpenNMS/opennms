@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.opennms.features.topology.api.SimpleConnector;
+import org.opennms.features.topology.api.SimpleGroup;
 import org.opennms.features.topology.api.SimpleLeafVertex;
 import org.slf4j.LoggerFactory;
 
@@ -87,6 +88,24 @@ public abstract class AbstractTopologyProvider extends DelegatingVertexEdgeProvi
     }
 
     @Override
+    public final AbstractVertex addGroup(String groupName, String groupIconKey) {
+        String nextGroupId = getNextGroupId();
+        return addGroup(nextGroupId, groupIconKey, groupName);
+    }
+
+    protected final AbstractVertex addGroup(String groupId, String iconKey, String label) {
+        if (containsVertexId(groupId)) {
+            throw new IllegalArgumentException("A vertex or group with id " + groupId + " already exists!");
+        }
+        LoggerFactory.getLogger(this.getClass()).debug("Adding a group: {}", groupId);
+        AbstractVertex vertex = new SimpleGroup(getVertexNamespace(), groupId);
+        vertex.setLabel(label);
+        vertex.setIconKey(iconKey);
+        addVertices(vertex);
+        return vertex;
+    }
+
+    @Override
     public final void addEdges(Edge... edges) {
         getSimpleEdgeProvider().add(edges);
     }
@@ -98,6 +117,7 @@ public abstract class AbstractTopologyProvider extends DelegatingVertexEdgeProvi
 
     @Override
     public final EdgeRef[] getEdgeIdsForVertex(VertexRef vertex) {
+        if (vertex == null) return new EdgeRef[0];
         List<EdgeRef> retval = new ArrayList<EdgeRef>();
         for (Edge edge : getEdges()) {
             // If the vertex is connected to the edge then add it
@@ -114,11 +134,11 @@ public abstract class AbstractTopologyProvider extends DelegatingVertexEdgeProvi
         return connectVertices(nextEdgeId, sourceVertextId, targetVertextId);
     }
 
-    private Edge connectVertices(String id, VertexRef sourceId, VertexRef targetId) {
-        SimpleConnector source = new SimpleConnector(getVertexNamespace(), sourceId.getId()+"-"+id+"-connector", sourceId);
-        SimpleConnector target = new SimpleConnector(getVertexNamespace(), targetId.getId()+"-"+id+"-connector", targetId);
+    protected Edge connectVertices(String id, VertexRef sourceId, VertexRef targetId) {
+        SimpleConnector source = new SimpleConnector(getEdgeNamespace(), sourceId.getId()+"-"+id+"-connector", sourceId);
+        SimpleConnector target = new SimpleConnector(getEdgeNamespace(), targetId.getId()+"-"+id+"-connector", targetId);
 
-        AbstractEdge edge = new AbstractEdge(getVertexNamespace(), id, source, target);
+        AbstractEdge edge = new AbstractEdge(getEdgeNamespace(), id, source, target);
 
         addEdges(edge);
         

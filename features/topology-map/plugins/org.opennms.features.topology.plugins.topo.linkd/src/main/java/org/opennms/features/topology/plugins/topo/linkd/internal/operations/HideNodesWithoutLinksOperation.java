@@ -28,7 +28,10 @@
 
 package org.opennms.features.topology.plugins.topo.linkd.internal.operations;
 
+import java.net.MalformedURLException;
 import java.util.List;
+
+import javax.xml.bind.JAXBException;
 
 import org.opennms.features.topology.api.CheckedOperation;
 import org.opennms.features.topology.api.OperationContext;
@@ -46,7 +49,15 @@ public class HideNodesWithoutLinksOperation implements CheckedOperation {
             log("found addNodeWithoutLinks: " + provider.isAddNodeWithoutLink());
             provider.setAddNodeWithoutLink(!provider.isAddNodeWithoutLink());
             log("switched addNodeWithoutLinks to: " + provider.isAddNodeWithoutLink());
-            provider.load(null);
+            try {
+                provider.load(null);
+            } catch (MalformedURLException e) {
+                // TODO: Display the error in the UI
+                LoggerFactory.getLogger(this.getClass()).error(e.getMessage(), e);
+            } catch (JAXBException e) {
+                // TODO: Display the error in the UI
+                LoggerFactory.getLogger(this.getClass()).error(e.getMessage(), e);
+            }
             log("executing redoLayout");
             operationContext.getGraphContainer().redoLayout();
         }

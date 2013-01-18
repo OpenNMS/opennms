@@ -95,37 +95,6 @@ public class SimpleTopologyProvider extends AbstractTopologyProvider implements 
 		}
 	}
 
-    /*
-    private Vertex addVertex(String id, int x, int y, String label, String ipAddr, int nodeID) {
-        if (containsVertexId(id)) {
-            throw new IllegalArgumentException("A vertex or group with id " + id + " already exists!");
-        }
-        s_log.debug("Adding a vertex: {}", id);
-        AbstractVertex vertex = new SimpleLeafVertex(TOPOLOGY_NAMESPACE_SIMPLE, id, x, y);
-        vertex.setIconKey("server");
-        vertex.setLabel(label);
-        vertex.setIpAddress(ipAddr);
-        vertex.setNodeID(nodeID);
-        addVertices(vertex);
-        return vertex;
-    }
-    */
-    
-    private Vertex addGroup(String groupId, String iconKey, String label) {
-        if (containsVertexId(groupId)) {
-            throw new IllegalArgumentException("A vertex or group with id " + groupId + " already exists: " + getVertex(TOPOLOGY_NAMESPACE_SIMPLE, groupId).toString());
-        }
-        s_log.debug("Adding a group: {}", groupId);
-        AbstractVertex vertex = new SimpleGroup(TOPOLOGY_NAMESPACE_SIMPLE, groupId);
-        vertex.setLabel(label);
-        vertex.setIconKey(iconKey);
-        addVertices(vertex);
-        return vertex;
-    }
-
-    /* (non-Javadoc)
-	 * @see org.opennms.features.topology.plugins.topo.simple.internal.EditableTopologyProvider#save(java.lang.String)
-	 */
     @Override
 	public void save(String filename) {
         List<WrappedVertex> vertices = new ArrayList<WrappedVertex>();
@@ -179,7 +148,14 @@ public class SimpleTopologyProvider extends AbstractTopologyProvider implements 
                     continue;
                 }
             }
-            SimpleLeafVertex newVertex = new SimpleLeafVertex(vertex.namespace, vertex.id, vertex.x, vertex.y);
+            AbstractVertex newVertex;
+            if (vertex.leaf) {
+                newVertex = new SimpleLeafVertex(vertex.namespace, vertex.id, vertex.x, vertex.y);
+            } else {
+                newVertex = new SimpleGroup(vertex.namespace, vertex.id);
+                if (vertex.x != null) newVertex.setX(vertex.x);
+                if (vertex.y != null) newVertex.setY(vertex.y);
+            }
             newVertex.setIconKey(vertex.iconKey);
             newVertex.setIpAddress(vertex.ipAddr);
             newVertex.setLabel(vertex.label);
@@ -220,8 +196,10 @@ public class SimpleTopologyProvider extends AbstractTopologyProvider implements 
         }
 
         for (WrappedVertex vertex: graph.m_vertices) {
-            LoggerFactory.getLogger(this.getClass()).debug("Setting parent of " + vertex + " to " + vertex.parent);
-            setParent(vertex, vertex.parent);
+            if (vertex.parent != null) {
+                LoggerFactory.getLogger(this.getClass()).debug("Setting parent of " + vertex + " to " + vertex.parent);
+                setParent(vertex, vertex.parent);
+            }
         }
     }
 
@@ -235,11 +213,5 @@ public class SimpleTopologyProvider extends AbstractTopologyProvider implements 
     @Override
     public void load(String filename) throws MalformedURLException, JAXBException {
         load(new File(filename).toURI());
-    }
-
-    @Override
-    public Vertex addGroup(String groupLabel, String groupIconKey) {
-        String nextGroupId = getNextGroupId();
-        return addGroup(nextGroupId, groupIconKey, groupLabel);
     }
 }

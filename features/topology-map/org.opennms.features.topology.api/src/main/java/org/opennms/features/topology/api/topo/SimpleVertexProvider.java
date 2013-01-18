@@ -264,6 +264,9 @@ public class SimpleVertexProvider implements VertexProvider {
 		fireVerticesRemoved(all);
 	}
 
+	/**
+	 * @deprecated You should search by the namespace and ID tuple instead
+	 */
 	@Override
 	public boolean containsVertexId(String id) {
 		return containsVertexId(new AbstractVertexRef(getVertexNamespace(), id));
