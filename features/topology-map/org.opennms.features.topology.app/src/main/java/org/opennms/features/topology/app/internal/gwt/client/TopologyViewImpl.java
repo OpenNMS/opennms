@@ -14,6 +14,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.EventTarget;
+import com.google.gwt.touch.client.Point;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Command;
@@ -258,6 +259,24 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
         D3.d3().select(getSVGViewPort()).attr("transform", transformVal);
         m_presenter.onScaleUpdate( transform.getA() );
         
+    }
+
+    @Override
+    public Point getCenterPos() {
+        Point point = new Point();
+        return point;
+    }
+
+    @Override
+    public int getPhysicalWidth() {
+        int leftMargin = 60;
+        int rightMargin = 21;
+        return getSVGElement().getParentElement().getOffsetWidth(); // - (leftMargin + rightMargin);
+    }
+
+    @Override
+    public int getPhysicalHeight() {
+        return getSVGElement().getParentElement().getOffsetHeight();
     }
 
 

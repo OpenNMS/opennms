@@ -8,6 +8,7 @@ import org.opennms.features.topology.app.internal.gwt.client.svg.SVGGElement;
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGMatrix;
 
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.touch.client.Point;
 import com.google.gwt.user.client.ui.Widget;
 
 public interface TopologyView<T> {
@@ -31,4 +32,7 @@ public interface TopologyView<T> {
     Element getMarqueeElement();
     void repaintNow(GWTGraph graph);
     SVGMatrix calculateNewTransform(GWTBoundingBox bound);
+    Point getCenterPos();
+    int getPhysicalWidth();
+    int getPhysicalHeight();
 }

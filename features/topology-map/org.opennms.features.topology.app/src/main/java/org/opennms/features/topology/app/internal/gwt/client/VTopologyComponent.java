@@ -245,7 +245,7 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 
                 @Override
                 public void call() {
-                    onScaleUpdate(scale);
+                    //onScaleUpdate(scale);
                 }
             });
             
@@ -736,7 +736,18 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
         //consoleLog("Bounding box :: x: " + graph.getBoundingBox().getX() + " y: " + graph.getBoundingBox().getY() + " width: " + graph.getBoundingBox().getWidth() + " height: " + graph.getBoundingBox().getHeight());
 		setGraph(graph);
         
-		
+		sendPhysicalDimensions();
+	}
+	
+	private void sendPhysicalDimensions() {
+	    int width = m_topologyView.getPhysicalWidth();
+	    int height = m_topologyView.getPhysicalHeight();
+	    Map<String, Object> dimensions = new HashMap<String, Object>();
+	    dimensions.put("width", width);
+	    dimensions.put("height", height);
+	    
+	    m_client.updateVariable(getPaintableId(), "mapPhysicalBounds", dimensions, true);
+	    
 	}
 
     private String minEndPoint(GWTEdge edge1) {
@@ -848,12 +859,17 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
     }
     
     private void setMapScaleNow(double scale) {
-        setMapScale(scale, true);
+        setMapScaleAndPos(scale, true);
     }
     
-    private void setMapScale(double scale, boolean immediate) {
+    private void setMapScaleAndPos(double scale, boolean immediate) {
         m_scale = scale;
-        m_client.updateVariable(m_paintableId, "mapScale", scale, immediate);
+        Point pos = m_topologyView.getCenterPos();
+        m_client.updateVariable(m_paintableId, "mapScale", scale, false);
+        m_client.updateVariable(m_paintableId, "clientX", pos.getX(), false);
+        m_client.updateVariable(m_paintableId, "clientY", pos.getY(), false);
+        
+        m_client.sendPendingVariableChanges();
     }
 
     @Override
