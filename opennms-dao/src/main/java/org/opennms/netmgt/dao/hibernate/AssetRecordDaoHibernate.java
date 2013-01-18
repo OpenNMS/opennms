@@ -61,7 +61,7 @@ public class AssetRecordDaoHibernate extends AbstractDaoHibernate<OnmsAssetRecor
 	 */
 	public OnmsAssetRecord findByNodeId(Integer id) {
 		return (OnmsAssetRecord) findUnique(
-				"from OnmsAssetRecord rec where rec.nodeId = ?", id);
+				"from OnmsAssetRecord rec where rec.node.id = ?", id);
 	}
 
 	/**
