@@ -202,7 +202,7 @@ public class JnaPinger implements Pinger {
 
 		final long threadId = JnaPingRequest.getNextTID();
 		for (int seqNum = 0; seqNum < count; seqNum++) {
-		    final JnaPingRequest request = new JnaPingRequest(host, m_pingerId, seqNum, threadId, timeout == 0? DEFAULT_TIMEOUT : timeout, DEFAULT_PACKET_SIZE, 0, cb);
+		    final JnaPingRequest request = new JnaPingRequest(host, m_pingerId, seqNum, threadId, timeout == 0? DEFAULT_TIMEOUT : timeout,0 , DEFAULT_PACKET_SIZE, cb);
 			m_pingTracker.sendRequest(request);
 			Thread.sleep(pingInterval);
 		}
