@@ -185,6 +185,7 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
     }
 
     private BoundingBox getBoundingBox() {
+        m_scale.setValue(m_viewManager.getScale());
         return m_viewManager.getCurrentBoundingBox();
     }
 
