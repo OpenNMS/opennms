@@ -45,8 +45,10 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
@@ -590,6 +592,7 @@ public class OnmsAssetRecord implements Serializable {
     }
 
     @Embedded
+    @XmlTransient
     public OnmsGeolocation getGeolocation() {
         return m_geolocation;
     }
@@ -1417,9 +1420,12 @@ public class OnmsAssetRecord implements Serializable {
      * PROXY METHOD: do not delete until {@link OnmsGeolocation} is truly a separate table, or projection mapping will fail.
      */
     @Transient
+    @Deprecated
+    @XmlElement
     public String getAddress1() {
-        return m_geolocation.getAddress1();
+        return m_geolocation == null? null : m_geolocation.getAddress1();
     }
+    @Deprecated
     public void setAddress1(final String address1) {
         m_geolocation.setAddress1(address1);
     }
@@ -1428,9 +1434,12 @@ public class OnmsAssetRecord implements Serializable {
      * PROXY METHOD: do not delete until {@link OnmsGeolocation} is truly a separate table, or projection mapping will fail.
      */
     @Transient
+    @Deprecated
+    @XmlElement
     public String getAddress2() {
-        return m_geolocation.getAddress2();
+        return m_geolocation == null? null : m_geolocation.getAddress2();
     }
+    @Deprecated
     public void setAddress2(final String address2) {
         m_geolocation.setAddress2(address2);
     }
@@ -1439,9 +1448,12 @@ public class OnmsAssetRecord implements Serializable {
      * PROXY METHOD: do not delete until {@link OnmsGeolocation} is truly a separate table, or projection mapping will fail.
      */
     @Transient
+    @Deprecated
+    @XmlElement
     public String getCity() {
-        return m_geolocation.getCity();
+        return m_geolocation == null? null : m_geolocation.getCity();
     }
+    @Deprecated
     public void setCity(final String city) {
         m_geolocation.setCity(city);
     }
@@ -1450,9 +1462,12 @@ public class OnmsAssetRecord implements Serializable {
      * PROXY METHOD: do not delete until {@link OnmsGeolocation} is truly a separate table, or projection mapping will fail.
      */
     @Transient
+    @Deprecated
+    @XmlElement
     public String getState() {
-        return m_geolocation.getState();
+        return m_geolocation == null? null : m_geolocation.getState();
     }
+    @Deprecated
     public void setState(final String state) {
         m_geolocation.setState(state);
     }
@@ -1461,9 +1476,12 @@ public class OnmsAssetRecord implements Serializable {
      * PROXY METHOD: do not delete until {@link OnmsGeolocation} is truly a separate table, or projection mapping will fail.
      */
     @Transient
+    @Deprecated
+    @XmlElement
     public String getZip() {
-        return m_geolocation.getZip();
+        return m_geolocation == null? null : m_geolocation.getZip();
     }
+    @Deprecated
     public void setZip(final String zip) {
         m_geolocation.setZip(zip);
     }
@@ -1472,9 +1490,12 @@ public class OnmsAssetRecord implements Serializable {
      * PROXY METHOD: do not delete until {@link OnmsGeolocation} is truly a separate table, or projection mapping will fail.
      */
     @Transient
+    @Deprecated
+    @XmlElement
     public String getCoordinates() {
-        return m_geolocation.getCoordinates();
+        return m_geolocation == null? null : m_geolocation.getCoordinates();
     }
+    @Deprecated
     public void setCoordinates(final String coordinates) {
         m_geolocation.setCoordinates(coordinates);
     }

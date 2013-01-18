@@ -31,9 +31,6 @@ import org.opennms.features.geocoder.GeocoderService;
 import org.opennms.features.vaadin.nodemaps.ui.OpenlayersWidgetComponent;
 import org.opennms.netmgt.dao.AssetRecordDao;
 import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.model.OnmsAssetRecord;
-import org.opennms.netmgt.model.OnmsGeolocation;
-import org.opennms.netmgt.model.OnmsNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,12 +76,6 @@ import com.vaadin.ui.Window;
 @SuppressWarnings("serial")
 public class NodeMapsApplication extends Application {
 
-    /** The Constant GEOCODER_REQUEST_PREFIX_FOR_XML. */
-    private static final String GEOCODER_REQUEST_PREFIX_FOR_XML = "http://maps.google.com/maps/api/geocode/xml";
-
-    /** The Constant NODE_CLASS. */
-    private static final String NODE_STYLE = "nodeCircle";
-
     private NodeDao m_nodeDao;
 
     private Window m_window;
@@ -121,6 +112,8 @@ public class NodeMapsApplication extends Application {
      */
     @Override
     public void init() {
+        m_log.debug("initializing");
+
         final OpenlayersWidgetComponent openlayers = new OpenlayersWidgetComponent();
         openlayers.setNodeDao(m_nodeDao);
         openlayers.setAssetRecordDao(m_assetDao);
@@ -135,142 +128,6 @@ public class NodeMapsApplication extends Application {
         setMainWindow(m_window);
 
         m_rootLayout.addComponent(openlayers, "top: 0px; left: 0px; right:0px; bottom:0px;");
-    }
-
-    /**
-     * Gets the point from address.
-     * <p>
-     * This method will use the Google API to retrieve the geolocation
-     * coordinates for a given address.
-     * </p>
-     * <p>
-     * Source inspired on:<br/>
-     * http://code.google.com/p/gmaps-samples/source/browse/trunk/geocoder/
-     * java/GeocodingSample.java?r=2476
-     * </p>
-     * 
-     * @param address the address
-     * @return the point from address
-     */
-    /*
-     * TODO We can create a provisioning adapter in order to populate the node
-     * assets with the coordinates based on the current address configured on
-     * the database.
-     */
-    /*
-    private PointVector getPointFromAddress(OnmsNode onmsNode) {
-        final String address = getNodeAddress(onmsNode);
-        if (address == null) {
-            LogUtils.debugf(this, "Node %s does not contain any address information.", onmsNode.getLabel());
-            return null;
-        }
-        try {
-            LogUtils.debugf(this, "Getting geolocation for node %s, located on %s", onmsNode.getLabel(), address);
-            URL url = new URL(GEOCODER_REQUEST_PREFIX_FOR_XML + "?address=" + URLEncoder.encode(address, "UTF-8") + "&sensor=false");
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            Document geocoderResultDocument = null;
-            try {
-                conn.connect();
-                InputSource geocoderResultInputSource = new InputSource(conn.getInputStream());
-                geocoderResultDocument = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(geocoderResultInputSource);
-            } finally {
-                conn.disconnect();
-            }
-            XPath xpath = XPathFactory.newInstance().newXPath();
-            NodeList resultNodeList = null;
-            resultNodeList = (NodeList) xpath.evaluate("/GeocodeResponse/result[1]/geometry/location/*", geocoderResultDocument, XPathConstants.NODESET);
-            double lat = Double.NaN;
-            double lng = Double.NaN;
-            for (int i = 0; i < resultNodeList.getLength(); ++i) {
-                Node node = resultNodeList.item(i);
-                if ("lat".equals(node.getNodeName())) {
-                    lat = Double.parseDouble(node.getTextContent());
-                }
-                if ("lng".equals(node.getNodeName())) {
-                    lng = Double.parseDouble(node.getTextContent());
-                }
-            }
-            if (lat == Double.NaN || lng == Double.NaN) {
-                LogUtils.warnf(this, "Couldn't find the coordinates for node %s located on %s", onmsNode.getLabel(), address);
-                return null;
-            }
-            LogUtils.infof(this, "Found geolocation coordinates for node %s at (%s, %s)", onmsNode.getLabel(), lng, lat);
-            return new PointVector(lng, lat);
-        } catch (Exception e) {
-            LogUtils.errorf(this, e, "An error occured when trying to get coordinates for %s.", address);
-        }
-        return null;
-    }
-    */
-
-    /**
-     * Creates the node layer.
-     * 
-     * @param map the map
-     * @return the vector layer
-     */
-    /*
-    private VectorLayer createNodeLayer(final OnmsOpenLayersMap map) {
-        // Creating Vecctor Layers
-        final VectorLayer nodeLayer = new VectorLayer();
-        nodeLayer.setDisplayName("Nodes Layer");
-        nodeLayer.setSelectionMode(SelectionMode.SIMPLE);
-
-        // Configuring Node Styles
-        Style nodeCircle = new Style(NODE_STYLE);
-        nodeCircle.setPointRadius(20);
-        nodeCircle.setFillColor("#000");
-        nodeCircle.setFillOpacity(0.5);
-        nodeLayer.setStyleMap(new StyleMap(nodeCircle));
-
-        // Configuring Layer Listeners to display a PopUp for Node Vectors.
-        nodeLayer.addListener(new VectorSelectedListener() {
-            public void vectorSelected(VectorSelectedEvent event) {
-                if (event.getVector() instanceof PointVector) {
-                    final PointVector v = (PointVector) event.getVector();
-                    final Popup popup = new Popup(v.getPoint().getLon(), v.getPoint().getLat(), v.getDescription());
-                    popup.addListener(new CloseListener() {
-                        public void onClose(CloseEvent event) {
-                            map.removeComponent(popup);
-                            nodeLayer.getSelectedVector().setRenderIntent(NODE_STYLE);
-                            nodeLayer.setSelectedVector(null);
-                        }
-                    });
-                    map.addPopup(popup);
-                }
-            }
-        });
-
-        return nodeLayer;
-    }
-	*/
-    
-    /**
-     * Gets the node description.
-     * 
-     * @param node the OpenNMS Node
-     * @return the node description
-     */
-    private String getNodeDescription(OnmsNode node) {
-        StringBuffer sb = new StringBuffer(node.getLabel());
-        sb.append("<br/>foreignSource=").append(node.getForeignSource());
-        sb.append("<br/>foreignId=").append(node.getForeignId());
-        return sb.toString();
-    }
-
-    /**
-     * Gets the node address.
-     * 
-     * @param node the OpenNMS Node
-     * @return the node address
-     */
-    private String getNodeAddress(final OnmsNode node) {
-        if (node == null || node.getAssetRecord() == null) return null;
-        final OnmsAssetRecord assetRecord = node.getAssetRecord();
-        final OnmsGeolocation geolocation = assetRecord.getGeolocation();
-
-        if (geolocation == null) return "";
-        return geolocation.asAddressString();
     }
 
 }
