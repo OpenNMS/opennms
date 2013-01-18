@@ -58,6 +58,7 @@ import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
 import org.apache.http.NameValuePair;
+import org.apache.http.Header;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.HttpClient;
@@ -488,7 +489,9 @@ public class HttpCollector implements ServiceCollector {
             final AttributeGroupType groupType = new AttributeGroupType(collectionSet.getUriDef().getName(),"all");
 
             final List<Locale> locales = new ArrayList<Locale>();
-            locales.add(responseLocale);
+            if (responseLocale != null) {
+                locales.add(responseLocale);
+            }
             locales.add(Locale.getDefault());
             if (Locale.getDefault() != Locale.ENGLISH) {
                 locales.add(Locale.ENGLISH);
@@ -510,6 +513,7 @@ public class HttpCollector implements ServiceCollector {
                     for (final Locale locale : locales) {
                         try {
                             num = NumberFormat.getNumberInstance(locale).parse(value);
+                            log().debug("processResponse: found a parsable number with locale \"" + locale + "\".");
                             break;
                         } catch (final ParseException e) {
                             log().error("attribute "+attribDef.getAlias()+" failed to match a parsable number with locale \"" + locale + "\"! Matched \""+value+"\" instead.");
@@ -569,17 +573,44 @@ public class HttpCollector implements ServiceCollector {
         }
     }
 
-    private void persistResponse(final HttpCollectionSet collectionSet, HttpCollectionResource collectionResource, final HttpClient client, final HttpResponse response) throws IOException {
-        String responseString = EntityUtils.toString(response.getEntity());
+    private void persistResponse(final HttpCollectionSet collectionSet, final HttpCollectionResource collectionResource, final HttpClient client, final HttpResponse response) throws IOException {
+        final String responseString = EntityUtils.toString(response.getEntity());
         if (responseString != null && !"".equals(responseString)) {
-            List<HttpCollectionAttribute> attributes = processResponse(response.getLocale(), responseString, collectionSet, collectionResource);
+            // Get response's locale from the Content-Language header if available
+            Locale responseLocale = null;
+            final Header[] headers = response.getHeaders("Content-Language");
+            if (headers != null) {
+                log().debug("doCollection: Trying to devise response's locale from Content-Language header.");
+                if (headers.length == 1) {
+                    if (headers[0].getValue().split(",").length == 1) {
+                        final String[] values = headers[0].getValue().split("-");
+                        log().debug("doCollection: Found one Content-Language header with value: " + headers[0].getValue());
+                        switch (values.length) {
+                            case 1:
+                                responseLocale = new Locale(values[0]);
+                                break;
+                            case 2:
+                                responseLocale = new Locale(values[0], values[1]);
+                                break;
+                            default:
+                                log().warn("doCollection: Ignoring Content-Language header with value " + headers[0].getValue() + ". No support for more than 1 language subtag!");
+                        }
+                    } else {
+                        log().warn("doCollection: Multiple languages specified. That doesn't make sense. Ignoring...");
+                    }
+                } else {
+                    log().warn("doCollection: More than 1 Content-Language headers received. Ignoring them!");
+                }
+            }
+
+            List<HttpCollectionAttribute> attributes = processResponse(responseLocale, responseString, collectionSet, collectionResource);
 
             if (attributes.isEmpty()) {
                 log().warn("doCollection: no attributes defined by the response: " + responseString.trim());
                 throw new HttpCollectorException("No attributes specified were found: ");
             }
 
-            //put the results into the collectionset for later
+            // put the results into the collectionset for later
             collectionSet.storeResults(attributes, collectionResource);
         }
     }

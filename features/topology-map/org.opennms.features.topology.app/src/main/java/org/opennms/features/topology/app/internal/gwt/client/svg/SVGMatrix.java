@@ -87,11 +87,11 @@ public class SVGMatrix extends JavaScriptObject {
     }-*/;
 
     public final native int getX() /*-{
-        return this.x;
+        return this.e;
     }-*/;
 
     public final native int getY() /*-{
-        return this.y;
+        return this.f;
     }-*/;
 
 }

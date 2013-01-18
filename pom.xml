@@ -464,6 +464,14 @@
      <plugin>
        <groupId>org.apache.maven.plugins</groupId>
        <artifactId>maven-eclipse-plugin</artifactId>
+       <configuration>
+         <additionalConfig>
+           <file>
+             <name>.settings/org.eclipse.jdt.core.prefs</name>
+             <url>https://opennms.svn.sourceforge.net/svnroot/opennms/opennms/trunk/src/main/eclipse/org.eclipse.jdt.core.prefs</url>
+           </file>
+         </additionalConfig>
+       </configuration>
      </plugin>
      <plugin>
        <groupId>org.ops4j</groupId>
@@ -774,10 +782,15 @@
     <!-- dependency versions -->
     <activemqVersion>5.6.0</activemqVersion>
     <commonsBeanutilsVersion>1.8.3</commonsBeanutilsVersion>
+    <commonsCodecVersion>1.7</commonsCodecVersion>
     <commonsCollectionsVersion>3.2.1</commonsCollectionsVersion>
+    <commonsLangVersion>2.6</commonsLangVersion>
+    <commonsLoggingVersion>1.1.1</commonsLoggingVersion>
     <commonsValidatorVersion>1.3.1</commonsValidatorVersion>
     <gwtVersion>2.3.0</gwtVersion>
     <gwtPluginVersion>2.3.0-1</gwtPluginVersion>
+    <httpcoreVersion>4.1.4</httpcoreVersion>
+    <httpclientVersion>4.1.3</httpclientVersion>
     <jasperreportsVersion>3.7.6</jasperreportsVersion>
     <jaxbVersion>2.1.7</jaxbVersion>
     <jettyVersion>7.6.7.v20120910</jettyVersion>
@@ -805,7 +818,7 @@
     <!-- moved here from topology features -->
     <jungVersion>2.0.1</jungVersion>
     <vaadinVersion>6.8.2</vaadinVersion>
-    <paxVaadinVersion>0.1.0-ONMS-20121206</paxVaadinVersion>
+    <paxVaadinVersion>0.1.0-ONMS-20121218</paxVaadinVersion>
 
   </properties>
 
@@ -1097,6 +1110,21 @@
         <artifactId>org.opennms.core.test-api.xml</artifactId>
         <version>${project.version}</version>
         <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features.geocoder</groupId>
+        <artifactId>org.opennms.features.geocoder.api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features.geocoder</groupId>
+        <artifactId>org.opennms.features.geocoder.google</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features.geocoder</groupId>
+        <artifactId>org.opennms.features.geocoder.nominatim</artifactId>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.opennms.features</groupId>
@@ -2034,7 +2062,7 @@
       <dependency>
         <groupId>commons-codec</groupId>
         <artifactId>commons-codec</artifactId>
-        <version>1.5</version>
+        <version>${commonsCodecVersion}</version>
       </dependency>
       <dependency>
         <groupId>commons-collections</groupId>
@@ -2065,12 +2093,12 @@
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpcore</artifactId>
-        <version>4.1.3</version>
+        <version>${httpcoreVersion}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpclient</artifactId>
-        <version>4.1.2</version>
+        <version>${httpclientVersion}</version>
       </dependency>
       <dependency>
         <groupId>commons-io</groupId>
@@ -2080,12 +2108,12 @@
       <dependency>
         <groupId>commons-lang</groupId>
         <artifactId>commons-lang</artifactId>
-        <version>2.6</version>
+        <version>${commonsLangVersion}</version>
       </dependency>
       <dependency>
         <groupId>commons-logging</groupId>
         <artifactId>commons-logging</artifactId>
-        <version>1.1.1</version>
+        <version>${commonsLoggingVersion}</version>
       </dependency>
       <dependency>
         <groupId>commons-net</groupId>
@@ -2122,6 +2150,11 @@
         <groupId>com.google.collections</groupId>
         <artifactId>google-collections</artifactId>
         <version>1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava</artifactId>
+        <version>10.0.1</version>
       </dependency>
       <dependency>
         <groupId>com.google.gwt</groupId>

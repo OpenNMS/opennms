@@ -26,6 +26,7 @@
     <module>springframework-security</module>
     <module>system-report</module>
     <module>ticketing</module>
+    <module>geocoder</module>
 
     <!-- SNMP MIB Parser and Event/Collection Configuration -->
     <module>vaadin-snmp-events-and-metrics</module>
@@ -33,8 +34,9 @@
     <!-- Near Real Time Graphing -->
     <module>nrtg</module>
 
-    <!-- Topoology Map -->
+    <!-- Topology Map -->
     <module>topology-map</module>
+    <module>vaadin-node-maps</module>
 
     <!-- SMS monitoring -->
     <module>phonebook</module>

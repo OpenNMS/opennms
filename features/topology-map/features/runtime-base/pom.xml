@@ -97,6 +97,12 @@
       <artifactId>adapter</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <!-- topology HistoryManager -->
+    <dependency>
+      <groupId>org.opennms.features.topology.plugins.topo</groupId>
+      <artifactId>history</artifactId>
+      <version>${project.version}</version>
+    </dependency>
     
     <!-- plugins -->
     <dependency>

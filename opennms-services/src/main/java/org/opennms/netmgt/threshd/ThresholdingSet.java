@@ -42,6 +42,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.ThreshdConfigFactory;
@@ -213,13 +214,16 @@ public class ThresholdingSet {
                 for(String key : entityMap.keySet()) {
                     for (ThresholdEntity thresholdEntity : entityMap.get(key)) {
                         Collection<String> requiredDatasources = thresholdEntity.getRequiredDatasources();
-                        if (requiredDatasources.contains(attributeName))
+                        if (requiredDatasources.contains(attributeName)) {
                             ok = true;
+                            LogUtils.debugf(ThresholdingSet.class, "hasThresholds: %s@%s? %s", resourceTypeName, attributeName, ok);
+                        } else {
+                            LogUtils.tracef(ThresholdingSet.class, "hasThresholds: %s@%s? %s", resourceTypeName, attributeName, ok);
+                        }
                     }
                 }
             }
         }
-        log().debug("hasThresholds: " + resourceTypeName + "@" + attributeName + "? " + ok);
         return ok;
     }
 
@@ -442,9 +446,7 @@ public class ThresholdingSet {
     }
 
     private static Map<String, Set<ThresholdEntity>> getEntityMap(ThresholdGroup thresholdGroup, String resourceType) {
-        if (log().isDebugEnabled()) {
-            log().debug("getEntityMap: checking if the resourceType '" + resourceType + "' exists on threshold group " + thresholdGroup);
-        }
+        LogUtils.tracef(ThresholdingSet.class, "getEntityMap: checking if the resourceType '%s' exists on threshold group %s", resourceType, thresholdGroup);
         Map<String, Set<ThresholdEntity>> entityMap = null;
         if ("node".equals(resourceType)) {
             entityMap = thresholdGroup.getNodeResourceType().getThresholdMap();
@@ -453,12 +455,12 @@ public class ThresholdingSet {
         } else {
             Map<String, ThresholdResourceType> typeMap = thresholdGroup.getGenericResourceTypeMap();
             if (typeMap == null) {
-                log().error("getEntityMap: Generic Resource Type map was null (this shouldn't happen) for threshold group " + thresholdGroup.getName());
+                LogUtils.errorf(ThresholdingSet.class, "getEntityMap: Generic Resource Type map was null (this shouldn't happen) for threshold group %s", thresholdGroup.getName());
                 return null;
             }
             ThresholdResourceType thisResourceType = typeMap.get(resourceType);
             if (thisResourceType == null) {
-                log().info("getEntityMap: No thresholds configured for resource type " + resourceType + " in threshold group " + thresholdGroup.getName() + ". Skipping this group.");
+                LogUtils.infof(ThresholdingSet.class, "getEntityMap: No thresholds configured for resource type '%s' in threshold group %s. Skipping this group.", resourceType, thresholdGroup.getName());
                 return null;
             }
             entityMap = thisResourceType.getThresholdMap();

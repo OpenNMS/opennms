@@ -35,6 +35,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.opennms.features.topology.api.BoundingBox;
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.GraphContainer.ChangeListener;
@@ -60,8 +61,8 @@ import com.vaadin.ui.ClientWidget;
 public class TopologyComponent extends AbstractComponent implements ChangeListener, ValueChangeListener {
 
     private static final long serialVersionUID = 1L;
-	
-	public class MapManager {
+    
+    public class MapManager {
 
         private int m_clientX = 0;
         private int m_clientY = 0;
@@ -85,36 +86,6 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
         
     }
 	
-	private class PanToSelectionManager{
-	    
-	    private boolean m_vertexClickCheck = false;
-	    private boolean m_panToSelection = false;
-	    
-	    public PanToSelectionManager() {};
-	    
-	    public void verticesSelectedByMap() {
-	        m_vertexClickCheck = true;
-	    }
-	    
-	    public boolean isPanToSelection() {
-	        return m_panToSelection;
-	    }
-	    
-	    public void setPanToSelection(boolean panTo) {
-	        if(!m_vertexClickCheck) {
-	            m_panToSelection = panTo;
-	        }else {
-	            m_panToSelection = false;
-	        }
-	    }
-
-        public void reset() {
-            m_vertexClickCheck = false;
-            m_panToSelection = false;
-        }
-	    
-	}
-    
 	private GraphContainer m_graphContainer;
 	private Property m_scale;
     private Graph m_graph;
@@ -125,7 +96,7 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
     private boolean m_fitToView = true;
     private boolean m_scaleUpdateFromUI = false;
     private String m_activeTool = "pan";
-    private PanToSelectionManager m_panToManager = new PanToSelectionManager();
+    private BoundingBox m_boundingBox = null;
 
 	public TopologyComponent(GraphContainer dataSource, Property scale) {
 		setGraph(dataSource.getGraph());
@@ -136,8 +107,10 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
 			
 			@Override
 			public void selectionChanged(SelectionManager selectionManager) {
-				requestRepaint();
+			    computeBoundsForSelected(selectionManager);
+			    requestRepaint();
 			}
+			
 		});
 
 		m_graphContainer.addChangeListener(this);
@@ -169,17 +142,13 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
     public void paintContent(PaintTarget target) throws PaintException {
         super.paintContent(target);
         target.addAttribute("scale", (Double)m_scale.getValue());
-        target.addAttribute("clientX", m_mapManager.getClientX());
-        target.addAttribute("clientY", m_mapManager.getClientY());
-        target.addAttribute("semanticZoomLevel", m_graphContainer.getSemanticZoomLevel());
         target.addAttribute("activeTool", m_activeTool);
         
-        boolean panToSelection = getPanToSelection();
-        target.addAttribute("panToSelection", panToSelection);
-        m_panToManager.reset();
-        
-        target.addAttribute("fitToView", isFitToView());
-        setFitToView(false);
+        BoundingBox boundingBox = getBoundingBox();
+        target.addAttribute("boundX", boundingBox.getX());
+        target.addAttribute("boundY", boundingBox.getY());
+        target.addAttribute("boundWidth", boundingBox.getWidth());
+        target.addAttribute("boundHeight", boundingBox.getHeight());
         
 		Graph graph = getGraph();
 
@@ -196,16 +165,20 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
         
     }
 
+    private BoundingBox getBoundingBox() {
+        if(m_boundingBox  == null) {
+            return m_graphContainer.getGraph().getLayout().getBounds();
+        } else {
+            return m_boundingBox;
+        }
+    }
+
 	public boolean isFitToView() {
         return m_fitToView;
     }
     
     public void setFitToView(boolean fitToView) {
         m_fitToView  = fitToView;
-    }
-
-    private boolean getPanToSelection() {
-        return m_panToManager.isPanToSelection();
     }
 
     /**
@@ -231,7 +204,6 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
         }
         
         if(variables.containsKey("clickedVertex")) {
-            m_panToManager.verticesSelectedByMap();
             String vertexKey = (String) variables.get("clickedVertex");
             if((variables.containsKey("shiftKeyPressed") && (Boolean) variables.get("shiftKeyPressed") == true) 
                     || variables.containsKey("metaKeyPressed") && (Boolean) variables.get("metaKeyPressed") == true
@@ -244,7 +216,6 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
         }
         
         if(variables.containsKey("marqueeSelection")) {
-            m_panToManager.verticesSelectedByMap();
             String[] vertexKeys = (String[]) variables.get("marqueeSelection");
             if(variables.containsKey("shiftKeyPressed") && (Boolean) variables.get("shiftKeyPressed") == true) {
             	addVerticesToSelection(vertexKeys);
@@ -255,7 +226,6 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
         }
         
         if(variables.containsKey("updatedVertex")) {
-            m_panToManager.verticesSelectedByMap();
             String vertexUpdate = (String) variables.get("updatedVertex");
             updateVertex(vertexUpdate);
             
@@ -264,7 +234,6 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
         }
         
         if(variables.containsKey("updateVertices")) {
-            m_panToManager.verticesSelectedByMap();
             String[] vertices = (String[]) variables.get("updateVertices");
             for(String vUpdate : vertices) {
                 updateVertex(vUpdate);
@@ -309,7 +278,6 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
             if (type.toLowerCase().equals("vertex")) {
             	String targetKey = (String)props.get("target");
             	target = getGraph().getVertexByKey(targetKey);
-            	m_panToManager.verticesSelectedByMap();
             	getSelectionManager().setSelectedVertexRefs(Arrays.asList((Vertex) target));
             } else if (type.toLowerCase().equals("edge")) {
             	String targetKey = (String)props.get("target");
@@ -416,6 +384,8 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
 	public void graphChanged(GraphContainer container) {
 		setGraph(container.getGraph());
 		setFitToView(true);
+		//re compute bounds when graph has changed if there are selected ones
+		computeBoundsForSelected(container.getSelectionManager());
 		requestRepaint();
 	}
 
@@ -431,6 +401,7 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
         }else {
             setScaleUpdateFromUI(false);
         }
+        
     }
 
     public ContextMenuHandler getContextMenuHandler() {
@@ -456,8 +427,21 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
         }
     }
 
-    public void setPanToSelection(boolean bool) {
-        m_panToManager.setPanToSelection(bool);
+    private void computeBoundsForSelected(SelectionManager selectionManager) {
+        if(selectionManager.getSelectedVertexRefs().size() > 0) {
+            Collection<? extends Vertex> visible = m_graphContainer.getGraph().getDisplayVertices();
+            Collection<VertexRef> selected = selectionManager.getSelectedVertexRefs();
+            Collection<VertexRef> vRefs = new ArrayList<VertexRef>();
+            for(VertexRef vRef : selected) {
+                if(visible.contains(vRef)) {
+                    vRefs.add(vRef);
+                }
+            }
+            m_boundingBox = m_graphContainer.getGraph().getLayout().computeBoundingBox(vRefs);
+        	
+        }else {
+            m_boundingBox = null;
+        }
     }
 
 }

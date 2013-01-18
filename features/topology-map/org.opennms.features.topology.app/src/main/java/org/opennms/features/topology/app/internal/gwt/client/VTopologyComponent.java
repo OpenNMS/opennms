@@ -235,48 +235,21 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 			edgeSelection.enter().create(GWTEdge.create()).call(setupEdgeEventHandlers());
 			
             //Scaling and Fit to Zoom transitions
-            if(!graph.isFitToView() && !graph.isPanToSelection()) {
-                
-                SVGMatrix transform = topologyView.calculateNewTransform(graph.getOldScale(), graph.getScale(), graph.getClientX(), graph.getClientY());
-                
-                D3.d3().select(topologyView.getSVGViewPort())
-                .transition().duration(1000)
-                .attr("transform", matrixTransform(transform) )
-                .selectAll(GWTEdge.SVG_EDGE_ELEMENT).style("stroke-width", GWTEdge.EDGE_WIDTH/transform.getA() + "px").transition().delay(750).duration(500).attr("opacity", "1").transition();
+			SVGMatrix transform = topologyView.calculateNewTransform(graph.getBoundingBox());
+			final double scale = transform.getA();
+            graph.setScale(scale);
             
-            } else if(graph.isPanToSelection()) {
-                
-                final BoundingRect rect = createBoundingRect(graph.getVertices(), false);
-                SVGMatrix transform = topologyView.calculateZoomToFit(rect);
-                final double scale = transform.getA();
-                graph.setScale(scale);
-                
-                D3.d3().select(topologyView.getSVGViewPort()).transition().duration(2000).attr("transform", matrixTransform(transform)).each("end", new AnonymousFunc() {
-                    
-                    @Override
-                    public void call() {
-                        onScaleUpdate(scale);
-                    }
-                });
-                
-                D3.d3().selectAll(GWTEdge.SVG_EDGE_ELEMENT).transition().delay(1000).duration(500).attr("opacity", "1").style("stroke-width", GWTEdge.EDGE_WIDTH / scale + "px");
-            }else if(graph.isFitToView()) {
-                
-                final BoundingRect rect = createBoundingRect(graph.getVertices(), true);
-                SVGMatrix transform = topologyView.calculateZoomToFit(rect);
-                final double scale = transform.getA();
-                graph.setScale(scale);
-                
-                D3.d3().select(topologyView.getSVGViewPort()).transition().duration(2000).attr("transform", matrixTransform(transform)).each("end", new AnonymousFunc() {
-                    
-                    @Override
-                    public void call() {
-                        onScaleUpdate(scale);
-                    }
-                });
-                
-                D3.d3().selectAll(GWTEdge.SVG_EDGE_ELEMENT).attr("opacity", "0").transition().delay(1000).duration(500).attr("opacity", "1").style("stroke-width", GWTEdge.EDGE_WIDTH / scale + "px");
-            }
+            D3.d3().select(topologyView.getSVGViewPort())
+            .transition().duration(1000)
+            .attr("transform", matrixTransform(transform) ).each("end",new AnonymousFunc() {
+
+                @Override
+                public void call() {
+                    onScaleUpdate(scale);
+                }
+            });
+            
+            D3.d3().selectAll(GWTEdge.SVG_EDGE_ELEMENT).style("stroke-width", GWTEdge.EDGE_WIDTH/transform.getA() + "px").transition().delay(750).duration(500).attr("opacity", "1").transition();
             
 		}
 		
@@ -752,12 +725,15 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 		    }
 		}
         
+        int x = uidl.getIntAttribute("boundX");
+        int y = uidl.getIntAttribute("boundY");
+        int width = uidl.getIntAttribute("boundWidth");
+        int height = uidl.getIntAttribute("boundHeight");
+        
         graph.setScale(uidl.getDoubleAttribute("scale"));
         graph.setOldScale(m_graph.getScale());
-        graph.setClientX(uidl.getIntAttribute("clientX"));
-        graph.setClientY(uidl.getIntAttribute("clientY"));
-        graph.setPanToSelection(uidl.getBooleanAttribute("panToSelection"));
-        graph.setFitToView(uidl.getBooleanAttribute("fitToView"));
+        graph.setBoundingBox(GWTBoundingBox.create(x, y, width, height));
+        //consoleLog("Bounding box :: x: " + graph.getBoundingBox().getX() + " y: " + graph.getBoundingBox().getY() + " width: " + graph.getBoundingBox().getWidth() + " height: " + graph.getBoundingBox().getHeight());
 		setGraph(graph);
         
 		

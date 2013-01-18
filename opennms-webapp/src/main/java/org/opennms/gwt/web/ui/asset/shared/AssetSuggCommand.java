@@ -126,7 +126,9 @@ public class AssetSuggCommand implements IsSerializable {
 
 	private Set<String> m_vendorPhone;
 
-	private Set<String> m_zip;
+        private Set<String> m_zip;
+
+        private Set<String> m_coordinates;
 
 	public AssetSuggCommand() {
 		m_additionalhardware = new TreeSet<String>();
@@ -170,7 +172,8 @@ public class AssetSuggCommand implements IsSerializable {
 		m_vendor = new TreeSet<String>();
 		m_vendorFax = new TreeSet<String>();
 		m_vendorPhone = new TreeSet<String>();
-		m_zip = new TreeSet<String>();
+                m_zip = new TreeSet<String>();
+                m_coordinates = new TreeSet<String>();
 		initUnchangedEntry();
 	}
 
@@ -426,6 +429,12 @@ public class AssetSuggCommand implements IsSerializable {
 		}
 	}
 
+	public void addCoordinates(String coordinates) {
+	        if ((coordinates != null) && !"".equals(coordinates)) {
+	            m_coordinates.add(coordinates);
+	        }
+	}
+
 	public Collection<String> getAdditionalhardware() {
 		return m_additionalhardware;
 	}
@@ -590,9 +599,13 @@ public class AssetSuggCommand implements IsSerializable {
 		return m_vendorPhone;
 	}
 
-	public Collection<String> getZip() {
-		return m_zip;
-	}
+        public Collection<String> getZip() {
+            return m_zip;
+    }
+
+        public Collection<String> getCoordinates() {
+            return m_coordinates;
+    }
 
 	private void initUnchangedEntry() {
 		m_additionalhardware.add("");
@@ -636,6 +649,7 @@ public class AssetSuggCommand implements IsSerializable {
 		m_vendor.add("");
 		m_vendorFax.add("");
 		m_vendorPhone.add("");
-		m_zip.add("");
+                m_zip.add("");
+                m_coordinates.add("");
 	}
 }

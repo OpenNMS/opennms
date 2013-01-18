@@ -103,7 +103,11 @@ public class OsgidTest implements InitializingBean {
 	@After
 	public void tearDown() throws Exception {
 		// Clean up the Karaf module cache
-		FileUtils.deleteDirectory(new File(m_daemon.getHomeDirectory(), "data"));
+		try {
+			FileUtils.deleteDirectory(new File(m_daemon.getHomeDirectory(), "data"));
+		} catch(Exception e) {
+			System.err.println("Couldn't delete data directory" + e);
+		}
 	}
 
 	@Override

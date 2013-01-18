@@ -142,12 +142,12 @@ public class WmiPlugin extends AbstractPlugin {
             
             if (qualifiers.get("password") != null) {
                 String pass = ParameterMap.getKeyedString(qualifiers, "password", agentConfig.getPassword());
-                agentConfig.setUsername(pass);
+                agentConfig.setPassword(pass);
             }
             
             if (qualifiers.get("domain") != null) {
                 String domain = ParameterMap.getKeyedString(qualifiers, "domain", agentConfig.getDomain());
-                agentConfig.setUsername(domain);
+                agentConfig.setDomain(domain);
             }
             
             matchType = ParameterMap.getKeyedString(qualifiers, "matchType", DEFAULT_WMI_MATCH_TYPE);
