@@ -42,7 +42,7 @@ public final class GWTGraph extends JavaScriptObject {
     
     public static final native GWTGraph create() /*-{
     	return { "vertices":[], "edges":[], "idToVMap":{}, 
-    	         "scale":0, "oldScale":0, "clientX":0, "clientY":0, 
+    	         "clientX":0, "clientY":0, 
     	         "viewTransformation":{}, "panToSelection":false,
     	         "fitToView":false, "boundingBox":{"x":0, "y":0, "width":0, "height":0}};
 	}-*/;
@@ -124,21 +124,6 @@ public final class GWTGraph extends JavaScriptObject {
 	public GWTVertex getVertex(String vertexKey) {
 		return get(vertexKey);
 	}
-
-    public native double getScale() /*-{
-        return this.scale;
-    }-*/;
-
-    public native void setScale(double scale) /*-{
-        if(this.scale != scale) {
-            this.oldScale = this.scale;
-            this.scale = scale;
-        }
-    }-*/;
-    
-    public native double getOldScale() /*-{
-        return this.oldScale;
-    }-*/;
 
     public native void setClientX(int clientX) /*-{
         this.clientX = clientX;

@@ -38,7 +38,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.opennms.features.topology.app.internal.gwt.client.VTopologyComponent.TopologyViewRenderer;
-import org.opennms.features.topology.app.internal.gwt.client.d3.AnonymousFunc;
 import org.opennms.features.topology.app.internal.gwt.client.d3.D3;
 import org.opennms.features.topology.app.internal.gwt.client.d3.D3Behavior;
 import org.opennms.features.topology.app.internal.gwt.client.d3.D3Drag;
@@ -236,18 +235,10 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 			
             //Scaling and Fit to Zoom transitions
 			SVGMatrix transform = topologyView.calculateNewTransform(graph.getBoundingBox());
-			final double scale = transform.getA();
-            graph.setScale(scale);
             
             D3.d3().select(topologyView.getSVGViewPort())
             .transition().duration(1000)
-            .attr("transform", matrixTransform(transform) ).each("end",new AnonymousFunc() {
-
-                @Override
-                public void call() {
-                    //onScaleUpdate(scale);
-                }
-            });
+            .attr("transform", matrixTransform(transform) );
             
             D3.d3().selectAll(GWTEdge.SVG_EDGE_ELEMENT).style("stroke-width", GWTEdge.EDGE_WIDTH/transform.getA() + "px").transition().delay(750).duration(500).attr("opacity", "1").transition();
             
@@ -730,8 +721,6 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
         int width = uidl.getIntAttribute("boundWidth");
         int height = uidl.getIntAttribute("boundHeight");
         
-        graph.setScale(uidl.getDoubleAttribute("scale"));
-        graph.setOldScale(m_graph.getScale());
         graph.setBoundingBox(GWTBoundingBox.create(x, y, width, height));
         //consoleLog("Bounding box :: x: " + graph.getBoundingBox().getX() + " y: " + graph.getBoundingBox().getY() + " width: " + graph.getBoundingBox().getWidth() + " height: " + graph.getBoundingBox().getHeight());
 		setGraph(graph);
@@ -865,7 +854,6 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
     private void setMapScaleAndPos(double scale, boolean immediate) {
         m_scale = scale;
         Point pos = m_topologyView.getCenterPos();
-        m_client.updateVariable(m_paintableId, "mapScale", scale, false);
         m_client.updateVariable(m_paintableId, "clientX", pos.getX(), false);
         m_client.updateVariable(m_paintableId, "clientY", pos.getY(), false);
         

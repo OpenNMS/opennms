@@ -159,11 +159,9 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
     @Override
     public void paintContent(PaintTarget target) throws PaintException {
         super.paintContent(target);
-        target.addAttribute("scale", (Double)m_scale.getValue());
         target.addAttribute("activeTool", m_activeTool);
         
         BoundingBox boundingBox = getBoundingBox();
-        System.out.println(m_viewManager);
         target.addAttribute("boundX", boundingBox.getX());
         target.addAttribute("boundY", boundingBox.getY());
         target.addAttribute("boundWidth", boundingBox.getWidth());
