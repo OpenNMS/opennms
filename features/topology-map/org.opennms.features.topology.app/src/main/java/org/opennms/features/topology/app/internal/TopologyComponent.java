@@ -39,6 +39,7 @@ import org.opennms.features.topology.api.BoundingBox;
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.GraphContainer.ChangeListener;
+import org.opennms.features.topology.api.Point;
 import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.SelectionManager.SelectionListener;
 import org.opennms.features.topology.api.topo.Edge;
@@ -113,7 +114,6 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
     private IconRepositoryManager m_iconRepoManager;
     private boolean m_scaleUpdateFromUI = false;
     private String m_activeTool = "pan";
-    private BoundingBox m_boundingBox = null;
     private MapViewManager m_viewManager = new MapViewManager();
 
 	public TopologyComponent(GraphContainer dataSource, Property scale) {
@@ -256,20 +256,31 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
             setScale(newScale);
         }
         
-        if(variables.containsKey("scrollWheelScale")) {
-            double newScale = (Double)variables.get("scrollWheelScale");
-            setScale(newScale);
+        if(variables.containsKey("scrollWheel")) {
+            Map<String, Object> props = (Map<String, Object>) variables.get("scrollWheel");
+            int x = (Integer) props.get("x");
+            int y = (Integer) props.get("y");
+            double scrollVal = (Double) props.get("scrollVal");
+            //m_viewManager.setCenter(new Point(x, y));
+            //m_viewManager.setScale( m_viewManager.getScale() + scrollVal );
+            //m_viewManager.zoomToPoint(scrollVal, new Point(x, y));
+        }
+        
+        if(variables.containsKey("clientCenterPoint")) {
+            Map<String, Object> props = (Map<String, Object>) variables.get("clientCenterPoint");
+            int x = (Integer) props.get("x");
+            int y = (Integer) props.get("y"); 
+            m_viewManager.setCenter(new Point(x, y));
+            
         }
         
         if(variables.containsKey("clientX")) {
             int clientX = (Integer) variables.get("clientX");
-            System.out.println("clientX: " + clientX);
             m_mapManager.setClientX(clientX);
         }
         
         if(variables.containsKey("clientY")) {
             int clientY = (Integer) variables.get("clientY");
-            System.out.println("clientY: " + clientY);
             m_mapManager.setClientY(clientY);
         }
         
@@ -317,7 +328,6 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
 		}
 
 		Collection<VertexRef> vertexTrees = m_graphContainer.getVertexRefForest(vertexRefs);
-
 	    getSelectionManager().setSelectedVertexRefs(vertexTrees);
 	}
 
@@ -402,9 +412,9 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
 	public void graphChanged(GraphContainer container) {
 		Graph graph = container.getGraph();
         setGraph(graph);
-		//re compute bounds when graph has changed if there are selected ones
-		computeBoundsForSelected(container.getSelectionManager());
+		
 		m_viewManager.setMapBounds(graph.getLayout().getBounds());
+		computeBoundsForSelected(container.getSelectionManager());
 		requestRepaint();
 	}
 	
@@ -443,7 +453,7 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
     }
 
     private void computeBoundsForSelected(SelectionManager selectionManager) {
-        if(selectionManager.getSelectedVertexRefs().size() > 0) {
+        if(selectionManager.getSelectedVertexRefs().size() > 0 && !isSelectionFromMap()) {
             Collection<? extends Vertex> visible = m_graphContainer.getGraph().getDisplayVertices();
             Collection<VertexRef> selected = selectionManager.getSelectedVertexRefs();
             Collection<VertexRef> vRefs = new ArrayList<VertexRef>();
@@ -458,6 +468,10 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
         }else {
             m_viewManager.setBoundingBox(m_graphContainer.getGraph().getLayout().getBounds());
         }
+    }
+
+    private boolean isSelectionFromMap() {
+        return false;
     }
 
     @Override

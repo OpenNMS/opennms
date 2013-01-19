@@ -69,9 +69,14 @@ public class DefaultSelectionManager implements SelectionManager {
 
 	@Override
 	public void deselectAll() {
-		doDeselectAll();
+		int vertSelectionSize = m_selectedVertices.size();
+		int edgeSelectionSize = m_selectedEdges.size();
 		
-		fireSelectionChanged();
+	    doDeselectAll();
+		
+	    if(vertSelectionSize > m_selectedVertices.size() || edgeSelectionSize > m_selectedEdges.size()) {
+	        fireSelectionChanged();
+	    }
 	}
 
 	private void doDeselectAll() {

@@ -52,10 +52,18 @@ public class MapViewManager{
     public void setCenter(Point point) {
         Point oldCenter = m_center;
         m_center = point;
-        
         if(!oldCenter.equals(m_center)) {
             fireUpdate();
         }
+    }
+    
+    public void zoomToPoint(double scale, Point center) {
+        m_scale = scale;
+        m_scale = Math.min(1.0, m_scale);
+        m_scale = Math.max(0.0, m_scale);
+        m_center = center;
+        
+        fireUpdate();
     }
     
     public BoundingBox getCurrentBoundingBox() {

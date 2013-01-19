@@ -54,6 +54,7 @@ import org.opennms.features.topology.app.internal.gwt.client.service.support.Def
 import org.opennms.features.topology.app.internal.gwt.client.svg.BoundingRect;
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGGElement;
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGMatrix;
+import org.opennms.features.topology.app.internal.gwt.client.svg.SVGPoint;
 import org.opennms.features.topology.app.internal.gwt.client.view.TopologyView;
 
 import com.google.gwt.core.client.GWT;
@@ -234,7 +235,9 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 			edgeSelection.enter().create(GWTEdge.create()).call(setupEdgeEventHandlers());
 			
             //Scaling and Fit to Zoom transitions
+			SVGMatrix orig = topologyView.getSVGViewPort().getCTM();
 			SVGMatrix transform = topologyView.calculateNewTransform(graph.getBoundingBox());
+			//consoleLog("Orig: " + matrixTransform(orig) + "\n new: " + matrixTransform(transform));
             
             D3.d3().select(topologyView.getSVGViewPort())
             .transition().duration(1000)
@@ -358,7 +361,6 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 	private String m_paintableId;
 
 	private GWTGraph m_graph;
-	private double m_scale = 0.0;
 	private DragObject m_dragObject;
 	
 	@UiField
@@ -448,6 +450,7 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 
 			public void call(Element elem, int index) {
 			    handlerManager.onDragEnd(elem);
+			    updateMapPosition();
 			}
 		});
 
@@ -616,7 +619,6 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 
 				m_dragObject.move();
 				
-				//TODO: change the viewRenderer to no transition
 				if(getViewRenderer() == m_graphDrawer) {
 				    m_currentViewRender = m_graphDrawerNoTransition;
 				}
@@ -722,7 +724,6 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
         int height = uidl.getIntAttribute("boundHeight");
         
         graph.setBoundingBox(GWTBoundingBox.create(x, y, width, height));
-        //consoleLog("Bounding box :: x: " + graph.getBoundingBox().getX() + " y: " + graph.getBoundingBox().getY() + " width: " + graph.getBoundingBox().getWidth() + " height: " + graph.getBoundingBox().getHeight());
 		setGraph(graph);
         
 		sendPhysicalDimensions();
@@ -847,17 +848,12 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
         return rect;
     }
     
-    private void setMapScaleNow(double scale) {
-        setMapScaleAndPos(scale, true);
-    }
-    
-    private void setMapScaleAndPos(double scale, boolean immediate) {
-        m_scale = scale;
-        Point pos = m_topologyView.getCenterPos();
-        m_client.updateVariable(m_paintableId, "clientX", pos.getX(), false);
-        m_client.updateVariable(m_paintableId, "clientY", pos.getY(), false);
-        
-        m_client.sendPendingVariableChanges();
+    private void updateMapPosition() {
+        SVGPoint pos = m_topologyView.getCenterPos(m_graph.getBoundingBox());
+        Map<String, Object> point = new HashMap<String, Object>();
+        point.put("x", (int)Math.round(pos.getX()));
+        point.put("y", (int)Math.round(pos.getY()));
+        m_client.updateVariable(getPaintableId(), "clientCenterPoint", point, true);
     }
 
     @Override
@@ -891,19 +887,12 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
     }
 
     @Override
-    public void onScaleUpdate(double scale) {
-        setMapScaleNow(scale);
-    }
-    
-    @Override
-    public void onMouseWheel(double newScale, int clientX, int clientY) {
-        //consoleLog("mapScale: " + newScale);
-//        m_client.updateVariable(m_paintableId, "scrollWheelScale", newScale, false);
-//        m_client.updateVariable(m_paintableId, "clientX", clientX, false);
-//        m_client.updateVariable(m_paintableId, "clientY", clientY, false);
-//        
-//        m_client.sendPendingVariableChanges();
-        
+    public void onMouseWheel(double scrollVal, SVGPoint center) {
+        Map<String, Object> props = new HashMap<String, Object>();
+        props.put("x", (int)Math.round(center.getX()));
+        props.put("y", (int)Math.round(center.getY()));
+        props.put("scrollVal", scrollVal);
+        //m_client.updateVariable(getPaintableId(), "scrollWheel", props, true);
     }
     
     public static final native void eval(JavaScriptObject elem) /*-{
