@@ -55,7 +55,7 @@ import org.springframework.core.io.Resource;
 public class DataCollectionConfigParserTest {
 
     private static final int resourceTypesCount = 106;
-    private static final int systemDefCount = 147;
+    private static final int systemDefCount = 148;
     private static final int groupsCount = 227;
     private Level errorLevel;
 
@@ -111,7 +111,7 @@ public class DataCollectionConfigParserTest {
 
         // Validate SNMP Collection
         Assert.assertEquals(0, collection.getResourceTypeCount()); // Resource Types should live on a special collection
-        Assert.assertEquals(141, collection.getSystems().getSystemDefCount());
+        Assert.assertEquals(142, collection.getSystems().getSystemDefCount());
         Assert.assertEquals(167, collection.getGroups().getGroupCount()); // Unused groups will be ignored
     }
 
@@ -155,8 +155,8 @@ public class DataCollectionConfigParserTest {
 
         // Validate SNMP Collection
         Assert.assertEquals(0, collection.getResourceTypeCount()); // Resource Types should live on a special collection
-        Assert.assertEquals(70, collection.getSystems().getSystemDefCount());
-        Assert.assertEquals(26, collection.getGroups().getGroupCount());
+        Assert.assertEquals(71, collection.getSystems().getSystemDefCount());
+        Assert.assertEquals(27, collection.getGroups().getGroupCount());
     }
 
     @Test
@@ -177,8 +177,8 @@ public class DataCollectionConfigParserTest {
 
         // Validate SNMP Collection
         Assert.assertEquals(0, collection.getResourceTypeCount()); // Resource Types should live on a special collection
-        Assert.assertEquals(40, collection.getSystems().getSystemDefCount()); // 48 systemDef to exclude
-        Assert.assertEquals(25, collection.getGroups().getGroupCount()); //  1 group to exclude (used only on Cisco PIX or Cisco AS)
+        Assert.assertEquals(41, collection.getSystems().getSystemDefCount()); // 48 systemDef to exclude
+        Assert.assertEquals(26, collection.getGroups().getGroupCount()); //  1 group to exclude (used only on Cisco PIX or Cisco AS)
     }
 
     @Test
@@ -222,8 +222,8 @@ public class DataCollectionConfigParserTest {
 
         // Validate SNMP Collection
         Assert.assertEquals(0, collection.getResourceTypeCount()); // Resource Types should live on a special collection
-        Assert.assertEquals(70, collection.getSystems().getSystemDefCount());
-        Assert.assertEquals(13, collection.getGroups().getGroupCount());
+        Assert.assertEquals(71, collection.getSystems().getSystemDefCount());
+        Assert.assertEquals(14, collection.getGroups().getGroupCount());
 
         // Test Precedence ~ any group/systemDef directly defined inside the SNMP collection will have precedence over any definition
         // from external files. That means, the definitions from external files will be ignored and won't be included in the collection.

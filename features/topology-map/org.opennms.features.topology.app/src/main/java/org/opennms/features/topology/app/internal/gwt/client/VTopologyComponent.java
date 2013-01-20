@@ -38,7 +38,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.opennms.features.topology.app.internal.gwt.client.VTopologyComponent.TopologyViewRenderer;
-import org.opennms.features.topology.app.internal.gwt.client.d3.AnonymousFunc;
 import org.opennms.features.topology.app.internal.gwt.client.d3.D3;
 import org.opennms.features.topology.app.internal.gwt.client.d3.D3Behavior;
 import org.opennms.features.topology.app.internal.gwt.client.d3.D3Drag;
@@ -55,6 +54,7 @@ import org.opennms.features.topology.app.internal.gwt.client.service.support.Def
 import org.opennms.features.topology.app.internal.gwt.client.svg.BoundingRect;
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGGElement;
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGMatrix;
+import org.opennms.features.topology.app.internal.gwt.client.svg.SVGPoint;
 import org.opennms.features.topology.app.internal.gwt.client.view.TopologyView;
 
 import com.google.gwt.core.client.GWT;
@@ -235,19 +235,13 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 			edgeSelection.enter().create(GWTEdge.create()).call(setupEdgeEventHandlers());
 			
             //Scaling and Fit to Zoom transitions
+			SVGMatrix orig = topologyView.getSVGViewPort().getCTM();
 			SVGMatrix transform = topologyView.calculateNewTransform(graph.getBoundingBox());
-			final double scale = transform.getA();
-            graph.setScale(scale);
+			//consoleLog("Orig: " + matrixTransform(orig) + "\n new: " + matrixTransform(transform));
             
             D3.d3().select(topologyView.getSVGViewPort())
             .transition().duration(1000)
-            .attr("transform", matrixTransform(transform) ).each("end",new AnonymousFunc() {
-
-                @Override
-                public void call() {
-                    onScaleUpdate(scale);
-                }
-            });
+            .attr("transform", matrixTransform(transform) );
             
             D3.d3().selectAll(GWTEdge.SVG_EDGE_ELEMENT).style("stroke-width", GWTEdge.EDGE_WIDTH/transform.getA() + "px").transition().delay(750).duration(500).attr("opacity", "1").transition();
             
@@ -367,7 +361,6 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 	private String m_paintableId;
 
 	private GWTGraph m_graph;
-	private double m_scale = 0.0;
 	private DragObject m_dragObject;
 	
 	@UiField
@@ -457,6 +450,7 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 
 			public void call(Element elem, int index) {
 			    handlerManager.onDragEnd(elem);
+			    updateMapPosition();
 			}
 		});
 
@@ -625,7 +619,6 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 
 				m_dragObject.move();
 				
-				//TODO: change the viewRenderer to no transition
 				if(getViewRenderer() == m_graphDrawer) {
 				    m_currentViewRender = m_graphDrawerNoTransition;
 				}
@@ -730,13 +723,21 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
         int width = uidl.getIntAttribute("boundWidth");
         int height = uidl.getIntAttribute("boundHeight");
         
-        graph.setScale(uidl.getDoubleAttribute("scale"));
-        graph.setOldScale(m_graph.getScale());
         graph.setBoundingBox(GWTBoundingBox.create(x, y, width, height));
-        //consoleLog("Bounding box :: x: " + graph.getBoundingBox().getX() + " y: " + graph.getBoundingBox().getY() + " width: " + graph.getBoundingBox().getWidth() + " height: " + graph.getBoundingBox().getHeight());
 		setGraph(graph);
         
-		
+		sendPhysicalDimensions();
+	}
+	
+	private void sendPhysicalDimensions() {
+	    int width = m_topologyView.getPhysicalWidth();
+	    int height = m_topologyView.getPhysicalHeight();
+	    Map<String, Object> dimensions = new HashMap<String, Object>();
+	    dimensions.put("width", width);
+	    dimensions.put("height", height);
+	    
+	    m_client.updateVariable(getPaintableId(), "mapPhysicalBounds", dimensions, true);
+	    
 	}
 
     private String minEndPoint(GWTEdge edge1) {
@@ -847,13 +848,12 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
         return rect;
     }
     
-    private void setMapScaleNow(double scale) {
-        setMapScale(scale, true);
-    }
-    
-    private void setMapScale(double scale, boolean immediate) {
-        m_scale = scale;
-        m_client.updateVariable(m_paintableId, "mapScale", scale, immediate);
+    private void updateMapPosition() {
+        SVGPoint pos = m_topologyView.getCenterPos(m_graph.getBoundingBox());
+        Map<String, Object> point = new HashMap<String, Object>();
+        point.put("x", (int)Math.round(pos.getX()));
+        point.put("y", (int)Math.round(pos.getY()));
+        m_client.updateVariable(getPaintableId(), "clientCenterPoint", point, true);
     }
 
     @Override
@@ -887,19 +887,12 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
     }
 
     @Override
-    public void onScaleUpdate(double scale) {
-        setMapScaleNow(scale);
-    }
-    
-    @Override
-    public void onMouseWheel(double newScale, int clientX, int clientY) {
-        //consoleLog("mapScale: " + newScale);
-//        m_client.updateVariable(m_paintableId, "scrollWheelScale", newScale, false);
-//        m_client.updateVariable(m_paintableId, "clientX", clientX, false);
-//        m_client.updateVariable(m_paintableId, "clientY", clientY, false);
-//        
-//        m_client.sendPendingVariableChanges();
-        
+    public void onMouseWheel(double scrollVal, SVGPoint center) {
+        Map<String, Object> props = new HashMap<String, Object>();
+        props.put("x", (int)Math.round(center.getX()));
+        props.put("y", (int)Math.round(center.getY()));
+        props.put("scrollVal", scrollVal);
+        //m_client.updateVariable(getPaintableId(), "scrollWheel", props, true);
     }
     
     public static final native void eval(JavaScriptObject elem) /*-{

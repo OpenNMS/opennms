@@ -59,7 +59,6 @@ import com.vaadin.ui.Layout;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.Slider;
-import com.vaadin.ui.Slider.ValueOutOfBoundsException;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UriFragmentUtility;
 import com.vaadin.ui.UriFragmentUtility.FragmentChangedEvent;
@@ -140,18 +139,18 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 		m_topologyComponent.addMenuItemStateListener(this);
 		m_topologyComponent.setContextMenuHandler(this);
 		
-		final Slider slider = new Slider(0, 2);
+		final Slider slider = new Slider(0, 1);
 		
 		slider.setPropertyDataSource(scale);
-		slider.setResolution(2);
+		slider.setResolution(1);
 		slider.setHeight("300px");
 		slider.setOrientation(Slider.ORIENTATION_VERTICAL);
-		try {
-            slider.setValue(1.0);
-        } catch (ValueOutOfBoundsException e) {
-            // Catch an Index out of bounds exception
-        }
-		scale.setValue(1.0);
+//		try {
+//            slider.setValue(1.0);
+//        } catch (ValueOutOfBoundsException e) {
+//            // Catch an Index out of bounds exception
+//        }
+		scale.setValue(0);
 		slider.setImmediate(true);
 
 		final Property zoomLevel = item.getItemProperty("semanticZoomLevel");

@@ -38,5 +38,6 @@
     <import-file>syslog/ApacheHTTPD.syslog.xml</import-file>
     <import-file>syslog/LinuxKernel.syslog.xml</import-file>
     <import-file>syslog/OpenSSH.syslog.xml</import-file>
+    <import-file>syslog/Sudo.syslog.xml</import-file>
 
 </syslogd-configuration>
