@@ -60,11 +60,10 @@ public class OpenlayersWidgetComponent extends VerticalLayout {
         if (assets != null && assets.getGeolocation() != null) {
             final OnmsGeolocation geolocation = assets.getGeolocation();
 
-            m_log.debug("geolocation = {}", geolocation);
-
             final String addressString = geolocation.asAddressString();
-            if (geolocation.getCoordinates() == null || geolocation.getCoordinates() == "" && addressString != "") {
-                m_log.debug("No coordinates for node {}, getting geolocation for street address: {}", node.getId(), addressString);
+            final String coordinateString = geolocation.getCoordinates();
+            if ((coordinateString == null || coordinateString == "" || !coordinateString.contains(",")) && addressString != "") {
+                m_log.debug("No coordinates for node {}, getting geolocation for street address: {}", new Object[] { node.getId(), addressString });
                 Coordinates coordinates = null;
                 try {
                     coordinates = m_geocoderService.getCoordinates(addressString);
@@ -77,11 +76,13 @@ public class OpenlayersWidgetComponent extends VerticalLayout {
                 } catch (final GeocoderException e) {
                     m_log.debug("Failed to retrieve coordinates", e);
                 }
+            } else {
+                m_log.debug("Found coordinates for node {}, geolocation for street address: {} = {}", new Object[] { node.getId(), addressString, coordinateString });
             }
             
-            if (geolocation.getCoordinates() != null && geolocation.getCoordinates() != "") {
+            if (coordinateString != null && coordinateString != "") {
                 target.startTag(node.getId().toString());
-                final String[] coordinates = geolocation.getCoordinates().split(",");
+                final String[] coordinates = coordinateString.split(",");
                 target.addAttribute("latitude", coordinates[0]);
                 target.addAttribute("longitude", coordinates[1]);
                 target.endTag(node.getId().toString());

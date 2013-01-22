@@ -12,18 +12,15 @@ import org.opennms.features.topology.app.internal.gwt.client.svg.SVGPoint;
 import org.opennms.features.topology.app.internal.gwt.client.view.TopologyView;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.EventTarget;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.vaadin.terminal.gwt.client.BrowserInfo;
 import com.vaadin.terminal.gwt.client.VTooltip;
 
 public class TopologyViewImpl extends Composite implements TopologyView<TopologyViewRenderer>, GraphUpdateListener {
@@ -144,24 +141,6 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
     
                 break;
     
-            case Event.ONMOUSEWHEEL:
-            //broken now need to fix it
-                  Command cmd = new Command() {
-                        
-                        public void execute() {
-                            SVGPoint mousePos = getPoint(event.getClientX(), event.getClientY());
-                            m_presenter.onMouseWheel(event.getMouseWheelVelocityY() / 10.0, mousePos);
-                        }
-                    };
-                    
-                    if(BrowserInfo.get().isWebkit()) {
-                        Scheduler.get().scheduleDeferred(cmd);
-                    }else {
-                        cmd.execute();
-                    }
-    
-                break;
-                
             case Event.ONCLICK:
                 if(event.getEventTarget().equals(getSVGElement())) {
                     m_presenter.onBackgroundClick();
@@ -169,22 +148,10 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
                 event.preventDefault();
                 event.stopPropagation();
                 break;
+                
         }
 
 
-    }
-
-    protected SVGPoint getPoint(int clientX, int clientY) {
-        SVGGElement g = getSVGViewPort().cast();
-        SVGMatrix stateTF = g.getCTM().inverse();
-        
-        SVGPoint p = getSVGElement().createSVGPoint();
-        p.setX(clientX);
-        p.setY(clientY);
-        
-        SVGPoint center = p.matrixTransform(stateTF);
-        
-        return center;
     }
 
     private double getViewPortScale() {
@@ -206,15 +173,14 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
         int iconMargin = 50;
         int iconLeftMargin = iconMargin + 50;
         int topMargin = iconMargin + 50;
-        int rightMargin = 21;
         
         SVGElement svg = getSVGElement().cast();
-        final int svgWidth = svg.getParentElement().getOffsetWidth() - m_leftMargin;//(leftMargin + rightMargin); 
+        final int svgWidth = svg.getParentElement().getOffsetWidth() - m_leftMargin; 
         final int svgHeight = svg.getParentElement().getOffsetHeight();
         
         double scale = Math.min(svgWidth/((double)bounds.getWidth() + iconLeftMargin), svgHeight/((double)bounds.getHeight() + topMargin));
         scale = scale > 2 ? 2 : scale;
-        double translateX =  -bounds.getX(); // + iconMargin;
+        double translateX =  -bounds.getX();
         double translateY =  -bounds.getY();
         
         double calcY = (svgHeight - (bounds.getHeight()* scale))/2;
@@ -260,6 +226,20 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
         SVGPoint p = getSVGElement().createSVGPoint();
         p.setX(getPhysicalWidth()/2 + m_leftMargin);
         p.setY(getPhysicalHeight()/2);
+        
+        SVGPoint center = p.matrixTransform(stateTF);
+        
+        return center;
+    }
+    
+    public SVGPoint getPoint(int clientX, int clientY) {
+        SVGGElement g = getSVGViewPort().cast();
+        SVGMatrix stateTF = g.getCTM().inverse();
+        
+        SVGPoint p = getSVGElement().createSVGPoint();
+        
+        p.setX(clientX);
+        p.setY(clientY);
         
         SVGPoint center = p.matrixTransform(stateTF);
         

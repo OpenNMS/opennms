@@ -38,7 +38,8 @@ public enum D3Events {
 	DRAG("drag"),
 	DRAG_END("dragend"), 
 	MOUSE_OVER("mouseover"), 
-	MOUSE_OUT("mouseout");
+	MOUSE_OUT("mouseout"),
+	DOUBLE_CLICK("dblclick");
 	
 	private String m_event;
 	
