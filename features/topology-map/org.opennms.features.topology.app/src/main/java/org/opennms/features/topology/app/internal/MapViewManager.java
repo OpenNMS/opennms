@@ -99,6 +99,7 @@ public class MapViewManager{
         m_scale = Math.min(1.0, m_scale);
         m_scale = Math.max(0.0, m_scale);
         m_center = boundingBox.getCenter();
+        
         fireUpdate();
     }
 

@@ -126,7 +126,6 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
 			@Override
 			public void selectionChanged(SelectionManager selectionManager) {
 			    computeBoundsForSelected(selectionManager);
-			    requestRepaint();
 			}
 			
 		});
@@ -229,14 +228,6 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
             	selectVertices(vertexKeys);
             }
             
-        }
-        
-        if(variables.containsKey("updatedVertex")) {
-            String vertexUpdate = (String) variables.get("updatedVertex");
-            updateVertex(vertexUpdate);
-            
-            
-            requestRepaint();
         }
         
         if(variables.containsKey("updateVertices")) {
@@ -415,7 +406,6 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
 		
 		m_viewManager.setMapBounds(graph.getLayout().getBounds());
 		computeBoundsForSelected(container.getSelectionManager());
-		requestRepaint();
 	}
 	
 	/**
@@ -453,7 +443,7 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
     }
 
     private void computeBoundsForSelected(SelectionManager selectionManager) {
-        if(selectionManager.getSelectedVertexRefs().size() > 0 && !isSelectionFromMap()) {
+        if(selectionManager.getSelectedVertexRefs().size() > 0) {
             Collection<? extends Vertex> visible = m_graphContainer.getGraph().getDisplayVertices();
             Collection<VertexRef> selected = selectionManager.getSelectedVertexRefs();
             Collection<VertexRef> vRefs = new ArrayList<VertexRef>();
@@ -468,10 +458,6 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
         }else {
             m_viewManager.setBoundingBox(m_graphContainer.getGraph().getLayout().getBounds());
         }
-    }
-
-    private boolean isSelectionFromMap() {
-        return false;
     }
 
     @Override

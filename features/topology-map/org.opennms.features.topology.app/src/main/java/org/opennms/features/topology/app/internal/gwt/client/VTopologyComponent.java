@@ -402,7 +402,7 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 		m_componentHolder.add(m_topologyView.asWidget());
 		
 		m_svgDragHandlerManager = new DragHandlerManager();
-		m_svgDragHandlerManager.addDragBehaviorHandler(PanHandler.DRAG_BEHAVIOR_KEY, new PanHandler(m_topologyView, m_serviceRegistry));
+		m_svgDragHandlerManager.addDragBehaviorHandler(PanHandler.DRAG_BEHAVIOR_KEY, new PanHandler(this, m_serviceRegistry));
 		m_svgDragHandlerManager.addDragBehaviorHandler(MarqueeSelectHandler.DRAG_BEHAVIOR_KEY, new MarqueeSelectHandler(this, m_topologyView));
 		m_svgDragHandlerManager.setCurrentDragHandler(PanHandler.DRAG_BEHAVIOR_KEY);
 		setupDragBehavior(m_topologyView.getSVGElement(), m_svgDragHandlerManager);
@@ -429,7 +429,11 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 	}
 
     
-	private void setupDragBehavior(final Element panElem, final DragHandlerManager handlerManager) {
+	public TopologyView<TopologyViewRenderer> getTopologyView() {
+        return m_topologyView;
+    }
+
+    private void setupDragBehavior(final Element panElem, final DragHandlerManager handlerManager) {
 	    
 		D3Drag d3Pan = D3.getDragBehavior();
 		d3Pan.on(D3Events.DRAG_START.event(), new Handler<Element>() {
@@ -450,7 +454,6 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 
 			public void call(Element elem, int index) {
 			    handlerManager.onDragEnd(elem);
-			    updateMapPosition();
 			}
 		});
 
@@ -848,7 +851,7 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
         return rect;
     }
     
-    private void updateMapPosition() {
+    public void updateMapPosition() {
         SVGPoint pos = m_topologyView.getCenterPos(m_graph.getBoundingBox());
         Map<String, Object> point = new HashMap<String, Object>();
         point.put("x", (int)Math.round(pos.getX()));
