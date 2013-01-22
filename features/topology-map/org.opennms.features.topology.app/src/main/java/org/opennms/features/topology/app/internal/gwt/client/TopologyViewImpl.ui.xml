@@ -12,7 +12,6 @@
                    </filter>
                </defs>
                <g ui:field="m_svgViewPort" transform="translate(0,0)" >
-                <rect width="5" height="5" style="fill:rgb(0,0,255);"></rect>
                    <g id="mapreference">
                        <rect width="1" height="1" x="0" y="0" fill="none"></rect>
                        <g ui:field="m_edgeGroup" transform="scale(1)"></g>
