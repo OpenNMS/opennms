@@ -169,22 +169,10 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
                 event.preventDefault();
                 event.stopPropagation();
                 break;
+                
         }
 
 
-    }
-
-    protected SVGPoint getPoint(int clientX, int clientY) {
-        SVGGElement g = getSVGViewPort().cast();
-        SVGMatrix stateTF = g.getCTM().inverse();
-        
-        SVGPoint p = getSVGElement().createSVGPoint();
-        p.setX(clientX);
-        p.setY(clientY);
-        
-        SVGPoint center = p.matrixTransform(stateTF);
-        
-        return center;
     }
 
     private double getViewPortScale() {
@@ -206,15 +194,14 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
         int iconMargin = 50;
         int iconLeftMargin = iconMargin + 50;
         int topMargin = iconMargin + 50;
-        int rightMargin = 21;
         
         SVGElement svg = getSVGElement().cast();
-        final int svgWidth = svg.getParentElement().getOffsetWidth() - m_leftMargin;//(leftMargin + rightMargin); 
+        final int svgWidth = svg.getParentElement().getOffsetWidth() - m_leftMargin; 
         final int svgHeight = svg.getParentElement().getOffsetHeight();
         
         double scale = Math.min(svgWidth/((double)bounds.getWidth() + iconLeftMargin), svgHeight/((double)bounds.getHeight() + topMargin));
         scale = scale > 2 ? 2 : scale;
-        double translateX =  -bounds.getX(); // + iconMargin;
+        double translateX =  -bounds.getX();
         double translateY =  -bounds.getY();
         
         double calcY = (svgHeight - (bounds.getHeight()* scale))/2;
@@ -260,6 +247,20 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
         SVGPoint p = getSVGElement().createSVGPoint();
         p.setX(getPhysicalWidth()/2 + m_leftMargin);
         p.setY(getPhysicalHeight()/2);
+        
+        SVGPoint center = p.matrixTransform(stateTF);
+        
+        return center;
+    }
+    
+    public SVGPoint getPoint(int clientX, int clientY) {
+        SVGGElement g = getSVGViewPort().cast();
+        SVGMatrix stateTF = g.getCTM().inverse();
+        
+        SVGPoint p = getSVGElement().createSVGPoint();
+        
+        p.setX(clientX);
+        p.setY(clientY);
         
         SVGPoint center = p.matrixTransform(stateTF);
         

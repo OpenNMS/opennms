@@ -19,6 +19,7 @@ public interface TopologyView<T> {
         void onContextMenu(Object element, int x, int y, String type);
         void onMouseWheel(double newScale, SVGPoint point);
         void onBackgroundClick();
+        void onBackgroundDoubleClick(SVGPoint center);
     }
     
     void setPresenter(Presenter<T> presenter);
@@ -34,4 +35,5 @@ public interface TopologyView<T> {
     SVGPoint getCenterPos(GWTBoundingBox gwtBoundingBox);
     int getPhysicalWidth();
     int getPhysicalHeight();
+    SVGPoint getPoint(int clientX, int clientY);
 }

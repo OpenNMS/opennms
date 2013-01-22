@@ -308,6 +308,16 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
             
         }
         
+        if(variables.containsKey("doubleClick")) {
+            Map<String, Object> props = (Map<String, Object>) variables.get("doubleClick");
+            int x = (Integer) props.get("x");
+            int y = (Integer) props.get("y");
+            
+            double scale = m_viewManager.getScale() + 0.1;
+            System.out.println("double click: scale: " + scale + " x: " + x + " y: " + y );
+            m_viewManager.zoomToPoint(scale, new Point(x, y));
+        }
+        
         updateMenuItems();
     }
 
