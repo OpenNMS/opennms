@@ -110,6 +110,7 @@ public class NodeRestService extends OnmsRestService {
             final CriteriaBuilder builder = new CriteriaBuilder(OnmsNode.class);
             builder.alias("snmpInterfaces", "snmpInterface", JoinType.LEFT_JOIN);
             builder.alias("ipInterfaces", "ipInterface", JoinType.LEFT_JOIN);
+            builder.alias("categories", "category", JoinType.LEFT_JOIN);
     
             final MultivaluedMap<String, String> params = m_uriInfo.getQueryParameters();
             final String type = params.getFirst("type");
