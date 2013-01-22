@@ -2133,7 +2133,6 @@
   <event-file>events/MGE-UPS.events.xml</event-file>
   <event-file>events/Microsoft.events.xml</event-file>
   <event-file>events/Multicast.standard.events.xml</event-file>
-  <event-file>events/MPLS.events.xml</event-file>
   <event-file>events/MRV.events.xml</event-file>
   <event-file>events/MSDP.events.xml</event-file>
   <event-file>events/Mylex.events.xml</event-file>
