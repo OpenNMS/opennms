@@ -75,6 +75,11 @@ public class WrappedVertex implements VertexRef {
 	public WrappedVertex() {}
 
 	protected WrappedVertex(VertexRef vertex) {
+		if (vertex.getId() == null) {
+			throw new IllegalArgumentException("Vertex has null ID: " + vertex);
+		} else if (vertex.getNamespace() == null) {
+			throw new IllegalArgumentException("Vertex has null namespace: " + vertex);
+		}
 		id = vertex.getId();
 		label = vertex.getLabel();
 		namespace = vertex.getNamespace();

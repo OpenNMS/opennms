@@ -33,6 +33,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -53,6 +54,7 @@ import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.AbstractVertexRef;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeRef;
+import org.opennms.features.topology.api.topo.SimpleVertexProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexListener;
 import org.opennms.features.topology.api.topo.VertexProvider;
@@ -60,6 +62,8 @@ import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.api.topo.WrappedLeafVertex;
 import org.opennms.features.topology.api.topo.WrappedVertex;
 import org.opennms.features.topology.plugins.topo.linkd.internal.operations.RefreshOperation;
+import org.opennms.netmgt.dao.DataLinkInterfaceDao;
+import org.opennms.netmgt.model.DataLinkInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -200,6 +204,12 @@ public class LinkdTopologyProviderTest {
 		assertEquals(15, m_topologyProvider.getVertices().size());
 		assertEquals(3, m_topologyProvider.getEdgeIdsForVertex(m_topologyProvider.getVertex(ref0)).length);
 		assertEquals(3, m_topologyProvider.getEdgeIdsForVertex(m_topologyProvider.getVertex(ref1)).length);
+		assertEquals(0, m_topologyProvider.getSemanticZoomLevel(group1));
+		assertEquals(0, m_topologyProvider.getSemanticZoomLevel(group2));
+		assertEquals(1, m_topologyProvider.getSemanticZoomLevel(vertexA));
+		assertEquals(1, m_topologyProvider.getSemanticZoomLevel(vertexB));
+		assertEquals(1, m_topologyProvider.getSemanticZoomLevel(vertexC));
+		assertEquals(1, m_topologyProvider.getSemanticZoomLevel(vertexD));
 		
 		m_topologyProvider.save(m_topologyProvider.getConfigurationFile());
 		
@@ -211,6 +221,12 @@ public class LinkdTopologyProviderTest {
 		assertEquals(0, m_topologyProvider.getVertices().size());
 		assertEquals(0, m_topologyProvider.getEdgeIdsForVertex(m_topologyProvider.getVertex(ref0)).length);
 		assertEquals(0, m_topologyProvider.getEdgeIdsForVertex(m_topologyProvider.getVertex(ref1)).length);
+		assertEquals(0, m_topologyProvider.getSemanticZoomLevel(group1));
+		assertEquals(0, m_topologyProvider.getSemanticZoomLevel(group2));
+		assertEquals(0, m_topologyProvider.getSemanticZoomLevel(vertexA));
+		assertEquals(0, m_topologyProvider.getSemanticZoomLevel(vertexB));
+		assertEquals(0, m_topologyProvider.getSemanticZoomLevel(vertexC));
+		assertEquals(0, m_topologyProvider.getSemanticZoomLevel(vertexD));
 		
 		m_topologyProvider.load(null);
 		
@@ -227,6 +243,12 @@ public class LinkdTopologyProviderTest {
 		assertEquals(0, m_topologyProvider.getEdgeIdsForVertex(m_topologyProvider.getVertex(ref1)).length);
 		assertEquals(0, m_topologyProvider.getEdgeIdsForVertex(m_topologyProvider.getVertex(group1)).length);
 		assertEquals(0, m_topologyProvider.getEdgeIdsForVertex(m_topologyProvider.getVertex(group2)).length);
+		assertEquals(0, m_topologyProvider.getSemanticZoomLevel(group1));
+		assertEquals(0, m_topologyProvider.getSemanticZoomLevel(group2));
+		assertEquals(1, m_topologyProvider.getSemanticZoomLevel(vertexA));
+		assertEquals(1, m_topologyProvider.getSemanticZoomLevel(vertexB));
+		assertEquals(1, m_topologyProvider.getSemanticZoomLevel(vertexC));
+		assertEquals(1, m_topologyProvider.getSemanticZoomLevel(vertexD));
 	}
 	
 	@Test
@@ -236,10 +258,74 @@ public class LinkdTopologyProviderTest {
 		//GraphProvider topologyProvider = new LinkdTopologyProvider();
 		m_topologyProvider.load(null);
 		
-		System.err.println("Vertex Count: " + m_topologyProvider.getVertices().size());
-		System.err.println("Edge Count: " + m_topologyProvider.getEdges().size());
+		assertEquals(8, m_topologyProvider.getVertices().size());
+		assertEquals(8, m_topologyProvider.getEdges().size());
 	}
 	
+	@Test
+	public void loadSavedGraphWithOnlyGroups() throws Exception {
+		m_topologyProvider.setConfigurationFile("target/test-classes/saved-linkd-graph.xml");
+		
+		// Temporarily replace the DataLinkInterfaceDao with a mock empty impl
+		DataLinkInterfaceDao dao = m_topologyProvider.getDataLinkInterfaceDao();
+		DataLinkInterfaceDao mockDao = EasyMock.createMock(DataLinkInterfaceDao.class);
+		EasyMock.expect(mockDao.findAll()).andReturn(new ArrayList<DataLinkInterface>()).anyTimes();
+		EasyMock.replay(mockDao);
+		m_topologyProvider.setDataLinkInterfaceDao(mockDao);
+		
+		m_topologyProvider.load(null);
+		
+		// Should have 8 groups
+		assertEquals(8, m_topologyProvider.getVertices().size());
+		// Ensure that all of the vertices are groups
+		for (Vertex vertex : m_topologyProvider.getVertices()) {
+			assertEquals(false, vertex.isLeaf());
+		}
+		Vertex vert1 = m_topologyProvider.getVertex("nodes", "linkdg5");
+		Vertex vert2 = m_topologyProvider.getVertex("nodes", "linkdg10");
+		Vertex vert3 = m_topologyProvider.getVertex("nodes", "linkdg14");
+		Vertex vert4 = m_topologyProvider.getVertex("nodes", "linkdg16");
+		Vertex vert5 = m_topologyProvider.getVertex("nodes", "linkdg17");
+		Vertex vert6 = m_topologyProvider.getVertex("nodes", "linkdg18");
+		Vertex vert7 = m_topologyProvider.getVertex("nodes", "linkdg20");
+		Vertex vert8 = m_topologyProvider.getVertex("nodes", "linkdg21");
+
+		assertEquals("Almost Top Group", vert1.getLabel());
+		assertEquals(vert1.getParent().toString() + " ?= " + vert7, 0, new SimpleVertexProvider.VertexRefComparator().compare(vert7, vert1.getParent()));
+		assertEquals(1, m_topologyProvider.getSemanticZoomLevel(vert1));
+
+		assertEquals("Group 32", vert2.getLabel());
+		assertEquals(vert2.getParent().toString() + " ?= " + vert8, 0, new SimpleVertexProvider.VertexRefComparator().compare(vert8, vert2.getParent()));
+		assertEquals(1, m_topologyProvider.getSemanticZoomLevel(vert2));
+
+		assertEquals("FGHKDKL", vert3.getLabel());
+		assertEquals(vert3.getParent().toString() + " ?= " + vert4, 0, new SimpleVertexProvider.VertexRefComparator().compare(vert4, vert3.getParent()));
+		assertEquals(3, m_topologyProvider.getSemanticZoomLevel(vert3));
+
+		assertEquals("Hello Again", vert4.getLabel());
+		assertEquals(vert4.getParent().toString() + " ?= " + vert6, 0, new SimpleVertexProvider.VertexRefComparator().compare(vert6, vert4.getParent()));
+		assertEquals(2, m_topologyProvider.getSemanticZoomLevel(vert4));
+
+		assertEquals("Big Group", vert5.getLabel());
+		assertEquals(vert5.getParent().toString() + " ?= " + vert2, 0, new SimpleVertexProvider.VertexRefComparator().compare(vert2, vert5.getParent()));
+		assertEquals(2, m_topologyProvider.getSemanticZoomLevel(vert5));
+
+		assertEquals("Smaller Group", vert6.getLabel());
+		assertEquals(vert6.getParent().toString() + " ?= " + vert7, 0, new SimpleVertexProvider.VertexRefComparator().compare(vert7, vert6.getParent()));
+		assertEquals(1, m_topologyProvider.getSemanticZoomLevel(vert6));
+
+		assertEquals("Top Three", vert7.getLabel());
+		assertEquals(null, vert7.getParent());
+		assertEquals(0, m_topologyProvider.getSemanticZoomLevel(vert7));
+
+		assertEquals("Bottom Four", vert8.getLabel());
+		assertEquals(null, vert8.getParent());
+		assertEquals(0, m_topologyProvider.getSemanticZoomLevel(vert8));
+
+		// Reset the DataLinkInterfaceDao
+		m_topologyProvider.setDataLinkInterfaceDao(dao);
+	}
+
 	@Test
 	public void testLoadSimpleGraph() throws Exception {
 		/*

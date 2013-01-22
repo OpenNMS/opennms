@@ -172,19 +172,11 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
      */
     public void onInit() throws MalformedURLException, JAXBException {
         log("init: loading topology v1.3");
-        loadtopology();
+        load(null);
     }
     
     public LinkdTopologyProvider() {
     	super(TOPOLOGY_NAMESPACE_LINKD);
-    }
-
-    @Override
-    public void load(String filename) throws MalformedURLException, JAXBException {
-        if (filename != null) {
-            LoggerFactory.getLogger(LinkdTopologyProvider.class).warn("Filename that was specified for linkd topology will be ignored: " + filename + ", using " + m_configurationFile + " instead");
-        }
-        loadtopology();
     }
 
     private static WrappedGraph getGraphFromFile(File file) throws JAXBException, MalformedURLException {
@@ -194,7 +186,11 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     }
 
     //@Transactional
-    private void loadtopology() throws MalformedURLException, JAXBException {
+    @Override
+    public void load(String filename) throws MalformedURLException, JAXBException {
+        if (filename != null) {
+            LoggerFactory.getLogger(LinkdTopologyProvider.class).warn("Filename that was specified for linkd topology will be ignored: " + filename + ", using " + m_configurationFile + " instead");
+        }
         log("loadtopology: Clear " + VertexProvider.class.getSimpleName());
         clearVertices();
         log("loadtopology: Clear " + EdgeProvider.class.getSimpleName());
@@ -265,7 +261,12 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
             for (WrappedVertex vertex: graph.m_vertices) {
                 if (!vertex.leaf) {
                     log("loadtopology: adding group to topology: " + vertex.id);
-                    if (vertex.namespace == null || vertex.id == null) {
+                    if (vertex.namespace == null) {
+                        vertex.namespace = TOPOLOGY_NAMESPACE_LINKD;
+                        LoggerFactory.getLogger(this.getClass()).warn("Setting namespace on vertex to linkd default: {}", vertex);
+                    } 
+
+                    if (vertex.id == null) {
                         LoggerFactory.getLogger(this.getClass()).warn("Invalid vertex unmarshalled from {}: {}", m_configurationFile, vertex);
                     } else if (vertex.id.startsWith(LINKD_GROUP_ID_PREFIX)) {
                         try {
