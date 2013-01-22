@@ -102,4 +102,7 @@ public class WrappedEdge {
 			}
 		}
 	}
+
+	@Override
+	public String toString() { return "WrappedEdge:"+namespace+":"+id+ "[label="+label+", styleName="+styleName+"]"; } 
 }

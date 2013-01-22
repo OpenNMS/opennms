@@ -440,9 +440,9 @@ public class EasyMockDataPopulator {
 
     public void check(GraphProvider topologyProvider) {
         String vertexNamespace = topologyProvider.getVertexNamespace();
-        Assert.assertTrue(topologyProvider.getVertices().size()==8);
+        Assert.assertEquals(8, topologyProvider.getVertices().size());
         
-        Assert.assertTrue(topologyProvider.getEdges().size()==8);
+        Assert.assertEquals(8, topologyProvider.getEdges().size());
 
         Assert.assertTrue(topologyProvider.containsVertexId("1"));
         Assert.assertTrue(topologyProvider.containsVertexId("2"));
@@ -454,14 +454,14 @@ public class EasyMockDataPopulator {
         Assert.assertTrue(topologyProvider.containsVertexId("8"));
         Assert.assertTrue(!topologyProvider.containsVertexId("15"));
         
-        Assert.assertTrue(topologyProvider.getEdgeIdsForVertex(new AbstractVertexRef(vertexNamespace, "1")).length == 2);
-        Assert.assertTrue(topologyProvider.getEdgeIdsForVertex(new AbstractVertexRef(vertexNamespace, "2")).length == 2);
-        Assert.assertTrue(topologyProvider.getEdgeIdsForVertex(new AbstractVertexRef(vertexNamespace, "3")).length == 2);
-        Assert.assertTrue(topologyProvider.getEdgeIdsForVertex(new AbstractVertexRef(vertexNamespace, "4")).length == 2);
-        Assert.assertTrue(topologyProvider.getEdgeIdsForVertex(new AbstractVertexRef(vertexNamespace, "5")).length == 2);
-        Assert.assertTrue(topologyProvider.getEdgeIdsForVertex(new AbstractVertexRef(vertexNamespace, "6")).length == 2);
-        Assert.assertTrue(topologyProvider.getEdgeIdsForVertex(new AbstractVertexRef(vertexNamespace, "7")).length == 2);
-        Assert.assertTrue(topologyProvider.getEdgeIdsForVertex(new AbstractVertexRef(vertexNamespace, "8")).length == 2);
+        Assert.assertEquals(2, topologyProvider.getEdgeIdsForVertex(new AbstractVertexRef(vertexNamespace, "1")).length);
+        Assert.assertEquals(2, topologyProvider.getEdgeIdsForVertex(new AbstractVertexRef(vertexNamespace, "2")).length);
+        Assert.assertEquals(2, topologyProvider.getEdgeIdsForVertex(new AbstractVertexRef(vertexNamespace, "3")).length);
+        Assert.assertEquals(2, topologyProvider.getEdgeIdsForVertex(new AbstractVertexRef(vertexNamespace, "4")).length);
+        Assert.assertEquals(2, topologyProvider.getEdgeIdsForVertex(new AbstractVertexRef(vertexNamespace, "5")).length);
+        Assert.assertEquals(2, topologyProvider.getEdgeIdsForVertex(new AbstractVertexRef(vertexNamespace, "6")).length);
+        Assert.assertEquals(2, topologyProvider.getEdgeIdsForVertex(new AbstractVertexRef(vertexNamespace, "7")).length);
+        Assert.assertEquals(2, topologyProvider.getEdgeIdsForVertex(new AbstractVertexRef(vertexNamespace, "8")).length);
         
         /**
          * This is a little hokey because it relies on the fact that edges are only judged to be equal based

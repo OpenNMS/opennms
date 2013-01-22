@@ -181,11 +181,10 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
 
     @Override
     public void load(String filename) throws MalformedURLException, JAXBException {
-        if (filename == null) {
-            loadtopology();
-        } else {
-            loadfromfile(filename);
+        if (filename != null) {
+            LoggerFactory.getLogger(LinkdTopologyProvider.class).warn("Filename that was specified for linkd topology will be ignored: " + filename + ", using " + m_configurationFile + " instead");
         }
+        loadtopology();
     }
 
     private static WrappedGraph getGraphFromFile(File file) throws JAXBException, MalformedURLException {
@@ -194,21 +193,12 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         return (WrappedGraph) u.unmarshal(file.toURI().toURL());
     }
 
-    private void loadfromfile(String filename) throws MalformedURLException, JAXBException {
-        File file = new File(filename);
-        if (file.exists() && file.canRead()) {
-            WrappedGraph graph = getGraphFromFile(file);
-            addVertices(graph.m_vertices.toArray(new Vertex[0]));
-            addEdges(graph.m_edges.toArray(new Edge[0]));
-        }
-    }
-
     //@Transactional
     private void loadtopology() throws MalformedURLException, JAXBException {
         log("loadtopology: Clear " + VertexProvider.class.getSimpleName());
         clearVertices();
         log("loadtopology: Clear " + EdgeProvider.class.getSimpleName());
-        clearVertices();
+        clearEdges();
 
         Map<String, Vertex> vertexes = new HashMap<String,Vertex>();
         List<Edge> edges = new ArrayList<Edge>();
@@ -216,21 +206,20 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
             log("loadtopology: parsing link: " + link.getDataLinkInterfaceId());
 
             OnmsNode node = m_nodeDao.get(link.getNode().getId());
-            //OnmsNode node = link.getNode();
-            log("loadtopology: found node: " + node.getLabel());
+            log("loadtopology: found source node: " + node.getLabel());
             String sourceId = node.getNodeId();
             Vertex source;
-            if ( vertexes.containsKey(sourceId)) {
+            if (vertexes.containsKey(sourceId)) {
                 source = vertexes.get(sourceId);
             } else {
-                log("loadtopology: adding source as vertex: " + node.getLabel());
+                log("loadtopology: adding source node as vertex: " + node.getLabel());
                 source = getVertex(node);
                 vertexes.put(sourceId, source);
             }
 
             OnmsNode parentNode = m_nodeDao.get(link.getNodeParentId());
-            log("loadtopology: found parentnode: " + parentNode.getLabel());
-                       String targetId = parentNode.getNodeId();
+            log("loadtopology: found target node: " + parentNode.getLabel());
+            String targetId = parentNode.getNodeId();
             Vertex target;
             if (vertexes.containsKey(targetId)) {
                 target = vertexes.get(targetId);
@@ -239,20 +228,22 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
                 target = getVertex(parentNode);
                 vertexes.put(targetId, target);
             }
-            AbstractEdge edge = new AbstractEdge(TOPOLOGY_NAMESPACE_LINKD, link.getDataLinkInterfaceId(),source,target); 
-            edge.setTooltipText(getEdgeTooltipText(link,source,target));
+            
+            // Create a new edge that connects the vertices
+            // TODO: Make sure that all properties are set on this object
+            AbstractEdge edge = new AbstractEdge(TOPOLOGY_NAMESPACE_LINKD, link.getDataLinkInterfaceId(), source, target); 
+            edge.setTooltipText(getEdgeTooltipText(link, source, target));
             edges.add(edge);
         }
         
-        log("loadtopology: isAddNodeWithoutLink: " + isAddNodeWithoutLink());
+        log("loadtopology: adding nodes without links: " + isAddNodeWithoutLink());
         if (isAddNodeWithoutLink()) {
             for (OnmsNode onmsnode: m_nodeDao.findAll()) {
-                log("loadtopology: parsing link less node: " + onmsnode.getLabel());
                 String nodeId = onmsnode.getNodeId();
                 if (!vertexes.containsKey(nodeId)) {
-                    log("loadtopology: adding link less node: " + onmsnode.getLabel());
-                    vertexes.put(nodeId,getVertex(onmsnode));
-                }                
+                    log("loadtopology: adding link-less node: " + onmsnode.getLabel());
+                    vertexes.put(nodeId, getVertex(onmsnode));
+                }
             }
         }
         
@@ -262,7 +253,6 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         addVertices(vertexes.values().toArray(new Vertex[0]));
         addEdges(edges.toArray(new Edge[0]));
  
-        log("loadtopology: loading topology: configFile:" + m_configurationFile);
         File configFile = new File(m_configurationFile);
 
         if (configFile.exists() && configFile.canRead()) {
@@ -270,29 +260,23 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
             m_groupCounter = 0;
             WrappedGraph graph = getGraphFromFile(configFile);
 
-            String namespace = graph.m_namespace == null ? TOPOLOGY_NAMESPACE_LINKD : graph.m_namespace;
-            if (getVertexNamespace() != namespace) { 
-                LoggerFactory.getLogger(this.getClass()).info("Creating new vertex provider with namespace {}", namespace);
-                m_vertexProvider = new SimpleVertexProvider(namespace);
-            }
-            if (getEdgeNamespace() != namespace) { 
-                LoggerFactory.getLogger(this.getClass()).info("Creating new edge provider with namespace {}", namespace);
-                m_edgeProvider = new SimpleEdgeProvider(namespace);
-            }
-
             // Add all groups to the topology
             int numberOfGroups = 0;
             for (WrappedVertex vertex: graph.m_vertices) {
                 if (!vertex.leaf) {
                     log("loadtopology: adding group to topology: " + vertex.id);
-                    // Find the highest index group number and start the index for new groups above it
-                    try {
-                        int groupNumber = Integer.parseInt(vertex.id.substring(LINKD_GROUP_ID_PREFIX.length()));
-                        if (m_groupCounter <= groupNumber) {
-                            m_groupCounter = groupNumber + 1;
+                    if (vertex.namespace == null || vertex.id == null) {
+                        LoggerFactory.getLogger(this.getClass()).warn("Invalid vertex unmarshalled from {}: {}", m_configurationFile, vertex);
+                    } else if (vertex.id.startsWith(LINKD_GROUP_ID_PREFIX)) {
+                        try {
+                            // Find the highest index group number and start the index for new groups above it
+                            int groupNumber = Integer.parseInt(vertex.id.substring(LINKD_GROUP_ID_PREFIX.length()));
+                            if (m_groupCounter <= groupNumber) {
+                                m_groupCounter = groupNumber + 1;
+                            }
+                        } catch (NumberFormatException e) {
+                            // Ignore this group ID since it doesn't conform to our pattern for auto-generated IDs
                         }
-                    } catch (NumberFormatException e) {
-                        // Ignore this group ID since it doesn't conform to our pattern for auto-generated IDs
                     }
                     AbstractVertex newVertex = addGroup(vertex.id, vertex.iconKey, vertex.label);
                     newVertex.setIpAddress(vertex.ipAddr);
@@ -315,6 +299,8 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
                 }
             }
             log("Found " + numberOfGroups + " groups");
+        } else {
+            log("loadtopology: could not load topology configFile:" + m_configurationFile);
         }
     }
 

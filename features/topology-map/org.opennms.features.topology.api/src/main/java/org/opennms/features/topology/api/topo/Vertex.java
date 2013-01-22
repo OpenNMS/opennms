@@ -33,9 +33,9 @@ public interface Vertex extends VertexRef {
 	 */
 	VertexRef getParent();
 
-	int getX();
+	Integer getX();
 
-	int getY();
+	Integer getY();
 
 	boolean isLocked();
 
@@ -43,5 +43,5 @@ public interface Vertex extends VertexRef {
 
 	String getIpAddress();
 
-	int getNodeID();
+	Integer getNodeID();
 }

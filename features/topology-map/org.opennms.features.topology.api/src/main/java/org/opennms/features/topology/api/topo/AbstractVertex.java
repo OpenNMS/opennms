@@ -37,12 +37,12 @@ public class AbstractVertex extends AbstractVertexRef implements Vertex {
 	private String m_iconKey;
 	private String m_styleName;
 	private VertexRef m_parent;
-	int m_x;
-	int m_y;
+	private Integer m_x;
+	private Integer m_y;
 	private boolean m_selected;
 	private boolean m_locked = false;
 	private String m_ipAddr ="127.0.0.1";
-	private int m_nodeID = -1;
+	private Integer m_nodeID;
 
 	public AbstractVertex(String namespace, String id) {
 		super(namespace, id);
@@ -89,20 +89,20 @@ public class AbstractVertex extends AbstractVertexRef implements Vertex {
 	}
 
 	@Override
-	public final int getX() {
+	public final Integer getX() {
 		return m_x;
 	}
 
-	public final void setX(int x) {
+	public final void setX(Integer x) {
 		m_x = x;
 	}
 
 	@Override
-	public final int getY() {
+	public final Integer getY() {
 		return m_y;
 	}
 
-	public final void setY(int y) {
+	public final void setY(Integer y) {
 		m_y = y;
 	}
 
@@ -151,11 +151,11 @@ public class AbstractVertex extends AbstractVertexRef implements Vertex {
 	}
 
 	@Override
-	public final int getNodeID() {
+	public final Integer getNodeID() {
 		return m_nodeID;
 	}
 
-	public final void setNodeID(int nodeID) {
+	public final void setNodeID(Integer nodeID) {
 		m_nodeID = nodeID;
 	}
 

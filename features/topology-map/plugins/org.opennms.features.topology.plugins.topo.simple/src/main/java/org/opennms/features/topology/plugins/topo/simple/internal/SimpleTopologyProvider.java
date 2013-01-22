@@ -145,7 +145,7 @@ public class SimpleTopologyProvider extends AbstractTopologyProvider implements 
                         m_groupCounter = groupNumber + 1;
                     }
                 } catch (NumberFormatException e) {
-                    continue;
+                    // Ignore this group ID since it doesn't conform to our pattern for auto-generated IDs
                 }
             }
             AbstractVertex newVertex;
@@ -185,7 +185,7 @@ public class SimpleTopologyProvider extends AbstractTopologyProvider implements 
                     }
                     */
                 } catch (NumberFormatException e) {
-                    continue;
+                    // Ignore this edge ID since it doesn't conform to our pattern for auto-generated IDs
                 }
             }
             AbstractEdge newEdge = new AbstractEdge(edge.namespace, edge.id, m_vertexProvider.getVertex(edge.source), m_vertexProvider.getVertex(edge.target));

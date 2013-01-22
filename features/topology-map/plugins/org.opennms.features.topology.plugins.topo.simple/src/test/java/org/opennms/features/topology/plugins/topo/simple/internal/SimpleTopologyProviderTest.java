@@ -74,7 +74,7 @@ import com.vaadin.ui.Window;
 
 public class SimpleTopologyProviderTest {
 
-    private class TestOperationContext implements OperationContext {
+    private static class TestOperationContext implements OperationContext {
         
         private GraphContainer m_graphContainer;
 
@@ -104,9 +104,17 @@ public class SimpleTopologyProviderTest {
 		}
         
     }
-    
+
+    private static TestOperationContext getOperationContext(GraphContainer mockedContainer) {
+        return new TestOperationContext(mockedContainer);
+    }
+
+    private VertexRef addVertexToTopr() {
+        return m_topologyProvider.addVertex(0, 0);
+    }
+
     private GraphProvider m_topologyProvider;
-    
+
     @Before
     public void setUp() {
         if(m_topologyProvider == null) {
@@ -142,7 +150,7 @@ public class SimpleTopologyProviderTest {
     
 	@Test
 	public void test() throws Exception {
-		assertTrue(m_topologyProvider.getVertices().size() == 0);
+		assertEquals(0, m_topologyProvider.getVertices().size());
 
 		Vertex vertexA = m_topologyProvider.addVertex(50, 100);
 		assertEquals(1, m_topologyProvider.getVertices().size());
@@ -244,10 +252,10 @@ public class SimpleTopologyProviderTest {
 		assertEquals("Vertex v0", v0.getLabel());
 		assertEquals("64.146.64.214", v0.getIpAddress());
 		assertEquals(false, v0.isLocked());
-		assertEquals(-1, v0.getNodeID());
+		assertEquals(new Integer(-1), v0.getNodeID());
 		assertEquals(false, v0.isSelected());
-		assertEquals(50, v0.getX());
-		assertEquals(100, v0.getY());
+		assertEquals(new Integer(50), v0.getX());
+		assertEquals(new Integer(100), v0.getY());
 		assertEquals(g0, v0.getParent());
 		
 		assertEquals(2, topologyProvider.getChildren(g0).size());
@@ -263,7 +271,7 @@ public class SimpleTopologyProviderTest {
 
 		for (Vertex vertex : topologyProvider.getVertices()) {
 			assertEquals("vertex", vertex.getNamespace());
-			assertTrue("127.0.0.1".equals(vertex.getIpAddress()) || "64.146.64.214".equals(vertex.getIpAddress()));
+			assertTrue(vertex.getIpAddress(), "127.0.0.1".equals(vertex.getIpAddress()) || "64.146.64.214".equals(vertex.getIpAddress()));
 		}
 		for (Edge edge : topologyProvider.getEdges()) {
 			assertEquals("vertex", edge.getNamespace());
@@ -466,14 +474,5 @@ public class SimpleTopologyProviderTest {
         }
         
         EasyMock.verify(graphContainer);
-    }
-	
-	
-	private TestOperationContext getOperationContext(GraphContainer mockedContainer) {
-        return new TestOperationContext(mockedContainer);
-    }
-	
-	private VertexRef addVertexToTopr() {
-	    return m_topologyProvider.addVertex(0, 0);
     }
 }
