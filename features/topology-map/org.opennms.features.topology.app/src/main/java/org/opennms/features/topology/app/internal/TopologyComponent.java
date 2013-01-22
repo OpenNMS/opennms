@@ -252,9 +252,7 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
             int x = (Integer) props.get("x");
             int y = (Integer) props.get("y");
             double scrollVal = (Double) props.get("scrollVal");
-            //m_viewManager.setCenter(new Point(x, y));
-            //m_viewManager.setScale( m_viewManager.getScale() + scrollVal );
-            //m_viewManager.zoomToPoint(scrollVal, new Point(x, y));
+            m_viewManager.zoomToPoint(m_viewManager.getScale() + scrollVal, new Point(x, y));
         }
         
         if(variables.containsKey("clientCenterPoint")) {

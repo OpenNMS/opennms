@@ -417,7 +417,8 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 		m_svgDragHandlerManager.addDragBehaviorHandler(MarqueeSelectHandler.DRAG_BEHAVIOR_KEY, new MarqueeSelectHandler(this, m_topologyView));
 		m_svgDragHandlerManager.setCurrentDragHandler(PanHandler.DRAG_BEHAVIOR_KEY);
 		setupDragBehavior(m_topologyView.getSVGElement(), m_svgDragHandlerManager);
-		D3.d3().select(m_topologyView.getSVGElement()).on("dblclick", new Handler<Void>() {
+		D3 svgElement = D3.d3().select(m_topologyView.getSVGElement());
+        svgElement.on("dblclick", new Handler<Void>() {
 
             @Override
             public void call(Void t, int index) {
@@ -426,7 +427,18 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
                 onBackgroundDoubleClick(m_topologyView.getPoint(pos.get(0), pos.get(1)));
             }
         
+		}).on("mousewheel", new Handler<Void>() {
+
+            @Override
+            public void call(Void t, int index) {
+                double scrollVal = (double)D3.getEvent().getMouseWheelVelocityY()/ 30.0;
+                JsArrayInteger pos = D3.getMouse(m_topologyView.getSVGElement());
+                SVGPoint centerPos = m_topologyView.getCenterPos(m_graph.getBoundingBox());
+                onMouseWheel(scrollVal, (int)centerPos.getX(), (int)centerPos.getY());
+            }
+            
 		});
+		
 		
 		D3Behavior dragBehavior = new D3Behavior() {
 
@@ -922,12 +934,12 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
     }
 
     @Override
-    public void onMouseWheel(double scrollVal, SVGPoint center) {
+    public void onMouseWheel(double scrollVal, int x, int y) {
         Map<String, Object> props = new HashMap<String, Object>();
-        props.put("x", (int)Math.round(center.getX()));
-        props.put("y", (int)Math.round(center.getY()));
+        props.put("x", x);
+        props.put("y", y);
         props.put("scrollVal", scrollVal);
-        //m_client.updateVariable(getPaintableId(), "scrollWheel", props, true);
+        m_client.updateVariable(getPaintableId(), "scrollWheel", props, true);
     }
     
     public static final native void eval(JavaScriptObject elem) /*-{
