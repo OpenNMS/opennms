@@ -1676,6 +1676,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
             }
             intf.m_ipHostName = ipIface.getIpHostName();
             intf.m_ipAddr = InetAddressUtils.str(ipIface.getIpAddress());
+            intf.m_isSnmpPrimary = ipIface.getIsSnmpPrimary().getCode();
             intf.m_isManaged = ipIface.getIsManaged().charAt(0);
             if(ipIface.getIpLastCapsdPoll() != null) {
                 intf.m_ipLastCapsdPoll = Util.formatDateToUIString(ipIface.getIpLastCapsdPoll());
