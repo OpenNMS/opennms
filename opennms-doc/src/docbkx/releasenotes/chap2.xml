@@ -179,6 +179,42 @@
 
 	<!-- Start 1.10 -->
 
+	<section id="opennms-1.10.8">
+		<title>Changes in OpenNMS 1.10.8</title>
+
+		<section id="opennms-1.10.8-bug">
+			<title>Bug</title>
+
+			<itemizedlist>
+				<listitem><para>NodeAvailabilityReport.jrxml doesn&#39;t work: PSQLException caused by date string in french locale (Issue <ulink url='http://issues.opennms.org/browse/NMS-5379'>NMS-5379</ulink>)</para></listitem>
+				<listitem><para>subreports/InterfaceAvailabilityReport_subreport1.jrxml doesn&#39;t work on my locale (Issue <ulink url='http://issues.opennms.org/browse/NMS-5457'>NMS-5457</ulink>)</para></listitem>
+				<listitem><para>SnmpMonitor is not able to manage &quot;OCTET STRING&quot; (Issue <ulink url='http://issues.opennms.org/browse/NMS-5563'>NMS-5563</ulink>)</para></listitem>
+				<listitem><para>Selecting Surveillance Categories Per Node Broken (Issue <ulink url='http://issues.opennms.org/browse/NMS-5609'>NMS-5609</ulink>)</para></listitem>
+				<listitem><para>Nodes with the same IP show up in the wrong categories (availability table on the index page) (Issue <ulink url='http://issues.opennms.org/browse/NMS-5611'>NMS-5611</ulink>)</para></listitem>
+				<listitem><para>JavaSendMailer throws NPE when no e-mail address configured for report (Issue <ulink url='http://issues.opennms.org/browse/NMS-5665'>NMS-5665</ulink>)</para></listitem>
+				<listitem><para>The search page is not displaying the services correctly if Capsd is disabled (Issue <ulink url='http://issues.opennms.org/browse/NMS-5669'>NMS-5669</ulink>)</para></listitem>
+				<listitem><para>The NTP Detector is broken (Issue <ulink url='http://issues.opennms.org/browse/NMS-5677'>NMS-5677</ulink>)</para></listitem>
+				<listitem><para>Add a way to use the IP address when building criteria selections for the SNMP interfaces on the SNMP Poller&#39;s configuration file. (Issue <ulink url='http://issues.opennms.org/browse/NMS-5683'>NMS-5683</ulink>)</para></listitem>
+				<listitem><para>The JRobin Converter doesn&#39;t work when the RRD Step is different than 5 minutes (Issue <ulink url='http://issues.opennms.org/browse/NMS-5685'>NMS-5685</ulink>)</para></listitem>
+				<listitem><para>The hover icon of the delete button from the Surveillance Categories Page is wrong. (Issue <ulink url='http://issues.opennms.org/browse/NMS-5693'>NMS-5693</ulink>)</para></listitem>
+				<listitem><para>Categories with spaces or non alphanumeric characters breaks the delete operation on the WebUI. (Issue <ulink url='http://issues.opennms.org/browse/NMS-5694'>NMS-5694</ulink>)</para></listitem>
+				<listitem><para>google-collections has been replaced with guava (Issue <ulink url='http://issues.opennms.org/browse/NMS-5695'>NMS-5695</ulink>)</para></listitem>
+				<listitem><para>HttpCollector doesn&#39;t detect response locale (PATCH INCLUDED) (Issue <ulink url='http://issues.opennms.org/browse/NMS-5701'>NMS-5701</ulink>)</para></listitem>
+				<listitem><para>Default poller-configuration.xml specifies timeout, retry, port for SNMP-based services (Issue <ulink url='http://issues.opennms.org/browse/NMS-5703'>NMS-5703</ulink>)</para></listitem>
+				<listitem><para>WMI Capsd plugin mixes up username, domain, and password (Issue <ulink url='http://issues.opennms.org/browse/NMS-5707'>NMS-5707</ulink>)</para></listitem>
+				<listitem><para>Wrong redirect after clicking on any ticket related button from the alarm details page (Issue <ulink url='http://issues.opennms.org/browse/NMS-5713'>NMS-5713</ulink>)</para></listitem>
+				<listitem><para>AssetRecordDao.findByNodeId is not working (Issue <ulink url='http://issues.opennms.org/browse/NMS-5714'>NMS-5714</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+		<section id="opennms-1.10.8-enhancement">
+			<title>Enhancement</title>
+
+			<itemizedlist>
+				<listitem><para>Improve the ticketer API in order to access more information about the ticket&#39;s originator. (Issue <ulink url='http://issues.opennms.org/browse/NMS-5705'>NMS-5705</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+	</section>
+
 	<section id="opennms-1.10.7">
 		<title>Changes in OpenNMS 1.10.7</title>
 
