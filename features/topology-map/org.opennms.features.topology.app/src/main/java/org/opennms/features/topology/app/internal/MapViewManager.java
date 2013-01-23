@@ -81,11 +81,12 @@ public class MapViewManager{
         
         return new BoundingBox(m_center, width, height); 
     }
+    
     public double getScale() { 
-        
         return m_scale;
         
     }
+    
     public void setScale(double scale) {
         double oldScale = m_scale;
         m_scale = scale;
