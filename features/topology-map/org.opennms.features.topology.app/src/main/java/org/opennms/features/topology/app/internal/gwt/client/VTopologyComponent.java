@@ -147,7 +147,8 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
         
 
 
-		public SVGGraphDrawer(D3Behavior dragBehavior, ServiceRegistry serviceRegistry) {
+		@SuppressWarnings("unchecked")
+        public SVGGraphDrawer(D3Behavior dragBehavior, ServiceRegistry serviceRegistry) {
 			m_dragBehavior = dragBehavior;
 			
 			m_clickHandler = serviceRegistry.findProvider(Handler.class, "(handlerType=vertexClick)");
@@ -244,9 +245,7 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 			edgeSelection.enter().create(GWTEdge.create()).call(setupEdgeEventHandlers());
 			
             //Scaling and Fit to Zoom transitions
-			SVGMatrix orig = topologyView.getSVGViewPort().getCTM();
 			SVGMatrix transform = topologyView.calculateNewTransform(graph.getBoundingBox());
-			//consoleLog("Orig: " + matrixTransform(orig) + "\n new: " + matrixTransform(transform));
             
             D3.d3().select(topologyView.getSVGViewPort())
             .transition().duration(1000)
@@ -392,6 +391,7 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 		m_graph = GWTGraph.create();
 	}
 
+    @SuppressWarnings("serial")
     @Override
 	protected void onLoad() {
 		super.onLoad();
@@ -422,7 +422,6 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 
             @Override
             public void call(Void t, int index) {
-                NativeEvent event = D3.getEvent();
                 JsArrayInteger pos = D3.getMouse(m_topologyView.getSVGElement());
                 onBackgroundDoubleClick(m_topologyView.getPoint(pos.get(0), pos.get(1)));
             }
@@ -432,7 +431,6 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
             @Override
             public void call(Void t, int index) {
                 double scrollVal = (double)D3.getEvent().getMouseWheelVelocityY()/ 30.0;
-                JsArrayInteger pos = D3.getMouse(m_topologyView.getSVGElement());
                 SVGPoint centerPos = m_topologyView.getCenterPos(m_graph.getBoundingBox());
                 onMouseWheel(scrollVal, (int)centerPos.getX(), (int)centerPos.getY());
             }
