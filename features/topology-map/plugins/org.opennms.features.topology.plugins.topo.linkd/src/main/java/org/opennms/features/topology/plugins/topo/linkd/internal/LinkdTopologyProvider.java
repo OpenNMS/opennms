@@ -194,7 +194,6 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         log("loadtopology: Clear " + EdgeProvider.class.getSimpleName());
         clearEdges();
 
-        Map<String, Vertex> vertexes = new HashMap<String,Vertex>();
         List<Edge> edges = new ArrayList<Edge>();
         for (DataLinkInterface link: m_dataLinkInterfaceDao.findAll()) {
             log("loadtopology: parsing link: " + link.getDataLinkInterfaceId());
@@ -202,51 +201,43 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
             OnmsNode node = m_nodeDao.get(link.getNode().getId());
             log("loadtopology: found source node: " + node.getLabel());
             String sourceId = node.getNodeId();
-            Vertex source;
-            if (vertexes.containsKey(sourceId)) {
-                source = vertexes.get(sourceId);
-            } else {
+            Vertex source = getVertex(getVertexNamespace(), sourceId);
+            if (source == null) {
                 log("loadtopology: adding source node as vertex: " + node.getLabel());
                 source = getVertex(node);
-                vertexes.put(sourceId, source);
+                addVertices(source);
             }
 
             OnmsNode parentNode = m_nodeDao.get(link.getNodeParentId());
             log("loadtopology: found target node: " + parentNode.getLabel());
             String targetId = parentNode.getNodeId();
-            Vertex target;
-            if (vertexes.containsKey(targetId)) {
-                target = vertexes.get(targetId);
-            } else {
+            Vertex target = getVertex(getVertexNamespace(), targetId);
+            if (target == null) {
                 log("loadtopology: adding target as vertex: " + parentNode.getLabel());
                 target = getVertex(parentNode);
-                vertexes.put(targetId, target);
+                addVertices(target);
             }
             
             // Create a new edge that connects the vertices
             // TODO: Make sure that all properties are set on this object
-            AbstractEdge edge = new AbstractEdge(getEdgeNamespace(), link.getDataLinkInterfaceId(), source, target); 
+            AbstractEdge edge = connectVertices(link.getDataLinkInterfaceId(), source, target); 
             edge.setTooltipText(getEdgeTooltipText(link, source, target));
-            edges.add(edge);
         }
         
         log("loadtopology: adding nodes without links: " + isAddNodeWithoutLink());
         if (isAddNodeWithoutLink()) {
             for (OnmsNode onmsnode: m_nodeDao.findAll()) {
                 String nodeId = onmsnode.getNodeId();
-                if (!vertexes.containsKey(nodeId)) {
+                if (getVertex(getVertexNamespace(), nodeId) == null) {
                     log("loadtopology: adding link-less node: " + onmsnode.getLabel());
-                    vertexes.put(nodeId, getVertex(onmsnode));
+                    addVertices(getVertex(onmsnode));
                 }
             }
         }
         
-        log("Found " + vertexes.size() + " vertices");
-        log("Found " + edges.size() + " edges");
+        log("Found " + getVertices().size() + " vertices");
+        log("Found " + getEdges().size() + " edges");
 
-        addVertices(vertexes.values().toArray(new Vertex[0]));
-        addEdges(edges.toArray(new Edge[0]));
- 
         File configFile = new File(m_configurationFile);
 
         if (configFile.exists() && configFile.canRead()) {

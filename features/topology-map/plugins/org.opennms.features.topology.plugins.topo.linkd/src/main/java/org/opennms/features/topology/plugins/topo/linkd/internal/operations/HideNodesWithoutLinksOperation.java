@@ -28,7 +28,10 @@
 
 package org.opennms.features.topology.plugins.topo.linkd.internal.operations;
 
+import java.net.MalformedURLException;
 import java.util.List;
+
+import javax.xml.bind.JAXBException;
 
 import org.opennms.features.topology.api.CheckedOperation;
 import org.opennms.features.topology.api.OperationContext;
@@ -50,6 +53,15 @@ public class HideNodesWithoutLinksOperation implements CheckedOperation {
 		if (enabled(targets, operationContext)) {
 			LoggerFactory.getLogger(this.getClass()).debug("switched addNodeWithoutLinks to: " + !m_topologyProvider.isAddNodeWithoutLink());
 			m_topologyProvider.setAddNodeWithoutLink(!m_topologyProvider.isAddNodeWithoutLink());
+			try {
+				m_topologyProvider.load(null);
+			} catch (MalformedURLException e) {
+				// TODO: Display the error in the UI
+				LoggerFactory.getLogger(this.getClass()).error(e.getMessage(), e);
+			} catch (JAXBException e) {
+				// TODO: Display the error in the UI
+				LoggerFactory.getLogger(this.getClass()).error(e.getMessage(), e);
+			}
 			operationContext.getGraphContainer().redoLayout();
 		}
 		return null;
@@ -67,7 +79,6 @@ public class HideNodesWithoutLinksOperation implements CheckedOperation {
 	@Override
 	public boolean enabled(List<VertexRef> targets, OperationContext operationContext) {
 		GraphProvider activeGraphProvider = operationContext.getGraphContainer().getBaseTopology();
-		LoggerFactory.getLogger(this.getClass()).debug(activeGraphProvider + " ?= " + m_topologyProvider);
 		return m_topologyProvider.getVertexNamespace().equals(activeGraphProvider.getVertexNamespace());
 	}
 
