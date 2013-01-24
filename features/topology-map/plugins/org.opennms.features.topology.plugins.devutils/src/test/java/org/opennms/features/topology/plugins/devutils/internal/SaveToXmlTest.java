@@ -45,6 +45,7 @@ import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.plugins.topo.simple.internal.SimpleTopologyProvider;
 
+import com.vaadin.data.Property;
 import com.vaadin.ui.Window;
 
 public class SaveToXmlTest {
@@ -212,6 +213,12 @@ public class SaveToXmlTest {
 						throw new UnsupportedOperationException("GraphContainer.getVertexRefForest is not yet implemented.");
 					}
 
+                    @Override
+                    public Property getScaleProperty() {
+                        // TODO Auto-generated method stub
+                        return null;
+                    }
+
 					
 				};
 			}
@@ -221,4 +228,8 @@ public class SaveToXmlTest {
 		
 		
 	}
+
+    public Property getScaleProperty() {
+        return null;
+    }
 }

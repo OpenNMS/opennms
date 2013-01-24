@@ -43,7 +43,6 @@ import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
 import com.github.wolfie.refresher.Refresher;
 import com.vaadin.Application;
 import com.vaadin.data.Property;
-import com.vaadin.data.util.BeanItem;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.AbsoluteLayout;
@@ -130,8 +129,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 
 		m_graphContainer.setLayoutAlgorithm(new FRLayoutAlgorithm());
 
-		BeanItem<GraphContainer> item = new BeanItem<GraphContainer>(m_graphContainer);
-		final Property scale = item.getItemProperty("scale");
+		final Property scale = m_graphContainer.getScaleProperty();
 
 		m_topologyComponent = new TopologyComponent(m_graphContainer, scale);
 		m_topologyComponent.setIconRepoManager(m_iconRepositoryManager);
@@ -153,8 +151,6 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 		scale.setValue(0);
 		slider.setImmediate(true);
 
-		final Property zoomLevel = item.getItemProperty("semanticZoomLevel");
-		
 		final Button zoomInBtn = new Button();
 		zoomInBtn.setIcon(new ThemeResource("images/plus.png"));
 		zoomInBtn.setDescription("Expand Semantic Zoom Level");
@@ -162,9 +158,9 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 		zoomInBtn.addListener(new ClickListener() {
 
             public void buttonClick(ClickEvent event) {
-				int szl = (Integer) zoomLevel.getValue();
+				int szl = (Integer) m_graphContainer.getSemanticZoomLevel();
 				szl++;
-				zoomLevel.setValue(szl);
+				m_graphContainer.setSemanticZoomLevel(szl);
 				setSemanticZoomLevel(szl);
 				saveHistory();
 			}
@@ -177,10 +173,10 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 		zoomOutBtn.addListener(new ClickListener() {
 
 			public void buttonClick(ClickEvent event) {
-				int szl = (Integer) zoomLevel.getValue();
+				int szl = (Integer) m_graphContainer.getSemanticZoomLevel();
 				if(szl > 0) {
 				    szl--;
-				    zoomLevel.setValue(szl);
+				    m_graphContainer.setSemanticZoomLevel(szl);
 				    setSemanticZoomLevel(szl);
 				    saveHistory();
 				} 

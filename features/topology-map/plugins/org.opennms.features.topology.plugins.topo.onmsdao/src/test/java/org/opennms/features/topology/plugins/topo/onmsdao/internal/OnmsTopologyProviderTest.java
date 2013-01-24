@@ -30,6 +30,7 @@ package org.opennms.features.topology.plugins.topo.onmsdao.internal;
 
 
 import java.util.Collection;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -50,6 +51,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import com.vaadin.data.Property;
 import com.vaadin.ui.Window;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -212,6 +214,10 @@ public class OnmsTopologyProviderTest {
 			Collection<? extends VertexRef> vertexRefs) {
 		throw new UnsupportedOperationException("GraphContainer.getVertexRefForest is not yet implemented.");
 	}
+
+    public Property getScaleProperty() {
+        return null;
+    }
 
 
     }

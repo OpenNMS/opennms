@@ -1004,6 +1004,10 @@ public class SimpleGraphContainer implements GraphContainer {
 		return !getChildren(vRef).isEmpty();
 	}
 
+    public Property getScaleProperty() {
+        return null;
+    }
+
 	
 
 

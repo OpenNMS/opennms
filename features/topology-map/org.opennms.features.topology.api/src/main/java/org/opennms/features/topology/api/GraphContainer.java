@@ -37,6 +37,8 @@ import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 
+import com.vaadin.data.Property;
+
 public interface GraphContainer extends DisplayState {
 	
 	public interface ChangeListener {
@@ -82,5 +84,7 @@ public interface GraphContainer extends DisplayState {
 
     @Deprecated
     public void setDataSource(TopologyProvider topologyProvider);
+
+    public abstract Property getScaleProperty();
 
 }

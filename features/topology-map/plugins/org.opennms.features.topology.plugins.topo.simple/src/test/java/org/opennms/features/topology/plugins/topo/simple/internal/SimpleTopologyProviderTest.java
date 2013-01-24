@@ -62,9 +62,10 @@ import org.opennms.features.topology.plugins.topo.simple.internal.operations.Add
 import org.opennms.features.topology.plugins.topo.simple.internal.operations.ConnectOperation;
 import org.opennms.features.topology.plugins.topo.simple.internal.operations.RemoveVertexOperation;
 
-import com.vaadin.data.Item;
 import com.vaadin.data.Container.ItemSetChangeEvent;
 import com.vaadin.data.Container.ItemSetChangeListener;
+import com.vaadin.data.Item;
+import com.vaadin.data.Property;
 import com.vaadin.ui.Window;
 
 public class SimpleTopologyProviderTest {
@@ -214,6 +215,10 @@ public class SimpleTopologyProviderTest {
 			Collection<? extends VertexRef> vertexRefs) {
 		throw new UnsupportedOperationException("GraphContainer.getVertexRefForest is not yet implemented.");
 	}
+
+    public Property getScaleProperty() {
+        return null;
+    }
 
     }
     
