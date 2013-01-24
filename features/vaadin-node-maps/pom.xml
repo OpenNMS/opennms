@@ -78,13 +78,13 @@
 				<configuration>
 					<bundles>
 						<bundle>mvn:org.opennms.features/vaadin-node-maps/${project.version}</bundle>
+						<bundle>mvn:org.opennms.features.geocoder/org.opennms.features.geocoder.google/${project.version}</bundle>
+						<bundle>mvn:org.opennms.features.geocoder/org.opennms.features.geocoder.nominatim/${project.version}</bundle>
+						<!-- <bundle>mvn:org.opennms.features.geocoder/org.opennms.features.geocoder.nominatim/${project.version}/cfg</bundle> -->
 					</bundles>
 					<features>
 						<feature>vaadin</feature>
 					</features>
-					<!-- <configs> <config> <name>${bundle.symbolicName}</name> <contents> 
-						servletAlias=/node-maps widgetset=org.opennms.features.vaadin.nodemaps.gwt.NodeMapsWidgetset 
-						</contents> </config> </configs> -->
 				</configuration>
 			</plugin>
 		</plugins>
@@ -197,6 +197,7 @@
 		<dependency>
 			<groupId>org.ops4j.pax.vaadin</groupId>
 			<artifactId>service</artifactId>
+			<scope>provided</scope>
 		</dependency>
 		<dependency> <!-- Required by pax/vaadin -->
 			<groupId>javax.servlet</groupId>
@@ -209,16 +210,8 @@
 		<dependency>
 			<groupId>com.vaadin</groupId>
 			<artifactId>vaadin</artifactId>
-		</dependency>
-<!--
-		<dependency>
-			<groupId>com.google.gwt</groupId>
-			<artifactId>gwt-dev</artifactId>
-			<version>${gwtVersion}</version>
-			<optional>true</optional>
 			<scope>provided</scope>
 		</dependency>
--->
 		<dependency>
 			<groupId>com.google.gwt</groupId>
 			<artifactId>gwt-user</artifactId>
@@ -229,6 +222,10 @@
 
 		<!-- Node Maps Dependencies -->
 
+		<dependency>
+			<groupId>org.opennms.features.geocoder</groupId>
+			<artifactId>org.opennms.features.geocoder.api</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>org.opennms.dependencies</groupId>
 			<artifactId>spring-dependencies</artifactId>
@@ -256,6 +253,21 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.opennms.features.geocoder</groupId>
+			<artifactId>org.opennms.features.geocoder.nominatim</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.opennms</groupId>
+			<artifactId>opennms-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.opennms.core.test-api</groupId>
+			<artifactId>org.opennms.core.test-api.lib</artifactId>
 			<scope>test</scope>
 		</dependency>
 

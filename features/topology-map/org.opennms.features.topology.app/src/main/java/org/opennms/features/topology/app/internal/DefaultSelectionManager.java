@@ -51,27 +51,40 @@ public class DefaultSelectionManager implements SelectionManager {
 	
 	@Override
 	public void selectVertexRefs(Collection<? extends VertexRef> vertexRefs) {
-		for(VertexRef vertexRef : vertexRefs) {
+	    int selectionSize = getSelectedVertexRefs().size();
+	    for(VertexRef vertexRef : vertexRefs) {
 			setVertexRefSelected(vertexRef, true);
 		}
-		
-		fireSelectionChanged();
+	    int selectionSizeAfterRemoval = getSelectedVertexRefs().size();
+	    
+	    if(selectionSize != selectionSizeAfterRemoval) {
+            fireSelectionChanged();
+        }
 	}
 
 	@Override
 	public void deselectVertexRefs(Collection<? extends VertexRef> vertexRefs) {
-		for(VertexRef vertexRef : vertexRefs) {
+		int selectionSize = getSelectedVertexRefs().size();
+	    for(VertexRef vertexRef : vertexRefs) {
 			setVertexRefSelected(vertexRef, false);
 		}
+		int selectionSizeAfterRemoval = getSelectedVertexRefs().size();
 		
-		fireSelectionChanged();
+		if(selectionSize != selectionSizeAfterRemoval) {
+		    fireSelectionChanged();
+		}
 	}
 
 	@Override
 	public void deselectAll() {
-		doDeselectAll();
+		int vertSelectionSize = m_selectedVertices.size();
+		int edgeSelectionSize = m_selectedEdges.size();
 		
-		fireSelectionChanged();
+	    doDeselectAll();
+		
+	    if(vertSelectionSize > m_selectedVertices.size() || edgeSelectionSize > m_selectedEdges.size()) {
+	        fireSelectionChanged();
+	    }
 	}
 
 	private void doDeselectAll() {

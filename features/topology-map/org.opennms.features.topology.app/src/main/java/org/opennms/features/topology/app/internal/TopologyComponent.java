@@ -39,6 +39,7 @@ import org.opennms.features.topology.api.BoundingBox;
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.GraphContainer.ChangeListener;
+import org.opennms.features.topology.api.Point;
 import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.SelectionManager.SelectionListener;
 import org.opennms.features.topology.api.topo.Edge;
@@ -58,7 +59,7 @@ import com.vaadin.ui.ClientWidget;
 
 
 @ClientWidget(VTopologyComponent.class)
-public class TopologyComponent extends AbstractComponent implements ChangeListener, ValueChangeListener {
+public class TopologyComponent extends AbstractComponent implements ChangeListener, ValueChangeListener, MapViewManagerListener {
 
     private static final long serialVersionUID = 1L;
     
@@ -66,6 +67,8 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
 
         private int m_clientX = 0;
         private int m_clientY = 0;
+        private int m_height;
+        private int m_width;
         
         public void setClientX(int clientX) {
             m_clientX = clientX;
@@ -82,6 +85,22 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
         public int getClientY() {
             return m_clientY;
         }
+
+        public void setClientWidth(int width) {
+            m_width = width;
+        }
+        
+        public int getClientWidth() {
+            return m_width;
+        }
+
+        public void setClientHeight(int height) {
+            m_height = height;
+        }
+        
+        public int getClientHeight() {
+            return m_height;
+        }
         
         
     }
@@ -93,10 +112,8 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
     private List<MenuItemUpdateListener> m_menuItemStateListener = new ArrayList<MenuItemUpdateListener>();
     private ContextMenuHandler m_contextMenuHandler;
     private IconRepositoryManager m_iconRepoManager;
-    private boolean m_fitToView = true;
-    private boolean m_scaleUpdateFromUI = false;
     private String m_activeTool = "pan";
-    private BoundingBox m_boundingBox = null;
+    private MapViewManager m_viewManager = new MapViewManager();
 
 	public TopologyComponent(GraphContainer dataSource, Property scale) {
 		setGraph(dataSource.getGraph());
@@ -108,15 +125,14 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
 			@Override
 			public void selectionChanged(SelectionManager selectionManager) {
 			    computeBoundsForSelected(selectionManager);
-			    requestRepaint();
 			}
 			
 		});
 
+		m_viewManager.addListener(this);
 		m_graphContainer.addChangeListener(this);
 		
 		setScaleDataSource(scale);
-				
 	}
 	
 	private void setScaleDataSource(Property scale) {
@@ -141,10 +157,10 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
     @Override
     public void paintContent(PaintTarget target) throws PaintException {
         super.paintContent(target);
-        target.addAttribute("scale", (Double)m_scale.getValue());
         target.addAttribute("activeTool", m_activeTool);
         
         BoundingBox boundingBox = getBoundingBox();
+        //System.out.println(m_viewManager);
         target.addAttribute("boundX", boundingBox.getX());
         target.addAttribute("boundY", boundingBox.getY());
         target.addAttribute("boundWidth", boundingBox.getWidth());
@@ -166,19 +182,10 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
     }
 
     private BoundingBox getBoundingBox() {
-        if(m_boundingBox  == null) {
-            return m_graphContainer.getGraph().getLayout().getBounds();
-        } else {
-            return m_boundingBox;
-        }
-    }
-
-	public boolean isFitToView() {
-        return m_fitToView;
-    }
-    
-    public void setFitToView(boolean fitToView) {
-        m_fitToView  = fitToView;
+        double scale = m_viewManager.getScale();
+        m_scale.setValue(scale);
+        
+        return m_viewManager.getCurrentBoundingBox();
     }
 
     /**
@@ -225,14 +232,6 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
             
         }
         
-        if(variables.containsKey("updatedVertex")) {
-            String vertexUpdate = (String) variables.get("updatedVertex");
-            updateVertex(vertexUpdate);
-            
-            
-            requestRepaint();
-        }
-        
         if(variables.containsKey("updateVertices")) {
             String[] vertices = (String[]) variables.get("updateVertices");
             for(String vUpdate : vertices) {
@@ -244,25 +243,20 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
             
         }
         
-        if(variables.containsKey("mapScale")) {
-            double newScale = (Double)variables.get("mapScale");
-            setScaleUpdateFromUI(true);
-            setScale(newScale);
+        if(variables.containsKey("scrollWheel")) {
+            Map<String, Object> props = (Map<String, Object>) variables.get("scrollWheel");
+            int x = (Integer) props.get("x");
+            int y = (Integer) props.get("y");
+            double scrollVal = (Double) props.get("scrollVal");
+            m_viewManager.zoomToPoint(m_viewManager.getScale() + scrollVal, new Point(x, y));
         }
         
-        if(variables.containsKey("scrollWheelScale")) {
-            double newScale = (Double)variables.get("scrollWheelScale");
-            setScale(newScale);
-        }
-        
-        if(variables.containsKey("clientX")) {
-            int clientX = (Integer) variables.get("clientX");
-            m_mapManager.setClientX(clientX);
-        }
-        
-        if(variables.containsKey("clientY")) {
-            int clientY = (Integer) variables.get("clientY");
-            m_mapManager.setClientY(clientY);
+        if(variables.containsKey("clientCenterPoint")) {
+            Map<String, Object> props = (Map<String, Object>) variables.get("clientCenterPoint");
+            int x = (Integer) props.get("x");
+            int y = (Integer) props.get("y"); 
+            m_viewManager.setCenter(new Point(x, y));
+            
         }
         
         if(variables.containsKey("contextMenu")) {
@@ -287,6 +281,26 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
             getContextMenuHandler().show(target, x, y);
         }
         
+        if(variables.containsKey("mapPhysicalBounds")) {
+            Map<String, Object> bounds = (Map<String, Object>) variables.get("mapPhysicalBounds");
+            Integer width = (Integer)bounds.get("width");
+            Integer height = (Integer)bounds.get("height");
+            
+            m_mapManager.setClientWidth(width);
+            m_mapManager.setClientHeight(height);
+            m_viewManager.setViewPort(width, height);
+            
+        }
+        
+        if(variables.containsKey("doubleClick")) {
+            Map<String, Object> props = (Map<String, Object>) variables.get("doubleClick");
+            int x = (Integer) props.get("x");
+            int y = (Integer) props.get("y");
+            
+            double scale = m_viewManager.getScale() + 0.1;
+            m_viewManager.zoomToPoint(scale, new Point(x, y));
+        }
+        
         updateMenuItems();
     }
 
@@ -298,7 +312,6 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
 		}
 
 		Collection<VertexRef> vertexTrees = m_graphContainer.getVertexRefForest(vertexRefs);
-
 	    getSelectionManager().setSelectedVertexRefs(vertexTrees);
 	}
 
@@ -325,14 +338,6 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
 
 	}
 
-    private void setScaleUpdateFromUI(boolean scaleUpdateFromUI) {
-        m_scaleUpdateFromUI  = scaleUpdateFromUI;
-    }
-    
-    private boolean isScaleUpdateFromUI() {
-        return m_scaleUpdateFromUI;
-    }
-
     private void updateVertex(String vertexUpdate) {
         String[] vertexProps = vertexUpdate.split("\\|");
         
@@ -353,9 +358,6 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
     }
     
 	protected void setScale(double scale){
-	    if(scale <= 0) {
-	        scale = 0.01;
-	    } 
 	    m_scale.setValue(scale);
     }
     
@@ -365,6 +367,7 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
 
 	private void setGraph(Graph graph) {
 		m_graph = graph;
+		m_viewManager.setMapBounds(graph.getLayout().getBounds());
 	}
 	
 	public void addMenuItemStateListener(MenuItemUpdateListener listener) {
@@ -382,25 +385,21 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
 	}
 
 	public void graphChanged(GraphContainer container) {
-		setGraph(container.getGraph());
-		setFitToView(true);
-		//re compute bounds when graph has changed if there are selected ones
+		Graph graph = container.getGraph();
+        setGraph(graph);
+		
+		m_viewManager.setMapBounds(graph.getLayout().getBounds());
 		computeBoundsForSelected(container.getSelectionManager());
-		requestRepaint();
 	}
-
+	
+	/**
+	 * ValueChange listener for the scale property
+	 */
     public void valueChange(ValueChangeEvent event) {
-        double scale = (Double) m_scale.getValue();
-        if(scale <= 0) {
-            m_scale.setValue(0.01);
-        } 
         
-        if(!isScaleUpdateFromUI()) {
-            requestRepaint();
-            setScaleUpdateFromUI(false);
-        }else {
-            setScaleUpdateFromUI(false);
-        }
+        double scale = (Double) event.getProperty().getValue();
+        
+        m_viewManager.setScale(scale);
         
     }
 
@@ -437,11 +436,17 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
                     vRefs.add(vRef);
                 }
             }
-            m_boundingBox = m_graphContainer.getGraph().getLayout().computeBoundingBox(vRefs);
+            
+            m_viewManager.setBoundingBox(m_graphContainer.getGraph().getLayout().computeBoundingBox(vRefs));
         	
         }else {
-            m_boundingBox = null;
+            m_viewManager.setBoundingBox(m_graphContainer.getGraph().getLayout().getBounds());
         }
+    }
+
+    @Override
+    public void boundingBoxChanged(MapViewManager viewManager) {
+        requestRepaint();
     }
 
 }

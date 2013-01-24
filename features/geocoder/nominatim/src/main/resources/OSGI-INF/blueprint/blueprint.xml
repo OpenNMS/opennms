@@ -1,0 +1,26 @@
+ <blueprint
+	xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+	xsi:schemaLocation="
+		http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+		http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0 https://svn.apache.org/repos/asf/aries/tags/blueprint-0.3.1/blueprint-cm/src/main/resources/org/apache/aries/blueprint/compendium/cm/blueprint-cm-1.1.0.xsd
+		http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/aries/tags/blueprint-0.3.1/blueprint-core/src/main/resources/org/apache/aries/blueprint/ext/blueprint-ext.xsd
+	">
+
+	<cm:property-placeholder id="geocoderConfig" persistent-id="org.opennms.features.geocoder.nominatim" update-strategy="reload">
+		<cm:default-properties>
+			<!-- We don't want to set these by default, we want to fail if we don't find a valid email address. -->
+			<cm:property name="emailAddress" value="" />
+			<cm:property name="referer" value="" />
+		</cm:default-properties>
+	</cm:property-placeholder>
+
+	<bean id="nominatimGeocoderService" class="org.opennms.features.geocoder.nominatim.NominatimGeocoderService" init-method="onInit">
+    	<property name="emailAddress" value="${emailAddress}" />
+        <property name="referer" value="${referer}" />
+	</bean>
+
+    <service interface="org.opennms.features.geocoder.GeocoderService"  ref="nominatimGeocoderService" ranking="100" />
+    
+</blueprint>

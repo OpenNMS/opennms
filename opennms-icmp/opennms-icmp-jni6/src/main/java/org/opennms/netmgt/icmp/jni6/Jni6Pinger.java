@@ -301,7 +301,7 @@ public class Jni6Pinger implements Pinger {
 
 	        final long threadId = Jni6PingRequest.getNextTID();
 	        for (int seqNum = 0; seqNum < count; seqNum++) {
-	            final Jni6PingRequest request = new Jni6PingRequest((Inet6Address)host, m_pingerId, seqNum, threadId, timeout == 0? DEFAULT_TIMEOUT : timeout, DEFAULT_PACKET_SIZE, 0, cb);
+	            final Jni6PingRequest request = new Jni6PingRequest((Inet6Address)host, m_pingerId, seqNum, threadId, timeout == 0? DEFAULT_TIMEOUT : timeout, 0 , DEFAULT_PACKET_SIZE, cb);
 	            s_pingTracker.sendRequest(request);
 	            Thread.sleep(pingInterval);
 	        }

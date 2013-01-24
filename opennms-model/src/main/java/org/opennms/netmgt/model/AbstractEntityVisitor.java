@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,40 +29,50 @@
 package org.opennms.netmgt.model;
 
 /**
- * <p>AbstractEntityVisitor class.</p>
+ * <p>
+ * AbstractEntityVisitor class.
+ * </p>
  */
 public class AbstractEntityVisitor implements EntityVisitor {
 
-	/** {@inheritDoc} */
-	public void visitNode(OnmsNode node) {
-	}
+    /** {@inheritDoc} */
+    @Override
+    public void visitNode(final OnmsNode node) {
+    }
 
-	/** {@inheritDoc} */
-	public void visitSnmpInterface(OnmsEntity snmpIface) {
-	}
+    /** {@inheritDoc} */
+    @Override
+    public void visitSnmpInterface(final OnmsEntity snmpIface) {
+    }
 
-	/** {@inheritDoc} */
-	public void visitIpInterface(OnmsIpInterface iface) {
-	}
+    /** {@inheritDoc} */
+    @Override
+    public void visitIpInterface(final OnmsIpInterface iface) {
+    }
 
-	/** {@inheritDoc} */
-	public void visitMonitoredService(OnmsMonitoredService monSvc) {
-	}
+    /** {@inheritDoc} */
+    @Override
+    public void visitMonitoredService(final OnmsMonitoredService monSvc) {
+    }
 
-	/** {@inheritDoc} */
-	public void visitNodeComplete(OnmsNode node) {
-	}
+    /** {@inheritDoc} */
+    @Override
+    public void visitNodeComplete(final OnmsNode node) {
+    }
 
-	/** {@inheritDoc} */
-	public void visitSnmpInterfaceComplete(OnmsEntity snmpIface) {
-	}
+    /** {@inheritDoc} */
+    @Override
+    public void visitSnmpInterfaceComplete(final OnmsEntity snmpIface) {
+    }
 
-	/** {@inheritDoc} */
-	public void visitIpInterfaceComplete(OnmsIpInterface iface) {
-	}
+    /** {@inheritDoc} */
+    @Override
+    public void visitIpInterfaceComplete(final OnmsIpInterface iface) {
+    }
 
-	/** {@inheritDoc} */
-	public void visitMonitoredServiceComplete(OnmsMonitoredService monSvc) {
-	}
+    /** {@inheritDoc} */
+    @Override
+    public void visitMonitoredServiceComplete(final OnmsMonitoredService monSvc) {
+    }
 
 }

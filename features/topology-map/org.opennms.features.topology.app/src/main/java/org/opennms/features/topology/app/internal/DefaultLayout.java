@@ -57,19 +57,29 @@ public class DefaultLayout implements Layout {
     @Override
     public BoundingBox getBounds() {
         Collection<? extends Vertex> vertices = m_graphContainer.getGraph().getDisplayVertices();
-        Collection<VertexRef> vRefs = new ArrayList<VertexRef>();
-        for(Vertex v : vertices) {
-            vRefs.add(v);
-        }
+        if(vertices.size() > 0) {
+            Collection<VertexRef> vRefs = new ArrayList<VertexRef>();
+            for(Vertex v : vertices) {
+                vRefs.add(v);
+            }
         
-        return computeBoundingBox(vRefs);
+            return computeBoundingBox(vRefs);
+        } else {
+            BoundingBox bBox = new BoundingBox();
+            bBox.addPoint(new Point(0,0));
+            return bBox;
+        }
+    }
+    
+    private BoundingBox computeBoundingBox(VertexRef vertRef) {
+        return new BoundingBox(getLocation(vertRef), 100, 100);
     }
     
     public BoundingBox computeBoundingBox(Collection<VertexRef> vertRefs) {
         if(vertRefs.size() > 0) {
             BoundingBox boundingBox = new BoundingBox();
             for(VertexRef vertRef : vertRefs) {
-                boundingBox.addPoint(getLocation(vertRef));
+                boundingBox.addBoundingbox( computeBoundingBox(vertRef) );
             }
             return boundingBox;
         }else {

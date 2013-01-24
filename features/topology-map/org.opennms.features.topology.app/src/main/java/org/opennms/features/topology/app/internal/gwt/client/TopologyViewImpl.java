@@ -8,21 +8,19 @@ import org.opennms.features.topology.app.internal.gwt.client.d3.Tween;
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGElement;
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGGElement;
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGMatrix;
+import org.opennms.features.topology.app.internal.gwt.client.svg.SVGPoint;
 import org.opennms.features.topology.app.internal.gwt.client.view.TopologyView;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.EventTarget;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.vaadin.terminal.gwt.client.BrowserInfo;
 import com.vaadin.terminal.gwt.client.VTooltip;
 
 public class TopologyViewImpl extends Composite implements TopologyView<TopologyViewRenderer>, GraphUpdateListener {
@@ -65,6 +63,8 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
     TopologyViewRenderer m_topologyViewRenderer;
 
     private boolean m_isRefresh;
+
+    private int m_leftMargin = 60;
 
     public TopologyViewImpl() {
         initWidget(uiBinder.createAndBindUi(this));
@@ -122,7 +122,7 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
     }
 
     @Override
-    public void onBrowserEvent(Event event) {
+    public void onBrowserEvent(final Event event) {
         super.onBrowserEvent(event);
 
         switch(DOM.eventGetType(event)) {
@@ -141,31 +141,6 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
     
                 break;
     
-            case Event.ONMOUSEWHEEL:
-                double delta = event.getMouseWheelVelocityY() / 30.0;
-                double oldScale = getViewPortScale();
-                final double newScale = oldScale + delta;
-                final int clientX = event.getClientX();
-                final int clientY = event.getClientY();
-                consoleLog("delta: " + delta);
-                
-                //broken now need to fix it
-                  Command cmd = new Command() {
-                        
-                        public void execute() {
-                            
-                            m_presenter.onMouseWheel(newScale, clientX, clientY);
-                        }
-                    };
-                    
-                    if(BrowserInfo.get().isWebkit()) {
-                        Scheduler.get().scheduleDeferred(cmd);
-                    }else {
-                        cmd.execute();
-                    }
-    
-                break;
-                
             case Event.ONCLICK:
                 if(event.getEventTarget().equals(getSVGElement())) {
                     m_presenter.onBackgroundClick();
@@ -173,6 +148,7 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
                 event.preventDefault();
                 event.stopPropagation();
                 break;
+                
         }
 
 
@@ -190,12 +166,6 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
     @Override
     public void onGraphUpdated(GWTGraph graph) {
             m_presenter.getViewRenderer().draw(graph, this);
-            
-            if(m_isRefresh) {
-                fitToScreen(graph.getBoundingBox());
-                m_isRefresh = false;
-            }
-            
     }
     
     @Override
@@ -203,22 +173,20 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
         int iconMargin = 50;
         int iconLeftMargin = iconMargin + 50;
         int topMargin = iconMargin + 50;
-        int leftMargin = 60;
-        int rightMargin = 21;
         
         SVGElement svg = getSVGElement().cast();
-        final int svgWidth = svg.getParentElement().getOffsetWidth() - (leftMargin + rightMargin); 
+        final int svgWidth = svg.getParentElement().getOffsetWidth() - m_leftMargin; 
         final int svgHeight = svg.getParentElement().getOffsetHeight();
         
         double scale = Math.min(svgWidth/((double)bounds.getWidth() + iconLeftMargin), svgHeight/((double)bounds.getHeight() + topMargin));
         scale = scale > 2 ? 2 : scale;
-        double translateX =  -bounds.getX() + iconMargin;
+        double translateX =  -bounds.getX();
         double translateY =  -bounds.getY();
         
         double calcY = (svgHeight - (bounds.getHeight()* scale))/2;
-        double calcX = (svgWidth - ((bounds.getWidth() + leftMargin)* scale))/2;
+        double calcX = (svgWidth - ((bounds.getWidth()) * scale))/2 + m_leftMargin;
         SVGMatrix transform = svg.createSVGMatrix()
-                .translate(Math.max(leftMargin, calcX), calcY)
+                .translate(calcX, calcY)
                 .scale(scale)
                 .translate(translateX, translateY)
                     ;
@@ -250,14 +218,42 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
         return D3.getTransform( m ).toString();
     }
 
-    private void fitToScreen(GWTBoundingBox bounds) {
-        SVGMatrix transform = calculateNewTransform(bounds);
-                   
-        String transformVal = ((TopologyViewImpl)this).matrixTransform( transform );
+    @Override
+    public SVGPoint getCenterPos(GWTBoundingBox box) {
+        SVGGElement g = getSVGViewPort().cast();
+        SVGMatrix stateTF = g.getCTM().inverse();
         
-        D3.d3().select(getSVGViewPort()).attr("transform", transformVal);
-        m_presenter.onScaleUpdate( transform.getA() );
+        SVGPoint p = getSVGElement().createSVGPoint();
+        p.setX(getPhysicalWidth()/2 + m_leftMargin);
+        p.setY(getPhysicalHeight()/2);
         
+        SVGPoint center = p.matrixTransform(stateTF);
+        
+        return center;
+    }
+    
+    public SVGPoint getPoint(int clientX, int clientY) {
+        SVGGElement g = getSVGViewPort().cast();
+        SVGMatrix stateTF = g.getCTM().inverse();
+        
+        SVGPoint p = getSVGElement().createSVGPoint();
+        
+        p.setX(clientX);
+        p.setY(clientY);
+        
+        SVGPoint center = p.matrixTransform(stateTF);
+        
+        return center;
+    }
+
+    @Override
+    public int getPhysicalWidth() {
+        return getSVGElement().getParentElement().getOffsetWidth() - m_leftMargin;
+    }
+
+    @Override
+    public int getPhysicalHeight() {
+        return getSVGElement().getParentElement().getOffsetHeight();
     }
 
 

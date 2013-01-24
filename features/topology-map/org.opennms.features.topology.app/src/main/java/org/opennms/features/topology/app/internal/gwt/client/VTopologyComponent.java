@@ -38,7 +38,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.opennms.features.topology.app.internal.gwt.client.VTopologyComponent.TopologyViewRenderer;
-import org.opennms.features.topology.app.internal.gwt.client.d3.AnonymousFunc;
 import org.opennms.features.topology.app.internal.gwt.client.d3.D3;
 import org.opennms.features.topology.app.internal.gwt.client.d3.D3Behavior;
 import org.opennms.features.topology.app.internal.gwt.client.d3.D3Drag;
@@ -55,11 +54,13 @@ import org.opennms.features.topology.app.internal.gwt.client.service.support.Def
 import org.opennms.features.topology.app.internal.gwt.client.svg.BoundingRect;
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGGElement;
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGMatrix;
+import org.opennms.features.topology.app.internal.gwt.client.svg.SVGPoint;
 import org.opennms.features.topology.app.internal.gwt.client.view.TopologyView;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
+import com.google.gwt.core.client.JsArrayInteger;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style.Cursor;
@@ -67,6 +68,7 @@ import com.google.gwt.touch.client.Point;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.Window.Navigator;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -136,17 +138,20 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 		Element m_edgeGroup;
 		D3Behavior m_dragBehavior;
 		Handler<GWTVertex> m_clickHandler;
-		Handler<GWTEdge> m_edgeClickHandler;
+		private Handler<GWTVertex> m_dblClickHandler;
+        Handler<GWTEdge> m_edgeClickHandler;
         Handler<GWTVertex> m_contextMenuHandler;
 		private Handler<GWTVertex> m_vertexTooltipHandler;
 		private Handler<GWTEdge> m_edgeContextHandler;
 		private Handler<GWTEdge> m_edgeToolTipHandler;
+        
 
 
 		public SVGGraphDrawer(D3Behavior dragBehavior, ServiceRegistry serviceRegistry) {
 			m_dragBehavior = dragBehavior;
 			
 			m_clickHandler = serviceRegistry.findProvider(Handler.class, "(handlerType=vertexClick)");
+			m_dblClickHandler = serviceRegistry.findProvider(Handler.class, "(handlerType=vertexDblClick)");
 			m_edgeClickHandler = serviceRegistry.findProvider(Handler.class, "(handlerType=edgeClick)");
 			
 			m_contextMenuHandler = serviceRegistry.findProvider(Handler.class, "(handlerType=vertexContextMenu)");
@@ -165,6 +170,10 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 		public Handler<GWTVertex> getClickHandler() {
 			return m_clickHandler;
 		}
+		
+		public Handler<GWTVertex> getDblClickHandler() {
+            return m_dblClickHandler;
+        }
 		
 		public Handler<GWTEdge> getEdgeClickHandler() {
             return m_edgeClickHandler;
@@ -235,19 +244,13 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 			edgeSelection.enter().create(GWTEdge.create()).call(setupEdgeEventHandlers());
 			
             //Scaling and Fit to Zoom transitions
+			SVGMatrix orig = topologyView.getSVGViewPort().getCTM();
 			SVGMatrix transform = topologyView.calculateNewTransform(graph.getBoundingBox());
-			final double scale = transform.getA();
-            graph.setScale(scale);
+			//consoleLog("Orig: " + matrixTransform(orig) + "\n new: " + matrixTransform(transform));
             
             D3.d3().select(topologyView.getSVGViewPort())
             .transition().duration(1000)
-            .attr("transform", matrixTransform(transform) ).each("end",new AnonymousFunc() {
-
-                @Override
-                public void call() {
-                    onScaleUpdate(scale);
-                }
-            });
+            .attr("transform", matrixTransform(transform) );
             
             D3.d3().selectAll(GWTEdge.SVG_EDGE_ELEMENT).style("stroke-width", GWTEdge.EDGE_WIDTH/transform.getA() + "px").transition().delay(750).duration(500).attr("opacity", "1").transition();
             
@@ -303,6 +306,7 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 							.on(D3Events.CONTEXT_MENU.event(), getContextMenuHandler())
 							.on(D3Events.MOUSE_OVER.event(), getVertexTooltipHandler())
 							.on(D3Events.MOUSE_OUT.event(), getVertexTooltipHandler())
+							.on(D3Events.DOUBLE_CLICK.event(), getDblClickHandler())
 							.call(getDragBehavior());
 				}
 			};
@@ -367,7 +371,6 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 	private String m_paintableId;
 
 	private GWTGraph m_graph;
-	private double m_scale = 0.0;
 	private DragObject m_dragObject;
 	
 	@UiField
@@ -395,6 +398,7 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 		
 		m_serviceRegistry = new DefaultServiceRegistry();
 		m_serviceRegistry.register(vertexClickHandler(), new HashMap<String, String>(){{ put("handlerType", "vertexClick"); }}, Handler.class);
+		m_serviceRegistry.register(vertexDblClickHandler(), new HashMap<String, String>(){{ put("handlerType", "vertexDblClick"); }}, Handler.class);
 		m_serviceRegistry.register(vertexContextMenuHandler(), new HashMap<String, String>(){{ put("handlerType", "vertexContextMenu"); }}, Handler.class);
 		m_serviceRegistry.register(vertexTooltipHandler(), new HashMap<String, String>(){{ put("handlerType", "vertexTooltip"); }}, Handler.class);
 		
@@ -409,10 +413,32 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 		m_componentHolder.add(m_topologyView.asWidget());
 		
 		m_svgDragHandlerManager = new DragHandlerManager();
-		m_svgDragHandlerManager.addDragBehaviorHandler(PanHandler.DRAG_BEHAVIOR_KEY, new PanHandler(m_topologyView, m_serviceRegistry));
+		m_svgDragHandlerManager.addDragBehaviorHandler(PanHandler.DRAG_BEHAVIOR_KEY, new PanHandler(this, m_serviceRegistry));
 		m_svgDragHandlerManager.addDragBehaviorHandler(MarqueeSelectHandler.DRAG_BEHAVIOR_KEY, new MarqueeSelectHandler(this, m_topologyView));
 		m_svgDragHandlerManager.setCurrentDragHandler(PanHandler.DRAG_BEHAVIOR_KEY);
 		setupDragBehavior(m_topologyView.getSVGElement(), m_svgDragHandlerManager);
+		D3 svgElement = D3.d3().select(m_topologyView.getSVGElement());
+        svgElement.on("dblclick", new Handler<Void>() {
+
+            @Override
+            public void call(Void t, int index) {
+                NativeEvent event = D3.getEvent();
+                JsArrayInteger pos = D3.getMouse(m_topologyView.getSVGElement());
+                onBackgroundDoubleClick(m_topologyView.getPoint(pos.get(0), pos.get(1)));
+            }
+        
+		}).on("mousewheel", new Handler<Void>() {
+
+            @Override
+            public void call(Void t, int index) {
+                double scrollVal = (double)D3.getEvent().getMouseWheelVelocityY()/ 30.0;
+                JsArrayInteger pos = D3.getMouse(m_topologyView.getSVGElement());
+                SVGPoint centerPos = m_topologyView.getCenterPos(m_graph.getBoundingBox());
+                onMouseWheel(scrollVal, (int)centerPos.getX(), (int)centerPos.getY());
+            }
+            
+		});
+		
 		
 		D3Behavior dragBehavior = new D3Behavior() {
 
@@ -436,7 +462,11 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 	}
 
     
-	private void setupDragBehavior(final Element panElem, final DragHandlerManager handlerManager) {
+	public TopologyView<TopologyViewRenderer> getTopologyView() {
+        return m_topologyView;
+    }
+
+    private void setupDragBehavior(final Element panElem, final DragHandlerManager handlerManager) {
 	    
 		D3Drag d3Pan = D3.getDragBehavior();
 		d3Pan.on(D3Events.DRAG_START.event(), new Handler<Element>() {
@@ -556,6 +586,17 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 			}
 		};
 	}
+	
+	private Handler<GWTVertex> vertexDblClickHandler(){
+	    return new D3Events.Handler<GWTVertex>() {
+
+            @Override
+            public void call(GWTVertex vert, int index) {
+                Window.alert("Vertex: " + vert.getLabel() + " was double clicked" );
+                
+            }
+        };
+	}
 
 	private Handler<GWTVertex> vertexDragEndHandler() {
 		return new Handler<GWTVertex>() {
@@ -625,7 +666,6 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 
 				m_dragObject.move();
 				
-				//TODO: change the viewRenderer to no transition
 				if(getViewRenderer() == m_graphDrawer) {
 				    m_currentViewRender = m_graphDrawerNoTransition;
 				}
@@ -730,13 +770,21 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
         int width = uidl.getIntAttribute("boundWidth");
         int height = uidl.getIntAttribute("boundHeight");
         
-        graph.setScale(uidl.getDoubleAttribute("scale"));
-        graph.setOldScale(m_graph.getScale());
         graph.setBoundingBox(GWTBoundingBox.create(x, y, width, height));
-        //consoleLog("Bounding box :: x: " + graph.getBoundingBox().getX() + " y: " + graph.getBoundingBox().getY() + " width: " + graph.getBoundingBox().getWidth() + " height: " + graph.getBoundingBox().getHeight());
 		setGraph(graph);
         
-		
+		sendPhysicalDimensions();
+	}
+	
+	private void sendPhysicalDimensions() {
+	    int width = m_topologyView.getPhysicalWidth();
+	    int height = m_topologyView.getPhysicalHeight();
+	    Map<String, Object> dimensions = new HashMap<String, Object>();
+	    dimensions.put("width", width);
+	    dimensions.put("height", height);
+	    
+	    m_client.updateVariable(getPaintableId(), "mapPhysicalBounds", dimensions, true);
+	    
 	}
 
     private String minEndPoint(GWTEdge edge1) {
@@ -847,13 +895,12 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
         return rect;
     }
     
-    private void setMapScaleNow(double scale) {
-        setMapScale(scale, true);
-    }
-    
-    private void setMapScale(double scale, boolean immediate) {
-        m_scale = scale;
-        m_client.updateVariable(m_paintableId, "mapScale", scale, immediate);
+    public void updateMapPosition() {
+        SVGPoint pos = m_topologyView.getCenterPos(m_graph.getBoundingBox());
+        Map<String, Object> point = new HashMap<String, Object>();
+        point.put("x", (int)Math.round(pos.getX()));
+        point.put("y", (int)Math.round(pos.getY()));
+        m_client.updateVariable(getPaintableId(), "clientCenterPoint", point, true);
     }
 
     @Override
@@ -887,19 +934,12 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
     }
 
     @Override
-    public void onScaleUpdate(double scale) {
-        setMapScaleNow(scale);
-    }
-    
-    @Override
-    public void onMouseWheel(double newScale, int clientX, int clientY) {
-        //consoleLog("mapScale: " + newScale);
-//        m_client.updateVariable(m_paintableId, "scrollWheelScale", newScale, false);
-//        m_client.updateVariable(m_paintableId, "clientX", clientX, false);
-//        m_client.updateVariable(m_paintableId, "clientY", clientY, false);
-//        
-//        m_client.sendPendingVariableChanges();
-        
+    public void onMouseWheel(double scrollVal, int x, int y) {
+        Map<String, Object> props = new HashMap<String, Object>();
+        props.put("x", x);
+        props.put("y", y);
+        props.put("scrollVal", scrollVal);
+        m_client.updateVariable(getPaintableId(), "scrollWheel", props, true);
     }
     
     public static final native void eval(JavaScriptObject elem) /*-{
@@ -913,5 +953,13 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 	private static final native void consoleLog(Object message) /*-{
         $wnd.console.log(message);
     }-*/;
+
+    @Override
+    public void onBackgroundDoubleClick(SVGPoint center) {
+        Map<String, Object> props = new HashMap<String, Object>();
+        props.put("x", (int)center.getX());
+        props.put("y", (int)center.getY());
+        getClient().updateVariable(getPaintableId(), "doubleClick", props, true);
+    }
 
 }
