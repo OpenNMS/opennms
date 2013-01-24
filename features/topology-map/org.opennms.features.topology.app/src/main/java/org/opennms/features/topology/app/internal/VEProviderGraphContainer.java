@@ -36,19 +36,12 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     
     public class PseudoEdge extends AbstractEdge {
 
-        private String m_styleName;
-        
         public PseudoEdge(String namespace, String id, String styleName, Vertex source, Vertex target) {
             super(namespace, id, source, target);
             setLabel(source.getLabel() + " :: " + target.getLabel());
-            m_styleName = styleName;
+            setStyleName(styleName);
         }
 
-        @Override
-        public String getStyleName() {
-            return m_styleName;
-        }
-        
         @Override
         public Item getItem() {
             return new BeanItem<PseudoEdge>(this);
