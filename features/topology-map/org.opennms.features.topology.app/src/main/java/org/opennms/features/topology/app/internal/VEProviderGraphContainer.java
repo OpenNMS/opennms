@@ -21,6 +21,7 @@ import org.opennms.features.topology.api.topo.EdgeListener;
 import org.opennms.features.topology.api.topo.EdgeProvider;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.GraphVisitor;
+import org.opennms.features.topology.api.topo.RefComparator;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexListener;
 import org.opennms.features.topology.api.topo.VertexProvider;
@@ -269,7 +270,7 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 	}
     
     private boolean refEquals(VertexRef a, VertexRef b) {
-    	return a.getNamespace().equals(b.getNamespace()) && a.getId().equals(b.getId());
+        return new RefComparator().compare(a, b) == 0;
     }
     
     private Vertex getDisplayVertex(VertexRef vertexRef) {

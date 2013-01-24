@@ -48,8 +48,6 @@ import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeProvider;
 import org.opennms.features.topology.api.topo.GraphProvider;
-import org.opennms.features.topology.api.topo.SimpleEdgeProvider;
-import org.opennms.features.topology.api.topo.SimpleVertexProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexProvider;
 import org.opennms.features.topology.api.topo.WrappedEdge;
@@ -227,7 +225,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
             
             // Create a new edge that connects the vertices
             // TODO: Make sure that all properties are set on this object
-            AbstractEdge edge = new AbstractEdge(TOPOLOGY_NAMESPACE_LINKD, link.getDataLinkInterfaceId(), source, target); 
+            AbstractEdge edge = new AbstractEdge(getEdgeNamespace(), link.getDataLinkInterfaceId(), source, target); 
             edge.setTooltipText(getEdgeTooltipText(link, source, target));
             edges.add(edge);
         }
@@ -262,8 +260,8 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
                 if (!vertex.leaf) {
                     log("loadtopology: adding group to topology: " + vertex.id);
                     if (vertex.namespace == null) {
-                        vertex.namespace = TOPOLOGY_NAMESPACE_LINKD;
-                        LoggerFactory.getLogger(this.getClass()).warn("Setting namespace on vertex to linkd default: {}", vertex);
+                        vertex.namespace = getVertexNamespace();
+                        LoggerFactory.getLogger(this.getClass()).warn("Setting namespace on vertex to default: {}", vertex);
                     } 
 
                     if (vertex.id == null) {

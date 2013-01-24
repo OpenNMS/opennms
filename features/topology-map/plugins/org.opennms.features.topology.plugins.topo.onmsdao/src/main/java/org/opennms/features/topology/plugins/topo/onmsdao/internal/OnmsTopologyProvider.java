@@ -36,7 +36,6 @@ import org.opennms.features.topology.api.SimpleGroup;
 import org.opennms.features.topology.api.SimpleLeafVertex;
 import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
-import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.Vertex;
@@ -47,7 +46,6 @@ import org.opennms.netmgt.dao.OnmsMapElementDao;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsMap;
 import org.opennms.netmgt.model.OnmsMapElement;
-import org.slf4j.LoggerFactory;
 
 public class OnmsTopologyProvider extends AbstractTopologyProvider implements GraphProvider {
 
@@ -85,18 +83,6 @@ public class OnmsTopologyProvider extends AbstractTopologyProvider implements Gr
         super(TOPOLOGY_NAMESPACE_ONMSDAO);
     }
 
-    protected Edge connectVertices(String id, VertexRef sourceId, VertexRef targetId) {
-
-        SimpleConnector source = new SimpleConnector(TOPOLOGY_NAMESPACE_ONMSDAO, sourceId.getId()+"-"+id+"-connector", sourceId);
-        SimpleConnector target = new SimpleConnector(TOPOLOGY_NAMESPACE_ONMSDAO, targetId.getId()+"-"+id+"-connector", targetId);
-
-        AbstractEdge edge = new AbstractEdge(TOPOLOGY_NAMESPACE_ONMSDAO, id, source, target);
-        
-        addEdges(edge);
-        
-        return edge;
-    }
-    
     private OnmsMap getMap(int mapId) {
         return getOnmsMapDao().findMapById(mapId);
     }
@@ -190,20 +176,11 @@ public class OnmsTopologyProvider extends AbstractTopologyProvider implements Gr
             for (DataLinkInterface link: getDataLinkInterfaceDao().findByNodeParentId(((SimpleLeafVertex)target).getNodeID())) {
                 for (Vertex source: leafs) {
                    if ( link.getNode().getId() == ((SimpleLeafVertex)source).getNodeID() ) {
-                       SimpleConnector sourceConnector = new SimpleConnector(TOPOLOGY_NAMESPACE_ONMSDAO, source.getId()+"-"+link.getId()+"-connector", source);
-                       SimpleConnector targetConnector = new SimpleConnector(TOPOLOGY_NAMESPACE_ONMSDAO, target.getId()+"-"+link.getId()+"-connector", target);
-                       AbstractEdge edge = new AbstractEdge(TOPOLOGY_NAMESPACE_ONMSDAO, link.getId().toString(), sourceConnector, targetConnector);
-                       edges.add(edge);
+                       connectVertices(link.getId().toString(), source, target);
                    }
                 }
             }
         }
         return edges;
-    }
-
-    @Override
-    public Edge connectVertices(VertexRef sourceVertextId, VertexRef targetVertextId) {
-        String nextEdgeId = getNextEdgeId();
-        return connectVertices(nextEdgeId, sourceVertextId, targetVertextId);
     }
 }

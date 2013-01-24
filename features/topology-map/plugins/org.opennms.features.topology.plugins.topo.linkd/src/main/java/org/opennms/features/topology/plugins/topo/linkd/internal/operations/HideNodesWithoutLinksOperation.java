@@ -28,72 +28,60 @@
 
 package org.opennms.features.topology.plugins.topo.linkd.internal.operations;
 
-import java.net.MalformedURLException;
 import java.util.List;
-
-import javax.xml.bind.JAXBException;
 
 import org.opennms.features.topology.api.CheckedOperation;
 import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.plugins.topo.linkd.internal.LinkdTopologyProvider;
 import org.slf4j.LoggerFactory;
 
 public class HideNodesWithoutLinksOperation implements CheckedOperation {
 
-    @Override
-    public Undoer execute(List<VertexRef> targets, OperationContext operationContext) {
-        if (enabled(targets, operationContext)) {
-            LinkdTopologyProvider provider = (LinkdTopologyProvider)operationContext.getGraphContainer().getBaseTopology();
-            log("executing Hide Nodes Without Link Checked Operation");
-            log("found addNodeWithoutLinks: " + provider.isAddNodeWithoutLink());
-            provider.setAddNodeWithoutLink(!provider.isAddNodeWithoutLink());
-            log("switched addNodeWithoutLinks to: " + provider.isAddNodeWithoutLink());
-            try {
-                provider.load(null);
-            } catch (MalformedURLException e) {
-                // TODO: Display the error in the UI
-                LoggerFactory.getLogger(this.getClass()).error(e.getMessage(), e);
-            } catch (JAXBException e) {
-                // TODO: Display the error in the UI
-                LoggerFactory.getLogger(this.getClass()).error(e.getMessage(), e);
-            }
-            log("executing redoLayout");
-            operationContext.getGraphContainer().redoLayout();
-        }
-        return null;
-    }
+	private final LinkdTopologyProvider m_topologyProvider;
 
-    @Override
-    public boolean display(List<VertexRef> targets, OperationContext operationContext) {
-        return true;
-    }
+	public HideNodesWithoutLinksOperation(LinkdTopologyProvider topologyProvider) {
+		m_topologyProvider = topologyProvider;
+	}
 
-    @Override
-    public boolean enabled(List<VertexRef> targets, OperationContext operationContext) {
-        if (operationContext != null && operationContext.getGraphContainer() != null && operationContext.getGraphContainer().getBaseTopology() instanceof LinkdTopologyProvider) {
-            return true;
-        } else {
-            return false;
-        }
-    }
+	@Override
+	public Undoer execute(List<VertexRef> targets, OperationContext operationContext) {
+		if (enabled(targets, operationContext)) {
+			LoggerFactory.getLogger(this.getClass()).debug("switched addNodeWithoutLinks to: " + !m_topologyProvider.isAddNodeWithoutLink());
+			m_topologyProvider.setAddNodeWithoutLink(!m_topologyProvider.isAddNodeWithoutLink());
+			operationContext.getGraphContainer().redoLayout();
+		}
+		return null;
+	}
 
-    @Override
-    public String getId() {
-        return "LinkdTopologyProviderHidesNodesWithoutLinksOperation";
-    }
+	@Override
+	public boolean display(List<VertexRef> targets, OperationContext operationContext) {
+		return true;
+	}
 
-    @Override
-    public boolean isChecked(List<VertexRef> targets, OperationContext operationContext) {
-        if (enabled(targets, operationContext)) {
-            LinkdTopologyProvider provider = (LinkdTopologyProvider)operationContext.getGraphContainer().getBaseTopology();
-            return !provider.isAddNodeWithoutLink();
-        } else {
-            return false;
-        }
-    }
+	/**
+	 * This is kinda unreliable because we are just matching on namespace... but that's all we can do with
+	 * the API as it is now.
+	 */
+	@Override
+	public boolean enabled(List<VertexRef> targets, OperationContext operationContext) {
+		GraphProvider activeGraphProvider = operationContext.getGraphContainer().getBaseTopology();
+		LoggerFactory.getLogger(this.getClass()).debug(activeGraphProvider + " ?= " + m_topologyProvider);
+		return m_topologyProvider.getVertexNamespace().equals(activeGraphProvider.getVertexNamespace());
+	}
 
-    private void log(final String string) {
-        LoggerFactory.getLogger(getClass()).debug("{}: {}", getId(), string);
-    }
+	@Override
+	public String getId() {
+		return "LinkdTopologyProviderHidesNodesWithoutLinksOperation";
+	}
+
+	@Override
+	public boolean isChecked(List<VertexRef> targets, OperationContext operationContext) {
+		if (enabled(targets, operationContext)) {
+			return !m_topologyProvider.isAddNodeWithoutLink();
+		} else {
+			return false;
+		}
+	}
 }

@@ -54,7 +54,7 @@ import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.AbstractVertexRef;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeRef;
-import org.opennms.features.topology.api.topo.SimpleVertexProvider;
+import org.opennms.features.topology.api.topo.RefComparator;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexListener;
 import org.opennms.features.topology.api.topo.VertexProvider;
@@ -291,27 +291,27 @@ public class LinkdTopologyProviderTest {
 		Vertex vert8 = m_topologyProvider.getVertex("nodes", "linkdg21");
 
 		assertEquals("Almost Top Group", vert1.getLabel());
-		assertEquals(vert1.getParent().toString() + " ?= " + vert7, 0, new SimpleVertexProvider.VertexRefComparator().compare(vert7, vert1.getParent()));
+		assertEquals(vert1.getParent().toString() + " ?= " + vert7, 0, new RefComparator().compare(vert7, vert1.getParent()));
 		assertEquals(1, m_topologyProvider.getSemanticZoomLevel(vert1));
 
 		assertEquals("Group 32", vert2.getLabel());
-		assertEquals(vert2.getParent().toString() + " ?= " + vert8, 0, new SimpleVertexProvider.VertexRefComparator().compare(vert8, vert2.getParent()));
+		assertEquals(vert2.getParent().toString() + " ?= " + vert8, 0, new RefComparator().compare(vert8, vert2.getParent()));
 		assertEquals(1, m_topologyProvider.getSemanticZoomLevel(vert2));
 
 		assertEquals("FGHKDKL", vert3.getLabel());
-		assertEquals(vert3.getParent().toString() + " ?= " + vert4, 0, new SimpleVertexProvider.VertexRefComparator().compare(vert4, vert3.getParent()));
+		assertEquals(vert3.getParent().toString() + " ?= " + vert4, 0, new RefComparator().compare(vert4, vert3.getParent()));
 		assertEquals(3, m_topologyProvider.getSemanticZoomLevel(vert3));
 
 		assertEquals("Hello Again", vert4.getLabel());
-		assertEquals(vert4.getParent().toString() + " ?= " + vert6, 0, new SimpleVertexProvider.VertexRefComparator().compare(vert6, vert4.getParent()));
+		assertEquals(vert4.getParent().toString() + " ?= " + vert6, 0, new RefComparator().compare(vert6, vert4.getParent()));
 		assertEquals(2, m_topologyProvider.getSemanticZoomLevel(vert4));
 
 		assertEquals("Big Group", vert5.getLabel());
-		assertEquals(vert5.getParent().toString() + " ?= " + vert2, 0, new SimpleVertexProvider.VertexRefComparator().compare(vert2, vert5.getParent()));
+		assertEquals(vert5.getParent().toString() + " ?= " + vert2, 0, new RefComparator().compare(vert2, vert5.getParent()));
 		assertEquals(2, m_topologyProvider.getSemanticZoomLevel(vert5));
 
 		assertEquals("Smaller Group", vert6.getLabel());
-		assertEquals(vert6.getParent().toString() + " ?= " + vert7, 0, new SimpleVertexProvider.VertexRefComparator().compare(vert7, vert6.getParent()));
+		assertEquals(vert6.getParent().toString() + " ?= " + vert7, 0, new RefComparator().compare(vert7, vert6.getParent()));
 		assertEquals(1, m_topologyProvider.getSemanticZoomLevel(vert6));
 
 		assertEquals("Top Three", vert7.getLabel());

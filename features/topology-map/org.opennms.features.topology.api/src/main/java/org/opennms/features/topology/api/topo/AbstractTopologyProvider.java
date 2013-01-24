@@ -121,7 +121,7 @@ public abstract class AbstractTopologyProvider extends DelegatingVertexEdgeProvi
         List<EdgeRef> retval = new ArrayList<EdgeRef>();
         for (Edge edge : getEdges()) {
             // If the vertex is connected to the edge then add it
-            if (edge.getSource().getVertex().equals(vertex) || edge.getTarget().getVertex().equals(vertex)) {
+            if (new RefComparator().compare(edge.getSource().getVertex(), vertex) == 0 || new RefComparator().compare(edge.getTarget().getVertex(), vertex) == 0) {
                 retval.add(edge);
             }
         }
@@ -134,7 +134,7 @@ public abstract class AbstractTopologyProvider extends DelegatingVertexEdgeProvi
         return connectVertices(nextEdgeId, sourceVertextId, targetVertextId);
     }
 
-    protected Edge connectVertices(String id, VertexRef sourceId, VertexRef targetId) {
+    protected final AbstractEdge connectVertices(String id, VertexRef sourceId, VertexRef targetId) {
         SimpleConnector source = new SimpleConnector(getEdgeNamespace(), sourceId.getId()+"-"+id+"-connector", sourceId);
         SimpleConnector target = new SimpleConnector(getEdgeNamespace(), targetId.getId()+"-"+id+"-connector", targetId);
 

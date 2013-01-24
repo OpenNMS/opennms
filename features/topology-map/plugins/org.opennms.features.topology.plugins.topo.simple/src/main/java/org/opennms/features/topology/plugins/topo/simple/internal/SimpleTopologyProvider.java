@@ -135,7 +135,12 @@ public class SimpleTopologyProvider extends AbstractTopologyProvider implements 
 
         clearVertices();
         for (WrappedVertex vertex : graph.m_vertices) {
-            if (vertex.namespace == null || vertex.id == null) {
+            if (vertex.namespace == null) {
+                vertex.namespace = getVertexNamespace();
+                LoggerFactory.getLogger(this.getClass()).warn("Setting namespace on vertex to default: {}", vertex);
+            } 
+
+            if (vertex.id == null) {
                 LoggerFactory.getLogger(this.getClass()).warn("Invalid vertex unmarshalled from {}: {}", source.toString(), vertex);
             } else if (vertex.id.startsWith(SIMPLE_GROUP_ID_PREFIX)) {
                 try {
@@ -170,7 +175,12 @@ public class SimpleTopologyProvider extends AbstractTopologyProvider implements 
         
         clearEdges();
         for (WrappedEdge edge : graph.m_edges) {
-            if (edge.namespace == null || edge.id == null) {
+            if (edge.namespace == null) {
+                edge.namespace = getEdgeNamespace();
+                LoggerFactory.getLogger(this.getClass()).warn("Setting namespace on edge to default: {}", edge);
+            } 
+
+            if (edge.id == null) {
                 LoggerFactory.getLogger(this.getClass()).warn("Invalid edge unmarshalled from {}: {}", source.toString(), edge);
             } else if (edge.id.startsWith(SIMPLE_EDGE_ID_PREFIX)) {
                 try {
@@ -188,11 +198,11 @@ public class SimpleTopologyProvider extends AbstractTopologyProvider implements 
                     // Ignore this edge ID since it doesn't conform to our pattern for auto-generated IDs
                 }
             }
-            AbstractEdge newEdge = new AbstractEdge(edge.namespace, edge.id, m_vertexProvider.getVertex(edge.source), m_vertexProvider.getVertex(edge.target));
+            AbstractEdge newEdge = connectVertices(edge.id, edge.source, edge.target);
             newEdge.setLabel(edge.label);
             newEdge.setStyleName(edge.styleName);
             newEdge.setTooltipText(edge.tooltipText);
-            addEdges(newEdge);
+            //addEdges(newEdge);
         }
 
         for (WrappedVertex vertex: graph.m_vertices) {
