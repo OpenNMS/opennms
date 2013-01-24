@@ -60,7 +60,11 @@ public class NCSEdgeProvider implements EdgeProvider {
 		public NCSEdge (String serviceName, NCSVertex source, NCSVertex target) {
 			super("ncs", source.getId() + ":::" + target.getId(), source, target);
 			m_serviceName = serviceName;
-			setStyleName("ncs edge");
+		}
+
+		@Override
+		public String getStyleName() {
+			return "ncs edge";
 		}
 
 		@Override

@@ -200,6 +200,7 @@ public class SimpleTopologyProvider extends AbstractTopologyProvider implements 
             }
             AbstractEdge newEdge = connectVertices(edge.id, edge.source, edge.target);
             newEdge.setLabel(edge.label);
+            newEdge.setStyleName(edge.styleName);
             newEdge.setTooltipText(edge.tooltipText);
             //addEdges(newEdge);
         }

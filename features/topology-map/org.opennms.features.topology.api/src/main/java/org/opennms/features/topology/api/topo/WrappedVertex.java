@@ -50,6 +50,7 @@ public class WrappedVertex implements VertexRef {
 	@XmlID
 	public String id;
 	public String ipAddr;
+	public String key;
 	public String label;
 	@XmlTransient
 	public String namespace;
@@ -88,6 +89,7 @@ public class WrappedVertex implements VertexRef {
 		this((VertexRef)vertex);
 		iconKey = vertex.getIconKey();
 		ipAddr = vertex.getIpAddress();
+		key = vertex.getKey();
 		nodeID = vertex.getNodeID();
 		if (vertex.getParent() != null) parent = new WrappedVertex(vertex.getParent());
 		styleName = vertex.getStyleName();

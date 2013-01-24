@@ -50,6 +50,7 @@ public class WrappedEdge {
 
 	public String key;
 	public String label;
+	public String styleName;
 	public String tooltipText;
 	@XmlIDREF
 	public WrappedVertex source;
@@ -68,6 +69,7 @@ public class WrappedEdge {
 	public WrappedEdge(Edge edge, WrappedVertex source, WrappedVertex target) {
 		key = edge.getKey();
 		label = edge.getLabel();
+		styleName = edge.getStyleName();
 		tooltipText = edge.getTooltipText();
 		id = edge.getId();
 		namespace = edge.getNamespace();
@@ -102,5 +104,5 @@ public class WrappedEdge {
 	}
 
 	@Override
-	public String toString() { return "WrappedEdge:"+namespace+":"+id+ "[label="+label+"]"; } 
+	public String toString() { return "WrappedEdge:"+namespace+":"+id+ "[label="+label+", styleName="+styleName+"]"; } 
 }
