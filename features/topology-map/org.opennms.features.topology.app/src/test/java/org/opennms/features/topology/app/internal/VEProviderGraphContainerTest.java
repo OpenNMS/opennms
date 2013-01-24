@@ -1,9 +1,6 @@
 package org.opennms.features.topology.app.internal;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -13,24 +10,20 @@ import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.opennms.core.test.MockLogAppender;
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.topo.Edge;
-import org.opennms.features.topology.api.topo.EdgeProvider;
 import org.opennms.features.topology.api.topo.EdgeRef;
-import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.GraphVisitor;
-import org.opennms.features.topology.api.topo.AbstractVertexRef;
-import org.opennms.features.topology.api.topo.AbstractEdgeRef;
-import org.opennms.features.topology.api.topo.SimpleEdgeProvider;
+import org.opennms.features.topology.api.topo.LWEdgeRef;
+import org.opennms.features.topology.api.topo.LWVertexRef;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 
 public class VEProviderGraphContainerTest {
 
-	private GraphProvider m_graphProvider;
-	private EdgeProvider m_edgeProvider;
+	private SimpleGraphProvider m_graphProvider;
+	private SimpleEdgeProvider m_edgeProvider;
 	private GraphContainer m_graphContainer;
 	private Set<VertexRef> m_expectedVertices = new HashSet<VertexRef>();
 	private Map<VertexRef, String> m_expectedVertexStyles = new HashMap<VertexRef, String>();
@@ -40,9 +33,7 @@ public class VEProviderGraphContainerTest {
 	
 	@Before
 	public void setUp() {
-
-		MockLogAppender.setupLogging();
-
+		
 		m_graphProvider = new SimpleGraphBuilder("nodes")
 			.vertex("g0").vLabel("group0").vIconKey("group").vTooltip("root group").vStyleName("vertex")
 			.vertex("g1").parent("g0").vLabel("group1").vIconKey("group").vTooltip("group 1").vStyleName("vertex")
@@ -163,13 +154,13 @@ public class VEProviderGraphContainerTest {
 	
 
 	private void expectVertex(String namespace, String vertexId, String styles) {
-		AbstractVertexRef vertexRef = new AbstractVertexRef(namespace, vertexId);
+		LWVertexRef vertexRef = new LWVertexRef(namespace, vertexId);
 		m_expectedVertices.add(vertexRef);
 		m_expectedVertexStyles.put(vertexRef, styles);
 	}
 	
 	private void expectEdge(String namespace, String edgeId, String styles) {
-		AbstractEdgeRef edgeRef = new AbstractEdgeRef(namespace, edgeId);
+		LWEdgeRef edgeRef = new LWEdgeRef(namespace, edgeId);
 		m_expectedEdges.add(edgeRef);
 		m_expectedEdgeStyles.put(edgeRef, styles);
 	}
@@ -180,4 +171,7 @@ public class VEProviderGraphContainerTest {
 		m_expectedVertexStyles.clear();
 		m_expectedEdgeStyles.clear();
 	}
+	
+	
+
 }

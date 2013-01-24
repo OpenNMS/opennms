@@ -13,7 +13,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         </cm:default-properties>
     </cm:property-placeholder>
     
-    <reference id="topologyProvider" interface="org.opennms.features.topology.api.topo.GraphProvider" availability="mandatory" />
+    <reference id="topologyProvider" interface="org.opennms.features.topology.api.TopologyProvider" availability="mandatory" />
 
     <bean id="topologyApplication" class="org.opennms.features.topology.app.internal.TopologyWidgetTestApplication" scope="prototype">
         <argument ref="commandManager"/>
@@ -44,8 +44,8 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
     	<property name="bundleContext" ref="blueprintBundleContext" />
     </bean>
     
-    <reference-list interface="org.opennms.features.topology.api.topo.GraphProvider" availability="mandatory">
-        <reference-listener bind-method="addGraphProvider" unbind-method="removeGraphProvider" ref="topologySelector" />
+    <reference-list interface="org.opennms.features.topology.api.TopologyProvider" availability="mandatory">
+        <reference-listener bind-method="addTopologyProvider" unbind-method="removeTopologyProvider" ref="topologySelector" />
     </reference-list>
 
     <!-- default icon repository -->    

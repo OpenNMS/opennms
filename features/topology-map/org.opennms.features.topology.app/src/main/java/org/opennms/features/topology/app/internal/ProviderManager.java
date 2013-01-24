@@ -12,10 +12,6 @@ import org.opennms.features.topology.api.topo.VertexProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * This class acts as a global manager of VertexProvider and EdgeProvider registrations.
- * It relays bind and unbind events to each GraphProvider.
- */
 public class ProviderManager {
 	
 	public static interface ProviderListener {
@@ -48,7 +44,7 @@ public class ProviderManager {
 	
     public void onEdgeProviderBind(EdgeProvider newProvider) {
     	s_log.info("ProviderManager onEdgeProviderBind({}}", newProvider);
-    	EdgeProvider oldProvider = m_edgeProviders.put(newProvider.getEdgeNamespace(), newProvider);
+    	EdgeProvider oldProvider = m_edgeProviders.put(newProvider.getNamespace(), newProvider);
     	
     	fireEdgeProviderAdded(oldProvider, newProvider);
     }
@@ -56,14 +52,14 @@ public class ProviderManager {
 	public void onEdgeProviderUnbind(EdgeProvider edgeProvider) {
     	s_log.info("ProviderManager onEdgeProviderUnbind({}}", edgeProvider);
     	if (edgeProvider == null) return;
-    	EdgeProvider removedProvider = m_edgeProviders.remove(edgeProvider.getEdgeNamespace());
+    	EdgeProvider removedProvider = m_edgeProviders.remove(edgeProvider.getNamespace());
     	
     	fireEdgeProviderRemoved(removedProvider);
     }
 
 	public void onVertexProviderBind(VertexProvider newProvider) {
     	s_log.info("ProviderManager onVertexProviderBind({}}", newProvider);
-    	VertexProvider oldProvider = m_vertexProviders.put(newProvider.getVertexNamespace(), newProvider);
+    	VertexProvider oldProvider = m_vertexProviders.put(newProvider.getNamespace(), newProvider);
     	
     	fireVertexProviderAdded(oldProvider, newProvider);
     }
@@ -71,7 +67,7 @@ public class ProviderManager {
     public void onVertexProviderUnbind(VertexProvider vertexProvider) {
     	s_log.info("ProviderManager onVertexProviderUnbind({}}", vertexProvider);
     	if (vertexProvider == null) return;
-    	VertexProvider removedProvider = m_vertexProviders.remove(vertexProvider.getVertexNamespace());
+    	VertexProvider removedProvider = m_vertexProviders.remove(vertexProvider.getNamespace());
     	
     	fireVertexProviderRemoved(removedProvider);
     }

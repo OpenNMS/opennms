@@ -29,19 +29,19 @@ public class GCFilterableContainer extends AbstractBeanContainer<VertexRef, Vert
 	/**
 	 * Mapping from Item ID to a list of child IDs when filtered
 	 */
-	private HashMap<VertexRef, LinkedList<VertexRef>> filteredChildren = null;
+	private HashMap<Object, LinkedList<Object>> filteredChildren = null;
 
 	/**
 	 * List that contains all filtered root elements of the container.
 	 */
-	private LinkedList<VertexRef> filteredRoots = null;
+	private LinkedList<Object> filteredRoots = null;
 
 	/**
 	 * Determines how filtering of the container is done.
 	 */
 	private boolean includeParentsWhenFiltering = true;
 
-	private Set<Vertex> filterOverride = null;
+	private Set<Object> filterOverride = null;
 	 
 	private final GraphContainer m_graphContainer;
 
@@ -54,10 +54,10 @@ public class GCFilterableContainer extends AbstractBeanContainer<VertexRef, Vert
 			@Override
 			public void graphChanged(GraphContainer graphContainer) {
 				GCFilterableContainer.super.removeAllItems();
-				GCFilterableContainer.super.addAll(m_graphContainer.getBaseTopology().getVertices());
+				GCFilterableContainer.super.addAll(m_graphContainer.getVertices());
 			}
 		});
-		super.addAll(m_graphContainer.getBaseTopology().getVertices());
+		super.addAll(m_graphContainer.getVertices());
 
 	}
 
@@ -87,7 +87,7 @@ public class GCFilterableContainer extends AbstractBeanContainer<VertexRef, Vert
 
 	private boolean internalAreChildrenAllowed(Object itemId) {
 		if (containsId(itemId)) {
-			return m_graphContainer.getBaseTopology().hasChildren(vRef(itemId));
+			return m_graphContainer.hasChildren(vRef(itemId));
 		}
 		return false;
 	}
@@ -105,12 +105,11 @@ public class GCFilterableContainer extends AbstractBeanContainer<VertexRef, Vert
 
 	}
 
-	private Collection<? extends VertexRef> internalGetChildren(Object itemId) {
+	private Collection<?> internalGetChildren(Object itemId) {
 		if (filteredChildren != null) {
 			return filteredChildren.get(itemId);
 		} else {
-			Collection<Vertex> emptyList = Collections.emptyList(); 
-			return !containsId(itemId) ? emptyList : m_graphContainer.getBaseTopology().getChildren(vRef(itemId));
+			return !containsId(itemId) ? Collections.emptyList() : m_graphContainer.getChildren(vRef(itemId));
 		}
 	}
 
@@ -152,7 +151,7 @@ public class GCFilterableContainer extends AbstractBeanContainer<VertexRef, Vert
 		if (filteredChildren != null) {
 			return filteredChildren.containsKey(itemId);
 		} else { 
-			return containsId(itemId) && m_graphContainer.getBaseTopology().hasChildren(vRef(itemId));
+			return containsId(itemId) && m_graphContainer.hasChildren(vRef(itemId));
 		}
 	}
 
@@ -188,7 +187,7 @@ public class GCFilterableContainer extends AbstractBeanContainer<VertexRef, Vert
 		if (filteredRoots != null) {
 			return Collections.unmodifiableCollection(filteredRoots);
 		} else {
-			return Collections.unmodifiableCollection(m_graphContainer.getBaseTopology().getRootGroup());
+			return Collections.unmodifiableCollection(m_graphContainer.getRootGroup());
 		}
 	}
 
@@ -369,15 +368,15 @@ public class GCFilterableContainer extends AbstractBeanContainer<VertexRef, Vert
 		 }
 
 		 // Reset data structures
-		 filteredRoots = new LinkedList<VertexRef>();
-		 filteredChildren = new HashMap<VertexRef, LinkedList<VertexRef>>();
+		 filteredRoots = new LinkedList<Object>();
+		 filteredChildren = new HashMap<Object, LinkedList<Object>>();
 		 filteredParent = new HashMap<Object, Object>();
 
 		 if (includeParentsWhenFiltering) {
 			 // Filter so that parents for items that match the filter are also
 			 // included
-			 HashSet<Vertex> includedItems = new HashSet<Vertex>();
-			 for (Vertex rootId : m_graphContainer.getBaseTopology().getRootGroup()) {
+			 HashSet<Object> includedItems = new HashSet<Object>();
+			 for (Object rootId : m_graphContainer.getRootGroup()) {
 				 if (filterIncludingParents(rootId, includedItems)) {
 					 filteredRoots.add(rootId);
 					 addFilteredChildrenRecursively(rootId, includedItems);
@@ -398,10 +397,11 @@ public class GCFilterableContainer extends AbstractBeanContainer<VertexRef, Vert
 			 // match
 			 super.doFilterContainer(hasFilters);
 
-			 LinkedHashSet<VertexRef> filteredItemIds = new LinkedHashSet<VertexRef>(getItemIds());
+			 LinkedHashSet<Object> filteredItemIds = new LinkedHashSet<Object>(
+					 getItemIds());
 
-			 for (VertexRef itemId : filteredItemIds) {
-				 Vertex itemParent = m_graphContainer.getParent(vRef(itemId));
+			 for (Object itemId : filteredItemIds) {
+				 Object itemParent = m_graphContainer.getParent(vRef(itemId));
 				 if (itemParent == null || !filteredItemIds.contains(itemParent)) {
 					 // Parent is not included or this was a root, in both cases
 					 // this should be a filtered root
@@ -424,11 +424,11 @@ public class GCFilterableContainer extends AbstractBeanContainer<VertexRef, Vert
 	  * @param parentItemId
 	  * @param childItemId
 	  */
-	 private void addFilteredChild(VertexRef parentItemId, VertexRef childItemId) {
-		 LinkedList<VertexRef> parentToChildrenList = filteredChildren
+	 private void addFilteredChild(Object parentItemId, Object childItemId) {
+		 LinkedList<Object> parentToChildrenList = filteredChildren
 				 .get(parentItemId);
 		 if (parentToChildrenList == null) {
-			 parentToChildrenList = new LinkedList<VertexRef>();
+			 parentToChildrenList = new LinkedList<Object>();
 			 filteredChildren.put(parentItemId, parentToChildrenList);
 		 }
 		 filteredParent.put(childItemId, parentItemId);
@@ -449,13 +449,13 @@ public class GCFilterableContainer extends AbstractBeanContainer<VertexRef, Vert
 	  *            Set containing the item ids for the items that should be
 	  *            included in the filteredChildren map
 	  */
-	 private void addFilteredChildrenRecursively(Vertex parentItemId, HashSet<Vertex> includedItems) {
-		 Collection<? extends Vertex> childList = m_graphContainer.getBaseTopology().getChildren(vRef(parentItemId));
+	 private void addFilteredChildrenRecursively(Object parentItemId, HashSet<Object> includedItems) {
+		 Collection<?> childList = m_graphContainer.getChildren(vRef(parentItemId));
 		 if (childList == null) {
 			 return;
 		 }
 
-		 for (Vertex childItemId : childList) {
+		 for (Object childItemId : childList) {
 			 if (includedItems.contains(childItemId)) {
 				 addFilteredChild(parentItemId, childItemId);
 				 addFilteredChildrenRecursively(childItemId, includedItems);
@@ -473,13 +473,13 @@ public class GCFilterableContainer extends AbstractBeanContainer<VertexRef, Vert
 	  * @param includedItems
 	  * @return true if the itemId should be included in the filtered container.
 	  */
-	 private boolean filterIncludingParents(Vertex itemId,
-			 HashSet<Vertex> includedItems) {
+	 private boolean filterIncludingParents(Object itemId,
+			 HashSet<Object> includedItems) {
 		 boolean toBeIncluded = passesFilters(itemId);
 
-		 Collection<? extends Vertex> childList = m_graphContainer.getBaseTopology().getChildren(vRef(itemId));
+		 Collection<?> childList = m_graphContainer.getChildren(vRef(itemId));
 		 if (childList != null) {
-			 for (Vertex childItemId : childList) {
+			 for (Object childItemId : childList) {
 				 toBeIncluded |= filterIncludingParents(childItemId, includedItems);
 			 }
 		 }

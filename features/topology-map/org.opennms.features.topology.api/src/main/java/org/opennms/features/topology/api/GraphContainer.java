@@ -31,6 +31,8 @@ package org.opennms.features.topology.api;
 import java.util.Collection;
 
 import org.opennms.features.topology.api.topo.Criteria;
+import org.opennms.features.topology.api.topo.Edge;
+import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
@@ -41,11 +43,23 @@ public interface GraphContainer extends DisplayState {
 		public void graphChanged(GraphContainer graphContainer);
 	}
 
+	public Collection<? extends Vertex> getVertices();
+
+	public Collection<? extends Vertex> getChildren(VertexRef vRef);
+
+	public Collection<? extends Vertex> getRootGroup();
+
+	public boolean hasChildren(VertexRef vRef);
+
 	public GraphProvider getBaseTopology();
     
     public void setBaseTopology(GraphProvider graphProvider);
     
     public Vertex getParent(VertexRef child);
+    
+    public Vertex getVertex(VertexRef ref);
+    
+    public Edge getEdge(EdgeRef ref);
     
 	public Criteria getCriteria(String namespace);
 	
@@ -61,5 +75,12 @@ public interface GraphContainer extends DisplayState {
 	
 	public Collection<VertexRef> getVertexRefForest(Collection<? extends VertexRef> vertexRefs);
 
-	void setDataSource(GraphProvider graphProvider);
+
+	// These will work the GraphProvider in the future
+	@Deprecated
+    public TopologyProvider getDataSource();
+
+    @Deprecated
+    public void setDataSource(TopologyProvider topologyProvider);
+
 }

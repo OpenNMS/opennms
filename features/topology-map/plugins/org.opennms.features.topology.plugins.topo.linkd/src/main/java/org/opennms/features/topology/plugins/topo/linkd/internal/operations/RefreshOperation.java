@@ -28,31 +28,27 @@
 
 package org.opennms.features.topology.plugins.topo.linkd.internal.operations;
 
-import java.net.MalformedURLException;
 import java.util.List;
-
-import javax.xml.bind.JAXBException;
 
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.api.TopologyProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.slf4j.LoggerFactory;
 
 public class RefreshOperation implements Operation {
 
+    TopologyProvider m_topologyProvider;
+    
+    public RefreshOperation(TopologyProvider topologyProvider) {
+        m_topologyProvider=topologyProvider;
+    }
+
     @Override
     public Undoer execute(List<VertexRef> targets, OperationContext operationContext) {
+            log("executing linkd topology refresh operation");
+            m_topologyProvider.load(null);
             if (operationContext != null && operationContext.getGraphContainer() != null) {
-                log("executing linkd topology refresh operation");
-                try {
-                    operationContext.getGraphContainer().getBaseTopology().load(null);
-                } catch (MalformedURLException e) {
-                    // TODO: Display the error in the UI
-                    LoggerFactory.getLogger(this.getClass()).error(e.getMessage(), e);
-                } catch (JAXBException e) {
-                    // TODO: Display the error in the UI
-                    LoggerFactory.getLogger(this.getClass()).error(e.getMessage(), e);
-                }
                 log("operationcontext and GraphContainer not null: executing redoLayout");
                 operationContext.getGraphContainer().redoLayout();
             }

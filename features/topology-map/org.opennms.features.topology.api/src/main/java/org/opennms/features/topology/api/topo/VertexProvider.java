@@ -12,7 +12,7 @@ public interface VertexProvider {
 	 * such as letters digits and underscore (no colons, periods, commans etc.)
 	 * 
 	 */
-	public String getVertexNamespace();
+	public String getNamespace();
 	
 	/**
 	 * This boolean returns true if the vertices in this provider are intended
@@ -24,13 +24,6 @@ public interface VertexProvider {
 	 */
 	public boolean contributesTo(String namespace);
 
-	/**
-	 * @deprecated Use {@link #containsVertexId(VertexRef id)} instead.
-	 */
-	boolean containsVertexId(String id);
-
-	boolean containsVertexId(VertexRef id);
-
 	public Vertex getVertex(String namespace, String id);
 	
 	public Vertex getVertex(VertexRef reference);
@@ -40,26 +33,22 @@ public interface VertexProvider {
 	/**
 	 * Return an immutable list of vertices that match the criteria.
 	 */
-	public List<Vertex> getVertices(Criteria criteria);
+	public List<? extends Vertex> getVertices(Criteria criteria);
 
-	public List<Vertex> getVertices();
+	public List<? extends Vertex> getVertices();
 	
-	public List<Vertex> getVertices(Collection<? extends VertexRef> references);
+	public List<? extends Vertex> getVertices(Collection<? extends VertexRef> references);
 	
-	public List<Vertex> getRootGroup();
+	public List<? extends Vertex> getRootGroup();
 	
 	public boolean hasChildren(VertexRef group);
 	
 	public Vertex getParent(VertexRef vertex);
 	
-	boolean setParent(VertexRef child, VertexRef parent);
-	
-	public List<Vertex> getChildren(VertexRef group);
+    public List<? extends Vertex> getChildren(VertexRef group);
 	
 	public void addVertexListener(VertexListener vertexListener);
 	
 	public void removeVertexListener(VertexListener vertexListener);
-
-	void clearVertices();
 
 }

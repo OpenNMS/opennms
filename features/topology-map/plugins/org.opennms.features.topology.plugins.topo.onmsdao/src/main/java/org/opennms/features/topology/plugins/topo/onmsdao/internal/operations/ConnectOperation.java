@@ -48,7 +48,7 @@ public class ConnectOperation implements Operation {
         
         List<VertexRef> endPoints = targets;
         
-        m_topologyProvider.connectVertices(endPoints.get(0), endPoints.get(1));
+        m_topologyProvider.connectVertices(endPoints.get(0).getId(), endPoints.get(1).getId());
         return null;
     }
 

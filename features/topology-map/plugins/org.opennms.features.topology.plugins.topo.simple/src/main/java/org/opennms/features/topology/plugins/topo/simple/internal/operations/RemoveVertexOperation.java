@@ -30,7 +30,8 @@ package org.opennms.features.topology.plugins.topo.simple.internal.operations;
 
 import java.util.List;
 
-import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.api.DisplayState;
+import org.opennms.features.topology.api.EditableTopologyProvider;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.topo.VertexRef;
@@ -39,16 +40,22 @@ import org.slf4j.LoggerFactory;
 
 public class RemoveVertexOperation implements Operation {
 
+    EditableTopologyProvider m_topologyProvider;
+    
+    public RemoveVertexOperation(EditableTopologyProvider topologyProvider) {
+        m_topologyProvider = topologyProvider;
+    }
+    
     @Override
     public Undoer execute(List<VertexRef> targets, OperationContext operationContext) {
-        GraphContainer graphContainer = operationContext.getGraphContainer();
+        DisplayState graphContainer = operationContext.getGraphContainer();
         
         if (targets == null) {
             LoggerFactory.getLogger(getClass()).debug("need to handle selection!!!");
         } else {
             for(VertexRef target : targets) {
-            	if (operationContext.getGraphContainer().getBaseTopology().getVertexNamespace().equals(target.getNamespace())) {
-            		operationContext.getGraphContainer().getBaseTopology().removeVertex(target);
+            	if (m_topologyProvider.getNamespace().equals(target.getNamespace())) {
+            		m_topologyProvider.removeVertex(target.getId());
             	}
             }
             
@@ -66,8 +73,8 @@ public class RemoveVertexOperation implements Operation {
     @Override
     public boolean enabled(List<VertexRef> targets, OperationContext operationContext) {
         if(targets != null) {
-            for(VertexRef target : targets) {
-                if(operationContext.getGraphContainer().getBaseTopology().getVertex(target) == null) return false;
+            for(Object target : targets) {
+                if(!m_topologyProvider.containsVertexId(target)) return false;
             }
             return true;
         }
@@ -76,6 +83,7 @@ public class RemoveVertexOperation implements Operation {
 
     @Override
     public String getId() {
-        return "RemoveVertex";
+        // TODO Auto-generated method stub
+        return null;
     }
 }

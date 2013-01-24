@@ -36,12 +36,15 @@ import org.opennms.features.topology.api.Constants;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.api.TopologyProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.vaadin.data.Item;
+import com.vaadin.data.Property;
+import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.data.util.PropertysetItem;
 import com.vaadin.ui.Button;
@@ -53,6 +56,7 @@ import com.vaadin.ui.Select;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+
 
 public class AddVertexToGroupOperation implements Constants, Operation {
 	
@@ -68,11 +72,12 @@ public class AddVertexToGroupOperation implements Constants, Operation {
 
 		final VertexRef currentVertex = targets.get(0);
 		final String currentVertexId = currentVertex.getId();
-		final Collection<? extends Vertex> vertexIds = graphContainer.getBaseTopology().getChildren(currentVertex);
+		final Collection<String> vertexIds = (Collection<String>)graphContainer.getDataSource().getVertexContainer().getItemIds();
 		final Collection<String> groupIds = new ArrayList<String>();
-		for (Vertex vertexId : vertexIds) {
-			if (!vertexId.isLeaf()) {
-				groupIds.add(vertexId.getLabel());
+		for (String vertexId : vertexIds) {
+			BeanItem<?> vertex = graphContainer.getDataSource().getVertexContainer().getItem(vertexId);
+			if (!(Boolean)vertex.getItemProperty("leaf").getValue()) {
+				groupIds.add(vertexId);
 				log.debug("Found group: {}", vertexId);
 			}
 		}
@@ -95,10 +100,13 @@ public class AddVertexToGroupOperation implements Constants, Operation {
 				String pid = (String) propertyId;
 				if ("Group".equals(pid)) {
 					Select select = new Select("Group");
-					for (Vertex childId : vertexIds) {
-						log.debug("Adding child: {}, {}", childId.getId(), childId.getLabel());
-						select.addItem(childId.getId());
-						select.setItemCaption(childId.getId(), childId.getLabel());
+					for (String childId : groupIds) {
+						BeanItem<?> childVertex = graphContainer.getDataSource().getVertexContainer().getItem(childId);
+						Property childLabelProperty = childVertex.getItemProperty("label");
+						String childLabel = (childLabelProperty == null ? childId : (String)childLabelProperty.getValue());
+						log.debug("Adding child: {}, {}", childId, childLabel);
+						select.addItem(childId);
+						select.setItemCaption(childId, childLabel);
 					}
 					select.setNewItemsAllowed(false);
 					select.setNullSelectionAllowed(false);
@@ -124,11 +132,13 @@ public class AddVertexToGroupOperation implements Constants, Operation {
 
 				LoggerFactory.getLogger(this.getClass()).debug("Adding item to group: {}", parentId);
 
+				TopologyProvider topologyProvider = graphContainer.getDataSource();
+
 				// Link the selected vertex to the parent group
-				graphContainer.getBaseTopology().setParent(currentVertex, graphContainer.getBaseTopology().getVertex(graphContainer.getBaseTopology().getVertexNamespace(), parentId));
+				topologyProvider.setParent(currentVertexId, parentId);
 
 				// Save the topology
-				graphContainer.getBaseTopology().save(null);
+				topologyProvider.save(null);
 
 				graphContainer.redoLayout();
 			}
@@ -187,5 +197,16 @@ public class AddVertexToGroupOperation implements Constants, Operation {
 	public String getId() {
 		return null;
 	}
+
+	private Object getTopoItemId(GraphContainer graphContainer, VertexRef vertexRef) {
+		if (vertexRef == null)  return null;
+		Vertex v = graphContainer.getVertex(vertexRef);
+		if (v == null) return null;
+		Item item = v.getItem();
+		if (item == null) return null;
+		Property property = item.getItemProperty("itemId");
+		return property == null ? null : property.getValue();
+	}
+
 
 }

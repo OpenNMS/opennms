@@ -12,7 +12,7 @@ public interface EdgeProvider {
 	 * such as letters digits and underscore (no colons, periods, commans etc.)
 	 * 
 	 */
-	public String getEdgeNamespace();
+	public String getNamespace();
 	
 	/**
 	 * This boolean returns true if the edges in this provider are intended
@@ -33,22 +33,20 @@ public interface EdgeProvider {
 	/**
 	 * Return an immutable list of edges that match the criteria.
 	 */
-	public List<Edge> getEdges(Criteria criteria);
+	public List<? extends Edge> getEdges(Criteria criteria);
 	
 	/**
 	 * Return an immutable list of all edges.
 	 */
-	public List<Edge> getEdges();
+	public List<? extends Edge> getEdges();
 	
 	/**
 	 * Return an immutable list of all edges that match this set of references.
 	 */
-	public List<Edge> getEdges(Collection<? extends EdgeRef> references);
+	public List<? extends Edge> getEdges(Collection<? extends EdgeRef> references);
 	
-	public void addEdgeListener(EdgeListener listener);
+	public void addEdgeListener(EdgeListener vertexListener);
 	
-	public void removeEdgeListener(EdgeListener listener);
-
-	void clearEdges();
+	public void removeEdgeListener(EdgeListener vertexListener);
 
 }

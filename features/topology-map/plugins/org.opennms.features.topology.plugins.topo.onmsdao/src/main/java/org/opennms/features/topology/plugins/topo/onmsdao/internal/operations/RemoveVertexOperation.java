@@ -53,7 +53,7 @@ public class RemoveVertexOperation implements Operation {
         if (targets == null) {
             LoggerFactory.getLogger(getClass()).debug("need to handle selection!!!");
         } else {
-            for(VertexRef target : targets) {
+            for(Object target : targets) {
                 m_topologyProvider.removeVertex(target);
             }
             
@@ -71,7 +71,7 @@ public class RemoveVertexOperation implements Operation {
     @Override
     public boolean enabled(List<VertexRef> targets, OperationContext operationContext) {
         if(targets != null) {
-            for(VertexRef target : targets) {
+            for(Object target : targets) {
                 if(!m_topologyProvider.containsVertexId(target)) return false;
             }
             return true;

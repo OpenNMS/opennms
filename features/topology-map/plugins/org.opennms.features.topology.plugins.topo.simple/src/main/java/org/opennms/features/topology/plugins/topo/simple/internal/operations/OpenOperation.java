@@ -28,31 +28,28 @@
 
 package org.opennms.features.topology.plugins.topo.simple.internal.operations;
 
-import java.net.MalformedURLException;
 import java.util.List;
-
-import javax.xml.bind.JAXBException;
 
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.api.TopologyProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.slf4j.LoggerFactory;
 
 
 public class OpenOperation implements Operation {
     
+    TopologyProvider m_topologyProvider;
+    
+    public OpenOperation(TopologyProvider topologyProvider) {
+        m_topologyProvider = topologyProvider;
+    }
+    
 	@Override
-    public Undoer execute(List<VertexRef> targets, OperationContext operationContext) {
+    public Undoer execute(List<VertexRef> targets,
+            OperationContext operationContext) {
         
-        try {
-            operationContext.getGraphContainer().getBaseTopology().load("graph.xml");
-        } catch (MalformedURLException e) {
-            // TODO: Display the error in the UI
-            LoggerFactory.getLogger(this.getClass()).error(e.getMessage(), e);
-        } catch (JAXBException e) {
-            // TODO: Display the error in the UI
-            LoggerFactory.getLogger(this.getClass()).error(e.getMessage(), e);
-        }
+        m_topologyProvider.load("graph.xml");
+        //graphContainer.load("graph.xml");
         return null;
     }
 
@@ -68,6 +65,6 @@ public class OpenOperation implements Operation {
 
     @Override
     public String getId() {
-        return "Open";
+        return null;
     }
 }

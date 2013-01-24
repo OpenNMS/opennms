@@ -173,6 +173,14 @@
       <scope>provided</scope>
     </dependency>
 
+    <dependency>
+      <groupId>org.opennms.features.topology.plugins.topo</groupId>
+      <artifactId>adapter</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+
+    
   </dependencies>
   
   <repositories>
