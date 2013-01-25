@@ -300,8 +300,13 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 
     @Override
     public void setSemanticZoomLevel(int level) {
+        int oldLevel = m_semanticZoomLevel;
         m_semanticZoomLevel = level;
-        rebuildGraph();
+        
+        if(oldLevel != m_semanticZoomLevel) {
+            rebuildGraph();
+        }
+        
     }
 
     @Override

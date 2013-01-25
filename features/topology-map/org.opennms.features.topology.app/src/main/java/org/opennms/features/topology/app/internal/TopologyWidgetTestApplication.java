@@ -43,6 +43,8 @@ import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
 import com.github.wolfie.refresher.Refresher;
 import com.vaadin.Application;
 import com.vaadin.data.Property;
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.AbsoluteLayout;
@@ -143,13 +145,15 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 		slider.setResolution(1);
 		slider.setHeight("300px");
 		slider.setOrientation(Slider.ORIENTATION_VERTICAL);
-//		try {
-//            slider.setValue(1.0);
-//        } catch (ValueOutOfBoundsException e) {
-//            // Catch an Index out of bounds exception
-//        }
-		scale.setValue(0);
+
 		slider.setImmediate(true);
+		slider.addListener(new ValueChangeListener() {
+            
+            @Override
+            public void valueChange(ValueChangeEvent event) {
+                saveHistory();
+            }
+        });
 
 		final Button zoomInBtn = new Button();
 		zoomInBtn.setIcon(new ThemeResource("images/plus.png"));
