@@ -50,12 +50,14 @@ public class AbstractEdge extends AbstractEdgeRef implements Edge {
 		}
 		m_source = new SimpleConnector(namespace, id + "::" + source.getId(), source.getLabel() + " Connector", source, this);
 		m_target = new SimpleConnector(namespace, id + "::" + target.getId(), target.getLabel() + " Connector", target, this);
+		m_styleName = "edge";
 	}
 
 	public AbstractEdge(String namespace, String id, SimpleConnector source, SimpleConnector target) {
 		super(namespace, id);
 		m_source = source;
 		m_target = target;
+		m_styleName = "edge";
 	}
 
 	/**
@@ -72,7 +74,7 @@ public class AbstractEdge extends AbstractEdgeRef implements Edge {
 	}
 
 	@Override
-	public String getStyleName() {
+	public final String getStyleName() {
 		return m_styleName;
 	}
 
