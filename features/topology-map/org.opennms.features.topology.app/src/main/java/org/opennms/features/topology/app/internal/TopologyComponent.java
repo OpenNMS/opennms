@@ -63,51 +63,8 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
 
     private static final long serialVersionUID = 1L;
     
-    public class MapManager {
-
-        private int m_clientX = 0;
-        private int m_clientY = 0;
-        private int m_height;
-        private int m_width;
-        
-        public void setClientX(int clientX) {
-            m_clientX = clientX;
-        }
-
-        public void setClientY(int clientY) {
-            m_clientY = clientY;
-        }
-
-        public int getClientX() {
-            return m_clientX;
-        }
-
-        public int getClientY() {
-            return m_clientY;
-        }
-
-        public void setClientWidth(int width) {
-            m_width = width;
-        }
-        
-        public int getClientWidth() {
-            return m_width;
-        }
-
-        public void setClientHeight(int height) {
-            m_height = height;
-        }
-        
-        public int getClientHeight() {
-            return m_height;
-        }
-        
-        
-    }
-	
 	private GraphContainer m_graphContainer;
     private Graph m_graph;
-	private MapManager m_mapManager = new MapManager();
     private List<MenuItemUpdateListener> m_menuItemStateListener = new ArrayList<MenuItemUpdateListener>();
     private ContextMenuHandler m_contextMenuHandler;
     private IconRepositoryManager m_iconRepoManager;
@@ -273,8 +230,6 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
             Integer width = (Integer)bounds.get("width");
             Integer height = (Integer)bounds.get("height");
             
-            m_mapManager.setClientWidth(width);
-            m_mapManager.setClientHeight(height);
             m_viewManager.setViewPort(width, height);
             
         }
