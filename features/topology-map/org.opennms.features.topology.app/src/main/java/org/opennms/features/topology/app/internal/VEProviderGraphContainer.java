@@ -14,21 +14,18 @@ import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Layout;
 import org.opennms.features.topology.api.LayoutAlgorithm;
 import org.opennms.features.topology.api.SelectionManager;
-import org.opennms.features.topology.api.TopologyProvider;
 import org.opennms.features.topology.api.topo.AbstractEdge;
-import org.opennms.features.topology.api.topo.Connector;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeListener;
 import org.opennms.features.topology.api.topo.EdgeProvider;
-import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.GraphVisitor;
+import org.opennms.features.topology.api.topo.RefComparator;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexListener;
 import org.opennms.features.topology.api.topo.VertexProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.plugins.topo.adapter.TPGraphProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,14 +37,11 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     public class PseudoEdge extends AbstractEdge {
 
         private String m_styleName;
-        private Vertex m_source;
-        private Vertex m_target;
         
         public PseudoEdge(String namespace, String id, String styleName, Vertex source, Vertex target) {
-        	super(namespace, id);
-        	m_styleName = styleName;
-            m_source = source;
-            m_target = target;
+            super(namespace, id, source, target);
+            setLabel(source.getLabel() + " :: " + target.getLabel());
+            m_styleName = styleName;
         }
 
         @Override
@@ -56,72 +50,8 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
         }
         
         @Override
-        public String getKey() {
-            return getNamespace()+":" + getId();
-        }
-
-        @Override
         public Item getItem() {
             return new BeanItem<PseudoEdge>(this);
-        }
-
-        @Override
-        public Connector getSource() {
-            return new Connector() {
-
-                @Override
-                public String getNamespace() {
-                    return PseudoEdge.this.getNamespace();
-                }
-
-                @Override
-                public String getId() {
-                    return PseudoEdge.this.getId()+":source";
-                }
-
-                @Override
-                public EdgeRef getEdge() {
-                    return PseudoEdge.this;
-                }
-
-                @Override
-                public VertexRef getVertex() {
-                    return PseudoEdge.this.m_source;
-                }
-
-            };
-        }
-
-        @Override
-        public Connector getTarget() {
-            return new Connector() {
-
-                @Override
-                public String getNamespace() {
-                    return PseudoEdge.this.getNamespace();
-                }
-
-                @Override
-                public String getId() {
-                    return PseudoEdge.this.getId()+":target";
-                }
-
-                @Override
-                public EdgeRef getEdge() {
-                    return PseudoEdge.this;
-                }
-
-                @Override
-                public VertexRef getVertex() {
-                    return PseudoEdge.this.m_target;
-                }
-
-            };
-        }
-
-        @Override
-        public String getLabel() {
-            return m_source.getLabel()+" :: " + m_target.getLabel();
         }
 
         @Override
@@ -205,17 +135,9 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     private SelectionManager m_selectionManager = new DefaultSelectionManager(); 
     
     private MergingGraphProvider m_mergedGraphProvider;
-    private TopologyProvider m_dataSource;
 
     private final Layout m_layout;
     private VEGraph m_graph;
-    
-    public VEProviderGraphContainer(TopologyProvider dataSource, ProviderManager providerManager) {
-    	m_dataSource = dataSource;
-    	m_mergedGraphProvider = new MergingGraphProvider(new TPGraphProvider(dataSource), providerManager);
-		m_layout = new DefaultLayout(this);
-		rebuildGraph();
-	}
     
     public VEProviderGraphContainer(GraphProvider graphProvider, ProviderManager providerManager) {
     	m_mergedGraphProvider = new MergingGraphProvider(graphProvider, providerManager);
@@ -269,7 +191,7 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 
     @Override
     public GraphProvider getBaseTopology() {
-        return m_mergedGraphProvider;
+        return m_mergedGraphProvider.getBaseGraphProvider();
     }
 
     @Override
@@ -348,7 +270,7 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 	}
     
     private boolean refEquals(VertexRef a, VertexRef b) {
-    	return a.getNamespace().equals(b.getNamespace()) && a.getId().equals(b.getId());
+        return new RefComparator().compare(a, b) == 0;
     }
     
     private Vertex getDisplayVertex(VertexRef vertexRef) {
@@ -361,27 +283,9 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     		return getDisplayVertex(parent);
     	}
     }
-    
 
     @Override
-    public Vertex getVertex(VertexRef ref) {
-    	return m_mergedGraphProvider.getVertex(ref);
-    }
-
-    @Override
-    public Edge getEdge(EdgeRef ref) {
-    	return m_mergedGraphProvider.getEdge(ref);
-    }
-
-    @Override
-    public TopologyProvider getDataSource() {
-    	return m_dataSource;
-    }
-
-    @Override
-    public void setDataSource(TopologyProvider topologyProvider) {
-    	m_dataSource = topologyProvider;
-    	TPGraphProvider graphProvider = new TPGraphProvider(topologyProvider);
+    public void setDataSource(GraphProvider graphProvider) {
     	m_mergedGraphProvider.setBaseGraphProvider(graphProvider);
     }
 
@@ -428,26 +332,6 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 	}
 
 	@Override
-	public Collection<? extends Vertex> getVertices() {
-		return m_mergedGraphProvider.getVertices();
-	}
-
-	@Override
-	public Collection<? extends Vertex> getChildren(VertexRef vRef) {
-		return m_mergedGraphProvider.getChildren(vRef);
-	}
-
-	@Override
-	public Collection<? extends Vertex> getRootGroup() {
-		return m_mergedGraphProvider.getRootGroup();
-	}
-
-	@Override
-	public boolean hasChildren(VertexRef vRef) {
-		return m_mergedGraphProvider.hasChildren(vRef);
-	}
-
-	@Override
 	public Collection<VertexRef> getVertexRefForest(Collection<? extends VertexRef> vertexRefs) {
 		Set<VertexRef> processed = new LinkedHashSet<VertexRef>();
 		for(VertexRef vertexRef : vertexRefs) {
@@ -459,7 +343,7 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 	public void addRefTreeToSet(VertexRef vertexId, Set<VertexRef> processed) {
 		processed.add(vertexId);
 
-		for(VertexRef childId : getChildren(vertexId)) {
+		for(VertexRef childId : getBaseTopology().getChildren(vertexId)) {
 			if (!processed.contains(childId)) {
 				addRefTreeToSet(childId, processed);
 			}
@@ -473,8 +357,8 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 
 	@Override
 	public void edgeSetChanged(EdgeProvider provider,
-			List<? extends Edge> added, List<? extends Edge> updated,
-			List<String> removedEdgeIds) {
+			Collection<? extends Edge> added, Collection<? extends Edge> updated,
+			Collection<String> removedEdgeIds) {
 		rebuildGraph();
 	}
 
@@ -485,11 +369,8 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 
 	@Override
 	public void vertexSetChanged(VertexProvider provider,
-			List<? extends Vertex> added, List<? extends Vertex> update,
-			List<String> removedVertexIds) {
+			Collection<? extends Vertex> added, Collection<? extends Vertex> update,
+			Collection<String> removedVertexIds) {
 		rebuildGraph();
 	}
-
-
-
 }

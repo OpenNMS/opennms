@@ -11,10 +11,10 @@ public class ComponentCommand extends OsgiCommandSupport {
 
     @Override
     protected Object doExecute() throws Exception {
-        final ServiceReference sr = this.bundleContext.getServiceReference(NCSComponentRepository.class.getName());
+        final ServiceReference<NCSComponentRepository> sr = this.bundleContext.getServiceReference(NCSComponentRepository.class);
         if (sr == null) return null;
 
-        final NCSComponentRepository repository = (NCSComponentRepository)this.bundleContext.getService(sr);
+        final NCSComponentRepository repository = this.bundleContext.getService(sr);
         for (final NCSComponent component : repository.findAll()) {
             System.out.println("    " + component.toString());
         }

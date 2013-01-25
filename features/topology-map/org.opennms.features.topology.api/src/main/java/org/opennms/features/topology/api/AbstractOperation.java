@@ -50,7 +50,7 @@ public abstract class AbstractOperation implements Operation {
     }
 
 	protected static Item getVertexItem(final OperationContext operationContext, final VertexRef target) {
-		Vertex vertex = operationContext.getGraphContainer().getVertex(target);
+		Vertex vertex = operationContext.getGraphContainer().getBaseTopology().getVertex(target);
 		if (vertex == null) {
 			LoggerFactory.getLogger(AbstractOperation.class).debug("Null vertex found for vertex reference: {}:{}", target.getNamespace(), target.getId());
 			return null;

@@ -36,14 +36,10 @@ import org.opennms.features.topology.api.Constants;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.api.TopologyProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.slf4j.LoggerFactory;
 
-import com.vaadin.data.Item;
-import com.vaadin.data.Property;
-import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.data.util.PropertysetItem;
 import com.vaadin.data.validator.AbstractValidator;
@@ -88,27 +84,28 @@ public class CreateGroupOperation implements Constants, Operation {
 				super.commit();
 				String groupLabel = (String)getField("Group Label").getValue();
 
-				TopologyProvider topologyProvider = graphContainer.getDataSource();
 				// Add the new group
-				Object groupId = topologyProvider.addGroup(groupLabel, GROUP_ICON_KEY);
+				VertexRef groupId = operationContext.getGraphContainer().getBaseTopology().addGroup(groupLabel, GROUP_ICON_KEY);
 
-				Object parentGroup = null;
+				Vertex parentGroup = null;
 				for(VertexRef vertexRef : targets) {
-					Object vertexId = getTopoItemId(graphContainer, vertexRef);
-					Object parent = topologyProvider.getVertexContainer().getParent(vertexId);
+					Vertex parent = operationContext.getGraphContainer().getBaseTopology().getParent(vertexRef);
 					if (parentGroup == null) {
 						parentGroup = parent;
 					} else if (!parentGroup.equals(parent)) {
-						parentGroup = ROOT_GROUP_ID;
+						// If there are multiple parents present then attach the new group 
+						// to the top level of the hierarchy
+						parentGroup = null;
+						break;
 					}
-					topologyProvider.setParent(vertexId, groupId);
+					operationContext.getGraphContainer().getBaseTopology().setParent(vertexRef, groupId);
 				}
 
 				// Set the parent of the new group to the selected top-level parent
-				topologyProvider.setParent(groupId, parentGroup == null ? ROOT_GROUP_ID : parentGroup);
+				operationContext.getGraphContainer().getBaseTopology().setParent(groupId, parentGroup);
 
 				// Save the topology
-				topologyProvider.save(null);
+				operationContext.getGraphContainer().getBaseTopology().save(null);
 
 				graphContainer.redoLayout();
 			}
@@ -128,12 +125,11 @@ public class CreateGroupOperation implements Constants, Operation {
 			@Override
 			public boolean isValid(Object value) {
 				try {
-					final Collection<String> vertexIds = (Collection<String>)graphContainer.getDataSource().getVertexContainer().getItemIds();
+					final Collection<? extends Vertex> vertexIds = graphContainer.getBaseTopology().getVertices();
 					final Collection<String> groupLabels = new ArrayList<String>();
-					for (String vertexId : vertexIds) {
-						BeanItem<?> vertex = graphContainer.getDataSource().getVertexContainer().getItem(vertexId);
-						if (!(Boolean)vertex.getItemProperty("leaf").getValue()) {
-							groupLabels.add((String)vertex.getItemProperty("label").getValue());
+					for (Vertex vertexId : vertexIds) {
+						if (!vertexId.isLeaf()) {
+							groupLabels.add(vertexId.getLabel());
 						}
 					}
 
@@ -198,15 +194,5 @@ public class CreateGroupOperation implements Constants, Operation {
 	@Override
 	public String getId() {
 		return null;
-	}
-
-	private Object getTopoItemId(GraphContainer graphContainer, VertexRef vertexRef) {
-		if (vertexRef == null)  return null;
-		Vertex v = graphContainer.getVertex(vertexRef);
-		if (v == null) return null;
-		Item item = v.getItem();
-		if (item == null) return null;
-		Property property = item.getItemProperty("itemId");
-		return property == null ? null : property.getValue();
 	}
 }

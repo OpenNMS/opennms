@@ -32,25 +32,19 @@ import java.util.List;
 
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.api.topo.GraphProvider;
+import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.plugins.topo.onmsdao.internal.OnmsTopologyProvider;
 
-
-public class ResetOperation implements Constants, Operation{
+public class ResetOperation implements Constants, Operation {
     
-    OnmsTopologyProvider m_topologyProvider;
-    
-    public ResetOperation(OnmsTopologyProvider topologyProvider) {
-        m_topologyProvider = topologyProvider;
-    }
-
     @Override
-    public Undoer execute(List<VertexRef> targets,
-            OperationContext operationContext) {
-        
+    public Undoer execute(List<VertexRef> targets, OperationContext operationContext) {
+
+        GraphProvider m_topologyProvider = operationContext.getGraphContainer().getBaseTopology();
         m_topologyProvider.resetContainer();
-        Object groupId = m_topologyProvider.addGroup("Group", GROUP_ICON);
-        Object vertexId = m_topologyProvider.addVertex(-1,50, 50, SERVER_ICON);
+        Vertex groupId = m_topologyProvider.addGroup("Group", GROUP_ICON);
+        Vertex vertexId = m_topologyProvider.addVertex(50, 50);
         m_topologyProvider.setParent(vertexId, groupId);
         return null;
     }

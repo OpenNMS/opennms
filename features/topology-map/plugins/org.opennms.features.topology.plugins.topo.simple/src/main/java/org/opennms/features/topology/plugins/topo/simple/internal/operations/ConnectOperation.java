@@ -30,29 +30,20 @@ package org.opennms.features.topology.plugins.topo.simple.internal.operations;
 
 import java.util.List;
 
-import org.opennms.features.topology.api.EditableTopologyProvider;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.topo.VertexRef;
 
 public class ConnectOperation implements Operation {
 
-    EditableTopologyProvider m_topologyProvider;
-    
-    public ConnectOperation(EditableTopologyProvider topologyProvider) {
-        m_topologyProvider = topologyProvider;
-    }
-    
     @Override
     public Undoer execute(List<VertexRef> targets, OperationContext operationContext) {
-    	String ns = m_topologyProvider.getNamespace();
+    	String ns = operationContext.getGraphContainer().getBaseTopology().getVertexNamespace();
     	if(targets != null && targets.size() > 1) {
     		VertexRef sourceRef = targets.get(0);
     		VertexRef targetRef = targets.get(1);
     		if (ns.equals(sourceRef.getNamespace()) && ns.equals(targetRef.getNamespace()))  {
-    			Object sourceVertexId = sourceRef.getId();
-    			Object targetVertexId = targetRef.getId();
-    			m_topologyProvider.connectVertices(sourceVertexId, targetVertexId);
+    			operationContext.getGraphContainer().getBaseTopology().connectVertices(sourceRef, targetRef);
     		}
     	}
     	return null;
