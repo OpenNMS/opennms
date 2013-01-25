@@ -34,6 +34,7 @@ import org.junit.Test;
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.LayoutAlgorithm;
+import org.opennms.features.topology.api.MapViewManager;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.TopologyProvider;
@@ -215,6 +216,12 @@ public class SaveToXmlTest {
 
                     @Override
                     public Property getScaleProperty() {
+                        // TODO Auto-generated method stub
+                        return null;
+                    }
+
+                    @Override
+                    public MapViewManager getMapViewManager() {
                         // TODO Auto-generated method stub
                         return null;
                     }

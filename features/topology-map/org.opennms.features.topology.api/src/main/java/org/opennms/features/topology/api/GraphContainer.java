@@ -86,5 +86,7 @@ public interface GraphContainer extends DisplayState {
     public void setDataSource(TopologyProvider topologyProvider);
 
     public abstract Property getScaleProperty();
+    
+    public MapViewManager getMapViewManager();
 
 }

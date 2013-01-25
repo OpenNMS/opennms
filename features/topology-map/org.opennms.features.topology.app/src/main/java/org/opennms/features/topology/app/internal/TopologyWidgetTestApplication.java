@@ -133,7 +133,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 
 		final Property scale = m_graphContainer.getScaleProperty();
 
-		m_topologyComponent = new TopologyComponent(m_graphContainer, scale);
+		m_topologyComponent = new TopologyComponent(m_graphContainer);
 		m_topologyComponent.setIconRepoManager(m_iconRepositoryManager);
 		m_topologyComponent.setSizeFull();
 		m_topologyComponent.addMenuItemStateListener(this);

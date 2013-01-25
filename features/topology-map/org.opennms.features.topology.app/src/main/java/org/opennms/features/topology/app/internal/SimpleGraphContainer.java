@@ -41,6 +41,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.LayoutAlgorithm;
+import org.opennms.features.topology.api.MapViewManager;
 import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.TopologyProvider;
 import org.opennms.features.topology.api.VertexContainer;
@@ -54,11 +55,11 @@ import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.plugins.topo.adapter.TPGraphProvider;
 import org.slf4j.LoggerFactory;
 
-import com.vaadin.data.Item;
-import com.vaadin.data.Property;
 import com.vaadin.data.Container.ItemSetChangeEvent;
 import com.vaadin.data.Container.ItemSetChangeListener;
 import com.vaadin.data.Container.PropertySetChangeListener;
+import com.vaadin.data.Item;
+import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
 
@@ -1006,6 +1007,12 @@ public class SimpleGraphContainer implements GraphContainer {
 	}
 
     public Property getScaleProperty() {
+        return null;
+    }
+
+    @Override
+    public MapViewManager getMapViewManager() {
+        // TODO Auto-generated method stub
         return null;
     }
 

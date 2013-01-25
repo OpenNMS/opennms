@@ -13,6 +13,7 @@ import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Layout;
 import org.opennms.features.topology.api.LayoutAlgorithm;
+import org.opennms.features.topology.api.MapViewManager;
 import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.TopologyProvider;
 import org.opennms.features.topology.api.topo.AbstractEdge;
@@ -274,6 +275,7 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     
     private MergingGraphProvider m_mergedGraphProvider;
     private TopologyProvider m_dataSource;
+    private MapViewManager m_viewManager = new DefaultMapViewManager();
 
     private final Layout m_layout;
     private VEGraph m_graph;
@@ -567,6 +569,11 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 			List<String> removedVertexIds) {
 		rebuildGraph();
 	}
+
+    @Override
+    public MapViewManager getMapViewManager() {
+        return m_viewManager;
+    }
 
 
 

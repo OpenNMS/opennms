@@ -11,7 +11,7 @@ public class MapViewPortTest {
     
     @Test
     public void testGetBounds() {
-        MapViewManager viewManager = new MapViewManager();
+        DefaultMapViewManager viewManager = new DefaultMapViewManager();
         viewManager.setMapBounds(new BoundingBox(0,0, 8000,4000));
         viewManager.setViewPort(400, 300);
         
@@ -43,7 +43,7 @@ public class MapViewPortTest {
     
     @Test
     public void testPanMap() {
-        MapViewManager viewManager = new MapViewManager();
+        DefaultMapViewManager viewManager = new DefaultMapViewManager();
         viewManager.setMapBounds(new BoundingBox(0,0, 8000,4000));
         viewManager.setViewPort(400, 300);
         
