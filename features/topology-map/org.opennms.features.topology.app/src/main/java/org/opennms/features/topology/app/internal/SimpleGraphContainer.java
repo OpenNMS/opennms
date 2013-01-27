@@ -479,6 +479,7 @@ public class SimpleGraphContainer implements GraphContainer {
                     item.getItemProperty("groupId").setValue(v.getGroupId());
                     item.getItemProperty("groupKey").setValue(v.getGroupKey());
                     item.getItemProperty("icon").setValue(v.getIcon());
+                    item.getItemProperty("iconKey").setValue(v.getIconKey());
                     item.getItemProperty("item").setValue(v.getItem());
                     item.getItemProperty("itemId").setValue(v.getItemId());
                     item.getItemProperty("key").setValue(v.getKey());

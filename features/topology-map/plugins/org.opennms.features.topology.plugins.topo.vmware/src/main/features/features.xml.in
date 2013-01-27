@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<features xmlns="http://karaf.apache.org/xmlns/features/v1.0.0" name="OpenNMS Topology :: Plugins :: Topology">
+    <feature name="${project.artifactId}" version="${project.version}" description="OpenNMS Topology :: Plugins :: Topology">
+        <details>OpenNMS topology plugins.</details>
+        <bundle>mvn:${project.groupId}/${project.artifactId}/${project.version}</bundle>
+    </feature>
+</features>
