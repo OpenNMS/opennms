@@ -53,7 +53,7 @@ public class GWTOpenlayersWidget extends Widget {
 	private final native void initializeMap(final OnmsOpenLayersMap map) /*-{
 		var displayAllNodes = true;
 
-		var fillColors = {
+		var nodeFillColors = {
 			Critical: "#F5CDCD",
 			Major: "#FFD7CD",
 			Minor: "#FFEBCD",
@@ -61,7 +61,7 @@ public class GWTOpenlayersWidget extends Widget {
 			Normal: "#D7E100" // was #D7E1CD
 		};
 
-		var strokeColors = {
+		var nodeStrokeColors = {
 			Critical: "#CC0000",
 			Major: "#FF3300",
 			Minor: "#FF9900",
@@ -69,52 +69,58 @@ public class GWTOpenlayersWidget extends Widget {
 			Normal: "#336600"
 		};
 
-		var style = new $wnd.OpenLayers.Style({
-			pointRadius: "${radius}",
-			label: "${label}",
-			display: "${display}",
-			fillColor: "${fillColor}",
-			fillOpacity: 0.8,
-			strokeColor: "${strokeColor}",
-			strokeOpacity: 0.8,
-			strokeWidth: 2
-		}, {
-			context: {
-				// The Radius will change according with the amount of nodes on the cluster.
-				radius: function(feature) {
-					return feature.cluster ? Math.min(feature.attributes.count, 7) + 5 : 5;
-				},
-				// The label will display the amount of nodes only for clusters.
-				label: function(feature) {
-					return feature.cluster && feature.cluster.length > 1 ? feature.cluster.length : "";
-				},
-				display: function(feature) {
-					if (displayAllNodes) {
-						return 'display';
-					}
-					// Display only nodes with availability < 100
-					return getAvailability(feature) < 100 ? 'display' : 'none';
-				},
-				// It depends on the calculated severity
-				strokeColor: function(feature) {
-					return strokeColors[getSeverity(feature)];
-				},
-				// It depends on the calculated severity
-				fillColor: function(feature) {
-					return fillColors[getSeverity(feature)];
-				}
-			}
-		});
+        	var nodeStyles = new $wnd.OpenLayers.Style({
+        		pointRadius: "${radius}",
+        		graphicName: "${shape}",
+        		label: "${label}",
+        		display: "${display}",
+        		fillColor: "${fillColor}",
+        		fillOpacity: 0.8,
+        		strokeColor: "${strokeColor}",
+        		strokeOpacity: 0.8,
+        		strokeWidth: 3,
+        		fontFamily: "'Lucida Grande', Verdana, sans-serif",
+        		fontSize: 10
+        	}, {
+        		context: {
+        			// The Shape will change if the cluster contain several nodes or not.
+        			shape: function(feature) {
+        				return feature.cluster && feature.cluster.length > 1 ? "circle" : "square";
+        			},
+        			// The Radius will change according with the amount of nodes on the cluster.
+        			radius: function(feature) {
+        				return feature.cluster ? Math.min(feature.attributes.count, 7) + 5 : 5;
+        			},
+        			// The label will display the amount of nodes only for clusters.
+        			label: function(feature) {
+        				return feature.cluster && feature.cluster.length > 1 ? feature.cluster.length : "";
+        			},
+        			display: function(feature) {
+        				if (displayAllNodes) {
+        					return 'display';
+        				}
+        				// Display only nodes with availability < 100
+        				return getAvailability(feature) < 100 ? 'display' : 'none';
+        			},
+        			// It depends on the calculated severity
+        			strokeColor: function(feature) {
+        				return nodeStrokeColors[getNodeSeverity(feature)];
+        			},
+        			// It depends on the calculated severity
+        			fillColor: function(feature) {
+        				return nodeFillColors[getNodeSeverity(feature)];
+        			}
+        		}
+        	});
 
 		// Nodes Layer
 
 		var nodesLayer = new $wnd.OpenLayers.Layer.Vector("All Nodes", {
 			strategies: [
-				// new $wnd.OpenLayers.Strategy.Fixed(),
 				new $wnd.OpenLayers.Strategy.Cluster()
 			],
 			styleMap: new $wnd.OpenLayers.StyleMap({
-				'default': style,
+				'default': nodeStyles,
 				'select': {
 					fillColor: "#8aeeef",
 					strokeColor: "#32a8a9"
@@ -151,7 +157,7 @@ public class GWTOpenlayersWidget extends Widget {
 			return ((1 - count/feature.cluster.length) * 100).toFixed(2);
 		}
 
-		function getSeverity(feature) {
+		function getNodeSeverity(feature) {
 			var p = getAvailability(feature);
 			if (p == 100)           return 'Normal';
 			if (p < 100 && p >= 98) return 'Warning';
@@ -164,27 +170,32 @@ public class GWTOpenlayersWidget extends Widget {
 			select.unselect(this.feature);
 		}
 
-		function onFeatureSelect(evt) {
-			feature = evt.feature;
-			var msg = "";
-			if (feature.cluster.length > 1) {
-				var nodes = [];
-				for (var i=0; i<feature.cluster.length; i++) {
-					var n = feature.cluster[i].attributes;
-					nodes.push(n.nodeLabel + "(" + n.ipAddress + ") : " + n.nodeStatus);
-				}
-				msg = "<h2># of nodes: " + feature.cluster.length + " (" + getAvailability(feature) + "% Available)</h2><ul><li>" + nodes.join("</li><li>") + "</li></ul>";
-			} else {
-				var n = feature.cluster[0].attributes;
-				msg = "<h2>Node " + n.nodeLabel + "</h2><p>IP Address: " + n.ipAddress + "</p>";
-			}
-			popup = new $wnd.OpenLayers.Popup.FramedCloud("nodePopup",
-				feature.geometry.getBounds().getCenterLonLat(),
-				new $wnd.OpenLayers.Size(100,100), msg, null, false, onPopupClose);
-			feature.popup = popup;
-			popup.feature = feature;
-			map.addPopup(popup);
-		}
+                function onFeatureSelect(evt) {
+                    feature = evt.feature;
+                    var msg = "";
+                    if (feature.cluster.length > 1) {
+                        var nodes = [];
+                        for (var i=0; i<feature.cluster.length; i++) {
+                            var n = feature.cluster[i].attributes;
+                            nodes.push(n.nodeLabel + "(" + n.ipAddress + ") : " + n.nodeStatus);
+                        }
+                        msg = "<h2># of nodes: " + feature.cluster.length + " (" + getAvailability(feature) + "% Available)</h2><ul><li>" + nodes.join("</li><li>") + "</li></ul>";
+                    } else {
+                        var n = feature.cluster[0].attributes;
+                        msg = "<h2>Node " + n.nodeLabel + "</h2>" +
+                              "<p>Node ID: " + n.nodeId + "</br>" +
+                              "Foreign Source: " + n.foreignSource + "</br>" +
+                              "Foreign ID: " + n.foreignId + "</br>" +
+                              "IP Address: " + n.ipAddress + "</br>" +
+                              "Status: " + n.nodeStatus + "</br></p>";
+                    }
+                    popup = new $wnd.OpenLayers.Popup.FramedCloud("nodePopup",
+                        feature.geometry.getBounds().getCenterLonLat(),
+                        new $wnd.OpenLayers.Size(100,100), msg, null, false, onPopupClose);
+                    feature.popup = popup;
+                    popup.feature = feature;
+                    map.addPopup(popup);
+                }
 
 		function onFeatureUnselect(evt) {
 			feature = evt.feature;
@@ -199,7 +210,7 @@ public class GWTOpenlayersWidget extends Widget {
 		function applyFilters(btn) {
 			btn.value = displayAllNodes ? 'Show All Nodes' : 'Show Down Nodes';
 			displayAllNodes = !displayAllNodes; 
-			nodesLayer.refresh();
+			nodesLayer.redraw();
 		}
 	}-*/;
 
