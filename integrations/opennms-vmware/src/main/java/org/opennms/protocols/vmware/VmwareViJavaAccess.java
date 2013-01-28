@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -19,6 +19,16 @@
  * You should have received a copy of the GNU General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
+ *
+ * Additional permission under GNU GPL version 3 section 7
+ *
+ * If you modify this Program, or any covered work, by linking or
+ * combining it with SBLIM (or a modified version of that library),
+ * containing parts covered by the terms of the Eclipse Public License,
+ * the licensors of this Program grant you additional permission to
+ * convey the resulting work. {Corresponding Source for a non-source
+ * form of such a combination shall include the source code for the
+ * parts of SBLIM used as well as that of the covered work.}
  *
  * For more information contact:
  *     OpenNMS(R) Licensing <license@opennms.org>
