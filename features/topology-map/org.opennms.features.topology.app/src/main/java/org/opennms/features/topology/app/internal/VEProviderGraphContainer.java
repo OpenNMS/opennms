@@ -56,12 +56,12 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 
     public class VEGraph implements Graph {
     	
-    	private final Collection<? extends Vertex> m_displayVertices;
-    	private final Collection<? extends Edge> m_displayEdges;
+    	private final Collection<Vertex> m_displayVertices;
+    	private final Collection<Edge> m_displayEdges;
     	private final Layout m_layout;
     	
-        public VEGraph(Layout layout, Collection<? extends Vertex> displayVertices,
-				Collection<? extends Edge> displayEdges) {
+        public VEGraph(Layout layout, Collection<Vertex> displayVertices,
+				Collection<Edge> displayEdges) {
 			m_displayVertices = displayVertices;
 			m_displayEdges = displayEdges;
 			m_layout = layout;
@@ -73,12 +73,12 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
         }
 
         @Override
-        public Collection<? extends Vertex> getDisplayVertices() {
+        public Collection<Vertex> getDisplayVertices() {
         	return Collections.unmodifiableCollection(m_displayVertices);
         }
 
         @Override
-        public Collection<? extends Edge> getDisplayEdges() {
+        public Collection<Edge> getDisplayEdges() {
         	return Collections.unmodifiableCollection(m_displayEdges);
         }
 

@@ -67,9 +67,9 @@ public class AbstractRef implements Ref {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((m_id == null) ? 0 : m_id.hashCode());
+		result = prime * result + ((getId() == null) ? 0 : getId().hashCode());
 		result = prime * result
-				+ ((m_namespace == null) ? 0 : m_namespace.hashCode());
+				+ ((getNamespace() == null) ? 0 : getNamespace().hashCode());
 		return result;
 	}
 

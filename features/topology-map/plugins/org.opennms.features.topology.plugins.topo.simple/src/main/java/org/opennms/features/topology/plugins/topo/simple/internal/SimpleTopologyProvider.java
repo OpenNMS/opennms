@@ -221,6 +221,10 @@ public class SimpleTopologyProvider extends AbstractTopologyProvider implements 
 
     @Override
     public void load(String filename) throws MalformedURLException, JAXBException {
-        load(new File(filename).toURI());
+        if (filename == null) {
+            load(getTopologyLocation());
+        } else {
+            load(new File(filename).toURI());
+        }
     }
 }

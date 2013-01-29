@@ -159,27 +159,6 @@ public class AbstractVertex extends AbstractVertexRef implements Vertex {
 		m_nodeID = nodeID;
 	}
 
-	@Override
-	public int hashCode() {
-		 final int prime = 31;
-		 int result = 1;
-		 result = prime * result + ((getId() == null) ? 0 : getId().hashCode());
-		 result = prime * result
-		 + ((getNamespace() == null) ? 0 : getNamespace().hashCode());
-		 return result;
-	 }
-
-	 @Override
-	 public boolean equals(Object obj) {
-		 if (this == obj) return true;
-		 if (obj == null) return false;
-		 if (!(obj instanceof VertexRef))	return false;
-
-		 VertexRef e = (VertexRef)obj;
-		 return getNamespace().equals(e.getNamespace()) && getId().equals(e.getId());
-
-	 }
-
 	 @Override
 	 public String toString() { return "Vertex:"+getNamespace()+":"+getId() + "[label="+getLabel()+", styleName="+getStyleName()+"]"; } 
 }
