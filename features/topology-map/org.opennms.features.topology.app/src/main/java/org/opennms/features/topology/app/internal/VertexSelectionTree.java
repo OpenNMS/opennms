@@ -27,7 +27,7 @@ public class VertexSelectionTree extends Tree implements SelectionListener {
             public void valueChange(com.vaadin.data.Property.ValueChangeEvent event) {
 
             	@SuppressWarnings("unchecked")
-				Collection<? extends VertexRef> refs = (Collection<? extends VertexRef>)event.getProperty().getValue();
+				Collection<VertexRef> refs = (Collection<VertexRef>)event.getProperty().getValue();
             	
             	Collection<VertexRef> vertices = m_graphContainer.getVertexRefForest(refs);
             	m_graphContainer.getSelectionManager().setSelectedVertexRefs(vertices);

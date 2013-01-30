@@ -325,7 +325,7 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 	}
 
 	@Override
-	public Collection<VertexRef> getVertexRefForest(Collection<? extends VertexRef> vertexRefs) {
+	public Collection<VertexRef> getVertexRefForest(Collection<VertexRef> vertexRefs) {
 		Set<VertexRef> processed = new LinkedHashSet<VertexRef>();
 		for(VertexRef vertexRef : vertexRefs) {
 			addRefTreeToSet(vertexRef, processed);

@@ -194,7 +194,6 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         log("loadtopology: Clear " + EdgeProvider.class.getSimpleName());
         clearEdges();
 
-        List<Edge> edges = new ArrayList<Edge>();
         for (DataLinkInterface link: m_dataLinkInterfaceDao.findAll()) {
             log("loadtopology: parsing link: " + link.getDataLinkInterfaceId());
 

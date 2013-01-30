@@ -67,8 +67,7 @@ public class AddVertexToGroupOperation implements Constants, Operation {
 		final GraphContainer graphContainer = operationContext.getGraphContainer();
 
 		final VertexRef currentVertex = targets.get(0);
-		final String currentVertexId = currentVertex.getId();
-		final Collection<? extends Vertex> vertexIds = graphContainer.getBaseTopology().getChildren(currentVertex);
+		final Collection<Vertex> vertexIds = graphContainer.getBaseTopology().getChildren(currentVertex);
 		final Collection<String> groupIds = new ArrayList<String>();
 		for (Vertex vertexId : vertexIds) {
 			if (!vertexId.isLeaf()) {

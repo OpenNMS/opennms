@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.slf4j.LoggerFactory;
@@ -18,8 +18,8 @@ public class SimpleVertexProvider implements VertexProvider {
 	private final String m_namespace;
 	private final Map<String,Vertex> m_vertexMap = new LinkedHashMap<String,Vertex>();
 	private final Set<VertexListener> m_listeners = new CopyOnWriteArraySet<VertexListener>();
-	private final Map<VertexRef, VertexRef> m_parents= new TreeMap<VertexRef, VertexRef>(new RefComparator());
-	private final Map<VertexRef, List<VertexRef>> m_children = new TreeMap<VertexRef, List<VertexRef>>(new RefComparator());
+	private final Map<VertexRef, VertexRef> m_parents= new HashMap<VertexRef, VertexRef>();
+	private final Map<VertexRef, List<VertexRef>> m_children = new HashMap<VertexRef, List<VertexRef>>();
 
 	public SimpleVertexProvider(String namespace) {
 		m_namespace = namespace;

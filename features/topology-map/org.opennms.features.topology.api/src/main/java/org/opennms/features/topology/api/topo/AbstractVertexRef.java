@@ -46,7 +46,7 @@ public class AbstractVertexRef extends AbstractRef implements VertexRef {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public final boolean equals(Object obj) {
 		if (obj instanceof VertexRef) {
 			return super.equals(obj);
 		}
