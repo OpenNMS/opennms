@@ -31,6 +31,9 @@
     <!-- SNMP MIB Parser and Event/Collection Configuration -->
     <module>vaadin-snmp-events-and-metrics</module>
 
+    <!-- opennms rest api -->
+    <module>rest</module>
+
     <!-- Near Real Time Graphing -->
     <module>nrtg</module>
 
