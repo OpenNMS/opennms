@@ -108,7 +108,7 @@ public class DefaultMapViewManager implements MapViewManager{
         m_scale = Math.log(bbPrime.getWidth()/(double)mPrime.getWidth()) / Math.log( (m_viewPortWidth/2.0) / (double)mPrime.getWidth());
         m_scale = Math.min(1.0, m_scale);
         m_scale = Math.max(0.0, m_scale);
-        m_scale = (int)(m_scale*10)/10.0;
+        m_scale = (int)(Math.round(m_scale*10))/10.0;
         
         Point oldCenter = m_center;
         m_center = boundingBox.getCenter();
