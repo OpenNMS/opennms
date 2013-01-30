@@ -63,6 +63,7 @@ import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.config.datacollection.StorageStrategy;
 import org.opennms.netmgt.dao.support.IndexStorageStrategy;
 import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.model.PrefabGraph;
 import org.opennms.netmgt.xml.eventconf.Decode;
 import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.netmgt.xml.eventconf.Events;
@@ -220,16 +221,8 @@ public class JsmiMibParser implements MibParser, Serializable {
         NameCutter cutter = new NameCutter();
         try {
             for (SmiVariable v : module.getVariables()) {
-                String groupName = null, resourceType = null;
-                if (v.getNode().getParent().getSingleValue() instanceof SmiRow) {
-                    groupName = v.getNode().getParent().getParent().getSingleValue().getId();
-                    /* TODO: Add a better description for the resourceType object.
-                    String description = ((SmiTable)v.getNode().getParent().getParent().getSingleValue()).getDescription().replaceAll("(?s)^([^.]+\\.).+", "$1");
-                    */
-                    resourceType = v.getNode().getParent().getSingleValue().getId();
-                } else {
-                    groupName = v.getNode().getParent().getSingleValue().getId();
-                }
+                String groupName = getGroupName(v);
+                String resourceType = getResourceType(v);
                 Group group = getGroup(dcGroup, groupName, resourceType);
                 String typeName = getType(v.getType().getPrimitiveType());
                 if (typeName != null) {
@@ -258,6 +251,70 @@ public class JsmiMibParser implements MibParser, Serializable {
             return null;
         }
         return dcGroup;
+    }
+
+
+    /* (non-Javadoc)
+     * @see org.opennms.features.vaadin.mibcompiler.api.MibParser#getPrefabGraphs()
+     */
+    @Override
+    public List<PrefabGraph> getPrefabGraphs() {
+        if (module == null) {
+            return null;
+        }
+        List<PrefabGraph> graphs = new ArrayList<PrefabGraph>();
+        LogUtils.infof(this, "Generating graph templates for %s", module.getId());
+        NameCutter cutter = new NameCutter();
+        try {
+            for (SmiVariable v : module.getVariables()) {
+                String groupName = getGroupName(v);
+                String resourceType = getResourceType(v);
+                if (resourceType == null)
+                    resourceType = "nodeSnmp";
+                String typeName = getType(v.getType().getPrimitiveType());
+                if (v.getId().contains("Index")) { // Treat SNMP Indexes as strings.
+                    typeName = "string";
+                }
+                int order = 1;
+                if (typeName != null && !typeName.equals("string")) {
+                    String name = groupName + '.' + v.getId();
+                    String alias = cutter.trimByCamelCase(v.getId(), 19); // RRDtool/JRobin DS size restriction.
+                    String descr = v.getDescription().replaceAll("[\n\r]", "").replaceAll("\\s+", " ");
+                    StringBuffer sb = new StringBuffer();
+                    sb.append("--title=\"").append(v.getId()).append("\" \\\n");
+                    sb.append(" DEF:var={rrd1}:").append(alias).append(":AVERAGE \\\n");
+                    sb.append(" LINE1:var#0000ff:\"").append(v.getId()).append("\" \\\n");
+                    sb.append(" GPRINT:var:AVERAGE:\"Avg\\\\: %8.2lf %s\" \\\n");
+                    sb.append(" GPRINT:var:MIN:\"Min\\\\: %8.2lf %s\" \\\n");
+                    sb.append(" GPRINT:var:MAX:\"Max\\\\: %8.2lf %s\\n\"");
+                    sb.append("\n\n");
+                    PrefabGraph graph = new PrefabGraph(name, descr, new String[] { alias }, sb.toString(), new String[0], new String[0], order++, new String[] { resourceType }, descr, null, null, new String[0]);
+                    graphs.add(graph);
+                }
+            }
+        } catch (Throwable e) {
+            String errors = e.getMessage();
+            if (errors == null || errors.trim().equals(""))
+                errors = "An unknown error accured when generating graph templates from the MIB " + module.getId();
+            LogUtils.errorf(this, e, "Graph templates parsing error: %s", errors);
+            errorHandler.addError(errors);
+            return null;
+        }
+        return graphs;
+    }
+
+    private String getGroupName(SmiVariable var) {
+        if (var.getNode().getParent().getSingleValue() instanceof SmiRow) {
+            return var.getNode().getParent().getParent().getSingleValue().getId();
+        }
+        return var.getNode().getParent().getSingleValue().getId();
+    }
+
+    private String getResourceType(SmiVariable var) {
+        if (var.getNode().getParent().getSingleValue() instanceof SmiRow) {
+            return var.getNode().getParent().getSingleValue().getId();
+        }
+        return null;
     }
 
     /**
