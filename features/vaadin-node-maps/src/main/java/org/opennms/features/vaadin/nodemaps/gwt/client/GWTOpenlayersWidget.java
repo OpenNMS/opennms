@@ -128,13 +128,10 @@ public class GWTOpenlayersWidget extends Widget {
 			})
 		});
 
-                this.@org.opennms.features.vaadin.nodemaps.gwt.client.GWTOpenlayersWidget::m_vectorLayer = nodesLayer;
-                this.@org.opennms.features.vaadin.nodemaps.gwt.client.GWTOpenlayersWidget::updateFeatureLayer()();
-
 		// Selection Features
 
 		var select = new $wnd.OpenLayers.Control.SelectFeature(
-			nodesLayer, {hover: true}
+			nodesLayer, {hover: false} // The user must click on the cluster to see the details of it.
 		);
 		map.addControl(select);
 		select.activate();
@@ -143,9 +140,16 @@ public class GWTOpenlayersWidget extends Widget {
 			'featureselected': onFeatureSelect,
 			'featureunselected': onFeatureUnselect
 		});
+
+		// It is important to add the layer to the map before populate it with the nodes.
+
 		map.addLayer(nodesLayer);
 
-		map.setCenter(new $wnd.OpenLayers.LonLat(0, 0), 1);
+		// Updating Nodes Layer
+
+                this.@org.opennms.features.vaadin.nodemaps.gwt.client.GWTOpenlayersWidget::m_vectorLayer = nodesLayer;
+                this.@org.opennms.features.vaadin.nodemaps.gwt.client.GWTOpenlayersWidget::updateFeatureLayer()();
+                map.zoomToExtent(nodesLayer.getDataExtent());
 
 		function getAvailability(feature) {
 			if (!feature.cluster) return 100;
