@@ -34,6 +34,8 @@ import java.util.List;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.HistoryManager;
 import org.opennms.features.topology.api.IViewContribution;
+import org.opennms.features.topology.api.MapViewManager;
+import org.opennms.features.topology.api.MapViewManagerListener;
 import org.opennms.features.topology.api.TopologyProvider;
 import org.opennms.features.topology.api.WidgetContext;
 import org.opennms.features.topology.app.internal.TopoContextMenu.TopoContextMenuItem;
@@ -43,8 +45,6 @@ import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
 import com.github.wolfie.refresher.Refresher;
 import com.vaadin.Application;
 import com.vaadin.data.Property;
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.AbsoluteLayout;
@@ -68,7 +68,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.VerticalSplitPanel;
 import com.vaadin.ui.Window;
 
-public class TopologyWidgetTestApplication extends Application implements CommandUpdateListener, MenuItemUpdateListener, ContextMenuHandler, WidgetUpdateListener, WidgetContext, FragmentChangedListener, GraphContainer.ChangeListener {
+public class TopologyWidgetTestApplication extends Application implements CommandUpdateListener, MenuItemUpdateListener, ContextMenuHandler, WidgetUpdateListener, WidgetContext, FragmentChangedListener, GraphContainer.ChangeListener, MapViewManagerListener {
     
     
 	private static final long serialVersionUID = 6837501987137310938L;
@@ -100,6 +100,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 		m_historyManager = historyManager;
 		m_graphContainer = new VEProviderGraphContainer(topologyProvider, providerManager);
 		m_graphContainer.addChangeListener(this);
+		m_graphContainer.getMapViewManager().addListener(this);
 		m_iconRepositoryManager = iconRepoManager;
 		
 	}
@@ -147,13 +148,6 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 		slider.setOrientation(Slider.ORIENTATION_VERTICAL);
 
 		slider.setImmediate(true);
-		slider.addListener(new ValueChangeListener() {
-            
-            @Override
-            public void valueChange(ValueChangeEvent event) {
-                saveHistory();
-            }
-        });
 
 		final Button zoomInBtn = new Button();
 		zoomInBtn.setIcon(new ThemeResource("images/plus.png"));
@@ -531,6 +525,12 @@ public class TopologyWidgetTestApplication extends Application implements Comman
     private void setSemanticZoomLevel(int szl) {
         m_zoomLevelLabel.setValue(szl);
         m_graphContainer.redoLayout();
+    }
+
+
+    @Override
+    public void boundingBoxChanged(MapViewManager viewManager) {
+        saveHistory();
     }
 
 
