@@ -132,6 +132,7 @@
       <artifactId>org.opennms.core.lib</artifactId>
       <scope>provided</scope>
     </dependency>
+
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-config</artifactId>
@@ -147,6 +148,11 @@
       <artifactId>jsmiparser-api</artifactId>
       <version>${jsmiparser.version}</version>
       <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.name-cutter</artifactId>
     </dependency>
     <dependency>
       <groupId>commons-lang</groupId>

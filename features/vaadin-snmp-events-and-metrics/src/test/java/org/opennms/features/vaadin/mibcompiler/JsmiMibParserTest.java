@@ -236,6 +236,32 @@ public class JsmiMibParserTest {
     }
 
     /**
+     * Test name cutter
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void testNameCutter() throws Exception {
+        if (parser.parseMib(new File(MIB_DIR, "Clavister-MIB.mib"))) {
+            DatacollectionGroup dcGroup = parser.getDataCollection();
+            Assert.assertNotNull(dcGroup);
+            System.out.println(JaxbUtils.marshal(dcGroup));
+            int count = 0;
+            for (Group group : dcGroup.getGroupCollection()) {
+                for (MibObj mo : group.getMibObjCollection()) {
+                    if (mo.getAlias().length() > 19) { // Character restriction.
+                        count++;
+                    }
+                }
+            }
+            // Without the name-cutter the number will be 80.
+            Assert.assertEquals(0, count);
+        } else {
+            Assert.fail("The Clavister-MIB.mib file couldn't be parsed successfully.");
+        }
+    }
+
+    /**
      * Test a MIB with internal syntax errors (or invalid content).
      *
      * @throws Exception the exception

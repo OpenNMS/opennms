@@ -53,6 +53,7 @@ import org.jsmiparser.smi.SmiTrapType;
 import org.jsmiparser.smi.SmiVariable;
 
 import org.opennms.core.utils.LogUtils;
+import org.opennms.features.namecutter.NameCutter;
 import org.opennms.features.vaadin.mibcompiler.api.MibParser;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.config.datacollection.Group;
@@ -216,11 +217,15 @@ public class JsmiMibParser implements MibParser, Serializable {
         LogUtils.infof(this, "Generating data collection configuration for %s", module.getId());
         DatacollectionGroup dcGroup = new DatacollectionGroup();
         dcGroup.setName(module.getId());
+        NameCutter cutter = new NameCutter();
         try {
             for (SmiVariable v : module.getVariables()) {
                 String groupName = null, resourceType = null;
                 if (v.getNode().getParent().getSingleValue() instanceof SmiRow) {
                     groupName = v.getNode().getParent().getParent().getSingleValue().getId();
+                    /* TODO: Add a better description for the resourceType object.
+                    String description = ((SmiTable)v.getNode().getParent().getParent().getSingleValue()).getDescription().replaceAll("(?s)^([^.]+\\.).+", "$1");
+                    */
                     resourceType = v.getNode().getParent().getSingleValue().getId();
                 } else {
                     groupName = v.getNode().getParent().getSingleValue().getId();
@@ -228,12 +233,20 @@ public class JsmiMibParser implements MibParser, Serializable {
                 Group group = getGroup(dcGroup, groupName, resourceType);
                 String typeName = getType(v.getType().getPrimitiveType());
                 if (typeName != null) {
+                    String alias = cutter.trimByCamelCase(v.getId(), 19); // RRDtool/JRobin DS size restriction.
                     MibObj mibObj = new MibObj();
                     mibObj.setOid('.' + v.getOidStr());
                     mibObj.setInstance(resourceType == null ? "0" : resourceType);
-                    mibObj.setAlias(v.getId());
+                    mibObj.setAlias(alias);
                     mibObj.setType(typeName);
                     group.addMibObj(mibObj);
+                    if (typeName.equals("string") && resourceType != null) {
+                        for (ResourceType rs : dcGroup.getResourceTypeCollection()) {
+                            if (rs.getName().equals(resourceType) && rs.getResourceLabel().equals("${index}")) {
+                                rs.setResourceLabel("${" + v.getId() + "} (${index})");
+                            }
+                        }
+                    }
                 }
             }
         } catch (Throwable e) {
@@ -330,6 +343,8 @@ public class JsmiMibParser implements MibParser, Serializable {
         if (type.equals(SmiPrimitiveType.TIME_TICKS)) // TimeTicks will be treated as strings.
             return "string";
         if (type.equals(SmiPrimitiveType.OBJECT_IDENTIFIER)) // ObjectIdentifier will be treated as strings.
+            return "string";
+        if (type.equals(SmiPrimitiveType.OCTET_STRING)) // OctetString should be treated as string.
             return "string";
         return type.toString().replaceAll("_", "").toLowerCase();
     }
