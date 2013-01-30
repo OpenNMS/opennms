@@ -1,13 +1,21 @@
 package org.opennms.features.vaadin.nodemaps.ui;
 
+import java.util.List;
+
 import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.features.geocoder.Coordinates;
+import org.opennms.features.geocoder.GeocoderException;
 import org.opennms.features.geocoder.GeocoderService;
 import org.opennms.features.vaadin.nodemaps.gwt.client.VOpenlayersWidget;
+import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.dao.AssetRecordDao;
 import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsGeolocation;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,14 +30,17 @@ public class OpenlayersWidgetComponent extends VerticalLayout {
     private static final long serialVersionUID = 1L;
     private NodeDao m_nodeDao;
     private AssetRecordDao m_assetDao;
+    private AlarmDao m_alarmDao;
     private GeocoderService m_geocoderService;
-    
+    private boolean m_enableGeocoding = false;
+
     private Logger m_log = LoggerFactory.getLogger(getClass());
 
     public OpenlayersWidgetComponent() {}
-    public OpenlayersWidgetComponent(final NodeDao nodeDao, final AssetRecordDao assetDao, final GeocoderService geocoder) {
+    public OpenlayersWidgetComponent(final NodeDao nodeDao, final AssetRecordDao assetDao, final AlarmDao alarmDao, final GeocoderService geocoder) {
         m_nodeDao = nodeDao;
         m_assetDao = assetDao;
+        m_alarmDao = alarmDao;
         m_geocoderService = geocoder;
     }
 
@@ -59,8 +70,8 @@ public class OpenlayersWidgetComponent extends VerticalLayout {
 
             final String addressString = geolocation.asAddressString();
             final String coordinateString = geolocation.getCoordinates();
-            /*
-            if ((coordinateString == null || coordinateString == "" || !coordinateString.contains(",")) && addressString != "") {
+
+            if (m_enableGeocoding && (coordinateString == null || coordinateString == "" || !coordinateString.contains(",")) && addressString != "") {
                 m_log.debug("No coordinates for node {}, getting geolocation for street address: {}", new Object[] { node.getId(), addressString });
                 Coordinates coordinates = null;
                 try {
@@ -78,12 +89,40 @@ public class OpenlayersWidgetComponent extends VerticalLayout {
             } else {
                 m_log.debug("Found coordinates for node {}, geolocation for street address: {} = {}", new Object[] { node.getId(), addressString, coordinateString });
             }
-            */
 
             if (coordinateString != null && coordinateString != "") {
                 final String[] coordinates = coordinateString.split(",");
                 if (coordinates[0] != "-1" && coordinates[1] != "-1") {
                     target.startTag(node.getId().toString());
+
+                    CriteriaBuilder builder = new CriteriaBuilder(OnmsAlarm.class);
+                    builder.alias("node", "node");
+                    builder.eq("node.id", node.getId());
+                    builder.ge("severity", OnmsSeverity.WARNING);
+                    builder.orderBy("severity").desc();
+                    builder.limit(1);
+
+                    // first, get the highest severity alarm
+                    final List<OnmsAlarm> alarms = m_alarmDao.findMatching(builder.toCriteria());
+                    if (alarms.size() == 1) {
+                        final OnmsAlarm alarm = alarms.get(0);
+                        target.addAttribute("severityLabel", alarm.getSeverityLabel());
+                        target.addAttribute("severity", alarm.getSeverityId());
+                    }
+
+                    builder = new CriteriaBuilder(OnmsAlarm.class);
+                    builder.alias("node", "node");
+                    builder.eq("node.id", node.getId());
+                    builder.ge("severity", OnmsSeverity.WARNING);
+                    builder.isNotNull("alarmAckTime");
+                    final int unackedCount = m_alarmDao.countMatching(builder.toCriteria());
+
+                    target.addAttribute("nodeId", node.getId());
+                    target.addAttribute("nodeLabel", node.getLabel());
+                    target.addAttribute("foreignSource", node.getForeignSource());
+                    target.addAttribute("foreignId", node.getForeignId());
+                    target.addAttribute("ipAddress", InetAddressUtils.str(node.getPrimaryInterface().getIpAddress()));
+                    target.addAttribute("unackedCount", unackedCount);
                     target.addAttribute("latitude", coordinates[0]);
                     target.addAttribute("longitude", coordinates[1]);
                     target.endTag(node.getId().toString());
@@ -94,7 +133,7 @@ public class OpenlayersWidgetComponent extends VerticalLayout {
 
     @Transactional
     void updateDatabase(final OnmsAssetRecord assets) {
-        // m_assetDao.saveOrUpdate(assets);
+        m_assetDao.saveOrUpdate(assets);
     }
 
     public void setNodeDao(final NodeDao nodeDao) {
@@ -102,6 +141,9 @@ public class OpenlayersWidgetComponent extends VerticalLayout {
     }
     public void setAssetRecordDao(final AssetRecordDao assetDao) {
         m_assetDao = assetDao;
+    }
+    public void setAlarmDao(final AlarmDao alarmDao) {
+        m_alarmDao = alarmDao;
     }
     public void setGeocoderService(final GeocoderService geocoderService) {
         m_geocoderService = geocoderService;

@@ -29,6 +29,7 @@ package org.opennms.features.vaadin.nodemaps;
 
 import org.opennms.features.geocoder.GeocoderService;
 import org.opennms.features.vaadin.nodemaps.ui.OpenlayersWidgetComponent;
+import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.dao.AssetRecordDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.slf4j.Logger;
@@ -77,14 +78,13 @@ import com.vaadin.ui.Window;
 public class NodeMapsApplication extends Application {
 
     private NodeDao m_nodeDao;
-
-    private Window m_window;
-
-    private AbsoluteLayout m_rootLayout;
-
     private AssetRecordDao m_assetDao;
+    private AlarmDao m_alarmDao;
 
     private GeocoderService m_geocoderService;
+
+    private Window m_window;
+    private AbsoluteLayout m_rootLayout;
 
     private Logger m_log = LoggerFactory.getLogger(getClass());
 
@@ -102,6 +102,10 @@ public class NodeMapsApplication extends Application {
         m_assetDao = assetDao;
     }
 
+    public void setAlarmDao(final AlarmDao alarmDao) {
+        m_alarmDao = alarmDao;
+    }
+
     public void setGeocoderService(final GeocoderService geocoderService) {
         m_geocoderService = geocoderService;
     }
@@ -117,6 +121,7 @@ public class NodeMapsApplication extends Application {
         final OpenlayersWidgetComponent openlayers = new OpenlayersWidgetComponent();
         openlayers.setNodeDao(m_nodeDao);
         openlayers.setAssetRecordDao(m_assetDao);
+        openlayers.setAlarmDao(m_alarmDao);
         openlayers.setGeocoderService(m_geocoderService);
         openlayers.setSizeFull();
 

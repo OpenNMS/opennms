@@ -7,10 +7,13 @@ import com.google.gwt.core.client.JavaScriptObject;
 public class GeoJSONFeature extends JavaScriptObject {
     protected GeoJSONFeature() {}
     
-    public static GeoJSONFeature create(final Float longitude, final Float latitude, final Map<String,String> properties) {
+    public static GeoJSONFeature create(final Float longitude, final Float latitude, final Map<String,String> stringProperties, final Map<String,Integer> intProperties) {
         final GeoJSONProperties props = GeoJSONProperties.create();
-        for (final Map.Entry<String,String> entry : properties.entrySet()) {
-            props.setAttribute(entry.getKey(), entry.getValue());
+        for (final Map.Entry<String,String> entry : stringProperties.entrySet()) {
+            props.setString(entry.getKey(), entry.getValue());
+        }
+        for (final Map.Entry<String,Integer> entry : intProperties.entrySet()) {
+            props.setInteger(entry.getKey(), entry.getValue());
         }
         return GeoJSONFeature.create(longitude, latitude, props);
     }

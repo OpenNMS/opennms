@@ -100,7 +100,7 @@ public class GWTOpenlayersWidget extends Widget {
         					return 'display';
         				}
         				// Display only nodes with availability < 100
-        				return getAvailability(feature) < 100 ? 'display' : 'none';
+        				return getHighestSeverity(feature) == 'Normal' ? 'none' : 'display';
         			},
         			// It depends on the calculated severity
         			strokeColor: function(feature) {
@@ -158,12 +158,7 @@ public class GWTOpenlayersWidget extends Widget {
 		}
 
 		function getNodeSeverity(feature) {
-			var p = getAvailability(feature);
-			if (p == 100)           return 'Normal';
-			if (p < 100 && p >= 98) return 'Warning';
-			if (p < 98 && p >= 90)  return 'Minor';
-			if (p < 90 && p >= 80)  return 'Major';
-			if (p < 80)             return 'Critical';
+		    return getHighestSeverity(feature);
 		}
 
 		function onPopupClose(evt) {
@@ -179,7 +174,7 @@ public class GWTOpenlayersWidget extends Widget {
                             var n = feature.cluster[i].attributes;
                             nodes.push(n.nodeLabel + "(" + n.ipAddress + ") : " + n.nodeStatus);
                         }
-                        msg = "<h2># of nodes: " + feature.cluster.length + " (" + getAvailability(feature) + "% Available)</h2><ul><li>" + nodes.join("</li><li>") + "</li></ul>";
+                        msg = "<h2># of nodes: " + feature.cluster.length + " (" + getNumUnacked(feature) + " Unacknowledged Alarms)</h2><ul><li>" + nodes.join("</li><li>") + "</li></ul>";
                     } else {
                         var n = feature.cluster[0].attributes;
                         msg = "<h2>Node " + n.nodeLabel + "</h2>" +
@@ -195,6 +190,32 @@ public class GWTOpenlayersWidget extends Widget {
                     feature.popup = popup;
                     popup.feature = feature;
                     map.addPopup(popup);
+                }
+
+                function getHighestSeverity(feature) {
+                    if (!feature.cluster) return "Normal";
+                    var severity = 0;
+                    var severityLabel = "Normal";
+                    for (var i=0; i<feature.cluster.length; i++) {
+                        var n = feature.cluster[i].attributes;
+                        if (n.severity && n.severity > severity) {
+                            severity = n.severity;
+                            severityLabel = n.severityLabel;
+                        }
+                        if (severity == 7) {
+                            break;
+                        }
+                    }
+                }
+
+                function getNumUnacked(feature) {
+                        if (!feature.cluster) return 0;
+                        var count = 0;
+                        for (var i=0; i<feature.cluster.length; i++) {
+                                var n = feature.cluster[i].attributes;
+                                if (n.unackedCount) count += n.unackedCount;
+                        }
+                        return count;
                 }
 
 		function onFeatureUnselect(evt) {

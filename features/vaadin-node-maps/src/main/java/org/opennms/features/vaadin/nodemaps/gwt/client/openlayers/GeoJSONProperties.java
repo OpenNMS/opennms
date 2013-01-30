@@ -9,7 +9,11 @@ public class GeoJSONProperties extends JavaScriptObject {
         return this[key];
     }-*/;
 
-    public native final void setAttribute(final String key, final String value) /*-{
+    public native final void setString(final String key, final String value) /*-{
+        this[key] = value;
+    }-*/;
+
+    public native final void setInteger(final String key, final Integer value) /*-{
         this[key] = value;
     }-*/;
 

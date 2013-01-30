@@ -31,6 +31,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.opennms.features.geocoder.GeocoderService;
+import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.dao.AssetRecordDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.ops4j.pax.vaadin.AbstractApplicationFactory;
@@ -45,19 +46,21 @@ import com.vaadin.Application;
 public class NodeMapsApplicationFactory extends AbstractApplicationFactory {
     private NodeDao m_nodeDao;
     private AssetRecordDao m_assetDao;
+    private AlarmDao m_alarmDao;
     private GeocoderService m_geocoder;
 
     /* (non-Javadoc)
      * @see org.ops4j.pax.vaadin.ApplicationFactory#createApplication(javax.servlet.http.HttpServletRequest)
      */
     @Override
-    public Application createApplication(HttpServletRequest request) throws ServletException {
+    public Application createApplication(final HttpServletRequest request) throws ServletException {
         if (m_nodeDao == null) {
             throw new RuntimeException("m_nodeDao cannot be null.");
         }
-        NodeMapsApplication app = new NodeMapsApplication();
+        final NodeMapsApplication app = new NodeMapsApplication();
         app.setNodeDao(m_nodeDao);
         app.setAssetRecordDao(m_assetDao);
+        app.setAlarmDao(m_alarmDao);
         app.setGeocoderService(m_geocoder);
         return app;
     }
@@ -75,15 +78,19 @@ public class NodeMapsApplicationFactory extends AbstractApplicationFactory {
      *
      * @param m_nodeDao the new OpenNMS Node DAO
      */
-    public void setNodeDao(NodeDao nodeDao) {
-        this.m_nodeDao = nodeDao;
+    public void setNodeDao(final NodeDao nodeDao) {
+        m_nodeDao = nodeDao;
     }
 
-    public void setAssetDao(AssetRecordDao assetDao) {
-        this.m_assetDao = assetDao;
+    public void setAssetDao(final AssetRecordDao assetDao) {
+        m_assetDao = assetDao;
     }
 
-    public void setGeocoderService(GeocoderService geocoderService) {
-        this.m_geocoder = geocoderService;
+    public void setAlarmDao(final AlarmDao alarmDao) {
+        m_alarmDao = alarmDao;
+    }
+
+    public void setGeocoderService(final GeocoderService geocoderService) {
+        m_geocoder = geocoderService;
     }
 }

@@ -1,9 +1,10 @@
 package org.opennms.features.vaadin.nodemaps.gwt.client;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.opennms.features.vaadin.nodemaps.gwt.client.openlayers.FeatureCollection;
 import org.opennms.features.vaadin.nodemaps.gwt.client.openlayers.GeoJSONFeature;
@@ -43,9 +44,21 @@ public class VOpenlayersWidget extends GWTOpenlayersWidget implements Paintable 
             
             final float longitude = node.getFloatAttribute("longitude");
             final float latitude = node.getFloatAttribute("latitude");
+            // VConsole.log("longitude = " + longitude + ", latitude = " + latitude);
 
-            VConsole.log("longitude = " + longitude + ", latitude = " + latitude);
-            final GeoJSONFeature feature = GeoJSONFeature.create(longitude, latitude, Collections.singletonMap("label", node.getTag()));
+            final String[] stringKeys = new String[] { "severityLabel", "nodeLabel", "foreignSource", "foreignId", "ipAddress" };
+            final String[] intKeys    = new String[] { "severity", "nodeId", "unackedCount" };
+
+            final Map<String,String> stringAttributes = new HashMap<String,String>(); 
+            final Map<String,Integer> intAttributes = new HashMap<String,Integer>();
+            for (final String key : stringKeys) {
+                if (node.hasAttribute(key)) stringAttributes.put(key, node.getStringAttribute(key));
+            }
+            for (final String key : intKeys) {
+                if (node.hasAttribute(key)) intAttributes.put(key, node.getIntAttribute(key));
+            }
+
+            final GeoJSONFeature feature = GeoJSONFeature.create(longitude, latitude, stringAttributes, intAttributes);
             features.add(feature);
         }
 
