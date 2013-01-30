@@ -4,9 +4,11 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.opennms.features.topology.api.BoundingBox;
+import org.opennms.features.topology.api.MapViewManager;
+import org.opennms.features.topology.api.MapViewManagerListener;
 import org.opennms.features.topology.api.Point;
 
-public class MapViewManager{
+public class DefaultMapViewManager implements MapViewManager{
     
     private BoundingBox m_mapBounds  = new BoundingBox(0, 0, 100, 100);
     private int m_viewPortWidth = 100;
@@ -62,6 +64,7 @@ public class MapViewManager{
         m_scale = scale;
         m_scale = Math.min(1.0, m_scale);
         m_scale = Math.max(0.0, m_scale);
+        m_scale = ((int)m_scale*10)/10.0;
         Point oldCenter = m_center;
         m_center = center;
         
@@ -97,15 +100,22 @@ public class MapViewManager{
         }
         
     }
+    
     public void setBoundingBox(BoundingBox boundingBox) {
         BoundingBox bbPrime = boundingBox.computeWithAspectRatio(getViewPortAspectRatio());
         BoundingBox mPrime = m_mapBounds.computeWithAspectRatio(getViewPortAspectRatio());
+        double oldScale = m_scale;
         m_scale = Math.log(bbPrime.getWidth()/(double)mPrime.getWidth()) / Math.log( (m_viewPortWidth/2.0) / (double)mPrime.getWidth());
         m_scale = Math.min(1.0, m_scale);
         m_scale = Math.max(0.0, m_scale);
-        m_center = boundingBox.getCenter();
+        m_scale = (int)(m_scale*10)/10.0;
         
-        fireUpdate();
+        Point oldCenter = m_center;
+        m_center = boundingBox.getCenter();
+        if(oldCenter != m_center || oldScale != m_scale || !bbPrime.equals(boundingBox)) {
+            fireUpdate();
+        }
+        
     }
 
     public int getViewPortHeight() {

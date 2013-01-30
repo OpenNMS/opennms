@@ -74,12 +74,36 @@ public class BoundingBox{
     public String toString() {
         return "x: " + getX() + " y: " + getY() + " width: " + getWidth() + " height: " + getHeight();
     }
+    
+    public String fragment() {
+        return toString().replace(' ', '_');
+    }
 
     public void addBoundingbox(BoundingBox box) {
         m_left = Math.min(m_left, box.m_left);
         m_right = Math.max(m_right, box.m_right);
         m_top = Math.min(m_top, box.m_top);
         m_bottom = Math.max(m_bottom, box.m_bottom);
+        
+    }
+    
+    @Override
+    public boolean equals(Object boundingBox) {
+        if(boundingBox instanceof BoundingBox) {
+            BoundingBox compareTo = (BoundingBox) boundingBox;
+            if(getX() == compareTo.getX() 
+               && getY() == compareTo.getY() 
+               && getWidth() == compareTo.getWidth() 
+               && getHeight() == compareTo.getHeight() 
+               && getCenter().equals(compareTo.getCenter())) {
+                return true;
+                
+            }else {
+                return false;
+            }
+        }else {
+            return false;
+        }
         
     }
 }

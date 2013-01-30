@@ -78,7 +78,7 @@ public class TopologyComponentTest {
 
     private static TopologyComponent getTopologyComponent(GraphContainer dataSource) {
     	BeanItem<GraphContainer> item = new BeanItem<GraphContainer>(dataSource);
-        TopologyComponent topologyComponent = new TopologyComponent(dataSource, item.getItemProperty("scale"));
+        TopologyComponent topologyComponent = new TopologyComponent(dataSource);
         topologyComponent.setIconRepoManager(new IconRepositoryManager());
         return topologyComponent;
     }
