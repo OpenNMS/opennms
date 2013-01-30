@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:ns="http://xmlns.opennms.org/xsd/config/vmware-config"
+        targetNamespace="http://xmlns.opennms.org/xsd/config/vmware-config"
+        elementFormDefault="qualified">
+
+    <annotation>
+        <documentation>
+            XML Schema for the vmware-config.xml configuration file.
+        </documentation>
+    </annotation>
+
+    <element name="vmware-config">
+        <annotation>
+            <documentation>
+                This is the top-level element for vmware-config.xml
+            </documentation>
+        </annotation>
+        <complexType>
+            <sequence>
+                <element ref="ns:vmware-server" minOccurs="0" maxOccurs="unbounded"/>
+            </sequence>
+        </complexType>
+    </element>
+
+    <element name="vmware-server">
+        <annotation>
+            <documentation>
+                A VMware Server entry
+            </documentation>
+        </annotation>
+        <complexType>
+            <attribute name="hostname" type="string" use="required">
+                <annotation>
+                    <documentation>
+                        The hostname of IP address of this server
+                    </documentation>
+                </annotation>
+            </attribute>
+            <attribute name="username" type="string" use="required">
+                <annotation>
+                    <documentation>
+                        The username of the read-only user
+                    </documentation>
+                </annotation>
+            </attribute>
+            <attribute name="password" type="string" use="required">
+                <annotation>
+                    <documentation>
+                        The password of the read-only user
+                    </documentation>
+                </annotation>
+            </attribute>
+        </complexType>
+    </element>
+</schema>

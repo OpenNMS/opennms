@@ -27,6 +27,7 @@
     <module>system-report</module>
     <module>ticketing</module>
     <module>geocoder</module>
+    <module>name-cutter</module>
 
     <!-- SNMP MIB Parser and Event/Collection Configuration -->
     <module>vaadin-snmp-events-and-metrics</module>

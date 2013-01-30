@@ -106,7 +106,6 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
     }
 	
 	private GraphContainer m_graphContainer;
-	private Property m_scale;
     private Graph m_graph;
 	private MapManager m_mapManager = new MapManager();
     private List<MenuItemUpdateListener> m_menuItemStateListener = new ArrayList<MenuItemUpdateListener>();
@@ -132,25 +131,15 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
 		m_viewManager.addListener(this);
 		m_graphContainer.addChangeListener(this);
 		
-		setScaleDataSource(scale);
+		setScaleDataSource(m_graphContainer.getScaleProperty());
 	}
 	
 	private void setScaleDataSource(Property scale) {
-	    // Stops listening the old data source changes
-        if (m_scale != null
-                && Property.ValueChangeNotifier.class
-                        .isAssignableFrom(m_scale.getClass())) {
-            ((Property.ValueChangeNotifier) m_scale).removeListener(this);
-        }
-
-        // Sets the new data source
-        m_scale = scale;
-
         // Listens the new data source if possible
-        if (m_scale != null
+        if (scale != null
                 && Property.ValueChangeNotifier.class
-                        .isAssignableFrom(m_scale.getClass())) {
-            ((Property.ValueChangeNotifier) m_scale).addListener(this);
+                        .isAssignableFrom(scale.getClass())) {
+            ((Property.ValueChangeNotifier) scale).addListener(this);
         }
     }
 	
@@ -182,8 +171,6 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
     }
 
     private BoundingBox getBoundingBox() {
-        double scale = m_viewManager.getScale();
-        m_scale.setValue(scale);
         
         return m_viewManager.getCurrentBoundingBox();
     }
@@ -358,7 +345,7 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
     }
     
 	protected void setScale(double scale){
-	    m_scale.setValue(scale);
+	    m_graphContainer.setScale(scale);
     }
     
     protected Graph getGraph() {
@@ -446,6 +433,7 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
 
     @Override
     public void boundingBoxChanged(MapViewManager viewManager) {
+        setScale(viewManager.getScale());
         requestRepaint();
     }
 

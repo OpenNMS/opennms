@@ -29,12 +29,12 @@
 package org.opennms.features.topology.plugins.devutils.internal;
 
 import org.easymock.EasyMock;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.plugins.topo.simple.internal.SimpleTopologyProvider;
 
+import com.vaadin.data.Property;
 import com.vaadin.ui.Window;
 
 public class SaveToXmlTest {
@@ -84,4 +84,8 @@ public class SaveToXmlTest {
 
 		saver.execute(null, new TestOperationContext(graphContainer));
 	}
+
+    public Property getScaleProperty() {
+        return null;
+    }
 }

@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,42 +26,24 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.provision.service.dns;
+package org.opennms.netmgt.collectd.vmware.cim;
 
-import static org.junit.Assert.*;
+import org.opennms.netmgt.collectd.CollectionAgent;
 
-import java.net.URLStreamHandler;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.opennms.core.utils.url.GenericURLFactory;
-import org.opennms.core.utils.url.GenericURLStreamHandler;
-import org.opennms.core.test.MockLogAppender;
-
-public class FactoryTest {
-
-    @Before
-    public void setUp() {
-        MockLogAppender.setupLogging();
+public class VmwareCimSingleInstanceCollectionResource extends VmwareCimCollectionResource {
+    public VmwareCimSingleInstanceCollectionResource(final CollectionAgent agent) {
+        super(agent);
     }
 
-    @Test
-    public void dwCreateURLStreamHandler() {
-
-        GenericURLFactory.initialize();
-
-        GenericURLFactory genericURLFactory = GenericURLFactory.getInstance();
-
-        URLStreamHandler handler = genericURLFactory.createURLStreamHandler("abc");
-        assertNull(handler);
-        
-        handler = genericURLFactory.createURLStreamHandler("dns");
-        
-        assertNotNull(handler);
-        
-        assertTrue(handler instanceof java.net.URLStreamHandler);
-        assertTrue(handler instanceof GenericURLStreamHandler);
-        
+    public String getResourceTypeName() {
+        return "node";
     }
 
+    public String getInstance() {
+        return null;
+    }
+
+    public String toString() {
+        return "Node[" + m_agent.getNodeId() + "]/type[node]";
+    }
 }

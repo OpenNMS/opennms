@@ -30,9 +30,77 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.vaadin.data.Item;
+import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanItem;
 
 public class VEProviderGraphContainer implements GraphContainer, VertexListener, EdgeListener {
+    
+    @SuppressWarnings("serial")
+    public class ScaleProperty implements Property, Property.ValueChangeNotifier{
+        private Double m_scale;
+        private Set<ValueChangeListener> m_listeners = new CopyOnWriteArraySet<Property.ValueChangeListener>();
+        
+        public ScaleProperty(double scale) {
+            m_scale = scale;
+        }
+        
+        @Override
+        public void addListener(ValueChangeListener listener) {
+            m_listeners.add(listener);
+        }
+
+        @Override
+        public void removeListener(ValueChangeListener listener) {
+            m_listeners.remove(listener);
+        }
+
+        @Override
+        public Object getValue() {
+            return m_scale;
+        }
+
+        @Override
+        public void setValue(Object newValue) throws ReadOnlyException, ConversionException {
+            if(newValue instanceof Number) {
+                double oldScale = m_scale;
+                m_scale = ((Number) newValue).doubleValue();
+                if(oldScale != m_scale) {
+                    fireValueChange();
+                }
+            } else {
+                throw new ConversionException("Scale must be number");
+            }
+        }
+
+        private void fireValueChange() {
+            ValueChangeEvent event = new ValueChangeEvent() {
+
+                @Override
+                public Property getProperty() {
+                    return ScaleProperty.this;
+                }
+            };
+            for(ValueChangeListener listener : m_listeners) {
+                listener.valueChange(event);
+            }
+        }
+
+        @Override
+        public Class<?> getType() {
+            return Double.class;
+        }
+
+        @Override
+        public boolean isReadOnly() {
+            return false;
+        }
+
+        @Override
+        public void setReadOnly(boolean newStatus) {
+            
+        }
+        
+    }
     
     public class PseudoEdge extends AbstractEdge {
 
@@ -123,7 +191,7 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     private static final Logger s_log = LoggerFactory.getLogger(VEProviderGraphContainer.class);
 
     private int m_semanticZoomLevel = 0;
-    private double m_scale = 1.0;
+    private Property m_scaleProperty = new ScaleProperty(0.0);
     private LayoutAlgorithm m_layoutAlgorithm;
     private SelectionManager m_selectionManager = new DefaultSelectionManager(); 
     
@@ -147,18 +215,28 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 
     @Override
     public void setSemanticZoomLevel(int level) {
+        int oldLevel = m_semanticZoomLevel;
         m_semanticZoomLevel = level;
-        rebuildGraph();
+        
+        if(oldLevel != m_semanticZoomLevel) {
+            rebuildGraph();
+        }
+        
     }
 
     @Override
     public double getScale() {
-        return m_scale;
+        return (Double) m_scaleProperty.getValue();
     }
-
+    
+    @Override
+    public Property getScaleProperty() {
+        return m_scaleProperty;
+    }
+    
     @Override
     public void setScale(double scale) {
-        m_scale = scale;
+        m_scaleProperty.setValue(scale);
     }
     @Override
     public void setLayoutAlgorithm(LayoutAlgorithm layoutAlgorithm) {
@@ -275,11 +353,6 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     		Vertex parent = m_mergedGraphProvider.getParent(vertexRef);
     		return getDisplayVertex(parent);
     	}
-    }
-
-    @Override
-    public void setDataSource(GraphProvider graphProvider) {
-    	m_mergedGraphProvider.setBaseGraphProvider(graphProvider);
     }
 
     @Override

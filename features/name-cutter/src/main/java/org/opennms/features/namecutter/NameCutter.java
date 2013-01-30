@@ -26,16 +26,11 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.jmxconfiggenerator.helper;
+package org.opennms.features.namecutter;
 
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,12 +38,12 @@ import org.slf4j.LoggerFactory;
  *
  * @author Markus Neumann <markus@opennms.com>
  */
-public class NameTools {
+public class NameCutter {
 
-    private final static Logger logger = LoggerFactory.getLogger(NameTools.class);
-    private static Map<String, String> dictionary = new HashMap<String, String>();
+    private final static Logger logger = LoggerFactory.getLogger(NameCutter.class);
+    private Map<String, String> dictionary = new HashMap<String, String>();
 
-    public static String trimByCamelCase(String name, Integer maxLength) {
+    public String trimByCamelCase(String name, Integer maxLength) {
         String result = "";
         String[] nameParts = StringUtils.splitByCharacterTypeCamelCase(name);
         Integer charsOver = name.length() - maxLength;
@@ -69,7 +64,7 @@ public class NameTools {
         return result;
     }
 
-    public static String trimByDictionary(String name) {
+    public String trimByDictionary(String name) {
         String result = "";
 
         String[] nameParts = StringUtils.splitByCharacterTypeCamelCase(name);
@@ -91,38 +86,11 @@ public class NameTools {
         return result;
     }
 
-    public static void loadExtermalDictionary(String dictionaryFile) {
-        Properties properties = new Properties();
-        try {
-            BufferedInputStream stream = new BufferedInputStream(new FileInputStream(dictionaryFile));
-            properties.load(stream);
-            stream.close();
-        } catch (FileNotFoundException ex) {
-            logger.error("'{}'", ex.getMessage());
-        } catch (IOException ex) {
-            logger.error("'{}'", ex.getMessage());
-        }
-        logger.info("Loaded '{}' external dictionary entiers from '{}'", properties.size(), dictionaryFile);
-        for (Object key : properties.keySet()) {
-            dictionary.put(key.toString(), properties.get(key).toString());
-        }
-        logger.info("Dictionary entries loaded: '{}'", dictionary.size());
+    public Map<String, String> getDictionary() {
+        return dictionary;
     }
 
-    public static void loadInternalDictionary() {
-        Properties properties = new Properties();
-        try {
-            BufferedInputStream stream = new BufferedInputStream(NameTools.class.getClassLoader().getResourceAsStream("dictionary.properties"));
-            properties.load(stream);
-            stream.close();
-        } catch (IOException ex) {
-            logger.error("Load dictionary entires from internal properties files error: '{}'", ex.getMessage());
-        }
-        logger.info("Loaded '{}' internal dictionary entiers", properties.size());
-        for (Object key : properties.keySet()) {
-            dictionary.put(key.toString(), properties.get(key).toString());
-        }
-        logger.info("Dictionary entries loaded: '{}'", dictionary.size());
+    public void setDictionary(Map<String, String> dictionary) {
+        this.dictionary = dictionary;
     }
-
 }

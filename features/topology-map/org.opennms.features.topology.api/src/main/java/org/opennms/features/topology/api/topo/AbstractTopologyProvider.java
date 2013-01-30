@@ -81,6 +81,10 @@ public abstract class AbstractTopologyProvider extends DelegatingVertexEdgeProvi
     @Override
     public final AbstractVertex addVertex(int x, int y) {
         String id = getNextVertexId();
+        return addVertex(id, x, y);
+    }
+    
+    protected final AbstractVertex addVertex(String id, int x, int y) {
         LoggerFactory.getLogger(getClass()).debug("Adding vertex in {} with ID: {}", getClass().getSimpleName(), id);
         AbstractVertex vertex = new SimpleLeafVertex(getVertexNamespace(), id, x, y);
         getSimpleVertexProvider().add(vertex);

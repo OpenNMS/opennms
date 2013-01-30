@@ -66,7 +66,7 @@ public class VEProviderGraphContainerTest {
 		ProviderManager providerManager = new ProviderManager();
 		providerManager.onEdgeProviderBind(m_edgeProvider);
 
-		VEProviderGraphContainer graphContainer = new VEProviderGraphContainer(m_graphProvider, providerManager);
+		GraphContainer graphContainer = new VEProviderGraphContainer(m_graphProvider, providerManager);
 		
 		m_graphContainer = graphContainer;
 	}

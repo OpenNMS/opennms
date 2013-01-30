@@ -1,0 +1,7 @@
+#!/bin/sh -
+
+VIJAVA_JAR=`ls -1 "${install.dir}"/lib/vijava-*.jar | head -n 1`
+VMWARE_JAR=`ls -1 "${install.dir}"/lib/opennms-vmware-*.jar | head -n 1`
+DOM4J_JAR=`ls -1 "${install.dir}"/lib/dom4j-*.jar | head -n 1`
+COMMONS_CLI_JAR=`ls -1 "${install.dir}"/lib/commons-cli-*.jar | head -n 1`
+exec ${install.bin.dir}/runjava -r -- -Xmx256m -cp "$VIJAVA_JAR:$VMWARE_JAR:$JCIFS_JAR:$DOM4J_JAR:$COMMONS_CLI_JAR" org.opennms.protocols.vmware.VmwareConfigBuilder -rrdRepository "${install.share.dir}"/rrd/snmp "$@"

@@ -28,9 +28,6 @@
 
 package org.opennms.netmgt.config;
 
-import java.io.File;
-import java.util.Map;
-
 import org.apache.log4j.Level;
 import org.junit.After;
 import org.junit.Assert;
@@ -39,13 +36,12 @@ import org.junit.Test;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.xml.CastorUtils;
-import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
-import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
-import org.opennms.netmgt.config.datacollection.Group;
-import org.opennms.netmgt.config.datacollection.SnmpCollection;
-import org.opennms.netmgt.config.datacollection.SystemDef;
+import org.opennms.netmgt.config.datacollection.*;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
+
+import java.io.File;
+import java.util.Map;
 
 /**
  * DataCollectionConfigParserTest
@@ -54,7 +50,7 @@ import org.springframework.core.io.Resource;
  */
 public class DataCollectionConfigParserTest {
 
-    private static final int resourceTypesCount = 106;
+    private static final int resourceTypesCount = 150;
     private static final int systemDefCount = 148;
     private static final int groupsCount = 227;
     private Level errorLevel;

@@ -35,31 +35,33 @@ import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 
+import com.vaadin.data.Property;
+
 public interface GraphContainer extends DisplayState {
-	
+
 	public interface ChangeListener {
 		public void graphChanged(GraphContainer graphContainer);
 	}
 
-	public GraphProvider getBaseTopology();
-    
-    public void setBaseTopology(GraphProvider graphProvider);
-    
-    public Vertex getParent(VertexRef child);
-    
-	public Criteria getCriteria(String namespace);
-	
-	public void setCriteria(Criteria critiera);
-	
-	public void addChangeListener(ChangeListener listener);
-	
-	public void removeChangeListener(ChangeListener listener);
+	GraphProvider getBaseTopology();
 
-	public Graph getGraph();
-	
-	public SelectionManager getSelectionManager();
-	
-	public Collection<VertexRef> getVertexRefForest(Collection<VertexRef> vertexRefs);
+	void setBaseTopology(GraphProvider graphProvider);
 
-	void setDataSource(GraphProvider graphProvider);
+	Vertex getParent(VertexRef child);
+
+	Criteria getCriteria(String namespace);
+
+	void setCriteria(Criteria critiera);
+
+	void addChangeListener(ChangeListener listener);
+
+	void removeChangeListener(ChangeListener listener);
+
+	Graph getGraph();
+
+	SelectionManager getSelectionManager();
+
+	Collection<VertexRef> getVertexRefForest(Collection<VertexRef> vertexRefs);
+
+	Property getScaleProperty();
 }

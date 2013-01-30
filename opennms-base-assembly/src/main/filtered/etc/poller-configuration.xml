@@ -187,6 +187,14 @@
       <parameter key="ds-name" value="opennms-jvm"/>
       <parameter key="friendly-name" value="opennms-jvm"/>
     </service>
+    <service name="VMwareCim-HostSystem" interval="300000" user-defined="false" status="on">
+      <parameter key="retry" value="2"/>
+      <parameter key="timeout" value="3000"/>
+    </service>
+    <service name="VMware-ManagedEntity" interval="300000" user-defined="false" status="on">
+      <parameter key="retry" value="2"/>
+      <parameter key="timeout" value="3000"/>
+    </service>
 
     <downtime interval="30000" begin="0" end="300000" /><!-- 30s, 0, 5m -->
     <downtime interval="300000" begin="300000" end="43200000" /><!-- 5m, 5m, 12h -->
@@ -247,4 +255,6 @@
   <monitor service="NRPE-NoSSL" class-name="org.opennms.netmgt.poller.monitors.NrpeMonitor" />
   <monitor service="Windows-Task-Scheduler" class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor" />
   <monitor service="OpenNMS-JVM" class-name="org.opennms.netmgt.poller.monitors.Jsr160Monitor" />
+  <monitor service="VMwareCim-HostSystem" class-name="org.opennms.netmgt.poller.monitors.VmwareCimMonitor"/>
+  <monitor service="VMware-ManagedEntity" class-name="org.opennms.netmgt.poller.monitors.VmwareMonitor"/>
 </poller-configuration>

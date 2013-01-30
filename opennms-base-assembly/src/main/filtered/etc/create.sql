@@ -1200,6 +1200,11 @@ create table assets (
         snmpcommunity		varchar(32),
         rackunitheight		varchar(2),
         geolocation		varchar(32),
+        vmwaremanagedobjectid	varchar(70),
+        vmwaremanagedentitytype	varchar(70),
+        vmwaremanagementserver	varchar(70),
+        vmwaretopologyinfo	varchar(1023),
+        vmwarestate	varchar(255),
         
     constraint pk_assetID primary key (id),
 	constraint fk_nodeID5 foreign key (nodeID) references node ON DELETE CASCADE

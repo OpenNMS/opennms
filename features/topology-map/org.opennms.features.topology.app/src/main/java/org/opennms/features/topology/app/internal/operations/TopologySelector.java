@@ -67,7 +67,7 @@ public class TopologySelector {
     	@Override
     	public Undoer execute(List<VertexRef> targets, OperationContext operationContext) {
     		LoggerFactory.getLogger(getClass()).debug("Active provider is: {}", m_topologyProvider);
-    		operationContext.getGraphContainer().setDataSource(m_topologyProvider);
+    		operationContext.getGraphContainer().setBaseTopology(m_topologyProvider);
     		operationContext.getGraphContainer().redoLayout();
     		return null;
     	}

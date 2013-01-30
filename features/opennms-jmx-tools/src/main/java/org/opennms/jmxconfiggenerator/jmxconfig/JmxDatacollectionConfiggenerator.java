@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import javax.management.*;
 import javax.management.openmbean.CompositeData;
@@ -41,7 +42,7 @@ import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 import javax.xml.bind.JAXB;
 import org.apache.commons.lang3.StringUtils;
-import org.opennms.jmxconfiggenerator.helper.NameTools;
+import org.opennms.features.namecutter.NameCutter;
 import org.opennms.xmlns.xsd.config.jmx_datacollection.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,6 +62,7 @@ public class JmxDatacollectionConfiggenerator {
     private static HashMap<String, Integer> aliasMap = new HashMap<String, Integer>();
     private static ArrayList<String> aliasList = new ArrayList<String>();
     private static Rrd rrd = new Rrd();
+    private static NameCutter nameCutter = new NameCutter();
 
     static {
         // Domanis directly from JVMs
@@ -88,9 +90,10 @@ public class JmxDatacollectionConfiggenerator {
         rrd.getRra().addAll(rras);
     }
 
-    public JmxDatacollectionConfig generateJmxConfigModel(MBeanServerConnection mBeanServerConnection, String serviceName, Boolean runStandardVmBeans, Boolean runWritableMBeans) {
+    public JmxDatacollectionConfig generateJmxConfigModel(MBeanServerConnection mBeanServerConnection, String serviceName, Boolean runStandardVmBeans, Boolean runWritableMBeans, Map<String, String> dictionary) {
 
-        logger.debug("Startup values: \n serviceName: " + serviceName + "\n runStandardVmBeans: " + runStandardVmBeans + "\n runWritableMBeans: " + runWritableMBeans);
+        logger.debug("Startup values: \n serviceName: " + serviceName + "\n runStandardVmBeans: " + runStandardVmBeans + "\n runWritableMBeans: " + runWritableMBeans + "\n dictionary" + dictionary);
+        nameCutter.setDictionary(dictionary);
         JmxDatacollectionConfig xmlJmxDatacollectionConfig = xmlObjectFactory.createJmxDatacollectionConfig();
         JmxCollection xmlJmxCollection = xmlObjectFactory.createJmxCollection();
 
@@ -274,8 +277,8 @@ public class JmxDatacollectionConfiggenerator {
                         xmlCompMember.setName(key);
 
                         logger.debug("composite member pure alias: '{}'", jmxMBeanAttributeInfo.getName() + StringUtils.capitalize(key));
-                        String alias = NameTools.trimByDictionary(jmxMBeanAttributeInfo.getName() + StringUtils.capitalize(key));
-                        alias = createAndRegisterUniceAlias(alias);
+                        String alias = nameCutter.trimByDictionary(jmxMBeanAttributeInfo.getName() + StringUtils.capitalize(key));
+                        alias = createAndRegisterUniqueAlias(alias);
                         xmlCompMember.setAlias(alias);
                         logger.debug("composite member trimmed alias: '{}'", alias);
 
@@ -303,30 +306,30 @@ public class JmxDatacollectionConfiggenerator {
 
         xmlJmxAttribute.setType("gauge");
         xmlJmxAttribute.setName(jmxMBeanAttributeInfo.getName());
-        String alias = NameTools.trimByDictionary(jmxMBeanAttributeInfo.getName());
-        alias = createAndRegisterUniceAlias(alias);
+        String alias = nameCutter.trimByDictionary(jmxMBeanAttributeInfo.getName());
+        alias = createAndRegisterUniqueAlias(alias);
         xmlJmxAttribute.setAlias(alias);
 
         return xmlJmxAttribute;
     }
 
-    private String createAndRegisterUniceAlias(String originalAlias) {
-        String uniceAlias = originalAlias;
+    private String createAndRegisterUniqueAlias(String originalAlias) {
+        String uniqueAlias = originalAlias;
         if (!aliasMap.containsKey(originalAlias)) {
             aliasMap.put(originalAlias, 0);
-            uniceAlias = 0 + uniceAlias;
+            uniqueAlias = 0 + uniqueAlias;
         } else {
             aliasMap.put(originalAlias, aliasMap.get(originalAlias) + 1);
-            uniceAlias = aliasMap.get(originalAlias).toString() + originalAlias;
+            uniqueAlias = aliasMap.get(originalAlias).toString() + originalAlias;
         }
         //find alias crashes caused by cuting down alias length to 19 chars
-        if (aliasList.contains(NameTools.trimByCamelCase(uniceAlias, 19))) {
-            logger.error("ALIAS CRASH AT :" + uniceAlias + "\t as: " + NameTools.trimByCamelCase(uniceAlias, 19));
-            uniceAlias = uniceAlias + "_NAME_CRASH_AS_19_CHAR_VALUE";
+        if (aliasList.contains(nameCutter.trimByCamelCase(uniqueAlias, 19))) {
+            logger.error("ALIAS CRASH AT :" + uniqueAlias + "\t as: " + nameCutter.trimByCamelCase(uniqueAlias, 19));
+            uniqueAlias = uniqueAlias + "_NAME_CRASH_AS_19_CHAR_VALUE";
         } else {
-            uniceAlias = NameTools.trimByCamelCase(uniceAlias, 19);
-            aliasList.add(uniceAlias);
+            uniqueAlias = nameCutter.trimByCamelCase(uniqueAlias, 19);
+            aliasList.add(uniqueAlias);
         }
-        return uniceAlias;
+        return uniqueAlias;
     }
 }

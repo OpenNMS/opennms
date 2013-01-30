@@ -101,6 +101,7 @@ public class MibObjField extends CustomField implements Button.ClickListener {
         layout.setComponentAlignment(toolbar, Alignment.MIDDLE_RIGHT);
 
         setWriteThrough(false);
+        setValidationVisible(true);
         setCompositionRoot(layout);
     }
 
@@ -163,6 +164,14 @@ public class MibObjField extends CustomField implements Button.ClickListener {
         if (btn == delete) {
             deleteHandler();
         }
+    }
+
+    /* (non-Javadoc)
+     * @see org.vaadin.addon.customfield.CustomField#isValid()
+     */
+    @Override
+    public boolean isValid() {
+        return table.isValid(); // FIXME This is not working
     }
 
     /**

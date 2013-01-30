@@ -36,6 +36,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import com.vaadin.data.Property;
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
 		"classpath:/META-INF/opennms/applicationContext-mock.xml"
@@ -66,6 +68,10 @@ public class OnmsTopologyProviderTest {
 	public void testLoad1() {
 		m_topologyProvider.load("1");
 	}
+
+    public Property getScaleProperty() {
+        return null;
+    }
 
 	@Test
 	public void testLoad2() {

@@ -1,8 +1,6 @@
 package org.opennms.features.vaadin.nodemaps.ui;
 
 import org.opennms.core.criteria.CriteriaBuilder;
-import org.opennms.features.geocoder.Coordinates;
-import org.opennms.features.geocoder.GeocoderException;
 import org.opennms.features.geocoder.GeocoderService;
 import org.opennms.features.vaadin.nodemaps.gwt.client.VOpenlayersWidget;
 import org.opennms.netmgt.dao.AssetRecordDao;
@@ -12,6 +10,7 @@ import org.opennms.netmgt.model.OnmsGeolocation;
 import org.opennms.netmgt.model.OnmsNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
@@ -44,8 +43,6 @@ public class OpenlayersWidgetComponent extends VerticalLayout {
 
         final CriteriaBuilder cb = new CriteriaBuilder(OnmsNode.class);
         cb.alias("assetRecord", "asset");
-        cb.isNotNull("asset.geolocation.coordinates");
-        cb.ne("asset.geolocation.coordinates", "");
 
         target.startTag("nodes");
 
@@ -62,32 +59,42 @@ public class OpenlayersWidgetComponent extends VerticalLayout {
 
             final String addressString = geolocation.asAddressString();
             final String coordinateString = geolocation.getCoordinates();
+            /*
             if ((coordinateString == null || coordinateString == "" || !coordinateString.contains(",")) && addressString != "") {
                 m_log.debug("No coordinates for node {}, getting geolocation for street address: {}", new Object[] { node.getId(), addressString });
                 Coordinates coordinates = null;
                 try {
                     coordinates = m_geocoderService.getCoordinates(addressString);
                     if (coordinates == null) {
+                        geolocation.setCoordinates("-1,-1");
                         m_log.debug("Failed to look up coordinates for street address: {}", addressString);
                     } else {
                         geolocation.setCoordinates(coordinates.getLatitude() + "," + coordinates.getLongitude());
-                        m_assetDao.saveOrUpdate(assets);
                     }
+                    updateDatabase(assets);
                 } catch (final GeocoderException e) {
                     m_log.debug("Failed to retrieve coordinates", e);
                 }
             } else {
                 m_log.debug("Found coordinates for node {}, geolocation for street address: {} = {}", new Object[] { node.getId(), addressString, coordinateString });
             }
-            
+            */
+
             if (coordinateString != null && coordinateString != "") {
-                target.startTag(node.getId().toString());
                 final String[] coordinates = coordinateString.split(",");
-                target.addAttribute("latitude", coordinates[0]);
-                target.addAttribute("longitude", coordinates[1]);
-                target.endTag(node.getId().toString());
+                if (coordinates[0] != "-1" && coordinates[1] != "-1") {
+                    target.startTag(node.getId().toString());
+                    target.addAttribute("latitude", coordinates[0]);
+                    target.addAttribute("longitude", coordinates[1]);
+                    target.endTag(node.getId().toString());
+                }
             }
         }
+    }
+
+    @Transactional
+    void updateDatabase(final OnmsAssetRecord assets) {
+        // m_assetDao.saveOrUpdate(assets);
     }
 
     public void setNodeDao(final NodeDao nodeDao) {

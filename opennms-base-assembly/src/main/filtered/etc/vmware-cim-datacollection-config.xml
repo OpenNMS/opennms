@@ -1,0 +1,352 @@
+<?xml version="1.0"?>
+<vmware-cim-datacollection-config rrdRepository="${install.share.dir}/rrd/snmp/">
+    <vmware-cim-collection name="default-ESX-HostSystem">
+        <rrd step="300">
+            <rra>RRA:AVERAGE:0.5:1:2016</rra>
+            <rra>RRA:AVERAGE:0.5:12:1488</rra>
+            <rra>RRA:AVERAGE:0.5:288:366</rra>
+            <rra>RRA:MAX:0.5:288:366</rra>
+            <rra>RRA:MIN:0.5:288:366</rra>
+        </rrd>
+
+        <vmware-cim-groups>
+            <vmware-cim-group cimClass="CIM_NumericSensor" name="SensorUnknown" instance="Name" key="SensorType" value="0" resourceType="SensorUnknown">
+                <attrib name="Name" alias="SensorName" type="String"/>
+                <attrib name="CurrentReading" alias="CurrentReading" type="Gauge"/>
+                <attrib name="DeviceID" alias="DeviceID" type="String"/>
+                <attrib name="SensorType" alias="SensorType" type="String"/>
+                <attrib name="Caption" alias="Caption" type="String"/>
+                <attrib name="ElementName" alias="ElementName" type="String"/>
+                <attrib name="BaseUnits" alias="BaseUnits" type="String"/>
+                <attrib name="RateUnits" alias="RateUnits" type="String"/>
+                <attrib name="IsLinear" alias="IsLinear" type="String"/>
+                <attrib name="UnitModifier" alias="UnitModifier" type="String"/>
+                <attrib name="MinReadable" alias="MinReadable" type="String"/>
+                <attrib name="MaxReadable" alias="MaxReadable" type="String"/>
+                <attrib name="LowerThresholdNonCritical" alias="LowerThresholdNonCritical" type="String"/>
+                <attrib name="UpperThresholdNonCritical" alias="UpperThresholdNonCritical" type="String"/>
+                <attrib name="LowerThresholdCritical" alias="LowerThresholdCritical" type="String"/>
+                <attrib name="UpperThresholdCritical" alias="UpperThresholdCritical" type="String"/>
+                <attrib name="LowerThresholdFatal" alias="LowerThresholdFatal" type="String"/>
+                <attrib name="UpperThresholdFatal" alias="UpperThresholdFatal" type="String"/>
+            </vmware-cim-group>
+
+            <vmware-cim-group cimClass="CIM_NumericSensor" name="SensorOther" instance="Name" key="SensorType" value="1" resourceType="SensorOther">
+                <attrib name="Name" alias="SensorName" type="String"/>
+                <attrib name="CurrentReading" alias="CurrentReading" type="Gauge"/>
+                <attrib name="DeviceID" alias="DeviceID" type="String"/>
+                <attrib name="SensorType" alias="SensorType" type="String"/>
+                <attrib name="Caption" alias="Caption" type="String"/>
+                <attrib name="ElementName" alias="ElementName" type="String"/>
+                <attrib name="BaseUnits" alias="BaseUnits" type="String"/>
+                <attrib name="RateUnits" alias="RateUnits" type="String"/>
+                <attrib name="IsLinear" alias="IsLinear" type="String"/>
+                <attrib name="UnitModifier" alias="UnitModifier" type="String"/>
+                <attrib name="MinReadable" alias="MinReadable" type="String"/>
+                <attrib name="MaxReadable" alias="MaxReadable" type="String"/>
+                <attrib name="LowerThresholdNonCritical" alias="LowerThresholdNonCritical" type="String"/>
+                <attrib name="UpperThresholdNonCritical" alias="UpperThresholdNonCritical" type="String"/>
+                <attrib name="LowerThresholdCritical" alias="LowerThresholdCritical" type="String"/>
+                <attrib name="UpperThresholdCritical" alias="UpperThresholdCritical" type="String"/>
+                <attrib name="LowerThresholdFatal" alias="LowerThresholdFatal" type="String"/>
+                <attrib name="UpperThresholdFatal" alias="UpperThresholdFatal" type="String"/>
+            </vmware-cim-group>
+
+            <vmware-cim-group cimClass="CIM_NumericSensor" name="SensorTemperature" instance="Name" key="SensorType" value="2" resourceType="SensorTemperature">
+                <attrib name="Name" alias="SensorName" type="String"/>
+                <attrib name="CurrentReading" alias="CurrentReading" type="Gauge"/>
+                <attrib name="DeviceID" alias="DeviceID" type="String"/>
+                <attrib name="SensorType" alias="SensorType" type="String"/>
+                <attrib name="Caption" alias="Caption" type="String"/>
+                <attrib name="ElementName" alias="ElementName" type="String"/>
+                <attrib name="BaseUnits" alias="BaseUnits" type="String"/>
+                <attrib name="RateUnits" alias="RateUnits" type="String"/>
+                <attrib name="IsLinear" alias="IsLinear" type="String"/>
+                <attrib name="UnitModifier" alias="UnitModifier" type="String"/>
+                <attrib name="MinReadable" alias="MinReadable" type="String"/>
+                <attrib name="MaxReadable" alias="MaxReadable" type="String"/>
+                <attrib name="LowerThresholdNonCritical" alias="LowerThresholdNonCritical" type="String"/>
+                <attrib name="UpperThresholdNonCritical" alias="UpperThresholdNonCritical" type="String"/>
+                <attrib name="LowerThresholdCritical" alias="LowerThresholdCritical" type="String"/>
+                <attrib name="UpperThresholdCritical" alias="UpperThresholdCritical" type="String"/>
+                <attrib name="LowerThresholdFatal" alias="LowerThresholdFatal" type="String"/>
+                <attrib name="UpperThresholdFatal" alias="UpperThresholdFatal" type="String"/>
+            </vmware-cim-group>
+
+            <vmware-cim-group cimClass="CIM_NumericSensor" name="SensorVoltage" instance="Name" key="SensorType" value="3" resourceType="SensorVoltage">
+                <attrib name="Name" alias="SensorName" type="String"/>
+                <attrib name="CurrentReading" alias="CurrentReading" type="Gauge"/>
+                <attrib name="DeviceID" alias="DeviceID" type="String"/>
+                <attrib name="SensorType" alias="SensorType" type="String"/>
+                <attrib name="Caption" alias="Caption" type="String"/>
+                <attrib name="ElementName" alias="ElementName" type="String"/>
+                <attrib name="BaseUnits" alias="BaseUnits" type="String"/>
+                <attrib name="RateUnits" alias="RateUnits" type="String"/>
+                <attrib name="IsLinear" alias="IsLinear" type="String"/>
+                <attrib name="UnitModifier" alias="UnitModifier" type="String"/>
+                <attrib name="MinReadable" alias="MinReadable" type="String"/>
+                <attrib name="MaxReadable" alias="MaxReadable" type="String"/>
+                <attrib name="LowerThresholdNonCritical" alias="LowerThresholdNonCritical" type="String"/>
+                <attrib name="UpperThresholdNonCritical" alias="UpperThresholdNonCritical" type="String"/>
+                <attrib name="LowerThresholdCritical" alias="LowerThresholdCritical" type="String"/>
+                <attrib name="UpperThresholdCritical" alias="UpperThresholdCritical" type="String"/>
+                <attrib name="LowerThresholdFatal" alias="LowerThresholdFatal" type="String"/>
+                <attrib name="UpperThresholdFatal" alias="UpperThresholdFatal" type="String"/>
+            </vmware-cim-group>
+
+            <vmware-cim-group cimClass="CIM_NumericSensor" name="SensorCurrent" instance="Name" key="SensorType" value="4" resourceType="SensorCurrent">
+                <attrib name="Name" alias="SensorName" type="String"/>
+                <attrib name="CurrentReading" alias="CurrentReading" type="Gauge"/>
+                <attrib name="DeviceID" alias="DeviceID" type="String"/>
+                <attrib name="SensorType" alias="SensorType" type="String"/>
+                <attrib name="Caption" alias="Caption" type="String"/>
+                <attrib name="ElementName" alias="ElementName" type="String"/>
+                <attrib name="BaseUnits" alias="BaseUnits" type="String"/>
+                <attrib name="RateUnits" alias="RateUnits" type="String"/>
+                <attrib name="IsLinear" alias="IsLinear" type="String"/>
+                <attrib name="UnitModifier" alias="UnitModifier" type="String"/>
+                <attrib name="MinReadable" alias="MinReadable" type="String"/>
+                <attrib name="MaxReadable" alias="MaxReadable" type="String"/>
+                <attrib name="LowerThresholdNonCritical" alias="LowerThresholdNonCritical" type="String"/>
+                <attrib name="UpperThresholdNonCritical" alias="UpperThresholdNonCritical" type="String"/>
+                <attrib name="LowerThresholdCritical" alias="LowerThresholdCritical" type="String"/>
+                <attrib name="UpperThresholdCritical" alias="UpperThresholdCritical" type="String"/>
+                <attrib name="LowerThresholdFatal" alias="LowerThresholdFatal" type="String"/>
+                <attrib name="UpperThresholdFatal" alias="UpperThresholdFatal" type="String"/>
+            </vmware-cim-group>
+
+            <vmware-cim-group cimClass="CIM_NumericSensor" name="SensorCounter" instance="Name" key="SensorType" value="5" resourceType="SensorCounter">
+                <attrib name="Name" alias="SensorName" type="String"/>
+                <attrib name="CurrentReading" alias="CurrentReading" type="Gauge"/>
+                <attrib name="DeviceID" alias="DeviceID" type="String"/>
+                <attrib name="SensorType" alias="SensorType" type="String"/>
+                <attrib name="Caption" alias="Caption" type="String"/>
+                <attrib name="ElementName" alias="ElementName" type="String"/>
+                <attrib name="BaseUnits" alias="BaseUnits" type="String"/>
+                <attrib name="RateUnits" alias="RateUnits" type="String"/>
+                <attrib name="IsLinear" alias="IsLinear" type="String"/>
+                <attrib name="UnitModifier" alias="UnitModifier" type="String"/>
+                <attrib name="MinReadable" alias="MinReadable" type="String"/>
+                <attrib name="MaxReadable" alias="MaxReadable" type="String"/>
+                <attrib name="LowerThresholdNonCritical" alias="LowerThresholdNonCritical" type="String"/>
+                <attrib name="UpperThresholdNonCritical" alias="UpperThresholdNonCritical" type="String"/>
+                <attrib name="LowerThresholdCritical" alias="LowerThresholdCritical" type="String"/>
+                <attrib name="UpperThresholdCritical" alias="UpperThresholdCritical" type="String"/>
+                <attrib name="LowerThresholdFatal" alias="LowerThresholdFatal" type="String"/>
+                <attrib name="UpperThresholdFatal" alias="UpperThresholdFatal" type="String"/>
+            </vmware-cim-group>
+
+            <vmware-cim-group cimClass="CIM_NumericSensor" name="SensorTachometer" instance="Name" key="SensorType" value="6" resourceType="SensorTachometer">
+                <attrib name="Name" alias="SensorName" type="String"/>
+                <attrib name="CurrentReading" alias="CurrentReading" type="Gauge"/>
+                <attrib name="DeviceID" alias="DeviceID" type="String"/>
+                <attrib name="SensorType" alias="SensorType" type="String"/>
+                <attrib name="Caption" alias="Caption" type="String"/>
+                <attrib name="ElementName" alias="ElementName" type="String"/>
+                <attrib name="BaseUnits" alias="BaseUnits" type="String"/>
+                <attrib name="RateUnits" alias="RateUnits" type="String"/>
+                <attrib name="IsLinear" alias="IsLinear" type="String"/>
+                <attrib name="UnitModifier" alias="UnitModifier" type="String"/>
+                <attrib name="MinReadable" alias="MinReadable" type="String"/>
+                <attrib name="MaxReadable" alias="MaxReadable" type="String"/>
+                <attrib name="LowerThresholdNonCritical" alias="LowerThresholdNonCritical" type="String"/>
+                <attrib name="UpperThresholdNonCritical" alias="UpperThresholdNonCritical" type="String"/>
+                <attrib name="LowerThresholdCritical" alias="LowerThresholdCritical" type="String"/>
+                <attrib name="UpperThresholdCritical" alias="UpperThresholdCritical" type="String"/>
+                <attrib name="LowerThresholdFatal" alias="LowerThresholdFatal" type="String"/>
+                <attrib name="UpperThresholdFatal" alias="UpperThresholdFatal" type="String"/>
+            </vmware-cim-group>
+
+            <vmware-cim-group cimClass="CIM_NumericSensor" name="SensorSwitch" instance="Name" key="SensorType" value="7" resourceType="SensorSwitch">
+                <attrib name="Name" alias="SensorName" type="String"/>
+                <attrib name="CurrentReading" alias="CurrentReading" type="Gauge"/>
+                <attrib name="DeviceID" alias="DeviceID" type="String"/>
+                <attrib name="SensorType" alias="SensorType" type="String"/>
+                <attrib name="Caption" alias="Caption" type="String"/>
+                <attrib name="ElementName" alias="ElementName" type="String"/>
+                <attrib name="BaseUnits" alias="BaseUnits" type="String"/>
+                <attrib name="RateUnits" alias="RateUnits" type="String"/>
+                <attrib name="IsLinear" alias="IsLinear" type="String"/>
+                <attrib name="UnitModifier" alias="UnitModifier" type="String"/>
+                <attrib name="MinReadable" alias="MinReadable" type="String"/>
+                <attrib name="MaxReadable" alias="MaxReadable" type="String"/>
+                <attrib name="LowerThresholdNonCritical" alias="LowerThresholdNonCritical" type="String"/>
+                <attrib name="UpperThresholdNonCritical" alias="UpperThresholdNonCritical" type="String"/>
+                <attrib name="LowerThresholdCritical" alias="LowerThresholdCritical" type="String"/>
+                <attrib name="UpperThresholdCritical" alias="UpperThresholdCritical" type="String"/>
+                <attrib name="LowerThresholdFatal" alias="LowerThresholdFatal" type="String"/>
+                <attrib name="UpperThresholdFatal" alias="UpperThresholdFatal" type="String"/>
+            </vmware-cim-group>
+
+            <vmware-cim-group cimClass="CIM_NumericSensor" name="SensorLock" instance="Name" key="SensorType" value="8" resourceType="SensorLock">
+                <attrib name="Name" alias="SensorName" type="String"/>
+                <attrib name="CurrentReading" alias="CurrentReading" type="Gauge"/>
+                <attrib name="DeviceID" alias="DeviceID" type="String"/>
+                <attrib name="SensorType" alias="SensorType" type="String"/>
+                <attrib name="Caption" alias="Caption" type="String"/>
+                <attrib name="ElementName" alias="ElementName" type="String"/>
+                <attrib name="BaseUnits" alias="BaseUnits" type="String"/>
+                <attrib name="RateUnits" alias="RateUnits" type="String"/>
+                <attrib name="IsLinear" alias="IsLinear" type="String"/>
+                <attrib name="UnitModifier" alias="UnitModifier" type="String"/>
+                <attrib name="MinReadable" alias="MinReadable" type="String"/>
+                <attrib name="MaxReadable" alias="MaxReadable" type="String"/>
+                <attrib name="LowerThresholdNonCritical" alias="LowerThresholdNonCritical" type="String"/>
+                <attrib name="UpperThresholdNonCritical" alias="UpperThresholdNonCritical" type="String"/>
+                <attrib name="LowerThresholdCritical" alias="LowerThresholdCritical" type="String"/>
+                <attrib name="UpperThresholdCritical" alias="UpperThresholdCritical" type="String"/>
+                <attrib name="LowerThresholdFatal" alias="LowerThresholdFatal" type="String"/>
+                <attrib name="UpperThresholdFatal" alias="UpperThresholdFatal" type="String"/>
+            </vmware-cim-group>
+
+            <vmware-cim-group cimClass="CIM_NumericSensor" name="SensorHumidity" instance="Name" key="SensorType" value="9" resourceType="SensorHumidity">
+                <attrib name="Name" alias="SensorName" type="String"/>
+                <attrib name="CurrentReading" alias="CurrentReading" type="Gauge"/>
+                <attrib name="DeviceID" alias="DeviceID" type="String"/>
+                <attrib name="SensorType" alias="SensorType" type="String"/>
+                <attrib name="Caption" alias="Caption" type="String"/>
+                <attrib name="ElementName" alias="ElementName" type="String"/>
+                <attrib name="BaseUnits" alias="BaseUnits" type="String"/>
+                <attrib name="RateUnits" alias="RateUnits" type="String"/>
+                <attrib name="IsLinear" alias="IsLinear" type="String"/>
+                <attrib name="UnitModifier" alias="UnitModifier" type="String"/>
+                <attrib name="MinReadable" alias="MinReadable" type="String"/>
+                <attrib name="MaxReadable" alias="MaxReadable" type="String"/>
+                <attrib name="LowerThresholdNonCritical" alias="LowerThresholdNonCritical" type="String"/>
+                <attrib name="UpperThresholdNonCritical" alias="UpperThresholdNonCritical" type="String"/>
+                <attrib name="LowerThresholdCritical" alias="LowerThresholdCritical" type="String"/>
+                <attrib name="UpperThresholdCritical" alias="UpperThresholdCritical" type="String"/>
+                <attrib name="LowerThresholdFatal" alias="LowerThresholdFatal" type="String"/>
+                <attrib name="UpperThresholdFatal" alias="UpperThresholdFatal" type="String"/>
+            </vmware-cim-group>
+
+            <vmware-cim-group cimClass="CIM_NumericSensor" name="SensorSmokeDetection" instance="Name" key="SensorType" value="10" resourceType="SensorDetection">
+                <attrib name="Name" alias="SensorName" type="String"/>
+                <attrib name="CurrentReading" alias="CurrentReading" type="Gauge"/>
+                <attrib name="DeviceID" alias="DeviceID" type="String"/>
+                <attrib name="SensorType" alias="SensorType" type="String"/>
+                <attrib name="Caption" alias="Caption" type="String"/>
+                <attrib name="ElementName" alias="ElementName" type="String"/>
+                <attrib name="BaseUnits" alias="BaseUnits" type="String"/>
+                <attrib name="RateUnits" alias="RateUnits" type="String"/>
+                <attrib name="IsLinear" alias="IsLinear" type="String"/>
+                <attrib name="UnitModifier" alias="UnitModifier" type="String"/>
+                <attrib name="MinReadable" alias="MinReadable" type="String"/>
+                <attrib name="MaxReadable" alias="MaxReadable" type="String"/>
+                <attrib name="LowerThresholdNonCritical" alias="LowerThresholdNonCritical" type="String"/>
+                <attrib name="UpperThresholdNonCritical" alias="UpperThresholdNonCritical" type="String"/>
+                <attrib name="LowerThresholdCritical" alias="LowerThresholdCritical" type="String"/>
+                <attrib name="UpperThresholdCritical" alias="UpperThresholdCritical" type="String"/>
+                <attrib name="LowerThresholdFatal" alias="LowerThresholdFatal" type="String"/>
+                <attrib name="UpperThresholdFatal" alias="UpperThresholdFatal" type="String"/>
+            </vmware-cim-group>
+
+            <vmware-cim-group cimClass="CIM_NumericSensor" name="SensorPresence" instance="Name" key="SensorType" value="11" resourceType="SensorPresence">
+                <attrib name="Name" alias="SensorName" type="String"/>
+                <attrib name="CurrentReading" alias="CurrentReading" type="Gauge"/>
+                <attrib name="DeviceID" alias="DeviceID" type="String"/>
+                <attrib name="SensorType" alias="SensorType" type="String"/>
+                <attrib name="Caption" alias="Caption" type="String"/>
+                <attrib name="ElementName" alias="ElementName" type="String"/>
+                <attrib name="BaseUnits" alias="BaseUnits" type="String"/>
+                <attrib name="RateUnits" alias="RateUnits" type="String"/>
+                <attrib name="IsLinear" alias="IsLinear" type="String"/>
+                <attrib name="UnitModifier" alias="UnitModifier" type="String"/>
+                <attrib name="MinReadable" alias="MinReadable" type="String"/>
+                <attrib name="MaxReadable" alias="MaxReadable" type="String"/>
+                <attrib name="LowerThresholdNonCritical" alias="LowerThresholdNonCritical" type="String"/>
+                <attrib name="UpperThresholdNonCritical" alias="UpperThresholdNonCritical" type="String"/>
+                <attrib name="LowerThresholdCritical" alias="LowerThresholdCritical" type="String"/>
+                <attrib name="UpperThresholdCritical" alias="UpperThresholdCritical" type="String"/>
+                <attrib name="LowerThresholdFatal" alias="LowerThresholdFatal" type="String"/>
+                <attrib name="UpperThresholdFatal" alias="UpperThresholdFatal" type="String"/>
+            </vmware-cim-group>
+
+            <vmware-cim-group cimClass="CIM_NumericSensor" name="SensorAirFlow" instance="Name" key="SensorType" value="12" resourceType="SensorAirFlow">
+                <attrib name="Name" alias="SensorName" type="String"/>
+                <attrib name="CurrentReading" alias="CurrentReading" type="Gauge"/>
+                <attrib name="DeviceID" alias="DeviceID" type="String"/>
+                <attrib name="SensorType" alias="SensorType" type="String"/>
+                <attrib name="Caption" alias="Caption" type="String"/>
+                <attrib name="ElementName" alias="ElementName" type="String"/>
+                <attrib name="BaseUnits" alias="BaseUnits" type="String"/>
+                <attrib name="RateUnits" alias="RateUnits" type="String"/>
+                <attrib name="IsLinear" alias="IsLinear" type="String"/>
+                <attrib name="UnitModifier" alias="UnitModifier" type="String"/>
+                <attrib name="MinReadable" alias="MinReadable" type="String"/>
+                <attrib name="MaxReadable" alias="MaxReadable" type="String"/>
+                <attrib name="LowerThresholdNonCritical" alias="LowerThresholdNonCritical" type="String"/>
+                <attrib name="UpperThresholdNonCritical" alias="UpperThresholdNonCritical" type="String"/>
+                <attrib name="LowerThresholdCritical" alias="LowerThresholdCritical" type="String"/>
+                <attrib name="UpperThresholdCritical" alias="UpperThresholdCritical" type="String"/>
+                <attrib name="LowerThresholdFatal" alias="LowerThresholdFatal" type="String"/>
+                <attrib name="UpperThresholdFatal" alias="UpperThresholdFatal" type="String"/>
+            </vmware-cim-group>
+
+            <vmware-cim-group cimClass="CIM_NumericSensor" name="SensorPowerConsumption" instance="Name" key="SensorType" value="13" resourceType="SensorPowerConsumption">
+                <attrib name="Name" alias="SensorName" type="String"/>
+                <attrib name="CurrentReading" alias="CurrentReading" type="Gauge"/>
+                <attrib name="DeviceID" alias="DeviceID" type="String"/>
+                <attrib name="SensorType" alias="SensorType" type="String"/>
+                <attrib name="Caption" alias="Caption" type="String"/>
+                <attrib name="ElementName" alias="ElementName" type="String"/>
+                <attrib name="BaseUnits" alias="BaseUnits" type="String"/>
+                <attrib name="RateUnits" alias="RateUnits" type="String"/>
+                <attrib name="IsLinear" alias="IsLinear" type="String"/>
+                <attrib name="UnitModifier" alias="UnitModifier" type="String"/>
+                <attrib name="MinReadable" alias="MinReadable" type="String"/>
+                <attrib name="MaxReadable" alias="MaxReadable" type="String"/>
+                <attrib name="LowerThresholdNonCritical" alias="LowerThresholdNonCritical" type="String"/>
+                <attrib name="UpperThresholdNonCritical" alias="UpperThresholdNonCritical" type="String"/>
+                <attrib name="LowerThresholdCritical" alias="LowerThresholdCritical" type="String"/>
+                <attrib name="UpperThresholdCritical" alias="UpperThresholdCritical" type="String"/>
+                <attrib name="LowerThresholdFatal" alias="LowerThresholdFatal" type="String"/>
+                <attrib name="UpperThresholdFatal" alias="UpperThresholdFatal" type="String"/>
+            </vmware-cim-group>
+
+            <vmware-cim-group cimClass="CIM_NumericSensor" name="SensorPowerProduction" instance="Name" key="SensorType" value="14" resourceType="SensorPowerProduction">
+                <attrib name="Name" alias="SensorName" type="String"/>
+                <attrib name="CurrentReading" alias="CurrentReading" type="Gauge"/>
+                <attrib name="DeviceID" alias="DeviceID" type="String"/>
+                <attrib name="SensorType" alias="SensorType" type="String"/>
+                <attrib name="Caption" alias="Caption" type="String"/>
+                <attrib name="ElementName" alias="ElementName" type="String"/>
+                <attrib name="BaseUnits" alias="BaseUnits" type="String"/>
+                <attrib name="RateUnits" alias="RateUnits" type="String"/>
+                <attrib name="IsLinear" alias="IsLinear" type="String"/>
+                <attrib name="UnitModifier" alias="UnitModifier" type="String"/>
+                <attrib name="MinReadable" alias="MinReadable" type="String"/>
+                <attrib name="MaxReadable" alias="MaxReadable" type="String"/>
+                <attrib name="LowerThresholdNonCritical" alias="LowerThresholdNonCritical" type="String"/>
+                <attrib name="UpperThresholdNonCritical" alias="UpperThresholdNonCritical" type="String"/>
+                <attrib name="LowerThresholdCritical" alias="LowerThresholdCritical" type="String"/>
+                <attrib name="UpperThresholdCritical" alias="UpperThresholdCritical" type="String"/>
+                <attrib name="LowerThresholdFatal" alias="LowerThresholdFatal" type="String"/>
+                <attrib name="UpperThresholdFatal" alias="UpperThresholdFatal" type="String"/>
+            </vmware-cim-group>
+
+            <vmware-cim-group cimClass="CIM_NumericSensor" name="SensorPressure" instance="Name" key="SensorType" value="15" resourceType="SensorPressure">
+                <attrib name="Name" alias="SensorName" type="String"/>
+                <attrib name="CurrentReading" alias="CurrentReading" type="Gauge"/>
+                <attrib name="DeviceID" alias="DeviceID" type="String"/>
+                <attrib name="SensorType" alias="SensorType" type="String"/>
+                <attrib name="Caption" alias="Caption" type="String"/>
+                <attrib name="ElementName" alias="ElementName" type="String"/>
+                <attrib name="BaseUnits" alias="BaseUnits" type="String"/>
+                <attrib name="RateUnits" alias="RateUnits" type="String"/>
+                <attrib name="IsLinear" alias="IsLinear" type="String"/>
+                <attrib name="UnitModifier" alias="UnitModifier" type="String"/>
+                <attrib name="MinReadable" alias="MinReadable" type="String"/>
+                <attrib name="MaxReadable" alias="MaxReadable" type="String"/>
+                <attrib name="LowerThresholdNonCritical" alias="LowerThresholdNonCritical" type="String"/>
+                <attrib name="UpperThresholdNonCritical" alias="UpperThresholdNonCritical" type="String"/>
+                <attrib name="LowerThresholdCritical" alias="LowerThresholdCritical" type="String"/>
+                <attrib name="UpperThresholdCritical" alias="UpperThresholdCritical" type="String"/>
+                <attrib name="LowerThresholdFatal" alias="LowerThresholdFatal" type="String"/>
+                <attrib name="UpperThresholdFatal" alias="UpperThresholdFatal" type="String"/>
+            </vmware-cim-group>
+
+        </vmware-cim-groups>
+    </vmware-cim-collection>
+
+</vmware-cim-datacollection-config>

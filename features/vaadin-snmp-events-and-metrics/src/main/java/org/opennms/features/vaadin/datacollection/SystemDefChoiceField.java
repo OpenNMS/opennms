@@ -56,10 +56,10 @@ public class SystemDefChoiceField extends CustomField {
     /** The Constant OPTIONS. */
     private static final List<String> OPTIONS = Arrays.asList(new String[] { SINGLE, MASK });
 
-    /** The oid type. */
+    /** The OID type. */
     private OptionGroup oidType;
 
-    /** The oid value. */
+    /** The OID value. */
     private TextField oidValue;
 
     /**
@@ -74,7 +74,8 @@ public class SystemDefChoiceField extends CustomField {
         oidValue.setWidth("100%");
         oidValue.setNullSettingAllowed(false);
         oidValue.setRequired(true);
-        oidValue.addValidator(new RegexpValidator("[.\\d]+", "Invalid OID {0}"));
+        oidValue.setImmediate(true);
+        oidValue.addValidator(new RegexpValidator("^\\.[.\\d]+$", "Invalid OID {0}"));
 
         HorizontalLayout layout = new HorizontalLayout();
         layout.setSpacing(true);
