@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -25,6 +25,7 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+
 package org.opennms.features.vaadin.nodemaps;
 
 import javax.servlet.ServletException;
@@ -41,16 +42,22 @@ import com.vaadin.Application;
 /**
  * A factory for creating NodeMapsApplication objects.
  * 
- * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 public class NodeMapsApplicationFactory extends AbstractApplicationFactory {
     private NodeDao m_nodeDao;
+
     private AssetRecordDao m_assetDao;
+
     private AlarmDao m_alarmDao;
+
     private GeocoderService m_geocoder;
 
-    /* (non-Javadoc)
-     * @see org.ops4j.pax.vaadin.ApplicationFactory#createApplication(javax.servlet.http.HttpServletRequest)
+    /*
+     * (non-Javadoc)
+     * @see
+     * org.ops4j.pax.vaadin.ApplicationFactory#createApplication(javax.servlet
+     * .http.HttpServletRequest)
      */
     @Override
     public Application createApplication(final HttpServletRequest request) throws ServletException {
@@ -65,7 +72,8 @@ public class NodeMapsApplicationFactory extends AbstractApplicationFactory {
         return app;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
      * @see org.ops4j.pax.vaadin.ApplicationFactory#getApplicationClass()
      */
     @Override
@@ -75,8 +83,9 @@ public class NodeMapsApplicationFactory extends AbstractApplicationFactory {
 
     /**
      * Sets the OpenNMS Node DAO.
-     *
-     * @param m_nodeDao the new OpenNMS Node DAO
+     * 
+     * @param m_nodeDao
+     *            the new OpenNMS Node DAO
      */
     public void setNodeDao(final NodeDao nodeDao) {
         m_nodeDao = nodeDao;

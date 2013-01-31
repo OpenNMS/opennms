@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -25,6 +25,7 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+
 package org.opennms.features.vaadin.nodemaps;
 
 import org.opennms.features.geocoder.GeocoderService;
@@ -78,12 +79,15 @@ import com.vaadin.ui.Window;
 public class NodeMapsApplication extends Application {
 
     private NodeDao m_nodeDao;
+
     private AssetRecordDao m_assetDao;
+
     private AlarmDao m_alarmDao;
 
     private GeocoderService m_geocoderService;
 
     private Window m_window;
+
     private AbsoluteLayout m_rootLayout;
 
     private Logger m_log = LoggerFactory.getLogger(getClass());
@@ -91,7 +95,8 @@ public class NodeMapsApplication extends Application {
     /**
      * Sets the OpenNMS Node DAO.
      * 
-     * @param m_nodeDao the new OpenNMS Node DAO
+     * @param m_nodeDao
+     *            the new OpenNMS Node DAO
      */
 
     public void setNodeDao(final NodeDao nodeDao) {
