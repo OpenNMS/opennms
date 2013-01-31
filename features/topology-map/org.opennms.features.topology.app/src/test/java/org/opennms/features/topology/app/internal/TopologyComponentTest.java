@@ -165,7 +165,7 @@ public class TopologyComponentTest {
         Vertex groupId = topologyProvider.addGroup(this.getClass().getSimpleName(), "GroupIcon.jpg");
         
         for(Vertex v : vertIds) {
-            if(v.isLeaf()) {
+            if(!v.isGroup()) {
                 topologyProvider.setParent(v, groupId);
             }
         }
@@ -220,7 +220,7 @@ public class TopologyComponentTest {
         Vertex groupId = topoProvider.addGroup(this.getClass().getSimpleName(), "GroupIcon.jpg");
         
         for(Vertex v: vertIds) {
-            if(v.isLeaf()) {
+            if(!v.isGroup()) {
                 topoProvider.setParent(v, groupId);
             }
             

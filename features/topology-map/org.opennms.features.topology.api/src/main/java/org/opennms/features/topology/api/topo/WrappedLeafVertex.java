@@ -39,7 +39,7 @@ public class WrappedLeafVertex extends WrappedVertex {
 	 */
 	public WrappedLeafVertex() {
 		super();
-		leaf = true;
+		group = false;
 	}
 
 	public WrappedLeafVertex(Vertex vertex) {

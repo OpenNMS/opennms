@@ -44,13 +44,13 @@ public class TestTopologyProvider extends AbstractTopologyProvider implements Gr
         resetContainer();
         
         String vId1 = getNextVertexId();
-        TestVertex v1 = new TestLeafVertex(vId1, 0, 0);
+        TestVertex v1 = new TestVertex(vId1, 0, 0);
         v1.setLabel("a leaf");
         
         addVertices(v1);
         
         String vId2 = getNextVertexId();
-        TestVertex v2 = new TestLeafVertex(vId2, 0, 0);
+        TestVertex v2 = new TestVertex(vId2, 0, 0);
         v2.setLabel("another leaf");
         addVertices(v2);
         
@@ -71,13 +71,13 @@ public class TestTopologyProvider extends AbstractTopologyProvider implements Gr
         List<TestVertex> vertices = new ArrayList<TestVertex>();
         
         String vId1 = getNextVertexId();
-        TestVertex v1 = new TestLeafVertex(vId1, 0, 0);
+        TestVertex v1 = new TestVertex(vId1, 0, 0);
         v1.setLabel("a leaf vertex");
         
         vertices.add(v1);
         
         String vId2 = getNextVertexId();
-        TestVertex v2 = new TestLeafVertex(vId2, 0, 0);
+        TestVertex v2 = new TestVertex(vId2, 0, 0);
         v2.setLabel("another leaf");
         vertices.add(v2);
         

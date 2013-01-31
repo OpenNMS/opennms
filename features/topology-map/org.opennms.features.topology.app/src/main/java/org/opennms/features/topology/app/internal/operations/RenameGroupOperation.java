@@ -123,7 +123,7 @@ public class RenameGroupOperation implements Constants, Operation {
 					final Collection<? extends Vertex> vertexIds = graphContainer.getBaseTopology().getVertices();
 					final Collection<String> groupLabels = new ArrayList<String>();
 					for (Vertex vertexId : vertexIds) {
-						if (!vertexId.isLeaf()) {
+						if (vertexId.isGroup()) {
 							groupLabels.add(vertexId.getLabel());
 						}
 					}
@@ -190,7 +190,7 @@ public class RenameGroupOperation implements Constants, Operation {
 		return targets != null && 
 		targets.size() == 1 && 
 		targets.get(0) != null && 
-		!operationContext.getGraphContainer().getBaseTopology().getVertex(targets.get(0)).isLeaf()
+		operationContext.getGraphContainer().getBaseTopology().getVertex(targets.get(0)).isGroup()
 		;
 	}
 

@@ -70,7 +70,7 @@ public class AddVertexToGroupOperation implements Constants, Operation {
 		final Collection<Vertex> vertexIds = graphContainer.getBaseTopology().getChildren(currentVertex);
 		final Collection<String> groupIds = new ArrayList<String>();
 		for (Vertex vertexId : vertexIds) {
-			if (!vertexId.isLeaf()) {
+			if (vertexId.isGroup()) {
 				groupIds.add(vertexId.getLabel());
 				log.debug("Found group: {}", vertexId);
 			}

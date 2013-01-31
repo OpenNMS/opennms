@@ -279,7 +279,7 @@ public class LinkdTopologyProviderTest {
 		assertEquals(8, m_topologyProvider.getVertices().size());
 		// Ensure that all of the vertices are groups
 		for (Vertex vertex : m_topologyProvider.getVertices()) {
-			assertEquals(false, vertex.isLeaf());
+			assertEquals(true, vertex.isGroup());
 		}
 		Vertex vert1 = m_topologyProvider.getVertex("nodes", "linkdg5");
 		Vertex vert2 = m_topologyProvider.getVertex("nodes", "linkdg10");

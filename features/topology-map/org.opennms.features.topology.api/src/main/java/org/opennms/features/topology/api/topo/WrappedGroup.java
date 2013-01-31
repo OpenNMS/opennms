@@ -44,7 +44,7 @@ public class WrappedGroup extends WrappedVertex {
 	 */
 	public WrappedGroup() {
 		super();
-		leaf = false;
+		group = true;
 	}
 
 	public WrappedGroup(Vertex vertex) {

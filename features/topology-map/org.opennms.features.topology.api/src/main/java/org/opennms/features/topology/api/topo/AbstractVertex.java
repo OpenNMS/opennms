@@ -128,8 +128,8 @@ public class AbstractVertex extends AbstractVertexRef implements Vertex {
 	}
 
 	@Override
-	public boolean isLeaf() {
-		return true;
+	public boolean isGroup() {
+		return false;
 	}
 
 	@Override

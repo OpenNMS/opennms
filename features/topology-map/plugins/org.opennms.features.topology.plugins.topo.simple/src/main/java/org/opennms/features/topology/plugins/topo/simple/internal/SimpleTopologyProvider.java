@@ -99,10 +99,10 @@ public class SimpleTopologyProvider extends AbstractTopologyProvider implements 
 	public void save(String filename) {
         List<WrappedVertex> vertices = new ArrayList<WrappedVertex>();
         for (Vertex vertex : getVertices()) {
-            if (vertex.isLeaf()) {
-                vertices.add(new WrappedLeafVertex(vertex));
-            } else {
+            if (vertex.isGroup()) {
                 vertices.add(new WrappedGroup(vertex));
+            } else {
+                vertices.add(new WrappedLeafVertex(vertex));
             }
         }
         List<WrappedEdge> edges = new ArrayList<WrappedEdge>();
@@ -154,12 +154,12 @@ public class SimpleTopologyProvider extends AbstractTopologyProvider implements 
                 }
             }
             AbstractVertex newVertex;
-            if (vertex.leaf) {
-                newVertex = new SimpleLeafVertex(vertex.namespace, vertex.id, vertex.x, vertex.y);
-            } else {
+            if (vertex.group) {
                 newVertex = new SimpleGroup(vertex.namespace, vertex.id);
                 if (vertex.x != null) newVertex.setX(vertex.x);
                 if (vertex.y != null) newVertex.setY(vertex.y);
+            } else {
+                newVertex = new SimpleLeafVertex(vertex.namespace, vertex.id, vertex.x, vertex.y);
             }
             newVertex.setIconKey(vertex.iconKey);
             newVertex.setIpAddress(vertex.ipAddr);

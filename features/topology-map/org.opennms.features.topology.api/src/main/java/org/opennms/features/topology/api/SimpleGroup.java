@@ -57,7 +57,7 @@ public class SimpleGroup extends AbstractVertex {
 	}
 
 	@Override
-	public boolean isLeaf() {
-		return false;
+	public boolean isGroup() {
+		return true;
 	}
 }

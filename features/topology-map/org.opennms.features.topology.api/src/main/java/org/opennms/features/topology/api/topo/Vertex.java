@@ -19,7 +19,7 @@ public interface Vertex extends VertexRef {
 
 	String getStyleName();
 
-	boolean isLeaf();
+	boolean isGroup();
 
 	/**
 	 * TODO: To support Many-to-Many grouping, this function will need to be

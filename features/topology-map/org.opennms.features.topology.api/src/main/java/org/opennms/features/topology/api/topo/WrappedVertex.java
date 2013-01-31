@@ -58,14 +58,15 @@ public class WrappedVertex implements VertexRef {
 	public String tooltipText;
 	public Integer x;
 	public Integer y;
-	public boolean leaf;
+	@XmlTransient
+	public boolean group;
 	public boolean locked;
 	public boolean selected;
 	@XmlIDREF
 	public WrappedVertex parent;
 	
 	public static WrappedVertex create(Vertex vertex) {
-		return (vertex.isLeaf() ? new WrappedLeafVertex(vertex) : new WrappedGroup(vertex));
+		return (vertex.isGroup() ? new WrappedGroup(vertex) : new WrappedLeafVertex(vertex));
 	}
 
 	/**
@@ -94,7 +95,7 @@ public class WrappedVertex implements VertexRef {
 		tooltipText = vertex.getTooltipText();
 		x = vertex.getX();
 		y = vertex.getY();
-		leaf = vertex.isLeaf();
+		group = vertex.isGroup();
 		locked = vertex.isLocked();
 		selected = vertex.isSelected();
 	}

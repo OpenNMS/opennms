@@ -128,7 +128,7 @@ public class CreateGroupOperation implements Constants, Operation {
 					final Collection<? extends Vertex> vertexIds = graphContainer.getBaseTopology().getVertices();
 					final Collection<String> groupLabels = new ArrayList<String>();
 					for (Vertex vertexId : vertexIds) {
-						if (!vertexId.isLeaf()) {
+						if (vertexId.isGroup()) {
 							groupLabels.add(vertexId.getLabel());
 						}
 					}

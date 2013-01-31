@@ -247,7 +247,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
             // Add all groups to the topology
             int numberOfGroups = 0;
             for (WrappedVertex vertex: graph.m_vertices) {
-                if (!vertex.leaf) {
+                if (vertex.group) {
                     log("loadtopology: adding group to topology: " + vertex.id);
                     if (vertex.namespace == null) {
                         vertex.namespace = getVertexNamespace();
@@ -427,10 +427,10 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
             filename=m_configurationFile;
         List<WrappedVertex> vertices = new ArrayList<WrappedVertex>();
         for (Vertex vertex : getVertices()) {
-            if (vertex.isLeaf()) {
-                vertices.add(new WrappedLeafVertex(vertex));
-            } else {
+            if (vertex.isGroup()) {
                 vertices.add(new WrappedGroup(vertex));
+            } else {
+                vertices.add(new WrappedLeafVertex(vertex));
             }
         }
         List<WrappedEdge> edges = new ArrayList<WrappedEdge>();

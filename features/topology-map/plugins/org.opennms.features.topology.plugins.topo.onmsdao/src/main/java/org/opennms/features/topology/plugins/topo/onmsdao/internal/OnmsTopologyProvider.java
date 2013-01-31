@@ -96,7 +96,7 @@ public class OnmsTopologyProvider extends AbstractTopologyProvider implements Gr
         getOnmsMapElementDao().deleteElementsByMapId(rootMap);
         
         for (Vertex vertex : vertices) {
-            if (!vertex.isLeaf()) {
+            if (vertex.isGroup()) {
                 Integer mapid = ((SimpleGroup)vertex).getMapid();
                 getOnmsMapElementDao().deleteElementsByMapId(getMap(mapid));
             }
@@ -106,7 +106,7 @@ public class OnmsTopologyProvider extends AbstractTopologyProvider implements Gr
             Integer mapid;
             Integer id;
             String type;
-            if (vertex.isLeaf()) {
+            if (!vertex.isGroup()) {
                 id = ((SimpleLeafVertex)vertex).getNodeID();
                 type=OnmsMapElement.NODE_TYPE;
             } else {
@@ -168,7 +168,7 @@ public class OnmsTopologyProvider extends AbstractTopologyProvider implements Gr
         List<Edge> edges = new ArrayList<Edge>();
         List<Vertex> leafs = new ArrayList<Vertex>();
         for (Vertex vertex: leafs ) {
-            if (vertex.isLeaf())
+            if (!vertex.isGroup())
                 leafs.add((SimpleLeafVertex) vertex);
         }
         
