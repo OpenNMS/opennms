@@ -42,7 +42,7 @@ public class DefaultLayout implements Layout {
 	@Override
 	public Point getInitialLocation(VertexRef v) {
 		Vertex parent = m_graphContainer.getParent(v);
-		return parent == null ? new Point(0, 0) : getLocation(parent);
+		return parent == null ? getLocation(v) : getLocation(parent);
 	}
 	
     @Override
