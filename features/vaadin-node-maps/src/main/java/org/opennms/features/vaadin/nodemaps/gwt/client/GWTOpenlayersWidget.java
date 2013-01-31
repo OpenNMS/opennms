@@ -146,23 +146,6 @@ public class GWTOpenlayersWidget extends Widget {
                     }
                 });
 
-                function getHighestSeverity(feature) {
-                    if (!feature.cluster) return "Normal";
-                    var severity = 0;
-                    var severityLabel = "Normal";
-                    for (var i=0; i<feature.cluster.length; i++) {
-                        var n = feature.cluster[i].attributes;
-                        if (n.severity && n.severity > severity) {
-                            severity = n.severity;
-                            severityLabel = n.severityLabel;
-                        }
-                        if (severity == 7) {
-                            break;
-                        }
-                    }
-                    return severityLabel;
-                }
-
         // Nodes Layer
 
         var nodesLayer = new $wnd.OpenLayers.Layer.Vector("All Nodes", {
@@ -258,6 +241,7 @@ public class GWTOpenlayersWidget extends Widget {
                     break;
                 }
             }
+            return severityLabel;
         }
 
         function getNumUnacked(feature) {
