@@ -183,17 +183,6 @@ public class GWTOpenlayersWidget extends Widget {
         this.@org.opennms.features.vaadin.nodemaps.gwt.client.GWTOpenlayersWidget::updateFeatureLayer()();
         map.zoomToExtent(nodesLayer.getDataExtent());
 
-        function getAvailability(feature) {
-            if (!feature.cluster) return 100;
-            var count = 0;
-            for (var i = 0; i < feature.cluster.length; i++) {
-                var n = feature.cluster[i].attributes;
-                if (n.nodeStatus == 'Down')
-                    count++;
-            }
-            return ((1 - count / feature.cluster.length) * 100).toFixed(2);
-        }
-
         function getNodeSeverity(feature) {
             return getHighestSeverity(feature);
         }
@@ -209,12 +198,12 @@ public class GWTOpenlayersWidget extends Widget {
                 var nodes = [];
                 for ( var i = 0; i < feature.cluster.length; i++) {
                     var n = feature.cluster[i].attributes;
-                    nodes.push(n.nodeLabel + "(" + n.ipAddress + ") : " + n.nodeStatus);
+                    nodes.push(n.nodeLabel + "(" + n.ipAddress + ") : " + n.severityLabel);
                 }
                 msg = "<h2># of nodes: " + feature.cluster.length + " (" + getNumUnacked(feature)  + " Unacknowledged Alarms)</h2><ul><li>" + nodes.join("</li><li>") + "</li></ul>";
             } else {
                 var n = feature.cluster[0].attributes;
-                msg = "<h2>Node " + n.nodeLabel + "</h2>" + "<p>Node ID: " + n.nodeId + "</br>" + "Foreign Source: " + n.foreignSource + "</br>" + "Foreign ID: " + n.foreignId + "</br>" + "IP Address: " + n.ipAddress + "</br>" + "Status: " + n.nodeStatus + "</br></p>";
+                msg = "<h2>Node " + n.nodeLabel + "</h2>" + "<p>Node ID: " + n.nodeId + "</br>" + "Foreign Source: " + n.foreignSource + "</br>" + "Foreign ID: " + n.foreignId + "</br>" + "IP Address: " + n.ipAddress + "</br>" + "Status: " + n.severityLabel + "</br></p>";
             }
             popup = new $wnd.OpenLayers.Popup.FramedCloud(
                 "nodePopup",
@@ -233,8 +222,8 @@ public class GWTOpenlayersWidget extends Widget {
             var severityLabel = "Normal";
             for ( var i = 0; i < feature.cluster.length; i++) {
                 var n = feature.cluster[i].attributes;
-                if (n.severity && n.severity > severity) {
-                    severity = n.severity;
+                if (n.severity && parseInt(n.severity) > severity) {
+                    severity = parseInt(n.severity);
                     severityLabel = n.severityLabel;
                 }
                 if (severity == 7) {
@@ -245,12 +234,11 @@ public class GWTOpenlayersWidget extends Widget {
         }
 
         function getNumUnacked(feature) {
-            if (!feature.cluster)
-                return 0;
+            if (!feature.cluster) return 0;
             var count = 0;
             for ( var i = 0; i < feature.cluster.length; i++) {
                 var n = feature.cluster[i].attributes;
-                if (n.unackedCount) count += n.unackedCount;
+                if (n.unackedCount) count += parseInt(n.unackedCount);
             }
             return count;
         }

@@ -85,6 +85,7 @@ public class OpenlayersWidgetComponent extends VerticalLayout {
 
         final CriteriaBuilder cb = new CriteriaBuilder(OnmsNode.class);
         cb.alias("assetRecord", "asset");
+        cb.orderBy("id");
 
         target.startTag("nodes");
 
@@ -146,7 +147,7 @@ public class OpenlayersWidgetComponent extends VerticalLayout {
                     builder.alias("node", "node");
                     builder.eq("node.id", node.getId());
                     builder.ge("severity", OnmsSeverity.WARNING);
-                    builder.isNotNull("alarmAckTime");
+                    builder.isNull("alarmAckTime");
                     final int unackedCount = m_alarmDao.countMatching(builder.toCriteria());
 
                     target.addAttribute("nodeId", node.getId());
