@@ -141,6 +141,10 @@ public class OpenlayersWidgetComponent extends VerticalLayout {
                         final OnmsSeverity severity = alarm.getSeverity();
                         target.addAttribute("severityLabel", severity.getLabel());
                         target.addAttribute("severity", severity.getId());
+                    } else {
+                        // assumes everything is OK
+                        target.addAttribute("severityLabel", OnmsSeverity.NORMAL.getLabel());
+                        target.addAttribute("severity", OnmsSeverity.NORMAL.getId());
                     }
 
                     builder = new CriteriaBuilder(OnmsAlarm.class);
