@@ -1,3 +1,31 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.features.vaadin.nodemaps.ui;
 
 import java.util.List;
@@ -25,18 +53,23 @@ import com.vaadin.terminal.PaintTarget;
 import com.vaadin.ui.ClientWidget;
 import com.vaadin.ui.VerticalLayout;
 
-@ClientWidget(value=VOpenlayersWidget.class)
+@ClientWidget(value = VOpenlayersWidget.class)
 public class OpenlayersWidgetComponent extends VerticalLayout {
     private static final long serialVersionUID = 1L;
+
     private NodeDao m_nodeDao;
     private AssetRecordDao m_assetDao;
     private AlarmDao m_alarmDao;
+
     private GeocoderService m_geocoderService;
+
     private boolean m_enableGeocoding = false;
 
     private Logger m_log = LoggerFactory.getLogger(getClass());
 
-    public OpenlayersWidgetComponent() {}
+    public OpenlayersWidgetComponent() {
+    }
+
     public OpenlayersWidgetComponent(final NodeDao nodeDao, final AssetRecordDao assetDao, final AlarmDao alarmDao, final GeocoderService geocoder) {
         m_nodeDao = nodeDao;
         m_assetDao = assetDao;
@@ -48,9 +81,7 @@ public class OpenlayersWidgetComponent extends VerticalLayout {
     public void paintContent(final PaintTarget target) throws PaintException {
         super.paintContent(target);
 
-        if (m_nodeDao == null) {
-            return;
-        }
+        if (m_nodeDao == null) return;
 
         final CriteriaBuilder cb = new CriteriaBuilder(OnmsNode.class);
         cb.alias("assetRecord", "asset");
@@ -106,8 +137,9 @@ public class OpenlayersWidgetComponent extends VerticalLayout {
                     final List<OnmsAlarm> alarms = m_alarmDao.findMatching(builder.toCriteria());
                     if (alarms.size() == 1) {
                         final OnmsAlarm alarm = alarms.get(0);
-                        target.addAttribute("severityLabel", alarm.getSeverityLabel());
-                        target.addAttribute("severity", alarm.getSeverityId());
+                        final OnmsSeverity severity = alarm.getSeverity();
+                        target.addAttribute("severityLabel", severity.getLabel());
+                        target.addAttribute("severity", severity.getId());
                     }
 
                     builder = new CriteriaBuilder(OnmsAlarm.class);
@@ -139,12 +171,15 @@ public class OpenlayersWidgetComponent extends VerticalLayout {
     public void setNodeDao(final NodeDao nodeDao) {
         m_nodeDao = nodeDao;
     }
+
     public void setAssetRecordDao(final AssetRecordDao assetDao) {
         m_assetDao = assetDao;
     }
+
     public void setAlarmDao(final AlarmDao alarmDao) {
         m_alarmDao = alarmDao;
     }
+
     public void setGeocoderService(final GeocoderService geocoderService) {
         m_geocoderService = geocoderService;
     }
