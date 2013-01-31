@@ -210,6 +210,7 @@ public class GWTOpenlayersWidget extends Widget {
                             break;
                         }
                     }
+                    return severityLabel;
                 }
 
                 function getNumUnacked(feature) {
