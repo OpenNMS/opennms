@@ -4,7 +4,7 @@ import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.HistoryManager;
 
 public abstract class AbstractHistoryManager implements HistoryManager {
-
+    
     @Override
     public void applyHistory(String fragmentId, GraphContainer container) {
         getHistoryForFragment(fragmentId, container);

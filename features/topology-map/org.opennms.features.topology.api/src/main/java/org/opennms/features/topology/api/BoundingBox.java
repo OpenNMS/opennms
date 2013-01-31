@@ -76,7 +76,7 @@ public class BoundingBox{
     }
     
     public String fragment() {
-        return toString().replace(' ', '_');
+        return "(" + getX() + "," + getY() + "," + getWidth() + "," + getHeight() + ")";
     }
 
     public void addBoundingbox(BoundingBox box) {
@@ -86,24 +86,39 @@ public class BoundingBox{
         m_bottom = Math.max(m_bottom, box.m_bottom);
         
     }
-    
+
     @Override
-    public boolean equals(Object boundingBox) {
-        if(boundingBox instanceof BoundingBox) {
-            BoundingBox compareTo = (BoundingBox) boundingBox;
-            if(getX() == compareTo.getX() 
-               && getY() == compareTo.getY() 
-               && getWidth() == compareTo.getWidth() 
-               && getHeight() == compareTo.getHeight() 
-               && getCenter().equals(compareTo.getCenter())) {
-                return true;
-                
-            }else {
-                return false;
-            }
-        }else {
-            return false;
-        }
-        
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + m_bottom;
+        result = prime * result + m_left;
+        result = prime * result + m_right;
+        result = prime * result + m_top;
+        return result;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        BoundingBox other = (BoundingBox) obj;
+        if (m_bottom != other.m_bottom)
+            return false;
+        if (m_left != other.m_left)
+            return false;
+        if (m_right != other.m_right)
+            return false;
+        if (m_top != other.m_top)
+            return false;
+        return true;
+    }
+    
+    
+    
+    
 }

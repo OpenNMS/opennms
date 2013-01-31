@@ -239,7 +239,7 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
             int x = (Integer) props.get("x");
             int y = (Integer) props.get("y");
             
-            double scale = getViewManager().getScale() + 0.1;
+            double scale = getViewManager().getScale() + 0.25;
             getViewManager().zoomToPoint(scale, new Point(x, y));
         }
         

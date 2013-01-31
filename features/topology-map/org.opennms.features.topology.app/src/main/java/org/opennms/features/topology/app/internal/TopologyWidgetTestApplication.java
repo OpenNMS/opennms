@@ -51,22 +51,22 @@ import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.MenuBar;
+import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.Slider;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UriFragmentUtility;
+import com.vaadin.ui.UriFragmentUtility.FragmentChangedEvent;
+import com.vaadin.ui.UriFragmentUtility.FragmentChangedListener;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.VerticalSplitPanel;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.MenuBar.MenuItem;
-import com.vaadin.ui.UriFragmentUtility.FragmentChangedEvent;
-import com.vaadin.ui.UriFragmentUtility.FragmentChangedListener;
 
 public class TopologyWidgetTestApplication extends Application implements CommandUpdateListener, MenuItemUpdateListener, ContextMenuHandler, WidgetUpdateListener, WidgetContext, FragmentChangedListener, GraphContainer.ChangeListener, MapViewManagerListener {
     
@@ -503,16 +503,26 @@ public class TopologyWidgetTestApplication extends Application implements Comman
     }
 
 
+    int m_settingFragment = 0;
     @Override
     public void fragmentChanged(FragmentChangedEvent source) {
+        m_settingFragment++;
         String fragment = source.getUriFragmentUtility().getFragment();
+        System.out.println("Fragment: " + fragment);
         m_historyManager.applyHistory(fragment, m_graphContainer);
+        m_settingFragment--;
     }
 
 
     private void saveHistory() {
-        String fragment = m_historyManager.create(m_graphContainer);
-        m_uriFragUtil.setFragment(fragment);
+        if (m_settingFragment == 0) {
+            System.out.println("Enter Save history :: scale: " + m_graphContainer.getScale());
+            String fragment = m_historyManager.create(m_graphContainer);
+            Thread.dumpStack();
+            System.out.println("Saving fragment: " + fragment);
+            m_uriFragUtil.setFragment(fragment, false);
+            System.out.println("Exit Save history :: scale: " + m_graphContainer.getScale());
+        }
     }
 
 
