@@ -36,6 +36,7 @@ import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.dao.AssetRecordDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.ops4j.pax.vaadin.AbstractApplicationFactory;
+import org.springframework.transaction.support.TransactionOperations;
 
 import com.vaadin.Application;
 
@@ -53,6 +54,8 @@ public class NodeMapsApplicationFactory extends AbstractApplicationFactory {
 
     private GeocoderService m_geocoder;
 
+    private TransactionOperations m_transaction;
+
     /*
      * (non-Javadoc)
      * @see
@@ -69,6 +72,7 @@ public class NodeMapsApplicationFactory extends AbstractApplicationFactory {
         app.setAssetRecordDao(m_assetDao);
         app.setAlarmDao(m_alarmDao);
         app.setGeocoderService(m_geocoder);
+        app.setTransactionOperations(m_transaction);
         return app;
     }
 
@@ -101,5 +105,9 @@ public class NodeMapsApplicationFactory extends AbstractApplicationFactory {
 
     public void setGeocoderService(final GeocoderService geocoderService) {
         m_geocoder = geocoderService;
+    }
+    
+    public void setTransactionOperations(final TransactionOperations tx) {
+        m_transaction = tx;
     }
 }

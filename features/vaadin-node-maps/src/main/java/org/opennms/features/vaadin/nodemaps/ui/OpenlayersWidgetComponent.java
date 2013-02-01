@@ -46,7 +46,9 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionOperations;
 
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
@@ -63,9 +65,11 @@ public class OpenlayersWidgetComponent extends VerticalLayout {
 
     private GeocoderService m_geocoderService;
 
-    private boolean m_enableGeocoding = false;
+    private boolean m_enableGeocoding = true;
 
     private Logger m_log = LoggerFactory.getLogger(getClass());
+
+    private TransactionOperations m_transactionOperations;
 
     public OpenlayersWidgetComponent() {
     }
@@ -168,9 +172,13 @@ public class OpenlayersWidgetComponent extends VerticalLayout {
         }
     }
 
-    @Transactional
     void updateDatabase(final OnmsAssetRecord assets) {
-        m_assetDao.saveOrUpdate(assets);
+        m_transactionOperations.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(final TransactionStatus status) {
+                m_assetDao.saveOrUpdate(assets);
+            }
+        });
     }
 
     public void setNodeDao(final NodeDao nodeDao) {
@@ -187,5 +195,9 @@ public class OpenlayersWidgetComponent extends VerticalLayout {
 
     public void setGeocoderService(final GeocoderService geocoderService) {
         m_geocoderService = geocoderService;
+    }
+
+    public void setTransactionOperation(final TransactionOperations tx) {
+        m_transactionOperations = tx;
     }
 }

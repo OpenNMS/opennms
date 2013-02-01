@@ -35,6 +35,7 @@ import org.opennms.netmgt.dao.AssetRecordDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.support.TransactionOperations;
 
 import com.vaadin.Application;
 import com.vaadin.ui.AbsoluteLayout;
@@ -92,6 +93,8 @@ public class NodeMapsApplication extends Application {
 
     private Logger m_log = LoggerFactory.getLogger(getClass());
 
+    private TransactionOperations m_transaction;
+
     /**
      * Sets the OpenNMS Node DAO.
      * 
@@ -115,6 +118,10 @@ public class NodeMapsApplication extends Application {
         m_geocoderService = geocoderService;
     }
 
+    public void setTransactionOperations(final TransactionOperations tx) {
+        m_transaction = tx;
+    }
+
     /*
      * (non-Javadoc)
      * @see com.vaadin.Application#init()
@@ -128,6 +135,7 @@ public class NodeMapsApplication extends Application {
         openlayers.setAssetRecordDao(m_assetDao);
         openlayers.setAlarmDao(m_alarmDao);
         openlayers.setGeocoderService(m_geocoderService);
+        openlayers.setTransactionOperation(m_transaction);
         openlayers.setSizeFull();
 
         m_rootLayout = new AbsoluteLayout();
