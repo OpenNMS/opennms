@@ -44,7 +44,7 @@ public final class GWTGraph extends JavaScriptObject {
     	return { "vertices":[], "edges":[], "idToVMap":{}, 
     	         "clientX":0, "clientY":0, 
     	         "viewTransformation":{}, "panToSelection":false,
-    	         "fitToView":false, "boundingBox":{"x":0, "y":0, "width":0, "height":0}};
+    	         "fitToView":false, "bounds":{"x":0, "y":0, "width":100, "height":100}};
 	}-*/;
 
     public final native JsArray<GWTVertex> getVertices()/*-{

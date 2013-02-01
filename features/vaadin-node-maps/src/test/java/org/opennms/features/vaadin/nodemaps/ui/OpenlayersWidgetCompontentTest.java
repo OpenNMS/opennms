@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.Ignore;
 import org.opennms.features.geocoder.Coordinates;
 import org.opennms.features.geocoder.GeocoderService;
 import org.opennms.netmgt.dao.AlarmDao;
@@ -33,6 +34,7 @@ public class OpenlayersWidgetCompontentTest {
     }
 
     @Test
+    @Ignore
     public void testGeolocation() throws Exception {
         final OnmsNode node = new OnmsNode();
         final OnmsAssetRecord asset = new OnmsAssetRecord();

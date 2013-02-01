@@ -118,7 +118,7 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
 
     @Override
     public void repaintNow(GWTGraph graph) {
-        m_presenter.getViewRenderer().draw(graph, this);
+        m_presenter.getViewRenderer().draw(graph, this, graph.getBoundingBox());
     }
 
     @Override
@@ -164,8 +164,8 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
     }-*/;
 
     @Override
-    public void onGraphUpdated(GWTGraph graph) {
-            m_presenter.getViewRenderer().draw(graph, this);
+    public void onGraphUpdated(GWTGraph graph, GWTBoundingBox oldBBox) {
+            m_presenter.getViewRenderer().draw(graph, this, oldBBox);
     }
     
     @Override
@@ -224,7 +224,7 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
         SVGMatrix stateTF = g.getCTM().inverse();
         
         SVGPoint p = getSVGElement().createSVGPoint();
-        p.setX(getPhysicalWidth()/2 + m_leftMargin);
+        p.setX(getPhysicalWidth()/2);
         p.setY(getPhysicalHeight()/2);
         
         SVGPoint center = p.matrixTransform(stateTF);
