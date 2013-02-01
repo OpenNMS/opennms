@@ -224,7 +224,7 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
         SVGMatrix stateTF = g.getCTM().inverse();
         
         SVGPoint p = getSVGElement().createSVGPoint();
-        p.setX(getPhysicalWidth()/2 + m_leftMargin);
+        p.setX(getPhysicalWidth()/2);
         p.setY(getPhysicalHeight()/2);
         
         SVGPoint center = p.matrixTransform(stateTF);
