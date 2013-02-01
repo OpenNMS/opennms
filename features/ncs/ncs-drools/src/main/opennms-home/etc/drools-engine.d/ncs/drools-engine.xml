@@ -32,6 +32,8 @@
     <event>uei.opennms.org/vendor/Juniper/syslog/rpd_mpls_path_bfd_up</event>
     <event>uei.opennms.org/vendor/Juniper/syslog/lfmd_3ah_linkup</event>
     <event>uei.opennms.org/vendor/Juniper/syslog/lfmd_3ah_linkdown</event>
+    <event>uei.opennms.org/translator/traps/SNMP_Link_Up</event>
+    <event>uei.opennms.org/translator/traps/SNMP_Link_Down</event>
     <event>uei.opennms.org/nodes/nodeDown</event>
     <event>uei.opennms.org/nodes/nodeUp</event>
     <event>uei.opennms.org/internal/ncs/componentAdded</event>

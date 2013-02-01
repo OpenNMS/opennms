@@ -269,6 +269,32 @@ then
           }
 end
 
+rule "gre_linkup  component up"
+          salience 100
+when
+          $e : Event( uei matches ".*SNMP_Link_Up" )
+then
+          retract( $e );
+          List<NCSComponent> list = correlationService.findComponentsByNodeIdAndAttrParmMaps($e, map("ifName", 6));
+          for ( NCSComponent ncs : list ) {
+                  Component c = new Component( ncs );
+                  insert( new ComponentUpEvent( c, $e ) );
+          }
+end
+
+rule "gre_linkdown component down"
+          salience 100
+when
+          $e : Event( uei matches ".*SNMP_Link_Down" )
+then
+          retract( $e );
+          List<NCSComponent> list = correlationService.findComponentsByNodeIdAndAttrParmMaps($e, map("ifName", 6));
+          for ( NCSComponent ncs : list ) {
+                  Component c = new Component( ncs );
+                  insert( new ComponentDownEvent( c, $e ) );
+          }
+end
+
 function void println(Object msg)
 {
 	System.err.println(new Date() + " : " + msg);
