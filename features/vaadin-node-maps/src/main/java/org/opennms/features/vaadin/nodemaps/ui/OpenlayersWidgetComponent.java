@@ -105,7 +105,7 @@ public class OpenlayersWidgetComponent extends VerticalLayout {
             final OnmsGeolocation geolocation = assets.getGeolocation();
 
             final String addressString = geolocation.asAddressString();
-            final String coordinateString = geolocation.getCoordinates();
+            String coordinateString = geolocation.getCoordinates();
 
             if (m_enableGeocoding && (coordinateString == null || coordinateString == "" || !coordinateString.contains(",")) && addressString != "") {
                 m_log.debug("No coordinates for node {}, getting geolocation for street address: {}", new Object[] { node.getId(), addressString });
@@ -116,7 +116,8 @@ public class OpenlayersWidgetComponent extends VerticalLayout {
                         geolocation.setCoordinates("-1,-1");
                         m_log.debug("Failed to look up coordinates for street address: {}", addressString);
                     } else {
-                        geolocation.setCoordinates(coordinates.getLatitude() + "," + coordinates.getLongitude());
+                        coordinateString = coordinates.getLatitude() + "," + coordinates.getLongitude();
+                        geolocation.setCoordinates(coordinateString);
                     }
                     updateDatabase(assets);
                 } catch (final GeocoderException e) {
