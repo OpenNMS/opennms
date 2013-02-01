@@ -162,7 +162,6 @@ public class D3 extends JavaScriptObject {
 		  function transform(p) {
 		    var k = width / p[2];
 		    var retVal = "translate(" + (center[0] - p[0] * k) + "," + (center[1] - p[1] * k) + ")scale(" + k + ")";
-		    $wnd.console.log(retVal);
 		    return retVal;
 		  }
 		}
