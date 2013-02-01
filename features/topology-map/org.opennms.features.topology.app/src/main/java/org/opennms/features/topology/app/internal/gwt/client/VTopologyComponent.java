@@ -43,6 +43,7 @@ import org.opennms.features.topology.app.internal.gwt.client.d3.D3Behavior;
 import org.opennms.features.topology.app.internal.gwt.client.d3.D3Drag;
 import org.opennms.features.topology.app.internal.gwt.client.d3.D3Events;
 import org.opennms.features.topology.app.internal.gwt.client.d3.D3Events.Handler;
+import org.opennms.features.topology.app.internal.gwt.client.d3.D3Transform;
 import org.opennms.features.topology.app.internal.gwt.client.d3.Func;
 import org.opennms.features.topology.app.internal.gwt.client.handler.DragHandlerManager;
 import org.opennms.features.topology.app.internal.gwt.client.handler.DragObject;
@@ -81,12 +82,11 @@ import com.vaadin.terminal.gwt.client.UIDL;
 public class VTopologyComponent extends Composite implements Paintable, SVGTopologyMap, TopologyView.Presenter<TopologyViewRenderer> {
     
     public interface TopologyViewRenderer{
-        void updateGraph(GWTGraph graph);
-        void draw(GWTGraph graph, TopologyView<TopologyViewRenderer> topologyView);
+        void draw(GWTGraph graph, TopologyView<TopologyViewRenderer> topologyView, GWTBoundingBox oldBBox);
     }
     
     public interface GraphUpdateListener{
-        void onGraphUpdated(GWTGraph graph);
+        void onGraphUpdated(GWTGraph graph, GWTBoundingBox oldBBox);
     }
     
 	public class SVGGraphDrawerNoTransition extends SVGGraphDrawer{
@@ -163,11 +163,6 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 			
 		}
 
-		public void updateGraph(GWTGraph graph) {
-			m_graph = graph;
-			draw(null, null);
-		}
-
 		public Handler<GWTVertex> getClickHandler() {
 			return m_clickHandler;
 		}
@@ -204,7 +199,7 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 			return m_dragBehavior;
 		}
 
-		public void draw(GWTGraph graph, final TopologyView<TopologyViewRenderer> topologyView) {
+		public void draw(GWTGraph graph, final TopologyView<TopologyViewRenderer> topologyView, GWTBoundingBox oldBBox) {
 			D3 edgeSelection = getEdgeSelection(graph, topologyView);
 
 			D3 vertexSelection = getVertexSelection(graph, topologyView);
@@ -247,9 +242,29 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
             //Scaling and Fit to Zoom transitions
 			SVGMatrix transform = topologyView.calculateNewTransform(graph.getBoundingBox());
             
-            D3.d3().select(topologyView.getSVGViewPort())
-            .transition().duration(1000)
-            .attr("transform", matrixTransform(transform) );
+			int width = topologyView.getSVGElement().getParentElement().getOffsetWidth() - 50;
+			int height = topologyView.getSVGElement().getParentElement().getOffsetHeight();
+            //D3.d3().select(topologyView.getSVGViewPort())
+            //.attrTweenZoom("transform", graph.getBoundingBox(), oldBBox, width, height);
+            //.attr("transform", matrixTransform(transform) );
+			
+			D3 selection = D3.d3().select(topologyView.getSVGViewPort());
+			D3Transform tform = D3.getTransform(selection.attr("transform"));
+			
+            JsArrayInteger p0 = (JsArrayInteger) JsArrayInteger.createArray();
+            p0.push((int) ((width/2 - tform.getX()) / tform.getScaleX()));
+            p0.push( (int) ((height/2 - tform.getY()) / tform.getScaleY()) );
+            p0.push((int) (width / tform.getScaleX()));
+            p0.push((int) (height / tform.getScaleY()));
+            
+            JsArrayInteger p1 = (JsArrayInteger) JsArrayInteger.createArray();
+            p1.push(graph.getBoundingBox().getX() + graph.getBoundingBox().getWidth()/2);
+            p1.push(graph.getBoundingBox().getY() + graph.getBoundingBox().getHeight()/2);
+            p1.push(graph.getBoundingBox().getWidth());
+            p1.push(graph.getBoundingBox().getHeight());
+            
+            
+			D3.d3().zoomTransition(selection, width, height, p0, p1);
             
             D3.d3().selectAll(GWTEdge.SVG_EDGE_ELEMENT).style("stroke-width", GWTEdge.EDGE_WIDTH/transform.getA() + "px").transition().delay(750).duration(500).attr("opacity", "1").transition();
             
@@ -669,7 +684,7 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 				}
 				
 				for( GraphUpdateListener listener : m_graphListenerList) {
-				    listener.onGraphUpdated(m_graph);
+				    listener.onGraphUpdated(m_graph, m_graph.getBoundingBox());
 				}
 				
 				D3.getEvent().preventDefault();
@@ -768,8 +783,9 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
         int width = uidl.getIntAttribute("boundWidth");
         int height = uidl.getIntAttribute("boundHeight");
         
+        GWTBoundingBox oldBBox = m_graph.getBoundingBox();
         graph.setBoundingBox(GWTBoundingBox.create(x, y, width, height));
-		setGraph(graph);
+		setGraph(graph, oldBBox);
         
 		sendPhysicalDimensions();
 	}
@@ -832,8 +848,9 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 	 * Sets the graph, updates the ViewRenderer if need be and 
 	 * updates all graphUpdateListeners
 	 * @param graph
+     * @param oldBBox 
 	 */
-	private void setGraph(GWTGraph graph) {
+	private void setGraph(GWTGraph graph, GWTBoundingBox oldBBox) {
 		m_graph = graph;
         
 		//Set the ViewRenderer to the Animated one if it isn't already
@@ -841,7 +858,7 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 		    setTopologyViewRenderer(m_graphDrawer);
 		}
         
-        updateGraphUpdateListeners();
+        updateGraphUpdateListeners(oldBBox);
 	}
 
     public ApplicationConnection getClient() {
@@ -925,9 +942,9 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
         m_graphListenerList.add(listener);
     }
     
-    private void updateGraphUpdateListeners() {
+    private void updateGraphUpdateListeners(GWTBoundingBox oldBBox) {
         for(GraphUpdateListener listener : m_graphListenerList) {
-            listener.onGraphUpdated( m_graph );
+            listener.onGraphUpdated( m_graph, oldBBox);
         }
     }
 

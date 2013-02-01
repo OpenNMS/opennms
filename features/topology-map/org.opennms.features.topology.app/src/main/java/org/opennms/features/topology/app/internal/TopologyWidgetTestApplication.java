@@ -518,7 +518,6 @@ public class TopologyWidgetTestApplication extends Application implements Comman
         if (m_settingFragment == 0) {
             System.out.println("Enter Save history :: scale: " + m_graphContainer.getScale());
             String fragment = m_historyManager.create(m_graphContainer);
-            Thread.dumpStack();
             System.out.println("Saving fragment: " + fragment);
             m_uriFragUtil.setFragment(fragment, false);
             System.out.println("Exit Save history :: scale: " + m_graphContainer.getScale());
