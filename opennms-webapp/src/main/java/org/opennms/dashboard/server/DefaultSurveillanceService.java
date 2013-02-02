@@ -28,38 +28,16 @@
 
 package org.opennms.dashboard.server;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.dashboard.client.Alarm;
-import org.opennms.dashboard.client.NodeRtc;
-import org.opennms.dashboard.client.Notification;
-import org.opennms.dashboard.client.SurveillanceData;
-import org.opennms.dashboard.client.SurveillanceGroup;
-import org.opennms.dashboard.client.SurveillanceService;
-import org.opennms.dashboard.client.SurveillanceSet;
+import org.opennms.dashboard.client.*;
 import org.opennms.netmgt.config.GroupDao;
 import org.opennms.netmgt.config.groups.Group;
 import org.opennms.netmgt.config.surveillanceViews.View;
-import org.opennms.netmgt.dao.AlarmDao;
-import org.opennms.netmgt.dao.CategoryDao;
-import org.opennms.netmgt.dao.GraphDao;
-import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.dao.NotificationDao;
-import org.opennms.netmgt.dao.OutageDao;
-import org.opennms.netmgt.dao.ResourceDao;
-import org.opennms.netmgt.dao.SurveillanceViewConfigDao;
-import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.model.OnmsCriteria;
-import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.OnmsNotification;
-import org.opennms.netmgt.model.OnmsResource;
-import org.opennms.netmgt.model.PrefabGraph;
+import org.opennms.netmgt.dao.*;
+import org.opennms.netmgt.model.*;
 import org.opennms.web.svclayer.ProgressMonitor;
 import org.opennms.web.svclayer.RtcService;
 import org.opennms.web.svclayer.SimpleWebTable;
@@ -73,6 +51,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * <p>DefaultSurveillanceService class.</p>
@@ -330,7 +312,7 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
         Assert.state(auth != null, "No Authentication object found when calling getAuthentication on our SecurityContext object");
         
         Object obj = auth.getPrincipal();
-        Assert.state(obj != null, "No principal object found when calling getPrinticpal on our Authentication object");
+        Assert.state(obj != null, "No principal object found when calling getPrincipal on our Authentication object");
         
         
         if (obj instanceof UserDetails) { 

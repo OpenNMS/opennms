@@ -1,0 +1,751 @@
+<?xml version="1.0"?>
+
+<vmware-datacollection-config rrdRepository="${install.share.dir}/rrd/snmp/">
+
+    <!--
+    Configuration file generated for:
+
+    Full name.......: VMware VirtualCenter 2.5.0 Build-147697
+    API type........: VirtualCenter
+    API version.....: 2.5u2
+    Product name....: null
+    Product version.: null
+    OS type.........: win32-x86
+    -->
+
+    <vmware-collection name="default-HostSystem3">
+        <rrd step="300">
+            <rra>RRA:AVERAGE:0.5:1:2016</rra>
+            <rra>RRA:AVERAGE:0.5:12:1488</rra>
+            <rra>RRA:AVERAGE:0.5:288:366</rra>
+            <rra>RRA:MAX:0.5:288:366</rra>
+            <rra>RRA:MIN:0.5:288:366</rra>
+        </rrd>
+        <vmware-groups>
+            <vmware-group name="vmware3Cpu" resourceType="vmware3Cpu">
+                <attrib name="cpu.idle.summation" alias="CpuIdleSum" type="Gauge"/>
+                <attrib name="cpu.usage.none" alias="CpuUsageNon" type="Gauge"/>
+                <attrib name="cpu.used.summation" alias="CpuUsedSum" type="Gauge"/>
+            </vmware-group>
+            <vmware-group name="vmware3Node" resourceType="Node">
+                <attrib name="cpu.reservedCapacity.average" alias="CpuRdCyAvg" type="Gauge"/>
+                <attrib name="cpu.usage.none" alias="CpuUsageNon" type="Gauge"/>
+                <attrib name="cpu.usagemhz.none" alias="CpuUsagemhzNon" type="Gauge"/>
+                <attrib name="disk.usage.none" alias="DiskUsageNon" type="Gauge"/>
+                <attrib name="mem.active.none" alias="MemActiveNon" type="Gauge"/>
+                <attrib name="mem.consumed.none" alias="MemConsumedNon" type="Gauge"/>
+                <attrib name="mem.granted.none" alias="MemGrantedNon" type="Gauge"/>
+                <attrib name="mem.heap.none" alias="MemHeapNon" type="Gauge"/>
+                <attrib name="mem.heapfree.none" alias="MemHeapfreeNon" type="Gauge"/>
+                <attrib name="mem.overhead.none" alias="MemOdNon" type="Gauge"/>
+                <attrib name="mem.reservedCapacity.average" alias="MemRdCyAvg" type="Gauge"/>
+                <attrib name="mem.shared.none" alias="MemSharedNon" type="Gauge"/>
+                <attrib name="mem.sharedcommon.none" alias="MemSharedcommonNon" type="Gauge"/>
+                <attrib name="mem.swapin.none" alias="MemSpinNon" type="Gauge"/>
+                <attrib name="mem.swapout.none" alias="MemSpoutNon" type="Gauge"/>
+                <attrib name="mem.swapused.none" alias="MemSpusedNon" type="Gauge"/>
+                <attrib name="mem.state.latest" alias="MemStateLat" type="Gauge"/>
+                <attrib name="mem.sysUsage.none" alias="MemSysUsageNon" type="Gauge"/>
+                <attrib name="mem.unreserved.none" alias="MemUdNon" type="Gauge"/>
+                <attrib name="mem.usage.none" alias="MemUsageNon" type="Gauge"/>
+                <attrib name="mem.vmmemctl.none" alias="MemVmmemctlNon" type="Gauge"/>
+                <attrib name="mem.zero.none" alias="MemZeroNon" type="Gauge"/>
+                <attrib name="net.usage.none" alias="NetUsageNon" type="Gauge"/>
+                <attrib name="rescpu.actav15.latest" alias="ResCpuActav15Lat" type="Gauge"/>
+                <attrib name="rescpu.actav1.latest" alias="ResCpuActav1Lat" type="Gauge"/>
+                <attrib name="rescpu.actav5.latest" alias="ResCpuActav5Lat" type="Gauge"/>
+                <attrib name="rescpu.actpk15.latest" alias="ResCpuActpk15Lat" type="Gauge"/>
+                <attrib name="rescpu.actpk1.latest" alias="ResCpuActpk1Lat" type="Gauge"/>
+                <attrib name="rescpu.actpk5.latest" alias="ResCpuActpk5Lat" type="Gauge"/>
+                <attrib name="rescpu.maxLimited15.latest" alias="ResCpuMaxLd15Lat" type="Gauge"/>
+                <attrib name="rescpu.maxLimited1.latest" alias="ResCpuMaxLd1Lat" type="Gauge"/>
+                <attrib name="rescpu.maxLimited5.latest" alias="ResCpuMaxLd5Lat" type="Gauge"/>
+                <attrib name="rescpu.runav15.latest" alias="ResCpuRunav15Lat" type="Gauge"/>
+                <attrib name="rescpu.runav1.latest" alias="ResCpuRunav1Lat" type="Gauge"/>
+                <attrib name="rescpu.runav5.latest" alias="ResCpuRunav5Lat" type="Gauge"/>
+                <attrib name="rescpu.runpk15.latest" alias="ResCpuRunpk15Lat" type="Gauge"/>
+                <attrib name="rescpu.runpk1.latest" alias="ResCpuRunpk1Lat" type="Gauge"/>
+                <attrib name="rescpu.runpk5.latest" alias="ResCpuRunpk5Lat" type="Gauge"/>
+                <attrib name="rescpu.sampleCount.latest" alias="ResCpuSeCtLat" type="Gauge"/>
+                <attrib name="rescpu.samplePeriod.latest" alias="ResCpuSePeriodLat" type="Gauge"/>
+                <attrib name="sys.uptime.latest" alias="SysUptimeLat" type="Gauge"/>
+            </vmware-group>
+            <vmware-group name="vmware3MgtAgt" resourceType="vmware3MgtAgt">
+                <attrib name="managementAgent.memUsed.average" alias="MgtAgtMemUsedAvg" type="Gauge"/>
+                <attrib name="managementAgent.swapIn.average" alias="MgtAgtSpInAvg" type="Gauge"/>
+                <attrib name="managementAgent.swapOut.average" alias="MgtAgtSpOutAvg" type="Gauge"/>
+                <attrib name="managementAgent.swapUsed.average" alias="MgtAgtSpUsedAvg" type="Gauge"/>
+            </vmware-group>
+            <vmware-group name="vmware3Net" resourceType="vmware3Net">
+                <attrib name="net.packetsRx.summation" alias="NetPacketsRxSum" type="Gauge"/>
+                <attrib name="net.packetsTx.summation" alias="NetPacketsTxSum" type="Gauge"/>
+                <attrib name="net.received.average" alias="NetReceivedAvg" type="Gauge"/>
+                <attrib name="net.transmitted.average" alias="NetTransmittedAvg" type="Gauge"/>
+            </vmware-group>
+            <vmware-group name="vmware3Disk" resourceType="vmware3Disk">
+                <attrib name="disk.busResets.summation" alias="DiskBusResetsSum" type="Gauge"/>
+                <attrib name="disk.commandsAborted.summation" alias="DiskCsAdSum" type="Gauge"/>
+                <attrib name="disk.commands.summation" alias="DiskCsSum" type="Gauge"/>
+                <attrib name="disk.deviceLatency.average" alias="DiskDeLyAvg" type="Gauge"/>
+                <attrib name="disk.deviceReadLatency.average" alias="DiskDeRdLyAvg" type="Gauge"/>
+                <attrib name="disk.deviceWriteLatency.average" alias="DiskDeWeLyAvg" type="Gauge"/>
+                <attrib name="disk.kernelLatency.average" alias="DiskKlLyAvg" type="Gauge"/>
+                <attrib name="disk.kernelReadLatency.average" alias="DiskKlRdLyAvg" type="Gauge"/>
+                <attrib name="disk.kernelWriteLatency.average" alias="DiskKlWeLyAvg" type="Gauge"/>
+                <attrib name="disk.numberRead.summation" alias="DiskNrRdSum" type="Gauge"/>
+                <attrib name="disk.numberWrite.summation" alias="DiskNrWeSum" type="Gauge"/>
+                <attrib name="disk.queueLatency.average" alias="DiskQeLyAvg" type="Gauge"/>
+                <attrib name="disk.queueReadLatency.average" alias="DiskQeRdLyAvg" type="Gauge"/>
+                <attrib name="disk.queueWriteLatency.average" alias="DiskQeWeLyAvg" type="Gauge"/>
+                <attrib name="disk.read.average" alias="DiskRdAvg" type="Gauge"/>
+                <attrib name="disk.totalLatency.average" alias="DiskTlLyAvg" type="Gauge"/>
+                <attrib name="disk.totalReadLatency.average" alias="DiskTlRdLyAvg" type="Gauge"/>
+                <attrib name="disk.totalWriteLatency.average" alias="DiskTlWeLyAvg" type="Gauge"/>
+                <attrib name="disk.write.average" alias="DiskWeAvg" type="Gauge"/>
+            </vmware-group>
+            <vmware-group name="vmware3Sys" resourceType="vmware3Sys">
+                <attrib name="sys.resourceCpuUsage.none" alias="SysReCpuUsageNon" type="Gauge"/>
+            </vmware-group>
+        </vmware-groups>
+    </vmware-collection>
+    <vmware-collection name="default-VirtualMachine3">
+        <rrd step="300">
+            <rra>RRA:AVERAGE:0.5:1:2016</rra>
+            <rra>RRA:AVERAGE:0.5:12:1488</rra>
+            <rra>RRA:AVERAGE:0.5:288:366</rra>
+            <rra>RRA:MAX:0.5:288:366</rra>
+            <rra>RRA:MIN:0.5:288:366</rra>
+        </rrd>
+        <vmware-groups>
+            <vmware-group name="vmware3Cpu" resourceType="vmware3Cpu">
+                <attrib name="cpu.extra.summation" alias="CpuExtraSum" type="Gauge"/>
+                <attrib name="cpu.guaranteed.latest" alias="CpuGuaranteedLat" type="Gauge"/>
+                <attrib name="cpu.ready.summation" alias="CpuRdySum" type="Gauge"/>
+                <attrib name="cpu.system.summation" alias="CpuSystemSum" type="Gauge"/>
+                <attrib name="cpu.usagemhz.none" alias="CpuUsagemhzNon" type="Gauge"/>
+                <attrib name="cpu.used.summation" alias="CpuUsedSum" type="Gauge"/>
+                <attrib name="cpu.wait.summation" alias="CpuWaitSum" type="Gauge"/>
+            </vmware-group>
+            <vmware-group name="vmware3Node" resourceType="Node">
+                <attrib name="cpu.usage.none" alias="CpuUsageNon" type="Gauge"/>
+                <attrib name="cpu.usagemhz.none" alias="CpuUsagemhzNon" type="Gauge"/>
+                <attrib name="disk.usage.none" alias="DiskUsageNon" type="Gauge"/>
+                <attrib name="mem.active.none" alias="MemActiveNon" type="Gauge"/>
+                <attrib name="mem.consumed.none" alias="MemConsumedNon" type="Gauge"/>
+                <attrib name="mem.granted.none" alias="MemGrantedNon" type="Gauge"/>
+                <attrib name="mem.overhead.none" alias="MemOdNon" type="Gauge"/>
+                <attrib name="mem.shared.none" alias="MemSharedNon" type="Gauge"/>
+                <attrib name="mem.swaptarget.none" alias="MemSpTtNon" type="Gauge"/>
+                <attrib name="mem.swapin.none" alias="MemSpinNon" type="Gauge"/>
+                <attrib name="mem.swapout.none" alias="MemSpoutNon" type="Gauge"/>
+                <attrib name="mem.swapped.none" alias="MemSppedNon" type="Gauge"/>
+                <attrib name="mem.usage.none" alias="MemUsageNon" type="Gauge"/>
+                <attrib name="mem.vmmemctl.none" alias="MemVmmemctlNon" type="Gauge"/>
+                <attrib name="mem.vmmemctltarget.none" alias="MemVmmemctlTtNon" type="Gauge"/>
+                <attrib name="mem.zero.none" alias="MemZeroNon" type="Gauge"/>
+                <attrib name="net.usage.none" alias="NetUsageNon" type="Gauge"/>
+                <attrib name="rescpu.actav15.latest" alias="ResCpuActav15Lat" type="Gauge"/>
+                <attrib name="rescpu.actav1.latest" alias="ResCpuActav1Lat" type="Gauge"/>
+                <attrib name="rescpu.actav5.latest" alias="ResCpuActav5Lat" type="Gauge"/>
+                <attrib name="rescpu.actpk15.latest" alias="ResCpuActpk15Lat" type="Gauge"/>
+                <attrib name="rescpu.actpk1.latest" alias="ResCpuActpk1Lat" type="Gauge"/>
+                <attrib name="rescpu.actpk5.latest" alias="ResCpuActpk5Lat" type="Gauge"/>
+                <attrib name="rescpu.maxLimited15.latest" alias="ResCpuMaxLd15Lat" type="Gauge"/>
+                <attrib name="rescpu.maxLimited1.latest" alias="ResCpuMaxLd1Lat" type="Gauge"/>
+                <attrib name="rescpu.maxLimited5.latest" alias="ResCpuMaxLd5Lat" type="Gauge"/>
+                <attrib name="rescpu.runav15.latest" alias="ResCpuRunav15Lat" type="Gauge"/>
+                <attrib name="rescpu.runav1.latest" alias="ResCpuRunav1Lat" type="Gauge"/>
+                <attrib name="rescpu.runav5.latest" alias="ResCpuRunav5Lat" type="Gauge"/>
+                <attrib name="rescpu.runpk15.latest" alias="ResCpuRunpk15Lat" type="Gauge"/>
+                <attrib name="rescpu.runpk1.latest" alias="ResCpuRunpk1Lat" type="Gauge"/>
+                <attrib name="rescpu.runpk5.latest" alias="ResCpuRunpk5Lat" type="Gauge"/>
+                <attrib name="rescpu.sampleCount.latest" alias="ResCpuSeCtLat" type="Gauge"/>
+                <attrib name="rescpu.samplePeriod.latest" alias="ResCpuSePeriodLat" type="Gauge"/>
+                <attrib name="sys.heartbeat.summation" alias="SysHeartbeatSum" type="Gauge"/>
+                <attrib name="sys.uptime.latest" alias="SysUptimeLat" type="Gauge"/>
+            </vmware-group>
+            <vmware-group name="vmware3Net" resourceType="vmware3Net">
+                <attrib name="net.packetsRx.summation" alias="NetPacketsRxSum" type="Gauge"/>
+                <attrib name="net.packetsTx.summation" alias="NetPacketsTxSum" type="Gauge"/>
+                <attrib name="net.received.average" alias="NetReceivedAvg" type="Gauge"/>
+                <attrib name="net.transmitted.average" alias="NetTransmittedAvg" type="Gauge"/>
+            </vmware-group>
+            <vmware-group name="vmware3Disk" resourceType="vmware3Disk">
+                <attrib name="disk.busResets.summation" alias="DiskBusResetsSum" type="Gauge"/>
+                <attrib name="disk.commandsAborted.summation" alias="DiskCsAdSum" type="Gauge"/>
+                <attrib name="disk.commands.summation" alias="DiskCsSum" type="Gauge"/>
+                <attrib name="disk.numberRead.summation" alias="DiskNrRdSum" type="Gauge"/>
+                <attrib name="disk.numberWrite.summation" alias="DiskNrWeSum" type="Gauge"/>
+                <attrib name="disk.read.average" alias="DiskRdAvg" type="Gauge"/>
+                <attrib name="disk.write.average" alias="DiskWeAvg" type="Gauge"/>
+            </vmware-group>
+        </vmware-groups>
+    </vmware-collection>
+
+    <!--
+    Configuration file generated for:
+
+    Full name.......: VMware vCenter Server 4.1.0 Build-258902
+    API type........: VirtualCenter
+    API version.....: 4.1
+    Product name....: VMware VirtualCenter Server
+    Product version.: 4.0
+    OS type.........: win32-x86
+    -->
+
+    <vmware-collection name="default-HostSystem4">
+        <rrd step="300">
+            <rra>RRA:AVERAGE:0.5:1:2016</rra>
+            <rra>RRA:AVERAGE:0.5:12:1488</rra>
+            <rra>RRA:AVERAGE:0.5:288:366</rra>
+            <rra>RRA:MAX:0.5:288:366</rra>
+            <rra>RRA:MIN:0.5:288:366</rra>
+        </rrd>
+        <vmware-groups>
+            <vmware-group name="vmware4Cpu" resourceType="vmware4Cpu">
+                <attrib name="cpu.idle.summation" alias="CpuIdleSum" type="Gauge"/>
+                <attrib name="cpu.usage.none" alias="CpuUsageNon" type="Gauge"/>
+                <attrib name="cpu.used.summation" alias="CpuUsedSum" type="Gauge"/>
+            </vmware-group>
+            <vmware-group name="vmware4Node" resourceType="Node">
+                <attrib name="cpu.reservedCapacity.average" alias="CpuRdCyAvg" type="Gauge"/>
+                <attrib name="cpu.usagemhz.none" alias="CpuUsagemhzNon" type="Gauge"/>
+                <attrib name="disk.maxTotalLatency.latest" alias="DiskMaxTlLyLat" type="Gauge"/>
+                <attrib name="disk.usage.none" alias="DiskUsageNon" type="Gauge"/>
+                <attrib name="mem.active.none" alias="MemActiveNon" type="Gauge"/>
+                <attrib name="mem.consumed.none" alias="MemConsumedNon" type="Gauge"/>
+                <attrib name="mem.granted.none" alias="MemGrantedNon" type="Gauge"/>
+                <attrib name="mem.heap.none" alias="MemHeapNon" type="Gauge"/>
+                <attrib name="mem.heapfree.none" alias="MemHeapfreeNon" type="Gauge"/>
+                <attrib name="mem.overhead.none" alias="MemOdNon" type="Gauge"/>
+                <attrib name="mem.reservedCapacity.average" alias="MemRdCyAvg" type="Gauge"/>
+                <attrib name="mem.shared.none" alias="MemSharedNon" type="Gauge"/>
+                <attrib name="mem.sharedcommon.none" alias="MemSharedcommonNon" type="Gauge"/>
+                <attrib name="mem.swapin.none" alias="MemSpinNon" type="Gauge"/>
+                <attrib name="mem.swapinRate.average" alias="MemSpinReAvg" type="Gauge"/>
+                <attrib name="mem.swapout.none" alias="MemSpoutNon" type="Gauge"/>
+                <attrib name="mem.swapoutRate.average" alias="MemSpoutReAvg" type="Gauge"/>
+                <attrib name="mem.swapused.none" alias="MemSpusedNon" type="Gauge"/>
+                <attrib name="mem.state.latest" alias="MemStateLat" type="Gauge"/>
+                <attrib name="mem.sysUsage.none" alias="MemSysUsageNon" type="Gauge"/>
+                <attrib name="mem.unreserved.none" alias="MemUdNon" type="Gauge"/>
+                <attrib name="mem.usage.none" alias="MemUsageNon" type="Gauge"/>
+                <attrib name="mem.vmmemctl.none" alias="MemVmmemctlNon" type="Gauge"/>
+                <attrib name="mem.zero.none" alias="MemZeroNon" type="Gauge"/>
+                <attrib name="net.transmitted.average" alias="NetTransmittedAvg" type="Gauge"/>
+                <attrib name="net.usage.none" alias="NetUsageNon" type="Gauge"/>
+                <attrib name="rescpu.actav15.latest" alias="ResCpuActav15Lat" type="Gauge"/>
+                <attrib name="rescpu.actav1.latest" alias="ResCpuActav1Lat" type="Gauge"/>
+                <attrib name="rescpu.actav5.latest" alias="ResCpuActav5Lat" type="Gauge"/>
+                <attrib name="rescpu.actpk15.latest" alias="ResCpuActpk15Lat" type="Gauge"/>
+                <attrib name="rescpu.actpk1.latest" alias="ResCpuActpk1Lat" type="Gauge"/>
+                <attrib name="rescpu.actpk5.latest" alias="ResCpuActpk5Lat" type="Gauge"/>
+                <attrib name="rescpu.maxLimited15.latest" alias="ResCpuMaxLd15Lat" type="Gauge"/>
+                <attrib name="rescpu.maxLimited1.latest" alias="ResCpuMaxLd1Lat" type="Gauge"/>
+                <attrib name="rescpu.maxLimited5.latest" alias="ResCpuMaxLd5Lat" type="Gauge"/>
+                <attrib name="rescpu.runav15.latest" alias="ResCpuRunav15Lat" type="Gauge"/>
+                <attrib name="rescpu.runav1.latest" alias="ResCpuRunav1Lat" type="Gauge"/>
+                <attrib name="rescpu.runav5.latest" alias="ResCpuRunav5Lat" type="Gauge"/>
+                <attrib name="rescpu.runpk15.latest" alias="ResCpuRunpk15Lat" type="Gauge"/>
+                <attrib name="rescpu.runpk1.latest" alias="ResCpuRunpk1Lat" type="Gauge"/>
+                <attrib name="rescpu.runpk5.latest" alias="ResCpuRunpk5Lat" type="Gauge"/>
+                <attrib name="rescpu.sampleCount.latest" alias="ResCpuSeCtLat" type="Gauge"/>
+                <attrib name="rescpu.samplePeriod.latest" alias="ResCpuSePeriodLat" type="Gauge"/>
+                <attrib name="sys.uptime.latest" alias="SysUptimeLat" type="Gauge"/>
+            </vmware-group>
+            <vmware-group name="vmware4MgtAgt" resourceType="vmware4MgtAgt">
+                <attrib name="managementAgent.memUsed.average" alias="MgtAgtMemUsedAvg" type="Gauge"/>
+                <attrib name="managementAgent.swapIn.average" alias="MgtAgtSpInAvg" type="Gauge"/>
+                <attrib name="managementAgent.swapOut.average" alias="MgtAgtSpOutAvg" type="Gauge"/>
+                <attrib name="managementAgent.swapUsed.average" alias="MgtAgtSpUsedAvg" type="Gauge"/>
+            </vmware-group>
+            <vmware-group name="vmware4Net" resourceType="vmware4Net">
+                <attrib name="net.droppedRx.summation" alias="NetDroppedRxSum" type="Gauge"/>
+                <attrib name="net.droppedTx.summation" alias="NetDroppedTxSum" type="Gauge"/>
+                <attrib name="net.packetsRx.summation" alias="NetPacketsRxSum" type="Gauge"/>
+                <attrib name="net.packetsTx.summation" alias="NetPacketsTxSum" type="Gauge"/>
+                <attrib name="net.received.average" alias="NetReceivedAvg" type="Gauge"/>
+                <attrib name="net.transmitted.average" alias="NetTransmittedAvg" type="Gauge"/>
+            </vmware-group>
+            <vmware-group name="vmware4Disk" resourceType="vmware4Disk">
+                <attrib name="disk.busResets.summation" alias="DiskBusResetsSum" type="Gauge"/>
+                <attrib name="disk.commandsAborted.summation" alias="DiskCsAdSum" type="Gauge"/>
+                <attrib name="disk.commands.summation" alias="DiskCsSum" type="Gauge"/>
+                <attrib name="disk.deviceLatency.average" alias="DiskDeLyAvg" type="Gauge"/>
+                <attrib name="disk.deviceReadLatency.average" alias="DiskDeRdLyAvg" type="Gauge"/>
+                <attrib name="disk.deviceWriteLatency.average" alias="DiskDeWeLyAvg" type="Gauge"/>
+                <attrib name="disk.kernelLatency.average" alias="DiskKlLyAvg" type="Gauge"/>
+                <attrib name="disk.kernelReadLatency.average" alias="DiskKlRdLyAvg" type="Gauge"/>
+                <attrib name="disk.kernelWriteLatency.average" alias="DiskKlWeLyAvg" type="Gauge"/>
+                <attrib name="disk.numberRead.summation" alias="DiskNrRdSum" type="Gauge"/>
+                <attrib name="disk.numberWrite.summation" alias="DiskNrWeSum" type="Gauge"/>
+                <attrib name="disk.queueLatency.average" alias="DiskQeLyAvg" type="Gauge"/>
+                <attrib name="disk.queueReadLatency.average" alias="DiskQeRdLyAvg" type="Gauge"/>
+                <attrib name="disk.queueWriteLatency.average" alias="DiskQeWeLyAvg" type="Gauge"/>
+                <attrib name="disk.read.average" alias="DiskRdAvg" type="Gauge"/>
+                <attrib name="disk.totalLatency.average" alias="DiskTlLyAvg" type="Gauge"/>
+                <attrib name="disk.totalReadLatency.average" alias="DiskTlRdLyAvg" type="Gauge"/>
+                <attrib name="disk.totalWriteLatency.average" alias="DiskTlWeLyAvg" type="Gauge"/>
+                <attrib name="disk.write.average" alias="DiskWeAvg" type="Gauge"/>
+            </vmware-group>
+            <vmware-group name="vmware4Sys" resourceType="vmware4Sys">
+                <attrib name="sys.diskUsage.latest" alias="SysDiskUsageLat" type="Gauge"/>
+                <attrib name="sys.resourceCpuAllocMax.latest" alias="SysReCpuAcMaxLat" type="Gauge"/>
+                <attrib name="sys.resourceCpuAllocMin.latest" alias="SysReCpuAcMinLat" type="Gauge"/>
+                <attrib name="sys.resourceCpuAllocShares.latest" alias="SysReCpuAcSsLat" type="Gauge"/>
+                <attrib name="sys.resourceCpuAct1.latest" alias="SysReCpuAct1Lat" type="Gauge"/>
+                <attrib name="sys.resourceCpuAct5.latest" alias="SysReCpuAct5Lat" type="Gauge"/>
+                <attrib name="sys.resourceCpuMaxLimited1.latest" alias="SysReCpuMaxLd1Lat" type="Gauge"/>
+                <attrib name="sys.resourceCpuMaxLimited5.latest" alias="SysReCpuMaxLd5Lat" type="Gauge"/>
+                <attrib name="sys.resourceCpuRun1.latest" alias="SysReCpuRun1Lat" type="Gauge"/>
+                <attrib name="sys.resourceCpuRun5.latest" alias="SysReCpuRun5Lat" type="Gauge"/>
+                <attrib name="sys.resourceCpuUsage.none" alias="SysReCpuUsageNon" type="Gauge"/>
+                <attrib name="sys.resourceMemAllocMax.latest" alias="SysReMemAcMaxLat" type="Gauge"/>
+                <attrib name="sys.resourceMemAllocMin.latest" alias="SysReMemAcMinLat" type="Gauge"/>
+                <attrib name="sys.resourceMemAllocShares.latest" alias="SysReMemAcSsLat" type="Gauge"/>
+                <attrib name="sys.resourceMemCow.latest" alias="SysReMemCowLat" type="Gauge"/>
+                <attrib name="sys.resourceMemMapped.latest" alias="SysReMemMappedLat" type="Gauge"/>
+                <attrib name="sys.resourceMemOverhead.latest" alias="SysReMemOdLat" type="Gauge"/>
+                <attrib name="sys.resourceMemShared.latest" alias="SysReMemSharedLat" type="Gauge"/>
+                <attrib name="sys.resourceMemSwapped.latest" alias="SysReMemSppedLat" type="Gauge"/>
+                <attrib name="sys.resourceMemTouched.latest" alias="SysReMemTdLat" type="Gauge"/>
+                <attrib name="sys.resourceMemZero.latest" alias="SysReMemZeroLat" type="Gauge"/>
+            </vmware-group>
+        </vmware-groups>
+    </vmware-collection>
+    <vmware-collection name="default-VirtualMachine4">
+        <rrd step="300">
+            <rra>RRA:AVERAGE:0.5:1:2016</rra>
+            <rra>RRA:AVERAGE:0.5:12:1488</rra>
+            <rra>RRA:AVERAGE:0.5:288:366</rra>
+            <rra>RRA:MAX:0.5:288:366</rra>
+            <rra>RRA:MIN:0.5:288:366</rra>
+        </rrd>
+        <vmware-groups>
+            <vmware-group name="vmware4Cpu" resourceType="vmware4Cpu">
+                <attrib name="cpu.ready.summation" alias="CpuRdySum" type="Gauge"/>
+                <attrib name="cpu.swapwait.summation" alias="CpuSpwaitSum" type="Gauge"/>
+                <attrib name="cpu.system.summation" alias="CpuSystemSum" type="Gauge"/>
+                <attrib name="cpu.usagemhz.none" alias="CpuUsagemhzNon" type="Gauge"/>
+                <attrib name="cpu.used.summation" alias="CpuUsedSum" type="Gauge"/>
+                <attrib name="cpu.wait.summation" alias="CpuWaitSum" type="Gauge"/>
+            </vmware-group>
+            <vmware-group name="vmware4Node" resourceType="Node">
+                <attrib name="cpu.ready.summation" alias="CpuRdySum" type="Gauge"/>
+                <attrib name="cpu.usage.none" alias="CpuUsageNon" type="Gauge"/>
+                <attrib name="cpu.usagemhz.none" alias="CpuUsagemhzNon" type="Gauge"/>
+                <attrib name="disk.read.average" alias="DiskRdAvg" type="Gauge"/>
+                <attrib name="disk.usage.none" alias="DiskUsageNon" type="Gauge"/>
+                <attrib name="mem.active.none" alias="MemActiveNon" type="Gauge"/>
+                <attrib name="mem.consumed.none" alias="MemConsumedNon" type="Gauge"/>
+                <attrib name="mem.granted.none" alias="MemGrantedNon" type="Gauge"/>
+                <attrib name="mem.overhead.none" alias="MemOdNon" type="Gauge"/>
+                <attrib name="mem.shared.none" alias="MemSharedNon" type="Gauge"/>
+                <attrib name="mem.swaptarget.none" alias="MemSpTtNon" type="Gauge"/>
+                <attrib name="mem.swapin.none" alias="MemSpinNon" type="Gauge"/>
+                <attrib name="mem.swapinRate.average" alias="MemSpinReAvg" type="Gauge"/>
+                <attrib name="mem.swapout.none" alias="MemSpoutNon" type="Gauge"/>
+                <attrib name="mem.swapoutRate.average" alias="MemSpoutReAvg" type="Gauge"/>
+                <attrib name="mem.swapped.none" alias="MemSppedNon" type="Gauge"/>
+                <attrib name="mem.usage.none" alias="MemUsageNon" type="Gauge"/>
+                <attrib name="mem.vmmemctl.none" alias="MemVmmemctlNon" type="Gauge"/>
+                <attrib name="mem.vmmemctltarget.none" alias="MemVmmemctlTtNon" type="Gauge"/>
+                <attrib name="mem.zero.none" alias="MemZeroNon" type="Gauge"/>
+                <attrib name="net.received.average" alias="NetReceivedAvg" type="Gauge"/>
+                <attrib name="net.usage.none" alias="NetUsageNon" type="Gauge"/>
+                <attrib name="rescpu.actav15.latest" alias="ResCpuActav15Lat" type="Gauge"/>
+                <attrib name="rescpu.actav1.latest" alias="ResCpuActav1Lat" type="Gauge"/>
+                <attrib name="rescpu.actav5.latest" alias="ResCpuActav5Lat" type="Gauge"/>
+                <attrib name="rescpu.actpk15.latest" alias="ResCpuActpk15Lat" type="Gauge"/>
+                <attrib name="rescpu.actpk1.latest" alias="ResCpuActpk1Lat" type="Gauge"/>
+                <attrib name="rescpu.actpk5.latest" alias="ResCpuActpk5Lat" type="Gauge"/>
+                <attrib name="rescpu.maxLimited15.latest" alias="ResCpuMaxLd15Lat" type="Gauge"/>
+                <attrib name="rescpu.maxLimited1.latest" alias="ResCpuMaxLd1Lat" type="Gauge"/>
+                <attrib name="rescpu.maxLimited5.latest" alias="ResCpuMaxLd5Lat" type="Gauge"/>
+                <attrib name="rescpu.runav15.latest" alias="ResCpuRunav15Lat" type="Gauge"/>
+                <attrib name="rescpu.runav1.latest" alias="ResCpuRunav1Lat" type="Gauge"/>
+                <attrib name="rescpu.runav5.latest" alias="ResCpuRunav5Lat" type="Gauge"/>
+                <attrib name="rescpu.runpk15.latest" alias="ResCpuRunpk15Lat" type="Gauge"/>
+                <attrib name="rescpu.runpk1.latest" alias="ResCpuRunpk1Lat" type="Gauge"/>
+                <attrib name="rescpu.runpk5.latest" alias="ResCpuRunpk5Lat" type="Gauge"/>
+                <attrib name="rescpu.sampleCount.latest" alias="ResCpuSeCtLat" type="Gauge"/>
+                <attrib name="rescpu.samplePeriod.latest" alias="ResCpuSePeriodLat" type="Gauge"/>
+                <attrib name="sys.heartbeat.summation" alias="SysHeartbeatSum" type="Gauge"/>
+                <attrib name="sys.uptime.latest" alias="SysUptimeLat" type="Gauge"/>
+            </vmware-group>
+            <vmware-group name="vmware4Net" resourceType="vmware4Net">
+                <attrib name="net.packetsRx.summation" alias="NetPacketsRxSum" type="Gauge"/>
+                <attrib name="net.packetsTx.summation" alias="NetPacketsTxSum" type="Gauge"/>
+                <attrib name="net.received.average" alias="NetReceivedAvg" type="Gauge"/>
+                <attrib name="net.transmitted.average" alias="NetTransmittedAvg" type="Gauge"/>
+            </vmware-group>
+            <vmware-group name="vmware4Disk" resourceType="vmware4Disk">
+                <attrib name="disk.busResets.summation" alias="DiskBusResetsSum" type="Gauge"/>
+                <attrib name="disk.commandsAborted.summation" alias="DiskCsAdSum" type="Gauge"/>
+                <attrib name="disk.commands.summation" alias="DiskCsSum" type="Gauge"/>
+                <attrib name="disk.numberRead.summation" alias="DiskNrRdSum" type="Gauge"/>
+                <attrib name="disk.numberWrite.summation" alias="DiskNrWeSum" type="Gauge"/>
+                <attrib name="disk.read.average" alias="DiskRdAvg" type="Gauge"/>
+                <attrib name="disk.write.average" alias="DiskWeAvg" type="Gauge"/>
+            </vmware-group>
+        </vmware-groups>
+    </vmware-collection>
+
+    <!--
+    Configuration file generated for:
+
+    Full name.......: VMware vCenter Server 5.0.0 build-755629
+    API type........: VirtualCenter
+    API version.....: 5.0
+    Product name....: VMware VirtualCenter Server
+    Product version.: 5.0
+    OS type.........: linux-x64
+    -->
+
+    <vmware-collection name="default-HostSystem5">
+        <rrd step="300">
+            <rra>RRA:AVERAGE:0.5:1:2016</rra>
+            <rra>RRA:AVERAGE:0.5:12:1488</rra>
+            <rra>RRA:AVERAGE:0.5:288:366</rra>
+            <rra>RRA:MAX:0.5:288:366</rra>
+            <rra>RRA:MIN:0.5:288:366</rra>
+        </rrd>
+        <vmware-groups>
+            <vmware-group name="vmware5StAdptr" resourceType="vmware5StAdptr">
+                <attrib name="storageAdapter.commandsAveraged.average" alias="StAdptrCsAdAvg" type="Gauge"/>
+                <attrib name="storageAdapter.numberReadAveraged.average" alias="StAdptrNrRdAdAvg" type="Gauge"/>
+                <attrib name="storageAdapter.numberWriteAveraged.average" alias="StAdptrNrWeAdAvg" type="Gauge"/>
+                <attrib name="storageAdapter.read.average" alias="StAdptrRdAvg" type="Gauge"/>
+                <attrib name="storageAdapter.totalReadLatency.average" alias="StAdptrTlRdLyAvg" type="Gauge"/>
+                <attrib name="storageAdapter.totalWriteLatency.average" alias="StAdptrTlWeLyAvg" type="Gauge"/>
+                <attrib name="storageAdapter.write.average" alias="StAdptrWeAvg" type="Gauge"/>
+            </vmware-group>
+            <vmware-group name="vmware5Cpu" resourceType="vmware5Cpu">
+                <attrib name="cpu.coreUtilization.average" alias="CpuCoreUnAvg" type="Gauge"/>
+                <attrib name="cpu.idle.summation" alias="CpuIdleSum" type="Gauge"/>
+                <attrib name="cpu.utilization.average" alias="CpuUnAvg" type="Gauge"/>
+                <attrib name="cpu.usage.average" alias="CpuUsageAvg" type="Gauge"/>
+                <attrib name="cpu.used.summation" alias="CpuUsedSum" type="Gauge"/>
+            </vmware-group>
+            <vmware-group name="vmware5Node" resourceType="Node">
+                <attrib name="cpu.costop.summation" alias="CpuCostopSum" type="Gauge"/>
+                <attrib name="cpu.demand.average" alias="CpuDemandAvg" type="Gauge"/>
+                <attrib name="cpu.latency.average" alias="CpuLyAvg" type="Gauge"/>
+                <attrib name="cpu.reservedCapacity.average" alias="CpuRdCyAvg" type="Gauge"/>
+                <attrib name="cpu.ready.summation" alias="CpuRdySum" type="Gauge"/>
+                <attrib name="cpu.swapwait.summation" alias="CpuSpwaitSum" type="Gauge"/>
+                <attrib name="cpu.totalCapacity.average" alias="CpuTlCyAvg" type="Gauge"/>
+                <attrib name="cpu.utilization.average" alias="CpuUnAvg" type="Gauge"/>
+                <attrib name="cpu.usagemhz.average" alias="CpuUsagemhzAvg" type="Gauge"/>
+                <attrib name="cpu.wait.summation" alias="CpuWaitSum" type="Gauge"/>
+                <attrib name="datastore.maxTotalLatency.latest" alias="DaStMaxTlLyLat" type="Gauge"/>
+                <attrib name="disk.maxTotalLatency.latest" alias="DiskMaxTlLyLat" type="Gauge"/>
+                <attrib name="disk.read.average" alias="DiskRdAvg" type="Gauge"/>
+                <attrib name="disk.usage.average" alias="DiskUsageAvg" type="Gauge"/>
+                <attrib name="hbr.hbrNetRx.average" alias="HbrHbrNetRxAvg" type="Gauge"/>
+                <attrib name="hbr.hbrNetTx.average" alias="HbrHbrNetTxAvg" type="Gauge"/>
+                <attrib name="hbr.hbrNumVms.average" alias="HbrHbrNumVmsAvg" type="Gauge"/>
+                <attrib name="mem.active.average" alias="MemActiveAvg" type="Gauge"/>
+                <attrib name="mem.activewrite.average" alias="MemActiveWeAvg" type="Gauge"/>
+                <attrib name="mem.compressionRate.average" alias="MemCnReAvg" type="Gauge"/>
+                <attrib name="mem.compressed.average" alias="MemCompressedAvg" type="Gauge"/>
+                <attrib name="mem.consumed.average" alias="MemConsumedAvg" type="Gauge"/>
+                <attrib name="mem.decompressionRate.average" alias="MemDnReAvg" type="Gauge"/>
+                <attrib name="mem.granted.average" alias="MemGrantedAvg" type="Gauge"/>
+                <attrib name="mem.heap.average" alias="MemHeapAvg" type="Gauge"/>
+                <attrib name="mem.heapfree.average" alias="MemHeapfreeAvg" type="Gauge"/>
+                <attrib name="mem.llSwapIn.average" alias="MemLlSpInAvg" type="Gauge"/>
+                <attrib name="mem.llSwapInRate.average" alias="MemLlSpInReAvg" type="Gauge"/>
+                <attrib name="mem.llSwapOut.average" alias="MemLlSpOutAvg" type="Gauge"/>
+                <attrib name="mem.llSwapOutRate.average" alias="MemLlSpOutReAvg" type="Gauge"/>
+                <attrib name="mem.llSwapUsed.average" alias="MemLlSpUsedAvg" type="Gauge"/>
+                <attrib name="mem.lowfreethreshold.average" alias="MemLowfreeTdAvg" type="Gauge"/>
+                <attrib name="mem.latency.average" alias="MemLyAvg" type="Gauge"/>
+                <attrib name="mem.overhead.average" alias="MemOdAvg" type="Gauge"/>
+                <attrib name="mem.reservedCapacity.average" alias="MemRdCyAvg" type="Gauge"/>
+                <attrib name="mem.shared.average" alias="MemSharedAvg" type="Gauge"/>
+                <attrib name="mem.sharedcommon.average" alias="MemSharedcommonAvg" type="Gauge"/>
+                <attrib name="mem.swapin.average" alias="MemSpinAvg" type="Gauge"/>
+                <attrib name="mem.swapinRate.average" alias="MemSpinReAvg" type="Gauge"/>
+                <attrib name="mem.swapout.average" alias="MemSpoutAvg" type="Gauge"/>
+                <attrib name="mem.swapoutRate.average" alias="MemSpoutReAvg" type="Gauge"/>
+                <attrib name="mem.swapused.average" alias="MemSpusedAvg" type="Gauge"/>
+                <attrib name="mem.state.latest" alias="MemStateLat" type="Gauge"/>
+                <attrib name="mem.sysUsage.average" alias="MemSysUsageAvg" type="Gauge"/>
+                <attrib name="mem.totalCapacity.average" alias="MemTlCyAvg" type="Gauge"/>
+                <attrib name="mem.unreserved.average" alias="MemUdAvg" type="Gauge"/>
+                <attrib name="mem.usage.average" alias="MemUsageAvg" type="Gauge"/>
+                <attrib name="mem.vmmemctl.average" alias="MemVmmemctlAvg" type="Gauge"/>
+                <attrib name="mem.zero.average" alias="MemZeroAvg" type="Gauge"/>
+                <attrib name="net.broadcastRx.summation" alias="NetBroadcastRxSum" type="Gauge"/>
+                <attrib name="net.broadcastTx.summation" alias="NetBroadcastTxSum" type="Gauge"/>
+                <attrib name="net.bytesRx.average" alias="NetBytesRxAvg" type="Gauge"/>
+                <attrib name="net.errorsRx.summation" alias="NetErrorsRxSum" type="Gauge"/>
+                <attrib name="net.multicastTx.summation" alias="NetMulticastTxSum" type="Gauge"/>
+                <attrib name="net.packetsRx.summation" alias="NetPacketsRxSum" type="Gauge"/>
+                <attrib name="net.packetsTx.summation" alias="NetPacketsTxSum" type="Gauge"/>
+                <attrib name="net.received.average" alias="NetReceivedAvg" type="Gauge"/>
+                <attrib name="net.usage.average" alias="NetUsageAvg" type="Gauge"/>
+                <attrib name="power.energy.summation" alias="PowerEnergySum" type="Gauge"/>
+                <attrib name="power.power.average" alias="PowerPowerAvg" type="Gauge"/>
+                <attrib name="power.powerCap.average" alias="PowerPowerCapAvg" type="Gauge"/>
+                <attrib name="rescpu.actav15.latest" alias="ResCpuActav15Lat" type="Gauge"/>
+                <attrib name="rescpu.actav1.latest" alias="ResCpuActav1Lat" type="Gauge"/>
+                <attrib name="rescpu.actav5.latest" alias="ResCpuActav5Lat" type="Gauge"/>
+                <attrib name="rescpu.actpk15.latest" alias="ResCpuActpk15Lat" type="Gauge"/>
+                <attrib name="rescpu.actpk1.latest" alias="ResCpuActpk1Lat" type="Gauge"/>
+                <attrib name="rescpu.actpk5.latest" alias="ResCpuActpk5Lat" type="Gauge"/>
+                <attrib name="rescpu.maxLimited15.latest" alias="ResCpuMaxLd15Lat" type="Gauge"/>
+                <attrib name="rescpu.maxLimited1.latest" alias="ResCpuMaxLd1Lat" type="Gauge"/>
+                <attrib name="rescpu.maxLimited5.latest" alias="ResCpuMaxLd5Lat" type="Gauge"/>
+                <attrib name="rescpu.runav15.latest" alias="ResCpuRunav15Lat" type="Gauge"/>
+                <attrib name="rescpu.runav1.latest" alias="ResCpuRunav1Lat" type="Gauge"/>
+                <attrib name="rescpu.runav5.latest" alias="ResCpuRunav5Lat" type="Gauge"/>
+                <attrib name="rescpu.runpk15.latest" alias="ResCpuRunpk15Lat" type="Gauge"/>
+                <attrib name="rescpu.runpk1.latest" alias="ResCpuRunpk1Lat" type="Gauge"/>
+                <attrib name="rescpu.runpk5.latest" alias="ResCpuRunpk5Lat" type="Gauge"/>
+                <attrib name="rescpu.sampleCount.latest" alias="ResCpuSeCtLat" type="Gauge"/>
+                <attrib name="rescpu.samplePeriod.latest" alias="ResCpuSePeriodLat" type="Gauge"/>
+                <attrib name="storageAdapter.maxTotalLatency.latest" alias="StAdptrMaxTlLyLat" type="Gauge"/>
+                <attrib name="storagePath.maxTotalLatency.latest" alias="StPthMaxTlLyLat" type="Gauge"/>
+                <attrib name="sys.uptime.latest" alias="SysUptimeLat" type="Gauge"/>
+            </vmware-group>
+            <vmware-group name="vmware5Net" resourceType="vmware5Net">
+                <attrib name="net.broadcastRx.summation" alias="NetBroadcastRxSum" type="Gauge"/>
+                <attrib name="net.broadcastTx.summation" alias="NetBroadcastTxSum" type="Gauge"/>
+                <attrib name="net.bytesRx.average" alias="NetBytesRxAvg" type="Gauge"/>
+                <attrib name="net.bytesTx.average" alias="NetBytesTxAvg" type="Gauge"/>
+                <attrib name="net.droppedRx.summation" alias="NetDroppedRxSum" type="Gauge"/>
+                <attrib name="net.droppedTx.summation" alias="NetDroppedTxSum" type="Gauge"/>
+                <attrib name="net.errorsRx.summation" alias="NetErrorsRxSum" type="Gauge"/>
+                <attrib name="net.errorsTx.summation" alias="NetErrorsTxSum" type="Gauge"/>
+                <attrib name="net.multicastRx.summation" alias="NetMulticastRxSum" type="Gauge"/>
+                <attrib name="net.multicastTx.summation" alias="NetMulticastTxSum" type="Gauge"/>
+                <attrib name="net.packetsRx.summation" alias="NetPacketsRxSum" type="Gauge"/>
+                <attrib name="net.packetsTx.summation" alias="NetPacketsTxSum" type="Gauge"/>
+                <attrib name="net.received.average" alias="NetReceivedAvg" type="Gauge"/>
+                <attrib name="net.transmitted.average" alias="NetTransmittedAvg" type="Gauge"/>
+                <attrib name="net.unknownProtos.summation" alias="NetUnknownPsSum" type="Gauge"/>
+                <attrib name="net.usage.average" alias="NetUsageAvg" type="Gauge"/>
+            </vmware-group>
+            <vmware-group name="vmware5Disk" resourceType="vmware5Disk">
+                <attrib name="disk.busResets.summation" alias="DiskBusResetsSum" type="Gauge"/>
+                <attrib name="disk.commandsAveraged.average" alias="DiskCsAdAvg" type="Gauge"/>
+                <attrib name="disk.commandsAborted.summation" alias="DiskCsAdSum" type="Gauge"/>
+                <attrib name="disk.commands.summation" alias="DiskCsSum" type="Gauge"/>
+                <attrib name="disk.deviceLatency.average" alias="DiskDeLyAvg" type="Gauge"/>
+                <attrib name="disk.deviceReadLatency.average" alias="DiskDeRdLyAvg" type="Gauge"/>
+                <attrib name="disk.deviceWriteLatency.average" alias="DiskDeWeLyAvg" type="Gauge"/>
+                <attrib name="disk.kernelLatency.average" alias="DiskKlLyAvg" type="Gauge"/>
+                <attrib name="disk.kernelReadLatency.average" alias="DiskKlRdLyAvg" type="Gauge"/>
+                <attrib name="disk.kernelWriteLatency.average" alias="DiskKlWeLyAvg" type="Gauge"/>
+                <attrib name="disk.maxQueueDepth.average" alias="DiskMaxQeDhAvg" type="Gauge"/>
+                <attrib name="disk.numberReadAveraged.average" alias="DiskNrRdAdAvg" type="Gauge"/>
+                <attrib name="disk.numberRead.summation" alias="DiskNrRdSum" type="Gauge"/>
+                <attrib name="disk.numberWriteAveraged.average" alias="DiskNrWeAdAvg" type="Gauge"/>
+                <attrib name="disk.numberWrite.summation" alias="DiskNrWeSum" type="Gauge"/>
+                <attrib name="disk.queueLatency.average" alias="DiskQeLyAvg" type="Gauge"/>
+                <attrib name="disk.queueReadLatency.average" alias="DiskQeRdLyAvg" type="Gauge"/>
+                <attrib name="disk.queueWriteLatency.average" alias="DiskQeWeLyAvg" type="Gauge"/>
+                <attrib name="disk.read.average" alias="DiskRdAvg" type="Gauge"/>
+                <attrib name="disk.totalLatency.average" alias="DiskTlLyAvg" type="Gauge"/>
+                <attrib name="disk.totalReadLatency.average" alias="DiskTlRdLyAvg" type="Gauge"/>
+                <attrib name="disk.totalWriteLatency.average" alias="DiskTlWeLyAvg" type="Gauge"/>
+                <attrib name="disk.write.average" alias="DiskWeAvg" type="Gauge"/>
+            </vmware-group>
+            <vmware-group name="vmware5StPth" resourceType="vmware5StPth">
+                <attrib name="storagePath.commandsAveraged.average" alias="StPthCsAdAvg" type="Gauge"/>
+                <attrib name="storagePath.numberReadAveraged.average" alias="StPthNrRdAdAvg" type="Gauge"/>
+                <attrib name="storagePath.numberWriteAveraged.average" alias="StPthNrWeAdAvg" type="Gauge"/>
+                <attrib name="storagePath.read.average" alias="StPthRdAvg" type="Gauge"/>
+                <attrib name="storagePath.totalReadLatency.average" alias="StPthTlRdLyAvg" type="Gauge"/>
+                <attrib name="storagePath.totalWriteLatency.average" alias="StPthTlWeLyAvg" type="Gauge"/>
+                <attrib name="storagePath.write.average" alias="StPthWeAvg" type="Gauge"/>
+            </vmware-group>
+            <vmware-group name="vmware5DaSt" resourceType="vmware5DaSt">
+                <attrib name="datastore.datastoreIops.average" alias="DaStDeIopsAvg" type="Gauge"/>
+                <attrib name="datastore.datastoreMaxQueueDepth.latest" alias="DaStDeMaxQeDhLat" type="Gauge"/>
+                <attrib name="datastore.datastoreNormalReadLatency.latest" alias="DaStDeNlRdLyLat" type="Gauge"/>
+                <attrib name="datastore.datastoreNormalWriteLatency.latest" alias="DaStDeNlWeLyLat" type="Gauge"/>
+                <attrib name="datastore.datastoreReadBytes.latest" alias="DaStDeRdBytesLat" type="Gauge"/>
+                <attrib name="datastore.datastoreReadIops.latest" alias="DaStDeRdIopsLat" type="Gauge"/>
+                <attrib name="datastore.datastoreReadLoadMetric.latest" alias="DaStDeRdLdMcLat" type="Gauge"/>
+                <attrib name="datastore.datastoreReadOIO.latest" alias="DaStDeRdOIOLat" type="Gauge"/>
+                <attrib name="datastore.datastoreWriteBytes.latest" alias="DaStDeWeBytesLat" type="Gauge"/>
+                <attrib name="datastore.datastoreWriteIops.latest" alias="DaStDeWeIopsLat" type="Gauge"/>
+                <attrib name="datastore.datastoreWriteLoadMetric.latest" alias="DaStDeWeLdMcLat" type="Gauge"/>
+                <attrib name="datastore.datastoreWriteOIO.latest" alias="DaStDeWeOIOLat" type="Gauge"/>
+                <attrib name="datastore.numberReadAveraged.average" alias="DaStNrRdAdAvg" type="Gauge"/>
+                <attrib name="datastore.numberWriteAveraged.average" alias="DaStNrWeAdAvg" type="Gauge"/>
+                <attrib name="datastore.read.average" alias="DaStRdAvg" type="Gauge"/>
+                <attrib name="datastore.sizeNormalizedDatastoreLatency.average" alias="DaStSizeNdDeLyAvg"
+                        type="Gauge"/>
+                <attrib name="datastore.totalReadLatency.average" alias="DaStTlRdLyAvg" type="Gauge"/>
+                <attrib name="datastore.totalWriteLatency.average" alias="DaStTlWeLyAvg" type="Gauge"/>
+                <attrib name="datastore.write.average" alias="DaStWeAvg" type="Gauge"/>
+            </vmware-group>
+            <vmware-group name="vmware5Sys" resourceType="vmware5Sys">
+                <attrib name="sys.resourceCpuAllocMax.latest" alias="SysReCpuAcMaxLat" type="Gauge"/>
+                <attrib name="sys.resourceCpuAllocMin.latest" alias="SysReCpuAcMinLat" type="Gauge"/>
+                <attrib name="sys.resourceCpuAllocShares.latest" alias="SysReCpuAcSsLat" type="Gauge"/>
+                <attrib name="sys.resourceCpuAct1.latest" alias="SysReCpuAct1Lat" type="Gauge"/>
+                <attrib name="sys.resourceCpuAct5.latest" alias="SysReCpuAct5Lat" type="Gauge"/>
+                <attrib name="sys.resourceCpuMaxLimited1.latest" alias="SysReCpuMaxLd1Lat" type="Gauge"/>
+                <attrib name="sys.resourceCpuMaxLimited5.latest" alias="SysReCpuMaxLd5Lat" type="Gauge"/>
+                <attrib name="sys.resourceCpuRun1.latest" alias="SysReCpuRun1Lat" type="Gauge"/>
+                <attrib name="sys.resourceCpuRun5.latest" alias="SysReCpuRun5Lat" type="Gauge"/>
+                <attrib name="sys.resourceCpuUsage.average" alias="SysReCpuUsageAvg" type="Gauge"/>
+                <attrib name="sys.resourceMemAllocMax.latest" alias="SysReMemAcMaxLat" type="Gauge"/>
+                <attrib name="sys.resourceMemAllocMin.latest" alias="SysReMemAcMinLat" type="Gauge"/>
+                <attrib name="sys.resourceMemAllocShares.latest" alias="SysReMemAcSsLat" type="Gauge"/>
+                <attrib name="sys.resourceMemCow.latest" alias="SysReMemCowLat" type="Gauge"/>
+                <attrib name="sys.resourceMemMapped.latest" alias="SysReMemMappedLat" type="Gauge"/>
+                <attrib name="sys.resourceMemOverhead.latest" alias="SysReMemOdLat" type="Gauge"/>
+                <attrib name="sys.resourceMemShared.latest" alias="SysReMemSharedLat" type="Gauge"/>
+                <attrib name="sys.resourceMemSwapped.latest" alias="SysReMemSppedLat" type="Gauge"/>
+                <attrib name="sys.resourceMemTouched.latest" alias="SysReMemTdLat" type="Gauge"/>
+                <attrib name="sys.resourceMemZero.latest" alias="SysReMemZeroLat" type="Gauge"/>
+            </vmware-group>
+        </vmware-groups>
+    </vmware-collection>
+    <vmware-collection name="default-VirtualMachine5">
+        <rrd step="300">
+            <rra>RRA:AVERAGE:0.5:1:2016</rra>
+            <rra>RRA:AVERAGE:0.5:12:1488</rra>
+            <rra>RRA:AVERAGE:0.5:288:366</rra>
+            <rra>RRA:MAX:0.5:288:366</rra>
+            <rra>RRA:MIN:0.5:288:366</rra>
+        </rrd>
+        <vmware-groups>
+            <vmware-group name="vmware5Cpu" resourceType="vmware5Cpu">
+                <attrib name="cpu.costop.summation" alias="CpuCostopSum" type="Gauge"/>
+                <attrib name="cpu.idle.summation" alias="CpuIdleSum" type="Gauge"/>
+                <attrib name="cpu.maxlimited.summation" alias="CpuMaxLdSum" type="Gauge"/>
+                <attrib name="cpu.overlap.summation" alias="CpuOverlapSum" type="Gauge"/>
+                <attrib name="cpu.ready.summation" alias="CpuRdySum" type="Gauge"/>
+                <attrib name="cpu.run.summation" alias="CpuRunSum" type="Gauge"/>
+                <attrib name="cpu.swapwait.summation" alias="CpuSpwaitSum" type="Gauge"/>
+                <attrib name="cpu.system.summation" alias="CpuSystemSum" type="Gauge"/>
+                <attrib name="cpu.usagemhz.average" alias="CpuUsagemhzAvg" type="Gauge"/>
+                <attrib name="cpu.used.summation" alias="CpuUsedSum" type="Gauge"/>
+                <attrib name="cpu.wait.summation" alias="CpuWaitSum" type="Gauge"/>
+            </vmware-group>
+            <vmware-group name="vmware5Node" resourceType="Node">
+                <attrib name="cpu.demand.average" alias="CpuDemandAvg" type="Gauge"/>
+                <attrib name="cpu.entitlement.latest" alias="CpuEntitlementLat" type="Gauge"/>
+                <attrib name="cpu.idle.summation" alias="CpuIdleSum" type="Gauge"/>
+                <attrib name="cpu.latency.average" alias="CpuLyAvg" type="Gauge"/>
+                <attrib name="cpu.system.summation" alias="CpuSystemSum" type="Gauge"/>
+                <attrib name="cpu.usage.average" alias="CpuUsageAvg" type="Gauge"/>
+                <attrib name="cpu.usagemhz.average" alias="CpuUsagemhzAvg" type="Gauge"/>
+                <attrib name="datastore.maxTotalLatency.latest" alias="DaStMaxTlLyLat" type="Gauge"/>
+                <attrib name="disk.maxTotalLatency.latest" alias="DiskMaxTlLyLat" type="Gauge"/>
+                <attrib name="disk.usage.average" alias="DiskUsageAvg" type="Gauge"/>
+                <attrib name="disk.write.average" alias="DiskWeAvg" type="Gauge"/>
+                <attrib name="mem.active.average" alias="MemActiveAvg" type="Gauge"/>
+                <attrib name="mem.activewrite.average" alias="MemActiveWeAvg" type="Gauge"/>
+                <attrib name="mem.compressionRate.average" alias="MemCnReAvg" type="Gauge"/>
+                <attrib name="mem.compressed.average" alias="MemCompressedAvg" type="Gauge"/>
+                <attrib name="mem.consumed.average" alias="MemConsumedAvg" type="Gauge"/>
+                <attrib name="mem.decompressionRate.average" alias="MemDnReAvg" type="Gauge"/>
+                <attrib name="mem.entitlement.average" alias="MemEntitlementAvg" type="Gauge"/>
+                <attrib name="mem.granted.average" alias="MemGrantedAvg" type="Gauge"/>
+                <attrib name="mem.llSwapInRate.average" alias="MemLlSpInReAvg" type="Gauge"/>
+                <attrib name="mem.llSwapOutRate.average" alias="MemLlSpOutReAvg" type="Gauge"/>
+                <attrib name="mem.llSwapUsed.average" alias="MemLlSpUsedAvg" type="Gauge"/>
+                <attrib name="mem.latency.average" alias="MemLyAvg" type="Gauge"/>
+                <attrib name="mem.overhead.average" alias="MemOdAvg" type="Gauge"/>
+                <attrib name="mem.overheadMax.average" alias="MemOdMaxAvg" type="Gauge"/>
+                <attrib name="mem.overheadTouched.average" alias="MemOdTdAvg" type="Gauge"/>
+                <attrib name="mem.shared.average" alias="MemSharedAvg" type="Gauge"/>
+                <attrib name="mem.swaptarget.average" alias="MemSpTtAvg" type="Gauge"/>
+                <attrib name="mem.swapin.average" alias="MemSpinAvg" type="Gauge"/>
+                <attrib name="mem.swapinRate.average" alias="MemSpinReAvg" type="Gauge"/>
+                <attrib name="mem.swapout.average" alias="MemSpoutAvg" type="Gauge"/>
+                <attrib name="mem.swapoutRate.average" alias="MemSpoutReAvg" type="Gauge"/>
+                <attrib name="mem.swapped.average" alias="MemSppedAvg" type="Gauge"/>
+                <attrib name="mem.usage.average" alias="MemUsageAvg" type="Gauge"/>
+                <attrib name="mem.vmmemctl.average" alias="MemVmmemctlAvg" type="Gauge"/>
+                <attrib name="mem.vmmemctltarget.average" alias="MemVmmemctlTtAvg" type="Gauge"/>
+                <attrib name="mem.zero.average" alias="MemZeroAvg" type="Gauge"/>
+                <attrib name="mem.zipSaved.latest" alias="MemZipSavedLat" type="Gauge"/>
+                <attrib name="mem.zipped.latest" alias="MemZippedLat" type="Gauge"/>
+                <attrib name="net.broadcastRx.summation" alias="NetBroadcastRxSum" type="Gauge"/>
+                <attrib name="net.droppedTx.summation" alias="NetDroppedTxSum" type="Gauge"/>
+                <attrib name="net.multicastRx.summation" alias="NetMulticastRxSum" type="Gauge"/>
+                <attrib name="net.multicastTx.summation" alias="NetMulticastTxSum" type="Gauge"/>
+                <attrib name="net.received.average" alias="NetReceivedAvg" type="Gauge"/>
+                <attrib name="net.transmitted.average" alias="NetTransmittedAvg" type="Gauge"/>
+                <attrib name="power.energy.summation" alias="PowerEnergySum" type="Gauge"/>
+                <attrib name="power.power.average" alias="PowerPowerAvg" type="Gauge"/>
+                <attrib name="rescpu.actav15.latest" alias="ResCpuActav15Lat" type="Gauge"/>
+                <attrib name="rescpu.actav1.latest" alias="ResCpuActav1Lat" type="Gauge"/>
+                <attrib name="rescpu.actav5.latest" alias="ResCpuActav5Lat" type="Gauge"/>
+                <attrib name="rescpu.actpk15.latest" alias="ResCpuActpk15Lat" type="Gauge"/>
+                <attrib name="rescpu.actpk1.latest" alias="ResCpuActpk1Lat" type="Gauge"/>
+                <attrib name="rescpu.actpk5.latest" alias="ResCpuActpk5Lat" type="Gauge"/>
+                <attrib name="rescpu.maxLimited15.latest" alias="ResCpuMaxLd15Lat" type="Gauge"/>
+                <attrib name="rescpu.maxLimited1.latest" alias="ResCpuMaxLd1Lat" type="Gauge"/>
+                <attrib name="rescpu.maxLimited5.latest" alias="ResCpuMaxLd5Lat" type="Gauge"/>
+                <attrib name="rescpu.runav15.latest" alias="ResCpuRunav15Lat" type="Gauge"/>
+                <attrib name="rescpu.runav1.latest" alias="ResCpuRunav1Lat" type="Gauge"/>
+                <attrib name="rescpu.runav5.latest" alias="ResCpuRunav5Lat" type="Gauge"/>
+                <attrib name="rescpu.runpk15.latest" alias="ResCpuRunpk15Lat" type="Gauge"/>
+                <attrib name="rescpu.runpk1.latest" alias="ResCpuRunpk1Lat" type="Gauge"/>
+                <attrib name="rescpu.runpk5.latest" alias="ResCpuRunpk5Lat" type="Gauge"/>
+                <attrib name="rescpu.sampleCount.latest" alias="ResCpuSeCtLat" type="Gauge"/>
+                <attrib name="rescpu.samplePeriod.latest" alias="ResCpuSePeriodLat" type="Gauge"/>
+                <attrib name="sys.heartbeat.summation" alias="SysHeartbeatSum" type="Gauge"/>
+                <attrib name="sys.osUptime.latest" alias="SysOsUptimeLat" type="Gauge"/>
+                <attrib name="sys.uptime.latest" alias="SysUptimeLat" type="Gauge"/>
+            </vmware-group>
+            <vmware-group name="vmware5Net" resourceType="vmware5Net">
+                <attrib name="net.broadcastRx.summation" alias="NetBroadcastRxSum" type="Gauge"/>
+                <attrib name="net.broadcastTx.summation" alias="NetBroadcastTxSum" type="Gauge"/>
+                <attrib name="net.bytesRx.average" alias="NetBytesRxAvg" type="Gauge"/>
+                <attrib name="net.bytesTx.average" alias="NetBytesTxAvg" type="Gauge"/>
+                <attrib name="net.droppedRx.summation" alias="NetDroppedRxSum" type="Gauge"/>
+                <attrib name="net.droppedTx.summation" alias="NetDroppedTxSum" type="Gauge"/>
+                <attrib name="net.multicastRx.summation" alias="NetMulticastRxSum" type="Gauge"/>
+                <attrib name="net.multicastTx.summation" alias="NetMulticastTxSum" type="Gauge"/>
+                <attrib name="net.packetsRx.summation" alias="NetPacketsRxSum" type="Gauge"/>
+                <attrib name="net.packetsTx.summation" alias="NetPacketsTxSum" type="Gauge"/>
+                <attrib name="net.received.average" alias="NetReceivedAvg" type="Gauge"/>
+                <attrib name="net.transmitted.average" alias="NetTransmittedAvg" type="Gauge"/>
+                <attrib name="net.usage.average" alias="NetUsageAvg" type="Gauge"/>
+            </vmware-group>
+            <vmware-group name="vmware5VrtDisk" resourceType="vmware5VrtDisk">
+                <attrib name="virtualDisk.numberReadAveraged.average" alias="VrtDiskNrRdAdAvg" type="Gauge"/>
+                <attrib name="virtualDisk.numberWriteAveraged.average" alias="VrtDiskNrWeAdAvg" type="Gauge"/>
+                <attrib name="virtualDisk.read.average" alias="VrtDiskRdAvg" type="Gauge"/>
+                <attrib name="virtualDisk.readLoadMetric.latest" alias="VrtDiskRdLdMcLat" type="Gauge"/>
+                <attrib name="virtualDisk.readOIO.latest" alias="VrtDiskRdOIOLat" type="Gauge"/>
+                <attrib name="virtualDisk.totalReadLatency.average" alias="VrtDiskTlRdLyAvg" type="Gauge"/>
+                <attrib name="virtualDisk.totalWriteLatency.average" alias="VrtDiskTlWeLyAvg" type="Gauge"/>
+                <attrib name="virtualDisk.write.average" alias="VrtDiskWeAvg" type="Gauge"/>
+                <attrib name="virtualDisk.writeLoadMetric.latest" alias="VrtDiskWeLdMcLat" type="Gauge"/>
+                <attrib name="virtualDisk.writeOIO.latest" alias="VrtDiskWeOIOLat" type="Gauge"/>
+            </vmware-group>
+            <vmware-group name="vmware5Disk" resourceType="vmware5Disk">
+                <attrib name="disk.busResets.summation" alias="DiskBusResetsSum" type="Gauge"/>
+                <attrib name="disk.commandsAveraged.average" alias="DiskCsAdAvg" type="Gauge"/>
+                <attrib name="disk.commandsAborted.summation" alias="DiskCsAdSum" type="Gauge"/>
+                <attrib name="disk.commands.summation" alias="DiskCsSum" type="Gauge"/>
+                <attrib name="disk.numberReadAveraged.average" alias="DiskNrRdAdAvg" type="Gauge"/>
+                <attrib name="disk.numberRead.summation" alias="DiskNrRdSum" type="Gauge"/>
+                <attrib name="disk.numberWriteAveraged.average" alias="DiskNrWeAdAvg" type="Gauge"/>
+                <attrib name="disk.numberWrite.summation" alias="DiskNrWeSum" type="Gauge"/>
+                <attrib name="disk.read.average" alias="DiskRdAvg" type="Gauge"/>
+                <attrib name="disk.write.average" alias="DiskWeAvg" type="Gauge"/>
+            </vmware-group>
+            <vmware-group name="vmware5DaSt" resourceType="vmware5DaSt">
+                <attrib name="datastore.numberReadAveraged.average" alias="DaStNrRdAdAvg" type="Gauge"/>
+                <attrib name="datastore.numberWriteAveraged.average" alias="DaStNrWeAdAvg" type="Gauge"/>
+                <attrib name="datastore.read.average" alias="DaStRdAvg" type="Gauge"/>
+                <attrib name="datastore.totalReadLatency.average" alias="DaStTlRdLyAvg" type="Gauge"/>
+                <attrib name="datastore.totalWriteLatency.average" alias="DaStTlWeLyAvg" type="Gauge"/>
+                <attrib name="datastore.write.average" alias="DaStWeAvg" type="Gauge"/>
+            </vmware-group>
+        </vmware-groups>
+    </vmware-collection>
+</vmware-datacollection-config>

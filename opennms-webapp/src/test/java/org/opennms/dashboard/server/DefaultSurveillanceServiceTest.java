@@ -117,7 +117,7 @@ public class DefaultSurveillanceServiceTest {
         SecurityContextHolder.getContext().setAuthentication(auth);
         
         ThrowableAnticipator ta = new ThrowableAnticipator();
-        ta.anticipate(new IllegalStateException("No principal object found when calling getPrinticpal on our Authentication object"));
+        ta.anticipate(new IllegalStateException("No principal object found when calling getPrincipal on our Authentication object"));
         
         try {
             m_service.getUsername();

@@ -1,0 +1,84 @@
+<?xml version="1.0"?>
+<datacollection-group name="VMware-Cim">
+
+    <resourceType name="SensorUnknown" label="VMware Sensor Unknown" resourceLabel="${SensorName}">
+        <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+        <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+
+    <resourceType name="SensorOther" label="VMware Sensor Other" resourceLabel="${SensorName}">
+        <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+        <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+
+    <resourceType name="SensorTemperature" label="VMware Sensor Temperature" resourceLabel="${SensorName}">
+        <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+        <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+
+    <resourceType name="SensorVoltage" label="VMware Sensor Voltage" resourceLabel="${SensorName}">
+        <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+        <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+
+    <resourceType name="SensorCurrent" label="VMware Sensor Current" resourceLabel="${SensorName}">
+        <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+        <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+
+    <resourceType name="SensorCounter" label="VMware Sensor Counter" resourceLabel="${SensorName}">
+        <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+        <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+
+    <resourceType name="SensorTachometer" label="VMware Sensor Tachometer" resourceLabel="${SensorName}">
+        <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+        <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+
+    <resourceType name="SensorSwitch" label="VMware Sensor Switch" resourceLabel="${SensorName}">
+        <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+        <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+
+    <resourceType name="SensorLock" label="VMware Sensor Lock" resourceLabel="${SensorName}">
+        <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+        <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+
+    <resourceType name="SensorHumidity" label="VMware Sensor Humidity" resourceLabel="${SensorName}">
+        <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+        <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+
+    <resourceType name="SensorSmokeDetection" label="VMware Sensor Smoke Detection" resourceLabel="${SensorName}">
+        <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+        <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+
+    <resourceType name="SensorPresence" label="VMware Sensor Presence" resourceLabel="${SensorName}">
+        <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+        <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+
+    <resourceType name="SensorAirFlow" label="VMware Sensor Air Flow" resourceLabel="${SensorName}">
+        <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+        <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+
+    <resourceType name="SensorPowerConsumption" label="VMware Sensor Power Consumption" resourceLabel="${SensorName}">
+        <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+        <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+
+    <resourceType name="SensorPowerProduction" label="VMware Sensor Power Production" resourceLabel="${SensorName}">
+        <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+        <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+
+    <resourceType name="SensorPressure" label="VMware Sensor Pressure" resourceLabel="${SensorName}">
+        <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+        <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+
+</datacollection-group>

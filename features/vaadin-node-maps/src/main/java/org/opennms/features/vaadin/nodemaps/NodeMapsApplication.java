@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -25,14 +25,17 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+
 package org.opennms.features.vaadin.nodemaps;
 
 import org.opennms.features.geocoder.GeocoderService;
 import org.opennms.features.vaadin.nodemaps.ui.OpenlayersWidgetComponent;
+import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.dao.AssetRecordDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.support.TransactionOperations;
 
 import com.vaadin.Application;
 import com.vaadin.ui.AbsoluteLayout;
@@ -78,20 +81,25 @@ public class NodeMapsApplication extends Application {
 
     private NodeDao m_nodeDao;
 
+    private AssetRecordDao m_assetDao;
+
+    private AlarmDao m_alarmDao;
+
+    private GeocoderService m_geocoderService;
+
     private Window m_window;
 
     private AbsoluteLayout m_rootLayout;
 
-    private AssetRecordDao m_assetDao;
-
-    private GeocoderService m_geocoderService;
-
     private Logger m_log = LoggerFactory.getLogger(getClass());
+
+    private TransactionOperations m_transaction;
 
     /**
      * Sets the OpenNMS Node DAO.
      * 
-     * @param m_nodeDao the new OpenNMS Node DAO
+     * @param m_nodeDao
+     *            the new OpenNMS Node DAO
      */
 
     public void setNodeDao(final NodeDao nodeDao) {
@@ -102,8 +110,16 @@ public class NodeMapsApplication extends Application {
         m_assetDao = assetDao;
     }
 
+    public void setAlarmDao(final AlarmDao alarmDao) {
+        m_alarmDao = alarmDao;
+    }
+
     public void setGeocoderService(final GeocoderService geocoderService) {
         m_geocoderService = geocoderService;
+    }
+
+    public void setTransactionOperations(final TransactionOperations tx) {
+        m_transaction = tx;
     }
 
     /*
@@ -117,7 +133,9 @@ public class NodeMapsApplication extends Application {
         final OpenlayersWidgetComponent openlayers = new OpenlayersWidgetComponent();
         openlayers.setNodeDao(m_nodeDao);
         openlayers.setAssetRecordDao(m_assetDao);
+        openlayers.setAlarmDao(m_alarmDao);
         openlayers.setGeocoderService(m_geocoderService);
+        openlayers.setTransactionOperation(m_transaction);
         openlayers.setSizeFull();
 
         m_rootLayout = new AbsoluteLayout();

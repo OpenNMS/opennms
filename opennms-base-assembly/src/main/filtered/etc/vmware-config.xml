@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<vmware-config>
+<!--
+    Authentication entries for VMware management servers.
+
+    Examples:
+    <vmware-server hostname="[2001:db8:0:8d3:0:8a2e:70:7344]" username="OpenNMS" password="secret"/>
+    <vmware-server hostname="172.16.123.100" username="OpenNMS" password="secret"/>
+    <vmware-server hostname="vcenter.mydomain.org" username="OpenNMS" password="secret"/>
+-->
+</vmware-config>
+

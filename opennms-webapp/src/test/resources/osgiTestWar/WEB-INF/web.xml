@@ -19,11 +19,6 @@
   </listener>
 
   <listener>
-    <!-- This listener will start up the Osgid (Karaf) OSGi container -->
-    <!-- <listener-class>org.opennms.web.osgi.FrameworkStartupContextListener</listener-class> -->
-  </listener>
-
-  <listener>
     <listener-class>org.apache.felix.http.proxy.ProxyListener</listener-class>
   </listener>
 

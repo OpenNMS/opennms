@@ -45,17 +45,19 @@ public class GraphPainter extends BaseGraphVisitor {
 		m_target.addAttribute("initialY", initialLocation.getY());
 		m_target.addAttribute("x", location.getX());
 		m_target.addAttribute("y", location.getY());
-		m_target.addAttribute("selected", isSelected(vertex));
+		m_target.addAttribute("selected", isSelected(getSelectionManager(), vertex));
 		m_target.addAttribute("iconUrl", m_iconRepoManager.findIconUrlByKey(vertex.getIconKey()));
 		m_target.addAttribute("label", vertex.getLabel());
 		m_target.addAttribute("tooltipText", getTooltipText(vertex));
 		m_target.endTag("vertex");
 	}
 
-	private String getTooltipText(Vertex vertex) {
+	private static String getTooltipText(Vertex vertex) {
 		String tooltipText = vertex.getTooltipText();
-		tooltipText = tooltipText != null ? tooltipText : vertex.getLabel();
-		return tooltipText != null ? tooltipText : "";
+		// If the tooltip text is null, use the label
+		tooltipText = (tooltipText == null ? vertex.getLabel() : tooltipText);
+		// If the label is null, use a blank string
+		return (tooltipText == null ? "" : tooltipText);
 	}
 
 	@Override
@@ -64,17 +66,21 @@ public class GraphPainter extends BaseGraphVisitor {
 		m_target.addAttribute("key", edge.getKey());
 		m_target.addAttribute("source", getSourceKey(edge));
 		m_target.addAttribute("target", getTargetKey(edge));
-		m_target.addAttribute("selected", isSelected(edge));
+		m_target.addAttribute("selected", isSelected(getSelectionManager(), edge));
 		m_target.addAttribute("cssClass", getStyleName(edge));
 		m_target.addAttribute("tooltipText", getTooltipText(edge));
 		m_target.endTag("edge");
 	}
 
-	private String getTooltipText(Edge edge) {
+	/**
+	 * Cannot return null
+	 */
+	private static String getTooltipText(Edge edge) {
 		String tooltipText = edge.getTooltipText();
-		tooltipText = tooltipText != null ? tooltipText : edge.getLabel();
-		tooltipText = tooltipText != null ? tooltipText : "";
-		return tooltipText;
+		// If the tooltip text is null, use the label
+		tooltipText = (tooltipText == null ? edge.getLabel() : tooltipText);
+		// If the label is null, use a blank string
+		return (tooltipText == null ? "" : tooltipText);
 	}
 
 	@Override
@@ -83,23 +89,30 @@ public class GraphPainter extends BaseGraphVisitor {
 	}
 
 	private String getSourceKey(Edge edge) {
-		return m_graphContainer.getVertex(edge.getSource().getVertex()).getKey();
+		return m_graphContainer.getBaseTopology().getVertex(edge.getSource().getVertex()).getKey();
 	}
 
 	private String getTargetKey(Edge edge) {
-		return m_graphContainer.getVertex(edge.getTarget().getVertex()).getKey();
+		return m_graphContainer.getBaseTopology().getVertex(edge.getTarget().getVertex()).getKey();
 	}
 
+	/**
+	 * Cannot return null
+	 */
 	private String getStyleName(Edge edge) {
-		return isSelected(edge) ? edge.getStyleName()+" selected" : edge.getStyleName();
+		String styleName = edge.getStyleName();
+		// If the style is null, use a blank string
+		styleName = (styleName == null ? "" : styleName);
+
+		return isSelected(getSelectionManager(), edge) ? styleName + " selected" : styleName;
 	}
 
-	private boolean isSelected(Vertex vertex) {
-		return getSelectionManager().isVertexRefSelected(vertex);
+	private static boolean isSelected(SelectionManager selectionManager, Vertex vertex) {
+		return selectionManager.isVertexRefSelected(vertex);
 	}
 
-	private boolean isSelected(Edge edge) {
-		return getSelectionManager().isEdgeRefSelected(edge);
+	private static boolean isSelected(SelectionManager selectionManager, Edge edge) {
+		return selectionManager.isEdgeRefSelected(edge);
 	}
 
 }

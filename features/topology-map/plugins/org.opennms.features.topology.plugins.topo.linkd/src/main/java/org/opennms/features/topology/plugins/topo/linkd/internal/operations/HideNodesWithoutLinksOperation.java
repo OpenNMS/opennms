@@ -28,60 +28,71 @@
 
 package org.opennms.features.topology.plugins.topo.linkd.internal.operations;
 
+import java.net.MalformedURLException;
 import java.util.List;
+
+import javax.xml.bind.JAXBException;
 
 import org.opennms.features.topology.api.CheckedOperation;
 import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.plugins.topo.linkd.internal.LinkdTopologyProvider;
 import org.slf4j.LoggerFactory;
 
 public class HideNodesWithoutLinksOperation implements CheckedOperation {
 
-    LinkdTopologyProvider m_topologyProvider;
-    public HideNodesWithoutLinksOperation(LinkdTopologyProvider topologyProvider) {
-        m_topologyProvider=topologyProvider;
-    }
+	private final LinkdTopologyProvider m_topologyProvider;
 
-    @Override
-    public Undoer execute(List<VertexRef> targets,
-            OperationContext operationContext) {
-        log("executing Hide Nodes Without Link Checked Operation");
-        log("found addNodeWithoutLinks: " + m_topologyProvider.isAddNodeWithoutLink());
-        m_topologyProvider.setAddNodeWithoutLink(!m_topologyProvider.isAddNodeWithoutLink());
-        log("switched addNodeWithoutLinks to: " + m_topologyProvider.isAddNodeWithoutLink());
-        m_topologyProvider.load(null);
-        if (operationContext != null && operationContext.getGraphContainer() != null) {
-            log("operationcontext and GraphContainer not null: executing redoLayout");
-            operationContext.getGraphContainer().redoLayout();
-        }
-        return null;
-    }
+	public HideNodesWithoutLinksOperation(LinkdTopologyProvider topologyProvider) {
+		m_topologyProvider = topologyProvider;
+	}
 
-    @Override
-    public boolean display(List<VertexRef> targets,
-            OperationContext operationContext) {
-        return true;
-    }
+	@Override
+	public Undoer execute(List<VertexRef> targets, OperationContext operationContext) {
+		if (enabled(targets, operationContext)) {
+			LoggerFactory.getLogger(this.getClass()).debug("switched addNodeWithoutLinks to: " + !m_topologyProvider.isAddNodeWithoutLink());
+			m_topologyProvider.setAddNodeWithoutLink(!m_topologyProvider.isAddNodeWithoutLink());
+			try {
+				m_topologyProvider.load(null);
+			} catch (MalformedURLException e) {
+				// TODO: Display the error in the UI
+				LoggerFactory.getLogger(this.getClass()).error(e.getMessage(), e);
+			} catch (JAXBException e) {
+				// TODO: Display the error in the UI
+				LoggerFactory.getLogger(this.getClass()).error(e.getMessage(), e);
+			}
+			operationContext.getGraphContainer().redoLayout();
+		}
+		return null;
+	}
 
-    @Override
-    public boolean enabled(List<VertexRef> targets,
-            OperationContext operationContext) {
-        return true;
-    }
+	@Override
+	public boolean display(List<VertexRef> targets, OperationContext operationContext) {
+		return true;
+	}
 
-    @Override
-    public String getId() {
-        return "LinkdTopologyProviderHidesNodesWithoutLinksOperation";
-    }
+	/**
+	 * This is kinda unreliable because we are just matching on namespace... but that's all we can do with
+	 * the API as it is now.
+	 */
+	@Override
+	public boolean enabled(List<VertexRef> targets, OperationContext operationContext) {
+		GraphProvider activeGraphProvider = operationContext.getGraphContainer().getBaseTopology();
+		return m_topologyProvider.getVertexNamespace().equals(activeGraphProvider.getVertexNamespace());
+	}
 
-    @Override
-    public boolean isChecked(List<VertexRef> targets,
-            OperationContext operationContext) {
-        return !m_topologyProvider.isAddNodeWithoutLink();
-    }
+	@Override
+	public String getId() {
+		return "LinkdTopologyProviderHidesNodesWithoutLinksOperation";
+	}
 
-    private void log(final String string) {
-        LoggerFactory.getLogger(getClass()).debug("{}: {}", getId(), string);
-    }
+	@Override
+	public boolean isChecked(List<VertexRef> targets, OperationContext operationContext) {
+		if (enabled(targets, operationContext)) {
+			return !m_topologyProvider.isAddNodeWithoutLink();
+		} else {
+			return false;
+		}
+	}
 }

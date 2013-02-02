@@ -28,44 +28,49 @@
 
 package org.opennms.features.topology.plugins.topo.sfree.internal.operations;
 
+import java.net.MalformedURLException;
 import java.util.List;
+
+import javax.xml.bind.JAXBException;
 
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.api.TopologyProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.plugins.topo.sfree.internal.SFreeTopologyProvider;
+import org.slf4j.LoggerFactory;
 
 public class ErdosReniyOperation implements Operation {
 
-    TopologyProvider m_topologyProvider;
-    
-    public ErdosReniyOperation(TopologyProvider topologyProvider) {
-        m_topologyProvider=topologyProvider;
-    }
-
-    @Override
-    public Undoer execute(List<VertexRef> targets, OperationContext operationContext) {
-            m_topologyProvider.load(SFreeTopologyProvider.ERDOS_RENIS);
-            if (operationContext != null && operationContext.getGraphContainer() != null) {
-                operationContext.getGraphContainer().redoLayout();
-            }
-            return null;
-    }
+	@Override
+	public Undoer execute(List<VertexRef> targets, OperationContext operationContext) {
+		if (operationContext != null && operationContext.getGraphContainer() != null) {
+			try {
+				operationContext.getGraphContainer().getBaseTopology().load(SFreeTopologyProvider.ERDOS_RENIS);
+			} catch (MalformedURLException e) {
+				// TODO: Display the error in the UI
+				LoggerFactory.getLogger(this.getClass()).error(e.getMessage(), e);
+			} catch (JAXBException e) {
+				// TODO: Display the error in the UI
+				LoggerFactory.getLogger(this.getClass()).error(e.getMessage(), e);
+			}
+			operationContext.getGraphContainer().redoLayout();
+		}
+		return null;
+	}
 
 	@Override
-    public boolean display(List<VertexRef> targets, OperationContext operationContext) {
-        return true;
-    }
+	public boolean display(List<VertexRef> targets, OperationContext operationContext) {
+		return true;
+	}
 
-    @Override
-    public boolean enabled(List<VertexRef> targets, OperationContext operationContext) {
-    	return true;
-    }
+	@Override
+	public boolean enabled(List<VertexRef> targets, OperationContext operationContext) {
+		return true;
+	}
 
-    @Override
-    public String getId() {
-    	return "ScaleFreeTopologyProviderErdosReniyOperation";
-    }
+	@Override
+	public String getId() {
+		return "ScaleFreeTopologyProviderErdosReniyOperation";
+	}
 
 }

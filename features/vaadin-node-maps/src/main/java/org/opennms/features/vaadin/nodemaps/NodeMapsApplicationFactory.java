@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -25,44 +25,59 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+
 package org.opennms.features.vaadin.nodemaps;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.opennms.features.geocoder.GeocoderService;
+import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.dao.AssetRecordDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.ops4j.pax.vaadin.AbstractApplicationFactory;
+import org.springframework.transaction.support.TransactionOperations;
 
 import com.vaadin.Application;
 
 /**
  * A factory for creating NodeMapsApplication objects.
  * 
- * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 public class NodeMapsApplicationFactory extends AbstractApplicationFactory {
     private NodeDao m_nodeDao;
+
     private AssetRecordDao m_assetDao;
+
+    private AlarmDao m_alarmDao;
+
     private GeocoderService m_geocoder;
 
-    /* (non-Javadoc)
-     * @see org.ops4j.pax.vaadin.ApplicationFactory#createApplication(javax.servlet.http.HttpServletRequest)
+    private TransactionOperations m_transaction;
+
+    /*
+     * (non-Javadoc)
+     * @see
+     * org.ops4j.pax.vaadin.ApplicationFactory#createApplication(javax.servlet
+     * .http.HttpServletRequest)
      */
     @Override
-    public Application createApplication(HttpServletRequest request) throws ServletException {
+    public Application createApplication(final HttpServletRequest request) throws ServletException {
         if (m_nodeDao == null) {
             throw new RuntimeException("m_nodeDao cannot be null.");
         }
-        NodeMapsApplication app = new NodeMapsApplication();
+        final NodeMapsApplication app = new NodeMapsApplication();
         app.setNodeDao(m_nodeDao);
         app.setAssetRecordDao(m_assetDao);
+        app.setAlarmDao(m_alarmDao);
         app.setGeocoderService(m_geocoder);
+        app.setTransactionOperations(m_transaction);
         return app;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
      * @see org.ops4j.pax.vaadin.ApplicationFactory#getApplicationClass()
      */
     @Override
@@ -72,18 +87,27 @@ public class NodeMapsApplicationFactory extends AbstractApplicationFactory {
 
     /**
      * Sets the OpenNMS Node DAO.
-     *
-     * @param m_nodeDao the new OpenNMS Node DAO
+     * 
+     * @param m_nodeDao
+     *            the new OpenNMS Node DAO
      */
-    public void setNodeDao(NodeDao nodeDao) {
-        this.m_nodeDao = nodeDao;
+    public void setNodeDao(final NodeDao nodeDao) {
+        m_nodeDao = nodeDao;
     }
 
-    public void setAssetDao(AssetRecordDao assetDao) {
-        this.m_assetDao = assetDao;
+    public void setAssetDao(final AssetRecordDao assetDao) {
+        m_assetDao = assetDao;
     }
 
-    public void setGeocoderService(GeocoderService geocoderService) {
-        this.m_geocoder = geocoderService;
+    public void setAlarmDao(final AlarmDao alarmDao) {
+        m_alarmDao = alarmDao;
+    }
+
+    public void setGeocoderService(final GeocoderService geocoderService) {
+        m_geocoder = geocoderService;
+    }
+    
+    public void setTransactionOperations(final TransactionOperations tx) {
+        m_transaction = tx;
     }
 }

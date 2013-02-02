@@ -29,68 +29,60 @@
 package org.opennms.features.topology.plugins.topo.simple.internal;
 
 import java.io.File;
-import java.net.URL;
+import java.net.MalformedURLException;
+import java.net.URI;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
-import javax.xml.bind.JAXB;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElements;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 
-import org.opennms.features.topology.api.EditableTopologyProvider;
-import org.opennms.features.topology.api.TopologyProvider;
+import org.opennms.features.topology.api.SimpleGroup;
+import org.opennms.features.topology.api.SimpleLeafVertex;
+import org.opennms.features.topology.api.topo.AbstractEdge;
+import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
+import org.opennms.features.topology.api.topo.AbstractVertex;
+import org.opennms.features.topology.api.topo.Edge;
+import org.opennms.features.topology.api.topo.GraphProvider;
+import org.opennms.features.topology.api.topo.SimpleEdgeProvider;
+import org.opennms.features.topology.api.topo.SimpleVertexProvider;
+import org.opennms.features.topology.api.topo.Vertex;
+import org.opennms.features.topology.api.topo.WrappedEdge;
+import org.opennms.features.topology.api.topo.WrappedGraph;
+import org.opennms.features.topology.api.topo.WrappedGroup;
+import org.opennms.features.topology.api.topo.WrappedLeafVertex;
+import org.opennms.features.topology.api.topo.WrappedVertex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.vaadin.data.Item;
-import com.vaadin.data.Property;
-import com.vaadin.data.util.BeanContainer;
-import com.vaadin.data.util.BeanItem;
+public class SimpleTopologyProvider extends AbstractTopologyProvider implements GraphProvider {
 
-public class SimpleTopologyProvider implements TopologyProvider, EditableTopologyProvider{
-	
+	protected static final String TOPOLOGY_NAMESPACE_SIMPLE = "simple";
+
 	private static final Logger s_log = LoggerFactory.getLogger(SimpleTopologyProvider.class);
 
-	private static final String SIMPLE_VERTEX_ID_PREFIX = "v";
-	private static final String SIMPLE_EDGE_ID_PREFIX = "e";
-	private static final String SIMPLE_GROUP_ID_PREFIX = "g";
+    private URI m_topologyLocation = null;
 
-    private final SimpleVertexContainer m_vertexContainer;
-    private final BeanContainer<String, SimpleEdge> m_edgeContainer;
-    private int m_counter = 0;
-    private int m_edgeCounter = 0;
-    private int m_groupCounter = 0;
-    
-    private URL m_topologyLocation = null;
-
-	private String m_namespace;
-    
     public SimpleTopologyProvider() {
-        s_log.debug("Creating a new SimpleTopologyProvider");
-        m_vertexContainer = new SimpleVertexContainer();
-        m_edgeContainer = new BeanContainer<String, SimpleEdge>(SimpleEdge.class);
-        m_edgeContainer.setBeanIdProperty("id");
+        this(TOPOLOGY_NAMESPACE_SIMPLE);
+    }
+
+    public SimpleTopologyProvider(String namespace) {
+        super(namespace);
+        s_log.debug("Creating a new SimpleTopologyProvider with namespace {}", namespace);
         
-        URL defaultGraph = getClass().getResource("/saved-vmware-graph.xml");
+        //URL defaultGraph = getClass().getResource("/saved-vmware-graph.xml");
 
-        setTopologyLocation(defaultGraph);
-    }
-    
-    public String getNamespace() {
-    	return m_namespace;
+        //setTopologyLocation(defaultGraph);
     }
 
-	public URL getTopologyLocation() {
+	public URI getTopologyLocation() {
 		return m_topologyLocation;
 	}
 
-	public void setTopologyLocation(URL topologyLocation) {
+	public void setTopologyLocation(URI topologyLocation) throws MalformedURLException, JAXBException {
 		m_topologyLocation = topologyLocation;
 		
 		if (m_topologyLocation != null) {
@@ -98,306 +90,141 @@ public class SimpleTopologyProvider implements TopologyProvider, EditableTopolog
 			load(m_topologyLocation);
 		} else {
 			s_log.debug("Setting topology location to null");
-			m_vertexContainer.removeAllItems();
-			m_edgeContainer.removeAllItems();
+			clearVertices();
+			clearEdges();
 		}
 	}
 
-	public SimpleVertexContainer getVertexContainer() {
-        return m_vertexContainer;
-    }
-
-    public BeanContainer<String, SimpleEdge> getEdgeContainer() {
-        return m_edgeContainer;
-    }
-
-    public Collection<String> getVertexIds() {
-        return m_vertexContainer.getItemIds();
-    }
-
-    @Override
-    public Collection<String> getEdgeIds() {
-        return m_edgeContainer.getItemIds();
-    }
-
-    @Override
-    public Collection<String> getEndPointIdsForEdge(Object edgeId) {
-        
-        SimpleEdge edge = getRequiredEdge(edgeId);
-
-        List<String> endPoints = new ArrayList<String>(2);
-        
-        endPoints.add(edge.getSource().getId());
-        endPoints.add(edge.getTarget().getId());
-
-        return endPoints;
-    }
-
-    @Override
-    public Collection<String> getEdgeIdsForVertex(Object vertexId) {
-        
-        SimpleVertex vertex = getRequiredVertex(vertexId);
-        
-        List<String> edges = new ArrayList<String>(vertex.getEdges().size());
-        
-        for(SimpleEdge e : vertex.getEdges()) {
-            edges.add(e.getId());
-        }
-        
-        return edges;
-
-    }
-    
-    private Item addVertex(String id, int x, int y, String label, String ipAddr, int nodeID) {
-        if (m_vertexContainer.containsId(id)) {
-            throw new IllegalArgumentException("A vertex or group with id " + id + " already exists!");
-        }
-        s_log.debug("Adding a vertex: {}", id);
-        SimpleVertex vertex = new SimpleLeafVertex(id, x, y);
-        vertex.setIconKey("server");
-        vertex.setLabel(label);
-        vertex.setIpAddr(ipAddr);
-        vertex.setNodeID(nodeID);
-        return m_vertexContainer.addBean(vertex);
-    }
-    
-    private Item addGroup(String groupId, String iconKey, String label) {
-        if (m_vertexContainer.containsId(groupId)) {
-            throw new IllegalArgumentException("A vertex or group with id " + groupId + " already exists!");
-        }
-        s_log.debug("Adding a group: {}", groupId);
-        SimpleVertex vertex = new SimpleGroup(groupId);
-        vertex.setLabel(label);
-        vertex.setIconKey(iconKey);
-        return m_vertexContainer.addBean(vertex);
-        
-    }
-    private void connectVertices(String id, Object sourceVertextId, Object targetVertextId) {
-        SimpleVertex source = getRequiredVertex(sourceVertextId);
-        SimpleVertex target = getRequiredVertex(targetVertextId);
-        
-        SimpleEdge edge = new SimpleEdge(id, source, target);
-        
-        m_edgeContainer.addBean(edge);
-        
-    }
-    
-    /* (non-Javadoc)
-	 * @see org.opennms.features.topology.plugins.topo.simple.internal.EditableTopologyProvider#removeVertex(java.lang.Object)
-	 */
-    @Override
-	public void removeVertex(Object vertexId) {
-        
-        SimpleVertex vertex = getVertex(vertexId, false);
-        if (vertex == null) return;
-        
-        m_vertexContainer.removeItem(vertexId);
-        
-        for(SimpleEdge e : vertex.getEdges()) {
-            m_edgeContainer.removeItem(e.getId());
-        }
-                
-        
-    }
-
-    private SimpleVertex getRequiredVertex(Object vertexId) {
-        return getVertex(vertexId, true);
-    }
-
-    private SimpleVertex getVertex(Object vertexId, boolean required) {
-        BeanItem<SimpleVertex> item = m_vertexContainer.getItem(vertexId);
-        if (required && item == null) {
-            throw new IllegalArgumentException("required vertex " + vertexId + " not found.");
-        }
-        
-        return item == null ? null : item.getBean();
-    }
-
-    private SimpleEdge getRequiredEdge(Object edgeId) {
-        return getEdge(edgeId, true);
-    }
-
-    private SimpleEdge getEdge(Object edgeId, boolean required) {
-        BeanItem<SimpleEdge> item = m_edgeContainer.getItem(edgeId);
-        if (required && item == null) {
-            throw new IllegalArgumentException("required edge " + edgeId + " not found.");
-        }
-        
-        return item == null ? null : item.getBean();
-    }
-    
-
-    @XmlRootElement(name="graph")
-    @XmlAccessorType(XmlAccessType.FIELD)
-    private static class SimpleGraph {
-        
-        @XmlElements({
-                @XmlElement(name="vertex", type=SimpleLeafVertex.class),
-                @XmlElement(name="group", type=SimpleGroup.class)
-        })
-        List<SimpleVertex> m_vertices = new ArrayList<SimpleVertex>();
-        
-        @XmlElement(name="edge")
-        List<SimpleEdge> m_edges = new ArrayList<SimpleEdge>();
-        
-        @XmlAttribute(name="namespace")
-        String m_namespace;
-        
-        @SuppressWarnings("unused") // except by JAXB
-        public SimpleGraph() {}
-
-        public SimpleGraph(String namespace, List<SimpleVertex> vertices, List<SimpleEdge> edges) {
-        	m_namespace = namespace;
-            m_vertices = vertices;
-            m_edges = edges;
-        }
-        
-        public String getNamespace() { return m_namespace; }
-
-    }
-    
-    /* (non-Javadoc)
-	 * @see org.opennms.features.topology.plugins.topo.simple.internal.EditableTopologyProvider#save(java.lang.String)
-	 */
     @Override
 	public void save(String filename) {
-        List<SimpleVertex> vertices = getBeans(m_vertexContainer);
-        List<SimpleEdge> edges = getBeans(m_edgeContainer);
-
-        SimpleGraph graph = new SimpleGraph(m_namespace, vertices, edges);
-        
-        JAXB.marshal(graph, new File(filename));
-    }
-    
-	public void load(URL url) {
-        SimpleGraph graph = JAXB.unmarshal(url, SimpleGraph.class);
-        
-        m_vertexContainer.removeAllItems();
-        m_vertexContainer.addAll(graph.m_vertices);
-        
-        m_edgeContainer.removeAllItems();
-        m_edgeContainer.addAll(graph.m_edges);
-        
-        if (graph.getNamespace() != null) {
-        	m_namespace = graph.getNamespace();
-        }
-    }
-
-    /* (non-Javadoc)
-	 * @see org.opennms.features.topology.plugins.topo.simple.internal.EditableTopologyProvider#load(java.lang.String)
-	 */
-    @Override
-	public void load(String filename) {
-        SimpleGraph graph = JAXB.unmarshal(new File(filename), SimpleGraph.class);
-        
-        m_vertexContainer.removeAllItems();
-        for (SimpleVertex vertex : graph.m_vertices) {
-            if (vertex.getId().startsWith(SIMPLE_GROUP_ID_PREFIX)) {
-                // Find the highest index group number and start the index for new groups above it
-                int groupNumber = Integer.parseInt(vertex.getId().substring(SIMPLE_GROUP_ID_PREFIX.length()));
-                if (m_groupCounter <= groupNumber) {
-                    m_groupCounter = groupNumber + 1;
-                }
+        List<WrappedVertex> vertices = new ArrayList<WrappedVertex>();
+        for (Vertex vertex : getVertices()) {
+            if (vertex.isGroup()) {
+                vertices.add(new WrappedGroup(vertex));
+            } else {
+                vertices.add(new WrappedLeafVertex(vertex));
             }
         }
-        m_vertexContainer.addAll(graph.m_vertices);
-        
-        m_edgeContainer.removeAllItems();
-        m_edgeContainer.addAll(graph.m_edges);
+        List<WrappedEdge> edges = new ArrayList<WrappedEdge>();
+        for (Edge edge : getEdges()) {
+            WrappedEdge newEdge = new WrappedEdge(edge, new WrappedLeafVertex(m_vertexProvider.getVertex(edge.getSource().getVertex())), new WrappedLeafVertex(m_vertexProvider.getVertex(edge.getTarget().getVertex())));
+            edges.add(newEdge);
+        }
+
+        WrappedGraph graph = new WrappedGraph(getVertexNamespace(), vertices, edges);
+
+        try {
+        	JAXBContext jc = JAXBContext.newInstance(WrappedGraph.class, WrappedLeafVertex.class, WrappedGroup.class, WrappedEdge.class);
+        	Marshaller u = jc.createMarshaller();
+        	u.marshal(graph, new File(filename));
+        } catch (JAXBException e) {
+        	s_log.error(e.getMessage(), e);
+        }
     }
     
-    private static <T> List<T> getBeans(BeanContainer<?, T> container) {
-        Collection<?> itemIds = container.getItemIds();
-        List<T> beans = new ArrayList<T>(itemIds.size());
-        
-        for(Object itemId : itemIds) {
-            beans.add(container.getItem(itemId).getBean());
+    private void load(final URI source, final WrappedGraph graph) {
+        String namespace = graph.m_namespace == null ? TOPOLOGY_NAMESPACE_SIMPLE : graph.m_namespace;
+        if (getVertexNamespace() != namespace) { 
+            LoggerFactory.getLogger(this.getClass()).info("Creating new vertex provider with namespace {}", namespace);
+            m_vertexProvider = new SimpleVertexProvider(namespace);
+        }
+        if (getEdgeNamespace() != namespace) { 
+            LoggerFactory.getLogger(this.getClass()).info("Creating new edge provider with namespace {}", namespace);
+            m_edgeProvider = new SimpleEdgeProvider(namespace);
+        }
+
+        clearVertices();
+        for (WrappedVertex vertex : graph.m_vertices) {
+            if (vertex.namespace == null) {
+                vertex.namespace = getVertexNamespace();
+                LoggerFactory.getLogger(this.getClass()).warn("Setting namespace on vertex to default: {}", vertex);
+            } 
+
+            if (vertex.id == null) {
+                LoggerFactory.getLogger(this.getClass()).warn("Invalid vertex unmarshalled from {}: {}", source.toString(), vertex);
+            } else if (vertex.id.startsWith(SIMPLE_GROUP_ID_PREFIX)) {
+                try {
+                    // Find the highest index group number and start the index for new groups above it
+                    int groupNumber = Integer.parseInt(vertex.id.substring(SIMPLE_GROUP_ID_PREFIX.length()));
+                    if (m_groupCounter <= groupNumber) {
+                        m_groupCounter = groupNumber + 1;
+                    }
+                } catch (NumberFormatException e) {
+                    // Ignore this group ID since it doesn't conform to our pattern for auto-generated IDs
+                }
+            }
+            AbstractVertex newVertex;
+            if (vertex.group) {
+                newVertex = new SimpleGroup(vertex.namespace, vertex.id);
+                if (vertex.x != null) newVertex.setX(vertex.x);
+                if (vertex.y != null) newVertex.setY(vertex.y);
+            } else {
+                newVertex = new SimpleLeafVertex(vertex.namespace, vertex.id, vertex.x, vertex.y);
+            }
+            newVertex.setIconKey(vertex.iconKey);
+            newVertex.setIpAddress(vertex.ipAddr);
+            newVertex.setLabel(vertex.label);
+            newVertex.setLocked(vertex.locked);
+            if (vertex.nodeID != null) newVertex.setNodeID(vertex.nodeID);
+            newVertex.setParent(vertex.parent);
+            newVertex.setSelected(vertex.selected);
+            newVertex.setStyleName(vertex.styleName);
+            newVertex.setTooltipText(vertex.tooltipText);
+            addVertices(newVertex);
         }
         
-        return beans;
+        clearEdges();
+        for (WrappedEdge edge : graph.m_edges) {
+            if (edge.namespace == null) {
+                edge.namespace = getEdgeNamespace();
+                LoggerFactory.getLogger(this.getClass()).warn("Setting namespace on edge to default: {}", edge);
+            } 
+
+            if (edge.id == null) {
+                LoggerFactory.getLogger(this.getClass()).warn("Invalid edge unmarshalled from {}: {}", source.toString(), edge);
+            } else if (edge.id.startsWith(SIMPLE_EDGE_ID_PREFIX)) {
+                try {
+                    /*
+                     * This code will be necessary if we allow edges to be created
+                    
+                    // Find the highest index group number and start the index for new groups above it
+                    int edgeNumber = Integer.parseInt(edge.getId().substring(SIMPLE_EDGE_ID_PREFIX.length()));
+                    
+                    if (m_edgeCounter <= edgeNumber) {
+                        m_edgeCounter = edgeNumber + 1;
+                    }
+                    */
+                } catch (NumberFormatException e) {
+                    // Ignore this edge ID since it doesn't conform to our pattern for auto-generated IDs
+                }
+            }
+            AbstractEdge newEdge = connectVertices(edge.id, edge.source, edge.target);
+            newEdge.setLabel(edge.label);
+            newEdge.setTooltipText(edge.tooltipText);
+            //addEdges(newEdge);
+        }
+
+        for (WrappedVertex vertex: graph.m_vertices) {
+            if (vertex.parent != null) {
+                LoggerFactory.getLogger(this.getClass()).debug("Setting parent of " + vertex + " to " + vertex.parent);
+                setParent(vertex, vertex.parent);
+            }
+        }
     }
 
-    protected String getNextVertexId() {
-        return SIMPLE_VERTEX_ID_PREFIX + m_counter++;
-    }
-
-    protected String getNextEdgeId() {
-        return SIMPLE_EDGE_ID_PREFIX + m_edgeCounter ++;
-    }
-    
-    protected String getNextGroupId() {
-        return SIMPLE_GROUP_ID_PREFIX + m_groupCounter++;
-    }
-
-    /* (non-Javadoc)
-	 * @see org.opennms.features.topology.plugins.topo.simple.internal.EditableTopologyProvider#resetContainer()
-	 */
-    @Override
-	public void resetContainer() {
-        getVertexContainer().removeAllItems();
-        getEdgeContainer().removeAllItems();
-        
-        m_counter = 0;
-        m_edgeCounter = 0;
-    }
-
-    public Collection<?> getPropertyIds() {
-        return Collections.EMPTY_LIST;
-    }
-
-    public Property getProperty(String propertyId) {
-        return null;
-    }
-    
-    
-    /* (non-Javadoc)
-	 * @see org.opennms.features.topology.plugins.topo.simple.internal.EditableTopologyProvider#addVertex(int, int)
-	 */
-    @Override
-	public String addVertex(int x, int y) {
-        String nextVertexId = getNextVertexId();
-//        addVertex(nextVertexId, x, y, icon, "Vertex " + nextVertexId, "127.0.0.1", -1);
-        /* 
-         * Passing a nodeID of -1 will disable the Events/Alarms, Node Info, and
-         * Resource Graphs windows in the context menus  
-         */
-        addVertex(nextVertexId, x, y, "Vertex " + nextVertexId, "64.146.64.214", -1);
-        return nextVertexId;
+    void load(URI url) throws JAXBException, MalformedURLException {
+    	JAXBContext jc = JAXBContext.newInstance(WrappedGraph.class);
+    	Unmarshaller u = jc.createUnmarshaller();
+    	WrappedGraph graph = (WrappedGraph) u.unmarshal(url.toURL());
+    	load(url, graph);
     }
 
     @Override
-    public void setParent(Object vertexId, Object parentId) {
-        m_vertexContainer.setParent(vertexId, parentId);
+    public void load(String filename) throws MalformedURLException, JAXBException {
+        if (filename == null) {
+            load(getTopologyLocation());
+        } else {
+            load(new File(filename).toURI());
+        }
     }
-
-    /* (non-Javadoc)
-	 * @see org.opennms.features.topology.plugins.topo.simple.internal.EditableTopologyProvider#connectVertices(java.lang.Object, java.lang.Object)
-	 */
-    @Override
-	public String connectVertices(Object sourceVertextId, Object targetVertextId) {
-        String nextEdgeId = getNextEdgeId();
-        connectVertices(nextEdgeId, sourceVertextId, targetVertextId);
-        return nextEdgeId;
-    }
-
-    /* (non-Javadoc)
-	 * @see org.opennms.features.topology.plugins.topo.simple.internal.EditableTopologyProvider#addGroup(java.lang.String)
-	 */
-
-    @Override
-    public Object addGroup(String groupLabel, String groupIconKey) {
-        String nextGroupId = getNextGroupId();
-        addGroup(nextGroupId, groupIconKey, groupLabel);
-        return nextGroupId;
-    }
-
-    /* (non-Javadoc)
-	 * @see org.opennms.features.topology.plugins.topo.simple.internal.EditableTopologyProvider#containsVertexId(java.lang.Object)
-	 */
-
-	@Override
-    public boolean containsVertexId(Object vertexId) {
-        return m_vertexContainer.containsId(vertexId);
-    }
-    
 }

@@ -34,8 +34,10 @@ import java.util.List;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.HistoryManager;
 import org.opennms.features.topology.api.IViewContribution;
-import org.opennms.features.topology.api.TopologyProvider;
+import org.opennms.features.topology.api.MapViewManager;
+import org.opennms.features.topology.api.MapViewManagerListener;
 import org.opennms.features.topology.api.WidgetContext;
+import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.app.internal.TopoContextMenu.TopoContextMenuItem;
 import org.opennms.features.topology.app.internal.jung.FRLayoutAlgorithm;
 import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
@@ -43,7 +45,6 @@ import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
 import com.github.wolfie.refresher.Refresher;
 import com.vaadin.Application;
 import com.vaadin.data.Property;
-import com.vaadin.data.util.BeanItem;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.AbsoluteLayout;
@@ -67,7 +68,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.VerticalSplitPanel;
 import com.vaadin.ui.Window;
 
-public class TopologyWidgetTestApplication extends Application implements CommandUpdateListener, MenuItemUpdateListener, ContextMenuHandler, WidgetUpdateListener, WidgetContext, FragmentChangedListener, GraphContainer.ChangeListener {
+public class TopologyWidgetTestApplication extends Application implements CommandUpdateListener, MenuItemUpdateListener, ContextMenuHandler, WidgetUpdateListener, WidgetContext, FragmentChangedListener, GraphContainer.ChangeListener, MapViewManagerListener {
     
     
 	private static final long serialVersionUID = 6837501987137310938L;
@@ -93,12 +94,13 @@ public class TopologyWidgetTestApplication extends Application implements Comman
     private UriFragmentUtility m_uriFragUtil;
     private HistoryManager m_historyManager;
     
-	public TopologyWidgetTestApplication(CommandManager commandManager, HistoryManager historyManager, TopologyProvider topologyProvider, ProviderManager providerManager, IconRepositoryManager iconRepoManager) {
+	public TopologyWidgetTestApplication(CommandManager commandManager, HistoryManager historyManager, GraphProvider topologyProvider, ProviderManager providerManager, IconRepositoryManager iconRepoManager) {
 		m_commandManager = commandManager;
 		m_commandManager.addMenuItemUpdateListener(this);
 		m_historyManager = historyManager;
 		m_graphContainer = new VEProviderGraphContainer(topologyProvider, providerManager);
 		m_graphContainer.addChangeListener(this);
+		m_graphContainer.getMapViewManager().addListener(this);
 		m_iconRepositoryManager = iconRepoManager;
 		
 	}
@@ -130,10 +132,9 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 
 		m_graphContainer.setLayoutAlgorithm(new FRLayoutAlgorithm());
 
-		BeanItem<GraphContainer> item = new BeanItem<GraphContainer>(m_graphContainer);
-		final Property scale = item.getItemProperty("scale");
+		final Property scale = m_graphContainer.getScaleProperty();
 
-		m_topologyComponent = new TopologyComponent(m_graphContainer, scale);
+		m_topologyComponent = new TopologyComponent(m_graphContainer);
 		m_topologyComponent.setIconRepoManager(m_iconRepositoryManager);
 		m_topologyComponent.setSizeFull();
 		m_topologyComponent.addMenuItemStateListener(this);
@@ -145,16 +146,9 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 		slider.setResolution(1);
 		slider.setHeight("300px");
 		slider.setOrientation(Slider.ORIENTATION_VERTICAL);
-//		try {
-//            slider.setValue(1.0);
-//        } catch (ValueOutOfBoundsException e) {
-//            // Catch an Index out of bounds exception
-//        }
-		scale.setValue(0);
+
 		slider.setImmediate(true);
 
-		final Property zoomLevel = item.getItemProperty("semanticZoomLevel");
-		
 		final Button zoomInBtn = new Button();
 		zoomInBtn.setIcon(new ThemeResource("images/plus.png"));
 		zoomInBtn.setDescription("Expand Semantic Zoom Level");
@@ -162,9 +156,9 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 		zoomInBtn.addListener(new ClickListener() {
 
             public void buttonClick(ClickEvent event) {
-				int szl = (Integer) zoomLevel.getValue();
+				int szl = (Integer) m_graphContainer.getSemanticZoomLevel();
 				szl++;
-				zoomLevel.setValue(szl);
+				m_graphContainer.setSemanticZoomLevel(szl);
 				setSemanticZoomLevel(szl);
 				saveHistory();
 			}
@@ -177,10 +171,10 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 		zoomOutBtn.addListener(new ClickListener() {
 
 			public void buttonClick(ClickEvent event) {
-				int szl = (Integer) zoomLevel.getValue();
+				int szl = (Integer) m_graphContainer.getSemanticZoomLevel();
 				if(szl > 0) {
 				    szl--;
-				    zoomLevel.setValue(szl);
+				    m_graphContainer.setSemanticZoomLevel(szl);
 				    setSemanticZoomLevel(szl);
 				    saveHistory();
 				} 
@@ -509,16 +503,25 @@ public class TopologyWidgetTestApplication extends Application implements Comman
     }
 
 
+    int m_settingFragment = 0;
     @Override
     public void fragmentChanged(FragmentChangedEvent source) {
+        m_settingFragment++;
         String fragment = source.getUriFragmentUtility().getFragment();
+        System.out.println("Fragment: " + fragment);
         m_historyManager.applyHistory(fragment, m_graphContainer);
+        m_settingFragment--;
     }
 
 
     private void saveHistory() {
-        String fragment = m_historyManager.create(m_graphContainer);
-        m_uriFragUtil.setFragment(fragment);
+        if (m_settingFragment == 0) {
+            System.out.println("Enter Save history :: scale: " + m_graphContainer.getScale());
+            String fragment = m_historyManager.create(m_graphContainer);
+            System.out.println("Saving fragment: " + fragment);
+            m_uriFragUtil.setFragment(fragment, false);
+            System.out.println("Exit Save history :: scale: " + m_graphContainer.getScale());
+        }
     }
 
 
@@ -531,6 +534,12 @@ public class TopologyWidgetTestApplication extends Application implements Comman
     private void setSemanticZoomLevel(int szl) {
         m_zoomLevelLabel.setValue(szl);
         m_graphContainer.redoLayout();
+    }
+
+
+    @Override
+    public void boundingBoxChanged(MapViewManager viewManager) {
+        saveHistory();
     }
 
 

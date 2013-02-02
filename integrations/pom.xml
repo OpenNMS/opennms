@@ -21,5 +21,6 @@
     <module>opennms-rws</module>
     <module>opennms-snmp-asset-provisioning-adapter</module>
     <module>opennms-jasper-extensions</module>
+    <module>opennms-vmware</module>
   </modules>
 </project>
