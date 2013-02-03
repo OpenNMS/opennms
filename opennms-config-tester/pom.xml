@@ -81,6 +81,10 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-snmp-asset-provisioning-adapter</artifactId>
     </dependency>
+    <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-vmware</artifactId>
+    </dependency>
     <!-- Non-OpenNMS dependencies -->
     <dependency>
       <groupId>commons-cli</groupId>
