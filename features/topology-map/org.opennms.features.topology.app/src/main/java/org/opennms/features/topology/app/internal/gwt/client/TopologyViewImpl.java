@@ -64,7 +64,7 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
 
     private boolean m_isRefresh;
 
-    private int m_leftMargin = 120;
+    private int m_leftMargin = 60;
 
     public int getLeftMargin() {
         return m_leftMargin;

@@ -508,7 +508,6 @@ public class TopologyWidgetTestApplication extends Application implements Comman
     public void fragmentChanged(FragmentChangedEvent source) {
         m_settingFragment++;
         String fragment = source.getUriFragmentUtility().getFragment();
-        System.out.println("Fragment: " + fragment);
         m_historyManager.applyHistory(fragment, m_graphContainer);
         m_settingFragment--;
     }
@@ -516,11 +515,8 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 
     private void saveHistory() {
         if (m_settingFragment == 0) {
-            System.out.println("Enter Save history :: scale: " + m_graphContainer.getScale());
             String fragment = m_historyManager.create(m_graphContainer);
-            System.out.println("Saving fragment: " + fragment);
             m_uriFragUtil.setFragment(fragment, false);
-            System.out.println("Exit Save history :: scale: " + m_graphContainer.getScale());
         }
     }
 

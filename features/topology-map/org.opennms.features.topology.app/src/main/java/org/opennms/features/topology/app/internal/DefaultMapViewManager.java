@@ -52,11 +52,8 @@ public class DefaultMapViewManager implements MapViewManager{
         return m_viewPortWidth < 0 ? -1 : m_viewPortWidth / (double)m_viewPortHeight;
     }
     public void setCenter(Point point) {
-        BoundingBox oldBoundingBox = getCurrentBoundingBox();
         Point oldCenter = m_center;
         m_center = point;
-        BoundingBox newBoundingBox = getCurrentBoundingBox();
-        System.err.println("oldBBox " + oldBoundingBox + " newBBox " + newBoundingBox + " oldCenter " + oldCenter + " newCenter: " + m_center);
         if(!oldCenter.equals(m_center)) {
             fireUpdate();
         }
@@ -94,13 +91,10 @@ public class DefaultMapViewManager implements MapViewManager{
     }
     
     public void setScale(double scale) {
-        BoundingBox oldBoundingBox = getCurrentBoundingBox();
         double oldScale = m_scale;
         m_scale = scale;
         m_scale = Math.min(1.0, m_scale);
         m_scale = Math.max(0.0, m_scale);
-        BoundingBox newBoundingBox = getCurrentBoundingBox();
-        System.err.println("oldBBox " + oldBoundingBox + " newBBox " + newBoundingBox + " oldScale " + oldScale + " newScale: " + m_scale);
         if(oldScale != m_scale) {
             fireUpdate();
         }
@@ -121,7 +115,6 @@ public class DefaultMapViewManager implements MapViewManager{
         m_center = boundingBox.getCenter();
         
         BoundingBox newBoundingBox = getCurrentBoundingBox();
-        System.err.println("oldBBox " + oldBoundingBox + " newBBox " + newBoundingBox + " boundingBox " + boundingBox + " bbPrime " + bbPrime);
         if(!oldCenter.equals(m_center) || oldScale != m_scale || !oldBoundingBox.equals(newBoundingBox)) {
             fireUpdate();
         }

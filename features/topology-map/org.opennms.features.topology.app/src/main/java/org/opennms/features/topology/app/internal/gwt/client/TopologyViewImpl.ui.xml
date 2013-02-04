@@ -4,7 +4,7 @@
         .toolbar { position: absolute; top:0px; right:50%; }
     </ui:style>
     <g:HTMLPanel ui:field="m_widgetContainer">
-       <div id="chart-2" style="width: 100%; height: 100%; background-color:white; padding-left: 60px;">
+       <div id="chart-2" class="map-controls" style="width: 100%; height: 100%; background-color:white; margin-left: 60px;">
            <svg ui:field="m_svg" width="100%" height="100%" style="background-color:white;" xmlns:xlink="http://www.w3.org/1999/xlink">
                <defs>
                    <filter id="h200" x="0" y="0" width="1" height="1">
