@@ -25,7 +25,6 @@
     <module>jersey</module>
     <module>jfreechart</module>
     <module>jinterop</module>
-    <module>jmdns</module>
     <module>jna</module>
     <module>jnlp</module>
     <module>jradius</module>

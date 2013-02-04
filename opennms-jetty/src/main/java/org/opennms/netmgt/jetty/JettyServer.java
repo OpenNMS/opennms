@@ -43,8 +43,6 @@ import org.eclipse.jetty.server.ssl.SslSocketConnector;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
-import org.opennms.serviceregistration.ServiceRegistrationFactory;
-import org.opennms.serviceregistration.ServiceRegistrationStrategy;
 
 /**
  * Implements Web Application within OpenNMS as a Service Daemon.
@@ -57,7 +55,6 @@ public class JettyServer extends AbstractServiceDaemon implements SpringServiceD
     int m_port = 8080;
 
     private Server m_server;
-    private Hashtable<String,ServiceRegistrationStrategy> services = new Hashtable<String,ServiceRegistrationStrategy>();
     
     /**
      * <p>Constructor for JettyServer.</p>
@@ -138,13 +135,11 @@ public class JettyServer extends AbstractServiceDaemon implements SpringServiceD
                         contextPath = "/" + file.getName();
                     }
                     addContext(handlers, file, contextPath);
-                    registerService(port, contextPath);
                 }
             }
             if (rootDir != null) {
                 // If we deferred a ROOT context, handle that now
                 addContext(handlers, rootDir, "/");
-                registerService(port, "/");
             }
         }
 
@@ -165,28 +160,6 @@ public class JettyServer extends AbstractServiceDaemon implements SpringServiceD
         wac.setWar(name.getAbsolutePath());
         wac.setContextPath(contextPath);
         handlers.addHandler(wac);
-    }
-
-    /**
-     * <p>registerService</p>
-     *
-     * @param port a {@link java.lang.Integer} object.
-     * @param contextPath a {@link java.lang.String} object.
-     */
-    protected void registerService(Integer port, String contextPath) {
-        String contextName = contextPath.replace("/", "");
-
-        try {
-            ServiceRegistrationStrategy srs = ServiceRegistrationFactory.getStrategy();
-            String host = InetAddress.getLocalHost().getHostName().replace(".local", "").replace(".", "-");
-            Hashtable<String, String> properties = new Hashtable<String, String>();
-            properties.put("path", contextPath);
-            
-            srs.initialize("HTTP", contextName + "-" + host, port, properties);
-            services.put(contextName, srs);
-        } catch (Throwable e) {
-            log().warn("unable to get a DNS-SD object for context '" + contextPath + "'", e);
-        }
     }
 
     /**
@@ -235,31 +208,11 @@ public class JettyServer extends AbstractServiceDaemon implements SpringServiceD
         } catch (Throwable e) {
             log().error("Error starting Jetty Server", e);
         }
-        for (String key: services.keySet()) {
-        	ServiceRegistrationStrategy srs = services.get(key);
-        	if (srs != null) {
-            	try {
-            		srs.register();
-            	} catch (Throwable e) {
-            		log().warn("unable to register a DNS-SD object for context '" + key + "'", e);
-            	}
-        	}
-        }
     }
 
     /** {@inheritDoc} */
     @Override
     protected void onStop() {
-        for (String key: services.keySet()) {
-        	ServiceRegistrationStrategy srs = services.get(key);
-        	if (srs != null) {
-            	try {
-            		srs.unregister();
-            	} catch (Throwable e) {
-            		log().warn("unable to unregister a DNS-SD object for context '" + key + "'", e);
-            	}
-        	}
-        }
         try {
             m_server.stop();
         } catch (Throwable e) {
