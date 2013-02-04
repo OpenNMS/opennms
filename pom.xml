@@ -1086,11 +1086,6 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.opennms.features</groupId>
-        <artifactId>org.opennms.features.mdns</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
         <groupId>org.opennms.features.ncs</groupId>
         <artifactId>ncs-alarm-gui</artifactId>
         <version>${project.version}</version>
