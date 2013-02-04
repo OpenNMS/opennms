@@ -10,9 +10,9 @@ import javax.ws.rs.core.MediaType;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 
-@Path("/nodes")
+@Path("/categories")
 @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-public class NodeRestService {
+public class CategoryResource {
 
     private NodeDao nodeDao;
 

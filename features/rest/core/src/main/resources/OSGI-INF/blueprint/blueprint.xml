@@ -16,11 +16,23 @@
 ">
     
     <reference id="nodeDao" interface="org.opennms.netmgt.dao.NodeDao" />
+    <reference id="eventDao" interface="org.opennms.netmgt.dao.EventDao" />
+    <reference id="categoryDao" interface="org.opennms.netmgt.dao.CategoryDao" />
     
-    <bean id="nodeRestService" class="org.opennms.features.rest.core.NodeRestService">
+    <bean id="nodeResource" class="org.opennms.features.rest.core.NodeResource">
         <property name="nodeDao" ref="nodeDao" /> 
     </bean>
-    
+
+    <bean id="eventResource" class="org.opennms.features.rest.core.EventResource">
+        <property name="nodeDao" ref="nodeDao" /> 
+        <property name="eventDao" ref="eventDao" /> 
+    </bean>
+
+    <bean id="categoryResource" class="org.opennms.features.rest.core.CategoryResource">
+        <property name="nodeDao" ref="nodeDao" /> 
+        <!--<property name="categoryDao" ref="categoryDao" />--> 
+    </bean>
+            
     <cxf:bus id="restBus">
         <cxf:features>
             <cxf:logging/>
@@ -29,7 +41,9 @@
 
     <jaxrs:server id="restServer">
         <jaxrs:serviceBeans>
-            <ref component-id="nodeRestService" />
+            <ref component-id="nodeResource" />
+            <ref component-id="eventResource" />
+            <ref component-id="categoryResource" />
         </jaxrs:serviceBeans>
     </jaxrs:server>
   
