@@ -34,6 +34,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
+import org.opennms.features.topology.api.AbstractCheckedOperation;
 import org.opennms.features.topology.api.CheckedOperation;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.topo.GraphProvider;
@@ -49,7 +50,7 @@ public class TopologySelector {
 	private final Map<GraphProvider, ServiceRegistration<CheckedOperation>> m_registrations = new HashMap<GraphProvider, ServiceRegistration<CheckedOperation>>();
 	
     
-    private class TopologySelectorOperation implements CheckedOperation {
+    private class TopologySelectorOperation extends AbstractCheckedOperation {
     	
     	private GraphProvider m_topologyProvider;
     	private Map<?,?> m_metaData;
@@ -78,17 +79,12 @@ public class TopologySelector {
     	}
 
     	@Override
-    	public boolean enabled(List<VertexRef> targets, OperationContext operationContext) {
-    		return true;
-    	}
-
-    	@Override
     	public String getId() {
     		return getLabel();
     	}
 
 		@Override
-		public boolean isChecked(List<VertexRef> targets, OperationContext operationContext) {
+		protected boolean isChecked(OperationContext operationContext) {
 			GraphProvider activeGraphProvider = operationContext.getGraphContainer().getBaseTopology();
 			return m_topologyProvider.equals(activeGraphProvider);
 		}

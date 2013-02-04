@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.simple.internal.operations;
+package org.opennms.features.topology.app.internal.operations;
 
 import java.util.List;
 
@@ -61,6 +61,6 @@ public class ConnectOperation implements Operation {
 
     @Override
     public String getId() {
-        return null;
+        return getClass().getSimpleName();
     }
 }

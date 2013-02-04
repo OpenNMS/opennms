@@ -326,6 +326,19 @@ public class TestMenuBarBuilder {
 					OperationContext operationContext) {
 				// TODO Auto-generated method stub
 				return false;
+			}
+
+			@Override
+			public void applyHistory(OperationContext context,
+					Map<String, String> settings) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public Map<String, String> createHistory(OperationContext context) {
+				// TODO Auto-generated method stub
+				return null;
 			}};
 	}
 

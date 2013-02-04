@@ -6,15 +6,7 @@ import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.slf4j.LoggerFactory;
 
-import com.vaadin.data.Item;
-import com.vaadin.data.Property;
-
 public abstract class AbstractOperation implements Operation {
-
-    @Override
-    public Undoer execute(final List<VertexRef> targets, final OperationContext operationContext) {
-        return null;
-    }
 
     @Override
     public boolean display(final List<VertexRef> targets, final OperationContext operationContext) {
@@ -34,50 +26,25 @@ public abstract class AbstractOperation implements Operation {
         return false;
     }
 
-    @Override
-    public abstract String getId();
-
     protected static String getLabelValue(final OperationContext operationContext, final VertexRef target) {
-        return getPropertyValue(getVertexItem(operationContext, target), "label", String.class);
+        return getVertexItem(operationContext, target).getLabel();
     }
 
     protected static String getIpAddrValue(final OperationContext operationContext, final VertexRef target) {
-        return getPropertyValue(getVertexItem(operationContext, target), "ipAddr", String.class);
+        return getVertexItem(operationContext, target).getIpAddress();
     }
 
     protected static Integer getNodeIdValue(final OperationContext operationContext, final VertexRef target) {
-        return getPropertyValue(getVertexItem(operationContext, target), "nodeID", Integer.class);
+        return getVertexItem(operationContext, target).getNodeID();
     }
 
-	protected static Item getVertexItem(final OperationContext operationContext, final VertexRef target) {
+	protected static Vertex getVertexItem(final OperationContext operationContext, final VertexRef target) {
 		Vertex vertex = operationContext.getGraphContainer().getBaseTopology().getVertex(target);
 		if (vertex == null) {
 			LoggerFactory.getLogger(AbstractOperation.class).debug("Null vertex found for vertex reference: {}:{}", target.getNamespace(), target.getId());
 			return null;
 		} else {
-			return vertex.getItem();
+			return vertex;
 		}
 	}
-
-    @SuppressWarnings("unchecked")
-    protected static <T> T getPropertyValue(final Item item, final Object id, final Class<T> clazz) {
-        if (item == null) return null;
-
-        final Property prop = item.getItemProperty(id);
-        if (prop == null) return null;
-
-        final Class<?> type = prop.getType();
-        if (type == null) return null;
-
-        final Object value = prop.getValue();
-        if (value == null) return null;
-
-        if (!type.isAssignableFrom(clazz)) {
-            LoggerFactory.getLogger(AbstractOperation.class).warn("Expected " + id + " of type " + clazz.getName() + ", but got " + type.getName() + " instead.");
-            return null;
-        }
-
-        return (T) value;
-    }
-
 }

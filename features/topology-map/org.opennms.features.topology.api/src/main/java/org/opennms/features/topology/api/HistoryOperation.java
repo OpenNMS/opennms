@@ -26,41 +26,11 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.app.internal.operations;
+package org.opennms.features.topology.api;
 
-import java.util.List;
+import java.util.Map;
 
-import org.opennms.features.topology.api.AbstractCheckedOperation;
-import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.app.internal.jung.CircleLayoutAlgorithm;
-
-
-public class CircleLayoutOperation extends AbstractCheckedOperation {
-
-    @Override
-    public Undoer execute(List<VertexRef> targets, OperationContext operationContext) {
-        operationContext.getGraphContainer().setLayoutAlgorithm(new CircleLayoutAlgorithm());
-        
-        return null;
-    }
-
-    @Override
-    public boolean display(List<VertexRef> targets, OperationContext operationContext) {
-        return true;
-    }
-
-    @Override
-    public String getId() {
-        return null;
-    }
-
-    @Override
-    protected boolean isChecked(OperationContext context) {
-        if(context.getGraphContainer().getLayoutAlgorithm() instanceof CircleLayoutAlgorithm ) {
-            return true;
-        }
-        
-        return false;
-    }
+public interface HistoryOperation {
+    void applyHistory(OperationContext context, Map<String,String> settings);
+    Map<String,String> createHistory(OperationContext context);
 }

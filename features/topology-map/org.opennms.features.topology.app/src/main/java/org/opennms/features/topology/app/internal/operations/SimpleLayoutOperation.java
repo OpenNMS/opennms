@@ -30,14 +30,14 @@ package org.opennms.features.topology.app.internal.operations;
 
 import java.util.List;
 
-import org.opennms.features.topology.api.CheckedOperation;
+import org.opennms.features.topology.api.AbstractCheckedOperation;
 import org.opennms.features.topology.api.DisplayState;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.SimpleLayoutAlgorithm;
 
 
-public class SimpleLayoutOperation implements CheckedOperation{
+public class SimpleLayoutOperation extends AbstractCheckedOperation {
     
 
     @Override
@@ -55,17 +55,12 @@ public class SimpleLayoutOperation implements CheckedOperation{
     }
 
     @Override
-    public boolean enabled(List<VertexRef> targets, OperationContext operationContext) {
-        return true;
-    }
-
-    @Override
     public String getId() {
         return null;
     }
 
     @Override
-    public boolean isChecked(List<VertexRef> targets, OperationContext operationContext) {
+    protected boolean isChecked(OperationContext operationContext) {
         if(operationContext.getGraphContainer().getLayoutAlgorithm() instanceof SimpleLayoutAlgorithm) {
             return true;
         }
