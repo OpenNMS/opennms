@@ -49,16 +49,16 @@ import org.vaadin.peter.contextmenu.ContextMenu.ClickEvent;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 
 import com.vaadin.ui.MenuBar;
-import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.MenuBar.MenuItem;
 
 public class CommandManager {
 
-	public class DefaultOperationContext implements OperationContext {
+	private class DefaultOperationContext implements OperationContext {
 
-		private Window m_mainWindow;
-		private GraphContainer m_graphContainer;
-		private DisplayLocation m_displayLocation;
+		private final Window m_mainWindow;
+		private final GraphContainer m_graphContainer;
+		private final DisplayLocation m_displayLocation;
 		private boolean m_checked = false;
 
 		public DefaultOperationContext(Window mainWindow, GraphContainer graphContainer, DisplayLocation displayLocation) {
@@ -94,7 +94,7 @@ public class CommandManager {
 	
 	private class ContextMenuListener implements ContextMenu.ClickListener {
 		
-		OperationContext m_opContext;
+		private final OperationContext m_opContext;
 		
 		public ContextMenuListener(OperationContext opContext) {
 			m_opContext = opContext;
@@ -112,23 +112,15 @@ public class CommandManager {
 		
 	}
 
-	private List<Command> m_commandList = new ArrayList<Command>();
-	private List<Command> m_commandHistoryList = new ArrayList<Command>();
-	private List<CommandUpdateListener> m_updateListeners = new ArrayList<CommandUpdateListener>();
-	private List<MenuItemUpdateListener> m_menuItemUpdateListeners = new ArrayList<MenuItemUpdateListener>();
-	private List<String> m_topLevelMenuOrder = new ArrayList<String>();
-	private Map<String, List<String>> m_subMenuGroupOrder = new HashMap<String, List<String>>();
-	private Map<MenuBar.Command, Operation> m_commandToOperationMap = new HashMap<MenuBar.Command, Operation>();
-	private Map<ContextMenuItem, Operation> m_contextMenuItemsToOperationMap = new HashMap<ContextMenuItem, Operation>();
+	private final List<Command> m_commandList = new ArrayList<Command>();
+	private final List<Command> m_commandHistoryList = new ArrayList<Command>();
+	private final List<CommandUpdateListener> m_updateListeners = new ArrayList<CommandUpdateListener>();
+	private final List<MenuItemUpdateListener> m_menuItemUpdateListeners = new ArrayList<MenuItemUpdateListener>();
+	private final List<String> m_topLevelMenuOrder = new ArrayList<String>();
+	private final Map<String, List<String>> m_subMenuGroupOrder = new HashMap<String, List<String>>();
+	private final Map<MenuBar.Command, Operation> m_commandToOperationMap = new HashMap<MenuBar.Command, Operation>();
+	private final Map<ContextMenuItem, Operation> m_contextMenuItemsToOperationMap = new HashMap<ContextMenuItem, Operation>();
 	public CommandManager() {
-	}
-
-	public List<Command> getCommandList() {
-		return m_commandList;
-	}
-
-	public void setCommandList(List<Command> commandList) {
-		m_commandList = commandList;
 	}
 
 	public void addCommand(Command command) {
@@ -161,7 +153,7 @@ public class CommandManager {
 		menuBarBuilder.setTopLevelMenuOrder(m_topLevelMenuOrder);
 		menuBarBuilder.setSubMenuGroupOder(m_subMenuGroupOrder);
 
-		for (Command command : getCommandList()) {
+		for (Command command : m_commandList) {
 			String menuPosition = command.getMenuPosition();
 			MenuBar.Command menuCommand = menuCommand(command, graphContainer, mainWindow, opContext);
 			updateCommandToOperationMap(command, menuCommand);
@@ -181,7 +173,7 @@ public class CommandManager {
 		OperationContext opContext = new DefaultOperationContext(mainWindow, graphContainer, DisplayLocation.CONTEXTMENU);
 		ContextMenuBuilder contextMenuBuilder = new ContextMenuBuilder();
 		Map<String, Operation> operationMap = new HashMap<String, Operation>(); 
-		for (Command command : getCommandList()) {
+		for (Command command : m_commandList) {
 			if (command.isAction()) {
 				String contextPosition = command.getContextMenuPosition();
 				contextMenuBuilder.addMenuCommand(command, contextPosition);
@@ -267,7 +259,7 @@ public class CommandManager {
 				it.remove();
 			}
 		}
-
+		updateCommandListeners();
 	}
 
 	private void removeCommand(Command command) {
@@ -276,7 +268,8 @@ public class CommandManager {
 	}
 
 	public void setTopLevelMenuOrder(List<String> menuOrderList) {
-		m_topLevelMenuOrder = menuOrderList;
+		m_topLevelMenuOrder.clear();
+		m_topLevelMenuOrder.addAll(menuOrderList);
 
 	}
 

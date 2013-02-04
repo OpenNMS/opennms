@@ -36,6 +36,7 @@ import java.util.Map;
 
 import org.opennms.features.topology.api.AbstractCheckedOperation;
 import org.opennms.features.topology.api.CheckedOperation;
+import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
@@ -83,9 +84,9 @@ public class TopologySelector {
     		return getLabel();
     	}
 
-		@Override
-		protected boolean isChecked(OperationContext operationContext) {
-			GraphProvider activeGraphProvider = operationContext.getGraphContainer().getBaseTopology();
+        @Override
+        protected boolean isChecked(GraphContainer container) {
+			GraphProvider activeGraphProvider = container.getBaseTopology();
 			return m_topologyProvider.equals(activeGraphProvider);
 		}
     }

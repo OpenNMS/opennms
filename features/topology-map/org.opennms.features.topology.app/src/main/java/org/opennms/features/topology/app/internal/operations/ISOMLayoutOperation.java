@@ -32,6 +32,7 @@ import java.util.List;
 
 import org.opennms.features.topology.api.AbstractCheckedOperation;
 import org.opennms.features.topology.api.DisplayState;
+import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.jung.ISOMLayoutAlgorithm;
@@ -59,8 +60,8 @@ public class ISOMLayoutOperation extends AbstractCheckedOperation {
     }
 
     @Override
-    protected boolean isChecked(OperationContext operationContext) {
-        if(operationContext.getGraphContainer().getLayoutAlgorithm() instanceof ISOMLayoutAlgorithm) {
+    protected boolean isChecked(GraphContainer container) {
+        if(container.getLayoutAlgorithm() instanceof ISOMLayoutAlgorithm) {
             return true;
         }
         return false;

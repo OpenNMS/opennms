@@ -41,6 +41,7 @@ import java.util.Properties;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.features.topology.api.CheckedOperation;
+import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.topo.VertexRef;
@@ -329,14 +330,14 @@ public class TestMenuBarBuilder {
 			}
 
 			@Override
-			public void applyHistory(OperationContext context,
+			public void applyHistory(GraphContainer context,
 					Map<String, String> settings) {
 				// TODO Auto-generated method stub
 				
 			}
 
 			@Override
-			public Map<String, String> createHistory(OperationContext context) {
+			public Map<String, String> createHistory(GraphContainer context) {
 				// TODO Auto-generated method stub
 				return null;
 			}};

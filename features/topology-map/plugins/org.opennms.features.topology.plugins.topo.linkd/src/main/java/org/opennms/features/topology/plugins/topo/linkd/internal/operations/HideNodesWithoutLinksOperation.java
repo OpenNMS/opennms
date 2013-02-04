@@ -35,6 +35,7 @@ import java.util.Map;
 import javax.xml.bind.JAXBException;
 
 import org.opennms.features.topology.api.AbstractCheckedOperation;
+import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
@@ -78,8 +79,8 @@ public class HideNodesWithoutLinksOperation extends AbstractCheckedOperation {
 	 * the API as it is now.
 	 */
 	@Override
-	protected boolean enabled(OperationContext operationContext) {
-		GraphProvider activeGraphProvider = operationContext.getGraphContainer().getBaseTopology();
+	protected boolean enabled(GraphContainer container) {
+		GraphProvider activeGraphProvider = container.getBaseTopology();
 		return m_topologyProvider.getVertexNamespace().equals(activeGraphProvider.getVertexNamespace());
 	}
 
@@ -89,8 +90,8 @@ public class HideNodesWithoutLinksOperation extends AbstractCheckedOperation {
 	}
 
 	@Override
-	protected boolean isChecked(OperationContext operationContext) {
-		if (enabled(operationContext)) {
+	protected boolean isChecked(GraphContainer container) {
+		if (enabled(container)) {
 			return !m_topologyProvider.isAddNodeWithoutLink();
 		} else {
 			return false;
@@ -98,7 +99,7 @@ public class HideNodesWithoutLinksOperation extends AbstractCheckedOperation {
 	}
 
 	@Override
-	public void applyHistory(OperationContext context, Map<String, String> settings) {
+	public void applyHistory(GraphContainer context, Map<String, String> settings) {
 		if ("true".equals(settings.get(this.getClass().getName()))) {
 			if (m_topologyProvider.isAddNodeWithoutLink()) {
 				m_topologyProvider.setAddNodeWithoutLink(false);

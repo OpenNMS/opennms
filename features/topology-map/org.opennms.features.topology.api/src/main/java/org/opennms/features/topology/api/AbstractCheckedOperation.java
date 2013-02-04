@@ -11,11 +11,11 @@ public abstract class AbstractCheckedOperation implements CheckedOperation {
 	/**
 	 * Return true by default.
 	 */
-	protected boolean enabled(OperationContext context) {
+	protected boolean enabled(GraphContainer container) {
 		return true;
 	}
 
-	protected boolean isChecked(OperationContext context) {
+	protected boolean isChecked(GraphContainer container) {
 		return false;
 	}
 
@@ -24,7 +24,7 @@ public abstract class AbstractCheckedOperation implements CheckedOperation {
 	 */
 	@Override
 	public boolean enabled(List<VertexRef> vertices, OperationContext context) {
-		return enabled(context);
+		return enabled(context.getGraphContainer());
 	}
 
 	/**
@@ -32,7 +32,7 @@ public abstract class AbstractCheckedOperation implements CheckedOperation {
 	 */
 	@Override
 	public boolean isChecked(List<VertexRef> vertices, OperationContext context) {
-		return isChecked(context);
+		return isChecked(context.getGraphContainer());
 	}
 
 	/**
@@ -40,13 +40,16 @@ public abstract class AbstractCheckedOperation implements CheckedOperation {
 	 * independent of any currently-selected vertices.
 	 */
 	@Override
-	public Map<String, String> createHistory(OperationContext context) {
-		return Collections.singletonMap(this.getClass().getName(), Boolean.toString(isChecked(context)));
+	public Map<String, String> createHistory(GraphContainer container) {
+		return Collections.singletonMap(this.getClass().getName(), Boolean.toString(isChecked(container)));
 	}
 
 
+	/**
+	 * @deprecated REMOVE ME!!! and then implement in subclasses
+	 */
 	@Override
-	public void applyHistory(OperationContext context, Map<String, String> settings) {
+	public void applyHistory(GraphContainer container, Map<String, String> settings) {
 		
 	}
 }

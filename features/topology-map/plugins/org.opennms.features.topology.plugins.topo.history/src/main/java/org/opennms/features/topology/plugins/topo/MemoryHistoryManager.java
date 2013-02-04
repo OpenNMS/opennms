@@ -11,7 +11,7 @@ public class MemoryHistoryManager extends AbstractHistoryManager {
     private Map<String, SavedHistory> m_historyMap = new HashMap<String, SavedHistory>(); 
     
     @Override
-    protected void save(SavedHistory hist) {
+    protected void saveHistory(SavedHistory hist) {
         m_historyMap.put(hist.getFragment(), hist);
     }
 
