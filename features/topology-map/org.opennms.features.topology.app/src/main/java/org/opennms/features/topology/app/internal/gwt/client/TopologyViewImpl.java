@@ -64,7 +64,11 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
 
     private boolean m_isRefresh;
 
-    private int m_leftMargin = 60;
+    private int m_leftMargin = 120;
+
+    public int getLeftMargin() {
+        return m_leftMargin;
+    }
 
     public TopologyViewImpl() {
         initWidget(uiBinder.createAndBindUi(this));
@@ -175,8 +179,8 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
         int topMargin = iconMargin + 50;
         
         SVGElement svg = getSVGElement().cast();
-        final int svgWidth = svg.getParentElement().getOffsetWidth() - m_leftMargin; 
-        final int svgHeight = svg.getParentElement().getOffsetHeight();
+        final int svgWidth = getPhysicalWidth(); 
+        final int svgHeight = getPhysicalHeight();
         
         double scale = Math.min(svgWidth/((double)bounds.getWidth() + iconLeftMargin), svgHeight/((double)bounds.getHeight() + topMargin));
         scale = scale > 2 ? 2 : scale;
@@ -184,7 +188,7 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
         double translateY =  -bounds.getY();
         
         double calcY = (svgHeight - (bounds.getHeight()* scale))/2;
-        double calcX = (svgWidth - ((bounds.getWidth()) * scale))/2 + m_leftMargin;
+        double calcX = (svgWidth - ((bounds.getWidth()) * scale))/2 + getLeftMargin();
         SVGMatrix transform = svg.createSVGMatrix()
                 .translate(calcX, calcY)
                 .scale(scale)
@@ -248,7 +252,7 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
 
     @Override
     public int getPhysicalWidth() {
-        return getSVGElement().getParentElement().getOffsetWidth() - m_leftMargin;
+        return getSVGElement().getParentElement().getOffsetWidth() - getLeftMargin();
     }
 
     @Override

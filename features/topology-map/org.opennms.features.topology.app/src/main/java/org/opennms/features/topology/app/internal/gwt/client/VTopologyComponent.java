@@ -242,12 +242,8 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
             //Scaling and Fit to Zoom transitions
 			SVGMatrix transform = topologyView.calculateNewTransform(graph.getBoundingBox());
             
-			int width = topologyView.getSVGElement().getParentElement().getOffsetWidth() - 60;
-			int height = topologyView.getSVGElement().getParentElement().getOffsetHeight();
-            //D3.d3().select(topologyView.getSVGViewPort())
-            //.attrTweenZoom("transform", graph.getBoundingBox(), oldBBox, width, height);
-            //.attr("transform", matrixTransform(transform) );
-			
+			int width = topologyView.getPhysicalWidth();
+			int height = topologyView.getPhysicalHeight();
 			D3 selection = D3.d3().select(topologyView.getSVGViewPort());
 			D3Transform tform = D3.getTransform(selection.attr("transform"));
 			
