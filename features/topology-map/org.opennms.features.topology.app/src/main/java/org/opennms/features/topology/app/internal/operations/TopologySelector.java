@@ -28,6 +28,7 @@
 
 package org.opennms.features.topology.app.internal.operations;
 
+import java.util.Collections;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -93,6 +94,11 @@ public class TopologySelector {
 			GraphProvider activeGraphProvider = container.getBaseTopology();
 			return m_topologyProvider.equals(activeGraphProvider);
 		}
+
+        @Override
+        public Map<String, String> createHistory(GraphContainer container) {
+        	return Collections.singletonMap(this.getClass().getName() + "." + getLabel(), Boolean.toString(isChecked(container)));
+        }
 
         @Override
         public void applyHistory(GraphContainer container, Map<String, String> settings) {

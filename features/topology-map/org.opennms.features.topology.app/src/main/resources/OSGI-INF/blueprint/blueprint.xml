@@ -142,17 +142,6 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         </reference-listener>
     </reference-list>
     
-    <reference-list interface="org.opennms.features.topology.api.HistoryOperation" availability="optional">
-        <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="historyManager">
-        </reference-listener>
-    </reference-list>
-    
-    <!-- All CheckedOperation classes are HistoryOperation instances -->
-    <reference-list interface="org.opennms.features.topology.api.CheckedOperation" availability="optional">
-        <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="historyManager">
-        </reference-listener>
-    </reference-list>
-
     <service interface="org.opennms.features.topology.api.CheckedOperation" >
         <service-properties>
             <entry key="operation.menuLocation" value="View"/>

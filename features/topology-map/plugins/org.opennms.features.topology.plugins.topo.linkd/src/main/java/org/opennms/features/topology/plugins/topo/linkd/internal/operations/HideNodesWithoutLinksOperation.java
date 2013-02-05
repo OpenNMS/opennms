@@ -53,20 +53,24 @@ public class HideNodesWithoutLinksOperation extends AbstractCheckedOperation {
 	@Override
 	public Undoer execute(List<VertexRef> targets, OperationContext operationContext) {
 		if (enabled(targets, operationContext)) {
-			LoggerFactory.getLogger(this.getClass()).debug("switched addNodeWithoutLinks to: " + !m_topologyProvider.isAddNodeWithoutLink());
-			m_topologyProvider.setAddNodeWithoutLink(!m_topologyProvider.isAddNodeWithoutLink());
-			try {
-				m_topologyProvider.load(null);
-			} catch (MalformedURLException e) {
-				// TODO: Display the error in the UI
-				LoggerFactory.getLogger(this.getClass()).error(e.getMessage(), e);
-			} catch (JAXBException e) {
-				// TODO: Display the error in the UI
-				LoggerFactory.getLogger(this.getClass()).error(e.getMessage(), e);
-			}
-			operationContext.getGraphContainer().redoLayout();
+			execute(operationContext.getGraphContainer());
 		}
 		return null;
+	}
+	
+	private void execute(GraphContainer container) {
+		LoggerFactory.getLogger(this.getClass()).debug("switched addNodeWithoutLinks to: " + !m_topologyProvider.isAddNodeWithoutLink());
+		m_topologyProvider.setAddNodeWithoutLink(!m_topologyProvider.isAddNodeWithoutLink());
+		try {
+			m_topologyProvider.load(null);
+		} catch (MalformedURLException e) {
+			// TODO: Display the error in the UI
+			LoggerFactory.getLogger(this.getClass()).error(e.getMessage(), e);
+		} catch (JAXBException e) {
+			// TODO: Display the error in the UI
+			LoggerFactory.getLogger(this.getClass()).error(e.getMessage(), e);
+		}
+		container.redoLayout();
 	}
 
 	@Override
@@ -99,10 +103,10 @@ public class HideNodesWithoutLinksOperation extends AbstractCheckedOperation {
 	}
 
 	@Override
-	public void applyHistory(GraphContainer context, Map<String, String> settings) {
+	public void applyHistory(GraphContainer container, Map<String, String> settings) {
 		if ("true".equals(settings.get(this.getClass().getName()))) {
 			if (m_topologyProvider.isAddNodeWithoutLink()) {
-				m_topologyProvider.setAddNodeWithoutLink(false);
+				execute(container);
 			} else {
 				// Hiding is enabled and isAddNodeWithoutLink() is already false
 			}
@@ -110,7 +114,7 @@ public class HideNodesWithoutLinksOperation extends AbstractCheckedOperation {
 			if (m_topologyProvider.isAddNodeWithoutLink()) {
 				// Adding is enabled and isAddNodeWithoutLink() is already true
 			} else {
-				m_topologyProvider.setAddNodeWithoutLink(true);
+				execute(container);
 			}
 		}
 	}

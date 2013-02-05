@@ -1,8 +1,10 @@
 package org.opennms.features.topology.api.support;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.zip.CRC32;
 
 import org.opennms.features.topology.api.BoundingBox;
 import org.opennms.features.topology.api.Graph;
@@ -12,6 +14,7 @@ import org.opennms.features.topology.api.Layout;
 import org.opennms.features.topology.api.Point;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
+import org.slf4j.LoggerFactory;
 
 /**
  * Immutable class that stores a snapshot of the topology layout at a given time.
@@ -32,6 +35,7 @@ public class SavedHistory {
         for (HistoryOperation operation : operations) {
             m_settings.putAll(operation.createHistory(graphContainer));
         }
+        // LoggerFactory.getLogger(this.getClass()).debug("Created " + toString());
     }
     
 
@@ -53,10 +57,23 @@ public class SavedHistory {
     }
     
     public String getFragment() {
-        return "(" + m_szl + ")," + m_boundBox.fragment() + "," + m_boundBox.getCenter();
+        StringBuffer retval = new StringBuffer().append("(").append(m_szl).append("),").append(m_boundBox.fragment()).append(",").append(m_boundBox.getCenter());
+        // Add a CRC of all of the key-value pairs in m_settings to make the fragment unique
+        CRC32 crc = new CRC32();
+        for (Map.Entry<String,String> entry : m_settings.entrySet()) {
+            try {
+                crc.update(entry.getKey().getBytes("UTF-8"));
+                crc.update(entry.getValue().getBytes("UTF-8"));
+            } catch (UnsupportedEncodingException e) {
+                // Impossible on modern JVMs
+            }
+        }
+        retval.append(String.format(",(%X)", crc.getValue()));
+        return retval.toString();
     }
 
     public void apply(GraphContainer graphContainer, Collection<HistoryOperation> operations) {
+        // LoggerFactory.getLogger(this.getClass()).debug("Applying " + toString());
         // Apply the history for each registered HistoryOperation
         for (HistoryOperation operation : operations) {
             operation.applyHistory(graphContainer, m_settings);
@@ -70,5 +87,14 @@ public class SavedHistory {
         for(VertexRef ref : locations.keySet()) {
             layout.setLocation(ref, locations.get(ref));
         }
+    }
+    
+    @Override
+    public String toString() {
+        StringBuffer retval = new StringBuffer().append(this.getClass().getSimpleName()).append(": ").append(getFragment());
+        for (Map.Entry<String,String> entry : m_settings.entrySet()) {
+            retval.append(",[").append(entry.getKey()).append("->").append(entry.getValue()).append("]");
+        }
+        return retval.toString();
     }
 }
