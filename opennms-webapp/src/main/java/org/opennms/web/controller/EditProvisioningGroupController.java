@@ -134,6 +134,13 @@ public class EditProvisioningGroupController extends SimpleFormController {
         String action = treeCmd.getAction();
         if (action == null) {
             return doShow(request, response, treeCmd, errors);
+        } else if ("toggleFreeForm".equalsIgnoreCase(action)) {
+            Boolean isFreeForm = (Boolean)request.getSession().getAttribute("freeFormEditing");
+            if (isFreeForm == null) {
+                isFreeForm = false;
+            }
+            request.getSession().setAttribute("freeFormEditing", !isFreeForm);
+            return doShow(request, response, treeCmd, errors);
         } else if ("addNode".equalsIgnoreCase(action)) {
             return doAddNode(request, response, treeCmd, errors);
         } else if ("addInterface".equalsIgnoreCase(action)) {
