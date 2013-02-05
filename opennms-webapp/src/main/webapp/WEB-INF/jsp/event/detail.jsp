@@ -99,6 +99,8 @@
 	<% } else { %>
       <h3>Event <%=event.getId()%></h3>
 
+      <% String acknowledgeEvent = System.getProperty("opennms.eventlist.acknowledge"); %>
+
       <table>
         <tr class="<%= event.getSeverity().getLabel() %>">
           <th class="divider" width="100em">Severity</th>
@@ -111,8 +113,12 @@
               &nbsp;
             <% } %>
           </td>
+          <% if ("true".equals(acknowledgeEvent)) { %>
           <th class="divider" width="100em">Acknowledged&nbsp;By</th>
           <td class="divider" width="28%"><%=event.getAcknowledgeUser()!=null ? event.getAcknowledgeUser() : "&nbsp;"%></td>
+          <% } else { %>
+          <td class="divider" colspan="2">&nbsp;</td>
+          <% } %>
         </tr>
         
         <tr  class="<%= event.getSeverity().getLabel() %>">
@@ -134,8 +140,12 @@
               &nbsp;
             <% } %>
           </td>
+          <% if ("true".equals(acknowledgeEvent)) { %>
           <th>Time&nbsp;Acknowledged</th>
           <td><%=event.getAcknowledgeTime()!=null ? org.opennms.web.api.Util.formatDateToUIString(event.getAcknowledgeTime()) : "&nbsp;"%></td>
+          <% } else { %>
+          <td colspan="2">&nbsp;</td>
+          <% } %>
         </tr>
         
         <tr class="<%= event.getSeverity().getLabel() %>">
@@ -212,7 +222,6 @@
       </table>
 
       <% 
-      String acknowledgeEvent = System.getProperty("opennms.eventlist.acknowledge");
       if( ( request.isUserInRole( org.opennms.web.springframework.security.Authentication.ROLE_ADMIN ) || !request.isUserInRole( org.opennms.web.springframework.security.Authentication.ROLE_READONLY ) ) && "true".equals(acknowledgeEvent)) { %>
         <form method="post" action="event/acknowledge">
           <input type="hidden" name="actionCode" value="<%=action%>" />
