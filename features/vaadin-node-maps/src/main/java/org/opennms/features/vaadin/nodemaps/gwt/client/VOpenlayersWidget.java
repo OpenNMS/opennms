@@ -28,11 +28,7 @@
 
 package org.opennms.features.vaadin.nodemaps.gwt.client;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 import org.opennms.features.vaadin.nodemaps.gwt.client.openlayers.FeatureCollection;
 import org.opennms.features.vaadin.nodemaps.gwt.client.openlayers.GeoJSONFeature;
@@ -44,10 +40,7 @@ import com.vaadin.terminal.gwt.client.VConsole;
 
 public class VOpenlayersWidget extends GWTOpenlayersWidget implements Paintable {
 
-    @SuppressWarnings("unused")
     private ApplicationConnection m_client;
-
-    @SuppressWarnings("unused")
     private String m_uidlId;
 
     public VOpenlayersWidget() {
@@ -56,59 +49,44 @@ public class VOpenlayersWidget extends GWTOpenlayersWidget implements Paintable 
         VConsole.log("div ID = " + getElement().getId());
     }
 
+    public native final void log(final String message) /*-{
+        console.log(message);
+    }-*/;
+
     @Override
     public void updateFromUIDL(final UIDL uidl, final ApplicationConnection client) {
         if (client.updateComponent(this, uidl, true)) return;
         m_client = client;
         m_uidlId = uidl.getId();
 
-        final List<GeoJSONFeature> features = new ArrayList<GeoJSONFeature>();
-
-        // debugUIDL(uidl, 0);
+        log("uidl ID = " + m_uidlId);
 
         final UIDL nodeUIDL = uidl.getChildByTagName("nodes");
+
+        final FeatureCollection featureCollection = FeatureCollection.create();
 
         for (final Iterator<?> iterator = nodeUIDL.getChildIterator(); iterator.hasNext();) {
             final UIDL node = (UIDL) iterator.next();
 
-            final float longitude = node.getFloatAttribute("longitude");
+            log("uidl = " + node.toString());
+
             final float latitude = node.getFloatAttribute("latitude");
+            final float longitude = node.getFloatAttribute("longitude");
 
-            final String[] stringKeys = new String[] { "severityLabel", "nodeLabel", "foreignSource", "foreignId", "ipAddress" };
-            final String[] intKeys = new String[] { "severity", "nodeId", "unackedCount" };
+            log("latitude = " + latitude + ", longitude = " + longitude);
 
-            final Map<String, String> stringAttributes = new HashMap<String, String>();
-            final Map<String, Integer> intAttributes = new HashMap<String, Integer>();
-            for (final String key : stringKeys) {
-                if (node.hasAttribute(key)) stringAttributes.put(key, node.getStringAttribute(key));
-            }
-            for (final String key : intKeys) {
-                if (node.hasAttribute(key)) intAttributes.put(key, node.getIntAttribute(key));
+            final GeoJSONFeature feature = GeoJSONFeature.create(latitude, longitude);
+
+            for (final String key : new String[] { "severityLabel", "nodeLabel", "foreignSource", "foreignId", "ipAddress", "severity", "nodeId", "unackedCount" }) {
+                if (node.hasAttribute(key)) feature.putProperty(key, node.getStringAttribute(key));
             }
 
-            final GeoJSONFeature feature = GeoJSONFeature.create(longitude, latitude, stringAttributes, intAttributes);
-            features.add(feature);
+            log(feature.asString());
+
+            featureCollection.add(feature);
         }
 
-        setFeatureCollection(FeatureCollection.create(features));
+        setFeatureCollection(featureCollection);
         updateFeatureLayer();
-    }
-
-    public void debugUIDL(final UIDL uidl, final int indent) {
-        final String indentString = "                                                ".substring(0, indent);
-        VConsole.log(indentString + "---- " + uidl.getTag() + " ----");
-        for (final String variable : uidl.getVariableNames()) {
-            VConsole.log(indentString + "V: " + variable + ": " + uidl.getStringVariable(variable));
-        }
-        for (final String attribute : uidl.getAttributeNames()) {
-            VConsole.log(indentString + "A: " + attribute + ": " + uidl.getStringAttribute(attribute));
-        }
-        final Iterator<?> iterator = uidl.getChildIterator();
-        if (iterator.hasNext()) {
-            VConsole.log(indentString + "Children:");
-            while (iterator.hasNext()) {
-                debugUIDL((UIDL) iterator.next(), indent + 2);
-            }
-        }
     }
 }

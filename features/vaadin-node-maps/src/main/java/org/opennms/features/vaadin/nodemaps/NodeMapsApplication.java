@@ -37,6 +37,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.support.TransactionOperations;
 
+import com.github.wolfie.refresher.Refresher;
 import com.vaadin.Application;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Window;
@@ -78,6 +79,8 @@ import com.vaadin.ui.Window;
  */
 @SuppressWarnings("serial")
 public class NodeMapsApplication extends Application {
+
+    private static final int REFRESH_INTERVAL = 5 * 60 * 1000;
 
     private NodeDao m_nodeDao;
 
@@ -146,6 +149,10 @@ public class NodeMapsApplication extends Application {
         setMainWindow(m_window);
 
         m_rootLayout.addComponent(openlayers, "top: 0px; left: 0px; right:0px; bottom:0px;");
+
+        final Refresher refresher = new Refresher();
+        refresher.setRefreshInterval(REFRESH_INTERVAL);
+        m_window.addComponent(refresher);
     }
 
 }

@@ -119,7 +119,12 @@ public class OpenlayersWidgetComponent extends VerticalLayout {
                         coordinateString = coordinates.getLatitude() + "," + coordinates.getLongitude();
                         geolocation.setCoordinates(coordinateString);
                     }
-                    updateDatabase(assets);
+                    m_transactionOperations.execute(new TransactionCallbackWithoutResult() {
+                        @Override
+                        protected void doInTransactionWithoutResult(final TransactionStatus status) {
+                            m_assetDao.saveOrUpdate(assets);
+                        }
+                    });
                 } catch (final GeocoderException e) {
                     m_log.debug("Failed to retrieve coordinates", e);
                 }
@@ -159,27 +164,22 @@ public class OpenlayersWidgetComponent extends VerticalLayout {
                     builder.isNull("alarmAckTime");
                     final int unackedCount = m_alarmDao.countMatching(builder.toCriteria());
 
-                    target.addAttribute("nodeId", node.getId());
+                    // latitude/longitude, as floats
+                    target.addAttribute("latitude", Float.valueOf(coordinates[0]));
+                    target.addAttribute("longitude", Float.valueOf(coordinates[1]));
+
+                    // everything else gets sent as basic string properties
+                    target.addAttribute("nodeId", node.getId().toString());
                     target.addAttribute("nodeLabel", node.getLabel());
                     target.addAttribute("foreignSource", node.getForeignSource());
                     target.addAttribute("foreignId", node.getForeignId());
                     target.addAttribute("ipAddress", InetAddressUtils.str(node.getPrimaryInterface().getIpAddress()));
-                    target.addAttribute("unackedCount", unackedCount);
-                    target.addAttribute("latitude", coordinates[0]);
-                    target.addAttribute("longitude", coordinates[1]);
+                    target.addAttribute("unackedCount", String.valueOf(unackedCount));
+
                     target.endTag(node.getId().toString());
                 }
             }
         }
-    }
-
-    void updateDatabase(final OnmsAssetRecord assets) {
-        m_transactionOperations.execute(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(final TransactionStatus status) {
-                m_assetDao.saveOrUpdate(assets);
-            }
-        });
     }
 
     public void setNodeDao(final NodeDao nodeDao) {

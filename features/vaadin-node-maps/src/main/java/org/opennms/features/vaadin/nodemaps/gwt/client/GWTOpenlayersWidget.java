@@ -72,10 +72,6 @@ public class GWTOpenlayersWidget extends Widget {
         super.onUnload();
     }
 
-    private String getNodesGml() {
-        return GWT.getModuleBaseURL() + "nodes.gml";
-    }
-
     private void createMap(final String divId) {
         m_map = OnmsOpenLayersMap.newInstance(divId);
         initializeMap(m_map);
@@ -122,7 +118,7 @@ public class GWTOpenlayersWidget extends Widget {
                         },
                         // The Radius will change according with the amount of nodes on the cluster.
                         radius : function(feature) {
-                            return feature.cluster ? Math.min(feature.attributes.count, 7) + 5 : 5;
+                            return feature.cluster ? Math.min(parseInt(feature.attributes.count), 7) + 5 : 5;
                         },
                         // The label will display the amount of nodes only for clusters.
                         label : function(feature) {
