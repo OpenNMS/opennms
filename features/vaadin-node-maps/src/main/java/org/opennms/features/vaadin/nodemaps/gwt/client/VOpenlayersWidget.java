@@ -31,7 +31,7 @@ package org.opennms.features.vaadin.nodemaps.gwt.client;
 import java.util.Iterator;
 
 import org.opennms.features.vaadin.nodemaps.gwt.client.openlayers.FeatureCollection;
-import org.opennms.features.vaadin.nodemaps.gwt.client.openlayers.GeoJSONFeature;
+import org.opennms.features.vaadin.nodemaps.gwt.client.openlayers.NodeFeature;
 
 import com.vaadin.terminal.gwt.client.ApplicationConnection;
 import com.vaadin.terminal.gwt.client.Paintable;
@@ -59,8 +59,6 @@ public class VOpenlayersWidget extends GWTOpenlayersWidget implements Paintable 
         m_client = client;
         m_uidlId = uidl.getId();
 
-        log("uidl ID = " + m_uidlId);
-
         final UIDL nodeUIDL = uidl.getChildByTagName("nodes");
 
         final FeatureCollection featureCollection = FeatureCollection.create();
@@ -68,14 +66,10 @@ public class VOpenlayersWidget extends GWTOpenlayersWidget implements Paintable 
         for (final Iterator<?> iterator = nodeUIDL.getChildIterator(); iterator.hasNext();) {
             final UIDL node = (UIDL) iterator.next();
 
-            log("uidl = " + node.toString());
-
             final float latitude = node.getFloatAttribute("latitude");
             final float longitude = node.getFloatAttribute("longitude");
 
-            log("latitude = " + latitude + ", longitude = " + longitude);
-
-            final GeoJSONFeature feature = GeoJSONFeature.create(latitude, longitude);
+            final NodeFeature feature = NodeFeature.create(latitude, longitude).cast();
 
             for (final String key : new String[] { "severityLabel", "nodeLabel", "foreignSource", "foreignId", "ipAddress", "severity", "nodeId", "unackedCount" }) {
                 if (node.hasAttribute(key)) feature.putProperty(key, node.getStringAttribute(key));
