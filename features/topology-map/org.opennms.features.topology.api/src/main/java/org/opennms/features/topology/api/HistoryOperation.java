@@ -31,6 +31,6 @@ package org.opennms.features.topology.api;
 import java.util.Map;
 
 public interface HistoryOperation {
-    void applyHistory(GraphContainer context, Map<String,String> settings);
+    void applyHistory(GraphContainer container, Map<String,String> settings);
     Map<String,String> createHistory(GraphContainer graphContainer);
 }

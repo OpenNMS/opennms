@@ -68,10 +68,14 @@ public class TopologySelector {
 
     	@Override
     	public Undoer execute(List<VertexRef> targets, OperationContext operationContext) {
-    		LoggerFactory.getLogger(getClass()).debug("Active provider is: {}", m_topologyProvider);
-    		operationContext.getGraphContainer().setBaseTopology(m_topologyProvider);
-    		operationContext.getGraphContainer().redoLayout();
+    		execute(operationContext.getGraphContainer());
     		return null;
+    	}
+    	
+    	private void execute(GraphContainer container) {
+    		LoggerFactory.getLogger(getClass()).debug("Active provider is: {}", m_topologyProvider);
+    		container.setBaseTopology(m_topologyProvider);
+    		container.redoLayout();
     	}
 
     	@Override
@@ -89,9 +93,17 @@ public class TopologySelector {
 			GraphProvider activeGraphProvider = container.getBaseTopology();
 			return m_topologyProvider.equals(activeGraphProvider);
 		}
+
+        @Override
+        public void applyHistory(GraphContainer container, Map<String, String> settings) {
+        	// If the class name and label tuple is set to true, then set the base topology provider
+        	if ("true".equals(settings.get(this.getClass().getName() + "." + getLabel()))) {
+        		execute(container);
+        	}
+        }
     }
-    
-    
+
+
 	public void setBundleContext(BundleContext bundleContext) {
 		m_bundleContext = bundleContext;
 	}

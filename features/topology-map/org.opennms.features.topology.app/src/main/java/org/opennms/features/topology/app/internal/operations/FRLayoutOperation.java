@@ -28,42 +28,23 @@
 
 package org.opennms.features.topology.app.internal.operations;
 
-import java.util.List;
-
-import org.opennms.features.topology.api.AbstractCheckedOperation;
-import org.opennms.features.topology.api.DisplayState;
-import org.opennms.features.topology.api.GraphContainer;
-import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.api.LayoutAlgorithm;
 import org.opennms.features.topology.app.internal.jung.FRLayoutAlgorithm;
 
+public class FRLayoutOperation extends LayoutOperation {
 
-public class FRLayoutOperation extends AbstractCheckedOperation {
+	public FRLayoutOperation() {
+		super(new LayoutFactory() {
+			@Override
+			public LayoutAlgorithm getLayoutAlgorithm() {
+				return new FRLayoutAlgorithm();
+			}
+		});
+	}
 
-    @Override
-    public Undoer execute(List<VertexRef> targets,
-            OperationContext operationContext) {
-        DisplayState graphContainer = operationContext.getGraphContainer();
-        
-        graphContainer.setLayoutAlgorithm(new FRLayoutAlgorithm());
-        return null;
-    }
+	@Override
+	public String getId() {
+		return getClass().getSimpleName();
+	}
 
-    @Override
-    public boolean display(List<VertexRef> targets, OperationContext operationContext) {
-        return true;
-    }
-
-    @Override
-    public String getId() {
-        return null;
-    }
-
-    @Override
-    protected boolean isChecked(GraphContainer container) {
-        if(container.getLayoutAlgorithm() instanceof FRLayoutAlgorithm) {
-            return true;
-        }
-        return false;
-    }
 }

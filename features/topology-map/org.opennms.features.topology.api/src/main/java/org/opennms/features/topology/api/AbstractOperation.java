@@ -27,15 +27,18 @@ public abstract class AbstractOperation implements Operation {
     }
 
     protected static String getLabelValue(final OperationContext operationContext, final VertexRef target) {
-        return getVertexItem(operationContext, target).getLabel();
+        Vertex vertex = getVertexItem(operationContext, target);
+        return vertex == null ? null : vertex.getLabel();
     }
 
     protected static String getIpAddrValue(final OperationContext operationContext, final VertexRef target) {
-        return getVertexItem(operationContext, target).getIpAddress();
+        Vertex vertex = getVertexItem(operationContext, target);
+        return vertex == null ? null : vertex.getIpAddress();
     }
 
     protected static Integer getNodeIdValue(final OperationContext operationContext, final VertexRef target) {
-        return getVertexItem(operationContext, target).getNodeID();
+        Vertex vertex = getVertexItem(operationContext, target);
+        return vertex == null ? null : vertex.getNodeID();
     }
 
 	protected static Vertex getVertexItem(final OperationContext operationContext, final VertexRef target) {

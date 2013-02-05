@@ -43,13 +43,4 @@ public abstract class AbstractCheckedOperation implements CheckedOperation {
 	public Map<String, String> createHistory(GraphContainer container) {
 		return Collections.singletonMap(this.getClass().getName(), Boolean.toString(isChecked(container)));
 	}
-
-
-	/**
-	 * @deprecated REMOVE ME!!! and then implement in subclasses
-	 */
-	@Override
-	public void applyHistory(GraphContainer container, Map<String, String> settings) {
-		
-	}
 }
