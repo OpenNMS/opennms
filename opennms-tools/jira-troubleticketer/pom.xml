@@ -14,7 +14,7 @@
         <repository>
             <id>atlassian-public</id>
             <name>Atlassian public repo</name>
-            <url>https://maven.atlassian.com/content/groups/public</url>
+            <url>https://maven.atlassian.com/content/repositories/atlassian-public/</url>
         </repository>
     </repositories>
 
@@ -38,27 +38,6 @@
                     <tarLongFileMode>gnu</tarLongFileMode>
                 </configuration>
             </plugin>
-
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>axistools-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>wsdl2java</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <urls>
-                        <url>file://${project.basedir}/src/main/wsdl/jirasoapservice-v2.wsdl</url>
-                    </urls>
-                    <packageSpace>com.atlassian.jira.rpc.soap.client</packageSpace>
-                    <testCases>false</testCases>
-                    <serverSide>false</serverSide>
-                </configuration>
-            </plugin>
-
         </plugins>
     </build>
 
@@ -75,28 +54,10 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
         </dependency>
-    </dependencies>
-
-  <!-- we add the jira-soapclient as a dependency in a profile only while we are not tagging
-       since we cannot release with a SNAPSHOT dependency.  When there is a released
-       wersion can make it a regular dependency -->
-  <profiles>
-    <profile>
-      <id>not-tagging</id>
-      <activation>
-        <property>
-          <name>!tagging</name>
-        </property>
-      </activation>
-      <dependencies>
-        <!-- Cutting edge ++ -->
         <dependency>
-          <groupId>com.atlassian.jira.plugins</groupId>
-          <artifactId>jira-soapclient</artifactId>
-          <version>5.1.2-SNAPSHOT</version>
+            <groupId>com.atlassian.jira</groupId>
+            <artifactId>jira-rest-java-client</artifactId>
+            <version>1.0</version>
         </dependency>
-      </dependencies>
-    </profile>
-  </profiles>
-
+    </dependencies>
 </project>

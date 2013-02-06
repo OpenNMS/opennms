@@ -13,6 +13,7 @@
     <module>opennms-rrd-stresser</module>
     <module>opennms-rrd-converter</module>
     <module>groovy-tools</module>
+    <module>jira-troubleticketer</module>
   </modules>
   <profiles>
     <profile>
@@ -25,7 +26,6 @@
       </activation>
       <modules>
         <module>centric-troubleticketer</module>
-        <module>jira-troubleticketer</module>
         <module>mib2events</module>
         <module>quickbase-troubleticketer</module>
         <module>jrobin-spike-hunter</module>

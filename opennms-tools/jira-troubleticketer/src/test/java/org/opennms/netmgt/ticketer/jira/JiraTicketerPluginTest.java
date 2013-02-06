@@ -28,18 +28,24 @@
 
 package org.opennms.netmgt.ticketer.jira;
 
-import junit.framework.TestCase;
-import org.opennms.api.integration.ticketing.Ticket;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
 
 import java.io.File;
 import java.util.Date;
 
-public class JiraTicketerPluginTest extends TestCase {
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.opennms.api.integration.ticketing.Ticket;
+
+public class JiraTicketerPluginTest {
 
     JiraTicketerPlugin m_ticketer;
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
 
         System.setProperty("opennms.home", "src" + File.separatorChar + "test" + File.separatorChar + "opennms-home");
 
@@ -48,6 +54,8 @@ public class JiraTicketerPluginTest extends TestCase {
         m_ticketer = new JiraTicketerPlugin();
     }
 
+    @Test
+    @Ignore("This test creates test tickets on a JIRA system.")
     public void testSave() {
 
         Ticket ticket = new Ticket();
@@ -66,6 +74,8 @@ public class JiraTicketerPluginTest extends TestCase {
 
     }
 
+    @Test
+    @Ignore("This test creates test tickets on a JIRA system.")
     public void testUpdate() throws Exception {
 
         String summary = "A Ticket at " + new Date();
@@ -98,7 +108,7 @@ public class JiraTicketerPluginTest extends TestCase {
         assertTicketEquals(newTicket, newerTicket);
     }
 
-    private void assertTicketEquals(Ticket ticket, Ticket newTicket) {
+    private static void assertTicketEquals(Ticket ticket, Ticket newTicket) {
         assertEquals(ticket.getId(), newTicket.getId());
         assertEquals(ticket.getState(), newTicket.getState());
         assertEquals(ticket.getSummary(), newTicket.getSummary());
@@ -107,19 +117,24 @@ public class JiraTicketerPluginTest extends TestCase {
         //assertEquals(ticket.getDetails(), newTicket.getDetails());
     }
 
+    /**
+     * This test relies on issues.opennms.org being accessible.
+     */
+    @Test
     public void testGet() {
 
         //This may need to be changed ;-)
-        String ticketId = "TST-12206";
+        String ticketId = "NMS-1000";
         Ticket newTicket = m_ticketer.get(ticketId);
 
         assertNotNull(newTicket);
         assertEquals(ticketId, newTicket.getId());
-        System.out.println(newTicket.getId() + ":" + newTicket.getSummary());
-        assertTrue(newTicket.getSummary().startsWith("This is the summary"));
+        System.out.println(newTicket.getId() + ": " + newTicket.getSummary());
+        // This was a bug about SQL exceptions
+        assertTrue("Unexpected summary: " + newTicket.getSummary(), newTicket.getSummary().startsWith("java.sql.SQLException"));
+        assertEquals(Ticket.State.CLOSED, newTicket.getState());
 
-        //TODO: Implement this later when we need 2 way retrieval of comments/details
-        //assertEquals("These are the details", newTicket.getDetails());
+        assertTrue("Unexpected details: " + newTicket.getDetails(), newTicket.getDetails().startsWith("Ted Kaczmarek"));
 
     }
 

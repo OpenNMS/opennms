@@ -33,89 +33,59 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
-import java.rmi.RemoteException;
 import java.util.Calendar;
 import java.util.Properties;
 
 import org.apache.commons.io.IOUtils;
+import org.joda.time.DateTime;
 import org.opennms.api.integration.ticketing.Plugin;
 import org.opennms.api.integration.ticketing.Ticket;
 import org.opennms.core.utils.ThreadCategory;
 
-import com.atlassian.jira.rpc.soap.client.JiraSoapService;
-import com.atlassian.jira.rpc.soap.client.JiraSoapServiceService;
-import com.atlassian.jira.rpc.soap.client.JiraSoapServiceServiceLocator;
-import com.atlassian.jira.rpc.soap.client.RemoteComment;
-import com.atlassian.jira.rpc.soap.client.RemoteFieldValue;
-import com.atlassian.jira.rpc.soap.client.RemoteIssue;
-
+import com.atlassian.jira.rest.client.JiraRestClient;
+import com.atlassian.jira.rest.client.JiraRestClientFactory;
+import com.atlassian.jira.rest.client.NullProgressMonitor;
+import com.atlassian.jira.rest.client.auth.AnonymousAuthenticationHandler;
+import com.atlassian.jira.rest.client.domain.Comment;
+import com.atlassian.jira.rest.client.domain.Issue;
+import com.atlassian.jira.rest.client.domain.Transition;
+import com.atlassian.jira.rest.client.domain.input.IssueInputBuilder;
+import com.atlassian.jira.rest.client.domain.input.TransitionInput;
+import com.atlassian.jira.rest.client.internal.jersey.JerseyJiraRestClientFactory;
 
 /**
- * OpenNMS Trouble Ticket Plugin API implementation for Jira
+ * OpenNMS Trouble Ticket Plugin API implementation for Atlassian JIRA.
+ * This implementation relies on the JIRA REST interface and is compatible
+ * with JIRA 5.0+.
+ * 
+ * @see http://www.atlassian.com/software/jira/overview
+ * @see http://docs.atlassian.com/jira-rest-java-client/1.0/apidocs/
  *
  * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
+ * @author Seth
  */
-
-/*
-* This class uses the Codehaus Swizzle-Jira library
-* to manipulate issues via the RPC gateway.
-* @author joed@opennms.org
-*
-*/
-
 public class JiraTicketerPlugin implements Plugin {
 
-    /*
-    * @returns JiraConnection
-     */
-    private class JiraConnection {
-        public JiraSoapService jira = null;
-        public String token = null;
+    protected final JiraRestClientFactory clientFactory = new JerseyJiraRestClientFactory();
 
-        public JiraSoapService getJira() {
-            return jira;
-        }
-
-        public void setJira(JiraSoapService jira) {
-            this.jira = jira;
-        }
-
-        public String getToken() {
-            return token;
-        }
-
-        public void setToken(String token) {
-            this.token = token;
-        }
-    }
-
-    JiraConnection getConnection() {
-        JiraConnection jira = new JiraConnection();
-        JiraSoapServiceService jiraSoapServiceGetter = new JiraSoapServiceServiceLocator();
-
-
-        URL jiraUrl = null;
-
+    protected JiraRestClient getConnection() {
         try {
-            jiraUrl = new URL(getProperties().getProperty("jira.host"));
+            URI jiraUri = new URL(getProperties().getProperty("jira.host")).toURI();
+            String username = getProperties().getProperty("jira.username");
+            if (username == null || "".equals(username)) {
+                return clientFactory.create(jiraUri, new AnonymousAuthenticationHandler());
+            } else {
+                return clientFactory.createWithBasicHttpAuthentication(jiraUri, getProperties().getProperty("jira.username"), getProperties().getProperty("jira.password"));
+            }
         } catch (MalformedURLException e) {
-            log().error("Failed to parse url " + jiraUrl);
+            log().error("Failed to parse URL: " + getProperties().getProperty("jira.host"));
+        } catch (URISyntaxException e) {
+            log().error("Failed to parse URI: " + getProperties().getProperty("jira.host"));
         }
-
-        try {
-            jira.setJira(jiraSoapServiceGetter.getJirasoapserviceV2(jiraUrl));
-        } catch (Throwable e) {
-            log().error("Failed initialzing JiraConnection" + e);
-        }
-	log().debug("Jira factory: " + jiraSoapServiceGetter.getJirasoapserviceV2Address());
-        try {
-            jira.setToken(jira.getJira().login(getProperties().getProperty("jira.username"), getProperties().getProperty("jira.password")));
-        } catch (Throwable e) {
-            log().error("Login failure: " + e);
-        }
-
-        return jira;
+        return null;
     }
 
     /**
@@ -123,61 +93,34 @@ public class JiraTicketerPlugin implements Plugin {
      *
      * @return an OpenNMS
      */
-
+    @Override
     public Ticket get(String ticketId) {
-        JiraConnection jira = getConnection();
-
-        RemoteIssue issue = new RemoteIssue();
+        JiraRestClient jira = getConnection();
+        if (jira == null) {
+            return null;
+        }
 
         // w00t
-        try {
-            issue = jira.getJira().getIssue(jira.getToken(), ticketId);
-        } catch (RemoteException e) {
-            log().error("Error fetching issue: " + ticketId + " " + e);
-        }
+        Issue issue = jira.getIssueClient().getIssue(ticketId, new NullProgressMonitor());
 
-        Ticket ticket = new Ticket();
         if (issue != null) {
+            Ticket ticket = new Ticket();
 
             ticket.setId(issue.getKey());
-            ticket.setModificationTimestamp(String.valueOf(issue.getUpdated().getTime()));
+            ticket.setModificationTimestamp(String.valueOf(issue.getUpdateDate().toDate().getTime()));
             ticket.setSummary(issue.getSummary());
 
-            RemoteComment[] comments = null;
-            try {
-                comments = jira.getJira().getComments(jira.getToken(), ticketId);
-            } catch (RemoteException e) {
-                log().error("Error retreiving remote comments " + e);
-            }
-
             String allComments = "";
-            if (comments != null) {
-                for (RemoteComment comment : comments) {
-                    allComments = allComments + "\n" + comment.getAuthor() + "\n" + comment.getAuthor();
-                }
+            for (Comment comment : issue.getComments()) {
+                allComments = allComments + "\n" + comment.getAuthor().getDisplayName() + "\n" + comment.getBody();
             }
 
-            ticket.setDetails(allComments);
-            ticket.setState(getStateFromId(issue.getStatus().toUpperCase()));
+            ticket.setDetails(allComments.trim());
+            ticket.setState(getStateFromId(issue.getStatus().getName()));
 
-        }
-        return ticket;
-    }
-
-    private int openNMSToJira(Ticket.State state) {
-
-        switch (state) {
-
-            case OPEN:
-                return 1;
-            case CANCELLED:
-                return 10033;
-            case CLOSED:
-                //Resolved
-                return 5;
-            default:
-                return 1;
-
+            return ticket;
+        } else { 
+            return null;
         }
     }
 
@@ -188,29 +131,21 @@ public class JiraTicketerPlugin implements Plugin {
      * @param stateIdString
      * @return the converted <code>org.opennms.api.integration.ticketing.Ticket.State</code>
      */
-    private Ticket.State getStateFromId(String stateIdString) {
+    private static Ticket.State getStateFromId(String stateIdString) {
         if (stateIdString == null) {
             return Ticket.State.OPEN;
-        }
-        int stateId = Integer.parseInt(stateIdString);
-        switch (stateId) {
-            case 1:
-                return Ticket.State.OPEN;
-            case 2:
-                return Ticket.State.OPEN;
-            case 3:
-                return Ticket.State.OPEN;
-            case 4:
-                return Ticket.State.OPEN;
-            case 5:
-                return Ticket.State.CLOSED;
-            case 6:
-                return Ticket.State.CANCELLED;
-            case 7:
-                return Ticket.State.CANCELLED;
-            default:
-                return Ticket.State.OPEN;
-
+        } else if ("Open".equals(stateIdString)) {
+            return Ticket.State.OPEN;
+        } else if ("In Progress".equals(stateIdString)) {
+            return Ticket.State.OPEN;
+        } else if ("Reopened".equals(stateIdString)) {
+            return Ticket.State.OPEN;
+        } else if ("Resolved".equals(stateIdString)) {
+            return Ticket.State.CLOSED;
+        } else if ("Closed".equals(stateIdString)) {
+            return Ticket.State.CLOSED;
+        } else {
+            return Ticket.State.OPEN;
         }
     }
 
@@ -220,7 +155,7 @@ public class JiraTicketerPlugin implements Plugin {
      * @return a <code>java.util.Properties object containing jira plugin defined properties
      */
 
-    private Properties getProperties() {
+    private static Properties getProperties() {
         File home = new File(System.getProperty("opennms.home"));
         File etc = new File(home, "etc");
         File config = new File(etc, "jira.properties");
@@ -237,8 +172,8 @@ public class JiraTicketerPlugin implements Plugin {
             IOUtils.closeQuietly(in);
         }
 
-	log().debug("Loaded user: " + props.getProperty("jira.username"));
-	log().debug("Loaded type: " + props.getProperty("jira.type"));
+        log().debug("Loaded user: " + props.getProperty("jira.username"));
+        log().debug("Loaded type: " + props.getProperty("jira.type"));
 
         return props;
 
@@ -248,71 +183,53 @@ public class JiraTicketerPlugin implements Plugin {
     * (non-Javadoc)
     * @see org.opennms.api.integration.ticketing.Plugin#saveOrUpdate(org.opennms.api.integration.ticketing.Ticket)
     */
+    @Override
     public void saveOrUpdate(Ticket ticket) {
 
-        JiraConnection jira = getConnection();
-        RemoteIssue issue = new RemoteIssue();
-        issue.setProject(getProperties().getProperty("jira.project"));
-        issue.setReporter(getProperties().getProperty("jira.username"));
-        issue.setType(getProperties().getProperty("jira.type").trim());
-        issue.setSummary(ticket.getSummary());
-        issue.setDescription(ticket.getSummary());
-        issue.setDuedate(Calendar.getInstance());
+        JiraRestClient jira = getConnection();
 
         if (ticket.getId() == null || ticket.getId().equals("")) {
-            try {
-                RemoteIssue addedIssue = jira.getJira().createIssue(jira.getToken(), issue);
-                ticket.setId(addedIssue.getKey());
-                RemoteComment comment = new RemoteComment();
-                comment.setBody(ticket.getDetails());
-                comment.setAuthor(getProperties().getProperty("jira.username"));
-                jira.getJira().addComment(jira.getToken(), ticket.getId(), comment);
-                log().error("Ticket ID: " + addedIssue.getKey());
-            } catch (Throwable e) {
-                log().error("Error: Could not create a Jira issue id " + e);
-            }
+            // If we can't find a ticket with the specified ID then create one.
+            IssueInputBuilder builder = new IssueInputBuilder(getProperties().getProperty("jira.project"), Long.valueOf(getProperties().getProperty("jira.type").trim()));
+            builder.setReporterName(getProperties().getProperty("jira.username"));
+            builder.setSummary(ticket.getSummary());
+            builder.setDescription(ticket.getDetails());
+            builder.setDueDate(new DateTime(Calendar.getInstance()));
+
+            jira.getIssueClient().createIssue(builder.build(), new NullProgressMonitor());
+
         } else {
+            // Otherwise update the existing ticket
             log().info("Received ticket: " + ticket.getId());
 
-            try {
-                issue = jira.getJira().getIssue(jira.getToken(), ticket.getId());
-            } catch (RemoteException e) {
-                log().error("Error: could not retrive remote issue");
-            }
+            Issue issue = jira.getIssueClient().getIssue(ticket.getId(), new NullProgressMonitor());
 
-            if ("closed".equals(ticket.getState().toString().toLowerCase())) {
-                log().info("Closing ticket " + ticket.getId());
-                RemoteComment comment = new RemoteComment();
-                comment.setBody("Issue resolved by OpenNMS");
-                try {
-                    jira.getJira().addComment(jira.getToken(), issue.getKey(), comment);
-                } catch (RemoteException e) {
-                    log().error("Could not append comments " + e);
+            Iterable<Transition> transitions = jira.getIssueClient().getTransitions(issue, new NullProgressMonitor());
+            if (Ticket.State.CLOSED.equals(ticket.getState())) {
+                Comment comment = Comment.valueOf("Issue resolved by OpenNMS.");
+                for (Transition transition : transitions) {
+                    if ("Resolve Issue".equals(transition.getName())) {
+                        log().info("Resolving ticket " + ticket.getId());
+                        // Resolve the issue
+                        jira.getIssueClient().transition(issue, new TransitionInput(transition.getId(), comment), new NullProgressMonitor());
+                        return;
+                    }
                 }
-
-                RemoteFieldValue[] resolution = new RemoteFieldValue[0];
-                try {
-                    jira.getJira().progressWorkflowAction(jira.getToken(), ticket.getId(), String.valueOf(openNMSToJira(ticket.getState())), resolution);
-                    ticket.setState(Ticket.State.CLOSED);
-                } catch (RemoteException e) {
-                    log().error("Error: Could not resolve ticket");
+                log().warn("Could not resolve ticket " + ticket.getId() + ", no \"Resolve Issue\" operation available.");
+            } else if (Ticket.State.OPEN.equals(ticket.getState())) {
+                // This case is most likely never used.
+                Comment comment = Comment.valueOf("Issue reopened by OpenNMS.");
+                for (Transition transition : transitions) {
+                    if ("Reopen Issue".equals(transition.getName())) {
+                        log().info("Reopening ticket " + ticket.getId());
+                        // Resolve the issue
+                        jira.getIssueClient().transition(issue, new TransitionInput(transition.getId(), comment), new NullProgressMonitor());
+                        return;
+                    }
                 }
+                log().warn("Could not reopen ticket " + ticket.getId() + ", no \"Reopen Issue\" operation available.");
             }
-
-            // This case is most likely never used.
-            if ("open".equals(ticket.getState().toString().toLowerCase())) {
-                log().info("Re-Opening ticket " + ticket.getId());
-                RemoteFieldValue[] resolution = new RemoteFieldValue[0];
-                try {
-                    jira.getJira().progressWorkflowAction(jira.getToken(), ticket.getId(), String.valueOf(openNMSToJira(ticket.getState())), resolution);
-                    ticket.setState(Ticket.State.OPEN);
-                } catch (RemoteException e) {
-                    log().error("Error: Could not re-open ticket");
-                }
-            }
-
         }
-
     }
 
     /**
@@ -320,8 +237,8 @@ public class JiraTicketerPlugin implements Plugin {
      *
      * @return a log4j Category for this class
      */
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
+    private static ThreadCategory log() {
+        return ThreadCategory.getInstance(JiraTicketerPlugin.class);
     }
 
 }
