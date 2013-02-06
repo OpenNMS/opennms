@@ -232,7 +232,7 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 
 
 			//Updates
-			edgeSelection.call(GWTEdge.draw()).attr("opacity", 1);
+			edgeSelection.call(GWTEdge.draw()).attr("opacity", 0);
 			
 			vertexSelection.with(updateTransition()).call(GWTVertex.draw()).attr("opacity", 1);
 
@@ -270,16 +270,6 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
             
 		}
 		
-		private String matrixTransform(SVGMatrix matrix) {
-	        String m = "matrix(" + matrix.getA() +
-	                ", " + matrix.getB() +
-	                ", " + matrix.getC() + 
-	                ", " + matrix.getD() +
-	                ", " + matrix.getE() + 
-	                ", " + matrix.getF() + ")";
-	        return D3.getTransform( m ).toString();
-	    }
-
 		protected D3Behavior enterTransition() {
 			return fadeIn(500, 1000);
 		}
