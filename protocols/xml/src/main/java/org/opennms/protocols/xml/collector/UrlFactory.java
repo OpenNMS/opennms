@@ -33,6 +33,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 
+import org.opennms.protocols.http.HttpUrlConnection;
 import org.opennms.protocols.http.HttpUrlHandler;
 import org.opennms.protocols.sftp.Sftp3gppUrlHandler;
 import org.opennms.protocols.sftp.SftpUrlConnection;
@@ -81,5 +82,7 @@ public class UrlFactory {
     public static void disconnect(URLConnection connection) throws IOException {
         if (connection != null && connection instanceof SftpUrlConnection) // We need to be sure to close the connections for SFTP
             ((SftpUrlConnection)connection).disconnect();
+        if (connection != null && connection instanceof HttpUrlConnection)
+            ((HttpUrlConnection)connection).disconnect();
     }
 }
