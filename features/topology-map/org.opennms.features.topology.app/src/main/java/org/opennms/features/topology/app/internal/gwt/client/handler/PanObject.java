@@ -51,14 +51,15 @@ public class PanObject extends DragObject{
 		SVGGElement g = topologyView.getSVGViewPort().cast();
 		m_stateTf = g.getCTM().inverse();
 
-		m_stateOrigin = getEventPoint(D3.getEvent()).matrixTransform(m_stateTf); 
-
+		SVGPoint eventPoint = getEventPoint(D3.getEvent());
+        m_stateOrigin = topologyView.getPoint((int)eventPoint.getX(), (int)eventPoint.getY()); 
 	}
 
 	@Override
 	public void move() {
 		Event event = D3.getEvent().cast();
-		SVGPoint p = getEventPoint(event).matrixTransform(m_stateTf);
+		SVGPoint eventPoint = getEventPoint(event);
+        SVGPoint p = eventPoint.matrixTransform(m_stateTf);
 
 		SVGMatrix m = m_stateTf.inverse().translate(p.getX() - m_stateOrigin.getX(), p.getY() - m_stateOrigin.getY() );
 
@@ -68,8 +69,7 @@ public class PanObject extends DragObject{
 				", " + m.getD() +
 				", " + m.getE() + 
 				", " + m.getF() + ")";
-		
 		getDraggableElement().setAttribute("transform", matrixTransform);
 	}
-
+	
 }
