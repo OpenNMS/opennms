@@ -45,6 +45,7 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -301,10 +302,11 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
      * @return the XML document
      */
     protected Document getXmlDocument(String urlString) {
+        InputStream is = null;
         try {
             URL url = UrlFactory.getUrl(urlString);
             URLConnection c = url.openConnection();
-            InputStream is = c.getInputStream();
+            is = c.getInputStream();
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             factory.setIgnoringComments(true);
             DocumentBuilder builder = factory.newDocumentBuilder();
@@ -313,6 +315,8 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
             return doc;
         } catch (Exception e) {
             throw new XmlCollectorException(e.getMessage(), e);
+        } finally {
+            IOUtils.closeQuietly(is);
         }
     }
 
