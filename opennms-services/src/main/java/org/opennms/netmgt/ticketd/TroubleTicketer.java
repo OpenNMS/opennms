@@ -29,7 +29,9 @@
 package org.opennms.netmgt.ticketd;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
@@ -209,8 +211,12 @@ public class TroubleTicketer implements SpringServiceDaemon, EventListener {
         EventUtils.requireParm(e, EventConstants.PARM_USER);
 
         int alarmId = EventUtils.getIntParm(e, EventConstants.PARM_ALARM_ID);
+        Map<String,String> attributes = new HashMap<String, String>();
+        for (final Parm parm: e.getParmCollection()) {
+        	attributes.put(parm.getParmName(), parm.getValue().getContent());
+        }
         
-        m_ticketerServiceLayer.createTicketForAlarm(alarmId);
+        m_ticketerServiceLayer.createTicketForAlarm(alarmId,attributes);
 	}
 
 	/**
