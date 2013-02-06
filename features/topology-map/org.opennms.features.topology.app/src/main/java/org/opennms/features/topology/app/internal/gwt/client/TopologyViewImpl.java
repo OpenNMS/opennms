@@ -58,6 +58,9 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
     Element m_marquee;
     
     @UiField
+    Element m_marginContainer;
+    
+    @UiField
     HTMLPanel m_widgetContainer;
     
     TopologyViewRenderer m_topologyViewRenderer;
@@ -94,7 +97,11 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
     public SVGElement getSVGElement() {
         return m_svg.cast();
     }
-
+    
+    private SVGGElement getMarginContainer() {
+        return m_marginContainer.cast();
+    }
+    
     @Override
     public SVGGElement getSVGViewPort() {
         return m_svgViewPort.cast();
@@ -228,7 +235,7 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
         SVGMatrix stateTF = g.getCTM().inverse();
         
         SVGPoint p = getSVGElement().createSVGPoint();
-        p.setX(getPhysicalWidth()/2);
+        p.setX(getPhysicalWidth()/2 + getLeftMargin());
         p.setY(getPhysicalHeight()/2);
         
         SVGPoint center = p.matrixTransform(stateTF);

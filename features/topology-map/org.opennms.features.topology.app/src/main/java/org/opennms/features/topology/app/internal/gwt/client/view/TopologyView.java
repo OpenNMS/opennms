@@ -36,4 +36,5 @@ public interface TopologyView<T> {
     int getPhysicalWidth();
     int getPhysicalHeight();
     SVGPoint getPoint(int clientX, int clientY);
+    int getLeftMargin();
 }
