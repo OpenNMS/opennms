@@ -115,7 +115,7 @@
 		SimpleDateFormat shortDF = new SimpleDateFormat("MMM", Locale.US);
 		SimpleDateFormat longDF  = new SimpleDateFormat("MMMM");
 		for (int mon = 0; mon < 12; mon++) {
-			Date tempDate = new GregorianCalendar(0, mon, 1).getTime();
+			java.util.Date tempDate = new GregorianCalendar(0, mon, 1).getTime();
 			sb.append("<option value=\"").append(shortDF.format(tempDate)).append("\" ");
 			sb.append((month==(mon+1))?"selected":"");
 			sb.append(">").append(longDF.format(tempDate)).append("</option>");
