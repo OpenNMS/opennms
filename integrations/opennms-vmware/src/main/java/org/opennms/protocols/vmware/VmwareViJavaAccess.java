@@ -453,7 +453,7 @@ public class VmwareViJavaAccess {
 
         CIMObjectPath rpCOP = new CIMObjectPath(cimClass);
 
-        Enumeration rpEnm = cimClient.enumerateInstances(rpCOP);
+        Enumeration<?> rpEnm = cimClient.enumerateInstances(rpCOP);
 
         while (rpEnm.hasMoreElements()) {
             CIMObject rp = (CIMObject) rpEnm.nextElement();

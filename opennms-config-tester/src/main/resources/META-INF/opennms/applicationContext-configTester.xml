@@ -84,7 +84,6 @@
         <entry key="users.xml" value="userFactory"/>
         <entry key="vacuumd-configuration.xml" value="vacuumdConfigFactory"/>
         <entry key="viewsdisplay.xml" value="viewsDisplayFactory"/>
-        <entry key="vulnscand-configuration.xml" value="vulnscandConfigFactory"/>
         <entry key="wmi-config.xml" value="wmiPeerFactory"/>
         <entry key="wmi-datacollection-config.xml" value="wmiDataCollectionConfigFactory"/>
 
@@ -600,12 +599,6 @@ org.opennms.netmgt.filter.FilterParseException: SQL Exception occurred getting I
   </bean>
 
   <bean id="viewsDisplayFactory" class="org.opennms.netmgt.config.ViewsDisplayFactory" depends-on="viewsDisplayFactory-init" factory-method="getInstance"/>
-
-  <bean id="vulnscandConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.VulnscandConfigFactory.init</value></property>
-  </bean>
-
-  <bean id="vulnscandConfigFactory" class="org.opennms.netmgt.config.VulnscandConfigFactory" depends-on="vulnscandConfigFactory-init" factory-method="getInstance"/>
 
   <bean id="wmiPeerFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.netmgt.config.WmiPeerFactory.init</value></property>

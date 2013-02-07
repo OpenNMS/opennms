@@ -119,7 +119,6 @@ import org.opennms.netmgt.config.viewsdisplay.Viewinfo;
 import org.opennms.netmgt.config.vmware.VmwareConfig;
 import org.opennms.netmgt.config.vmware.cim.VmwareCimDatacollectionConfig;
 import org.opennms.netmgt.config.vmware.vijava.VmwareDatacollectionConfig;
-import org.opennms.netmgt.config.vulnscand.VulnscandConfiguration;
 import org.opennms.netmgt.config.wmi.WmiConfig;
 import org.opennms.netmgt.config.wmi.WmiDatacollectionConfig;
 import org.opennms.netmgt.config.xmlrpcd.XmlrpcdConfiguration;
@@ -458,10 +457,6 @@ public class WillItUnmarshalTest {
     @Test
     public void testVacuumdConfiguration() throws Exception {
         unmarshal("vacuumd-configuration.xml", VacuumdConfiguration.class);
-    }
-    @Test
-    public void testVulnscandConfiguration() throws Exception {
-        unmarshal("vulnscand-configuration.xml", VulnscandConfiguration.class);
     }
     @Test
     public void testXmlrpcdConfiguration() throws Exception {

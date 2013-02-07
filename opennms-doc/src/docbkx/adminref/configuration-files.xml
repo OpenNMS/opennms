@@ -959,13 +959,6 @@
 		</para>
 	</section>
 
-	<section id="vulnscand-configuration.xml">
-		<title>vulnscand-configuration.xml</title>
-		<para>
-			Configure Vulnscand, the Nessus vulnerability scanning integration.
-		</para>
-	</section>
-
 	<section id="xmlrpcd-configuration.xml">
 		<title>xmlrpcd-configuration.xml</title>
 		<para>
