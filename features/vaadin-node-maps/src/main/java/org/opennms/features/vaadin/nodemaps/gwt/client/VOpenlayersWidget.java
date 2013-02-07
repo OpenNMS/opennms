@@ -28,7 +28,11 @@
 
 package org.opennms.features.vaadin.nodemaps.gwt.client;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import org.opennms.features.vaadin.nodemaps.gwt.client.openlayers.FeatureCollection;
 import org.opennms.features.vaadin.nodemaps.gwt.client.openlayers.NodeFeature;
@@ -62,25 +66,36 @@ public class VOpenlayersWidget extends GWTOpenlayersWidget implements Paintable 
         final UIDL nodeUIDL = uidl.getChildByTagName("nodes");
 
         final FeatureCollection featureCollection = FeatureCollection.create();
-
         for (final Iterator<?> iterator = nodeUIDL.getChildIterator(); iterator.hasNext();) {
             final UIDL node = (UIDL) iterator.next();
-
-            final float latitude = node.getFloatAttribute("latitude");
-            final float longitude = node.getFloatAttribute("longitude");
-
-            final NodeFeature feature = NodeFeature.create(latitude, longitude).cast();
-
-            for (final String key : new String[] { "severityLabel", "nodeLabel", "foreignSource", "foreignId", "ipAddress", "severity", "nodeId", "unackedCount" }) {
-                if (node.hasAttribute(key)) feature.putProperty(key, node.getStringAttribute(key));
-            }
-
+            final NodeFeature feature = NodeFeature.create(node).cast();
             log(feature.asString());
-
             featureCollection.add(feature);
         }
+        setFeatures(featureCollection);
 
-        setFeatureCollection(featureCollection);
+        final UIDL alarmUIDL = uidl.getChildByTagName("alarms");
+
+        final Map<Integer,List<Alarm>> alarms = new HashMap<Integer,List<Alarm>>();
+        for (final Iterator<?> iterator = alarmUIDL.getChildIterator(); iterator.hasNext(); ) {
+            final UIDL uidlAlarm = (UIDL) iterator.next();
+            final Alarm alarm = Alarm.create(uidlAlarm);
+            addAlarm(alarms, alarm);
+        }
+        setAlarms(alarms);
+
         updateFeatureLayer();
+    }
+
+    private void addAlarm(final Map<Integer, List<Alarm>> alarms, final Alarm alarm) {
+        final List<Alarm> alarmList;
+        final Integer nodeId = alarm.getNodeId();
+        if (alarms.containsKey(nodeId)) {
+            alarmList = alarms.get(nodeId);
+        } else {
+            alarmList = new ArrayList<Alarm>();
+            alarms.put(nodeId, alarmList);
+        }
+        alarmList.add(alarm);
     }
 }
