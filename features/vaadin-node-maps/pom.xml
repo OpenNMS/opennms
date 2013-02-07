@@ -31,7 +31,6 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>gwt-maven-plugin</artifactId>
-				<version>${gwtPluginVersion}</version>
 				<configuration>
 					<webappDirectory>target/gwt/VAADIN/widgetsets</webappDirectory>
 					<extraJvmArgs>-Xmx512M -Xss1024k</extraJvmArgs>
@@ -192,30 +191,17 @@
 
 	<dependencies>
 
-		<!-- OSGi Dependencies -->
-
-		<dependency>
-			<groupId>org.ops4j.pax.vaadin</groupId>
-			<artifactId>service</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency> <!-- Required by pax/vaadin -->
-			<groupId>javax.servlet</groupId>
-			<artifactId>servlet-api</artifactId>
-			<scope>provided</scope>
-		</dependency>
-
 		<!-- Vaadin Dependencies -->
 
 		<dependency>
-			<groupId>com.vaadin</groupId>
+			<groupId>org.opennms.osgi.features.topology</groupId>
 			<artifactId>vaadin</artifactId>
-			<scope>provided</scope>
+			<type>pom</type>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.gwt</groupId>
 			<artifactId>gwt-user</artifactId>
-			<version>${gwtVersion}</version>
 			<optional>true</optional>
 			<scope>provided</scope>
 		</dependency>

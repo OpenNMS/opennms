@@ -31,10 +31,8 @@ package org.opennms.features.topology.plugins.topo.onmsdao.internal;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.opennms.features.topology.api.SimpleConnector;
 import org.opennms.features.topology.api.SimpleGroup;
 import org.opennms.features.topology.api.SimpleLeafVertex;
-import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.GraphProvider;

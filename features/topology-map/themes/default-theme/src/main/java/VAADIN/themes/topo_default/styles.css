@@ -67,3 +67,9 @@ div.v-button-down .v-button-wrap{
 .edge.ncs.selected {
 	stroke: #00ffff;
 }
+
+.map-controls {
+	background-color: #eeeeee;
+	border-left: 1px solid #dddddd;
+	
+}

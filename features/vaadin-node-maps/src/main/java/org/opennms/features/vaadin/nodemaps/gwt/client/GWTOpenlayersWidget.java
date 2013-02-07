@@ -28,11 +28,13 @@
 
 package org.opennms.features.vaadin.nodemaps.gwt.client;
 
+import java.util.List;
+import java.util.Map;
+
 import org.opennms.features.vaadin.nodemaps.gwt.client.openlayers.FeatureCollection;
 import org.opennms.features.vaadin.nodemaps.gwt.client.openlayers.OnmsOpenLayersMap;
 import org.opennms.features.vaadin.nodemaps.gwt.client.openlayers.VectorLayer;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Document;
@@ -48,6 +50,8 @@ public class GWTOpenlayersWidget extends Widget {
     private VectorLayer m_vectorLayer;
 
     private FeatureCollection m_features;
+
+    private AlarmCollection m_alarms;
 
     public GWTOpenlayersWidget() {
         super();
@@ -72,17 +76,109 @@ public class GWTOpenlayersWidget extends Widget {
         super.onUnload();
     }
 
-    private String getNodesGml() {
-        return GWT.getModuleBaseURL() + "nodes.gml";
-    }
-
     private void createMap(final String divId) {
         m_map = OnmsOpenLayersMap.newInstance(divId);
         initializeMap(m_map);
     }
 
     private final native void initializeMap(final OnmsOpenLayersMap map) /*-{
+        var me = this;
         var displayAllNodes = true;
+
+        var onPopupClose = function(evt) {
+            select.unselect(this.feature);
+        };
+
+        var getHighestSeverityAlarmForNode = function(nodeId) {
+            var alarms = me.@org.opennms.features.vaadin.nodemaps.gwt.client.GWTOpenlayersWidget::m_alarms;
+            if (alarms) {
+                return alarms.getHighestSeverityAlarm(nodeId);
+            } else {
+                return null;
+            }
+        };
+
+        var getUnackedCount = function(nodeId) {
+            var alarms = me.@org.opennms.features.vaadin.nodemaps.gwt.client.GWTOpenlayersWidget::m_alarms;
+            if (alarms) {
+                return alarms.getUnackedCount(nodeId);
+            } else {
+                return 0;
+            }
+        };
+
+        var onFeatureSelect = function(evt) {
+            feature = evt.feature;
+            var msg = "";
+            if (feature.cluster.length > 1) {
+                var nodes = [];
+                for ( var i = 0; i < feature.cluster.length; i++) {
+                    var n = feature.cluster[i].attributes;
+                    nodes.push(n.nodeLabel + "(" + n.ipAddress + ") : " + n.severityLabel);
+                }
+                msg = "<h2># of nodes: " + feature.cluster.length + " (" + getNumUnacked(feature)  + " Unacknowledged Alarms)</h2><ul><li>" + nodes.join("</li><li>") + "</li></ul>";
+            } else {
+                var n = feature.cluster[0].attributes;
+                var severity = getHighestSeverity(feature);
+                msg = "<h2>Node " + n.nodeLabel + "</h2>" + "<p>Node ID: " + n.nodeId + "</br>" + "Foreign Source: " + n.foreignSource + "</br>" + "Foreign ID: " + n.foreignId + "</br>" + "IP Address: " + n.ipAddress + "</br>" + "Status: " + severity + "</br></p>";
+            }
+            popup = new $wnd.OpenLayers.Popup.FramedCloud(
+                "nodePopup",
+                feature.geometry.getBounds().getCenterLonLat(),
+                new $wnd.OpenLayers.Size(100, 100), msg, null, false,
+                onPopupClose
+            );
+            feature.popup = popup;
+            popup.feature = feature;
+            map.addPopup(popup);
+        };
+
+        var getHighestSeverity = function(feature) {
+            if (!feature.cluster) return "Normal";
+            var severity = 0;
+            var severityLabel = "Normal";
+            for ( var i = 0; i < feature.cluster.length; i++) {
+                var n = feature.cluster[i].attributes;
+                var nodeId = parseInt(n.nodeId);
+                var alarm = getHighestSeverityAlarmForNode(nodeId);
+                if (alarm) {
+                    if (alarm.severity > severity) {
+                        severity = alarm.severity;
+                        severityLabel = alarm.severityLabel;
+                    }
+                }
+                if (severity == 7) {
+                    break;
+                }
+            }
+            return severityLabel;
+        };
+
+        var getNumUnacked = function(feature) {
+            if (!feature.cluster) return 0;
+            var count = 0;
+            for ( var i = 0; i < feature.cluster.length; i++) {
+                var nodeId = parseInt(feature.cluster[i].attributes.nodeId);
+                count += getUnackedCount(nodeId);
+            }
+            return count;
+        };
+
+        var onFeatureUnselect = function(evt) {
+            feature = evt.feature;
+            if (feature.popup) {
+                popup.feature = null;
+                map.removePopup(feature.popup);
+                feature.popup.destroy();
+                feature.popup = null;
+            }
+        }
+
+        var applyFilters = function(btn) {
+            btn.value = displayAllNodes ? 'Show All Nodes' : 'Show Down Nodes';
+            displayAllNodes = !displayAllNodes;
+            nodesLayer.redraw();
+        };
 
         var nodeFillColors = {
             Critical : "#F5CDCD",
@@ -122,7 +218,7 @@ public class GWTOpenlayersWidget extends Widget {
                         },
                         // The Radius will change according with the amount of nodes on the cluster.
                         radius : function(feature) {
-                            return feature.cluster ? Math.min(feature.attributes.count, 7) + 5 : 5;
+                            return feature.cluster ? Math.min(parseInt(feature.attributes.count), 7) + 5 : 5;
                         },
                         // The label will display the amount of nodes only for clusters.
                         label : function(feature) {
@@ -137,11 +233,11 @@ public class GWTOpenlayersWidget extends Widget {
                         },
                         // It depends on the calculated severity
                         strokeColor : function(feature) {
-                            return nodeStrokeColors[getNodeSeverity(feature)];
+                            return nodeStrokeColors[getHighestSeverity(feature)];
                         },
                         // It depends on the calculated severity
                         fillColor : function(feature) {
-                            return nodeFillColors[getNodeSeverity(feature)];
+                            return nodeFillColors[getHighestSeverity(feature)];
                         }
                     }
                 });
@@ -179,85 +275,9 @@ public class GWTOpenlayersWidget extends Widget {
 
         // Updating Nodes Layer
 
-        this.@org.opennms.features.vaadin.nodemaps.gwt.client.GWTOpenlayersWidget::m_vectorLayer = nodesLayer;
-        this.@org.opennms.features.vaadin.nodemaps.gwt.client.GWTOpenlayersWidget::updateFeatureLayer()();
+        me.@org.opennms.features.vaadin.nodemaps.gwt.client.GWTOpenlayersWidget::m_vectorLayer = nodesLayer;
+        me.@org.opennms.features.vaadin.nodemaps.gwt.client.GWTOpenlayersWidget::updateFeatureLayer()();
         map.zoomToExtent(nodesLayer.getDataExtent());
-
-        function getNodeSeverity(feature) {
-            return getHighestSeverity(feature);
-        }
-
-        function onPopupClose(evt) {
-            select.unselect(this.feature);
-        }
-
-        function onFeatureSelect(evt) {
-            feature = evt.feature;
-            var msg = "";
-            if (feature.cluster.length > 1) {
-                var nodes = [];
-                for ( var i = 0; i < feature.cluster.length; i++) {
-                    var n = feature.cluster[i].attributes;
-                    nodes.push(n.nodeLabel + "(" + n.ipAddress + ") : " + n.severityLabel);
-                }
-                msg = "<h2># of nodes: " + feature.cluster.length + " (" + getNumUnacked(feature)  + " Unacknowledged Alarms)</h2><ul><li>" + nodes.join("</li><li>") + "</li></ul>";
-            } else {
-                var n = feature.cluster[0].attributes;
-                msg = "<h2>Node " + n.nodeLabel + "</h2>" + "<p>Node ID: " + n.nodeId + "</br>" + "Foreign Source: " + n.foreignSource + "</br>" + "Foreign ID: " + n.foreignId + "</br>" + "IP Address: " + n.ipAddress + "</br>" + "Status: " + n.severityLabel + "</br></p>";
-            }
-            popup = new $wnd.OpenLayers.Popup.FramedCloud(
-                "nodePopup",
-                feature.geometry.getBounds().getCenterLonLat(),
-                new $wnd.OpenLayers.Size(100, 100), msg, null, false,
-                onPopupClose
-            );
-            feature.popup = popup;
-            popup.feature = feature;
-            map.addPopup(popup);
-        }
-
-        function getHighestSeverity(feature) {
-            if (!feature.cluster) return "Normal";
-            var severity = 0;
-            var severityLabel = "Normal";
-            for ( var i = 0; i < feature.cluster.length; i++) {
-                var n = feature.cluster[i].attributes;
-                if (n.severity && parseInt(n.severity) > severity) {
-                    severity = parseInt(n.severity);
-                    severityLabel = n.severityLabel;
-                }
-                if (severity == 7) {
-                    break;
-                }
-            }
-            return severityLabel;
-        }
-
-        function getNumUnacked(feature) {
-            if (!feature.cluster) return 0;
-            var count = 0;
-            for ( var i = 0; i < feature.cluster.length; i++) {
-                var n = feature.cluster[i].attributes;
-                if (n.unackedCount) count += parseInt(n.unackedCount);
-            }
-            return count;
-        }
-
-        function onFeatureUnselect(evt) {
-            feature = evt.feature;
-            if (feature.popup) {
-                popup.feature = null;
-                map.removePopup(feature.popup);
-                feature.popup.destroy();
-                feature.popup = null;
-            }
-        }
-
-        function applyFilters(btn) {
-            btn.value = displayAllNodes ? 'Show All Nodes' : 'Show Down Nodes';
-            displayAllNodes = !displayAllNodes;
-            nodesLayer.redraw();
-        }
     }-*/;
 
     public void updateFeatureLayer() {
@@ -278,8 +298,12 @@ public class GWTOpenlayersWidget extends Widget {
         return m_features;
     }
 
-    public void setFeatureCollection(final FeatureCollection collection) {
+    public void setFeatures(final FeatureCollection collection) {
         m_features = collection;
+    }
+
+    public void setAlarms(final Map<Integer,List<Alarm>> alarms) {
+        m_alarms = AlarmCollection.create(alarms);
     }
 
     private final native void destroyMap() /*-{

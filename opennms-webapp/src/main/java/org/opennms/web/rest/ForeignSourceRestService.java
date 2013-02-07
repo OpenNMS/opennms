@@ -157,7 +157,7 @@ public class ForeignSourceRestService extends OnmsRestService {
      */
     @GET
     @Path("default")
-    @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public ForeignSource getDefaultForeignSource() throws ParseException {
         readLock();
         try {
@@ -211,7 +211,7 @@ public class ForeignSourceRestService extends OnmsRestService {
      * @throws java.text.ParseException if any.
      */
     @GET
-    @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public ForeignSourceCollection getForeignSources() throws ParseException {
         readLock();
         
@@ -252,7 +252,7 @@ public class ForeignSourceRestService extends OnmsRestService {
      */
     @GET
     @Path("{foreignSource}")
-    @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public ForeignSource getForeignSource(@PathParam("foreignSource") String foreignSource) {
         readLock();
         try {
@@ -270,7 +270,7 @@ public class ForeignSourceRestService extends OnmsRestService {
      */
     @GET
     @Path("{foreignSource}/detectors")
-    @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public DetectorCollection getDetectors(@PathParam("foreignSource") String foreignSource) {
         readLock();
         try {
@@ -289,7 +289,7 @@ public class ForeignSourceRestService extends OnmsRestService {
      */
     @GET
     @Path("{foreignSource}/detectors/{detector}")
-    @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public DetectorWrapper getDetector(@PathParam("foreignSource") String foreignSource, @PathParam("detector") String detector) {
         readLock();
         try {
@@ -312,7 +312,7 @@ public class ForeignSourceRestService extends OnmsRestService {
      */
     @GET
     @Path("{foreignSource}/policies")
-    @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public PolicyCollection getPolicies(@PathParam("foreignSource") String foreignSource) {
         readLock();
         try {
@@ -331,7 +331,7 @@ public class ForeignSourceRestService extends OnmsRestService {
      */
     @GET
     @Path("{foreignSource}/policies/{policy}")
-    @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public PolicyWrapper getPolicy(@PathParam("foreignSource") String foreignSource, @PathParam("policy") String policy) {
         readLock();
         try {

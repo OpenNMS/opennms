@@ -5,8 +5,19 @@ xsi:schemaLocation="
 http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
 http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/aries/tags/blueprint-0.3.1/blueprint-core/src/main/resources/org/apache/aries/blueprint/ext/blueprint-ext.xsd">
 
-    <service interface="org.opennms.features.topology.api.HistoryManager" >
-        <bean class="org.opennms.features.topology.plugins.topo.MemoryHistoryManager"/>
-    </service>
+    <bean id="historyManager" class="org.opennms.features.topology.plugins.topo.MemoryHistoryManager"/>
+
+    <service interface="org.opennms.features.topology.api.HistoryManager" ref="historyManager"/>
+
+    <reference-list interface="org.opennms.features.topology.api.HistoryOperation" availability="optional">
+        <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="historyManager">
+        </reference-listener>
+    </reference-list>
+
+    <!-- All CheckedOperation classes are HistoryOperation instances -->
+    <reference-list interface="org.opennms.features.topology.api.CheckedOperation" availability="optional">
+        <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="historyManager">
+        </reference-listener>
+    </reference-list>
 
 </blueprint>

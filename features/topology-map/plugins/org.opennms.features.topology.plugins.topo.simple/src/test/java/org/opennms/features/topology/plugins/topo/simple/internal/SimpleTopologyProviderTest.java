@@ -67,7 +67,6 @@ import org.opennms.features.topology.api.topo.WrappedGraph;
 import org.opennms.features.topology.api.topo.WrappedLeafVertex;
 import org.opennms.features.topology.api.topo.WrappedVertex;
 import org.opennms.features.topology.plugins.topo.simple.internal.operations.AddVertexOperation;
-import org.opennms.features.topology.plugins.topo.simple.internal.operations.ConnectOperation;
 import org.opennms.features.topology.plugins.topo.simple.internal.operations.RemoveVertexOperation;
 
 import com.vaadin.ui.Window;
@@ -438,41 +437,5 @@ public class SimpleTopologyProviderTest {
         m_topologyProvider.setParent(vertexId2, groupId);
         
         assertEquals(2, eventsReceived.get());
-    }
-    
-    @Test
-    public void testConnectVerticesOperation() {
-    	
-		m_topologyProvider.resetContainer();
-
-        VertexRef vertexId1 = addVertexToTopr();
-        VertexRef vertexId2 = addVertexToTopr();
-        
-        GraphContainer graphContainer = EasyMock.createMock(GraphContainer.class);
-
-        EasyMock.expect(graphContainer.getBaseTopology()).andReturn(m_topologyProvider).anyTimes();
-
-        EasyMock.replay(graphContainer);
-        
-        List<VertexRef> targets = new ArrayList<VertexRef>();
-        targets.add(vertexId1);
-        targets.add(vertexId2);
-        
-        ConnectOperation connectOperation = new ConnectOperation();
-        connectOperation.execute(targets, getOperationContext(graphContainer));
-        
-        Collection<? extends Edge> edgeIds = m_topologyProvider.getEdges();
-        assertEquals(1, edgeIds.size());
-        
-        for(Edge edgeId : edgeIds) {
-            SimpleLeafVertex source = (SimpleLeafVertex) edgeId.getSource().getVertex();
-            SimpleLeafVertex target = (SimpleLeafVertex) edgeId.getTarget().getVertex();
-            assertNotNull(source);
-            assertNotNull(target);
-            assertEquals(vertexId1.getId(), source.getId());
-            assertEquals(vertexId2.getId(), target.getId());
-        }
-        
-        EasyMock.verify(graphContainer);
     }
 }

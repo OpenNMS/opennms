@@ -102,7 +102,7 @@ public class NodeRestService extends OnmsRestService {
      * @return a {@link org.opennms.netmgt.model.OnmsNodeList} object.
      */
     @GET
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public OnmsNodeList getNodes() {
         readLock();
         
@@ -147,7 +147,7 @@ public class NodeRestService extends OnmsRestService {
      * @return a {@link org.opennms.netmgt.model.OnmsNode} object.
      */
     @GET
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Path("{nodeCriteria}")
     public OnmsNode getNode(@PathParam("nodeCriteria") final String nodeCriteria) {
         readLock();

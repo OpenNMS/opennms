@@ -232,7 +232,7 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 
 
 			//Updates
-			edgeSelection.call(GWTEdge.draw()).attr("opacity", 1);
+			edgeSelection.call(GWTEdge.draw()).attr("opacity", 0);
 			
 			vertexSelection.with(updateTransition()).call(GWTVertex.draw()).attr("opacity", 1);
 
@@ -242,24 +242,24 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
             //Scaling and Fit to Zoom transitions
 			SVGMatrix transform = topologyView.calculateNewTransform(graph.getBoundingBox());
             
-			int width = topologyView.getSVGElement().getParentElement().getOffsetWidth() - 60;
-			int height = topologyView.getSVGElement().getParentElement().getOffsetHeight();
-            //D3.d3().select(topologyView.getSVGViewPort())
-            //.attrTweenZoom("transform", graph.getBoundingBox(), oldBBox, width, height);
-            //.attr("transform", matrixTransform(transform) );
-			
+			int width = topologyView.getPhysicalWidth();
+			int height = topologyView.getPhysicalHeight();
 			D3 selection = D3.d3().select(topologyView.getSVGViewPort());
 			D3Transform tform = D3.getTransform(selection.attr("transform"));
 			
             JsArrayInteger p0 = (JsArrayInteger) JsArrayInteger.createArray();
-            p0.push((int) ((width/2 - tform.getX()) / tform.getScaleX()));
-            p0.push( (int) ((height/2 - tform.getY()) / tform.getScaleY()) );
+            int oldCenterX = (int) ((width/2 - tform.getX()) / tform.getScaleX());
+            int oldCenterY = (int) ((height/2 - tform.getY()) / tform.getScaleY());
+            p0.push(oldCenterX);
+            p0.push( oldCenterY );
             p0.push((int) (width / tform.getScaleX()));
             p0.push((int) (height / tform.getScaleY()));
             
             JsArrayInteger p1 = (JsArrayInteger) JsArrayInteger.createArray();
-            p1.push(graph.getBoundingBox().getX() + graph.getBoundingBox().getWidth()/2);
-            p1.push(graph.getBoundingBox().getY() + graph.getBoundingBox().getHeight()/2);
+            int newCenterX = graph.getBoundingBox().getX() + graph.getBoundingBox().getWidth()/2;
+            int newCenterY = graph.getBoundingBox().getY() + graph.getBoundingBox().getHeight()/2;
+            p1.push(newCenterX);
+            p1.push(newCenterY);
             p1.push(graph.getBoundingBox().getWidth());
             p1.push(graph.getBoundingBox().getHeight());
             
@@ -270,16 +270,6 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
             
 		}
 		
-		private String matrixTransform(SVGMatrix matrix) {
-	        String m = "matrix(" + matrix.getA() +
-	                ", " + matrix.getB() +
-	                ", " + matrix.getC() + 
-	                ", " + matrix.getD() +
-	                ", " + matrix.getE() + 
-	                ", " + matrix.getF() + ")";
-	        return D3.getTransform( m ).toString();
-	    }
-
 		protected D3Behavior enterTransition() {
 			return fadeIn(500, 1000);
 		}
@@ -915,6 +905,7 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
         Map<String, Object> point = new HashMap<String, Object>();
         point.put("x", (int)Math.round(pos.getX()));
         point.put("y", (int)Math.round(pos.getY()));
+        consoleLog("mapUpdate centerPos :: x: " + pos.getX() + " y: " + pos.getY());
         m_client.updateVariable(getPaintableId(), "clientCenterPoint", point, true);
     }
 

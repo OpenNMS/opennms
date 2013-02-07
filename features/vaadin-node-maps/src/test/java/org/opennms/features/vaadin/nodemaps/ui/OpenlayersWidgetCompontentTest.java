@@ -4,8 +4,8 @@ import static org.junit.Assert.assertEquals;
 
 import org.easymock.EasyMock;
 import org.junit.Before;
-import org.junit.Test;
 import org.junit.Ignore;
+import org.junit.Test;
 import org.opennms.features.geocoder.Coordinates;
 import org.opennms.features.geocoder.GeocoderService;
 import org.opennms.netmgt.dao.AlarmDao;
@@ -63,7 +63,7 @@ public class OpenlayersWidgetCompontentTest {
         
         EasyMock.replay(m_nodeDao, m_assetDao, m_geocoder, target);
 
-        m_component.paintNode(target, node);
+        m_component.addNode(target, node);
         
         EasyMock.verify(m_nodeDao, m_assetDao, m_geocoder, target);
     }

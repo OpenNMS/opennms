@@ -70,6 +70,8 @@ public class AssetCommand implements IsSerializable {
 
     private ArrayList<String> m_connectionOptions;
 
+    private String m_coordinates;
+
     private String m_cpu;
 
     private String m_dateInstalled;
@@ -262,6 +264,10 @@ public class AssetCommand implements IsSerializable {
 
     public ArrayList<String> getConnectionOptions() {
         return m_connectionOptions;
+    }
+
+    public String getCoordinates() {
+        return m_coordinates;
     }
 
     public String getCpu() {
@@ -578,6 +584,10 @@ public class AssetCommand implements IsSerializable {
         m_connectionOptions = connectionOptions;
     }
 
+    public void setCoordinates(String coordinates) {
+        m_coordinates = coordinates;
+    }
+
     public void setCpu(String cpu) {
         m_cpu = cpu;
     }
@@ -841,7 +851,8 @@ public class AssetCommand implements IsSerializable {
                 + ", m_connectionOptions=" + m_connectionOptions + ", m_cpu=" + m_cpu + ", m_dateInstalled="
                 + m_dateInstalled + ", m_department=" + m_department + ", m_description=" + m_description
                 + ", m_displayCategory=" + m_displayCategory + ", m_division=" + m_division + ", m_enable=" + m_enable
-                + ", m_floor=" + m_floor + ", m_hdd1=" + m_hdd1 + ", m_hdd2=" + m_hdd2 + ", m_hdd3=" + m_hdd3
+                + ", m_floor=" + m_floor + ", m_coordinates=" + m_coordinates + ", m_hdd1=" + m_hdd1
+                + ", m_hdd2=" + m_hdd2 + ", m_hdd3=" + m_hdd3
                 + ", m_hdd4=" + m_hdd4 + ", m_hdd5=" + m_hdd5 + ", m_hdd6=" + m_hdd6 + ", m_id=" + m_id
                 + ", m_inputpower=" + m_inputpower + ", m_lastModifiedBy=" + m_lastModifiedBy + ", m_lastModifiedDate="
                 + m_lastModifiedDate + ", m_lease=" + m_lease + ", m_leaseExpires=" + m_leaseExpires

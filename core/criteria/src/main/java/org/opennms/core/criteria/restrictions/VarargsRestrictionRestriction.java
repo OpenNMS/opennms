@@ -29,6 +29,7 @@
 package org.opennms.core.criteria.restrictions;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public abstract class VarargsRestrictionRestriction extends BaseRestriction {
@@ -42,7 +43,7 @@ public abstract class VarargsRestrictionRestriction extends BaseRestriction {
 		}
 	}
 
-	public List<Restriction> getRestrictions() {
+	public Collection<Restriction> getRestrictions() {
 		return m_restrictions;
 	}
 
