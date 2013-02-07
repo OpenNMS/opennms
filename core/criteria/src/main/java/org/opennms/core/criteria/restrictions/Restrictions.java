@@ -28,7 +28,7 @@
 
 package org.opennms.core.criteria.restrictions;
 
-import java.util.List;
+import java.util.Collection;
 
 public class Restrictions {
 
@@ -82,8 +82,8 @@ public class Restrictions {
         return new IplikeRestriction(attribute, comparator);
     }
 
-    public static InRestriction in(final String attribute, final List<?> list) {
-		return new InRestriction(attribute, list);
+    public static InRestriction in(final String attribute, final Collection<?> collection) {
+		return new InRestriction(attribute, collection);
 	}
 
 	public static BetweenRestriction between(final String attribute, final Object begin, final Object end) {
@@ -106,7 +106,7 @@ public class Restrictions {
         return new AllRestriction(restrictions);
     }
 
-    public static AllRestriction all(final List<Restriction> restrictions) {
+    public static AllRestriction all(final Collection<Restriction> restrictions) {
         return new AllRestriction(restrictions.toArray(EMPTY_RESTRICTION_ARRAY));
     }
 
@@ -114,7 +114,7 @@ public class Restrictions {
 		return new AnyRestriction(restrictions);
 	}
 
-    public static AnyRestriction any(final List<Restriction> restrictions) {
+    public static AnyRestriction any(final Collection<Restriction> restrictions) {
         return new AnyRestriction(restrictions.toArray(EMPTY_RESTRICTION_ARRAY));
     }
 
