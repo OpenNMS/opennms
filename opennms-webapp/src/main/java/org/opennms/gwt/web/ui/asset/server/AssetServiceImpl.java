@@ -244,6 +244,7 @@ public class AssetServiceImpl extends RemoteServiceServlet implements AssetServi
             suggestion.addDisplayCategory(asset.getDisplayCategory());
             suggestion.addDivision(asset.getDivision());
             suggestion.addFloor(asset.getFloor());
+            suggestion.addCoordinates(asset.getGeolocation().getCoordinates());
             suggestion.addHdd1(asset.getHdd1());
             suggestion.addHdd2(asset.getHdd2());
             suggestion.addHdd3(asset.getHdd3());
@@ -281,7 +282,7 @@ public class AssetServiceImpl extends RemoteServiceServlet implements AssetServi
 
             // VMware topology assets
             suggestion.addVmwareTopologyInfo(asset.getVmwareTopologyInfo());
-            suggestion.addVmwareState(asset.getState());
+            suggestion.addVmwareState(asset.getGeolocation().getState());
 
         }
         return suggestion;

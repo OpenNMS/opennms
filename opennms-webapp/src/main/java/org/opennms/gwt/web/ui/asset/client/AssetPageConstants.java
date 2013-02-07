@@ -53,6 +53,14 @@ public interface AssetPageConstants extends com.google.gwt.i18n.client.Constants
     @Key("address1Help")
     String address1Help();
 
+    @DefaultStringValue("Geo Coordinates")
+    @Key("coordinates")
+    String coordinates();
+
+    @DefaultStringValue("Geo Coordinates (Google Format), expressed as 'lng,lat'")
+    @Key("coordinatesHelp")
+    String coordinatesHelp();
+
     @DefaultStringValue("Address 2")
     @Key("address2")
     String address2();
