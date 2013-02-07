@@ -89,7 +89,7 @@ public class EventRestService extends OnmsRestService {
      * @return a {@link org.opennms.netmgt.model.OnmsEvent} object.
      */
     @GET
-    @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Path("{eventId}")
     @Transactional
     public OnmsEvent getEvent(@PathParam("eventId") final String eventId) {
@@ -128,7 +128,7 @@ public class EventRestService extends OnmsRestService {
      *             if any.
      */
     @GET
-    @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Transactional
     public OnmsEventCollection getEvents() throws ParseException {
         readLock();
@@ -156,7 +156,7 @@ public class EventRestService extends OnmsRestService {
      *             if any.
      */
     @GET
-    @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Path("between")
     @Transactional
     public OnmsEventCollection getEventsBetween() throws ParseException {

@@ -87,7 +87,7 @@ public class KscRestService extends OnmsRestService {
     SecurityContext m_securityContext;
 
     @GET
-    @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Transactional
     public KscReportCollection getReports() throws ParseException {
         readLock();
@@ -102,7 +102,7 @@ public class KscRestService extends OnmsRestService {
     }
 
     @GET
-    @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Path("{reportId}")
     @Transactional
     public KscReport getReport(@PathParam("reportId") final Integer reportId) {

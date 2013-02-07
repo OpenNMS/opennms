@@ -39,8 +39,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriInfo;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.EventConstants;
@@ -106,7 +106,7 @@ public class ScheduledOutagesRestService extends OnmsRestService {
     protected EventProxy m_eventProxy;
 
     @GET
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public Outages getOutages() {
         readLock();
         try {
@@ -120,7 +120,7 @@ public class ScheduledOutagesRestService extends OnmsRestService {
 
     @GET
     @Path("{outageName}")
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public Outage getOutage(@PathParam("outageName") String outageName) throws IllegalArgumentException {
         readLock();
         try {
