@@ -37,11 +37,6 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>com.sun.jersey.contribs</groupId>
-      <artifactId>jersey-apache-client</artifactId>
-      <version>${jerseyVersion}</version>
-    </dependency>
-    <dependency>
       <groupId>com.sun.jersey</groupId>
       <artifactId>jersey-json</artifactId>
       <version>${jerseyVersion}</version>
@@ -98,6 +93,26 @@
           <artifactId>spring-webmvc</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.jersey.contribs</groupId>
+      <artifactId>jersey-apache-client</artifactId>
+      <version>${jerseyVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.jersey.contribs</groupId>
+      <artifactId>jersey-multipart</artifactId>
+      <version>${jerseyVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.jersey.contribs.jersey-oauth</groupId>
+      <artifactId>oauth-client</artifactId>
+      <version>${jerseyVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.jersey.contribs.jersey-oauth</groupId>
+      <artifactId>oauth-signature</artifactId>
+      <version>${jerseyVersion}</version>
     </dependency>
     <dependency>
       <groupId>javax.ws.rs</groupId>
