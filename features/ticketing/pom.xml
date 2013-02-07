@@ -15,5 +15,6 @@
     <module>drools-integration</module>
     <module>jira-integration</module>
     <module>otrs-integration</module>
+    <module>rt-integration</module>
   </modules>
 </project>
