@@ -59,6 +59,8 @@ public class AssetSuggCommand implements IsSerializable {
 
     private Set<String> m_city;
 
+    private Set<String> m_country;
+
     private Set<String> m_cpu;
 
     private Set<String> m_department;
@@ -164,6 +166,7 @@ public class AssetSuggCommand implements IsSerializable {
         m_circuitId = new TreeSet<String>();
         m_city = new TreeSet<String>();
         m_cpu = new TreeSet<String>();
+        m_country = new TreeSet<String>();
         m_department = new TreeSet<String>();
         m_description = new TreeSet<String>();
         m_displayCategory = new TreeSet<String>();
@@ -257,6 +260,12 @@ public class AssetSuggCommand implements IsSerializable {
     public void addCpu(String cpu) {
         if ((cpu != null) && !"".equals(cpu)) {
             m_cpu.add(cpu);
+        }
+    }
+
+    public void addCountry(String country) {
+        if ((country != null) && !"".equals(country)) {
+            m_country.add(country);
         }
     }
 
@@ -524,6 +533,10 @@ public class AssetSuggCommand implements IsSerializable {
 
     public Collection<String> getCity() {
         return m_city;
+    }
+
+    public Collection<String> getCountry() {
+        return m_country;
     }
 
     public Collection<String> getCpu() {

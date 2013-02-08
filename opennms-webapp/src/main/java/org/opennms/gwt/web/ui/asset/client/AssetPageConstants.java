@@ -712,6 +712,14 @@ public interface AssetPageConstants extends com.google.gwt.i18n.client.Constants
     @Key("zipHelp")
     String zipHelp();
 
+    @DefaultStringValue("Country")
+    @Key("country")
+    String country();
+
+    @DefaultStringValue("Country")
+    @Key("countryHelp")
+    String countryHelp();
+
     /* VMware asset fields */
     @DefaultStringValue("VMware")
     @Key("vmwareHeader")

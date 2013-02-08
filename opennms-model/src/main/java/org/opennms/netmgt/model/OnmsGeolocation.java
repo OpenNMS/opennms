@@ -19,6 +19,7 @@ public class OnmsGeolocation implements Serializable {
     private String m_city;
     private String m_state;
     private String m_zip;
+    private String m_country;
     private String m_coordinates;
 
     /**
@@ -115,7 +116,26 @@ public class OnmsGeolocation implements Serializable {
     public void setZip(String zip) {
         m_zip = zip;
     }
-    
+
+    /**
+     *--# country              : The country where this asset resides.
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    @Column(name="country", length=64)
+    public String getCountry() {
+        return m_country;
+    }
+
+    /**
+     * <p>setCountry</p>
+     *
+     * @param country a {@link java.lang.String} object.
+     */
+    public void setCountry(String country) {
+        m_country = country;
+    }
+
     @Column(name="geolocation", length=32)
     public String getCoordinates() {
         return m_coordinates;
@@ -143,6 +163,7 @@ public class OnmsGeolocation implements Serializable {
         if (sb.length() > 0 && this.getCity() != null) sb.append(", ").append(this.getCity());
         if (sb.length() > 0 && this.getState() != null) sb.append(", ").append(this.getState());
         if (sb.length() > 0 && this.getZip() != null) sb.append(" ").append(this.getZip());
+        if (sb.length() > 0 && this.getCountry() != null) sb.append(", ").append(this.getCountry());
 
         return sb.toString();
     }

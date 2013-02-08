@@ -238,6 +238,8 @@ public class AssetServiceImpl extends RemoteServiceServlet implements AssetServi
             suggestion.addCategory(asset.getCategory());
             suggestion.addCircuitId(asset.getCircuitId());
             suggestion.addCity(asset.getGeolocation().getCity());
+            suggestion.addCoordinates(asset.getGeolocation().getCoordinates());
+            suggestion.addCountry(asset.getGeolocation().getCountry());
             suggestion.addCpu(asset.getCpu());
             suggestion.addDepartment(asset.getDepartment());
             suggestion.addDescription(asset.getDescription());
@@ -273,7 +275,6 @@ public class AssetServiceImpl extends RemoteServiceServlet implements AssetServi
             suggestion.addVendorFax(asset.getVendorFax());
             suggestion.addVendorPhone(asset.getVendorPhone());
             suggestion.addZip(asset.getGeolocation().getZip());
-            suggestion.addCoordinates(asset.getGeolocation().getCoordinates());
 
             // VMware monitoring assets
             suggestion.addVmwareManagedObjectId(asset.getVmwareManagedObjectId());
