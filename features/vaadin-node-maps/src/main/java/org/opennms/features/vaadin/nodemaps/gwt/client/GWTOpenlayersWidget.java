@@ -32,7 +32,6 @@ import org.opennms.features.vaadin.nodemaps.gwt.client.openlayers.FeatureCollect
 import org.opennms.features.vaadin.nodemaps.gwt.client.openlayers.OnmsOpenLayersMap;
 import org.opennms.features.vaadin.nodemaps.gwt.client.openlayers.VectorLayer;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Document;
@@ -78,8 +77,6 @@ public class GWTOpenlayersWidget extends Widget {
     }
 
     private final native void initializeMap(final OnmsOpenLayersMap map) /*-{
-        var displayAllNodes = true;
-
         var nodeFillColors = {
             Critical : "#F5CDCD",
             Major : "#FFD7CD",
@@ -101,7 +98,6 @@ public class GWTOpenlayersWidget extends Widget {
                     pointRadius : "${radius}",
                     graphicName : "${shape}",
                     label : "${label}",
-                    display : "${display}",
                     fillColor : "${fillColor}",
                     fillOpacity : 0.8,
                     strokeColor : "${strokeColor}",
@@ -124,20 +120,13 @@ public class GWTOpenlayersWidget extends Widget {
                         label : function(feature) {
                             return feature.cluster && feature.cluster.length > 1 ? feature.cluster.length : "";
                         },
-                        display : function(feature) {
-                            if (displayAllNodes) {
-                                return 'display';
-                            }
-                            // Display only nodes with availability < 100
-                            return getHighestSeverity(feature) == 'Normal' ? 'none' : 'display';
-                        },
                         // It depends on the calculated severity
                         strokeColor : function(feature) {
-                            return nodeStrokeColors[getNodeSeverity(feature)];
+                            return nodeStrokeColors[getHighestSeverity(feature)];
                         },
                         // It depends on the calculated severity
                         fillColor : function(feature) {
-                            return nodeFillColors[getNodeSeverity(feature)];
+                            return nodeFillColors[getHighestSeverity(feature)];
                         }
                     }
                 });
@@ -178,10 +167,6 @@ public class GWTOpenlayersWidget extends Widget {
         this.@org.opennms.features.vaadin.nodemaps.gwt.client.GWTOpenlayersWidget::m_vectorLayer = nodesLayer;
         this.@org.opennms.features.vaadin.nodemaps.gwt.client.GWTOpenlayersWidget::updateFeatureLayer()();
         map.zoomToExtent(nodesLayer.getDataExtent());
-
-        function getNodeSeverity(feature) {
-            return getHighestSeverity(feature);
-        }
 
         function onPopupClose(evt) {
             select.unselect(this.feature);
@@ -247,12 +232,6 @@ public class GWTOpenlayersWidget extends Widget {
                 feature.popup.destroy();
                 feature.popup = null;
             }
-        }
-
-        function applyFilters(btn) {
-            btn.value = displayAllNodes ? 'Show All Nodes' : 'Show Down Nodes';
-            displayAllNodes = !displayAllNodes;
-            nodesLayer.redraw();
         }
     }-*/;
 

@@ -130,6 +130,8 @@ public class Asset extends Object {
 
     protected String zip = "";
 
+    protected String geolocation = "";
+
     protected String building = "";
 
     protected String floor = "";
@@ -1031,6 +1033,28 @@ public class Asset extends Object {
             this.zip = zip;
         } else {
             this.zip = "";
+        }
+    }
+
+    /**
+     * <p>Getter for the field <code>coordinates</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getGeolocation() {
+        return (this.geolocation);
+    }
+
+    /**
+     * <p>Setter for the field <code>geolocation</code>.</p>
+     *
+     * @param geolocation a {@link java.lang.String} object.
+     */
+    public void setGeolocation(String geolocation) {
+        if (geolocation != null) {
+            this.geolocation = geolocation;
+        } else {
+            this.geolocation = "";
         }
     }
 

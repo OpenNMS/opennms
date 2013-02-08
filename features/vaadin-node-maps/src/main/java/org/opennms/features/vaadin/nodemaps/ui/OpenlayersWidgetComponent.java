@@ -71,6 +71,8 @@ public class OpenlayersWidgetComponent extends VerticalLayout {
 
     private TransactionOperations m_transactionOperations;
 
+    private int singleNodeId = 0;
+
     public OpenlayersWidgetComponent() {
     }
 
@@ -90,6 +92,9 @@ public class OpenlayersWidgetComponent extends VerticalLayout {
         final CriteriaBuilder cb = new CriteriaBuilder(OnmsNode.class);
         cb.alias("assetRecord", "asset");
         cb.orderBy("id");
+
+        if (singleNodeId > 0)
+            cb.eq("id", singleNodeId);
 
         target.startTag("nodes");
 
@@ -200,5 +205,9 @@ public class OpenlayersWidgetComponent extends VerticalLayout {
 
     public void setTransactionOperation(final TransactionOperations tx) {
         m_transactionOperations = tx;
+    }
+
+    public void setSingleNodeId(int nodeId) {
+        this.singleNodeId = nodeId;
     }
 }

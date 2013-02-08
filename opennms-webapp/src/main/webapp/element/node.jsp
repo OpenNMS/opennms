@@ -309,7 +309,7 @@
   
 
   <!-- Asset box, if info available --> 
-  <c:if test="${! empty model.asset && (! empty model.asset.description || ! empty model.asset.comments)}">
+  <c:if test="${! empty model.asset && (! empty model.asset.description || ! empty model.asset.comments || ! empty model.asset.geolocation)}">
     <h3 class="o-box">Asset Information</h3>
     <table class="o-box">
       <tr>
@@ -321,6 +321,13 @@
         <th>Comments</th>
         <td>${model.asset.comments}</td>
       </tr>
+
+      <c:if test="${! empty model.asset.geolocation}">
+        <tr>
+          <th>Geo Coordinates</th>
+          <td><a href="node-maps?nodeId=${model.id}">${model.asset.geolocation}</a></td>
+        </tr>
+      </c:if>
     </table>
   </c:if>
 
