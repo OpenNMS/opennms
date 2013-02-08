@@ -81,7 +81,7 @@ public class UserRestService extends OnmsRestService {
     ResourceContext m_context;
 
     @GET
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public OnmsUserList getUsers() {
         final OnmsUserList list;
         readLock();
@@ -102,7 +102,7 @@ public class UserRestService extends OnmsRestService {
     }
 
     @GET
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Path("{username}")
     public OnmsUser getUser(@PathParam("username") final String username) {
         readLock();

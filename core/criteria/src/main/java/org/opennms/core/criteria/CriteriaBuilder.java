@@ -28,9 +28,9 @@
 
 package org.opennms.core.criteria;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.opennms.core.criteria.Alias.JoinType;
@@ -240,8 +240,8 @@ public class CriteriaBuilder {
 		return this;
 	}
 
-	public CriteriaBuilder in(final String attribute, final List<?> list) {
-		addRestriction(Restrictions.in(attribute, list));
+	public CriteriaBuilder in(final String attribute, final Collection<?> collection) {
+		addRestriction(Restrictions.in(attribute, collection));
 		return this;
 	}
 

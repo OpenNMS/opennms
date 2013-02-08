@@ -146,6 +146,9 @@
 						name="{con.city}" value="" helpText="{con.cityHelp}" maxLength="64" />
 					<onms_fs:FieldSetSuggestBox ui:field="sZip"
 						name="{con.zip}" value="" helpText="{con.zipHelp}" maxLength="64" />
+					<onms_fs:FieldSetSuggestBox ui:field="sCoordinates"
+						name="{con.coordinates}" value="" helpText="{con.coordinatesHelp}"
+						maxLength="32" />
 					<br />
 					<onms_fs:FieldSetSuggestBox ui:field="sDivision"
 						name="{con.division}" value="" helpText="{con.divisionHelp}"

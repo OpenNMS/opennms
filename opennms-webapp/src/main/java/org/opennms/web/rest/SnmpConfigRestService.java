@@ -109,7 +109,7 @@ public class SnmpConfigRestService extends OnmsRestService {
      * @return a {@link org.opennms.web.snmpinfo.SnmpInfo} object.
      */
     @GET
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Path("{ipAddr}")
     public SnmpInfo getSnmpInfo(@PathParam("ipAddr") String ipAddr) {
         readLock();

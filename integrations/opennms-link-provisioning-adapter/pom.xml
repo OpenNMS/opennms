@@ -103,10 +103,15 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao</artifactId>
     </dependency>
+    <!-- 
+      We have to use a different version of the JAXB implementation
+      here because the NamespacePrefixMapper class isn't accessible
+      from the JAXB implementation inside the Java6 JVM.
+    -->
     <dependency>
       <groupId>com.sun.xml</groupId>
       <artifactId>com.springsource.com.sun.xml.bind</artifactId>
-      <version>${jaxbVersion}</version>
+      <version>${springJaxbVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>

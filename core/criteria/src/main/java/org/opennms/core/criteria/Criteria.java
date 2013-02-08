@@ -116,7 +116,7 @@ public class Criteria {
 		return m_class;
 	}
 
-	public List<Order> getOrders() {
+	public Collection<Order> getOrders() {
 		return Collections.unmodifiableList(m_orders);
 	}
 
@@ -125,7 +125,7 @@ public class Criteria {
 		m_orders.addAll(orderCollection);
 	}
 
-	public List<Fetch> getFetchTypes() {
+	public Collection<Fetch> getFetchTypes() {
 		return Collections.unmodifiableList(new ArrayList<Fetch>(m_fetchTypes));
 	}
 
@@ -134,7 +134,7 @@ public class Criteria {
 		m_fetchTypes.addAll(fetchTypes);
 	}
 
-	public List<Alias> getAliases() {
+	public Collection<Alias> getAliases() {
 		return Collections.unmodifiableList(m_aliases);
 	}
 
@@ -143,7 +143,7 @@ public class Criteria {
 		m_aliases.addAll(aliases);
 	}
 
-	public List<Restriction> getRestrictions() {
+	public Collection<Restriction> getRestrictions() {
 		return Collections.unmodifiableList(new ArrayList<Restriction>(m_restrictions));
 	}
 
