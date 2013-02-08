@@ -28,8 +28,7 @@
 
 package org.opennms.features.vaadin.nodemaps.ui;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.utils.InetAddressUtils;
@@ -92,34 +91,16 @@ public class OpenlayersWidgetComponent extends VerticalLayout {
         cb.alias("assetRecord", "asset");
         cb.orderBy("id");
 
-        final Set<Integer> nodeIds = new HashSet<Integer>();
-
         target.startTag("nodes");
+
         for (final OnmsNode node : m_nodeDao.findMatching(cb.toCriteria())) {
-            addNode(target, node);
-            nodeIds.add(node.getId());
+            paintNode(target, node);
         }
         target.endTag("nodes");
-
-        target.startTag("alarms");
-
-        final CriteriaBuilder builder = new CriteriaBuilder(OnmsAlarm.class);
-        builder.alias("node", "node");
-        builder.in("node.id", nodeIds);
-        builder.ge("severity", OnmsSeverity.WARNING);
-        builder.orderBy("severity").desc();
-        builder.distinct();
-
-        for (final OnmsAlarm alarm : m_alarmDao.findMatching(builder.toCriteria())) {
-            addAlarm(target, alarm);
-        }
-        
-        target.endTag("alarms");
     }
 
-    void addNode(final PaintTarget target, final OnmsNode node) throws PaintException {
+    void paintNode(final PaintTarget target, final OnmsNode node) throws PaintException {
         final OnmsAssetRecord assets = node.getAssetRecord();
-
         if (assets != null && assets.getGeolocation() != null) {
             final OnmsGeolocation geolocation = assets.getGeolocation();
 
@@ -156,6 +137,33 @@ public class OpenlayersWidgetComponent extends VerticalLayout {
                 if (coordinates[0] != "-1" && coordinates[1] != "-1") {
                     target.startTag(node.getId().toString());
 
+                    CriteriaBuilder builder = new CriteriaBuilder(OnmsAlarm.class);
+                    builder.alias("node", "node");
+                    builder.eq("node.id", node.getId());
+                    builder.ge("severity", OnmsSeverity.WARNING);
+                    builder.orderBy("severity").desc();
+                    builder.limit(1);
+
+                    // first, get the highest severity alarm
+                    final List<OnmsAlarm> alarms = m_alarmDao.findMatching(builder.toCriteria());
+                    if (alarms.size() == 1) {
+                        final OnmsAlarm alarm = alarms.get(0);
+                        final OnmsSeverity severity = alarm.getSeverity();
+                        target.addAttribute("severityLabel", severity.getLabel());
+                        target.addAttribute("severity", severity.getId());
+                    } else {
+                        // assumes everything is OK
+                        target.addAttribute("severityLabel", OnmsSeverity.NORMAL.getLabel());
+                        target.addAttribute("severity", OnmsSeverity.NORMAL.getId());
+                    }
+
+                    builder = new CriteriaBuilder(OnmsAlarm.class);
+                    builder.alias("node", "node");
+                    builder.eq("node.id", node.getId());
+                    builder.ge("severity", OnmsSeverity.WARNING);
+                    builder.isNull("alarmAckTime");
+                    final int unackedCount = m_alarmDao.countMatching(builder.toCriteria());
+
                     // latitude/longitude, as floats
                     target.addAttribute("latitude", Float.valueOf(coordinates[0]));
                     target.addAttribute("longitude", Float.valueOf(coordinates[1]));
@@ -166,27 +174,12 @@ public class OpenlayersWidgetComponent extends VerticalLayout {
                     target.addAttribute("foreignSource", node.getForeignSource());
                     target.addAttribute("foreignId", node.getForeignId());
                     target.addAttribute("ipAddress", InetAddressUtils.str(node.getPrimaryInterface().getIpAddress()));
+                    target.addAttribute("unackedCount", String.valueOf(unackedCount));
 
                     target.endTag(node.getId().toString());
                 }
             }
         }
-    }
-
-    void addAlarm(final PaintTarget target, final OnmsAlarm alarm) throws PaintException {
-        target.startTag(alarm.getId().toString());
-
-        target.addAttribute("id", alarm.getId().toString());
-        target.addAttribute("nodeId", alarm.getNodeId().toString());
-        if (alarm.getAlarmAckTime() != null) target.addAttribute("ackTime", String.valueOf(alarm.getAlarmAckTime().getTime()));
-        if (alarm.getAlarmAckUser() != null) target.addAttribute("ackUser", alarm.getAlarmAckUser());
-        target.addAttribute("severityLabel", alarm.getSeverity().getLabel());
-        target.addAttribute("severity", String.valueOf(alarm.getSeverity().getId()));
-        target.addAttribute("uei", alarm.getUei());
-        target.addAttribute("logMsg", alarm.getLogMsg());
-        if (alarm.getLastEventTime() != null) target.addAttribute("lastEventTime", String.valueOf(alarm.getLastEventTime().getTime()));
-
-        target.endTag(alarm.getId().toString());
     }
 
     public void setNodeDao(final NodeDao nodeDao) {
