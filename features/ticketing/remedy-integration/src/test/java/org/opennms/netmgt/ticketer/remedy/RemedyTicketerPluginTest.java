@@ -16,8 +16,37 @@ public class RemedyTicketerPluginTest extends TestCase {
 	
 	Ticket m_ticket;
 	
+	
 	String m_ticketId;
-	 @Override
+	
+    /**
+     * Don't run this test unless the runOtrsTests property
+     * is set to "true".
+     */
+    @Override
+    protected void runTest() throws Throwable {
+        if (!isRunTest()) {
+            System.err.println("Skipping test '" + getName() + "' because system property '" + getRunTestProperty() + "' is not set to 'true'");
+            return;
+        }
+            
+        try {
+            System.err.println("------------------- begin "+getName()+" ---------------------");
+            super.runTest();
+        } finally {
+            System.err.println("------------------- end "+getName()+" -----------------------");
+        }
+    }
+
+    private boolean isRunTest() {
+        return Boolean.getBoolean(getRunTestProperty());
+    }
+
+    private String getRunTestProperty() {
+        return "runRemedyTests";
+    }
+
+	@Override
 	 protected void setUp() throws Exception {
 
 	        System.setProperty("opennms.home", "src" + File.separatorChar + "test" + File.separatorChar + "opennms-home");

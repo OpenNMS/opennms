@@ -556,6 +556,7 @@
             <opennms.library.jicmp>${opennms.library.jicmp}</opennms.library.jicmp>
             <opennms.library.jrrd>${opennms.library.jrrd}</opennms.library.jrrd>
             <install.rrdtool.bin>${install.rrdtool.bin}</install.rrdtool.bin>
+            <runRemedyTests>${runRemedyTests}</runRemedyTests>
             <runOtrsTests>${runOtrsTests}</runOtrsTests>
             <runRtTests>${runRtTests}</runRtTests>
             <runMailTests>${runMailTests}</runMailTests>
