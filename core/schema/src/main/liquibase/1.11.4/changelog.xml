@@ -28,4 +28,13 @@
       </rollback>
     </changeSet>
 
+    <changeSet author="agalue" id="1.11.4-add-country-to-assets">
+      <addColumn tableName="assets">
+        <column name="country" type="varchar(32)" />
+      </addColumn>
+      <rollback>
+        <dropColumn tableName="assets" columnName="country" />
+      </rollback>
+    </changeSet>
+
 </databaseChangeLog>

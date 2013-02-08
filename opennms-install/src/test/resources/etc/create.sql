@@ -1158,6 +1158,7 @@ create table assets (
         city            varchar(64),
         state           varchar(64),
         zip             varchar(64),
+        country         varchar(64),
         building        varchar(64),
         floor           varchar(64),
         room            varchar(64),

@@ -130,6 +130,8 @@ public class Asset extends Object {
 
     protected String zip = "";
 
+    protected String country = "";
+
     protected String geolocation = "";
 
     protected String building = "";
@@ -1037,12 +1039,34 @@ public class Asset extends Object {
     }
 
     /**
-     * <p>Getter for the field <code>coordinates</code>.</p>
+     * <p>Getter for the field <code>zip</code>.</p>
      *
      * @return a {@link java.lang.String} object.
      */
-    public String getGeolocation() {
-        return (this.geolocation);
+    public String getZip() {
+        return (this.zip);
+    }
+
+    /**
+     * <p>Setter for the field <code>country</code>.</p>
+     *
+     * @param country a {@link java.lang.String} object.
+     */
+    public void setCountry(String country) {
+        if (country != null) {
+            this.country = country;
+        } else {
+            this.country = "";
+        }
+    }
+
+    /**
+     * <p>Getter for the field <code>country</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getCountry() {
+        return (this.country);
     }
 
     /**
@@ -1059,12 +1083,12 @@ public class Asset extends Object {
     }
 
     /**
-     * <p>Getter for the field <code>zip</code>.</p>
+     * <p>Getter for the field <code>geolocation</code>.</p>
      *
      * @return a {@link java.lang.String} object.
      */
-    public String getZip() {
-        return (this.zip);
+    public String getGeolocation() {
+        return (this.geolocation);
     }
 
     /**
@@ -1578,6 +1602,10 @@ public class Asset extends Object {
         builder.append(state);
         builder.append(", zip=");
         builder.append(zip);
+        builder.append(", country=");
+        builder.append(country);
+        builder.append(", geolocation=");
+        builder.append(geolocation);
         builder.append(", building=");
         builder.append(building);
         builder.append(", floor=");

@@ -159,6 +159,8 @@ public class ModifyAssetServlet extends HttpServlet {
         asset.setCity(getRequestParameter(request, "city"));
         asset.setState(getRequestParameter(request, "state"));
         asset.setZip(getRequestParameter(request, "zip"));
+        asset.setCountry(getRequestParameter(request, "country"));
+        asset.setGeolocation(getRequestParameter(request, "geolocation"));
         asset.setBuilding(getRequestParameter(request, "building"));
         asset.setFloor(getRequestParameter(request, "floor"));
         asset.setRoom(getRequestParameter(request, "room"));

@@ -119,7 +119,7 @@ public class AssetModel {
             Connection conn = Vault.getDbConnection();
             d.watch(conn);
 
-            PreparedStatement stmt = conn.prepareStatement("INSERT INTO ASSETS (nodeID,category,manufacturer,vendor,modelNumber,serialNumber,description,circuitId,assetNumber,operatingSystem,rack,slot,port,region,division,department,address1,address2,city,state,zip,building,floor,room,vendorPhone,vendorFax,userLastModified,lastModifiedDate,dateInstalled,lease,leaseExpires,supportPhone,maintContract,vendorAssetNumber,maintContractExpires,displayCategory,notifyCategory,pollerCategory,thresholdCategory,comment,username,password,enable,connection,autoenable,cpu,ram,storagectrl,hdd1,hdd2,hdd3,hdd4,hdd5,hdd6,numpowersupplies,inputpower,additionalhardware,admin,snmpcommunity,rackunitheight,geolocation) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+            PreparedStatement stmt = conn.prepareStatement("INSERT INTO ASSETS (nodeID,category,manufacturer,vendor,modelNumber,serialNumber,description,circuitId,assetNumber,operatingSystem,rack,slot,port,region,division,department,address1,address2,city,state,zip,building,floor,room,vendorPhone,vendorFax,userLastModified,lastModifiedDate,dateInstalled,lease,leaseExpires,supportPhone,maintContract,vendorAssetNumber,maintContractExpires,displayCategory,notifyCategory,pollerCategory,thresholdCategory,comment,username,password,enable,connection,autoenable,cpu,ram,storagectrl,hdd1,hdd2,hdd3,hdd4,hdd5,hdd6,numpowersupplies,inputpower,additionalhardware,admin,snmpcommunity,rackunitheight,geolocation,country) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
             d.watch(stmt);
             stmt.setInt(1, asset.nodeId);
             stmt.setString(2, asset.category);
@@ -182,6 +182,7 @@ public class AssetModel {
             stmt.setString(59, asset.snmpcommunity);
             stmt.setString(60, asset.rackunitheight);
             stmt.setString(61, asset.geolocation);
+            stmt.setString(62, asset.country);
 
             stmt.execute();
         } finally {
@@ -203,7 +204,7 @@ public class AssetModel {
             Connection conn = Vault.getDbConnection();
             d.watch(conn);
 
-            PreparedStatement stmt = conn.prepareStatement("UPDATE ASSETS SET category=?,manufacturer=?,vendor=?,modelNumber=?,serialNumber=?,description=?,circuitId=?,assetNumber=?,operatingSystem=?,rack=?,slot=?,port=?,region=?,division=?,department=?,address1=?,address2=?,city=?,state=?,zip=?,building=?,floor=?,room=?,vendorPhone=?,vendorFax=?,userLastModified=?,lastModifiedDate=?,dateInstalled=?,lease=?,leaseExpires=?,supportPhone=?,maintContract=?,vendorAssetNumber=?,maintContractExpires=?,displayCategory=?,notifyCategory=?,pollerCategory=?,thresholdCategory=?,comment=?, username=?, password=?,enable=?,connection=?,autoenable=?,cpu=?,ram=?,storagectrl=?,hdd1=?,hdd2=?,hdd3=?,hdd4=?,hdd5=?,hdd6=?,numpowersupplies=?,inputpower=?,additionalhardware=?,admin=?,snmpcommunity=?,rackunitheight=?,geolocation=? WHERE nodeid=?");
+            PreparedStatement stmt = conn.prepareStatement("UPDATE ASSETS SET category=?,manufacturer=?,vendor=?,modelNumber=?,serialNumber=?,description=?,circuitId=?,assetNumber=?,operatingSystem=?,rack=?,slot=?,port=?,region=?,division=?,department=?,address1=?,address2=?,city=?,state=?,zip=?,building=?,floor=?,room=?,vendorPhone=?,vendorFax=?,userLastModified=?,lastModifiedDate=?,dateInstalled=?,lease=?,leaseExpires=?,supportPhone=?,maintContract=?,vendorAssetNumber=?,maintContractExpires=?,displayCategory=?,notifyCategory=?,pollerCategory=?,thresholdCategory=?,comment=?, username=?, password=?,enable=?,connection=?,autoenable=?,cpu=?,ram=?,storagectrl=?,hdd1=?,hdd2=?,hdd3=?,hdd4=?,hdd5=?,hdd6=?,numpowersupplies=?,inputpower=?,additionalhardware=?,admin=?,snmpcommunity=?,rackunitheight=?,geolocation=?,country=? WHERE nodeid=?");
             d.watch(stmt);
             stmt.setString(1, asset.category);
             stmt.setString(2, asset.manufacturer);
@@ -265,7 +266,8 @@ public class AssetModel {
             stmt.setString(58, asset.snmpcommunity);
             stmt.setString(59, asset.rackunitheight);
             stmt.setString(60, asset.geolocation);
-            stmt.setInt(61, asset.nodeId);
+            stmt.setString(61, asset.country);
+            stmt.setInt(62, asset.nodeId);
 
             stmt.execute();
         } finally {
@@ -438,6 +440,7 @@ public class AssetModel {
             asset.setSnmpcommunity(rs.getString("snmpcommunity"));
             asset.setRackunitheight(rs.getString("rackunitheight"));
             asset.setGeolocation(rs.getString("geolocation"));
+            asset.setCountry(rs.getString("country"));
 
             // Convert from java.sql.Timestamp to java.util.Date, since it looks more pretty or something
             asset.lastModifiedDate = new Date(rs.getTimestamp("lastModifiedDate").getTime());
@@ -533,6 +536,7 @@ public class AssetModel {
         new String[] { "Admin", "admin" },
         new String[] { "SNMP community", "snmpcommunity" },
 	new String[] { "Rack unit height", "rackunitheight" },
-        new String[] { "GeoLocation coordinates", "geolocation" }
+        new String[] { "GeoLocation coordinates", "geolocation" },
+        new String[] { "Country", "country" }
     };
 }
