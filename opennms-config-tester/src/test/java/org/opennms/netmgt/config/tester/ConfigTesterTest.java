@@ -512,11 +512,6 @@ public class ConfigTesterTest {
     }
 
 	@Test
-    public void testVulnscandConfiguration() {
-        testConfigFile("vulnscand-configuration.xml");
-    }
-
-	@Test
     public void testWmiConfig() {
         testConfigFile("wmi-config.xml");
     }

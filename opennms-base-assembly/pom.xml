@@ -247,11 +247,11 @@
       <artifactId>opennms-jetty</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
+      <groupId>org.opennms.features</groupId>
       <artifactId>opennms-integration-rt</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
+      <groupId>org.opennms.features</groupId>
       <artifactId>opennms-integration-otrs</artifactId>
     </dependency>
     <dependency>
