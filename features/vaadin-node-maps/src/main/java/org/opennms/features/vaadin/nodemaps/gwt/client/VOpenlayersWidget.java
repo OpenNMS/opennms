@@ -49,10 +49,6 @@ public class VOpenlayersWidget extends GWTOpenlayersWidget implements Paintable 
         VConsole.log("div ID = " + getElement().getId());
     }
 
-    public native final void log(final String message) /*-{
-        console.log(message);
-    }-*/;
-
     @Override
     public void updateFromUIDL(final UIDL uidl, final ApplicationConnection client) {
         if (client.updateComponent(this, uidl, true)) return;
@@ -74,8 +70,6 @@ public class VOpenlayersWidget extends GWTOpenlayersWidget implements Paintable 
             for (final String key : new String[] { "severityLabel", "nodeLabel", "foreignSource", "foreignId", "ipAddress", "severity", "nodeId", "unackedCount" }) {
                 if (node.hasAttribute(key)) feature.putProperty(key, node.getStringAttribute(key));
             }
-
-            log(feature.asString());
 
             featureCollection.add(feature);
         }
