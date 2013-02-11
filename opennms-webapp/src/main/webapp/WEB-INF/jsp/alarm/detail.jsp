@@ -38,10 +38,7 @@
         org.opennms.web.alarm.*,
         org.opennms.netmgt.model.OnmsAcknowledgment,
         org.opennms.netmgt.model.OnmsSeverity,
-        org.opennms.web.springframework.security.Authentication,
-		org.apache.commons.configuration.Configuration,
-            org.apache.commons.configuration.ConfigurationException,
-            org.apache.commons.configuration.PropertiesConfiguration"
+        org.opennms.web.springframework.security.Authentication"
         %>
 
 <%@page import="org.opennms.web.alarm.Alarm" %>
@@ -366,29 +363,6 @@
     <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
     <input type="hidden" name="redirect" value="<%="/alarm/detail.htm" + "?" + request.getQueryString()%>" />
     <form:input type="submit" value="Create Ticket" disabled="${(!empty alarm.troubleTicketState) && (alarm.troubleTicketState != 'CREATE_FAILED')}" />
-<% if ("org.opennms.netmgt.ticketer.remedy.RemedyTicketerPlugin".equalsIgnoreCase(Vault.getProperty("opennms.ticketer.plugin")) && (alarm.getTroubleTicketState() == null || alarm.getTroubleTicketState().toString().equals("CREATE_FAILED") )) { %>
-	<input type="hidden" name="nodelabel" value="<%=alarm.getNodeLabel()%>"/>
-    <input type="text" name="remedy.user.comment" value="Add a Comment here"/>
-    <select name="remedy.urgency">
-    <option value="1-Critical">1-Critical</option>
-    <option value="2-High">2-High</option>
-    <option value="3-Medium">3-Medium</option>
-    <option value="4-Low" selected="selected">4-Low</option>
-    </select>
-    <select name="remedy.assignedgroup">
-    <% 		String propsFile = new String(Vault.getProperty("opennms.home") + "/etc/remedy.properties");
-
-		Configuration remedyConfig = null;
-		try {
-			remedyConfig = new PropertiesConfiguration(propsFile);
-		} catch (final ConfigurationException e) {
-		}
-		for (String group: 	remedyConfig.getString("remedy.targetgroups").split(":")) { %>
-     %>
-           <option value="<%=group%>"><%=group%></option>
-    <%	        }  %>
-    </select>
-    <% } //Remedy Specific Trouble Ticket %>
 </form>
 
 <form method="post" action="alarm/ticket/update.htm">
