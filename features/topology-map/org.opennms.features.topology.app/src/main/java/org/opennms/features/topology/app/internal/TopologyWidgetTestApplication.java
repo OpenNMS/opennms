@@ -39,6 +39,7 @@ import org.opennms.features.topology.api.MapViewManagerListener;
 import org.opennms.features.topology.api.WidgetContext;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.app.internal.TopoContextMenu.TopoContextMenuItem;
+import org.opennms.features.topology.app.internal.TopologyComponent.VertexUpdateListener;
 import org.opennms.features.topology.app.internal.jung.FRLayoutAlgorithm;
 import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
 
@@ -68,7 +69,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.VerticalSplitPanel;
 import com.vaadin.ui.Window;
 
-public class TopologyWidgetTestApplication extends Application implements CommandUpdateListener, MenuItemUpdateListener, ContextMenuHandler, WidgetUpdateListener, WidgetContext, FragmentChangedListener, GraphContainer.ChangeListener, MapViewManagerListener {
+public class TopologyWidgetTestApplication extends Application implements CommandUpdateListener, MenuItemUpdateListener, ContextMenuHandler, WidgetUpdateListener, WidgetContext, FragmentChangedListener, GraphContainer.ChangeListener, MapViewManagerListener, VertexUpdateListener {
     
     
 	private static final long serialVersionUID = 6837501987137310938L;
@@ -138,6 +139,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 		m_topologyComponent.setIconRepoManager(m_iconRepositoryManager);
 		m_topologyComponent.setSizeFull();
 		m_topologyComponent.addMenuItemStateListener(this);
+		m_topologyComponent.addVertexUpdateListener(this);
 		m_topologyComponent.setContextMenuHandler(this);
 		
 		final Slider slider = new Slider(0, 1);
@@ -535,6 +537,12 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 
     @Override
     public void boundingBoxChanged(MapViewManager viewManager) {
+        saveHistory();
+    }
+
+
+    @Override
+    public void onVertexUpdate() {
         saveHistory();
     }
 
