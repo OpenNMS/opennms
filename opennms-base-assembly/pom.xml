@@ -255,7 +255,7 @@
       <artifactId>opennms-integration-otrs</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
+      <groupId>org.opennms.features</groupId>
       <artifactId>opennms-integration-remedy</artifactId>
     </dependency>
     <dependency>
