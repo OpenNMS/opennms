@@ -256,6 +256,10 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
+      <artifactId>opennms-integration-remedy</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
       <artifactId>opennms-reporting</artifactId>
       <scope>runtime</scope>
     </dependency>

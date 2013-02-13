@@ -16,5 +16,6 @@
     <module>jira-integration</module>
     <module>otrs-integration</module>
     <module>rt-integration</module>
+    <module>remedy-integration</module>
   </modules>
 </project>

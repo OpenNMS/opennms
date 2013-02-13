@@ -28,6 +28,8 @@
 
 package org.opennms.web.svclayer.support;
 
+import java.util.Map;
+
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.model.OnmsAlarm;
@@ -74,21 +76,21 @@ public class DefaultTroubleTicketProxy implements TroubleTicketProxy {
     
     /** {@inheritDoc} */
     public void closeTicket(Integer alarmId) {
-        changeTicket(alarmId, TroubleTicketState.CLOSE_PENDING, EventConstants.TROUBLETICKET_CLOSE_UEI);
+        changeTicket(alarmId, TroubleTicketState.CLOSE_PENDING, EventConstants.TROUBLETICKET_CLOSE_UEI,null);
     }
 
     /** {@inheritDoc} */
-    public void createTicket(Integer alarmId) {
-        changeTicket(alarmId, TroubleTicketState.CREATE_PENDING, EventConstants.TROUBLETICKET_CREATE_UEI);
+    public void createTicket(Integer alarmId, Map<String,String> attributes) {
+        changeTicket(alarmId, TroubleTicketState.CREATE_PENDING, EventConstants.TROUBLETICKET_CREATE_UEI,attributes);
     }
 
 
     /** {@inheritDoc} */
     public void updateTicket(Integer alarmId) {
-        changeTicket(alarmId, TroubleTicketState.UPDATE_PENDING, EventConstants.TROUBLETICKET_UPDATE_UEI);
+        changeTicket(alarmId, TroubleTicketState.UPDATE_PENDING, EventConstants.TROUBLETICKET_UPDATE_UEI,null);
     }
 
-    private void changeTicket(Integer alarmId, TroubleTicketState newState, String uei) {
+    private void changeTicket(Integer alarmId, TroubleTicketState newState, String uei,Map<String,String> attributes) {
         OnmsAlarm alarm = m_alarmDao.get(alarmId);
         alarm.setTTicketState(newState);
         m_alarmDao.saveOrUpdate(alarm);
@@ -98,10 +100,16 @@ public class DefaultTroubleTicketProxy implements TroubleTicketProxy {
         bldr.setInterface(alarm.getIpAddr());
         bldr.setService(alarm.getServiceType() == null ? null : alarm.getServiceType().getName());
         bldr.addParam(EventConstants.PARM_ALARM_UEI, alarm.getUei());
-        bldr.addParam(EventConstants.PARM_USER, alarm.getAlarmAckUser());
+        if (attributes == null || !attributes.containsKey(EventConstants.PARM_USER))
+        	bldr.addParam(EventConstants.PARM_USER, alarm.getAlarmAckUser());
         bldr.addParam(EventConstants.PARM_ALARM_ID, alarm.getId());
         if (alarm.getTTicketId() != null) {
             bldr.addParam(EventConstants.PARM_TROUBLE_TICKET, alarm.getTTicketId());
+        }
+        if (attributes != null) {
+        	for (Map.Entry<String, String> attribute: attributes.entrySet()) {
+        		bldr.addParam(attribute.getKey(), attribute.getValue());
+        	}
         }
         send(bldr.getEvent());
     }
