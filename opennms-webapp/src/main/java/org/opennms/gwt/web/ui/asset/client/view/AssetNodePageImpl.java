@@ -143,6 +143,8 @@ public class AssetNodePageImpl extends Composite implements AssetPagePresenter.D
     @UiField
     FieldSetSuggestBox sZip;
     @UiField
+    FieldSetSuggestBox sCountry;
+    @UiField
     FieldSetSuggestBox sCoordinates;
     @UiField
     FieldSetSuggestBox sBuilding;
@@ -332,6 +334,7 @@ public class AssetNodePageImpl extends Composite implements AssetPagePresenter.D
         fieldSetList.add(sCity);
         fieldSetList.add(sState);
         fieldSetList.add(sZip);
+        fieldSetList.add(sCountry);
         fieldSetList.add(sCoordinates);
         fieldSetList.add(sBuilding);
         fieldSetList.add(sFloor);
@@ -450,6 +453,7 @@ public class AssetNodePageImpl extends Composite implements AssetPagePresenter.D
         m_asset.setCity(sCity.getValue());
         m_asset.setState(sState.getValue());
         m_asset.setZip(sZip.getValue());
+        m_asset.setCountry(sCountry.getValue());
         m_asset.setCoordinates(sCoordinates.getValue());
         m_asset.setBuilding(sBuilding.getValue());
         m_asset.setFloor(sFloor.getValue());
@@ -560,6 +564,7 @@ public class AssetNodePageImpl extends Composite implements AssetPagePresenter.D
         sCity.setValue(asset.getCity());
         sState.setValue(asset.getState());
         sZip.setValue(asset.getZip());
+        sCountry.setValue(asset.getCountry());
         sCoordinates.setValue(asset.getCoordinates());
         sBuilding.setValue(asset.getBuilding());
         sFloor.setValue(asset.getFloor());
@@ -640,6 +645,7 @@ public class AssetNodePageImpl extends Composite implements AssetPagePresenter.D
         sCity.setSuggestions(assetSugg.getCity());
         sState.setSuggestions(assetSugg.getState());
         sZip.setSuggestions(assetSugg.getZip());
+        sCountry.setSuggestions(assetSugg.getCountry());
         sCoordinates.setSuggestions(assetSugg.getCoordinates());
         sBuilding.setSuggestions(assetSugg.getBuilding());
         sFloor.setSuggestions(assetSugg.getFloor());

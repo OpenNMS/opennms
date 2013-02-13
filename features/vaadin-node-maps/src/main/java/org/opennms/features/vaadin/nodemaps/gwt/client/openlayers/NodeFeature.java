@@ -1,41 +1,48 @@
 package org.opennms.features.vaadin.nodemaps.gwt.client.openlayers;
 
-import com.vaadin.terminal.gwt.client.UIDL;
-
 public class NodeFeature extends GeoJSONFeature {
     protected NodeFeature() {}
 
-    public static NodeFeature create(final UIDL node) {
-        final float latitude = node.getFloatAttribute("latitude");
-        final float longitude = node.getFloatAttribute("longitude");
+    protected native final String getAttribute(final String key) /*-{
+        return this[key];
+    }-*/;
 
-        final NodeFeature me = GeoJSONFeature.create(latitude, longitude).cast();
-
-        for (final String key : new String[] { "nodeLabel", "foreignSource", "foreignId", "ipAddress", "nodeId" }) {
-            if (node.hasAttribute(key)) me.putProperty(key, node.getStringAttribute(key));
-        }
-
-        return me;
-    }
+    protected native final void setAttribute(final String key, final String value) /*-{
+        this[key] = value;
+    }-*/;
 
     public final Integer getNodeId() {
-        final String id = getProperty("nodeId");
+        final String id = getAttribute("nodeId");
         return id == null? null : Integer.valueOf(id);
     }
 
     public final String getNodeLabel() {
-        return getProperty("nodeLabel");
+        return getAttribute("nodeLabel");
     }
 
     public final String getForeignSource() {
-        return getProperty("foreignSource");
+        return getAttribute("foreignSource");
     }
 
     public final String getForeignId() {
-        return getProperty("foreignId");
+        return getAttribute("foreignId");
     }
     
     public final String getIpAddress() {
-        return getProperty("ipAddress");
+        return getAttribute("ipAddress");
+    }
+
+    public final String getSeverityLabel() {
+        return getAttribute("severityLabel");
+    }
+
+    public final Integer getSeverity() {
+        final String severity = getAttribute("severity");
+        return severity == null? null : Integer.valueOf(severity);
+    }
+
+    public final Integer getUnackedCount() {
+        final String count = getAttribute("unackedCount");
+        return count == null? 0 : Integer.valueOf(count);
     }
 }

@@ -28,6 +28,8 @@
 
 package org.opennms.features.vaadin.nodemaps;
 
+import java.util.Map;
+
 import org.opennms.features.geocoder.GeocoderService;
 import org.opennms.features.vaadin.nodemaps.ui.OpenlayersWidgetComponent;
 import org.opennms.netmgt.dao.AlarmDao;
@@ -39,6 +41,7 @@ import org.springframework.transaction.support.TransactionOperations;
 
 import com.github.wolfie.refresher.Refresher;
 import com.vaadin.Application;
+import com.vaadin.terminal.ParameterHandler;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Window;
 
@@ -146,6 +149,19 @@ public class NodeMapsApplication extends Application {
 
         m_window = new Window("OpenNMS Node Maps");
         m_window.setContent(m_rootLayout);
+        m_window.addParameterHandler(new ParameterHandler() {
+            @Override
+            public void handleParameters(Map<String, String[]> parameters) {
+                if (parameters.containsKey("nodeId")) {
+                    int nodeId = parseInt(parameters.get("nodeId")[0], 0);
+                    if (nodeId > 0) {
+                        openlayers.setSingleNodeId(nodeId);
+                    }
+                } else {
+                    openlayers.setSingleNodeId(-1);
+                }
+            }
+        });
         setMainWindow(m_window);
 
         m_rootLayout.addComponent(openlayers, "top: 0px; left: 0px; right:0px; bottom:0px;");
@@ -153,6 +169,14 @@ public class NodeMapsApplication extends Application {
         final Refresher refresher = new Refresher();
         refresher.setRefreshInterval(REFRESH_INTERVAL);
         m_window.addComponent(refresher);
+    }
+
+    public int parseInt(String intStr, int defaultValue) {
+        try {
+            return Integer.parseInt(intStr);
+        } catch (Exception e) {
+            return defaultValue;
+        }
     }
 
 }

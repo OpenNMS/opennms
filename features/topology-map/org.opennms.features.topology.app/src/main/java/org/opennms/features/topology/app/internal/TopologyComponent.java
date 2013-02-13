@@ -34,6 +34,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.opennms.features.topology.api.BoundingBox;
 import org.opennms.features.topology.api.Graph;
@@ -62,7 +64,11 @@ import com.vaadin.ui.ClientWidget;
 
 @ClientWidget(VTopologyComponent.class)
 public class TopologyComponent extends AbstractComponent implements ChangeListener, ValueChangeListener, MapViewManagerListener {
-
+    
+    public interface VertexUpdateListener{
+        public void onVertexUpdate();
+    }
+    
     private static final long serialVersionUID = 1L;
     
 	private GraphContainer m_graphContainer;
@@ -71,6 +77,8 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
     private ContextMenuHandler m_contextMenuHandler;
     private IconRepositoryManager m_iconRepoManager;
     private String m_activeTool = "pan";
+
+    private Set<VertexUpdateListener> m_vertexUpdateListeners = new CopyOnWriteArraySet<VertexUpdateListener>();
 
     public TopologyComponent(GraphContainer dataSource) {
 	    m_graphContainer = dataSource;
@@ -181,6 +189,8 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
             for(String vUpdate : vertices) {
                 updateVertex(vUpdate);
             }
+            
+            fireVertexUpdated();
             if(vertices.length > 0) {
                 requestRepaint();
             }
@@ -394,6 +404,16 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
     
     public MapViewManager getViewManager() {
         return m_graphContainer.getMapViewManager();
+    }
+
+    public void addVertexUpdateListener(VertexUpdateListener listener) {
+        m_vertexUpdateListeners.add(listener);
+    }
+    
+    private void fireVertexUpdated() {
+        for(VertexUpdateListener listener : m_vertexUpdateListeners) {
+            listener.onVertexUpdate();
+        }
     }
 
 }

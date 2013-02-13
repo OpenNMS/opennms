@@ -205,12 +205,13 @@ div.nodeintbox {
 						display = new StringBuffer("All nodes/interfaces");
 					} else {
 						display = new StringBuffer();
-						org.opennms.web.element.Interface[] interfaces = NetworkElementFactory.getInstance(getServletContext()).getInterfacesWithIpAddress(rawAddress);
-						if (interfaces.length == 0) {
+						List<Integer> nodeids = NetworkElementFactory.getInstance(getServletContext()).getNodeIdsWithIpLike(rawAddress);
+						//org.opennms.web.element.Interface[] interfaces = NetworkElementFactory.getInstance(getServletContext()).getInterfacesWithIpAddress(rawAddress);
+						if (nodeids.size() == 0) {
 							display.append("Intfc: " + rawAddress + " Not Found<br/>");
 						}
-						for (int k = 0; k < interfaces.length; k++) {
-							org.opennms.web.element.Interface thisInterface = interfaces[k];
+						for (Integer nodeid: nodeids) {
+							org.opennms.web.element.Interface thisInterface = NetworkElementFactory.getInstance(getServletContext()).getInterface(nodeid,rawAddress);
 							if (thisInterface.isManagedChar()=='D') {
 								display.append("Intfc: " + thisInterface.getIpAddress() + " Not Found<br/>");
 							} else {

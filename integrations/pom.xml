@@ -10,7 +10,6 @@
   <packaging>pom</packaging>
   <name>OpenNMS Integrations</name>
   <modules>
-    <module>opennms-integration-rt</module>
     <module>opennms-dns-provisioning-adapter</module>
     <module>opennms-reverse-dns-provisioning-adapter</module>
     <module>opennms-link-provisioning-adapter</module>

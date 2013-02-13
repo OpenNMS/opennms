@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.ticketd;
 
+import java.util.HashMap;
+
 import org.easymock.EasyMock;
 import org.easymock.IAnswer;
 import org.opennms.netmgt.dao.AlarmDao;
@@ -149,7 +151,7 @@ public class DroolsTicketerServiceLayerTest extends TestCase {
 
         m_easyMockUtils.replayAll();
 
-        m_droolsTicketerServiceLayer.createTicketForAlarm(m_alarm.getId());
+        m_droolsTicketerServiceLayer.createTicketForAlarm(m_alarm.getId(), new HashMap<String, String>());
 
         m_easyMockUtils.verifyAll();
     }
@@ -174,7 +176,7 @@ public class DroolsTicketerServiceLayerTest extends TestCase {
         
         m_easyMockUtils.replayAll();
         
-        m_droolsTicketerServiceLayer.createTicketForAlarm(m_alarm.getId());
+        m_droolsTicketerServiceLayer.createTicketForAlarm(m_alarm.getId(),new HashMap<String, String>());
         
         m_easyMockUtils.verifyAll();
     }

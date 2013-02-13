@@ -40,25 +40,25 @@ public class GeoJSONFeature extends JavaScriptObject {
             "properties" : {},
             "geometry" : {
                 "type" : "Point",
-                "coordinates" : [ longitude, latitude ]
+                "coordinates" : [ latitude, longitude ]
             },
         };
     }-*/;
 
     public native final Float getLongitude() /*-{
-    return this.geometry.coordinates[0];
-}-*/;
-
-    public native final Float getLatitude() /*-{
         return this.geometry.coordinates[1];
     }-*/;
 
-    public native final String getProperty(final String key) /*-{
-    return this.properties[key];
-}-*/;
+    public native final Float getLatitude() /*-{
+        return this.geometry.coordinates[0];
+    }-*/;
 
     public native final void putProperty(final String key, final String value) /*-{
         this.properties[key] = value;
+    }-*/;
+
+    public native final String getProperty(final String key) /*-{
+        return this.properties[key];
     }-*/;
 
     public final String asString() {

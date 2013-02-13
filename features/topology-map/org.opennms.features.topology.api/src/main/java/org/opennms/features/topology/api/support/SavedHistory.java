@@ -14,7 +14,6 @@ import org.opennms.features.topology.api.Layout;
 import org.opennms.features.topology.api.Point;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.slf4j.LoggerFactory;
 
 /**
  * Immutable class that stores a snapshot of the topology layout at a given time.
@@ -68,7 +67,21 @@ public class SavedHistory {
                 // Impossible on modern JVMs
             }
         }
+        
         retval.append(String.format(",(%X)", crc.getValue()));
+        
+        CRC32 vCrc = new CRC32();
+        for(Map.Entry<VertexRef, Point> entry : m_locations.entrySet()) {
+            try {
+                vCrc.update(entry.getKey().getId().getBytes("UTF-8"));
+                vCrc.update(entry.getValue().getX());
+                vCrc.update(entry.getValue().getY());
+            } catch(UnsupportedEncodingException e) {
+                
+            }
+        }
+        
+        retval.append(String.format(",(%X)", vCrc.getValue()));
         return retval.toString();
     }
 

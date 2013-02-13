@@ -137,12 +137,12 @@ public class PhysInterfaceTableTracker extends TableTracker {
         
         private Long getIfHighSpeed() {
             final SnmpValue value = getValue(IF_HIGH_SPEED);
-            return value == null ? null : value.toLong()*1000000L;
+            return value == null ? null : value.toLong();
         }
         
         private Long getSpeed() {
             final Long highSpeed = getIfHighSpeed();
-            return highSpeed != null && highSpeed > 0 ? highSpeed : getIfSpeed(); 
+            return highSpeed != null && highSpeed > 4294 ? highSpeed*1000000L : getIfSpeed(); 
         }
 
         private Integer getIfOperStatus() {

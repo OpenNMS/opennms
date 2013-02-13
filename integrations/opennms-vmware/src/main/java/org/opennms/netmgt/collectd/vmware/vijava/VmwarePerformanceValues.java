@@ -45,8 +45,8 @@ public class VmwarePerformanceValues {
             object = new HashMap<String, Long>();
         }
 
-        if (object instanceof HashMap) {
-            ((HashMap) object).put(instance, Long.valueOf(value));
+        if (object instanceof HashMap<?,?>) {
+            ((HashMap<String, Long>) object).put(instance, Long.valueOf(value));
         } else {
             object = new Long(value);
         }
@@ -61,14 +61,14 @@ public class VmwarePerformanceValues {
     public boolean hasInstances(String name) {
         Object object = values.get(name);
 
-        return (object instanceof HashMap);
+        return (object instanceof HashMap<?,?>);
     }
 
     public Set<String> getInstances(String name) {
         Object object = values.get(name);
 
-        if (object instanceof HashMap) {
-            return ((HashMap) object).keySet();
+        if (object instanceof HashMap<?,?>) {
+            return ((HashMap<String,?>) object).keySet();
         } else {
             return null;
         }
@@ -87,8 +87,8 @@ public class VmwarePerformanceValues {
     public Long getValue(String name, String instance) {
         Object object = values.get(name);
 
-        if (object instanceof HashMap) {
-            return (Long) ((HashMap) object).get(instance);
+        if (object instanceof HashMap<?,?>) {
+            return ((HashMap<String,Long>) object).get(instance);
         } else {
             return null;
         }

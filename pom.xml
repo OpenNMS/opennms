@@ -556,6 +556,7 @@
             <opennms.library.jicmp>${opennms.library.jicmp}</opennms.library.jicmp>
             <opennms.library.jrrd>${opennms.library.jrrd}</opennms.library.jrrd>
             <install.rrdtool.bin>${install.rrdtool.bin}</install.rrdtool.bin>
+            <runRemedyTests>${runRemedyTests}</runRemedyTests>
             <runOtrsTests>${runOtrsTests}</runOtrsTests>
             <runRtTests>${runRtTests}</runRtTests>
             <runMailTests>${runMailTests}</runMailTests>
@@ -803,6 +804,7 @@
     <osgiVersion>4.3.0</osgiVersion>
     <osgiEnterpriseVersion>4.2.0</osgiEnterpriseVersion>
     <slf4jVersion>1.6.4</slf4jVersion>
+    <springJaxbVersion>2.1.7</springJaxbVersion>
     <xalanVersion>2.7.1</xalanVersion>
     <xercesVersion>2.9.1</xercesVersion>
     <xmlApisVersion>1.4.01</xmlApisVersion>
@@ -1644,13 +1646,18 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.opennms</groupId>
+        <groupId>org.opennms.features</groupId>
         <artifactId>opennms-integration-otrs</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.opennms</groupId>
+        <groupId>org.opennms.features</groupId>
         <artifactId>opennms-integration-rt</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features</groupId>
+        <artifactId>opennms-integration-remedy</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

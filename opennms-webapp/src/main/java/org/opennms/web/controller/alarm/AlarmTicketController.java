@@ -28,10 +28,15 @@
 
 package org.opennms.web.controller.alarm;
 
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.EventConstants;
 import org.opennms.web.svclayer.TroubleTicketProxy;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
@@ -91,7 +96,16 @@ public class AlarmTicketController extends MultiActionController {
      * @throws java.lang.Exception if any.
      */
     public ModelAndView create(HttpServletRequest request, HttpServletResponse response, CommandBean bean) throws Exception {
-        m_troubleTicketProxy.createTicket(bean.getAlarm());
+    	Map<String,String> parameters = new HashMap<String, String>();
+    	parameters.put(EventConstants.PARM_USER, request.getRemoteUser());
+    	@SuppressWarnings("unchecked")
+		Enumeration<String> paramNames = request.getParameterNames();
+        while(paramNames.hasMoreElements()) {        
+        	String paramName = paramNames.nextElement();
+        	if (!paramName.equals("alarm") || !paramName.equals("redirect"))
+        		parameters.put(paramName, request.getParameter(paramName));
+        }
+    	m_troubleTicketProxy.createTicket(bean.getAlarm(), parameters);
         return new ModelAndView("redirect:"+bean.getRedirect());
     }
     /**

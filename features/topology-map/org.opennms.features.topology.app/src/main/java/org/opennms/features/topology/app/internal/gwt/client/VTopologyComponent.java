@@ -232,7 +232,7 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 
 
 			//Updates
-			edgeSelection.call(GWTEdge.draw()).attr("opacity", 0);
+			edgeSelection.call(GWTEdge.draw()).attr("opacity", 1);
 			
 			vertexSelection.with(updateTransition()).call(GWTVertex.draw()).attr("opacity", 1);
 
