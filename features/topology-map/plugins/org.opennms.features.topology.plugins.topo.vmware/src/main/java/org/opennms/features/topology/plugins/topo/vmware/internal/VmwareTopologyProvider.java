@@ -28,36 +28,29 @@
 
 package org.opennms.features.topology.plugins.topo.vmware.internal;
 
-import org.opennms.features.topology.api.SimpleGroup;
-import org.opennms.features.topology.api.SimpleLeafVertex;
-import org.opennms.features.topology.api.topo.*;
-import org.opennms.netmgt.dao.IpInterfaceDao;
-import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.model.OnmsIpInterface;
-import org.opennms.netmgt.model.OnmsNode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import java.io.File;
 import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class VmwareTopologyProvider extends AbstractTopologyProvider implements GraphProvider {
+import org.opennms.features.topology.api.topo.AbstractVertex;
+import org.opennms.features.topology.api.topo.Edge;
+import org.opennms.features.topology.api.topo.EdgeRef;
+import org.opennms.features.topology.api.topo.GraphProvider;
+import org.opennms.features.topology.api.topo.Vertex;
+import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.plugins.topo.simple.internal.SimpleTopologyProvider;
+import org.opennms.netmgt.dao.IpInterfaceDao;
+import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsNode;
+
+public class VmwareTopologyProvider extends SimpleTopologyProvider implements GraphProvider {
 
     public static final String TOPOLOGY_NAMESPACE_VMWARE = "vmware";
 
     private final String SPLIT_REGEXP = " *, *";
-
-    private static final Logger m_vmwareLog = LoggerFactory.getLogger(VmwareTopologyProvider.class);
 
     private NodeDao m_nodeDao;
     private IpInterfaceDao m_ipInterfaceDao;
@@ -65,7 +58,7 @@ public class VmwareTopologyProvider extends AbstractTopologyProvider implements 
     private boolean m_generated = false;
 
     public VmwareTopologyProvider() {
-        super(TOPOLOGY_NAMESPACE_VMWARE);
+    	super(TOPOLOGY_NAMESPACE_VMWARE);
     }
 
     public NodeDao getNodeDao() {
@@ -118,16 +111,10 @@ public class VmwareTopologyProvider extends AbstractTopologyProvider implements 
     }
 
     private AbstractVertex addDatacenterGroup(String groupId, String groupName) {
-        if (containsVertexId(groupId)) {
-            return (AbstractVertex) getVertex(TOPOLOGY_NAMESPACE_VMWARE, groupId);
-        }
         return addGroup(groupId, "DATACENTER_ICON", groupName);
     }
 
     private AbstractVertex addNetworkVertex(String vertexId, String vertexName) {
-        if (containsVertexId(vertexId)) {
-            return (AbstractVertex) getVertex(TOPOLOGY_NAMESPACE_VMWARE, vertexId);
-        }
         AbstractVertex vertex = addVertex(vertexId, 50, 50);
         vertex.setIconKey("NETWORK_ICON");
         vertex.setLabel(vertexName);
@@ -135,9 +122,6 @@ public class VmwareTopologyProvider extends AbstractTopologyProvider implements 
     }
 
     private AbstractVertex addDatastoreVertex(String vertexId, String vertexName) {
-        if (containsVertexId(vertexId)) {
-            return (AbstractVertex) getVertex(TOPOLOGY_NAMESPACE_VMWARE, vertexId);
-        }
         AbstractVertex vertex = addVertex(vertexId, 50, 50);
         vertex.setIconKey("DATASTORE_ICON");
         vertex.setLabel(vertexName);
@@ -164,26 +148,22 @@ public class VmwareTopologyProvider extends AbstractTopologyProvider implements 
     }
 
     private AbstractVertex addHostSystemVertex(String vertexId, String vertexName, String primaryInterface, int id, String powerState) {
-        if (containsVertexId(vertexId)) {
-            return (AbstractVertex) getVertex(TOPOLOGY_NAMESPACE_VMWARE, vertexId);
-        }
+            String icon = "HOSTSYSTEM_ICON_UNKNOWN";
 
-        String icon = "HOSTSYSTEM_ICON_UNKNOWN";
+            if ("poweredOn".equals(powerState)) {
+                icon = "HOSTSYSTEM_ICON_ON";
+            } else if ("poweredOff".equals(powerState)) {
+                icon = "HOSTSYSTEM_ICON_OFF";
+            } else if ("standBy".equals(powerState)) {
+                icon = "HOSTSYSTEM_ICON_STANDBY";
+            }
 
-        if ("poweredOn".equals(powerState)) {
-            icon = "HOSTSYSTEM_ICON_ON";
-        } else if ("poweredOff".equals(powerState)) {
-            icon = "HOSTSYSTEM_ICON_OFF";
-        } else if ("standBy".equals(powerState)) {
-            icon = "HOSTSYSTEM_ICON_STANDBY";
-        }
-
-        AbstractVertex vertex = addVertex(vertexId, 50, 50);
-        vertex.setIconKey(icon);
-        vertex.setLabel(vertexName);
-        vertex.setIpAddress(primaryInterface);
-        vertex.setNodeID(id);
-        return vertex;
+            AbstractVertex vertex = addVertex(vertexId, 50, 50);
+            vertex.setIconKey(icon);
+            vertex.setLabel(vertexName);
+            vertex.setIpAddress(primaryInterface);
+            vertex.setNodeID(id);
+            return vertex;
     }
 
 
@@ -386,138 +366,5 @@ public class VmwareTopologyProvider extends AbstractTopologyProvider implements 
         }
 
         debugAll();
-    }
-
-    public void save(String filename) {
-        List<WrappedVertex> vertices = new ArrayList<WrappedVertex>();
-        for (Vertex vertex : getVertices()) {
-            if (vertex.isGroup()) {
-                vertices.add(new WrappedGroup(vertex));
-            } else {
-                vertices.add(new WrappedLeafVertex(vertex));
-            }
-        }
-        List<WrappedEdge> edges = new ArrayList<WrappedEdge>();
-        for (Edge edge : getEdges()) {
-            WrappedEdge newEdge = new WrappedEdge(edge, new WrappedLeafVertex(m_vertexProvider.getVertex(edge.getSource().getVertex())), new WrappedLeafVertex(m_vertexProvider.getVertex(edge.getTarget().getVertex())));
-            edges.add(newEdge);
-        }
-
-        WrappedGraph graph = new WrappedGraph(getVertexNamespace(), vertices, edges);
-
-        try {
-            JAXBContext jc = JAXBContext.newInstance(WrappedGraph.class, WrappedLeafVertex.class, WrappedGroup.class, WrappedEdge.class);
-            Marshaller u = jc.createMarshaller();
-            u.marshal(graph, new File(filename));
-        } catch (JAXBException e) {
-            m_vmwareLog.error(e.getMessage(), e);
-        }
-    }
-
-    private void load(final URI source, final WrappedGraph graph) {
-        String namespace = graph.m_namespace == null ? TOPOLOGY_NAMESPACE_VMWARE : graph.m_namespace;
-        if (getVertexNamespace() != namespace) {
-            m_vmwareLog.info("Creating new vertex provider with namespace {}", namespace);
-            m_vertexProvider = new SimpleVertexProvider(namespace);
-        }
-        if (getEdgeNamespace() != namespace) {
-            m_vmwareLog.info("Creating new edge provider with namespace {}", namespace);
-            m_edgeProvider = new SimpleEdgeProvider(namespace);
-        }
-
-        clearVertices();
-        for (WrappedVertex vertex : graph.m_vertices) {
-            if (vertex.namespace == null) {
-                vertex.namespace = getVertexNamespace();
-                m_vmwareLog.warn("Setting namespace on vertex to default: {}", vertex);
-            }
-
-            if (vertex.id == null) {
-                m_vmwareLog.warn("Invalid vertex unmarshalled from {}: {}", source.toString(), vertex);
-            } else if (vertex.id.startsWith(SIMPLE_GROUP_ID_PREFIX)) {
-                try {
-                    // Find the highest index group number and start the index for new groups above it
-                    int groupNumber = Integer.parseInt(vertex.id.substring(SIMPLE_GROUP_ID_PREFIX.length()));
-                    if (m_groupCounter <= groupNumber) {
-                        m_groupCounter = groupNumber + 1;
-                    }
-                } catch (NumberFormatException e) {
-                    // Ignore this group ID since it doesn't conform to our pattern for auto-generated IDs
-                }
-            }
-            AbstractVertex newVertex;
-            if (vertex.group) {
-                newVertex = new SimpleGroup(vertex.namespace, vertex.id);
-                if (vertex.x != null) {
-                    newVertex.setX(vertex.x);
-                }
-                if (vertex.y != null) {
-                    newVertex.setY(vertex.y);
-                }
-            } else {
-                newVertex = new SimpleLeafVertex(vertex.namespace, vertex.id, vertex.x, vertex.y);
-            }
-            newVertex.setIconKey(vertex.iconKey);
-            newVertex.setIpAddress(vertex.ipAddr);
-            newVertex.setLabel(vertex.label);
-            newVertex.setLocked(vertex.locked);
-            if (vertex.nodeID != null) {
-                newVertex.setNodeID(vertex.nodeID);
-            }
-            newVertex.setParent(vertex.parent);
-            newVertex.setSelected(vertex.selected);
-            newVertex.setStyleName(vertex.styleName);
-            newVertex.setTooltipText(vertex.tooltipText);
-            addVertices(newVertex);
-        }
-
-        clearEdges();
-        for (WrappedEdge edge : graph.m_edges) {
-            if (edge.namespace == null) {
-                edge.namespace = getEdgeNamespace();
-                m_vmwareLog.warn("Setting namespace on edge to default: {}", edge);
-            }
-
-            if (edge.id == null) {
-                m_vmwareLog.warn("Invalid edge unmarshalled from {}: {}", source.toString(), edge);
-            } else if (edge.id.startsWith(SIMPLE_EDGE_ID_PREFIX)) {
-                try {
-                    /*
-                     * This code will be necessary if we allow edges to be created
-
-                    // Find the highest index group number and start the index for new groups above it
-                    int edgeNumber = Integer.parseInt(edge.getId().substring(SIMPLE_EDGE_ID_PREFIX.length()));
-
-                    if (m_edgeCounter <= edgeNumber) {
-                        m_edgeCounter = edgeNumber + 1;
-                    }
-                    */
-                } catch (NumberFormatException e) {
-                    // Ignore this edge ID since it doesn't conform to our pattern for auto-generated IDs
-                }
-            }
-            AbstractEdge newEdge = connectVertices(edge.id, edge.source, edge.target);
-            newEdge.setLabel(edge.label);
-            newEdge.setTooltipText(edge.tooltipText);
-            //addEdges(newEdge);
-        }
-
-        for (WrappedVertex vertex : graph.m_vertices) {
-            if (vertex.parent != null) {
-                m_vmwareLog.debug("Setting parent of " + vertex + " to " + vertex.parent);
-                setParent(vertex, vertex.parent);
-            }
-        }
-    }
-
-    void load(URI url) throws JAXBException, MalformedURLException {
-        JAXBContext jc = JAXBContext.newInstance(WrappedGraph.class);
-        Unmarshaller u = jc.createUnmarshaller();
-        WrappedGraph graph = (WrappedGraph) u.unmarshal(url.toURL());
-        load(url, graph);
-    }
-
-    public void load(String filename) throws MalformedURLException, JAXBException {
-        load(new File(filename).toURI());
     }
 }
