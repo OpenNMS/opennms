@@ -40,13 +40,13 @@ import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.plugins.topo.simple.internal.SimpleTopologyProvider;
+import org.opennms.features.topology.plugins.topo.simple.SimpleGraphProvider;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 
-public class VmwareTopologyProvider extends SimpleTopologyProvider implements GraphProvider {
+public class VmwareTopologyProvider extends SimpleGraphProvider implements GraphProvider {
 
     public static final String TOPOLOGY_NAMESPACE_VMWARE = "vmware";
 

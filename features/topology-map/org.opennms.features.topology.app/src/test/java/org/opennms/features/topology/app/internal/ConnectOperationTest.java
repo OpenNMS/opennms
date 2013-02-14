@@ -47,7 +47,7 @@ import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.operations.ConnectOperation;
-import org.opennms.features.topology.plugins.topo.simple.internal.SimpleTopologyProvider;
+import org.opennms.features.topology.plugins.topo.simple.SimpleGraphProvider;
 
 import com.vaadin.ui.Window;
 
@@ -97,7 +97,7 @@ public class ConnectOperationTest {
     @Before
     public void setUp() {
         if(m_topologyProvider == null) {
-            m_topologyProvider = new SimpleTopologyProvider();
+            m_topologyProvider = new SimpleGraphProvider();
         }
         
 		m_topologyProvider.resetContainer();
