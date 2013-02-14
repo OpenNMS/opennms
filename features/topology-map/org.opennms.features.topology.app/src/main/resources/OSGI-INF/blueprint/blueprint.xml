@@ -114,6 +114,58 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="treeWidgetManager"/>
     </reference-list>
     
+    <!-- Move to separate project -->
+    <!--
+		<reference id="alarmDao" interface="org.opennms.netmgt.dao.AlarmDao" availability="mandatory" />
+		<reference id="nodeDao" interface="org.opennms.netmgt.dao.NodeDao" availability="mandatory" />
+
+		<!- - Wrap the DAO in a Vaadin container - ->
+		<bean id="alarmDaoContainer" class="org.opennms.features.topology.app.internal.support.AlarmDaoContainer">
+			<argument ref="alarmDao" />
+		</bean>
+
+		<bean id="alarmTable" class="com.vaadin.ui.Table" scope="prototype">
+			<argument value="Alarms"/>
+			<argument ref="alarmDaoContainer" />
+		</bean>
+
+		<bean id="alarmViewContribution" class="org.opennms.features.topology.app.internal.support.BlueprintIViewContribution">
+			<argument ref="blueprintContainer" />
+			<argument value="alarmTable" />
+			<property name="title" value="Alarms" />
+		</bean>
+
+		<service interface="org.opennms.features.topology.api.IViewContribution" ref="alarmViewContribution">
+			<description>Alarm table IViewContribution service.</description>
+			<service-properties>
+				<entry key="location" value="bottom"/>
+			</service-properties>
+		</service>
+
+		<!- - Wrap the DAO in a Vaadin container - ->
+		<bean id="nodeDaoContainer" class="org.opennms.features.topology.app.internal.support.NodeDaoContainer">
+			<argument ref="nodeDao" />
+		</bean>
+
+		<bean id="nodeTable" class="com.vaadin.ui.Table" scope="prototype">
+			<argument value="Nodes"/>
+			<argument ref="nodeDaoContainer" />
+		</bean>
+
+		<bean id="nodeViewContribution" class="org.opennms.features.topology.app.internal.support.BlueprintIViewContribution">
+			<argument ref="blueprintContainer" />
+			<argument value="nodeTable" />
+			<property name="title" value="Nodes" />
+		</bean>
+
+		<service interface="org.opennms.features.topology.api.IViewContribution" ref="nodeViewContribution">
+			<description>Node table IViewContribution service.</description>
+			<service-properties>
+				<entry key="location" value="bottom"/>
+			</service-properties>
+		</service>
+		-->
+		<!-- End move to separate project -->
     
     <service interface="org.osgi.service.cm.ManagedService" >
         <service-properties>

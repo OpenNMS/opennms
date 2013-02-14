@@ -26,8 +26,47 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.app.internal;
+package org.opennms.features.topology.app.internal.support;
 
-public class UnDoer {
+import java.util.Collection;
+import java.util.Map;
+import java.util.TreeMap;
 
+import org.opennms.netmgt.dao.AlarmDao;
+import org.opennms.netmgt.model.OnmsAlarm;
+
+import com.vaadin.data.util.BeanItem;
+
+public class AlarmDaoContainer extends OnmsDaoContainer<OnmsAlarm,Integer> {
+
+	private static final long serialVersionUID = -4026870931086916312L;
+
+	private Map<Object,Class<?>> m_properties;
+
+	public AlarmDaoContainer(AlarmDao dao) {
+		super(dao);
+	}
+
+	@Override
+	public Collection<?> getContainerPropertyIds() {
+		if (m_properties == null) {
+			m_properties = new TreeMap<Object,Class<?>>();
+			BeanItem<OnmsAlarm> item = new BeanItem<OnmsAlarm>(new OnmsAlarm());
+			for (Object key : item.getItemPropertyIds()) {
+				m_properties.put(key, item.getItemProperty(key).getType());
+			}
+		}
+		m_properties.remove("details");
+		m_properties.remove("distPoller");
+		return m_properties.keySet();
+	}
+
+	protected Integer getId(OnmsAlarm bean){
+		return bean.getId();
+	}
+
+	@Override
+	public Class<?> getType(Object propertyId) {
+		return m_properties.get(propertyId);
+	}
 }
