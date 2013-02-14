@@ -79,6 +79,13 @@ public interface OnmsDao<T, K extends Serializable> {
     void delete(T entity);
 
     /**
+     * <p>delete</p>
+     *
+     * @param key a K object.
+     */
+    void delete(K key);
+
+    /**
      * <p>findAll</p>
      *
      * @return a {@link java.util.List} object.

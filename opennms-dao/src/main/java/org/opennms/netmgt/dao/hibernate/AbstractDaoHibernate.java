@@ -277,6 +277,16 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
     }
     
     /**
+     * <p>delete</p>
+     *
+     * @param key a K object.
+     * @throws org.springframework.dao.DataAccessException if any.
+     */
+    public void delete(final K key) throws DataAccessException {
+        delete(get(key));
+    }
+    
+    /**
      * <p>deleteAll</p>
      *
      * @param entities a {@link java.util.Collection} object.
