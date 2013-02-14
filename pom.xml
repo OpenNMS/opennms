@@ -556,6 +556,7 @@
             <opennms.library.jicmp>${opennms.library.jicmp}</opennms.library.jicmp>
             <opennms.library.jrrd>${opennms.library.jrrd}</opennms.library.jrrd>
             <install.rrdtool.bin>${install.rrdtool.bin}</install.rrdtool.bin>
+            <runRemedyTests>${runRemedyTests}</runRemedyTests>
             <runOtrsTests>${runOtrsTests}</runOtrsTests>
             <runRtTests>${runRtTests}</runRtTests>
             <runMailTests>${runMailTests}</runMailTests>
@@ -1628,6 +1629,11 @@
       <dependency>
         <groupId>org.opennms.features</groupId>
         <artifactId>opennms-integration-rt</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features</groupId>
+        <artifactId>opennms-integration-remedy</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

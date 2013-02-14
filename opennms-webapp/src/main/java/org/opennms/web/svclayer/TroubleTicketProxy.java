@@ -28,6 +28,8 @@
 
 package org.opennms.web.svclayer;
 
+import java.util.Map;
+
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -45,7 +47,7 @@ public interface TroubleTicketProxy {
      *
      * @param alarmId a {@link java.lang.Integer} object.
      */
-    public void createTicket(Integer alarmId);
+    public void createTicket(Integer alarmId, Map<String,String> attributes);
     
     /**
      * <p>updateTicket</p>

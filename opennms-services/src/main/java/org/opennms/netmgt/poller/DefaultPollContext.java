@@ -265,7 +265,7 @@ public class DefaultPollContext implements PollContext, EventListener {
         
         // For node level events (nodeUp/nodeDown) retrieve the
         // node's nodeLabel value and add it as a parm
-        else if (uei.equals(EventConstants.NODE_UP_EVENT_UEI)
+        if (uei.equals(EventConstants.NODE_UP_EVENT_UEI)
                 || uei.equals(EventConstants.NODE_DOWN_EVENT_UEI)) {
         
             String nodeLabel = this.getNodeLabel(nodeId);
