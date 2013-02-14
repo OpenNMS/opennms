@@ -28,12 +28,6 @@
 
 package org.opennms.features.topology.plugins.topo.linkd.internal.operations;
 
-import java.net.MalformedURLException;
-import java.util.List;
-import java.util.Map;
-
-import javax.xml.bind.JAXBException;
-
 import org.opennms.features.topology.api.AbstractCheckedOperation;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
@@ -42,80 +36,85 @@ import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.plugins.topo.linkd.internal.LinkdTopologyProvider;
 import org.slf4j.LoggerFactory;
 
+import javax.xml.bind.JAXBException;
+import java.net.MalformedURLException;
+import java.util.List;
+import java.util.Map;
+
 public class HideNodesWithoutLinksOperation extends AbstractCheckedOperation {
 
-	private final LinkdTopologyProvider m_topologyProvider;
+    private final LinkdTopologyProvider m_topologyProvider;
 
-	public HideNodesWithoutLinksOperation(LinkdTopologyProvider topologyProvider) {
-		m_topologyProvider = topologyProvider;
-	}
+    public HideNodesWithoutLinksOperation(LinkdTopologyProvider topologyProvider) {
+        m_topologyProvider = topologyProvider;
+    }
 
-	@Override
-	public Undoer execute(List<VertexRef> targets, OperationContext operationContext) {
-		if (enabled(targets, operationContext)) {
-			execute(operationContext.getGraphContainer());
-		}
-		return null;
-	}
-	
-	private void execute(GraphContainer container) {
-		LoggerFactory.getLogger(this.getClass()).debug("switched addNodeWithoutLinks to: " + !m_topologyProvider.isAddNodeWithoutLink());
-		m_topologyProvider.setAddNodeWithoutLink(!m_topologyProvider.isAddNodeWithoutLink());
-		try {
-			m_topologyProvider.load(null);
-		} catch (MalformedURLException e) {
-			// TODO: Display the error in the UI
-			LoggerFactory.getLogger(this.getClass()).error(e.getMessage(), e);
-		} catch (JAXBException e) {
-			// TODO: Display the error in the UI
-			LoggerFactory.getLogger(this.getClass()).error(e.getMessage(), e);
-		}
-		container.redoLayout();
-	}
+    @Override
+    public Undoer execute(List<VertexRef> targets, OperationContext operationContext) {
+        if (enabled(targets, operationContext)) {
+            execute(operationContext.getGraphContainer());
+        }
+        return null;
+    }
 
-	@Override
-	public boolean display(List<VertexRef> targets, OperationContext operationContext) {
-		return true;
-	}
+    private void execute(GraphContainer container) {
+        LoggerFactory.getLogger(this.getClass()).debug("switched addNodeWithoutLinks to: " + !m_topologyProvider.isAddNodeWithoutLink());
+        m_topologyProvider.setAddNodeWithoutLink(!m_topologyProvider.isAddNodeWithoutLink());
+        try {
+            m_topologyProvider.load(null);
+        } catch (MalformedURLException e) {
+            // TODO: Display the error in the UI
+            LoggerFactory.getLogger(this.getClass()).error(e.getMessage(), e);
+        } catch (JAXBException e) {
+            // TODO: Display the error in the UI
+            LoggerFactory.getLogger(this.getClass()).error(e.getMessage(), e);
+        }
+        container.redoLayout();
+    }
 
-	/**
-	 * This is kinda unreliable because we are just matching on namespace... but that's all we can do with
-	 * the API as it is now.
-	 */
-	@Override
-	protected boolean enabled(GraphContainer container) {
-		GraphProvider activeGraphProvider = container.getBaseTopology();
-		return m_topologyProvider.getVertexNamespace().equals(activeGraphProvider.getVertexNamespace());
-	}
+    @Override
+    public boolean display(List<VertexRef> targets, OperationContext operationContext) {
+        return (operationContext.getGraphContainer().getBaseTopology().equals(m_topologyProvider));
+    }
 
-	@Override
-	public String getId() {
-		return "LinkdTopologyProviderHidesNodesWithoutLinksOperation";
-	}
+    /**
+     * This is kinda unreliable because we are just matching on namespace... but that's all we can do with
+     * the API as it is now.
+     */
+    @Override
+    public boolean enabled(List<VertexRef> vertices, OperationContext operationContext) {
+        GraphProvider activeGraphProvider = operationContext.getGraphContainer().getBaseTopology();
+        return (operationContext.getGraphContainer().getBaseTopology().equals(m_topologyProvider)) && m_topologyProvider.getVertexNamespace().equals(activeGraphProvider.getVertexNamespace());
+    }
 
-	@Override
-	protected boolean isChecked(GraphContainer container) {
-		if (enabled(container)) {
-			return !m_topologyProvider.isAddNodeWithoutLink();
-		} else {
-			return false;
-		}
-	}
+    @Override
+    public String getId() {
+        return "LinkdTopologyProviderHidesNodesWithoutLinksOperation";
+    }
 
-	@Override
-	public void applyHistory(GraphContainer container, Map<String, String> settings) {
-		if ("true".equals(settings.get(this.getClass().getName()))) {
-			if (m_topologyProvider.isAddNodeWithoutLink()) {
-				execute(container);
-			} else {
-				// Hiding is enabled and isAddNodeWithoutLink() is already false
-			}
-		} else {
-			if (m_topologyProvider.isAddNodeWithoutLink()) {
-				// Adding is enabled and isAddNodeWithoutLink() is already true
-			} else {
-				execute(container);
-			}
-		}
-	}
+    @Override
+    protected boolean isChecked(GraphContainer container) {
+        if (enabled(container)) {
+            return !m_topologyProvider.isAddNodeWithoutLink();
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public void applyHistory(GraphContainer container, Map<String, String> settings) {
+        if ("true".equals(settings.get(this.getClass().getName()))) {
+            if (m_topologyProvider.isAddNodeWithoutLink()) {
+                execute(container);
+            } else {
+                // Hiding is enabled and isAddNodeWithoutLink() is already false
+            }
+        } else {
+            if (m_topologyProvider.isAddNodeWithoutLink()) {
+                // Adding is enabled and isAddNodeWithoutLink() is already true
+            } else {
+                execute(container);
+            }
+        }
+    }
 }

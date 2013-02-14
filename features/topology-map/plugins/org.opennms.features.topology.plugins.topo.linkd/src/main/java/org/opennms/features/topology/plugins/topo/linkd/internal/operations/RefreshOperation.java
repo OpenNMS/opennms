@@ -28,54 +28,59 @@
 
 package org.opennms.features.topology.plugins.topo.linkd.internal.operations;
 
-import java.net.MalformedURLException;
-import java.util.List;
-
-import javax.xml.bind.JAXBException;
-
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.plugins.topo.linkd.internal.LinkdTopologyProvider;
 import org.slf4j.LoggerFactory;
 
+import javax.xml.bind.JAXBException;
+import java.net.MalformedURLException;
+import java.util.List;
+
 public class RefreshOperation implements Operation {
+    private final LinkdTopologyProvider m_topologyProvider;
+
+    public RefreshOperation(LinkdTopologyProvider topologyProvider) {
+        m_topologyProvider = topologyProvider;
+    }
 
     @Override
     public Undoer execute(List<VertexRef> targets, OperationContext operationContext) {
-            if (operationContext != null && operationContext.getGraphContainer() != null) {
-                log("executing linkd topology refresh operation");
-                try {
-                    operationContext.getGraphContainer().getBaseTopology().load(null);
-                } catch (MalformedURLException e) {
-                    // TODO: Display the error in the UI
-                    LoggerFactory.getLogger(this.getClass()).error(e.getMessage(), e);
-                } catch (JAXBException e) {
-                    // TODO: Display the error in the UI
-                    LoggerFactory.getLogger(this.getClass()).error(e.getMessage(), e);
-                }
-                log("operationcontext and GraphContainer not null: executing redoLayout");
-                operationContext.getGraphContainer().redoLayout();
+        if (operationContext != null && operationContext.getGraphContainer() != null) {
+            log("executing linkd topology refresh operation");
+            try {
+                operationContext.getGraphContainer().getBaseTopology().load(null);
+            } catch (MalformedURLException e) {
+                // TODO: Display the error in the UI
+                LoggerFactory.getLogger(this.getClass()).error(e.getMessage(), e);
+            } catch (JAXBException e) {
+                // TODO: Display the error in the UI
+                LoggerFactory.getLogger(this.getClass()).error(e.getMessage(), e);
             }
-            return null;
+            log("operationcontext and GraphContainer not null: executing redoLayout");
+            operationContext.getGraphContainer().redoLayout();
+        }
+        return null;
     }
 
     private void log(final String string) {
         LoggerFactory.getLogger(getClass()).debug("{}: {}", getId(), string);
     }
 
-	@Override
+    @Override
     public boolean display(List<VertexRef> targets, OperationContext operationContext) {
-        return true;
+        return (operationContext.getGraphContainer().getBaseTopology().equals(m_topologyProvider));
     }
 
     @Override
     public boolean enabled(List<VertexRef> targets, OperationContext operationContext) {
-    	return true;
+        return (operationContext.getGraphContainer().getBaseTopology().equals(m_topologyProvider));
     }
 
     @Override
     public String getId() {
-    	return "LinkdTopologyProviderRefreshOperation";
+        return "LinkdTopologyProviderRefreshOperation";
     }
 
 }
