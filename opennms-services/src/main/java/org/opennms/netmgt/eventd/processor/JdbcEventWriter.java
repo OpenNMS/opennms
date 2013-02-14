@@ -185,7 +185,7 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
             set(insStmt, 6, Constants.format(event.getInterface(), EVENT_INTERFACE_FIELD_SIZE));
 
             // eventDpName
-            insStmt.setString(7, (eventHeader != null) ? Constants.format(eventHeader.getDpName(), EVENT_DPNAME_FIELD_SIZE) : "undefined");
+            insStmt.setString(7, (eventHeader != null) ? Constants.format(eventHeader.getDpName(), EVENT_DPNAME_FIELD_SIZE) : "localhost");
 
             // eventSnmpHost
             set(insStmt, 8, Constants.format(event.getSnmphost(), EVENT_SNMPHOST_FIELD_SIZE));
