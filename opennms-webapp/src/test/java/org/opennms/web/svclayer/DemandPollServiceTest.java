@@ -96,6 +96,11 @@ public class DemandPollServiceTest extends TestCase {
 			return (m_demandPoll == null ? 0 : 1);
 		}
 
+		public void delete(Integer id) {
+			if (id == m_demandPoll.getId())
+				m_demandPoll = null;
+		}
+
 		public void delete(DemandPoll entity) {
 			if (entity.getId() == m_demandPoll.getId())
 				m_demandPoll = null;
