@@ -30,7 +30,8 @@
             <entry key="label" value="VMware"/>
         </service-properties>
     </service>
-        
+
+    <!--
     <service interface="org.opennms.features.topology.api.Operation">
         <service-properties>
             <entry key="operation.menuLocation" value="View"/>
@@ -41,7 +42,6 @@
         </bean>
     </service>
 
-    <!--
     <service interface="org.opennms.features.topology.api.Operation">
         <service-properties>
             <entry key="operation.menuLocation" value="File"/>
