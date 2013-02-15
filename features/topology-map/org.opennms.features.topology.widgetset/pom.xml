@@ -23,16 +23,52 @@
 
   <build>
     <plugins>
-      <!-- Compiles your custom GWT components with the GWT compiler -->
-      <!-- A hosted mode browser for client-side widget debugging can be run with the goal gwt:run after uncommenting the
-	   correct line below. A remote debugger can then be connected to port 8998. Note that e.g. a Jetty server should be running
-	   with the server side parts - use the goal jetty:run . -->
+      <plugin>
+          <groupId>com.vaadin</groupId>
+          <artifactId>vaadin-maven-plugin</artifactId>
+          <version>${vaadin.plugin.version}</version>
+          <configuration>
+              <extraJvmArgs>-Xmx512M -Xss1024k</extraJvmArgs>
+              <!-- <runTarget>mobilemail</runTarget> -->
+              <!-- We are doing "inplace" but into subdir VAADIN/widgetsets. This
+               way compatible with Vaadin eclipse plugin. -->
+              <webappDirectory>${basedir}/src/main/webapp/VAADIN/widgetsets
+              </webappDirectory>
+              <hostedWebapp>${basedir}/src/main/webapp/VAADIN/widgetsets
+              </hostedWebapp>
+              <noServer>true</noServer>
+              <!-- Remove draftCompile when project is ready -->
+              <draftCompile>false</draftCompile>
+              <compileReport>true</compileReport>
+              <style>OBF</style>
+              <strict>true</strict>
+              <runTarget>http://localhost:8080/</runTarget>
+          </configuration>
+          <executions>
+              <execution>
+                  <configuration>
+                      <!-- if you don't specify any modules, the plugin will find them -->
+                      <!-- <modules> <module>com.vaadin.demo.mobilemail.gwt.ColorPickerWidgetSet</module>
+                       </modules> -->
+                  </configuration>
+                  <goals>
+                      <goal>resources</goal>
+                      <goal>update-widgetset</goal>
+                      <goal>compile</goal>
+                  </goals>
+              </execution>
+          </executions>
+      </plugin>
+      
+    <!-- Vaadin update remove
+    <plugins>
+      
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>gwt-maven-plugin</artifactId>
         <version>${gwtPluginVersion}</version>
         <configuration>
-          <!-- <modules> <module>org.opennms.features.topology.app.internal.gwt.MyWidgetSet</module> </modules> -->
+          
           <webappDirectory>target/gwt/VAADIN/widgetsets</webappDirectory>
           <extraJvmArgs>-Xmx512M -Xss1024k</extraJvmArgs>
         </configuration>
@@ -57,7 +93,9 @@
           </dependency>
         </dependencies>
       </plugin>
+     -->
       
+    <!-- Vaadin Update remove
       <plugin>
         <groupId>com.vaadin</groupId>
         <artifactId>vaadin-maven-plugin</artifactId>
@@ -71,6 +109,7 @@
           </execution>
         </executions>
       </plugin>
+     -->
       
     </plugins>
 

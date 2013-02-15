@@ -36,10 +36,28 @@
   </build>
 
   <dependencies>
+<!-- Vaadin Update -->
     <dependency>
       <groupId>com.vaadin</groupId>
-      <artifactId>vaadin</artifactId>
+      <artifactId>vaadin-server</artifactId>
+      <version>${vaadinVersion}</version>
     </dependency>
+    <dependency>
+      <groupId>com.vaadin</groupId>
+      <artifactId>vaadin-client-compiled</artifactId>
+      <version>${vaadinVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.vaadin</groupId>
+      <artifactId>vaadin-client</artifactId>
+      <version>${vaadinVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.vaadin</groupId>
+      <artifactId>vaadin-themes</artifactId>
+      <version>${vaadinVersion}</version>
+    </dependency>
+
     <dependency>
       <groupId>org.ops4j.pax.vaadin</groupId>
       <artifactId>service</artifactId>
@@ -65,7 +83,7 @@
   <repositories>
     <repository>
        <id>vaadin-addons</id>
-       <url>http://maven.vaadin.com/vaadin-addons</url>
+       <url>http://maven.vaadin./comvaadin-addons</url>
     </repository>
   </repositories>
 

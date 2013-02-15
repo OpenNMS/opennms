@@ -80,12 +80,12 @@
       <scope>provided</scope>
     </dependency>
     
-    <dependency>
-      <groupId>com.google.gwt</groupId>
-      <artifactId>gwt-user</artifactId>
-      <optional>true</optional>
-      <scope>provided</scope>
-    </dependency>
+<!--     <dependency> -->
+<!--       <groupId>com.google.gwt</groupId> -->
+<!--       <artifactId>gwt-user</artifactId> -->
+<!--       <optional>true</optional> -->
+<!--       <scope>provided</scope> -->
+<!--     </dependency> -->
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao</artifactId>
