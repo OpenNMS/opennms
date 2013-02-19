@@ -5,6 +5,7 @@
 
 %{!?extrainfo:%define extrainfo %{nil}}
 %{!?extrainfo2:%define extrainfo2 %{nil}}
+%{!?enable_snapshots:%define enable_snapshots 1}
 
 # keep RPM from making an empty debug package
 %define debug_package %{nil}
@@ -44,7 +45,10 @@ http://www.opennms.org/index.php/CentricCRM_Trouble_Ticket_Plugin
 %setup -n centric-troubleticketer
 
 %build
-mvn -Droot.dir="%{instprefix}" -Dmaven.test.skip.exec=true package assembly:attached
+if [ "%{enable_snapshots}" = 1 ]; then
+	export EXTRA_OPTIONS="$EXTRA_OPTIONS -Denable.snapshots=true -DupdatePolicy=always"
+fi
+mvn -Droot.dir="%{instprefix}" $EXTRA_OPTIONS -Dmaven.test.skip.exec=true package assembly:attached
 
 %install
 install -d -m 755 $RPM_BUILD_ROOT%{instprefix}
