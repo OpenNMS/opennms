@@ -36,6 +36,7 @@ import org.opennms.features.topology.api.IViewContribution;
 import org.opennms.features.topology.api.WidgetContext;
 import org.slf4j.LoggerFactory;
 
+import com.vaadin.ui.Component;
 import com.vaadin.ui.TabSheet;
 
 /**
@@ -84,16 +85,17 @@ public class WidgetManager {
      */
     public TabSheet getTabSheet(WidgetContext widgetContext) {
         TabSheet tabSheet = new TabSheet();
+        tabSheet.setSizeFull();
         
         synchronized (m_viewContributors) {
             for(IViewContribution viewContrib : m_viewContributors) {
-                
+                Component view = viewContrib.getView(widgetContext);
                 if(viewContrib.getIcon() != null) {
-                    tabSheet.addTab(viewContrib.getView(widgetContext), viewContrib.getTitle(), viewContrib.getIcon());
+                    tabSheet.addTab(view, viewContrib.getTitle(), viewContrib.getIcon());
                 } else {
-                    tabSheet.addTab(viewContrib.getView(widgetContext), viewContrib.getTitle());
+                    tabSheet.addTab(view, viewContrib.getTitle());
                 }
-                
+                view.setSizeFull();
             }
         }
         

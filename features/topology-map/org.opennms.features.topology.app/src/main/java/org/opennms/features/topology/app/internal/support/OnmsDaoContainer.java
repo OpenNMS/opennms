@@ -31,6 +31,7 @@ package org.opennms.features.topology.app.internal.support;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import org.opennms.netmgt.dao.OnmsDao;
@@ -40,7 +41,7 @@ import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanItem;
 
-public abstract class OnmsDaoContainer<T,K extends Serializable> implements Container {
+public abstract class OnmsDaoContainer<T,K extends Serializable> implements Container, Container.Ordered {
 
 	private static final long serialVersionUID = -9131723065433979979L;
 
@@ -126,5 +127,92 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Cont
 	@Override
 	public int size() {
 		return m_dao.countAll();
+	}
+
+	@Override
+	public Object addItemAfter(Object previousItemId) throws UnsupportedOperationException {
+		throw new UnsupportedOperationException("Cannot add new items to this container");
+	}
+
+	@Override
+	public Item addItemAfter(Object previousItemId, Object newItemId) throws UnsupportedOperationException {
+		throw new UnsupportedOperationException("Cannot add new items to this container");
+	}
+
+	/**
+	 * Very inefficient default behavior, override in subclasses.
+	 */
+	@Override
+	public Object firstItemId() {
+		Iterator<T> itr = m_dao.findAll().iterator();
+		if (itr.hasNext()) {
+			return getId(itr.next());
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * Very inefficient default behavior, override in subclasses.
+	 */
+	@Override
+	public boolean isFirstId(Object itemId) {
+		return firstItemId().equals(itemId);
+	}
+
+	/**
+	 * Very inefficient default behavior, override in subclasses.
+	 */
+	@Override
+	public boolean isLastId(Object itemId) {
+		return lastItemId().equals(itemId);
+	}
+
+	/**
+	 * Very inefficient default behavior, override in subclasses.
+	 */
+	@Override
+	public Object lastItemId() {
+		List<T> all = m_dao.findAll();
+		if (all.size() > 0) {
+			return getId(all.get(all.size() - 1));
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * Very inefficient default behavior, override in subclasses.
+	 */
+	@Override
+	public Object nextItemId(Object itemId) {
+		Iterator<T> itr = m_dao.findAll().iterator();
+		do {
+			if (itemId.equals(getId(itr.next()))) {
+				if (itr.hasNext()) {
+					return getId(itr.next());
+				} else {
+					return null;
+				}
+			}
+		} while (itr.hasNext());
+		return null;
+	}
+
+	/**
+	 * Very inefficient default behavior, override in subclasses.
+	 */
+	@Override
+	public Object prevItemId(Object itemId) {
+		Iterator<T> itr = m_dao.findAll().iterator();
+		T previous = null;
+		do {
+			T current = (T)itr.next();
+			if (itemId.equals(getId(current))) {
+				return previous;
+			}
+			previous = current;
+		} while (itr.hasNext());
+		return null;
 	}
 }

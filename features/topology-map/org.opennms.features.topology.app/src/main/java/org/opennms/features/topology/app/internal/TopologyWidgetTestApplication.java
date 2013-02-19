@@ -87,7 +87,6 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 	private IconRepositoryManager m_iconRepositoryManager;
 	private WidgetManager m_widgetManager;
 	private WidgetManager m_treeWidgetManager;
-	private Layout m_viewContribLayout;
 	private Accordion m_treeAccordion;
     private HorizontalSplitPanel m_treeMapSplitPanel;
     private VerticalSplitPanel m_bottomLayoutBar;
@@ -280,10 +279,6 @@ public class TopologyWidgetTestApplication extends Application implements Comman
      */
     private void updateWidgetView(WidgetManager widgetManager) {
         if(widgetManager.widgetCount() == 0) {
-            if(m_viewContribLayout != null) {
-                m_viewContribLayout.removeAllComponents();
-            }
-            
             m_layout.removeAllComponents();
             m_layout.addComponent(m_treeMapSplitPanel, "top: 23px; left: 0px; right:0px; bottom:0px;");
             m_layout.requestRepaint();
@@ -291,19 +286,12 @@ public class TopologyWidgetTestApplication extends Application implements Comman
             if(m_bottomLayoutBar == null) {
                 m_bottomLayoutBar = new VerticalSplitPanel();
                 m_bottomLayoutBar.setFirstComponent(m_treeMapSplitPanel);
-                
-                if(m_viewContribLayout == null) {
-                    m_viewContribLayout = new VerticalLayout();
-                    m_bottomLayoutBar.setSecondComponent(m_viewContribLayout);
-                }
-                
+                // Split the screen 70% top, 30% bottom
                 m_bottomLayoutBar.setSplitPosition(70, Sizeable.UNITS_PERCENTAGE);
                 m_bottomLayoutBar.setSizeFull();
-                
+                m_bottomLayoutBar.setSecondComponent(widgetManager.getTabSheet(this));
             }
-            m_viewContribLayout.removeAllComponents();
-            m_viewContribLayout.addComponent(widgetManager.getTabSheet(this));
-            
+
             m_layout.removeAllComponents();
             m_layout.addComponent(m_bottomLayoutBar, "top: 23px; left: 0px; right:0px; bottom:0px;");
             m_layout.requestRepaint();

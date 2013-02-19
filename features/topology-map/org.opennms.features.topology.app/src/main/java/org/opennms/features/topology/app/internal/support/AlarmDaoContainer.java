@@ -56,13 +56,19 @@ public class AlarmDaoContainer extends OnmsDaoContainer<OnmsAlarm,Integer> {
 				m_properties.put(key, item.getItemProperty(key).getType());
 			}
 		}
+
+		// Causes problems because it is a map of values 
 		m_properties.remove("details");
+
+		// Causes referential integrity problems
+		// @see http://issues.opennms.org/browse/NMS-5750
 		m_properties.remove("distPoller");
+
 		return m_properties.keySet();
 	}
 
 	protected Integer getId(OnmsAlarm bean){
-		return bean.getId();
+		return bean == null ? null : bean.getId();
 	}
 
 	@Override
