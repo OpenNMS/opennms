@@ -44,8 +44,9 @@
       <type>pom</type>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.mdns</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>servlet-dependencies</artifactId>
+      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
