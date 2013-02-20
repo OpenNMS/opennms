@@ -29,6 +29,8 @@
 package org.opennms.features.topology.app.internal.support;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -48,7 +50,11 @@ public class AlarmDaoContainer extends OnmsDaoContainer<OnmsAlarm,Integer> {
 	}
 
 	@Override
-	public Collection<?> getContainerPropertyIds() {
+	public Class<OnmsAlarm> getItemClass() {
+		return OnmsAlarm.class;
+	}
+
+	private synchronized void loadPropertiesIfNull() {
 		if (m_properties == null) {
 			m_properties = new TreeMap<Object,Class<?>>();
 			BeanItem<OnmsAlarm> item = new BeanItem<OnmsAlarm>(new OnmsAlarm());
@@ -63,10 +69,16 @@ public class AlarmDaoContainer extends OnmsDaoContainer<OnmsAlarm,Integer> {
 		// Causes referential integrity problems
 		// @see http://issues.opennms.org/browse/NMS-5750
 		m_properties.remove("distPoller");
-
-		return m_properties.keySet();
 	}
 
+	@Override
+	public Collection<?> getContainerPropertyIds() {
+		loadPropertiesIfNull();
+
+		return Collections.unmodifiableCollection(m_properties.keySet());
+	}
+
+	@Override
 	protected Integer getId(OnmsAlarm bean){
 		return bean == null ? null : bean.getId();
 	}
@@ -74,5 +86,18 @@ public class AlarmDaoContainer extends OnmsDaoContainer<OnmsAlarm,Integer> {
 	@Override
 	public Class<?> getType(Object propertyId) {
 		return m_properties.get(propertyId);
+	}
+
+	@Override
+	public Collection<?> getSortableContainerPropertyIds() {
+		loadPropertiesIfNull();
+
+		Collection<Object> propertyIds = new HashSet<Object>();
+		propertyIds.addAll(m_properties.keySet());
+
+		// nodeLabel is a transient value so we can't sort on it (yet)
+		propertyIds.remove("nodeLabel");
+
+		return Collections.unmodifiableCollection(propertyIds);
 	}
 }

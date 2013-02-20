@@ -29,6 +29,8 @@
 package org.opennms.features.topology.app.internal.support;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -48,7 +50,11 @@ public class NodeDaoContainer extends OnmsDaoContainer<OnmsNode,Integer> {
 	}
 
 	@Override
-	public Collection<?> getContainerPropertyIds() {
+	public Class<OnmsNode> getItemClass() {
+		return OnmsNode.class;
+	}
+
+	private synchronized void loadPropertiesIfNull() {
 		if (m_properties == null) {
 			m_properties = new TreeMap<Object,Class<?>>();
 			BeanItem<OnmsNode> item = new BeanItem<OnmsNode>(new OnmsNode());
@@ -56,9 +62,16 @@ public class NodeDaoContainer extends OnmsDaoContainer<OnmsNode,Integer> {
 				m_properties.put(key, item.getItemProperty(key).getType());
 			}
 		}
-		return m_properties.keySet();
 	}
 
+	@Override
+	public Collection<?> getContainerPropertyIds() {
+		loadPropertiesIfNull();
+
+		return Collections.unmodifiableCollection(m_properties.keySet());
+	}
+
+	@Override
 	protected Integer getId(OnmsNode bean){
 		return bean.getId();
 	}
@@ -66,5 +79,18 @@ public class NodeDaoContainer extends OnmsDaoContainer<OnmsNode,Integer> {
 	@Override
 	public Class<?> getType(Object propertyId) {
 		return m_properties.get(propertyId);
+	}
+
+	@Override
+	public Collection<?> getSortableContainerPropertyIds() {
+		loadPropertiesIfNull();
+
+		Collection<Object> propertyIds = new HashSet<Object>();
+		propertyIds.addAll(m_properties.keySet());
+
+		// primaryInterface is a complex object so we can't sort on it (yet)
+		propertyIds.remove("primaryInterface");
+
+		return Collections.unmodifiableCollection(propertyIds);
 	}
 }

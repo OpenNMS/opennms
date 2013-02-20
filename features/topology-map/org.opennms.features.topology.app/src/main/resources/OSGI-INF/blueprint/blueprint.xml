@@ -129,6 +129,20 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
 			<argument ref="alarmDaoContainer" />
 			<property name="columnReorderingAllowed" value="true"/>
 			<property name="columnCollapsingAllowed" value="true"/>
+			<property name="visibleColumns">
+				<array>
+					<value>id</value>
+					<value>severity</value>
+					<value>lastEventTime</value>
+					<value>counter</value>
+					<value>nodeLabel</value>
+					<value>ifIndex</value>
+					<value>ipAddr</value>
+					<value>serviceType</value>
+					<value>uei</value>
+					<value>logMsg</value>
+				</array>
+			</property>
 		</bean>
 
 		<bean id="alarmViewContribution" class="org.opennms.features.topology.app.internal.support.BlueprintIViewContribution">
@@ -154,6 +168,22 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
 			<argument ref="nodeDaoContainer" />
 			<property name="columnReorderingAllowed" value="true"/>
 			<property name="columnCollapsingAllowed" value="true"/>
+			<property name="visibleColumns">
+				<array>
+					<value>id</value>
+					<value>foreignSource</value>
+					<value>foreignId</value>
+					<value>label</value>
+					<value>labelSource</value>
+					<value>lastCapsdPoll</value>
+					<value>primaryInterface</value>
+					<value>sysObjectId</value>
+					<value>sysName</value>
+					<value>sysDescription</value>
+					<value>sysContact</value>
+					<value>sysLocation</value>
+				</array>
+			</property>
 		</bean>
 
 		<bean id="nodeViewContribution" class="org.opennms.features.topology.app.internal.support.BlueprintIViewContribution">

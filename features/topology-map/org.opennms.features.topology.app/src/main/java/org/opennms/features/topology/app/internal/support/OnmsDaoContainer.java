@@ -34,6 +34,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import org.opennms.core.criteria.Criteria;
+import org.opennms.core.criteria.Order;
 import org.opennms.netmgt.dao.OnmsDao;
 
 import com.vaadin.data.Container;
@@ -41,11 +43,13 @@ import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanItem;
 
-public abstract class OnmsDaoContainer<T,K extends Serializable> implements Container, Container.Ordered {
+public abstract class OnmsDaoContainer<T,K extends Serializable> implements Container, Container.Sortable {
 
 	private static final long serialVersionUID = -9131723065433979979L;
 
 	private final OnmsDao<T,K> m_dao;
+
+	private Criteria m_criteria = new Criteria(getItemClass());
 
 	public OnmsDaoContainer(OnmsDao<T,K> dao) {
 		m_dao = dao;
@@ -94,7 +98,7 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Cont
 
 	@Override
 	public Collection<?> getItemIds() {
-		List<T> beans = m_dao.findAll();
+		List<T> beans = m_dao.findMatching(m_criteria);
 		List<K> retval = new ArrayList<K>();
 		for (T bean : beans) {
 			retval.add(getId(bean));
@@ -103,6 +107,8 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Cont
 	}
 
 	protected abstract K getId(T bean);
+
+	public abstract Class<T> getItemClass();
 
 	@Override
 	public abstract Class<?> getType(Object propertyId);
@@ -144,7 +150,7 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Cont
 	 */
 	@Override
 	public Object firstItemId() {
-		Iterator<T> itr = m_dao.findAll().iterator();
+		Iterator<T> itr = m_dao.findMatching(m_criteria).iterator();
 		if (itr.hasNext()) {
 			return getId(itr.next());
 		} else {
@@ -173,7 +179,7 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Cont
 	 */
 	@Override
 	public Object lastItemId() {
-		List<T> all = m_dao.findAll();
+		List<T> all = m_dao.findMatching(m_criteria);
 		if (all.size() > 0) {
 			return getId(all.get(all.size() - 1));
 		} else {
@@ -186,7 +192,7 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Cont
 	 */
 	@Override
 	public Object nextItemId(Object itemId) {
-		Iterator<T> itr = m_dao.findAll().iterator();
+		Iterator<T> itr = m_dao.findMatching(m_criteria).iterator();
 		do {
 			if (itemId.equals(getId(itr.next()))) {
 				if (itr.hasNext()) {
@@ -204,7 +210,7 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Cont
 	 */
 	@Override
 	public Object prevItemId(Object itemId) {
-		Iterator<T> itr = m_dao.findAll().iterator();
+		Iterator<T> itr = m_dao.findMatching(m_criteria).iterator();
 		T previous = null;
 		do {
 			T current = (T)itr.next();
@@ -214,5 +220,30 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Cont
 			previous = current;
 		} while (itr.hasNext());
 		return null;
+	}
+
+	/**
+	 * This function returns {@link #getContainerPropertyIds()}.
+	 */
+	@Override
+	public Collection<?> getSortableContainerPropertyIds() {
+		return this.getContainerPropertyIds();
+	}
+
+	@Override
+	public void sort(Object[] propertyId, boolean[] ascending) {
+		if (propertyId.length > ascending.length) {
+			throw new IllegalArgumentException("Property list and ascending list are different sizes");
+		}
+
+		List<Order> orders = new ArrayList<Order>();
+		for(int i = 0; i < propertyId.length; i++) {
+			if (ascending[i]) {
+				orders.add(Order.asc((String)propertyId[i]));
+			} else {
+				orders.add(Order.desc((String)propertyId[i]));
+			}
+		}
+		m_criteria.setOrders(orders);
 	}
 }
