@@ -426,6 +426,11 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 		// Do nothing
 	}
 
+    @Override
+    public void refresh() {
+        // Do nothing
+    }
+
 	@Override
 	public void removeEdges(EdgeRef... edges) {
 		for (EdgeRef edge : edges) {
@@ -706,6 +711,11 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 		public void load(String filename) {
 			// Do nothing
 		}
+
+        @Override
+        public void refresh() {
+            // Do nothing
+        }
 
 		@Override
 		public void removeVertex(VertexRef... vertexId) {

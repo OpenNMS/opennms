@@ -212,6 +212,16 @@ public class SimpleGraphProvider extends AbstractTopologyProvider implements Gra
         }
     }
 
+    public void refresh() {
+        try {
+            load(getTopologyLocation());
+        } catch (JAXBException e) {
+            s_log.error(e.getMessage(), e);
+        } catch (MalformedURLException e) {
+            s_log.error(e.getMessage(), e);
+        }
+    }
+
     void load(URI url) throws JAXBException, MalformedURLException {
     	JAXBContext jc = JAXBContext.newInstance(WrappedGraph.class);
     	Unmarshaller u = jc.createUnmarshaller();

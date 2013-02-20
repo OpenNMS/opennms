@@ -78,10 +78,6 @@ public class VmwareTopologyProvider extends SimpleGraphProvider implements Graph
         return m_generated;
     }
 
-    public void initialize() {
-        generate();
-    }
-
     public void debug(Vertex vmwareVertex) {
         System.err.println("-+- id: " + vmwareVertex.getId());
         System.err.println(" |- hashCode: " + vmwareVertex.hashCode());
@@ -351,7 +347,7 @@ public class VmwareTopologyProvider extends SimpleGraphProvider implements Graph
         connectVertices(vmwareManagementServer + "/" + vmwareManagedObjectId + "->" + vmwareManagementServer + "/" + vmwareHostSystemId, virtualMachineVertex, getVertex(getVertexNamespace(), vmwareManagementServer + "/" + vmwareHostSystemId));
     }
 
-    public void generate() {
+    public void refresh() {
         m_generated = true;
 
         // reset container
@@ -380,14 +376,5 @@ public class VmwareTopologyProvider extends SimpleGraphProvider implements Graph
         }
 
         debugAll();
-    }
-
-    @Override
-    public void load(String filename) throws MalformedURLException, JAXBException {
-        if (filename == null) {
-            generate();
-        } else {
-            super.load(filename);
-        }
     }
 }

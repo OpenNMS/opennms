@@ -183,6 +183,17 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         return (WrappedGraph) u.unmarshal(file.toURI().toURL());
     }
 
+    @Override
+    public void refresh() {
+        try {
+            load(null);
+        } catch (MalformedURLException e) {
+            LoggerFactory.getLogger(LinkdTopologyProvider.class).error(e.getMessage(), e);
+        } catch (JAXBException e) {
+            LoggerFactory.getLogger(LinkdTopologyProvider.class).error(e.getMessage(), e);
+        }
+    }
+
     //@Transactional
     @Override
     public void load(String filename) throws MalformedURLException, JAXBException {

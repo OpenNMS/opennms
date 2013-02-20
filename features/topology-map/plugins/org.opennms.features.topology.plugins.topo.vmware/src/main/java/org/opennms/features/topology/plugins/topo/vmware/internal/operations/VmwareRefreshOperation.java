@@ -32,35 +32,24 @@ import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.plugins.topo.vmware.internal.VmwareTopologyProvider;
-import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.net.MalformedURLException;
 import java.util.List;
 
-import javax.xml.bind.JAXBException;
-
-
-public class VmwareLoadOperation implements Operation {
+public class VmwareRefreshOperation implements Operation {
 
     VmwareTopologyProvider m_topologyProvider;
 
-    public VmwareLoadOperation(VmwareTopologyProvider topologyProvider) {
+    public VmwareRefreshOperation(VmwareTopologyProvider topologyProvider) {
         m_topologyProvider = topologyProvider;
     }
 
     @Override
     public Undoer execute(List<VertexRef> targets, OperationContext operationContext) {
-    	try {
-    		m_topologyProvider.load("graph-vmware.xml");
-    	} catch (MalformedURLException e) {
-    		// TODO: Display the error in the UI
-    		LoggerFactory.getLogger(this.getClass()).error(e.getMessage(), e);
-    	} catch (JAXBException e) {
-    		// TODO: Display the error in the UI
-    		LoggerFactory.getLogger(this.getClass()).error(e.getMessage(), e);
-    	}
-    	return null;
+        m_topologyProvider.refresh();
+
+        operationContext.getGraphContainer().redoLayout();
+
+        return null;
     }
 
     @Override
@@ -70,7 +59,7 @@ public class VmwareLoadOperation implements Operation {
 
     @Override
     public boolean enabled(List<VertexRef> targets, OperationContext operationContext) {
-        return (operationContext.getGraphContainer().getBaseTopology().equals(m_topologyProvider) && (new File("graph-vmware.xml").exists()));
+        return (operationContext.getGraphContainer().getBaseTopology().equals(m_topologyProvider));
     }
 
     @Override

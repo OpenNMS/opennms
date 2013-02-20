@@ -7,7 +7,7 @@
 
     <reference id="ipInterfaceDao" interface="org.opennms.netmgt.dao.IpInterfaceDao" availability="mandatory"/>
 
-    <bean id="vmwareTopologyProvider" init-method="initialize"
+    <bean id="vmwareTopologyProvider" init-method="refresh"
           class="org.opennms.features.topology.plugins.topo.vmware.internal.VmwareTopologyProvider">
         <property name="nodeDao" ref="nodeDao"/>
         <property name="ipInterfaceDao" ref="ipInterfaceDao"/>
@@ -37,40 +37,7 @@
             <entry key="operation.menuLocation" value="View"/>
             <entry key="operation.label" value="Refresh"/>
         </service-properties>
-        <bean class="org.opennms.features.topology.plugins.topo.vmware.internal.operations.VmwareUpdateOperation">
-            <argument ref="vmwareTopologyProvider"/>
-        </bean>
-    </service>
-
-    <service interface="org.opennms.features.topology.api.Operation">
-        <service-properties>
-            <entry key="operation.menuLocation" value="File"/>
-            <entry key="operation.label" value="Save"/>
-        </service-properties>
-        <bean class="org.opennms.features.topology.plugins.topo.vmware.internal.operations.VmwareSaveOperation">
-            <argument ref="vmwareTopologyProvider"/>
-        </bean>
-    </service>
-
-    <service interface="org.opennms.features.topology.api.Operation">
-        <service-properties>
-            <entry key="operation.menuLocation" value="File"/>
-            <entry key="operation.label" value="Load"/>
-        </service-properties>
-        <bean class="org.opennms.features.topology.plugins.topo.vmware.internal.operations.VmwareLoadOperation">
-            <argument ref="vmwareTopologyProvider"/>
-        </bean>
-    </service>
-    -->
-
-    <!--
-    <service interface="org.opennms.features.topology.api.Operation" >
-        <service-properties>
-            <entry key="operation.menuLocation" value="Edit"/>
-            <entry key="operation.label" value="Reset"/>
-            <entry key="operation.contextMenuLocation" value=""/>
-        </service-properties>
-        <bean class="org.opennms.features.topology.plugins.topo.vmware.internal.operations.VmwareResetOperation">
+        <bean class="org.opennms.features.topology.plugins.topo.vmware.internal.operations.VmwareRefreshOperation">
             <argument ref="vmwareTopologyProvider"/>
         </bean>
     </service>
