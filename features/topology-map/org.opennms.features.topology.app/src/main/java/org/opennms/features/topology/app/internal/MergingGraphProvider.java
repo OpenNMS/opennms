@@ -428,7 +428,8 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 
     @Override
     public void refresh() {
-        // Do nothing
+        m_baseGraphProvider.refresh();
+        // TODO: Should we refresh the vertex and edge providers also??
     }
 
 	@Override
