@@ -105,6 +105,10 @@ public class Main {
     public void sortByTotalCollections() {
         c.setSortColumn(SortColumn.TOTALCOLLECTS);
     }
+    @Option (shortName ="ms", longName = "msDurations", help = "Outputs all durations in milliseconds")
+    public void setDurationsMs() {
+        c.setDurationsMs(true);
+    }
     public Collector getCollector(){
         return c;
     }

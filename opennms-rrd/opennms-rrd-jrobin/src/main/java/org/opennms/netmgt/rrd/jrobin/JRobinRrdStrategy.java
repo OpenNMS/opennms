@@ -675,6 +675,12 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
                 String[] color = tokenize(stack[0], "#", true);
                 graphDef.stack(color[0], getColor(color[1]), (stack.length > 1 ? stack[1] : ""));
 
+            } else if (arg.startsWith("HRULE:")) {
+                String definition = arg.substring("HRULE:".length());
+                String hrule[] = tokenize(definition, ":", true);
+                String[] color = tokenize(hrule[0], "#", true);
+                Double value = Double.valueOf(color[0]);
+                graphDef.hrule(value, getColor(color[1]), hrule[1]);
             } else if (arg.endsWith("/rrdtool") || arg.equals("graph") || arg.equals("-")) {
             	// ignore, this is just a leftover from the rrdtool-specific options
 
