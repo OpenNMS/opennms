@@ -313,7 +313,13 @@ public class CollectionResourceWrapper {
         }
         // Generating a unique ID for the node/resourceType/resource/metric combination.
         String id =  "node[" + m_nodeId + "].resourceType[" + m_resource.getResourceTypeName() + "].instance[" + m_resource.getLabel() + "].metric[" + ds + "]";
-        Double current = Double.parseDouble(numValue);
+        Double current = null;
+        try {
+            current = Double.parseDouble(numValue);
+        } catch (NumberFormatException e) {
+            log().error(id + " does not have a numeric value: " + numValue);
+            return null;
+        }
         if (m_attributes.get(ds).getType().toLowerCase().startsWith("counter") == false) {
             if (log().isDebugEnabled()) {
                 log().debug("getAttributeValue: id=" + id + ", value= " + current);

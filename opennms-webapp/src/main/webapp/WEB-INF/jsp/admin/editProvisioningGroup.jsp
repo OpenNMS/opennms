@@ -51,6 +51,16 @@
 
   <input type="hidden" id="groupName" name="groupName" value="${fn:escapeXml(nodeEditForm.groupName)}"/> 
  
+ <p>
+ <c:choose>
+  <c:when test="${freeFormEditing == true}">
+   Free-form editing of service and category names is ON. <tree:action label="[Disable?]" action="toggleFreeForm" />
+  </c:when>
+  <c:otherwise>
+   Free-form editing of service and category names is OFF. <tree:action label="[Enable?]" action="toggleFreeForm" />
+  </c:otherwise>
+ </c:choose>
+ </p>
  <tree:actionButton label="Done" action="done" />
  <tree:actionButton label="Add Node" action="addNode"/> 
 
@@ -85,7 +95,14 @@
       
         <!--  Form for editing a service -->
         <tree:nodeForm>  
-            <tree:select label="Service" property="serviceName" items="${services}" />
+            <c:choose>
+              <c:when test="${freeFormEditing == true}">
+                <tree:field label="Service" property="serviceName" />
+              </c:when>
+              <c:otherwise>
+                <tree:select label="Service" property="serviceName" items="${services}" />
+              </c:otherwise>
+            </c:choose>
         </tree:nodeForm>
       </tree:tree>
 
@@ -96,7 +113,14 @@
     
       <!--  Form for editing a category -->
       <tree:nodeForm>
-        <tree:select label="Node Category" property="name" items="${categories}"/>
+        <c:choose>
+          <c:when test="${freeFormEditing == true}">
+            <tree:field label="Node Category" property="name" />
+          </c:when>
+          <c:otherwise>
+            <tree:select label="Node Category" property="name" items="${categories}"/>
+          </c:otherwise>
+        </c:choose>
       </tree:nodeForm>
       
     </tree:tree>
