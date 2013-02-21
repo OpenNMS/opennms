@@ -30,6 +30,11 @@ public class SFreeTopologyProvider extends AbstractTopologyProvider implements G
 		// Do nothing
 	}
 
+    @Override
+    public void refresh() {
+        // Do nothing
+    }
+
 	@Override
 	public void load(String filename) {
 

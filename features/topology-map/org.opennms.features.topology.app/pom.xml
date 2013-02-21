@@ -87,6 +87,11 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-dao</artifactId>
+      <scope>compile</scope>
+     </dependency>
+    <dependency>
       <groupId>net.sf.jung</groupId>
       <artifactId>jung-api</artifactId>
     </dependency>

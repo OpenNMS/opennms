@@ -28,25 +28,22 @@
 
 package org.opennms.features.topology.plugins.topo.vmware.internal;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
-import org.opennms.features.topology.api.topo.AbstractVertex;
-import org.opennms.features.topology.api.topo.Edge;
-import org.opennms.features.topology.api.topo.EdgeRef;
-import org.opennms.features.topology.api.topo.GraphProvider;
-import org.opennms.features.topology.api.topo.Vertex;
-import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.plugins.topo.simple.internal.SimpleTopologyProvider;
+import org.opennms.features.topology.api.topo.*;
+import org.opennms.features.topology.plugins.topo.simple.SimpleGraphProvider;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 
-public class VmwareTopologyProvider extends SimpleTopologyProvider implements GraphProvider {
+import javax.xml.bind.JAXBException;
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+public class VmwareTopologyProvider extends SimpleGraphProvider implements GraphProvider {
 
     public static final String TOPOLOGY_NAMESPACE_VMWARE = "vmware";
 
@@ -58,7 +55,7 @@ public class VmwareTopologyProvider extends SimpleTopologyProvider implements Gr
     private boolean m_generated = false;
 
     public VmwareTopologyProvider() {
-    	super(TOPOLOGY_NAMESPACE_VMWARE);
+        super(TOPOLOGY_NAMESPACE_VMWARE);
     }
 
     public NodeDao getNodeDao() {
@@ -79,10 +76,6 @@ public class VmwareTopologyProvider extends SimpleTopologyProvider implements Gr
 
     public boolean isGenerated() {
         return m_generated;
-    }
-
-    public void initialize() {
-        generate();
     }
 
     public void debug(Vertex vmwareVertex) {
@@ -110,11 +103,17 @@ public class VmwareTopologyProvider extends SimpleTopologyProvider implements Gr
         }
     }
 
-    private AbstractVertex addDatacenterGroup(String groupId, String groupName) {
-        return addGroup(groupId, "DATACENTER_ICON", groupName);
+    private AbstractVertex addDatacenterGroup(String vertexId, String groupName) {
+        if (containsVertexId(vertexId)) {
+            return (AbstractVertex) getVertex(TOPOLOGY_NAMESPACE_VMWARE, vertexId);
+        }
+        return addGroup(vertexId, "DATACENTER_ICON", groupName);
     }
 
     private AbstractVertex addNetworkVertex(String vertexId, String vertexName) {
+        if (containsVertexId(vertexId)) {
+            return (AbstractVertex) getVertex(TOPOLOGY_NAMESPACE_VMWARE, vertexId);
+        }
         AbstractVertex vertex = addVertex(vertexId, 50, 50);
         vertex.setIconKey("NETWORK_ICON");
         vertex.setLabel(vertexName);
@@ -122,6 +121,9 @@ public class VmwareTopologyProvider extends SimpleTopologyProvider implements Gr
     }
 
     private AbstractVertex addDatastoreVertex(String vertexId, String vertexName) {
+        if (containsVertexId(vertexId)) {
+            return (AbstractVertex) getVertex(TOPOLOGY_NAMESPACE_VMWARE, vertexId);
+        }
         AbstractVertex vertex = addVertex(vertexId, 50, 50);
         vertex.setIconKey("DATASTORE_ICON");
         vertex.setLabel(vertexName);
@@ -129,6 +131,10 @@ public class VmwareTopologyProvider extends SimpleTopologyProvider implements Gr
     }
 
     private AbstractVertex addVirtualMachineVertex(String vertexId, String vertexName, String primaryInterface, int id, String powerState) {
+        if (containsVertexId(vertexId)) {
+            return (AbstractVertex) getVertex(TOPOLOGY_NAMESPACE_VMWARE, vertexId);
+        }
+
         String icon = "VIRTUALMACHINE_ICON_UNKNOWN";
 
         if ("poweredOn".equals(powerState)) {
@@ -148,22 +154,26 @@ public class VmwareTopologyProvider extends SimpleTopologyProvider implements Gr
     }
 
     private AbstractVertex addHostSystemVertex(String vertexId, String vertexName, String primaryInterface, int id, String powerState) {
-            String icon = "HOSTSYSTEM_ICON_UNKNOWN";
+        if (containsVertexId(vertexId)) {
+            return (AbstractVertex) getVertex(TOPOLOGY_NAMESPACE_VMWARE, vertexId);
+        }
 
-            if ("poweredOn".equals(powerState)) {
-                icon = "HOSTSYSTEM_ICON_ON";
-            } else if ("poweredOff".equals(powerState)) {
-                icon = "HOSTSYSTEM_ICON_OFF";
-            } else if ("standBy".equals(powerState)) {
-                icon = "HOSTSYSTEM_ICON_STANDBY";
-            }
+        String icon = "HOSTSYSTEM_ICON_UNKNOWN";
 
-            AbstractVertex vertex = addVertex(vertexId, 50, 50);
-            vertex.setIconKey(icon);
-            vertex.setLabel(vertexName);
-            vertex.setIpAddress(primaryInterface);
-            vertex.setNodeID(id);
-            return vertex;
+        if ("poweredOn".equals(powerState)) {
+            icon = "HOSTSYSTEM_ICON_ON";
+        } else if ("poweredOff".equals(powerState)) {
+            icon = "HOSTSYSTEM_ICON_OFF";
+        } else if ("standBy".equals(powerState)) {
+            icon = "HOSTSYSTEM_ICON_STANDBY";
+        }
+
+        AbstractVertex vertex = addVertex(vertexId, 50, 50);
+        vertex.setIconKey(icon);
+        vertex.setLabel(vertexName);
+        vertex.setIpAddress(primaryInterface);
+        vertex.setNodeID(id);
+        return vertex;
     }
 
 
@@ -337,7 +347,7 @@ public class VmwareTopologyProvider extends SimpleTopologyProvider implements Gr
         connectVertices(vmwareManagementServer + "/" + vmwareManagedObjectId + "->" + vmwareManagementServer + "/" + vmwareHostSystemId, virtualMachineVertex, getVertex(getVertexNamespace(), vmwareManagementServer + "/" + vmwareHostSystemId));
     }
 
-    public void generate() {
+    public void refresh() {
         m_generated = true;
 
         // reset container

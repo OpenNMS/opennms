@@ -32,7 +32,7 @@ import org.easymock.EasyMock;
 import org.junit.Test;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.plugins.topo.simple.internal.SimpleTopologyProvider;
+import org.opennms.features.topology.plugins.topo.simple.SimpleGraphProvider;
 
 import com.vaadin.data.Property;
 import com.vaadin.ui.Window;
@@ -73,7 +73,7 @@ public class SaveToXmlTest {
 	@Test
 	public void testSave() throws Exception {
 
-		final SimpleTopologyProvider simpleTopo = new SimpleTopologyProvider();
+		final SimpleGraphProvider simpleTopo = new SimpleGraphProvider();
 		simpleTopo.load("test-graph.xml");
 
 		SaveToXmlOperation saver = new SaveToXmlOperation();

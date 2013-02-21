@@ -38,6 +38,8 @@ public interface GraphProvider extends VertexProvider, EdgeProvider {
 
 	void load(String filename) throws MalformedURLException, JAXBException;
 
+    public void refresh();
+
 	void resetContainer();
 
 	void addVertices(Vertex... vertices);

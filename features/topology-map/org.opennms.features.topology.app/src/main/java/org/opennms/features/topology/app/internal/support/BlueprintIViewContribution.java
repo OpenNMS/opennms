@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,24 +26,47 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.serviceregistration.strategies;
+package org.opennms.features.topology.app.internal.support;
 
-import java.util.Map;
+import org.opennms.features.topology.api.IViewContribution;
+import org.opennms.features.topology.api.WidgetContext;
+import org.osgi.service.blueprint.container.BlueprintContainer;
 
-import org.opennms.serviceregistration.ServiceRegistrationStrategy;
+import com.vaadin.terminal.Resource;
+import com.vaadin.ui.Component;
 
-public class NullStrategy implements ServiceRegistrationStrategy {
+public class BlueprintIViewContribution implements IViewContribution {
 
-	public void initialize(final String serviceType, final String serviceName, final int port) throws Exception {
+	private final BlueprintContainer m_container;
+	private final String m_beanName;
+	private String m_title;
+
+	public BlueprintIViewContribution(BlueprintContainer container, String beanName) {
+		m_container = container;
+		m_beanName = beanName;
 	}
 
-	public void initialize(final String serviceType, final String serviceName, final int port, final Map<String, String> properties) throws Exception {
+	@Override
+	public Component getView(WidgetContext widgetContext) {
+		// Get the component by asking the blueprint container to instantiate a prototype bean 
+		Component component = (Component)m_container.getComponentInstance(m_beanName);
+		return component;
 	}
 
-	public void register() throws Exception {
+	/**
+	 * Returns null.
+	 */
+	@Override
+	public Resource getIcon() {
+		return null;
 	}
 
-	public void unregister() throws Exception {
+	@Override
+	public String getTitle() {
+		return m_title;
 	}
 
+	public void setTitle(String title) {
+		m_title = title;
+	}
 }

@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.simple.internal;
+package org.opennms.features.topology.plugins.topo.simple;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -57,19 +57,19 @@ import org.opennms.features.topology.api.topo.WrappedVertex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SimpleTopologyProvider extends AbstractTopologyProvider implements GraphProvider {
+public class SimpleGraphProvider extends AbstractTopologyProvider implements GraphProvider {
 
 	protected static final String TOPOLOGY_NAMESPACE_SIMPLE = "simple";
 
-	private static final Logger s_log = LoggerFactory.getLogger(SimpleTopologyProvider.class);
+	private static final Logger s_log = LoggerFactory.getLogger(SimpleGraphProvider.class);
 
     private URI m_topologyLocation = null;
 
-    public SimpleTopologyProvider() {
+    public SimpleGraphProvider() {
         this(TOPOLOGY_NAMESPACE_SIMPLE);
     }
 
-    public SimpleTopologyProvider(String namespace) {
+    public SimpleGraphProvider(String namespace) {
         super(namespace);
         s_log.debug("Creating a new SimpleTopologyProvider with namespace {}", namespace);
         
@@ -209,6 +209,16 @@ public class SimpleTopologyProvider extends AbstractTopologyProvider implements 
                 LoggerFactory.getLogger(this.getClass()).debug("Setting parent of " + vertex + " to " + vertex.parent);
                 setParent(vertex, vertex.parent);
             }
+        }
+    }
+
+    public void refresh() {
+        try {
+            load(getTopologyLocation());
+        } catch (JAXBException e) {
+            s_log.error(e.getMessage(), e);
+        } catch (MalformedURLException e) {
+            s_log.error(e.getMessage(), e);
         }
     }
 

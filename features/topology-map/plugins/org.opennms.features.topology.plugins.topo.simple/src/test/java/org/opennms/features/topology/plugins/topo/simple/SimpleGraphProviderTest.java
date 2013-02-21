@@ -26,11 +26,10 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.simple.internal;
+package org.opennms.features.topology.plugins.topo.simple;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
@@ -71,7 +70,7 @@ import org.opennms.features.topology.plugins.topo.simple.internal.operations.Rem
 
 import com.vaadin.ui.Window;
 
-public class SimpleTopologyProviderTest {
+public class SimpleGraphProviderTest {
 
     private static class TestOperationContext implements OperationContext {
         
@@ -117,7 +116,7 @@ public class SimpleTopologyProviderTest {
     @Before
     public void setUp() {
         if(m_topologyProvider == null) {
-            m_topologyProvider = new SimpleTopologyProvider();
+            m_topologyProvider = new SimpleGraphProvider();
         }
         
 		m_topologyProvider.resetContainer();
@@ -227,7 +226,7 @@ public class SimpleTopologyProviderTest {
 	
 	@Test
 	public void loadSampleGraph() throws Exception {
-		GraphProvider topologyProvider = new SimpleTopologyProvider();
+		GraphProvider topologyProvider = new SimpleGraphProvider();
 		topologyProvider.load("saved-vmware-graph.xml");
 		
 		System.err.println("Vertex Count: " + topologyProvider.getVertices().size());
@@ -236,7 +235,7 @@ public class SimpleTopologyProviderTest {
 	
 	@Test
 	public void testLoadSimpleGraph() throws Exception {
-		SimpleTopologyProvider topologyProvider = new SimpleTopologyProvider();
+		SimpleGraphProvider topologyProvider = new SimpleGraphProvider();
 		topologyProvider.load(URI.create("file:target/test-classes/simple-graph.xml"));
 		
 		assertEquals(7, topologyProvider.getVertices().size());

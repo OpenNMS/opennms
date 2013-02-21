@@ -122,7 +122,12 @@ public class OnmsTopologyProvider extends AbstractTopologyProvider implements Gr
             getOnmsMapElementDao().save(new OnmsMapElement(map, id, type, "Here is the label", vertex.getIconKey(), vertex.getX(), vertex.getY()));
         }
     }
-    
+
+    @Override
+    public void refresh() {
+        // Do nothing
+    }
+
     @Override
     public void load(String filename) {
 

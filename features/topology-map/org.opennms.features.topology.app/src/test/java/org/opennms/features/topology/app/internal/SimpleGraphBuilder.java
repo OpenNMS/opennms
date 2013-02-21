@@ -7,7 +7,7 @@ import org.opennms.features.topology.api.topo.AbstractVertexRef;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.plugins.topo.simple.internal.SimpleTopologyProvider;
+import org.opennms.features.topology.plugins.topo.simple.SimpleGraphProvider;
 
 public class SimpleGraphBuilder {
 
@@ -16,7 +16,7 @@ public class SimpleGraphBuilder {
 	private AbstractEdge m_currentEdge;
 	
 	public SimpleGraphBuilder(String namespace) {
-		m_graphProvider = new SimpleTopologyProvider(namespace);
+		m_graphProvider = new SimpleGraphProvider(namespace);
 	}
 	
 	public SimpleGraphBuilder vertex(String id) {

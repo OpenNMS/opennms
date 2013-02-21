@@ -64,6 +64,11 @@ public class TestTopologyProvider extends AbstractTopologyProvider implements Gr
     }
 
     @Override
+    public void refresh() {
+        // Do nothing
+    }
+
+    @Override
     public void load(String filename) {
         clearEdges();
         clearVertices();

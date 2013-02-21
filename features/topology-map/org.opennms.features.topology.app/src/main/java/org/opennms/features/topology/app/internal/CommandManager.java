@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.opennms.features.topology.api.CheckedOperation;
 import org.opennms.features.topology.api.GraphContainer;
@@ -49,8 +50,8 @@ import org.vaadin.peter.contextmenu.ContextMenu.ClickEvent;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 
 import com.vaadin.ui.MenuBar;
-import com.vaadin.ui.Window;
 import com.vaadin.ui.MenuBar.MenuItem;
+import com.vaadin.ui.Window;
 
 public class CommandManager {
 
@@ -112,7 +113,7 @@ public class CommandManager {
 		
 	}
 
-	private final List<Command> m_commandList = new ArrayList<Command>();
+	private final List<Command> m_commandList = new CopyOnWriteArrayList<Command>();
 	private final List<Command> m_commandHistoryList = new ArrayList<Command>();
 	private final List<CommandUpdateListener> m_updateListeners = new ArrayList<CommandUpdateListener>();
 	private final List<MenuItemUpdateListener> m_menuItemUpdateListeners = new ArrayList<MenuItemUpdateListener>();
@@ -152,7 +153,7 @@ public class CommandManager {
 		MenuBarBuilder menuBarBuilder = new MenuBarBuilder();
 		menuBarBuilder.setTopLevelMenuOrder(m_topLevelMenuOrder);
 		menuBarBuilder.setSubMenuGroupOder(m_subMenuGroupOrder);
-
+		
 		for (Command command : m_commandList) {
 			String menuPosition = command.getMenuPosition();
 			MenuBar.Command menuCommand = menuCommand(command, graphContainer, mainWindow, opContext);
@@ -256,7 +257,7 @@ public class CommandManager {
 		while (it.hasNext()) {
 			Command command = it.next();
 			if (command.getOperation() == operation) {
-				it.remove();
+				it.remove(); 
 			}
 		}
 		updateCommandListeners();

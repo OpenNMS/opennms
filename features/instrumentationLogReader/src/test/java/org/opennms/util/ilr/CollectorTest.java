@@ -206,16 +206,14 @@ public class CollectorTest {
 	public void testPrintGlobalStats () throws IOException {
 		Collector c = new Collector ();
 		c.readLogMessagesFromFile("TestLogFile.log");
-		String expectedOutput = 
-			"Start Time: 2010-05-26 12:12:40,883\n" +
-			"End Time: 2010-06-01 08:45:12,104\n" +
-			"Duration: 5d20h32m31.221s\n" +
-			"Total Services: 5\n" +
-			"Threads Used: 5\n";
 		StringWriter out = new StringWriter();
 		c.printGlobalStats(new PrintWriter(out, true));
 		String actualOutput = out.toString(); 
-		assertEquals(expectedOutput,actualOutput);
+		assertTrue(actualOutput.contains("Start Time: 2010-05-26 12:12:40,883"));
+		assertTrue(actualOutput.contains("End Time: 2010-06-01 08:45:12,104"));
+		assertTrue(actualOutput.contains("Duration: 5d20h32m31.221s"));
+		assertTrue(actualOutput.contains("Total Services: 5"));
+		assertTrue(actualOutput.contains("Threads Used: 5"));
 	}
 	@Test 
 	public void testPrintServiceStats () throws IOException {
