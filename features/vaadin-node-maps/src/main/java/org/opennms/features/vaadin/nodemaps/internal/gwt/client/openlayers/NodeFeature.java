@@ -1,4 +1,4 @@
-package org.opennms.features.vaadin.nodemaps.gwt.client.openlayers;
+package org.opennms.features.vaadin.nodemaps.internal.gwt.client.openlayers;
 
 public class NodeFeature extends GeoJSONFeature {
     protected NodeFeature() {}

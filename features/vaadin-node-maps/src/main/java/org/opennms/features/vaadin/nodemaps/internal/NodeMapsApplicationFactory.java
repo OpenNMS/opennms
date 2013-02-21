@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.vaadin.nodemaps;
+package org.opennms.features.vaadin.nodemaps.internal;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;

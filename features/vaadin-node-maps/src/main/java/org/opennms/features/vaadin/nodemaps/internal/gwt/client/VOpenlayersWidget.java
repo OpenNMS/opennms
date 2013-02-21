@@ -26,12 +26,12 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.vaadin.nodemaps.gwt.client;
+package org.opennms.features.vaadin.nodemaps.internal.gwt.client;
 
 import java.util.Iterator;
 
-import org.opennms.features.vaadin.nodemaps.gwt.client.openlayers.FeatureCollection;
-import org.opennms.features.vaadin.nodemaps.gwt.client.openlayers.NodeFeature;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.openlayers.FeatureCollection;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.openlayers.NodeFeature;
 
 import com.vaadin.terminal.gwt.client.ApplicationConnection;
 import com.vaadin.terminal.gwt.client.Paintable;
@@ -67,7 +67,7 @@ public class VOpenlayersWidget extends GWTOpenlayersWidget implements Paintable 
 
             final NodeFeature feature = NodeFeature.create(latitude, longitude).cast();
 
-            for (final String key : new String[] { "severityLabel", "nodeLabel", "foreignSource", "foreignId", "ipAddress", "severity", "nodeId", "unackedCount" }) {
+            for (final String key : new String[] { "nodeId", "nodeLabel", "foreignSource", "foreignId", "ipAddress", "severity", "severityLabel", "unackedCount" }) {
                 if (node.hasAttribute(key)) feature.putProperty(key, node.getStringAttribute(key));
             }
 

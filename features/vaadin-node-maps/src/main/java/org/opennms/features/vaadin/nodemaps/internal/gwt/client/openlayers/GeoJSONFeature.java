@@ -26,22 +26,42 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.vaadin.nodemaps.gwt.client.openlayers;
+package org.opennms.features.vaadin.nodemaps.internal.gwt.client.openlayers;
 
 import com.google.gwt.core.client.JavaScriptObject;
 
-public class GeoJSONFormat extends JavaScriptObject {
-    protected GeoJSONFormat() {
+public class GeoJSONFeature extends JavaScriptObject {
+    protected GeoJSONFeature() {
     }
 
-    public static final native GeoJSONFormat create(final Projection internal, final Projection external) /*-{
-        var options = {};
-        if (internal) {
-            options.internalProjection = internal;
-        }
-        if (external) {
-            options.externalProjection = external;
-        }
-        return new $wnd.OpenLayers.Format.GeoJSON(options);
+    public static native GeoJSONFeature create(final Float latitude, final Float longitude) /*-{
+        return {
+            "type" : "Feature",
+            "properties" : {},
+            "geometry" : {
+                "type" : "Point",
+                "coordinates" : [ longitude, latitude ]
+            },
+        };
     }-*/;
+
+    public native final Float getLatitude() /*-{
+        return this.geometry.coordinates[0];
+    }-*/;
+
+    public native final Float getLongitude() /*-{
+        return this.geometry.coordinates[1];
+    }-*/;
+
+    public native final void putProperty(final String key, final String value) /*-{
+        this.properties[key] = value;
+    }-*/;
+
+    public native final String getProperty(final String key) /*-{
+        return this.properties[key];
+    }-*/;
+
+    public final String asString() {
+        return "Feature[lat=" + getLatitude() + ",lon=" + getLongitude() + ",label=" + getProperty("nodeLabel") + "]";
+    }
 }

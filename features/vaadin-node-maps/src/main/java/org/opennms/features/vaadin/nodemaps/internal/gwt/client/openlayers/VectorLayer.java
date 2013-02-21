@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.vaadin.nodemaps.gwt.client.openlayers;
+package org.opennms.features.vaadin.nodemaps.internal.gwt.client.openlayers;
 
 import com.google.gwt.core.client.JavaScriptObject;
 
@@ -40,9 +40,10 @@ public class VectorLayer extends JavaScriptObject {
             externalProjection : new $wnd.OpenLayers.Projection("EPSG:4326")
         });
         var vectorFeatures = geojson_format.read(features);
-        this.removeAllFeatures({
-            silent : true
-        });
+        this.removeAllFeatures();
+//        this.removeAllFeatures({
+//            silent : true
+//        });
         this.addFeatures(vectorFeatures);
     }-*/;
 }

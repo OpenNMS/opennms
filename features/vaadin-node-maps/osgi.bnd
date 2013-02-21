@@ -6,5 +6,5 @@
 
 # Package format version - do not change
 Vaadin-Package-Version: 1
-Vaadin-Widgetsets: org.opennms.features.vaadin.nodemaps.gwt.NodeMapsWidgetset
+Vaadin-Widgetsets: org.opennms.features.vaadin.nodemaps.internal.gwt.NodeMapsWidgetset
 Include-Resource: {maven-resources},target/gwt/

@@ -26,11 +26,17 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.vaadin.nodemaps.gwt.client;
+package org.opennms.features.vaadin.nodemaps.internal.gwt.client;
 
-import org.opennms.features.vaadin.nodemaps.gwt.client.openlayers.FeatureCollection;
-import org.opennms.features.vaadin.nodemaps.gwt.client.openlayers.OnmsOpenLayersMap;
-import org.opennms.features.vaadin.nodemaps.gwt.client.openlayers.VectorLayer;
+import org.discotools.gwt.leaflet.client.crs.epsg.EPSG4326;
+import org.discotools.gwt.leaflet.client.layers.raster.WmsLayer;
+import org.discotools.gwt.leaflet.client.map.Map;
+import org.discotools.gwt.leaflet.client.map.MapOptions;
+import org.discotools.gwt.leaflet.client.types.LatLng;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.leaflet.GoogleLayer;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.openlayers.FeatureCollection;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.openlayers.OnmsOpenLayersMap;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.openlayers.VectorLayer;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.DivElement;
@@ -72,8 +78,16 @@ public class GWTOpenlayersWidget extends Widget {
     }
 
     private void createMap(final String divId) {
+        /*
         m_map = OnmsOpenLayersMap.newInstance(divId);
         initializeMap(m_map);
+        */
+        final MapOptions options = new MapOptions();
+        options.setCenter(new LatLng(0, 0));
+        options.setZoom(13);
+        final Map map = new Map(divId, options);
+        final GoogleLayer layer = new GoogleLayer("SATELLITE");
+        map.addLayer(layer, true);
     }
 
     private final native void initializeMap(final OnmsOpenLayersMap map) /*-{
@@ -110,15 +124,15 @@ public class GWTOpenlayersWidget extends Widget {
                     context : {
                         // The Shape will change if the cluster contain several nodes or not.
                         shape : function(feature) {
-                            return feature.cluster && feature.cluster.length > 1 ? "circle" : "square";
+                            return (feature.cluster && feature.cluster.length > 1) ? "circle" : "square";
                         },
                         // The Radius will change according with the amount of nodes on the cluster.
                         radius : function(feature) {
-                            return feature.cluster ? Math.min(parseInt(feature.attributes.count), 7) + 5 : 5;
+                            return feature.cluster ? (Math.min(parseInt(feature.attributes.count), 7) + 5) : 5;
                         },
                         // The label will display the amount of nodes only for clusters.
                         label : function(feature) {
-                            return feature.cluster && feature.cluster.length > 1 ? feature.cluster.length : "";
+                            return (feature.cluster && feature.cluster.length > 1) ? feature.cluster.length : "";
                         },
                         // It depends on the calculated severity
                         strokeColor : function(feature) {
@@ -164,8 +178,8 @@ public class GWTOpenlayersWidget extends Widget {
 
         // Updating Nodes Layer
 
-        this.@org.opennms.features.vaadin.nodemaps.gwt.client.GWTOpenlayersWidget::m_vectorLayer = nodesLayer;
-        this.@org.opennms.features.vaadin.nodemaps.gwt.client.GWTOpenlayersWidget::updateFeatureLayer()();
+        this.@org.opennms.features.vaadin.nodemaps.internal.gwt.client.GWTOpenlayersWidget::m_vectorLayer = nodesLayer;
+        this.@org.opennms.features.vaadin.nodemaps.internal.gwt.client.GWTOpenlayersWidget::updateFeatureLayer()();
         map.zoomToExtent(nodesLayer.getDataExtent());
 
         function onPopupClose(evt) {
@@ -219,7 +233,9 @@ public class GWTOpenlayersWidget extends Widget {
             var count = 0;
             for ( var i = 0; i < feature.cluster.length; i++) {
                 var n = feature.cluster[i].attributes;
-                if (n.unackedCount) count += parseInt(n.unackedCount);
+                if (n.unackedCount) {
+                    count += parseInt(n.unackedCount);
+                }
             }
             return count;
         }
