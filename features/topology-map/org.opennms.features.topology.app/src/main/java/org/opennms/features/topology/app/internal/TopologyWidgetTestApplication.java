@@ -36,6 +36,7 @@ import org.opennms.features.topology.api.HistoryManager;
 import org.opennms.features.topology.api.IViewContribution;
 import org.opennms.features.topology.api.MapViewManager;
 import org.opennms.features.topology.api.MapViewManagerListener;
+import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.WidgetContext;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.app.internal.TopoContextMenu.TopoContextMenuItem;
@@ -52,22 +53,22 @@ import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.MenuBar;
-import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.Slider;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UriFragmentUtility;
-import com.vaadin.ui.UriFragmentUtility.FragmentChangedEvent;
-import com.vaadin.ui.UriFragmentUtility.FragmentChangedListener;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.VerticalSplitPanel;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.MenuBar.MenuItem;
+import com.vaadin.ui.UriFragmentUtility.FragmentChangedEvent;
+import com.vaadin.ui.UriFragmentUtility.FragmentChangedListener;
 
 public class TopologyWidgetTestApplication extends Application implements CommandUpdateListener, MenuItemUpdateListener, ContextMenuHandler, WidgetUpdateListener, WidgetContext, FragmentChangedListener, GraphContainer.ChangeListener, MapViewManagerListener, VertexUpdateListener {
     
@@ -78,13 +79,13 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 	private Window m_window;
 	private TopologyComponent m_topologyComponent;
 	private VertexSelectionTree m_tree;
-	private GraphContainer m_graphContainer;
-	private CommandManager m_commandManager;
+	private final GraphContainer m_graphContainer;
+	private final CommandManager m_commandManager;
 	private MenuBar m_menuBar;
 	private TopoContextMenu m_contextMenu;
 	private AbsoluteLayout m_layout;
 	private AbsoluteLayout m_rootLayout;
-	private IconRepositoryManager m_iconRepositoryManager;
+	private final IconRepositoryManager m_iconRepositoryManager;
 	private WidgetManager m_widgetManager;
 	private WidgetManager m_treeWidgetManager;
 	private Accordion m_treeAccordion;
@@ -92,17 +93,20 @@ public class TopologyWidgetTestApplication extends Application implements Comman
     private VerticalSplitPanel m_bottomLayoutBar;
     private final Label m_zoomLevelLabel = new Label("0"); 
     private UriFragmentUtility m_uriFragUtil;
-    private HistoryManager m_historyManager;
-    
-	public TopologyWidgetTestApplication(CommandManager commandManager, HistoryManager historyManager, GraphProvider topologyProvider, ProviderManager providerManager, IconRepositoryManager iconRepoManager) {
+    private final HistoryManager m_historyManager;
+    private final SelectionManager m_selectionManager;
+
+	public TopologyWidgetTestApplication(CommandManager commandManager, HistoryManager historyManager, GraphProvider topologyProvider, ProviderManager providerManager, IconRepositoryManager iconRepoManager, SelectionManager selectionManager) {
 		m_commandManager = commandManager;
 		m_commandManager.addMenuItemUpdateListener(this);
 		m_historyManager = historyManager;
+		m_iconRepositoryManager = iconRepoManager;
+		m_selectionManager = selectionManager;
+
+		// Create a per-session GraphContainer instance
 		m_graphContainer = new VEProviderGraphContainer(topologyProvider, providerManager);
 		m_graphContainer.addChangeListener(this);
 		m_graphContainer.getMapViewManager().addListener(this);
-		m_iconRepositoryManager = iconRepoManager;
-		
 	}
 
 
@@ -134,12 +138,10 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 
 		final Property scale = m_graphContainer.getScaleProperty();
 
-		m_topologyComponent = new TopologyComponent(m_graphContainer);
-		m_topologyComponent.setIconRepoManager(m_iconRepositoryManager);
+		m_topologyComponent = new TopologyComponent(m_graphContainer, m_iconRepositoryManager, m_selectionManager, this);
 		m_topologyComponent.setSizeFull();
 		m_topologyComponent.addMenuItemStateListener(this);
 		m_topologyComponent.addVertexUpdateListener(this);
-		m_topologyComponent.setContextMenuHandler(this);
 		
 		final Slider slider = new Slider(0, 1);
 		
@@ -361,7 +363,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
     private VertexSelectionTree createTree() {
 	    //final FilterableHierarchicalContainer container = new FilterableHierarchicalContainer(m_graphContainer.getVertexContainer());
 	    
-		VertexSelectionTree tree = new VertexSelectionTree("Nodes", m_graphContainer);
+		VertexSelectionTree tree = new VertexSelectionTree("Nodes", m_graphContainer, m_selectionManager);
 		tree.setMultiSelect(true);
 		tree.setImmediate(true);
 		tree.setItemCaptionPropertyId(LABEL_PROPERTY);
@@ -371,7 +373,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 			tree.expandItemsRecursively(item);
 		}
 		
-		m_graphContainer.getSelectionManager().addSelectionListener(tree);
+		m_selectionManager.addSelectionListener(tree);
 
 		return tree;
 	}
@@ -398,7 +400,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 			if(menuItem.hasChildren()) {
 				updateMenuItems(menuItem.getChildren());
 			}else {
-				m_commandManager.updateMenuItem(menuItem, m_graphContainer, getMainWindow());
+				m_commandManager.updateMenuItem(menuItem, m_graphContainer, getMainWindow(), m_selectionManager);
 			}
 		}
 	}
@@ -413,7 +415,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 			getMainWindow().removeComponent(m_contextMenu);
 		}
 
-		m_menuBar = commandManager.getMenuBar(m_graphContainer, getMainWindow());
+		m_menuBar = commandManager.getMenuBar(m_graphContainer, getMainWindow(), m_selectionManager);
 		m_menuBar.setWidth("100%");
 		m_rootLayout.addComponent(m_menuBar, "top: 0px; left: 0px; right:0px;");
 

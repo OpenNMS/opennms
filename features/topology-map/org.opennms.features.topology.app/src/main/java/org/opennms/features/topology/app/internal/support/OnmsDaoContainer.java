@@ -31,11 +31,14 @@ package org.opennms.features.topology.app.internal.support;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.Order;
+import org.opennms.features.topology.api.SelectionListener;
+import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.netmgt.dao.OnmsDao;
 
 import com.vaadin.data.Container;
@@ -43,13 +46,21 @@ import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanItem;
 
-public abstract class OnmsDaoContainer<T,K extends Serializable> implements Container, Container.Sortable {
+public abstract class OnmsDaoContainer<T,K extends Serializable> implements SelectionListener, Container, Container.Sortable, Container.ItemSetChangeNotifier {
 
 	private static final long serialVersionUID = -9131723065433979979L;
 
 	private final OnmsDao<T,K> m_dao;
 
-	private Criteria m_criteria = new Criteria(getItemClass());
+	/**
+	 * TODO: Fix concurrent access to this field
+	 */
+	protected Criteria m_criteria = new Criteria(getItemClass());
+
+	/**
+	 * TODO: Fix concurrent access to this field
+	 */
+	private final Collection<ItemSetChangeListener> m_itemSetChangeListeners = new HashSet<ItemSetChangeListener>();
 
 	public OnmsDaoContainer(OnmsDao<T,K> dao) {
 		m_dao = dao;
@@ -245,5 +256,31 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Cont
 			}
 		}
 		m_criteria.setOrders(orders);
+	}
+
+	@Override
+	public abstract void selectionChanged(SelectionManager selectionManager);
+
+	@Override
+	public void addListener(ItemSetChangeListener listener) {
+		m_itemSetChangeListeners.add(listener);
+	}
+
+	@Override
+	public void removeListener(ItemSetChangeListener listener) {
+		m_itemSetChangeListeners.remove(listener);
+	}
+
+	protected void fireItemSetChangedEvent() {
+		ItemSetChangeEvent event = new ItemSetChangeEvent() {
+			private static final long serialVersionUID = -2796401359570611938L;
+			@Override
+			public Container getContainer() {
+				return OnmsDaoContainer.this;
+			}
+		};
+		for (ItemSetChangeListener listener : m_itemSetChangeListeners) {
+			listener.containerItemSetChange(event);
+		}
 	}
 }

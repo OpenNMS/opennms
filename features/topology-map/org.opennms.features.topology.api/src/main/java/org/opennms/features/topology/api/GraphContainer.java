@@ -60,8 +60,6 @@ public interface GraphContainer extends DisplayState {
 
 	Graph getGraph();
 
-	SelectionManager getSelectionManager();
-
 	Collection<VertexRef> getVertexRefForest(Collection<VertexRef> vertexRefs);
     
 	MapViewManager getMapViewManager();

@@ -31,10 +31,13 @@ package org.opennms.netmgt.dao;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+import java.util.Collection;
 import java.util.Date;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.criteria.Criteria;
+import org.opennms.core.criteria.restrictions.EqRestriction;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.BeanUtils;
@@ -176,6 +179,15 @@ public class AlarmDaoTest implements InitializingBean {
         // It works we're so smart! hehe
         
         OnmsAlarm newAlarm = m_alarmDao.load(alarm.getId());
+        assertEquals("uei://org/opennms/test/EventDaoTest", newAlarm.getUei());
+        assertEquals(alarm.getLastEvent().getId(), newAlarm.getLastEvent().getId());
+        
+        Collection<OnmsAlarm> alarms;
+        Criteria criteria = new Criteria(OnmsAlarm.class);
+        criteria.addRestriction(new EqRestriction("node.id", node.getId()));
+        alarms = m_alarmDao.findMatching(criteria);
+        assertEquals(1, alarms.size());
+        newAlarm = alarms.iterator().next();
         assertEquals("uei://org/opennms/test/EventDaoTest", newAlarm.getUei());
         assertEquals(alarm.getLastEvent().getId(), newAlarm.getLastEvent().getId());
     }

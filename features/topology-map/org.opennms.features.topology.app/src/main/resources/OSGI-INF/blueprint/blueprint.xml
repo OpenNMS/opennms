@@ -21,6 +21,11 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         <argument ref="topologyProvider"/>
         <argument ref="providerManager" />
         <argument ref="iconRepoManager"/>
+        <argument>
+            <bean class="org.opennms.features.topology.app.internal.DefaultSelectionManager">
+                <property name="selectionListeners" ref="selectionListeners"/>
+            </bean>
+        </argument>
         <property name="theme" value="${theme}"/>
         <property name="widgetManager" ref="widgetManager"/>
         <property name="treeWidgetManager" ref="treeWidgetManager"/>
@@ -128,9 +133,11 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
 		<reference id="nodeDao" interface="org.opennms.netmgt.dao.NodeDao" availability="mandatory" />
 
 		<!- - Wrap the DAO in a Vaadin container - ->
-		<bean id="alarmDaoContainer" class="org.opennms.features.topology.app.internal.support.AlarmDaoContainer">
+		<bean id="alarmDaoContainer" class="org.opennms.features.topology.app.internal.support.AlarmDaoContainer" scope="prototype">
 			<argument ref="alarmDao" />
 		</bean>
+
+		<service interface="org.opennms.features.topology.api.SelectionListener" ref="alarmDaoContainer"/>
 
 		<bean id="alarmTable" class="com.vaadin.ui.Table" scope="prototype">
 			<argument value="Alarms"/>
@@ -167,9 +174,11 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
 		</service>
 
 		<!- - Wrap the DAO in a Vaadin container - ->
-		<bean id="nodeDaoContainer" class="org.opennms.features.topology.app.internal.support.NodeDaoContainer">
+		<bean id="nodeDaoContainer" class="org.opennms.features.topology.app.internal.support.NodeDaoContainer" scope="prototype">
 			<argument ref="nodeDao" />
 		</bean>
+
+		<service interface="org.opennms.features.topology.api.SelectionListener" ref="nodeDaoContainer"/>
 
 		<bean id="nodeTable" class="com.vaadin.ui.Table" scope="prototype">
 			<argument value="Nodes"/>
@@ -206,6 +215,8 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
 				<entry key="location" value="bottom"/>
 			</service-properties>
 		</service>
+
+		<reference-list id="selectionListeners" interface="org.opennms.features.topology.api.SelectionListener" availability="optional"/>
 		-->
 		<!-- End move to separate project -->
     
@@ -218,8 +229,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         </bean>
     </service>
     
-    <bean id="commandManager" class="org.opennms.features.topology.app.internal.CommandManager">
-    </bean>
+    <bean id="commandManager" class="org.opennms.features.topology.app.internal.CommandManager" />
     
     <reference-list interface="org.opennms.features.topology.app.internal.Command" availability="optional">
         <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="commandManager">

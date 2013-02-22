@@ -34,6 +34,11 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.opennms.core.criteria.Criteria;
+import org.opennms.core.criteria.Order;
+import org.opennms.core.criteria.restrictions.EqRestriction;
+import org.opennms.features.topology.api.SelectionManager;
+import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 
@@ -99,5 +104,18 @@ public class AlarmDaoContainer extends OnmsDaoContainer<OnmsAlarm,Integer> {
 		propertyIds.remove("nodeLabel");
 
 		return Collections.unmodifiableCollection(propertyIds);
+	}
+
+	@Override
+	public void selectionChanged(SelectionManager selectionManager) {
+		Collection<Order> oldOrders = m_criteria.getOrders();
+		m_criteria = new Criteria(getItemClass());
+		for (VertexRef ref : selectionManager.getSelectedVertexRefs()) {
+			if ("nodes".equals(ref.getNamespace())) {
+				m_criteria.addRestriction(new EqRestriction("node.id", Integer.valueOf(ref.getId())));
+			}
+		}
+		m_criteria.setOrders(oldOrders);
+		fireItemSetChangedEvent();
 	}
 }
