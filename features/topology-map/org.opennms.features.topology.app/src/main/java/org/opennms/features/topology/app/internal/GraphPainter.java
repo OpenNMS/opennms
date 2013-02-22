@@ -6,6 +6,7 @@ import org.opennms.features.topology.api.Layout;
 import org.opennms.features.topology.api.Point;
 import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.topo.Edge;
+import org.opennms.features.topology.api.topo.StatusProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
 
@@ -18,16 +19,22 @@ public class GraphPainter extends BaseGraphVisitor {
 	private final IconRepositoryManager m_iconRepoManager;
 	private final PaintTarget m_target;
 	private final Layout m_layout;
+	private final StatusProvider m_statusProvider;
 
-	GraphPainter(GraphContainer graphContainer, Layout layout, IconRepositoryManager iconRepoManager, PaintTarget target) {
+	GraphPainter(GraphContainer graphContainer, Layout layout, IconRepositoryManager iconRepoManager, PaintTarget target, StatusProvider statusProvider) {
 		m_graphContainer = graphContainer;
 		m_layout = layout;
 		m_iconRepoManager = iconRepoManager;
 		m_target = target;
+		m_statusProvider = statusProvider;
 	}
 	
 	public SelectionManager getSelectionManager() {
 		return m_graphContainer.getSelectionManager();
+	}
+	
+	public StatusProvider getStatusProvider() {
+	    return m_statusProvider;
 	}
 
 	@Override
@@ -46,13 +53,20 @@ public class GraphPainter extends BaseGraphVisitor {
 		m_target.addAttribute("x", location.getX());
 		m_target.addAttribute("y", location.getY());
 		m_target.addAttribute("selected", isSelected(getSelectionManager(), vertex));
+		if(m_graphContainer.getStatusProvider() != null) {
+		    m_target.addAttribute("status", getStatus(vertex) );
+		}
 		m_target.addAttribute("iconUrl", m_iconRepoManager.findIconUrlByKey(vertex.getIconKey()));
 		m_target.addAttribute("label", vertex.getLabel());
 		m_target.addAttribute("tooltipText", getTooltipText(vertex));
 		m_target.endTag("vertex");
 	}
 
-	private static String getTooltipText(Vertex vertex) {
+    private String getStatus(Vertex vertex) {
+        return m_statusProvider != null ? m_statusProvider.getStatusForVertex(vertex).computeStatus() : "";
+    }
+
+    private static String getTooltipText(Vertex vertex) {
 		String tooltipText = vertex.getTooltipText();
 		// If the tooltip text is null, use the label
 		tooltipText = (tooltipText == null ? vertex.getLabel() : tooltipText);

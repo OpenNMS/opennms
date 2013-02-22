@@ -121,8 +121,8 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
         target.addAttribute("boundHeight", boundingBox.getHeight());
         
 		Graph graph = getGraph();
-
-		GraphVisitor painter = new GraphPainter(m_graphContainer, graph.getLayout(), m_iconRepoManager, target);
+		//Set Status provider from the graph container because I may move it later
+		GraphVisitor painter = new GraphPainter(m_graphContainer, graph.getLayout(), m_iconRepoManager, target, m_graphContainer.getStatusProvider());
 
 		try {
 			graph.visit(painter);

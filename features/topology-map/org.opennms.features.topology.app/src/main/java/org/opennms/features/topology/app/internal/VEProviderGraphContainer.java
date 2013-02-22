@@ -23,6 +23,7 @@ import org.opennms.features.topology.api.topo.EdgeProvider;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.GraphVisitor;
 import org.opennms.features.topology.api.topo.RefComparator;
+import org.opennms.features.topology.api.topo.StatusProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexListener;
 import org.opennms.features.topology.api.topo.VertexProvider;
@@ -194,7 +195,8 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     private int m_semanticZoomLevel = 0;
     private Property m_scaleProperty = new ScaleProperty(0.0);
     private LayoutAlgorithm m_layoutAlgorithm;
-    private SelectionManager m_selectionManager = new DefaultSelectionManager(); 
+    private SelectionManager m_selectionManager = new DefaultSelectionManager();
+    private StatusProvider m_statusProvider;
     
     private MergingGraphProvider m_mergedGraphProvider;
     private MapViewManager m_viewManager = new DefaultMapViewManager();
@@ -270,6 +272,12 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     @Override
     public void setBaseTopology(GraphProvider graphProvider) {
         m_mergedGraphProvider.setBaseGraphProvider(graphProvider);
+        rebuildGraph();
+    }
+    
+    @Override
+    public void setStatusProvider(StatusProvider statusProvider) {
+        m_statusProvider = statusProvider;
         rebuildGraph();
     }
 
@@ -445,5 +453,10 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     @Override
     public MapViewManager getMapViewManager() {
         return m_viewManager;
+    }
+
+    @Override
+    public StatusProvider getStatusProvider() {
+        return m_statusProvider;
     }
 }

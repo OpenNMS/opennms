@@ -47,6 +47,33 @@
       <artifactId>org.osgi.compendium</artifactId>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-dao</artifactId>
+      <scope>provided</scope>
+     </dependency>
+     <dependency>
+        <groupId>org.opennms.core</groupId>
+        <artifactId>org.opennms.core.lib</artifactId>
+        <scope>provided</scope>
+     </dependency>
+     <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-test</artifactId>
+        <scope>test</scope>
+     </dependency>
+     <dependency>
+        <groupId>org.opennms.osgi.features.topology</groupId>
+        <artifactId>opennms-topology-api</artifactId>
+        <version>1.11.4-SNAPSHOT</version>
+        <type>pom</type>
+     </dependency>
+     <dependency>
+        <groupId>org.opennms.osgi.features.topology</groupId>
+        <artifactId>vaadin</artifactId>
+        <version>1.11.4-SNAPSHOT</version>
+        <type>pom</type>
+     </dependency>
   </dependencies>
 
 </project>
