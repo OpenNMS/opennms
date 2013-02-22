@@ -34,6 +34,11 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.opennms.core.criteria.Criteria;
+import org.opennms.core.criteria.Order;
+import org.opennms.core.criteria.restrictions.EqRestriction;
+import org.opennms.features.topology.api.SelectionManager;
+import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 
@@ -92,5 +97,18 @@ public class NodeDaoContainer extends OnmsDaoContainer<OnmsNode,Integer> {
 		propertyIds.remove("primaryInterface");
 
 		return Collections.unmodifiableCollection(propertyIds);
+	}
+
+	@Override
+	public void selectionChanged(SelectionManager selectionManager) {
+		Collection<Order> oldOrders = m_criteria.getOrders();
+		m_criteria = new Criteria(getItemClass());
+		for (VertexRef ref : selectionManager.getSelectedVertexRefs()) {
+			if ("nodes".equals(ref.getNamespace())) {
+				m_criteria.addRestriction(new EqRestriction("id", Integer.valueOf(ref.getId())));
+			}
+		}
+		m_criteria.setOrders(oldOrders);
+		fireItemSetChangedEvent();
 	}
 }

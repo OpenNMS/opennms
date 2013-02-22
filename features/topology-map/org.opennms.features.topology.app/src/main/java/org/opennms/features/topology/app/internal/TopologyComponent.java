@@ -44,8 +44,8 @@ import org.opennms.features.topology.api.GraphContainer.ChangeListener;
 import org.opennms.features.topology.api.MapViewManager;
 import org.opennms.features.topology.api.MapViewManagerListener;
 import org.opennms.features.topology.api.Point;
+import org.opennms.features.topology.api.SelectionListener;
 import org.opennms.features.topology.api.SelectionManager;
-import org.opennms.features.topology.api.SelectionManager.SelectionListener;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.GraphVisitor;
 import org.opennms.features.topology.api.topo.Vertex;
@@ -71,20 +71,25 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
     
     private static final long serialVersionUID = 1L;
     
-	private GraphContainer m_graphContainer;
+	private final GraphContainer m_graphContainer;
     private Graph m_graph;
-    private List<MenuItemUpdateListener> m_menuItemStateListener = new ArrayList<MenuItemUpdateListener>();
-    private ContextMenuHandler m_contextMenuHandler;
-    private IconRepositoryManager m_iconRepoManager;
+    private final List<MenuItemUpdateListener> m_menuItemStateListener = new ArrayList<MenuItemUpdateListener>();
+    private final ContextMenuHandler m_contextMenuHandler;
+    private final IconRepositoryManager m_iconRepoManager;
+    private final SelectionManager m_selectionManager;
     private String m_activeTool = "pan";
 
     private Set<VertexUpdateListener> m_vertexUpdateListeners = new CopyOnWriteArraySet<VertexUpdateListener>();
 
-    public TopologyComponent(GraphContainer dataSource) {
+    public TopologyComponent(GraphContainer dataSource, IconRepositoryManager iconRepositoryManager, SelectionManager selectionManager, ContextMenuHandler contextMenuHandler) {
 	    m_graphContainer = dataSource;
+	    m_iconRepoManager = iconRepositoryManager;
+	    m_selectionManager = selectionManager;
+	    m_contextMenuHandler = contextMenuHandler;
+
 	    setGraph(m_graphContainer.getGraph());
 		
-		m_graphContainer.getSelectionManager().addSelectionListener(new SelectionListener() {
+		m_selectionManager.addSelectionListener(new SelectionListener() {
 			
 			@Override
 			public void selectionChanged(SelectionManager selectionManager) {
@@ -122,7 +127,7 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
         
 		Graph graph = getGraph();
 
-		GraphVisitor painter = new GraphPainter(m_graphContainer, graph.getLayout(), m_iconRepoManager, target);
+		GraphVisitor painter = new GraphPainter(m_graphContainer, graph.getLayout(), m_iconRepoManager, m_selectionManager, target);
 
 		try {
 			graph.visit(painter);
@@ -159,7 +164,7 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
         }
         
         if(variables.containsKey("clickedBackground")) {
-            getSelectionManager().deselectAll();
+            m_selectionManager.deselectAll();
         }
         
         if(variables.containsKey("clickedVertex")) {
@@ -226,13 +231,13 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
             if (type.toLowerCase().equals("vertex")) {
             	String targetKey = (String)props.get("target");
             	target = getGraph().getVertexByKey(targetKey);
-            	getSelectionManager().setSelectedVertexRefs(Arrays.asList((Vertex) target));
+            	m_selectionManager.setSelectedVertexRefs(Arrays.asList((Vertex) target));
             } else if (type.toLowerCase().equals("edge")) {
             	String targetKey = (String)props.get("target");
             	target = getGraph().getEdgeByKey(targetKey);
             }
 
-            getContextMenuHandler().show(target, x, y);
+            m_contextMenuHandler.show(target, x, y);
         }
         
         if(variables.containsKey("mapPhysicalBounds")) {
@@ -264,11 +269,7 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
 		}
 
 		Collection<VertexRef> vertexTrees = m_graphContainer.getVertexRefForest(vertexRefs);
-	    getSelectionManager().setSelectedVertexRefs(vertexTrees);
-	}
-
-	private SelectionManager getSelectionManager() {
-		return m_graphContainer.getSelectionManager();
+	    m_selectionManager.setSelectedVertexRefs(vertexTrees);
 	}
 
 	private void addVerticesToSelection(String... vertexKeys) {
@@ -280,13 +281,13 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
 
 		Collection<VertexRef> vertexTrees = m_graphContainer.getVertexRefForest(vertexRefs);
 		
-		getSelectionManager().selectVertexRefs(vertexTrees);
+		m_selectionManager.selectVertexRefs(vertexTrees);
     }
     
 	private void selectEdge(String edgeKey) {
 		Edge edge = getGraph().getEdgeByKey(edgeKey);
 		
-		getSelectionManager().setSelectedEdgeRefs(Collections.singleton(edge));
+		m_selectionManager.setSelectedEdgeRefs(Collections.singleton(edge));
 
 	}
 
@@ -303,9 +304,9 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
         getGraph().getLayout().setLocation(vertex, x, y);
 
         if (selected) {
-        	getSelectionManager().selectVertexRefs(Collections.singleton(vertex));
+        	m_selectionManager.selectVertexRefs(Collections.singleton(vertex));
         } else {
-        	getSelectionManager().deselectVertexRefs(Collections.singleton(vertex));
+        	m_selectionManager.deselectVertexRefs(Collections.singleton(vertex));
         }
     }
     
@@ -341,7 +342,7 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
         setGraph(graph);
 		
 		getViewManager().setMapBounds(graph.getLayout().getBounds());
-		computeBoundsForSelected(container.getSelectionManager());
+		computeBoundsForSelected(m_selectionManager);
 	}
 	
 	/**
@@ -353,22 +354,6 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
         
         getViewManager().setScale(scale);
         
-    }
-
-    public ContextMenuHandler getContextMenuHandler() {
-        return m_contextMenuHandler;
-    }
-
-    public void setContextMenuHandler(ContextMenuHandler contextMenuHandler) {
-        m_contextMenuHandler = contextMenuHandler;
-    }
-
-    public IconRepositoryManager getIconRepoManager() {
-        return m_iconRepoManager;
-    }
-
-    public void setIconRepoManager(IconRepositoryManager iconRepoManager) {
-        m_iconRepoManager = iconRepoManager;
     }
 
     public void setActiveTool(String toolname) {

@@ -30,6 +30,7 @@ package org.opennms.features.topology.app.internal;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import org.easymock.EasyMock;
@@ -39,9 +40,13 @@ import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.api.SelectionListener;
+import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.Edge;
+import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.Vertex;
+import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
 
 import com.vaadin.data.util.BeanItem;
@@ -63,23 +68,28 @@ public class TopologyComponentTest {
         
         mockDefaultGraph(target);
         
-        EasyMock.replay(target);
+        SelectionManager selectionManager = EasyMock.createMock(SelectionManager.class);
+        SelectionListener listener = EasyMock.anyObject();
+        selectionManager.addSelectionListener(listener);
+        EasyMock.expect(selectionManager.isVertexRefSelected(EasyMock.anyObject(VertexRef.class))).andReturn(false).anyTimes();
+        EasyMock.expect(selectionManager.isEdgeRefSelected(EasyMock.anyObject(EdgeRef.class))).andReturn(false).anyTimes();
+        
+        EasyMock.replay(target, selectionManager);
         
         TestTopologyProvider topoProvider = new TestTopologyProvider("test");
         assertEquals(2, topoProvider.getVertices().size());
         assertEquals(1, topoProvider.getEdges().size());
         GraphContainer graphContainer = new VEProviderGraphContainer(topoProvider, new ProviderManager());
-        TopologyComponent topoComponent = getTopologyComponent(graphContainer);
+        TopologyComponent topoComponent = getTopologyComponent(graphContainer, selectionManager);
         
         topoComponent.paintContent(target);
         
         EasyMock.verify(target);
     }
 
-    private static TopologyComponent getTopologyComponent(GraphContainer dataSource) {
+    private static TopologyComponent getTopologyComponent(GraphContainer dataSource, SelectionManager selectionManager) {
     	BeanItem<GraphContainer> item = new BeanItem<GraphContainer>(dataSource);
-        TopologyComponent topologyComponent = new TopologyComponent(dataSource);
-        topologyComponent.setIconRepoManager(new IconRepositoryManager());
+        TopologyComponent topologyComponent = new TopologyComponent(dataSource, new IconRepositoryManager(), selectionManager, null);
         return topologyComponent;
     }
     
@@ -101,13 +111,20 @@ public class TopologyComponentTest {
         
         mockGraphTagEnd(target);
         
-        EasyMock.replay(target);
+        SelectionManager selectionManager = EasyMock.createMock(SelectionManager.class);
+        SelectionListener listener = EasyMock.anyObject();
+        selectionManager.addSelectionListener(listener);
+        EasyMock.expect(selectionManager.getSelectedVertexRefs()).andReturn(new ArrayList<VertexRef>()).anyTimes();
+        EasyMock.expect(selectionManager.isVertexRefSelected(EasyMock.anyObject(VertexRef.class))).andReturn(false).anyTimes();
+        EasyMock.expect(selectionManager.isEdgeRefSelected(EasyMock.anyObject(EdgeRef.class))).andReturn(false).anyTimes();
+        
+        EasyMock.replay(target, selectionManager);
         
         TestTopologyProvider topoProvider = new TestTopologyProvider("test");
         assertEquals(2, topoProvider.getVertices().size());
         assertEquals(1, topoProvider.getEdges().size());
         GraphContainer graphContainer = new VEProviderGraphContainer(topoProvider, new ProviderManager());
-        TopologyComponent topoComponent = getTopologyComponent(graphContainer);
+        TopologyComponent topoComponent = getTopologyComponent(graphContainer, selectionManager);
         
         AbstractVertex newVertex = topoProvider.addVertex(0, 0);
         newVertex.setLabel("New Vertex");
@@ -153,11 +170,18 @@ public class TopologyComponentTest {
 
         mockGraphTagEnd(target);
 
-        EasyMock.replay(target);
+        SelectionManager selectionManager = EasyMock.createMock(SelectionManager.class);
+        SelectionListener listener = EasyMock.anyObject();
+        selectionManager.addSelectionListener(listener);
+        EasyMock.expect(selectionManager.getSelectedVertexRefs()).andReturn(new ArrayList<VertexRef>()).anyTimes();
+        EasyMock.expect(selectionManager.isVertexRefSelected(EasyMock.anyObject(VertexRef.class))).andReturn(false).anyTimes();
+        EasyMock.expect(selectionManager.isEdgeRefSelected(EasyMock.anyObject(EdgeRef.class))).andReturn(false).anyTimes();
+
+        EasyMock.replay(target, selectionManager);
         
         TestTopologyProvider topologyProvider = new TestTopologyProvider("test");
         GraphContainer graphContainer = new VEProviderGraphContainer(topologyProvider, new ProviderManager());
-        TopologyComponent topoComponent = getTopologyComponent(graphContainer);
+        TopologyComponent topoComponent = getTopologyComponent(graphContainer, selectionManager);
         
         Collection<Vertex> vertIds = topologyProvider.getVertices();
         assertEquals(2, vertIds.size());
@@ -192,10 +216,16 @@ public class TopologyComponentTest {
     @Test
     @Ignore
     public void testTopologyComponentSendCorrectEdgeIds() throws PaintException {
+        SelectionManager selectionManager = EasyMock.createMock(SelectionManager.class);
+        SelectionListener listener = EasyMock.anyObject();
+        selectionManager.addSelectionListener(listener);
+        EasyMock.expect(selectionManager.isVertexRefSelected(EasyMock.anyObject(VertexRef.class))).andReturn(false).anyTimes();
+        EasyMock.expect(selectionManager.isEdgeRefSelected(EasyMock.anyObject(EdgeRef.class))).andReturn(false).anyTimes();
+        EasyMock.replay(selectionManager);
+
         TestTopologyProvider topoProvider = new TestTopologyProvider("test");
         GraphContainer graphContainer = new VEProviderGraphContainer(topoProvider, new ProviderManager());
-        TopologyComponent topoComponent = getTopologyComponent(graphContainer);
-        topoComponent.setIconRepoManager(new IconRepositoryManager());
+        TopologyComponent topoComponent = getTopologyComponent(graphContainer, selectionManager);
         Graph graph = topoComponent.getGraph();
         
         Collection<? extends Edge> edges = graph.getDisplayEdges();

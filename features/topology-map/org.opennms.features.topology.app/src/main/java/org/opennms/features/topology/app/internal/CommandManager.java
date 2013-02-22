@@ -42,6 +42,7 @@ import org.opennms.features.topology.api.CheckedOperation;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.OperationContext.DisplayLocation;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.TopoContextMenu.TopoContextMenuItem;
@@ -50,8 +51,8 @@ import org.vaadin.peter.contextmenu.ContextMenu.ClickEvent;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 
 import com.vaadin.ui.MenuBar;
-import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.MenuBar.MenuItem;
 
 public class CommandManager {
 
@@ -148,7 +149,7 @@ public class CommandManager {
 		m_menuItemUpdateListeners.remove(listener);
 	}
 
-	MenuBar getMenuBar(GraphContainer graphContainer, Window mainWindow) {
+	MenuBar getMenuBar(GraphContainer graphContainer, Window mainWindow, SelectionManager selectionManager) {
 		OperationContext opContext = new DefaultOperationContext(mainWindow, graphContainer, DisplayLocation.MENUBAR);
 		MenuBarBuilder menuBarBuilder = new MenuBarBuilder();
 		menuBarBuilder.setTopLevelMenuOrder(m_topLevelMenuOrder);
@@ -156,7 +157,7 @@ public class CommandManager {
 		
 		for (Command command : m_commandList) {
 			String menuPosition = command.getMenuPosition();
-			MenuBar.Command menuCommand = menuCommand(command, graphContainer, mainWindow, opContext);
+			MenuBar.Command menuCommand = menuCommand(command, graphContainer, mainWindow, opContext, selectionManager);
 			updateCommandToOperationMap(command, menuCommand);
 			menuBarBuilder.addMenuCommand(menuCommand, menuPosition);
 		}
@@ -204,12 +205,12 @@ public class CommandManager {
 
 	public MenuBar.Command menuCommand(final Command command,
 			final GraphContainer graphContainer, final Window mainWindow,
-			final OperationContext operationContext) {
+			final OperationContext operationContext, final SelectionManager selectionManager) {
 
 		return new MenuBar.Command() {
 
 			public void menuSelected(MenuItem selectedItem) {
-				List<VertexRef> targets = new ArrayList<VertexRef>(graphContainer.getSelectionManager().getSelectedVertexRefs());
+				List<VertexRef> targets = new ArrayList<VertexRef>(selectionManager.getSelectedVertexRefs());
 
 				DefaultOperationContext context = (DefaultOperationContext) operationContext;
 				context.setChecked(selectedItem.isChecked());
@@ -309,13 +310,13 @@ public class CommandManager {
 		return m_subMenuGroupOrder;
 	}
 
-	public void updateMenuItem(MenuItem menuItem, GraphContainer graphContainer, Window mainWindow) {
+	public void updateMenuItem(MenuItem menuItem, GraphContainer graphContainer, Window mainWindow, SelectionManager selectionManager) {
 		DefaultOperationContext operationContext = new DefaultOperationContext(mainWindow, graphContainer, DisplayLocation.MENUBAR);
 		Operation operation = getOperationByMenuItemCommand(menuItem.getCommand());
 		
 		//Check for null because separators have no Operation
 		if(operation != null) {
-    		List<VertexRef> selectedVertices = new ArrayList<VertexRef>(graphContainer.getSelectionManager().getSelectedVertexRefs());
+    		List<VertexRef> selectedVertices = new ArrayList<VertexRef>(selectionManager.getSelectedVertexRefs());
 			boolean visibility = operation.display(selectedVertices, operationContext);
     		menuItem.setVisible(visibility);
     		boolean enabled = operation.enabled(selectedVertices, operationContext);
