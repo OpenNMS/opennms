@@ -1,0 +1,181 @@
+=== Notes ===
+
+ App (VPN)                                                                                                        App (VPN)
+  |                                                                                                                |
+app port (vpn if)----------------------------------------- Layer 7 link --------------------------------------- app port (vpn if)
+  |                                                                                                                |
+Host                               +- has                    Router                                              Device
+  | - ownership                    |                           |                                                   |
+IP Address ----------------- Layer 3 Link ----------------- IP <-> IP--- --------------- L3 link-----------------IP Address
+    | - encapsulation                                        |     |                                               |
+MAC Address--L2----------MacAddr<->MacAddr------------------Mac<->Mac ----------------- Mac<->Mac --------------Mac Address
+                                 |                                                          |
+                               Switch                                                     Switch
+
+
+Interface identificate:
+
+L3 IPv4: is ipv4 address
+L3 IPv6: is ipv6 address
+
+L2 interfaces have varying depending on the underlaying communication and deploy strategy
+To identify an L2 interface uniquely you must have:
+1. Technology (ethernet, serial, mpls?)
+2. Naming Strategy (similar to LldpChassisSubTypeId) (4 - means mac address)
+3. the id as defined by that strategy - would then the mac addess
+Additionally L2 interfaces may have alternative names such as port ids which are used in some table to reference the interface
+
+For ethernet
+L2 interfaces are mac addresses
+
+A switch port is an L2 interface that has a port number
+ 
+Classes:
+           has 2              owns
+   Link 1 ----> * Endpoint * <------ 1 Device
+
+              is encapsulated by
+   Endpoint 1 -------------------> 1 Endpoint (sublayer)
+ex:     IP                              Mac
+
+       Endpoint
+          |
+  |-------|----------|
+  v       v          v
+ L2If    IPIf       AppIf
+  |
+  v
+ Port
+
+       Device
+         |
+  |------|---------|-----------|
+  v      v         v           v
+ Node   Switch    Router     Cloud
+
+
+
+Discovery Process;
+
+1. sned 'An ip address is found' msg
+
+listner 'checks for snmp'
+
+posts 'ip with snmp found' OR 'ip without snmp found'
+
+ip with snmp
+ - check interfaces table, get mac, assicate it
+   - mac found for ip
+
+ip with snmp 2
+ - check if its a router
+   - router found
+
+ip with snmp 3
+ - check if its a switch
+   - switch found
+
+ip with snmp 4
+- get default route
+  - IP link found
+
+mac found for ip
+- check switches for mac and associate
+  - L2 link found
+
+ip without snmp
+ - check router arp caches and assicate mac with ip
+   - mac found for ip
+
+ip without snmp
+  - traceroute and assicate with router
+    IP link found
+
+ip with snmp 5
+- check if lldp supported
+  - lldp device found
+
+lldp devices
+- walk lldp device table
+  - post link found for each link
+
+switch found
+- scan stp tables
+  - create swtich backbone links
+
+router found
+- scan for interfaces and subnet
+  - create intefaces with subnets  
+
+ 
+listener 'ip with snmp'
+    B0 - add all interfaces for device
+    B1 - if ipForwarding = true and device has more than one ip, then it is a router
+         - post router found
+    B2 - if has bridge address then it is a switch
+         - post switch found
+    B3 - get mac address from ipAddr/interfaces tables and assiciate
+       - post mac address associated with ip address
+    B4 - get default route and create IP link between ip and router ip
+         - ip link created
+
+listener 'ip without snmp'
+    A1 - checkout routers in subnet for mac address, make IP link between ip address and router ip, else traceroute and link 'next hop' IP link 
+          - IP link found
+    A2 - if found associate IP with Mac
+         - post mac address assicated with ip
+
+
+3. is SNMP supported?
+   No 
+    A1 - checkout routers in subnet for mac address, make IP link between ip address and router ip, else traceroute and link 'next hop' IP link 
+    A2 - if found associate IP with Mac
+   Yes
+    B0 - add all interfaces for device
+    B1 - if ipForwarding = true and device has more than one ip, then it is a router
+    B2 - if has bridge address then it is a switch
+    B3 - get mac address from ipAddr/interfaces tables and assiciate
+    B4 - get default route and create IP link between ip and router ip
+
+   C - check switch on subnet for mac if found create L2 link between mac address and appropriate switch, else make L2 cloud for subnet and link ip's to it
+
+   if (devices supports LLDP) {
+      D - walk LLDP neighbor table and for each row:
+          D.1 - create L2 link between each interface of device indexed in table and associated mac address (port)
+   }
+
+   if (device is switch that does not support LLDP) {
+     
+   }
+
+   if (device is router) {
+      
+   }
+ 
+
+    
+
+
+  
+   
+    
+
+
+
+
+Unknown regions are modeled by the boundary addresses that known devices link to
+
+
+1. Do we need to model 'sub interfaces'?
+
+
+ge0 ifindex 1 <- 'base interface'
+
+ge0.0 ifindex 2 <- layer 2 if
+
+ipAddrTable
+ 10.1.1.1 -> ifIndex 3
+
+
+
+
