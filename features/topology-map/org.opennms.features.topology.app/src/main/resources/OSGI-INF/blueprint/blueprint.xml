@@ -208,10 +208,11 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
 			</service-properties>
 		</service>
 
-		<reference-list id="selectionListeners" interface="org.opennms.features.topology.api.SelectionListener" availability="optional"/>
 		-->
 		<!-- End move to separate project -->
-    
+
+    <reference-list id="selectionListeners" interface="org.opennms.features.topology.api.SelectionListener" availability="optional"/>
+
     <service interface="org.osgi.service.cm.ManagedService" >
         <service-properties>
             <entry key="service.pid" value="org.opennms.features.topology.app.menu"/>
