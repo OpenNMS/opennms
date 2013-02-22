@@ -43,11 +43,11 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.TimeoutTracker;
-import org.opennms.protocols.vmware.VmwareViJavaAccess;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
+import org.opennms.protocols.vmware.VmwareViJavaAccess;
 import org.sblim.wbem.cim.CIMException;
 import org.sblim.wbem.cim.CIMObject;
 import org.slf4j.Logger;
@@ -101,7 +101,7 @@ public class VmwareCimMonitor extends AbstractServiceMonitor {
     static {
         m_healthStates = new HashMap<Integer, String>();
 
-        m_healthStates.put(0, "Unkown");
+        m_healthStates.put(0, "Unknown");
         m_healthStates.put(5, "OK");
         m_healthStates.put(10, "Degraded/Warning");
         m_healthStates.put(15, "Minor failure");
