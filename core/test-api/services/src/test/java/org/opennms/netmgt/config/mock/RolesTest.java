@@ -31,9 +31,11 @@ package org.opennms.netmgt.config.mock;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
@@ -121,17 +123,22 @@ public class RolesTest extends IntervalTestCase {
     
     @Test
     public void testWeekCount() throws Exception {
+        int firstDayOfWeek = Calendar.getInstance().getFirstDayOfWeek();
+        if(firstDayOfWeek != Calendar.SUNDAY && firstDayOfWeek != Calendar.MONDAY) {
+            fail("Start of week is not Monday or Sunday");
+        }
+        
         Date aug3 = getDate("2005-08-03");
         MonthlyCalendar calendar = new MonthlyCalendar(aug3, null, null);
         assertEquals(5, calendar.getWeeks().length);
         
         Date july17 = getDate("2005-07-17");
         calendar = new MonthlyCalendar(july17, null, null);
-        assertEquals(6, calendar.getWeeks().length);
+        assertEquals(firstDayOfWeek == Calendar.SUNDAY ? 6 : 5, calendar.getWeeks().length);
         
         Date may27 = getDate("2005-05-27");
         calendar = new MonthlyCalendar(may27, null, null);
-        assertEquals(5, calendar.getWeeks().length);
+        assertEquals(firstDayOfWeek == Calendar.SUNDAY ? 5 : 6, calendar.getWeeks().length);
         
         Date feb14_04 = getDate("2004-02-14");
         calendar = new MonthlyCalendar(feb14_04, null, null);
@@ -139,7 +146,7 @@ public class RolesTest extends IntervalTestCase {
         
         Date feb7_09 = getDate("2009-02-09");
         calendar = new MonthlyCalendar(feb7_09, null, null);
-        assertEquals(4, calendar.getWeeks().length);
+        assertEquals(firstDayOfWeek == Calendar.SUNDAY ? 4 : 5, calendar.getWeeks().length);
         
     }
     
