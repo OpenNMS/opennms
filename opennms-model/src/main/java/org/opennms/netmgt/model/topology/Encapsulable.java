@@ -8,7 +8,7 @@ package org.opennms.netmgt.model.topology;
  * @author Antonio
  *
  */
-public abstract class EndPointContainer extends EndPoint{
+public abstract class Encapsulable extends EndPoint {
 	
 	private EndPoint m_encapsulatedby;
 
@@ -17,7 +17,7 @@ public abstract class EndPointContainer extends EndPoint{
 	}
 
 	public void setEncapsulatedBy(EndPoint encapsulatedby) {
-		m_encapsulatedby = m_encapsulatedby;
+		m_encapsulatedby = encapsulatedby;
 	}
 	
 	

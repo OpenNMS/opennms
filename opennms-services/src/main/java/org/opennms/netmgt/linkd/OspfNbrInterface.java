@@ -36,7 +36,8 @@ package org.opennms.netmgt.linkd;
 import java.net.InetAddress;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.opennms.netmgt.model.topology.EndPoint;
+
+import org.opennms.netmgt.model.topology.Link;
 
 /**
  * <p>
@@ -46,7 +47,7 @@ import org.opennms.netmgt.model.topology.EndPoint;
  * @author antonio
  * @version $Id: $
  */
-public class OspfNbrInterface extends EndPoint {
+public class OspfNbrInterface extends Link {
 
     /**
      * the ip address

@@ -30,7 +30,9 @@ package org.opennms.netmgt.linkd;
 
 import java.net.InetAddress;
 
-public class AtInterface {
+import org.opennms.netmgt.model.topology.EndPoint;
+
+public class AtInterface extends EndPoint {
 
     Integer m_nodeid;
     Integer m_ifIndex;
