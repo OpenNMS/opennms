@@ -20,16 +20,16 @@ public abstract class Link {
 		return m_a;
 	}
 
-	public void setA(EndPoint m_a) {
-		this.m_a = m_a;
+	public void setA(EndPoint a) {
+		this.m_a = a;
 	}
 
 	public EndPoint getB() {
 		return m_b;
 	}
 
-	public void setB(EndPoint m_b) {
-		this.m_b = m_b;
+	public void setB(EndPoint b) {
+		this.m_b = b;
 	}
 
 }

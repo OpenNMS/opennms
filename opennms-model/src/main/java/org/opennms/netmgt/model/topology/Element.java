@@ -15,8 +15,8 @@ public abstract class Element {
 		return m_endpoints;
 	}
 
-	public void setEndpoints(List<EndPoint> m_endpoints) {
-		this.m_endpoints = m_endpoints;
+	public void setEndpoints(List<EndPoint> endpoints) {
+		m_endpoints = endpoints;
 	}
 
 }

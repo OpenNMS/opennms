@@ -1,35 +1,50 @@
 package org.opennms.netmgt.model.topology;
 
-import java.util.List;
-
 
 /**
  * This class represents a destination in the network such as
  * an IP address or a physical port.
+ * Also can represent a TCP Port
  * 
  * @author Antonio
  *
  */
 public abstract class EndPoint {
 	
+	/** 
+	 * The Element to which the End Point 
+	 * belongs
+	 *  
+	 */
 	private Element m_device;
 
-	private List<Link> m_links;
+	/**
+	 * Only one Link for End Point is allowed
+	 * 
+	 */	
+	private Link m_link;
 	
 	public Element getDevice() {
 		return m_device;
 	}
 
-	public void setDevice(Element m_device) {
-		this.m_device = m_device;
+	public void setDevice(Element device) {
+		m_device = device;
 	}
 	
-	public List<Link> getLinks() {
-		return m_links;
+	public Link getLink() {
+		return m_link;
+	}
+
+	public void setLink(Link link) {
+		m_link = link	;
 	}
 	
-	public void setLinks(List<Link> links) {
-		m_links = links	;
+	public boolean hasLink() {
+		return m_link != null;
 	}
-	
+
+	public boolean hasElement() {
+		return m_device != null;
+	}
 }
