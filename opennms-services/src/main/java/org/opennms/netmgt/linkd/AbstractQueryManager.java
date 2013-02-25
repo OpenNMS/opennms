@@ -63,7 +63,7 @@ import org.opennms.netmgt.linkd.snmp.LldpMibConstants;
 import org.opennms.netmgt.linkd.snmp.LldpRemTableEntry;
 import org.opennms.netmgt.linkd.snmp.OspfNbrTableEntry;
 import org.opennms.netmgt.linkd.snmp.QBridgeDot1dTpFdbTableEntry;
-import org.opennms.netmgt.linkd.snmp.VlanCollectorEntry;
+import org.opennms.netmgt.linkd.snmp.Vlan;
 import org.opennms.netmgt.model.OnmsAtInterface;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -75,6 +75,43 @@ import org.opennms.netmgt.model.OnmsStpNode;
 import org.opennms.netmgt.model.OnmsVlan;
 
 public abstract class AbstractQueryManager implements QueryManager {
+
+	/**
+	 * The character returned if the entry is active
+	 */
+	public static final char STATUS_ACTIVE = 'A';
+
+	/**
+	 * The character returned if the entry is not active
+	 * means last polled
+	 */
+	public static final char STATUS_NOT_POLLED = 'N';
+
+	/**
+	 * It stats that node is deleted
+	 * The character returned if the node is deleted
+	 */
+	public static final char STATUS_DELETED = 'D';
+
+	/**
+	 * The character returned if the entry type is unset/unknown.
+	 */
+	public static final char STATUS_UNKNOWN = 'K';
+
+    public static final int VLAN_TYPE_UNKNOWN = 0;
+    public static final int VLAN_TYPE_ETHERNET = 1;
+    public static final int VLAN_TYPE_FDDI = 2;
+    public static final int VLAN_TYPE_TOKEN_RING = 3;
+    public static final int VLAN_TYPE_FDDINET = 4;
+    public static final int VLAN_TYPE_TRNET = 5;
+    public static final int VLAN_TYPE_DEPRECATED = 6;
+
+    public static final int VLAN_STATUS_UNKNOWN = 0;
+    public static final int VLAN_STATUS_OPERATIONAL = 1;
+    public static final int VLAN_STATUS_SUSPENDED = 2;
+    public static final int VLAN_STATUS_MTU_TOO_BIG_FOR_DEVICE = 3;
+    public static final int VLAN_STATUS_MTU_TOO_BIG_FOR_TRUNK = 4;
+
     protected Linkd m_linkd;
 
     @Override
@@ -191,7 +228,7 @@ public abstract class AbstractQueryManager implements QueryManager {
             at.setIfIndex(ifindex);
 
             at.setLastPollTime(scanTime);
-            at.setStatus(DbAtInterfaceEntry.STATUS_ACTIVE);
+            at.setStatus(STATUS_ACTIVE);
 
             getAtInterfaceDao().saveAtInterface(dbConn, at);
             
@@ -669,7 +706,7 @@ public abstract class AbstractQueryManager implements QueryManager {
                 ipRouteInterface.setRouteNextHop(str(nexthop));
                 ipRouteInterface.setRouteProto(routeproto);
                 ipRouteInterface.setRouteType(routetype);
-                ipRouteInterface.setStatus(DbAtInterfaceEntry.STATUS_ACTIVE);
+                ipRouteInterface.setStatus(STATUS_ACTIVE);
 
                 saveIpRouteInterface(dbConn, ipRouteInterface);
             }
@@ -710,35 +747,14 @@ public abstract class AbstractQueryManager implements QueryManager {
 
         final List<OnmsVlan> vlans = new ArrayList<OnmsVlan>();
 
-        for (final SnmpStore ent : snmpcoll.getVlanTable()) {
-            final Integer vlanIndex = ent.getInt32(VlanCollectorEntry.VLAN_INDEX);
-
-            if (vlanIndex == null || vlanIndex < 0) {
-                LogUtils.debugf(this, "processVlanTable: VLAN ifIndex was invalid (%d). Skipping.", vlanIndex);
-                continue;
-            }
-
-            String vlanName = ent.getDisplayString(VlanCollectorEntry.VLAN_NAME);
-            if (vlanName == null) {
-                vlanName = "default-" + vlanIndex;
-                LogUtils.debugf(this, "processVlanTable: No VLAN name found. Setting to '%s'.", vlanName);
-            }
-
-            Integer vlanType = ent.getInt32(VlanCollectorEntry.VLAN_TYPE);
-            if (vlanType == null) {
-                vlanType = DbVlanEntry.VLAN_TYPE_UNKNOWN;
-            }
-
-            Integer vlanStatus = ent.getInt32(VlanCollectorEntry.VLAN_STATUS);
-            if (vlanStatus == null) {
-                vlanStatus = DbVlanEntry.VLAN_STATUS_UNKNOWN;
-            }
-
+        for (final SnmpStore ente : snmpcoll.getVlanTable()) {
+        	
+        	Vlan ent = (Vlan) ente;
             final OnmsNode onmsNode = getNode(node.getNodeId());
-            final OnmsVlan vlan = new OnmsVlan(vlanIndex, vlanName, vlanStatus, vlanType);
+            final OnmsVlan vlan = ent.getOnmsVlan();
             vlan.setLastPollTime(scanTime);
             vlan.setNode(onmsNode);
-            vlan.setStatus(DbVlanEntry.STATUS_ACTIVE);
+            vlan.setStatus(STATUS_ACTIVE);
             vlans.add(vlan);
 
             LogUtils.debugf(this, "processVlanTable: Saving VLAN entry: %s", vlan);
@@ -969,7 +985,7 @@ public abstract class AbstractQueryManager implements QueryManager {
             stpInterface.setBridgePort(baseport);
             stpInterface.setVlan(vlan.getVlanId());
             stpInterface.setIfIndex(ifindex);
-            stpInterface.setStatus(DbStpNodeEntry.STATUS_ACTIVE);
+            stpInterface.setStatus(STATUS_ACTIVE);
             stpInterface.setLastPollTime(scanTime);
 
             stpinterfaces.put(baseport, stpInterface);
@@ -986,7 +1002,7 @@ public abstract class AbstractQueryManager implements QueryManager {
         LogUtils.debugf(this, "processStpNode: processing Dot1dBaseGroup in stpnode");
         final OnmsStpNode stpNode = new OnmsStpNode(onmsNode, vlan.getVlanId());
         stpNode.setLastPollTime(scanTime);
-        stpNode.setStatus(DbStpNodeEntry.STATUS_ACTIVE);
+        stpNode.setStatus(STATUS_ACTIVE);
         stpNode.setBaseBridgeAddress(baseBridgeAddress);
         LogUtils.debugf(this, "processStpNode: baseBridgeAddress = %s", baseBridgeAddress);
         stpNode.setBaseNumPorts(dod1db.getNumberOfPorts());

@@ -33,7 +33,6 @@ import java.net.InetAddress;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.capsd.snmp.NamedSnmpVar;
 import org.opennms.netmgt.capsd.snmp.SnmpStore;
-import org.opennms.netmgt.linkd.DbStpNodeEntry;
 import org.opennms.netmgt.snmp.AggregateTracker;
 import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.SnmpValue;
@@ -49,7 +48,16 @@ import org.opennms.netmgt.snmp.SnmpValue;
  * @version $Id: $
  */
 public final class Dot1dStpGroup extends AggregateTracker {
-	//
+
+	 /**
+     * the STP Protocol Specification
+     */
+
+    public static final int STP_UNKNOWN = 1;
+    public static final int STP_DECLB100 = 2;
+    public static final int STP_IEEE8011D = 3;
+    
+    //
 	// Lookup strings for specific table entries
 	//
 	/** Constant <code>STP_PROTOCOL_SPEC="dot1dStpProtocolSpecification"</code> */
@@ -301,7 +309,7 @@ public final class Dot1dStpGroup extends AggregateTracker {
     public int getStpProtocolSpecification(){
     	Integer stpProtocolSpecification = m_store.getInt32(STP_PROTOCOL_SPEC);
     	if (stpProtocolSpecification == null) {
-            return DbStpNodeEntry.STP_UNKNOWN;
+            return STP_UNKNOWN;
         }
     	return stpProtocolSpecification;
     }

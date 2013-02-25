@@ -270,12 +270,12 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
                                               lk.getIfindex(),
                                               lk.getNodeparentid(),
                                               lk.getParentifindex(),
-                                              String.valueOf(DbDataLinkInterfaceEntry.STATUS_ACTIVE),
+                                              String.valueOf(STATUS_ACTIVE),
                                               now);
             }
             iface.setNodeParentId(lk.getNodeparentid());
             iface.setParentIfIndex(lk.getParentifindex());
-            iface.setStatus(String.valueOf(DbDataLinkInterfaceEntry.STATUS_ACTIVE));
+            iface.setStatus(String.valueOf(STATUS_ACTIVE));
             iface.setLastPollTime(now);
             m_dataLinkInterfaceDao.saveOrUpdate(iface);
             final DataLinkInterface parent = m_dataLinkInterfaceDao.findByNodeIdAndIfIndex(lk.getNodeparentid(),
@@ -283,7 +283,7 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
             if (parent != null) {
                 if (parent.getNodeParentId() == lk.getNodeId()
                         && parent.getParentIfIndex() == lk.getIfindex()
-                        && parent.getStatus().equals(String.valueOf(DbDataLinkInterfaceEntry.STATUS_DELETED))) {
+                        && parent.getStatus().equals(String.valueOf(STATUS_DELETED))) {
                     m_dataLinkInterfaceDao.delete(parent);
                 }
             }
@@ -319,12 +319,12 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
                                             atInterface.getIfIndex(),
                                             lkm.getNodeparentid(),
                                             lkm.getParentifindex(),
-                                            String.valueOf(DbDataLinkInterfaceEntry.STATUS_ACTIVE),
+                                            String.valueOf(STATUS_ACTIVE),
                                             now);
             }
             dli.setNodeParentId(lkm.getNodeparentid());
             dli.setParentIfIndex(lkm.getParentifindex());
-            dli.setStatus(String.valueOf(DbDataLinkInterfaceEntry.STATUS_ACTIVE));
+            dli.setStatus(String.valueOf(STATUS_ACTIVE));
             dli.setLastPollTime(now);
             m_dataLinkInterfaceDao.saveOrUpdate(dli);
             LogUtils.debugf(this, "storeDiscoveryLink: Storing %s", dli);

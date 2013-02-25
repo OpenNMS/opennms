@@ -41,17 +41,9 @@ import java.util.Map;
 import java.util.Set;
 
 import org.opennms.core.utils.LogUtils;
-import org.opennms.netmgt.config.LinkdConfig;
-import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.linkd.scheduler.ReadyRunnable;
 import org.opennms.netmgt.linkd.scheduler.Scheduler;
-import org.opennms.netmgt.linkd.snmp.CiscoVlanTable;
-import org.opennms.netmgt.linkd.snmp.FdbTableGet;
-import org.opennms.netmgt.linkd.snmp.IntelVlanTable;
-import org.opennms.netmgt.linkd.snmp.VlanCollectorEntry;
 import org.opennms.netmgt.model.OnmsStpInterface;
-import org.opennms.netmgt.model.OnmsVlan;
-import org.opennms.netmgt.snmp.SnmpAgentConfig;
 
 /**
  * This class is designed to discover link among nodes using the collected and
@@ -105,9 +97,9 @@ public final class DiscoveryLink implements ReadyRunnable {
 
     private boolean discoveryUsingBridge = true;
 
-    private boolean discoveryUsingLldp = false;
+    private boolean discoveryUsingLldp = true;
 
-    private boolean discoveryUsingOspf = false;
+    private boolean discoveryUsingOspf = true;
 
     private boolean suspendCollection = false;
 
@@ -235,8 +227,7 @@ public final class DiscoveryLink implements ReadyRunnable {
         // now perform operation to complete
         if (enableDownloadDiscovery) {
             LogUtils.infof(this,
-                           "run: fetching further unknown MAC address SNMP bridge table info");
-            parseBridgeNodes();
+                           "run: fetching further unknown MAC address SNMP bridge table info no more available");
         }
 
         // this part could have several special function to get inter-router
@@ -1626,163 +1617,6 @@ public final class DiscoveryLink implements ReadyRunnable {
     /** {@inheritDoc} */
     public void setPackageName(String packageName) {
         this.packageName = packageName;
-    }
-
-    /**
-     * This method is useful to get forwarding table for switch who failed.
-     */
-    private void parseBridgeNodes() {
-        LogUtils.debugf(this,
-                        "parseBridgeNodes: searching bridge port for bridge identifier not yet already found. Iterating on bridge nodes.");
-
-        List<LinkableNode> bridgenodeschanged = new ArrayList<LinkableNode>();
-        for (LinkableNode curNode : m_bridgeNodes.values()) {
-            LogUtils.debugf(this, "parseBridgeNodes: parsing bridge: %d/%s",
-                            curNode.getNodeId(),
-                            curNode.getSnmpPrimaryIpAddr());
-
-            // get macs
-
-            final List<String> macs = getNotAlreadyFoundMacsOnNode(curNode);
-
-            if (macs.isEmpty())
-                continue;
-
-            SnmpAgentConfig agentConfig = null;
-
-            String className = null;
-
-            final LinkdConfig linkdConfig = m_linkd.getLinkdConfig();
-            linkdConfig.getReadLock().lock();
-
-            try {
-                boolean useVlan = linkdConfig.isVlanDiscoveryEnabled();
-                if (linkdConfig.getPackage(getPackageName()).hasEnableVlanDiscovery()) {
-                    useVlan = linkdConfig.getPackage(getPackageName()).getEnableVlanDiscovery();
-                }
-
-                if (useVlan && linkdConfig.hasClassName(curNode.getSysoid())) {
-                    className = linkdConfig.getVlanClassName(curNode.getSysoid());
-                }
-
-                final InetAddress addr = curNode.getSnmpPrimaryIpAddr();
-                if (addr == null) {
-                    LogUtils.errorf(this,
-                                    "parseBridgeNodes: Failed to load SNMP parameter from SNMP configuration file.");
-                    return;
-                }
-                agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(addr);
-
-                String community = agentConfig.getReadCommunity();
-
-                for (final String mac : macs) {
-                    LogUtils.debugf(this,
-                                    "parseBridgeNodes: parsing MAC: %s", mac);
-
-                    if (className != null
-                            && (className.equals(CiscoVlanTable.class.getName()) || className.equals(IntelVlanTable.class.getName()))) {
-                        for (OnmsVlan vlan : curNode.getVlans()) {
-                            if (vlan.getVlanStatus() != VlanCollectorEntry.VLAN_STATUS_OPERATIONAL
-                                    || vlan.getVlanType() != VlanCollectorEntry.VLAN_TYPE_ETHERNET) {
-                                LogUtils.debugf(this,
-                                                "parseBridgeNodes: skipping VLAN: %s",
-                                                vlan.getVlanName());
-                                continue;
-                            }
-                            agentConfig.setReadCommunity(community + "@"
-                                    + vlan.getVlanId());
-                            curNode = collectMacAddress(this, agentConfig,
-                                                        curNode, mac,
-                                                        vlan.getVlanId());
-                            agentConfig.setReadCommunity(community);
-                        }
-                    } else {
-                        int vlan = SnmpCollection.DEFAULT_VLAN_INDEX;
-                        if (useVlan)
-                            vlan = SnmpCollection.TRUNK_VLAN_INDEX;
-                        curNode = collectMacAddress(this, agentConfig,
-                                                    curNode, mac, vlan);
-                    }
-                }
-                bridgenodeschanged.add(curNode);
-            } finally {
-                linkdConfig.getReadLock().unlock();
-            }
-        }
-
-        for (LinkableNode node : bridgenodeschanged) {
-            m_bridgeNodes.put(node.getNodeId(), node);
-        }
-    }
-
-    private static LinkableNode collectMacAddress(
-            DiscoveryLink discoveryLink, SnmpAgentConfig agentConfig,
-            LinkableNode node, String mac, int vlan) {
-        FdbTableGet coll = new FdbTableGet(agentConfig, mac);
-        LogUtils.debugf(discoveryLink,
-                        "collectMacAddress: finding entry in bridge forwarding table for MAC on node: %s/%d",
-                        mac, node.getNodeId());
-        int bridgeport = coll.getBridgePort();
-        if (bridgeport > 0
-                && coll.getBridgePortStatus() == QueryManager.SNMP_DOT1D_FDB_STATUS_LEARNED) {
-            node.addMacAddress(bridgeport, mac, Integer.toString(vlan));
-            LogUtils.debugf(discoveryLink,
-                            "collectMacAddress: found MAC on bridge port: %d",
-                            bridgeport);
-        } else {
-            bridgeport = coll.getQBridgePort();
-            if (bridgeport > 0
-                    && coll.getQBridgePortStatus() == QueryManager.SNMP_DOT1D_FDB_STATUS_LEARNED) {
-                node.addMacAddress(bridgeport, mac, Integer.toString(vlan));
-                LogUtils.debugf(discoveryLink,
-                                "collectMacAddress: found MAC on bridge port: %d",
-                                bridgeport);
-            } else {
-                LogUtils.debugf(discoveryLink,
-                                "collectMacAddress: MAC not found: %d",
-                                bridgeport);
-            }
-        }
-        return node;
-    }
-
-    private List<String> getNotAlreadyFoundMacsOnNode(LinkableNode node) {
-        LogUtils.debugf(this,
-                        "getNotAlreadyFoundMacsOnNode: Searching Not Yet Found Bridge Identifier Occurrence on Node: %d",
-                        node.getNodeId());
-        List<String> macs = new ArrayList<String>();
-        for (LinkableNode curNode : m_bridgeNodes.values()) {
-            if (node.getNodeId() == curNode.getNodeId())
-                continue;
-            for (String curMac : curNode.getBridgeIdentifiers()) {
-                if (node.hasMacAddress(curMac))
-                    continue;
-                if (macs.contains(curMac))
-                    continue;
-                LogUtils.debugf(this,
-                                "getNotAlreadyFoundMacsOnNode: Found a node/Bridge Identifier %d/%s that was not found in bridge forwarding table for bridge node: %d",
-                                curNode.getNodeId(), curMac, node.getNodeId());
-                macs.add(curMac);
-            }
-        }
-
-        LogUtils.debugf(this,
-                        "getNotAlreadyFoundMacsOnNode: Searching Not Yet Found MAC Address Occurrence on Node: %d",
-                        node.getNodeId());
-
-        if (getLinkd().getAtInterfaces(getPackageName()) != null) { 
-            for (String curMac : getLinkd().getAtInterfaces(getPackageName()).keySet()) {
-                if (node.hasMacAddress(curMac))
-                    continue;
-                if (macs.contains(curMac))
-                    continue;
-                LogUtils.debugf(this,
-                            "getNotAlreadyFoundMacsOnNode: Found a MAC Address %s that was not found in bridge forwarding table for bridge node: %d",
-                            curMac, node.getNodeId());
-                macs.add(curMac);
-            }
-        }
-        return macs;
     }
 
     /**

@@ -32,7 +32,8 @@ import java.net.InetAddress;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.core.utils.InetAddressUtils;
-public class RouterInterface {
+import org.opennms.netmgt.model.topology.EndPoint;
+public class RouterInterface extends EndPoint {
 	
     private int m_ifIndex;
     private int m_metric;

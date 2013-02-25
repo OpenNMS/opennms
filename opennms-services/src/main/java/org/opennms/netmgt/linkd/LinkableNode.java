@@ -41,6 +41,7 @@ import java.util.Set;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.netmgt.model.OnmsStpInterface;
 import org.opennms.netmgt.model.OnmsVlan;
+import org.opennms.netmgt.model.topology.Element;
 import org.springframework.util.Assert;
 
 /**
@@ -49,7 +50,7 @@ import org.springframework.util.Assert;
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
  * @version $Id: $
  */
-public class LinkableNode {
+public class LinkableNode extends Element {
 
     private final int m_nodeId;
 

@@ -33,7 +33,6 @@ import java.net.InetAddress;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.capsd.snmp.NamedSnmpVar;
 import org.opennms.netmgt.capsd.snmp.SnmpStore;
-import org.opennms.netmgt.linkd.DbStpNodeEntry;
 import org.opennms.netmgt.snmp.AggregateTracker;
 import org.opennms.netmgt.snmp.SnmpResult;
 
@@ -49,6 +48,15 @@ import org.opennms.netmgt.snmp.SnmpResult;
  */
 public final class Dot1dBaseGroup extends AggregateTracker
 {
+	
+    /**
+     * the bridge type
+     */
+
+    public static final int BASE_TYPE_UNKNOWN = 1;
+    public static final int BASE_TYPE_TRANSPARENT_ONLY = 2;
+    public static final int BASE_TYPE_SOURCEROUTE_ONLY = 3;
+    public static final int BASE_TYPE_SRT = 4;
 	//
 	// Lookup strings for specific table entries
 	//
@@ -171,7 +179,7 @@ public final class Dot1dBaseGroup extends AggregateTracker
     public int getBridgeType() {
     	Integer type = m_store.getInt32(BASE_NUM_TYPE);
     	if (type == null) {
-            return DbStpNodeEntry.BASE_TYPE_UNKNOWN;
+            return BASE_TYPE_UNKNOWN;
         }
     	return type;
     }

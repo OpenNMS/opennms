@@ -36,6 +36,7 @@ package org.opennms.netmgt.linkd;
 import java.net.InetAddress;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.opennms.netmgt.model.topology.EndPoint;
 
 /**
  * <p>CdpInterface class.</p>
@@ -43,7 +44,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  * @author antonio
  * @version $Id: $
  */
-public class CdpInterface {
+public class CdpInterface extends EndPoint {
 	
 	/**
 	 * the ip address 

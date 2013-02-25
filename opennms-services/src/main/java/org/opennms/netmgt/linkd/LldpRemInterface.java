@@ -30,7 +30,8 @@ package org.opennms.netmgt.linkd;
 
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-public class LldpRemInterface {
+import org.opennms.netmgt.model.topology.EndPoint;
+public class LldpRemInterface extends EndPoint {
 	
     private final Integer m_lldpRemChassidSubtype;
     private final String m_lldpRemChassisid;

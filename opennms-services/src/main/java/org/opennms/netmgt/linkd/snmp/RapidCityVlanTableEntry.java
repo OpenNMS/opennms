@@ -29,15 +29,14 @@
 package org.opennms.netmgt.linkd.snmp;
 
 import org.opennms.netmgt.capsd.snmp.NamedSnmpVar;
-import org.opennms.netmgt.capsd.snmp.SnmpStore;
 
 /**
  *<P>The RapidCityVlanTableEntry class is designed to hold all the MIB
  * information for one entry in the:
  * .1.3.6.1.4.1.2272.1.3.2.1
  *
- * <P>This object is used by the IntelVlanTable  to hold information
- * single entries in the table. See the IntelVlanTable documentation
+ * <P>This object is used by the RapidCityVlanTable  to hold information
+ * single entries in the table. See the RapidCityVlanTable documentation
  * form more information.</P>
  *
  * @author <A HREF="mailto:rssntn67@yahoo.it">Antonio</A>
@@ -45,8 +44,7 @@ import org.opennms.netmgt.capsd.snmp.SnmpStore;
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213</A>
  * @version $Id: $
  */
-public final class RapidCityVlanTableEntry extends SnmpStore
-implements VlanCollectorEntry {
+public final class RapidCityVlanTableEntry extends Vlan {
 
 	// Lookup strings for specific table entries
 	//
@@ -86,6 +84,21 @@ implements VlanCollectorEntry {
 	 */
 	public RapidCityVlanTableEntry() {
 		super(rcVlan_elemList);
+	}
+
+	@Override
+	protected boolean hasVlanIndexOid() {
+		return true;
+	}
+
+	@Override
+	public Integer getVlanStatus() {
+		return VLAN_STATUS_UNKNOWN;
+	}
+
+	@Override
+	public Integer getVlanType() {
+		return VLAN_TYPE_UNKNOWN;
 	}
 	
 }

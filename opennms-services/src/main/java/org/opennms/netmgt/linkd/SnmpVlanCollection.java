@@ -56,7 +56,7 @@ import org.opennms.netmgt.snmp.SnmpWalker;
  * @author <a href="http://www.opennms.org">OpenNMS </a>
  *  
  */
-final class SnmpVlanCollection implements ReadyRunnable {
+public final class SnmpVlanCollection implements ReadyRunnable {
 	/**
 	 * The SnmpPeer object used to communicate via SNMP with the remote host.
 	 */

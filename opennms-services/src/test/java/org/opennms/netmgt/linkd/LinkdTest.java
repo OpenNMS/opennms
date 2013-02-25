@@ -100,7 +100,8 @@ public class LinkdTest extends LinkdNetworkBuilder implements InitializingBean {
         BeanUtils.assertAutowiring(this);
     }
 
-    @Before
+    @SuppressWarnings("deprecation")
+	@Before
     public void setUp() throws Exception {
         // MockLogAppender.setupLogging(true);
         Properties p = new Properties();
@@ -189,7 +190,8 @@ public class LinkdTest extends LinkdNetworkBuilder implements InitializingBean {
         m_nodeDao.flush();
     }
 
-    @Test
+    @SuppressWarnings("deprecation")
+	@Test
     @JUnitSnmpAgents(value={
         @JUnitSnmpAgent(host="10.1.5.1", port=161, resource="classpath:linkd/cisco1700b.properties"),
         @JUnitSnmpAgent(host="10.1.5.2", port=161, resource="classpath:linkd/cisco1700.properties")

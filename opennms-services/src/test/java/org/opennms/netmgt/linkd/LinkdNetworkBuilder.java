@@ -140,7 +140,7 @@ public abstract class LinkdNetworkBuilder {
         return nb.getCurrentNode();
     }
     
-    void printCdpRow(CdpCacheTableEntry cdpCacheTableEntry) {
+    protected void printCdpRow(CdpCacheTableEntry cdpCacheTableEntry) {
         System.err.println("-----------------------------------------------------------");    
         System.err.println("getCdpCacheIfIndex: "+cdpCacheTableEntry.getCdpCacheIfIndex());
         System.err.println("getCdpCacheDeviceIndex: "+cdpCacheTableEntry.getCdpCacheDeviceIndex());
@@ -155,7 +155,7 @@ public abstract class LinkdNetworkBuilder {
         
     }
 
-    void printLldpRemRow(Integer lldpRemLocalPortNum, String lldpRemSysname, 
+    protected void printLldpRemRow(Integer lldpRemLocalPortNum, String lldpRemSysname, 
             String lldpRemChassiid,Integer lldpRemChassisidSubtype,String lldpRemPortid, Integer lldpRemPortidSubtype) {
         System.err.println("-----------------------------------------------------------");    
         System.err.println("getLldpRemLocalPortNum: "+lldpRemLocalPortNum);
@@ -168,7 +168,7 @@ public abstract class LinkdNetworkBuilder {
         System.err.println("");        
     }
     
-    void printLldpLocRow(Integer lldpLocPortNum,
+    protected void printLldpLocRow(Integer lldpLocPortNum,
             Integer lldpLocPortidSubtype, String lldpLocPortid) {
         System.err.println("-----------------------------------------------------------");    
         System.err.println("getLldpLocPortNum: "+lldpLocPortNum);
@@ -179,7 +179,7 @@ public abstract class LinkdNetworkBuilder {
       
     }
     
-    void printLink(DataLinkInterface datalinkinterface) {
+    protected void printLink(DataLinkInterface datalinkinterface) {
         System.out.println("----------------Link------------------");
         Integer nodeid = datalinkinterface.getNode().getId();
         System.out.println("linkid: " + datalinkinterface.getId());
@@ -201,7 +201,7 @@ public abstract class LinkdNetworkBuilder {
 
     }
     
-    void checkLink(OnmsNode node, OnmsNode nodeparent, int ifindex, int parentifindex, DataLinkInterface datalinkinterface) {
+    protected void checkLink(OnmsNode node, OnmsNode nodeparent, int ifindex, int parentifindex, DataLinkInterface datalinkinterface) {
         printLink(datalinkinterface);
         printNode(node);
         printNode(nodeparent);
@@ -220,7 +220,7 @@ public abstract class LinkdNetworkBuilder {
         
     }
     
-    int getStartPoint(List<DataLinkInterface> links) {
+    protected int getStartPoint(List<DataLinkInterface> links) {
         int start = 0;
         for (final DataLinkInterface link:links) {
             if (start==0 || link.getId().intValue() < start)
@@ -229,11 +229,11 @@ public abstract class LinkdNetworkBuilder {
         return start;
     }
     
-    void printipInterface(String nodeStringId,OnmsIpInterface ipinterface) {
+    protected void printipInterface(String nodeStringId,OnmsIpInterface ipinterface) {
         System.out.println(nodeStringId+"_IP_IF_MAP.put(InetAddress.getByName(\""+ipinterface.getIpHostName()+"\"), "+ipinterface.getIfIndex()+");");
     }
     
-    void printSnmpInterface(String nodeStringId,OnmsSnmpInterface snmpinterface) {
+    protected void printSnmpInterface(String nodeStringId,OnmsSnmpInterface snmpinterface) {
         if ( snmpinterface.getIfName() != null)
             System.out.println(nodeStringId+"_IF_IFNAME_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfName()+"\");");
             if (snmpinterface.getIfDescr() != null)

@@ -44,15 +44,14 @@ import org.opennms.netmgt.capsd.snmp.SnmpTable;
 import org.opennms.netmgt.linkd.scheduler.ReadyRunnable;
 import org.opennms.netmgt.linkd.scheduler.Scheduler;
 import org.opennms.netmgt.linkd.snmp.CdpCacheTable;
-import org.opennms.netmgt.linkd.snmp.CiscoVlanTable;
-import org.opennms.netmgt.linkd.snmp.IntelVlanTable;
 import org.opennms.netmgt.linkd.snmp.IpNetToMediaTable;
 import org.opennms.netmgt.linkd.snmp.LldpLocTable;
 import org.opennms.netmgt.linkd.snmp.LldpLocalGroup;
 import org.opennms.netmgt.linkd.snmp.LldpRemTable;
 import org.opennms.netmgt.linkd.snmp.OspfGeneralGroup;
 import org.opennms.netmgt.linkd.snmp.OspfNbrTable;
-import org.opennms.netmgt.linkd.snmp.VlanCollectorEntry;
+import org.opennms.netmgt.linkd.snmp.VlanTable;
+import org.opennms.netmgt.linkd.snmp.VlanTableBasic;
 import org.opennms.netmgt.model.OnmsVlan;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.snmp.CollectionTracker;
@@ -68,28 +67,6 @@ import org.opennms.netmgt.snmp.SnmpWalker;
  * allows the collection to occur in a thread if necessary.
  */
 public final class SnmpCollection implements ReadyRunnable {
-
-    /**
-     * The VLAN string to define VLAN name when collection is made for all
-     * VLAN
-     */
-    public final static String TRUNK_VLAN_NAME = "AllVlans";
-
-    /**
-     * The VLAN string to define VLAN index when collection is made for all
-     * VLAN
-     */
-    public final static int TRUNK_VLAN_INDEX = 0;
-
-    /**
-     * The VLAN string to define default VLAN name
-     */
-    public final static String DEFAULT_VLAN_NAME = "default";
-
-    /**
-     * The VLAN string to define default VLAN index
-     */
-    public final static int DEFAULT_VLAN_INDEX = 1;
 
     /**
      * The SnmpPeer object used to communicate via SNMP with the remote host.
@@ -244,7 +221,7 @@ public final class SnmpCollection implements ReadyRunnable {
         return m_ospfGeneralGroup; 
     }
     
-    boolean hasOspfNbrTable() {
+    public boolean hasOspfNbrTable() {
         return (m_osNbrTable != null && !m_osNbrTable.failed() && !m_osNbrTable.isEmpty());
     }
 
@@ -332,43 +309,6 @@ public final class SnmpCollection implements ReadyRunnable {
         return m_vlanTable;
     }
 
-    /**
-     * Returns the VLAN name from vlanindex.
-     * 
-     * @param m_vlan
-     *            a int.
-     * @return a {@link java.lang.String} object.
-     */
-    public String getVlanName(int m_vlan) {
-        if (this.hasVlanTable()) {
-            for (final SnmpStore ent : this.getVlanTable()) {
-                int vlanIndex = ent.getInt32(VlanCollectorEntry.VLAN_INDEX);
-                if (vlanIndex == m_vlan) {
-                    return ent.getDisplayString(VlanCollectorEntry.VLAN_NAME);
-                }
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Returns the VLAN vlanindex from name.
-     * 
-     * @param m_vlanname
-     *            a {@link java.lang.String} object.
-     * @return a int.
-     */
-    public int getVlanIndex(String m_vlanname) {
-        if (this.hasVlanTable()) {
-            for (final SnmpStore ent : this.getVlanTable()) {
-                String vlanName = ent.getDisplayString(VlanCollectorEntry.VLAN_NAME);
-                if (vlanName.equals(m_vlanname)) {
-                    return ent.getInt32(VlanCollectorEntry.VLAN_INDEX);
-                }
-            }
-        }
-        return -1;
-    }
 
     Map<OnmsVlan, SnmpVlanCollection> getSnmpVlanCollections() {
         return m_snmpVlanCollection;
@@ -542,64 +482,24 @@ public final class SnmpCollection implements ReadyRunnable {
         
 
         if (this.hasVlanTable()) {
-            if (!m_vlanClass.equals(CiscoVlanTable.class.getName())
-                    && !m_vlanClass.equals(IntelVlanTable.class.getName())) {
-                runAndSaveSnmpVlanCollection(new OnmsVlan(
-                                                          TRUNK_VLAN_INDEX,
-                                                          TRUNK_VLAN_NAME,
-                                                          VlanCollectorEntry.VLAN_STATUS_OPERATIONAL));
-            } else {
+        	VlanTableBasic basicvlans = (VlanTableBasic) m_vlanTable;
+            LogUtils.debugf(this,
+                    "run: start snmp collection for %d VLAN entries",
+                    basicvlans.size());
+        	for (OnmsVlan vlan: basicvlans.getVlansForSnmpCollection()) {
+                String community = m_agentConfig.getReadCommunity();
+                Integer vlanindex = vlan.getVlanId();
                 LogUtils.debugf(this,
-                                "run: start collection for %d VLAN entries",
-                                getVlanTable().size());
-                for (final SnmpStore ent : m_vlanTable) {
-                    int vlanindex = ent.getInt32(VlanCollectorEntry.VLAN_INDEX);
-                    if (vlanindex == -1) {
-                        LogUtils.debugf(this,
-                                        "run: found null value for VLAN.");
-                        continue;
-                    }
-                    String vlanname = ent.getDisplayString(VlanCollectorEntry.VLAN_NAME);
-                    if (vlanname == null)
-                        vlanname = DEFAULT_VLAN_NAME;
-                    Integer status = ent.getInt32(VlanCollectorEntry.VLAN_STATUS);
-
-                    if (status == null
-                            || status != VlanCollectorEntry.VLAN_STATUS_OPERATIONAL) {
-                        LogUtils.infof(this,
-                                       "run: skipping VLAN %s: NOT ACTIVE or null",
-                                       vlanindex);
-                        continue;
-                    }
-
-                    String community = m_agentConfig.getReadCommunity();
-                    LogUtils.debugf(this,
-                                    "run: peer community: %s with VLAN %s",
-                                    community, vlanindex);
-
-                    Integer type = ent.getInt32(VlanCollectorEntry.VLAN_TYPE);
-                    if (type == null
-                            || type != VlanCollectorEntry.VLAN_TYPE_ETHERNET) {
-                        LogUtils.infof(this,
-                                       "run: skipping VLAN %s NOT ETHERNET TYPE",
-                                       vlanindex);
-                        continue;
-                    }
-                    if (vlanindex != 1)
-                        m_agentConfig.setReadCommunity(community + "@"
-                                + vlanindex);
-
-                    runAndSaveSnmpVlanCollection(new OnmsVlan(vlanindex,
-                                                              vlanname,
-                                                              status));
-                    m_agentConfig.setReadCommunity(community);
-                }
+                                "run: peer community: %s with VLAN %s",
+                                community, vlanindex);
+                if (vlanindex != 1)
+                    m_agentConfig.setReadCommunity(community + "@"
+                            + vlanindex);
+                runAndSaveSnmpVlanCollection(vlan);
+                m_agentConfig.setReadCommunity(community);
             }
         } else {
-            runAndSaveSnmpVlanCollection(new OnmsVlan(
-                                                      DEFAULT_VLAN_INDEX,
-                                                      DEFAULT_VLAN_NAME,
-                                                      VlanCollectorEntry.VLAN_STATUS_OPERATIONAL));
+            runAndSaveSnmpVlanCollection(new OnmsVlan(VlanTable.DEFAULT_VLAN_INDEX, VlanTable.DEFAULT_VLAN_NAME, VlanTable.DEFAULT_VLAN_STATUS));
         }
         // update info in linkd used correctly by {@link DiscoveryLink}
         LogUtils.debugf(this, "run: saving collection into database for %s",
@@ -632,6 +532,7 @@ public final class SnmpCollection implements ReadyRunnable {
         runned = true;
     }
 
+	@SuppressWarnings("unchecked")
 	private SnmpTable<SnmpStore> createClass(String className, InetAddress address) {
 		SnmpTable<SnmpStore> vlanTable = null;
 		Class<SnmpTable<SnmpStore>> getter = null;

@@ -29,8 +29,11 @@
 package org.opennms.netmgt.linkd.snmp;
 
 import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.opennms.netmgt.capsd.snmp.SnmpTable;
+import org.opennms.netmgt.capsd.snmp.SnmpStore;
+import org.opennms.netmgt.model.OnmsVlan;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 
@@ -46,7 +49,7 @@ import org.opennms.netmgt.snmp.SnmpObjId;
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213 </A>
  * @version $Id: $
  */
-public class CiscoVlanTable extends SnmpTable<CiscoVlanTableEntry> {
+public class CiscoVlanTable extends VlanTableBasic {
 
 	/**
 	 * <P>
@@ -60,12 +63,24 @@ public class CiscoVlanTable extends SnmpTable<CiscoVlanTableEntry> {
 	 * @param address a {@link java.net.InetAddress} object.
 	 */
 	public CiscoVlanTable(InetAddress address) {
-        super(address, "ciscoVlanTable", CiscoVlanTableEntry.ciscoVlan_elemList);
+        super(address, "ciscoVlanTable", CiscoVlanTableEntry.cisco_vlan_elemList);
     }
     
     /** {@inheritDoc} */
     protected CiscoVlanTableEntry createTableEntry(SnmpObjId base, SnmpInstId inst, Object val) {
         return new CiscoVlanTableEntry();
     }
+
+	@Override
+	public List<OnmsVlan> getVlansForSnmpCollection() {
+		List<OnmsVlan> vlans = new ArrayList<OnmsVlan>();
+		for (SnmpStore elm: getEntries()) {
+			OnmsVlan vlan = ((CiscoVlanTableEntry) elm).getOnmsVlan();
+			if (vlan.getVlanType() == CiscoVlanTableEntry.CISCOVTP_VLAN_TYPE_ETHERNET 
+					&& vlan.getVlanStatus() == CiscoVlanTableEntry.CISCOVTP_VLAN_STATUS_OPERATIONAL )
+				vlans.add(vlan);
+		}
+		return vlans;
+	}
 
 }
