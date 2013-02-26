@@ -73,12 +73,14 @@ public class CategoryController extends AbstractController {
 
         RedirectView redirect = new RedirectView("/admin/categories.htm", true);
 
+        // delete a category
         if (removeCategoryIdString != null) {
             m_adminCategoryService.removeCategory(removeCategoryIdString);
             
             return new ModelAndView(redirect);
         }
-        
+
+        // add a category
         if (newCategoryName != null) {
             OnmsCategory cat = m_adminCategoryService.getCategoryWithName(newCategoryName);
             if (cat == null) {
@@ -94,7 +96,8 @@ public class CategoryController extends AbstractController {
              */
             return new ModelAndView(redirect);
         }
-        
+
+        // high-level category edit (add or remove nodes from a category)
         if (categoryIdString != null && editString != null) {
             String editAction = request.getParameter("action");
             if (editAction != null) {
@@ -105,7 +108,7 @@ public class CategoryController extends AbstractController {
 
                 ModelAndView modelAndView = new ModelAndView(redirect);
                 modelAndView.addObject("categoryid", categoryIdString);
-                modelAndView.addObject("edit", null);
+                modelAndView.addObject("edit", "edit");
                 return modelAndView;
             }
 
@@ -113,13 +116,17 @@ public class CategoryController extends AbstractController {
 
             return new ModelAndView("/admin/editCategory", "model", model);
         }
-        
+
+        // if we don't have an edit string, we just show the category
         if (categoryIdString != null) {
             return new ModelAndView("/admin/showCategory", "model", m_adminCategoryService.getCategory(categoryIdString));
         }
-        
+
+        // if we have a nodeId and we're in edit mode, edit the categories for a specific node
         if (nodeIdString != null && editString != null) {
             String editAction = request.getParameter("action");
+            
+            // if we've specified an action, perform that action
             if (editAction != null) {
                 String[] toAdd = request.getParameterValues("toAdd");
                 String[] toDelete = request.getParameterValues("toDelete");
@@ -128,19 +135,20 @@ public class CategoryController extends AbstractController {
 
                 ModelAndView modelAndView = new ModelAndView(redirect);
                 modelAndView.addObject("node", nodeIdString);
-                modelAndView.addObject("edit", null);
+                modelAndView.addObject("edit", "edit");
                 return modelAndView;
             }
 
+            // otherwise, display the edit page for adding and removing categories from a node
             NodeEditModel model = m_adminCategoryService.findNodeCategories(nodeIdString);
 
             return new ModelAndView("/admin/editNodeCategories", "model", model);
         }
 
-
+        // otherwise, just show the category editor
         List<OnmsCategory> sortedCategories = m_adminCategoryService.findAllCategories();
         List<String> surveillanceCategories = getAllSurveillanceViewCategories();
-         
+
         ModelAndView modelAndView = new ModelAndView("/admin/categories");
         modelAndView.addObject("categories", sortedCategories);
         modelAndView.addObject("surveillanceCategories",surveillanceCategories);

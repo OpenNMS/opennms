@@ -31,56 +31,42 @@ package org.opennms.features.topology.api;
 import java.util.Collection;
 
 import org.opennms.features.topology.api.topo.Criteria;
-import org.opennms.features.topology.api.topo.Edge;
-import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.GraphProvider;
+import org.opennms.features.topology.api.topo.StatusProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 
+import com.vaadin.data.Property;
+
 public interface GraphContainer extends DisplayState {
-	
+
 	public interface ChangeListener {
 		public void graphChanged(GraphContainer graphContainer);
 	}
 
-	public Collection<? extends Vertex> getVertices();
+	GraphProvider getBaseTopology();
 
-	public Collection<? extends Vertex> getChildren(VertexRef vRef);
+	void setBaseTopology(GraphProvider graphProvider);
 
-	public Collection<? extends Vertex> getRootGroup();
+	Vertex getParent(VertexRef child);
 
-	public boolean hasChildren(VertexRef vRef);
+	Criteria getCriteria(String namespace);
 
-	public GraphProvider getBaseTopology();
+	void setCriteria(Criteria critiera);
+
+	void addChangeListener(ChangeListener listener);
+
+	void removeChangeListener(ChangeListener listener);
+
+	Graph getGraph();
+
+	Collection<VertexRef> getVertexRefForest(Collection<VertexRef> vertexRefs);
     
-    public void setBaseTopology(GraphProvider graphProvider);
-    
-    public Vertex getParent(VertexRef child);
-    
-    public Vertex getVertex(VertexRef ref);
-    
-    public Edge getEdge(EdgeRef ref);
-    
-	public Criteria getCriteria(String namespace);
-	
-	public void setCriteria(Criteria critiera);
-	
-	public void addChangeListener(ChangeListener listener);
-	
-	public void removeChangeListener(ChangeListener listener);
+	MapViewManager getMapViewManager();
 
-	public Graph getGraph();
-	
-	public SelectionManager getSelectionManager();
-	
-	public Collection<VertexRef> getVertexRefForest(Collection<? extends VertexRef> vertexRefs);
+	Property getScaleProperty();
 
+    StatusProvider getStatusProvider();
 
-	// These will work the GraphProvider in the future
-	@Deprecated
-    public TopologyProvider getDataSource();
-
-    @Deprecated
-    public void setDataSource(TopologyProvider topologyProvider);
-
+    void setStatusProvider(StatusProvider statusProvider);
 }

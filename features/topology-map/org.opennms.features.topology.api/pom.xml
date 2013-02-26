@@ -5,7 +5,7 @@
     <relativePath>../poms/compiled/</relativePath>
     <groupId>org.opennms.features.topology.build</groupId>
     <artifactId>compiled-bundle-settings</artifactId>
-    <version>1.11.4-SNAPSHOT</version>
+    <version>1.11.90-SNAPSHOT</version>
   </parent>
 
   <properties>
@@ -16,7 +16,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.topology</groupId>
   <artifactId>api</artifactId>
-  <version>1.11.4-SNAPSHOT</version>
+  <version>1.11.90-SNAPSHOT</version>
 
   <name>${bundle.symbolicName}</name>
 
@@ -55,6 +55,10 @@
 	   <groupId>org.osgi</groupId>
 	   <artifactId>org.osgi.compendium</artifactId>
 	   <scope>provided</scope>
+	</dependency>
+	<dependency>
+	   <groupId>junit</groupId>
+	   <artifactId>junit</artifactId>
 	</dependency>
 	
   </dependencies>

@@ -102,7 +102,7 @@ public class NodeRestService extends OnmsRestService {
      * @return a {@link org.opennms.netmgt.model.OnmsNodeList} object.
      */
     @GET
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public OnmsNodeList getNodes() {
         readLock();
         
@@ -110,6 +110,7 @@ public class NodeRestService extends OnmsRestService {
             final CriteriaBuilder builder = new CriteriaBuilder(OnmsNode.class);
             builder.alias("snmpInterfaces", "snmpInterface", JoinType.LEFT_JOIN);
             builder.alias("ipInterfaces", "ipInterface", JoinType.LEFT_JOIN);
+            builder.alias("categories", "category", JoinType.LEFT_JOIN);
     
             final MultivaluedMap<String, String> params = m_uriInfo.getQueryParameters();
             final String type = params.getFirst("type");
@@ -146,7 +147,7 @@ public class NodeRestService extends OnmsRestService {
      * @return a {@link org.opennms.netmgt.model.OnmsNode} object.
      */
     @GET
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Path("{nodeCriteria}")
     public OnmsNode getNode(@PathParam("nodeCriteria") final String nodeCriteria) {
         readLock();

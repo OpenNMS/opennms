@@ -10,9 +10,9 @@ public interface Graph {
 
 	Layout getLayout();
 	
-	Collection<? extends Vertex> getDisplayVertices();
+	Collection<Vertex> getDisplayVertices();
 	
-	Collection<? extends Edge> getDisplayEdges();
+	Collection<Edge> getDisplayEdges();
 
 	Edge getEdgeByKey(String edgeKey);
 	

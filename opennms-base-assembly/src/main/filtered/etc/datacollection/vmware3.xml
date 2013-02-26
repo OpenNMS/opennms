@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+
+<!--
+Configuration file generated for:
+
+Full name.......: VMware VirtualCenter 2.5.0 Build-147697
+API type........: VirtualCenter
+API version.....: 2.5u2
+Product name....: null
+Product version.: null
+OS type.........: win32-x86
+-->
+
+<datacollection-group name="VMware3">
+
+  <resourceType name="vmware3Cpu" label="VMware v3 Cpu" resourceLabel="${CpuName}">
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+    <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+  </resourceType>
+
+  <resourceType name="vmware3MgtAgt" label="VMware v3 MgtAgt" resourceLabel="${MgtAgtName}">
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+    <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+  </resourceType>
+
+  <resourceType name="vmware3Net" label="VMware v3 Net" resourceLabel="${NetName}">
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+    <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+  </resourceType>
+
+  <resourceType name="vmware3Disk" label="VMware v3 Disk" resourceLabel="${DiskName}">
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+    <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+  </resourceType>
+
+  <resourceType name="vmware3Sys" label="VMware v3 Sys" resourceLabel="${SysName}">
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+    <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+  </resourceType>
+
+  <resourceType name="vmware3Cpu" label="VMware v3 Cpu" resourceLabel="${CpuName}">
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+    <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+  </resourceType>
+
+  <resourceType name="vmware3Net" label="VMware v3 Net" resourceLabel="${NetName}">
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+    <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+  </resourceType>
+
+  <resourceType name="vmware3Disk" label="VMware v3 Disk" resourceLabel="${DiskName}">
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+    <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+  </resourceType>
+
+</datacollection-group>

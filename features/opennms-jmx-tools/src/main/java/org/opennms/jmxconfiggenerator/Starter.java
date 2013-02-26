@@ -28,9 +28,15 @@
 
 package org.opennms.jmxconfiggenerator;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 import javax.management.MBeanServerConnection;
 import org.apache.commons.io.FileUtils;
 import org.kohsuke.args4j.CmdLineException;
@@ -39,15 +45,17 @@ import org.kohsuke.args4j.Option;
 import org.opennms.jmxconfiggenerator.graphs.GraphConfigGenerator;
 import org.opennms.jmxconfiggenerator.graphs.JmxConfigReader;
 import org.opennms.jmxconfiggenerator.graphs.Report;
-import org.opennms.jmxconfiggenerator.helper.NameTools;
 import org.opennms.jmxconfiggenerator.jmxconfig.JmxDatacollectionConfiggenerator;
 import org.opennms.xmlns.xsd.config.jmx_datacollection.JmxDatacollectionConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Simon Walter <simon.walter@hp-factory.de>
  * @author Markus Neumann <markus@opennms.com>
  */
 public class Starter {
+    private static Logger logger = LoggerFactory.getLogger(Starter.class);
 
     @Option(name = "-jmx", usage = "Generate jmx-datacollection.xml by reading JMX over RMI")
     private boolean jmx = false;
@@ -94,6 +102,8 @@ public class Starter {
     @Option(name = "-dictionary", usage = "Dictionary properties file for replacing attribute names and parts of this names")
     private String dictionaryFile;
 
+    private Map<String, String> dictionary = new HashMap<String, String>();
+
     public static void main(String[] args) throws IOException {
         new Starter().doMain(args);
     }
@@ -113,13 +123,13 @@ public class Starter {
                 throw new CmdLineException(parser, "set jmx or graph.");
             }
             if (jmx && hostName != null && port != null && outFile != null) {
-                NameTools.loadInternalDictionary();
+                dictionary = loadInternalDictionary();
                 if (dictionaryFile != null) {
-                    NameTools.loadExtermalDictionary(dictionaryFile);
+                    dictionary = loadExtermalDictionary(dictionaryFile);
                 }
                 JmxDatacollectionConfiggenerator jmxConfigGenerator = new JmxDatacollectionConfiggenerator();
                 MBeanServerConnection mBeanServerConnection = jmxConfigGenerator.createMBeanServerConnection(hostName, port, username, password, ssl, jmxmp);
-                JmxDatacollectionConfig generateJmxConfigModel = jmxConfigGenerator.generateJmxConfigModel(mBeanServerConnection, serviceName, !skipDefaultVM, runWritableMBeans);
+                JmxDatacollectionConfig generateJmxConfigModel = jmxConfigGenerator.generateJmxConfigModel(mBeanServerConnection, serviceName, !skipDefaultVM, runWritableMBeans, dictionary);
                 jmxConfigGenerator.writeJmxConfigFile(generateJmxConfigModel, outFile);
                 return;
             }
@@ -152,5 +162,43 @@ public class Starter {
             System.err.println(" Generation of jmx-datacollection.xml: java -jar JmxConfigGenerator.jar -jmx -host localhost -port 7199 -out JMX-DatacollectionDummy.xml [-service cassandra] [-skipDefaultVM] [-runWritableMBeans] [-dictionary dictionary.properties]");
             System.err.println(" Generation of snmp-graph.properties: java -jar JmxConfigGenerator.jar -graph -input test.xml -out test.properies [-template graphTemplate.vm] [-service cassandra]");
         }
+    }
+
+    private Map<String, String> loadInternalDictionary() {
+        Map<String, String> internalDictionary = new HashMap<String, String>();
+        Properties properties = new Properties();
+        try {
+            BufferedInputStream stream = new BufferedInputStream(Starter.class.getClassLoader().getResourceAsStream("dictionary.properties"));
+            properties.load(stream);
+            stream.close();
+        } catch (IOException ex) {
+            logger.error("Load dictionary entires from internal properties files error: '{}'", ex.getMessage());
+        }
+        logger.info("Loaded '{}' internal dictionary entiers", properties.size());
+        for (Object key : properties.keySet()) {
+            internalDictionary.put(key.toString(), properties.get(key).toString());
+        }
+        logger.info("Dictionary entries loaded: '{}'", internalDictionary.size());
+        return internalDictionary;
+    }
+    
+    private Map<String, String> loadExtermalDictionary(String dictionaryFile) {
+        Map<String, String> externalDictionary = new HashMap<String, String>();
+        Properties properties = new Properties();
+        try {
+            BufferedInputStream stream = new BufferedInputStream(new FileInputStream(dictionaryFile));
+            properties.load(stream);
+            stream.close();
+        } catch (FileNotFoundException ex) {
+            logger.error("'{}'", ex.getMessage());
+        } catch (IOException ex) {
+            logger.error("'{}'", ex.getMessage());
+        }
+        logger.info("Loaded '{}' external dictionary entiers from '{}'", properties.size(), dictionaryFile);
+        for (Object key : properties.keySet()) {
+            externalDictionary.put(key.toString(), properties.get(key).toString());
+        }
+        logger.info("Dictionary entries loaded: '{}'", externalDictionary.size());
+        return externalDictionary;
     }
 }

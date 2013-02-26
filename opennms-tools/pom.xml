@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.11.4-SNAPSHOT</version>
+    <version>1.11.90-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-tools</artifactId>
@@ -25,7 +25,6 @@
       </activation>
       <modules>
         <module>centric-troubleticketer</module>
-        <module>jira-troubleticketer</module>
         <module>mib2events</module>
         <module>quickbase-troubleticketer</module>
         <module>jrobin-spike-hunter</module>

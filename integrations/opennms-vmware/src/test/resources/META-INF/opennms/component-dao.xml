@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd"
+        >
+
+    <context:annotation-config/>
+
+    <bean id="vmwareCimDatacollectionConfigResourceLocation" class="java.lang.String">
+        <constructor-arg value="file:src/test/resources/etc/vmware-cim-datacollection-config.xml"/>
+    </bean>
+
+    <bean id="vmwareDatacollectionConfigResourceLocation" class="java.lang.String">
+        <constructor-arg value="file:src/test/resources/etc/vmware-datacollection-config.xml"/>
+    </bean>
+
+    <bean id="vmwareConfigResourceLocation" class="java.lang.String">
+        <constructor-arg value="file:src/test/resources/etc/vmware-config.xml"/>
+    </bean>
+
+    <bean id="vmwareCimDatacollectionConfigDao"
+          class="org.opennms.netmgt.dao.jaxb.VmwareCimDatacollectionConfigDaoJaxb">
+        <property name="configResource" ref="vmwareCimDatacollectionConfigResourceLocation"/>
+    </bean>
+
+    <bean id="vmwareDatacollectionConfigDao" class="org.opennms.netmgt.dao.jaxb.VmwareDatacollectionConfigDaoJaxb">
+        <property name="configResource" ref="vmwareDatacollectionConfigResourceLocation"/>
+    </bean>
+
+    <bean id="vmwareConfigDao" class="org.opennms.netmgt.dao.jaxb.VmwareConfigDaoJaxb">
+        <property name="configResource" ref="vmwareConfigResourceLocation"/>
+    </bean>
+
+</beans>

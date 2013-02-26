@@ -262,9 +262,9 @@
   
   <!-- NrtCollection -->
     <context-param>
+        <description>The URL of the Message Broker to connect to</description>
         <param-name>org.apache.activemq.brokerURL</param-name>
         <param-value>tcp://localhost:61616</param-value>
-        <description>The URL of the Message Broker to connect to</description>
     </context-param>
   
   <!-- WARMERGE: insert listener -->
@@ -473,10 +473,6 @@
       <param-value>list.htm</param-value>
     </init-param>    
   </servlet>
-  <servlet>
-    <servlet-name>filterVulnerability</servlet-name>
-    <servlet-class>org.opennms.web.vulnerability.VulnerabilityFilterServlet</servlet-class>
-  </servlet>  
   
   
   <!-- Servlet for updating the notification status -->
@@ -807,11 +803,6 @@
     <url-pattern>/alarm/query</url-pattern>
   </servlet-mapping>
 
-  <servlet-mapping>
-    <servlet-name>filterVulnerability</servlet-name>
-    <url-pattern>/vulnerability/list</url-pattern>
-  </servlet-mapping>    
-  
   <!--servlet mapping for update notification status servlet -->
   <servlet-mapping>
     <servlet-name>updateNotificationStatus</servlet-name>
@@ -1159,10 +1150,6 @@
     <exception-type>org.opennms.web.controller.statisticsReports.StatisticsReportIdNotFoundException</exception-type>
     <location>/errors/statisticsreportidnotfound.jsp</location>
   </error-page>
-  <error-page>
-    <exception-type>org.opennms.web.vulnerability.VulnerabilityIdNotFoundException</exception-type>
-    <location>/errors/vulnerabilityidnotfound.jsp</location>
-  </error-page>  
   <error-page>
     <exception-type>org.opennms.netmgt.model.events.EventProxyException</exception-type>
     <location>/errors/eventproxyexception.jsp</location>

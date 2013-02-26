@@ -3,17 +3,22 @@ package org.opennms.features.topology.app.internal;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 
+import org.opennms.features.topology.api.SelectionListener;
 import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.VertexRef;
+import org.slf4j.LoggerFactory;
 
 public class DefaultSelectionManager implements SelectionManager {
 	private final Set<VertexRef> m_selectedVertices = new HashSet<VertexRef>();
 	private final Set<EdgeRef> m_selectedEdges = new HashSet<EdgeRef>();
-	private final Set<SelectionListener> m_listeners = new CopyOnWriteArraySet<SelectionListener>();
+	private List<SelectionListener> m_listeners = new CopyOnWriteArrayList<SelectionListener>();
+	private final Set<SelectionListener> m_addedListeners = new CopyOnWriteArraySet<SelectionListener>();
 
 	public DefaultSelectionManager() {
 	}
@@ -51,27 +56,40 @@ public class DefaultSelectionManager implements SelectionManager {
 	
 	@Override
 	public void selectVertexRefs(Collection<? extends VertexRef> vertexRefs) {
-		for(VertexRef vertexRef : vertexRefs) {
+	    int selectionSize = getSelectedVertexRefs().size();
+	    for(VertexRef vertexRef : vertexRefs) {
 			setVertexRefSelected(vertexRef, true);
 		}
-		
-		fireSelectionChanged();
+	    int selectionSizeAfterRemoval = getSelectedVertexRefs().size();
+	    
+	    if(selectionSize != selectionSizeAfterRemoval) {
+            fireSelectionChanged();
+        }
 	}
 
 	@Override
 	public void deselectVertexRefs(Collection<? extends VertexRef> vertexRefs) {
-		for(VertexRef vertexRef : vertexRefs) {
+		int selectionSize = getSelectedVertexRefs().size();
+	    for(VertexRef vertexRef : vertexRefs) {
 			setVertexRefSelected(vertexRef, false);
 		}
+		int selectionSizeAfterRemoval = getSelectedVertexRefs().size();
 		
-		fireSelectionChanged();
+		if(selectionSize != selectionSizeAfterRemoval) {
+		    fireSelectionChanged();
+		}
 	}
 
 	@Override
 	public void deselectAll() {
-		doDeselectAll();
+		int vertSelectionSize = m_selectedVertices.size();
+		int edgeSelectionSize = m_selectedEdges.size();
 		
-		fireSelectionChanged();
+	    doDeselectAll();
+		
+	    if(vertSelectionSize > m_selectedVertices.size() || edgeSelectionSize > m_selectedEdges.size()) {
+	        fireSelectionChanged();
+	    }
 	}
 
 	private void doDeselectAll() {
@@ -99,16 +117,30 @@ public class DefaultSelectionManager implements SelectionManager {
 
 	@Override
 	public void addSelectionListener(SelectionListener listener) {
-		m_listeners.add(listener);
+		m_addedListeners.add(listener);
+	}
+	
+	@Override
+	public void setSelectionListeners(List<SelectionListener> listeners) {
+		m_addedListeners.clear();
+		m_listeners = listeners;
 	}
 	
 	@Override
 	public void removeSelectionListener(SelectionListener listener) {
-		m_listeners.remove(listener);
+		// Remove the listener from either the added list or the set collection
+		if (!m_addedListeners.remove(listener)) {
+			m_listeners.remove(listener);
+		}
 	}
 
-	void fireSelectionChanged() {
+	protected void fireSelectionChanged() {
 		for(SelectionListener listener : m_listeners) {
+			LoggerFactory.getLogger(this.getClass()).debug("Invoking selectionChanged() on {}", listener);
+			listener.selectionChanged(this);
+		}
+		for(SelectionListener listener : m_addedListeners) {
+			LoggerFactory.getLogger(this.getClass()).debug("Invoking selectionChanged() on {}", listener);
 			listener.selectionChanged(this);
 		}
 	}

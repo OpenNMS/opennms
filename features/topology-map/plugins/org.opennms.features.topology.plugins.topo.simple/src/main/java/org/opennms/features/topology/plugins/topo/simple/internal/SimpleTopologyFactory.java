@@ -29,15 +29,17 @@
 package org.opennms.features.topology.plugins.topo.simple.internal;
 
 import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
-import java.util.Properties;
 
-import org.opennms.features.topology.api.EditableTopologyProvider;
-import org.opennms.features.topology.api.TopologyProvider;
+import javax.xml.bind.JAXBException;
+
+import org.opennms.features.topology.api.topo.GraphProvider;
+import org.opennms.features.topology.plugins.topo.simple.SimpleGraphProvider;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
@@ -50,8 +52,8 @@ public class SimpleTopologyFactory implements ManagedServiceFactory {
 	private static final String LABEL = "label";
 
 	private BundleContext m_bundleContext;
-	private Map<String, SimpleTopologyProvider> m_providers = new HashMap<String, SimpleTopologyProvider>();
-	private Map<String, ServiceRegistration> m_registrations = new HashMap<String, ServiceRegistration>();
+	private Map<String, SimpleGraphProvider> m_providers = new HashMap<String, SimpleGraphProvider>();
+	private Map<String, ServiceRegistration<GraphProvider>> m_registrations = new HashMap<String, ServiceRegistration<GraphProvider>>();
 
 	public void setBundleContext(BundleContext bundleContext) {
 		m_bundleContext = bundleContext;
@@ -67,9 +69,9 @@ public class SimpleTopologyFactory implements ManagedServiceFactory {
 		
 		try {
 			String location = (String)properties.get(TOPOLOGY_LOCATION);
-			URL url = new URL(location);
+			URI url = new URI(location);
 			if (!m_providers.containsKey(pid)) {
-				SimpleTopologyProvider topoProvider = new SimpleTopologyProvider();
+				SimpleGraphProvider topoProvider = new SimpleGraphProvider();
 				topoProvider.setTopologyLocation(url);
 
 				m_providers.put(pid, topoProvider);
@@ -81,17 +83,16 @@ public class SimpleTopologyFactory implements ManagedServiceFactory {
 					metaData.put(LABEL, properties.get(LABEL));
 				}
 
-				ServiceRegistration<?> registration = m_bundleContext.registerService(new String[] { TopologyProvider.class.getName(), EditableTopologyProvider.class.getName() },
-						topoProvider, metaData);
+				ServiceRegistration<GraphProvider> registration = m_bundleContext.registerService(GraphProvider.class, topoProvider, metaData);
 
 				m_registrations.put(pid, registration);
 
 			} else {
 				m_providers.get(pid).setTopologyLocation(url);
 
-				ServiceRegistration registration = m_registrations.get(pid);
+				ServiceRegistration<GraphProvider> registration = m_registrations.get(pid);
 
-				Properties metaData = new Properties();
+				Dictionary<String,Object> metaData = new Hashtable<String,Object>();
 				metaData.put(Constants.SERVICE_PID, pid);
 
 				if (properties.get(LABEL) != null) {
@@ -101,14 +102,18 @@ public class SimpleTopologyFactory implements ManagedServiceFactory {
 				registration.setProperties(metaData);
 			}
 
+		} catch (URISyntaxException e) {
+			throw new ConfigurationException(TOPOLOGY_LOCATION, "Topology location must be a valid URI", e);
 		} catch (MalformedURLException e) {
-			throw new ConfigurationException(TOPOLOGY_LOCATION, "Topology location must be a valid url");
+			throw new ConfigurationException(TOPOLOGY_LOCATION, "Topology location must be a valid URL", e);
+		} catch (JAXBException e) {
+			throw new ConfigurationException(TOPOLOGY_LOCATION, "Topology location could not be deserialized", e);
 		}
 	}
 
 	@Override
 	public void deleted(String pid) {
-		ServiceRegistration registration = m_registrations.remove(pid);
+		ServiceRegistration<GraphProvider> registration = m_registrations.remove(pid);
 		if (registration != null) {
 			registration.unregister();
 		}

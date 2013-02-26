@@ -22,6 +22,7 @@
     <!-- Widgetset default theme -->
     <!-- This is relative to widgetset_directory/public --> 
     <stylesheet src="topologywidget/styles.css"/>
-    <script src="topologywidget/js/d3.v2.js"/>
+    <script src="topologywidget/js/d3.v3.js"/>
+    <script src="topologywidget/js/d3.interpolate-zoom.v0.js"/>
 
 </module>

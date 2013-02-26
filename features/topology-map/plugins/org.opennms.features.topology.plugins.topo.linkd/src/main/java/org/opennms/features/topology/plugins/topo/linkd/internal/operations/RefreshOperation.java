@@ -28,50 +28,45 @@
 
 package org.opennms.features.topology.plugins.topo.linkd.internal.operations;
 
-import java.util.List;
-
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.api.TopologyProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.slf4j.LoggerFactory;
 
-public class RefreshOperation implements Operation {
+import java.util.List;
 
-    TopologyProvider m_topologyProvider;
-    
-    public RefreshOperation(TopologyProvider topologyProvider) {
-        m_topologyProvider=topologyProvider;
-    }
+public class RefreshOperation implements Operation {
 
     @Override
     public Undoer execute(List<VertexRef> targets, OperationContext operationContext) {
+        if (operationContext != null && operationContext.getGraphContainer() != null) {
             log("executing linkd topology refresh operation");
-            m_topologyProvider.load(null);
-            if (operationContext != null && operationContext.getGraphContainer() != null) {
-                log("operationcontext and GraphContainer not null: executing redoLayout");
-                operationContext.getGraphContainer().redoLayout();
-            }
-            return null;
+
+            operationContext.getGraphContainer().getBaseTopology().refresh();
+
+            log("operationcontext and GraphContainer not null: executing redoLayout");
+            operationContext.getGraphContainer().redoLayout();
+        }
+        return null;
     }
 
     private void log(final String string) {
         LoggerFactory.getLogger(getClass()).debug("{}: {}", getId(), string);
     }
 
-	@Override
+    @Override
     public boolean display(List<VertexRef> targets, OperationContext operationContext) {
         return true;
     }
 
     @Override
     public boolean enabled(List<VertexRef> targets, OperationContext operationContext) {
-    	return true;
+        return true;
     }
 
     @Override
     public String getId() {
-    	return "LinkdTopologyProviderRefreshOperation";
+        return "LinkdTopologyProviderRefreshOperation";
     }
 
 }

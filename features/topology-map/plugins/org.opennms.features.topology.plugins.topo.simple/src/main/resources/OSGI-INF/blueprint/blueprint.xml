@@ -3,13 +3,12 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
 xsi:schemaLocation="
 http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
-http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/aries/tags/blueprint-0.3.1/blueprint-core/src/main/resources/org/apache/aries/blueprint/ext/blueprint-ext.xsd
 http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0 https://svn.apache.org/repos/asf/aries/tags/blueprint-0.3.1/blueprint-cm/src/main/resources/org/apache/aries/blueprint/compendium/cm/blueprint-cm-1.1.0.xsd
 ">
 <!-- 
-    <bean id="simpleTopologyProvider" class="org.opennms.features.topology.plugins.topo.simple.internal.SimpleTopologyProvider" />
+    <bean id="simpleGraphProvider" class="org.opennms.features.topology.plugins.topo.simple.SimpleGraphProvider" />
     
-    <service interface="org.opennms.features.topology.api.TopologyProvider" ref="simpleTopologyProvider"/>
+    <service interface="org.opennms.features.topology.api.topo.GraphProvider" ref="simpleGraphProvider"/>
 -->    
 
 	<bean id="simpleTopologyFactory" class="org.opennms.features.topology.plugins.topo.simple.internal.SimpleTopologyFactory">
@@ -23,9 +22,6 @@ http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0 https://svn.apache.o
     </service>
     
 <!-- 
-    <reference id="activeTopoProvider" interface="org.opennms.features.topology.api.EditableTopologyProvider" availability="optional"
-    	filter="(org.opennms.features.topology.plugins.topo.simple.active=true)" />
-    
     <service interface="org.opennms.features.topology.api.Operation" >
         <service-properties>
             <entry key="operation.menuLocation" value="Edit"/>
@@ -34,39 +30,6 @@ http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0 https://svn.apache.o
         </service-properties>
         <bean class="org.opennms.features.topology.plugins.topo.simple.internal.operations.AddVertexOperation">
             <argument value="VAADIN/widgetsets/org.opennms.features.topology.app.internal.gwt.TopologyWidget/topologywidget/images/server.png"/>
-            <argument ref="activeTopoProvider"/>
-        </bean>
-    </service>
-    
-    <service interface="org.opennms.features.topology.api.Operation" >
-        <service-properties>
-            <entry key="operation.menuLocation" value="Edit"/>
-            <entry key="operation.label" value="Connect"/>
-            <entry key="operation.contextMenuLocation" value=""/>
-        </service-properties>
-        <bean class="org.opennms.features.topology.plugins.topo.simple.internal.operations.ConnectOperation">
-            <argument ref="activeTopoProvider"/>
-        </bean>
-    </service>
-    
-    <service interface="org.opennms.features.topology.api.Operation" >
-        <service-properties>
-            <entry key="operation.menuLocation" value="Edit"/>
-            <entry key="operation.label" value="Create Group"/>
-            <entry key="operation.contextMenuLocation" value=""/>
-        </service-properties>
-        <bean class="org.opennms.features.topology.plugins.topo.simple.internal.operations.CreateGroupOperation">
-            <argument ref="activeTopoProvider"/>
-        </bean>
-    </service>
-    
-    <service interface="org.opennms.features.topology.api.Operation" >
-        <service-properties>
-            <entry key="operation.menuLocation" value="File"/>
-            <entry key="operation.label" value="Open"/>
-        </service-properties>
-        <bean class="org.opennms.features.topology.plugins.topo.simple.internal.operations.OpenOperation">
-            <argument ref="activeTopoProvider"/>
         </bean>
     </service>
     
@@ -76,9 +39,7 @@ http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0 https://svn.apache.o
             <entry key="operation.label" value="Remove Vertex"/>
             <entry key="operation.contextMenuLocation" value=""/>
         </service-properties>
-        <bean class="org.opennms.features.topology.plugins.topo.simple.internal.operations.RemoveVertexOperation">
-            <argument ref="activeTopoProvider"/>
-        </bean>
+        <bean class="org.opennms.features.topology.plugins.topo.simple.internal.operations.RemoveVertexOperation"/>
     </service>
     
     <service interface="org.opennms.features.topology.api.Operation" >
@@ -87,9 +48,7 @@ http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0 https://svn.apache.o
             <entry key="operation.label" value="Reset"/>
             <entry key="operation.contextMenuLocation" value=""/>
         </service-properties>
-        <bean class="org.opennms.features.topology.plugins.topo.simple.internal.operations.ResetOperation">
-            <argument ref="activeTopoProvider"/>
-        </bean>
+        <bean class="org.opennms.features.topology.plugins.topo.simple.internal.operations.ResetOperation"/>
     </service>
     
     <service interface="org.opennms.features.topology.api.Operation" >
@@ -97,11 +56,8 @@ http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0 https://svn.apache.o
             <entry key="operation.menuLocation" value="File"/>
             <entry key="operation.label" value="Save"/>
         </service-properties>
-        <bean class="org.opennms.features.topology.plugins.topo.simple.internal.operations.SaveOperation">
-            <argument ref="activeTopoProvider"/>
-        </bean>
+        <bean class="org.opennms.features.topology.plugins.topo.simple.internal.operations.SaveOperation"/>
     </service>
-    
-    -->
-    
+-->
+
 </blueprint>

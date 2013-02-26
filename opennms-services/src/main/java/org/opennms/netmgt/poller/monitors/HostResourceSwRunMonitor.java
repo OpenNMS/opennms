@@ -31,6 +31,7 @@ package org.opennms.netmgt.poller.monitors;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Level;
@@ -42,11 +43,15 @@ import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
+import org.opennms.netmgt.snmp.RowCallback;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
+import org.opennms.netmgt.snmp.SnmpRowResult;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
+import org.opennms.netmgt.snmp.SnmpWalker;
+import org.opennms.netmgt.snmp.TableTracker;
 
 import antlr.StringUtils;
 
@@ -61,7 +66,14 @@ import antlr.StringUtils;
  * This does SNMP and therefore relies on the SNMP configuration so it is not distributable.
  * </p>
  *
+ * Feature Added (2013-01-23):
+ *
+ * <p>This class uses TableTracker to request multiple columns at once and avoid possible problems,
+ * if the table is re-indexed at the moment is being collected, which is a problem with volatile
+ * services, or service with several forks like crond.</p>
+ *
  * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
+ * @author <A HREF="mailto:agalue@opennms.org">Alejandro Galue </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 @Distributable(DistributionContext.DAEMON)
@@ -211,9 +223,22 @@ public class HostResourceSwRunMonitor extends SnmpMonitorStrategy {
                 return status;
             }
 
-            // This returns two maps: one of instance and service name, and one of instance and status.
-            Map<SnmpInstId, SnmpValue> nameResults = SnmpUtils.getOidValues(agentConfig, "HostResourceSwRunMonitor", SnmpObjId.get(serviceNameOid));
-            Map<SnmpInstId, SnmpValue> statusResults = SnmpUtils.getOidValues(agentConfig, "HostResourceSwRunMonitor", SnmpObjId.get(serviceStatusOid));
+            // This updates two maps: one of instance and service name, and one of instance and status.
+            final SnmpObjId serviceNameOidId = SnmpObjId.get(serviceNameOid);
+            final SnmpObjId serviceStatusOidId = SnmpObjId.get(serviceStatusOid);
+            final Map<SnmpInstId, SnmpValue> nameResults = new HashMap<SnmpInstId, SnmpValue>();
+            final Map<SnmpInstId, SnmpValue> statusResults = new HashMap<SnmpInstId, SnmpValue>();
+            RowCallback callback = new RowCallback() {
+                @Override
+                public void rowCompleted(SnmpRowResult result) {
+                    nameResults.put(result.getInstance(), result.getValue(serviceNameOidId));
+                    statusResults.put(result.getInstance(), result.getValue(serviceStatusOidId));
+                }
+            };
+            TableTracker tracker = new TableTracker(callback, serviceNameOidId, serviceStatusOidId);
+            SnmpWalker walker = SnmpUtils.createWalker(agentConfig, "HostResourceSwRunMonitor", tracker);
+            walker.start();
+            walker.waitFor();
 
             // Iterate over the list of running services
             for(SnmpInstId nameInstance : nameResults.keySet()) {

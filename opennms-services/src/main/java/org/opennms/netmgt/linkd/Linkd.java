@@ -803,7 +803,13 @@ public class Linkd extends AbstractServiceDaemon {
     void sendNewSuspectEvent(InetAddress ipaddress, InetAddress ipowner,
             String pkgName) {
 
-        if (m_newSuspectEventsIpAddr.contains(ipaddress)) {
+    	if (ipaddress == null) {
+            LogUtils.infof(this,
+                    "sendNewSuspectEvent: nothing to send,  IP addressis null");
+            return;    		
+    	}
+
+    	if (m_newSuspectEventsIpAddr.contains(ipaddress)) {
             LogUtils.infof(this,
                            "sendNewSuspectEvent: nothing to send, suspect event previously sent for IP address: %s",
                            str(ipaddress));

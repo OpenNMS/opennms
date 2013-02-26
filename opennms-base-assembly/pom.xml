@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.11.4-SNAPSHOT</version>
+    <version>1.11.90-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-base-assembly</artifactId>
@@ -247,12 +247,16 @@
       <artifactId>opennms-jetty</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
+      <groupId>org.opennms.features</groupId>
       <artifactId>opennms-integration-rt</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
+      <groupId>org.opennms.features</groupId>
       <artifactId>opennms-integration-otrs</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>opennms-integration-remedy</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -282,6 +286,11 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-wmi</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-vmware</artifactId>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -353,7 +362,7 @@
     <dependency>
       <groupId>com.sun.xml</groupId>
       <artifactId>com.springsource.com.sun.xml.bind</artifactId>
-      <version>${jaxbVersion}</version>
+      <version>${springJaxbVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>

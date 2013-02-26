@@ -13,13 +13,19 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         </cm:default-properties>
     </cm:property-placeholder>
     
-    <reference id="topologyProvider" interface="org.opennms.features.topology.api.TopologyProvider" availability="mandatory" />
+    <reference id="topologyProvider" interface="org.opennms.features.topology.api.topo.GraphProvider" availability="mandatory" />
 
     <bean id="topologyApplication" class="org.opennms.features.topology.app.internal.TopologyWidgetTestApplication" scope="prototype">
         <argument ref="commandManager"/>
+        <argument ref="historyManager"/>
         <argument ref="topologyProvider"/>
         <argument ref="providerManager" />
         <argument ref="iconRepoManager"/>
+        <argument>
+            <bean class="org.opennms.features.topology.app.internal.DefaultSelectionManager">
+                <property name="selectionListeners" ref="selectionListeners"/>
+            </bean>
+        </argument>
         <property name="theme" value="${theme}"/>
         <property name="widgetManager" ref="widgetManager"/>
         <property name="treeWidgetManager" ref="treeWidgetManager"/>
@@ -43,8 +49,16 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
     	<property name="bundleContext" ref="blueprintBundleContext" />
     </bean>
     
-    <reference-list interface="org.opennms.features.topology.api.TopologyProvider" availability="mandatory">
-        <reference-listener bind-method="addTopologyProvider" unbind-method="removeTopologyProvider" ref="topologySelector" />
+    <reference-list interface="org.opennms.features.topology.api.topo.GraphProvider" availability="mandatory">
+        <reference-listener bind-method="addGraphProvider" unbind-method="removeGraphProvider" ref="topologySelector" />
+    </reference-list>
+    
+    <bean id="statusSelector" class="org.opennms.features.topology.app.internal.operations.StatusSelector">
+        <property name="bundleContext" ref="blueprintBundleContext" />
+    </bean>
+
+    <reference-list interface="org.opennms.features.topology.api.topo.StatusProvider" availability="optional">
+        <reference-listener bind-method="addStatusProvider" unbind-method="removeStatusProvider" ref="statusSelector" />
     </reference-list>
 
     <!-- default icon repository -->    
@@ -101,7 +115,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
     <reference-list interface="org.opennms.features.topology.api.topo.VertexProvider" availability="optional">
         <reference-listener bind-method="onVertexProviderBind" unbind-method="onVertexProviderUnbind" ref="providerManager"/>
     </reference-list>
-
+    
     <bean id="widgetManager" class="org.opennms.features.topology.app.internal.WidgetManager" />
     <bean id="treeWidgetManager" class="org.opennms.features.topology.app.internal.WidgetManager" />
     
@@ -113,7 +127,100 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="treeWidgetManager"/>
     </reference-list>
     
-    
+    <!-- Move to separate project -->
+    <!--
+		<reference id="alarmDao" interface="org.opennms.netmgt.dao.AlarmDao" availability="mandatory" />
+		<reference id="nodeDao" interface="org.opennms.netmgt.dao.NodeDao" availability="mandatory" />
+
+		<!- - Wrap the DAO in a Vaadin container - ->
+		<bean id="alarmDaoContainer" class="org.opennms.features.topology.app.internal.support.AlarmDaoContainer" scope="prototype">
+			<argument ref="alarmDao" />
+		</bean>
+
+		<service interface="org.opennms.features.topology.api.SelectionListener" ref="alarmDaoContainer"/>
+
+		<bean id="alarmTable" class="com.vaadin.ui.Table" scope="prototype">
+			<argument value="Alarms"/>
+			<argument ref="alarmDaoContainer" />
+			<property name="columnReorderingAllowed" value="true"/>
+			<property name="columnCollapsingAllowed" value="true"/>
+			<property name="visibleColumns">
+				<array>
+					<value>id</value>
+					<value>severity</value>
+					<value>lastEventTime</value>
+					<value>counter</value>
+					<value>nodeLabel</value>
+					<value>ifIndex</value>
+					<value>ipAddr</value>
+					<value>serviceType</value>
+					<value>uei</value>
+					<value>logMsg</value>
+				</array>
+			</property>
+		</bean>
+
+		<bean id="alarmViewContribution" class="org.opennms.features.topology.app.internal.support.BlueprintIViewContribution">
+			<argument ref="blueprintContainer" />
+			<argument value="alarmTable" />
+			<property name="title" value="Alarms" />
+		</bean>
+
+		<service interface="org.opennms.features.topology.api.IViewContribution" ref="alarmViewContribution">
+			<description>Alarm table IViewContribution service.</description>
+			<service-properties>
+				<entry key="location" value="bottom"/>
+			</service-properties>
+		</service>
+
+		<!- - Wrap the DAO in a Vaadin container - ->
+		<bean id="nodeDaoContainer" class="org.opennms.features.topology.app.internal.support.NodeDaoContainer" scope="prototype">
+			<argument ref="nodeDao" />
+		</bean>
+
+		<service interface="org.opennms.features.topology.api.SelectionListener" ref="nodeDaoContainer"/>
+
+		<bean id="nodeTable" class="com.vaadin.ui.Table" scope="prototype">
+			<argument value="Nodes"/>
+			<argument ref="nodeDaoContainer" />
+			<property name="columnReorderingAllowed" value="true"/>
+			<property name="columnCollapsingAllowed" value="true"/>
+			<property name="visibleColumns">
+				<array>
+					<value>id</value>
+					<value>foreignSource</value>
+					<value>foreignId</value>
+					<value>label</value>
+					<value>labelSource</value>
+					<value>lastCapsdPoll</value>
+					<value>primaryInterface</value>
+					<value>sysObjectId</value>
+					<value>sysName</value>
+					<value>sysDescription</value>
+					<value>sysContact</value>
+					<value>sysLocation</value>
+				</array>
+			</property>
+		</bean>
+
+		<bean id="nodeViewContribution" class="org.opennms.features.topology.app.internal.support.BlueprintIViewContribution">
+			<argument ref="blueprintContainer" />
+			<argument value="nodeTable" />
+			<property name="title" value="Nodes" />
+		</bean>
+
+		<service interface="org.opennms.features.topology.api.IViewContribution" ref="nodeViewContribution">
+			<description>Node table IViewContribution service.</description>
+			<service-properties>
+				<entry key="location" value="bottom"/>
+			</service-properties>
+		</service>
+
+		-->
+		<!-- End move to separate project -->
+
+    <reference-list id="selectionListeners" interface="org.opennms.features.topology.api.SelectionListener" availability="optional"/>
+
     <service interface="org.osgi.service.cm.ManagedService" >
         <service-properties>
             <entry key="service.pid" value="org.opennms.features.topology.app.menu"/>
@@ -123,8 +230,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         </bean>
     </service>
     
-    <bean id="commandManager" class="org.opennms.features.topology.app.internal.CommandManager">
-    </bean>
+    <bean id="commandManager" class="org.opennms.features.topology.app.internal.CommandManager" />
     
     <reference-list interface="org.opennms.features.topology.app.internal.Command" availability="optional">
         <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="commandManager">
@@ -281,5 +387,8 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         </service-properties>
         <bean class="org.opennms.features.topology.app.internal.operations.SpringLayoutOperation"/>
     </service>
+    
+    <reference id="historyManager" interface="org.opennms.features.topology.api.HistoryManager" availability="mandatory">
+    </reference>
 
 </blueprint>

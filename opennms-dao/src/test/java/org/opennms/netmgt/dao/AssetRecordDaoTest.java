@@ -29,6 +29,7 @@
 package org.opennms.netmgt.dao;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Collection;
 
@@ -159,4 +160,21 @@ public class AssetRecordDaoTest implements InitializingBean {
         assertEquals(assetRecord.getConnection(), assetRecordFromDb.getConnection());
 
     }
+
+        @Test
+        @Transactional
+    public void testFindByNodeId() {
+        OnmsNode onmsNode = new OnmsNode(m_distPollerDao.load("localhost"));
+        onmsNode.setLabel("myNode");
+        m_nodeDao.save(onmsNode);
+        OnmsAssetRecord assetRecord = onmsNode.getAssetRecord();
+        assetRecord.setAssetNumber("imported-id: 7");
+        m_assetRecordDao.update(assetRecord);
+        m_assetRecordDao.flush();
+
+        //Test findByNodeId method
+        OnmsAssetRecord a = m_assetRecordDao.findByNodeId(onmsNode.getId());
+        assertTrue(a.equals(assetRecord));
+    }
+
 }

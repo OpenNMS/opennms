@@ -78,6 +78,7 @@
     }
     a:hover {
         text-decoration: underline;
+        cursor: pointer;
     }
     
     body { background: #fff; font-family: "Lucida Grande", Verdana, sans-serif;  }

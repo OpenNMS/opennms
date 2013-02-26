@@ -116,7 +116,9 @@ import org.opennms.netmgt.config.trapd.TrapdConfiguration;
 import org.opennms.netmgt.config.users.Userinfo;
 import org.opennms.netmgt.config.vacuumd.VacuumdConfiguration;
 import org.opennms.netmgt.config.viewsdisplay.Viewinfo;
-import org.opennms.netmgt.config.vulnscand.VulnscandConfiguration;
+import org.opennms.netmgt.config.vmware.VmwareConfig;
+import org.opennms.netmgt.config.vmware.cim.VmwareCimDatacollectionConfig;
+import org.opennms.netmgt.config.vmware.vijava.VmwareDatacollectionConfig;
 import org.opennms.netmgt.config.wmi.WmiConfig;
 import org.opennms.netmgt.config.wmi.WmiDatacollectionConfig;
 import org.opennms.netmgt.config.xmlrpcd.XmlrpcdConfiguration;
@@ -457,10 +459,6 @@ public class WillItUnmarshalTest {
         unmarshal("vacuumd-configuration.xml", VacuumdConfiguration.class);
     }
     @Test
-    public void testVulnscandConfiguration() throws Exception {
-        unmarshal("vulnscand-configuration.xml", VulnscandConfiguration.class);
-    }
-    @Test
     public void testXmlrpcdConfiguration() throws Exception {
         unmarshal("xmlrpcd-configuration.xml", XmlrpcdConfiguration.class);
     }
@@ -548,10 +546,21 @@ public class WillItUnmarshalTest {
     public void testJdbcDataCollectionConfiguration() throws Exception {
         unmarshalJaxb("jdbc-datacollection-config.xml", JdbcDataCollectionConfig.class);
     }
-
     @Test
     public void testRemoteRepositoryXmlConfiguration() throws Exception {
         unmarshalJaxb("remote-repository.xml", RemoteRepositoryConfig.class);
+    }
+    @Test
+    public void testVmwareConfiguration() throws Exception {
+        unmarshalJaxb("vmware-config.xml", VmwareConfig.class);
+    }
+    @Test
+    public void testVmwareDatacollectionConfiguration() throws Exception {
+        unmarshalJaxb("vmware-datacollection-config.xml", VmwareDatacollectionConfig.class);
+    }
+    @Test
+    public void testVmwareCimDatacollectionConfiguration() throws Exception {
+        unmarshalJaxb("vmware-cim-datacollection-config.xml", VmwareCimDatacollectionConfig.class);
     }
 
     @Test

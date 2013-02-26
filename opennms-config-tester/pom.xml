@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.11.4-SNAPSHOT</version>
+    <version>1.11.90-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-config-tester</artifactId>
@@ -66,7 +66,7 @@
       <artifactId>opennms-import</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
+      <groupId>org.opennms.features</groupId>
       <artifactId>opennms-integration-otrs</artifactId>
     </dependency>
     <dependency>
@@ -74,12 +74,16 @@
       <artifactId>opennms-rancid-provisioning-adapter</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
+      <groupId>org.opennms.features</groupId>
       <artifactId>opennms-integration-rt</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-snmp-asset-provisioning-adapter</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-vmware</artifactId>
     </dependency>
     <!-- Non-OpenNMS dependencies -->
     <dependency>

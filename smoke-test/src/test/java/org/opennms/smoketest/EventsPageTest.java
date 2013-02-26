@@ -57,7 +57,7 @@ public class EventsPageTest extends OpenNMSSeleniumTestCase {
     public void testAllLinks() {
         selenium.click("link=All events");
         waitForPageToLoad();
-        assertTrue(selenium.isTextPresent("Ack"));
+        assertFalse(selenium.isTextPresent("Ack"));
         assertTrue(selenium.isTextPresent("Event(s) outstanding"));
         assertTrue(selenium.isTextPresent("Event Text"));
         assertTrue(selenium.isElementPresent("link=Interface"));

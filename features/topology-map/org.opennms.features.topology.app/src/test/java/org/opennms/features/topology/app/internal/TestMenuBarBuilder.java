@@ -41,6 +41,7 @@ import java.util.Properties;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.features.topology.api.CheckedOperation;
+import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.topo.VertexRef;
@@ -51,8 +52,6 @@ import com.vaadin.ui.MenuBar.MenuItem;
 
 public class TestMenuBarBuilder {
 
-    private MenuBar m_menubar = new MenuBar();
-    
     @Test
     public void createMenuTest() {
         MenuBarBuilder builder = new MenuBarBuilder();
@@ -147,7 +146,7 @@ public class TestMenuBarBuilder {
         
         cmdManager.onBind(getTestOperation(), getProps("File|New", "NewOperation", ""));
         
-        MenuBar menuBar = cmdManager.getMenuBar(null, null);
+        MenuBar menuBar = cmdManager.getMenuBar(null, null, null);
         
         List<MenuItem> menuItems = menuBar.getItems();
         assertEquals(1, menuItems.size());
@@ -176,7 +175,7 @@ public class TestMenuBarBuilder {
         cmdManager.onBind(getTestOperation(), getProps("Device", "NewOperation?group=additions", ""));
         
         
-        MenuBar menuBar = cmdManager.getMenuBar(null, null);
+        MenuBar menuBar = cmdManager.getMenuBar(null, null, null);
         
         List<MenuItem> menuItems = menuBar.getItems();
         assertEquals(1, menuItems.size());
@@ -203,7 +202,7 @@ public class TestMenuBarBuilder {
         cmdManager.onBind(getTestOperation(), getProps("Edit", "Spring Layout?group=layout", ""));
         
         
-        MenuBar menuBar = cmdManager.getMenuBar(null, null);
+        MenuBar menuBar = cmdManager.getMenuBar(null, null, null);
         
         List<MenuItem> menuItems = menuBar.getItems();
         assertEquals(1, menuItems.size());
@@ -232,7 +231,7 @@ public class TestMenuBarBuilder {
         cmdManager.onBind(getTestOperation(), getProps("Edit", "Spring Layout?group=layout", ""));
         
         
-        MenuBar menuBar = cmdManager.getMenuBar(null, null);
+        MenuBar menuBar = cmdManager.getMenuBar(null, null, null);
         
         List<MenuItem> menuItems = menuBar.getItems();
         assertEquals(1, menuItems.size());
@@ -260,7 +259,7 @@ public class TestMenuBarBuilder {
         
         cmdManager.onBind(getTestOperation(), getProps("File|New", "NewOperation", ""));
         
-        MenuBar menuBar = cmdManager.getMenuBar(null, null);
+        MenuBar menuBar = cmdManager.getMenuBar(null, null, null);
         
         List<MenuItem> menuItems = menuBar.getItems();
         assertEquals(1, menuItems.size());
@@ -282,7 +281,7 @@ public class TestMenuBarBuilder {
         
         cmdManager.onBind(getCheckedTestOperation(), getProps("File", "Operation1", ""));
         
-        MenuBar menuBar = cmdManager.getMenuBar(null, null);
+        MenuBar menuBar = cmdManager.getMenuBar(null, null, null);
         
         List<MenuItem> menuItems = menuBar.getItems();
         assertEquals(1, menuItems.size());
@@ -326,6 +325,19 @@ public class TestMenuBarBuilder {
 					OperationContext operationContext) {
 				// TODO Auto-generated method stub
 				return false;
+			}
+
+			@Override
+			public void applyHistory(GraphContainer context,
+					Map<String, String> settings) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public Map<String, String> createHistory(GraphContainer context) {
+				// TODO Auto-generated method stub
+				return null;
 			}};
 	}
 

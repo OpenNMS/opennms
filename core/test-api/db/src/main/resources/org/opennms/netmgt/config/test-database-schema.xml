@@ -133,6 +133,8 @@
 		<column name="comment"/>
 		<column name="managedobjectinstance"/>
 		<column name="managedobjecttype"/>
+		<column name="geolocation"/>
+		<column name="country"/>
 	</table>
 
 	<table name="applications">

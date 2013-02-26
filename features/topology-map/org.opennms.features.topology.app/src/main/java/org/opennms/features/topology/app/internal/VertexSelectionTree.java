@@ -3,8 +3,8 @@ package org.opennms.features.topology.app.internal;
 import java.util.Collection;
 
 import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.api.SelectionListener;
 import org.opennms.features.topology.api.SelectionManager;
-import org.opennms.features.topology.api.SelectionManager.SelectionListener;
 import org.opennms.features.topology.api.topo.VertexRef;
 
 import com.vaadin.ui.Tree;
@@ -14,12 +14,14 @@ public class VertexSelectionTree extends Tree implements SelectionListener {
 
 	private final String m_title;
     private final GraphContainer m_graphContainer;
+    private final SelectionManager m_selectionManager;
 
-    public VertexSelectionTree(String title, GraphContainer graphContainer) {
+    public VertexSelectionTree(String title, GraphContainer graphContainer, SelectionManager selectionManager) {
         super(null, new GCFilterableContainer(graphContainer));
         m_title = title;
         
         m_graphContainer = graphContainer;
+        m_selectionManager = selectionManager;
         
         this.addListener(new ValueChangeListener() {
             
@@ -27,10 +29,10 @@ public class VertexSelectionTree extends Tree implements SelectionListener {
             public void valueChange(com.vaadin.data.Property.ValueChangeEvent event) {
 
             	@SuppressWarnings("unchecked")
-				Collection<? extends VertexRef> refs = (Collection<? extends VertexRef>)event.getProperty().getValue();
+				Collection<VertexRef> refs = (Collection<VertexRef>)event.getProperty().getValue();
             	
             	Collection<VertexRef> vertices = m_graphContainer.getVertexRefForest(refs);
-            	m_graphContainer.getSelectionManager().setSelectedVertexRefs(vertices);
+            	m_selectionManager.setSelectedVertexRefs(vertices);
             	
             	getContainerDataSource().fireItemSetChange();
             }

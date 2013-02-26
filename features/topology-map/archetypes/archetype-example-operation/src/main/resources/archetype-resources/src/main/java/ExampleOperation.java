@@ -35,19 +35,20 @@ import java.util.List;
 
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.api.topo.VertexRef;
 
 public class ExampleOperation implements Operation {
 
-    public Undoer execute(List<Object> targets, OperationContext operationContext) {
+    public Undoer execute(List<VertexRef> targets, OperationContext operationContext) {
         operationContext.getMainWindow().showNotification("This is an Example Operation, there isn't much to it");
         return null;
     }
 
-    public boolean display(List<Object> targets, OperationContext operationContext) {
+    public boolean display(List<VertexRef> targets, OperationContext operationContext) {
         return false;
     }
 
-    public boolean enabled(List<Object> targets, OperationContext operationContext) {
+    public boolean enabled(List<VertexRef> targets, OperationContext operationContext) {
         return true;
     }
 

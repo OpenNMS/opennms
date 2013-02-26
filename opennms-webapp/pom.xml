@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.11.4-SNAPSHOT</version>
+    <version>1.11.90-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-webapp</artifactId>
@@ -176,7 +176,7 @@
                 <configuration>
                     <artifacts>
                         <artifact>
-                            <file>target/opennms-webapp-1.11.4-SNAPSHOT/WEB-INF/lib/opennms-webapp-1.11.4-SNAPSHOT.jar</file>
+                            <file>target/opennms-webapp-1.11.90-SNAPSHOT/WEB-INF/lib/opennms-webapp-1.11.90-SNAPSHOT.jar</file>
                             <type>jar</type>
                         </artifact>
                     </artifacts>
@@ -361,11 +361,6 @@
         <groupId>org.opennms.core</groupId>
         <artifactId>org.opennms.core.soa</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.opennms.core</groupId>
-      <artifactId>org.opennms.core.osgid</artifactId>
-      <scope>provided</scope> <!-- provided because we don't want all the transient deps for now -->
-    </dependency>
 
     <!-- FIXME: Does this even need to be here? I had to switch it from provided
          to runtime or it interfered with GWT. -->
@@ -427,8 +422,8 @@
     </dependency>
     -->
     <dependency>
-      <groupId>com.google.collections</groupId>
-      <artifactId>google-collections</artifactId>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
     </dependency>
     <dependency>
       <groupId>net.sf.opencsv</groupId>

@@ -35,15 +35,13 @@ import org.opennms.features.topology.api.Constants;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.api.TopologyProvider;
+import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.vaadin.data.Item;
-import com.vaadin.data.Property;
-import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.data.util.PropertysetItem;
 import com.vaadin.ui.Button;
@@ -71,9 +69,9 @@ public class RemoveVertexFromGroupOperation implements Constants, Operation {
 
 		final VertexRef currentGroup = targets.get(0);
 		final String currentGroupId = currentGroup.getId();
-		final Collection<String> childIds = (Collection<String>)graphContainer.getDataSource().getVertexContainer().getChildren(currentGroupId);
-		for (String childId : childIds) {
-			log.debug("Child ID: {}", childId);
+		final Collection<? extends Vertex> children = graphContainer.getBaseTopology().getChildren(currentGroup);
+		for (Vertex child : children) {
+			log.debug("Child ID: {}", child.getId());
 		}
 
 		final Window window = operationContext.getMainWindow();
@@ -94,13 +92,10 @@ public class RemoveVertexFromGroupOperation implements Constants, Operation {
 				String pid = (String) propertyId;
 				if ("Item".equals(pid)) {
 					Select select = new Select("Item");
-					for (String childId : childIds) {
-						BeanItem<?> childVertex = graphContainer.getDataSource().getVertexContainer().getItem(childId);
-						Property childLabelProperty = childVertex.getItemProperty("label");
-						String childLabel = (childLabelProperty == null ? childId : (String)childLabelProperty.getValue());
-						log.debug("Adding child: {}, {}", childId, childLabel);
-						select.addItem(childId);
-						select.setItemCaption(childId, childLabel);
+					for (Vertex child : children) {
+						log.debug("Adding child: {}, {}", child.getId(), child.getLabel());
+						select.addItem(child.getId());
+						select.setItemCaption(child.getId(), child.getLabel());
 					}
 					select.setNewItemsAllowed(false);
 					select.setNullSelectionAllowed(false);
@@ -127,12 +122,11 @@ public class RemoveVertexFromGroupOperation implements Constants, Operation {
 				LoggerFactory.getLogger(this.getClass()).debug("Removing item from group: {}", childId);
 
 				Vertex grandParent = graphContainer.getParent(currentGroup);
-				Object grandParentId = getTopoItemId(graphContainer, grandParent);
 
-				TopologyProvider topologyProvider = graphContainer.getDataSource();
+				GraphProvider topologyProvider = graphContainer.getBaseTopology();
 
 				// Relink the child to the grandparent group (or null if it is null)
-				topologyProvider.setParent(childId, grandParentId);
+				topologyProvider.setParent(graphContainer.getBaseTopology().getVertex(graphContainer.getBaseTopology().getVertexNamespace(), childId), grandParent);
 
 				// Save the topology
 				topologyProvider.save(null);
@@ -187,23 +181,11 @@ public class RemoveVertexFromGroupOperation implements Constants, Operation {
 
 	@Override
 	public boolean enabled(List<VertexRef> targets, OperationContext operationContext) {
-		return (targets.size() == 1) && (operationContext.getGraphContainer().getDataSource().getVertexContainer().getChildren(targets.get(0).getId()).size() > 0);
+		return (targets.size() == 1) && (operationContext.getGraphContainer().getBaseTopology().hasChildren(targets.get(0)));
 	}
 
 	@Override
 	public String getId() {
-		return null;
+		return "RemoveVertexFromGroup";
 	}
-
-	private Object getTopoItemId(GraphContainer graphContainer, VertexRef vertexRef) {
-		if (vertexRef == null)  return null;
-		Vertex v = graphContainer.getVertex(vertexRef);
-		if (v == null) return null;
-		Item item = v.getItem();
-		if (item == null) return null;
-		Property property = item.getItemProperty("itemId");
-		return property == null ? null : property.getValue();
-	}
-
-
 }

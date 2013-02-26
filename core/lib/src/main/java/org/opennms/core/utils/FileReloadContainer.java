@@ -98,6 +98,7 @@ public class FileReloadContainer<T> {
     private Resource m_resource;
     private File m_file;
     private long m_lastModified;
+    private long m_lastFileSize;
     private FileReloadCallback<T> m_callback;
     private long m_reloadCheckInterval = DEFAULT_RELOAD_CHECK_INTERVAL;
     private long m_lastReloadCheck;
@@ -131,6 +132,7 @@ public class FileReloadContainer<T> {
         try {
             m_file = resource.getFile();
             m_lastModified = m_file.lastModified();
+            m_lastFileSize = m_file.length();
         } catch (final IOException e) {
             // Do nothing... we'll fall back to using the InputStream
             LogUtils.infof(this, e, "Resource '%s' does not seem to have an underlying File object; assuming this is not an auto-reloadable file resource", resource);
@@ -146,6 +148,7 @@ public class FileReloadContainer<T> {
     	m_callback = callback;
     	
     	m_lastModified = -1;
+    	m_lastFileSize = -1;
     			
     }
     
@@ -182,7 +185,7 @@ public class FileReloadContainer<T> {
         
         m_lastReloadCheck = System.currentTimeMillis();
         
-        if (m_file.lastModified() < m_lastModified) {
+        if (m_file.lastModified() <= m_lastModified && m_file.length() == m_lastFileSize) {
             return;
         }
         
@@ -200,6 +203,7 @@ public class FileReloadContainer<T> {
          * within the same second, so lastModified doesn't get updated.
          */
         m_lastModified = m_file.lastModified();
+        m_lastFileSize = m_file.length();
             
         final T object;
         try {

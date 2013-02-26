@@ -4,19 +4,21 @@
         .toolbar { position: absolute; top:0px; right:50%; }
     </ui:style>
     <g:HTMLPanel ui:field="m_widgetContainer">
-       <div id="chart-2" style="width: 100%; height: 100%; background-color:red;">
+       <div id="chart-2" class="map-controls" style="width: 100%; height: 100%; background-color:white;">
            <svg ui:field="m_svg" width="100%" height="100%" style="background-color:white;" xmlns:xlink="http://www.w3.org/1999/xlink">
                <defs>
                    <filter id="h200" x="0" y="0" width="1" height="1">
                        <feColorMatrix type="hueRotate" values="200"/>
                    </filter>
                </defs>
+               <g ui:field="m_marginContainer" transform="translate(60, 0)scale(1)">
                <g ui:field="m_svgViewPort" transform="translate(0,0)" >
                    <g id="mapreference">
                        <rect width="1" height="1" x="0" y="0" fill="none"></rect>
                        <g ui:field="m_edgeGroup" transform="scale(1)"></g>
                        <g ui:field="m_vertexGroup" transform="scale(1)"></g>
                    </g>
+               </g>
                </g>
            
                <g ui:field="m_referenceMap" >

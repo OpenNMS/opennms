@@ -95,7 +95,7 @@ public class AcknowledgmentRestService extends OnmsRestService {
      * @return a {@link org.opennms.netmgt.model.OnmsAcknowledgment} object.
      */
     @GET
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Path("{id}")
     @Transactional
     public OnmsAcknowledgment getAcknowledgment(@PathParam("id") String alarmId) {
@@ -132,7 +132,7 @@ public class AcknowledgmentRestService extends OnmsRestService {
      * @return a {@link org.opennms.netmgt.model.OnmsAcknowledgmentCollection} object.
      */
     @GET
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Transactional
     public OnmsAcknowledgmentCollection getAcks() {
         readLock();
