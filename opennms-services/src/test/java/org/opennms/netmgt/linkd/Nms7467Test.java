@@ -149,7 +149,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=CISCO_WS_C2948_IP, port=161, resource="classpath:linkd/nms7467"+CISCO_WS_C2948_IP+"-walk.txt")
+            @JUnitSnmpAgent(host=CISCO_WS_C2948_IP, port=161, resource="classpath:linkd/nms7467/"+CISCO_WS_C2948_IP+"-walk.txt")
     })
     public void testCiscoWsC2948Collection() throws Exception {
         
@@ -239,7 +239,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
     
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=CISCO_C870_IP, port=161, resource="classpath:linkd/nms7467"+CISCO_C870_IP+"-walk.txt")
+            @JUnitSnmpAgent(host=CISCO_C870_IP, port=161, resource="classpath:linkd/nms7467/"+CISCO_C870_IP+"-walk.txt")
     })
     public void testCiscoC870Collection() throws Exception {
         m_nodeDao.save(getCiscoC870());
@@ -358,7 +358,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=NETGEAR_SW_108_IP, port=161, resource="classpath:linkd/nms7467"+NETGEAR_SW_108_IP+"-walk.txt")
+            @JUnitSnmpAgent(host=NETGEAR_SW_108_IP, port=161, resource="classpath:linkd/nms7467/"+NETGEAR_SW_108_IP+"-walk.txt")
     })
     public void testNetGearSw108Collection() throws Exception {
         m_nodeDao.save(getNetGearSw108());
@@ -459,7 +459,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=LINUX_UBUNTU_IP, port=161, resource="classpath:linkd/nms7467"+LINUX_UBUNTU_IP+"-walk.txt")
+            @JUnitSnmpAgent(host=LINUX_UBUNTU_IP, port=161, resource="classpath:linkd/nms7467/"+LINUX_UBUNTU_IP+"-walk.txt")
     })
     public void testLinuxUbuntuCollection() throws Exception {
         m_nodeDao.save(getLinuxUbuntu());
@@ -540,7 +540,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
     
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=DARWIN_10_8_IP, port=161, resource="classpath:linkd/nms7467"+DARWIN_10_8_IP+"-walk.txt")
+            @JUnitSnmpAgent(host=DARWIN_10_8_IP, port=161, resource="classpath:linkd/nms7467/"+DARWIN_10_8_IP+"-walk.txt")
     })
     public void testDarwin108Collection() throws Exception {
         m_nodeDao.save(getDarwin108());
@@ -639,8 +639,8 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
      */
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=DARWIN_10_8_IP, port=161, resource="classpath:linkd/nms7467"+DARWIN_10_8_IP+"-walk.txt"),
-            @JUnitSnmpAgent(host=NETGEAR_SW_108_IP, port=161, resource="classpath:linkd/nms7467"+NETGEAR_SW_108_IP+"-walk.txt")
+            @JUnitSnmpAgent(host=DARWIN_10_8_IP, port=161, resource="classpath:linkd/nms7467/"+DARWIN_10_8_IP+"-walk.txt"),
+            @JUnitSnmpAgent(host=NETGEAR_SW_108_IP, port=161, resource="classpath:linkd/nms7467/"+NETGEAR_SW_108_IP+"-walk.txt")
     })
     public void testLinkDarwinNetgear() throws Exception {
         m_nodeDao.save(getNetGearSw108());
@@ -684,8 +684,8 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
      */
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=CISCO_WS_C2948_IP, port=161, resource="classpath:linkd/nms7467"+CISCO_WS_C2948_IP+"-walk.txt"),
-            @JUnitSnmpAgent(host=NETGEAR_SW_108_IP, port=161, resource="classpath:linkd/nms7467"+NETGEAR_SW_108_IP+"-walk.txt")
+            @JUnitSnmpAgent(host=CISCO_WS_C2948_IP, port=161, resource="classpath:linkd/nms7467/"+CISCO_WS_C2948_IP+"-walk.txt"),
+            @JUnitSnmpAgent(host=NETGEAR_SW_108_IP, port=161, resource="classpath:linkd/nms7467/"+NETGEAR_SW_108_IP+"-walk.txt")
     })
     public void testLinkNetgearCiscoWs() throws Exception {
         m_nodeDao.save(getNetGearSw108());
@@ -729,8 +729,8 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
      */
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=CISCO_WS_C2948_IP, port=161, resource="classpath:linkd/nms7467"+CISCO_WS_C2948_IP+"-walk.txt"),
-            @JUnitSnmpAgent(host=LINUX_UBUNTU_IP, port=161, resource="classpath:linkd/nms7467"+LINUX_UBUNTU_IP+"-walk.txt")
+            @JUnitSnmpAgent(host=CISCO_WS_C2948_IP, port=161, resource="classpath:linkd/nms7467/"+CISCO_WS_C2948_IP+"-walk.txt"),
+            @JUnitSnmpAgent(host=LINUX_UBUNTU_IP, port=161, resource="classpath:linkd/nms7467/"+LINUX_UBUNTU_IP+"-walk.txt")
     })
     public void testLinuxUbuntuCiscoWs() throws Exception {
         m_nodeDao.save(getLinuxUbuntu());
@@ -775,7 +775,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
      */
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=CISCO_WS_C2948_IP, port=161, resource="classpath:linkd/nms7467"+CISCO_WS_C2948_IP+"-walk.txt")
+            @JUnitSnmpAgent(host=CISCO_WS_C2948_IP, port=161, resource="classpath:linkd/nms7467/"+CISCO_WS_C2948_IP+"-walk.txt")
     })
     public void testWorkstationCiscoWs() throws Exception {
         m_nodeDao.save(getNodeWithoutSnmp(WORKSTATION_NAME, WORKSTATION_IP));
@@ -909,8 +909,8 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
      */
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=CISCO_WS_C2948_IP, port=161, resource="classpath:linkd/nms7467"+CISCO_WS_C2948_IP+"-walk.txt"),
-            @JUnitSnmpAgent(host=CISCO_C870_IP, port=161, resource="classpath:linkd/nms7467"+CISCO_C870_IP+"-walk.txt")
+            @JUnitSnmpAgent(host=CISCO_WS_C2948_IP, port=161, resource="classpath:linkd/nms7467/"+CISCO_WS_C2948_IP+"-walk.txt"),
+            @JUnitSnmpAgent(host=CISCO_C870_IP, port=161, resource="classpath:linkd/nms7467/"+CISCO_C870_IP+"-walk.txt")
     })
     public void testCiscoRouterCiscoWsUsingCdp() throws Exception {
         m_nodeDao.save(getCiscoC870());
@@ -975,7 +975,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
     */
    @Test
    @JUnitSnmpAgents(value={
-           @JUnitSnmpAgent(host=CISCO_WS_C2948_IP, port=161, resource="classpath:linkd/nms7467"+CISCO_WS_C2948_IP+"-walk.txt")
+           @JUnitSnmpAgent(host=CISCO_WS_C2948_IP, port=161, resource="classpath:linkd/nms7467/"+CISCO_WS_C2948_IP+"-walk.txt")
    })
    public void testCiscoAccessPointCiscoWsUsingCdp() throws Exception {
        m_nodeDao.save(getCiscoWsC2948());
@@ -1026,11 +1026,11 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
 
    @Test
    @JUnitSnmpAgents(value={
-           @JUnitSnmpAgent(host=CISCO_WS_C2948_IP, port=161, resource="classpath:linkd/nms7467"+CISCO_WS_C2948_IP+"-walk.txt"),
-           @JUnitSnmpAgent(host=CISCO_C870_IP, port=161, resource="classpath:linkd/nms7467"+CISCO_C870_IP+"-walk.txt"),
-           @JUnitSnmpAgent(host=DARWIN_10_8_IP, port=161, resource="classpath:linkd/nms7467"+DARWIN_10_8_IP+"-walk.txt"),
-           @JUnitSnmpAgent(host=NETGEAR_SW_108_IP, port=161, resource="classpath:linkd/nms7467"+NETGEAR_SW_108_IP+"-walk.txt"),
-           @JUnitSnmpAgent(host=LINUX_UBUNTU_IP, port=161, resource="classpath:linkd/nms7467"+LINUX_UBUNTU_IP+"-walk.txt")
+           @JUnitSnmpAgent(host=CISCO_WS_C2948_IP, port=161, resource="classpath:linkd/nms7467/"+CISCO_WS_C2948_IP+"-walk.txt"),
+           @JUnitSnmpAgent(host=CISCO_C870_IP, port=161, resource="classpath:linkd/nms7467/"+CISCO_C870_IP+"-walk.txt"),
+           @JUnitSnmpAgent(host=DARWIN_10_8_IP, port=161, resource="classpath:linkd/nms7467/"+DARWIN_10_8_IP+"-walk.txt"),
+           @JUnitSnmpAgent(host=NETGEAR_SW_108_IP, port=161, resource="classpath:linkd/nms7467/"+NETGEAR_SW_108_IP+"-walk.txt"),
+           @JUnitSnmpAgent(host=LINUX_UBUNTU_IP, port=161, resource="classpath:linkd/nms7467/"+LINUX_UBUNTU_IP+"-walk.txt")
    })
    public void testAllTogether() throws Exception {
 

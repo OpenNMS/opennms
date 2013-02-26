@@ -44,8 +44,8 @@ import org.opennms.netmgt.model.OnmsNode;
 
 public abstract class Nms10205aNetworkBuilder extends LinkdNetworkBuilder {
 
-    static final String MUMBAI_IP = "10.205.56.5";
-    static final String MUMBAI_NAME = "Mumbai";
+    protected static final String MUMBAI_IP = "10.205.56.5";
+    protected static final String MUMBAI_NAME = "Mumbai";
     static final String MUMBAI_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.9";
    
     static final Map<InetAddress,Integer> MUMBAI_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
@@ -55,8 +55,8 @@ public abstract class Nms10205aNetworkBuilder extends LinkdNetworkBuilder {
     static final Map<Integer,String> MUMBAI_IF_IFALIAS_MAP = new HashMap<Integer, String>();
     static final Map<Integer,InetAddress> MUMBAI_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
     
-    static final String CHENNAI_IP = "10.205.56.6";
-    static final String CHENNAI_NAME = "Chennai";
+    protected static final String CHENNAI_IP = "10.205.56.6";
+    protected static final String CHENNAI_NAME = "Chennai";
     static final String CHENNAI_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.25";
    
     static final Map<InetAddress,Integer> CHENNAI_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
@@ -66,8 +66,8 @@ public abstract class Nms10205aNetworkBuilder extends LinkdNetworkBuilder {
     static final Map<Integer,String> CHENNAI_IF_IFALIAS_MAP = new HashMap<Integer, String>();
     static final Map<Integer,InetAddress> CHENNAI_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
 
-    static final String DELHI_IP = "10.205.56.7";
-    static final String DELHI_NAME = "Delhi";
+    protected static final String DELHI_IP = "10.205.56.7";
+    protected static final String DELHI_NAME = "Delhi";
     static final String DELHI_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.29";
    
     static final Map<InetAddress,Integer> DELHI_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
@@ -77,8 +77,8 @@ public abstract class Nms10205aNetworkBuilder extends LinkdNetworkBuilder {
     static final Map<Integer,String> DELHI_IF_IFALIAS_MAP = new HashMap<Integer, String>();
     static final Map<Integer,InetAddress> DELHI_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
     
-    static final String BANGALORE_IP = "10.205.56.9";
-    static final String BANGALORE_NAME = "Bangalore";
+    protected static final String BANGALORE_IP = "10.205.56.9";
+    protected static final String BANGALORE_NAME = "Bangalore";
     static final String BANGALORE_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.10";
    
     static final Map<InetAddress,Integer> BANGALORE_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
@@ -88,8 +88,8 @@ public abstract class Nms10205aNetworkBuilder extends LinkdNetworkBuilder {
     static final Map<Integer,String> BANGALORE_IF_IFALIAS_MAP = new HashMap<Integer, String>();
     static final Map<Integer,InetAddress> BANGALORE_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
 
-    static final String MYSORE_IP = "10.205.56.22";
-    static final String MYSORE_NAME = "Mysore";
+    protected static final String MYSORE_IP = "10.205.56.22";
+    protected static final String MYSORE_NAME = "Mysore";
     static final String MYSORE_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.11";
    
     static final Map<InetAddress,Integer> MYSORE_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
@@ -99,8 +99,8 @@ public abstract class Nms10205aNetworkBuilder extends LinkdNetworkBuilder {
     static final Map<Integer,String> MYSORE_IF_IFALIAS_MAP = new HashMap<Integer, String>();
     static final Map<Integer,InetAddress> MYSORE_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
 
-    static final String BAGMANE_IP = "10.205.56.20";
-    static final String BAGMANE_NAME = "Bagmane";
+    protected static final String BAGMANE_IP = "10.205.56.20";
+    protected static final String BAGMANE_NAME = "Bagmane";
     static final String BAGMANE_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.57";
    
     static final Map<InetAddress,Integer> BAGMANE_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
@@ -110,8 +110,8 @@ public abstract class Nms10205aNetworkBuilder extends LinkdNetworkBuilder {
     static final Map<Integer,String> BAGMANE_IF_IFALIAS_MAP = new HashMap<Integer, String>();
     static final Map<Integer,InetAddress> BAGMANE_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
 
-    static final String SPACE_EX_SW1_IP = "10.205.56.1";
-    static final String SPACE_EX_SW1_NAME = "Space-EX-SW1";
+    protected static final String SPACE_EX_SW1_IP = "10.205.56.1";
+    protected static final String SPACE_EX_SW1_NAME = "Space-EX-SW1";
     static final String SPACE_EX_SW1_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.30";
    
     static final Map<InetAddress,Integer> SPACE_EX_SW1_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
@@ -121,8 +121,8 @@ public abstract class Nms10205aNetworkBuilder extends LinkdNetworkBuilder {
     static final Map<Integer,String> SPACE_EX_SW1_IF_IFALIAS_MAP = new HashMap<Integer, String>();
     static final Map<Integer,InetAddress> SPACE_EX_SW1_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
 
-    static final String SPACE_EX_SW2_IP = "10.205.56.2";
-    static final String SPACE_EX_SW2_NAME = "Space-EX-SW2";
+    protected static final String SPACE_EX_SW2_IP = "10.205.56.2";
+    protected static final String SPACE_EX_SW2_NAME = "Space-EX-SW2";
     static final String SPACE_EX_SW2_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.31";
    
     static final Map<InetAddress,Integer> SPACE_EX_SW2_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
@@ -132,8 +132,8 @@ public abstract class Nms10205aNetworkBuilder extends LinkdNetworkBuilder {
     static final Map<Integer,String> SPACE_EX_SW2_IF_IFALIAS_MAP = new HashMap<Integer, String>();
     static final Map<Integer,InetAddress> SPACE_EX_SW2_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
         
-    static final String J6350_41_IP = "10.205.56.41";
-    static final String J6350_41_NAME = "J6350-41";
+    protected static final String J6350_41_IP = "10.205.56.41";
+    protected static final String J6350_41_NAME = "J6350-41";
     static final String J6350_41_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.20";
    
     static final Map<InetAddress,Integer> J6350_41_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
@@ -143,8 +143,8 @@ public abstract class Nms10205aNetworkBuilder extends LinkdNetworkBuilder {
     static final Map<Integer,String> J6350_41_IF_IFALIAS_MAP = new HashMap<Integer, String>();
     static final Map<Integer,InetAddress> J6350_41_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
 
-    static final String J6350_42_IP = "10.205.56.42";
-    static final String J6350_42_NAME = "J6350-2";
+    protected static final String J6350_42_IP = "10.205.56.42";
+    protected static final String J6350_42_NAME = "J6350-2";
     static final String J6350_42_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.20";
    
     static final Map<InetAddress,Integer> J6350_42_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
@@ -154,8 +154,8 @@ public abstract class Nms10205aNetworkBuilder extends LinkdNetworkBuilder {
     static final Map<Integer,String> J6350_42_IF_IFALIAS_MAP = new HashMap<Integer, String>();
     static final Map<Integer,InetAddress> J6350_42_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
 
-    static final String SRX_100_IP = "10.205.56.23";
-    static final String SRX_100_NAME = "SRX_56.23";
+    protected static final String SRX_100_IP = "10.205.56.23";
+    protected static final String SRX_100_NAME = "SRX_56.23";
     static final String SRX_100_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.41";
    
     static final Map<InetAddress,Integer> SRX_100_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
@@ -165,8 +165,8 @@ public abstract class Nms10205aNetworkBuilder extends LinkdNetworkBuilder {
     static final Map<Integer,String> SRX_100_IF_IFALIAS_MAP = new HashMap<Integer, String>();
     static final Map<Integer,InetAddress> SRX_100_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
 
-    static final String SSG550_IP = "10.205.35.100";
-    static final String SSG550_NAME = "SSG550";
+    protected static final String SSG550_IP = "10.205.35.100";
+    protected static final String SSG550_NAME = "SSG550";
     static final String SSG550_SYSOID = ".1.3.6.1.4.1.3224.1.51";
    
     static final Map<InetAddress,Integer> SSG550_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
