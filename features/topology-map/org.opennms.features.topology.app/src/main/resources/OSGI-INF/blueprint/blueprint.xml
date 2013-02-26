@@ -52,6 +52,14 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
     <reference-list interface="org.opennms.features.topology.api.topo.GraphProvider" availability="mandatory">
         <reference-listener bind-method="addGraphProvider" unbind-method="removeGraphProvider" ref="topologySelector" />
     </reference-list>
+    
+    <bean id="statusSelector" class="org.opennms.features.topology.app.internal.operations.StatusSelector">
+        <property name="bundleContext" ref="blueprintBundleContext" />
+    </bean>
+
+    <reference-list interface="org.opennms.features.topology.api.topo.StatusProvider" availability="optional">
+        <reference-listener bind-method="addStatusProvider" unbind-method="removeStatusProvider" ref="statusSelector" />
+    </reference-list>
 
     <!-- default icon repository -->    
     <service>
@@ -107,7 +115,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
     <reference-list interface="org.opennms.features.topology.api.topo.VertexProvider" availability="optional">
         <reference-listener bind-method="onVertexProviderBind" unbind-method="onVertexProviderUnbind" ref="providerManager"/>
     </reference-list>
-
+    
     <bean id="widgetManager" class="org.opennms.features.topology.app.internal.WidgetManager" />
     <bean id="treeWidgetManager" class="org.opennms.features.topology.app.internal.WidgetManager" />
     

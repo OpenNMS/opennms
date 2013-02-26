@@ -72,7 +72,7 @@
         <dependency>
             <groupId>org.opennms.features</groupId>
             <artifactId>org.opennms.features.name-cutter</artifactId>
-            <version>1.11.4-SNAPSHOT</version>
+            <version>1.11.90-SNAPSHOT</version>
             <type>jar</type>
         </dependency>
         

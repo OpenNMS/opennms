@@ -13,6 +13,7 @@
 
 .vertex.selected .highlight{
     opacity: 1;
+    stroke: #00ffff;
 }
 
 /*** End Vertex Styles***/
@@ -73,3 +74,43 @@ div.v-button-down .v-button-wrap{
 	border-left: 1px solid #dddddd;
 	
 }
+
+/******** Status Styles ********/
+.vertex .status.cleared,
+.vertex .status.normal, 
+.vertex .status.indeterminate,
+.vertex .status.warning, 
+.vertex .status.minor,
+.vertex .status.major,
+.vertex .status.critical {
+	opacity: 1;
+}
+
+.vertex .status.cleared{
+	fill:rgb(152, 152, 152);
+}
+
+.vertex .status.normal{
+	fill:rgb(69, 100, 25);
+}
+
+.vertex .status.indeterminate{
+	fill:rgb(152, 140, 29);
+}
+
+.vertex .status.warning{
+	fill:rgb(247, 201, 36);
+}
+
+.vertex .status.minor{
+	fill:rgb(238, 67, 0);
+}
+.vertex .status.major{
+	fill:rgb(230, 67, 0);
+}
+
+.vertex .status.critical{
+	fill:rgb(183, 35, 0);
+}
+
+

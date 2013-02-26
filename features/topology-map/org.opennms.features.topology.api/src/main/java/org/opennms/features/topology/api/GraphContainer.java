@@ -32,6 +32,7 @@ import java.util.Collection;
 
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.GraphProvider;
+import org.opennms.features.topology.api.topo.StatusProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 
@@ -64,4 +65,8 @@ public interface GraphContainer extends DisplayState {
 	MapViewManager getMapViewManager();
 
 	Property getScaleProperty();
+
+    StatusProvider getStatusProvider();
+
+    void setStatusProvider(StatusProvider statusProvider);
 }
