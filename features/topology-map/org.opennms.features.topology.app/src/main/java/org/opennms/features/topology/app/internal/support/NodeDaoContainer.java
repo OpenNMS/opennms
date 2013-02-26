@@ -37,7 +37,7 @@ import java.util.TreeMap;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.Order;
 import org.opennms.core.criteria.restrictions.EqRestriction;
-import org.opennms.features.topology.api.SelectionManager;
+import org.opennms.features.topology.api.SelectionContext;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
@@ -78,7 +78,7 @@ public class NodeDaoContainer extends OnmsDaoContainer<OnmsNode,Integer> {
 
 	@Override
 	protected Integer getId(OnmsNode bean){
-		return bean.getId();
+		return bean == null ? null : bean.getId();
 	}
 
 	@Override
@@ -100,10 +100,10 @@ public class NodeDaoContainer extends OnmsDaoContainer<OnmsNode,Integer> {
 	}
 
 	@Override
-	public void selectionChanged(SelectionManager selectionManager) {
+	public void selectionChanged(SelectionContext selectionContext) {
 		Collection<Order> oldOrders = m_criteria.getOrders();
 		m_criteria = new Criteria(getItemClass());
-		for (VertexRef ref : selectionManager.getSelectedVertexRefs()) {
+		for (VertexRef ref : selectionContext.getSelectedVertexRefs()) {
 			if ("nodes".equals(ref.getNamespace())) {
 				m_criteria.addRestriction(new EqRestriction("id", Integer.valueOf(ref.getId())));
 			}

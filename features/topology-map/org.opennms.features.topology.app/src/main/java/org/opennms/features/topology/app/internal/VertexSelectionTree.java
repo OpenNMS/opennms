@@ -3,6 +3,7 @@ package org.opennms.features.topology.app.internal;
 import java.util.Collection;
 
 import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.api.SelectionContext;
 import org.opennms.features.topology.api.SelectionListener;
 import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.topo.VertexRef;
@@ -44,8 +45,8 @@ public class VertexSelectionTree extends Tree implements SelectionListener {
      * When a user clicks on a vertex or edge in the UI, update the selection in the tree view.
      */
     @Override
-    public void selectionChanged(SelectionManager selectionManager) {
-        setValue(selectionManager.getSelectedVertexRefs());
+    public void selectionChanged(SelectionContext selectionContext) {
+        setValue(selectionContext.getSelectedVertexRefs());
     }
 
     @Override
