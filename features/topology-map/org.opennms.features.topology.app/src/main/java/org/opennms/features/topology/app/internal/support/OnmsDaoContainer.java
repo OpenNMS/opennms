@@ -46,7 +46,7 @@ import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanItem;
 
-public abstract class OnmsDaoContainer<T,K extends Serializable> implements SelectionListener, Container, Container.Sortable, Container.ItemSetChangeNotifier {
+public abstract class OnmsDaoContainer<T,K extends Serializable> implements SelectionListener, Container, Container.Sortable, Container.Ordered, Container.ItemSetChangeNotifier {
 
 	private static final long serialVersionUID = -9131723065433979979L;
 

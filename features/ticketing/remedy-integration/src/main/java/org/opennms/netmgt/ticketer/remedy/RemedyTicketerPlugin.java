@@ -134,6 +134,7 @@ public class RemedyTicketerPlugin implements Plugin {
 					opennmsTicket.setUser(outputmap.getAssigned_Group());
 				} catch (RemoteException e) {
 					e.printStackTrace();
+					throw new PluginException("Problem getting ticket", e);
 				}    
 		    }		
 		}
@@ -198,12 +199,13 @@ public class RemedyTicketerPlugin implements Plugin {
 				port.helpDesk_Modify_Service(output , getRemedyAuthenticationHeader());
 			} catch (RemoteException e) {
 				e.printStackTrace();
+				throw new PluginException("Problem creating ticket", e);
 			}
     	}
 		
 	}
 
-    private SetInputMap getRemedySetInputMap(Ticket ticket,GetOutputMap output) {
+    private SetInputMap getRemedySetInputMap(Ticket ticket, GetOutputMap output) {
     	Calendar cal = Calendar.getInstance();
     	cal.setTime(new Date());
 		return new SetInputMap(
@@ -424,12 +426,13 @@ public class RemedyTicketerPlugin implements Plugin {
 			newTicket.setId(incident_number);
 		} catch (RemoteException e) {
 			e.printStackTrace();
+			throw new PluginException("Problem saving ticket", e);
 		}
     	
     }
     
 	/**
-     * Convenience method for initialising the ticketServicePort and correctly setting the endpoint.
+     * Convenience method for initializing the ticketServicePort and correctly setting the endpoint.
      *
      * @return TicketServicePort to connect to the remote service.
      */
@@ -445,7 +448,7 @@ public class RemedyTicketerPlugin implements Plugin {
            port = service.getHPD_IncidentInterface_WSPortTypeSoap();
         } catch (ServiceException e) {
             log().error("Failed initialzing Remedy TicketServicePort" + e);
-            throw new PluginException("Failed initialzing Remedy TicketServicePort");
+            throw new PluginException("Failed initialzing Remedy TicketServicePort", e);
         }
         
         return port;
@@ -469,7 +472,7 @@ public class RemedyTicketerPlugin implements Plugin {
            port = service.getHPD_IncidentInterface_Create_WSPortTypeSoap();
         } catch (ServiceException e) {
             log().error("Failed initialzing Remedy TicketServicePort" + e);
-            throw new PluginException("Failed initialzing Remedy TicketServicePort");
+            throw new PluginException("Failed initialzing Remedy TicketServicePort", e);
         }
         
         return port;
