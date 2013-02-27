@@ -76,6 +76,7 @@ public class VMapWidget extends GWTMapWidget implements Paintable {
                 if (node.hasAttribute(key)) feature.putProperty(key, node.getStringAttribute(key));
             }
 
+            feature.bindPopup(NodeMarkerClusterCallback.getPopupTextForMarker(feature));
             featureCollection.add(feature);
         }
 

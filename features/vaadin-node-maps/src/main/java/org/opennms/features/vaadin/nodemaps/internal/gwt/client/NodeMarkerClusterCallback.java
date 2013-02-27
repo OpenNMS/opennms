@@ -21,14 +21,7 @@ final class NodeMarkerClusterCallback implements MarkerClusterEventCallback {
         VConsole.log("Clicked, processing " + markers.size() + " markers.");
         if (markers.size() == 1) {
             final NodeMarker marker = markers.get(0);
-            sb.append("<h2>Node ").append(marker.getNodeLabel()).append("</h2>");
-            sb.append("<p>");
-            sb.append("Node ID: ").append(marker.getNodeId()).append("<br/>");
-            sb.append("Foreign Source: ").append(marker.getForeignSource()).append("<br/>");
-            sb.append("Foreign ID: ").append(marker.getForeignId()).append("<br/>");
-            sb.append("IP Address: ").append(marker.getIpAddress()).append("<br/>");
-            sb.append("Severity: ").append(marker.getSeverityLabel());
-            sb.append("</p>");
+            sb.append(getPopupTextForMarker(marker));
         } else {
             final StringBuilder nodeBuilder = new StringBuilder();
             int unacked = 0;
@@ -53,5 +46,18 @@ final class NodeMarkerClusterCallback implements MarkerClusterEventCallback {
         popup.setLatLng(cluster.getLatLng());
         VConsole.log("html = " + sb.toString());
         PopupImpl.openOn(popup.getJSObject(), cluster.getGroup().getMapObject());
+    }
+
+    public static String getPopupTextForMarker(final NodeMarker marker) {
+        final StringBuilder sb = new StringBuilder();
+        sb.append("<h2>Node ").append(marker.getNodeLabel()).append("</h2>");
+        sb.append("<p>");
+        sb.append("Node ID: ").append(marker.getNodeId()).append("<br/>");
+        sb.append("Foreign Source: ").append(marker.getForeignSource()).append("<br/>");
+        sb.append("Foreign ID: ").append(marker.getForeignId()).append("<br/>");
+        sb.append("IP Address: ").append(marker.getIpAddress()).append("<br/>");
+        sb.append("Severity: ").append(marker.getSeverityLabel());
+        sb.append("</p>");
+        return sb.toString();
     }
 }
