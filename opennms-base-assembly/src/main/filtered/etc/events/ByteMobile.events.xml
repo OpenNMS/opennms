@@ -1,0 +1,2100 @@
+<!-- MIB: BMI-ALARM-MIB -->
+<events>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.8521.11.0.90</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>1</vbnumber>
+			<vbvalue>1114119</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/bytemobile/traps/bmiAlarmRxEvent/1114119</uei>
+	<event-label>ByteMobile trap event: bmiAlarmRxEvent (Media Fidelity Service interrupted: Media Proxy failed)</event-label>
+	<descr>
+<![CDATA[
+<p>A trap that is generated when a new alarming event is received
+by the system and added to the alarm table.</p><table>
+	<tr><td><b>
+
+	bmiAlarmNumber</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmSeverity</b></td><td>
+	%parm[#2]%;</td><td><p>
+		indeterminate(0)
+		critical(1)
+		major(2)
+		minor(3)
+		warning(4)
+		cleared(5)
+		normal(6)
+	</p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmType</b></td><td>
+	%parm[#3]%;</td><td><p>
+		unknown(0)
+		processingError(1)
+		communications(2)
+		qualityOfService(3)
+		environmental(4)
+		equipment(5)
+	</p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmDesc</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmNode</b></td><td>
+	%parm[#5]%</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmTimestamp</b></td><td>
+	%parm[#6]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmProbableCause</b></td><td>
+	%parm[#7]%;</td><td><p></p></td></tr></table>
+]]>
+	</descr>
+	<logmsg dest='logndisplay'><![CDATA[<p>%parm[#4]% on %parm[#5]%</p>]]></logmsg>
+	<severity>Major</severity>
+	<varbindsdecode>
+		<parmid>parm[#2]</parmid>
+		<decode varbindvalue="0" varbinddecodedstring="Indeterminate"/>
+		<decode varbindvalue="1" varbinddecodedstring="Critical"/>
+		<decode varbindvalue="2" varbinddecodedstring="Major"/>
+		<decode varbindvalue="3" varbinddecodedstring="Minor"/>
+		<decode varbindvalue="4" varbinddecodedstring="Warning"/>
+		<decode varbindvalue="5" varbinddecodedstring="Cleared"/>
+		<decode varbindvalue="6" varbinddecodedstring="Normal"/>
+	</varbindsdecode>
+	<varbindsdecode>
+		<parmid>parm[#3]</parmid>
+		<decode varbindvalue="0" varbinddecodedstring="unknown"/>
+		<decode varbindvalue="1" varbinddecodedstring="processingError"/>
+		<decode varbindvalue="2" varbinddecodedstring="communications"/>
+		<decode varbindvalue="3" varbinddecodedstring="qualityOfService"/>
+		<decode varbindvalue="4" varbinddecodedstring="environmental"/>
+		<decode varbindvalue="5" varbinddecodedstring="equipment"/>
+	</varbindsdecode>
+	<alarm-data reduction-key="bmiAlarms:%dpname%:%nodeid%:%parm[#5]%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.8521.11.0.90</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>2</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>1</vbnumber>
+			<vbvalue>1114119</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/bytemobile/traps/bmiAlarmEventCleared/1114119</uei>
+	<event-label>ByteMobile event: bmiAlarmEventCleared (Media Fidelity Service interrupted: Media Proxy failed)</event-label>
+	<descr>
+<![CDATA[
+<p>A trap that is generated when an existing alarming event is deactivated
+or cleared from the system and removed from the alarm table.</p><table>
+	<tr><td><b>
+
+	bmiAlarmNumber</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmSeverity</b></td><td>
+	%parm[#2]%;</td><td><p>
+		indeterminate(0)
+		critical(1)
+		major(2)
+		minor(3)
+		warning(4)
+		cleared(5)
+		normal(6)
+	</p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmType</b></td><td>
+	%parm[#3]%;</td><td><p>
+		unknown(0)
+		processingError(1)
+		communications(2)
+		qualityOfService(3)
+		environmental(4)
+		equipment(5)
+	</p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmDesc</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmNode</b></td><td>
+	%parm[#5]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmTimestamp</b></td><td>
+	%parm[#6]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmProbableCause</b></td><td>
+	%parm[#7]%;</td><td><p></p></td></tr></table>
+]]>
+	</descr>
+	<logmsg dest='logndisplay'><![CDATA[<p>%parm[#4]% on %parm[#5]%</p>]]></logmsg>
+	<severity>Cleared</severity>
+	<varbindsdecode>
+		<parmid>parm[#2]</parmid>
+		<decode varbindvalue="0" varbinddecodedstring="Indeterminate"/>
+		<decode varbindvalue="1" varbinddecodedstring="Critical"/>
+		<decode varbindvalue="2" varbinddecodedstring="Major"/>
+		<decode varbindvalue="3" varbinddecodedstring="Minor"/>
+		<decode varbindvalue="4" varbinddecodedstring="Warning"/>
+		<decode varbindvalue="5" varbinddecodedstring="Cleared"/>
+		<decode varbindvalue="6" varbinddecodedstring="Normal"/>
+	</varbindsdecode>
+	<varbindsdecode>
+		<parmid>parm[#3]</parmid>
+		<decode varbindvalue="0" varbinddecodedstring="unknown"/>
+		<decode varbindvalue="1" varbinddecodedstring="processingError"/>
+		<decode varbindvalue="2" varbinddecodedstring="communications"/>
+		<decode varbindvalue="3" varbinddecodedstring="qualityOfService"/>
+		<decode varbindvalue="4" varbinddecodedstring="environmental"/>
+		<decode varbindvalue="5" varbinddecodedstring="equipment"/>
+	</varbindsdecode>
+	<alarm-data reduction-key="bmiAlarms:%dpname%:%nodeid%:%parm[#5]%:%parm[#1]%" alarm-type="2" auto-clean="false"/>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.8521.11.0.90</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>1</vbnumber>
+			<vbvalue>1114112</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/bytemobile/traps/bmiAlarmRxEvent/1114112</uei>
+	<event-label>ByteMobile trap event: bmiAlarmRxEvent (Media Fidelity service health check has failed)</event-label>
+	<descr>
+<![CDATA[
+<p>A trap that is generated when a new alarming event is received
+by the system and added to the alarm table.</p><table>
+	<tr><td><b>
+
+	bmiAlarmNumber</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmSeverity</b></td><td>
+	%parm[#2]%;</td><td><p>
+		indeterminate(0)
+		critical(1)
+		major(2)
+		minor(3)
+		warning(4)
+		cleared(5)
+		normal(6)
+	</p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmType</b></td><td>
+	%parm[#3]%;</td><td><p>
+		unknown(0)
+		processingError(1)
+		communications(2)
+		qualityOfService(3)
+		environmental(4)
+		equipment(5)
+	</p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmDesc</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmNode</b></td><td>
+	%parm[#5]%</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmTimestamp</b></td><td>
+	%parm[#6]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmProbableCause</b></td><td>
+	%parm[#7]%;</td><td><p></p></td></tr></table>
+]]>
+	</descr>
+	<logmsg dest='logndisplay'><![CDATA[<p>%parm[#4]% on %parm[#5]%</p>]]></logmsg>
+	<severity>Major</severity>
+	<varbindsdecode>
+		<parmid>parm[#2]</parmid>
+		<decode varbindvalue="0" varbinddecodedstring="Indeterminate"/>
+		<decode varbindvalue="1" varbinddecodedstring="Critical"/>
+		<decode varbindvalue="2" varbinddecodedstring="Major"/>
+		<decode varbindvalue="3" varbinddecodedstring="Minor"/>
+		<decode varbindvalue="4" varbinddecodedstring="Warning"/>
+		<decode varbindvalue="5" varbinddecodedstring="Cleared"/>
+		<decode varbindvalue="6" varbinddecodedstring="Normal"/>
+	</varbindsdecode>
+	<varbindsdecode>
+		<parmid>parm[#3]</parmid>
+		<decode varbindvalue="0" varbinddecodedstring="unknown"/>
+		<decode varbindvalue="1" varbinddecodedstring="processingError"/>
+		<decode varbindvalue="2" varbinddecodedstring="communications"/>
+		<decode varbindvalue="3" varbinddecodedstring="qualityOfService"/>
+		<decode varbindvalue="4" varbinddecodedstring="environmental"/>
+		<decode varbindvalue="5" varbinddecodedstring="equipment"/>
+	</varbindsdecode>
+	<alarm-data reduction-key="bmiAlarms:%dpname%:%nodeid%:%parm[#5]%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.8521.11.0.90</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>2</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>1</vbnumber>
+			<vbvalue>1114112</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/bytemobile/traps/bmiAlarmEventCleared/1114112</uei>
+	<event-label>ByteMobile event: bmiAlarmEventCleared (Media Fidelity service health check has failed)</event-label>
+	<descr>
+<![CDATA[
+<p>A trap that is generated when an existing alarming event is deactivated
+or cleared from the system and removed from the alarm table.</p><table>
+	<tr><td><b>
+
+	bmiAlarmNumber</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmSeverity</b></td><td>
+	%parm[#2]%;</td><td><p>
+		indeterminate(0)
+		critical(1)
+		major(2)
+		minor(3)
+		warning(4)
+		cleared(5)
+		normal(6)
+	</p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmType</b></td><td>
+	%parm[#3]%;</td><td><p>
+		unknown(0)
+		processingError(1)
+		communications(2)
+		qualityOfService(3)
+		environmental(4)
+		equipment(5)
+	</p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmDesc</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmNode</b></td><td>
+	%parm[#5]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmTimestamp</b></td><td>
+	%parm[#6]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmProbableCause</b></td><td>
+	%parm[#7]%;</td><td><p></p></td></tr></table>
+]]>
+	</descr>
+	<logmsg dest='logndisplay'><![CDATA[<p>%parm[#4]% on %parm[#5]%</p>]]></logmsg>
+	<severity>Cleared</severity>
+	<varbindsdecode>
+		<parmid>parm[#2]</parmid>
+		<decode varbindvalue="0" varbinddecodedstring="Indeterminate"/>
+		<decode varbindvalue="1" varbinddecodedstring="Critical"/>
+		<decode varbindvalue="2" varbinddecodedstring="Major"/>
+		<decode varbindvalue="3" varbinddecodedstring="Minor"/>
+		<decode varbindvalue="4" varbinddecodedstring="Warning"/>
+		<decode varbindvalue="5" varbinddecodedstring="Cleared"/>
+		<decode varbindvalue="6" varbinddecodedstring="Normal"/>
+	</varbindsdecode>
+	<varbindsdecode>
+		<parmid>parm[#3]</parmid>
+		<decode varbindvalue="0" varbinddecodedstring="unknown"/>
+		<decode varbindvalue="1" varbinddecodedstring="processingError"/>
+		<decode varbindvalue="2" varbinddecodedstring="communications"/>
+		<decode varbindvalue="3" varbinddecodedstring="qualityOfService"/>
+		<decode varbindvalue="4" varbinddecodedstring="environmental"/>
+		<decode varbindvalue="5" varbinddecodedstring="equipment"/>
+	</varbindsdecode>
+	<alarm-data reduction-key="bmiAlarms:%dpname%:%nodeid%:%parm[#5]%:%parm[#1]%" alarm-type="2" auto-clean="false"/>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.8521.11.0.90</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>1</vbnumber>
+			<vbvalue>1114114</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/bytemobile/traps/bmiAlarmRxEvent/1114114</uei>
+	<event-label>ByteMobile trap event: bmiAlarmRxEvent (Media Fidelity Service internal error: no transcoders available)</event-label>
+	<descr>
+<![CDATA[
+<p>A trap that is generated when a new alarming event is received
+by the system and added to the alarm table.</p><table>
+	<tr><td><b>
+
+	bmiAlarmNumber</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmSeverity</b></td><td>
+	%parm[#2]%;</td><td><p>
+		indeterminate(0)
+		critical(1)
+		major(2)
+		minor(3)
+		warning(4)
+		cleared(5)
+		normal(6)
+	</p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmType</b></td><td>
+	%parm[#3]%;</td><td><p>
+		unknown(0)
+		processingError(1)
+		communications(2)
+		qualityOfService(3)
+		environmental(4)
+		equipment(5)
+	</p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmDesc</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmNode</b></td><td>
+	%parm[#5]%</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmTimestamp</b></td><td>
+	%parm[#6]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmProbableCause</b></td><td>
+	%parm[#7]%;</td><td><p></p></td></tr></table>
+]]>
+	</descr>
+	<logmsg dest='logndisplay'><![CDATA[<p>%parm[#4]% on %parm[#5]%</p>]]></logmsg>
+	<severity>Warning</severity>
+	<varbindsdecode>
+		<parmid>parm[#2]</parmid>
+		<decode varbindvalue="0" varbinddecodedstring="Indeterminate"/>
+		<decode varbindvalue="1" varbinddecodedstring="Critical"/>
+		<decode varbindvalue="2" varbinddecodedstring="Major"/>
+		<decode varbindvalue="3" varbinddecodedstring="Minor"/>
+		<decode varbindvalue="4" varbinddecodedstring="Warning"/>
+		<decode varbindvalue="5" varbinddecodedstring="Cleared"/>
+		<decode varbindvalue="6" varbinddecodedstring="Normal"/>
+	</varbindsdecode>
+	<varbindsdecode>
+		<parmid>parm[#3]</parmid>
+		<decode varbindvalue="0" varbinddecodedstring="unknown"/>
+		<decode varbindvalue="1" varbinddecodedstring="processingError"/>
+		<decode varbindvalue="2" varbinddecodedstring="communications"/>
+		<decode varbindvalue="3" varbinddecodedstring="qualityOfService"/>
+		<decode varbindvalue="4" varbinddecodedstring="environmental"/>
+		<decode varbindvalue="5" varbinddecodedstring="equipment"/>
+	</varbindsdecode>
+	<alarm-data reduction-key="bmiAlarms:%dpname%:%nodeid%:%parm[#5]%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.8521.11.0.90</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>1</vbnumber>
+			<vbvalue>2162706</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/bytemobile/traps/bmiAlarmRxEvent/2162706</uei>
+	<event-label>ByteMobile trap event: bmiAlarmRxEvent (web: health check failure for media fidelity service)</event-label>
+	<descr>
+<![CDATA[
+<p>A trap that is generated when a new alarming event is received
+by the system and added to the alarm table.</p><table>
+	<tr><td><b>
+
+	bmiAlarmNumber</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmSeverity</b></td><td>
+	%parm[#2]%;</td><td><p>
+		indeterminate(0)
+		critical(1)
+		major(2)
+		minor(3)
+		warning(4)
+		cleared(5)
+		normal(6)
+	</p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmType</b></td><td>
+	%parm[#3]%;</td><td><p>
+		unknown(0)
+		processingError(1)
+		communications(2)
+		qualityOfService(3)
+		environmental(4)
+		equipment(5)
+	</p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmDesc</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmNode</b></td><td>
+	%parm[#5]%</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmTimestamp</b></td><td>
+	%parm[#6]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmProbableCause</b></td><td>
+	%parm[#7]%;</td><td><p></p></td></tr></table>
+]]>
+	</descr>
+	<logmsg dest='logndisplay'><![CDATA[<p>%parm[#4]% on %parm[#5]%</p>]]></logmsg>
+	<severity>Warning</severity>
+	<varbindsdecode>
+		<parmid>parm[#2]</parmid>
+		<decode varbindvalue="0" varbinddecodedstring="Indeterminate"/>
+		<decode varbindvalue="1" varbinddecodedstring="Critical"/>
+		<decode varbindvalue="2" varbinddecodedstring="Major"/>
+		<decode varbindvalue="3" varbinddecodedstring="Minor"/>
+		<decode varbindvalue="4" varbinddecodedstring="Warning"/>
+		<decode varbindvalue="5" varbinddecodedstring="Cleared"/>
+		<decode varbindvalue="6" varbinddecodedstring="Normal"/>
+	</varbindsdecode>
+	<varbindsdecode>
+		<parmid>parm[#3]</parmid>
+		<decode varbindvalue="0" varbinddecodedstring="unknown"/>
+		<decode varbindvalue="1" varbinddecodedstring="processingError"/>
+		<decode varbindvalue="2" varbinddecodedstring="communications"/>
+		<decode varbindvalue="3" varbinddecodedstring="qualityOfService"/>
+		<decode varbindvalue="4" varbinddecodedstring="environmental"/>
+		<decode varbindvalue="5" varbinddecodedstring="equipment"/>
+	</varbindsdecode>
+	<alarm-data reduction-key="bmiAlarms:%dpname%:%nodeid%:%parm[#5]%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.8521.11.0.90</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>2</vbnumber>
+			<vbvalue>3</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/bytemobile/traps/bmiAlarmRxEvent/25</uei>
+	<event-label>ByteMobile Minor trap event: bmiAlarmRxEvent 25 (Nodes with bad SSH-Health)</event-label>
+	<descr>
+<![CDATA[
+<p>A trap that is generated when a new alarming event is received
+by the system and added to the alarm table.</p><table>
+	<tr><td><b>
+
+	bmiAlarmNumber</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmSeverity</b></td><td>
+	%parm[#2]%;</td><td><p>
+		indeterminate(0)
+		critical(1)
+		major(2)
+		minor(3)
+		warning(4)
+		cleared(5)
+		normal(6)
+	</p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmType</b></td><td>
+	%parm[#3]%;</td><td><p>
+		unknown(0)
+		processingError(1)
+		communications(2)
+		qualityOfService(3)
+		environmental(4)
+		equipment(5)
+	</p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmDesc</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmNode</b></td><td>
+	%parm[#5]%</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmTimestamp</b></td><td>
+	%parm[#6]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmProbableCause</b></td><td>
+	%parm[#7]%;</td><td><p></p></td></tr></table>
+]]>
+	</descr>
+	<logmsg dest='logndisplay'><![CDATA[<p>%parm[#4]% on %parm[#5]%</p>]]></logmsg>
+	<severity>Minor</severity>
+	<varbindsdecode>
+		<parmid>parm[#2]</parmid>
+		<decode varbindvalue="0" varbinddecodedstring="Indeterminate"/>
+		<decode varbindvalue="1" varbinddecodedstring="Critical"/>
+		<decode varbindvalue="2" varbinddecodedstring="Major"/>
+		<decode varbindvalue="3" varbinddecodedstring="Minor"/>
+		<decode varbindvalue="4" varbinddecodedstring="Warning"/>
+		<decode varbindvalue="5" varbinddecodedstring="Cleared"/>
+		<decode varbindvalue="6" varbinddecodedstring="Normal"/>
+	</varbindsdecode>
+	<varbindsdecode>
+		<parmid>parm[#3]</parmid>
+		<decode varbindvalue="0" varbinddecodedstring="unknown"/>
+		<decode varbindvalue="1" varbinddecodedstring="processingError"/>
+		<decode varbindvalue="2" varbinddecodedstring="communications"/>
+		<decode varbindvalue="3" varbinddecodedstring="qualityOfService"/>
+		<decode varbindvalue="4" varbinddecodedstring="environmental"/>
+		<decode varbindvalue="5" varbinddecodedstring="equipment"/>
+	</varbindsdecode>
+	<alarm-data reduction-key="bmiAlarms:%dpname%:%nodeid%:%parm[#5]%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.8521.11.0.90</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>2</vbnumber>
+			<vbvalue>1</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/bytemobile/traps/bmiAlarmRxEvent/Critical</uei>
+	<event-label>ByteMobile Critical trap event: bmiAlarmRxEvent</event-label>
+	<descr>
+<![CDATA[
+<p>A trap that is generated when a new alarming event is received
+by the system and added to the alarm table.</p><table>
+	<tr><td><b>
+
+	bmiAlarmNumber</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmSeverity</b></td><td>
+	%parm[#2]%;</td><td><p>
+		indeterminate(0)
+		critical(1)
+		major(2)
+		minor(3)
+		warning(4)
+		cleared(5)
+		normal(6)
+	</p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmType</b></td><td>
+	%parm[#3]%;</td><td><p>
+		unknown(0)
+		processingError(1)
+		communications(2)
+		qualityOfService(3)
+		environmental(4)
+		equipment(5)
+	</p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmDesc</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmNode</b></td><td>
+	%parm[#5]%</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmTimestamp</b></td><td>
+	%parm[#6]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmProbableCause</b></td><td>
+	%parm[#7]%;</td><td><p></p></td></tr></table>
+]]>
+	</descr>
+	<logmsg dest='logndisplay'><![CDATA[<p>%parm[#4]% on %parm[#5]%</p>]]></logmsg>
+	<severity>Critical</severity>
+	<varbindsdecode>
+		<parmid>parm[#2]</parmid>
+		<decode varbindvalue="0" varbinddecodedstring="Indeterminate"/>
+		<decode varbindvalue="1" varbinddecodedstring="Critical"/>
+		<decode varbindvalue="2" varbinddecodedstring="Major"/>
+		<decode varbindvalue="3" varbinddecodedstring="Minor"/>
+		<decode varbindvalue="4" varbinddecodedstring="Warning"/>
+		<decode varbindvalue="5" varbinddecodedstring="Cleared"/>
+		<decode varbindvalue="6" varbinddecodedstring="Normal"/>
+	</varbindsdecode>
+	<varbindsdecode>
+		<parmid>parm[#3]</parmid>
+		<decode varbindvalue="0" varbinddecodedstring="unknown"/>
+		<decode varbindvalue="1" varbinddecodedstring="processingError"/>
+		<decode varbindvalue="2" varbinddecodedstring="communications"/>
+		<decode varbindvalue="3" varbinddecodedstring="qualityOfService"/>
+		<decode varbindvalue="4" varbinddecodedstring="environmental"/>
+		<decode varbindvalue="5" varbinddecodedstring="equipment"/>
+	</varbindsdecode>
+	<alarm-data reduction-key="bmiAlarms:%dpname%:%nodeid%:%parm[#5]%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.8521.11.0.90</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>2</vbnumber>
+			<vbvalue>2</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/bytemobile/traps/bmiAlarmRxEvent/Major</uei>
+	<event-label>ByteMobile Major trap event: bmiAlarmRxEvent</event-label>
+	<descr>
+<![CDATA[
+<p>A trap that is generated when a new alarming event is received
+by the system and added to the alarm table.</p><table>
+	<tr><td><b>
+
+	bmiAlarmNumber</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmSeverity</b></td><td>
+	%parm[#2]%;</td><td><p>
+		indeterminate(0)
+		critical(1)
+		major(2)
+		minor(3)
+		warning(4)
+		cleared(5)
+		normal(6)
+	</p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmType</b></td><td>
+	%parm[#3]%;</td><td><p>
+		unknown(0)
+		processingError(1)
+		communications(2)
+		qualityOfService(3)
+		environmental(4)
+		equipment(5)
+	</p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmDesc</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmNode</b></td><td>
+	%parm[#5]%</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmTimestamp</b></td><td>
+	%parm[#6]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmProbableCause</b></td><td>
+	%parm[#7]%;</td><td><p></p></td></tr></table>
+]]>
+	</descr>
+	<logmsg dest='logndisplay'><![CDATA[<p>%parm[#4]% on %parm[#5]%</p>]]></logmsg>
+	<severity>Major</severity>
+	<varbindsdecode>
+		<parmid>parm[#2]</parmid>
+		<decode varbindvalue="0" varbinddecodedstring="Indeterminate"/>
+		<decode varbindvalue="1" varbinddecodedstring="Critical"/>
+		<decode varbindvalue="2" varbinddecodedstring="Major"/>
+		<decode varbindvalue="3" varbinddecodedstring="Minor"/>
+		<decode varbindvalue="4" varbinddecodedstring="Warning"/>
+		<decode varbindvalue="5" varbinddecodedstring="Cleared"/>
+		<decode varbindvalue="6" varbinddecodedstring="Normal"/>
+	</varbindsdecode>
+	<varbindsdecode>
+		<parmid>parm[#3]</parmid>
+		<decode varbindvalue="0" varbinddecodedstring="unknown"/>
+		<decode varbindvalue="1" varbinddecodedstring="processingError"/>
+		<decode varbindvalue="2" varbinddecodedstring="communications"/>
+		<decode varbindvalue="3" varbinddecodedstring="qualityOfService"/>
+		<decode varbindvalue="4" varbinddecodedstring="environmental"/>
+		<decode varbindvalue="5" varbinddecodedstring="equipment"/>
+	</varbindsdecode>
+	<alarm-data reduction-key="bmiAlarms:%dpname%:%nodeid%:%parm[#5]%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.8521.11.0.90</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>2</vbnumber>
+			<vbvalue>3</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/bytemobile/traps/bmiAlarmRxEvent/Minor</uei>
+	<event-label>ByteMobile Minor trap event: bmiAlarmRxEvent</event-label>
+	<descr>
+<![CDATA[
+<p>A trap that is generated when a new alarming event is received
+by the system and added to the alarm table.</p><table>
+	<tr><td><b>
+
+	bmiAlarmNumber</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmSeverity</b></td><td>
+	%parm[#2]%;</td><td><p>
+		indeterminate(0)
+		critical(1)
+		major(2)
+		minor(3)
+		warning(4)
+		cleared(5)
+		normal(6)
+	</p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmType</b></td><td>
+	%parm[#3]%;</td><td><p>
+		unknown(0)
+		processingError(1)
+		communications(2)
+		qualityOfService(3)
+		environmental(4)
+		equipment(5)
+	</p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmDesc</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmNode</b></td><td>
+	%parm[#5]%</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmTimestamp</b></td><td>
+	%parm[#6]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmProbableCause</b></td><td>
+	%parm[#7]%;</td><td><p></p></td></tr></table>
+]]>
+	</descr>
+	<logmsg dest='logndisplay'><![CDATA[<p>%parm[#4]% on %parm[#5]%</p>]]></logmsg>
+	<severity>Minor</severity>
+	<varbindsdecode>
+		<parmid>parm[#2]</parmid>
+		<decode varbindvalue="0" varbinddecodedstring="Indeterminate"/>
+		<decode varbindvalue="1" varbinddecodedstring="Critical"/>
+		<decode varbindvalue="2" varbinddecodedstring="Major"/>
+		<decode varbindvalue="3" varbinddecodedstring="Minor"/>
+		<decode varbindvalue="4" varbinddecodedstring="Warning"/>
+		<decode varbindvalue="5" varbinddecodedstring="Cleared"/>
+		<decode varbindvalue="6" varbinddecodedstring="Normal"/>
+	</varbindsdecode>
+	<varbindsdecode>
+		<parmid>parm[#3]</parmid>
+		<decode varbindvalue="0" varbinddecodedstring="unknown"/>
+		<decode varbindvalue="1" varbinddecodedstring="processingError"/>
+		<decode varbindvalue="2" varbinddecodedstring="communications"/>
+		<decode varbindvalue="3" varbinddecodedstring="qualityOfService"/>
+		<decode varbindvalue="4" varbinddecodedstring="environmental"/>
+		<decode varbindvalue="5" varbinddecodedstring="equipment"/>
+	</varbindsdecode>
+	<alarm-data reduction-key="bmiAlarms:%dpname%:%nodeid%:%parm[#5]%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.8521.11.0.90</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>2</vbnumber>
+			<vbvalue>4</vbvalue>
+		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/bytemobile/traps/bmiAlarmRxEvent/Warn</uei>
+	<event-label>ByteMobile Warn trap event: bmiAlarmRxEvent</event-label>
+	<descr>
+<![CDATA[
+<p>A trap that is generated when a new alarming event is received
+by the system and added to the alarm table.</p><table>
+	<tr><td><b>
+
+	bmiAlarmNumber</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmSeverity</b></td><td>
+	%parm[#2]%;</td><td><p>
+		indeterminate(0)
+		critical(1)
+		major(2)
+		minor(3)
+		warning(4)
+		cleared(5)
+		normal(6)
+	</p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmType</b></td><td>
+	%parm[#3]%;</td><td><p>
+		unknown(0)
+		processingError(1)
+		communications(2)
+		qualityOfService(3)
+		environmental(4)
+		equipment(5)
+	</p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmDesc</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmNode</b></td><td>
+	%parm[#5]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmTimestamp</b></td><td>
+	%parm[#6]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmProbableCause</b></td><td>
+	%parm[#7]%;</td><td><p></p></td></tr></table>
+]]>
+	</descr>
+	<logmsg dest='logndisplay'><![CDATA[<p>%parm[#4]% on %parm[#5]%</p>]]></logmsg>
+	<severity>Warning</severity>
+	<varbindsdecode>
+		<parmid>parm[#2]</parmid>
+		<decode varbindvalue="0" varbinddecodedstring="Indeterminate"/>
+		<decode varbindvalue="1" varbinddecodedstring="Critical"/>
+		<decode varbindvalue="2" varbinddecodedstring="Major"/>
+		<decode varbindvalue="3" varbinddecodedstring="Minor"/>
+		<decode varbindvalue="4" varbinddecodedstring="Warning"/>
+		<decode varbindvalue="5" varbinddecodedstring="Cleared"/>
+		<decode varbindvalue="6" varbinddecodedstring="Normal"/>
+	</varbindsdecode>
+	<varbindsdecode>
+		<parmid>parm[#3]</parmid>
+		<decode varbindvalue="0" varbinddecodedstring="unknown"/>
+		<decode varbindvalue="1" varbinddecodedstring="processingError"/>
+		<decode varbindvalue="2" varbinddecodedstring="communications"/>
+		<decode varbindvalue="3" varbinddecodedstring="qualityOfService"/>
+		<decode varbindvalue="4" varbinddecodedstring="environmental"/>
+		<decode varbindvalue="5" varbinddecodedstring="equipment"/>
+	</varbindsdecode>
+	<alarm-data reduction-key="bmiAlarms:%dpname%:%nodeid%:%parm[#5]%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.8521.11.0.90</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/bytemobile/traps/bmiAlarmRxEvent</uei>
+	<event-label>ByteMobile trap event: bmiAlarmRxEvent</event-label>
+	<descr>
+<![CDATA[
+<p>A trap that is generated when a new alarming event is received
+by the system and added to the alarm table.</p><table>
+	<tr><td><b>
+
+	bmiAlarmNumber</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmSeverity</b></td><td>
+	%parm[#2]%;</td><td><p>
+		indeterminate(0)
+		critical(1)
+		major(2)
+		minor(3)
+		warning(4)
+		cleared(5)
+		normal(6)
+	</p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmType</b></td><td>
+	%parm[#3]%;</td><td><p>
+		unknown(0)
+		processingError(1)
+		communications(2)
+		qualityOfService(3)
+		environmental(4)
+		equipment(5)
+	</p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmDesc</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmNode</b></td><td>
+	%parm[#5]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmTimestamp</b></td><td>
+	%parm[#6]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmProbableCause</b></td><td>
+	%parm[#7]%;</td><td><p></p></td></tr></table>
+]]>
+	</descr>
+		<logmsg dest='logndisplay'><![CDATA[<p>
+			bmiAlarmRxEvent trap received 
+			bmiAlarmNumber=%parm[#1]% 
+			bmiAlarmSeverity=%parm[#2]% 
+			bmiAlarmType=%parm[#3]% 
+			bmiAlarmDesc=%parm[#4]% 
+			bmiAlarmNode=%parm[#5]% 
+			bmiAlarmTimestamp=%parm[#6]% 
+			bmiAlarmProbableCause=%parm[#7]%</p>
+]]>		</logmsg>
+	<severity>Indeterminate</severity>
+	<varbindsdecode>
+		<parmid>parm[#2]</parmid>
+		<decode varbindvalue="0" varbinddecodedstring="Indeterminate"/>
+		<decode varbindvalue="1" varbinddecodedstring="Critical"/>
+		<decode varbindvalue="2" varbinddecodedstring="Major"/>
+		<decode varbindvalue="3" varbinddecodedstring="Minor"/>
+		<decode varbindvalue="4" varbinddecodedstring="Warning"/>
+		<decode varbindvalue="5" varbinddecodedstring="Cleared"/>
+		<decode varbindvalue="6" varbinddecodedstring="Normal"/>
+	</varbindsdecode>
+	<varbindsdecode>
+		<parmid>parm[#3]</parmid>
+		<decode varbindvalue="0" varbinddecodedstring="unknown"/>
+		<decode varbindvalue="1" varbinddecodedstring="processingError"/>
+		<decode varbindvalue="2" varbinddecodedstring="communications"/>
+		<decode varbindvalue="3" varbinddecodedstring="qualityOfService"/>
+		<decode varbindvalue="4" varbinddecodedstring="environmental"/>
+		<decode varbindvalue="5" varbinddecodedstring="equipment"/>
+	</varbindsdecode>
+	<alarm-data reduction-key="bmiAlarms:%dpname%:%nodeid%:%parm[#5]%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.8521.11.0.90</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>2</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/bytemobile/traps/bmiAlarmEventCleared</uei>
+	<event-label>ByteMobile event: bmiAlarmEventCleared</event-label>
+	<descr>
+<![CDATA[
+<p>A trap that is generated when an existing alarming event is deactivated
+or cleared from the system and removed from the alarm table.</p><table>
+	<tr><td><b>
+
+	bmiAlarmNumber</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmSeverity</b></td><td>
+	%parm[#2]%;</td><td><p>
+		indeterminate(0)
+		critical(1)
+		major(2)
+		minor(3)
+		warning(4)
+		cleared(5)
+		normal(6)
+	</p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmType</b></td><td>
+	%parm[#3]%;</td><td><p>
+		unknown(0)
+		processingError(1)
+		communications(2)
+		qualityOfService(3)
+		environmental(4)
+		equipment(5)
+	</p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmDesc</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmNode</b></td><td>
+	%parm[#5]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmTimestamp</b></td><td>
+	%parm[#6]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bmiAlarmProbableCause</b></td><td>
+	%parm[#7]%;</td><td><p></p></td></tr></table>
+]]>
+	</descr>
+	<logmsg dest='logndisplay'><![CDATA[<p>%parm[#4]% on %parm[#5]%</p>]]></logmsg>
+	<severity>Cleared</severity>
+	<varbindsdecode>
+		<parmid>parm[#2]</parmid>
+		<decode varbindvalue="0" varbinddecodedstring="Indeterminate"/>
+		<decode varbindvalue="1" varbinddecodedstring="Critical"/>
+		<decode varbindvalue="2" varbinddecodedstring="Major"/>
+		<decode varbindvalue="3" varbinddecodedstring="Minor"/>
+		<decode varbindvalue="4" varbinddecodedstring="Warning"/>
+		<decode varbindvalue="5" varbinddecodedstring="Cleared"/>
+		<decode varbindvalue="6" varbinddecodedstring="Normal"/>
+	</varbindsdecode>
+	<varbindsdecode>
+		<parmid>parm[#3]</parmid>
+		<decode varbindvalue="0" varbinddecodedstring="unknown"/>
+		<decode varbindvalue="1" varbinddecodedstring="processingError"/>
+		<decode varbindvalue="2" varbinddecodedstring="communications"/>
+		<decode varbindvalue="3" varbinddecodedstring="qualityOfService"/>
+		<decode varbindvalue="4" varbinddecodedstring="environmental"/>
+		<decode varbindvalue="5" varbinddecodedstring="equipment"/>
+	</varbindsdecode>
+	<alarm-data reduction-key="bmiAlarms:%dpname%:%nodeid%:%parm[#5]%:%parm[#1]%" alarm-type="2" auto-clean="false"/>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.8521.11.0.90</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/bytemobile/traps/bmiAlarmSystemEvent</uei>
+	<event-label>BMI-ALARM-MIB defined trap event: bmiAlarmSystemEvent</event-label>
+	<descr>
+<![CDATA[
+<p>An informational trap that is generated to indicate a major event 
+in the system has occured.</p><table>
+	<tr><td><b>
+
+	bmiEventID</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bmiEventDesc</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+]]>
+	</descr>
+		<logmsg dest='logndisplay'><![CDATA[<p>
+			bmiAlarmSystemEvent trap received 
+			bmiEventID=%parm[#1]% 
+			bmiEventDesc=%parm[#2]%</p>
+]]>		</logmsg>
+	<severity>Indeterminate</severity>
+	<alarm-data reduction-key="bmiAlarms:%dpname%:%nodeid%:%parm[#5]%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+</event>
+<!-- End of auto generated data from MIB: BMI-ALARM-MIB -->
+
+<!-- Start of auto generated data from MIB: BMI-TRAP-MIB -->
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.8521.11.0</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/bytemobile/traps/frameworkUp</uei>
+	<event-label>BMI-TRAP-MIB defined trap event: frameworkUp</event-label>
+	<descr>
+<![CDATA[
+<p>The trap will be sent when the service framework is up </p><table>
+	<tr><td><b>
+
+	frameworkUpTrapSeverity</b></td><td>
+	%parm[#1]%;</td><td><p>
+		indeterminate(1)
+		critical(2)
+		major(3)
+		minor(4)
+		warning(5)
+		cleared(6)
+	</p></td></tr></table>
+]]>
+	</descr>
+		<logmsg dest='logndisplay'><![CDATA[<p>
+			frameworkUp trap received 
+			frameworkUpTrapSeverity=%parm[#1]%</p>
+]]>		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.8521.11.0</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>2</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/bytemobile/traps/frameworkDown</uei>
+	<event-label>BMI-TRAP-MIB defined trap event: frameworkDown</event-label>
+	<descr>
+<![CDATA[
+<p>The trap will be sent when the service framework is down </p><table>
+	<tr><td><b>
+
+	frameworkDownTrapSeverity</b></td><td>
+	%parm[#1]%;</td><td><p>
+		indeterminate(1)
+		critical(2)
+		major(3)
+		minor(4)
+		warning(5)
+		cleared(6)
+	</p></td></tr></table>
+]]>
+	</descr>
+		<logmsg dest='logndisplay'><![CDATA[<p>
+			frameworkDown trap received 
+			frameworkDownTrapSeverity=%parm[#1]%</p>
+]]>		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.8521.11.0</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/bytemobile/traps/alarmHeartbeat</uei>
+	<event-label>BMI-TRAP-MIB defined trap event: alarmHeartbeat</event-label>
+	<descr>
+<![CDATA[
+<p>Heartbeat alarm</p><table>
+	<tr><td><b>
+
+	alarmHeartbeatData</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	alarmHeartbeatTrapSeverity</b></td><td>
+	%parm[#2]%;</td><td><p>
+		indeterminate(1)
+		critical(2)
+		major(3)
+		minor(4)
+		warning(5)
+		cleared(6)
+	</p></td></tr></table>
+]]>
+	</descr>
+		<logmsg dest='logndisplay'><![CDATA[<p>
+			alarmHeartbeat trap received 
+			alarmHeartbeatData=%parm[#1]% 
+			alarmHeartbeatTrapSeverity=%parm[#2]%</p>
+]]>		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.8521.11.0</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>4</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/bytemobile/traps/serviceUp</uei>
+	<event-label>BMI-TRAP-MIB defined trap event: serviceUp</event-label>
+	<descr>
+<![CDATA[
+<p>The trap will be sent when the registered service starts or restarts.
+When the system is booted, the proxy services register themselves and
+the serviceRegistered trap will always be sent, followed by the
+serviceUp trap. In the unusual case when the proxy service terminates
+abnormally and is automatically restarted, the service remains
+registered during the time that it is down, and therefore when it
+starts up again, only the serviceUp trap (and not the serviceRegistered
+trap) is sent.</p><table>
+	<tr><td><b>
+
+	serviceID</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	serviceName</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	serviceProcID</b></td><td>
+	%parm[#3]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	serviceProcParentID</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	serviceProcCMD</b></td><td>
+	%parm[#5]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	serviceUpTrapSeverity</b></td><td>
+	%parm[#6]%;</td><td><p>
+		indeterminate(1)
+		critical(2)
+		major(3)
+		minor(4)
+		warning(5)
+		cleared(6)
+	</p></td></tr></table>
+]]>
+	</descr>
+		<logmsg dest='logndisplay'><![CDATA[<p>
+			serviceUp trap received 
+			serviceID=%parm[#1]% 
+			serviceName=%parm[#2]% 
+			serviceProcID=%parm[#3]% 
+			serviceProcParentID=%parm[#4]% 
+			serviceProcCMD=%parm[#5]% 
+			serviceUpTrapSeverity=%parm[#6]%</p>
+]]>		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.8521.11.0</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>5</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/bytemobile/traps/serviceDown</uei>
+	<event-label>BMI-TRAP-MIB defined trap event: serviceDown</event-label>
+	<descr>
+<![CDATA[
+<p>The trap will be sent when the registered service terminates </p><table>
+	<tr><td><b>
+
+	serviceID</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	serviceName</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	serviceProcID</b></td><td>
+	%parm[#3]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	serviceProcParentID</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	serviceProcCMD</b></td><td>
+	%parm[#5]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	serviceDownTrapSeverity</b></td><td>
+	%parm[#6]%;</td><td><p>
+		indeterminate(1)
+		critical(2)
+		major(3)
+		minor(4)
+		warning(5)
+		cleared(6)
+	</p></td></tr></table>
+]]>
+	</descr>
+		<logmsg dest='logndisplay'><![CDATA[<p>
+			serviceDown trap received 
+			serviceID=%parm[#1]% 
+			serviceName=%parm[#2]% 
+			serviceProcID=%parm[#3]% 
+			serviceProcParentID=%parm[#4]% 
+			serviceProcCMD=%parm[#5]% 
+			serviceDownTrapSeverity=%parm[#6]%</p>
+]]>		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.8521.11.0</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/bytemobile/traps/serviceRegistered</uei>
+	<event-label>BMI-TRAP-MIB defined trap event: serviceRegistered</event-label>
+	<descr>
+<![CDATA[
+<p>The trap will be sent when the service is registered. See the
+description of the serviceUp trap for the distinction between the
+serviceUp trap and the serviceRegistered trap.</p><table>
+	<tr><td><b>
+
+	serviceID</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	serviceName</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	serviceRegisteredTrapSeverity</b></td><td>
+	%parm[#3]%;</td><td><p>
+		indeterminate(1)
+		critical(2)
+		major(3)
+		minor(4)
+		warning(5)
+		cleared(6)
+	</p></td></tr></table>
+]]>
+	</descr>
+		<logmsg dest='logndisplay'><![CDATA[<p>
+			serviceRegistered trap received 
+			serviceID=%parm[#1]% 
+			serviceName=%parm[#2]% 
+			serviceRegisteredTrapSeverity=%parm[#3]%</p>
+]]>		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.8521.11.0</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>7</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/bytemobile/traps/serviceUnregistered</uei>
+	<event-label>BMI-TRAP-MIB defined trap event: serviceUnregistered</event-label>
+	<descr>
+<![CDATA[
+<p>The trap will be sent when the service is unregistered. This trap
+is normally sent upon system shutdown or when a proxy service is
+terminated in the normal manner. A proxy service is not unregistered
+when it abnormally terminates and subsequently restarts, hence, the
+serviceUnregistered trap is not sent in this case.</p><table>
+	<tr><td><b>
+
+	serviceID</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	serviceName</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	serviceUnregisteredTrapSeverity</b></td><td>
+	%parm[#3]%;</td><td><p>
+		indeterminate(1)
+		critical(2)
+		major(3)
+		minor(4)
+		warning(5)
+		cleared(6)
+	</p></td></tr></table>
+]]>
+	</descr>
+		<logmsg dest='logndisplay'><![CDATA[<p>
+			serviceUnregistered trap received 
+			serviceID=%parm[#1]% 
+			serviceName=%parm[#2]% 
+			serviceUnregisteredTrapSeverity=%parm[#3]%</p>
+]]>		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.8521.11.0</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>8</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/bytemobile/traps/watchdogColdStart</uei>
+	<event-label>BMI-TRAP-MIB defined trap event: watchdogColdStart</event-label>
+	<descr>
+<![CDATA[
+<p>This trap is sent when the software watchdog reinitializes itself
+and its configuration may have been altered. It is sent for the
+first time upon system bootup, when the software watchdog is started.
+Subsequently, in the unusual case when the software watchdog
+abnormally terminates and is restarted, this trap is also sent.
+In addition, if the SIGHUP hangup signal is sent to ask the software
+watchdog to re-read the configuration file, and the configuration is
+altered, the watchdogColdStart trap is sent.</p><table>
+	<tr><td><b>
+
+	watchdogColdStartTrapSeverity</b></td><td>
+	%parm[#1]%;</td><td><p>
+		indeterminate(1)
+		critical(2)
+		major(3)
+		minor(4)
+		warning(5)
+		cleared(6)
+	</p></td></tr></table>
+]]>
+	</descr>
+		<logmsg dest='logndisplay'><![CDATA[<p>
+			watchdogColdStart trap received 
+			watchdogColdStartTrapSeverity=%parm[#1]%</p>
+]]>		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.8521.11.0</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>9</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/bytemobile/traps/watchdogWarmStart</uei>
+	<event-label>BMI-TRAP-MIB defined trap event: watchdogWarmStart</event-label>
+	<descr>
+<![CDATA[
+<p>Watchdog reinitializes itself and its configuration is unaltered.
+This occurs if the SIGHUP hangup signal is sent to ask the software
+watchdog to re-read the configuration file when the watchdog is
+up and running, but the modification time of configuration file
+is unchanged from the previous time it is read.</p><table>
+	<tr><td><b>
+
+	watchdogWarmStartTrapSeverity</b></td><td>
+	%parm[#1]%;</td><td><p>
+		indeterminate(1)
+		critical(2)
+		major(3)
+		minor(4)
+		warning(5)
+		cleared(6)
+	</p></td></tr></table>
+]]>
+	</descr>
+		<logmsg dest='logndisplay'><![CDATA[<p>
+			watchdogWarmStart trap received 
+			watchdogWarmStartTrapSeverity=%parm[#1]%</p>
+]]>		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.8521.11.0</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>10</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/bytemobile/traps/bmirisingAlarm</uei>
+	<event-label>BMI-TRAP-MIB defined trap event: bmirisingAlarm</event-label>
+	<descr>
+<![CDATA[
+<p>Superset of the RMON Rising Alarm trap with the addition
+of alarm severity. The SNMP trap that is generated when an alarm
+entry crosses its rising threshold and generates an event that is
+is configured for sending SNMP traps.</p><table>
+	<tr><td><b>
+
+	alarmIndex</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	alarmVariable</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	alarmSampleType</b></td><td>
+	%parm[#3]%;</td><td><p>
+		absoluteValue(1)
+		deltaValue(2)
+	</p></td></tr>
+	<tr><td><b>
+
+	alarmValue</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	alarmRisingThreshold</b></td><td>
+	%parm[#5]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	alarmRisingSeverity</b></td><td>
+	%parm[#6]%;</td><td><p>
+		indeterminate(1)
+		critical(2)
+		major(3)
+		minor(4)
+		warning(5)
+		cleared(6)
+	</p></td></tr></table>
+]]>
+	</descr>
+		<logmsg dest='logndisplay'><![CDATA[<p>
+			bmirisingAlarm trap received 
+			alarmIndex=%parm[#1]% 
+			alarmVariable=%parm[#2]% 
+			alarmSampleType=%parm[#3]% 
+			alarmValue=%parm[#4]% 
+			alarmRisingThreshold=%parm[#5]% 
+			alarmRisingSeverity=%parm[#6]%</p>
+]]>		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.8521.11</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>11</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/bytemobile/traps/bmifallingAlarm</uei>
+	<event-label>BMI-TRAP-MIB defined trap event: bmifallingAlarm</event-label>
+	<descr>
+<![CDATA[
+<p>Superset of the RMON Falling Alarm trap with the addition
+of alarm severity . The SNMP trap that is generated when an
+alarm entry crosses its falling threshold and generates
+an event that is configured for sending SNMP traps.</p><table>
+	<tr><td><b>
+
+	alarmIndex</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	alarmVariable</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	alarmSampleType</b></td><td>
+	%parm[#3]%;</td><td><p>
+		absoluteValue(1)
+		deltaValue(2)
+	</p></td></tr>
+	<tr><td><b>
+
+	alarmValue</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	alarmFallingThreshold</b></td><td>
+	%parm[#5]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	alarmFallingSeverity</b></td><td>
+	%parm[#6]%;</td><td><p>
+		indeterminate(1)
+		critical(2)
+		major(3)
+		minor(4)
+		warning(5)
+		cleared(6)
+	</p></td></tr></table>
+]]>
+	</descr>
+		<logmsg dest='logndisplay'><![CDATA[<p>
+			bmifallingAlarm trap received 
+			alarmIndex=%parm[#1]% 
+			alarmVariable=%parm[#2]% 
+			alarmSampleType=%parm[#3]% 
+			alarmValue=%parm[#4]% 
+			alarmFallingThreshold=%parm[#5]% 
+			alarmFallingSeverity=%parm[#6]%</p>
+]]>		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.8521.11.0</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>12</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/bytemobile/traps/healthCheckServiceDown</uei>
+	<event-label>BMI-TRAP-MIB defined trap event: healthCheckServiceDown</event-label>
+	<descr>
+<![CDATA[
+<p>The trap will be sent if the health check fails to get the response
+from the service but the service is running or the service is not healthy.
+In addition, the service will be restarted if the trap has
+been sent.</p><table>
+	<tr><td><b>
+
+	serviceID</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	serviceName</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	serviceProcID</b></td><td>
+	%parm[#3]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	serviceProcParentID</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	serviceProcCMD</b></td><td>
+	%parm[#5]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	healthCheckServiceDownTrapSeverity</b></td><td>
+	%parm[#6]%;</td><td><p>
+		indeterminate(1)
+		critical(2)
+		major(3)
+		minor(4)
+		warning(5)
+		cleared(6)
+	</p></td></tr></table>
+]]>
+	</descr>
+		<logmsg dest='logndisplay'><![CDATA[<p>
+			healthCheckServiceDown trap received 
+			serviceID=%parm[#1]% 
+			serviceName=%parm[#2]% 
+			serviceProcID=%parm[#3]% 
+			serviceProcParentID=%parm[#4]% 
+			serviceProcCMD=%parm[#5]% 
+			healthCheckServiceDownTrapSeverity=%parm[#6]%</p>
+]]>		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.8521.11.0</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>13</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/bytemobile/traps/licensingNoneOptInterface</uei>
+	<event-label>BMI-TRAP-MIB defined trap event: licensingNoneOptInterface</event-label>
+	<descr>
+<![CDATA[
+<p>The trap will be sent if the licensed could not find the configured
+optimization interfaces.</p><table>
+	<tr><td><b>
+
+	applicationAlarmMessage</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	applicationAlarmSeverity</b></td><td>
+	%parm[#2]%;</td><td><p>
+		indeterminate(1)
+		critical(2)
+		major(3)
+		minor(4)
+		warning(5)
+		cleared(6)
+	</p></td></tr></table>
+]]>
+	</descr>
+		<logmsg dest='logndisplay'><![CDATA[<p>
+			licensingNoneOptInterface trap received 
+			applicationAlarmMessage=%parm[#1]% 
+			applicationAlarmSeverity=%parm[#2]%</p>
+]]>		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.8521.11.0</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>14</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/bytemobile/traps/licensingLicenseFileMissing</uei>
+	<event-label>BMI-TRAP-MIB defined trap event: licensingLicenseFileMissing</event-label>
+	<descr>
+<![CDATA[
+<p>The trap will be sent if the licensing file is missing or corrupted.</p><table>
+	<tr><td><b>
+
+	applicationAlarmMessage</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	applicationAlarmSeverity</b></td><td>
+	%parm[#2]%;</td><td><p>
+		indeterminate(1)
+		critical(2)
+		major(3)
+		minor(4)
+		warning(5)
+		cleared(6)
+	</p></td></tr></table>
+]]>
+	</descr>
+		<logmsg dest='logndisplay'><![CDATA[<p>
+			licensingLicenseFileMissing trap received 
+			applicationAlarmMessage=%parm[#1]% 
+			applicationAlarmSeverity=%parm[#2]%</p>
+]]>		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.8521.11.0</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>15</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/bytemobile/traps/licensingUsageAlarm</uei>
+	<event-label>BMI-TRAP-MIB defined trap event: licensingUsageAlarm</event-label>
+	<descr>
+<![CDATA[
+<p>The trap will be sent if the current usage rate over certain threshold value</p><table>
+	<tr><td><b>
+
+	applicationAlarmValue</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	applicationAlarmMessage</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	applicationAlarmSeverity</b></td><td>
+	%parm[#3]%;</td><td><p>
+		indeterminate(1)
+		critical(2)
+		major(3)
+		minor(4)
+		warning(5)
+		cleared(6)
+	</p></td></tr></table>
+]]>
+	</descr>
+		<logmsg dest='logndisplay'><![CDATA[<p>
+			licensingUsageAlarm trap received 
+			applicationAlarmValue=%parm[#1]% 
+			applicationAlarmMessage=%parm[#2]% 
+			applicationAlarmSeverity=%parm[#3]%</p>
+]]>		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.8521.11.0</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>100</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/bytemobile/traps/applicationGenericAlarm</uei>
+	<event-label>BMI-TRAP-MIB defined trap event: applicationGenericAlarm</event-label>
+	<descr>
+<![CDATA[
+<p>The trap will be sent if one generic application has occurred</p><table>
+	<tr><td><b>
+
+	applicationAlarmValue</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	applicationAlarmMessage</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	applicationAlarmSeverity</b></td><td>
+	%parm[#3]%;</td><td><p>
+		indeterminate(1)
+		critical(2)
+		major(3)
+		minor(4)
+		warning(5)
+		cleared(6)
+	</p></td></tr></table>
+]]>
+	</descr>
+		<logmsg dest='logndisplay'><![CDATA[<p>
+			applicationGenericAlarm trap received 
+			applicationAlarmValue=%parm[#1]% 
+			applicationAlarmMessage=%parm[#2]% 
+			applicationAlarmSeverity=%parm[#3]%</p>
+]]>		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+</events>
+<!-- End of MIB: BMI-TRAP-MIB -->

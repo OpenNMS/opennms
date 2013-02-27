@@ -1984,6 +1984,7 @@
   <event-file>events/Bluecat.events.xml</event-file>
   <event-file>events/BlueCoat.events.xml</event-file>
   <event-file>events/Brocade.events.xml</event-file>
+  <event-file>events/ByteMobile.events.xml</event-file>
   <event-file>events/CA.ArcServe.events.xml</event-file>
   <event-file>events/Cisco.airespace.xml</event-file>
   <event-file>events/Cisco.CIDS.events.xml</event-file>
