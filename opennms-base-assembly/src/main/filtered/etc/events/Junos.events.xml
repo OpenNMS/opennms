@@ -4173,6 +4173,19 @@ of type jnxVpnIfVpnType transitions out of the 'down' state.&lt;/p&gt;&lt;table&
 			jnxVpnIfVpnName=%parm[#2]% 
 			jnxVpnIfIndex=%parm[#3]%&lt;/p&gt;
 		</logmsg>
+        <varbindsdecode>
+                <parmid>parm[#1]</parmid>
+                <decode varbindvalue="1" varbinddecodedstring="other"/>
+                <decode varbindvalue="2" varbinddecodedstring="bgpIpVpn"/>
+                <decode varbindvalue="3" varbinddecodedstring="bgpL2Vpn"/>
+                <decode varbindvalue="4" varbinddecodedstring="bgpVpls"/>
+                <decode varbindvalue="5" varbinddecodedstring="l2Circuit"/>
+                <decode varbindvalue="6" varbinddecodedstring="ldpVpls"/>
+                <decode varbindvalue="7" varbinddecodedstring="opticalVpn"/>
+                <decode varbindvalue="8" varbinddecodedstring="vpOxc"/>
+                <decode varbindvalue="9" varbinddecodedstring="ccc"/>
+                <decode varbindvalue="10" varbinddecodedstring="bgpAtmVpn"/>
+        </varbindsdecode>
 	<severity>Normal</severity>
 </event>
 <event>
