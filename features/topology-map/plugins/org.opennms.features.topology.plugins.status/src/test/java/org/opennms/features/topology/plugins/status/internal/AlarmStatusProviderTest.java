@@ -24,12 +24,12 @@ public class AlarmStatusProviderTest {
 
         @Override
         public String getId() {
-            return null;
+            return String.valueOf(getNodeID());
         }
 
         @Override
         public String getNamespace() {
-            return null;
+            return "nodes";
         }
 
         @Override
@@ -129,7 +129,7 @@ public class AlarmStatusProviderTest {
         
         Status vertexStatus = m_statusProvider.getStatusForVertex(vertex);
         String computeStatus = vertexStatus.computeStatus();
-        assertTrue(computeStatus.equals("Normal"));
+        assertTrue(computeStatus.equals("normal"));
         
         EasyMock.verify(m_alarmDao);
     }
