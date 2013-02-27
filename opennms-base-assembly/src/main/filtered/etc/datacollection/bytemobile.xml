@@ -1,0 +1,78 @@
+<?xml version="1.0"?>
+<datacollection-group name="ByteMobile">
+
+      <!-- Bytemobile Resource Types -->
+      <group name="BMI-csm" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.8521.4.10.8" instance="0" alias="bmTotWebReqClient" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.8521.4.10.10" instance="0" alias="bmTotWebReqServer" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.8521.4.10.13.1" instance="0" alias="bmConcurrentUsers" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.8521.4.10.2" instance="0" alias="bmClstrNodes" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.8521.4.10.3" instance="0" alias="bmClstrActivNodes" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.8521.4.11.1.1" instance="0" alias="bmAlrmSysLvl" type="gauge" />
+      </group>
+
+      <group name="BMI-osn" ifType="ignore">
+        <!-- The total number of requests received by the web proxy since initialization that did not result in an error -->
+        <mibObj oid=".1.3.6.1.4.1.8521.4.5.1" instance="0" alias="bmWebPrxReqClnt" type="counter" />
+        <!-- The total number of requests received by the web proxy since initialization that resulted in an error -->
+        <mibObj oid=".1.3.6.1.4.1.8521.4.5.2" instance="0" alias="bmWebPrxErrClnt" type="counter" />
+        <!-- The total number of requests initiated by the web proxy to content servers since initialization that did not result in an error -->
+        <mibObj oid=".1.3.6.1.4.1.8521.4.5.3" instance="0" alias="bmWebPrxReqSrv" type="counter" />
+        <!-- The total number of requests initiated by the web proxy to content servers since initialization that resulted in an error -->
+        <mibObj oid=".1.3.6.1.4.1.8521.4.5.4" instance="0" alias="bmWebPrxErrSrv" type="counter" />
+        <!-- The total number of requests the resulted in any kind of hit in the web cache -->
+        <mibObj oid=".1.3.6.1.4.1.8521.4.5.8" instance="0" alias="bmWebPrxHitClnt" type="counter" />
+        <!-- The total number of bytes that would have been sent to clients from the web proxy since initialization that were the result
+		of any kind of hit in the web proxy -->
+        <mibObj oid=".1.3.6.1.4.1.8521.4.5.9" instance="0" alias="bmWebPrxHitBytUCom" type="counter" />
+        <!-- The total number of bytes actually sent to clients from the web proxy since initialization that were the result of any kind
+		of hit in the web proxy -->
+        <mibObj oid=".1.3.6.1.4.1.8521.4.5.10" instance="0" alias="bmWebPrxHitBytCom" type="counter" />
+        <!-- The total number of bytes that would have been sent to clients from the web proxy since initialization that were the result
+		of any kind of miss in the web proxy -->
+        <mibObj oid=".1.3.6.1.4.1.8521.4.5.29" instance="0" alias="bmWebPrxMisBytCom" type="counter" />
+        <!-- The total number of bytes actually sent to clients from the web proxy since initialization that were the result of any kind
+		of miss in the web proxy -->
+        <mibObj oid=".1.3.6.1.4.1.8521.4.5.30" instance="0" alias="bmWebPrxMisBytCom" type="counter" />
+      </group>
+
+      <systemDef name="ByteMobile Unison">
+        <sysoidMask>.1.3.6.1.4.1.8521.</sysoidMask>
+        <collect>
+          <includeGroup>mib2-interfaces</includeGroup>
+          <includeGroup>mib2-tcp</includeGroup>
+          <includeGroup>mib2-icmp</includeGroup>
+          <includeGroup>mib2-powerethernet</includeGroup>
+          <includeGroup>mib2-host-resources-system</includeGroup>
+          <includeGroup>mib2-host-resources-memory</includeGroup>
+          <includeGroup>mib2-X-interfaces</includeGroup>
+          <includeGroup>net-snmp-disk</includeGroup>
+          <includeGroup>net-snmp-disk-more</includeGroup>
+          <includeGroup>net-snmp-disk-highlow</includeGroup>
+          <includeGroup>ucd-loadavg</includeGroup>
+          <includeGroup>ucd-memory</includeGroup>
+          <includeGroup>ucd-sysstat</includeGroup>
+          <includeGroup>ucd-sysstat-raw</includeGroup>
+          <includeGroup>ucd-sysstat-raw-more</includeGroup>
+          <includeGroup>lmsensors-temp</includeGroup>
+          <includeGroup>lmsensors-fan</includeGroup>
+          <includeGroup>lmsensors-volt</includeGroup>
+          <includeGroup>sun</includeGroup>
+          <includeGroup>sunHostPerf</includeGroup>
+        </collect>
+      </systemDef>
+      <systemDef name="ByteMobile Unison CSM">
+        <sysoid>.1.3.6.1.4.1.8072.3.2.3</sysoid>
+        <collect>
+          <includeGroup>BMI-csm</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="ByteMobile Unison OSN">
+        <sysoid>.1.3.6.1.4.1.8521.1.3</sysoid>
+        <collect>
+          <includeGroup>BMI-osn</includeGroup>
+        </collect>
+      </systemDef>
+
+</datacollection-group>
