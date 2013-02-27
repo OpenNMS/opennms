@@ -241,8 +241,11 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     }
     @Override
     public void setLayoutAlgorithm(LayoutAlgorithm layoutAlgorithm) {
-        m_layoutAlgorithm = layoutAlgorithm;
-        redoLayout();
+        if(m_layoutAlgorithm != layoutAlgorithm) {
+            m_layoutAlgorithm = layoutAlgorithm;
+            redoLayout();
+        }
+        
     }
 
     @Override

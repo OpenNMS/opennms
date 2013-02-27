@@ -35,9 +35,12 @@ public class ISOMLayoutOperation extends LayoutOperation {
 
 	public ISOMLayoutOperation() {
 		super(new LayoutFactory() {
+		    
+		    private final ISOMLayoutAlgorithm m_layoutAlgorithm = new ISOMLayoutAlgorithm();
+		    
 			@Override
 			public LayoutAlgorithm getLayoutAlgorithm() {
-				return new ISOMLayoutAlgorithm();
+				return m_layoutAlgorithm;
 			}
 		});
 	}
