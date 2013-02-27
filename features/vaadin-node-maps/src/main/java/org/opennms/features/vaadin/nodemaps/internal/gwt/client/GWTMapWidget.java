@@ -130,7 +130,9 @@ public class GWTMapWidget extends Widget {
         markerClusterOptions.setProperty("zoomToBoundsOnClick", false);
         markerClusterOptions.setProperty("iconCreateFunction", new IconCreateCallback());
         m_markerClusterGroup = new MarkerClusterGroup(markerClusterOptions);
-        m_markerClusterGroup.on("clusterclick", new NodeMarkerClusterCallback());
+        final NodeMarkerClusterCallback callback = new NodeMarkerClusterCallback();
+        m_markerClusterGroup.on("clusterclick", callback);
+        m_markerClusterGroup.on("clustertouchend", callback);
         m_map.addLayer(m_markerClusterGroup);
     }
 
