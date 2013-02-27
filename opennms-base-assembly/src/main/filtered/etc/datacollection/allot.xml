@@ -43,13 +43,31 @@
         <mibObj oid=".1.3.6.1.4.1.2603.5.4.7" instance="0" alias="alSGConnEstRate" type="gauge" />
         <mibObj oid=".1.3.6.1.4.1.2603.5.5.4" instance="0" alias="alSGMemUsage" type="gauge" />
         <mibObj oid=".1.3.6.1.4.1.2603.5.5.5" instance="0" alias="alSGDiskUsage" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.2603.5.5.6" instance="0" alias="alTemperature" type="gauge" />
         <mibObj oid=".1.3.6.1.4.1.2603.5.5.15" instance="0" alias="alSGCpuUsage" type="gauge" />
         <mibObj oid=".1.3.6.1.4.1.2603.5.5.18.1.3.0" instance="15001" alias="alSGRegSubs" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.2603.5.2.6.5.1" instance="0" alias="alBypassSetting" type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.2603.5.2.6.5.4" instance="0" alias="alRemoteBypass" type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.2603.5.2.6.5.5" instance="0" alias="alBypass" type="integer" />
       </group>
 
       <group name="allot-smp" ifType="ignore">
         <mibObj oid=".1.3.6.1.4.1.2603.5.5.20.2" instance="0" alias="AllotRadiusTPS" type="gauge" />
         <mibObj oid=".1.3.6.1.4.1.2603.11.2.2" instance="0" alias="AllotSMPSubcribers" type="gauge" />
+      </group>
+
+      <group name="allot-smp-custom" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.8072.1.3.2.4.1.2.13.115.101.110.116.82.97.97.84.111.80.99.114.102" instance="1" alias="alSentRaaToPcrf" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.8072.1.3.2.4.1.2.14.115.101.110.116.67.99.114.73.84.111.80.99.114.102" instance="1" alias="alSentCcrIToPcrf" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.8072.1.3.2.4.1.2.14.115.101.110.116.67.99.114.84.84.111.80.99.114.102" instance="1" alias="alSentCcrTToPcrf" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.8072.1.3.2.4.1.2.14.115.101.110.116.67.99.114.85.84.111.80.99.114.102" instance="1" alias="alSentCcrUToPcrf" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.8072.1.3.2.4.1.2.16.102.97.105.108.83.116.111.112.77.101.115.115.97.103.101.115" instance="1" alias="alfailStopMsgs" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.8072.1.3.2.4.1.2.20.105.110.99.111.109.105.110.103.67.99.97.73.70.114.111.109.80.99.114.102" instance="1" alias="alInCcaIFromPcrf" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.8072.1.3.2.4.1.2.20.105.110.99.111.109.105.110.103.67.99.97.84.70.114.111.109.80.99.114.102" instance="1" alias="alInCcaTFromPcrf" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.8072.1.3.2.4.1.2.20.105.110.99.111.109.105.110.103.67.99.97.85.70.114.111.109.80.99.114.102" instance="1" alias="alInCcaUFromPcrf" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.8072.1.3.2.4.1.2.27.114.101.99.101.105.118.101.100.69.114.114.111.114.73.110.67.99.114.73.70.114.111.109.80.99.114.102" instance="1" alias="alRcvErInCcrIFrPcrf" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.8072.1.3.2.4.1.2.27.114.101.99.101.105.118.101.100.69.114.114.111.114.84.110.67.99.114.73.70.114.111.109.80.99.114.102" instance="1" alias="alRcvErTnCcrIFrPcrf" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.8072.1.3.2.4.1.2.27.114.101.99.101.105.118.101.100.69.114.114.111.114.85.110.67.99.114.73.70.114.111.109.80.99.114.102" instance="1" alias="alRcvErUnCcrIFrPcrf" type="counter" />
       </group>
 
       <systemDef name="Allot Communications">
@@ -58,6 +76,7 @@
           <includeGroup>allot</includeGroup>
           <includeGroup>allot-nx</includeGroup>
           <includeGroup>allot-smp</includeGroup>
+          <includeGroup>allot-smp-custom</includeGroup>
         </collect>
       </systemDef>
 
