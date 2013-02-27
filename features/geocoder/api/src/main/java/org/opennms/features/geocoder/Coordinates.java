@@ -3,56 +3,64 @@ package org.opennms.features.geocoder;
 import java.io.Serializable;
 
 public class Coordinates implements Serializable {
-    private static final long serialVersionUID = 3358715493486703594L;
-    private float m_latitude;
+    private static final long serialVersionUID = 7625206700618002037L;
+
     private float m_longitude;
+    private float m_latitude;
 
     public Coordinates() {}
-    public Coordinates(final String latLng) throws GeocoderException {
-        setCoordinates(latLng);
+    public Coordinates(final String lonLat) throws GeocoderException {
+        setCoordinates(lonLat);
     }
-    public Coordinates(final float latitude, final float longitude) {
-        setCoordinates(latitude, longitude);
+    public Coordinates(final float longitude, final float latitude) {
+        setCoordinates(longitude, latitude);
     }
 
-    protected void setCoordinates(final String latLng) throws GeocoderException {
-        if (latLng == null) {
-            throw new GeocoderException("Attempt to initialize a Coordinate with a null lat/lng string!");
-        }
-
-        final String[] separated = latLng.split(",");
+    public static Float[] splitCommaSeparatedFloats(final String coordinateString) throws GeocoderException {
+        final String[] separated = coordinateString.split(",");
+        final Float[] coordinates;
         try {
-            m_latitude = Float.valueOf(separated[0]).floatValue();
-            m_longitude = Float.valueOf(separated[1]).floatValue();
+            coordinates = new Float[] { Float.valueOf(separated[0]), Float.valueOf(separated[1]) };
         } catch (final NumberFormatException e) {
-            throw new GeocoderException("Failed to parse lat/lng string '" + latLng + "'", e);
+            throw new GeocoderException("Failed to parse coordinate string '" + coordinateString + "'", e);
         }
+        return coordinates;
     }
 
-    protected void setCoordinates(final float latitude, final float longitude) {
-        m_latitude = latitude;
+    protected void setCoordinates(final String lonLat) throws GeocoderException {
+        if (lonLat == null) {
+            throw new GeocoderException("Attempt to initialize a Coordinate with a null lon/lat string!");
+        }
+
+        final Float[] coordinates = splitCommaSeparatedFloats(lonLat);
+        m_longitude = coordinates[0].floatValue();
+        m_latitude  = coordinates[1].floatValue();
+    }
+
+    protected void setCoordinates(final float longitude, final float latitude) {
         m_longitude = longitude;
+        m_latitude = latitude;
+    }
+
+    public float getLongitude() {
+        return m_longitude;
     }
 
     public float getLatitude() {
         return m_latitude;
     }
     
-    public float getLongitude() {
-        return m_longitude;
-    }
-
     @Override
     public String toString() {
-        return m_latitude + "," + m_longitude;
+        return m_longitude + "," + m_latitude;
     }
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + Float.floatToIntBits(m_latitude);
         result = prime * result + Float.floatToIntBits(m_longitude);
+        result = prime * result + Float.floatToIntBits(m_latitude);
         return result;
     }
     @Override
@@ -63,8 +71,8 @@ public class Coordinates implements Serializable {
             return false;
         }
         final Coordinates other = (Coordinates) obj;
-        if (Float.floatToIntBits(m_latitude)  != Float.floatToIntBits(other.m_latitude))  return false;
         if (Float.floatToIntBits(m_longitude) != Float.floatToIntBits(other.m_longitude)) return false;
+        if (Float.floatToIntBits(m_latitude)  != Float.floatToIntBits(other.m_latitude))  return false;
         return true;
     }
 

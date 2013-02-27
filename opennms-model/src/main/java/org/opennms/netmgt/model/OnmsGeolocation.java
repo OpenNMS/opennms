@@ -136,6 +136,10 @@ public class OnmsGeolocation implements Serializable {
         m_country = country;
     }
 
+    /**
+     * Coordinates, as a String, in "longitude,latitude" format
+     * @return
+     */
     @Column(name="geolocation", length=32)
     public String getCoordinates() {
         return m_coordinates;

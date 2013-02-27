@@ -7,6 +7,7 @@ import java.util.List;
 
 import net.simon04.jelementtree.ElementTree;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -40,11 +41,12 @@ public class NominatimGeocoderService implements GeocoderService {
         final HttpUriRequest method = new HttpGet(getUrl(address));
         method.addHeader("User-Agent", "OpenNMS-NominatimGeocoderService/1.0");
         if (m_referer != null && !"".equals(m_referer)) {
-                method.addHeader("Referer", m_referer);
+            method.addHeader("Referer", m_referer);
         }
 
+        InputStream responseStream = null;
         try {
-            InputStream responseStream = m_httpClient.execute(method).getEntity().getContent();
+            responseStream = m_httpClient.execute(method).getEntity().getContent();
             final ElementTree tree = ElementTree.fromStream(responseStream);
             if (tree == null) {
                 throw new GeocoderException("an error occurred connecting to the Nominatim geocoding service (no XML tree was found)");
@@ -58,20 +60,22 @@ public class NominatimGeocoderService implements GeocoderService {
             }
             final ElementTree place = places.get(0);
 
-            Float latitude = Float.valueOf(place.getAttribute("lat"));
-            Float longitude = Float.valueOf(place.getAttribute("lon"));
-            return new Coordinates(latitude, longitude);
-        } catch (GeocoderException e) {
+            final Float longitude = Float.valueOf(place.getAttribute("lon"));
+            final Float latitude  = Float.valueOf(place.getAttribute("lat"));
+            return new Coordinates(longitude, latitude);
+        } catch (final GeocoderException e) {
             throw e;
-        } catch (Throwable e) {
-            throw new GeocoderException("unable to get lat/lng from Nominatim", e);
+        } catch (final Throwable e) {
+            throw new GeocoderException("unable to get lon/lat from Nominatim", e);
+        } finally {
+            IOUtils.closeQuietly(responseStream);
         }
     }
 
-    private String getUrl(String geolocation) throws GeocoderException {
+    private String getUrl(final String geolocation) throws GeocoderException {
         try {
             return GEOCODE_URL + "&q=" + URLEncoder.encode(geolocation, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
+        } catch (final UnsupportedEncodingException e) {
             throw new GeocoderException("unable to URL-encode query string", e);
         }
     }

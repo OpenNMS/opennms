@@ -26,24 +26,29 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.vaadin.nodemaps.gwt.client;
+package org.opennms.features.vaadin.nodemaps.internal.gwt.client;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
-import org.opennms.features.vaadin.nodemaps.gwt.client.openlayers.FeatureCollection;
-import org.opennms.features.vaadin.nodemaps.gwt.client.openlayers.NodeFeature;
+import org.discotools.gwt.leaflet.client.types.LatLng;
 
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.user.client.Command;
 import com.vaadin.terminal.gwt.client.ApplicationConnection;
 import com.vaadin.terminal.gwt.client.Paintable;
 import com.vaadin.terminal.gwt.client.UIDL;
 import com.vaadin.terminal.gwt.client.VConsole;
 
-public class VOpenlayersWidget extends GWTOpenlayersWidget implements Paintable {
+public class VMapWidget extends GWTMapWidget implements Paintable {
 
+    @SuppressWarnings("unused")
     private ApplicationConnection m_client;
+    @SuppressWarnings("unused")
     private String m_uidlId;
 
-    public VOpenlayersWidget() {
+    public VMapWidget() {
         super();
         setStyleName("v-openlayers");
         VConsole.log("div ID = " + getElement().getId());
@@ -57,24 +62,29 @@ public class VOpenlayersWidget extends GWTOpenlayersWidget implements Paintable 
 
         final UIDL nodeUIDL = uidl.getChildByTagName("nodes");
 
-        final FeatureCollection featureCollection = FeatureCollection.create();
+        final List<NodeMarker> featureCollection = new ArrayList<NodeMarker>();
 
         for (final Iterator<?> iterator = nodeUIDL.getChildIterator(); iterator.hasNext();) {
             final UIDL node = (UIDL) iterator.next();
 
-            final float latitude = node.getFloatAttribute("latitude");
-            final float longitude = node.getFloatAttribute("longitude");
+            final double latitude = Float.valueOf(node.getFloatAttribute("latitude")).doubleValue();
+            final double longitude = Float.valueOf(node.getFloatAttribute("longitude")).doubleValue();
 
-            final NodeFeature feature = NodeFeature.create(latitude, longitude).cast();
+            final NodeMarker feature = new NodeMarker(new LatLng(latitude, longitude));
 
-            for (final String key : new String[] { "severityLabel", "nodeLabel", "foreignSource", "foreignId", "ipAddress", "severity", "nodeId", "unackedCount" }) {
+            for (final String key : new String[] { "nodeId", "nodeLabel", "foreignSource", "foreignId", "ipAddress", "severity", "severityLabel", "unackedCount" }) {
                 if (node.hasAttribute(key)) feature.putProperty(key, node.getStringAttribute(key));
             }
 
+            feature.bindPopup(NodeMarkerClusterCallback.getPopupTextForMarker(feature));
             featureCollection.add(feature);
         }
 
         setFeatureCollection(featureCollection);
-        updateFeatureLayer();
+        Scheduler.get().scheduleDeferred(new Command() {
+            @Override public void execute() {
+                updateFeatureLayer();
+            }
+        });
     }
 }
