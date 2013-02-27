@@ -26,12 +26,11 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.vaadin.nodemaps;
+package org.opennms.features.vaadin.nodemaps.internal;
 
 import java.util.Map;
 
 import org.opennms.features.geocoder.GeocoderService;
-import org.opennms.features.vaadin.nodemaps.ui.OpenlayersWidgetComponent;
 import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.dao.AssetRecordDao;
 import org.opennms.netmgt.dao.NodeDao;
@@ -136,7 +135,7 @@ public class NodeMapsApplication extends Application {
     public void init() {
         m_log.debug("initializing");
 
-        final OpenlayersWidgetComponent openlayers = new OpenlayersWidgetComponent();
+        final MapWidgetComponent openlayers = new MapWidgetComponent();
         openlayers.setNodeDao(m_nodeDao);
         openlayers.setAssetRecordDao(m_assetDao);
         openlayers.setAlarmDao(m_alarmDao);
