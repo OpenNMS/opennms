@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<datacollection-group name="Optenet">
+      <group name="optenet-alu-customstats" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.637.333.13" instance="0" alias="optTotReqProcessed" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.637.333.14" instance="0" alias="optTotReqBlocked" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.637.333.15" instance="0" alias="optThreadsAvail" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.637.333.16" instance="0" alias="optThreadsTotal" type="gauge" />
+      </group>
+
+      <systemDef name="Optenet Custom Stats MIB by ALU">
+        <sysoidMask>.1.3.6.1.4.1.8072.3.</sysoidMask>
+        <collect>
+          <includeGroup>optenet-alu-customstats</includeGroup>
+        </collect>
+      </systemDef>
+
+</datacollection-group>
