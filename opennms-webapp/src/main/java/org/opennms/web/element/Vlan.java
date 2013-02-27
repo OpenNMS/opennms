@@ -28,11 +28,6 @@
 
 package org.opennms.web.element;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.opennms.netmgt.linkd.DbVlanEntry;
-
 /**
  * <p>Vlan class.</p>
  *
@@ -40,7 +35,7 @@ import org.opennms.netmgt.linkd.DbVlanEntry;
  * @version $Id: $
  * @since 1.8.1
  */
-public class Vlan
+public class Vlan extends RowStatus
 {
     private final int m_nodeId;
     private final int m_vlanId;
@@ -48,7 +43,6 @@ public class Vlan
     private final int m_vlantype;
     private final int m_vlanstatus;
     private final String m_lastPollTime;
-    private final char m_status;
 
     /**
      * <p>String identifiers for the enumeration of values:</p>
@@ -61,7 +55,22 @@ public class Vlan
      * <li>{@link DbVlanEntry#VLAN_TYPE_TRNET}</li>
      * <li>{@link DbVlanEntry#VLAN_TYPE_DEPRECATED}</li>
      * </ul>
-     */ 
+     */
+    
+    public static final int VLAN_TYPE_UNKNOWN = 0;
+    public static final int VLAN_TYPE_ETHERNET = 1;
+    public static final int VLAN_TYPE_FDDI = 2;
+    public static final int VLAN_TYPE_TOKEN_RING = 3;
+    public static final int VLAN_TYPE_FDDINET = 4;
+    public static final int VLAN_TYPE_TRNET = 5;
+    public static final int VLAN_TYPE_DEPRECATED = 6;
+
+    public static final int VLAN_STATUS_UNKNOWN = 0;
+    public static final int VLAN_STATUS_OPERATIONAL = 1;
+    public static final int VLAN_STATUS_SUSPENDED = 2;
+    public static final int VLAN_STATUS_MTU_TOO_BIG_FOR_DEVICE = 3;
+    public static final int VLAN_STATUS_MTU_TOO_BIG_FOR_TRUNK = 4;
+    
     private static final String[] VLAN_TYPE = new String[] {
         "Unknown", //0
         "Ethernet", //1 
@@ -90,25 +99,17 @@ public class Vlan
         "mtuTooBigForTrunk" //4
     };
 
-    private static final Map<Character, String> statusMap = new HashMap<Character, String>();
-
-    static {
-        statusMap.put( DbVlanEntry.STATUS_ACTIVE, "Active" );
-        statusMap.put( DbVlanEntry.STATUS_UNKNOWN, "Unknown" );
-        statusMap.put( DbVlanEntry.STATUS_DELETED, "Deleted" );
-        statusMap.put( DbVlanEntry.STATUS_NOT_POLLED, "Not Active" );
-    }
 
     /* package-protected so only the NetworkElementFactory can instantiate */
     Vlan(Integer nodeId, Integer vlanid, String vlanname, Integer vlantype, Integer vlanstatus, String lastpolltime, char status)
     {
+    	super(status);
         m_nodeId = nodeId;
         m_vlanId = vlanid;
         m_vlanname = vlanname;
         m_vlantype = vlantype;
         m_vlanstatus = vlanstatus;
         m_lastPollTime = lastpolltime; 
-        m_status = status;
     }
 
     /**
@@ -142,24 +143,6 @@ public class Vlan
      */
     public int getNodeId() {
         return m_nodeId;
-    }
-
-    /**
-     * <p>getStatus</p>
-     *
-     * @return a char.
-     */
-    public char getStatus() {
-        return m_status;
-    }
-
-    /**
-     * <p>getStatusString</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public String getStatusString() {
-        return( (String)statusMap.get( new Character(m_status) ));
     }
 
     /**
@@ -221,7 +204,7 @@ public class Vlan
         try {
             return VLAN_STATUS[m_vlanstatus];
         } catch (ArrayIndexOutOfBoundsException e) {
-            return VLAN_STATUS[DbVlanEntry.VLAN_STATUS_UNKNOWN];
+            return "Unknown";
         }
     }
 
@@ -243,7 +226,7 @@ public class Vlan
         try {
             return VLAN_TYPE[m_vlantype];
         } catch (ArrayIndexOutOfBoundsException e) {
-            return VLAN_TYPE[DbVlanEntry.VLAN_TYPE_UNKNOWN];
+            return "Unknown";
         }
     }
 

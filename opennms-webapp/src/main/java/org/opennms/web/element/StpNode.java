@@ -28,18 +28,12 @@
 
 package org.opennms.web.element;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.opennms.netmgt.linkd.DbStpNodeEntry;
-
-
 /**
  * <p>StpNode class.</p>
  *
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
  */
-public class StpNode
+public class StpNode extends RowStatus
 {
         int     m_nodeId;
         int     m_basenumports;
@@ -53,7 +47,6 @@ public class StpNode
         String  m_basebridgeaddress;
 		String  m_stpdesignatedroot;
         String  m_lastPollTime;
-        char    m_status;
         int 	m_stprootnodeid;
 
         /**
@@ -65,6 +58,20 @@ public class StpNode
          * <li>{@link DbStpNodeEntry#BASE_TYPE_SRT}</li>
          * </ul>
          */ 
+        
+    	public static final int BASE_TYPE_UNKNOWN = 1;
+    	public static final int BASE_TYPE_TRANSPARENT_ONLY = 2;
+    	public static final int BASE_TYPE_SOURCEROUTE_ONLY = 3;
+    	public static final int BASE_TYPE_SRT = 4;
+
+    	/**
+    	 * the STP Protocol Specification
+    	 */
+
+    	public static final int STP_UNKNOWN = 1;
+    	public static final int STP_DECLB100 = 2;
+    	public static final int STP_IEEE8011D = 3;
+    	
 	    private static final String[] BRIDGE_BASE_TYPE = new String[] {
 		    null,                //0 (not a valid index)
 		    "Unknown",           //1
@@ -88,19 +95,10 @@ public class StpNode
 		    "IEEE 802.1D",      //3
 		 };
 
-
-        private static final Map<Character, String> statusMap = new HashMap<Character, String>();
-      	
-        static {
-            statusMap.put( DbStpNodeEntry.STATUS_ACTIVE, "Active" );
-            statusMap.put( DbStpNodeEntry.STATUS_UNKNOWN, "Unknown" );
-            statusMap.put( DbStpNodeEntry.STATUS_DELETED, "Deleted" );
-            statusMap.put( DbStpNodeEntry.STATUS_NOT_POLLED, "Not Active" );
-        }
-
         /* package-protected so only the NetworkElementFactory can instantiate */
         StpNode()
         {
+        	super('K');
         }
 
         /* package-protected so only the NetworkElementFactory can instantiate */
@@ -120,20 +118,20 @@ public class StpNode
 	int		stprootnodeid
 )
         {
-                m_nodeId = nodeId;
-                m_basenumports = basenumports;
-				m_basetype = basetype;
-				m_stpprotocolspecification = stpprotocolspecification;
-				m_stppriority = stppriority;
-				m_stprootcost = stprootcost;
-				m_stprootcost = stprootport;
-				m_basevlan = basevlan;
-				m_basevlanname = basevlanname;
-                m_basebridgeaddress = basebridgeaddress;
-                m_stpdesignatedroot = stpdesignatedroot;
-                m_lastPollTime = lastPollTime; 
-                m_status = status;
-                m_stprootnodeid = stprootnodeid;
+        	super(status);
+            m_nodeId = nodeId;
+            m_basenumports = basenumports;
+			m_basetype = basetype;
+			m_stpprotocolspecification = stpprotocolspecification;
+			m_stppriority = stppriority;
+			m_stprootcost = stprootcost;
+			m_stprootcost = stprootport;
+			m_basevlan = basevlan;
+			m_basevlanname = basevlanname;
+            m_basebridgeaddress = basebridgeaddress;
+            m_stpdesignatedroot = stpdesignatedroot;
+            m_lastPollTime = lastPollTime; 
+            m_stprootnodeid = stprootnodeid;
         }
 
         /**
@@ -186,7 +184,7 @@ public class StpNode
 		    try {
 		        return BRIDGE_BASE_TYPE[m_basetype];
 		    } catch (ArrayIndexOutOfBoundsException e) {
-		        return BRIDGE_BASE_TYPE[DbStpNodeEntry.BASE_TYPE_UNKNOWN];
+		        return "Unknown";
 		    }
 		}
 		/**
@@ -214,15 +212,6 @@ public class StpNode
 		 */
 		public int get_nodeId() {
 			return m_nodeId;
-		}
-
-		/**
-		 * <p>get_status</p>
-		 *
-		 * @return a char.
-		 */
-		public char get_status() {
-			return m_status;
 		}
 
 		/**
@@ -261,7 +250,7 @@ public class StpNode
             try {
                 return STP_PROTO_TYPE[m_stpprotocolspecification];
             } catch (ArrayIndexOutOfBoundsException e) {
-                return STP_PROTO_TYPE[DbStpNodeEntry.STP_UNKNOWN];
+                return "Unknown";
             }
 		}
 
@@ -301,15 +290,6 @@ public class StpNode
 			return m_basevlanname;
 		}
 		
-	    /**
-	     * <p>getStatusString</p>
-	     *
-	     * @return a {@link java.lang.String} object.
-	     */
-	    public String getStatusString() {
-	        return statusMap.get( new Character(m_status) );
-	    }
-
 	    /**
 	     * <p>getVlanColorIdentifier</p>
 	     *

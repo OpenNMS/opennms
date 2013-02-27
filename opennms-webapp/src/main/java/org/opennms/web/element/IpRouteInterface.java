@@ -28,47 +28,42 @@
 
 package org.opennms.web.element;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.opennms.netmgt.linkd.DbIpRouteInterfaceEntry;
-
-
-
 /**
  * <p>IpRouteInterface class.</p>
  *
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
  */
-public class IpRouteInterface
+public class IpRouteInterface extends RowStatus
 {
-        int     m_nodeId;
-		int     m_routeifindex;
-		int     m_routemetric1;
-		int     m_routemetric2;
-		int     m_routemetric3;
-		int     m_routemetric4;
-		int     m_routemetric5;
-		int     m_routetype;
-		int     m_routeproto;
-        String  m_routedest;
-		String  m_routemask;
-		String  m_routenexthop;
-        String  m_lastPollTime;
-        char    m_status;
+	/** 
+	 * Integer representing route type
+	 */
+	public static final int ROUTE_TYPE_OTHER = 1;
 
-        private static final Map<Character, String> statusMap = new HashMap<Character, String>();
+	public static final int ROUTE_TYPE_INVALID = 2;
 
-        static {
-            statusMap.put( DbIpRouteInterfaceEntry.STATUS_ACTIVE, "Active" );
-            statusMap.put( DbIpRouteInterfaceEntry.STATUS_UNKNOWN, "Unknown" );
-            statusMap.put( DbIpRouteInterfaceEntry.STATUS_DELETED, "Deleted" );
-            statusMap.put( DbIpRouteInterfaceEntry.STATUS_NOT_POLLED, "Not Active" );
-        }
+	public static final int ROUTE_TYPE_DIRECT = 3;
+
+	public static final int ROUTE_TYPE_INDIRECT = 4;
+	
+	int     m_nodeId;
+	int     m_routeifindex;
+	int     m_routemetric1;
+	int     m_routemetric2;
+	int     m_routemetric3;
+	int     m_routemetric4;
+	int     m_routemetric5;
+	int     m_routetype;
+	int     m_routeproto;
+    String  m_routedest;
+	String  m_routemask;
+	String  m_routenexthop;
+    String  m_lastPollTime;
 
         /* package-protected so only the NetworkElementFactory can instantiate */
         IpRouteInterface()
         {
+        	super('K');
         }
 
         /* package-protected so only the NetworkElementFactory can instantiate */
@@ -88,6 +83,7 @@ public class IpRouteInterface
 	char    status
         )
         {
+        	super(status);
             m_nodeId = nodeId;
             m_routeifindex = routeifindex;
 			m_routemetric1 = routemetric1;
@@ -101,7 +97,6 @@ public class IpRouteInterface
 			m_routedest = routedest;
 			m_routemask = routemask;
 			m_lastPollTime = lastPollTime; 
-            m_status = status;
         }
 
         /**
@@ -141,15 +136,6 @@ public class IpRouteInterface
 		 */
 		public int get_nodeId() {
 			return m_nodeId;
-		}
-
-		/**
-		 * <p>get_status</p>
-		 *
-		 * @return a char.
-		 */
-		public char get_status() {
-			return m_status;
 		}
 
 		/**

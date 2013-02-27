@@ -28,17 +28,14 @@
 
 package org.opennms.web.element;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.opennms.netmgt.linkd.DbAtInterfaceEntry;
+import org.opennms.netmgt.model.OnmsArpInterface;
 
 /**
  * <p>AtInterface class.</p>
  *
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
  */
-public class AtInterface
+public class AtInterface extends RowStatus
 {
         private final int     m_nodeId;
         private final int     m_sourcenodeid;
@@ -46,33 +43,17 @@ public class AtInterface
         private final String  m_ipaddr;
         private final String  m_physaddr;
         private final String  m_lastPollTime;
-        private final char    m_status;
-
-        private static final Map<Character, String> statusMap = new HashMap<Character, String>();
-
-        static {
-            statusMap.put( DbAtInterfaceEntry.STATUS_ACTIVE, "Active" );
-            statusMap.put( DbAtInterfaceEntry.STATUS_UNKNOWN, "Unknown" );
-            statusMap.put( DbAtInterfaceEntry.STATUS_DELETED, "Deleted" );
-            statusMap.put( DbAtInterfaceEntry.STATUS_NOT_POLLED, "Not Active" );
-        }
 
         /* package-protected so only the NetworkElementFactory can instantiate */
-        AtInterface(   int nodeId,
-                int sourcenodeid,
-				int ifindex,
-                String ipaddr,
-                String physaddr,
-                String lastPollTime,
-                char status)
+        AtInterface(OnmsArpInterface onmsat)
         {
-                m_nodeId = nodeId;
-                m_sourcenodeid = sourcenodeid;
-				m_ifindex = ifindex;
-                m_ipaddr = ipaddr;
-                m_physaddr = physaddr;
-                m_lastPollTime = lastPollTime; 
-                m_status = status;
+            super(onmsat.getStatus().getCharCode());
+            m_nodeId = onmsat.getNode().getId();
+            m_sourcenodeid = onmsat.getSourceNode().getId();
+			m_ifindex = onmsat.getIfIndex();
+            m_ipaddr = onmsat.getIpAddress();
+            m_physaddr = onmsat.getPhysAddr();
+            m_lastPollTime = onmsat.getLastPoll().toString(); 
         }
 
         /**
@@ -141,15 +122,6 @@ public class AtInterface
 		 */
 		public int get_sourcenodeid() {
 			return m_sourcenodeid;
-		}
-
-		/**
-		 * <p>get_status</p>
-		 *
-		 * @return a char.
-		 */
-		public char get_status() {
-			return m_status;
 		}
 
 }

@@ -62,10 +62,6 @@ import org.opennms.netmgt.dao.MonitoredServiceDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.ServiceTypeDao;
 import org.opennms.netmgt.dao.SnmpInterfaceDao;
-import org.opennms.netmgt.linkd.DbIpRouteInterfaceEntry;
-import org.opennms.netmgt.linkd.DbStpInterfaceEntry;
-import org.opennms.netmgt.linkd.DbStpNodeEntry;
-import org.opennms.netmgt.linkd.DbVlanEntry;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsArpInterface;
 import org.opennms.netmgt.model.OnmsCategory;
@@ -683,7 +679,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         for (final OnmsArpInterface iface : onmsNode.getArpInterfaces()) {
             final String ifaceAddress = iface.getIpAddress();
             if (ifaceAddress != null && ifaceAddress.equals(ipAddr)) {
-                return new AtInterface(onmsNode.getId(), iface.getSourceNode().getId(), iface.getIfIndex(), iface.getIpAddress(), iface.getPhysAddr(), iface.getLastPoll().toString(), iface.getStatus().getCharCode());
+                return new AtInterface(iface);
             }
         }
         return null;
@@ -1248,7 +1244,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
             if (element != null && ((Integer)element).intValue() > 0) {
                 ipRtIf.m_routetype = ((Integer) element).intValue();
             } else {
-                ipRtIf.m_routetype = DbIpRouteInterfaceEntry.ROUTE_TYPE_OTHER;
+                ipRtIf.m_routetype = IpRouteInterface.ROUTE_TYPE_OTHER;
             }
 
             element = new Integer(rs.getInt("routeproto"));
@@ -1260,7 +1256,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
             if (element != null) {
                 ipRtIf.m_status = ((String) element).charAt(0);
             } else {
-                ipRtIf.m_status = DbIpRouteInterfaceEntry.STATUS_UNKNOWN;
+                ipRtIf.m_status = RowStatus.STATUS_UNKNOWN;
             }
 
             return ipRtIf;
@@ -1318,7 +1314,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
             if (element != null && ((Integer)element).intValue() > 0) {
                 stpIf.m_stpportstate = ((Integer) element).intValue();
             } else {
-                stpIf.m_stpportstate = DbStpInterfaceEntry.STP_PORT_DISABLED;
+                stpIf.m_stpportstate = StpInterface.STP_PORT_DISABLED;
             }
 
             element = new Integer(rs.getInt("stpvlan"));
@@ -1330,7 +1326,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
             if (element != null) {
                 stpIf.m_status = ((String) element).charAt(0);
             } else {
-                stpIf.m_status = DbStpInterfaceEntry.STATUS_UNKNOWN;
+                stpIf.m_status = RowStatus.STATUS_UNKNOWN;
             }
 
             element = new Integer(rs.getInt("dbridge"));
@@ -1388,7 +1384,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
             if (element != null && ((Integer)element).intValue() > 0) {
                 stpNode.m_basetype = ((Integer) element).intValue();
             } else {
-                stpNode.m_basetype = DbStpNodeEntry.BASE_TYPE_UNKNOWN;
+                stpNode.m_basetype = StpNode.BASE_TYPE_UNKNOWN;
             }
 
             element = new Integer(rs.getInt("basevlan"));
@@ -1410,7 +1406,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
             if (element != null && ((Integer)element).intValue() > 0) {
                 stpNode.m_stpprotocolspecification = ((Integer) element).intValue();
             } else {
-                stpNode.m_stpprotocolspecification = DbStpNodeEntry.STP_UNKNOWN;
+                stpNode.m_stpprotocolspecification = StpNode.STP_UNKNOWN;
             }
 
             element = new Integer(rs.getInt("stprootcost"));
@@ -1427,7 +1423,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
             if (element != null) {
                 stpNode.m_status = ((String) element).charAt(0);
             } else {
-                stpNode.m_status = DbStpNodeEntry.STATUS_UNKNOWN;
+                stpNode.m_status = RowStatus.STATUS_UNKNOWN;
             }
 
             element = new Integer(rs.getInt("stpdesignatedrootnodeid"));
@@ -1465,13 +1461,13 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
                         ((Timestamp) element).getTime()));
 
             element = new Integer(rs.getInt("vlantype"));
-            int vlantype = DbVlanEntry.VLAN_TYPE_UNKNOWN;
+            int vlantype = Vlan.VLAN_TYPE_UNKNOWN;
             if (element != null) {
                 vlantype = ((Integer) element).intValue();
             }
 
             element = new Integer(rs.getInt("vlanstatus"));
-            int vlanstatus = DbVlanEntry.VLAN_STATUS_UNKNOWN;
+            int vlanstatus = Vlan.VLAN_STATUS_UNKNOWN;
             if (element != null) {
                 vlanstatus= ((Integer) element).intValue();
             }
