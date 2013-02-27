@@ -28,12 +28,11 @@
 
 package org.opennms.web.element;
 
-import static org.opennms.core.utils.InetAddressUtils.str;
+//import java.sql.Date;
+//import java.sql.ResultSet;
+//import java.sql.SQLException;
+//import java.sql.Timestamp;
 
-import java.sql.Date;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -52,17 +51,22 @@ import org.hibernate.FetchMode;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressComparator;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.CategoryDao;
+
 import org.opennms.netmgt.dao.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.IpInterfaceDao;
+import org.opennms.netmgt.dao.IpRouteInterfaceDao;
 import org.opennms.netmgt.dao.MonitoredServiceDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.ServiceTypeDao;
 import org.opennms.netmgt.dao.SnmpInterfaceDao;
-import org.opennms.netmgt.linkd.DbIpRouteInterfaceEntry;
+import org.opennms.netmgt.dao.StpNodeDao;
+import org.opennms.netmgt.dao.VlanDao;
+
 import org.opennms.netmgt.linkd.DbStpInterfaceEntry;
 import org.opennms.netmgt.linkd.DbStpNodeEntry;
 import org.opennms.netmgt.linkd.DbVlanEntry;
@@ -71,11 +75,14 @@ import org.opennms.netmgt.model.OnmsArpInterface;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsIpRouteInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsRestrictions;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
+import org.opennms.netmgt.model.OnmsStpNode;
+import org.opennms.netmgt.model.OnmsVlan;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.web.api.Util;
@@ -115,7 +122,16 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     private DataLinkInterfaceDao m_dataLinkInterfaceDao;
 
     @Autowired
+    private IpRouteInterfaceDao m_ipRouteInterfaceDao;
+
+    @Autowired
+    private StpNodeDao m_stpNodeDao;
+    
+    @Autowired
     private MonitoredServiceDao m_monSvcDao;
+    
+    @Autowired
+    private VlanDao m_vlanDao;
     
     @Autowired
     private ServiceTypeDao m_serviceTypeDao;
@@ -123,8 +139,8 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     @Autowired
     private CategoryDao m_categoryDao;
     
-    @Autowired
-    SimpleJdbcTemplate m_jdbcTemplate;
+//    @Autowired
+//    SimpleJdbcTemplate m_jdbcTemplate;
 
     public static NetworkElementFactoryInterface getInstance(ServletContext servletContext) {
         return getInstance(WebApplicationContextUtils.getWebApplicationContext(servletContext));    
@@ -336,20 +352,20 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
 
     @Override
     public Integer getIfIndex(int ipinterfaceid) {
-        final Integer result = m_jdbcTemplate.queryForObject("SELECT ifindex FROM IPINTERFACE WHERE ID = ?", Integer.class, ipinterfaceid);
-        if (result !=  null)
-            return result;
-        return -1;
+        return getIfIndex(m_ipInterfaceDao.get(ipinterfaceid));
     }
     
     @Override
     public Integer getIfIndex(int nodeID, String ipaddr) {
-        final Integer result = m_jdbcTemplate.queryForObject("SELECT ifindex FROM IPINTERFACE WHERE Nodeid = ? and ipaddr = ?", Integer.class, nodeID, ipaddr);
-        if (result !=  null)
-            return result;
-        return -1;
+        return getIfIndex(m_ipInterfaceDao.get(m_nodeDao.get(nodeID), ipaddr));
     }
-    
+
+    private Integer getIfIndex(OnmsIpInterface ipinterface) {
+        if (ipinterface != null && ipinterface.getIfIndex() != null)
+            return ipinterface.getIfIndex();
+        return -1;        
+    }
+
     /* (non-Javadoc)
 	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getInterface(int)
 	 */
@@ -362,7 +378,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         List<OnmsIpInterface> ifaces = m_ipInterfaceDao.findMatching(criteria);
         
         if(ifaces.size() > 0) {
-            return onmsIpInterface2Interface(ifaces.get(0));
+            return new Interface(ifaces.get(0));
         }
         
         return null;
@@ -380,7 +396,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         criteria.setFetchMode("snmpInterface", FetchMode.JOIN);
         
         List<OnmsIpInterface> ifaces = m_ipInterfaceDao.findMatching(criteria);
-        return ifaces.size() > 0 ? onmsIpInterface2Interface(ifaces.get(0)) : null;
+        return ifaces.size() > 0 ? new Interface(ifaces.get(0)) : null;
     }
 
     /* (non-Javadoc)
@@ -397,7 +413,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
 
         List<OnmsIpInterface> ifaces = m_ipInterfaceDao.findMatching(criteria);
         
-        return ifaces.size() > 0 ? onmsIpInterface2Interface(ifaces.get(0)) : null;
+        return ifaces.size() > 0 ? new Interface(ifaces.get(0)) : null;
     }
 
     /* (non-Javadoc)
@@ -412,7 +428,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         
         List<OnmsSnmpInterface> snmpIfaces = m_snmpInterfaceDao.findMatching(criteria);
         if(snmpIfaces.size() > 0) {
-            return onmsSnmpInterface2Interface(snmpIfaces.get(0));
+            return new Interface(snmpIfaces.get(0));
         }
         return null;
     }
@@ -427,7 +443,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         criteria.createAlias("snmpInterface", "snmpInterface", OnmsCriteria.LEFT_JOIN);
         criteria.add(Restrictions.eq("ipAddress", InetAddressUtils.addr(ipAddress)));
         
-        return onmsIpInterfaces2InterfaceArray(m_ipInterfaceDao.findMatching(criteria));
+        return getInterfaceArray(m_ipInterfaceDao.findMatching(criteria));
     }
 
     
@@ -446,7 +462,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         criteria.add(Restrictions.ilike("snmpIface.ifAlias", ifAlias, MatchMode.ANYWHERE));
         criteria.add(Restrictions.ne("isManaged", "D"));
         
-        return onmsIpInterfaces2InterfaceArray(m_ipInterfaceDao.findMatching(criteria));
+        return getInterfaceArray(m_ipInterfaceDao.findMatching(criteria));
     }
 
     /* (non-Javadoc)
@@ -460,7 +476,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         criteria.createAlias("node.assetRecord", "assetRecord");
         criteria.add(Restrictions.eq("node.id", nodeId));
         
-        return onmsIpInterfaces2InterfaceArray(m_ipInterfaceDao.findMatching(criteria));
+        return getInterfaceArray(m_ipInterfaceDao.findMatching(criteria));
     }
 
     /* (non-Javadoc)
@@ -481,7 +497,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         List<Interface> intfs = new LinkedList<Interface>();
         
         for(OnmsSnmpInterface snmpIface : snmpIfaces) {
-            intfs.add(onmsSnmpInterface2Interface(snmpIface));
+            intfs.add(new Interface(snmpIface));
         }
         
         return intfs.toArray(new Interface[intfs.size()]);
@@ -497,7 +513,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         criteria.add(Restrictions.eq("node.id", nodeId));
         criteria.add(Restrictions.ne("isManaged", "D"));
         
-        return onmsIpInterfaces2InterfaceArray(m_ipInterfaceDao.findMatching(criteria));
+        return getInterfaceArray(m_ipInterfaceDao.findMatching(criteria));
     }
 
     /*
@@ -527,12 +543,10 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         OnmsCriteria criteria = new OnmsCriteria(OnmsIpInterface.class);
         criteria.createAlias("snmpInterface", "snmpInterface", OnmsCriteria.LEFT_JOIN);
         if(!includeSnmp) {
-            return onmsIpInterfaces2InterfaceArray(m_ipInterfaceDao.findMatching(criteria));
+            return getInterfaceArray(m_ipInterfaceDao.findMatching(criteria));
         }else {
-            return onmsIpInterfaces2InterfaceArrayWithSnmpData(m_ipInterfaceDao.findMatching(criteria));
+            return getInterfaceArrayWithSnmpData(m_ipInterfaceDao.findMatching(criteria));
         }
-        
-        
     }
 
 
@@ -552,9 +566,9 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         criteria.addOrder(Order.asc("ipAddress"));
         
         if(!includeSNMP) {
-            return onmsIpInterfaces2InterfaceArray(m_ipInterfaceDao.findMatching(criteria));
+            return getInterfaceArray(m_ipInterfaceDao.findMatching(criteria));
         }else {
-            return onmsIpInterfaces2InterfaceArrayWithSnmpData(m_ipInterfaceDao.findMatching(criteria));
+            return getInterfaceArrayWithSnmpData(m_ipInterfaceDao.findMatching(criteria));
         }
     }
 
@@ -577,7 +591,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         
         List<OnmsMonitoredService> monSvcs = m_monSvcDao.findMatching(criteria);
         if(monSvcs.size() > 0) {
-            return onmsMonitoredService2Service(monSvcs.get(0));
+            return new Service(monSvcs.get(0));
         }else {
             return null;
         }
@@ -599,7 +613,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         List<OnmsMonitoredService> monSvcs = m_monSvcDao.findMatching(criteria);
         
         if(monSvcs.size() > 0) {
-            return onmsMonitoredService2Service(monSvcs.get(0));
+            return new Service(monSvcs.get(0));
         }else {
             return null;
         }
@@ -613,7 +627,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
 	 */
     @Override
     public Service[] getAllServices() {
-        return onmsMonitoredServices2ServiceArray(m_monSvcDao.findAll());
+        return getServiceArray(m_monSvcDao.findAll());
     }
 
     
@@ -645,7 +659,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
             criteria.add(Restrictions.ne("status", "D"));
         }
         
-        return onmsMonitoredServices2ServiceArray(m_monSvcDao.findMatching(criteria));
+        return getServiceArray(m_monSvcDao.findMatching(criteria));
     }
 
     /* (non-Javadoc)
@@ -660,7 +674,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         criteria.createAlias("serviceType", "serviceType");
         criteria.add(Restrictions.eq("node.id", nodeId));
         
-        return onmsMonitoredServices2ServiceArray(m_monSvcDao.findMatching(criteria));
+        return getServiceArray(m_monSvcDao.findMatching(criteria));
     }
 
     /* (non-Javadoc)
@@ -676,23 +690,13 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         criteria.add(Restrictions.eq("node.id", nodeId));
         criteria.add(Restrictions.eq("serviceType.id", serviceId));
         
-        return onmsMonitoredServices2ServiceArray(m_monSvcDao.findMatching(criteria));
-    }
-    
-    private static AtInterface getAtInterfaceForOnmsNode(final OnmsNode onmsNode, final String ipAddr) {
-        for (final OnmsArpInterface iface : onmsNode.getArpInterfaces()) {
-            final String ifaceAddress = iface.getIpAddress();
-            if (ifaceAddress != null && ifaceAddress.equals(ipAddr)) {
-                return new AtInterface(onmsNode.getId(), iface.getSourceNode().getId(), iface.getIfIndex(), iface.getIpAddress(), iface.getPhysAddr(), iface.getLastPoll().toString(), iface.getStatus().getCharCode());
-            }
-        }
-        return null;
+        return getServiceArray(m_monSvcDao.findMatching(criteria));
     }
 
-    private static Service[] onmsMonitoredServices2ServiceArray(List<OnmsMonitoredService> monSvcs) {
+    private static Service[] getServiceArray(List<OnmsMonitoredService> monSvcs) {
         List<Service> svcs = new LinkedList<Service>();
         for(OnmsMonitoredService monSvc : monSvcs) {
-            Service service = onmsMonitoredService2Service(monSvc);
+            Service service = new Service(monSvc);
             
             svcs.add(service);
         }
@@ -700,28 +704,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         
         return svcs.toArray(new Service[svcs.size()]);
     }
-
-    private static Service onmsMonitoredService2Service(OnmsMonitoredService monSvc) {
-        Service service = new Service();
-        service.setId(monSvc.getId());
-        service.setNodeId(monSvc.getNodeId());
-        
-        service.setIpAddress(InetAddressUtils.str(monSvc.getIpAddress()));
-        service.setServiceId(monSvc.getServiceId());
-        service.setServiceName(monSvc.getServiceName());
-        if(monSvc.getLastGood() != null) {
-            service.setLastGood(monSvc.getLastGood().toString());
-        }
-        if(monSvc.getLastFail() != null) {
-            service.setLastFail(monSvc.getLastFail().toString());
-        }
-        service.setNotify(monSvc.getNotify());
-        if(monSvc.getStatus() != null) {
-            service.setStatus(monSvc.getStatus().charAt(0));
-        }
-        return service;
-    }
-
+    
     /* (non-Javadoc)
 	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getServiceNameFromId(int)
 	 */
@@ -879,9 +862,20 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
      */
     @Override
     public AtInterface getAtInterface(int nodeId, String ipAddr) {
-        OnmsNode node = m_nodeDao.get(nodeId);
-        return getAtInterfaceForOnmsNode(node, ipAddr);
+        return getAtInterfaceForOnmsNode(m_nodeDao.get(nodeId), ipAddr);
     }
+
+    private AtInterface getAtInterfaceForOnmsNode(final OnmsNode onmsNode, final String ipAddr) {
+        for (final OnmsArpInterface iface : onmsNode.getArpInterfaces()) {
+            final String ifaceAddress = iface.getIpAddress();
+            if (ifaceAddress != null && ifaceAddress.equals(ipAddr)) {
+                return new AtInterface(iface);
+            }
+        }
+        return null;
+    }
+
+
 
     /**
      * <p>getIpRoute</p>
@@ -892,8 +886,18 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
      */
     @Override
     public IpRouteInterface[] getIpRoute(int nodeID) {
-        List<IpRouteInterface> nodes = m_jdbcTemplate.query("SELECT * FROM IPROUTEINTERFACE WHERE NODEID = ? AND STATUS != 'D' ORDER BY ROUTEDEST", new IpRouteInterfaceRowMapper(), nodeID);
+        OnmsCriteria criteria = new OnmsCriteria(OnmsIpRouteInterface.class);
+        criteria.add(Restrictions.and(Restrictions.eq("node.id", nodeID), Restrictions.ne("status", StatusType.DELETED)));
+        List<IpRouteInterface> nodes = getIpRouteInterfaceArray(m_ipRouteInterfaceDao.findMatching(criteria));
         return nodes.toArray(new IpRouteInterface[nodes.size()]);
+    }
+
+    private List<IpRouteInterface> getIpRouteInterfaceArray(List<OnmsIpRouteInterface> iproutes ) {
+        List<IpRouteInterface> routes = new ArrayList<IpRouteInterface>();
+        for (OnmsIpRouteInterface iproute: iproutes) {
+            routes.add(new IpRouteInterface(iproute));
+        }
+        return routes;
     }
 
     /* (non-Javadoc)
@@ -903,15 +907,11 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     public boolean isParentNode(int nodeId) {
         OnmsCriteria criteria = new OnmsCriteria(DataLinkInterface.class);
         criteria.add(Restrictions.eq("nodeParentId", nodeId));
-        criteria.add(Restrictions.ne("status", "D"));
+        criteria.add(Restrictions.ne("status", StatusType.DELETED));
         
-        List<DataLinkInterface> dlis = m_dataLinkInterfaceDao.findMatching(criteria);
+        int count = m_dataLinkInterfaceDao.countMatching(criteria);
         
-        if(dlis.size() > 0) {
-            return true;
-        }else {
-            return false;
-        }
+        return (count > 0);
         
     }
 
@@ -923,8 +923,13 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
      * @throws java.sql.SQLException if any.
      */
     @Override
-    public boolean isBridgeNode(int nodeID) throws SQLException {
-        int count = m_jdbcTemplate.queryForInt("SELECT COUNT(*) FROM STPNODE WHERE NODEID = ? AND STATUS != 'D'", nodeID);
+    public boolean isBridgeNode(int nodeID) {
+        OnmsCriteria criteria = new OnmsCriteria(OnmsStpNode.class);
+        criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
+        criteria.add(Restrictions.eq("node.id", nodeID));
+        criteria.add(Restrictions.ne("status", StatusType.DELETED));
+        
+        int count = m_stpNodeDao.countMatching(criteria);
         return (count > 0);
     }
 
@@ -936,8 +941,13 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
      * @throws java.sql.SQLException if any.
      */
     @Override
-    public boolean isRouteInfoNode(int nodeID) throws SQLException {
-        int count = m_jdbcTemplate.queryForInt("SELECT COUNT(*) FROM IPROUTEINTERFACE WHERE NODEID = ? AND STATUS != 'D'", nodeID);
+    public boolean isRouteInfoNode(int nodeID) {
+        OnmsCriteria criteria = new OnmsCriteria(OnmsIpRouteInterface.class);
+        criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
+        criteria.add(Restrictions.eq("node.id", nodeID));
+        criteria.add(Restrictions.ne("status", StatusType.DELETED));
+        int count = m_ipRouteInterfaceDao.countMatching(criteria);
+        //        m_jdbcTemplate.queryForInt("SELECT COUNT(*) FROM IPROUTEINTERFACE WHERE NODEID = ? AND STATUS != 'D'", nodeID);
         return (count > 0);
     }
 
@@ -949,37 +959,24 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
      * @throws java.sql.SQLException if any.
      */
     @Override
-    public Set<Integer> getLinkedNodeIdOnNode(int nodeID) throws SQLException {
+    public Set<Integer> getLinkedNodeIdOnNode(int nodeID) {
         Set<Integer> nodes = new TreeSet<Integer>();
 
-        List<Integer> parentIds = m_jdbcTemplate.query(
-            "SELECT distinct(nodeparentid) as parentid FROM DATALINKINTERFACE WHERE NODEID = ? AND STATUS != 'D'",
-            new RowMapper<Integer>() {
-                @Override
-                public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
-                    return rs.getObject("parentid") == null ? null : rs.getInt("parentid");
-                }
-            },
-            nodeID
-        );
-        // Remove all nulls, TreeSets cannot contain null
-        parentIds.remove(null);
-        nodes.addAll(parentIds);
+        for (DataLinkInterface link: m_dataLinkInterfaceDao.findByNodeId(nodeID)) {
+            Integer linkedNodeId = link.getNodeParentId();
+            if (nodes.contains(linkedNodeId) || link.getStatus().equals(StatusType.DELETED))
+                continue;
+            nodes.add(linkedNodeId);            
+        }
 
-        parentIds = m_jdbcTemplate.query(
-            "SELECT distinct(nodeid) as parentid FROM DATALINKINTERFACE WHERE NODEPARENTID = ? AND STATUS != 'D'",
-            new RowMapper<Integer>() {
-                @Override
-                public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
-                    return rs.getObject("parentid") == null ? null : rs.getInt("parentid");
-                }
-            },
-            nodeID
-        );
+        for (DataLinkInterface link : m_dataLinkInterfaceDao.findByNodeParentId(nodeID)) {
+            Integer linkedNodeId = link.getNodeId();
+            if (nodes.contains(linkedNodeId) || link.getStatus().equals(StatusType.DELETED))
+                continue;
+            nodes.add(linkedNodeId);            
+        }
+        
         // Remove all nulls, TreeSets cannot contain null
-        parentIds.remove(null);
-        nodes.addAll(parentIds);
-
         return nodes;
     }
     
@@ -1073,53 +1070,53 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
      * 3) node ha una interfaccia SNMP e node parent pure
      * 
      */
-	private LinkInterface createLinkInterface(DataLinkInterface dliface, boolean isParent) {
+    private LinkInterface createLinkInterface(DataLinkInterface dliface, boolean isParent) {
 
-		Integer nodeid = dliface.getNode().getId();
-		Integer linkedNodeid = dliface.getNodeParentId();
-		Integer ifindex = dliface.getIfIndex();
-		Integer linkedIfindex = dliface.getParentIfIndex();
+        Integer nodeid = dliface.getNode().getId();
+        Integer linkedNodeid = dliface.getNodeParentId();
+        Integer ifindex = dliface.getIfIndex();
+        Integer linkedIfindex = dliface.getParentIfIndex();
 
-    	if (isParent) {
-    		nodeid = dliface.getNodeParentId();
-    		linkedNodeid = dliface.getNode().getId();
-    		ifindex = dliface.getParentIfIndex();
-    		linkedIfindex = dliface.getIfIndex();
-    	} 
+        if (isParent) {
+            nodeid = dliface.getNodeParentId();
+            linkedNodeid = dliface.getNode().getId();
+            ifindex = dliface.getParentIfIndex();
+            linkedIfindex = dliface.getIfIndex();
+        } 
     		
-		Interface iface = getInterfaceForLink(nodeid, ifindex);
-		Interface linkedIface = getInterfaceForLink(linkedNodeid, linkedIfindex); 
+        Interface iface = getInterfaceForLink(nodeid, ifindex);
+        Interface linkedIface = getInterfaceForLink(linkedNodeid, linkedIfindex); 
     		
-    	return new LinkInterface(nodeid, ifindex, linkedNodeid, linkedIfindex, iface, linkedIface, Util.formatDateToUIString(dliface.getLastPollTime()), dliface.getStatus().charAt(0), dliface.getLinkTypeId());
+        return new LinkInterface(dliface, iface, linkedIface);
     }
 	
-	private Interface getInterfaceForLink(int nodeid, int ifindex) {
-		Interface iface = null;
-		if (ifindex > 0 ) {
-			iface = getSnmpInterface(nodeid, ifindex);
+    private Interface getInterfaceForLink(int nodeid, int ifindex) {
+	Interface iface = null;
+	if (ifindex > 0 ) {
+	    iface = getSnmpInterface(nodeid, ifindex);	
+	    OnmsCriteria criteria = new OnmsCriteria(OnmsIpInterface.class); 
+	    criteria.add(Restrictions.sqlRestriction("nodeid = " + nodeid + " and ifindex = " + ifindex ));
+	    List<String> addresses = new ArrayList<String>();
 			
-			OnmsCriteria criteria = new OnmsCriteria(org.opennms.netmgt.model.OnmsIpInterface.class); 
-			criteria.add(Restrictions.sqlRestriction("nodeid = " + nodeid + " and ifindex = " + ifindex ));
-			List<String> addresses = new ArrayList<String>();
+	    for (OnmsIpInterface onmsIpInterface : m_ipInterfaceDao.findMatching(criteria)) {
+	        addresses.add(onmsIpInterface.getIpAddress().getHostAddress());
+	    }
 			
-			for (OnmsIpInterface onmsIpInterface : m_ipInterfaceDao.findMatching(criteria)) {
-				addresses.add(onmsIpInterface.getIpAddress().getHostAddress());
-			}
-			
-			if (addresses.size() > 0 ) {
-				if (iface ==  null) {
-					iface = new Interface();
-					iface.m_nodeId = nodeid;
-					iface.m_ifIndex = ifindex;
-				}
-				iface.setIpaddresses(addresses);
-			} else {
-				if (iface != null)
-					iface.setIpaddresses(addresses);					
-			}
-		} 
-		return iface;
-	}
+	    if (addresses.size() > 0 ) {
+		if (iface ==  null) {
+		    iface = new Interface();
+		    iface.m_nodeId = nodeid;
+		    iface.m_ifIndex = ifindex;
+		}
+		iface.setIpaddresses(addresses);
+	    } else {
+	        if (iface != null)
+	            iface.setIpaddresses(addresses);					
+	    }
+	} 
+	return iface;
+    }
+    
     /**
      * <p>getVlansOnNode</p>
      *
@@ -1128,12 +1125,26 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
      * @throws java.sql.SQLException if any.
      */
     @Override
-    public Vlan[] getVlansOnNode(int nodeID) throws SQLException {
-        String sqlQuery = "SELECT * from vlan WHERE status != 'D' AND nodeid = ? order by vlanid;";
-        List<Vlan> nodes = m_jdbcTemplate.query(sqlQuery, new VlanRowMapper(), nodeID);
-        return nodes.toArray(new Vlan[nodes.size()]);
+    public Vlan[] getVlansOnNode(int nodeID) {
+        //String sqlQuery = "SELECT * from vlan WHERE status != 'D' AND nodeid = ? order by vlanid;";
+        //m_jdbcTemplate.query(sqlQuery, new VlanRowMapper(), nodeID);
+        
+        final OnmsCriteria criteria = new OnmsCriteria(OnmsVlan.class);
+        criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
+        criteria.add(Restrictions.eq("node.id", nodeID));
+        criteria.add(Restrictions.ne("status", "D"));
+
+        List<Vlan> vlans = getVlans(m_vlanDao.findMatching(criteria));
+        return vlans.toArray(new Vlan[vlans.size()]);
     }
-    
+
+    private List<Vlan> getVlans(List<OnmsVlan> onmsvlans) {
+        List<Vlan> vlans = new ArrayList<Vlan>();
+        for (OnmsVlan onmsvlan: onmsvlans) {
+            vlans.add(new Vlan(onmsvlan));
+        }
+        return vlans;
+    }
     /**
      * <p>getStpInterface</p>
      *
@@ -1142,7 +1153,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
      * @throws java.sql.SQLException if any.
      */
     @Override
-    public StpInterface[] getStpInterface(int nodeID) throws SQLException {
+    public StpInterface[] getStpInterface(int nodeID) {
         String sqlQuery = "SELECT DISTINCT(stpnode.nodeid) AS droot, stpinterfacedb.* FROM "
             + "((SELECT DISTINCT(stpnode.nodeid) AS dbridge, stpinterface.* FROM "
             + "stpinterface LEFT JOIN stpnode ON SUBSTR(stpportdesignatedbridge,5,16) = stpnode.basebridgeaddress " 
@@ -1187,85 +1198,6 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         return nodes.toArray(new StpNode[nodes.size()]);
     }
 
-    /**
-     * This class converts data from the result set into {@link IpRouteInterface} objects.
-     */
-    private static class IpRouteInterfaceRowMapper implements RowMapper<IpRouteInterface> {
-
-        @Override
-        public IpRouteInterface mapRow(ResultSet rs, int rowNum) throws SQLException {
-            IpRouteInterface ipRtIf = new IpRouteInterface();
-
-            Object element = new Integer(rs.getInt("nodeId"));
-            ipRtIf.m_nodeId = ((Integer) element).intValue();
-
-            element = rs.getString("routedest");
-            ipRtIf.m_routedest = (String) element;
-
-            element = rs.getString("routemask");
-            ipRtIf.m_routemask = (String) element;
-
-            element = rs.getString("routenexthop");
-            ipRtIf.m_routenexthop = (String) element;
-
-            element = rs.getTimestamp("lastpolltime");
-            if (element != null) {
-                ipRtIf.m_lastPollTime = Util.formatDateToUIString(new Date(
-                        ((Timestamp) element).getTime()));
-            }
-
-            element = new Integer(rs.getInt("routeifindex"));
-            if (element != null) {
-                ipRtIf.m_routeifindex = ((Integer) element).intValue();
-            }
-
-            element = new Integer(rs.getInt("routemetric1"));
-            if (element != null) {
-                ipRtIf.m_routemetric1 = ((Integer) element).intValue();
-            }
-
-            element = new Integer(rs.getInt("routemetric2"));
-            if (element != null) {
-                ipRtIf.m_routemetric2 = ((Integer) element).intValue();
-            }
-
-            element = new Integer(rs.getInt("routemetric3"));
-            if (element != null) {
-                ipRtIf.m_routemetric4 = ((Integer) element).intValue();
-            }
-
-            element = new Integer(rs.getInt("routemetric4"));
-            if (element != null) {
-                ipRtIf.m_routemetric4 = ((Integer) element).intValue();
-            }
-
-            element = new Integer(rs.getInt("routemetric5"));
-            if (element != null) {
-                ipRtIf.m_routemetric5 = ((Integer) element).intValue();
-            }
-
-            element = new Integer(rs.getInt("routetype"));
-            if (element != null && ((Integer)element).intValue() > 0) {
-                ipRtIf.m_routetype = ((Integer) element).intValue();
-            } else {
-                ipRtIf.m_routetype = DbIpRouteInterfaceEntry.ROUTE_TYPE_OTHER;
-            }
-
-            element = new Integer(rs.getInt("routeproto"));
-            if (element != null) {
-                ipRtIf.m_routeproto = ((Integer) element).intValue();
-            }
-
-            element = rs.getString("status");
-            if (element != null) {
-                ipRtIf.m_status = ((String) element).charAt(0);
-            } else {
-                ipRtIf.m_status = DbIpRouteInterfaceEntry.STATUS_UNKNOWN;
-            }
-
-            return ipRtIf;
-        }
-    }
 
     /**
      * This class converts data from the result set to {@link StpInterface} objects.
@@ -1440,59 +1372,13 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     }
 
     /**
-     * This class converts data from the result set into {@link Vlan}
-     * objects.
-     */
-    private static class VlanRowMapper implements RowMapper<Vlan> {
-
-        @Override
-        public Vlan mapRow(ResultSet rs, int rowNum) throws SQLException {
-            // Non-null field
-            Object element = new Integer(rs.getInt("nodeId"));
-            int nodeId = ((Integer) element).intValue();
-
-            // Non-null field
-            element = rs.getInt("vlanId");
-            int vlanid = ((Integer) element).intValue();
-
-            // Non-null field
-            element = rs.getString("vlanname");
-            String vlanname = (String) element;
-
-            // Non-null field
-            element = rs.getTimestamp("lastpolltime");
-            String lastpolltime = Util.formatDateToUIString(new Date(
-                        ((Timestamp) element).getTime()));
-
-            element = new Integer(rs.getInt("vlantype"));
-            int vlantype = DbVlanEntry.VLAN_TYPE_UNKNOWN;
-            if (element != null) {
-                vlantype = ((Integer) element).intValue();
-            }
-
-            element = new Integer(rs.getInt("vlanstatus"));
-            int vlanstatus = DbVlanEntry.VLAN_STATUS_UNKNOWN;
-            if (element != null) {
-                vlanstatus= ((Integer) element).intValue();
-            }
-
-            // Non-null field
-            element = rs.getString("status");
-            char status = ((String) element).charAt(0);
-
-            return new Vlan(nodeId, vlanid, vlanname, vlantype, vlanstatus, lastpolltime, status);
-        }
-    }
-
-
-    /**
      * <p>getIpAddress</p>
      *
      * @param nodeid a int.
      * @return a {@link java.lang.String} object.
      * @throws java.sql.SQLException if any.
      */
-    private String getIpAddress(int nodeid) throws SQLException {
+    private String getIpAddress(int nodeid) {
         String retval = null;
         List<String> rs = m_jdbcTemplate.query(
             "SELECT DISTINCT(IPADDR) FROM IPINTERFACE WHERE NODEID = ?",
@@ -1659,82 +1545,24 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
 
         return ourNodes;
     }
-    
-    private Interface onmsIpInterface2Interface(OnmsIpInterface ipIface) {
         
-        
-            
-            Interface intf = new Interface();
-            
-            intf.m_id = ipIface.getId();
-            if(ipIface.getNode() != null) {
-                intf.m_nodeId = ipIface.getNode().getId();
-            }
-            
-            if(ipIface.getSnmpInterface() != null) {
-                intf.m_ifIndex = ipIface.getIfIndex();
-            }
-            intf.m_ipHostName = ipIface.getIpHostName();
-            intf.m_ipAddr = InetAddressUtils.str(ipIface.getIpAddress());
-            intf.m_isSnmpPrimary = ipIface.getIsSnmpPrimary().getCode();
-            intf.m_isManaged = ipIface.getIsManaged().charAt(0);
-            if(ipIface.getIpLastCapsdPoll() != null) {
-                intf.m_ipLastCapsdPoll = Util.formatDateToUIString(ipIface.getIpLastCapsdPoll());
-            }
-            
-            
-            return intf;
-        
-        
-        
-    }
-    
-    private Interface[] onmsIpInterfaces2InterfaceArray(List<OnmsIpInterface> ipIfaces) {
+    private Interface[] getInterfaceArray(List<OnmsIpInterface> ipIfaces) {
         List<Interface> intfs = new LinkedList<Interface>();
         for(OnmsIpInterface iface : ipIfaces) {
-            intfs.add(onmsIpInterface2Interface(iface));
+            intfs.add(new Interface(iface));
         }
         
         Collections.sort(intfs, INTERFACE_COMPARATOR);
         return intfs.toArray(new Interface[intfs.size()]);
     }
     
-    private Interface[] onmsIpInterfaces2InterfaceArrayWithSnmpData(List<OnmsIpInterface> ipIfaces) {
+    private Interface[] getInterfaceArrayWithSnmpData(List<OnmsIpInterface> ipIfaces) {
         List<Interface> intfs = new LinkedList<Interface>();
         for(OnmsIpInterface iface : ipIfaces) {
-            Interface intf = onmsIpInterface2Interface(iface);
+            Interface intf = new Interface(iface);
             if(iface.getSnmpInterface() != null) {
                 OnmsSnmpInterface snmpIface = iface.getSnmpInterface();
-                intf.m_snmpIfIndex = snmpIface.getIfIndex();
-                intf.m_snmpIpAdEntNetMask = str(snmpIface.getNetMask());
-                intf.m_snmpPhysAddr = snmpIface.getPhysAddr();
-                intf.m_snmpIfDescr = snmpIface.getIfDescr();
-                intf.m_snmpIfName = snmpIface.getIfName();
-                if(snmpIface.getIfType() != null) {
-                    intf.m_snmpIfType = snmpIface.getIfType();
-                }
-                
-                intf.m_snmpIfOperStatus = snmpIface.getIfOperStatus();
-                intf.m_snmpIfSpeed = snmpIface.getIfSpeed();
-                if(snmpIface.getIfAdminStatus() != null) {
-                    intf.m_snmpIfAdminStatus = snmpIface.getIfAdminStatus();
-                }
-                intf.m_snmpIfAlias = snmpIface.getIfAlias();
-                
-                Object element = snmpIface.getPoll();
-                if (element != null) {
-                    intf.m_isSnmpPoll = ((String) element).charAt(0);
-                }
-
-                java.util.Date capsdPoll = snmpIface.getLastCapsdPoll();
-                if (capsdPoll != null) {
-                    intf.m_snmpLastCapsdPoll = Util.formatDateToUIString(new Date((capsdPoll).getTime()));
-                }
-
-                java.util.Date snmpPoll = snmpIface.getLastSnmpPoll();
-                if (snmpPoll != null) {
-                    intf.m_snmpLastSnmpPoll = Util.formatDateToUIString(new Date((snmpPoll).getTime()));
-                }
+                intf.createSnmpInterface(snmpIface);
             }
             intfs.add(intf);
         }
@@ -1742,51 +1570,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         Collections.sort(intfs, INTERFACE_COMPARATOR);
         return intfs.toArray(new Interface[intfs.size()]);
     }
-    
-    private Interface onmsSnmpInterface2Interface(OnmsSnmpInterface snmpIface) {
-            Interface intf = new Interface();
-            intf.m_id = snmpIface.getId();
-            if(snmpIface.getNode() != null) {
-                intf.m_nodeId = snmpIface.getNode().getId();
-            }
-            
-            intf.m_snmpIfIndex = snmpIface.getIfIndex();
-            intf.m_snmpIpAdEntNetMask = str(snmpIface.getNetMask());
-            intf.m_snmpPhysAddr = snmpIface.getPhysAddr();
-            intf.m_snmpIfDescr = snmpIface.getIfDescr();
-            intf.m_snmpIfName = snmpIface.getIfName();
-            if(snmpIface.getIfType() != null) {
-                intf.m_snmpIfType = snmpIface.getIfType();
-            }
-            if(snmpIface.getIfOperStatus() != null) {
-                intf.m_snmpIfOperStatus = snmpIface.getIfOperStatus();
-            }
-            if(snmpIface.getIfSpeed() != null) {
-                intf.m_snmpIfSpeed = snmpIface.getIfSpeed();
-            }
-            if(snmpIface.getIfAdminStatus() != null) {
-                intf.m_snmpIfAdminStatus = snmpIface.getIfAdminStatus();
-            }
-            intf.m_snmpIfAlias = snmpIface.getIfAlias();
-            
-            Object element = snmpIface.getPoll();
-            if (element != null) {
-                intf.m_isSnmpPoll = ((String) element).charAt(0);
-            }
-
-            java.util.Date capsdPoll = snmpIface.getLastCapsdPoll();
-            if (capsdPoll != null) {
-                intf.m_snmpLastCapsdPoll = Util.formatDateToUIString(new Date((capsdPoll).getTime()));
-            }
-
-            java.util.Date snmpPoll = snmpIface.getLastSnmpPoll();
-            if (snmpPoll != null) {
-                intf.m_snmpLastSnmpPoll = Util.formatDateToUIString(new Date((snmpPoll).getTime()));
-            }
-
-            return intf;
-    }
-    
+        
     // FIXME: Do any of these @SuppressWarnings("unused") methods get reflected?  Or can we drop them?
 
     @SuppressWarnings("unused")
@@ -1879,4 +1663,33 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
     }
+
+    public IpRouteInterfaceDao getIpRouteInterfaceDao() {
+        return m_ipRouteInterfaceDao;
+    }
+
+    @SuppressWarnings("unused")
+    private void setIpRouteInterfaceDao(IpRouteInterfaceDao ipRouteInterfaceDao) {
+        m_ipRouteInterfaceDao = ipRouteInterfaceDao;
+    }
+
+    public StpNodeDao getStpNodeDao() {
+        return m_stpNodeDao;
+    }
+
+    @SuppressWarnings("unused")
+    private void setStpNodeDao(StpNodeDao stpNodeDao) {
+        m_stpNodeDao = stpNodeDao;
+    }
+
+    public VlanDao getVlanDao() {
+        return m_vlanDao;
+    }
+
+    @SuppressWarnings("unused")
+    private void setVlanDao(VlanDao vlanDao) {
+        m_vlanDao = vlanDao;
+    }
+    
+    
 }

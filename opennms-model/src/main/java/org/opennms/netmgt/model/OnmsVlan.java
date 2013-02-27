@@ -28,9 +28,13 @@
 
 package org.opennms.netmgt.model;
 
+import java.io.Serializable;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.persistence.Column;
+import javax.persistence.Embeddable;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -52,34 +56,154 @@ import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
+import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
+
 @XmlRootElement(name = "vlan")
 @Entity
 @Table(name="vlan", uniqueConstraints = {@UniqueConstraint(columnNames={"nodeId", "vlanId"})})
 public class OnmsVlan {
+    
+    @Embeddable
+    public static class VlanType implements Comparable<VlanType>, Serializable {
+        private static final long serialVersionUID = -4784344871599250528L;
+        
+        /**
+         * <p>String identifiers for the enumeration of values:</p>
+         */ 
+        public static final int VLAN_TYPE_UNKNOWN = 0;
+        public static final int VLAN_TYPE_VTP_ETHERNET = 1;
+        public static final int VLAN_TYPE_VTP_FDDI = 2;
+        public static final int VLAN_TYPE_VTP_TOKENRING = 3;
+        public static final int VLAN_TYPE_VTP_FDDINET = 4;
+        public static final int VLAN_TYPE_VTP_TRNET = 5;
+        public static final int VLAN_TYPE_VTP_DEPRECATED = 6;
+
+        
+        private static final Integer[] s_order = {0,1,2,3,4,5,6};
+
+        private Integer m_vlanType;
+
+        private static final Map<Integer, String> vlanTypeMap = new HashMap<Integer, String>();
+        
+        static {
+            vlanTypeMap.put(0, "Unknown" );
+            vlanTypeMap.put(1, "CiscoVtp/Ethernet" );
+            vlanTypeMap.put(2, "CiscoVtp/FDDI" );
+            vlanTypeMap.put(3, "CiscoVtp/TokenRing" );
+            vlanTypeMap.put(4, "CiscoVtp/FDDINet" );
+            vlanTypeMap.put(5, "CiscoVtp/TRNet" );
+            vlanTypeMap.put(6, "CiscoVtp/Deprecated" );
+        }
+
+        @SuppressWarnings("unused")
+        private VlanType() {
+        }
+
+        public VlanType(Integer vlanType) {
+            m_vlanType = vlanType;
+        }
+
+        @Column(name="vlanType")
+        public Integer getIntCode() {
+            return m_vlanType;
+        }
+
+        public void setIntCode(Integer vlanType) {
+            m_vlanType = vlanType;
+        }
+
+        public int compareTo(VlanType o) {
+            return getIndex(m_vlanType) - getIndex(o.m_vlanType);
+        }
+
+        private static int getIndex(Integer code) {
+            for (int i = 0; i < s_order.length; i++) {
+                if (s_order[i] == code) {
+                    return i;
+                }
+            }
+            throw new IllegalArgumentException("illegal vlanType code '"+code+"'");
+        }
+
+        public boolean equals(Object o) {
+            if (o instanceof VlanType) {
+                return m_vlanType == ((VlanType)o).m_vlanType;
+            }
+            return false;
+        }
+
+        public int hashCode() {
+            return toString().hashCode();
+        }
+
+        public String toString() {
+            return String.valueOf(m_vlanType);
+        }
+
+        public static VlanType get(Integer code) {
+            if (code == null)
+                return null;
+            switch (code) {
+            case VLAN_TYPE_UNKNOWN: return UNKNOWN;
+            case VLAN_TYPE_VTP_ETHERNET: return CISCO_VTP_ETHERNET;
+            case VLAN_TYPE_VTP_FDDI: return CISCO_VTP_FDDI;
+            case VLAN_TYPE_VTP_TOKENRING: return CISCO_VTP_TOKENRING;
+            case VLAN_TYPE_VTP_FDDINET: return CISCO_VTP_FDDINET;
+            case VLAN_TYPE_VTP_TRNET: return CISCO_VTP_TRNET;
+            case VLAN_TYPE_VTP_DEPRECATED: return CISCO_VTP_DEPRECATED;
+            default:
+                throw new IllegalArgumentException("Cannot create vlanType from code "+code);
+            }
+        }
+
+        /**
+         * <p>getRouteTypeString</p>
+         *
+         * @return a {@link java.lang.String} object.
+         */
+        /**
+         */
+        public static String getVlanTypeString(Integer code) {
+            if (vlanTypeMap.containsKey(code))
+                    return vlanTypeMap.get( code);
+            return null;
+        }
+        
+        public static VlanType UNKNOWN = new VlanType(VLAN_TYPE_UNKNOWN);
+        public static VlanType CISCO_VTP_ETHERNET = new VlanType(VLAN_TYPE_VTP_ETHERNET);
+        public static VlanType CISCO_VTP_FDDI = new VlanType(VLAN_TYPE_VTP_FDDI);
+        public static VlanType CISCO_VTP_TOKENRING = new VlanType(VLAN_TYPE_VTP_TOKENRING);
+        public static VlanType CISCO_VTP_FDDINET = new VlanType(VLAN_TYPE_VTP_FDDINET);
+        public static VlanType CISCO_VTP_TRNET = new VlanType(VLAN_TYPE_VTP_TRNET);
+        public static VlanType CISCO_VTP_DEPRECATED = new VlanType(VLAN_TYPE_VTP_DEPRECATED);
+
+
+    }
+
     private Integer m_id;
-	private OnmsNode m_node;
-	private Integer m_vlanId;
-	private String m_vlanName;
-	private Integer m_vlanType = -1;
-	private Integer m_vlanStatus = -1;
-	private Character m_status;
-	private Date m_lastPollTime;	
+    private OnmsNode m_node;
+    private Integer m_vlanId;
+    private String m_vlanName;
+    private VlanType m_vlanType = VlanType.UNKNOWN;
+    private Integer m_vlanStatus = -1;
+    private StatusType m_status = StatusType.UNKNOWN;
+    private Date m_lastPollTime;	
 
-	public OnmsVlan() {
-	}
+    public OnmsVlan() {
+    }
 	
-	public OnmsVlan(final int index, final String name, final int status, final int type) {
-		m_vlanId = index;
-		m_vlanName = name;
-		m_vlanStatus = status;
-		m_vlanType = type;
-	}
+    public OnmsVlan(final int index, final String name, final int status, final VlanType type) {
+	m_vlanId = index;
+	m_vlanName = name;
+	m_vlanStatus = status;
+	m_vlanType = type;
+    }
 
-	public OnmsVlan(final int index, final String name, final int status) {
-		m_vlanId = index;
-		m_vlanName = name;
-		m_vlanStatus = status;
-	}
+    public OnmsVlan(final int index, final String name, final int status) {
+	m_vlanId = index;
+	m_vlanName = name;
+	m_vlanStatus = status;
+    }
 
     @Id
     @Column(nullable=false)
@@ -145,11 +269,11 @@ public class OnmsVlan {
 
 	@XmlAttribute(name="type")
 	@Column
-	public Integer getVlanType() {
+	public VlanType getVlanType() {
 		return m_vlanType;
 	}
 
-	public void setVlanType(final Integer vlanType) {
+	public void setVlanType(final VlanType vlanType) {
 		m_vlanType = vlanType;
 	}
 
@@ -165,11 +289,11 @@ public class OnmsVlan {
 
 	@XmlAttribute
 	@Column(nullable=false)
-	public Character getStatus() {
+	public StatusType getStatus() {
 		return m_status;
 	}
 
-	public void setStatus(final Character status) {
+	public void setStatus(final StatusType status) {
 		m_status = status;
 	}
 

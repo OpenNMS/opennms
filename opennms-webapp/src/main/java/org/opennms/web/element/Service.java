@@ -28,6 +28,9 @@
 
 package org.opennms.web.element;
 
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.model.OnmsMonitoredService;
+
 public class Service {
     private int m_id;
     
@@ -47,6 +50,25 @@ public class Service {
 
     private char m_status;
 
+    Service(OnmsMonitoredService monSvc) {
+        setId(monSvc.getId());
+        setNodeId(monSvc.getNodeId());
+        
+        setIpAddress(InetAddressUtils.str(monSvc.getIpAddress()));
+        setServiceId(monSvc.getServiceId());
+        setServiceName(monSvc.getServiceName());
+        if(monSvc.getLastGood() != null) {
+           setLastGood(monSvc.getLastGood().toString());
+        }
+        if(monSvc.getLastFail() != null) {
+            setLastFail(monSvc.getLastFail().toString());
+        }
+        setNotify(monSvc.getNotify());
+        if(monSvc.getStatus() != null) {
+            setStatus(monSvc.getStatus().charAt(0));
+        }
+
+    }
     /**
      * <p>getId</p>
      *

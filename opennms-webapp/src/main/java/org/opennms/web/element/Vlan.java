@@ -32,6 +32,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.opennms.netmgt.linkd.DbVlanEntry;
+import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
+import org.opennms.netmgt.model.OnmsVlan;
+import org.opennms.web.api.Util;
 
 /**
  * <p>Vlan class.</p>
@@ -45,32 +48,10 @@ public class Vlan
     private final int m_nodeId;
     private final int m_vlanId;
     private final String m_vlanname;
-    private final int m_vlantype;
-    private final int m_vlanstatus;
+    private final String m_vlantype;
+    private final String m_vlanstatus;
     private final String m_lastPollTime;
-    private final char m_status;
-
-    /**
-     * <p>String identifiers for the enumeration of values:</p>
-     * <ul>
-     * <li>{@link DbVlanEntry#VLAN_TYPE_UNKNOWN}</li>
-     * <li>{@link DbVlanEntry#VLAN_TYPE_ETHERNET}</li>
-     * <li>{@link DbVlanEntry#VLAN_TYPE_FDDI}</li>
-     * <li>{@link DbVlanEntry#VLAN_TYPE_TOKEN_RING}</li>
-     * <li>{@link DbVlanEntry#VLAN_TYPE_FDDINET}</li>
-     * <li>{@link DbVlanEntry#VLAN_TYPE_TRNET}</li>
-     * <li>{@link DbVlanEntry#VLAN_TYPE_DEPRECATED}</li>
-     * </ul>
-     */ 
-    private static final String[] VLAN_TYPE = new String[] {
-        "Unknown", //0
-        "Ethernet", //1 
-        "FDDI", //2
-        "TokenRing", //3
-        "FDDINet", //5
-        "TRNet", //5
-        "Deprecated" //6
-    };
+    private final String m_status;
 
     /**
      * <p>String identifiers for the enumeration of values:</p>
@@ -90,25 +71,16 @@ public class Vlan
         "mtuTooBigForTrunk" //4
     };
 
-    private static final Map<Character, String> statusMap = new HashMap<Character, String>();
-
-    static {
-        statusMap.put( DbVlanEntry.STATUS_ACTIVE, "Active" );
-        statusMap.put( DbVlanEntry.STATUS_UNKNOWN, "Unknown" );
-        statusMap.put( DbVlanEntry.STATUS_DELETED, "Deleted" );
-        statusMap.put( DbVlanEntry.STATUS_NOT_POLLED, "Not Active" );
-    }
-
     /* package-protected so only the NetworkElementFactory can instantiate */
-    Vlan(Integer nodeId, Integer vlanid, String vlanname, Integer vlantype, Integer vlanstatus, String lastpolltime, char status)
+    Vlan(OnmsVlan vlan)
     {
-        m_nodeId = nodeId;
-        m_vlanId = vlanid;
-        m_vlanname = vlanname;
+        m_nodeId = vlan.getNode().getId();
+        m_vlanId = vlan.getVlanId();
+        m_vlanname = vlan.getVlanName();
         m_vlantype = vlantype;
         m_vlanstatus = vlanstatus;
-        m_lastPollTime = lastpolltime; 
-        m_status = status;
+        m_lastPollTime = Util.formatDateToUIString(vlan.getLastPollTime()); 
+        m_status = StatusType.getStatusString(vlan.getStatus().getCharCode());
     }
 
     /**
@@ -149,7 +121,7 @@ public class Vlan
      *
      * @return a char.
      */
-    public char getStatus() {
+    public String getStatus() {
         return m_status;
     }
 
@@ -159,7 +131,7 @@ public class Vlan
      * @return a {@link java.lang.String} object.
      */
     public String getStatusString() {
-        return( (String)statusMap.get( new Character(m_status) ));
+        return m_status;
     }
 
     /**
@@ -208,7 +180,7 @@ public class Vlan
      *
      * @return a int.
      */
-    public int getVlanStatus() {
+    public String getVlanStatus() {
         return m_vlanstatus;
     }
 
@@ -230,7 +202,7 @@ public class Vlan
      *
      * @return a int.
      */
-    public int getVlanType() {
+    public String getVlanType() {
         return m_vlantype;
     }
 
@@ -240,11 +212,7 @@ public class Vlan
      * @return a {@link java.lang.String} object.
      */
     public String getVlanTypeString() {
-        try {
-            return VLAN_TYPE[m_vlantype];
-        } catch (ArrayIndexOutOfBoundsException e) {
-            return VLAN_TYPE[DbVlanEntry.VLAN_TYPE_UNKNOWN];
-        }
+        return m_vlantype;
     }
 
 }

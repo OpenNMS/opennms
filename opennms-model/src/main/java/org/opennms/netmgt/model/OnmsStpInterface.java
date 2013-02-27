@@ -56,6 +56,8 @@ import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
+
 
 /**
  * <p>BridgeStpInterface class.</p>
@@ -77,7 +79,7 @@ public class OnmsStpInterface {
 	private Integer m_stpPortDesignatedCost;
 	private String m_stpPortDesignatedBridge;
 	private String m_stpPortDesignatedPort;
-	private Character m_status;
+	private StatusType m_status = StatusType.UNKNOWN;
 	private Date m_lastPollTime;
 	private Integer m_vlan;
 
@@ -179,11 +181,11 @@ public class OnmsStpInterface {
 
 	@XmlAttribute
 	@Column(nullable=false)
-	public Character getStatus() {
+	public StatusType getStatus() {
 		return m_status;
 	}
 
-	public void setStatus(final Character status) {
+	public void setStatus(final StatusType status) {
 		m_status = status;
 	}
 

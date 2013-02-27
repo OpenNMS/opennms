@@ -51,6 +51,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 
 /**
  * <p>AtInterface class.</p>
@@ -72,7 +73,7 @@ public class OnmsStpNode {
 	private String m_stpDesignatedRoot;
 	private Integer m_stpRootCost;
 	private Integer m_stpRootPort;
-	private Character m_status;
+	private StatusType m_status = StatusType.UNKNOWN;
 	private Date m_lastPollTime;
 	private Integer m_baseVlan;
 	private String m_baseVlanName;
@@ -198,12 +199,12 @@ public class OnmsStpNode {
 
     @XmlAttribute
     @Column(nullable=false)
-	public Character getStatus() {
+	public StatusType getStatus() {
 		return m_status;
 	}
 
-	public void setStatus(final Character statusActive) {
-		m_status = statusActive;
+	public void setStatus(final StatusType status) {
+		m_status = status;
 	}
 
     @Temporal(TemporalType.TIMESTAMP)

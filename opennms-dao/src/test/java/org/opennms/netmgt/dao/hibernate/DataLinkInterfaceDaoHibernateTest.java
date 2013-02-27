@@ -48,6 +48,7 @@ import org.opennms.netmgt.dao.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.DataLinkInterface;
+import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -135,7 +136,7 @@ public class DataLinkInterfaceDaoHibernateTest implements InitializingBean {
     @Transactional // why is this necessary?
     public void testSaveDataLinkInterface() {
         // Create a new data link interface and save it.
-        DataLinkInterface dli = new DataLinkInterface(m_databasePopulator.getNode2(), 2, m_databasePopulator.getNode1().getId(), 1, "?", new Date());
+        DataLinkInterface dli = new DataLinkInterface(m_databasePopulator.getNode2(), 2, m_databasePopulator.getNode1().getId(), 1, StatusType.UNKNOWN, new Date());
         dli.setLinkTypeId(101);
         m_dataLinkInterfaceDao.save(dli);
         m_dataLinkInterfaceDao.flush();
@@ -159,7 +160,7 @@ public class DataLinkInterfaceDaoHibernateTest implements InitializingBean {
     @Transactional // why is this necessary?
     public void testSaveDataLinkInterface2() {
         // Create a new data link interface and save it.
-        DataLinkInterface dli = new DataLinkInterface(m_databasePopulator.getNode3(), -1, m_databasePopulator.getNode1().getId(), 3, "?", new Date());
+        DataLinkInterface dli = new DataLinkInterface(m_databasePopulator.getNode3(), -1, m_databasePopulator.getNode1().getId(), 3, StatusType.UNKNOWN, new Date());
         dli.setLinkTypeId(101);
         dli.setSource("rest");
         m_dataLinkInterfaceDao.save(dli);
@@ -184,13 +185,13 @@ public class DataLinkInterfaceDaoHibernateTest implements InitializingBean {
     @Transactional // why is this necessary?
     public void testUpdate() {
         // Create a new data link interface and save it.
-        DataLinkInterface dli = new DataLinkInterface(m_databasePopulator.getNode4(), -1, m_databasePopulator.getNode1().getId(), 3, "?", new Date());
+        DataLinkInterface dli = new DataLinkInterface(m_databasePopulator.getNode4(), -1, m_databasePopulator.getNode1().getId(), 3, StatusType.UNKNOWN, new Date());
         dli.setLinkTypeId(101);
         dli.setSource("updatetest");
         m_dataLinkInterfaceDao.save(dli);
         m_dataLinkInterfaceDao.flush();
 
-        m_dataLinkInterfaceDao.setStatusForNode(m_databasePopulator.getNode4().getId(), "updatetest",'D');
+        m_dataLinkInterfaceDao.setStatusForNode(m_databasePopulator.getNode4().getId(), "updatetest",StatusType.DELETED);
         
         assertNotNull(m_dataLinkInterfaceDao.get(dli.getId()));
 
@@ -201,7 +202,7 @@ public class DataLinkInterfaceDaoHibernateTest implements InitializingBean {
         assertEquals(dli.getIfIndex(), dli2.getIfIndex());
         assertEquals(dli.getNodeParentId(), dli2.getNodeParentId());
         assertEquals(dli.getParentIfIndex(), dli2.getParentIfIndex());
-        assertEquals("D", dli2.getStatus());
+        assertEquals(StatusType.DELETED, dli2.getStatus());
         assertEquals(dli.getLinkTypeId(), dli2.getLinkTypeId());
         assertEquals(dli.getLastPollTime(), dli2.getLastPollTime());
         assertEquals(dli.getSource(), "updatetest");
