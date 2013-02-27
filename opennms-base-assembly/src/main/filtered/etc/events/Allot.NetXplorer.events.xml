@@ -14,10 +14,80 @@
 			<mename>specific</mename>
 			<mevalue>1</mevalue>
 		</maskelement>
-                <varbind>
-                        <vbnumber>1</vbnumber>
-                        <vbvalue>3</vbvalue>
-                </varbind>
+        <varbind>
+            <vbnumber>1</vbnumber>
+            <vbvalue>3</vbvalue>
+        </varbind>
+        <varbind>
+            <vbnumber>2</vbnumber>
+            <vbvalue>~Board status from type Core Controller.*</vbvalue>
+        </varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/allot/traps/alAlarmRisingTrap/CCBoardStatus</uei>
+	<event-label>ALLOT-NX-MIB defined critical trap event: alAlarmRisingTrap CCBoardStatus</event-label>
+	<descr>
+<![CDATA[
+<p>Trap shall be sent for alarm rising</p><table>
+	<tr><td><b>
+
+	alSeverity</b></td><td>
+	%parm[#1]%;</td><td><p>
+		unknown(0)
+		cleared(1)
+		indeterminate(2)
+		critical(3)
+		major(4)
+		minor(5)
+		warning(6)
+	</p></td></tr>
+	<tr><td><b>
+
+	alDescription</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	alTimestamp</b></td><td>
+	%parm[#3]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	alIndex</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr></table>
+]]>
+	</descr>
+		<logmsg dest='logndisplay'><![CDATA[<p>
+			%parm[#2]%</p>
+]]>		</logmsg>
+	<severity>Critical</severity>
+        <varbindsdecode>
+                <parmid>parm[#1]</parmid>
+                <decode varbindvalue="0" varbinddecodedstring="Unknown"/>
+                <decode varbindvalue="1" varbinddecodedstring="Cleared"/>
+                <decode varbindvalue="2" varbinddecodedstring="Indeterminate"/>
+                <decode varbindvalue="3" varbinddecodedstring="Critical"/>
+                <decode varbindvalue="4" varbinddecodedstring="Major"/>
+                <decode varbindvalue="5" varbinddecodedstring="Minor"/>
+                <decode varbindvalue="6" varbinddecodedstring="Warning"/>
+        </varbindsdecode>
+	<alarm-data reduction-key="allotAlarms:%dpname%:%nodeid%:%parm[#4]%" alarm-type="1" auto-clean="false"/>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2603.10</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+        <varbind>
+            <vbnumber>1</vbnumber>
+            <vbvalue>3</vbvalue>
+        </varbind>
 	</mask>
 	<uei>uei.opennms.org/vendor/allot/traps/alAlarmRisingTrap/Critical</uei>
 	<event-label>ALLOT-NX-MIB defined critical trap event: alAlarmRisingTrap</event-label>
@@ -51,23 +121,20 @@
 ]]>
 	</descr>
 		<logmsg dest='logndisplay'><![CDATA[<p>
-			alAlarmRisingTrap trap received 
-			alSeverity=%parm[#1]% 
-			alDescription=%parm[#2]% 
-			alTimestamp=%parm[#3]% 
-			alIndex=%parm[#4]%</p>
+			%parm[#2]%</p>
 ]]>		</logmsg>
 	<severity>Critical</severity>
-        <varbindsdecode>
-                <parmid>parm[#1]</parmid>
-                <decode varbindvalue="0" varbinddecodedstring="Unknown"/>
-                <decode varbindvalue="1" varbinddecodedstring="Cleared"/>
-                <decode varbindvalue="2" varbinddecodedstring="Indeterminate"/>
-                <decode varbindvalue="3" varbinddecodedstring="Critical"/>
-                <decode varbindvalue="4" varbinddecodedstring="Major"/>
-                <decode varbindvalue="5" varbinddecodedstring="Minor"/>
-                <decode varbindvalue="6" varbinddecodedstring="Warning"/>
-        </varbindsdecode>
+    <varbindsdecode>
+        <parmid>parm[#1]</parmid>
+        <decode varbindvalue="0" varbinddecodedstring="Unknown"/>
+        <decode varbindvalue="1" varbinddecodedstring="Cleared"/>
+        <decode varbindvalue="2" varbinddecodedstring="Indeterminate"/>
+        <decode varbindvalue="3" varbinddecodedstring="Critical"/>
+        <decode varbindvalue="4" varbinddecodedstring="Major"/>
+        <decode varbindvalue="5" varbinddecodedstring="Minor"/>
+        <decode varbindvalue="6" varbinddecodedstring="Warning"/>
+    </varbindsdecode>
+	<alarm-data reduction-key="allotAlarms:%dpname%:%nodeid%:%parm[#4]%" alarm-type="1" auto-clean="false"/>
 </event>
 <event>
 	<mask>
@@ -83,10 +150,10 @@
 			<mename>specific</mename>
 			<mevalue>1</mevalue>
 		</maskelement>
-                <varbind>
-                        <vbnumber>1</vbnumber>
-                        <vbvalue>4</vbvalue>
-                </varbind>
+        <varbind>
+            <vbnumber>1</vbnumber>
+            <vbvalue>4</vbvalue>
+        </varbind>
 	</mask>
 	<uei>uei.opennms.org/vendor/allot/traps/alAlarmRisingTrap/Major</uei>
 	<event-label>ALLOT-NX-MIB defined major trap event: alAlarmRisingTrap</event-label>
@@ -119,12 +186,8 @@
 	%parm[#4]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
-			alAlarmRisingTrap trap received 
-			alSeverity=%parm[#1]% 
-			alDescription=%parm[#2]% 
-			alTimestamp=%parm[#3]% 
-			alIndex=%parm[#4]%</p>
+		<logmsg dest='logndisplay'><![CDATA[
+			%parm[#2]% 
 ]]>		</logmsg>
 	<severity>Major</severity>
         <varbindsdecode>
@@ -137,6 +200,7 @@
                 <decode varbindvalue="5" varbinddecodedstring="Minor"/>
                 <decode varbindvalue="6" varbinddecodedstring="Warning"/>
         </varbindsdecode>
+	<alarm-data reduction-key="allotAlarms:%dpname%:%nodeid%:%parm[#4]%" alarm-type="1" auto-clean="false"/>
 </event>
 <event>
 	<mask>
@@ -189,11 +253,7 @@
 ]]>
 	</descr>
 		<logmsg dest='logndisplay'><![CDATA[<p>
-			alAlarmRisingTrap trap received 
-			alSeverity=%parm[#1]% 
-			alDescription=%parm[#2]% 
-			alTimestamp=%parm[#3]% 
-			alIndex=%parm[#4]%</p>
+			%parm[#2]%</p>
 ]]>		</logmsg>
 	<severity>Minor</severity>
         <varbindsdecode>
@@ -206,6 +266,7 @@
                 <decode varbindvalue="5" varbinddecodedstring="Minor"/>
                 <decode varbindvalue="6" varbinddecodedstring="Warning"/>
         </varbindsdecode>
+	<alarm-data reduction-key="allotAlarms:%dpname%:%nodeid%:%parm[#4]%" alarm-type="1" auto-clean="false"/>
 </event>
 <event>
 	<mask>
@@ -258,11 +319,7 @@
 ]]>
 	</descr>
 		<logmsg dest='logndisplay'><![CDATA[<p>
-			alAlarmRisingTrap trap received 
-			alSeverity=%parm[#1]% 
-			alDescription=%parm[#2]% 
-			alTimestamp=%parm[#3]% 
-			alIndex=%parm[#4]%</p>
+			%parm[#2]%</p>
 ]]>		</logmsg>
 	<severity>Warning</severity>
         <varbindsdecode>
@@ -275,6 +332,7 @@
                 <decode varbindvalue="5" varbinddecodedstring="Minor"/>
                 <decode varbindvalue="6" varbinddecodedstring="Warning"/>
         </varbindsdecode>
+	<alarm-data reduction-key="allotAlarms:%dpname%:%nodeid%:%parm[#4]%" alarm-type="1" auto-clean="false"/>
 </event>
 <event>
 	<mask>
@@ -356,8 +414,8 @@
 			<mevalue>2</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/allot/traps/alAlarmFallingTrap/Cleared</uei>
-	<event-label>ALLOT-NX-MIB defined clear trap event: alAlarmFallingTrap</event-label>
+	<uei>uei.opennms.org/vendor/allot/traps/alAlarmFallingTrap</uei>
+	<event-label>ALLOT-NX-MIB defined trap event: alAlarmFallingTrap</event-label>
 	<descr>
 <![CDATA[
 <p>Trap shall be sent for alarm clearing</p><table>
@@ -405,6 +463,7 @@
                 <decode varbindvalue="5" varbinddecodedstring="Minor"/>
                 <decode varbindvalue="6" varbinddecodedstring="Warning"/>
         </varbindsdecode>
+	<alarm-data reduction-key="allotAlarms:%dpname%:%nodeid%:%parm[#4]%" alarm-type="2" auto-clean="false"/>
 </event>
 <!-- End of auto generated data from MIB: ALLOT-NX-MIB -->
 </events>
