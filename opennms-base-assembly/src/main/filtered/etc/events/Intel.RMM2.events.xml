@@ -1,0 +1,216 @@
+<!-- Start of auto generated data from MIB: RMM2-MIB -->
+<events>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.343.1.4.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/intel/RMM2/traps/dummyTrap</uei>
+	<event-label>RMM2-MIB defined trap event: dummyTrap</event-label>
+	<descr>
+<![CDATA[
+<p>Dummy Trap for testing</p><table></table>
+]]>
+	</descr>
+		<logmsg dest='logndisplay'><![CDATA[<p>
+			dummyTrap trap received</p>
+]]>		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.343.1.4.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/intel/RMM2/traps/loginfailed</uei>
+	<event-label>RMM2-MIB defined trap event: loginfailed</event-label>
+	<descr>
+<![CDATA[
+<p>Failed login try.</p><table>
+	<tr><td><b>
+
+	userLoginName</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	remoteHost</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+]]>
+	</descr>
+		<logmsg dest='logndisplay'><![CDATA[<p>
+			loginfailed trap received 
+			userLoginName=%parm[#1]% 
+			remoteHost=%parm[#2]%</p>
+]]>		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.343.1.4.3</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/intel/RMM2/traps/loginsuccess</uei>
+	<event-label>RMM2-MIB defined trap event: loginsuccess</event-label>
+	<descr>
+<![CDATA[
+<p>Success login.</p><table>
+	<tr><td><b>
+
+	userLoginName</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	remoteHost</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+]]>
+	</descr>
+		<logmsg dest='logndisplay'><![CDATA[<p>
+			loginsuccess trap received 
+			userLoginName=%parm[#1]% 
+			remoteHost=%parm[#2]%</p>
+]]>		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.343.1.4.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/intel/RMM2/traps/securityViolation</uei>
+	<event-label>RMM2-MIB defined trap event: securityViolation</event-label>
+	<descr>
+<![CDATA[
+<p>Security violation.</p><table>
+	<tr><td><b>
+
+	userLoginName</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	remoteHost</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+]]>
+	</descr>
+		<logmsg dest='logndisplay'><![CDATA[<p>
+			securityViolation trap received 
+			userLoginName=%parm[#1]% 
+			remoteHost=%parm[#2]%</p>
+]]>		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.343.1.4.5</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/intel/RMM2/traps/generic</uei>
+	<event-label>RMM2-MIB defined trap event: generic</event-label>
+	<descr>
+<![CDATA[
+<p>This trap is used for any other notification message.</p><table>
+	<tr><td><b>
+
+	eventType</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	eventDesc</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+]]>
+	</descr>
+		<logmsg dest='logndisplay'><![CDATA[<p>
+			generic trap received 
+			eventType=%parm[#1]% 
+			eventDesc=%parm[#2]%</p>
+]]>		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.343.1.4.6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/intel/RMM2/traps/logout</uei>
+	<event-label>RMM2-MIB defined trap event: logout</event-label>
+	<descr>
+<![CDATA[
+<p>User logout.</p><table>
+	<tr><td><b>
+
+	userLoginName</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	remoteHost</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+]]>
+	</descr>
+		<logmsg dest='logndisplay'><![CDATA[<p>
+			logout trap received 
+			userLoginName=%parm[#1]% 
+			remoteHost=%parm[#2]%</p>
+]]>		</logmsg>
+	<severity>Normal</severity>
+</event>
+</events>
+<!-- End of auto generated data from MIB: RMM2-MIB -->
