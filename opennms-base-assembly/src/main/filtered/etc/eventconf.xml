@@ -1938,6 +1938,7 @@
   <event-file>events/Translator.default.events.xml</event-file>
   <event-file>events/Rancid.events.xml</event-file>
   <event-file>events/3Com.events.xml</event-file>
+  <event-file>events/AcmePacket.events.xml</event-file>
   <event-file>events/AdaptecRaid.events.xml</event-file>
   <event-file>events/ADIC-v2.events.xml</event-file>
   <event-file>events/Adtran.events.xml</event-file>

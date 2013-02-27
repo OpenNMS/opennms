@@ -1,0 +1,3911 @@
+<events>
+<!-- Start of auto generated data from MIB: ACMEPACKET-ENTITY-VENDORTYPE-OID-MIB -->
+<!-- End of auto generated data from MIB: ACMEPACKET-ENTITY-VENDORTYPE-OID-MIB -->
+<!-- Start of auto generated data from MIB: ACMEPACKET-ENVMON-MIB -->
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.3.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apEnvMonI2CFailNotification</uei>
+	<event-label>ACMEPACKET-ENVMON-MIB defined trap event: apEnvMonI2CFailNotification</event-label>
+	<descr>
+&lt;p&gt;A notification of I2C state turns from normal(1) to
+notFunctioning(7)&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apEnvMonI2CFailNotification trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.3.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>2</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apEnvMonStatusChangeNotification</uei>
+	<event-label>ACMEPACKET-ENVMON-MIB defined trap event: apEnvMonStatusChangeNotification</event-label>
+	<descr>
+&lt;p&gt;A apEnvStatusChangeNotification is sent if any entry of
+above table change in the state of a device being monitored&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apEnvMonTrapInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apEnvMonTrapPreviousState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		initial(1)
+		normal(2)
+		minor(3)
+		major(4)
+		critical(5)
+		shutdown(6)
+		notPresent(7)
+		notFunctioning(8)
+		unknown(9)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apEnvMonTrapCurrentState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		initial(1)
+		normal(2)
+		minor(3)
+		major(4)
+		critical(5)
+		shutdown(6)
+		notPresent(7)
+		notFunctioning(8)
+		unknown(9)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apEnvMonStatusChangeNotification trap received 
+			apEnvMonTrapInstance=%parm[#1]% 
+			apEnvMonTrapPreviousState=%parm[#2]% 
+			apEnvMonTrapCurrentState=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.3.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apEnvMonTempChangeNotification</uei>
+	<event-label>ACMEPACKET-ENVMON-MIB defined trap event: apEnvMonTempChangeNotification</event-label>
+	<descr>
+&lt;p&gt;A notification is sent if any of the units cross a
+temperature threshold&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apEnvMonTrapSlotID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apEnvMonTrapSlotType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(0)
+		spu(17)
+		npu(18)
+		tcu(19)
+		niuCopper(24)
+		niuFiber(25)
+		miu(26)
+		fanTray(240)
+		powerSupply(241)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apEnvMonTrapPreviousState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		initial(1)
+		normal(2)
+		minor(3)
+		major(4)
+		critical(5)
+		shutdown(6)
+		notPresent(7)
+		notFunctioning(8)
+		unknown(9)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apEnvMonTrapCurrentState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		initial(1)
+		normal(2)
+		minor(3)
+		major(4)
+		critical(5)
+		shutdown(6)
+		notPresent(7)
+		notFunctioning(8)
+		unknown(9)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apEnvMonTempChangeNotification trap received 
+			apEnvMonTrapSlotID=%parm[#1]% 
+			apEnvMonTrapSlotType=%parm[#2]% 
+			apEnvMonTrapPreviousState=%parm[#3]% 
+			apEnvMonTrapCurrentState=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.3.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>4</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apEnvMonVoltageChangeNotification</uei>
+	<event-label>ACMEPACKET-ENVMON-MIB defined trap event: apEnvMonVoltageChangeNotification</event-label>
+	<descr>
+&lt;p&gt;A notification is sent if any of the units cross a
+voltage threshold&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apEnvMonTrapSlotID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apEnvMonTrapSlotType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(0)
+		spu(17)
+		npu(18)
+		tcu(19)
+		niuCopper(24)
+		niuFiber(25)
+		miu(26)
+		fanTray(240)
+		powerSupply(241)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apEnvMonTrapPreviousState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		initial(1)
+		normal(2)
+		minor(3)
+		major(4)
+		critical(5)
+		shutdown(6)
+		notPresent(7)
+		notFunctioning(8)
+		unknown(9)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apEnvMonTrapCurrentState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		initial(1)
+		normal(2)
+		minor(3)
+		major(4)
+		critical(5)
+		shutdown(6)
+		notPresent(7)
+		notFunctioning(8)
+		unknown(9)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apEnvMonVoltageChangeNotification trap received 
+			apEnvMonTrapSlotID=%parm[#1]% 
+			apEnvMonTrapSlotType=%parm[#2]% 
+			apEnvMonTrapPreviousState=%parm[#3]% 
+			apEnvMonTrapCurrentState=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.3.4</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>5</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apEnvMonPortChangeNotification</uei>
+	<event-label>ACMEPACKET-ENVMON-MIB defined trap event: apEnvMonPortChangeNotification</event-label>
+	<descr>
+&lt;p&gt; The trap will be generated if a physical port is
+inserted/present or removed/not present. &lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apEnvMonTrapPortType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(0)
+		sfp(1)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apEnvMonTrapPresence&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(0)
+		inserted(1)
+		removed(2)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apEnvMonTrapSlotID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apEnvMonTrapPortID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apEnvMonPortChangeNotification trap received 
+			apEnvMonTrapPortType=%parm[#1]% 
+			apEnvMonTrapPresence=%parm[#2]% 
+			apEnvMonTrapSlotID=%parm[#3]% 
+			apEnvMonTrapPortID=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<!-- End of auto generated data from MIB: ACMEPACKET-ENVMON-MIB -->
+<!-- Start of auto generated data from MIB: ACMEPACKET-PRODUCTS -->
+<!-- End of auto generated data from MIB: ACMEPACKET-PRODUCTS -->
+<!-- Start of auto generated data from MIB: ACMEPACKET-SMI -->
+<!-- End of auto generated data from MIB: ACMEPACKET-SMI -->
+<!-- Start of auto generated data from MIB: ACMEPACKET-TC -->
+<!-- End of auto generated data from MIB: ACMEPACKET-TC -->
+<!-- Start of auto generated data from MIB: APAGENTCAP-MIB -->
+<!-- End of auto generated data from MIB: APAGENTCAP-MIB -->
+<!-- Start of auto generated data from MIB: APAMI-MIB -->
+<!-- End of auto generated data from MIB: APAMI-MIB -->
+<!-- Start of auto generated data from MIB: APCODEC-MIB -->
+<!-- End of auto generated data from MIB: APCODEC-MIB -->
+<!-- Start of auto generated data from MIB: APEMS-MIB -->
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.8.3.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apEMSDiscoveryFailure</uei>
+	<event-label>APEMS-MIB defined trap event: apEMSDiscoveryFailure</event-label>
+	<descr>
+&lt;p&gt;The notification will be generated whenever an error
+
+is detected during node discovery. &lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apEMSDiscoveryMode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(0)
+		discovery(1)
+		reDiscovery(2)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apEMSNodeID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apEMSStartTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apEMSDateTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apEMSUser&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apEMSDiscoveryFailure trap received 
+			apEMSDiscoveryMode=%parm[#1]% 
+			apEMSNodeID=%parm[#2]% 
+			apEMSStartTime=%parm[#3]% 
+			apEMSDateTime=%parm[#4]% 
+			apEMSUser=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.8.3.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>2</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apEMSSaveFailure</uei>
+	<event-label>APEMS-MIB defined trap event: apEMSSaveFailure</event-label>
+	<descr>
+&lt;p&gt;The notification will be generated whenever an save
+
+configuration request initiated by Net-Net EMS fails. &lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apEMSNodeID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apEMSStartTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apEMSDateTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apEMSUser&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apEMSSaveFailure trap received 
+			apEMSNodeID=%parm[#1]% 
+			apEMSStartTime=%parm[#2]% 
+			apEMSDateTime=%parm[#3]% 
+			apEMSUser=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.8.3.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apEMSActivateFailure</uei>
+	<event-label>APEMS-MIB defined trap event: apEMSActivateFailure</event-label>
+	<descr>
+&lt;p&gt;The notification will be generated whenever an activate
+
+configuration request initiated by Net-Net EMS fails`. &lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apEMSNodeID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apEMSStartTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apEMSDateTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apEMSUser&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apEMSActivateFailure trap received 
+			apEMSNodeID=%parm[#1]% 
+			apEMSStartTime=%parm[#2]% 
+			apEMSDateTime=%parm[#3]% 
+			apEMSUser=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.8.3.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>4</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apEMSInvalidConfigDiscovered</uei>
+	<event-label>APEMS-MIB defined trap event: apEMSInvalidConfigDiscovered</event-label>
+	<descr>
+&lt;p&gt;The notification will be generated whenever an invalid
+
+configuration is retrieved from a node.  Additional information
+
+about the validity failure is available in the discovery log.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apEMSNodeID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apEMSDateTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apEMSInvalidConfigDiscovered trap received 
+			apEMSNodeID=%parm[#1]% 
+			apEMSDateTime=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.8.3.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>5</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apEMSInvalidConfigInventory</uei>
+	<event-label>APEMS-MIB defined trap event: apEMSInvalidConfigInventory</event-label>
+	<descr>
+&lt;p&gt;The notification will be generated whenever an inventory check
+
+was performed and failed.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apEMSFunction&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(0)
+		discovery(1)
+		reDiscovery(2)
+		save(3)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apEMSNodeID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apEMSStartTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apEMSDateTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apEMSUser&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apEMSInvalidConfigInventory trap received 
+			apEMSFunction=%parm[#1]% 
+			apEMSNodeID=%parm[#2]% 
+			apEMSStartTime=%parm[#3]% 
+			apEMSDateTime=%parm[#4]% 
+			apEMSUser=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.8.3.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apEMSNodeUnreachable</uei>
+	<event-label>APEMS-MIB defined trap event: apEMSNodeUnreachable</event-label>
+	<descr>
+&lt;p&gt;The notification will be generated whenever a managed device is 
+
+determined to be unreachable from the Net-Net EMS server. &lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apEMSDeviceAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apEMSDateTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apEMSNodeUnreachable trap received 
+			apEMSDeviceAddress=%parm[#1]% 
+			apEMSDateTime=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.8.3.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>2</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apEMSNodeUnreachableClear</uei>
+	<event-label>APEMS-MIB defined trap event: apEMSNodeUnreachableClear</event-label>
+	<descr>
+&lt;p&gt;The notification will be generated whenever a previously
+
+unreachable managed device is determined to be reachable
+
+by the Net-Net EMS server. &lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apEMSDeviceAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apEMSDateTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apEMSNodeUnreachableClear trap received 
+			apEMSDeviceAddress=%parm[#1]% 
+			apEMSDateTime=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+</event>
+<!-- End of auto generated data from MIB: APEMS-MIB -->
+<!-- Start of auto generated data from MIB: APH323-MIB -->
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.10.3</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apH323StackMaxCallThresholdTrap</uei>
+	<event-label>APH323-MIB defined trap event: apH323StackMaxCallThresholdTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is sent if the number of h323 calls increases percentage of the max-calls threshold &lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apH323StackName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apH323StackMaxCalls&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apH323StackMaxCallsThreshold&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apH323StackCurrentCalls&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apH323StackMaxCallThresholdTrap trap received 
+			apH323StackName=%parm[#1]% 
+			apH323StackMaxCalls=%parm[#2]% 
+			apH323StackMaxCallsThreshold=%parm[#3]% 
+			apH323StackCurrentCalls=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.10.3</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>2</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apH323StackMaxCallThresholdClearTrap</uei>
+	<event-label>APH323-MIB defined trap event: apH323StackMaxCallThresholdClearTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is sent if the number of h323 calls decreases to below the lowest max-calls threshold&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apH323StackName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apH323StackMaxCalls&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apH323StackMaxCallsThreshold&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apH323StackCurrentCalls&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apH323StackMaxCallThresholdClearTrap trap received 
+			apH323StackName=%parm[#1]% 
+			apH323StackMaxCalls=%parm[#2]% 
+			apH323StackMaxCallsThreshold=%parm[#3]% 
+			apH323StackCurrentCalls=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+</event>
+<!-- End of auto generated data from MIB: APH323-MIB -->
+<!-- Start of auto generated data from MIB: APLICENSE-MIB -->
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.5.3</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apLicenseApproachingCapacityNotification</uei>
+	<event-label>APLICENSE-MIB defined trap event: apLicenseApproachingCapacityNotification</event-label>
+	<descr>
+&lt;p&gt;This trap is sent if the total sessions is approaching
+
+the license capacity allowed. (98% or higher)&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apLicenseApproachingCapacityNotification trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.5.3</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>2</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apLicenseNotApproachingCapacityNotification</uei>
+	<event-label>APLICENSE-MIB defined trap event: apLicenseNotApproachingCapacityNotification</event-label>
+	<descr>
+&lt;p&gt;This trap is sent if the total sessions is no longer
+
+approaching the license capacity allowed. (less than 90%)&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apLicenseNotApproachingCapacityNotification trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<!-- End of auto generated data from MIB: APLICENSE-MIB -->
+<!-- Start of auto generated data from MIB: APSECURITY-MIB -->
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.9.3.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSecurityTunnelFailureNotification</uei>
+	<event-label>APSECURITY-MIB defined trap event: apSecurityTunnelFailureNotification</event-label>
+	<descr>
+&lt;p&gt;The notification will be generated whenever IPSEC IKEV2 tunnel fails to 
+
+establish. &lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSecuritySpi&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSecuritySrcIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSecurityDstIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSecurityFailureCause&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		incorrect-id(0)
+		incorrect-user-passwd(1)
+		incorrect-shared-secret(2)
+		incorrect-dh-group(3)
+		incorrect-encryption-alg(4)
+		incorrect-auth-alg(5)
+		incorrect-sec-protocol(6)
+		incorrect-hash(7)
+		incorrect-mode(8)
+		service-unavailable(9)
+		access-reject(10)
+		initiator-timeout(11)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSecurityFailureArea&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		ike(0)
+		ipsec(1)
+		radius(2)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSecurityStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		success(1)
+		failure(2)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSecurityTunnelFailureNotification trap received 
+			apSecuritySpi=%parm[#1]% 
+			apSecuritySrcIpAddress=%parm[#2]% 
+			apSecurityDstIpAddress=%parm[#3]% 
+			apSecurityFailureCause=%parm[#4]% 
+			apSecurityFailureArea=%parm[#5]% 
+			apSecurityStatus=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.9.3.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>2</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSecurityRadiusFailureNotification</uei>
+	<event-label>APSECURITY-MIB defined trap event: apSecurityRadiusFailureNotification</event-label>
+	<descr>
+&lt;p&gt;The notification will be generated whenever Radius authentication request fails.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSecurityUser&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSecurityFailureCause&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		incorrect-id(0)
+		incorrect-user-passwd(1)
+		incorrect-shared-secret(2)
+		incorrect-dh-group(3)
+		incorrect-encryption-alg(4)
+		incorrect-auth-alg(5)
+		incorrect-sec-protocol(6)
+		incorrect-hash(7)
+		incorrect-mode(8)
+		service-unavailable(9)
+		access-reject(10)
+		initiator-timeout(11)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSecurityFailureArea&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		ike(0)
+		ipsec(1)
+		radius(2)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSecurityStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		success(1)
+		failure(2)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSecurityRadiusFailureNotification trap received 
+			apSecurityUser=%parm[#1]% 
+			apSecurityFailureCause=%parm[#2]% 
+			apSecurityFailureArea=%parm[#3]% 
+			apSecurityStatus=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.9.3.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSecurityTunnelDPDNotification</uei>
+	<event-label>APSECURITY-MIB defined trap event: apSecurityTunnelDPDNotification</event-label>
+	<descr>
+&lt;p&gt;The notification will be generated whenever IPSEC IKEV2 tunnel fails 
+
+due to Dead Peer Detection(DPD). &lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSecuritySpi&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSecuritySrcIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSecurityDstIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSecurityFailureArea&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		ike(0)
+		ipsec(1)
+		radius(2)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSecurityStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		success(1)
+		failure(2)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSecurityTunnelDPDNotification trap received 
+			apSecuritySpi=%parm[#1]% 
+			apSecuritySrcIpAddress=%parm[#2]% 
+			apSecurityDstIpAddress=%parm[#3]% 
+			apSecurityFailureArea=%parm[#4]% 
+			apSecurityStatus=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.9.3.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>2</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSecurityIPsecTunCapNotification</uei>
+	<event-label>APSECURITY-MIB defined trap event: apSecurityIPsecTunCapNotification</event-label>
+	<descr>
+&lt;p&gt;This notification is sent when the percentage of licensed
+
+IPsec tunnels exceeds an IPsec tunnel alarm threshold.
+
+The apSecurityIPsecTunCapPct object indicates the current
+
+percentage.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSecurityIPsecTunCapPct&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSecurityIPsecTunCapNotification trap received 
+			apSecurityIPsecTunCapPct=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.9.3.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSecurityIPsecTunCapClearNotification</uei>
+	<event-label>APSECURITY-MIB defined trap event: apSecurityIPsecTunCapClearNotification</event-label>
+	<descr>
+&lt;p&gt;This trap is sent when the percentage of licensed IPsec
+
+tunnels no longer exceeds an IPsec tunnel alarm threshold.
+
+The apSecurityIPsecTunCapPct object indicates the current
+
+percentage.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSecurityIPsecTunCapPct&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSecurityIPsecTunCapClearNotification trap received 
+			apSecurityIPsecTunCapPct=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+</event>
+<!-- End of auto generated data from MIB: APSECURITY-MIB -->
+<!-- Start of auto generated data from MIB: APSWINVENTORY-MIB -->
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.4.3</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSwCfgActivateNotification</uei>
+	<event-label>APSWINVENTORY-MIB defined trap event: apSwCfgActivateNotification</event-label>
+	<descr>
+	&lt;p&gt;This trap is sent if activate-config is 
+	issued and configuration has been changed at run time&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSwCfgTrapPreviousVersion&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSwCfgTrapCurrentVersion&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSwCfgActivateNotification trap received 
+			apSwCfgTrapPreviousVersion=%parm[#1]% 
+			apSwCfgTrapCurrentVersion=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<!-- End of auto generated data from MIB: APSWINVENTORY-MIB -->
+<!-- Start of auto generated data from MIB: APSYSLOG-MIB -->
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.1.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSyslogMessageGenerated</uei>
+	<event-label>APSYSLOG-MIB defined trap event: apSyslogMessageGenerated</event-label>
+	<descr>
+&lt;p&gt;When a syslog message is generated by the device a
+apSyslogMessageGenerated notification is sent.  The
+sending of these notifications can be enabled/disabled
+via the apSyslogNotificationsEnabled object.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSyslogHistFrom&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSyslogHistLevel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		emergency(1)
+		critical(2)
+		major(3)
+		minor(4)
+		warning(5)
+		notice(6)
+		info(7)
+		trace(8)
+		debug(9)
+		detail(10)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSyslogHistType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSyslogHistContent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSyslogHistTimestamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSyslogMessageGenerated trap received 
+			apSyslogHistFrom=%parm[#1]% 
+			apSyslogHistLevel=%parm[#2]% 
+			apSyslogHistType=%parm[#3]% 
+			apSyslogHistContent=%parm[#4]% 
+			apSyslogHistTimestamp=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<!-- End of auto generated data from MIB: APSYSLOG-MIB -->
+<!-- Start of auto generated data from MIB: APSYSMGMT-MIB -->
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.2.3</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSysMgmtGroupTrap</uei>
+	<event-label>APSYSMGMT-MIB defined trap event: apSysMgmtGroupTrap</event-label>
+	<descr>
+&lt;p&gt; The trap will generated if value of the monitoring object
+exceeds a certain threshold. &lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtTrapType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtTrapValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSysMgmtGroupTrap trap received 
+			apSysMgmtTrapType=%parm[#1]% 
+			apSysMgmtTrapValue=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.2.3</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>2</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSysMgmtGroupClearTrap</uei>
+	<event-label>APSYSMGMT-MIB defined trap event: apSysMgmtGroupClearTrap</event-label>
+	<descr>
+&lt;p&gt; The trap will generated if value of the monitoring object
+returns to within a certain threshold.  This signifies that
+an alarm caused by that monitoring object has been cleared. &lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtTrapType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSysMgmtGroupClearTrap trap received 
+			apSysMgmtTrapType=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.2.3</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSysMgmtSingleUnitRedundancyTrap</uei>
+	<event-label>APSYSMGMT-MIB defined trap event: apSysMgmtSingleUnitRedundancyTrap</event-label>
+	<descr>
+&lt;p&gt; The trap will generated a slot's status changes.
+The varbinds contain the new information for the generating
+slot.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtSlotID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtSlotType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(0)
+		spu(17)
+		npu(18)
+		tcu(19)
+		niuCopper(24)
+		niuFiber(25)
+		miu(26)
+		fanTray(240)
+		powerSupply(241)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtSingleUnitRedundancyState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(0)
+		initial(1)
+		active(2)
+		standby(3)
+		outOfService(4)
+		unassigned(5)
+		activePending(6)
+		standbyPending(7)
+		outOfServicePending(8)
+		recovery(9)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSysMgmtSingleUnitRedundancyTrap trap received 
+			apSysMgmtSlotID=%parm[#1]% 
+			apSysMgmtSlotType=%parm[#2]% 
+			apSysMgmtSingleUnitRedundancyState=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.2.6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSysMgmtPowerTrap</uei>
+	<event-label>APSYSMGMT-MIB defined trap event: apSysMgmtPowerTrap</event-label>
+	<descr>
+&lt;p&gt; The trap will be generated if a power supply is powered down,
+powered up, inserted/present or removed/not present. &lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtPowerLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		left(0)
+		right(1)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtPowerPresence&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		down(0)
+		up(1)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSysMgmtPowerTrap trap received 
+			apSysMgmtPowerLocation=%parm[#1]% 
+			apSysMgmtPowerPresence=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.2.6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>2</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSysMgmtTempTrap</uei>
+	<event-label>APSYSMGMT-MIB defined trap event: apSysMgmtTempTrap</event-label>
+	<descr>
+&lt;p&gt; The trap will be generated if the temperature falls below
+the monitoring threshold. &lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtTempValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSysMgmtTempTrap trap received 
+			apSysMgmtTempValue=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.2.6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSysMgmtFanTrap</uei>
+	<event-label>APSYSMGMT-MIB defined trap event: apSysMgmtFanTrap</event-label>
+	<descr>
+&lt;p&gt; The trap will be generated if a fan unit speed falls
+below the monitoring threshold. &lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtFanLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		left(0)
+		middle(1)
+		right(2)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtFanSpeed&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSysMgmtFanTrap trap received 
+			apSysMgmtFanLocation=%parm[#1]% 
+			apSysMgmtFanSpeed=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.2.6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>4</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSysMgmtTaskSuspendTrap</uei>
+	<event-label>APSYSMGMT-MIB defined trap event: apSysMgmtTaskSuspendTrap</event-label>
+	<descr>
+&lt;p&gt; The trap will be generated if a critical task running
+on the system enters a suspened state.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtTaskSuspend&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSysMgmtTaskSuspendTrap trap received 
+			apSysMgmtTaskSuspend=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.2.6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>5</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSysMgmtRedundancyTrap</uei>
+	<event-label>APSYSMGMT-MIB defined trap event: apSysMgmtRedundancyTrap</event-label>
+	<descr>
+&lt;p&gt; The trap will be generated if a state change occurs on either
+the primary or secondary system in a redundant(HA) pair.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtRedRole&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		primary(0)
+		secondary(1)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtRedTransState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		out-of-service(0)
+		active(1)
+		standby(2)
+		no-peer(3)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSysMgmtRedundancyTrap trap received 
+			apSysMgmtRedRole=%parm[#1]% 
+			apSysMgmtRedTransState=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Major</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.2.6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSysMgmtMediaPortsTrap</uei>
+	<event-label>APSYSMGMT-MIB defined trap event: apSysMgmtMediaPortsTrap</event-label>
+	<descr>
+&lt;p&gt; The trap will be generated if port allocation fails at
+a percentage rate higher or equal to the system's default
+threshold rate.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtMediaPorts&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSysMgmtMediaPortsTrap trap received 
+			apSysMgmtMediaPorts=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.2.6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>7</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSysMgmtMediaBandwidthTrap</uei>
+	<event-label>APSYSMGMT-MIB defined trap event: apSysMgmtMediaBandwidthTrap</event-label>
+	<descr>
+&lt;p&gt; The trap will be generated if bandwidth allocation fails at
+a percentage rage higher or equal to the system's default
+threshold rate.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtMediaBandwidth&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSysMgmtMediaBandwidthTrap trap received 
+			apSysMgmtMediaBandwidth=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.2.6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>8</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSysMgmtMediaOutOfMemory</uei>
+	<event-label>APSYSMGMT-MIB defined trap event: apSysMgmtMediaOutOfMemory</event-label>
+	<descr>
+&lt;p&gt; The trap will be generated if media procees cannot allocate
+memory.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSysMgmtMediaOutOfMemory trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Major</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.2.6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>9</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSysMgmtMediaUnknownRealm</uei>
+	<event-label>APSYSMGMT-MIB defined trap event: apSysMgmtMediaUnknownRealm</event-label>
+	<descr>
+&lt;p&gt; The trap will be generated if media proccess cannot find
+associated realm for flow.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSysMgmtMediaUnknownRealm trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.2.6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>10</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSysMgmtGatewayUnreachableTrap</uei>
+	<event-label>APSYSMGMT-MIB defined trap event: apSysMgmtGatewayUnreachableTrap</event-label>
+	<descr>
+&lt;p&gt; The trap will be generated if gateway specified becomes
+unreachable by the system.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtGatewayUnreachable&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSysMgmtGatewayUnreachableTrap trap received 
+			apSysMgmtGatewayUnreachable=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.2.6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>11</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSysMgmtRadiusDownTrap</uei>
+	<event-label>APSYSMGMT-MIB defined trap event: apSysMgmtRadiusDownTrap</event-label>
+	<descr>
+&lt;p&gt; The trap will be generated if all or some configured
+radius accounting servers haved timed out from a
+RADIUS Server.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtRadiusDown&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		all-servers-down(0)
+		some-servers-down(1)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSysMgmtRadiusDownTrap trap received 
+			apSysMgmtRadiusDown=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.2.6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>12</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSysMgmtH323InitFailTrap</uei>
+	<event-label>APSYSMGMT-MIB defined trap event: apSysMgmtH323InitFailTrap</event-label>
+	<descr>
+&lt;p&gt; The trap will be generated if H.323 stack has failed to
+initialize properly and has been terminated.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtH323InitFail&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSysMgmtH323InitFailTrap trap received 
+			apSysMgmtH323InitFail=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.2.6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>13</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSysMgmtCfgSaveFailTrap</uei>
+	<event-label>APSYSMGMT-MIB defined trap event: apSysMgmtCfgSaveFailTrap</event-label>
+	<descr>
+&lt;p&gt; The trap will be generated if an error occurs while the
+system is trying to save the configuration to memory.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtCfgSaveFail&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSysMgmtCfgSaveFailTrap trap received 
+			apSysMgmtCfgSaveFail=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.2.6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>14</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSysMgmtHardwareErrorTrap</uei>
+	<event-label>APSYSMGMT-MIB defined trap event: apSysMgmtHardwareErrorTrap</event-label>
+	<descr>
+&lt;p&gt; The trap will be generated if an error condition is
+detected in the Switch or CAM subsystems.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtHardwareError&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSysMgmtHardwareErrorTrap trap received 
+			apSysMgmtHardwareError=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.2.6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>15</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSysMgmtSAStatusChangeTrap</uei>
+	<event-label>APSYSMGMT-MIB defined trap event: apSysMgmtSAStatusChangeTrap</event-label>
+	<descr>
+&lt;p&gt;Generated when a session agent changes status.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtSAHostname&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtSAIP&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtSAStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		inservice(0)
+		outofservice(1)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtSAStatusReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		administrative(0)
+		oosbyproxyerror(1)
+		standby(2)
+		inservice(3)
+		constraintsexceeded(4)
+		unresponsive(5)
+		oosprovisionedresponse(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSysMgmtSAStatusChangeTrap trap received 
+			apSysMgmtSAHostname=%parm[#1]% 
+			apSysMgmtSAIP=%parm[#2]% 
+			apSysMgmtSAStatus=%parm[#3]% 
+			apSysMgmtSAStatusReason=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.2.6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>16</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSysMgmtAuthenticationFailedTrap</uei>
+	<event-label>APSYSMGMT-MIB defined trap event: apSysMgmtAuthenticationFailedTrap</event-label>
+	<descr>
+&lt;p&gt; The trap will be generated if a user fails authentication
+on the console or over telnet, ftp, ssh, or sftp.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtAuthFailLevel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		login(0)
+		user(1)
+		priv(2)
+		shell(3)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtAuthFailProto&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		console(0)
+		telnet(1)
+		ftp(2)
+		ssh(3)
+		sftp(4)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtAuthFailOrigin&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSysMgmtAuthenticationFailedTrap trap received 
+			apSysMgmtAuthFailLevel=%parm[#1]% 
+			apSysMgmtAuthFailProto=%parm[#2]% 
+			apSysMgmtAuthFailOrigin=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.2.6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>17</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSysMgmtSystemStateTrap</uei>
+	<event-label>APSYSMGMT-MIB defined trap event: apSysMgmtSystemStateTrap</event-label>
+	<descr>
+&lt;p&gt; The trap will be generated when the SD is instructed
+to change system-state or the transition from
+becoming_offline to offline occurs.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtSystemState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		online(0)
+		becoming-offline(1)
+		offline(2)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSysMgmtSystemStateTrap trap received 
+			apSysMgmtSystemState=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.2.6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>18</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSysMgmtMediaPortsClearTrap</uei>
+	<event-label>APSYSMGMT-MIB defined trap event: apSysMgmtMediaPortsClearTrap</event-label>
+	<descr>
+&lt;p&gt; The trap will be generated if the port allocation failure
+rate drops below the system's default acceptable threshold.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSysMgmtMediaPortsClearTrap trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.2.6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>19</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSysMgmtMediaBandwidthClearTrap</uei>
+	<event-label>APSYSMGMT-MIB defined trap event: apSysMgmtMediaBandwidthClearTrap</event-label>
+	<descr>
+&lt;p&gt; The trap will be generated if bandwidth allocation failure
+rate drops below the system's default acceptable failure 
+threshold.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSysMgmtMediaBandwidthClearTrap trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.2.6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>20</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSysMgmtMediaOutOfMemoryClear</uei>
+	<event-label>APSYSMGMT-MIB defined trap event: apSysMgmtMediaOutOfMemoryClear</event-label>
+	<descr>
+&lt;p&gt; The trap will be generated if the media out-of-memory alarm
+is manually cleared, there is no automatic trigger to clear
+that particular alarm.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSysMgmtMediaOutOfMemoryClear trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.2.6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>21</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSysMgmtGatewayUnreachableClearTrap</uei>
+	<event-label>APSYSMGMT-MIB defined trap event: apSysMgmtGatewayUnreachableClearTrap</event-label>
+	<descr>
+&lt;p&gt; The trap will be generated if gateway specified again becomes
+reachable after being previously unreachable.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtGatewayUnreachable&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSysMgmtGatewayUnreachableClearTrap trap received 
+			apSysMgmtGatewayUnreachable=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.2.6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>22</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSysMgmtRadiusDownClearTrap</uei>
+	<event-label>APSYSMGMT-MIB defined trap event: apSysMgmtRadiusDownClearTrap</event-label>
+	<descr>
+&lt;p&gt; The trap will be generated when all configured radius
+accounting servers have resumed communication after any or
+all have previously timed out.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSysMgmtRadiusDownClearTrap trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.2.6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>23</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSysMgmtTaskDeleteTrap</uei>
+	<event-label>APSYSMGMT-MIB defined trap event: apSysMgmtTaskDeleteTrap</event-label>
+	<descr>
+&lt;p&gt; The trap will be generated if a task running
+on the system is deleted.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtTaskDelete&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSysMgmtTaskDeleteTrap trap received 
+			apSysMgmtTaskDelete=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.2.6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>24</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSysMgmtAlgdCPULoadTrap</uei>
+	<event-label>APSYSMGMT-MIB defined trap event: apSysMgmtAlgdCPULoadTrap</event-label>
+	<descr>
+&lt;p&gt; The trap will be generated if the CPU utilization percentage of
+application tasks has exceeded the threshold algd-load-limit.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtAlgdCPULoad&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSysMgmtAlgdCPULoadTrap trap received 
+			apSysMgmtAlgdCPULoad=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.2.6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>25</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSysMgmtAlgdCPULoadClearTrap</uei>
+	<event-label>APSYSMGMT-MIB defined trap event: apSysMgmtAlgdCPULoadClearTrap</event-label>
+	<descr>
+&lt;p&gt; The trap will be generated when the CPU utilization percentage
+of application tasks has fallen below the threshold
+algd-load-limit.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSysMgmtAlgdCPULoadClearTrap trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.2.6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>26</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSysMgmtInterfaceStatusChangeTrap</uei>
+	<event-label>APSYSMGMT-MIB defined trap event: apSysMgmtInterfaceStatusChangeTrap</event-label>
+	<descr>
+&lt;p&gt; The trap will be generated when there is a change
+in the status of the sip interface.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtSipInterfaceRealmName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtSipInterfaceIP&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtSipInterfaceStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		inservice(0)
+		outofservice(1)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtSipInterfaceStatusReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		administrative(0)
+		oosbyproxyerror(1)
+		standby(2)
+		inservice(3)
+		constraintsexceeded(4)
+		unresponsive(5)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSysMgmtInterfaceStatusChangeTrap trap received 
+			apSysMgmtSipInterfaceRealmName=%parm[#1]% 
+			apSysMgmtSipInterfaceIP=%parm[#2]% 
+			apSysMgmtSipInterfaceStatus=%parm[#3]% 
+			apSysMgmtSipInterfaceStatusReason=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.2.6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>27</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSysMgmtENUMStatusChangeTrap</uei>
+	<event-label>APSYSMGMT-MIB defined trap event: apSysMgmtENUMStatusChangeTrap</event-label>
+	<descr>
+&lt;p&gt; The trap will be generated if the reachability status of an ENUM 
+server changes.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apENUMConfigName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apENUMServerIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apENUMServerStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		inservice(0)
+		lowerpriority(1)
+		oosunreachable(2)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSysMgmtENUMStatusChangeTrap trap received 
+			apENUMConfigName=%parm[#1]% 
+			apENUMServerIpAddress=%parm[#2]% 
+			apENUMServerStatus=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.2.6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>28</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSysMgmtPushServerUnreachableTrap</uei>
+	<event-label>APSYSMGMT-MIB defined trap event: apSysMgmtPushServerUnreachableTrap</event-label>
+	<descr>
+&lt;p&gt; The trap will be generated if server specified becomes
+unreachable by the system collector.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtCollectPushServerUnreachable&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSysMgmtPushServerUnreachableTrap trap received 
+			apSysMgmtCollectPushServerUnreachable=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.2.6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>29</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSysMgmtPushServerUnreachableClearTrap</uei>
+	<event-label>APSYSMGMT-MIB defined trap event: apSysMgmtPushServerUnreachableClearTrap</event-label>
+	<descr>
+&lt;p&gt; The trap will be generated if server specified becomes
+unreachable by the system collector.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtCollectPushServerUnreachable&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSysMgmtPushServerUnreachableClearTrap trap received 
+			apSysMgmtCollectPushServerUnreachable=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.2.6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>30</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSysMgmtNTPServerUnreachableTrap</uei>
+	<event-label>APSYSMGMT-MIB defined trap event: apSysMgmtNTPServerUnreachableTrap</event-label>
+	<descr>
+&lt;p&gt; The trap will be generated if server specified becomes
+unreachable by the NTP process.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtNTPServer&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSysMgmtNTPServerUnreachableTrap trap received 
+			apSysMgmtNTPServer=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.2.6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>31</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSysMgmtNTPServerUnreachableClearTrap</uei>
+	<event-label>APSYSMGMT-MIB defined trap event: apSysMgmtNTPServerUnreachableClearTrap</event-label>
+	<descr>
+&lt;p&gt; The trap will be generated if server specified was 
+unreachable by the NTP process and now is reachable.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtNTPServer&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSysMgmtNTPServerUnreachableClearTrap trap received 
+			apSysMgmtNTPServer=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.2.6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>32</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSysMgmtNTPServiceDownTrap</uei>
+	<event-label>APSYSMGMT-MIB defined trap event: apSysMgmtNTPServiceDownTrap</event-label>
+	<descr>
+&lt;p&gt; The trap will be generated if all servers specified are 
+unreachable by the NTP process.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSysMgmtNTPServiceDownTrap trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.2.6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>33</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSysMgmtNTPServiceDownClearTrap</uei>
+	<event-label>APSYSMGMT-MIB defined trap event: apSysMgmtNTPServiceDownClearTrap</event-label>
+	<descr>
+&lt;p&gt; The trap will be generated if all servers specified are 
+unreachable by the NTP process.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSysMgmtNTPServiceDownClearTrap trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.2.6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>34</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSysMgmtMediaSupervisionTimerExpTrap</uei>
+	<event-label>APSYSMGMT-MIB defined trap event: apSysMgmtMediaSupervisionTimerExpTrap</event-label>
+	<descr>
+&lt;p&gt; The trap will be generated when a media supervision timer
+has expired.  This behavior is disabled by default but may
+be enabled by changing the 'media-supervision-traps'
+parameter of the 'media-manager' configuration element.  The
+included object is the call identifier for the call which had
+the timer expire.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtCallId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSysMgmtMediaSupervisionTimerExpTrap trap received 
+			apSysMgmtCallId=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.2.6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>35</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSysMgmntH248AssociationLostTrap</uei>
+	<event-label>APSYSMGMT-MIB defined trap event: apSysMgmntH248AssociationLostTrap</event-label>
+	<descr>
+&lt;p&gt; This trap will be generated when an H248 control
+association between a border gateway and session controller
+is lost.  The included object is the border gateway
+identifier.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtBorderGatewayId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSysMgmntH248AssociationLostTrap trap received 
+			apSysMgmtBorderGatewayId=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.2.6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>36</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSysMgmntH248AssociationLostClearTrap</uei>
+	<event-label>APSYSMGMT-MIB defined trap event: apSysMgmntH248AssociationLostClearTrap</event-label>
+	<descr>
+&lt;p&gt; This trap will be generated when an H248 control
+association between a border gateway and session controller
+has been restored.  The included object is the border
+gateway identifier.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtBorderGatewayId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSysMgmntH248AssociationLostClearTrap trap received 
+			apSysMgmtBorderGatewayId=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.2.6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>37</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSysMgmtRFactorBelowThresholdTrap</uei>
+	<event-label>APSYSMGMT-MIB defined trap event: apSysMgmtRFactorBelowThresholdTrap</event-label>
+	<descr>
+&lt;p&gt; This trap will be generated when a call using the
+vq-qos statistics gathering function determines that
+the R-factor has gone below a configured threshold.
+The included objects are the current RFactor value
+and a call identifier.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtRFactor&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtCallId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSysMgmtRFactorBelowThresholdTrap trap received 
+			apSysMgmtRFactor=%parm[#1]% 
+			apSysMgmtCallId=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.2.6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>38</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSysMgmtRFactorBelowThresholdClearTrap</uei>
+	<event-label>APSYSMGMT-MIB defined trap event: apSysMgmtRFactorBelowThresholdClearTrap</event-label>
+	<descr>
+&lt;p&gt; This trap will be generated when a call using the
+vq-qos statistics gathering function determines that
+the R-factor has recovered after having gone below a 
+configurable threshold.  The included object is a call
+identifier&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtCallId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSysMgmtRFactorBelowThresholdClearTrap trap received 
+			apSysMgmtCallId=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.2.6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>39</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSysMgmtSurrogateRegFailed</uei>
+	<event-label>APSYSMGMT-MIB defined trap event: apSysMgmtSurrogateRegFailed</event-label>
+	<descr>
+&lt;p&gt; The trap will be generated if a surrogate registration
+failed after the maximum configured attempts.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtSurrogateRegHost&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtSurrogateRegAor&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSysMgmtSurrogateRegFailed trap received 
+			apSysMgmtSurrogateRegHost=%parm[#1]% 
+			apSysMgmtSurrogateRegAor=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.2.6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>40</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSysMgmtRealmMinutesExceedTrap</uei>
+	<event-label>APSYSMGMT-MIB defined trap event: apSysMgmtRealmMinutesExceedTrap</event-label>
+	<descr>
+&lt;p&gt; The trap will be generated if monthly minutes exceed for a realm.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtRealmID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSysMgmtRealmMinutesExceedTrap trap received 
+			apSysMgmtRealmID=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.2.6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>41</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSysMgmtRealmMinutesExceedClearTrap</uei>
+	<event-label>APSYSMGMT-MIB defined trap event: apSysMgmtRealmMinutesExceedClearTrap</event-label>
+	<descr>
+&lt;p&gt; The trap will be generated if monthly minutes reset.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtRealmID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSysMgmtRealmMinutesExceedClearTrap trap received 
+			apSysMgmtRealmID=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.2.6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>42</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSysMgmtLDAPStatusChangeTrap</uei>
+	<event-label>APSYSMGMT-MIB defined trap event: apSysMgmtLDAPStatusChangeTrap</event-label>
+	<descr>
+&lt;p&gt; The trap will be generated if the reachability status of an 
+LDAP server changes.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apLDAPConfigName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apLDAPServerIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apLDAPServerStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(0)
+		inservice(1)
+		sessionlost(2)
+		servertimeout(3)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSysMgmtLDAPStatusChangeTrap trap received 
+			apLDAPConfigName=%parm[#1]% 
+			apLDAPServerIpAddress=%parm[#2]% 
+			apLDAPServerStatus=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.2.6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>43</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSysMgmtNTPClockSkewTrap</uei>
+	<event-label>APSYSMGMT-MIB defined trap event: apSysMgmtNTPClockSkewTrap</event-label>
+	<descr>
+&lt;p&gt; The trap will be generated if NTP has to adjust the clock by
+more than 1000 seconds.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSysMgmtNTPClockSkewTrap trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.2.6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>44</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSysMgmtCollectorPushSuccessTrap</uei>
+	<event-label>APSYSMGMT-MIB defined trap event: apSysMgmtCollectorPushSuccessTrap</event-label>
+	<descr>
+&lt;p&gt; The trap will be generated when the collector completes a push
+operation successfully.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtCollectorPushNodeName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtCollectorPushUniqueFileName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtCollectorPushReceiverAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSysMgmtCollectorPushSuccessTrap trap received 
+			apSysMgmtCollectorPushNodeName=%parm[#1]% 
+			apSysMgmtCollectorPushUniqueFileName=%parm[#2]% 
+			apSysMgmtCollectorPushReceiverAddress=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.2.6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>45</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSysMgmtRealmStatusChangeTrap</uei>
+	<event-label>APSYSMGMT-MIB defined trap event: apSysMgmtRealmStatusChangeTrap</event-label>
+	<descr>
+&lt;p&gt; The trap will be generated when there is a change
+in the status of the realm constraints.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtRealmName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtRealmStatusReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		administrative(0)
+		oosbyproxyerror(1)
+		standby(2)
+		inservice(3)
+		constraintsexceeded(4)
+		unresponsive(5)
+		oosprovisionedresponse(6)
+		callloadreduction(7)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSysMgmtRealmStatusChangeTrap trap received 
+			apSysMgmtRealmName=%parm[#1]% 
+			apSysMgmtRealmStatusReason=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.2.6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>46</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSysMgmtRegCacheThresholdTrap</uei>
+	<event-label>APSYSMGMT-MIB defined trap event: apSysMgmtRegCacheThresholdTrap</event-label>
+	<descr>
+&lt;p&gt;The trap will be generated when the number of contacts stored 
+in the registration cache exceeds the configured threshold.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysSipStatsActiveLocalContacts&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysRegCacheLimit&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSysMgmtRegCacheThresholdTrap trap received 
+			apSysSipStatsActiveLocalContacts=%parm[#1]% 
+			apSysRegCacheLimit=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.2.6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>47</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSysMgmtRegCacheThresholdClearTrap</uei>
+	<event-label>APSYSMGMT-MIB defined trap event: apSysMgmtRegCacheThresholdClearTrap</event-label>
+	<descr>
+&lt;p&gt;The trap will be generated when the number of contacts stored 
+in the registration cache falls below the configured threshold.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysSipStatsActiveLocalContacts&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysRegCacheLimit&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSysMgmtRegCacheThresholdClearTrap trap received 
+			apSysSipStatsActiveLocalContacts=%parm[#1]% 
+			apSysRegCacheLimit=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.2.6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>48</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSysMgmtShortSessionExceedTrap</uei>
+	<event-label>APSYSMGMT-MIB defined trap event: apSysMgmtShortSessionExceedTrap</event-label>
+	<descr>
+&lt;p&gt;The trap will be generated when the amount of short sessions
+in a realm exceeds the short session threshold within the
+short session window.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtRealmID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSysMgmtShortSessionExceedTrap trap received 
+			apSysMgmtRealmID=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.2.6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>49</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSysMgmtGatewaySynchronizedTrap</uei>
+	<event-label>APSYSMGMT-MIB defined trap event: apSysMgmtGatewaySynchronizedTrap</event-label>
+	<descr>
+&lt;p&gt;The trap will be generated when the default gateway is synchronized in the ARP table.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtGatewaySynchronized&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSysMgmtGatewaySynchronizedTrap trap received 
+			apSysMgmtGatewaySynchronized=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.2.6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>50</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSysMgmtCallRecordingStateChangeTrap</uei>
+	<event-label>APSYSMGMT-MIB defined trap event: apSysMgmtCallRecordingStateChangeTrap</event-label>
+	<descr>
+&lt;p&gt;The trap will be generated when a call recording server
+changes state.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysCallRecordingServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysCallRecordingServerState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(0)
+		not-monitoring(1)
+		primary-active(2)
+		secondary-active(3)
+		no-active(4)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSysMgmtCallRecordingStateChangeTrap trap received 
+			apSysCallRecordingServerName=%parm[#1]% 
+			apSysCallRecordingServerState=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.2.6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>51</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSysMgmtRealmIcmpFailureTrap</uei>
+	<event-label>APSYSMGMT-MIB defined trap event: apSysMgmtRealmIcmpFailureTrap</event-label>
+	<descr>
+&lt;p&gt; The trap will be generated when ICMP heartbeat failure.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtRealmID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSysMgmtRealmIcmpFailureTrap trap received 
+			apSysMgmtRealmID=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.2.6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>52</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSysMgmtRealmIcmpFailureClearTrap</uei>
+	<event-label>APSYSMGMT-MIB defined trap event: apSysMgmtRealmIcmpFailureClearTrap</event-label>
+	<descr>
+&lt;p&gt; The trap will be generated ICMP heartbeat failure cleared.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtRealmID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSysMgmtRealmIcmpFailureClearTrap trap received 
+			apSysMgmtRealmID=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.2.6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>53</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSysMgmtCDRPushReceiverFailureTrap</uei>
+	<event-label>APSYSMGMT-MIB defined trap event: apSysMgmtCDRPushReceiverFailureTrap</event-label>
+	<descr>
+&lt;p&gt; The trap will be generated when an enabled cdr push receiver fails.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysCDRPushReceiverAddressType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(0)
+		ipv4(1)
+		ipv6(2)
+		ipv4z(3)
+		ipv6z(4)
+		dns(16)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysCDRPushReceiverAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysCDRPushReceiverFailureReasonCode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(0)
+		file-access-error(1)
+		connection-error(2)
+		authentication-error(3)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSysMgmtCDRPushReceiverFailureTrap trap received 
+			apSysCDRPushReceiverAddressType=%parm[#1]% 
+			apSysCDRPushReceiverAddress=%parm[#2]% 
+			apSysCDRPushReceiverFailureReasonCode=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.2.6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>54</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSysMgmtCDRPushReceiverFailureClearTrap</uei>
+	<event-label>APSYSMGMT-MIB defined trap event: apSysMgmtCDRPushReceiverFailureClearTrap</event-label>
+	<descr>
+&lt;p&gt; The trap will be generated when an enabled cdr push receiver resumes normal operation after a failure.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysCDRPushReceiverAddressType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(0)
+		ipv4(1)
+		ipv6(2)
+		ipv4z(3)
+		ipv6z(4)
+		dns(16)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysCDRPushReceiverAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSysMgmtCDRPushReceiverFailureClearTrap trap received 
+			apSysCDRPushReceiverAddressType=%parm[#1]% 
+			apSysCDRPushReceiverAddress=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.2.6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>55</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSysMgmtCDRPushAllReceiversFailureTrap</uei>
+	<event-label>APSYSMGMT-MIB defined trap event: apSysMgmtCDRPushAllReceiversFailureTrap</event-label>
+	<descr>
+&lt;p&gt; The trap will be generated when all enabled cdr push receivers fail.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSysMgmtCDRPushAllReceiversFailureTrap trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.2.6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>56</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSysMgmtCDRPushAllReceiversFailureClearTrap</uei>
+	<event-label>APSYSMGMT-MIB defined trap event: apSysMgmtCDRPushAllReceiversFailureClearTrap</event-label>
+	<descr>
+&lt;p&gt; The trap will be generated when one or more enabled cdr push receivers return to normal operation,
+after failures were encountered on all receivers.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSysMgmtCDRPushAllReceiversFailureClearTrap trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.2.6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>57</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSysMgmtRejectedMesagesThresholdExeededTrap</uei>
+	<event-label>APSYSMGMT-MIB defined trap event: apSysMgmtRejectedMesagesThresholdExeededTrap</event-label>
+	<descr>
+&lt;p&gt; The trap will be generated when the number of rejected messages exceed the configured threshold within the configured window.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysRejectedMessages&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSysMgmtRejectedMesagesThresholdExeededTrap trap received 
+			apSysRejectedMessages=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.2.6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>58</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSysMgmtAdminAuditLogFullTrap</uei>
+	<event-label>APSYSMGMT-MIB defined trap event: apSysMgmtAdminAuditLogFullTrap</event-label>
+	<descr>
+&lt;p&gt; The trap will be generated when one of the audit log full threshold [time interval/file-size/percentage-full] is satisfied.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysAdminAuditLogFullReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		file-size(0)
+		percentage-full(1)
+		file-transfer-time(2)
+		maxspaceused-deletingfile(3)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysAdminFileName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSysMgmtAdminAuditLogFullTrap trap received 
+			apSysAdminAuditLogFullReason=%parm[#1]% 
+			apSysAdminFileName=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.2.6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>59</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSysMgmtAdminAuditLogFullClearTrap</uei>
+	<event-label>APSYSMGMT-MIB defined trap event: apSysMgmtAdminAuditLogFullClearTrap</event-label>
+	<descr>
+&lt;p&gt; The trap will be generated when free audit log storage space becomes available.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSysMgmtAdminAuditLogFullClearTrap trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.2.6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>60</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSysMgmtAdminAuditPushFailTrap</uei>
+	<event-label>APSYSMGMT-MIB defined trap event: apSysMgmtAdminAuditPushFailTrap</event-label>
+	<descr>
+&lt;p&gt; The trap will be generated when audit file transfer fails.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysAddressType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(0)
+		ipv4(1)
+		ipv6(2)
+		ipv4z(3)
+		ipv6z(4)
+		dns(16)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysReasonCode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(0)
+		login-error(1)
+		file-transfer-error(2)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSysMgmtAdminAuditPushFailTrap trap received 
+			apSysAddressType=%parm[#1]% 
+			apSysAddress=%parm[#2]% 
+			apSysReasonCode=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.2.6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>61</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSysMgmtAdminAuditPushFailClearTrap</uei>
+	<event-label>APSYSMGMT-MIB defined trap event: apSysMgmtAdminAuditPushFailClearTrap</event-label>
+	<descr>
+&lt;p&gt; The trap will be generated when audit file is successfully transferred.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysAddressType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(0)
+		ipv4(1)
+		ipv6(2)
+		ipv4z(3)
+		ipv6z(4)
+		dns(16)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSysMgmtAdminAuditPushFailClearTrap trap received 
+			apSysAddressType=%parm[#1]% 
+			apSysAddress=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.2.6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>62</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSysMgmtAdminWriteFailTrap</uei>
+	<event-label>APSYSMGMT-MIB defined trap event: apSysMgmtAdminWriteFailTrap</event-label>
+	<descr>
+&lt;p&gt; The trap will be generated when a write to file fails.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysAdminWriteErrorCode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(0)
+		not-open(1)
+		io-error(2)
+		comress-error(3)
+		encrypt-error(4)
+		no-space(5)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysAdminFileName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSysMgmtAdminWriteFailTrap trap received 
+			apSysAdminWriteErrorCode=%parm[#1]% 
+			apSysAdminFileName=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.2.6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>63</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSysMgmtAdminWriteFailClearTrap</uei>
+	<event-label>APSYSMGMT-MIB defined trap event: apSysMgmtAdminWriteFailClearTrap</event-label>
+	<descr>
+&lt;p&gt; The trap will be generated when a write to file succeeds.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSysMgmtAdminWriteFailClearTrap trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.2.6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>64</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSysMgmtAdminAuthLockoutTrap</uei>
+	<event-label>APSYSMGMT-MIB defined trap event: apSysMgmtAdminAuthLockoutTrap</event-label>
+	<descr>
+&lt;p&gt; The trap will be generated on system lockout after multiple auth failures.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtAuthFailProto&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		console(0)
+		telnet(1)
+		ftp(2)
+		ssh(3)
+		sftp(4)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSysMgmtAdminAuthLockoutTrap trap received 
+			apSysMgmtAuthFailProto=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.2.6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>65</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSysMgmtLPLookupExceededTrap</uei>
+	<event-label>APSYSMGMT-MIB defined trap event: apSysMgmtLPLookupExceededTrap</event-label>
+	<descr>
+&lt;p&gt; The trap will be generated the first time the Additional
+Local Policy Lookups limit is reached  in the recent window
+period.  This trap will only occur once during a window
+period.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSysMgmtLPLookupExceededTrap trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.2.6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>66</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSysMgmtPhyUtilThresholdTrap</uei>
+	<event-label>APSYSMGMT-MIB defined trap event: apSysMgmtPhyUtilThresholdTrap</event-label>
+	<descr>
+&lt;p&gt; The trap will be generated when the media-port's utilization
+crosses a configured threshold. This trap will indicate if the
+OverloadProtection feature is turned active.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ifIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtPhyUtilCurrent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtPhyUtilMinorThreshold&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtPhyUtilMajorThreshold&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtPhyUtilCriticalThreshold&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtPhyRejectOverUtil&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSysMgmtPhyUtilThresholdTrap trap received 
+			ifIndex=%parm[#1]% 
+			apSysMgmtPhyUtilCurrent=%parm[#2]% 
+			apSysMgmtPhyUtilMinorThreshold=%parm[#3]% 
+			apSysMgmtPhyUtilMajorThreshold=%parm[#4]% 
+			apSysMgmtPhyUtilCriticalThreshold=%parm[#5]% 
+			apSysMgmtPhyRejectOverUtil=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.2.6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>67</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSysMgmtPhyUtilThresholdClearTrap</uei>
+	<event-label>APSYSMGMT-MIB defined trap event: apSysMgmtPhyUtilThresholdClearTrap</event-label>
+	<descr>
+&lt;p&gt; The trap will be generated once a media-ports' utilization falls
+below the lowest configured threshold.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ifIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtPhyUtilCurrent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtPhyUtilMinorThreshold&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtPhyUtilMajorThreshold&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtPhyUtilCriticalThreshold&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtPhyRejectOverUtil&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSysMgmtPhyUtilThresholdClearTrap trap received 
+			ifIndex=%parm[#1]% 
+			apSysMgmtPhyUtilCurrent=%parm[#2]% 
+			apSysMgmtPhyUtilMinorThreshold=%parm[#3]% 
+			apSysMgmtPhyUtilMajorThreshold=%parm[#4]% 
+			apSysMgmtPhyUtilCriticalThreshold=%parm[#5]% 
+			apSysMgmtPhyRejectOverUtil=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.2.8</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSysMgmtDOSTrap</uei>
+	<event-label>APSYSMGMT-MIB defined trap event: apSysMgmtDOSTrap</event-label>
+	<descr>
+&lt;p&gt; The trap will generated if IP address and realm ID is denied of service.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtDOSIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtDOSRealmID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSysMgmtDOSTrap trap received 
+			apSysMgmtDOSIpAddress=%parm[#1]% 
+			apSysMgmtDOSRealmID=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.2.8</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>2</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSysMgmtExpDOSTrap</uei>
+	<event-label>APSYSMGMT-MIB defined trap event: apSysMgmtExpDOSTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is generated when an IP is placed on a deny list due
+to denial-of-service attempts, and provides the ip address that
+has been demoted, the realm-id of that IP, and (if available) 
+the URI portion of the SIP From header of the message that
+caused the demotion.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtDOSIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtDOSRealmID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtDOSFromUri&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSysMgmtExpDOSTrap trap received 
+			apSysMgmtDOSIpAddress=%parm[#1]% 
+			apSysMgmtDOSRealmID=%parm[#2]% 
+			apSysMgmtDOSFromUri=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.2.8</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSysMgmtInetAddrDOSTrap</uei>
+	<event-label>APSYSMGMT-MIB defined trap event: apSysMgmtInetAddrDOSTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is generated when an IP is placed on a deny list due
+to denial-of-service attempts, and provides the ip address that
+has been demoted, the realm-id of that IP, and (if available) 
+the URI portion of the SIP From header of the message that
+caused the demotion.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtDOSInetAddressType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(0)
+		ipv4(1)
+		ipv6(2)
+		ipv4z(3)
+		ipv6z(4)
+		dns(16)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtDOSInetAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtDOSRealmID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtDOSFromUri&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSysMgmtInetAddrDOSTrap trap received 
+			apSysMgmtDOSInetAddressType=%parm[#1]% 
+			apSysMgmtDOSInetAddress=%parm[#2]% 
+			apSysMgmtDOSRealmID=%parm[#3]% 
+			apSysMgmtDOSFromUri=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.2.8</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>4</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSysMgmtInetAddrWithReasonDOSTrap</uei>
+	<event-label>APSYSMGMT-MIB defined trap event: apSysMgmtInetAddrWithReasonDOSTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is generated when an IP is placed on a deny list due
+to denial-of-service attempts, and provides the ip address that
+has been demoted, the realm-id of that IP, (if available) 
+the URI portion of the SIP From header of the message that
+caused the demotion and the reason for demotion.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtDOSInetAddressType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		unknown(0)
+		ipv4(1)
+		ipv6(2)
+		ipv4z(3)
+		ipv6z(4)
+		dns(16)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtDOSInetAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtDOSRealmID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtDOSFromUri&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtDOSReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSysMgmtInetAddrWithReasonDOSTrap trap received 
+			apSysMgmtDOSInetAddressType=%parm[#1]% 
+			apSysMgmtDOSInetAddress=%parm[#2]% 
+			apSysMgmtDOSRealmID=%parm[#3]% 
+			apSysMgmtDOSFromUri=%parm[#4]% 
+			apSysMgmtDOSReason=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.9148.3.2.10</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/AcmePacket/apSysMgmtSipRejectionTrap</uei>
+	<event-label>APSYSMGMT-MIB defined trap event: apSysMgmtSipRejectionTrap</event-label>
+	<descr>
+&lt;p&gt;This trap is sent when either a SIP Invite or 
+Registration request fails.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtSipRejFromUriUser&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtSipRejToUriUser&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtSipRejRequestUri&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtSipRejContactUri&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtSipRejIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtSipRejMsgType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		registration(0)
+		call(1)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtSipRejMethod&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	apSysMgmtSipRejReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			apSysMgmtSipRejectionTrap trap received 
+			apSysMgmtSipRejFromUriUser=%parm[#1]% 
+			apSysMgmtSipRejToUriUser=%parm[#2]% 
+			apSysMgmtSipRejRequestUri=%parm[#3]% 
+			apSysMgmtSipRejContactUri=%parm[#4]% 
+			apSysMgmtSipRejIpAddress=%parm[#5]% 
+			apSysMgmtSipRejMsgType=%parm[#6]% 
+			apSysMgmtSipRejMethod=%parm[#7]% 
+			apSysMgmtSipRejReason=%parm[#8]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<!-- End of auto generated data from MIB: APSYSMGMT-MIB -->
+</events>
