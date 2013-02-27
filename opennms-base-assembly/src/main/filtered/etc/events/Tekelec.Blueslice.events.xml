@@ -1,0 +1,546 @@
+<!-- Start of auto generated data from MIB: BLUESLICE-SYS-MIB -->
+<events>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.17094.1.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Tekelec/Blueslice/traps/bsCriticalAlarmNotification</uei>
+	<event-label>BLUESLICE-SYS-MIB defined trap event: bsCriticalAlarmNotification</event-label>
+	<descr>
+<![CDATA[
+<p>The generic notification to send to the NM triggered
+by an alarm notification with the severity parameter
+value set to critical.</p><table>
+	<tr><td><b>
+
+	bsSlotId</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bsShelfId</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bsSequenceId</b></td><td>
+	%parm[#3]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bsAlarmId</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bsModuleName</b></td><td>
+	%parm[#5]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bsModuleInstance</b></td><td>
+	%parm[#6]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bsComponentName</b></td><td>
+	%parm[#7]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bsSetTimeStamp</b></td><td>
+	%parm[#8]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bsComponentInstanceContext</b></td><td>
+	%parm[#9]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bsAlarmDynamicDescription</b></td><td>
+	%parm[#10]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bsAlarmNotification</b></td><td>
+	%parm[#11]%;</td><td><p>
+		clear(0)
+		set(1)
+		clearall(2)
+	</p></td></tr></table>
+]]>
+	</descr>
+		<logmsg dest='logndisplay'><![CDATA[<p>
+			bsCriticalAlarmNotification trap received 
+			bsSlotId=%parm[#1]% 
+			bsShelfId=%parm[#2]% 
+			bsSequenceId=%parm[#3]% 
+			bsAlarmId=%parm[#4]% 
+			bsModuleName=%parm[#5]% 
+			bsModuleInstance=%parm[#6]% 
+			bsComponentName=%parm[#7]% 
+			bsSetTimeStamp=%parm[#8]% 
+			bsComponentInstanceContext=%parm[#9]% 
+			bsAlarmDynamicDescription=%parm[#10]% 
+			bsAlarmNotification=%parm[#11]%</p>
+]]>		</logmsg>
+	<severity>Critical</severity>
+        <varbindsdecode>
+                <parmid>parm[#11]</parmid>
+                <decode varbindvalue="0" varbinddecodedstring="clear"/>
+                <decode varbindvalue="1" varbinddecodedstring="set"/>
+                <decode varbindvalue="2" varbinddecodedstring="clearall"/>
+        </varbindsdecode>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.17094.1.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>2</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Tekelec/Blueslice/traps/bsMajorAlarmNotification</uei>
+	<event-label>BLUESLICE-SYS-MIB defined trap event: bsMajorAlarmNotification</event-label>
+	<descr>
+<![CDATA[
+<p>The generic notification to send to the NM triggered
+by an alarm notification with the severity parameter
+value set to major.</p><table>
+	<tr><td><b>
+
+	bsSlotId</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bsShelfId</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bsSequenceId</b></td><td>
+	%parm[#3]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bsAlarmId</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bsModuleName</b></td><td>
+	%parm[#5]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bsModuleInstance</b></td><td>
+	%parm[#6]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bsComponentName</b></td><td>
+	%parm[#7]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bsSetTimeStamp</b></td><td>
+	%parm[#8]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bsComponentInstanceContext</b></td><td>
+	%parm[#9]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bsAlarmDynamicDescription</b></td><td>
+	%parm[#10]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bsAlarmNotification</b></td><td>
+	%parm[#11]%;</td><td><p>
+		clear(0)
+		set(1)
+		clearall(2)
+	</p></td></tr></table>
+]]>
+	</descr>
+		<logmsg dest='logndisplay'><![CDATA[<p>
+			bsMajorAlarmNotification trap received 
+			bsSlotId=%parm[#1]% 
+			bsShelfId=%parm[#2]% 
+			bsSequenceId=%parm[#3]% 
+			bsAlarmId=%parm[#4]% 
+			bsModuleName=%parm[#5]% 
+			bsModuleInstance=%parm[#6]% 
+			bsComponentName=%parm[#7]% 
+			bsSetTimeStamp=%parm[#8]% 
+			bsComponentInstanceContext=%parm[#9]% 
+			bsAlarmDynamicDescription=%parm[#10]% 
+			bsAlarmNotification=%parm[#11]%</p>
+]]>		</logmsg>
+	<severity>Major</severity>
+        <varbindsdecode>
+                <parmid>parm[#11]</parmid>
+                <decode varbindvalue="0" varbinddecodedstring="clear"/>
+                <decode varbindvalue="1" varbinddecodedstring="set"/>
+                <decode varbindvalue="2" varbinddecodedstring="clearall"/>
+        </varbindsdecode>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.17094.1.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Tekelec/Blueslice/traps/bsMinorAlarmNotification</uei>
+	<event-label>BLUESLICE-SYS-MIB defined trap event: bsMinorAlarmNotification</event-label>
+	<descr>
+<![CDATA[
+<p>The generic notification to send to the NM triggered
+by an alarm notification with the severity parameter
+value set to minor.</p><table>
+	<tr><td><b>
+
+	bsSlotId</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bsShelfId</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bsSequenceId</b></td><td>
+	%parm[#3]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bsAlarmId</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bsModuleName</b></td><td>
+	%parm[#5]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bsModuleInstance</b></td><td>
+	%parm[#6]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bsComponentName</b></td><td>
+	%parm[#7]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bsSetTimeStamp</b></td><td>
+	%parm[#8]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bsComponentInstanceContext</b></td><td>
+	%parm[#9]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bsAlarmDynamicDescription</b></td><td>
+	%parm[#10]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bsAlarmNotification</b></td><td>
+	%parm[#11]%;</td><td><p>
+		clear(0)
+		set(1)
+		clearall(2)
+	</p></td></tr></table>
+]]>
+	</descr>
+		<logmsg dest='logndisplay'><![CDATA[<p>
+			bsMinorAlarmNotification trap received 
+			bsSlotId=%parm[#1]% 
+			bsShelfId=%parm[#2]% 
+			bsSequenceId=%parm[#3]% 
+			bsAlarmId=%parm[#4]% 
+			bsModuleName=%parm[#5]% 
+			bsModuleInstance=%parm[#6]% 
+			bsComponentName=%parm[#7]% 
+			bsSetTimeStamp=%parm[#8]% 
+			bsComponentInstanceContext=%parm[#9]% 
+			bsAlarmDynamicDescription=%parm[#10]% 
+			bsAlarmNotification=%parm[#11]%</p>
+]]>		</logmsg>
+	<severity>Minor</severity>
+        <varbindsdecode>
+                <parmid>parm[#11]</parmid>
+                <decode varbindvalue="0" varbinddecodedstring="clear"/>
+                <decode varbindvalue="1" varbinddecodedstring="set"/>
+                <decode varbindvalue="2" varbinddecodedstring="clearall"/>
+        </varbindsdecode>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.17094.1.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>4</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Tekelec/Blueslice/traps/bsWarningAlarmNotification</uei>
+	<event-label>BLUESLICE-SYS-MIB defined trap event: bsWarningAlarmNotification</event-label>
+	<descr>
+<![CDATA[
+<p>The generic notification to send to the NM triggered
+by an alarm notification with the severity parameter
+value set to warning.</p><table>
+	<tr><td><b>
+
+	bsSlotId</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bsShelfId</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bsSequenceId</b></td><td>
+	%parm[#3]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bsAlarmId</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bsModuleName</b></td><td>
+	%parm[#5]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bsModuleInstance</b></td><td>
+	%parm[#6]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bsComponentName</b></td><td>
+	%parm[#7]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bsSetTimeStamp</b></td><td>
+	%parm[#8]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bsComponentInstanceContext</b></td><td>
+	%parm[#9]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bsAlarmDynamicDescription</b></td><td>
+	%parm[#10]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bsAlarmNotification</b></td><td>
+	%parm[#11]%;</td><td><p>
+		clear(0)
+		set(1)
+		clearall(2)
+	</p></td></tr></table>
+]]>
+	</descr>
+		<logmsg dest='logndisplay'><![CDATA[<p>
+			bsWarningAlarmNotification trap received 
+			bsSlotId=%parm[#1]% 
+			bsShelfId=%parm[#2]% 
+			bsSequenceId=%parm[#3]% 
+			bsAlarmId=%parm[#4]% 
+			bsModuleName=%parm[#5]% 
+			bsModuleInstance=%parm[#6]% 
+			bsComponentName=%parm[#7]% 
+			bsSetTimeStamp=%parm[#8]% 
+			bsComponentInstanceContext=%parm[#9]% 
+			bsAlarmDynamicDescription=%parm[#10]% 
+			bsAlarmNotification=%parm[#11]%</p>
+]]>		</logmsg>
+	<severity>Warning</severity>
+        <varbindsdecode>
+                <parmid>parm[#11]</parmid>
+                <decode varbindvalue="0" varbinddecodedstring="clear"/>
+                <decode varbindvalue="1" varbinddecodedstring="set"/>
+                <decode varbindvalue="2" varbinddecodedstring="clearall"/>
+        </varbindsdecode>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.17094.1.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>5</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Tekelec/Blueslice/traps/bsAcknowledgeAlarmNotification</uei>
+	<event-label>BLUESLICE-SYS-MIB defined trap event: bsAcknowledgeAlarmNotification</event-label>
+	<descr>
+<![CDATA[
+<p>The generic notification to send to the NM triggered
+by an alarm aknowledgment</p><table>
+	<tr><td><b>
+
+	bsSequenceId</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr></table>
+]]>
+	</descr>
+		<logmsg dest='logndisplay'><![CDATA[<p>
+			bsAcknowledgeAlarmNotification trap received 
+			bsSequenceId=%parm[#1]%</p>
+]]>		</logmsg>
+	<severity>Normal</severity>
+        <varbindsdecode>
+                <parmid>parm[#11]</parmid>
+                <decode varbindvalue="0" varbinddecodedstring="clear"/>
+                <decode varbindvalue="1" varbinddecodedstring="set"/>
+                <decode varbindvalue="2" varbinddecodedstring="clearall"/>
+        </varbindsdecode>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.17094.1.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Tekelec/Blueslice/traps/bsClearAlarmNotification</uei>
+	<event-label>BLUESLICE-SYS-MIB defined trap event: bsClearAlarmNotification</event-label>
+	<descr>
+<![CDATA[
+<p>The generic notification to send to the NM triggered
+by a clear alarm or clear all alarms</p><table>
+	<tr><td><b>
+
+	bsSequenceId</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bsAlarmNotification</b></td><td>
+	%parm[#2]%;</td><td><p>
+		clear(0)
+		set(1)
+		clearall(2)
+	</p></td></tr></table>
+]]>
+	</descr>
+		<logmsg dest='logndisplay'><![CDATA[<p>
+			bsClearAlarmNotification trap received 
+			bsSequenceId=%parm[#1]% 
+			bsAlarmNotification=%parm[#2]%</p>
+]]>		</logmsg>
+	<severity>Cleared</severity>
+        <varbindsdecode>
+                <parmid>parm[#11]</parmid>
+                <decode varbindvalue="0" varbinddecodedstring="clear"/>
+                <decode varbindvalue="1" varbinddecodedstring="set"/>
+                <decode varbindvalue="2" varbinddecodedstring="clearall"/>
+        </varbindsdecode>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.17094.1.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>7</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Tekelec/Blueslice/traps/bsSynchroAlarmNotification</uei>
+	<event-label>BLUESLICE-SYS-MIB defined trap event: bsSynchroAlarmNotification</event-label>
+	<descr>
+<![CDATA[
+<p>The generic notification to send to the NM triggered
+by a switchover. This is an indication for the NM to 
+perform a synchro request</p><table></table>
+]]>
+	</descr>
+		<logmsg dest='logndisplay'><![CDATA[<p>
+			bsSynchroAlarmNotification trap received</p>
+]]>		</logmsg>
+	<severity>Normal</severity>
+        <varbindsdecode>
+                <parmid>parm[#11]</parmid>
+                <decode varbindvalue="0" varbinddecodedstring="clear"/>
+                <decode varbindvalue="1" varbinddecodedstring="set"/>
+                <decode varbindvalue="2" varbinddecodedstring="clearall"/>
+        </varbindsdecode>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.17094.1.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Tekelec/Blueslice/traps/bsHeartbeatNotification</uei>
+	<event-label>BLUESLICE-SYS-MIB defined trap event: bsHeartbeatNotification</event-label>
+	<descr>
+<![CDATA[
+<p>The heartbeat notification to send to the NM triggered
+by internal ping.</p><table>
+	<tr><td><b>
+
+	bsSlotId</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bsShelfId</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+]]>
+	</descr>
+		<logmsg dest='logndisplay'><![CDATA[<p>
+			bsHeartbeatNotification trap received 
+			bsSlotId=%parm[#1]% 
+			bsShelfId=%parm[#2]%</p>
+]]>		</logmsg>
+	<severity>Normal</severity>
+        <varbindsdecode>
+                <parmid>parm[#11]</parmid>
+                <decode varbindvalue="0" varbinddecodedstring="clear"/>
+                <decode varbindvalue="1" varbinddecodedstring="set"/>
+                <decode varbindvalue="2" varbinddecodedstring="clearall"/>
+        </varbindsdecode>
+</event>
+</events>
+<!-- End of auto generated data from MIB: BLUESLICE-SYS-MIB -->
