@@ -95,8 +95,6 @@
 						<bundle>mvn:org.opennms.features/vaadin-node-maps/${project.version}</bundle>
 						<bundle>mvn:org.opennms.features.geocoder/org.opennms.features.geocoder.google/${project.version}</bundle>
 						<bundle>mvn:org.opennms.features.geocoder/org.opennms.features.geocoder.nominatim/${project.version}</bundle>
-						<!-- <bundle>wrap:mvn:org.discotools.gwt.leaflet/gwtl-core/3.0-SNAPSHOT</bundle> -->
-						<!-- <bundle>mvn:org.opennms.features.geocoder/org.opennms.features.geocoder.nominatim/${project.version}/cfg</bundle> -->
 					</bundles>
 					<features>
 						<feature>vaadin</feature>
@@ -232,7 +230,7 @@
 		<dependency>
 			<groupId>org.discotools.gwt.leaflet</groupId>
 			<artifactId>gwtl-core</artifactId>
-			<version>0.3-SNAPSHOT</version>
+			<version>0.3-ONMS-20130227-1</version>
 			<optional>true</optional>
 			<scope>provided</scope>
 		</dependency>
