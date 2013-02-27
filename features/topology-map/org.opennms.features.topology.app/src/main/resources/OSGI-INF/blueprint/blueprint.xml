@@ -22,9 +22,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         <argument ref="providerManager" />
         <argument ref="iconRepoManager"/>
         <argument>
-            <bean class="org.opennms.features.topology.app.internal.DefaultSelectionManager">
-                <property name="selectionListeners" ref="selectionListeners"/>
-            </bean>
+            <bean class="org.opennms.features.topology.app.internal.DefaultSelectionManager"/>
         </argument>
         <property name="theme" value="${theme}"/>
         <property name="widgetManager" ref="widgetManager"/>
@@ -128,18 +126,15 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
     </reference-list>
     
     <!-- Move to separate project -->
-    <!--
 		<reference id="alarmDao" interface="org.opennms.netmgt.dao.AlarmDao" availability="mandatory" />
 		<reference id="nodeDao" interface="org.opennms.netmgt.dao.NodeDao" availability="mandatory" />
 
-		<!- - Wrap the DAO in a Vaadin container - ->
+		<!-- Wrap the DAO in a Vaadin container -->
 		<bean id="alarmDaoContainer" class="org.opennms.features.topology.app.internal.support.AlarmDaoContainer" scope="prototype">
 			<argument ref="alarmDao" />
 		</bean>
 
-		<service interface="org.opennms.features.topology.api.SelectionListener" ref="alarmDaoContainer"/>
-
-		<bean id="alarmTable" class="com.vaadin.ui.Table" scope="prototype">
+		<bean id="alarmTable" class="org.opennms.features.topology.app.internal.SelectionAwareTable" scope="prototype">
 			<argument value="Alarms"/>
 			<argument ref="alarmDaoContainer" />
 			<property name="columnReorderingAllowed" value="true"/>
@@ -173,14 +168,12 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
 			</service-properties>
 		</service>
 
-		<!- - Wrap the DAO in a Vaadin container - ->
+		<!-- Wrap the DAO in a Vaadin container -->
 		<bean id="nodeDaoContainer" class="org.opennms.features.topology.app.internal.support.NodeDaoContainer" scope="prototype">
 			<argument ref="nodeDao" />
 		</bean>
 
-		<service interface="org.opennms.features.topology.api.SelectionListener" ref="nodeDaoContainer"/>
-
-		<bean id="nodeTable" class="com.vaadin.ui.Table" scope="prototype">
+		<bean id="nodeTable" class="org.opennms.features.topology.app.internal.SelectionAwareTable" scope="prototype">
 			<argument value="Nodes"/>
 			<argument ref="nodeDaoContainer" />
 			<property name="columnReorderingAllowed" value="true"/>
@@ -216,10 +209,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
 			</service-properties>
 		</service>
 
-		-->
 		<!-- End move to separate project -->
-
-    <reference-list id="selectionListeners" interface="org.opennms.features.topology.api.SelectionListener" availability="optional"/>
 
     <service interface="org.osgi.service.cm.ManagedService" >
         <service-properties>

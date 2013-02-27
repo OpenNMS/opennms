@@ -28,6 +28,27 @@
 
 package org.opennms.features.topology.api;
 
-public interface SelectionListener {
-	public void selectionChanged(SelectionContext selectionManager);
+import java.util.Collection;
+
+import org.opennms.features.topology.api.topo.EdgeRef;
+import org.opennms.features.topology.api.topo.VertexRef;
+
+public interface SelectionContext {
+
+	public boolean deselectAll();
+
+	public boolean setSelectedVertexRefs(Collection<? extends VertexRef> vertexRefs);
+
+	public boolean selectVertexRefs(Collection<? extends VertexRef> vertexRefs);
+
+	public boolean deselectVertexRefs(Collection<? extends VertexRef> vertexRefs);
+
+	public boolean setSelectedEdgeRefs(Collection<? extends EdgeRef> edgeRefs);
+
+	public boolean isVertexRefSelected(VertexRef vertexRef);
+
+	public boolean isEdgeRefSelected(EdgeRef edgeRef);
+
+	public Collection<VertexRef> getSelectedVertexRefs();
+
 }

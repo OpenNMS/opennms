@@ -28,25 +28,20 @@
 
 package org.opennms.features.topology.app.internal;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.opennms.features.topology.api.IViewContribution;
-import org.opennms.features.topology.api.WidgetContext;
 import org.slf4j.LoggerFactory;
 
-import com.vaadin.ui.Component;
-import com.vaadin.ui.TabSheet;
-
 /**
- * This class listens for {@link IViewContribution} service registrations and adds them
- * to an internal {@link TabSheet}.
+ * This class listens for {@link IViewContribution} service registrations.
  */
 public class WidgetManager {
 
-    private List<IViewContribution> m_viewContributors = new ArrayList<IViewContribution>();
-    private List<WidgetUpdateListener> m_listeners = new ArrayList<WidgetUpdateListener>();
+    private List<IViewContribution> m_viewContributors = new CopyOnWriteArrayList<IViewContribution>();
+    private List<WidgetUpdateListener> m_listeners = new CopyOnWriteArrayList<WidgetUpdateListener>();
     
     public WidgetManager() {}
     
@@ -76,30 +71,6 @@ public class WidgetManager {
      */
     public List<IViewContribution> getWidgets(){
         return Collections.unmodifiableList(m_viewContributors);
-    }
-    
-    /**
-     * Gets a {@link TabSheet} view for all widgets in this manager.
-     * 
-     * @return TabSheet
-     */
-    public TabSheet getTabSheet(WidgetContext widgetContext) {
-        TabSheet tabSheet = new TabSheet();
-        tabSheet.setSizeFull();
-        
-        synchronized (m_viewContributors) {
-            for(IViewContribution viewContrib : m_viewContributors) {
-                Component view = viewContrib.getView(widgetContext);
-                if(viewContrib.getIcon() != null) {
-                    tabSheet.addTab(view, viewContrib.getTitle(), viewContrib.getIcon());
-                } else {
-                    tabSheet.addTab(view, viewContrib.getTitle());
-                }
-                view.setSizeFull();
-            }
-        }
-        
-        return tabSheet;
     }
     
     public void onBind(IViewContribution viewContribution) {

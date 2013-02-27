@@ -34,11 +34,13 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.Order;
+import org.opennms.features.topology.api.SelectionContext;
 import org.opennms.features.topology.api.SelectionListener;
-import org.opennms.features.topology.api.SelectionManager;
+import org.opennms.features.topology.api.SelectionNotifier;
 import org.opennms.netmgt.dao.OnmsDao;
 
 import com.vaadin.data.Container;
@@ -46,7 +48,7 @@ import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanItem;
 
-public abstract class OnmsDaoContainer<T,K extends Serializable> implements SelectionListener, Container, Container.Sortable, Container.Ordered, Container.ItemSetChangeNotifier {
+public abstract class OnmsDaoContainer<T,K extends Serializable> implements SelectionNotifier, SelectionListener, Container, Container.Sortable, Container.Ordered, Container.ItemSetChangeNotifier {
 
 	private static final long serialVersionUID = -9131723065433979979L;
 
@@ -61,6 +63,11 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Sele
 	 * TODO: Fix concurrent access to this field
 	 */
 	private final Collection<ItemSetChangeListener> m_itemSetChangeListeners = new HashSet<ItemSetChangeListener>();
+
+	/**
+	 * TODO: Fix concurrent access to this field
+	 */
+	private Collection<SelectionListener> m_selectionListeners = new HashSet<SelectionListener>();
 
 	public OnmsDaoContainer(OnmsDao<T,K> dao) {
 		m_dao = dao;
@@ -89,6 +96,9 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Sele
 
 	@Override
 	public boolean containsId(Object itemId) {
+		if (itemId == null) {
+			return false;
+		}
 		return m_dao.get((K)itemId) != null;
 	}
 
@@ -103,6 +113,9 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Sele
 
 	@Override
 	public Item getItem(Object itemId) {
+		if (itemId == null) {
+			return null;
+		}
 		T bean = m_dao.get((K)itemId);
 		return new BeanItem<T>(bean);
 	}
@@ -143,7 +156,7 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Sele
 
 	@Override
 	public int size() {
-		return m_dao.countAll();
+		return m_dao.countMatching(m_criteria);
 	}
 
 	@Override
@@ -174,7 +187,12 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Sele
 	 */
 	@Override
 	public boolean isFirstId(Object itemId) {
-		return firstItemId().equals(itemId);
+		Object firstItemId = firstItemId();
+		if (firstItemId == null) {
+			return false;
+		} else {
+			return firstItemId.equals(itemId);
+		}
 	}
 
 	/**
@@ -182,7 +200,21 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Sele
 	 */
 	@Override
 	public boolean isLastId(Object itemId) {
-		return lastItemId().equals(itemId);
+		Object lastItemId = lastItemId();
+		if (lastItemId == null) {
+			if (itemId == null) {
+				return true;
+			} else {
+				return false;
+			}
+		} else {
+			if (itemId == null) {
+				return false;
+			} else {
+				return lastItemId.equals(itemId);
+			}
+		}
+		
 	}
 
 	/**
@@ -203,6 +235,10 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Sele
 	 */
 	@Override
 	public Object nextItemId(Object itemId) {
+		if (itemId == null) {
+			return null;
+		}
+
 		Iterator<T> itr = m_dao.findMatching(m_criteria).iterator();
 		do {
 			if (itemId.equals(getId(itr.next()))) {
@@ -221,6 +257,10 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Sele
 	 */
 	@Override
 	public Object prevItemId(Object itemId) {
+		if (itemId == null) {
+			return null;
+		}
+
 		Iterator<T> itr = m_dao.findMatching(m_criteria).iterator();
 		T previous = null;
 		do {
@@ -259,7 +299,7 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Sele
 	}
 
 	@Override
-	public abstract void selectionChanged(SelectionManager selectionManager);
+	public abstract void selectionChanged(SelectionContext selectionManager);
 
 	@Override
 	public void addListener(ItemSetChangeListener listener) {
@@ -282,5 +322,20 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Sele
 		for (ItemSetChangeListener listener : m_itemSetChangeListeners) {
 			listener.containerItemSetChange(event);
 		}
+	}
+
+	@Override
+	public void addSelectionListener(SelectionListener listener) {
+		m_selectionListeners.add(listener);
+	}
+	
+	@Override
+	public void setSelectionListeners(Set<SelectionListener> listeners) {
+		m_selectionListeners = listeners;
+	}
+	
+	@Override
+	public void removeSelectionListener(SelectionListener listener) {
+		m_selectionListeners.remove(listener);
 	}
 }
