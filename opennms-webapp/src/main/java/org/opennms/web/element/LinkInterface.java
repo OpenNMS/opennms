@@ -36,11 +36,12 @@ import java.util.Map;
  *
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
  */
-public class LinkInterface extends RowStatus
+public class LinkInterface
 {
         private final Interface m_iface;
         private final Interface m_linkedInterface;
         private final String  m_lastPollTime;
+        private final char    m_status;
         private final Integer m_linktypeid;
         
 		private final Integer m_nodeId;
@@ -48,8 +49,20 @@ public class LinkInterface extends RowStatus
         private final Integer m_linkedNodeId;
         private final Integer m_linkedIfindex;
 
+        private static final Map<Character, String> statusMap = new HashMap<Character, String>();
+
         private static final Map<Integer, String> linktypeMap = new HashMap<Integer, String>();
         
+        static {
+            statusMap.put( 'A', "Active" );
+            statusMap.put( 'K', "Unknown" );
+            statusMap.put( 'D', "Deleted" );
+            statusMap.put( 'N', "Not Active" );
+            statusMap.put( 'B', "Bad" );
+            statusMap.put( 'G', "Good" );
+        }
+        
+
         static {
         	linktypeMap.put(9999, "Unknown");
         	linktypeMap.put(777, "DWO connection");
@@ -59,15 +72,15 @@ public class LinkInterface extends RowStatus
         LinkInterface( Integer nodeid, Integer ifindex, Integer linkedNodeid, Integer linkedIfindex, Interface iface, Interface linkedIface, String lastPollTime,
                 char status, Integer linktypeid)
         {
-        	super(status);
-    		m_nodeId = nodeid;
-    		m_ifindex = ifindex;
-    		m_linkedNodeId = linkedNodeid;
-    		m_linkedIfindex = linkedIfindex;
-            m_iface = iface;
-            m_linkedInterface = linkedIface;
-		    m_lastPollTime = lastPollTime; 
-            m_linktypeid = linktypeid;                
+        		m_nodeId = nodeid;
+        		m_ifindex = ifindex;
+        		m_linkedNodeId = linkedNodeid;
+        		m_linkedIfindex = linkedIfindex;
+                m_iface = iface;
+                m_linkedInterface = linkedIface;
+			    m_lastPollTime = lastPollTime; 
+                m_status = status;
+                m_linktypeid = linktypeid;                
         }
 
 		/**
@@ -110,6 +123,23 @@ public class LinkInterface extends RowStatus
 			return m_lastPollTime;
 		}
 
+		/**
+		 * <p>get_status</p>m
+		 *
+		 * @return a char.
+		 */
+		public char getStatus() {
+			return m_status;
+		}
+		
+        /**
+         */
+        public String getStatusString() {
+            if (statusMap.containsKey(m_status))
+            	return statusMap.get( new Character(m_status) );
+            return null;
+        }
+        
         public Integer getLinktypeId() {
         	return m_linktypeid;
         }

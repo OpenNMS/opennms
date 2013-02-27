@@ -28,13 +28,18 @@
 
 package org.opennms.web.element;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.opennms.netmgt.linkd.DbStpInterfaceEntry;
+
 
 /**
  * <p>StpInterface class.</p>
  *
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
  */
-public class StpInterface extends RowStatus
+public class StpInterface
 {
         int     m_nodeId;
         int     m_bridgeport;
@@ -48,6 +53,7 @@ public class StpInterface extends RowStatus
         String  m_stpdesignatedbridge;
 		String  m_stpdesignatedport;
         String  m_lastPollTime;
+        char    m_status;
         int		m_stprootnodeid;
         int		m_stpbridgenodeid;
 
@@ -62,19 +68,6 @@ public class StpInterface extends RowStatus
          * <li>{@link DbStpInterfaceEntry#STP_PORT_BROKEN}</li>
          * </ul>
          */ 
-        
-    	public static final int STP_PORT_DISABLED = 1;
-
-    	public static final int STP_PORT_BLOCKING = 2;
-
-    	public static final int STP_PORT_LISTENING = 3;
-
-    	public static final int STP_PORT_LEARNING = 4;
-
-    	public static final int STP_PORT_FORWARDING = 5;
-
-    	public static final int STP_PORT_BROKEN = 6;
-    	
         public static final String[] STP_PORT_STATUS = new String[] {
             null,         //0 (not a valid index)
             "Disabled",   //1
@@ -85,10 +78,19 @@ public class StpInterface extends RowStatus
             "Broken",     //6
           };
 
+        private static final Map<Character, String> statusMap = new HashMap<Character, String>();
+      	
+        static {
+            statusMap.put( DbStpInterfaceEntry.STATUS_ACTIVE, "Active" );
+            statusMap.put( DbStpInterfaceEntry.STATUS_UNKNOWN, "Unknown" );
+            statusMap.put( DbStpInterfaceEntry.STATUS_DELETED, "Deleted" );
+            statusMap.put( DbStpInterfaceEntry.STATUS_NOT_POLLED, "Not Active" );
+        }
+
+
         /* package-protected so only the NetworkElementFactory can instantiate */
         StpInterface()
         {
-        	super('K');
         }
 
         /* package-protected so only the NetworkElementFactory can instantiate */
@@ -108,20 +110,20 @@ public class StpInterface extends RowStatus
 	int 	stpbridgenodeid
 )
         {
-        	super(status);
-            m_nodeId = nodeId;
-            m_bridgeport = bridgeport;
-			m_ifindex = ifindex;
-			m_stpportstate = stpportstate;
-			m_stpportpathcost = stpportpathcost;
-			m_stpportdesignatedcost = stpportdesignatedcost;
-			m_stpvlan = stpvlan;
-            m_stpdesignatedbridge = stpdesignatedbridge;
-            m_stpdesignatedroot = stpdesignatedroot;
-			m_stpdesignatedport = stpdesignatedport;
-			m_lastPollTime = lastPollTime; 
-            m_stprootnodeid = stprootnodeid;
-            m_stpbridgenodeid = stpbridgenodeid;
+                m_nodeId = nodeId;
+                m_bridgeport = bridgeport;
+				m_ifindex = ifindex;
+				m_stpportstate = stpportstate;
+				m_stpportpathcost = stpportpathcost;
+				m_stpportdesignatedcost = stpportdesignatedcost;
+				m_stpvlan = stpvlan;
+                m_stpdesignatedbridge = stpdesignatedbridge;
+                m_stpdesignatedroot = stpdesignatedroot;
+				m_stpdesignatedport = stpdesignatedport;
+				m_lastPollTime = lastPollTime; 
+                m_status = status;
+                m_stprootnodeid = stprootnodeid;
+                m_stpbridgenodeid = stpbridgenodeid;
         }
 
         /**
@@ -172,6 +174,15 @@ public class StpInterface extends RowStatus
 		 */
 		public int get_nodeId() {
 			return m_nodeId;
+		}
+
+		/**
+		 * <p>get_status</p>
+		 *
+		 * @return a char.
+		 */
+		public char get_status() {
+			return m_status;
 		}
 
 		/**
@@ -237,7 +248,7 @@ public class StpInterface extends RowStatus
 		    try {
 		        return STP_PORT_STATUS[m_stpportstate];
 		    } catch (ArrayIndexOutOfBoundsException e) {
-		        return "Unknown";
+		        return STP_PORT_STATUS[DbStpInterfaceEntry.STP_PORT_DISABLED];
 		    }
 		}
 			
@@ -283,6 +294,15 @@ public class StpInterface extends RowStatus
 			this.m_ipaddr = m_ipaddr;
 		}
 		
+	    /**
+	     * <p>getStatusString</p>
+	     *
+	     * @return a {@link java.lang.String} object.
+	     */
+	    public String getStatusString() {
+	        return statusMap.get( new Character(m_status) );
+	    }
+
 	    /**
 	     * <p>getVlanColorIdentifier</p>
 	     *
