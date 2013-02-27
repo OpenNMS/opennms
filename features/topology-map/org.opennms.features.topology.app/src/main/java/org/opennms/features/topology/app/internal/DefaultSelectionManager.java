@@ -1,13 +1,11 @@
 package org.opennms.features.topology.app.internal;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 
+import org.opennms.features.topology.api.DefaultSelectionContext;
+import org.opennms.features.topology.api.SelectionContext;
 import org.opennms.features.topology.api.SelectionListener;
 import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.topo.EdgeRef;
@@ -15,104 +13,68 @@ import org.opennms.features.topology.api.topo.VertexRef;
 import org.slf4j.LoggerFactory;
 
 public class DefaultSelectionManager implements SelectionManager {
-	private final Set<VertexRef> m_selectedVertices = new HashSet<VertexRef>();
-	private final Set<EdgeRef> m_selectedEdges = new HashSet<EdgeRef>();
-	private List<SelectionListener> m_listeners = new CopyOnWriteArrayList<SelectionListener>();
+	private Set<SelectionListener> m_listeners = new CopyOnWriteArraySet<SelectionListener>();
 	private final Set<SelectionListener> m_addedListeners = new CopyOnWriteArraySet<SelectionListener>();
+	private final SelectionContext m_context = new DefaultSelectionContext();
 
-	public DefaultSelectionManager() {
+	@Override
+	public boolean deselectAll() {
+		boolean retval = m_context.deselectAll();
+		if (retval) {
+			selectionChanged(m_context);
+		}
+		return retval;
 	}
 
 	@Override
-	public boolean isVertexRefSelected(VertexRef vertexRef) {
-		return m_selectedVertices.contains(vertexRef);
-	}
-
-	private void setVertexRefSelected(VertexRef ref, boolean selected) {
-		if (selected) {
-			m_selectedVertices.add(ref);
-		} else {
-			m_selectedVertices.remove(ref);
+	public boolean deselectVertexRefs(Collection<? extends VertexRef> vertexRefs) {
+		boolean retval = m_context.deselectVertexRefs(vertexRefs);
+		if (retval) {
+			selectionChanged(m_context);
 		}
-	}
-
-	@Override
-	public boolean isEdgeRefSelected(EdgeRef edgeRef) {
-		return m_selectedEdges.contains(edgeRef);
-	}
-
-	private void setEdgeRefSelected(EdgeRef edgeRef, boolean selected) {
-		if (selected) {
-			m_selectedEdges.add(edgeRef);
-		} else {
-			m_selectedEdges.remove(edgeRef);
-		}
+		return retval;
 	}
 
 	@Override
 	public Collection<VertexRef> getSelectedVertexRefs() {
-		return Collections.unmodifiableSet(m_selectedVertices);
+		return m_context.getSelectedVertexRefs();
 	}
-	
+
 	@Override
-	public void selectVertexRefs(Collection<? extends VertexRef> vertexRefs) {
-	    int selectionSize = getSelectedVertexRefs().size();
-	    for(VertexRef vertexRef : vertexRefs) {
-			setVertexRefSelected(vertexRef, true);
+	public boolean isEdgeRefSelected(EdgeRef edgeRef) {
+		return m_context.isEdgeRefSelected(edgeRef);
+	}
+
+	@Override
+	public boolean isVertexRefSelected(VertexRef vertexRef) {
+		return m_context.isVertexRefSelected(vertexRef);
+	}
+
+	@Override
+	public boolean selectVertexRefs(Collection<? extends VertexRef> vertexRefs) {
+		boolean retval = m_context.selectVertexRefs(vertexRefs);
+		if (retval) {
+			selectionChanged(m_context);
 		}
-	    int selectionSizeAfterRemoval = getSelectedVertexRefs().size();
-	    
-	    if(selectionSize != selectionSizeAfterRemoval) {
-            fireSelectionChanged();
-        }
+		return retval;
 	}
 
 	@Override
-	public void deselectVertexRefs(Collection<? extends VertexRef> vertexRefs) {
-		int selectionSize = getSelectedVertexRefs().size();
-	    for(VertexRef vertexRef : vertexRefs) {
-			setVertexRefSelected(vertexRef, false);
+	public boolean setSelectedEdgeRefs(Collection<? extends EdgeRef> edgeRefs) {
+		boolean retval = m_context.setSelectedEdgeRefs(edgeRefs);
+		if (retval) {
+			selectionChanged(m_context);
 		}
-		int selectionSizeAfterRemoval = getSelectedVertexRefs().size();
-		
-		if(selectionSize != selectionSizeAfterRemoval) {
-		    fireSelectionChanged();
+		return retval;
+	}
+
+	@Override
+	public boolean setSelectedVertexRefs(Collection<? extends VertexRef> vertexRefs) {
+		boolean retval = m_context.setSelectedVertexRefs(vertexRefs);
+		if (retval) {
+			selectionChanged(m_context);
 		}
-	}
-
-	@Override
-	public void deselectAll() {
-		int vertSelectionSize = m_selectedVertices.size();
-		int edgeSelectionSize = m_selectedEdges.size();
-		
-	    doDeselectAll();
-		
-	    if(vertSelectionSize > m_selectedVertices.size() || edgeSelectionSize > m_selectedEdges.size()) {
-	        fireSelectionChanged();
-	    }
-	}
-
-	private void doDeselectAll() {
-		m_selectedEdges.clear();
-		m_selectedVertices.clear();
-	}
-
-	@Override
-	public void setSelectedVertexRefs(Collection<? extends VertexRef> vertexRefs) {
-		doDeselectAll();
-		
-		selectVertexRefs(vertexRefs);
-	}
-
-	@Override
-	public void setSelectedEdgeRefs(Collection<? extends EdgeRef> edgeRefs) {
-		doDeselectAll();
-		
-		for(EdgeRef edgeRef : edgeRefs) {
-			setEdgeRefSelected(edgeRef, true);
-		}
-		
-		fireSelectionChanged();
+		return retval;
 	}
 
 	@Override
@@ -121,7 +83,7 @@ public class DefaultSelectionManager implements SelectionManager {
 	}
 	
 	@Override
-	public void setSelectionListeners(List<SelectionListener> listeners) {
+	public void setSelectionListeners(Set<SelectionListener> listeners) {
 		m_addedListeners.clear();
 		m_listeners = listeners;
 	}
@@ -134,15 +96,15 @@ public class DefaultSelectionManager implements SelectionManager {
 		}
 	}
 
-	protected void fireSelectionChanged() {
+	@Override
+	public void selectionChanged(SelectionContext selectionContext) {
 		for(SelectionListener listener : m_listeners) {
 			LoggerFactory.getLogger(this.getClass()).debug("Invoking selectionChanged() on {}", listener);
-			listener.selectionChanged(this);
+			listener.selectionChanged(selectionContext);
 		}
 		for(SelectionListener listener : m_addedListeners) {
 			LoggerFactory.getLogger(this.getClass()).debug("Invoking selectionChanged() on {}", listener);
-			listener.selectionChanged(this);
+			listener.selectionChanged(selectionContext);
 		}
 	}
-
 }

@@ -40,12 +40,13 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import org.opennms.features.topology.api.BoundingBox;
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
-import org.opennms.features.topology.api.GraphContainer.ChangeListener;
 import org.opennms.features.topology.api.MapViewManager;
 import org.opennms.features.topology.api.MapViewManagerListener;
 import org.opennms.features.topology.api.Point;
+import org.opennms.features.topology.api.SelectionContext;
 import org.opennms.features.topology.api.SelectionListener;
 import org.opennms.features.topology.api.SelectionManager;
+import org.opennms.features.topology.api.GraphContainer.ChangeListener;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.GraphVisitor;
 import org.opennms.features.topology.api.topo.Vertex;
@@ -92,8 +93,8 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
 		m_selectionManager.addSelectionListener(new SelectionListener() {
 			
 			@Override
-			public void selectionChanged(SelectionManager selectionManager) {
-			    computeBoundsForSelected(selectionManager);
+			public void selectionChanged(SelectionContext selectionContext) {
+			    computeBoundsForSelected(selectionContext);
 			}
 			
 		});
@@ -363,10 +364,10 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
         }
     }
 
-    private void computeBoundsForSelected(SelectionManager selectionManager) {
-        if(selectionManager.getSelectedVertexRefs().size() > 0) {
+    private void computeBoundsForSelected(SelectionContext selectionContext) {
+        if(selectionContext.getSelectedVertexRefs().size() > 0) {
             Collection<? extends Vertex> visible = m_graphContainer.getGraph().getDisplayVertices();
-            Collection<VertexRef> selected = selectionManager.getSelectedVertexRefs();
+            Collection<VertexRef> selected = selectionContext.getSelectedVertexRefs();
             Collection<VertexRef> vRefs = new ArrayList<VertexRef>();
             for(VertexRef vRef : selected) {
                 if(visible.contains(vRef)) {

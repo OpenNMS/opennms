@@ -36,7 +36,9 @@ import org.opennms.features.topology.api.HistoryManager;
 import org.opennms.features.topology.api.IViewContribution;
 import org.opennms.features.topology.api.MapViewManager;
 import org.opennms.features.topology.api.MapViewManagerListener;
+import org.opennms.features.topology.api.SelectionListener;
 import org.opennms.features.topology.api.SelectionManager;
+import org.opennms.features.topology.api.SelectionNotifier;
 import org.opennms.features.topology.api.WidgetContext;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.app.internal.TopoContextMenu.TopoContextMenuItem;
@@ -53,12 +55,14 @@ import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.Slider;
+import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UriFragmentUtility;
 import com.vaadin.ui.VerticalLayout;
@@ -71,8 +75,7 @@ import com.vaadin.ui.UriFragmentUtility.FragmentChangedEvent;
 import com.vaadin.ui.UriFragmentUtility.FragmentChangedListener;
 
 public class TopologyWidgetTestApplication extends Application implements CommandUpdateListener, MenuItemUpdateListener, ContextMenuHandler, WidgetUpdateListener, WidgetContext, FragmentChangedListener, GraphContainer.ChangeListener, MapViewManagerListener, VertexUpdateListener {
-    
-    
+
 	private static final long serialVersionUID = 6837501987137310938L;
 
 	private static final String LABEL_PROPERTY = "label";
@@ -291,7 +294,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
                 // Split the screen 70% top, 30% bottom
                 m_bottomLayoutBar.setSplitPosition(70, Sizeable.UNITS_PERCENTAGE);
                 m_bottomLayoutBar.setSizeFull();
-                m_bottomLayoutBar.setSecondComponent(widgetManager.getTabSheet(this));
+                m_bottomLayoutBar.setSecondComponent(getTabSheet(widgetManager, this));
             }
 
             m_layout.removeAllComponents();
@@ -304,6 +307,40 @@ public class TopologyWidgetTestApplication extends Application implements Comman
             getMainWindow().addComponent(m_contextMenu);
         }
     }
+
+    /**
+     * Gets a {@link TabSheet} view for all widgets in this manager.
+     * 
+     * @return TabSheet
+     */
+    private TabSheet getTabSheet(WidgetManager manager, WidgetContext widgetContext) {
+        TabSheet tabSheet = new TabSheet();
+        tabSheet.setSizeFull();
+
+        for(IViewContribution viewContrib : manager.getWidgets()) {
+            // Create a new view instance
+            Component view = viewContrib.getView(widgetContext);
+            try {
+                m_selectionManager.addSelectionListener((SelectionListener)view);
+            } catch (ClassCastException e) {
+                
+            }
+            try {
+                ((SelectionNotifier)view).addSelectionListener(m_selectionManager);
+            } catch (ClassCastException e) {
+                
+            }
+            if(viewContrib.getIcon() != null) {
+                tabSheet.addTab(view, viewContrib.getTitle(), viewContrib.getIcon());
+            } else {
+                tabSheet.addTab(view, viewContrib.getTitle());
+            }
+            view.setSizeFull();
+        }
+
+        return tabSheet;
+    }
+    
 
     /**
      * Creates the west area layout including the

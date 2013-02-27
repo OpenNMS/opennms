@@ -1246,6 +1246,18 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.opennms.osgi.features.topology</groupId>
+        <artifactId>opennms-topology-api</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.osgi.features.topology</groupId>
+        <artifactId>vaadin</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+      </dependency>
+      <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-map-provisioning-adapter</artifactId>
         <version>${project.version}</version>
