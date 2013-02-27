@@ -26,6 +26,24 @@
     </storageStrategy>
   </resourceType>
 
+  <resourceType name="ejnPgwSharedIpPool" label="GGSN Shared IP Pool" resourceLabel="${pgwSharedPoolName}">
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+    <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
+      <parameter key="sibling-column-name" value="pgwSharedPoolName" />
+    </storageStrategy>
+  </resourceType>
+
+  <resourceType name="ejnGgsnRadiusAuthIndex" label="GGSN RADIUS Auth Servers" resourceLabel="RADIUS ${index}: ${ggsnApnRadAthSvrIp}">
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+    <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
+      <parameter key="sibling-column-name" value="ggsnApnRadAthSvrIp" />
+    </storageStrategy>
+  </resourceType>
+
+      <group name="ejn-ggsn-radius" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.10.1.1.2" instance="ejnGgsnRadiusAuthIndex" alias="ggsnApnRadAthSvrIp" type="string" />
+      </group>
+
       <group name="ejn-ggsn" ifType="ignore">
         <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.1.3.3.1" instance="0" alias="ggsnPdpCreateAtmpt" type="counter" />
         <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.1.3.3.2" instance="0" alias="ggsnPdpDeleteAtmpt" type="counter" />
@@ -46,7 +64,7 @@
         <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.1.3.25" instance="0" alias="ggsnControlLoad" type="gauge" />
         <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.1.3.26" instance="0" alias="ggsnPayloadLoad" type="gauge" />
         <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.1.3.32" instance="0" alias="ggsnL2tpActTnls" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.1.3.33" instance="0" alias="ggsnL2tpActSess" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.1.3.34" instance="0" alias="ggsnL2tpActSess" type="gauge" />
         <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.1.3.36" instance="0" alias="ggsnChgCdrsSucc" type="counter" />
         <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.1.3.37" instance="0" alias="ggsnChgCdrsFail" type="counter" />
         <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.1.3.43" instance="0" alias="ggsnPdpsTClassConv" type="gauge" />
@@ -67,8 +85,12 @@
         <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.1.5.1.59" instance="ejnGgsnApnIndex" alias="ApnRadAuthFail" type="counter" />
         <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.1.5.1.63" instance="ejnGgsnApnIndex" alias="ApnFreePoolIps" type="integer" />
         <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.1.5.1.64" instance="ejnGgsnApnIndex" alias="ApnQuarPoolIps" type="integer" />
-        <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.7.1.11.1.3" instance="ejnGgsnApnIndex" alias="ApnFbcCcasStrtReq" type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.7.1.11.1.4" instance="ejnGgsnApnIndex" alias="ApnFbcCcasStrtFail" type="counter" />
+      </group>
+
+      <group name="ejn-ggsn-ippool" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.11.1.2" instance="ejnPgwSharedIpPool" alias="pgwSharedPoolName" type="string" />
+        <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.11.1.3" instance="ejnPgwSharedIpPool" alias="pgwSharedPoolFreeIP" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.11.1.4" instance="ejnPgwSharedIpPool" alias="pgwSharedPoolQuarIP" type="gauge" />
       </group>
 
       <group name="ejn-ggsn-gtpc" ifType="all">
@@ -101,11 +123,13 @@
       </group>
 
 
-      <systemDef name="EJN Mobile IP GGSN">
+      <systemDef name="EJN Mobile IP GGSN M120 Chassis">
         <sysoid>.1.3.6.1.4.1.2636.1.1.1.2.18</sysoid>
         <collect>
           <includeGroup>ejn-ggsn</includeGroup>
           <includeGroup>ejn-ggsn-apn</includeGroup>
+          <includeGroup>ejn-ggsn-ippool</includeGroup>
+          <includeGroup>ejn-ggsn-radius</includeGroup>
           <includeGroup>ejn-ggsn-gtpc</includeGroup>
           <includeGroup>ejn-ggsn-gtpu</includeGroup>
         </collect>
