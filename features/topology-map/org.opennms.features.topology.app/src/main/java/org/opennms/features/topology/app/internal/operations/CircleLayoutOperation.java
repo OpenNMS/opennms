@@ -35,9 +35,11 @@ public class CircleLayoutOperation extends LayoutOperation {
 
 	public CircleLayoutOperation() {
 		super(new LayoutFactory() {
+		    
+		    private final CircleLayoutAlgorithm m_layoutAlgorithm = new CircleLayoutAlgorithm();
 			@Override
 			public LayoutAlgorithm getLayoutAlgorithm() {
-				return new CircleLayoutAlgorithm();
+				return m_layoutAlgorithm;
 			}
 		});
 	}
