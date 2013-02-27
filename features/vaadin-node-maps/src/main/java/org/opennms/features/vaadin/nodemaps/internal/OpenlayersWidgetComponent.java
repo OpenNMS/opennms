@@ -35,6 +35,7 @@ import java.util.Map;
 
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.features.geocoder.Coordinates;
 import org.opennms.features.geocoder.GeocoderException;
 import org.opennms.features.geocoder.GeocoderService;
@@ -62,8 +63,8 @@ import com.vaadin.ui.VerticalLayout;
 public class OpenlayersWidgetComponent extends VerticalLayout {
     public static final class NodeEntry {
 
-        private Float m_latitude;
         private Float m_longitude;
+        private Float m_latitude;
         private Integer m_nodeId;
         private String m_nodeLabel;
         private String m_foreignSource;
@@ -73,14 +74,23 @@ public class OpenlayersWidgetComponent extends VerticalLayout {
         private int m_unackedCount = 0;
 
         public NodeEntry(final OnmsNode node) {
-            final String[] coordinates = node.getAssetRecord().getGeolocation().getCoordinates().split(",");
+            final OnmsAssetRecord assetRecord = node.getAssetRecord();
+            if (assetRecord != null && assetRecord.getGeolocation() != null) {
+                final String coordinateString = assetRecord.getGeolocation().getCoordinates();
+                final Coordinates coordinates;
+                try {
+                    coordinates = new Coordinates(coordinateString);
+                    m_longitude = coordinates.getLongitude();
+                    m_latitude  = coordinates.getLatitude();
+                } catch (final GeocoderException e) {
+                    LogUtils.debugf(this, "failed to parse coordinates: %s", coordinateString);
+                }
+            }
 
             m_nodeId        = node.getId();
             m_nodeLabel     = node.getLabel();
             m_foreignSource = node.getForeignSource();
             m_foreignId     = node.getForeignId();
-            m_latitude      = Float.valueOf(coordinates[0]);
-            m_longitude     = Float.valueOf(coordinates[1]);
 
             if (node.getPrimaryInterface() != null) {
                 m_ipAddress = InetAddressUtils.str(node.getPrimaryInterface().getIpAddress());
@@ -94,9 +104,9 @@ public class OpenlayersWidgetComponent extends VerticalLayout {
         public void visit(final PaintTarget target) throws PaintException {
             target.startTag("node-" + m_nodeId.toString());
 
-            // latitude/longitude, as floats
-            target.addAttribute("latitude", m_latitude);
+            // longitude/latitude, as floats
             target.addAttribute("longitude", m_longitude);
+            target.addAttribute("latitude", m_latitude);
 
             // everything else gets sent as basic string properties
             target.addAttribute("nodeId", m_nodeId.toString());
@@ -214,7 +224,10 @@ public class OpenlayersWidgetComponent extends VerticalLayout {
 
             lastId = nodeId;
         }
-        nodes.get(lastId).setUnackedCount(unackedCount);
+
+        if (lastId != -1) {
+            nodes.get(lastId).setUnackedCount(unackedCount);
+        }
 
         m_log.debug("pushing nodes to the UI");
         target.startTag("nodes");
@@ -234,10 +247,15 @@ public class OpenlayersWidgetComponent extends VerticalLayout {
         });
     }
 
+    /**
+     * Given an address, return the coordinates for that address.
+     * @param address the complete address, in a format a geolocator can understand
+     * @return the coordinates for the given address, in "longitude,latitude" format
+     */
     private String getCoordinates(final String address) {
         try {
             final Coordinates coordinates = m_geocoderService.getCoordinates(address);
-            return coordinates.getLatitude() + "," + coordinates.getLongitude();
+            return coordinates.getLongitude() + "," + coordinates.getLatitude();
         } catch (final GeocoderException e) {
             m_log.debug("Failed to find coordinates for address {}, returning {}", address, BAD_COORDINATES);
             return BAD_COORDINATES;

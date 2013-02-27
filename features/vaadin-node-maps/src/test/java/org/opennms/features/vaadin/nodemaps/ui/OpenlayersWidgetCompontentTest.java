@@ -4,8 +4,8 @@ import static org.junit.Assert.assertEquals;
 
 import org.easymock.EasyMock;
 import org.junit.Before;
-import org.junit.Test;
 import org.junit.Ignore;
+import org.junit.Test;
 import org.opennms.features.geocoder.Coordinates;
 import org.opennms.features.geocoder.GeocoderService;
 import org.opennms.features.vaadin.nodemaps.internal.OpenlayersWidgetComponent;
@@ -23,6 +23,7 @@ public class OpenlayersWidgetCompontentTest {
     private AssetRecordDao m_assetDao;
     private AlarmDao m_alarmDao;
     private GeocoderService m_geocoder;
+    @SuppressWarnings("unused")
     private OpenlayersWidgetComponent m_component;
 
     @Before
@@ -52,14 +53,14 @@ public class OpenlayersWidgetCompontentTest {
         
         assertEquals("220 Chatham Business Dr., Pittsboro, NC 27312", geo.asAddressString());
 
-        EasyMock.expect(m_geocoder.getCoordinates(geo.asAddressString())).andReturn(new Coordinates(1.0f, -1.0f)).times(1);
+        EasyMock.expect(m_geocoder.getCoordinates(geo.asAddressString())).andReturn(new Coordinates(-1.0f, 1.0f)).times(1);
         final PaintTarget target = EasyMock.createMock(PaintTarget.class);
 
         m_assetDao.saveOrUpdate(EasyMock.isA(OnmsAssetRecord.class));
 
         target.startTag(EasyMock.eq("1"));
-        target.addAttribute(EasyMock.eq("latitude"), EasyMock.eq("1.0"));
         target.addAttribute(EasyMock.eq("longitude"), EasyMock.eq("-1.0"));
+        target.addAttribute(EasyMock.eq("latitude"), EasyMock.eq("1.0"));
         target.endTag(EasyMock.eq("1"));
         
         EasyMock.replay(m_nodeDao, m_assetDao, m_geocoder, target);

@@ -68,10 +68,14 @@
       <groupId>org.opennms.features.geocoder</groupId>
       <artifactId>org.opennms.features.geocoder.api</artifactId>
     </dependency>
-      <dependency>
-        <groupId>org.apache.httpcomponents</groupId>
-        <artifactId>httpclient</artifactId>
-      </dependency>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
+    </dependency>
     <dependency>
       <groupId>net.simon04.jelementtree</groupId>
       <artifactId>jelementtree</artifactId>

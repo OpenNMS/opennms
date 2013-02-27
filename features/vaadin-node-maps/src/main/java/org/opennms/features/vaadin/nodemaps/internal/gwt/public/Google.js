@@ -61,21 +61,21 @@ L.Google = L.Class.extend({
 	},
 
 	_initContainer: function() {
-		var tilePane = this._map._container
-			first = tilePane.firstChild;
+		var tilePane = this._map._panes.tilePane;
 
-		if (!this._container) {
-			this._container = L.DomUtil.create('div', 'leaflet-google-layer leaflet-top leaflet-left');
-			this._container.id = "_GMapContainer";
-		}
+		if (!this._container || tilePane.empty) {
+			this._container = L.DomUtil.create('div', 'leaflet-google-layer leaflet-layer');
 
-		if (true) {
-			tilePane.insertBefore(this._container, first);
+			this._updateZIndex();
 
+			tilePane.appendChild(this._container);
 			this.setOpacity(this.options.opacity);
-			var size = this._map.getSize();
-			this._container.style.width = size.x + 'px';
-			this._container.style.height = size.y + 'px';
+		}
+	},
+
+	_updateZIndex: function () {
+		if (this._container && this.options.zIndex !== undefined) {
+			this._container.style.zIndex = this.options.zIndex;
 		}
 	},
 
@@ -129,9 +129,7 @@ L.Google = L.Class.extend({
 
 	_resize: function() {
 		var size = this._map.getSize();
-		if (this._container.style.width == size.x &&
-		    this._container.style.height == size.y)
-			return;
+		if (this._container.style.width == size.x && this._container.style.height == size.y) return;
 		this._container.style.width = size.x + 'px';
 		this._container.style.height = size.y + 'px';
 		google.maps.event.trigger(this._google, "resize");
