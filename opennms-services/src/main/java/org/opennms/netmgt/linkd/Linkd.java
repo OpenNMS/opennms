@@ -31,9 +31,8 @@ package org.opennms.netmgt.linkd;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 import static org.opennms.core.utils.InetAddressUtils.str;
 
-import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
-import java.sql.SQLException;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -54,6 +53,7 @@ import org.opennms.netmgt.config.linkd.Package;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.linkd.scheduler.ReadyRunnable;
 import org.opennms.netmgt.linkd.scheduler.Scheduler;
+import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -148,13 +148,8 @@ public class Linkd extends AbstractServiceDaemon {
         m_newSuspectEventsIpAddr.add(addr("127.0.0.1"));
         m_newSuspectEventsIpAddr.add(addr("0.0.0.0"));
 
-        try {
-            m_nodes = m_queryMgr.getSnmpNodeList();
-            m_queryMgr.updateDeletedNodes();
-        } catch (SQLException e) {
-            LogUtils.errorf(this, e, "SQL exception executing on database");
-            throw new UndeclaredThrowableException(e);
-        }
+        m_nodes = m_queryMgr.getSnmpNodeList();
+        m_queryMgr.updateDeletedNodes();
 
         Assert.notNull(m_nodes);
         scheduleCollection();
@@ -489,21 +484,14 @@ public class Linkd extends AbstractServiceDaemon {
         LogUtils.debugf(this,
                         "scheduleNodeCollection: Loading node %d from database",
                         nodeid);
-        try {
-            node = m_queryMgr.getSnmpNode(nodeid);
-            if (node == null) {
-                LogUtils.warnf(this,
-                               "scheduleNodeCollection: Failed to get linkable node from database with ID %d. Exiting",
-                               nodeid);
-                return false;
-            }
-        } catch (final SQLException sqlE) {
-            LogUtils.errorf(this,
-                            sqlE,
-                            "scheduleNodeCollection: SQL Exception while syncing node object with ID %d with database information.",
-                            nodeid);
+        node = m_queryMgr.getSnmpNode(nodeid);
+        if (node == null) {
+            LogUtils.warnf(this,
+                           "scheduleNodeCollection: Failed to get linkable node from database with ID %d. Exiting",
+                           nodeid);
             return false;
         }
+
         synchronized (m_nodes) {
             LogUtils.debugf(this, "adding node %s to the collection", node);
             m_nodes.add(node);
@@ -514,7 +502,6 @@ public class Linkd extends AbstractServiceDaemon {
     }
 
     public boolean runSingleCollection(final int nodeId) {
-        try {
             final LinkableNode node = m_queryMgr.getSnmpNode(nodeId);
 
             for (final SnmpCollection snmpColl : getSnmpCollections(nodeId,
@@ -527,18 +514,10 @@ public class Linkd extends AbstractServiceDaemon {
                 link.setScheduler(m_scheduler);
                 link.run();
             }
-
             return true;
-        } catch (final SQLException e) {
-            LogUtils.debugf(this,
-                            "runSingleCollection: unable to get linkable node from database with ID %d",
-                            nodeId);
-        }
-        return false;
     }
 
     public boolean runSingleSnmpCollection(final int nodeId) {
-        try {
             final LinkableNode node = m_queryMgr.getSnmpNode(nodeId);
 
             for (final SnmpCollection snmpColl : getSnmpCollections(nodeId,
@@ -549,28 +528,14 @@ public class Linkd extends AbstractServiceDaemon {
             }
 
             return true;
-        } catch (final SQLException e) {
-            LogUtils.debugf(this,
-                            "runSingleSnmpCollection: unable to get linkable node from database with ID %d",
-                            nodeId);
-        }
-        return false;
     }
 
     public boolean runSingleLinkDiscovery(final String packageName) {
-        try {
-
             final DiscoveryLink link = getDiscoveryLink(packageName);
             link.setScheduler(m_scheduler);
             link.run();
 
             return true;
-        } catch (final Exception e) {
-            LogUtils.debugf(this,
-                            "runSingleLinkDiscovery: got exception %s: ",
-                            e.getLocalizedMessage());
-        }
-        return false;
     }
 
     void wakeUpNodeCollection(int nodeid) {
@@ -611,13 +576,7 @@ public class Linkd extends AbstractServiceDaemon {
                         "deleteNode: deleting LinkableNode for node %s",
                         nodeid);
 
-        try {
-            m_queryMgr.update(nodeid, QueryManager.ACTION_DELETE);
-        } catch (SQLException sqlE) {
-            LogUtils.errorf(this,
-                            sqlE,
-                            "deleteNode: SQL Exception while syncing node object with database information.");
-        }
+            m_queryMgr.update(nodeid, StatusType.DELETED);
 
         LinkableNode node = removeNode(nodeid);
 
@@ -666,14 +625,9 @@ public class Linkd extends AbstractServiceDaemon {
                         "deleteInterface: marking table entries as deleted for node %d with IP address %s and ifIndex %s",
                         nodeid, ipAddr, (ifIndex > -1 ? "" + ifIndex : "N/A"));
 
-        try {
             m_queryMgr.updateForInterface(nodeid, ipAddr, ifIndex,
-                                          QueryManager.ACTION_DELETE);
-        } catch (SQLException sqlE) {
-            LogUtils.errorf(this, sqlE,
-                            "deleteInterface: SQL Exception while updating database.");
-        }
-
+                                          StatusType.DELETED);
+   
         // database changed need reload packageiplist
         m_linkdConfig.update();
 
@@ -684,14 +638,8 @@ public class Linkd extends AbstractServiceDaemon {
                         "suspendNodeCollection: suspend collection LinkableNode for node %d",
                         nodeid);
 
-        try {
-            m_queryMgr.update(nodeid, QueryManager.ACTION_UPTODATE);
-        } catch (SQLException sqlE) {
-            LogUtils.errorf(this,
-                            sqlE,
-                            "suspendNodeCollection: SQL Exception while syncing node object with database information.");
-        }
-
+            m_queryMgr.update(nodeid, StatusType.INACTIVE);
+   
         LinkableNode node = getNode(nodeid);
 
         if (node == null) {
@@ -754,15 +702,7 @@ public class Linkd extends AbstractServiceDaemon {
         node = new LinkableNode(node.getNodeId(),
                                 node.getSnmpPrimaryIpAddr(), node.getSysoid());
 
-        try {
-            node = m_queryMgr.storeSnmpCollection(node, snmpcoll);
-        } catch (SQLException e) {
-            LogUtils.errorf(this,
-                            e,
-                            "Failed to save on db snmpcollection/package: %s/%s",
-                            snmpcoll.getPackageName(), snmpcoll.getInfo());
-            return;
-        }
+        node = m_queryMgr.storeSnmpCollection(node, snmpcoll);
         if (node != null) {
             synchronized (m_nodes) {
                 m_nodes.add(node);
@@ -779,14 +719,7 @@ public class Linkd extends AbstractServiceDaemon {
      */
     void updateDiscoveryLinkCollection(final DiscoveryLink discover) {
 
-        try {
-            m_queryMgr.storeDiscoveryLink(discover);
-        } catch (SQLException e) {
-            LogUtils.errorf(this,
-                            e,
-                            "Failed to save discoverylink on database for package: %s",
-                            discover.getPackageName());
-        }
+        m_queryMgr.storeDiscoveryLink(discover);
     }
 
     /**

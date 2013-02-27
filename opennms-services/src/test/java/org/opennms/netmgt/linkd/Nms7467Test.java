@@ -880,7 +880,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         
         HibernateEventWriter db = (HibernateEventWriter)m_linkd.getQueryManager();
         
-        final int nodeid = db.getNodeidFromIp(null, InetAddress.getByName(CISCO_C870_IP)).get(0);
+        final int nodeid = db.getNodeidFromIp(InetAddress.getByName(CISCO_C870_IP)).get(0);
         assertEquals(m_nodeDao.findByForeignId("linkd", CISCO_C870_NAME).getId().intValue(), nodeid);
     }
     
@@ -898,8 +898,8 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         assertEquals("2/44", ciscosw.getSnmpInterfaceWithIfIndex(52).getIfName());
 
         HibernateEventWriter db = (HibernateEventWriter)m_linkd.getQueryManager();
-        assertEquals(3, db.getIfIndexByName(null, ciscorouter.getId(), "FastEthernet2"));
-        assertEquals(52,db.getIfIndexByName(null, ciscosw.getId(), "2/44"));
+        assertEquals(3, db.getIfIndexByName(ciscorouter.getId(), "FastEthernet2"));
+        assertEquals(52,db.getIfIndexByName(ciscosw.getId(), "2/44"));
         
     }
     /*

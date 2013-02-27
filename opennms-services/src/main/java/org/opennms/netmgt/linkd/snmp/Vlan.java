@@ -31,6 +31,7 @@ package org.opennms.netmgt.linkd.snmp;
 import org.opennms.netmgt.capsd.snmp.NamedSnmpVar;
 import org.opennms.netmgt.capsd.snmp.SnmpStore;
 import org.opennms.netmgt.model.OnmsVlan;
+import org.opennms.netmgt.model.OnmsVlan.VlanType;
 import org.opennms.netmgt.snmp.SnmpResult;
 
 /**
@@ -98,7 +99,7 @@ public abstract class Vlan extends SnmpStore {
     abstract public Integer getVlanType();
     
     public OnmsVlan getOnmsVlan() {
-    	return new OnmsVlan(getVlanIndex(),getVlanName(),getVlanStatus(),getVlanType());
+    	return new OnmsVlan(getVlanIndex(),getVlanName(),getVlanStatus(),VlanType.get(getVlanType()));
     }
     
 }

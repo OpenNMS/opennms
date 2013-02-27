@@ -32,24 +32,25 @@ import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Timestamp;
+
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.hibernate.criterion.Restrictions;
-import org.opennms.core.utils.DBUtils;
+
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
+
 import org.opennms.netmgt.capsd.snmp.SnmpStore;
 import org.opennms.netmgt.dao.AtInterfaceDao;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.SnmpInterfaceDao;
+
 import org.opennms.netmgt.linkd.snmp.CdpCacheTableEntry;
 import org.opennms.netmgt.linkd.snmp.Dot1dBaseGroup;
 import org.opennms.netmgt.linkd.snmp.Dot1dBasePortTableEntry;
@@ -64,10 +65,13 @@ import org.opennms.netmgt.linkd.snmp.LldpRemTableEntry;
 import org.opennms.netmgt.linkd.snmp.OspfNbrTableEntry;
 import org.opennms.netmgt.linkd.snmp.QBridgeDot1dTpFdbTableEntry;
 import org.opennms.netmgt.linkd.snmp.Vlan;
+
+import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.netmgt.model.OnmsAtInterface;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsIpRouteInterface;
+import org.opennms.netmgt.model.OnmsIpRouteInterface.RouteType;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.OnmsStpInterface;
@@ -75,42 +79,6 @@ import org.opennms.netmgt.model.OnmsStpNode;
 import org.opennms.netmgt.model.OnmsVlan;
 
 public abstract class AbstractQueryManager implements QueryManager {
-
-	/**
-	 * The character returned if the entry is active
-	 */
-	public static final char STATUS_ACTIVE = 'A';
-
-	/**
-	 * The character returned if the entry is not active
-	 * means last polled
-	 */
-	public static final char STATUS_NOT_POLLED = 'N';
-
-	/**
-	 * It stats that node is deleted
-	 * The character returned if the node is deleted
-	 */
-	public static final char STATUS_DELETED = 'D';
-
-	/**
-	 * The character returned if the entry type is unset/unknown.
-	 */
-	public static final char STATUS_UNKNOWN = 'K';
-
-    public static final int VLAN_TYPE_UNKNOWN = 0;
-    public static final int VLAN_TYPE_ETHERNET = 1;
-    public static final int VLAN_TYPE_FDDI = 2;
-    public static final int VLAN_TYPE_TOKEN_RING = 3;
-    public static final int VLAN_TYPE_FDDINET = 4;
-    public static final int VLAN_TYPE_TRNET = 5;
-    public static final int VLAN_TYPE_DEPRECATED = 6;
-
-    public static final int VLAN_STATUS_UNKNOWN = 0;
-    public static final int VLAN_STATUS_OPERATIONAL = 1;
-    public static final int VLAN_STATUS_SUSPENDED = 2;
-    public static final int VLAN_STATUS_MTU_TOO_BIG_FOR_DEVICE = 3;
-    public static final int VLAN_STATUS_MTU_TOO_BIG_FOR_TRUNK = 4;
 
     protected Linkd m_linkd;
 
@@ -136,35 +104,35 @@ public abstract class AbstractQueryManager implements QueryManager {
     
     public abstract SnmpInterfaceDao getSnmpInterfaceDao();
 
-    protected abstract int getIfIndexByName(Connection dbConn, int targetCdpNodeId, String cdpTargetDevicePort) throws SQLException;
+    protected abstract int getIfIndexByName(int targetCdpNodeId, String cdpTargetDevicePort);
 
-    protected abstract List<Integer> getNodeidFromIp(Connection dbConn, InetAddress cdpTargetIpAddr) throws SQLException;
+    protected abstract List<Integer> getNodeidFromIp(InetAddress cdpTargetIpAddr);
 
-    protected abstract RouterInterface getNodeidMaskFromIp(Connection dbConn, InetAddress nexthop) throws SQLException;
+    protected abstract RouterInterface getNodeidMaskFromIp(InetAddress nexthop);
 
-    protected abstract RouterInterface getNodeFromIp(Connection dbConn, InetAddress nexthop) throws SQLException;
+    protected abstract RouterInterface getNodeFromIp(InetAddress nexthop);
 
-    protected abstract int getSnmpIfType(Connection dbConn, int nodeId, Integer ifindex) throws SQLException;
+    protected abstract int getSnmpIfType(int nodeId, Integer ifindex);
 
-    protected abstract void saveIpRouteInterface(final Connection dbConn, OnmsIpRouteInterface ipRouteInterface) throws SQLException;
+    protected abstract void saveIpRouteInterface(OnmsIpRouteInterface ipRouteInterface);
 
-    protected abstract void saveVlan(final Connection dbConn, final OnmsVlan vlan) throws SQLException;
+    protected abstract void saveVlan(final OnmsVlan vlan);
 
-    protected abstract void saveStpNode(Connection dbConn, final OnmsStpNode stpNode) throws SQLException;
+    protected abstract void saveStpNode(final OnmsStpNode stpNode);
 
-    protected abstract void saveStpInterface(final Connection dbConn, final OnmsStpInterface stpInterface) throws SQLException;
+    protected abstract void saveStpInterface(final OnmsStpInterface stpInterface);
 
-    protected abstract List<String> getPhysAddrs(final int nodeId, final DBUtils d, final Connection dbConn) throws SQLException;
+    protected abstract List<String> getPhysAddrs(final int nodeId);
 
-    protected abstract void markOldDataInactive(final Connection dbConn, final Timestamp now, final int nodeid) throws SQLException;
+    protected abstract void markOldDataInactive(final Date now, final int nodeid);
 
-    protected abstract void deleteOlderData(final Connection dbConn, final Timestamp now, final int nodeid) throws SQLException;
+    protected abstract void deleteOlderData(final Date now, final int nodeid);
 
-    protected OnmsNode getNode(Integer nodeId) throws SQLException {
+    protected OnmsNode getNode(Integer nodeId) {
         return getNodeDao().get(nodeId);
     }
 
-    protected void processIpNetToMediaTable(final LinkableNode node, final SnmpCollection snmpcoll, final Connection dbConn, final Timestamp scanTime) throws SQLException {
+    protected void processIpNetToMediaTable(final LinkableNode node, final SnmpCollection snmpcoll, final Date scanTime) {
         if (LogUtils.isDebugEnabled(this)) {
             if (snmpcoll.getIpNetToMediaTable().size() > 0) {
                 LogUtils.debugf(this, "processIpNetToMediaTable: Starting ipNetToMedia table processing for %d/%s", node.getNodeId(), str(node.getSnmpPrimaryIpAddr()));
@@ -206,7 +174,7 @@ public abstract class AbstractQueryManager implements QueryManager {
             LogUtils.debugf(this, "processIpNetToMediaTable: trying save ipNetToMedia info: IP address %s, MAC address %s, ifIndex %d", hostAddress, physAddr, ifindex);
 
             // get an AtInterface but without setting MAC address
-            final OnmsAtInterface at = getAtInterfaceDao().getAtInterfaceForAddress(dbConn, ipaddress);
+            final OnmsAtInterface at = getAtInterfaceDao().getAtInterfaceForAddress(ipaddress);
             //FIXME could return more then one interface 
             //to be updated all the returned nodes
             if (at == null) {
@@ -228,9 +196,9 @@ public abstract class AbstractQueryManager implements QueryManager {
             at.setIfIndex(ifindex);
 
             at.setLastPollTime(scanTime);
-            at.setStatus(STATUS_ACTIVE);
+            at.setStatus(StatusType.ACTIVE);
 
-            getAtInterfaceDao().saveAtInterface(dbConn, at);
+            getAtInterfaceDao().save(at);
             
             // Now store the information that is needed to create link in linkd
             for (OnmsAtInterface onmsatinterface: getAtInterfaceDao().findByMacAddress(physAddr) ) {
@@ -274,7 +242,7 @@ public abstract class AbstractQueryManager implements QueryManager {
         return -1;
     }
 
-    protected void processOspf(final LinkableNode node, final SnmpCollection snmpcoll, final Connection dbConn, final Timestamp scanTime) {
+    protected void processOspf(final LinkableNode node, final SnmpCollection snmpcoll, final Date scanTime) {
         
         InetAddress ospfRouterId = snmpcoll.getOspfGeneralGroup().getOspfRouterId();
 
@@ -328,7 +296,7 @@ public abstract class AbstractQueryManager implements QueryManager {
         node.setOspfinterfaces(ospfinterfaces);
     }
     
-    protected void processLldp(final LinkableNode node, final SnmpCollection snmpcoll, final Connection dbConn, final Timestamp scanTime) {
+    protected void processLldp(final LinkableNode node, final SnmpCollection snmpcoll, final Date scanTime) {
 
         node.setLldpChassisId(snmpcoll.getLldpLocalGroup().getLldpLocChassisid());
         node.setLldpChassisIdSubtype(snmpcoll.getLldpLocalGroup().getLldpLocChassisidSubType());
@@ -463,7 +431,7 @@ public abstract class AbstractQueryManager implements QueryManager {
         return null;
     }
 
-    protected void processCdpCacheTable(final LinkableNode node, final SnmpCollection snmpcoll, final Connection dbConn, final Timestamp scanTime) throws SQLException {
+    protected void processCdpCacheTable(final LinkableNode node, final SnmpCollection snmpcoll, final Date scanTime) {
         if (LogUtils.isDebugEnabled(this)) {
             if (snmpcoll.getCdpCacheTable().size() > 0) {
                 LogUtils.debugf(this, "processCdpCacheTable: Starting CDP cache table processing for %d/%s", node.getNodeId(), str(node.getSnmpPrimaryIpAddr()));
@@ -501,7 +469,7 @@ public abstract class AbstractQueryManager implements QueryManager {
                     cdpTargetIpAddrString = null;
                 } else {
                     LogUtils.debugf(this, "processCdpCacheTable: Target IP address found: %s", cdpTargetIpAddrString);
-                    targetCdpNodeIds = getNodeidFromIp(dbConn, cdpTargetIpAddr);
+                    targetCdpNodeIds = getNodeidFromIp(cdpTargetIpAddr);
                     if (targetCdpNodeIds.isEmpty()) {
                         LogUtils.infof(this, "processCdpCacheTable: No Target node IDs found: interface %s not added to linkable SNMP node. Skipping.", cdpTargetIpAddrString);
                         sendNewSuspectEvent(cdpTargetIpAddr, snmpcoll.getTarget(), snmpcoll.getPackageName());
@@ -527,7 +495,7 @@ public abstract class AbstractQueryManager implements QueryManager {
 
             LogUtils.debugf(this, "processCdpCacheTable: Target device port name found: %s", cdpTargetDevicePort);
 
-            final int cdpTargetIfindex = getIfIndexByName(dbConn, targetCdpNodeId, cdpTargetDevicePort);
+            final int cdpTargetIfindex = getIfIndexByName(targetCdpNodeId, cdpTargetDevicePort);
 
             if (cdpTargetIfindex == -1) {
                 LogUtils.infof(this, "processCdpCacheTable: No valid target ifIndex found but interface added to linkable SNMP node using ifindex  = -1.");
@@ -560,7 +528,7 @@ public abstract class AbstractQueryManager implements QueryManager {
         return nodeids;
     }
 
-    protected void processRouteTable(final LinkableNode node, final SnmpCollection snmpcoll, final Connection dbConn, final Timestamp scanTime) throws SQLException {
+    protected void processRouteTable(final LinkableNode node, final SnmpCollection snmpcoll, final Date scanTime) {
         if (LogUtils.isDebugEnabled(this)) {
             final int routes = snmpcoll.getIpRouteTable().size();
             if (routes > 0) {
@@ -640,12 +608,12 @@ public abstract class AbstractQueryManager implements QueryManager {
 
             // the routerinterface constructor set nodeid, ifindex, netmask for nexthop address
             // try to find on snmpinterface table
-            RouterInterface routeIface = getNodeidMaskFromIp(dbConn, nexthop);
+            RouterInterface routeIface = getNodeidMaskFromIp(nexthop);
 
             // if target node is not snmp node always try to find info
             // on ipinterface table
             if (routeIface == null) {
-                routeIface = getNodeFromIp(dbConn, nexthop);
+                routeIface = getNodeFromIp(nexthop);
             }
 
             if (routeIface == null) {
@@ -656,7 +624,7 @@ public abstract class AbstractQueryManager implements QueryManager {
                 int snmpiftype = -2;
 
                 if (ifindex > 0)
-                    snmpiftype = getSnmpIfType(dbConn, node.getNodeId(), ifindex);
+                    snmpiftype = getSnmpIfType(node.getNodeId(), ifindex);
 
                 if (snmpiftype == -1) {
                     LogUtils.warnf(this, "processRouteTable: interface has an invalid ifType (%d). Skipping.", snmpiftype);
@@ -705,10 +673,10 @@ public abstract class AbstractQueryManager implements QueryManager {
                 ipRouteInterface.setRouteMetric5(routemetric5);
                 ipRouteInterface.setRouteNextHop(str(nexthop));
                 ipRouteInterface.setRouteProto(routeproto);
-                ipRouteInterface.setRouteType(routetype);
-                ipRouteInterface.setStatus(STATUS_ACTIVE);
+                ipRouteInterface.setRouteType(RouteType.get(routetype));
+                ipRouteInterface.setStatus(StatusType.ACTIVE);
 
-                saveIpRouteInterface(dbConn, ipRouteInterface);
+                saveIpRouteInterface(ipRouteInterface);
             }
         }
         node.setRouteInterfaces(routeInterfaces);
@@ -736,7 +704,7 @@ public abstract class AbstractQueryManager implements QueryManager {
         return -1;
     }
 
-    protected void processVlanTable(final LinkableNode node, final SnmpCollection snmpcoll, final Connection dbConn, final Timestamp scanTime) throws SQLException {
+    protected void processVlanTable(final LinkableNode node, final SnmpCollection snmpcoll, final Date scanTime) {
         if (LogUtils.isDebugEnabled(this)) {
             if (snmpcoll.getVlanTable().size() > 0) {
                 LogUtils.debugf(this, "processVlanTable: Starting VLAN table processing for %d/%s", node.getNodeId(), str(node.getSnmpPrimaryIpAddr()));
@@ -754,18 +722,18 @@ public abstract class AbstractQueryManager implements QueryManager {
             final OnmsVlan vlan = ent.getOnmsVlan();
             vlan.setLastPollTime(scanTime);
             vlan.setNode(onmsNode);
-            vlan.setStatus(STATUS_ACTIVE);
+            vlan.setStatus(StatusType.ACTIVE);
             vlans.add(vlan);
 
             LogUtils.debugf(this, "processVlanTable: Saving VLAN entry: %s", vlan);
 
-            saveVlan(dbConn, vlan);
+            saveVlan(vlan);
 
         }
         node.setVlans(vlans);
     }
 
-    protected void processDot1DBase(final LinkableNode node, final SnmpCollection snmpcoll, final DBUtils d, final Connection dbConn, final Timestamp scanTime, final OnmsVlan vlan, final SnmpVlanCollection snmpVlanColl) throws SQLException {
+    protected void processDot1DBase(final LinkableNode node, final SnmpCollection snmpcoll, final Date scanTime, final OnmsVlan vlan, final SnmpVlanCollection snmpVlanColl) {
 
         LogUtils.debugf(this, "processDot1DBase: Starting Bridge MIB processing for Vlan: %s.", vlan.getVlanName());
 
@@ -783,7 +751,7 @@ public abstract class AbstractQueryManager implements QueryManager {
             return;
         }
 
-        processStpNode(onmsNode,node, snmpcoll, dbConn, scanTime, vlan, snmpVlanColl);
+        processStpNode(onmsNode,node, snmpcoll, scanTime, vlan, snmpVlanColl);
 
         if (snmpVlanColl.hasDot1dBasePortTable()) {
             Map<Integer, OnmsStpInterface> stpinterfaces = new HashMap<Integer, OnmsStpInterface>(snmpVlanColl.getDot1dBasePortTable().size());        
@@ -793,7 +761,7 @@ public abstract class AbstractQueryManager implements QueryManager {
                 stpinterfaces = processDot1StpPortTable(node, snmpcoll, scanTime, vlan, snmpVlanColl, stpinterfaces);
             }
 
-            processStpInterfaces(node,snmpcoll,dbConn,stpinterfaces);
+            processStpInterfaces(node,snmpcoll,stpinterfaces);
         }
         
         if (snmpVlanColl.hasDot1dTpFdbTable()) {
@@ -804,7 +772,7 @@ public abstract class AbstractQueryManager implements QueryManager {
             processQBridgeDot1dTpFdbTable(node, vlan, snmpVlanColl);
         }
 
-        for (final String physaddr : getPhysAddrs(node.getNodeId(), d, dbConn)) {
+        for (final String physaddr : getPhysAddrs(node.getNodeId())) {
             LogUtils.debugf(this, "Try to add Bridge Identifier \"%s\" for node %d", physaddr, node.getNodeId());                       
             if (physaddr == null || physaddr.equals("") || physaddr.equals("000000000000")) continue;
             LogUtils.infof(this, "Adding Bridge Identifier %s for node %d", physaddr, node.getNodeId());                       
@@ -861,7 +829,7 @@ public abstract class AbstractQueryManager implements QueryManager {
         }
     }
 
-    protected void processDot1DTpFdbTable(LinkableNode node, final OnmsVlan vlan, final SnmpVlanCollection snmpVlanColl, Timestamp scanTime) {
+    protected void processDot1DTpFdbTable(LinkableNode node, final OnmsVlan vlan, final SnmpVlanCollection snmpVlanColl, Date scanTime) {
         if (LogUtils.isDebugEnabled(this)) {
             if (snmpVlanColl.getDot1dFdbTable().size() > 0) {
                 LogUtils.debugf(this, "processDot1DTpFdbTable: Starting dot1dTpFdb table processing for %d/%s", node.getNodeId(), str(node.getSnmpPrimaryIpAddr()));
@@ -907,7 +875,7 @@ public abstract class AbstractQueryManager implements QueryManager {
         }
     }
 
-    protected Map<Integer, OnmsStpInterface> processDot1StpPortTable(final LinkableNode node, final SnmpCollection snmpcoll, final Timestamp scanTime, final OnmsVlan vlan,SnmpVlanCollection snmpVlanColl, Map<Integer, OnmsStpInterface>stpinterfaces) throws SQLException {
+    protected Map<Integer, OnmsStpInterface> processDot1StpPortTable(final LinkableNode node, final SnmpCollection snmpcoll, final Date scanTime, final OnmsVlan vlan,SnmpVlanCollection snmpVlanColl, Map<Integer, OnmsStpInterface>stpinterfaces) {
         if (LogUtils.isDebugEnabled(this)) {
             if (snmpVlanColl.getDot1dStpPortTable().size() > 0) {
                 LogUtils.debugf(this, "processDot1StpPortTable: Processing dot1StpPortTable for nodeid/ip for %d/%s", node.getNodeId(), str(node.getSnmpPrimaryIpAddr()));
@@ -950,17 +918,17 @@ public abstract class AbstractQueryManager implements QueryManager {
         return stpinterfaces;
     }
 
-    protected void processStpInterfaces(final LinkableNode node, final SnmpCollection snmpcoll,final Connection dbConn, Map<Integer, OnmsStpInterface>stpinterfaces) throws SQLException {
+    protected void processStpInterfaces(final LinkableNode node, final SnmpCollection snmpcoll, Map<Integer, OnmsStpInterface>stpinterfaces) {
         for (OnmsStpInterface stpInterface: stpinterfaces.values()) {
             node.addStpInterface(stpInterface);
             if (snmpcoll.getSaveStpInterfaceTable()) {
                 LogUtils.debugf(this, "processStpInterfaces: saving %s in stpinterface table", stpInterface.toString());
-                saveStpInterface(dbConn, stpInterface);
+                saveStpInterface(stpInterface);
             }
             
         }
     }
-    protected Map<Integer, OnmsStpInterface> processDot1DBasePortTable(final OnmsNode onmsNode, final LinkableNode node, final SnmpCollection snmpcoll, final Timestamp scanTime, final OnmsVlan vlan, final SnmpVlanCollection snmpVlanColl,Map<Integer, OnmsStpInterface>stpinterfaces) throws SQLException {
+    protected Map<Integer, OnmsStpInterface> processDot1DBasePortTable(final OnmsNode onmsNode, final LinkableNode node, final SnmpCollection snmpcoll, final Date scanTime, final OnmsVlan vlan, final SnmpVlanCollection snmpVlanColl,Map<Integer, OnmsStpInterface>stpinterfaces) {
         if (LogUtils.isDebugEnabled(this)) {
             if (snmpVlanColl.getDot1dBasePortTable().size() > 0) {
                 LogUtils.debugf(this, "processDot1DBasePortTable: Processing dot1BasePortTable for nodeid/ip %d/%s", node.getNodeId(), str(node.getSnmpPrimaryIpAddr()));
@@ -985,7 +953,7 @@ public abstract class AbstractQueryManager implements QueryManager {
             stpInterface.setBridgePort(baseport);
             stpInterface.setVlan(vlan.getVlanId());
             stpInterface.setIfIndex(ifindex);
-            stpInterface.setStatus(STATUS_ACTIVE);
+            stpInterface.setStatus(StatusType.ACTIVE);
             stpInterface.setLastPollTime(scanTime);
 
             stpinterfaces.put(baseport, stpInterface);
@@ -993,7 +961,7 @@ public abstract class AbstractQueryManager implements QueryManager {
         return stpinterfaces;
     }
 
-    protected void processStpNode(final OnmsNode onmsNode,final LinkableNode node, final SnmpCollection snmpcoll, final Connection dbConn, final Timestamp scanTime, final OnmsVlan vlan, final SnmpVlanCollection snmpVlanColl) throws SQLException {
+    protected void processStpNode(final OnmsNode onmsNode,final LinkableNode node, final SnmpCollection snmpcoll, final Date scanTime, final OnmsVlan vlan, final SnmpVlanCollection snmpVlanColl) {
         LogUtils.debugf(this, "processStpNode: Starting stpnode processing for Vlan: %s", vlan.getVlanName());
 
         final Dot1dBaseGroup dod1db = snmpVlanColl.getDot1dBase();
@@ -1002,7 +970,7 @@ public abstract class AbstractQueryManager implements QueryManager {
         LogUtils.debugf(this, "processStpNode: processing Dot1dBaseGroup in stpnode");
         final OnmsStpNode stpNode = new OnmsStpNode(onmsNode, vlan.getVlanId());
         stpNode.setLastPollTime(scanTime);
-        stpNode.setStatus(STATUS_ACTIVE);
+        stpNode.setStatus(StatusType.ACTIVE);
         stpNode.setBaseBridgeAddress(baseBridgeAddress);
         LogUtils.debugf(this, "processStpNode: baseBridgeAddress = %s", baseBridgeAddress);
         stpNode.setBaseNumPorts(dod1db.getNumberOfPorts());
@@ -1036,7 +1004,7 @@ public abstract class AbstractQueryManager implements QueryManager {
         // store object in database
         if (snmpcoll.getSaveStpNodeTable()) {
             LogUtils.debugf(this, "processStpNode: saving %s in stpnode table", stpNode.toString());
-            saveStpNode(dbConn, stpNode);
+            saveStpNode(stpNode);
         }
         if (vlan.getVlanId() != null) {
             LogUtils.debugf(this, "processStpNode: Found Bridge Identifier %s for Vlan %d.", baseBridgeAddress, vlan.getVlanId());
