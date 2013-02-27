@@ -39,7 +39,7 @@ import org.opennms.core.utils.LogUtils;
 import org.opennms.features.geocoder.Coordinates;
 import org.opennms.features.geocoder.GeocoderException;
 import org.opennms.features.geocoder.GeocoderService;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.VOpenlayersWidget;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.VMapWidget;
 import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.dao.AssetRecordDao;
 import org.opennms.netmgt.dao.NodeDao;
@@ -59,8 +59,8 @@ import com.vaadin.terminal.PaintTarget;
 import com.vaadin.ui.ClientWidget;
 import com.vaadin.ui.VerticalLayout;
 
-@ClientWidget(value = VOpenlayersWidget.class)
-public class OpenlayersWidgetComponent extends VerticalLayout {
+@ClientWidget(value = VMapWidget.class)
+public class MapWidgetComponent extends VerticalLayout {
     public static final class NodeEntry {
 
         private Float m_longitude;
@@ -144,10 +144,10 @@ public class OpenlayersWidgetComponent extends VerticalLayout {
 
     private int singleNodeId = 0;
 
-    public OpenlayersWidgetComponent() {
+    public MapWidgetComponent() {
     }
 
-    public OpenlayersWidgetComponent(final NodeDao nodeDao, final AssetRecordDao assetDao, final AlarmDao alarmDao, final GeocoderService geocoder) {
+    public MapWidgetComponent(final NodeDao nodeDao, final AssetRecordDao assetDao, final AlarmDao alarmDao, final GeocoderService geocoder) {
         m_nodeDao = nodeDao;
         m_assetDao = assetDao;
         m_alarmDao = alarmDao;

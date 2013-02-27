@@ -135,7 +135,7 @@ public class NodeMapsApplication extends Application {
     public void init() {
         m_log.debug("initializing");
 
-        final OpenlayersWidgetComponent openlayers = new OpenlayersWidgetComponent();
+        final MapWidgetComponent openlayers = new MapWidgetComponent();
         openlayers.setNodeDao(m_nodeDao);
         openlayers.setAssetRecordDao(m_assetDao);
         openlayers.setAlarmDao(m_alarmDao);

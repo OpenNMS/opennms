@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.discotools.gwt.leaflet.client.jsobject.JSObject;
 import org.discotools.gwt.leaflet.client.marker.Marker;
+import org.discotools.gwt.leaflet.client.types.LatLng;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.leaflet.MarkerClusterGroup;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.leaflet.NodeMarker;
 
 import com.google.gwt.core.client.JavaScriptObject;
@@ -31,7 +33,23 @@ public class MarkerCluster extends JavaScriptObject {
         return markers;
     }
 
+    public final MarkerClusterGroup getGroup() {
+        return new MarkerClusterGroup(getNativeGroup());
+    }
+
+    private final native JSObject getNativeGroup() /*-{
+        return this._group;
+    }-*/;
+
     private final native JsArray<JSObject> getMarkerObjects() /*-{
         return this.getAllChildMarkers();
+    }-*/;
+
+    public final LatLng getLatLng() {
+        return new LatLng(getNativeLatLng());
+    }
+
+    private final native JSObject getNativeLatLng() /*-{
+        return this.getLatLng();
     }-*/;
 }
