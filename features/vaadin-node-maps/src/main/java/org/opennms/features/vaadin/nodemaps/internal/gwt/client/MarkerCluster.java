@@ -6,8 +6,6 @@ import java.util.List;
 import org.discotools.gwt.leaflet.client.jsobject.JSObject;
 import org.discotools.gwt.leaflet.client.marker.Marker;
 import org.discotools.gwt.leaflet.client.types.LatLng;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.leaflet.MarkerClusterGroup;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.leaflet.NodeMarker;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;

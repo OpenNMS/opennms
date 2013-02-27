@@ -37,13 +37,7 @@ import org.discotools.gwt.leaflet.client.layers.raster.TileLayer;
 import org.discotools.gwt.leaflet.client.map.Map;
 import org.discotools.gwt.leaflet.client.map.MapOptions;
 import org.discotools.gwt.leaflet.client.marker.Marker;
-import org.discotools.gwt.leaflet.client.popup.Popup;
-import org.discotools.gwt.leaflet.client.popup.PopupImpl;
-import org.discotools.gwt.leaflet.client.popup.PopupOptions;
 import org.discotools.gwt.leaflet.client.types.LatLng;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.leaflet.GoogleLayer;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.leaflet.MarkerClusterGroup;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.leaflet.NodeMarker;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.DivElement;
@@ -54,54 +48,6 @@ import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.terminal.gwt.client.VConsole;
 
 public class GWTMapWidget extends Widget {
-    private static final class NodeMarkerClusterCallback implements MarkerClusterEventCallback {
-        private NodeMarkerClusterCallback() {
-        }
-
-        @Override
-        public final void run(final MarkerClusterEvent event) {
-            final StringBuilder sb = new StringBuilder();
-            final MarkerCluster cluster = event.getMarkerCluster();
-            @SuppressWarnings("unchecked")
-            final List<NodeMarker> markers = (List<NodeMarker>)cluster.getAllChildMarkers();
-            VConsole.log("Clicked, processing " + markers.size() + " markers.");
-            if (markers.size() == 1) {
-                final NodeMarker marker = markers.get(0);
-                sb.append("<h2>Node ").append(marker.getNodeLabel()).append("</h2>");
-                sb.append("<p>");
-                sb.append("Node ID: ").append(marker.getNodeId()).append("<br/>");
-                sb.append("Foreign Source: ").append(marker.getForeignSource()).append("<br/>");
-                sb.append("Foreign ID: ").append(marker.getForeignId()).append("<br/>");
-                sb.append("IP Address: ").append(marker.getIpAddress()).append("<br/>");
-                sb.append("Severity: ").append(marker.getSeverityLabel());
-                sb.append("</p>");
-            } else {
-                final StringBuilder nodeBuilder = new StringBuilder();
-                int unacked = 0;
-                for (final NodeMarker marker : markers) {
-                    unacked += marker.getUnackedCount();
-                    nodeBuilder.append("<li>");
-                    nodeBuilder.append(marker.getNodeLabel()).append(" ");
-                    nodeBuilder.append("(").append(marker.getIpAddress()).append(")").append(": ");
-                    nodeBuilder.append(marker.getSeverityLabel());
-                    nodeBuilder.append("</li>");
-                }
-                sb.append("<h2># of nodes: ").append(markers.size()).append(" ");
-                sb.append("(").append(unacked).append(" Unacknowledged Alarms)");
-                sb.append("</h2>");
-                sb.append("<ul>").append(nodeBuilder).append("</ul>");
-            }
-            final PopupOptions options = new PopupOptions();
-            options.setMaxWidth(500);
-            options.setProperty("maxHeight", 250);
-            final Popup popup = new Popup(options);
-            popup.setContent(sb.toString());
-            popup.setLatLng(cluster.getLatLng());
-            VConsole.log("html = " + sb.toString());
-            PopupImpl.openOn(popup.getJSObject(), cluster.getGroup().getMapObject());
-        }
-    }
-
     private final DivElement m_div;
 
     private Map m_map;
@@ -184,8 +130,6 @@ public class GWTMapWidget extends Widget {
         markerClusterOptions.setProperty("zoomToBoundsOnClick", false);
         markerClusterOptions.setProperty("iconCreateFunction", new IconCreateCallback());
         m_markerClusterGroup = new MarkerClusterGroup(markerClusterOptions);
-//        m_markerClusterGroup.bindPopup("Test Popup", new Options());
-        
         m_markerClusterGroup.on("clusterclick", new NodeMarkerClusterCallback());
         m_map.addLayer(m_markerClusterGroup);
     }

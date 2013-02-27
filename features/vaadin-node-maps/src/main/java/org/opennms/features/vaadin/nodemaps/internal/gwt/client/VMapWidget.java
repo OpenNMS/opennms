@@ -33,7 +33,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.discotools.gwt.leaflet.client.types.LatLng;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.leaflet.NodeMarker;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.user.client.Command;

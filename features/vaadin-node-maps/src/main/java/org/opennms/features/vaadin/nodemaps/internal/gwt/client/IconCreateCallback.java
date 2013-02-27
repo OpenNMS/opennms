@@ -7,7 +7,6 @@ import org.discotools.gwt.leaflet.client.jsobject.JSObjectWrapper;
 import org.discotools.gwt.leaflet.client.types.DivIcon;
 import org.discotools.gwt.leaflet.client.types.DivIconOptions;
 import org.discotools.gwt.leaflet.client.types.Point;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.leaflet.NodeMarker;
 
 public class IconCreateCallback extends JSObjectWrapper {
 

@@ -1,7 +1,6 @@
-package org.opennms.features.vaadin.nodemaps.internal.gwt.client.leaflet;
+package org.opennms.features.vaadin.nodemaps.internal.gwt.client;
 
 import org.discotools.gwt.leaflet.client.jsobject.JSObject;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.MarkerClusterEventCallback;
 
 import com.google.gwt.core.client.JsArray;
 
