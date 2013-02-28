@@ -321,6 +321,11 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.protocols</groupId>
+      <artifactId>org.opennms.protocols.cifs</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.protocols</groupId>
       <artifactId>org.opennms.protocols.dhcp</artifactId>
       <version>${project.version}</version>
     </dependency>
