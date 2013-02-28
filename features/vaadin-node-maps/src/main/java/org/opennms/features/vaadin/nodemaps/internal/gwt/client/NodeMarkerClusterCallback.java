@@ -1,5 +1,7 @@
 package org.opennms.features.vaadin.nodemaps.internal.gwt.client;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.discotools.gwt.leaflet.client.popup.Popup;
@@ -19,6 +21,24 @@ final class NodeMarkerClusterCallback implements MarkerClusterEventCallback {
         @SuppressWarnings("unchecked")
         final List<NodeMarker> markers = (List<NodeMarker>)cluster.getAllChildMarkers();
         VConsole.log("Clicked, processing " + markers.size() + " markers.");
+        Collections.sort(markers, new Comparator<NodeMarker>() {
+            final static int BEFORE = -1;
+            final static int EQUAL = 0;
+            final static int AFTER = 1;
+
+            @Override
+            public int compare(final NodeMarker left, final NodeMarker right) {
+                if (left == right) return EQUAL;
+                if (left.getSeverity() != right.getSeverity()) {
+                    return left.getSeverity() > right.getSeverity()? BEFORE : AFTER;
+                }
+                if (left.getNodeLabel() != right.getNodeLabel()) {
+                    return left.getNodeLabel() == null? AFTER : left.getNodeLabel().toLowerCase().compareTo(right.getNodeLabel() == null? BEFORE : right.getNodeLabel().toLowerCase());
+                }
+                return left.getNodeId().compareTo(right.getNodeId());
+            }
+        });
+
         if (markers.size() == 1) {
             final NodeMarker marker = markers.get(0);
             sb.append(getPopupTextForMarker(marker));
