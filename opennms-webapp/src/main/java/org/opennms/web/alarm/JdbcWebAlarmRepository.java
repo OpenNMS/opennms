@@ -387,11 +387,11 @@ public class JdbcWebAlarmRepository implements WebAlarmRepository, InitializingB
     }
 
     public List<OnmsAcknowledgment> getAcknowledgments(int alarmId) {
-        throw new UnsupportedOperationException("Not supported yet. JdbcWebAlarmRepositony is deprecated.");
+        throw new UnsupportedOperationException("Not supported yet. JdbcWebAlarmRepository is deprecated.");
     }
 
     public List<AlarmSummary> getCurrentNodeAlarmSummaries(int rows) {
-        throw new UnsupportedOperationException("Not supported yet. JdbcWebAlarmRepositony is deprecated.");
+        throw new UnsupportedOperationException("Not supported yet. JdbcWebAlarmRepository is deprecated.");
     }
 
     private int queryForInt(String sql, PreparedStatementSetter setter) throws DataAccessException {
