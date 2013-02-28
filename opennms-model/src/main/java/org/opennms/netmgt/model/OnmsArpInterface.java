@@ -58,14 +58,14 @@ public class OnmsArpInterface extends OnmsEntity implements Serializable {
     @Embeddable
     public static class StatusType implements Comparable<StatusType>, Serializable {
         private static final long serialVersionUID = -4784344871599250528L;
-        private static final char[] s_order = {'A', 'N', 'D', 'K', 'B', 'G' };
+        private static final char[] s_order = {'A', 'N', 'D', 'U', 'B', 'G' };
         private char m_statusType;
 
         private static final Map<Character, String> statusMap = new HashMap<Character, String>();
         
         static {
             statusMap.put( 'A', "Active" );
-            statusMap.put( 'K', "Unknown" );
+            statusMap.put( 'U', "Unknown" );
             statusMap.put( 'D', "Deleted" );
             statusMap.put( 'N', "Not Active" );
             statusMap.put( 'B', "Bad" );
@@ -121,7 +121,7 @@ public class OnmsArpInterface extends OnmsEntity implements Serializable {
             case 'A': return ACTIVE;
             case 'N': return INACTIVE;
             case 'D': return DELETED;
-            case 'K': return UNKNOWN;
+            case 'U': return UNKNOWN;
             case 'B': return BAD;
             case 'G': return GOOD;
             default:
@@ -157,7 +157,7 @@ public class OnmsArpInterface extends OnmsEntity implements Serializable {
         public static StatusType ACTIVE = new StatusType('A');
         public static StatusType INACTIVE = new StatusType('N');
         public static StatusType DELETED = new StatusType('D');
-        public static StatusType UNKNOWN = new StatusType('K');
+        public static StatusType UNKNOWN = new StatusType('U');
         public static StatusType BAD = new StatusType('B');
         public static StatusType GOOD = new StatusType('G');
 

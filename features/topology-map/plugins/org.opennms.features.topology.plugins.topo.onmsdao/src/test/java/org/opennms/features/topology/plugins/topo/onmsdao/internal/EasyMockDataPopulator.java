@@ -43,6 +43,7 @@ import org.opennms.netmgt.dao.OnmsMapElementDao;
 
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.NetworkBuilder;
+import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsMap;
 import org.opennms.netmgt.model.OnmsMapElement;
@@ -336,13 +337,13 @@ public class EasyMockDataPopulator {
         element9.setId(1009);
         map4.addMapElement(element9);
 
-        final DataLinkInterface dli12 = new DataLinkInterface(getNode2(), 1, getNode1().getId(), 1, "A", new Date());
-        final DataLinkInterface dli13 = new DataLinkInterface(getNode3(), 2, getNode1().getId(), 1, "A", new Date());
-        final DataLinkInterface dli14 = new DataLinkInterface(getNode4(), 1, getNode1().getId(), 1, "A", new Date());
-        final DataLinkInterface dli15 = new DataLinkInterface(getNode5(), 1, getNode1().getId(), 1, "A", new Date());
-        final DataLinkInterface dli76 = new DataLinkInterface(getNode6(), 2, getNode7().getId(), 1, "A", new Date());
-        final DataLinkInterface dli78 = new DataLinkInterface(getNode8(), 1, getNode7().getId(), 1, "A", new Date());
-        final DataLinkInterface dli68 = new DataLinkInterface(getNode8(), 1, getNode6().getId(), 1, "A", new Date());
+        final DataLinkInterface dli12 = new DataLinkInterface(getNode2(), 1, getNode1().getId(), 1, StatusType.ACTIVE, new Date());
+        final DataLinkInterface dli13 = new DataLinkInterface(getNode3(), 2, getNode1().getId(), 1, StatusType.ACTIVE, new Date());
+        final DataLinkInterface dli14 = new DataLinkInterface(getNode4(), 1, getNode1().getId(), 1, StatusType.ACTIVE, new Date());
+        final DataLinkInterface dli15 = new DataLinkInterface(getNode5(), 1, getNode1().getId(), 1, StatusType.ACTIVE, new Date());
+        final DataLinkInterface dli76 = new DataLinkInterface(getNode6(), 2, getNode7().getId(), 1, StatusType.ACTIVE, new Date());
+        final DataLinkInterface dli78 = new DataLinkInterface(getNode8(), 1, getNode7().getId(), 1, StatusType.ACTIVE, new Date());
+        final DataLinkInterface dli68 = new DataLinkInterface(getNode8(), 1, getNode6().getId(), 1, StatusType.ACTIVE, new Date());
         
         Collection<DataLinkInterface> links1 = new ArrayList<DataLinkInterface>();
         Collection<DataLinkInterface> links2 = new ArrayList<DataLinkInterface>();

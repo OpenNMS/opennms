@@ -51,6 +51,7 @@ import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
+import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -253,14 +254,14 @@ public class EasyMockDataPopulator {
         nodes.add(node8);
         setNodes(nodes);
         
-        final DataLinkInterface dli12 = new DataLinkInterface(getNode2(), -1, getNode1().getId(), -1, "A", new Date());
-        final DataLinkInterface dli23 = new DataLinkInterface(getNode3(), -1, getNode2().getId(), -1, "A", new Date());
-        final DataLinkInterface dli34 = new DataLinkInterface(getNode4(), -1, getNode3().getId(), -1, "A", new Date());
-        final DataLinkInterface dli45 = new DataLinkInterface(getNode5(), -1, getNode4().getId(), -1, "A", new Date());
-        final DataLinkInterface dli56 = new DataLinkInterface(getNode6(), -1, getNode5().getId(), -1, "A", new Date());
-        final DataLinkInterface dli67 = new DataLinkInterface(getNode7(), -1, getNode6().getId(), -1, "A", new Date());
-        final DataLinkInterface dli78 = new DataLinkInterface(getNode8(), -1, getNode7().getId(), -1, "A", new Date());
-        final DataLinkInterface dli81 = new DataLinkInterface(getNode1(), -1, getNode8().getId(), -1, "A", new Date());
+        final DataLinkInterface dli12 = new DataLinkInterface(getNode2(), -1, getNode1().getId(), -1,StatusType.ACTIVE, new Date());
+        final DataLinkInterface dli23 = new DataLinkInterface(getNode3(), -1, getNode2().getId(), -1, StatusType.ACTIVE, new Date());
+        final DataLinkInterface dli34 = new DataLinkInterface(getNode4(), -1, getNode3().getId(), -1, StatusType.ACTIVE, new Date());
+        final DataLinkInterface dli45 = new DataLinkInterface(getNode5(), -1, getNode4().getId(), -1, StatusType.ACTIVE, new Date());
+        final DataLinkInterface dli56 = new DataLinkInterface(getNode6(), -1, getNode5().getId(), -1, StatusType.ACTIVE, new Date());
+        final DataLinkInterface dli67 = new DataLinkInterface(getNode7(), -1, getNode6().getId(), -1, StatusType.ACTIVE, new Date());
+        final DataLinkInterface dli78 = new DataLinkInterface(getNode8(), -1, getNode7().getId(), -1, StatusType.ACTIVE, new Date());
+        final DataLinkInterface dli81 = new DataLinkInterface(getNode1(), -1, getNode8().getId(), -1, StatusType.ACTIVE, new Date());
         
         dli12.setId(10012);
         dli23.setId(10023);
