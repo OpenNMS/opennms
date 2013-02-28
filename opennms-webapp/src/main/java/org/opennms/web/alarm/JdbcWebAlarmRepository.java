@@ -46,6 +46,8 @@ import org.opennms.web.alarm.filter.AlarmIdListFilter;
 import org.opennms.web.alarm.filter.AlarmTypeFilter;
 import org.opennms.web.alarm.filter.SeverityBetweenFilter;
 import org.opennms.web.alarm.filter.SeverityFilter;
+import org.opennms.netmgt.model.alarm.AlarmSummary;
+import org.opennms.web.alarm.filter.*;
 import org.opennms.web.alarm.filter.AlarmCriteria.AlarmCriteriaVisitor;
 import org.opennms.web.alarm.filter.AlarmCriteria.BaseAlarmCriteriaVisitor;
 import org.opennms.web.filter.AndFilter;
@@ -388,6 +390,10 @@ public class JdbcWebAlarmRepository implements WebAlarmRepository, InitializingB
         throw new UnsupportedOperationException("Not supported yet. JdbcWebAlarmRepositony is deprecated.");
     }
 
+    public List<AlarmSummary> getCurrentNodeAlarmSummaries(int rows) {
+        throw new UnsupportedOperationException("Not supported yet. JdbcWebAlarmRepositony is deprecated.");
+    }
+
     private int queryForInt(String sql, PreparedStatementSetter setter) throws DataAccessException {
         Integer number = queryForObject(sql, setter, new SingleColumnRowMapper<Integer>(Integer.class));
         return (number != null ? number.intValue() : 0);
@@ -404,4 +410,5 @@ public class JdbcWebAlarmRepository implements WebAlarmRepository, InitializingB
     private JdbcOperations jdbc() {
         return m_simpleJdbcTemplate.getJdbcOperations();
     }
+
 }
