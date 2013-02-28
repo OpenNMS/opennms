@@ -35,6 +35,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsStpNode.BridgeBaseType;
 
 /**
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
@@ -147,7 +148,7 @@ public abstract class Nms7467NetworkBuilder extends LinkdNetworkBuilder {
     protected static final String CISCO_C870_NAME         = "ciscorouter";
     protected static final String CISCO_C870_IP_PRIMARY   = "10.255.255.2";
     protected static final String CISCO_C870_IP           = "172.20.1.1";
-    static final int CISCO_C870_STP_TYPE        = 4;
+    static final int CISCO_C870_STP_TYPE        = BridgeBaseType.BASE_TYPE_SRT;
     static final String CISCO_C870_BRIDGEID      = "00000c83d9a8";
     static final String CISCO_C870_SYSOID        = ".1.3.6.1.4.1.9.1.569";
 
@@ -287,7 +288,7 @@ public abstract class Nms7467NetworkBuilder extends LinkdNetworkBuilder {
 
     protected static final String CISCO_WS_C2948_NAME         = "ciscoswitch";
     protected static final String CISCO_WS_C2948_IP       = "172.20.1.7";
-    static final int CISCO_WS_C2948_STP_TYPE        = 2;
+    static final int CISCO_WS_C2948_STP_TYPE        = BridgeBaseType.BASE_TYPE_TRANSPARENT_ONLY;
     static final String CISCO_WS_C2948_BRIDGEID      = "0002baaacc00";
     static final String CISCO_WS_C2948_SYSOID        = ".1.3.6.1.4.1.9.5.42";
 
@@ -401,7 +402,7 @@ public abstract class Nms7467NetworkBuilder extends LinkdNetworkBuilder {
      */
     protected static final String NETGEAR_SW_108_NAME         = "ng108switch";
     protected static final String NETGEAR_SW_108_IP       = "172.20.1.8";
-    static final int NETGEAR_SW_108_STP_TYPE        = 2;
+    static final int NETGEAR_SW_108_STP_TYPE        = BridgeBaseType.BASE_TYPE_TRANSPARENT_ONLY;
     static final String NETGEAR_SW_108_BRIDGEID      = "00223ff00b7b";
     static final String NETGEAR_SW_108_SYSOID        = ".1.3.6.1.4.1.4526.100.4.8";
     static final Map<InetAddress,Integer> NETGEAR_SW_108_IP_IF_MAP = new HashMap<InetAddress, Integer>();

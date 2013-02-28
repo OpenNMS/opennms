@@ -29,6 +29,8 @@
 package org.opennms.netmgt.linkd.snmp;
 
 import org.opennms.netmgt.capsd.snmp.NamedSnmpVar;
+import org.opennms.netmgt.model.OnmsVlan.VlanStatus;
+import org.opennms.netmgt.model.OnmsVlan.VlanType;
 
 /**
  *<P>The CiscoVlanTableEntry class is designed to hold all the information
@@ -75,29 +77,7 @@ public final class CiscoVlanTableEntry extends Vlan {
 	public final static String CISCOVTP_VLAN_TYPEEXT = "vtpVlanTypeExt";
 	/** Constant <code>CISCOVTP_VLAN_IFINDEX="vtpVlanIfIndex"</code> */
 	public final static String CISCOVTP_VLAN_IFINDEX = "vtpVlanIfIndex";
-
-	/** Constant <code>CISCOVTP_VLAN_TYPE_ETHERNET=1</code> */
-	public final static int CISCOVTP_VLAN_TYPE_ETHERNET = 1;
-	/** Constant <code>CISCOVTP_VLAN_TYPE_FDDI=2</code> */
-	public final static int CISCOVTP_VLAN_TYPE_FDDI = 2;
-	/** Constant <code>CISCOVTP_VLAN_TYPE_TOKENRING=3</code> */
-	public final static int CISCOVTP_VLAN_TYPE_TOKENRING = 3;
-	/** Constant <code>CISCOVTP_VLAN_TYPE_FDDINET=4</code> */
-	public final static int CISCOVTP_VLAN_TYPE_FDDINET = 4;
-	/** Constant <code>CISCOVTP_VLAN_TYPE_TRNET=5</code> */
-	public final static int CISCOVTP_VLAN_TYPE_TRNET = 5;
-	/** Constant <code>CISCOVTP_VLAN_TYPE_DEPRECATED=6</code> */
-	public final static int CISCOVTP_VLAN_TYPE_DEPRECATED = 6;
 	
-	/** Constant <code>CISCOVTP_VLAN_STATUS_OPERATIONAL=1</code> */
-	public final static int CISCOVTP_VLAN_STATUS_OPERATIONAL = 1;
-	/** Constant <code>CISCOVTP_VLAN_STATUS_SUSPENDED=2</code> */
-	public final static int CISCOVTP_VLAN_STATUS_SUSPENDED = 2;
-	/** Constant <code>CISCOVTP_VLAN_STATUS_mtuTooBigForDevice=3</code> */
-	public final static int CISCOVTP_VLAN_STATUS_mtuTooBigForDevice = 3;
-	/** Constant <code>CISCOVTP_VLAN_STATUS_mtuTooBigForTrunk=4</code> */
-	public final static int CISCOVTP_VLAN_STATUS_mtuTooBigForTrunk = 4;
-
     /**
      * <P>The TABLE_OID is the object identifier that represents
      * the root of the table vtpVlanTable in the MIB forest.</P>
@@ -146,13 +126,13 @@ public final class CiscoVlanTableEntry extends Vlan {
 	}
 
 	@Override
-	public Integer getVlanStatus() {
-		return getInt32(VLAN_STATUS);
+	public VlanStatus getVlanStatus() {
+		return VlanStatus.get(getInt32(VLAN_STATUS));
 	}
 
 	@Override
-	public Integer getVlanType() {
-		return getInt32(VLAN_TYPE);
+	public VlanType getVlanType() {
+		return VlanType.get(getInt32(VLAN_TYPE));
 	}
 	
 }

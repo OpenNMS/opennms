@@ -29,6 +29,8 @@
 package org.opennms.netmgt.linkd.snmp;
 
 import org.opennms.netmgt.capsd.snmp.NamedSnmpVar;
+import org.opennms.netmgt.model.OnmsVlan.VlanStatus;
+import org.opennms.netmgt.model.OnmsVlan.VlanType;
 
 /**
  *<P>The IntelVlanTableEntry class is designed to hold all the MIB
@@ -96,12 +98,12 @@ public final class IntelVlanTableEntry extends Vlan {
 	}
 
 	@Override
-	public Integer getVlanStatus() {
-		return VLAN_STATUS_UNKNOWN;
+	public VlanStatus getVlanStatus() {
+		return VlanStatus.UNKNOWN;
 	}
 
 	@Override
-	public Integer getVlanType() {
-		return VLAN_TYPE_ETHERNET;
+	public VlanType getVlanType() {
+		return VlanType.CISCO_VTP_ETHERNET;
 	}
 }

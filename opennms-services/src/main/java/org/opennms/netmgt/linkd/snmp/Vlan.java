@@ -31,6 +31,7 @@ package org.opennms.netmgt.linkd.snmp;
 import org.opennms.netmgt.capsd.snmp.NamedSnmpVar;
 import org.opennms.netmgt.capsd.snmp.SnmpStore;
 import org.opennms.netmgt.model.OnmsVlan;
+import org.opennms.netmgt.model.OnmsVlan.VlanStatus;
 import org.opennms.netmgt.model.OnmsVlan.VlanType;
 import org.opennms.netmgt.snmp.SnmpResult;
 
@@ -55,20 +56,6 @@ public abstract class Vlan extends SnmpStore {
 
 	public final static String VLAN_TYPE = "vlanType";
 	
-    public static final int VLAN_TYPE_UNKNOWN = 0;
-    public static final int VLAN_TYPE_ETHERNET = 1;
-    public static final int VLAN_TYPE_FDDI = 2;
-    public static final int VLAN_TYPE_TOKEN_RING = 3;
-    public static final int VLAN_TYPE_FDDINET = 4;
-    public static final int VLAN_TYPE_TRNET = 5;
-    public static final int VLAN_TYPE_DEPRECATED = 6;
-
-    public static final int VLAN_STATUS_UNKNOWN = 0;
-    public static final int VLAN_STATUS_OPERATIONAL = 1;
-    public static final int VLAN_STATUS_SUSPENDED = 2;
-    public static final int VLAN_STATUS_MTU_TOO_BIG_FOR_DEVICE = 3;
-    public static final int VLAN_STATUS_MTU_TOO_BIG_FOR_TRUNK = 4;
-
 	public Vlan(NamedSnmpVar[] list) {
 		super(list);
 	}
@@ -95,11 +82,11 @@ public abstract class Vlan extends SnmpStore {
     	return getDisplayString(VLAN_NAME);
     }
     
-    abstract public Integer getVlanStatus();
-    abstract public Integer getVlanType();
+    abstract public VlanStatus getVlanStatus();
+    abstract public VlanType getVlanType();
     
     public OnmsVlan getOnmsVlan() {
-    	return new OnmsVlan(getVlanIndex(),getVlanName(),getVlanStatus(),VlanType.get(getVlanType()));
+    	return new OnmsVlan(getVlanIndex(),getVlanName(),getVlanStatus(),getVlanType());
     }
     
 }

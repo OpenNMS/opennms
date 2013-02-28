@@ -29,6 +29,8 @@
 package org.opennms.netmgt.linkd.snmp;
 
 import org.opennms.netmgt.capsd.snmp.NamedSnmpVar;
+import org.opennms.netmgt.model.OnmsVlan.VlanStatus;
+import org.opennms.netmgt.model.OnmsVlan.VlanType;
 
 /**
  *<P>The ExtremeNetworkVlanTableEntry class is designed to hold all the MIB-II
@@ -61,15 +63,6 @@ public final class ExtremeNetworkVlanTableEntry extends Vlan {
     /** Constant <code>EXTREME_VLAN_GLOBAL_ID="extremeVlanIfGlobalIdentifier"</code> */
     public final static String EXTREME_VLAN_GLOBAL_ID="extremeVlanIfGlobalIdentifier";
 	
-    public final static int EXTREME_VLAN_TYPE_LAYERTWO = 1;
-    
-	public final static int EXTREMECOMVLAN_STATUS_ACTIVE = 1;
-	public final static int EXTREMECOMVLAN_STATUS_NOTINSERVICE = 2;
-	public final static int EXTREMECOMVLANVLAN_STATUS_NOTREADY = 3;
-	public final static int EXTREMECOMVLAN_STATUS_CREATEANDGO = 4;
-	public final static int EXTREMECOMVLAN_STATUS_CREATEANDWAIT = 5;
-	public final static int EXTREMECOMVLANVLAN_STATUS_DESTROY = 6;
-
 	private static String VLAN_INDEX_OID=".1.3.6.1.4.1.1916.1.2.1.2.1.10";
 	private static String VLAN_NAME_OID=".1.3.6.1.4.1.1916.1.2.1.2.1.2";
 
@@ -120,13 +113,16 @@ public final class ExtremeNetworkVlanTableEntry extends Vlan {
 	}
 
 	@Override
-	public Integer getVlanStatus() {
-		return getInt32(VLAN_STATUS);
+	public VlanStatus getVlanStatus() {
+		
+		return VlanStatus.get(VlanStatus.ROWSTATUS_STARTING_INDEX + getInt32(VLAN_STATUS));
 	}
 
 	@Override
-	public Integer getVlanType() {
-		return getInt32(VLAN_TYPE);
+	public VlanType getVlanType() {
+		if (getInt32(VLAN_TYPE) == 1)
+			return VlanType.EXTREME_LAYER2;
+		return VlanType.UNKNOWN;		
 	}
 	
 }

@@ -29,6 +29,8 @@
 package org.opennms.netmgt.linkd.snmp;
 
 import org.opennms.netmgt.capsd.snmp.NamedSnmpVar;
+import org.opennms.netmgt.model.OnmsVlan.VlanStatus;
+import org.opennms.netmgt.model.OnmsVlan.VlanType;
 
 /**
  *<P>The ThreeComVlanTableEntry class is designed to hold all the MIB
@@ -52,13 +54,6 @@ public final class ThreeComVlanTableEntry extends Vlan {
     public final static String VLAN_IN = "a3ComVlanIfIndex";
 	/** Constant <code>VLAN_IFINFO="a3ComVlanIfInfo"</code> */
 	public final static String VLAN_IFINFO = "a3ComVlanIfInfo";
-
-	public final static int THREECOMVLAN_STATUS_ACTIVE = 1;
-	public final static int THREECOMVLAN_STATUS_NOTINSERVICE = 2;
-	public final static int THREECOMVLANVLAN_STATUS_NOTREADY = 3;
-	public final static int THREECOMVLAN_STATUS_CREATEANDGO = 4;
-	public final static int THREECOMVLAN_STATUS_CREATEANDWAIT = 5;
-	public final static int THREECOMVLANVLAN_STATUS_DESTROY = 6;
 
 	/**
 	 * <P>The keys that will be supported by default from the 
@@ -104,13 +99,13 @@ public final class ThreeComVlanTableEntry extends Vlan {
 	}
 
 	@Override
-	public Integer getVlanStatus() {
-		return getInt32(VLAN_STATUS);
+	public VlanStatus getVlanStatus() {
+		return VlanStatus.get(VlanStatus.ROWSTATUS_STARTING_INDEX+getInt32(VLAN_STATUS));
 	}
 
 	@Override
-	public Integer getVlanType() {
-		return getInt32(VLAN_TYPE);
+	public VlanType getVlanType() {
+		return VlanType.get(VlanType.THREECOM_STARTING_INDEX+getInt32(VLAN_TYPE));
 	}
 
 }

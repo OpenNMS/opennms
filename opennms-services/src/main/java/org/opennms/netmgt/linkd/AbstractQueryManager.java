@@ -72,10 +72,13 @@ import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsIpRouteInterface;
 import org.opennms.netmgt.model.OnmsIpRouteInterface.RouteType;
+import org.opennms.netmgt.model.OnmsStpInterface.StpPortStatus;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.OnmsStpInterface;
 import org.opennms.netmgt.model.OnmsStpNode;
+import org.opennms.netmgt.model.OnmsStpNode.BridgeBaseType;
+import org.opennms.netmgt.model.OnmsStpNode.StpProtocolSpecification;
 import org.opennms.netmgt.model.OnmsVlan;
 
 public abstract class AbstractQueryManager implements QueryManager {
@@ -906,7 +909,7 @@ public abstract class AbstractQueryManager implements QueryManager {
                 LogUtils.infof(this, "processDot1StpPortTable: Designated port (%s) is invalid on node %d. Skipping.", stpPortDesignatedPort, node.getNodeId());
                 stpPortDesignatedPort = "0000";
             } 
-            stpInterface.setStpPortState(dot1dstpptentry.getDot1dStpPortState());
+            stpInterface.setStpPortState(StpPortStatus.get(dot1dstpptentry.getDot1dStpPortState()));
             stpInterface.setStpPortPathCost(dot1dstpptentry.getDot1dStpPortPathCost());
             stpInterface.setStpPortDesignatedBridge(stpPortDesignatedBridge);
             stpInterface.setStpPortDesignatedRoot(dot1dstpptentry.getDot1dStpPortDesignatedRoot());
@@ -974,7 +977,7 @@ public abstract class AbstractQueryManager implements QueryManager {
         stpNode.setBaseBridgeAddress(baseBridgeAddress);
         LogUtils.debugf(this, "processStpNode: baseBridgeAddress = %s", baseBridgeAddress);
         stpNode.setBaseNumPorts(dod1db.getNumberOfPorts());
-        stpNode.setBaseType(dod1db.getBridgeType());
+        stpNode.setBaseType(BridgeBaseType.get(dod1db.getBridgeType()));
         stpNode.setBaseVlanName(vlan.getVlanName());
 
         if (snmpVlanColl.hasDot1dStp()) {
@@ -982,7 +985,7 @@ public abstract class AbstractQueryManager implements QueryManager {
 
             final Dot1dStpGroup dod1stp = snmpVlanColl.getDot1dStp();
 
-            stpNode.setStpProtocolSpecification(dod1stp.getStpProtocolSpecification());
+            stpNode.setStpProtocolSpecification(StpProtocolSpecification.get(dod1stp.getStpProtocolSpecification()));
             stpNode.setStpPriority(dod1stp.getStpPriority());
             stpNode.setStpRootCost(dod1stp.getStpRootCost());
             stpNode.setStpRootPort(dod1stp.getStpRootPort());

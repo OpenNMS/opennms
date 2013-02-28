@@ -28,12 +28,10 @@
 
 package org.opennms.web.element;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.opennms.netmgt.linkd.DbVlanEntry;
 import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.netmgt.model.OnmsVlan;
+import org.opennms.netmgt.model.OnmsVlan.VlanStatus;
+import org.opennms.netmgt.model.OnmsVlan.VlanType;
 import org.opennms.web.api.Util;
 
 /**
@@ -53,32 +51,14 @@ public class Vlan
     private final String m_lastPollTime;
     private final String m_status;
 
-    /**
-     * <p>String identifiers for the enumeration of values:</p>
-     * <ul>
-     * <li>{@link DbVlanEntry#VLAN_STATUS_UNKNOWN}</li>
-     * <li>{@link DbVlanEntry#VLAN_STATUS_OPERATIONAL}</li>
-     * <li>{@link DbVlanEntry#VLAN_STATUS_SUSPENDED}</li>
-     * <li>{@link DbVlanEntry#VLAN_STATUS_MTU_TOO_BIG_FOR_DEVICE}</li>
-     * <li>{@link DbVlanEntry#VLAN_STATUS_MTU_TOO_BIG_FOR_TRUNK}</li>
-     * </ul>
-     */ 
-    private static final String[] VLAN_STATUS = new String[] {
-        "unknown", //0
-        "operational", //1
-        "suspended", //2 
-        "mtuTooBigForDevice", //3
-        "mtuTooBigForTrunk" //4
-    };
-
     /* package-protected so only the NetworkElementFactory can instantiate */
     Vlan(OnmsVlan vlan)
     {
         m_nodeId = vlan.getNode().getId();
         m_vlanId = vlan.getVlanId();
         m_vlanname = vlan.getVlanName();
-        m_vlantype = vlantype;
-        m_vlanstatus = vlanstatus;
+        m_vlantype = VlanType.getVlanTypeString(vlan.getVlanType().getIntCode());
+        m_vlanstatus = VlanStatus.getVlanStatusString(vlan.getVlanStatus().getIntCode());
         m_lastPollTime = Util.formatDateToUIString(vlan.getLastPollTime()); 
         m_status = StatusType.getStatusString(vlan.getStatus().getCharCode());
     }
@@ -190,11 +170,7 @@ public class Vlan
      * @return a {@link java.lang.String} object.
      */
     public String getVlanStatusString() {
-        try {
-            return VLAN_STATUS[m_vlanstatus];
-        } catch (ArrayIndexOutOfBoundsException e) {
-            return VLAN_STATUS[DbVlanEntry.VLAN_STATUS_UNKNOWN];
-        }
+    	return m_vlanstatus;
     }
 
     /**

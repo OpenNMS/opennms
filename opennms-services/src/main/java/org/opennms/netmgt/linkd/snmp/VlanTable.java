@@ -3,6 +3,7 @@ package org.opennms.netmgt.linkd.snmp;
 import java.util.List;
 
 import org.opennms.netmgt.model.OnmsVlan;
+import org.opennms.netmgt.model.OnmsVlan.VlanStatus;
 
 public interface VlanTable {
     /**
@@ -18,7 +19,7 @@ public interface VlanTable {
     /**
      * The VLAN int to define default VLAN status, 1 means operational/active
      */
-	public static final int DEFAULT_VLAN_STATUS = 1;
+	public static final VlanStatus DEFAULT_VLAN_STATUS = VlanStatus.CISCOVTP_OPERATIONAL;
 
 	public List<OnmsVlan> getVlansForSnmpCollection();
 	

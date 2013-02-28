@@ -29,6 +29,8 @@
 package org.opennms.netmgt.linkd.snmp;
 
 import org.opennms.netmgt.capsd.snmp.NamedSnmpVar;
+import org.opennms.netmgt.model.OnmsVlan.VlanStatus;
+import org.opennms.netmgt.model.OnmsVlan.VlanType;
 
 /**
  *<P>The Dot1qStaticVlanTableEntry class is designed to hold all the MIB-II
@@ -100,12 +102,12 @@ public final class Dot1qStaticVlanTableEntry extends Vlan {
 	}
 
 	@Override
-	public Integer getVlanStatus() {
-		return getInt32(VLAN_STATUS);
+	public VlanStatus getVlanStatus() {
+		return VlanStatus.get(VlanStatus.ROWSTATUS_STARTING_INDEX+getInt32(VLAN_STATUS));
 	}
 
 	@Override
-	public Integer getVlanType() {
-		return VLAN_TYPE_ETHERNET;
+	public VlanType getVlanType() {
+		return VlanType.CISCO_VTP_ETHERNET;
 	}
 }

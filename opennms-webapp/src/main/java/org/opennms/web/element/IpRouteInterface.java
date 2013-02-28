@@ -31,6 +31,7 @@ package org.opennms.web.element;
 import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.netmgt.model.OnmsIpRouteInterface;
 import org.opennms.netmgt.model.OnmsIpRouteInterface.RouteType;
+import org.opennms.web.api.Util;
 
 
 
@@ -49,8 +50,8 @@ public class IpRouteInterface
 	int     m_routemetric4;
 	int     m_routemetric5;
 	String  m_routetype;
-	int     m_routeproto;
-        String  m_routedest;
+	String  m_routeproto;
+    String  m_routedest;
 	String  m_routemask;
 	String  m_routenexthop;
         String  m_lastPollTime;
@@ -72,11 +73,11 @@ public class IpRouteInterface
             m_routemetric4 = iproute.getRouteMetric4();
             m_routemetric5 = iproute.getRouteMetric5();
             m_routetype = RouteType.getRouteTypeString(iproute.getRouteType().getIntCode());
-            m_routeproto= iproute.getRouteProto();
+            m_routeproto= ElementUtil.getIpRouteProtocolString(iproute.getRouteProto());
             m_routenexthop = iproute.getRouteNextHop();
             m_routedest = iproute.getRouteDest();
             m_routemask = iproute.getRouteMask();
-            m_lastPollTime = iproute.getLastPollTime().toString(); 
+            m_lastPollTime = Util.formatDateToUIString(iproute.getLastPollTime()); 
             m_status = StatusType.getStatusString(iproute.getStatus().getCharCode());
         }
 
@@ -205,7 +206,7 @@ public class IpRouteInterface
 		 *
 		 * @return a int.
 		 */
-		public int get_routeproto() {
+		public String get_routeproto() {
 			return m_routeproto;
 		}
 

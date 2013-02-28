@@ -34,6 +34,8 @@ import java.util.List;
 
 import org.opennms.netmgt.capsd.snmp.SnmpStore;
 import org.opennms.netmgt.model.OnmsVlan;
+import org.opennms.netmgt.model.OnmsVlan.VlanStatus;
+import org.opennms.netmgt.model.OnmsVlan.VlanType;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 
@@ -76,8 +78,8 @@ public class CiscoVlanTable extends VlanTableBasic {
 		List<OnmsVlan> vlans = new ArrayList<OnmsVlan>();
 		for (SnmpStore elm: getEntries()) {
 			OnmsVlan vlan = ((CiscoVlanTableEntry) elm).getOnmsVlan();
-			if (vlan.getVlanType().getIntCode() == CiscoVlanTableEntry.CISCOVTP_VLAN_TYPE_ETHERNET 
-					&& vlan.getVlanStatus() == CiscoVlanTableEntry.CISCOVTP_VLAN_STATUS_OPERATIONAL )
+			if (vlan.getVlanType().equals(VlanType.CISCO_VTP_ETHERNET) 
+					&& vlan.getVlanStatus().equals(VlanStatus.CISCOVTP_OPERATIONAL))
 				vlans.add(vlan);
 		}
 		return vlans;

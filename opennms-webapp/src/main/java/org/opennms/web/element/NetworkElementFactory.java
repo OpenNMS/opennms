@@ -28,11 +28,6 @@
 
 package org.opennms.web.element;
 
-//import java.sql.Date;
-//import java.sql.ResultSet;
-//import java.sql.SQLException;
-//import java.sql.Timestamp;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -64,12 +59,10 @@ import org.opennms.netmgt.dao.MonitoredServiceDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.ServiceTypeDao;
 import org.opennms.netmgt.dao.SnmpInterfaceDao;
+import org.opennms.netmgt.dao.StpInterfaceDao;
 import org.opennms.netmgt.dao.StpNodeDao;
 import org.opennms.netmgt.dao.VlanDao;
 
-import org.opennms.netmgt.linkd.DbStpInterfaceEntry;
-import org.opennms.netmgt.linkd.DbStpNodeEntry;
-import org.opennms.netmgt.linkd.DbVlanEntry;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsArpInterface;
 import org.opennms.netmgt.model.OnmsCategory;
@@ -81,17 +74,18 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsRestrictions;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
+import org.opennms.netmgt.model.OnmsStpInterface;
 import org.opennms.netmgt.model.OnmsStpNode;
 import org.opennms.netmgt.model.OnmsVlan;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
-import org.opennms.web.api.Util;
+
 import org.opennms.web.svclayer.AggregateStatus;
+
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
@@ -128,10 +122,13 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     private StpNodeDao m_stpNodeDao;
     
     @Autowired
-    private MonitoredServiceDao m_monSvcDao;
+    private StpInterfaceDao m_stpInterfaceDao;
     
     @Autowired
     private VlanDao m_vlanDao;
+    
+    @Autowired
+    private MonitoredServiceDao m_monSvcDao;
     
     @Autowired
     private ServiceTypeDao m_serviceTypeDao;
@@ -139,9 +136,10 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     @Autowired
     private CategoryDao m_categoryDao;
     
-//    @Autowired
-//    SimpleJdbcTemplate m_jdbcTemplate;
+	@Autowired
+	private PlatformTransactionManager m_transactionManager;
 
+    
     public static NetworkElementFactoryInterface getInstance(ServletContext servletContext) {
         return getInstance(WebApplicationContextUtils.getWebApplicationContext(servletContext));    
     }
@@ -1154,6 +1152,16 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
      */
     @Override
     public StpInterface[] getStpInterface(int nodeID) {
+        final OnmsCriteria criteria = new OnmsCriteria(OnmsStpInterface.class);
+        criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
+        criteria.add(Restrictions.eq("node.id", nodeID));
+        criteria.add(Restrictions.ne("status", "D"));
+
+        List<StpInterface> stpinterfaces = new ArrayList<StpInterface>();
+    	for (OnmsStpInterface onmsStpInterface: m_stpInterfaceDao.findMatching(criteria)) {
+    		stpinterfaces.add(getStpInterface(onmsStpInterface));
+    	}
+    	/*
         String sqlQuery = "SELECT DISTINCT(stpnode.nodeid) AS droot, stpinterfacedb.* FROM "
             + "((SELECT DISTINCT(stpnode.nodeid) AS dbridge, stpinterface.* FROM "
             + "stpinterface LEFT JOIN stpnode ON SUBSTR(stpportdesignatedbridge,5,16) = stpnode.basebridgeaddress " 
@@ -1161,7 +1169,9 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
             + "WHERE stpinterface.status != 'D' AND stpinterface.nodeid = ?) AS stpinterfacedb "
             + "LEFT JOIN stpnode ON SUBSTR(stpportdesignatedroot, 5, 16) = stpnode.basebridgeaddress) order by stpinterfacedb.stpvlan, stpinterfacedb.ifindex;";
         List<StpInterface> nodes = m_jdbcTemplate.query(sqlQuery, new StpInterfaceRowMapper(), nodeID);
-        return nodes.toArray(new StpInterface[nodes.size()]);
+        */
+    	
+        return stpinterfaces.toArray(new StpInterface[stpinterfaces.size()]);
     }
 
     /**
@@ -1173,7 +1183,8 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
      * @throws java.sql.SQLException if any.
      */
     @Override
-    public StpInterface[] getStpInterface(int nodeID, int ifindex) throws SQLException {
+    public StpInterface[] getStpInterface(int nodeID, int ifindex) {
+    	/*
         String sqlQuery = "SELECT DISTINCT(stpnode.nodeid) AS droot, stpinterfacedb.* FROM "
             + "((SELECT DISTINCT(stpnode.nodeid) AS dbridge, stpinterface.* FROM "
             + "stpinterface LEFT JOIN stpnode ON SUBSTR(stpportdesignatedbridge,5,16) = stpnode.basebridgeaddress "
@@ -1181,7 +1192,19 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
             + "WHERE stpinterface.status != 'D' AND stpinterface.nodeid = ? AND stpinterface.ifindex = ?) AS stpinterfacedb "
             + "LEFT JOIN stpnode ON SUBSTR(stpportdesignatedroot, 5, 16) = stpnode.basebridgeaddress) order by stpinterfacedb.stpvlan, stpinterfacedb.ifindex;";
         List<StpInterface> nodes = m_jdbcTemplate.query(sqlQuery, new StpInterfaceRowMapper(), nodeID, ifindex);
-        return nodes.toArray(new StpInterface[nodes.size()]);
+        */
+
+    	final OnmsCriteria criteria = new OnmsCriteria(OnmsStpInterface.class);
+        criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
+        criteria.add(Restrictions.eq("node.id", nodeID));
+        criteria.add(Restrictions.eq("ifIndex", ifindex));
+        criteria.add(Restrictions.ne("status", "D"));
+
+        List<StpInterface> stpinterfaces = new ArrayList<StpInterface>();
+    	for (OnmsStpInterface onmsStpInterface: m_stpInterfaceDao.findMatching(criteria)) {
+    		stpinterfaces.add(getStpInterface(onmsStpInterface));
+    	}
+        return stpinterfaces.toArray(new StpInterface[stpinterfaces.size()]);
     }
 
     /**
@@ -1192,183 +1215,69 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
      * @throws java.sql.SQLException if any.
      */
     @Override
-    public StpNode[] getStpNode(int nodeID) throws SQLException {
+    public StpNode[] getStpNode(int nodeID) {
+    	/*
         String sqlQuery = "select distinct(e2.nodeid) as stpdesignatedrootnodeid, e1.* from (stpnode e1 left join stpnode e2 on substr(e1.stpdesignatedroot, 5, 16) = e2.basebridgeaddress) where e1.nodeid = ? AND e1.status != 'D' ORDER BY e1.basevlan";
         List<StpNode> nodes = m_jdbcTemplate.query(sqlQuery, new StpNodeRowMapper(), nodeID);
+		*/
+    	final OnmsCriteria criteria = new OnmsCriteria(OnmsStpNode.class);
+        criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
+        criteria.add(Restrictions.eq("node.id", nodeID));
+        criteria.add(Restrictions.ne("status", "D"));
+
+    	List<StpNode> nodes = new ArrayList<StpNode>();
+    	
+    	for (OnmsStpNode onmsstpnode: m_stpNodeDao.findMatching(criteria)) {
+    		nodes.add(getStpNode(onmsstpnode));
+    	}
         return nodes.toArray(new StpNode[nodes.size()]);
     }
 
+    private Integer getStpNodeFromStpRootIdentifier(String baseaddress) {
+    	
+        final OnmsCriteria criteria = new OnmsCriteria(OnmsStpNode.class);
+        criteria.add(Restrictions.eq("baseBridgeAddress", baseaddress.substring(5,16)));
 
-    /**
-     * This class converts data from the result set to {@link StpInterface} objects.
-     */
-    private class StpInterfaceRowMapper implements RowMapper<StpInterface> {
+        List<OnmsStpNode> stpnodes = m_stpNodeDao.findMatching(criteria);
+        if (stpnodes.size() == 1)
+        	return stpnodes.get(0).getId();
+        return null;
+    }
 
-        @Override
-        public StpInterface mapRow(ResultSet rs, int rowNum) throws SQLException {
-            StpInterface stpIf = new StpInterface();
-
-            Object element = new Integer(rs.getInt("nodeId"));
-            stpIf.m_nodeId = ((Integer) element).intValue();
-
-            element = rs.getTimestamp("lastpolltime");
-            if (element != null) {
-                stpIf.m_lastPollTime = Util.formatDateToUIString(new Date(
-                        ((Timestamp) element).getTime()));
-            }
-
-            element = new Integer(rs.getInt("bridgeport"));
-            if (element != null) {
-                stpIf.m_bridgeport = ((Integer) element).intValue();
-            }
-
-            element = new Integer(rs.getInt("ifindex"));
-            if (element != null) {
-                stpIf.m_ifindex = ((Integer) element).intValue();
-            }
-
-            element = rs.getString("stpportdesignatedroot");
-            stpIf.m_stpdesignatedroot = (String) element;
-
-            element = new Integer(rs.getInt("stpportdesignatedcost"));
-            if (element != null) {
-                stpIf.m_stpportdesignatedcost = ((Integer) element).intValue();
-            }
-
-            element = rs.getString("stpportdesignatedbridge");
-            stpIf.m_stpdesignatedbridge = (String) element;
-
-            element = rs.getString("stpportdesignatedport");
-            stpIf.m_stpdesignatedport = (String) element;
-
-            element = new Integer(rs.getInt("stpportpathcost"));
-            if (element != null) {
-                stpIf.m_stpportpathcost = ((Integer) element).intValue();
-            }
-
-            element = new Integer(rs.getInt("stpportstate"));
-            if (element != null && ((Integer)element).intValue() > 0) {
-                stpIf.m_stpportstate = ((Integer) element).intValue();
-            } else {
-                stpIf.m_stpportstate = DbStpInterfaceEntry.STP_PORT_DISABLED;
-            }
-
-            element = new Integer(rs.getInt("stpvlan"));
-            if (element != null) {
-                stpIf.m_stpvlan = ((Integer) element).intValue();
-            }
-
-            element = rs.getString("status");
-            if (element != null) {
-                stpIf.m_status = ((String) element).charAt(0);
-            } else {
-                stpIf.m_status = DbStpInterfaceEntry.STATUS_UNKNOWN;
-            }
-
-            element = new Integer(rs.getInt("dbridge"));
-            if (element != null) {
-                stpIf.m_stpbridgenodeid = ((Integer) element).intValue();
-            }
-
-            element = new Integer(rs.getInt("droot"));
-            if (element != null) {
-                stpIf.m_stprootnodeid = ((Integer) element).intValue();
-            }
-            
-            if (stpIf.get_ifindex() == -1 ) {
-                stpIf.m_ipaddr = getIpAddress(stpIf.get_nodeId());
-            } else {
-                stpIf.m_ipaddr = getIpAddress(stpIf.get_nodeId(), stpIf
-                        .get_ifindex());
-            }
-
-            return stpIf;
+    private StpInterface getStpInterface(OnmsStpInterface onmsStpInterface)  {
+        StpInterface stpIf = new StpInterface(onmsStpInterface);
+        Integer element = getStpNodeFromStpRootIdentifier(stpIf.get_stpdesignatedbridge());
+        if (element != null) {
+            stpIf.setStpBridgeNodeid(element);
         }
+
+        element = getStpNodeFromStpRootIdentifier(stpIf.get_stpdesignatedroot());
+        if (element != null) {
+            stpIf.setStpRootNodeid(element);
+        }
+        
+        if (stpIf.get_ifindex() == -1 ) {
+            stpIf.setIpAddress(getIpAddress(stpIf.get_nodeId()));
+        } else {
+        	stpIf.setIpAddress(getIpAddress(stpIf.get_nodeId(), stpIf
+                    .get_ifindex()));
+        }
+
+        return stpIf;
     }
 
     /**
      * This class converts data from the result set into {@link StpNode}
      * objects.
      */
-    private static class StpNodeRowMapper implements RowMapper<StpNode> {
-
-        @Override
-        public StpNode mapRow(ResultSet rs, int rowNum) throws SQLException {
-            StpNode stpNode = new StpNode();
-
-            Object element = new Integer(rs.getInt("nodeId"));
-            stpNode.m_nodeId = ((Integer) element).intValue();
-
-            element = rs.getString("basebridgeaddress");
-            stpNode.m_basebridgeaddress = (String) element;
-
-            element = rs.getString("stpdesignatedroot");
-            stpNode.m_stpdesignatedroot = (String) element;
-
-            element = rs.getTimestamp("lastpolltime");
-            if (element != null) {
-                stpNode.m_lastPollTime = Util.formatDateToUIString(new Date(
-                        ((Timestamp) element).getTime()));
-            }
-
-            element = new Integer(rs.getInt("basenumports"));
-            if (element != null) {
-                stpNode.m_basenumports = ((Integer) element).intValue();
-            }
-
-            element = new Integer(rs.getInt("basetype"));
-            if (element != null && ((Integer)element).intValue() > 0) {
-                stpNode.m_basetype = ((Integer) element).intValue();
-            } else {
-                stpNode.m_basetype = DbStpNodeEntry.BASE_TYPE_UNKNOWN;
-            }
-
-            element = new Integer(rs.getInt("basevlan"));
-            if (element != null) {
-                stpNode.m_basevlan = ((Integer) element).intValue();
-            }
-
-            element = rs.getString("basevlanname");
-            if (element != null) {
-                stpNode.m_basevlanname = (String) element;
-            }
-
-            element = new Integer(rs.getInt("stppriority"));
-            if (element != null) {
-                stpNode.m_stppriority = ((Integer) element).intValue();
-            }
-
-            element = new Integer(rs.getInt("stpprotocolspecification"));
-            if (element != null && ((Integer)element).intValue() > 0) {
-                stpNode.m_stpprotocolspecification = ((Integer) element).intValue();
-            } else {
-                stpNode.m_stpprotocolspecification = DbStpNodeEntry.STP_UNKNOWN;
-            }
-
-            element = new Integer(rs.getInt("stprootcost"));
-            if (element != null) {
-                stpNode.m_stprootcost = ((Integer) element).intValue();
-            }
-
-            element = new Integer(rs.getInt("stprootport"));
-            if (element != null) {
-                stpNode.m_stprootport = ((Integer) element).intValue();
-            }
-
-            element = rs.getString("status");
-            if (element != null) {
-                stpNode.m_status = ((String) element).charAt(0);
-            } else {
-                stpNode.m_status = DbStpNodeEntry.STATUS_UNKNOWN;
-            }
-
-            element = new Integer(rs.getInt("stpdesignatedrootnodeid"));
-            if (element != null) {
-                stpNode.m_stprootnodeid = ((Integer) element).intValue();
-            }
-
-            return stpNode;
+    private StpNode getStpNode(OnmsStpNode node) {
+        StpNode stpNode = new StpNode(node);
+        Integer element = getStpNodeFromStpRootIdentifier(node.getStpDesignatedRoot());
+        if (element != null) {
+            stpNode.m_stprootnodeid = element;
         }
+
+        return stpNode;
     }
 
     /**
@@ -1380,21 +1289,9 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
      */
     private String getIpAddress(int nodeid) {
         String retval = null;
-        List<String> rs = m_jdbcTemplate.query(
-            "SELECT DISTINCT(IPADDR) FROM IPINTERFACE WHERE NODEID = ?",
-            new RowMapper<String>() {
-                @Override
-                public String mapRow(ResultSet rs, int rowNum) throws SQLException {
-                    return rs.getString("ipaddr");
-                }
-            },
-            nodeid
-        );
-
-        for (String ipaddr : rs) {
-            retval = ipaddr;
+        for (OnmsIpInterface ipaddr : m_ipInterfaceDao.findByNodeId(nodeid)) {
+            retval = ipaddr.getIpAddress().getHostAddress();
         }
-
         return retval;
     }
 
@@ -1406,24 +1303,14 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
      * @return a {@link java.lang.String} object.
      * @throws java.sql.SQLException if any.
      */
+    @Transactional
     private String getIpAddress(int nodeid, int ifindex)
-            throws SQLException {
-        String retval = null;
-        List<String> rs = m_jdbcTemplate.query(
-            "SELECT DISTINCT(IPADDR) FROM IPINTERFACE WHERE NODEID = ? AND IFINDEX = ? ",
-            new RowMapper<String>() {
-                @Override
-                public String mapRow(ResultSet rs, int rowNum) throws SQLException {
-                    return rs.getString("ipaddr");
-                }
-            },
-            nodeid,
-            ifindex
-        );
-
-        for (String ipaddr : rs) {
-            retval = ipaddr;
-        }
+            {
+    	String retval = null;
+    	OnmsSnmpInterface snmpinterface = m_snmpInterfaceDao.findByNodeIdAndIfIndex(nodeid, ifindex);
+    	for (OnmsIpInterface ipinterface: snmpinterface.getIpInterfaces() ) {
+    		retval = ipinterface.getIpAddress().getHostAddress();
+    	}
 
         return retval;
     }
@@ -1680,6 +1567,15 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     @SuppressWarnings("unused")
     private void setStpNodeDao(StpNodeDao stpNodeDao) {
         m_stpNodeDao = stpNodeDao;
+    }
+
+    public StpInterfaceDao getStpInterfaceDao() {
+        return m_stpInterfaceDao;
+    }
+
+    @SuppressWarnings("unused")
+    private void setStpInterfaceDao(StpInterfaceDao stpInterfaceDao) {
+        m_stpInterfaceDao = stpInterfaceDao;
     }
 
     public VlanDao getVlanDao() {

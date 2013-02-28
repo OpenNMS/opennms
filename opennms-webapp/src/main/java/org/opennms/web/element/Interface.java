@@ -131,14 +131,12 @@ public class Interface {
             m_isSnmpPoll = ((String) element).charAt(0);
         }
 
-        java.util.Date capsdPoll = snmpIface.getLastCapsdPoll();
-        if (capsdPoll != null) {
-            m_snmpLastCapsdPoll = Util.formatDateToUIString(new Date((capsdPoll).getTime()));
+        if (snmpIface.getLastCapsdPoll() != null) {
+            m_snmpLastCapsdPoll = Util.formatDateToUIString(snmpIface.getLastCapsdPoll());
         }
 
-        java.util.Date snmpPoll = snmpIface.getLastSnmpPoll();
-        if (snmpPoll != null) {
-            m_snmpLastSnmpPoll = Util.formatDateToUIString(new Date((snmpPoll).getTime()));
+        if (snmpIface.getLastSnmpPoll() != null) {
+            m_snmpLastSnmpPoll = Util.formatDateToUIString(snmpIface.getLastSnmpPoll());
         }
     }
     

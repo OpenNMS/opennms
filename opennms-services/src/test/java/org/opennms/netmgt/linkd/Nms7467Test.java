@@ -230,7 +230,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         assertTrue(CISCO_WS_C2948_BRIDGEID.equals(stpnode.getBaseBridgeAddress()));
         assertEquals(50, stpnode.getBaseNumPorts().intValue());
 
-        assertEquals(CISCO_WS_C2948_STP_TYPE, stpnode.getBaseType().intValue());
+        assertEquals(CISCO_WS_C2948_STP_TYPE, stpnode.getBaseType());
         
         
         // 50 entry in stpinterface
@@ -347,7 +347,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         assertTrue(CISCO_C870_BRIDGEID.equals(stpnode.getBaseBridgeAddress()));
         assertEquals(1, stpnode.getBaseNumPorts().intValue());
 
-        assertEquals(CISCO_C870_STP_TYPE, stpnode.getBaseType().intValue());
+        assertEquals(CISCO_C870_STP_TYPE, stpnode.getBaseType());
         
         
         // 1 entry in stpinterface
@@ -449,7 +449,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         assertTrue(NETGEAR_SW_108_BRIDGEID.equals(stpnode.getBaseBridgeAddress()));
         assertEquals(8, stpnode.getBaseNumPorts().intValue());
 
-        assertEquals(NETGEAR_SW_108_STP_TYPE, stpnode.getBaseType().intValue());
+        assertEquals(NETGEAR_SW_108_STP_TYPE, stpnode.getBaseType());
         
         
         // 50 entry in stpinterface
