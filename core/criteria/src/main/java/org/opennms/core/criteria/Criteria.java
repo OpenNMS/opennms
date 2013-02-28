@@ -47,7 +47,7 @@ import java.util.regex.Pattern;
 
 import org.opennms.core.criteria.restrictions.Restriction;
 
-public class Criteria {
+public class Criteria implements Cloneable {
     public static interface CriteriaVisitor {
         public void visitClass(final Class<?> clazz);
 
@@ -134,7 +134,9 @@ public class Criteria {
 
     public void setOrders(final Collection<? extends Order> orderCollection) {
         m_orders.clear();
-        m_orders.addAll(orderCollection);
+        if (orderCollection != null) {
+            m_orders.addAll(orderCollection);
+        }
     }
 
     public Collection<Fetch> getFetchTypes() {
@@ -287,4 +289,16 @@ public class Criteria {
                 + ", limit=" + m_limit + ", offset=" + m_offset + "]";
     }
 
+    @Override
+    public Criteria clone() {
+        Criteria retval = new Criteria(getCriteriaClass());
+        retval.setAliases(getAliases());
+        retval.setDistinct(isDistinct());
+        retval.setFetchTypes(getFetchTypes());
+        retval.setLimit(getLimit());
+        retval.setOffset(getOffset());
+        retval.setOrders(getOrders());
+        retval.setRestrictions(getRestrictions());
+        return retval;
+    }
 }
