@@ -33,7 +33,9 @@ final class NodeMarkerClusterCallback implements MarkerClusterEventCallback {
                     return left.getSeverity() > right.getSeverity()? BEFORE : AFTER;
                 }
                 if (left.getNodeLabel() != right.getNodeLabel()) {
-                    return left.getNodeLabel() == null? AFTER : left.getNodeLabel().toLowerCase().compareTo(right.getNodeLabel() == null? BEFORE : right.getNodeLabel().toLowerCase());
+                    if (left.getNodeLabel() == null) return AFTER;
+                    if (right.getNodeLabel() == null) return BEFORE;
+                    return left.getNodeLabel().toLowerCase().compareTo(right.getNodeLabel().toLowerCase());
                 }
                 return left.getNodeId().compareTo(right.getNodeId());
             }
