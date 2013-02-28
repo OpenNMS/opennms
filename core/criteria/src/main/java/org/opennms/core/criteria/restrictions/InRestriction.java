@@ -32,21 +32,21 @@ import java.util.Collection;
 
 public class InRestriction extends AttributeValueRestriction {
 
-	public InRestriction(final String attribute, final Collection<?> collection) {
-		super(RestrictionType.IN, attribute, collection);
-	}
+    public InRestriction(final String attribute, final Collection<?> collection) {
+        super(RestrictionType.IN, attribute, collection);
+    }
 
-	public Collection<?> getValues() {
-		return (Collection<?>)this.getValue();
-	}
+    public Collection<?> getValues() {
+        return (Collection<?>) this.getValue();
+    }
 
-	@Override
-	public void visit(final RestrictionVisitor visitor) {
-		visitor.visitIn(this);
-	}
+    @Override
+    public void visit(final RestrictionVisitor visitor) {
+        visitor.visitIn(this);
+    }
 
-	@Override
-	public String toString() {
-		return "InRestriction [attribute=" + getAttribute() + ", values=" + getValues() + "]";
-	}
+    @Override
+    public String toString() {
+        return "InRestriction [attribute=" + getAttribute() + ", values=" + getValues() + "]";
+    }
 }
