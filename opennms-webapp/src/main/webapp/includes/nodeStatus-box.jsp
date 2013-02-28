@@ -40,7 +40,7 @@
 <%@page language="java"
         contentType="text/html"
         session="true"
-        import="org.opennms.web.alarm.*,org.opennms.web.MissingParameterException,org.opennms.core.utils.WebSecurityUtils,org.opennms.netmgt.model.OnmsSeverity" %>
+        import="org.opennms.web.alarm.*,org.opennms.web.servlet.MissingParameterException,org.opennms.core.utils.WebSecurityUtils,org.opennms.netmgt.model.OnmsSeverity" %>
 
 <%
     int nodeId = -1;
