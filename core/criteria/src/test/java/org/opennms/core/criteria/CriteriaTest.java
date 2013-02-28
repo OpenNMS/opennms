@@ -203,5 +203,18 @@ public class CriteriaTest {
 		cb.ne("id", 8);
 		expected.add(Restrictions.not(Restrictions.eq("id", 8)));
 		assertEquals(expected, cb.toCriteria().getRestrictions());
+		
+		cb = new CriteriaBuilder(OnmsAlarm.class);
+                cb.id(1).and(Restrictions.gt("firstEventTime", d), Restrictions.lt("severity", OnmsSeverity.CRITICAL));
+                expected.clear();
+                expected.add(Restrictions.eq("id", 1));
+                expected.add(Restrictions.and(Restrictions.gt("firstEventTime", d), Restrictions.lt("severity", OnmsSeverity.CRITICAL)));
+                cb.like("description", "*foo*").ilike("uei", "*bar*");
+                expected.add(Restrictions.like("description", "*foo*"));
+                expected.add(Restrictions.ilike("uei", "*bar*"));
+		inValues.clear();
+                cb.in("nodeLabel", inValues);
+                expected.add(Restrictions.in("nodeLabel", inValues));
+                assertEquals(expected, cb.toCriteria().getRestrictions());
 	}
 }

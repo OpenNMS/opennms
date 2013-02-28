@@ -318,7 +318,11 @@ public class HibernateCriteriaConverter implements CriteriaConverter<DetachedCri
 
 		@Override
 		public void visitIn(final InRestriction restriction) {
-			m_criterions.add(org.hibernate.criterion.Restrictions.in(restriction.getAttribute(), restriction.getValues()));
+		        if (restriction.getValues() == null || restriction.getValues().size() == 0) {
+		            m_criterions.add(org.hibernate.criterion.Restrictions.sqlRestriction("0"));
+		        } else {
+		            m_criterions.add(org.hibernate.criterion.Restrictions.in(restriction.getAttribute(), restriction.getValues()));
+		        }
 		}
 
 		@Override
