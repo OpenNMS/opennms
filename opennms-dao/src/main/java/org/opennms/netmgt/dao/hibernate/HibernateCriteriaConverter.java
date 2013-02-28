@@ -77,15 +77,40 @@ public class HibernateCriteriaConverter implements CriteriaConverter<DetachedCri
 		return visitor.getCriteria(session);
 	}
 
-	@Override
-	public DetachedCriteria convert(final Criteria criteria) {
-		final HibernateCriteriaVisitor visitor = new HibernateCriteriaVisitor();
-		criteria.visit(visitor);
+        @Override
+        public DetachedCriteria convert(final Criteria criteria) {
+                final HibernateCriteriaVisitor visitor = new HibernateCriteriaVisitor();
+                criteria.visit(visitor);
 
-		return visitor.getCriteria();
-	}
+                return visitor.getCriteria();
+        }
 
-	public static final class HibernateCriteriaVisitor extends AbstractCriteriaVisitor {
+        public org.hibernate.Criteria convertForCount(final Criteria criteria, final Session session) {
+            final HibernateCriteriaVisitor visitor = new CountHibernateCriteriaVisitor();
+            criteria.visit(visitor);
+            
+            return visitor.getCriteria(session);
+        }
+
+        @Override
+        public DetachedCriteria convertForCount(final Criteria criteria) {
+                final HibernateCriteriaVisitor visitor = new HibernateCriteriaVisitor() {
+                    public void visitOrder(final Order order) {
+                        // skip order-by when converting for count
+                    }
+                };
+                criteria.visit(visitor);
+
+                return visitor.getCriteria();
+        }
+
+	public static class CountHibernateCriteriaVisitor extends HibernateCriteriaVisitor {
+            public void visitOrder(final Order order) {
+                // skip order-by when converting for count
+            }
+        }
+
+	public static class HibernateCriteriaVisitor extends AbstractCriteriaVisitor {
 		private DetachedCriteria m_criteria;
 		private Class<?> m_class;
 		private Set<org.hibernate.criterion.Order> m_orders = new LinkedHashSet<org.hibernate.criterion.Order>();
@@ -134,7 +159,7 @@ public class HibernateCriteriaConverter implements CriteriaConverter<DetachedCri
 
 		@Override
 		public void visitOrder(final Order order) {
-			final HibernateOrderVisitor visitor = new HibernateOrderVisitor();
+		        final HibernateOrderVisitor visitor = new HibernateOrderVisitor();
 			order.visit(visitor);
 			// we hold onto these later because they need to be applied after distinct projection
 			m_orders.add(visitor.getOrder());
