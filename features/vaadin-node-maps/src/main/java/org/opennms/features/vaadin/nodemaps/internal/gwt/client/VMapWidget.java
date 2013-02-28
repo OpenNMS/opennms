@@ -29,10 +29,15 @@
 package org.opennms.features.vaadin.nodemaps.internal.gwt.client;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
+import org.discotools.gwt.leaflet.client.types.Icon;
+import org.discotools.gwt.leaflet.client.types.IconOptions;
 import org.discotools.gwt.leaflet.client.types.LatLng;
+import org.discotools.gwt.leaflet.client.types.Point;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.user.client.Command;
@@ -43,10 +48,10 @@ import com.vaadin.terminal.gwt.client.VConsole;
 
 public class VMapWidget extends GWTMapWidget implements Paintable {
 
-    @SuppressWarnings("unused")
     private ApplicationConnection m_client;
-    @SuppressWarnings("unused")
     private String m_uidlId;
+    
+    private Map<String,Icon> m_icons;
 
     public VMapWidget() {
         super();
@@ -54,11 +59,17 @@ public class VMapWidget extends GWTMapWidget implements Paintable {
         VConsole.log("div ID = " + getElement().getId());
     }
 
+    private static native final boolean isRetina() /*-{
+        return $wnd.L.Browser.retina;
+    }-*/;
+
     @Override
     public void updateFromUIDL(final UIDL uidl, final ApplicationConnection client) {
         if (client.updateComponent(this, uidl, true)) return;
         m_client = client;
         m_uidlId = uidl.getId();
+
+        initializeIcons();
 
         final UIDL nodeUIDL = uidl.getChildByTagName("nodes");
 
@@ -76,6 +87,11 @@ public class VMapWidget extends GWTMapWidget implements Paintable {
                 if (node.hasAttribute(key)) feature.putProperty(key, node.getStringAttribute(key));
             }
 
+            if (m_icons.containsKey(feature.getSeverityLabel())) {
+                feature.setIcon(m_icons.get(feature.getSeverityLabel()));
+            } else {
+                feature.setIcon(m_icons.get("Normal"));
+            }
             feature.bindPopup(NodeMarkerClusterCallback.getPopupTextForMarker(feature));
             featureCollection.add(feature);
         }
@@ -86,5 +102,27 @@ public class VMapWidget extends GWTMapWidget implements Paintable {
                 updateFeatureLayer();
             }
         });
+    }
+
+    private void initializeIcons() {
+        if (m_icons == null) {
+            m_icons = new HashMap<String,Icon>();
+            final String basepath = m_client.getAppUri();
+            for (final String severity : new String[] { "Normal", "Warning", "Minor", "Major", "Critical" }) {
+                IconOptions options = new IconOptions();
+                options.setIconSize(new Point(25,41));
+                options.setIconAnchor(new Point(12,41));
+                options.setPopupAnchor(new Point(1,-34));
+                options.setShadowUrl(new Point(41,41));
+                if (isRetina()) {
+                    options.setIconUrl(basepath + "../VAADIN/widgetsets/org.opennms.features.vaadin.nodemaps.internal.gwt.NodeMapsWidgetset/images/" + severity + "@2x.png");
+                } else {
+                    options.setIconUrl(basepath + "../VAADIN/widgetsets/org.opennms.features.vaadin.nodemaps.internal.gwt.NodeMapsWidgetset/images/" + severity + ".png");
+                }
+                Icon icon = new Icon(options);
+
+                m_icons.put(severity, icon);
+            }
+        }
     }
 }

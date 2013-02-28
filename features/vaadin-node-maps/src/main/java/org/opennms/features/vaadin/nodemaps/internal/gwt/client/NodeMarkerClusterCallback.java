@@ -49,8 +49,9 @@ final class NodeMarkerClusterCallback implements MarkerClusterEventCallback {
     }
 
     public static String getPopupTextForMarker(final NodeMarker marker) {
+        // TODO: THIS IS AWFUL
         final StringBuilder sb = new StringBuilder();
-        sb.append("<h2>Node ").append(marker.getNodeLabel()).append("</h2>");
+        sb.append("<h2><a href=\"/opennms/element/node.jsp?node=" + marker.getNodeId() + "\" target=\"_blank\">Node ").append(marker.getNodeLabel()).append("</a></h2>");
         sb.append("<p>");
         sb.append("Node ID: ").append(marker.getNodeId()).append("<br/>");
         sb.append("Foreign Source: ").append(marker.getForeignSource()).append("<br/>");
