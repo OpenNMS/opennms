@@ -7,6 +7,7 @@
   <componentDescriptors>
     <componentDescriptor>src/assembly/components/adapters.xml</componentDescriptor>
     <componentDescriptor>src/assembly/components/base-assembly.xml</componentDescriptor>
+    <componentDescriptor>src/assembly/components/cifs.xml</componentDescriptor>
     <componentDescriptor>src/assembly/components/dhcp.xml</componentDescriptor>
     <componentDescriptor>src/assembly/components/juniper-tca.xml</componentDescriptor>
     <componentDescriptor>src/assembly/components/ncs.xml</componentDescriptor>
