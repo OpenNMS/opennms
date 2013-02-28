@@ -197,32 +197,35 @@ public class MapWidgetComponent extends VerticalLayout {
             }
         }
 
-        m_log.debug("getting alarms for nodes");
-        final CriteriaBuilder ab = new CriteriaBuilder(OnmsAlarm.class);
-        ab.alias("node", "node");
-        ab.ge("severity", OnmsSeverity.WARNING);
-        ab.in("node.id", nodes.keySet());
-        ab.orderBy("node.id").asc();
-        ab.orderBy("severity").desc();
-
         int lastId = -1;
         int unackedCount = 0;
-        for (final OnmsAlarm alarm : m_alarmDao.findMatching(ab.toCriteria())) {
-            final int nodeId = alarm.getNodeId();
-            m_log.debug("nodeId = {}, lastId = {}, unackedCount = {}", new Object[] { nodeId, lastId, unackedCount });
-            if (nodeId != lastId) {
-                m_log.debug("  setting severity for node {} to {}", new Object[] { nodeId, alarm.getSeverity().getLabel() });
-                nodes.get(nodeId).setSeverity(alarm.getSeverity());
-                if (lastId != -1) {
-                    nodes.get(nodeId).setUnackedCount(unackedCount);
-                    unackedCount = 0;
-                }
-            }
-            if (alarm.getAckUser() == null) {
-                unackedCount++;
-            }
 
-            lastId = nodeId;
+        if (!nodes.isEmpty()) {
+            m_log.debug("getting alarms for nodes");
+            final CriteriaBuilder ab = new CriteriaBuilder(OnmsAlarm.class);
+            ab.alias("node", "node");
+            ab.ge("severity", OnmsSeverity.WARNING);
+            ab.in("node.id", nodes.keySet());
+            ab.orderBy("node.id").asc();
+            ab.orderBy("severity").desc();
+    
+            for (final OnmsAlarm alarm : m_alarmDao.findMatching(ab.toCriteria())) {
+                final int nodeId = alarm.getNodeId();
+                m_log.debug("nodeId = {}, lastId = {}, unackedCount = {}", new Object[] { nodeId, lastId, unackedCount });
+                if (nodeId != lastId) {
+                    m_log.debug("  setting severity for node {} to {}", new Object[] { nodeId, alarm.getSeverity().getLabel() });
+                    nodes.get(nodeId).setSeverity(alarm.getSeverity());
+                    if (lastId != -1) {
+                        nodes.get(nodeId).setUnackedCount(unackedCount);
+                        unackedCount = 0;
+                    }
+                }
+                if (alarm.getAckUser() == null) {
+                    unackedCount++;
+                }
+    
+                lastId = nodeId;
+            }
         }
 
         if (lastId != -1) {
