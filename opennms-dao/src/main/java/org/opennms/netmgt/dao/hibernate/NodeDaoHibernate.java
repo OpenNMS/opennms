@@ -264,8 +264,8 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
                             }
 
                             // Implements Hibernate API
-                            @SuppressWarnings("unchecked")
-                            public List transformList(List collection) {
+                            @SuppressWarnings("rawtypes")
+							public List transformList(List collection) {
                                 return collection;
                             }
                 		    
