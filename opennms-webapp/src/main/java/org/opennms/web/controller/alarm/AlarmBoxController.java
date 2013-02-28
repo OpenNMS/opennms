@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,40 +26,40 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.controller.outage;
+package org.opennms.web.controller.alarm;
+
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.opennms.netmgt.model.outage.OutageSummary;
-import org.opennms.web.outage.WebOutageRepository;
+import org.opennms.netmgt.model.alarm.AlarmSummary;
+import org.opennms.web.alarm.AcknowledgeType;
+import org.opennms.web.alarm.WebAlarmRepository;
+import org.opennms.web.alarm.filter.AlarmCriteria;
+import org.opennms.web.filter.Filter;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
 /**
- * A controller that handles querying the outages table to create the front-page
- * outage summary box.
+ * A controller that handles querying the alarm table to create the front-page
+ * alarm summary box.
  *
- * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
- * @author <a href="http://www.opennms.org/">OpenNMS</a>
- * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
- * @author <a href="http://www.opennms.org/">OpenNMS</a>
- * @version $Id: $
- * @since 1.8.1
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class OutageBoxController extends AbstractController implements InitializingBean {
+public class AlarmBoxController extends AbstractController implements InitializingBean {
     public static final int ROWS = 12;
 
-    private WebOutageRepository m_webOutageRepository;
+    private WebAlarmRepository m_webAlarmRepository;
     private String m_successView;
-    
+
     /** {@inheritDoc} */
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        int rows = Integer.getInteger("opennms.nodesWithOutages.count", ROWS);
-        final String parm = request.getParameter("outageCount");
+        int rows = Integer.getInteger("opennms.nodesWithProblems.count", ROWS);
+        final String parm = request.getParameter("alarmCount");
         if (parm != null) {
             try {
                 rows = Integer.valueOf(parm);
@@ -67,12 +67,13 @@ public class OutageBoxController extends AbstractController implements Initializ
                 // ignore, and let it fall back to the defaults
             }
         }
-        OutageSummary[] summaries = m_webOutageRepository.getCurrentOutages(rows);
-        int outagesRemaining = (m_webOutageRepository.countCurrentOutages() - summaries.length);
+        List<AlarmSummary> summaries = m_webAlarmRepository.getCurrentNodeAlarmSummaries(rows);
+        AlarmCriteria criteria = new AlarmCriteria(AcknowledgeType.UNACKNOWLEDGED, new Filter[] {});
+        int alarmCount = m_webAlarmRepository.countMatchingAlarms(criteria);
 
         ModelAndView modelAndView = new ModelAndView(getSuccessView());
         modelAndView.addObject("summaries", summaries);
-        modelAndView.addObject("moreCount", outagesRemaining);
+        modelAndView.addObject("alarmCount", alarmCount);
         return modelAndView;
 
     }
@@ -89,14 +90,14 @@ public class OutageBoxController extends AbstractController implements Initializ
     public void setSuccessView(String successView) {
         m_successView = successView;
     }
-    
+
     /**
-     * <p>setWebOutageRepository</p>
+     * <p>setWebAlarmRepository</p>
      *
-     * @param webOutageRepository a {@link org.opennms.web.outage.WebOutageRepository} object.
+     * @param webAlarmRepository a {@link org.opennms.web.alarm.WebAlarmRepository} object.
      */
-    public void setWebOutageRepository(WebOutageRepository webOutageRepository) {
-        m_webOutageRepository = webOutageRepository;
+    public void setWebAlarmRepository(WebAlarmRepository webAlarmRepository) {
+        m_webAlarmRepository = webAlarmRepository;
     }
 
     /**
@@ -104,7 +105,7 @@ public class OutageBoxController extends AbstractController implements Initializ
      */
     public void afterPropertiesSet() {
         Assert.notNull(m_successView, "property successView must be set");
-        Assert.notNull(m_webOutageRepository, "webOutageRepository must be set");
+        Assert.notNull(m_webAlarmRepository, "webAlarmRepository must be set");
     }
 
 }

@@ -32,6 +32,7 @@ import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.TroubleTicketState;
+import org.opennms.netmgt.model.alarm.AlarmSummary;
 import org.opennms.web.alarm.filter.*;
 import org.opennms.web.alarm.filter.AlarmCriteria.AlarmCriteriaVisitor;
 import org.opennms.web.alarm.filter.AlarmCriteria.BaseAlarmCriteriaVisitor;
@@ -374,6 +375,10 @@ public class JdbcWebAlarmRepository implements WebAlarmRepository {
         throw new UnsupportedOperationException("Not supported yet. JdbcWebAlarmRepositony is deprecated.");
     }
 
+    public List<AlarmSummary> getCurrentNodeAlarmSummaries(int rows) {
+        throw new UnsupportedOperationException("Not supported yet. JdbcWebAlarmRepositony is deprecated.");
+    }
+
     private int queryForInt(String sql, PreparedStatementSetter setter) throws DataAccessException {
         Integer number = queryForObject(sql, setter, new SingleColumnRowMapper<Integer>(Integer.class));
         return (number != null ? number.intValue() : 0);
@@ -390,4 +395,5 @@ public class JdbcWebAlarmRepository implements WebAlarmRepository {
     private JdbcOperations jdbc() {
         return m_simpleJdbcTemplate.getJdbcOperations();
     }
+
 }

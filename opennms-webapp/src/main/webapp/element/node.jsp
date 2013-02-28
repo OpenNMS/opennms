@@ -296,6 +296,10 @@
   </ul>
 </div>
 </div>
+<% String showNodeStatusBar = System.getProperty("opennms.nodeStatusBar.show", "false");
+   if (Boolean.parseBoolean(showNodeStatusBar)) { %>
+<jsp:include page="/includes/nodeStatus-box.jsp?nodeId=${model.id}" flush="false" />
+<% } %>
 <div class="TwoColLeft">
   
   

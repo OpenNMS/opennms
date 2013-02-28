@@ -32,6 +32,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import java.util.Date;
+import java.util.List;
+
+import junit.framework.Assert;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,6 +45,7 @@ import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.model.alarm.AlarmSummary;
 import org.opennms.test.ThrowableAnticipator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -208,4 +212,41 @@ public class AlarmDaoTest {
         
         ta.verifyAnticipated();
     }
+
+	@Test
+	@Transactional
+	public void testAlarmSummary() {
+	    OnmsEvent event = new OnmsEvent();
+	    event.setEventLog("Y");
+	    event.setEventDisplay("Y");
+	    event.setEventCreateTime(new Date());
+	    event.setDistPoller(m_distPollerDao.load("localhost"));
+	    event.setEventTime(new Date());
+	    event.setEventSeverity(new Integer(7));
+	    event.setEventUei("uei://org/opennms/test/EventDaoTest");
+	    event.setEventSource("test");
+	    m_eventDao.save(event);
+
+	    OnmsNode node = m_nodeDao.findAll().iterator().next();
+
+	    OnmsAlarm alarm = new OnmsAlarm();
+
+	    alarm.setNode(node);
+	    alarm.setUei(event.getEventUei());
+	    alarm.setSeverityId(event.getEventSeverity());
+	    alarm.setFirstEventTime(event.getEventTime());
+	    alarm.setSeverityId(event.getEventSeverity());
+	    alarm.setLastEvent(event);
+	    alarm.setCounter(1);
+	    alarm.setDistPoller(m_distPollerDao.load("localhost"));
+
+	    m_alarmDao.save(alarm);
+
+	    List<AlarmSummary> summary = m_alarmDao.getNodeAlarmSummaries(5);
+	    Assert.assertNotNull(summary);
+	    Assert.assertEquals(1, summary.size());
+	    AlarmSummary sum = summary.get(0);
+	    Assert.assertEquals(node.getLabel(), sum.getNodeLabel());
+            Assert.assertEquals(alarm.getSeverity().getId(), sum.getMaxSeverity().getId());
+	}
 }
