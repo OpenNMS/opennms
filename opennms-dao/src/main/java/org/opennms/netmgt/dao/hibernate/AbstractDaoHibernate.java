@@ -346,7 +346,8 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
     public int countMatching(final org.opennms.core.criteria.Criteria criteria) throws DataAccessException {
     	final HibernateCallback<Integer> callback = new HibernateCallback<Integer>() {
             public Integer doInHibernate(final Session session) throws HibernateException, SQLException {
-            	final Criteria hibernateCriteria = m_criteriaConverter.convert(criteria, session);
+                
+            	final Criteria hibernateCriteria = m_criteriaConverter.convertForCount(criteria, session);
             	hibernateCriteria.setProjection(Projections.rowCount());
                 return (Integer)hibernateCriteria.uniqueResult();
             }
