@@ -1,0 +1,4 @@
+#!/bin/sh -
+
+ILR_JAR=`ls -1 "${install.dir}"/lib/org.opennms.features.instrumentationLogReader-*.jar | head -n 1`
+exec ${install.bin.dir}/runjava -r -- -jar "$ILR_JAR" "$@"
