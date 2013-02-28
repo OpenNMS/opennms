@@ -11,6 +11,33 @@ import org.discotools.gwt.leaflet.client.popup.PopupOptions;
 import com.vaadin.terminal.gwt.client.VConsole;
 
 final class NodeMarkerClusterCallback implements MarkerClusterEventCallback {
+    private static final class NodeMarkerComparator implements Comparator<NodeMarker> {
+        final static int BEFORE = -1;
+
+        final static int EQUAL = 0;
+
+        final static int AFTER = 1;
+
+        @Override
+        public int compare(final NodeMarker left, final NodeMarker right) {
+            if (left == right) return EQUAL;
+            if (left.getSeverity() != right.getSeverity()) {
+                return left.getSeverity() > right.getSeverity()? BEFORE : AFTER;
+            }
+            if (left.getNodeLabel() != right.getNodeLabel()) {
+                if (left.getNodeLabel() == null) return AFTER;
+                if (right.getNodeLabel() == null) return BEFORE;
+                return left.getNodeLabel().toLowerCase().compareTo(right.getNodeLabel().toLowerCase());
+            }
+            if (left.getNodeId() != right.getNodeId()) {
+                if (left.getNodeId() == null) return AFTER;
+                if (right.getNodeId() == null) return BEFORE;
+                return left.getNodeId().compareTo(right.getNodeId());
+            }
+            return EQUAL;
+        }
+    }
+
     NodeMarkerClusterCallback() {
     }
 
@@ -21,25 +48,7 @@ final class NodeMarkerClusterCallback implements MarkerClusterEventCallback {
         @SuppressWarnings("unchecked")
         final List<NodeMarker> markers = (List<NodeMarker>)cluster.getAllChildMarkers();
         VConsole.log("Clicked, processing " + markers.size() + " markers.");
-        Collections.sort(markers, new Comparator<NodeMarker>() {
-            final static int BEFORE = -1;
-            final static int EQUAL = 0;
-            final static int AFTER = 1;
-
-            @Override
-            public int compare(final NodeMarker left, final NodeMarker right) {
-                if (left == right) return EQUAL;
-                if (left.getSeverity() != right.getSeverity()) {
-                    return left.getSeverity() > right.getSeverity()? BEFORE : AFTER;
-                }
-                if (left.getNodeLabel() != right.getNodeLabel()) {
-                    if (left.getNodeLabel() == null) return AFTER;
-                    if (right.getNodeLabel() == null) return BEFORE;
-                    return left.getNodeLabel().toLowerCase().compareTo(right.getNodeLabel().toLowerCase());
-                }
-                return left.getNodeId().compareTo(right.getNodeId());
-            }
-        });
+        Collections.sort(markers, new NodeMarkerComparator());
 
         if (markers.size() == 1) {
             final NodeMarker marker = markers.get(0);
