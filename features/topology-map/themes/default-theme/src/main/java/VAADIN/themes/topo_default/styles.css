@@ -49,6 +49,10 @@ div.v-button-down .v-button-wrap{
     background-image: url(../reindeer/button/img/button-sprites.png);
 }
 
+div.v-table-header-wrap {
+    text-transform: none;
+}
+
 .semantic-zoom-button .v-button-wrap{
 	padding: 7px 4px 0 1px;
 }

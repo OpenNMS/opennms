@@ -133,12 +133,22 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
 		<bean id="alarmDaoContainer" class="org.opennms.features.topology.app.internal.support.AlarmDaoContainer" scope="prototype">
 			<argument ref="alarmDao" />
 		</bean>
-
+		
 		<bean id="alarmTable" class="org.opennms.features.topology.app.internal.SelectionAwareTable" scope="prototype">
 			<argument value="Alarms"/>
 			<argument ref="alarmDaoContainer" />
 			<property name="columnReorderingAllowed" value="true"/>
 			<property name="columnCollapsingAllowed" value="true"/>
+			<property name="columnGenerators">
+				<map>
+					<entry key="serviceType">
+						<bean class="org.opennms.features.topology.app.internal.support.OnmsServiceTypeGenerator"/>
+					</entry>
+					<entry key="ipAddr">
+						<bean class="org.opennms.features.topology.app.internal.support.InetAddressGenerator"/>
+					</entry>
+				</map>
+			</property>
 			<property name="visibleColumns">
 				<array>
 					<value>id</value>
@@ -153,8 +163,22 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
 					<value>logMsg</value>
 				</array>
 			</property>
+			<property name="columnHeaders">
+				<array>
+					<value>ID</value>
+					<value>Severity</value>
+					<value>Last Event Time</value>
+					<value>Count</value>
+					<value>Node</value>
+					<value>ifIndex</value>
+					<value>IP Address</value>
+					<value>Service</value>
+					<value>UEI</value>
+					<value>Log Message</value>
+				</array>
+			</property>
 		</bean>
-
+		
 		<bean id="alarmViewContribution" class="org.opennms.features.topology.app.internal.support.BlueprintIViewContribution">
 			<argument ref="blueprintContainer" />
 			<argument value="alarmTable" />
@@ -178,6 +202,13 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
 			<argument ref="nodeDaoContainer" />
 			<property name="columnReorderingAllowed" value="true"/>
 			<property name="columnCollapsingAllowed" value="true"/>
+			<property name="columnGenerators">
+				<map>
+					<entry key="primaryInterface">
+						<bean class="org.opennms.features.topology.app.internal.support.OnmsIpInterfaceGenerator"/>
+					</entry>
+				</map>
+			</property>
 			<property name="visibleColumns">
 				<array>
 					<value>id</value>
@@ -187,6 +218,22 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
 					<value>labelSource</value>
 					<value>lastCapsdPoll</value>
 					<value>primaryInterface</value>
+					<value>sysObjectId</value>
+					<value>sysName</value>
+					<value>sysDescription</value>
+					<value>sysContact</value>
+					<value>sysLocation</value>
+				</array>
+			</property>
+			<property name="columnHeaders">
+				<array>
+					<value>ID</value>
+					<value>Foreign Source</value>
+					<value>Foreign ID</value>
+					<value>Label</value>
+					<value>Label Source</value>
+					<value>Last Capsd Poll</value>
+					<value>Primary Interface</value>
 					<value>sysObjectId</value>
 					<value>sysName</value>
 					<value>sysDescription</value>
