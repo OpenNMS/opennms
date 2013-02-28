@@ -103,11 +103,11 @@ install: build
 	##
 	## Setup the protocol packages
 	##
-	install -d -m 755 debian/opennms-plugin-protocol-{dhcp,nsclient,radius,xml,xmp}/usr/share/java/opennms
-	install -d -m 755 debian/opennms-plugin-protocol-{dhcp,nsclient,radius,xml,xmp}/usr/share/opennms/contrib
-	install -d -m 755 debian/opennms-plugin-protocol-{dhcp,nsclient,radius,xml,xmp}/etc/opennms
-	install -d -m 755 debian/opennms-plugin-protocol-{dhcp,nsclient,radius,xml,xmp}/var/lib/opennms/etc-pristine
-	install -d -m 755 debian/opennms-plugin-protocol-{dhcp,nsclient,radius,xml,xmp}/var/lib/opennms/xsds
+	install -d -m 755 debian/opennms-plugin-protocol-{cifs,dhcp,nsclient,radius,xml,xmp}/usr/share/java/opennms
+	install -d -m 755 debian/opennms-plugin-protocol-{cifs,dhcp,nsclient,radius,xml,xmp}/usr/share/opennms/contrib
+	install -d -m 755 debian/opennms-plugin-protocol-{cifs,dhcp,nsclient,radius,xml,xmp}/etc/opennms
+	install -d -m 755 debian/opennms-plugin-protocol-{cifs,dhcp,nsclient,radius,xml,xmp}/var/lib/opennms/etc-pristine
+	install -d -m 755 debian/opennms-plugin-protocol-{cifs,dhcp,nsclient,radius,xml,xmp}/var/lib/opennms/xsds
 	install -d -m 755 debian/opennms-plugin-protocol-xml/etc/opennms/{datacollection,xml-datacollection,snmp-graph.properties.d}
 	
 	# Setup Juniper TCA collector
@@ -126,6 +126,9 @@ install: build
 	install -d -m 755 debian/opennms-ncs/usr/share/opennms/jetty-webapps/opennms/WEB-INF/jsp/alarm
 	install -d -m 755 debian/opennms-ncs/usr/share/opennms/jetty-webapps/opennms/WEB-INF/lib
 	install -d -m 755 debian/opennms-ncs/usr/share/opennms/jetty-webapps/opennms/META-INF/opennms
+	
+	# CIFS
+	mv debian/temp/lib/org.opennms.protocols.cifs-*.jar                                        debian/opennms-plugin-protocol-cifs/usr/share/java/opennms/
 	
 	# DHCP
 	mv debian/temp/lib/jdhcp-*.jar                                                             debian/opennms-plugin-protocol-dhcp/usr/share/java/opennms/

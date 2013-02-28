@@ -29,6 +29,7 @@
 package org.opennms.features.topology.app.internal;
 
 import java.io.Serializable;
+import java.util.Map;
 import java.util.Set;
 
 import org.opennms.features.topology.api.SelectionContext;
@@ -44,7 +45,12 @@ public class SelectionAwareTable extends Table implements SelectionListener, Sel
 	private static final long serialVersionUID = 2761774077365441249L;
 
 	private final OnmsDaoContainer<?,? extends Serializable> m_container;
-	
+
+	/**
+	 *  Leave OnmsDaoContainer without generics; the Aries blueprint code cannot match up
+	 *  the arguments if you put the generic types in.
+	 */
+	@SuppressWarnings("unchecked")
 	public SelectionAwareTable(String caption, OnmsDaoContainer container) {
 		super(caption, container);
 		m_container = container;
@@ -74,5 +80,11 @@ public class SelectionAwareTable extends Table implements SelectionListener, Sel
 	@Override
 	public void setSelectionListeners(Set<SelectionListener> listeners) {
 		m_container.setSelectionListeners(listeners);
+	}
+
+	public void setColumnGenerators(Map generators) {
+		for (Object key : generators.keySet()) {
+			super.addGeneratedColumn(key, (ColumnGenerator)generators.get(key));
+		}
 	}
 }
