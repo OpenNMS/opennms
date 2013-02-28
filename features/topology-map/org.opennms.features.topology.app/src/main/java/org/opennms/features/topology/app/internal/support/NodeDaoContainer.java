@@ -32,11 +32,14 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.Order;
+import org.opennms.core.criteria.restrictions.AnyRestriction;
 import org.opennms.core.criteria.restrictions.EqRestriction;
+import org.opennms.core.criteria.restrictions.Restriction;
 import org.opennms.features.topology.api.SelectionContext;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.dao.NodeDao;
@@ -102,11 +105,17 @@ public class NodeDaoContainer extends OnmsDaoContainer<OnmsNode,Integer> {
 	@Override
 	public void selectionChanged(SelectionContext selectionContext) {
 		Collection<Order> oldOrders = m_criteria.getOrders();
-		m_criteria = new Criteria(getItemClass());
+		Set<Restriction> restrictions = new HashSet<Restriction>();
 		for (VertexRef ref : selectionContext.getSelectedVertexRefs()) {
 			if ("nodes".equals(ref.getNamespace())) {
-				m_criteria.addRestriction(new EqRestriction("id", Integer.valueOf(ref.getId())));
+				restrictions.add(new EqRestriction("id", Integer.valueOf(ref.getId())));
 			}
+		}
+
+		m_criteria = new Criteria(getItemClass());
+		if (restrictions.size() > 0) {
+			AnyRestriction any = new AnyRestriction(restrictions.toArray(new Restriction[0]));
+			m_criteria.addRestriction(any);
 		}
 		m_criteria.setOrders(oldOrders);
 		fireItemSetChangedEvent();

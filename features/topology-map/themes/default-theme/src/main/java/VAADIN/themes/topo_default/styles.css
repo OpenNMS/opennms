@@ -1,6 +1,12 @@
 @CHARSET "UTF-8";
 @import "../reindeer/styles.css";
 
+/** Ensure that tables don't have their font style/size overridden by GWT's standard.css */
+.v-app table td {
+    font-family: Arial,Helvetica,Tahoma,Verdana,sans-serif;
+    font-size: 12px;
+}
+
 /*** Vertex Styles ***/
 .vertex:hover{
 	opacity: 0.8;
