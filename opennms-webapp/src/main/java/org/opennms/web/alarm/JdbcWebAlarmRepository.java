@@ -391,10 +391,6 @@ public class JdbcWebAlarmRepository implements WebAlarmRepository, InitializingB
     }
 
     public List<AlarmSummary> getCurrentNodeAlarmSummaries(int rows) {
-        throw new UnsupportedOperationException("Not supported yet. JdbcWebAlarmRepository is deprecated.");
-    }
-
-    public List<AlarmSummary> getCurrentNodeAlarmSummaries(int rows) {
         throw new UnsupportedOperationException("Not supported yet. JdbcWebAlarmRepositony is deprecated.");
     }
 
