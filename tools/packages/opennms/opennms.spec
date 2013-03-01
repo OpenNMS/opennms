@@ -286,7 +286,7 @@ Group:		Applications/System
 Requires(pre):	opennms-core = %{version}-%{release}
 Requires:	opennms-core = %{version}-%{release}
 
-%description plugin-protocol-cif
+%description plugin-protocol-cifs
 The CIFS protocol plugin provides a poller monitor for CIFS network shares.
 
 %{extrainfo}
