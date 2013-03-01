@@ -453,7 +453,7 @@ public class VmwareConfigBuilder {
             pw.println("An error occurred: " + error + "\n");
         }
 
-        formatter.printHelp("Usage: VmwareConfig <hostname> <username> <password>", options);
+        formatter.printHelp("Usage: VmwareConfigBuilder <hostname> <username> <password>", options);
 
         if (e != null) {
             pw.println(e.getMessage());

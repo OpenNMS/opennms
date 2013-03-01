@@ -1,6 +1,12 @@
 @CHARSET "UTF-8";
 @import "../reindeer/styles.css";
 
+/** Ensure that tables don't have their font style/size overridden by GWT's standard.css */
+.v-app table td {
+    font-family: Arial,Helvetica,Tahoma,Verdana,sans-serif;
+    font-size: 12px;
+}
+
 /*** Vertex Styles ***/
 .vertex:hover{
 	opacity: 0.8;
@@ -13,6 +19,7 @@
 
 .vertex.selected .highlight{
     opacity: 1;
+    stroke: #00ffff;
 }
 
 /*** End Vertex Styles***/
@@ -48,6 +55,10 @@ div.v-button-down .v-button-wrap{
     background-image: url(../reindeer/button/img/button-sprites.png);
 }
 
+div.v-table-header-wrap {
+    text-transform: none;
+}
+
 .semantic-zoom-button .v-button-wrap{
 	padding: 7px 4px 0 1px;
 }
@@ -73,3 +84,43 @@ div.v-button-down .v-button-wrap{
 	border-left: 1px solid #dddddd;
 	
 }
+
+/******** Status Styles ********/
+.vertex .status.cleared,
+.vertex .status.normal, 
+.vertex .status.indeterminate,
+.vertex .status.warning, 
+.vertex .status.minor,
+.vertex .status.major,
+.vertex .status.critical {
+	opacity: 1;
+}
+
+.vertex .status.cleared{
+	fill:rgb(152, 152, 152);
+}
+
+.vertex .status.normal{
+	fill:rgb(69, 100, 25);
+}
+
+.vertex .status.indeterminate{
+	fill:rgb(152, 140, 29);
+}
+
+.vertex .status.warning{
+	fill:rgb(247, 201, 36);
+}
+
+.vertex .status.minor{
+	fill:rgb(238, 67, 0);
+}
+.vertex .status.major{
+	fill:rgb(230, 67, 0);
+}
+
+.vertex .status.critical{
+	fill:rgb(183, 35, 0);
+}
+
+

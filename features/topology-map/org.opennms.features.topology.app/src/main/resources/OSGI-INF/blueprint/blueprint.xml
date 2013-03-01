@@ -21,6 +21,9 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         <argument ref="topologyProvider"/>
         <argument ref="providerManager" />
         <argument ref="iconRepoManager"/>
+        <argument>
+            <bean class="org.opennms.features.topology.app.internal.DefaultSelectionManager"/>
+        </argument>
         <property name="theme" value="${theme}"/>
         <property name="widgetManager" ref="widgetManager"/>
         <property name="treeWidgetManager" ref="treeWidgetManager"/>
@@ -46,6 +49,14 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
     
     <reference-list interface="org.opennms.features.topology.api.topo.GraphProvider" availability="mandatory">
         <reference-listener bind-method="addGraphProvider" unbind-method="removeGraphProvider" ref="topologySelector" />
+    </reference-list>
+    
+    <bean id="statusSelector" class="org.opennms.features.topology.app.internal.operations.StatusSelector">
+        <property name="bundleContext" ref="blueprintBundleContext" />
+    </bean>
+
+    <reference-list interface="org.opennms.features.topology.api.topo.StatusProvider" availability="optional">
+        <reference-listener bind-method="addStatusProvider" unbind-method="removeStatusProvider" ref="statusSelector" />
     </reference-list>
 
     <!-- default icon repository -->    
@@ -102,7 +113,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
     <reference-list interface="org.opennms.features.topology.api.topo.VertexProvider" availability="optional">
         <reference-listener bind-method="onVertexProviderBind" unbind-method="onVertexProviderUnbind" ref="providerManager"/>
     </reference-list>
-
+    
     <bean id="widgetManager" class="org.opennms.features.topology.app.internal.WidgetManager" />
     <bean id="treeWidgetManager" class="org.opennms.features.topology.app.internal.WidgetManager" />
     
@@ -115,20 +126,29 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
     </reference-list>
     
     <!-- Move to separate project -->
-    <!--
 		<reference id="alarmDao" interface="org.opennms.netmgt.dao.AlarmDao" availability="mandatory" />
 		<reference id="nodeDao" interface="org.opennms.netmgt.dao.NodeDao" availability="mandatory" />
 
-		<!- - Wrap the DAO in a Vaadin container - ->
-		<bean id="alarmDaoContainer" class="org.opennms.features.topology.app.internal.support.AlarmDaoContainer">
+		<!-- Wrap the DAO in a Vaadin container -->
+		<bean id="alarmDaoContainer" class="org.opennms.features.topology.app.internal.support.AlarmDaoContainer" scope="prototype">
 			<argument ref="alarmDao" />
 		</bean>
-
-		<bean id="alarmTable" class="com.vaadin.ui.Table" scope="prototype">
+		
+		<bean id="alarmTable" class="org.opennms.features.topology.app.internal.SelectionAwareTable" scope="prototype">
 			<argument value="Alarms"/>
 			<argument ref="alarmDaoContainer" />
 			<property name="columnReorderingAllowed" value="true"/>
 			<property name="columnCollapsingAllowed" value="true"/>
+			<property name="columnGenerators">
+				<map>
+					<entry key="serviceType">
+						<bean class="org.opennms.features.topology.app.internal.support.OnmsServiceTypeGenerator"/>
+					</entry>
+					<entry key="ipAddr">
+						<bean class="org.opennms.features.topology.app.internal.support.InetAddressGenerator"/>
+					</entry>
+				</map>
+			</property>
 			<property name="visibleColumns">
 				<array>
 					<value>id</value>
@@ -143,8 +163,22 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
 					<value>logMsg</value>
 				</array>
 			</property>
+			<property name="columnHeaders">
+				<array>
+					<value>ID</value>
+					<value>Severity</value>
+					<value>Last Event Time</value>
+					<value>Count</value>
+					<value>Node</value>
+					<value>ifIndex</value>
+					<value>IP Address</value>
+					<value>Service</value>
+					<value>UEI</value>
+					<value>Log Message</value>
+				</array>
+			</property>
 		</bean>
-
+		
 		<bean id="alarmViewContribution" class="org.opennms.features.topology.app.internal.support.BlueprintIViewContribution">
 			<argument ref="blueprintContainer" />
 			<argument value="alarmTable" />
@@ -158,16 +192,23 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
 			</service-properties>
 		</service>
 
-		<!- - Wrap the DAO in a Vaadin container - ->
-		<bean id="nodeDaoContainer" class="org.opennms.features.topology.app.internal.support.NodeDaoContainer">
+		<!-- Wrap the DAO in a Vaadin container -->
+		<bean id="nodeDaoContainer" class="org.opennms.features.topology.app.internal.support.NodeDaoContainer" scope="prototype">
 			<argument ref="nodeDao" />
 		</bean>
 
-		<bean id="nodeTable" class="com.vaadin.ui.Table" scope="prototype">
+		<bean id="nodeTable" class="org.opennms.features.topology.app.internal.SelectionAwareTable" scope="prototype">
 			<argument value="Nodes"/>
 			<argument ref="nodeDaoContainer" />
 			<property name="columnReorderingAllowed" value="true"/>
 			<property name="columnCollapsingAllowed" value="true"/>
+			<property name="columnGenerators">
+				<map>
+					<entry key="primaryInterface">
+						<bean class="org.opennms.features.topology.app.internal.support.OnmsIpInterfaceGenerator"/>
+					</entry>
+				</map>
+			</property>
 			<property name="visibleColumns">
 				<array>
 					<value>id</value>
@@ -177,6 +218,22 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
 					<value>labelSource</value>
 					<value>lastCapsdPoll</value>
 					<value>primaryInterface</value>
+					<value>sysObjectId</value>
+					<value>sysName</value>
+					<value>sysDescription</value>
+					<value>sysContact</value>
+					<value>sysLocation</value>
+				</array>
+			</property>
+			<property name="columnHeaders">
+				<array>
+					<value>ID</value>
+					<value>Foreign Source</value>
+					<value>Foreign ID</value>
+					<value>Label</value>
+					<value>Label Source</value>
+					<value>Last Capsd Poll</value>
+					<value>Primary Interface</value>
 					<value>sysObjectId</value>
 					<value>sysName</value>
 					<value>sysDescription</value>
@@ -198,9 +255,9 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
 				<entry key="location" value="bottom"/>
 			</service-properties>
 		</service>
-		-->
+
 		<!-- End move to separate project -->
-    
+
     <service interface="org.osgi.service.cm.ManagedService" >
         <service-properties>
             <entry key="service.pid" value="org.opennms.features.topology.app.menu"/>
@@ -210,8 +267,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         </bean>
     </service>
     
-    <bean id="commandManager" class="org.opennms.features.topology.app.internal.CommandManager">
-    </bean>
+    <bean id="commandManager" class="org.opennms.features.topology.app.internal.CommandManager" />
     
     <reference-list interface="org.opennms.features.topology.app.internal.Command" availability="optional">
         <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="commandManager">

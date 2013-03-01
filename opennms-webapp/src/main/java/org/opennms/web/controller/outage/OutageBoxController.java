@@ -58,7 +58,7 @@ public class OutageBoxController extends AbstractController implements Initializ
     /** {@inheritDoc} */
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        int rows = Integer.getInteger("opennms.nodesWithOutagesCount", ROWS);
+        int rows = Integer.getInteger("opennms.nodesWithOutages.count", ROWS);
         final String parm = request.getParameter("outageCount");
         if (parm != null) {
             try {

@@ -5,7 +5,7 @@
       <unpack>false</unpack>
       <useProjectArtifact>false</useProjectArtifact>
       <useTransitiveDependencies>false</useTransitiveDependencies>
-      <outputDirectory>lib</outputDirectory>
+      <outputDirectory>/lib/</outputDirectory>
       <includes>
         <include>org.opennms.protocols:org.opennms.protocols.xml:jar:${project.version}</include>
       </includes>

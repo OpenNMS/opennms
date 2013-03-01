@@ -35,12 +35,14 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Statement;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.Map.Entry;
+import java.util.logging.Logger;
 
 import javax.sql.DataSource;
 
@@ -571,5 +573,10 @@ public class TemporaryDatabase implements DataSource {
             .append("adminDataSource", m_adminDataSource)
             .append("adminUser", m_adminUser)
             .toString();
+    }
+
+    @Override
+    public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+        return m_dataSource.getParentLogger();
     }
 }

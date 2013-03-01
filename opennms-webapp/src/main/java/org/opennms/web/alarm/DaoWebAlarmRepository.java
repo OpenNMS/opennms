@@ -38,6 +38,7 @@ import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.dao.MemoDao;
 import org.opennms.netmgt.model.*;
 import org.opennms.netmgt.model.acknowledgments.AckService;
+import org.opennms.netmgt.model.alarm.AlarmSummary;
 import org.opennms.web.alarm.filter.AlarmCriteria;
 import org.opennms.web.alarm.filter.AlarmCriteria.AlarmCriteriaVisitor;
 import org.opennms.web.alarm.filter.AlarmIdListFilter;
@@ -464,4 +465,11 @@ public class DaoWebAlarmRepository implements WebAlarmRepository, InitializingBe
         cb.eq("ackType", AckType.ALARM);
         return m_ackDao.findMatching(cb.toCriteria());
     }
+
+    @Override
+    @Transactional
+    public List<AlarmSummary> getCurrentNodeAlarmSummaries(int rows) {
+        return m_alarmDao.getNodeAlarmSummaries(rows);
+    }
+
 }

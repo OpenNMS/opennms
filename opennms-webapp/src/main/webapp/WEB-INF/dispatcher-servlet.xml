@@ -316,6 +316,11 @@
         <property name="webAlarmRepository" ref="webAlarmRepository"/>
     </bean>
     
+    <bean name="/alarm/summary-box.htm" class="org.opennms.web.controller.alarm.AlarmBoxController">
+        <property name="successView" value="alarm/summary-box"/>
+        <property name="webAlarmRepository" ref="webAlarmRepository"/>
+    </bean>
+ 
     <alias name="/event/detail.htm" alias="/event/detail.jsp"/>
     <bean name="/event/detail.htm" class="org.opennms.web.controller.event.EventFilterController">
         <property name="successView" value="event/detail"/>

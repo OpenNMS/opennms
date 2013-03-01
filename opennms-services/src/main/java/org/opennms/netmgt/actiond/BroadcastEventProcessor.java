@@ -94,7 +94,7 @@ final class BroadcastEventProcessor implements EventListener {
         while (walker.hasMoreElements()) {
             try {
                 Autoaction aact = walker.nextElement();
-                if (aact.getState().equalsIgnoreCase("on")) {
+                if ("on".equalsIgnoreCase(aact.getState())) {
                     m_execQ.add(aact.getContent()); // java.lang.String
                 }
 

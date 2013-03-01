@@ -32,6 +32,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.opennms.netmgt.model.OnmsAcknowledgment;
+import org.opennms.netmgt.model.alarm.AlarmSummary;
 import org.opennms.web.alarm.filter.AlarmCriteria;
 
 /*
@@ -166,6 +167,9 @@ public interface WebAlarmRepository {
     public void removeStickyMemo(Integer alarmId);
 
     public void removeReductionKeyMemo(int alarmId);
-    
+
     public List<OnmsAcknowledgment> getAcknowledgments(int alarmId);
+
+    public List<AlarmSummary> getCurrentNodeAlarmSummaries(int rows);
+
 }

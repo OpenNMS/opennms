@@ -406,29 +406,7 @@ public class VmwareViJavaAccess {
         HostServiceTicket hostServiceTicket = m_hostServiceTickets.get(hostSystem);
 
         if (!m_hostSystemCimUrls.containsKey(hostSystem)) {
-            String ipAddress = null;
-
-            HostNetworkSystem hostNetworkSystem = hostSystem.getHostNetworkSystem();
-
-            if (hostNetworkSystem != null) {
-                HostNetworkInfo hostNetworkInfo = hostNetworkSystem.getNetworkInfo();
-                if (hostNetworkInfo != null) {
-
-                    HostVirtualNic[] hostVirtualNics = hostNetworkInfo.getConsoleVnic();
-                    if (hostVirtualNics != null) {
-                        for (HostVirtualNic hostVirtualNic : hostVirtualNics) {
-                            ipAddress = hostVirtualNic.getSpec().getIp().getIpAddress();
-                        }
-                    }
-
-                    hostVirtualNics = hostNetworkInfo.getVnic();
-                    if (ipAddress == null && hostVirtualNics != null) {
-                        for (HostVirtualNic hostVirtualNic : hostVirtualNics) {
-                            ipAddress = hostVirtualNic.getSpec().getIp().getIpAddress();
-                        }
-                    }
-                }
-            }
+            String ipAddress = getPrimaryHostSystemIpAddress(hostSystem);
 
             if (ipAddress == null) {
                 logger.warn("Cannot determine ip address for host system '{}'", hostSystem.getMOR().getVal());
@@ -462,6 +440,49 @@ public class VmwareViJavaAccess {
         }
 
         return cimObjects;
+    }
+
+    /**
+     * Searches for the primary ip address of a host system
+     *
+     * @param hostSystem the host system to query
+     * @return the primary ip address
+     * @throws RemoteException
+     */
+    public String getPrimaryHostSystemIpAddress(HostSystem hostSystem) throws RemoteException {
+        return getHostSystemIpAddresses(hostSystem).first();
+    }
+
+    /**
+     * Searches for all ip addresses of a host system
+     *
+     * @param hostSystem the host system to query
+     * @return the ip addresses of the host system, the first one is the primary
+     * @throws RemoteException
+     */
+    public TreeSet<String> getHostSystemIpAddresses(HostSystem hostSystem) throws RemoteException {
+        TreeSet<String> ipAddresses = new TreeSet<String>();
+
+        HostNetworkSystem hostNetworkSystem = hostSystem.getHostNetworkSystem();
+
+        if (hostNetworkSystem != null) {
+            HostNetworkInfo hostNetworkInfo = hostNetworkSystem.getNetworkInfo();
+            if (hostNetworkInfo != null) {
+                HostVirtualNic[] hostVirtualNics = hostNetworkInfo.getConsoleVnic();
+                if (hostVirtualNics != null) {
+                    for (HostVirtualNic hostVirtualNic : hostVirtualNics) {
+                        ipAddresses.add(hostVirtualNic.getSpec().getIp().getIpAddress());
+                    }
+                }
+                hostVirtualNics = hostNetworkInfo.getVnic();
+                if (hostVirtualNics != null) {
+                    for (HostVirtualNic hostVirtualNic : hostVirtualNics) {
+                        ipAddresses.add(hostVirtualNic.getSpec().getIp().getIpAddress());
+                    }
+                }
+            }
+        }
+        return ipAddresses;
     }
 
     /**

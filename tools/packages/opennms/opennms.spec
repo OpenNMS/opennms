@@ -189,6 +189,8 @@ Requires(pre):	opennms-plugin-provisioning-snmp-asset
 Requires:	opennms-plugin-provisioning-snmp-asset
 Requires(pre):	opennms-plugin-ticketer-centric
 Requires:	opennms-plugin-ticketer-centric
+Requires(pre):	opennms-plugin-protocol-cifs
+Requires:	opennms-plugin-protocol-cifs
 Requires(pre):	opennms-plugin-protocol-dhcp
 Requires:	opennms-plugin-protocol-dhcp
 Requires(pre):	opennms-plugin-protocol-nsclient
@@ -273,6 +275,19 @@ Requires:	opennms-core = %{version}-%{release}
 %description plugin-provisioning-snmp-asset
 The SNMP asset provisioning adapter responds to provisioning events by updating asset
 fields with data fetched from SNMP GET requests.
+
+%{extrainfo}
+%{extrainfo2}
+
+
+%package plugin-protocol-cifs
+Summary:	CIFS Poller Plugin for OpenNMS
+Group:		Applications/System
+Requires(pre):	opennms-core = %{version}-%{release}
+Requires:	opennms-core = %{version}-%{release}
+
+%description plugin-protocol-cifs
+The CIFS protocol plugin provides a poller monitor for CIFS network shares.
 
 %{extrainfo}
 %{extrainfo2}
@@ -542,6 +557,7 @@ find $RPM_BUILD_ROOT%{instprefix}/lib ! -type d | \
 	sed -e "s|^$RPM_BUILD_ROOT|%attr(755,root,root) |" | \
 	grep -v 'ncs-' | \
 	grep -v 'provisioning-adapter' | \
+	grep -v 'org.opennms.protocols.cifs' | \
 	grep -v 'org.opennms.protocols.dhcp' | \
 	grep -v 'jdhcp' | \
 	grep -v 'org.opennms.protocols.nsclient' | \
@@ -658,6 +674,10 @@ rm -rf $RPM_BUILD_ROOT
 %{instprefix}/lib/opennms-snmp-asset-provisioning-adapter*.jar
 %config(noreplace) %{instprefix}/etc/snmp-asset-adapter-configuration.xml
 %{sharedir}/etc-pristine/snmp-asset-adapter-configuration.xml
+
+%files plugin-protocol-cifs
+%defattr(664 root root 775)
+%{instprefix}/lib/org.opennms.protocols.cifs*.jar
 
 %files plugin-protocol-dhcp
 %defattr(664 root root 775)

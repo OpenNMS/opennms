@@ -28,7 +28,10 @@
 
 package org.opennms.netmgt.provision.service.vmware;
 
-import com.vmware.vim25.*;
+import com.vmware.vim25.CustomFieldDef;
+import com.vmware.vim25.CustomFieldStringValue;
+import com.vmware.vim25.CustomFieldValue;
+import com.vmware.vim25.GuestNicInfo;
 import com.vmware.vim25.mo.*;
 import org.apache.commons.io.IOExceptionWithCause;
 import org.exolab.castor.xml.MarshalException;
@@ -48,10 +51,7 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.*;
 import java.rmi.RemoteException;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * The Class VmwareRequisitionUrlConnection
@@ -548,29 +548,7 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
                     logger.debug("Adding Host System '{}'", hostSystem.getName());
 
                     // iterate over all service console networks and add interface Ip addresses
-                    LinkedHashSet<String> ipAddresses = new LinkedHashSet<String>();
-
-                    HostNetworkSystem hostNetworkSystem = hostSystem.getHostNetworkSystem();
-
-                    if (hostNetworkSystem != null) {
-                        HostNetworkInfo hostNetworkInfo = hostNetworkSystem.getNetworkInfo();
-                        if (hostNetworkInfo != null) {
-
-                            HostVirtualNic[] hostVirtualNics = hostNetworkInfo.getConsoleVnic();
-                            if (hostVirtualNics != null) {
-                                for (HostVirtualNic hostVirtualNic : hostVirtualNics) {
-                                    ipAddresses.add(hostVirtualNic.getSpec().getIp().getIpAddress());
-                                }
-                            }
-
-                            hostVirtualNics = hostNetworkInfo.getVnic();
-                            if (hostVirtualNics != null) {
-                                for (HostVirtualNic hostVirtualNic : hostVirtualNics) {
-                                    ipAddresses.add(hostVirtualNic.getSpec().getIp().getIpAddress());
-                                }
-                            }
-                        }
-                    }
+                    TreeSet<String> ipAddresses = vmwareViJavaAccess.getHostSystemIpAddresses(hostSystem);
 
                     // create the new node...
                     RequisitionNode node = createRequisitionNode(ipAddresses, hostSystem, apiVersion);

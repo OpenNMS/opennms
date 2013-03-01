@@ -46,7 +46,7 @@ public class GWTVertex extends JavaScriptObject {
     protected GWTVertex() {};
     
     public static native GWTVertex create(String id, int x, int y) /*-{
-    	return {"id":id, "x":x, "y":y, "initialX":0, "initialY":0, "selected":false, "iconUrl":"", "semanticZoomLevel":0, "group":null};
+    	return {"id":id, "x":x, "y":y, "initialX":0, "initialY":0, "selected":false, "iconUrl":"", "semanticZoomLevel":0, "group":null, "status":""};
 	}-*/;
 
     public final native String getId()/*-{
@@ -68,7 +68,15 @@ public class GWTVertex extends JavaScriptObject {
     public final native String getLabel() /*-{
     	return this.label;
     }-*/;
-
+    
+    public final native void setStatus(String status) /*-{
+        this.status = status;
+    }-*/;
+    
+    public final native String getStatus()/*-{
+        return this.status;
+    }-*/;
+    
     public final native void setIpAddr(String ipAddr) /*-{
         this.ipAddr = ipAddr;
     }-*/;
@@ -149,6 +157,31 @@ public class GWTVertex extends JavaScriptObject {
         };
     }
     
+    protected static Func<String, GWTVertex> getCircleId(){
+        return new Func<String, GWTVertex>(){
+
+            @Override
+            public String call(GWTVertex vertex, int index) {
+                return "circle-" + vertex.getId();
+            }
+            
+        };
+    }
+    
+    protected static Func<String, GWTVertex> getStatusClass(){
+        return new Func<String, GWTVertex>(){
+
+            @Override
+            public String call(GWTVertex vertex, int index) {
+                if(vertex.getStatus().equals("")) {
+                    return "status";
+                }
+                return "status " + vertex.getStatus();
+            }
+            
+        };
+    }
+    
     protected static Func<String, GWTVertex> getClassName() {
         return new Func<String, GWTVertex>(){
 
@@ -158,17 +191,6 @@ public class GWTVertex extends JavaScriptObject {
             }};
     }
     
-    protected static Func<String, GWTVertex> strokeFilter(){
-        return new Func<String, GWTVertex>(){
-
-            @Override
-            public String call(GWTVertex datum, int index) {
-                return datum.isSelected() ? "blue" : "none";
-            }
-            
-        };
-    }
-
     static Func<String, GWTVertex> getTranslation() {
     	return new Func<String, GWTVertex>() {
     
@@ -206,7 +228,8 @@ public class GWTVertex extends JavaScriptObject {
 
             @Override
             public D3 run(D3 selection) {
-                return selection.attr("class", GWTVertex.getClassName()).attr("transform", GWTVertex.getTranslation()).select("text").text(label()).select(".highlight").attr("opacity", GWTVertex.selectionFilter());
+                selection.select(".status").attr("class", getStatusClass());
+                return selection.attr("class", GWTVertex.getClassName()).attr("transform", GWTVertex.getTranslation()).select("text").text(label());
             }
         };
     }
@@ -231,6 +254,7 @@ public class GWTVertex extends JavaScriptObject {
                 vertex.style("cursor", "pointer");
                 
                 D3 circleSelection = vertex.append("circle");
+                D3 statusIndicator = vertex.append("circle");
                 D3 bgImage = vertex.append("svg:image");
                 bgImage.attr("xlink:href", getBackgroundImage());
                 D3 imageSelection = vertex.append("svg:image");
@@ -249,12 +273,19 @@ public class GWTVertex extends JavaScriptObject {
                 	.attr("height", "48px");
                 
                 int circleRadius = 38;
-                int circlePos = -32;
                 circleSelection.attr("class", "highlight")
-                    .attr("x", circlePos + "px")
-                    .attr("y", circlePos + "px")
-                    .attr("r", circleRadius + "px" )
+                    .attr("cx", -0.5)
+                    .attr("cy", -0.55)
+                    .attr("r", circleRadius + 1.5 + "px" )
+                    .attr("stroke-width", "2px")
+                    .attr("fill-opacity", 0);
+                
+                statusIndicator.attr("class", "status")
+                    .attr("cx", 0)
+                    .attr("cy", 0)
+                    .attr("r", circleRadius + "px")
                     .attr("opacity", "0");
+                    
                 
                 textSelection.text(label())
                     .attr("class", "vertex-label")
@@ -273,5 +304,5 @@ public class GWTVertex extends JavaScriptObject {
     public static final native void logDocument(Object doc)/*-{
         $wnd.console.log(doc)
     }-*/;
-    
+
 }

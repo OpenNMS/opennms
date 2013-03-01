@@ -37,12 +37,18 @@
 
 	<!-- Left Column -->
 	<div id="index-contentleft">
+		<!-- Problems box -->
+		<% String showNodesWithProblems = System.getProperty("opennms.nodesWithProblems.show", "false");
+           if (Boolean.parseBoolean(showNodesWithProblems)) { %>
+		<jsp:include page="/alarm/summary-box.htm" flush="false" />
+		<hr />
+        <% } %>
 		<!-- Services down box -->
+		<% String showNodesWithOutages = System.getProperty("opennms.nodesWithOutages.show", "true");
+           if (Boolean.parseBoolean(showNodesWithOutages)) { %>
 		<jsp:include page="/outage/servicesdown-box.htm" flush="false" />
 		<hr />
-		<!-- Quick Search box -->
-		<jsp:include page="/includes/quicksearch-box.jsp" flush="false" />
-		<hr />
+        <% } %>
 	</div>
 
 	<!-- Middle Column -->
@@ -62,6 +68,9 @@
 		<hr />
 		<!-- KSC Reports box -->    
 		<jsp:include page="/KSC/include-box.htm" flush="false" />
+		<hr />
+		<!-- Quick Search box -->
+		<jsp:include page="/includes/quicksearch-box.jsp" flush="false" />
 		<hr />
 		<%--
 		<!-- security box -->    
