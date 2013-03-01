@@ -1,5 +1,14 @@
 #!/bin/bash
 
+REST_USER=admin
+REST_PASSWD=admin
+
+doCurl()
+{
+   #echo curl "$@" 1>&2
+   curl "$@"
+}
+
 createEmptyRequisition()
 {
     local baseUrl=$1
@@ -13,13 +22,14 @@ createEmptyRequisition()
 <model-import foreign-source="${foreignSource}" />
 EOF
 
-    curl --user admin:admin -sSf -d @${req} -X POST -H 'Content-type: application/xml' ${baseUrl}/requisitions -o /dev/null
+    doCurl --user ${REST_USER}:${REST_PASSWD} -sSf -d @${req} -X POST -H 'Content-type: application/xml' ${baseUrl}/requisitions -o /dev/null
 
     local RET=$?
 
     rm -f $req
 
 }
+
 
 createRequisitionWithOneNode()
 {
@@ -43,7 +53,7 @@ createRequisitionWithOneNode()
 </model-import>
 EOF
 
-    curl --user admin:admin -sSf -d @${req} -X POST -H 'Content-type: application/xml' ${baseUrl}/requisitions -o /dev/null
+    doCurl --user ${REST_USER}:${REST_PASSWD} -sSf -d @${req} -X POST -H 'Content-type: application/xml' ${baseUrl}/requisitions -o /dev/null
 
     local RET=$?
 
@@ -73,7 +83,7 @@ addNodeToRequisition()
     </node>
 EOF
 
-    curl --user admin:admin -sSf -d @${req} -X POST -H 'Content-type: application/xml' "${baseUrl}/requisitions/${foreignSource}/nodes" -o /dev/null
+    doCurl --user ${REST_USER}:${REST_PASSWD} -sSf -d @${req} -X POST -H 'Content-type: application/xml' "${baseUrl}/requisitions/${foreignSource}/nodes" -o /dev/null
 
     local RET=$?
 
@@ -88,7 +98,7 @@ deleteNodeFromRequisition()
     local foreignSource=$2
     local foreignId=$3
 
-    curl --user admin:admin -sSf -X DELETE "${baseUrl}/requisitions/${foreignSource}/nodes/${foreignId}" -o /dev/null
+    doCurl --user ${REST_USER}:${REST_PASSWD} -sSf -X DELETE "${baseUrl}/requisitions/${foreignSource}/nodes/${foreignId}" -o /dev/null
     
 }
 
@@ -97,8 +107,16 @@ synchRequisition()
     local baseUrl=$1
     local foreignSource=$2
 
-    curl --user admin:admin -sSf -X PUT "${baseUrl}/requisitions/${foreignSource}/import" -o /dev/null
+    doCurl --user ${REST_USER}:${REST_PASSWD} -sSf -X PUT "${baseUrl}/requisitions/${foreignSource}/import" -o /dev/null
 
+}
+
+getRequisition()
+{
+    local baseUrl=$1
+    local foreignSource=$2
+
+    doCurl --user ${REST_USER}:${REST_PASSWD} -sSf -X GET "${baseUrl}/requisitions/${foreignSource}"
 }
 
 getSnmpConfig()
@@ -106,7 +124,7 @@ getSnmpConfig()
     local baseUrl=$1
     local ip=$2
 
-    curl --user admin:admin -sSf -X GET "${baseUrl}/snmpConfig/${ip}"
+    doCurl --user ${REST_USER}:${REST_PASSWD} -sSf -X GET "${baseUrl}/snmpConfig/${ip}"
 }
 
 setSnmpConfig()
@@ -123,6 +141,6 @@ setSnmpConfig()
 	form_parms="${form_parms} -d ${parm}"
     done
 
-    curl --user admin:admin -sSf -X PUT $form_parms "${baseUrl}/snmpConfig/${ip}"
+    doCurl --user ${REST_USER}:${REST_PASSWD} -sSf -X PUT $form_parms "${baseUrl}/snmpConfig/${ip}"
     
 }
