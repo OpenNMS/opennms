@@ -60,7 +60,7 @@
   <%-- This is: AbstractProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY --%>
   <p>Reason: ${SPRING_SECURITY_LAST_EXCEPTION.message}</p>
 </c:if>
-
+<%-- comment for Space Only
 <div class="formOnly">
   <form action="<c:url value='j_spring_security_check'/>" method="post">
     <p>
@@ -83,7 +83,8 @@
   
   </form>
 </div>
-
+--%>
+<div> <p> Please login from Space UI </p> </div>
 <hr />
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
