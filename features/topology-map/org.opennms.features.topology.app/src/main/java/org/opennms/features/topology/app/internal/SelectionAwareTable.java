@@ -67,16 +67,25 @@ public class SelectionAwareTable extends Table implements SelectionListener, Sel
 		m_container.selectionChanged(selectionManager);
 	}
 
+	/**
+	 * Delegate {@link SelectionNotifier} calls to the container.
+	 */
 	@Override
 	public void addSelectionListener(SelectionListener listener) {
 		m_container.addSelectionListener(listener);
 	}
 
+	/**
+	 * Delegate {@link SelectionNotifier} calls to the container.
+	 */
 	@Override
 	public void removeSelectionListener(SelectionListener listener) {
 		m_container.removeSelectionListener(listener);
 	}
 
+	/**
+	 * Delegate {@link SelectionNotifier} calls to the container.
+	 */
 	@Override
 	public void setSelectionListeners(Set<SelectionListener> listeners) {
 		m_container.setSelectionListeners(listeners);
@@ -85,6 +94,11 @@ public class SelectionAwareTable extends Table implements SelectionListener, Sel
 	public void setColumnGenerators(Map generators) {
 		for (Object key : generators.keySet()) {
 			super.addGeneratedColumn(key, (ColumnGenerator)generators.get(key));
+			// If any of the column generators are {@link SelectionNotifier} instances,
+			// then register this component as a listener for events that they generate.
+			try {
+				((SelectionNotifier)generators.get(key)).addSelectionListener(this);
+			} catch (ClassCastException e) {}
 		}
 	}
 }

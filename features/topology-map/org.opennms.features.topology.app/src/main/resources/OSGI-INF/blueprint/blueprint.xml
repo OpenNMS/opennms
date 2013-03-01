@@ -141,6 +141,11 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
 			<property name="columnCollapsingAllowed" value="true"/>
 			<property name="columnGenerators">
 				<map>
+					<entry key="nodeLabel">
+						<bean class="org.opennms.features.topology.app.internal.support.NodeSelectionLinkGenerator">
+							<argument value="nodeId"/>
+						</bean>
+					</entry>
 					<entry key="serviceType">
 						<bean class="org.opennms.features.topology.app.internal.support.OnmsServiceTypeGenerator"/>
 					</entry>
@@ -204,6 +209,16 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
 			<property name="columnCollapsingAllowed" value="true"/>
 			<property name="columnGenerators">
 				<map>
+					<entry key="id">
+						<bean class="org.opennms.features.topology.app.internal.support.NodeSelectionLinkGenerator">
+							<argument value="id"/>
+						</bean>
+					</entry>
+					<entry key="label">
+						<bean class="org.opennms.features.topology.app.internal.support.NodeSelectionLinkGenerator">
+							<argument value="id"/>
+						</bean>
+					</entry>
 					<entry key="primaryInterface">
 						<bean class="org.opennms.features.topology.app.internal.support.OnmsIpInterfaceGenerator"/>
 					</entry>
