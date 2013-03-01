@@ -394,6 +394,10 @@ public class JdbcWebAlarmRepository implements WebAlarmRepository, InitializingB
         throw new UnsupportedOperationException("Not supported yet. JdbcWebAlarmRepository is deprecated.");
     }
 
+    public List<AlarmSummary> getCurrentNodeAlarmSummaries(int rows) {
+        throw new UnsupportedOperationException("Not supported yet. JdbcWebAlarmRepositony is deprecated.");
+    }
+
     private int queryForInt(String sql, PreparedStatementSetter setter) throws DataAccessException {
         Integer number = queryForObject(sql, setter, new SingleColumnRowMapper<Integer>(Integer.class));
         return (number != null ? number.intValue() : 0);
