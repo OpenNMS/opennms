@@ -212,15 +212,15 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
 	public LinkableNode storeSnmpCollection(final LinkableNode node, final SnmpCollection snmpColl) {
 		final Date scanTime = new Date();
 	
-	LogUtils.debugf(this, "storeSnmpCollection: ospf hasOspfGeneralGroup/hasOspfNbrTable: %b/%b", snmpColl.hasOspfGeneralGroup(),snmpColl.hasOspfNbrTable());
-	if (snmpColl.hasOspfGeneralGroup() && snmpColl.hasOspfNbrTable()) {
-	    processOspf(node,snmpColl,scanTime);
-	}
-        
-	LogUtils.debugf(this, "storeSnmpCollection: lldp hasLldpLocalGroup/hasLldpLocTable/haLldpRemTable: %b/%b/%b", snmpColl.hasLldpLocalGroup() ,snmpColl.hasLldpLocTable() ,snmpColl.hasLldpRemTable());
-        if (snmpColl.hasLldpLocalGroup()) {
-	        processLldp(node,snmpColl,scanTime);
-	}
+		LogUtils.debugf(this, "storeSnmpCollection: ospf hasOspfGeneralGroup/hasOspfNbrTable: %b/%b", snmpColl.hasOspfGeneralGroup(),snmpColl.hasOspfNbrTable());
+		if (snmpColl.hasOspfGeneralGroup() && snmpColl.hasOspfNbrTable()) {
+		    processOspf(node,snmpColl,scanTime);
+		}
+	        
+		LogUtils.debugf(this, "storeSnmpCollection: lldp hasLldpLocalGroup/hasLldpLocTable/haLldpRemTable: %b/%b/%b", snmpColl.hasLldpLocalGroup() ,snmpColl.hasLldpLocTable() ,snmpColl.hasLldpRemTable());
+	        if (snmpColl.hasLldpLocalGroup()) {
+		        processLldp(node,snmpColl,scanTime);
+		}
         
         LogUtils.debugf(this, "storeSnmpCollection: hasIpNetToMediaTable: %b", snmpColl.hasIpNetToMediaTable());
         if (snmpColl.hasIpNetToMediaTable()) {
