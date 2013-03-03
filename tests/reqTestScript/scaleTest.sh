@@ -189,7 +189,8 @@ addSampleNodesToRequistion()
 	octet1=octet1+1
     done
 
-    getRequisition ${BASE_URL} ${foreignSource} > /dev/null
+    synchRequisition ${BASE_URL} ${foreignSource} > /dev/null
+    shuAssert "1: Failure synching requistion" $?
 
     local -i end=$(date "+%s")
     local -i elapsed=end-start
@@ -208,9 +209,12 @@ TestRequisition26000Nodes()
     local foreignSource=$PROV_GROUP
     local foreignId=21
 
+    createForeignSource ${BASE_URL} ${foreignSource}
+    shuAssert "0: Unexpected failure creating foreignSource" $?
+
     # Create requisition
     createEmptyRequisition ${BASE_URL} ${foreignSource}
-    shuAssert "0: Unexpected failure creating requistion" $?
+    shuAssert "1: Unexpected failure creating requistion" $?
 
     local -i batchNumber=1
     echo
@@ -226,7 +230,7 @@ TestRequisition26000Nodes()
 #    done
 
     local -i start=$(date "+%s")
-    getRequisition ${BASE_URL} ${foreignSource}
+    getRequisition ${BASE_URL} ${foreignSource} > /dev/null
     local -i end=$(date "+%s")
     local -i elapsed=end-start
 

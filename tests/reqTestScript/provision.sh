@@ -9,6 +9,32 @@ doCurl()
    curl "$@"
 }
 
+createForeignSource()
+{
+    local baseUrl=$1
+    local foreignSource=$2
+
+    local req=/tmp/provision.request.$$
+
+    cat <<EOF > $req
+<foreign-source xmlns="http://xmlns.opennms.org/xsd/config/foreign-source" name="$foreignSource">
+    <scan-interval>52w</scan-interval>
+    <detectors>
+        <detector name="SNMP" class="org.opennms.netmgt.provision.detector.snmp.SnmpDetector" />
+    </detectors>
+</foreign-source>
+EOF
+
+    doCurl --user ${REST_USER}:${REST_PASSWD} -sSf -d @${req} -X POST -H 'Content-type: application/xml' ${baseUrl}/foreignSources -o /dev/null
+
+    local RET=$?
+
+    rm -f $req
+
+    return $RET
+
+}
+
 createEmptyRequisition()
 {
     local baseUrl=$1
@@ -28,6 +54,8 @@ EOF
 
     rm -f $req
 
+    return $RET
+
 }
 
 
@@ -46,7 +74,6 @@ createRequisitionWithOneNode()
 <model-import foreign-source="${foreignSource}">
     <node node-label="${nodeLabel}" foreign-id="${foreignId}">
         <interface status="1" snmp-primary="P" ip-addr="${ip}" descr="vmnet8">
-            <monitored-service service-name="SNMP"/>
             <monitored-service service-name="ICMP"/>
         </interface>
     </node>
@@ -77,7 +104,6 @@ addNodeToRequisition()
     cat <<EOF > $req
     <node node-label="${nodeLabel}" foreign-id="${foreignId}">
         <interface status="1" snmp-primary="P" ip-addr="${ip}" descr="vmnet8">
-            <monitored-service service-name="SNMP"/>
             <monitored-service service-name="ICMP"/>
         </interface>
     </node>
@@ -107,7 +133,7 @@ synchRequisition()
     local baseUrl=$1
     local foreignSource=$2
 
-    doCurl --user ${REST_USER}:${REST_PASSWD} -sSf -X PUT "${baseUrl}/requisitions/${foreignSource}/import" -o /dev/null
+    doCurl --user ${REST_USER}:${REST_PASSWD} -sSf -X PUT "${baseUrl}/requisitions/${foreignSource}/import?rescanExisting=false" -o /dev/null
 
 }
 
