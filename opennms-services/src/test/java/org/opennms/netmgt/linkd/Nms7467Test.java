@@ -69,6 +69,8 @@ import org.opennms.netmgt.model.OnmsIpRouteInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsStpInterface;
 import org.opennms.netmgt.model.OnmsStpNode;
+import org.opennms.netmgt.model.OnmsStpNode.BridgeBaseType;
+import org.opennms.netmgt.model.OnmsStpNode.StpProtocolSpecification;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -230,7 +232,8 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         assertTrue(CISCO_WS_C2948_BRIDGEID.equals(stpnode.getBaseBridgeAddress()));
         assertEquals(50, stpnode.getBaseNumPorts().intValue());
 
-        assertEquals(CISCO_WS_C2948_STP_TYPE, stpnode.getBaseType());
+        assertEquals(BridgeBaseType.TRANSPARENT_ONLY,stpnode.getBaseType());
+        assertEquals(StpProtocolSpecification.IEEE8021D,stpnode.getStpProtocolSpecification());
         
         
         // 50 entry in stpinterface
@@ -347,7 +350,8 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         assertTrue(CISCO_C870_BRIDGEID.equals(stpnode.getBaseBridgeAddress()));
         assertEquals(1, stpnode.getBaseNumPorts().intValue());
 
-        assertEquals(CISCO_C870_STP_TYPE, stpnode.getBaseType());
+        assertEquals(BridgeBaseType.SRT,stpnode.getBaseType());
+        assertEquals(StpProtocolSpecification.IEEE8021D,stpnode.getStpProtocolSpecification());
         
         
         // 1 entry in stpinterface
@@ -449,7 +453,8 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         assertTrue(NETGEAR_SW_108_BRIDGEID.equals(stpnode.getBaseBridgeAddress()));
         assertEquals(8, stpnode.getBaseNumPorts().intValue());
 
-        assertEquals(NETGEAR_SW_108_STP_TYPE, stpnode.getBaseType());
+        assertEquals(BridgeBaseType.TRANSPARENT_ONLY,stpnode.getBaseType());
+        assertEquals(StpProtocolSpecification.IEEE8021D,stpnode.getStpProtocolSpecification());
         
         
         // 50 entry in stpinterface

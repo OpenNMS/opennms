@@ -130,7 +130,7 @@ public class OnmsIpRouteInterface {
 
         public boolean equals(Object o) {
             if (o instanceof RouteType) {
-                return m_routeType == ((RouteType)o).m_routeType;
+                return m_routeType.intValue() == ((RouteType)o).m_routeType.intValue();
             }
             return false;
         }

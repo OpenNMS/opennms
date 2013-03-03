@@ -138,7 +138,7 @@ public class OnmsStpInterface {
 
         public boolean equals(Object o) {
             if (o instanceof StpPortStatus) {
-                return m_stpPortStatus == ((StpPortStatus)o).m_stpPortStatus;
+                return m_stpPortStatus.intValue() == ((StpPortStatus)o).m_stpPortStatus.intValue();
             }
             return false;
         }

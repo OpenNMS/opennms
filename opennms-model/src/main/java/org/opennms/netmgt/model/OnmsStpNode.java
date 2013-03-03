@@ -98,7 +98,7 @@ public class OnmsStpNode {
             m_basebridgetype = bridgeBaseType;
         }
 
-        @Column(name="bridgeBaseType")
+        @Column(name="baseType")
         public Integer getIntCode() {
             return m_basebridgetype;
         }
@@ -122,7 +122,7 @@ public class OnmsStpNode {
 
         public boolean equals(Object o) {
             if (o instanceof BridgeBaseType) {
-                return m_basebridgetype == ((BridgeBaseType)o).m_basebridgetype;
+                return m_basebridgetype.intValue() == ((BridgeBaseType)o).m_basebridgetype.intValue();
             }
             return false;
         }
@@ -224,7 +224,7 @@ public class OnmsStpNode {
 
         public boolean equals(Object o) {
             if (o instanceof StpProtocolSpecification) {
-                return m_stpprotocolspecification == ((StpProtocolSpecification)o).m_stpprotocolspecification;
+                return m_stpprotocolspecification.intValue() == ((StpProtocolSpecification)o).m_stpprotocolspecification.intValue();
             }
             return false;
         }

@@ -142,7 +142,7 @@ public class OnmsVlan {
 
         public boolean equals(Object o) {
             if (o instanceof VlanStatus) {
-                return m_vlanStatus == ((VlanStatus)o).m_vlanStatus;
+                return m_vlanStatus.intValue() == ((VlanStatus)o).m_vlanStatus.intValue();
             }
             return false;
         }
@@ -336,7 +336,7 @@ public class OnmsVlan {
 
         public boolean equals(Object o) {
             if (o instanceof VlanType) {
-                return m_vlanType == ((VlanType)o).m_vlanType;
+                return m_vlanType.intValue() == ((VlanType)o).m_vlanType.intValue();
             }
             return false;
         }
