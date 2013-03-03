@@ -31,6 +31,7 @@ package org.opennms.features.topology.app.internal;
 import java.io.Serializable;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.opennms.features.topology.api.SelectionContext;
 import org.opennms.features.topology.api.SelectionListener;
@@ -45,6 +46,7 @@ public class SelectionAwareTable extends Table implements SelectionListener, Sel
 	private static final long serialVersionUID = 2761774077365441249L;
 
 	private final OnmsDaoContainer<?,? extends Serializable> m_container;
+	private final Set<SelectionNotifier> m_selectionNotifiers = new CopyOnWriteArraySet();
 
 	/**
 	 *  Leave OnmsDaoContainer without generics; the Aries blueprint code cannot match up
@@ -67,24 +69,52 @@ public class SelectionAwareTable extends Table implements SelectionListener, Sel
 		m_container.selectionChanged(selectionManager);
 	}
 
+	/**
+	 * Delegate {@link SelectionNotifier} calls to the container.
+	 */
 	@Override
 	public void addSelectionListener(SelectionListener listener) {
 		m_container.addSelectionListener(listener);
+		for (SelectionNotifier notifier : m_selectionNotifiers) {
+			notifier.addSelectionListener(listener);
+		}
 	}
 
+	/**
+	 * Delegate {@link SelectionNotifier} calls to the container.
+	 */
 	@Override
 	public void removeSelectionListener(SelectionListener listener) {
 		m_container.removeSelectionListener(listener);
+		for (SelectionNotifier notifier : m_selectionNotifiers) {
+			notifier.removeSelectionListener(listener);
+		}
 	}
 
+	/**
+	 * Delegate {@link SelectionNotifier} calls to the container.
+	 */
 	@Override
 	public void setSelectionListeners(Set<SelectionListener> listeners) {
 		m_container.setSelectionListeners(listeners);
+		for (SelectionNotifier notifier : m_selectionNotifiers) {
+			notifier.setSelectionListeners(listeners);
+		}
 	}
 
+	/**
+	 * Call this method before any of the {@link SelectionNotifier} methods to ensure
+	 * that the {@link SelectionListener} instances are registered with all of the
+	 * {@link ColumnGenerator} classes that also implement {@link SelectionNotifier}.
+	 */
 	public void setColumnGenerators(Map generators) {
 		for (Object key : generators.keySet()) {
 			super.addGeneratedColumn(key, (ColumnGenerator)generators.get(key));
+			// If any of the column generators are {@link SelectionNotifier} instances,
+			// then register this component as a listener for events that they generate.
+			try {
+				m_selectionNotifiers.add((SelectionNotifier)generators.get(key));
+			} catch (ClassCastException e) {}
 		}
 	}
 }

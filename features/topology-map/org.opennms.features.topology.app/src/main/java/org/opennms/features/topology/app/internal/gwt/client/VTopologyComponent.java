@@ -505,9 +505,9 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 		return new D3Events.Handler<GWTVertex>() {
 
 			public void call(final GWTVertex vertex, int index) {
-
 				showContextMenu(vertex.getId(), D3.getEvent().getClientX(), D3.getEvent().getClientY(), "vertex");
-				D3.eventPreventDefault();
+				D3.getEvent().preventDefault();
+                D3.getEvent().stopPropagation();
 			}
 		};
 	}
@@ -518,7 +518,8 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 			public void call(final GWTEdge edge, int index) {
 
 				showContextMenu(edge.getId(), D3.getEvent().getClientX(), D3.getEvent().getClientY(), "edge");
-				D3.eventPreventDefault();
+				D3.getEvent().preventDefault();
+                D3.getEvent().stopPropagation();
 
 			}
 		};
@@ -571,7 +572,6 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 
 			public void call(GWTVertex vertex, int index) {
 				NativeEvent event = D3.getEvent();
-				
 				SVGGElement vertexElement = event.getCurrentEventTarget().cast();
 				vertexElement.getParentElement().appendChild(vertexElement);
 				
@@ -605,32 +605,34 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 		return new Handler<GWTVertex>() {
 
 			public void call(GWTVertex vertex, int index) {
+			    if(D3.getEvent().getButton() != NativeEvent.BUTTON_RIGHT) {
 			    
-			    final List<String> values = new ArrayList<String>();
-			    final String[] vertexIds = m_dragObject.getDraggedVertices();
-			    D3.d3().selectAll(GWTVertex.VERTEX_CLASS_NAME).each(new Handler<GWTVertex>() {
-
-                    @Override
-                    public void call(GWTVertex vertex, int index) {
-                        for(String id : vertexIds) {
-                            if(vertex.getId().equals(id)) {
-                                values.add("id," + vertex.getId() + "|x," + vertex.getX() + "|y," + vertex.getY() + "|selected,"+ vertex.isSelected());
+    			    final List<String> values = new ArrayList<String>();
+    			    final String[] vertexIds = m_dragObject.getDraggedVertices();
+    			    D3.d3().selectAll(GWTVertex.VERTEX_CLASS_NAME).each(new Handler<GWTVertex>() {
+    
+                        @Override
+                        public void call(GWTVertex vertex, int index) {
+                            for(String id : vertexIds) {
+                                if(vertex.getId().equals(id)) {
+                                    values.add("id," + vertex.getId() + "|x," + vertex.getX() + "|y," + vertex.getY() + "|selected,"+ vertex.isSelected());
+                                }
                             }
                         }
-                    }
-                });
-			    
-			    if(m_dragObject.getDraggableElement().getAttribute("class").equals("vertex")) {
-			        //if(!D3.getEvent().getShiftKey()) {
-			        //    deselectAllItems(false);
-			        //}
+                    });
+    			    
+    			    if(m_dragObject.getDraggableElement().getAttribute("class").equals("vertex")) {
+    			        //if(!D3.getEvent().getShiftKey()) {
+    			        //    deselectAllItems(false);
+    			        //}
+    			    }
+    			    
+    			    m_client.updateVariable(getPaintableId(), "updateVertices", values.toArray(new String[] {}), false);
+    			    m_client.sendPendingVariableChanges();
+    			    
+    				D3.getEvent().preventDefault();
+    				D3.getEvent().stopPropagation();
 			    }
-			    
-			    m_client.updateVariable(getPaintableId(), "updateVertices", values.toArray(new String[] {}), false);
-			    m_client.sendPendingVariableChanges();
-			    
-				D3.getEvent().preventDefault();
-				D3.getEvent().stopPropagation();
 			}
 
 		};
@@ -689,7 +691,6 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 		if(client.updateComponent(this, uidl, true)) {
 			return;
 		}
-		
 		GWTGraph graph = GWTGraph.create();
 		
 		m_client = client;
@@ -909,7 +910,6 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
         Map<String, Object> point = new HashMap<String, Object>();
         point.put("x", (int)Math.round(pos.getX()));
         point.put("y", (int)Math.round(pos.getY()));
-        consoleLog("mapUpdate centerPos :: x: " + pos.getX() + " y: " + pos.getY());
         m_client.updateVariable(getPaintableId(), "clientCenterPoint", point, true);
     }
 
