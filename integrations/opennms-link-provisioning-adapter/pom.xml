@@ -160,10 +160,6 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-services</artifactId>
-    </dependency>
-    <dependency>
       <groupId>xmlunit</groupId>
       <artifactId>xmlunit</artifactId>
     </dependency>

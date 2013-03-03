@@ -50,6 +50,7 @@ import org.opennms.netmgt.dao.MonitoredServiceDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.ServiceTypeDao;
 import org.opennms.netmgt.model.DataLinkInterface;
+import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsLinkState;
 import org.opennms.netmgt.model.OnmsMonitoredService;
@@ -194,14 +195,14 @@ public class DefaultNodeLinkServiceTest implements InitializingBean {
     @Transactional
     public void dwoTestUpdateLinkStatus(){
         Collection<DataLinkInterface> dataLinks = m_dataLinkDao.findByNodeId(END_POINT2_ID);
-        assertEquals("A", dataLinks.iterator().next().getStatus());
+        assertEquals(StatusType.ACTIVE, dataLinks.iterator().next().getStatus());
         int parentNodeId = END_POINT1_ID;
         int nodeId = END_POINT2_ID;
         
         m_nodeLinkService.updateLinkStatus(parentNodeId, nodeId, "G");
         
         dataLinks = m_dataLinkDao.findByNodeId(END_POINT2_ID);
-        assertEquals("G", dataLinks.iterator().next().getStatus());
+        assertEquals(StatusType.GOOD, dataLinks.iterator().next().getStatus());
     }
     
     @Test
@@ -211,12 +212,12 @@ public class DefaultNodeLinkServiceTest implements InitializingBean {
         int nodeId = END_POINT2_ID;
         
         Collection<DataLinkInterface> dataLinks = m_dataLinkDao.findByNodeId(nodeId);
-        assertEquals("A", dataLinks.iterator().next().getStatus());
+        assertEquals(StatusType.ACTIVE, dataLinks.iterator().next().getStatus());
         
         m_nodeLinkService.updateLinkStatus(parentNodeId, nodeId, "B");
         
         dataLinks = m_dataLinkDao.findByNodeId(nodeId);
-        assertEquals("B", dataLinks.iterator().next().getStatus());
+        assertEquals(StatusType.BAD, dataLinks.iterator().next().getStatus());
     }
     
     @Test
@@ -226,17 +227,17 @@ public class DefaultNodeLinkServiceTest implements InitializingBean {
         int nodeId = END_POINT2_ID;
         
         Collection<DataLinkInterface> dataLinks = m_dataLinkDao.findByNodeId(nodeId);
-        assertEquals("A", dataLinks.iterator().next().getStatus());
+        assertEquals(StatusType.ACTIVE, dataLinks.iterator().next().getStatus());
         
         m_nodeLinkService.updateLinkStatus(parentNodeId, nodeId, "G");
         
         dataLinks = m_dataLinkDao.findByNodeId(nodeId);
-        assertEquals("G", dataLinks.iterator().next().getStatus());
+        assertEquals(StatusType.GOOD, dataLinks.iterator().next().getStatus());
         
         m_nodeLinkService.updateLinkStatus(parentNodeId, nodeId, "B");
         
         dataLinks = m_dataLinkDao.findByNodeId(nodeId);
-        assertEquals("B", dataLinks.iterator().next().getStatus());
+        assertEquals(StatusType.BAD, dataLinks.iterator().next().getStatus());
     }
     
     @Test
