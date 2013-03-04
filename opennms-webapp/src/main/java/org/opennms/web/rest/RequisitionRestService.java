@@ -244,7 +244,7 @@ public class RequisitionRestService extends OnmsRestService {
         RequisitionNode node = m_accessService.getNode(foreignSource, foreignId);
         
         if (node == null) {
-            throw getException(Response.Status.NOT_FOUND, "Foreign source '" + foreignSource + "' not found.");
+            throw getException(Response.Status.NOT_FOUND, "Node with Foreign ID '" + foreignId +"' and Foreign source '" + foreignSource + "' not found.");
         }
         return node;
         
