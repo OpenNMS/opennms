@@ -85,6 +85,34 @@ div.v-table-header-wrap {
 	
 }
 
+
+/**
+ * Table row CSS. Coordinate these class names with the values inside:
+ *
+ * org.opennms.features.topology.app.internal.support.AlarmTableCellStyleGenerator
+ */
+.v-table-row-alarm-table-minor.v-table-row { background-color: #FFEBCD; }
+.v-table-row-alarm-table-minor.v-table-row-odd { background-color: #F8E4C6; }
+
+.v-table-row-alarm-table-critical.v-table-row { background-color: #F5CDCD; }
+.v-table-row-alarm-table-critical.v-table-row-odd { background-color: #EEC6C6; }
+
+.v-table-row-alarm-table-major.v-table-row { background-color: #FFD7CD; }
+.v-table-row-alarm-table-major.v-table-row-odd { background-color: #F8D0C6; }
+
+.v-table-row-alarm-table-warning.v-table-row { background-color: #FFF5CD; }
+.v-table-row-alarm-table-warning.v-table-row-odd { background-color: #F8EEC6; }
+
+.v-table-row-alarm-table-indeterminate.v-table-row { background-color: #EBEBCD; }
+.v-table-row-alarm-table-indeterminate.v-table-row-odd { background-color: #E4E4C6; }
+
+.v-table-row-alarm-table-normal.v-table-row { background-color: #D7E1CD; }
+.v-table-row-alarm-table-normal.v-table-row-odd { background-color: #D0DAC6; }
+
+.v-table-row-alarm-table-cleared.v-table-row { background-color: #EEEEEE; }
+.v-table-row-alarm-table-cleared.v-table-row-odd { background-color: #E7E7E7; }
+
+
 /******** Status Styles ********/
 .vertex .status.cleared,
 .vertex .status.normal, 

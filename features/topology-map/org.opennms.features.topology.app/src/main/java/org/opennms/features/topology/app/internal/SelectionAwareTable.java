@@ -37,6 +37,7 @@ import org.opennms.features.topology.api.SelectionContext;
 import org.opennms.features.topology.api.SelectionListener;
 import org.opennms.features.topology.api.SelectionNotifier;
 import org.opennms.features.topology.app.internal.support.OnmsDaoContainer;
+import org.opennms.features.topology.app.internal.support.TableAware;
 
 import com.vaadin.data.Container;
 import com.vaadin.ui.Table;
@@ -116,5 +117,18 @@ public class SelectionAwareTable extends Table implements SelectionListener, Sel
 				m_selectionNotifiers.add((SelectionNotifier)generators.get(key));
 			} catch (ClassCastException e) {}
 		}
+	}
+
+	/**
+	 * Call this method before any of the {@link SelectionNotifier} methods to ensure
+	 * that the {@link SelectionListener} instances are registered with all of the
+	 * {@link ColumnGenerator} classes that also implement {@link SelectionNotifier}.
+	 */
+	@Override
+	public void setCellStyleGenerator(CellStyleGenerator generator) {
+		try {
+			((TableAware)generator).setTable(this);
+		} catch (ClassCastException e) {}
+		super.setCellStyleGenerator(generator);
 	}
 }
