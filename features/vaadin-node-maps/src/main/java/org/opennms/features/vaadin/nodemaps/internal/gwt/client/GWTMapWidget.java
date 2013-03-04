@@ -28,6 +28,8 @@
 
 package org.opennms.features.vaadin.nodemaps.internal.gwt.client;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.discotools.gwt.leaflet.client.Options;
@@ -36,7 +38,6 @@ import org.discotools.gwt.leaflet.client.layers.ILayer;
 import org.discotools.gwt.leaflet.client.layers.raster.TileLayer;
 import org.discotools.gwt.leaflet.client.map.Map;
 import org.discotools.gwt.leaflet.client.map.MapOptions;
-import org.discotools.gwt.leaflet.client.marker.Marker;
 import org.discotools.gwt.leaflet.client.types.LatLng;
 
 import com.google.gwt.core.client.Scheduler;
@@ -47,13 +48,13 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.terminal.gwt.client.VConsole;
 
-public class GWTMapWidget extends Widget {
+public class GWTMapWidget extends Widget implements MarkerProvider {
     private final DivElement m_div;
 
     private Map m_map;
     private ILayer m_layer;
 
-    private List<? extends Marker> m_features;
+    private List<NodeMarker> m_markers;
 
     private MarkerClusterGroup m_markerClusterGroup;
 
@@ -90,6 +91,7 @@ public class GWTMapWidget extends Widget {
         // createGoogleLayer();
         addTileLayer();
         addMarkerLayer();
+        addSearchInput();
 
         VConsole.log("finished initializing map");
     }
@@ -123,6 +125,33 @@ public class GWTMapWidget extends Widget {
         m_layer = new TileLayer(url, tileOptions);
         m_map.addLayer(m_layer, true);
     }
+    
+    private void addSearchInput() {
+        VConsole.log("adding search input");
+        final SearchOptions options = new SearchOptions();
+        options.setSearchCallback(new NodeMarkerSearchCallback(this) {
+           public Collection<NodeMarker> search(final Collection<NodeMarker> markers, final String text) {
+               VConsole.log("search() called for text: " + text + ", searching " + markers.size() + " markers.");
+               final List<NodeMarker> matched = new ArrayList<NodeMarker>();
+               for (final NodeMarker marker : markers) {
+                   if (marker.containsText(text)) {
+                       VConsole.log(" matched: " + marker.toString());
+                       matched.add(marker);
+                   } else {
+                       VConsole.log("!matched: " + marker.toString());
+                   }
+               }
+               return matched;
+           }
+        });
+        options.setAutoCollapse(false);
+        options.setAutoResize(true);
+        options.setTipAutoSubmit(true);
+        options.setAnimateLocation(true);
+        options.setMarkerLocation(true);
+        final Search search = new Search(options);
+        m_map.addControl(search);
+    }
 
     private void addMarkerLayer() {
         VConsole.log("adding marker cluster layer");
@@ -136,9 +165,9 @@ public class GWTMapWidget extends Widget {
         m_map.addLayer(m_markerClusterGroup);
     }
 
-    public void updateFeatureLayer() {
-        if (m_features == null) {
-            VConsole.log("features not initialized yet, skipping update");
+    public void updateMarkerClusterLayer() {
+        if (m_markers == null) {
+            VConsole.log("markers not initialized yet, skipping update");
             return;
         }
         if (m_markerClusterGroup == null) {
@@ -148,18 +177,17 @@ public class GWTMapWidget extends Widget {
 
         VConsole.log("clearing existing markers");
         m_markerClusterGroup.clearLayers();
-        VConsole.log("adding " + m_features.size() + " features to the node layer");
-        m_markerClusterGroup.addLayers(m_features);
-        VConsole.log("finished adding features");
+        VConsole.log("adding " + m_markers.size() + " markers to the node layer");
+        m_markerClusterGroup.addLayers(m_markers);
+        VConsole.log("finished adding markers");
     }
 
-    public List<? extends Marker> getFeatureCollection() {
-        return m_features;
+    public List<NodeMarker> getMarkers() {
+        return m_markers;
     }
 
-    public void setFeatureCollection(final List<? extends Marker> featureCollection) {
-        VConsole.log("setFeatureCollection: " + featureCollection.size() + " features");
-        m_features = featureCollection;
+    public void setMarkers(final List<NodeMarker> markers) {
+        m_markers = markers;
     }
 
     private final void destroyMap() {

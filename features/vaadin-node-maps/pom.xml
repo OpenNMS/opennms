@@ -230,7 +230,7 @@
 		<dependency>
 			<groupId>org.discotools.gwt.leaflet</groupId>
 			<artifactId>gwtl-core</artifactId>
-			<version>0.3-ONMS-20130227-1</version>
+			<version>0.3-ONMS-20130301-1</version>
 			<optional>true</optional>
 			<scope>provided</scope>
 		</dependency>

@@ -96,10 +96,10 @@ public class VMapWidget extends GWTMapWidget implements Paintable {
             featureCollection.add(feature);
         }
 
-        setFeatureCollection(featureCollection);
+        setMarkers(featureCollection);
         Scheduler.get().scheduleDeferred(new Command() {
             @Override public void execute() {
-                updateFeatureLayer();
+                updateMarkerClusterLayer();
             }
         });
     }
