@@ -83,7 +83,7 @@ public class VMapWidget extends GWTMapWidget implements Paintable {
 
             final NodeMarker feature = new NodeMarker(new LatLng(latitude, longitude));
 
-            for (final String key : new String[] { "nodeId", "nodeLabel", "foreignSource", "foreignId", "ipAddress", "severity", "severityLabel", "unackedCount" }) {
+            for (final String key : new String[] { "nodeId", "nodeLabel", "foreignSource", "foreignId", "description", "maintcontract", "ipAddress", "severity", "severityLabel", "unackedCount" }) {
                 if (node.hasAttribute(key)) feature.putProperty(key, node.getStringAttribute(key));
             }
 

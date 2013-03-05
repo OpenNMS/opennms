@@ -231,9 +231,9 @@ L.Control.Search = L.Control.extend({
 		
 		L.DomEvent
 			.on(input, 'keyup', this._handleKeypress, this)
-			.on(input, 'keydown', this._handleAutoresize, this)
-			.on(input, 'blur', this.collapseDelayed, this)
-			.on(input, 'focus', this.collapseDelayedStop, this);
+			.on(input, 'keydown', this._handleAutoresize, this);
+			//.on(input, 'blur', this.collapseDelayed, this)
+			//.on(input, 'focus', this.collapseDelayedStop, this);
 		
 		return input;
 	},
@@ -259,9 +259,9 @@ L.Control.Search = L.Control.extend({
 
 		L.DomEvent
 			.on(button, 'click', L.DomEvent.stop, this)
-			.on(button, 'click', this._handleSubmit, this)			
-			.on(button, 'focus', this.collapseDelayedStop, this)
-			.on(button, 'blur', this.collapseDelayed, this);
+			.on(button, 'click', this._handleSubmit, this);
+			//.on(button, 'focus', this.collapseDelayedStop, this)
+			//.on(button, 'blur', this.collapseDelayed, this);
 
 		return button;
 	},
@@ -570,18 +570,20 @@ L.Control.Search = L.Control.extend({
 			this._input.selectionStart = this._input.selectionEnd;
 		}
 
-		if(this._input.style.display == 'none')	//on first click show _input only
-			this.expand();
-		else
-		{
-			if(this._input.value == '')	//hide _input only
-				this.collapse();
-			else
-			{
-				if( this._findLocation(this._input.value)===false )
-					this.showAlert( this.options.textErr );//location not found, alert!
-			}
-		}
+		if( this._findLocation(this._input.value)===false )
+			this.showAlert( this.options.textErr );//location not found, alert!
+//		if(this._input.style.display == 'none')	//on first click show _input only
+//			this.expand();
+//		else
+//		{
+//			if(this._input.value == '')	//hide _input only
+//				this.collapse();
+//			else
+//			{
+//				if( this._findLocation(this._input.value)===false )
+//					this.showAlert( this.options.textErr );//location not found, alert!
+//			}
+//		}
 		this._input.focus();	//block collapseDelayed after _button blur
 	},
 	

@@ -34,7 +34,7 @@ import org.discotools.gwt.leaflet.client.marker.Marker;
 import org.discotools.gwt.leaflet.client.types.LatLng;
 
 public class NodeMarker extends Marker {
-    private String[] m_textProperties = new String[] { "nodeLabel", "foreignSource", "foreignId", "ipAddress" };
+    private String[] m_textProperties = new String[] { "nodeLabel", "ipAddress", "description", "maintcontract" };
 
     public NodeMarker(final LatLng latLng) {
         super(latLng, new Options());
@@ -75,6 +75,14 @@ public class NodeMarker extends Marker {
 
     public String getSeverityLabel() {
         return getProperty("severityLabel");
+    }
+
+    public String getDescription() {
+        return getProperty("description");
+    }
+
+    public String getMaintContract() {
+        return getProperty("maintcontract");
     }
 
     public int getSeverity() {

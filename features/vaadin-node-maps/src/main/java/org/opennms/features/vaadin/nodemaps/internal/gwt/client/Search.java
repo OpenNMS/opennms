@@ -15,4 +15,27 @@ public class Search extends Control {
     public Search(final SearchOptions options) {
         this(SearchImpl.create(options.getJSObject()));
     }
+
+    public void setSize(final int size) {
+        setSize(getJSObject(), size);
+    }
+
+    private final native void setSize(final JSObject self, final int size) /*-{
+        self._inputMinSize = size;
+        self._input.size = size;
+    }-*/;
+
+    public void expand() {
+        this.expand(getJSObject());
+    }
+    public final native void expand(final JSObject self) /*-{
+        self.expand();
+    }-*/;
+
+    public void collapse() {
+        this.collapse(getJSObject());
+    }
+    public final native void collapse(final JSObject self) /*-{
+        self.collapse();
+    }-*/;
 }
