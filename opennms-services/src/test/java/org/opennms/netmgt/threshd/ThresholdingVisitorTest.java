@@ -1301,6 +1301,17 @@ public class ThresholdingVisitorTest {
          verifyEvents(0);
      }
 
+     @Test
+     public void testBug5764() throws Exception {
+         ThresholdingVisitor visitor = createVisitor();
+
+
+         initFactories("/threshd-configuration.xml","/test-thresholds-bug5764.xml");
+         
+         visitor.reload();
+
+     }
+
      /*
      * This test uses this files from src/test/resources:
      * - thresd-configuration.xml
