@@ -139,6 +139,9 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
 			<argument ref="alarmDaoContainer" />
 			<property name="columnReorderingAllowed" value="true"/>
 			<property name="columnCollapsingAllowed" value="true"/>
+			<property name="cellStyleGenerator">
+				<bean class="org.opennms.features.topology.app.internal.support.AlarmTableCellStyleGenerator"/>
+			</property>
 			<property name="columnGenerators">
 				<map>
 					<entry key="nodeLabel">

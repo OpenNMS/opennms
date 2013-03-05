@@ -96,9 +96,11 @@
     }
     String details = "";
     if (maxSeverity > 3) {
-        String unackText = "<a href='alarm/list.htm?filter=node%3d" + nodeId + "&amp;acktype=unack'>" + unackCount + "</a>";
-        String ackText   = "<a href='alarm/list.htm?filter=node%3d" + nodeId + "&amp;acktype=ack'>"   + ackCount + "</a>";
-        details = " There are <b>" + unackText + "</b> unacknowledged problems, and <b>" + ackText + "</b> acknowledged problems.";
+        String unackText = "<a href='alarm/list.htm?filter=node%3d" + nodeId + "&amp;acktype=unack'><b>"
+            + unackCount + "</b> unacknowledged</a>";
+        String ackText = "<a href='alarm/list.htm?filter=node%3d" + nodeId + "&amp;acktype=ack'><b>"
+            + ackCount + "</b> acknowledged</a>";
+        details = " There are " + unackText + " problems, and " + ackText + " problems.";
     }
 %>
 

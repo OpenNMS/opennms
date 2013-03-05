@@ -129,7 +129,7 @@ public class AlarmStatusProviderTest {
         
         Status vertexStatus = m_statusProvider.getStatusForVertex(vertex);
         String computeStatus = vertexStatus.computeStatus();
-        assertTrue(computeStatus.equals("normal"));
+        assertTrue(computeStatus.equals("indeterminate"));
         
         EasyMock.verify(m_alarmDao);
     }

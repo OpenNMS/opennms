@@ -1,0 +1,109 @@
+<?xml version="1.0"?>
+<thresholding-config>
+
+        <group name="generic-snmp"
+                rrdRepository = "${install.share.dir}/rrd/snmp/">
+				<threshold type="high" ds-name="ns-dskPercent" ds-type="dskIndex" ds-label="ns-dskPath" value="90.0" rearm="75.0" trigger="2"/>	                <threshold type="high" ds-name="freeMem"  ds-type="node" value="10000" rearm="5000" trigger="1"/>
+                <threshold type="high" ds-name="ifInOctets"  ds-type="if" value="90" rearm="50" trigger="1">
+                	<resource-filter field='snmpifalias'>wlan0</resource-filter>
+                	<resource-filter field='myMockParam'>myMockValue</resource-filter>
+                </threshold>
+                <threshold type="high" ds-name="ifOutOctets"  ds-type="if" value="90" rearm="50" trigger="1"/>
+                <threshold type="high" ds-name="frReceivedFrames" ds-label="frName" ds-type="frCircuitIfIndex" value="90" rearm="50" trigger="1"/>
+                <threshold type="high" ds-name="frSentFrames" ds-label="frName" ds-type="frCircuitIfIndex" value="90" rearm="50" trigger="1">
+                	<resource-filter field='frIntf'>^0$</resource-filter>
+                	<resource-filter field='frDlci'>^1.+</resource-filter>
+                </threshold>
+                <expression type="high" ds-type="hrStorageIndex" value="30.0" rearm="25.0" trigger="1" ds-label="hrStorageDescr"
+                    expression="(((hrStorageAllocUnits*hrStorageUsed)/(hrStorageAllocUnits*hrStorageSize))*100)">
+                    <resource-filter field="hrStorageDescr">^/opt.*</resource-filter>
+                </expression>
+        </group>
+
+        <group name="default-snmp"
+                rrdRepository = "${install.share.dir}/rrd/snmp/">
+                <threshold type="high" ds-name="avgBusy5"  ds-type="node" value="90" rearm="50" trigger="3"/>
+                <threshold type="low" ds-name="freeMem"  ds-type="node" value="1024" rearm="1000000" trigger="3"/>
+
+                <!--  We don't have good data to base the next one on, so we're commenting it out
+                <threshold type="high" ds-name="bufferFail"  ds-type="node" value="1" rearm="0" trigger="3"/>
+
+		
+                                                                                                        -->
+
+                <!--  We don't have good data to base the next one on, so we're commenting it out
+                <threshold type="high" ds-name="bufferNoMem"  ds-type="node" value="1" rearm="0" trigger="3"/>
+                                                                                                        -->
+
+		<!-- SNMP Informant thresholds -->
+                <threshold type="low" ds-name="sinfDskPtFreeSpcC"  ds-type="node" value="5" rearm="10" trigger="1"/>
+                <threshold type="low" ds-name="sinfDskPtFreeSpcD"  ds-type="node" value="5" rearm="10" trigger="1"/>
+                <threshold type="low" ds-name="sinfDskPtFreeSpcE"  ds-type="node" value="5" rearm="10" trigger="1"/>
+                <threshold type="low" ds-name="sinfDskPtFreeSpcTl"  ds-type="node" value="5" rearm="10" trigger="1"/>
+
+                <threshold type="high" ds-name="sinfCpuPtProcTime0"  ds-type="node" value="100" rearm="90" trigger="3"/>
+                <threshold type="high" ds-name="sinfCpuPtProcTime1"  ds-type="node" value="100" rearm="90" trigger="3"/>
+                <threshold type="high" ds-name="sinfCpuPtProcTime2"  ds-type="node" value="100" rearm="90" trigger="3"/>
+                <threshold type="high" ds-name="sinfCpuPtProcTime3"  ds-type="node" value="100" rearm="90" trigger="3"/>
+                <threshold type="high" ds-name="sinfCpuPtProcTimeTl"  ds-type="node" value="100" rearm="90" trigger="3"/>
+
+                <threshold type="low" ds-name="wfkernelBuffersFree"  ds-type="node" value="0" rearm="1" trigger="3"/>
+                <threshold type="low" ds-name="wfkernelMemoryFree"  ds-type="node" value="0" rearm="1" trigger="3"/>
+                <threshold type="high" ds-name="wfkernelTasksInQue"  ds-type="node" value="100" rearm="0" trigger="3"/>
+                <threshold type="high" ds-name="wfkernelTasksTotal"  ds-type="node" value="500" rearm="0" trigger="3"/>
+
+                <threshold type="high" ds-name="a3sysCpuUtil"  ds-type="node" value="90" rearm="50" trigger="3"/>
+
+                <threshold type="high" ds-name="cpuPercentBusy"  ds-type="node" value="90" rearm="50" trigger="3"/>
+                <threshold type="low" ds-name="freeSpaceOnSys"  ds-type="node" value="5000" rearm="100000" trigger="3"/>
+                <threshold type="low" ds-name="freeSpaceOnVol2"  ds-type="node" value="5000" rearm="100000" trigger="3"/>
+
+                <!-- The following entry is for the Checkpoint MIB -->
+                <threshold type="high" ds-name="cpuUtilization"  ds-type="node" value="90" rearm="50" trigger="3"/>
+
+
+                <threshold type="low" ds-name="freeMemory"  ds-type="node" value="1" rearm="1000" trigger="3"/>
+                <threshold type="low" ds-name="1stHDDFreeSpace"  ds-type="node" value="5000" rearm="100000" trigger="3"/>
+                <threshold type="low" ds-name="2ndHDDFreeSpace"  ds-type="node" value="5000" rearm="100000" trigger="3"/>
+
+                <threshold type="high" ds-name="cimPctHddUsed1"  ds-type="node" value="99" rearm="80" trigger="1"/>
+                <threshold type="high" ds-name="cimPctHddUsed2"  ds-type="node" value="99" rearm="80" trigger="1"/>
+                <threshold type="high" ds-name="cim5MinCpuUtilPct"  ds-type="node" value="90" rearm="50" trigger="3"/>
+        </group>
+
+        <!--group name="jboss"
+                rrdRepository = "${install.share.dir}/rrd/snmp/">
+                <threshold type="high" ds-name="portal-core_hits"  ds-type="node" value="10" rearm="5" trigger="3"/>
+                <threshold type="high" ds-name="portal-core_access"   ds-type="node" value="10" rearm="7" trigger="3"/>
+        </group-->
+
+	<group name="icmp-latency"
+                rrdRepository = "${install.share.dir}/rrd/response/">
+                <threshold type="high" ds-name="icmp"  ds-type="if" value="75000" rearm="25000" trigger="3"/>
+        </group>
+
+        <group name="http-latency"
+                rrdRepository = "${install.share.dir}/rrd/response/">
+                <threshold type="high" ds-name="http"  ds-type="if" value="100" rearm="50" trigger="5"/>
+        </group>
+
+        <group name="http-8000-latency"
+                rrdRepository = "${install.share.dir}/rrd/response/">
+                <threshold type="high" ds-name="http-8000"  ds-type="if" value="100" rearm="50" trigger="3"/>
+        </group>
+
+        <group name="http-8080-latency"
+                rrdRepository = "${install.share.dir}/rrd/response/">
+                <threshold type="high" ds-name="http-8080"  ds-type="if" value="100" rearm="50" trigger="3"/>
+        </group>
+
+        <group name="dns-latency"
+                rrdRepository = "${install.share.dir}/rrd/response/">
+                <threshold type="high" ds-name="dns"  ds-type="if" value="100" rearm="50" trigger="3"/>
+        </group>
+
+        <group name="dhcp-latency"
+                rrdRepository = "${install.share.dir}/rrd/response/">
+                <threshold type="high" ds-name="dhcp"  ds-type="if" value="500" rearm="100" trigger="3"/>
+        </group>
+</thresholding-config>
