@@ -177,7 +177,8 @@ public class DefaultThresholdsDao implements ThresholdsDao, InitializingBean {
 
     private ThresholdResourceType mergeType(String groupName, String typeName, ThresholdResourceType type) {
         ThresholdResourceType resourceType = new ThresholdResourceType(typeName);
-        resourceType.setThresholdMap(mergeThresholdStateMap(groupName, type));
+        Map<String, Set<ThresholdEntity>> mergedStateMap = type == null ? createThresholdStateMap(groupName, typeName) : mergeThresholdStateMap(groupName, type);
+		resourceType.setThresholdMap(mergedStateMap);
         return resourceType;
     }
 
