@@ -156,7 +156,8 @@ public class AtInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsAtInterfac
 
     @Override
     public OnmsAtInterface findByNodeAndAddress(final Integer nodeId, final InetAddress ipAddress, final String macAddress) {
-        final OnmsCriteria criteria = new OnmsCriteria(OnmsAtInterface.class);
+    	/*
+    	final OnmsCriteria criteria = new OnmsCriteria(OnmsAtInterface.class);
         criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
         criteria.add(Restrictions.eq("node.id", nodeId));
         criteria.add(Restrictions.eq("ipAddress", ipAddress));
@@ -168,11 +169,15 @@ public class AtInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsAtInterfac
         } else {
             return ifaces.get(0);
         }
+        */
+        final String addressString = str(ipAddress);
+        return 
+        	findUnique("from OnmsAtInterface atInterface where atInterface.node.id = ? and atInterface.ipAddress = ? and atInterface.macAddress = ?", nodeId,addressString,macAddress);
     }
 
     // SELECT node.nodeid,ipinterface.ifindex FROM node LEFT JOIN ipinterface ON node.nodeid = ipinterface.nodeid WHERE nodetype = 'A' AND ipaddr = ?
     @Override
-    public OnmsAtInterface getAtInterfaceForAddress(final InetAddress address) {
+    public Collection<OnmsAtInterface> getAtInterfaceForAddress(final InetAddress address) {
         final String addressString = str(address);
 
         if (address.isLoopbackAddress() || addressString.equals("0.0.0.0")) return null;
@@ -182,30 +187,17 @@ public class AtInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsAtInterfac
         criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
         criteria.add(Restrictions.eq("node.type", "A"));
         criteria.add(Restrictions.eq("ipAddress", addressString));
+
         List<OnmsAtInterface> interfaces = findMatching(criteria);
 
         if (interfaces.isEmpty()) {
-                    final List<OnmsIpInterface> ifaces = m_ipInterfaceDao.findByIpAddress(addressString);
-                    if (ifaces.isEmpty()) {
-                        return null;
-                    } else {
-                        if (ifaces.size() > 1) {
-                            LogUtils.debugf(this, "getAtInterfaceForAddress: More than one AtInterface matched address %s!", addressString);
-                        }
-                        OnmsIpInterface iface = ifaces.get(0);
-                        OnmsAtInterface retval = new OnmsAtInterface(iface.getNode(), iface.getIpAddress());
-                        retval.setLastPollTime(new Date());
-                        retval.setSourceNodeId(iface.getNode().getId());
-                        retval.setStatus(StatusType.INACTIVE);
-                        save(retval);
-                        return retval;
-                    }
-        } else {
-            if (interfaces.size() > 1) {
-                LogUtils.debugf(this, "getAtInterfaceForAddress: More than one AtInterface matched address %s!", addressString);
-            }
-            return interfaces.get(0);
+            LogUtils.debugf(this, "getAtInterfaceForAddress: No AtInterface matched address %s!", addressString);
+            LogUtils.debugf(this, "getAtInterfaceForAddress: search IpInterface for address %s!", addressString);
+	        for ( final OnmsIpInterface iface : m_ipInterfaceDao.findByIpAddress(addressString)) {
+	            interfaces.add(new OnmsAtInterface(iface.getNode(), iface.getIpAddress()));
+	        }
         }
+        return interfaces;
     }
 
 }

@@ -136,6 +136,8 @@ public abstract class AbstractQueryManager implements QueryManager {
     }
 
     protected void processIpNetToMediaTable(final LinkableNode node, final SnmpCollection snmpcoll, final Date scanTime) {
+
+    	boolean hasPrimaryIpAsAtinterface = false;
         if (LogUtils.isDebugEnabled(this)) {
             if (snmpcoll.getIpNetToMediaTable().size() > 0) {
                 LogUtils.debugf(this, "processIpNetToMediaTable: Starting ipNetToMedia table processing for %d/%s", node.getNodeId(), str(node.getSnmpPrimaryIpAddr()));
@@ -144,7 +146,6 @@ public abstract class AbstractQueryManager implements QueryManager {
             }
         }
 
-        boolean trytostoreprimary=true;
         // the AtInterfaces used by LinkableNode where to save info
         for (final IpNetToMediaTableEntry ent : snmpcoll.getIpNetToMediaTable()) {
 
@@ -156,10 +157,9 @@ public abstract class AbstractQueryManager implements QueryManager {
             }
 
             final InetAddress ipaddress = ent.getIpNetToMediaNetAddress(); 
-                if (ipaddress.equals(node.getSnmpPrimaryIpAddr())){
-                    trytostoreprimary=false;
-            }
             
+            if (ipaddress.equals(node.getSnmpPrimaryIpAddr()))
+            	hasPrimaryIpAsAtinterface = true;
             final String hostAddress = InetAddressUtils.str(ipaddress);
 
             if (ipaddress == null || ipaddress.isLoopbackAddress() || hostAddress.equals("0.0.0.0")) {
@@ -177,56 +177,57 @@ public abstract class AbstractQueryManager implements QueryManager {
             LogUtils.debugf(this, "processIpNetToMediaTable: trying save ipNetToMedia info: IP address %s, MAC address %s, ifIndex %d", hostAddress, physAddr, ifindex);
 
             // get an AtInterface but without setting MAC address
-            final OnmsAtInterface at = getAtInterfaceDao().getAtInterfaceForAddress(ipaddress);
-            //FIXME could return more then one interface 
-            //to be updated all the returned nodes
-            if (at == null) {
+            final Collection<OnmsAtInterface> ats = getAtInterfaceDao().getAtInterfaceForAddress(ipaddress);
+            if (ats.isEmpty()) {
                 LogUtils.debugf(this, "processIpNetToMediaTable: no node found for IP address %s.", hostAddress);
                 sendNewSuspectEvent(ipaddress, snmpcoll.getTarget(), snmpcoll.getPackageName());
                 continue;
             }
 
-            at.setSourceNodeId(node.getNodeId());
+            for (final OnmsAtInterface at : ats) {
+            	at.setSourceNodeId(node.getNodeId());
 
-            if (at.getMacAddress() != null && !at.getMacAddress().equals(physAddr)) {
-                LogUtils.infof(this, "processIpNetToMediaTable: Setting OnmsAtInterface MAC address to %s but it used to be '%s' (IP Address = %s, ifIndex = %d)", physAddr, at.getMacAddress(), hostAddress, ifindex);
-            }
-            at.setMacAddress(physAddr);
+	            if (at.getMacAddress() != null && !at.getMacAddress().equals(physAddr)) {
+	                LogUtils.infof(this, "processIpNetToMediaTable: Setting OnmsAtInterface MAC address to %s but it used to be '%s' (IP Address = %s, ifIndex = %d)", physAddr, at.getMacAddress(), hostAddress, ifindex);
+	            }
+	            at.setMacAddress(physAddr);
 
-            if (at.getIfIndex() != null && !at.getIfIndex().equals(ifindex)) {
-                LogUtils.infof(this, "processIpNetToMediaTable: Setting OnmsAtInterface ifIndex to %d but it used to be '%s' (IP Address = %s, MAC = %s)", ifindex, at.getIfIndex(), hostAddress, physAddr);
-            }
-            at.setIfIndex(ifindex);
+	            if (at.getIfIndex() != null && !at.getIfIndex().equals(ifindex)) {
+	                LogUtils.infof(this, "processIpNetToMediaTable: Setting OnmsAtInterface ifIndex to %d but it used to be '%s' (IP Address = %s, MAC = %s)", ifindex, at.getIfIndex(), hostAddress, physAddr);
+	            }
+	            at.setIfIndex(ifindex);
 
-            at.setLastPollTime(scanTime);
-            at.setStatus(StatusType.ACTIVE);
+	            at.setLastPollTime(scanTime);
+	            at.setStatus(StatusType.ACTIVE);
 
-            getAtInterfaceDao().save(at);
+	            getAtInterfaceDao().saveOrUpdate(at);
             
-            // Now store the information that is needed to create link in linkd
-            for (OnmsAtInterface onmsatinterface: getAtInterfaceDao().findByMacAddress(physAddr) ) {
-                AtInterface atinterface = new AtInterface(onmsatinterface.getNode().getId(), physAddr, at.getIpAddress());
-                atinterface.setIfIndex(getIfIndex(onmsatinterface.getNode().getId(), at.getIpAddress().getHostAddress()));
-
-                getLinkd().addAtInterface(atinterface);
+	            // Now store the information that is needed to create link in linkd
+	            AtInterface atinterface = new AtInterface(at.getNode().getId(), physAddr, at.getIpAddress());
+	            atinterface.setIfIndex(getIfIndex(at.getNode().getId(), at.getIpAddress().getHostAddress()));
+	            getLinkd().addAtInterface(atinterface);            
             }
         }
         
-        if (trytostoreprimary) {
-            LogUtils.infof(this, "processIpNetToMediaTable: try to setting ifindex for linkednode primary ip address '%s' ", node.getSnmpPrimaryIpAddr().getHostAddress());
-            OnmsIpInterface ipinterface = getIpInterfaceDao().findByNodeIdAndIpAddress(Integer.valueOf(node.getNodeId()), node.getSnmpPrimaryIpAddr().getHostAddress());
-            if (ipinterface != null) {
-                OnmsSnmpInterface snmpinterface = ipinterface.getSnmpInterface();
-                if (snmpinterface != null && snmpinterface.getPhysAddr() != null ) {
-                    AtInterface at = new AtInterface(node.getNodeId(), snmpinterface.getPhysAddr(), node.getSnmpPrimaryIpAddr());
-                    at.setMacAddress(snmpinterface.getPhysAddr());
-                    LogUtils.infof(this, "processIpNetToMediaTable: Setting AtInterface ifIndex to %d, for primary IP Address %s, MAC = %s)", at.getIfIndex(), at.getIpAddress().getHostAddress(), at.getMacAddress());
-                    at.setIfIndex(snmpinterface.getIfIndex());
-                    getLinkd().addAtInterface(at);
-                }
-            }
-        }
+        if (!hasPrimaryIpAsAtinterface)
+        	savePrimaryAddressAtInterface(node);
+        
     }
+
+	private void savePrimaryAddressAtInterface(final LinkableNode node) {
+		LogUtils.infof(this, "savePrimaryAddressAtInterface: try to setting ifindex for linkednode primary ip address '%s' ", node.getSnmpPrimaryIpAddr().getHostAddress());
+		OnmsIpInterface ipinterface = getIpInterfaceDao().findByNodeIdAndIpAddress(Integer.valueOf(node.getNodeId()), node.getSnmpPrimaryIpAddr().getHostAddress());
+		if (ipinterface != null) {
+		    OnmsSnmpInterface snmpinterface = ipinterface.getSnmpInterface();
+		    if (snmpinterface != null && snmpinterface.getPhysAddr() != null ) {
+		        AtInterface at = new AtInterface(node.getNodeId(), snmpinterface.getPhysAddr(), node.getSnmpPrimaryIpAddr());
+		        at.setMacAddress(snmpinterface.getPhysAddr());
+		        LogUtils.infof(this, "savePrimaryAddressAtInterface: Setting AtInterface ifIndex to %d, for primary IP Address %s, MAC = %s)", at.getIfIndex(), at.getIpAddress().getHostAddress(), at.getMacAddress());
+		        at.setIfIndex(snmpinterface.getIfIndex());
+		        getLinkd().addAtInterface(at);
+		    }
+		}
+	}
 
     // This method retrieve the right interface index from the OnmsIpInterface
     // This is required because the ifindex  walked in atInterface snmp table

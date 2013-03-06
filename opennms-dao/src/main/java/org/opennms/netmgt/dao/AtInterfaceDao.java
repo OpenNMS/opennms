@@ -69,5 +69,5 @@ public interface AtInterfaceDao extends OnmsDao<OnmsAtInterface, Integer> {
      * @return an {@link OnmsAtInterface}
      * @throws SQLException
      */
-    OnmsAtInterface getAtInterfaceForAddress(final InetAddress address);
+    Collection<OnmsAtInterface> getAtInterfaceForAddress(final InetAddress address);
 }
