@@ -14,6 +14,13 @@ public class SearchOptions extends Options {
         return (SearchOptions)setProperty("minLength", minLength);
     }
 
+    public boolean getInitial() {
+        return getPropertyAsBoolean("initial");
+    }
+    public SearchOptions setInitial(final boolean initial) {
+        return (SearchOptions)setProperty("initial", initial);
+    }
+
     /** limit max results to show in tooltip. -1 for no limit. */
     public int getToolTipLimit() {
         return getPropertyAsInt("toolTipLimit");

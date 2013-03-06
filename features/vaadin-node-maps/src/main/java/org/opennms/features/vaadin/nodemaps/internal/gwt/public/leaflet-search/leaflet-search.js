@@ -175,7 +175,7 @@ L.Control.Search = L.Control.extend({
 			that._alert.style.display = 'none';
 		},this.options.autoCollapseTime);
 	},
-	
+
 	cancel: function() {
 		this._input.value = '';
 		this._handleKeypress({keyCode:8});//simulate backspace keypress
@@ -183,7 +183,7 @@ L.Control.Search = L.Control.extend({
 		this._input.focus();
 		this._cancel.style.display = 'none';
 	},
-	
+
 	expand: function() {		
 		this._input.style.display = 'block';
 		L.DomUtil.addClass(this._container, 'search-exp');	
@@ -194,12 +194,11 @@ L.Control.Search = L.Control.extend({
 		this._hideTooltip();
 		this.cancel();
 		this._alert.style.display = 'none';
-		this._input.style.display = 'none';
+		this._input.style.display = 'block';
 		this._cancel.style.display = 'none';
-		L.DomUtil.removeClass(this._container, 'search-exp');		
+		L.DomUtil.addClass(this._container, 'search-exp');		
 		this._markerLoc.hide();
-		//TODO optional markerLoc.hide in collapse()
-		this._map._container.focus();
+		this._input.focus();
 	},
 	
 	collapseDelayed: function() {	//collapse after delay, used on_input blur
@@ -232,6 +231,7 @@ L.Control.Search = L.Control.extend({
 		L.DomEvent
 			.on(input, 'keyup', this._handleKeypress, this)
 			.on(input, 'keydown', this._handleAutoresize, this);
+			//.on(input, 'click', input.focus());
 			//.on(input, 'blur', this.collapseDelayed, this)
 			//.on(input, 'focus', this.collapseDelayedStop, this);
 		
@@ -324,12 +324,12 @@ L.Control.Search = L.Control.extend({
 
 		for(var key in this._recordsCache)
 		{
-			if(regSearch.test(key))//search in records
-			{
+			//if(regSearch.test(key))//search in records
+			//{
 				if (ntip == this.options.tooltipLimit) break;
 				this._tooltip.appendChild( this._createTip(key) );
 				ntip++;
-			}
+			//}
 		}
 		
 		if(ntip > 0)
@@ -426,7 +426,6 @@ L.Control.Search = L.Control.extend({
 	},
 
 	_handleKeypress: function (e) {	//run _input keyup event
-		
 		switch(e.keyCode)
 		{
 			case 27: //Esc
@@ -451,6 +450,7 @@ L.Control.Search = L.Control.extend({
 			case 46://delete
 				this._autoTypeTmp = false;//disable temporarily autoType
 			default://All keys
+				if (e.altKey || e.shiftKey || e.ctrlKey || e.metaKey) { return; }
 
 				if(this._input.value.length)
 					this._cancel.style.display = 'block';
@@ -631,8 +631,8 @@ L.Control.Search = L.Control.extend({
 				this._markerLoc.animate();
 			
 			//FIXME autoCollapse option hide this._markerLoc before that visualized!!
-			if(this.options.autoCollapse)
-				this.collapse();			
+//			if(this.options.autoCollapse)
+//				this.collapse();
 
 			return newCenter;
 		}

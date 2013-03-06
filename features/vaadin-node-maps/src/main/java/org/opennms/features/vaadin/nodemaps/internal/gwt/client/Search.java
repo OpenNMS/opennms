@@ -38,4 +38,12 @@ public class Search extends Control {
     public final native void collapse(final JSObject self) /*-{
         self.collapse();
     }-*/;
+
+    public void focus() {
+        this.focus(getJSObject());
+    }
+
+    private final native void focus(final JSObject self) /*-{
+        self._input.focus();
+    }-*/;
 }

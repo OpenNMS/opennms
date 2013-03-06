@@ -96,6 +96,7 @@ public class GWTMapWidget extends Widget implements MarkerProvider {
         addTileLayer();
         addMarkerLayer();
         addSearchInput();
+        //addSearchControl();
         addZoomControl();
 
         VConsole.log("finished initializing map");
@@ -168,12 +169,18 @@ public class GWTMapWidget extends Widget implements MarkerProvider {
         options.setAnimateLocation(true);
         options.setMarkerLocation(true);
         options.setPosition("topleft");
+        options.setInitial(false);
         final Search search = new Search(options);
         m_map.addControl(search);
         search.setSize(40);
         search.expand();
+        search.focus();
     }
 
+    private void addSearchControl() {
+        VConsole.log("adding search control");
+        m_map.addControl(new SearchControl(this));
+    }
     private void addZoomControl() {
         VConsole.log("adding zoom control");
         m_map.addControl(new Zoom(new Options()));
