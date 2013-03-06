@@ -125,30 +125,30 @@ div.v-table-header-wrap {
 }
 
 .vertex .status.cleared{
-	fill:rgb(152, 152, 152);
+	fill:#999;
 }
 
 .vertex .status.normal{
-	fill:rgb(69, 100, 25);
+	fill:#336600;
 }
 
 .vertex .status.indeterminate{
-	fill:rgb(152, 140, 29);
+	fill:#999000;
 }
 
 .vertex .status.warning{
-	fill:rgb(247, 201, 36);
+	fill:#FFCC00;
 }
 
 .vertex .status.minor{
-	fill:rgb(238, 67, 0);
+	fill:#FF9900;
 }
 .vertex .status.major{
-	fill:rgb(230, 67, 0);
+	fill:#FF3300;
 }
 
 .vertex .status.critical{
-	fill:rgb(183, 35, 0);
+	fill:#CC0000;
 }
 
 

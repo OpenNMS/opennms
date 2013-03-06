@@ -248,8 +248,10 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 			D3Transform tform = D3.getTransform(selection.attr("transform"));
 			
             JsArrayInteger p0 = (JsArrayInteger) JsArrayInteger.createArray();
-            int oldCenterX = (int) ((width/2 - tform.getX()) / tform.getScaleX());
-            int oldCenterY = (int) ((height/2 - tform.getY()) / tform.getScaleY());
+            int x = tform.getX();
+            int oldCenterX = (int) Math.round(((width/2 - x) / tform.getScaleX()));
+            int y = tform.getY();
+            int oldCenterY = (int) Math.round(((height/2 - y) / tform.getScaleY()));
             p0.push(oldCenterX);
             p0.push( oldCenterY );
             p0.push((int) (width / tform.getScaleX()));
@@ -262,7 +264,6 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
             p1.push(newCenterY);
             p1.push(graph.getBoundingBox().getWidth());
             p1.push(graph.getBoundingBox().getHeight());
-            
             
 			D3.d3().zoomTransition(selection, width, height, p0, p1);
             
