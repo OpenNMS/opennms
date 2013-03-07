@@ -134,10 +134,9 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
     @Override
     public void onBrowserEvent(final Event event) {
         super.onBrowserEvent(event);
-
         switch(DOM.eventGetType(event)) {
             case Event.ONCONTEXTMENU:
-                
+
                 EventTarget target = event.getEventTarget();
                 
                 if (target.equals( getSVGElement() )) {
@@ -147,9 +146,6 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
                 event.stopPropagation();
                 break;
                 
-            case Event.ONMOUSEDOWN:
-    
-                break;
     
             case Event.ONCLICK:
                 if(event.getEventTarget().equals(getSVGElement())) {

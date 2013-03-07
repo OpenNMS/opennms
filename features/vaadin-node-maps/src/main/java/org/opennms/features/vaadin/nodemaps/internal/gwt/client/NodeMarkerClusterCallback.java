@@ -45,7 +45,6 @@ final class NodeMarkerClusterCallback implements MarkerClusterEventCallback {
     public final void run(final MarkerClusterEvent event) {
         final StringBuilder sb = new StringBuilder();
         final MarkerCluster cluster = event.getMarkerCluster();
-        @SuppressWarnings("unchecked")
         final List<NodeMarker> markers = (List<NodeMarker>)cluster.getAllChildMarkers();
         VConsole.log("Clicked, processing " + markers.size() + " markers.");
         Collections.sort(markers, new NodeMarkerComparator());
@@ -59,9 +58,9 @@ final class NodeMarkerClusterCallback implements MarkerClusterEventCallback {
             for (final NodeMarker marker : markers) {
                 unacked += marker.getUnackedCount();
                 nodeBuilder.append("<li>");
-                nodeBuilder.append(marker.getNodeLabel()).append(" ");
+                nodeBuilder.append("<a href=\"/opennms/element/node.jsp?node=").append(marker.getNodeId()).append("\" target=\"_blank\">").append(marker.getNodeLabel()).append("</a> ");
                 nodeBuilder.append("(").append(marker.getIpAddress()).append(")").append(": ");
-                nodeBuilder.append(marker.getSeverityLabel());
+                nodeBuilder.append("<a href=\"/opennms/alarm/list.htm?sortby=id&acktype=unack&limit=20&filter=node%3D").append(marker.getNodeId()).append("\" target=\"_blank\">").append(marker.getSeverityLabel()).append("</a>");
                 nodeBuilder.append("</li>");
             }
             sb.append("<h2># of nodes: ").append(markers.size()).append(" ");
@@ -82,13 +81,12 @@ final class NodeMarkerClusterCallback implements MarkerClusterEventCallback {
     public static String getPopupTextForMarker(final NodeMarker marker) {
         // TODO: THIS IS AWFUL
         final StringBuilder sb = new StringBuilder();
-        sb.append("<h2><a href=\"/opennms/element/node.jsp?node=" + marker.getNodeId() + "\" target=\"_blank\">Node ").append(marker.getNodeLabel()).append("</a></h2>");
+        sb.append("<h2>Node <a href=\"/opennms/element/node.jsp?node=").append(marker.getNodeId()).append("\" target=\"_blank\">").append(marker.getNodeLabel()).append("</a></h2>");
         sb.append("<p>");
-        sb.append("Node ID: ").append(marker.getNodeId()).append("<br/>");
-        sb.append("Foreign Source: ").append(marker.getForeignSource()).append("<br/>");
-        sb.append("Foreign ID: ").append(marker.getForeignId()).append("<br/>");
+        sb.append("Description: ").append(marker.getDescription()).append("<br/>");
+        sb.append("Maint.&nbsp;Contract: ").append(marker.getMaintContract()).append("<br/>");
         sb.append("IP Address: ").append(marker.getIpAddress()).append("<br/>");
-        sb.append("Severity: ").append(marker.getSeverityLabel());
+        sb.append("Severity: ").append("<a href=\"/opennms/alarm/list.htm?sortby=id&acktype=unack&limit=20&filter=node%3D").append(marker.getNodeId()).append("\" target=\"_blank\">").append(marker.getSeverityLabel()).append("</a>");
         sb.append("</p>");
         return sb.toString();
     }

@@ -50,7 +50,7 @@ import org.springframework.web.servlet.mvc.AbstractController;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 public class AlarmBoxController extends AbstractController implements InitializingBean {
-    public static final int ROWS = 12;
+    public static final int ROWS = 16;
 
     private WebAlarmRepository m_webAlarmRepository;
     private String m_successView;
@@ -69,11 +69,11 @@ public class AlarmBoxController extends AbstractController implements Initializi
         }
         List<AlarmSummary> summaries = m_webAlarmRepository.getCurrentNodeAlarmSummaries(rows);
         AlarmCriteria criteria = new AlarmCriteria(AcknowledgeType.UNACKNOWLEDGED, new Filter[] {});
-        int alarmCount = m_webAlarmRepository.countMatchingAlarms(criteria);
+        int totalAlarmCount = m_webAlarmRepository.countMatchingAlarms(criteria);
 
         ModelAndView modelAndView = new ModelAndView(getSuccessView());
         modelAndView.addObject("summaries", summaries);
-        modelAndView.addObject("alarmCount", alarmCount);
+        modelAndView.addObject("moreCount", totalAlarmCount - rows);
         return modelAndView;
 
     }

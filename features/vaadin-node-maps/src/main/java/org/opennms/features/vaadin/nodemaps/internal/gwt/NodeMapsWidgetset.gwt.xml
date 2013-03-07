@@ -13,9 +13,11 @@
     <script src="openlayers/OpenLayers.js"></script>
     <script src="Google.js"></script>
     <script src="markercluster/leaflet.markercluster.js"></script>
+    <script src="leaflet-search/leaflet-search.js"></script>
 
     <stylesheet src="markercluster/MarkerCluster.css"></stylesheet>
     <stylesheet src="markercluster/MarkerCluster.Default.css"></stylesheet>
+    <stylesheet src="leaflet-search/leaflet-search.css"></stylesheet>
     <stylesheet src="node-maps.js"></stylesheet>
 
 </module>

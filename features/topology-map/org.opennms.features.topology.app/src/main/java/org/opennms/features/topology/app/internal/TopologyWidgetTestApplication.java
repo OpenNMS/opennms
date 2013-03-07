@@ -322,14 +322,10 @@ public class TopologyWidgetTestApplication extends Application implements Comman
             Component view = viewContrib.getView(widgetContext);
             try {
                 m_selectionManager.addSelectionListener((SelectionListener)view);
-            } catch (ClassCastException e) {
-                
-            }
+            } catch (ClassCastException e) {}
             try {
                 ((SelectionNotifier)view).addSelectionListener(m_selectionManager);
-            } catch (ClassCastException e) {
-                
-            }
+            } catch (ClassCastException e) {}
             if(viewContrib.getIcon() != null) {
                 tabSheet.addTab(view, viewContrib.getTitle(), viewContrib.getIcon());
             } else {

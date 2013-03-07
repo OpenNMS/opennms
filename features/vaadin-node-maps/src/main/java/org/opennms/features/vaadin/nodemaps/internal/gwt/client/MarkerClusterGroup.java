@@ -27,9 +27,9 @@ public class MarkerClusterGroup extends FeatureGroup {
         return this;
     }
 
-    public MarkerClusterGroup addLayers(final List<? extends Marker> markers) {
+    public MarkerClusterGroup addLayers(final List<NodeMarker> markers) {
         final JsArray<JSObject> markerArray = JsArray.createArray().cast();
-        for (final Marker marker : markers) {
+        for (final NodeMarker marker : markers) {
             markerArray.push(marker.getJSObject());
         }
         MarkerClusterGroupImpl.addLayers(getJSObject(), markerArray);

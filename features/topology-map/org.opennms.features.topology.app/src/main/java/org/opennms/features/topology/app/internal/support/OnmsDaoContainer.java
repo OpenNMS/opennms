@@ -299,7 +299,7 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Sele
 	}
 
 	@Override
-	public abstract void selectionChanged(SelectionContext selectionManager);
+	public abstract void selectionChanged(SelectionContext selectionContext);
 
 	@Override
 	public void addListener(ItemSetChangeListener listener) {

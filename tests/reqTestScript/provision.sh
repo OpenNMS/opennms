@@ -1,5 +1,40 @@
 #!/bin/bash
 
+REST_USER=admin
+REST_PASSWD=admin
+
+doCurl()
+{
+   #echo curl "$@" 1>&2
+   curl "$@"
+}
+
+createForeignSource()
+{
+    local baseUrl=$1
+    local foreignSource=$2
+
+    local req=/tmp/provision.request.$$
+
+    cat <<EOF > $req
+<foreign-source xmlns="http://xmlns.opennms.org/xsd/config/foreign-source" name="$foreignSource">
+    <scan-interval>52w</scan-interval>
+    <detectors>
+        <detector name="SNMP" class="org.opennms.netmgt.provision.detector.snmp.SnmpDetector" />
+    </detectors>
+</foreign-source>
+EOF
+
+    doCurl --user ${REST_USER}:${REST_PASSWD} -sSf -d @${req} -X POST -H 'Content-type: application/xml' ${baseUrl}/foreignSources -o /dev/null
+
+    local RET=$?
+
+    rm -f $req
+
+    return $RET
+
+}
+
 createEmptyRequisition()
 {
     local baseUrl=$1
@@ -13,13 +48,16 @@ createEmptyRequisition()
 <model-import foreign-source="${foreignSource}" />
 EOF
 
-    curl --user admin:admin -sSf -d @${req} -X POST -H 'Content-type: application/xml' ${baseUrl}/requisitions -o /dev/null
+    doCurl --user ${REST_USER}:${REST_PASSWD} -sSf -d @${req} -X POST -H 'Content-type: application/xml' ${baseUrl}/requisitions -o /dev/null
 
     local RET=$?
 
     rm -f $req
 
+    return $RET
+
 }
+
 
 createRequisitionWithOneNode()
 {
@@ -36,14 +74,13 @@ createRequisitionWithOneNode()
 <model-import foreign-source="${foreignSource}">
     <node node-label="${nodeLabel}" foreign-id="${foreignId}">
         <interface status="1" snmp-primary="P" ip-addr="${ip}" descr="vmnet8">
-            <monitored-service service-name="SNMP"/>
             <monitored-service service-name="ICMP"/>
         </interface>
     </node>
 </model-import>
 EOF
 
-    curl --user admin:admin -sSf -d @${req} -X POST -H 'Content-type: application/xml' ${baseUrl}/requisitions -o /dev/null
+    doCurl --user ${REST_USER}:${REST_PASSWD} -sSf -d @${req} -X POST -H 'Content-type: application/xml' ${baseUrl}/requisitions -o /dev/null
 
     local RET=$?
 
@@ -67,13 +104,12 @@ addNodeToRequisition()
     cat <<EOF > $req
     <node node-label="${nodeLabel}" foreign-id="${foreignId}">
         <interface status="1" snmp-primary="P" ip-addr="${ip}" descr="vmnet8">
-            <monitored-service service-name="SNMP"/>
             <monitored-service service-name="ICMP"/>
         </interface>
     </node>
 EOF
 
-    curl --user admin:admin -sSf -d @${req} -X POST -H 'Content-type: application/xml' "${baseUrl}/requisitions/${foreignSource}/nodes" -o /dev/null
+    doCurl --user ${REST_USER}:${REST_PASSWD} -sSf -d @${req} -X POST -H 'Content-type: application/xml' "${baseUrl}/requisitions/${foreignSource}/nodes" -o /dev/null
 
     local RET=$?
 
@@ -88,7 +124,7 @@ deleteNodeFromRequisition()
     local foreignSource=$2
     local foreignId=$3
 
-    curl --user admin:admin -sSf -X DELETE "${baseUrl}/requisitions/${foreignSource}/nodes/${foreignId}" -o /dev/null
+    doCurl --user ${REST_USER}:${REST_PASSWD} -sSf -X DELETE "${baseUrl}/requisitions/${foreignSource}/nodes/${foreignId}" -o /dev/null
     
 }
 
@@ -97,8 +133,16 @@ synchRequisition()
     local baseUrl=$1
     local foreignSource=$2
 
-    curl --user admin:admin -sSf -X PUT "${baseUrl}/requisitions/${foreignSource}/import" -o /dev/null
+    doCurl --user ${REST_USER}:${REST_PASSWD} -sSf -X PUT "${baseUrl}/requisitions/${foreignSource}/import?rescanExisting=false" -o /dev/null
 
+}
+
+getRequisition()
+{
+    local baseUrl=$1
+    local foreignSource=$2
+
+    doCurl --user ${REST_USER}:${REST_PASSWD} -sSf -X GET "${baseUrl}/requisitions/${foreignSource}"
 }
 
 getSnmpConfig()
@@ -106,7 +150,7 @@ getSnmpConfig()
     local baseUrl=$1
     local ip=$2
 
-    curl --user admin:admin -sSf -X GET "${baseUrl}/snmpConfig/${ip}"
+    doCurl --user ${REST_USER}:${REST_PASSWD} -sSf -X GET "${baseUrl}/snmpConfig/${ip}"
 }
 
 setSnmpConfig()
@@ -123,6 +167,6 @@ setSnmpConfig()
 	form_parms="${form_parms} -d ${parm}"
     done
 
-    curl --user admin:admin -sSf -X PUT $form_parms "${baseUrl}/snmpConfig/${ip}"
+    doCurl --user ${REST_USER}:${REST_PASSWD} -sSf -X PUT $form_parms "${baseUrl}/snmpConfig/${ip}"
     
 }

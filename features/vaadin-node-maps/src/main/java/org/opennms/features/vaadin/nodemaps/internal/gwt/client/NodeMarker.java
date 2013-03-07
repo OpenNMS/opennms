@@ -34,6 +34,8 @@ import org.discotools.gwt.leaflet.client.marker.Marker;
 import org.discotools.gwt.leaflet.client.types.LatLng;
 
 public class NodeMarker extends Marker {
+    private String[] m_textProperties = new String[] { "nodeLabel", "ipAddress", "description", "maintcontract" };
+
     public NodeMarker(final LatLng latLng) {
         super(latLng, new Options());
     }
@@ -75,6 +77,14 @@ public class NodeMarker extends Marker {
         return getProperty("severityLabel");
     }
 
+    public String getDescription() {
+        return getProperty("description");
+    }
+
+    public String getMaintContract() {
+        return getProperty("maintcontract");
+    }
+
     public int getSeverity() {
         final String severity = getProperty("severity");
         return severity == null? 0 : Integer.valueOf(severity);
@@ -85,8 +95,31 @@ public class NodeMarker extends Marker {
         return count == null? 0 : Integer.valueOf(count);
     }
 
+    public boolean containsText(final String text) {
+        if (text == null) return false;
+        if ("".equals(text)) return true;
+
+        for (final String propertyName : m_textProperties) {
+            final String value = getProperty(propertyName);
+            if (value != null) {
+                final String searchString = text.toLowerCase();
+                final String property = value.toLowerCase();
+                if (property.contains(searchString)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
     @Override
     public final String toString() {
         return "Feature[lat=" + getLatLng().lat() + ",lon=" + getLatLng().lng() + ",label=" + getNodeLabel() + "]";
     }
+
+    public JSObject toSearchResult() {
+        return SearchResult.create(getNodeLabel(), getLatLng());
+    }
+
 }
