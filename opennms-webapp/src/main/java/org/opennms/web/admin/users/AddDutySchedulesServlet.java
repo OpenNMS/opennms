@@ -77,7 +77,7 @@ public class AddDutySchedulesServlet extends HttpServlet {
         int dutyAddCount = WebSecurityUtils.safeParseInt(request.getParameter("numSchedules"));
 
         for (int j = 0; j < dutyAddCount; j++) {
-            user.addDutySchedule((new DutySchedule(new ArrayList<Boolean>(FALSE_LIST), 0, 0)).toString());
+            user.addDutySchedule((new DutySchedule(new ArrayList<Boolean>(FALSE_LIST), 0, 2359)).toString());
         }
 
         // forward the request for proper display
