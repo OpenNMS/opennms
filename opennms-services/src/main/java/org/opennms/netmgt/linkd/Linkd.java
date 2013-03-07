@@ -897,33 +897,42 @@ public class Linkd extends AbstractServiceDaemon {
     }
 
     // Here all the information related to the
-    // mapping between ipaddress and mac address is stored
-    // also the correlated ifindex is found
+    // mapping between ipaddress and mac address are stored
     public void addAtInterface(AtInterface atinterface) {
+    	LogUtils.debugf(this, "addAtInterface: adding at interface %s/%s", atinterface.getIpAddress().getHostAddress(),atinterface.getMacAddress());
         for (String packageName : m_activepackages) {
-            if (isInterfaceInPackage(atinterface.getIpAddress(), packageName)) {
-                List<AtInterface> atis = new ArrayList<AtInterface>();
-                if (!m_macToAtinterface.containsKey(packageName)) {
-                    m_macToAtinterface.put(packageName,
-                                           new HashMap<String, List<AtInterface>>());
-                }
-                if (m_macToAtinterface.get(packageName).containsKey(atinterface.getMacAddress())) {
-                    atis = m_macToAtinterface.get(packageName).get(atinterface.getMacAddress());
-                }
-                boolean add = true;
-                for (AtInterface at : atis) {
-                    if (at.getNodeid() == atinterface.getNodeid()
-                            && at.getIpAddress().equals(atinterface.getIpAddress()))
-                        add = false;
-                }
-                if (add) {
-                    atis.add(atinterface);
-                    m_macToAtinterface.get(packageName).put(atinterface.getMacAddress(),
-                                                            atis);
-                }
-
+        	if (!m_macToAtinterface.containsKey(packageName)) {
+               	LogUtils.debugf(this, "addAtInterface: creating map for package %s.",packageName);
+                               m_macToAtinterface.put(packageName,
+                                       new HashMap<String, List<AtInterface>>());
             }
-
+        	if (!isInterfaceInPackage(atinterface.getIpAddress(), packageName)) {
+            	LogUtils.debugf(this, "addAtInterface: ip %s not in package %s. Skipping", atinterface.getIpAddress().getHostAddress(),packageName);
+            	continue;
+            }
+            List<AtInterface> atis = new ArrayList<AtInterface>();
+            
+            if (m_macToAtinterface.get(packageName).containsKey(atinterface.getMacAddress())) {
+                atis = m_macToAtinterface.get(packageName).get(atinterface.getMacAddress());
+            }
+            boolean add = true;
+            for (AtInterface at : atis) {
+            	LogUtils.debugf(this, "addAtInterface: found ip %s on package %s.", atinterface.getIpAddress().getHostAddress(),packageName);
+            	if (atinterface.equals(at)) {
+                	LogUtils.debugf(this, "addAtInterface: Interface/package %s/%s found not adding.", atinterface.getIpAddress().getHostAddress(),packageName);
+                    add = false;
+            	}
+            }
+            if (add) {
+            	LogUtils.debugf(this, "addAtInterface: add ip/mac/ifindex %s/%s/%d on package %s.", 
+            			atinterface.getIpAddress().getHostAddress(),
+            			atinterface.getMacAddress(),
+            			atinterface.getIfIndex(),
+            			packageName);
+                atis.add(atinterface);
+                m_macToAtinterface.get(packageName).put(atinterface.getMacAddress(),
+                                                        atis);
+            }
         }
 
     }

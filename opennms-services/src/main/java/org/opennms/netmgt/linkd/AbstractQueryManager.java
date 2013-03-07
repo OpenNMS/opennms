@@ -488,34 +488,34 @@ public abstract class AbstractQueryManager implements QueryManager {
             }
 
             for (final Integer targetCdpNodeId: targetCdpNodeIds) {
-            LogUtils.infof(this, "processCdpCacheTable: Target node ID found: %d.", targetCdpNodeId);
+	            LogUtils.infof(this, "processCdpCacheTable: Target node ID found: %d.", targetCdpNodeId);
+	
+	            final String cdpTargetDevicePort = cdpEntry.getCdpCacheDevicePort();
+	
+	            if (cdpTargetDevicePort == null) {
+	                LogUtils.warnf(this, "processCdpCacheTable: Target device port not found. Skipping.");
+	                continue;
+	            }
+	
+	            LogUtils.debugf(this, "processCdpCacheTable: Target device port name found: %s", cdpTargetDevicePort);
+	
+	            final int cdpTargetIfindex = getIfIndexByName(targetCdpNodeId, cdpTargetDevicePort);
+	
+	            if (cdpTargetIfindex == -1) {
+	                LogUtils.infof(this, "processCdpCacheTable: No valid target ifIndex found but interface added to linkable SNMP node using ifindex  = -1.");
+	            }
+	            final CdpInterface cdpIface = new CdpInterface(cdpIfIndex);
+	            cdpIface.setCdpTargetNodeId(targetCdpNodeId);
+	            cdpIface.setCdpTargetIfIndex(cdpTargetIfindex);
+	            if (cdpTargetIpAddrString == null) {
+	                cdpIface.setCdpTargetIpAddr(getIpInterfaceDao().findPrimaryInterfaceByNodeId(targetCdpNodeId).getIpAddress());
+	            } else {
+	                cdpIface.setCdpTargetIpAddr(cdpTargetIpAddr);               
+	            }
 
-            final String cdpTargetDevicePort = cdpEntry.getCdpCacheDevicePort();
+	            LogUtils.debugf(this, "processCdpCacheTable: Adding interface to linkable SNMP node: %s", cdpIface);
 
-            if (cdpTargetDevicePort == null) {
-                LogUtils.warnf(this, "processCdpCacheTable: Target device port not found. Skipping.");
-                continue;
-            }
-
-            LogUtils.debugf(this, "processCdpCacheTable: Target device port name found: %s", cdpTargetDevicePort);
-
-            final int cdpTargetIfindex = getIfIndexByName(targetCdpNodeId, cdpTargetDevicePort);
-
-            if (cdpTargetIfindex == -1) {
-                LogUtils.infof(this, "processCdpCacheTable: No valid target ifIndex found but interface added to linkable SNMP node using ifindex  = -1.");
-            }
-            final CdpInterface cdpIface = new CdpInterface(cdpIfIndex);
-            cdpIface.setCdpTargetNodeId(targetCdpNodeId);
-            cdpIface.setCdpTargetIfIndex(cdpTargetIfindex);
-            if (cdpTargetIpAddrString == null) {
-                cdpIface.setCdpTargetIpAddr(getIpInterfaceDao().findPrimaryInterfaceByNodeId(targetCdpNodeId).getIpAddress());
-            } else {
-                cdpIface.setCdpTargetIpAddr(cdpTargetIpAddr);               
-            }
-
-            LogUtils.debugf(this, "processCdpCacheTable: Adding interface to linkable SNMP node: %s", cdpIface);
-
-            cdpInterfaces.add(cdpIface);
+	            cdpInterfaces.add(cdpIface);
             }
         }
         node.setCdpInterfaces(cdpInterfaces);
