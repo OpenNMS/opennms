@@ -288,6 +288,23 @@ public class Linkd extends AbstractServiceDaemon {
         return coll;
     }
 
+    public boolean saveRouteTable(String pkgName) {
+    	Package pkg = m_linkdConfig.getPackage(pkgName);
+    	return pkg.hasSaveRouteTable() ? pkg.getSaveRouteTable()
+                : m_linkdConfig.saveRouteTable();
+    }
+    
+    public boolean saveStpNodeTable(String pkgName) {
+    	Package pkg = m_linkdConfig.getPackage(pkgName);
+    	return pkg.hasSaveStpNodeTable() ? pkg.getSaveStpNodeTable()
+                : m_linkdConfig.saveStpNodeTable();
+    }
+
+    public boolean saveStpInterfaceTable(String pkgName) {
+    	Package pkg = m_linkdConfig.getPackage(pkgName);
+    	return pkg.hasSaveStpInterfaceTable() ? pkg.getSaveStpInterfaceTable()
+                : m_linkdConfig.saveStpInterfaceTable();
+    }
     private void populateSnmpCollection(final SnmpCollection coll,
             final Package pkg, final String sysoid) {
         coll.setPackageName(pkg.getName());
@@ -311,31 +328,21 @@ public class Linkd extends AbstractServiceDaemon {
                                                                  : m_linkdConfig.useCdpDiscovery());
         final boolean useIpRouteDiscovery = (pkg.hasUseIpRouteDiscovery() ? pkg.getUseIpRouteDiscovery()
                                                                          : m_linkdConfig.useIpRouteDiscovery());
-        final boolean saveRouteTable = (pkg.hasSaveRouteTable() ? pkg.getSaveRouteTable()
-                                                               : m_linkdConfig.saveRouteTable());
         final boolean useLldpDiscovery = (pkg.hasUseLldpDiscovery() ? pkg.getUseLldpDiscovery()
                                                                    : m_linkdConfig.useLldpDiscovery());
         final boolean useOspfDiscovery = (pkg.hasUseOspfDiscovery() ? pkg.getUseOspfDiscovery()
                                                                     : m_linkdConfig.useOspfDiscovery());
         final boolean useBridgeDiscovery = (pkg.hasUseBridgeDiscovery() ? pkg.getUseBridgeDiscovery()
                                                                        : m_linkdConfig.useBridgeDiscovery());
-        final boolean saveStpNodeTable = (pkg.hasSaveStpNodeTable() ? pkg.getSaveStpNodeTable()
-                                                                   : m_linkdConfig.saveStpNodeTable());
-        final boolean saveStpInterfaceTable = (pkg.hasSaveStpInterfaceTable() ? pkg.getSaveStpInterfaceTable()
-                                                                             : m_linkdConfig.saveStpInterfaceTable());
-
         coll.setIpRouteClass(ipRouteClassName);
         coll.setInitialSleepTime(initialSleepTime);
         coll.setPollInterval(snmpPollInterval);
         coll.collectCdp(useCdpDiscovery);
-        coll.SaveIpRouteTable(saveRouteTable);
-        coll.collectIpRoute(useIpRouteDiscovery || saveRouteTable);
+        coll.collectIpRoute(useIpRouteDiscovery || saveRouteTable(pkg.getName()));
         coll.collectLldp(useLldpDiscovery);
         coll.collectOspf(useOspfDiscovery);
         coll.collectBridge(useBridgeDiscovery);
-        coll.saveStpNodeTable(saveStpNodeTable);
-        coll.collectStp(useBridgeDiscovery || saveStpNodeTable || saveStpInterfaceTable);
-        coll.saveStpInterfaceTable(saveStpInterfaceTable);
+        coll.collectStp(useBridgeDiscovery || saveStpNodeTable(pkg.getName()) || saveStpInterfaceTable(pkg.getName()));
  
         if ( (pkg.hasEnableVlanDiscovery()  && pkg.getEnableVlanDiscovery()) 
                 || 

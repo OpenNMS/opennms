@@ -212,6 +212,12 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
 	public LinkableNode storeSnmpCollection(final LinkableNode node, final SnmpCollection snmpColl) {
 		final Date scanTime = new Date();
 	
+		final OnmsNode onmsNode = getNode(node.getNodeId());
+        if (onmsNode == null) {
+            LogUtils.debugf(this, "no node found!");
+            return null;
+        }
+        
 		LogUtils.debugf(this, "storeSnmpCollection: ospf hasOspfGeneralGroup/hasOspfNbrTable: %b/%b", snmpColl.hasOspfGeneralGroup(),snmpColl.hasOspfNbrTable());
 		if (snmpColl.hasOspfGeneralGroup() && snmpColl.hasOspfNbrTable()) {
 		    processOspf(node,snmpColl,scanTime);
@@ -234,22 +240,17 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
 
         LogUtils.debugf(this, "storeSnmpCollection: hasRouteTable: %b", snmpColl.hasRouteTable());
         if (snmpColl.hasRouteTable()) {
-            processRouteTable(node, snmpColl,scanTime);
+            processRouteTable(onmsNode,node, snmpColl,scanTime);
         }
 
         LogUtils.debugf(this, "storeSnmpCollection: hasVlanTable: %b", snmpColl.hasVlanTable());
         if (snmpColl.hasVlanTable()) {
-            processVlanTable(node, snmpColl,scanTime);
+            processVlanTable(onmsNode,node, snmpColl,scanTime);
         }
 
         for (final OnmsVlan vlan : snmpColl.getSnmpVlanCollections().keySet()) {
-            LogUtils.debugf(this, "storeSnmpCollection: parsing VLAN %s/%s", vlan.getVlanId(), vlan.getVlanName());
-
-            final SnmpVlanCollection snmpVlanColl = snmpColl.getSnmpVlanCollections().get(vlan);
-
-            if (snmpVlanColl.hasDot1dBase()) {
-                processDot1DBase(node, snmpColl,scanTime, vlan, snmpVlanColl);
-            }
+            LogUtils.debugf(this, "storeSnmpCollection: parsing bridge data on VLAN %s/%s", vlan.getVlanId(), vlan.getVlanName());
+            storeSnmpVlanCollection(onmsNode, node, vlan, snmpColl.getSnmpVlanCollections().get(vlan), scanTime);
         }
 
         markOldDataInactive(scanTime, node.getNodeId());

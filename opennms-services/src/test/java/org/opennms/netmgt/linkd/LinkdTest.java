@@ -370,9 +370,9 @@ public class LinkdTest extends LinkdNetworkBuilder implements InitializingBean {
         
         assertEquals("org.opennms.netmgt.linkd.snmp.IpRouteTable", snmpCollLaptop.getIpRouteClass());
         assertEquals("example1", snmpCollLaptop.getPackageName());
-        assertEquals(true, snmpCollLaptop.getSaveIpRouteTable());
-        assertEquals(true, snmpCollLaptop.getSaveStpNodeTable());
-        assertEquals(true, snmpCollLaptop.getSaveStpInterfaceTable());
+        assertEquals(true, m_linkd.saveRouteTable("example1"));
+        assertEquals(true, m_linkd.saveStpNodeTable("example1"));
+        assertEquals(true, m_linkd.saveStpInterfaceTable("example1"));
 
         SnmpCollection snmpCollcisco3600 = m_linkd.getSnmpCollection(cisco3600.getId(), cisco3600.getPrimaryInterface().getIpAddress(), cisco3600.getSysObjectId(), "example1");
 
@@ -388,11 +388,6 @@ public class LinkdTest extends LinkdNetworkBuilder implements InitializingBean {
         
         assertEquals("org.opennms.netmgt.linkd.snmp.IpCidrRouteTable", snmpCollcisco3600.getIpRouteClass());
         assertEquals("example1", snmpCollcisco3600.getPackageName());
-        
-        assertEquals(true, snmpCollcisco3600.getSaveIpRouteTable());
-        assertEquals(true, snmpCollcisco3600.getSaveStpNodeTable());
-        assertEquals(true, snmpCollcisco3600.getSaveStpInterfaceTable());
-
 
         Package example1 = m_linkdConfig.getPackage("example1");
         assertEquals(true, example1.getForceIpRouteDiscoveryOnEthernet());

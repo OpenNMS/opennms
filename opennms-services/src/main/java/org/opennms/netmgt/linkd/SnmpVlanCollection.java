@@ -57,6 +57,8 @@ import org.opennms.netmgt.snmp.SnmpWalker;
  *  
  */
 public final class SnmpVlanCollection implements ReadyRunnable {
+	private String m_packageName;
+	
 	/**
 	 * The SnmpPeer object used to communicate via SNMP with the remote host.
 	 */
@@ -363,5 +365,13 @@ public final class SnmpVlanCollection implements ReadyRunnable {
 	        .append("dot1dTpFdbTable", m_dot1dTpFdbTable)
 	        .append("dot1qTpFdbTable", m_dot1qTpFdbTable)
 	        .toString();
+	}
+
+	public void setPackageName(String packageName) {
+		m_packageName = packageName;
+	}
+	
+	public String getPackageName() {
+		return m_packageName;
 	}
 }

@@ -33,9 +33,10 @@ import java.net.InetAddress;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.capsd.snmp.NamedSnmpVar;
 import org.opennms.netmgt.capsd.snmp.SnmpStore;
+import org.opennms.netmgt.model.OnmsStpNode;
+import org.opennms.netmgt.model.OnmsStpNode.StpProtocolSpecification;
 import org.opennms.netmgt.snmp.AggregateTracker;
 import org.opennms.netmgt.snmp.SnmpResult;
-import org.opennms.netmgt.snmp.SnmpValue;
 
 /**
  * <P>SystemGroup holds the system group properties
@@ -48,14 +49,6 @@ import org.opennms.netmgt.snmp.SnmpValue;
  * @version $Id: $
  */
 public final class Dot1dStpGroup extends AggregateTracker {
-
-	 /**
-     * the STP Protocol Specification
-     */
-
-    public static final int STP_UNKNOWN = 1;
-    public static final int STP_DECLB100 = 2;
-    public static final int STP_IEEE8011D = 3;
     
     //
 	// Lookup strings for specific table entries
@@ -67,10 +60,10 @@ public final class Dot1dStpGroup extends AggregateTracker {
 	public final static String STP_PRIORITY = "dot1dStpPriority";
 
 	/** Constant <code>STP_TIME_LASTTOPCH="dot1dStpTimeSinceLastTopologyChange"</code> */
-	public final static String STP_TIME_LASTTOPCH = "dot1dStpTimeSinceLastTopologyChange";
+//	public final static String STP_TIME_LASTTOPCH = "dot1dStpTimeSinceLastTopologyChange";
 
 	/** Constant <code>STP_TOP_CHANGES="dot1dStpTopChanges"</code> */
-	public final static String STP_TOP_CHANGES = "dot1dStpTopChanges";
+//	public final static String STP_TOP_CHANGES = "dot1dStpTopChanges";
 
 	/** Constant <code>STP_DESIGNATED_ROOT="dot1dStpDesignatedRoot"</code> */
 	public final static String STP_DESIGNATED_ROOT = "dot1dStpDesignatedRoot";
@@ -82,25 +75,25 @@ public final class Dot1dStpGroup extends AggregateTracker {
 	public final static String STP_ROOT_PORT = "dot1dStpRootPort";
 
 	/** Constant <code>STP_MAX_AGE="dot1dStpMaxAge"</code> */
-	public final static String STP_MAX_AGE = "dot1dStpMaxAge";
+//	public final static String STP_MAX_AGE = "dot1dStpMaxAge";
 
 	/** Constant <code>STP_HELLO_TIME="dot1dStpHelloTime"</code> */
-	public final static String STP_HELLO_TIME = "dot1dStpHelloTime";
+//	public final static String STP_HELLO_TIME = "dot1dStpHelloTime";
 
 	/** Constant <code>STP_HOLD_TIME="dot1dStpHoldTime"</code> */
-	public final static String STP_HOLD_TIME = "dot1dStpHoldTime";
+//	public final static String STP_HOLD_TIME = "dot1dStpHoldTime";
 
 	/** Constant <code>STP_FORW_DELAY="dot1dStpForwardDelay"</code> */
-	public final static String STP_FORW_DELAY = "dot1dStpForwardDelay";
+//	public final static String STP_FORW_DELAY = "dot1dStpForwardDelay";
 
 	/** Constant <code>STP_BRDG_MAX_AGE="dot1dStpBridgeMaxAge"</code> */
-	public final static String STP_BRDG_MAX_AGE = "dot1dStpBridgeMaxAge";
+//	public final static String STP_BRDG_MAX_AGE = "dot1dStpBridgeMaxAge";
 
 	/** Constant <code>STP_BRDG_HELLO_TIME="dot1dStpBridgeHelloTime"</code> */
-	public final static String STP_BRDG_HELLO_TIME = "dot1dStpBridgeHelloTime";
+//	public final static String STP_BRDG_HELLO_TIME = "dot1dStpBridgeHelloTime";
 
 	/** Constant <code>STP_BRDG_FORW_DELAY="dot1dStpBridgeForwardDelay"</code> */
-	public final static String STP_BRDG_FORW_DELAY = "dot1dStpBridgeForwardDelay";
+//	public final static String STP_BRDG_FORW_DELAY = "dot1dStpBridgeForwardDelay";
 
 	/**
 	 * <P>The keys that will be supported by default from the 
@@ -137,14 +130,14 @@ public final class Dot1dStpGroup extends AggregateTracker {
 		 *  last time a topology change was detected by the
 		 * bridge entity</P>.
 		 */
-		new NamedSnmpVar(NamedSnmpVar.SNMPTIMETICKS, STP_TIME_LASTTOPCH, ".1.3.6.1.2.1.17.2.3"),
+		//new NamedSnmpVar(NamedSnmpVar.SNMPTIMETICKS, STP_TIME_LASTTOPCH, ".1.3.6.1.2.1.17.2.3"),
 
 		/**
 		 * <P>The total number of topology changes detected by
 		 *  this bridge since the management entity was last
 		 *  reset or initialized.</P>
 		 */
-		new NamedSnmpVar(NamedSnmpVar.SNMPCOUNTER32, STP_TOP_CHANGES, ".1.3.6.1.2.1.17.2.4"),
+		//new NamedSnmpVar(NamedSnmpVar.SNMPCOUNTER32, STP_TOP_CHANGES, ".1.3.6.1.2.1.17.2.4"),
 	
 		/**
 		 * <P>The bridge identifier of the root of the spanning
@@ -178,7 +171,7 @@ public final class Dot1dStpGroup extends AggregateTracker {
 		 * bridge is currently using.</P>
 		 * 
 		 */
-		new NamedSnmpVar(NamedSnmpVar.SNMPINT32, STP_MAX_AGE, ".1.3.6.1.2.1.17.2.8"),
+		//new NamedSnmpVar(NamedSnmpVar.SNMPINT32, STP_MAX_AGE, ".1.3.6.1.2.1.17.2.8"),
 
 		/**
 		 * <P>The amount of time between the transmission of
@@ -189,7 +182,7 @@ public final class Dot1dStpGroup extends AggregateTracker {
  		 * currently using.</P>
 		 * 
 		 */
-		new NamedSnmpVar(NamedSnmpVar.SNMPINT32, STP_HELLO_TIME, ".1.3.6.1.2.1.17.2.9"),
+		//new NamedSnmpVar(NamedSnmpVar.SNMPINT32, STP_HELLO_TIME, ".1.3.6.1.2.1.17.2.9"),
 		
 		/**
 		 * <P>This time value determines the interval length
@@ -198,7 +191,7 @@ public final class Dot1dStpGroup extends AggregateTracker {
  		 * of hundredths of a second.</P>
 		 * 
 		 */
-		new NamedSnmpVar(NamedSnmpVar.SNMPINT32, STP_HOLD_TIME, ".1.3.6.1.2.1.17.2.10"),
+		//new NamedSnmpVar(NamedSnmpVar.SNMPINT32, STP_HOLD_TIME, ".1.3.6.1.2.1.17.2.10"),
 
 		/**
 		 * <P>This time value, measured in units of hundredths
@@ -217,7 +210,7 @@ public final class Dot1dStpGroup extends AggregateTracker {
  		 * if/when this bridge were to become the root.]</P>
 		 * 
 		 */
-		new NamedSnmpVar(NamedSnmpVar.SNMPINT32, STP_FORW_DELAY, ".1.3.6.1.2.1.17.2.11"),
+		//new NamedSnmpVar(NamedSnmpVar.SNMPINT32, STP_FORW_DELAY, ".1.3.6.1.2.1.17.2.11"),
 
 		/**
 		 * <P>The value that all bridges use for MaxAge when
@@ -231,7 +224,7 @@ public final class Dot1dStpGroup extends AggregateTracker {
  		 * of seconds.</P>
 		 * 
 		 */
-		new NamedSnmpVar(NamedSnmpVar.SNMPINT32, STP_BRDG_MAX_AGE, ".1.3.6.1.2.1.17.2.12"),
+		//new NamedSnmpVar(NamedSnmpVar.SNMPINT32, STP_BRDG_MAX_AGE, ".1.3.6.1.2.1.17.2.12"),
 
 		/**
 		 * <P>The value that all bridges use for HelloTime when
@@ -242,7 +235,7 @@ public final class Dot1dStpGroup extends AggregateTracker {
  		 * which is not a whole number of seconds.</P>
 		 * 
 		 */
-		new NamedSnmpVar(NamedSnmpVar.SNMPINT32, STP_BRDG_HELLO_TIME, ".1.3.6.1.2.1.17.2.13"),
+		//new NamedSnmpVar(NamedSnmpVar.SNMPINT32, STP_BRDG_HELLO_TIME, ".1.3.6.1.2.1.17.2.13"),
 		
 		/**
 		 * <P>The value that all bridges use for ForwardDelay
@@ -256,7 +249,7 @@ public final class Dot1dStpGroup extends AggregateTracker {
  		 * of seconds.</P>
 		 * 
 		 */
-		new NamedSnmpVar(NamedSnmpVar.SNMPINT32, STP_BRDG_FORW_DELAY, ".1.3.6.1.2.1.17.2.14")
+		//new NamedSnmpVar(NamedSnmpVar.SNMPINT32, STP_BRDG_FORW_DELAY, ".1.3.6.1.2.1.17.2.14")
 	};
 
 	/**
@@ -307,11 +300,7 @@ public final class Dot1dStpGroup extends AggregateTracker {
      * @return a int.
      */
     public int getStpProtocolSpecification(){
-    	Integer stpProtocolSpecification = m_store.getInt32(STP_PROTOCOL_SPEC);
-    	if (stpProtocolSpecification == null) {
-            return STP_UNKNOWN;
-        }
-    	return stpProtocolSpecification;
+    	return m_store.getInt32(STP_PROTOCOL_SPEC);
     }
 	
     /**
@@ -320,11 +309,7 @@ public final class Dot1dStpGroup extends AggregateTracker {
      * @return a int.
      */
     public int getStpPriority(){
-    	Integer stpPriority = m_store.getInt32(STP_PRIORITY);
-    	if (stpPriority == null ) {
-            return -1;
-        }
-    	return stpPriority;
+    	return m_store.getInt32(STP_PRIORITY);
     }
 
     /**
@@ -332,18 +317,18 @@ public final class Dot1dStpGroup extends AggregateTracker {
      *
      * @return a {@link org.opennms.netmgt.snmp.SnmpValue} object.
      */
-    public SnmpValue getStpTimeSinceLastTopologyChange(){
-    	return m_store.getValue(STP_TIME_LASTTOPCH);
-    }
+    //public SnmpValue getStpTimeSinceLastTopologyChange(){
+    //	return m_store.getValue(STP_TIME_LASTTOPCH);
+    //}
 
     /**
      * <p>getStpTopologyChanges</p>
      *
      * @return a int.
      */
-    public int getStpTopologyChanges(){
-    	return m_store.getInt32(STP_TOP_CHANGES);
-    }
+    //public int getStpTopologyChanges(){
+    //	return m_store.getInt32(STP_TOP_CHANGES);
+    //}
 
     /**
      * <p>getStpDesignatedRoot</p>
@@ -360,11 +345,7 @@ public final class Dot1dStpGroup extends AggregateTracker {
      * @return a int.
      */
     public int getStpRootCost(){
-    	Integer stpRootCost = m_store.getInt32(STP_ROOT_COST); 
-    	if (stpRootCost == null) {
-            return -1;
-        }
-    	return stpRootCost;
+    	return m_store.getInt32(STP_ROOT_COST); 
     }
 
     /**
@@ -373,11 +354,7 @@ public final class Dot1dStpGroup extends AggregateTracker {
      * @return a int.
      */
     public int getStpRootPort(){
-    	Integer stpRootPort = m_store.getInt32(STP_ROOT_PORT);
-    	if (stpRootPort == null) {
-            return -1;
-        }
-    	return stpRootPort;
+    	return m_store.getInt32(STP_ROOT_PORT);
     }
 
     /**
@@ -385,91 +362,99 @@ public final class Dot1dStpGroup extends AggregateTracker {
      *
      * @return a int.
      */
-    public int getStpMaxAge(){
-    	Integer stpMaxAge = m_store.getInt32(STP_MAX_AGE);
-    	if (stpMaxAge == null ) {
-            return -1;
-        }
-    	return stpMaxAge;
-    }
+    //public int getStpMaxAge(){
+    //	Integer stpMaxAge = m_store.getInt32(STP_MAX_AGE);
+    //	if (stpMaxAge == null ) {
+     //       return -1;
+     //   }
+    //	return stpMaxAge;
+    //}
 
     /**
      * <p>getStpHelloTime</p>
      *
      * @return a int.
      */
-    public int getStpHelloTime(){
-    	Integer stpHelloTime = m_store.getInt32(STP_HELLO_TIME); 
-    	if (stpHelloTime == null) {
-            return -1;
-        }
-    	return stpHelloTime;
-    }
+    //public int getStpHelloTime(){
+    //	Integer stpHelloTime = m_store.getInt32(STP_HELLO_TIME); 
+    //	if (stpHelloTime == null) {
+    //        return -1;
+    //   }
+    //	return stpHelloTime;
+    //}
 
     /**
      * <p>getStpHoldTime</p>
      *
      * @return a int.
      */
-    public int getStpHoldTime(){
-    	Integer stpHoldTime = m_store.getInt32(STP_HOLD_TIME); 
-    	if (stpHoldTime == null) {
-            return -1;
-        }
-    	return stpHoldTime;
-    }
+    //public int getStpHoldTime(){
+    //	Integer stpHoldTime = m_store.getInt32(STP_HOLD_TIME); 
+    //	if (stpHoldTime == null) {
+    //        return -1;
+    //    }
+    //	return stpHoldTime;
+    //}
 
     /**
      * <p>getStpForwardDelay</p>
      *
      * @return a int.
      */
-    public int getStpForwardDelay(){
- 
-    	Integer stpForwardDelay = m_store.getInt32(STP_FORW_DELAY);
-    	if (stpForwardDelay == null) {
-            return -1;
-        }
-    	return stpForwardDelay;
-    }
+    //public int getStpForwardDelay(){
+    //
+    //	Integer stpForwardDelay = m_store.getInt32(STP_FORW_DELAY);
+    //	if (stpForwardDelay == null) {
+    //        return -1;
+    //    }
+    //	return stpForwardDelay;
+    //}
 
     /**
      * <p>getStpBridgeMaxAge</p>
      *
      * @return a int.
      */
-    public int getStpBridgeMaxAge(){
-    	Integer stpBridgeMaxAge = m_store.getInt32(STP_BRDG_MAX_AGE);
-    	if (stpBridgeMaxAge == null ) {
-            return -1;
-        }
-    	return stpBridgeMaxAge;
-    }
+    //public int getStpBridgeMaxAge(){
+    //	Integer stpBridgeMaxAge = m_store.getInt32(STP_BRDG_MAX_AGE);
+    //	if (stpBridgeMaxAge == null ) {
+    //        return -1;
+    //    }
+    //	return stpBridgeMaxAge;
+    //}
 
     /**
      * <p>getStpBridgeHelloTime</p>
      *
      * @return a int.
      */
-    public int getStpBridgeHelloTime(){
-    	Integer stpBridgeHelloTime = m_store.getInt32(STP_BRDG_HELLO_TIME);
-    	if (stpBridgeHelloTime == null ) {
-            return -1;
-        }
-    	return stpBridgeHelloTime;
-    }
+    //public int getStpBridgeHelloTime(){
+    //	Integer stpBridgeHelloTime = m_store.getInt32(STP_BRDG_HELLO_TIME);
+    //	if (stpBridgeHelloTime == null ) {
+    //       return -1;
+    //    }
+    //	return stpBridgeHelloTime;
+    //}
 
     /**
      * <p>getStpBridgeForwardDelay</p>
      *
      * @return a int.
      */
-    public int getStpBridgeForwardDelay(){
-    	Integer stpBridgeForwardDelay = m_store.getInt32(STP_BRDG_FORW_DELAY);
-    	if (stpBridgeForwardDelay == null ) {
-            return -1;
-        }
-    	return stpBridgeForwardDelay;
-    }
+    //public int getStpBridgeForwardDelay(){
+    //	Integer stpBridgeForwardDelay = m_store.getInt32(STP_BRDG_FORW_DELAY);
+    //	if (stpBridgeForwardDelay == null ) {
+    //        return -1;
+    //    }
+    //	return stpBridgeForwardDelay;
+    //}
 
+    public OnmsStpNode getOnmsStpNode(OnmsStpNode node) {
+    	node.setStpDesignatedRoot(getStpDesignatedRoot());
+    	node.setStpPriority(getStpPriority());
+    	node.setStpProtocolSpecification(StpProtocolSpecification.get(getStpProtocolSpecification()));
+    	node.setStpRootCost(getStpRootCost());
+    	node.setStpRootPort(getStpRootPort());
+    	return node;
+    }
 }
