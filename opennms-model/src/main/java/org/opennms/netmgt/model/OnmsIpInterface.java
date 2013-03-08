@@ -460,7 +460,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
     	return m_monitoredServices.size();
     }
     
-    public void setMonitoredServiceCount () {
+    public int setMonitoredServiceCount () {
       // no-op
     }
     
