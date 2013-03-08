@@ -33,4 +33,8 @@ public class MarkerClusterGroupImpl {
     public static native JSObject getMapObject(final JSObject self) /*-{
         return self._map;
     }-*/;
+
+    public static native boolean hasLayer(final JSObject self, final JSObject layer) /*-{
+        return self.hasLayer(layer);
+    }-*/;
 }

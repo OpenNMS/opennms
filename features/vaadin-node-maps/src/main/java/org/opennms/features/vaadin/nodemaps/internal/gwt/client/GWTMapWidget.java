@@ -31,6 +31,7 @@ package org.opennms.features.vaadin.nodemaps.internal.gwt.client;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.ListIterator;
 
 import org.discotools.gwt.leaflet.client.Options;
 import org.discotools.gwt.leaflet.client.controls.zoom.Zoom;
@@ -41,8 +42,10 @@ import org.discotools.gwt.leaflet.client.map.Map;
 import org.discotools.gwt.leaflet.client.map.MapOptions;
 import org.discotools.gwt.leaflet.client.types.LatLng;
 import org.discotools.gwt.leaflet.client.types.LatLngBounds;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.controls.alarm.AlarmControl;
 
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.RepeatingCommand;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Style.Unit;
@@ -50,17 +53,18 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.terminal.gwt.client.VConsole;
 
-public class GWTMapWidget extends Widget implements MarkerProvider {
+public class GWTMapWidget extends Widget implements MarkerProvider, SearchConsumer {
     private final DivElement m_div;
 
     private Map m_map;
     private ILayer m_layer;
 
     private List<NodeMarker> m_markers;
-
     private MarkerClusterGroup m_markerClusterGroup;
 
     private boolean m_firstUpdate = true;
+    private int m_minimumSeverity = 0;
+    private String m_searchString = "";
 
     public GWTMapWidget() {
         super();
@@ -95,8 +99,11 @@ public class GWTMapWidget extends Widget implements MarkerProvider {
         // createGoogleLayer();
         addTileLayer();
         addMarkerLayer();
+        
+        // overlay controls
         addSearchInput();
         //addSearchControl();
+        addAlarmControl();
         addZoomControl();
 
         VConsole.log("finished initializing map");
@@ -138,6 +145,7 @@ public class GWTMapWidget extends Widget implements MarkerProvider {
         final Options markerClusterOptions = new Options();
         markerClusterOptions.setProperty("zoomToBoundsOnClick", false);
         markerClusterOptions.setProperty("iconCreateFunction", new IconCreateCallback());
+        markerClusterOptions.setProperty("disableClusteringAtZoom", 13);
         m_markerClusterGroup = new MarkerClusterGroup(markerClusterOptions);
         final NodeMarkerClusterCallback callback = new NodeMarkerClusterCallback();
         m_markerClusterGroup.on("clusterclick", callback);
@@ -177,16 +185,32 @@ public class GWTMapWidget extends Widget implements MarkerProvider {
         search.focus();
     }
 
+    @SuppressWarnings("unused")
     private void addSearchControl() {
         VConsole.log("adding search control");
         m_map.addControl(new SearchControl(this));
     }
+    
+    private void addAlarmControl() {
+        VConsole.log("adding alarm control");
+        final Options options = new Options();
+        options.setProperty("position", "topleft");
+        final AlarmControl alarmControl = new AlarmControl(this, options);
+        m_map.addControl(alarmControl);
+    }
+
     private void addZoomControl() {
         VConsole.log("adding zoom control");
         m_map.addControl(new Zoom(new Options()));
     }
 
-    public void updateMarkerClusterLayer() {
+    public boolean markerShouldBeVisible(final NodeMarker marker) {
+        if (marker.getSeverity() < m_minimumSeverity) return false;
+        if (m_searchString != null && !"".equals(m_searchString) && !marker.containsText(m_searchString)) return false;
+        return true;
+    }
+
+    public void refresh() {
         if (m_markers == null) {
             VConsole.log("markers not initialized yet, skipping update");
             return;
@@ -196,25 +220,57 @@ public class GWTMapWidget extends Widget implements MarkerProvider {
             return;
         }
 
-        VConsole.log("clearing existing markers");
-        m_markerClusterGroup.clearLayers();
-        VConsole.log("adding " + m_markers.size() + " markers to the node layer");
-        m_markerClusterGroup.addLayers(m_markers);
-        VConsole.log("finished adding markers");
+        VConsole.log("processing " + m_markers.size() + " markers for the node layer");
+        Scheduler.get().scheduleIncremental(new RepeatingCommand() {
+            final ListIterator<NodeMarker> m_markerIterator = m_markers.listIterator();
+            LatLngBounds m_bounds;
 
-        if (m_firstUpdate && m_markers.size() > 0) {
-            final LatLngBounds bounds = new LatLngBounds();
-            for (final NodeMarker marker : m_markers) {
-                bounds.extend(marker.getLatLng());
+            @Override public boolean execute() {
+                if (m_markerIterator.hasNext()) {
+                    final NodeMarker marker = m_markerIterator.next();
+                    if (markerShouldBeVisible(marker)) {
+                        if (!m_markerClusterGroup.hasLayer(marker)) {
+                            m_markerClusterGroup.addLayer(marker);
+                        }
+                        if (m_firstUpdate) {
+                            if (m_bounds == null) {
+                                m_bounds = new LatLngBounds();
+                            }
+                            m_bounds.extend(marker.getLatLng());
+                        }
+                    } else {
+                        m_markerClusterGroup.removeLayer(marker);
+                    }
+                    return true;
+                }
+
+                VConsole.log("finished adding markers");
+
+                if (m_bounds != null) {
+                    VConsole.log("first update, zooming to "+ m_bounds.toBBoxString());
+                    m_map.fitBounds(m_bounds);
+                    m_firstUpdate = false;
+                } else {
+                    VConsole.log("Skipping zoom, we've already done it once.");
+                }
+
+                VConsole.log("finished updating marker cluster layer");
+
+                return false;
             }
-            VConsole.log("first update, zooming to "+ bounds.toBBoxString());
-            m_map.fitBounds(bounds);
-            m_firstUpdate = false;
-        } else {
-            VConsole.log("Skipping zoom, we've already done it once.");
+        });
+    }
+
+    public void updateMarkerClusterLayer() {
+        if (m_markerClusterGroup == null) {
+            VConsole.log("marker cluster not initialized yet, skipping update");
+            return;
         }
 
-        VConsole.log("finished updating marker cluster layer");
+        VConsole.log("clearing existing markers");
+        m_markerClusterGroup.clearLayers();
+
+        refresh();
     }
 
     public List<NodeMarker> getMarkers() {
@@ -223,6 +279,32 @@ public class GWTMapWidget extends Widget implements MarkerProvider {
 
     public void setMarkers(final List<NodeMarker> markers) {
         m_markers = markers;
+    }
+
+    @Override
+    public int getMinimumSeverity() {
+        return m_minimumSeverity;
+    }
+
+    @Override
+    public void setMinimumSeverity(final int minSeverity) {
+        m_minimumSeverity = minSeverity;
+    }
+
+    @Override
+    public String getSearchString() {
+        return m_searchString;
+    }
+
+    @Override
+    public void setSearchString(final String searchString) {
+        m_searchString = searchString;
+    }
+
+    @Override
+    public void clearSearch() {
+        m_minimumSeverity = 0;
+        m_searchString = "";
     }
 
     private final void destroyMap() {
