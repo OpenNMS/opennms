@@ -350,8 +350,6 @@ public class OnmsIpRouteInterface {
 		        .append("routeprotocol", m_routeProto)
 		        .append("routemetric1", m_routeMetric1)
 		        .toString();
-		}
-
 	}
 
 }
