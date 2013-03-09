@@ -227,10 +227,6 @@ public class Linkd extends AbstractServiceDaemon {
                                                                    : m_linkdConfig.useCdpDiscovery());
         discoveryLink.setDiscoveryUsingRoutes(pkg.hasUseIpRouteDiscovery() ? pkg.getUseIpRouteDiscovery()
                                                                           : m_linkdConfig.useIpRouteDiscovery());
-        discoveryLink.setEnableDownloadDiscovery(pkg.hasEnableDiscoveryDownload() ? pkg.getEnableDiscoveryDownload()
-                                                                                 : m_linkdConfig.enableDiscoveryDownload());
-        discoveryLink.setForceIpRouteDiscoveryOnEtherNet(pkg.hasForceIpRouteDiscoveryOnEthernet() ? pkg.getForceIpRouteDiscoveryOnEthernet()
-                                                                                                 : m_linkdConfig.forceIpRouteDiscoveryOnEthernet());
         discoveryLink.setDiscoveryUsingLldp(pkg.hasUseLldpDiscovery() ? pkg.getUseLldpDiscovery()
                                                                      : m_linkdConfig.useLldpDiscovery());
         discoveryLink.setDiscoveryUsingOspf(pkg.hasUseOspfDiscovery() ? pkg.getUseOspfDiscovery()
@@ -304,6 +300,12 @@ public class Linkd extends AbstractServiceDaemon {
     	Package pkg = m_linkdConfig.getPackage(pkgName);
     	return pkg.hasSaveStpInterfaceTable() ? pkg.getSaveStpInterfaceTable()
                 : m_linkdConfig.saveStpInterfaceTable();
+    }
+    
+    public boolean forceIpRoutediscoveryOnEthernet(String pkgName) {
+    	Package pkg = m_linkdConfig.getPackage(pkgName);
+    	return pkg.hasForceIpRouteDiscoveryOnEthernet() ? pkg.getForceIpRouteDiscoveryOnEthernet()
+                : m_linkdConfig.forceIpRouteDiscoveryOnEthernet();
     }
     private void populateSnmpCollection(final SnmpCollection coll,
             final Package pkg, final String sysoid) {

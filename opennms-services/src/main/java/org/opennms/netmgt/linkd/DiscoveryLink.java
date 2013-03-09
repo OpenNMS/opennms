@@ -54,14 +54,6 @@ import org.opennms.netmgt.model.OnmsStpInterface;
  */
 public final class DiscoveryLink implements ReadyRunnable {
 
-    private static final int SNMP_IF_TYPE_ETHERNET = 6;
-
-    private static final int SNMP_IF_TYPE_PROP_VIRTUAL = 53;
-
-    private static final int SNMP_IF_TYPE_L2_VLAN = 135;
-
-    private static final int SNMP_IF_TYPE_L3_VLAN = 136;
-
     private String packageName;
 
     private List<NodeToNodeLink> m_links = new ArrayList<NodeToNodeLink>();
@@ -89,8 +81,6 @@ public final class DiscoveryLink implements ReadyRunnable {
     // discovered
     // by main processes. This is used by addlinks method.
 
-    private boolean enableDownloadDiscovery = false;
-
     private boolean discoveryUsingRoutes = true;
 
     private boolean discoveryUsingCdp = true;
@@ -104,8 +94,6 @@ public final class DiscoveryLink implements ReadyRunnable {
     private boolean suspendCollection = false;
 
     private boolean isRunned = false;
-
-    private boolean forceIpRouteDiscoveryOnEtherNet = false;
 
     /**
      * The scheduler object
@@ -175,8 +163,6 @@ public final class DiscoveryLink implements ReadyRunnable {
                         discoveryUsingBridge, discoveryUsingCdp,
                         discoveryUsingRoutes, discoveryUsingLldp,
                         discoveryUsingOspf);
-        LogUtils.debugf(this, "run: enableDownloadDiscovery: %b",
-                        enableDownloadDiscovery);
 
         for (final LinkableNode linkableNode : linkableNodes) {
             LogUtils.debugf(this,
@@ -223,12 +209,6 @@ public final class DiscoveryLink implements ReadyRunnable {
         // with ip addresses.
         if (discoveryUsingBridge)
             populateMacToAtInterface();
-
-        // now perform operation to complete
-        if (enableDownloadDiscovery) {
-            LogUtils.infof(this,
-                           "run: fetching further unknown MAC address SNMP bridge table info no more available");
-        }
 
         // this part could have several special function to get inter-router
         // links, but at the moment we worked much on switches.
@@ -682,122 +662,11 @@ public final class DiscoveryLink implements ReadyRunnable {
                 LogUtils.debugf(this, "run: parsing RouterInterface: "
                         + routeIface.toString());
 
-                if (routeIface.getMetric() == -1) {
-                    LogUtils.warnf(this,
-                                   "run: Router interface has invalid metric %d. Skipping.",
-                                   routeIface.getMetric());
-                    continue;
-                }
-
-                if (forceIpRouteDiscoveryOnEtherNet) {
-                    LogUtils.debugf(this,
-                                    "run: forceIpRouteDiscoveryOnEtherNet is set, skipping validation of the SNMP interface type");
-                } else {
-                    final int snmpiftype = routeIface.getSnmpiftype();
-                    LogUtils.debugf(this,
-                                    "run: force IP route discovery getting SnmpIfType: "
-                                            + snmpiftype);
-
-                    if (snmpiftype == SNMP_IF_TYPE_ETHERNET) {
-                        LogUtils.debugf(this,
-                                        "run: Ethernet interface for nodeid %d. Skipping.",
-                                        curNodeId);
-                        continue;
-                    } else if (snmpiftype == SNMP_IF_TYPE_PROP_VIRTUAL) {
-                        LogUtils.debugf(this,
-                                        "run: PropVirtual interface for nodeid %d. Skipping.",
-                                        curNodeId);
-                        continue;
-                    } else if (snmpiftype == SNMP_IF_TYPE_L2_VLAN) {
-                        LogUtils.debugf(this,
-                                        "run: Layer2 VLAN interface for nodeid %d. Skipping.",
-                                        curNodeId);
-                        continue;
-                    } else if (snmpiftype == SNMP_IF_TYPE_L3_VLAN) {
-                        LogUtils.debugf(this,
-                                        "run: Layer3 VLAN interface for nodeid %d. Skipping.",
-                                        curNodeId);
-                        continue;
-                    } else if (snmpiftype == -1) {
-                        LogUtils.debugf(this,
-                                        "run: interface on node %d has unknown snmpiftype %d. Skipping.",
-                                        curNodeId, snmpiftype);
-                        continue;
-                    }
-                }
-
-                final InetAddress nexthop = routeIface.getNextHop();
-                final String hostAddress = str(nexthop);
-
-                if (hostAddress.equals("0.0.0.0")) {
-                    LogUtils.debugf(this,
-                                    "run: nexthop address is broadcast address %s. Skipping.",
-                                    hostAddress);
-                    // FIXME this should be further analyzed
-                    // working on routeDestNet you can find hosts that
-                    // are directly connected with the destination network
-                    // This happens when static routing is made like this:
-                    // route 10.3.2.0 255.255.255.0 Serial0
-                    // so the router broadcasts on Serial0
-                    continue;
-                }
-
-                if (nexthop.isLoopbackAddress()) {
-                    LogUtils.debugf(this,
-                                    "run: nexthop address is localhost address %s. Skipping.",
-                                    hostAddress);
-                    continue;
-                }
-
-                if (!m_linkd.isInterfaceInPackage(nexthop, getPackageName())) {
-                    LogUtils.debugf(this,
-                                    "run: nexthop address is not in package %s/%s. Skipping.",
-                                    hostAddress, getPackageName());
-                    continue;
-                }
-
-                final int nextHopNodeid = routeIface.getNextHopNodeid();
-
-                if (nextHopNodeid == -1) {
-                    LogUtils.debugf(this,
-                                    "run: no node id found for IP next hop address %s. Skipping.",
-                                    hostAddress);
-                    continue;
-                }
-
-                if (nextHopNodeid == curNodeId) {
-                    LogUtils.debugf(this,
-                                    "run: node id found for IP next hop address %s is itself. Skipping.",
-                                    hostAddress);
-                    continue;
-                }
-
-                int ifindex = routeIface.getIfindex();
-
-                if (ifindex == 0) {
-                    LogUtils.debugf(this,
-                                    "run: route interface has ifindex %d, trying to get ifIndex from nextHopNet: %s",
-                                    ifindex, routeIface.getNextHopNet());
-                    ifindex = getIfIndexFromRouter(curNode,
-                                                   routeIface.getNextHopNet());
-                    if (ifindex == -1) {
-                        LogUtils.debugf(this,
-                                        "run: found not correct ifindex %d. Skipping.",
-                                        ifindex);
-                        continue;
-                    } else {
-                        LogUtils.debugf(this,
-                                        "run: found correct ifindex %d.",
-                                        ifindex);
-                    }
-                }
-
-                // Saving link also when ifindex = -1 (not found)
                 final NodeToNodeLink lk = new NodeToNodeLink(
-                                                             nextHopNodeid,
-                                                             routeIface.getNextHopIfindex());
+                							routeIface.getNextHopNodeid(),
+                                            routeIface.getNextHopIfindex());
                 lk.setNodeparentid(curNodeId);
-                lk.setParentifindex(ifindex);
+                lk.setParentifindex(routeIface.getIfindex());
                 LogUtils.infof(this,
                                "run: saving route link: " + lk.toString());
                 addNodetoNodeLink(lk);
@@ -1012,28 +881,6 @@ public final class DiscoveryLink implements ReadyRunnable {
             }
         }
         return links;
-    }
-
-    private int getIfIndexFromRouter(LinkableNode parentnode,
-            InetAddress nextHopNet) {
-
-        if (!parentnode.hasRouteInterfaces())
-            return -1;
-        for (RouterInterface curIface : parentnode.getRouteInterfaces()) {
-
-            if (curIface.getMetric() == -1) {
-                continue;
-            }
-
-            int ifindex = curIface.getIfindex();
-
-            if (ifindex == 0 || ifindex == -1)
-                continue;
-
-            if (curIface.getRouteNet().equals(nextHopNet))
-                return ifindex;
-        }
-        return -1;
     }
 
     /**
@@ -1617,53 +1464,6 @@ public final class DiscoveryLink implements ReadyRunnable {
     /** {@inheritDoc} */
     public void setPackageName(String packageName) {
         this.packageName = packageName;
-    }
-
-    /**
-     * <p>
-     * isEnableDownloadDiscovery
-     * </p>
-     * 
-     * @return a boolean.
-     */
-    public boolean isEnableDownloadDiscovery() {
-        return enableDownloadDiscovery;
-    }
-
-    /**
-     * <p>
-     * Setter for the field <code>enableDownloadDiscovery</code>.
-     * </p>
-     * 
-     * @param enableDownloaddiscovery
-     *            a boolean.
-     */
-    public void setEnableDownloadDiscovery(boolean enableDownloaddiscovery) {
-        this.enableDownloadDiscovery = enableDownloaddiscovery;
-    }
-
-    /**
-     * <p>
-     * isForceIpRouteDiscoveryOnEtherNet
-     * </p>
-     * 
-     * @return a boolean.
-     */
-    public boolean isForceIpRouteDiscoveryOnEtherNet() {
-        return forceIpRouteDiscoveryOnEtherNet;
-    }
-
-    /**
-     * <p>
-     * Setter for the field <code>forceIpRouteDiscoveryOnEtherNet</code>.
-     * </p>
-     * 
-     * @param forceIpRouteDiscoveryOnEtherNet
-     *            a boolean.
-     */
-    public void setForceIpRouteDiscoveryOnEtherNet(
-            boolean forceIpRouteDiscoveryOnEtherNet) {
-        this.forceIpRouteDiscoveryOnEtherNet = forceIpRouteDiscoveryOnEtherNet;
     }
 
 }

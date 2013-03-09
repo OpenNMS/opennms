@@ -396,72 +396,49 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
 
 	// SELECT node.nodeid,snmpinterface.snmpifindex,snmpinterface.snmpipadentnetmask FROM node LEFT JOIN ipinterface ON node.nodeid = ipinterface.nodeid LEFT JOIN snmpinterface ON ipinterface.snmpinterfaceid = snmpinterface.id WHERE node.nodetype = 'A' AND ipinterface.ipaddr = ?
 	@Override
-	protected RouterInterface getNodeidMaskFromIp(final InetAddress nexthop) {
-        final OnmsCriteria criteria = new OnmsCriteria(OnmsIpInterface.class);
+	protected List<RouterInterface> getRouteInterface(final InetAddress nexthop, int ifindex) {
+        
+		final OnmsCriteria criteria = new OnmsCriteria(OnmsIpInterface.class);
         criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
         criteria.createAlias("snmpInterface", "snmpInterface", OnmsCriteria.LEFT_JOIN);
         criteria.add(Restrictions.eq("ipAddress", nexthop));
         criteria.add(Restrictions.eq("node.type", "A"));
         final List<OnmsIpInterface> interfaces = m_ipInterfaceDao.findMatching(criteria);
 		
+        List<RouterInterface> routes = new ArrayList<RouterInterface>();
         if (interfaces.isEmpty()) {
-        	return null;
-        } else {
-        	if (interfaces.size() > 1) {
-        		LogUtils.debugf(this, "getNodeidMaskFromIp: More than one IP Interface matches ipAddress %s", str(nexthop));
-        	}
-        	final OnmsIpInterface ipInterface = interfaces.get(0);
+        	return getRouterInterfaceWithoutSnmpData(nexthop,ifindex);
+        } 
+
+        for (OnmsIpInterface ipInterface : interfaces) {
         	final OnmsNode node = ipInterface.getNode();
 			final OnmsSnmpInterface snmpInterface = ipInterface.getSnmpInterface();
 
-			if (node == null) {
-			    LogUtils.warnf(this, "getNodeidMaskFromIp: No node associated with OnmsIpInterface: %s", ipInterface);
-			    return null;
-			}
-			if (snmpInterface == null) {
-			    LogUtils.warnf(this, "getNodeidMaskFromIp: No SNMP interface associated with OnmsIpInterface: %s", ipInterface);
-			    return null;
-			}
-
-			return new RouterInterface(node.getId(), snmpInterface.getIfIndex(), snmpInterface.getNetMask());
+			RouterInterface route = new RouterInterface(node.getId(), snmpInterface.getIfIndex(), snmpInterface.getNetMask());
+			route.setNextHop(nexthop);
+			route.setIfindex(ifindex);
+			routes.add(route);
         }
+        return routes;
 	}
 
 	// SELECT node.nodeid FROM node LEFT JOIN ipinterface ON node.nodeid = ipinterface.nodeid WHERE nodetype = 'A' AND ipaddr = ?
-	@Override
-	protected RouterInterface getNodeFromIp(final InetAddress nexthop) {
+	private 	 List<RouterInterface> getRouterInterfaceWithoutSnmpData(final InetAddress nexthop, int ifindex) {
         final OnmsCriteria criteria = new OnmsCriteria(OnmsIpInterface.class);
         criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
         criteria.add(Restrictions.eq("ipAddress", nexthop));
         criteria.add(Restrictions.eq("node.type", "A"));
         final List<OnmsIpInterface> interfaces = m_ipInterfaceDao.findMatching(criteria);
+        List<RouterInterface> routes = new ArrayList<RouterInterface>();
 		
-        if (interfaces.isEmpty()) {
-        	return null;
-        } else {
-        	if (interfaces.size() > 1) {
-        		LogUtils.debugf(this, "getNodeFromIp: More than one IP Interface matches ipAddress %s", str(nexthop));
-        	}
-        	final OnmsIpInterface ipInterface = interfaces.get(0);
+        for (OnmsIpInterface ipInterface : interfaces) {
         	final OnmsNode node = ipInterface.getNode();
-
-			if (node == null) {
-			    LogUtils.warnf(this, "getNodeFromIp: No node associated with OnmsIpInterface: %s", ipInterface);
-			    return null;
-			}
-
-			int ifIndex = -1;
-
-			// the existing Linkd code always put -1 in the ifIndex here, but we should probably fill it in if we know it
-			/*
-			final OnmsSnmpInterface snmpInterface = ipInterface.getSnmpInterface();
-			if (snmpInterface != null) {
-				ifIndex = snmpInterface.getIfIndex();
-			}
-			*/
-
-			return new RouterInterface(node.getId(), ifIndex);
+			RouterInterface route = new RouterInterface(node.getId(), -1);
+			route.setNextHop(nexthop);
+			route.setIfindex(ifindex);
+			routes.add(route);
         }
+        return routes;
 	}
 
 	// SELECT snmpiftype FROM snmpinterface WHERE nodeid = ? AND snmpifindex = ?"

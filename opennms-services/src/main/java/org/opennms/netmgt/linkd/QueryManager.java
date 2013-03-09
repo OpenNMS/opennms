@@ -40,6 +40,14 @@ import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
  */
 public interface QueryManager {
 
+    public static final int SNMP_IF_TYPE_ETHERNET = 6;
+
+    public static final int SNMP_IF_TYPE_PROP_VIRTUAL = 53;
+
+    public static final int SNMP_IF_TYPE_L2_VLAN = 135;
+
+    public static final int SNMP_IF_TYPE_L3_VLAN = 136;
+
 	/**
 	 * The status of the info in FDB table entry The meanings of the value is
 	 * other(1): none of the following. This would include the case where some
