@@ -54,6 +54,7 @@ import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 
 @XmlRootElement(name = "ipRouteInterface")
@@ -337,5 +338,20 @@ public class OnmsIpRouteInterface {
 		m_lastPollTime = lastPollTime;
 	}
 
+	public String toString() {
+		    return new ToStringBuilder(this)
+		        .append("id", m_id)
+		        .append("node", m_node)
+		        .append("routedest", m_routeDest)
+		        .append("routemask", m_routeMask)
+		        .append("routenexthop", m_routeNextHop)
+		        .append("routeifindex", m_routeIfIndex)
+		        .append("routetype", RouteType.getRouteTypeString(m_routeType.getIntCode()))
+		        .append("routeprotocol", m_routeProto)
+		        .append("routemetric1", m_routeMetric1)
+		        .toString();
+		}
+
+	}
 
 }
