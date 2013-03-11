@@ -33,6 +33,8 @@ import org.discotools.gwt.leaflet.client.jsobject.JSObject;
 import org.discotools.gwt.leaflet.client.marker.Marker;
 import org.discotools.gwt.leaflet.client.types.LatLng;
 
+import com.google.gwt.core.client.JsArrayString;
+
 public class NodeMarker extends Marker {
     private String[] m_textProperties = new String[] { "nodeLabel", "ipAddress", "description", "maintcontract" };
 
@@ -50,6 +52,19 @@ public class NodeMarker extends Marker {
 
     public String getProperty(final String key) {
         return getJSObject().getPropertyAsString(key);
+    }
+
+    public JsArrayString getCategories() {
+        return getJSObject().getProperty("categories").cast();
+    }
+
+    public void setCategories(final String[] categories) {
+        final JsArrayString array = JsArrayString.createArray().cast();
+        for (final String category : categories) {
+            array.push(category);
+        }
+        final JSObject jsObject = array.cast();
+        getJSObject().setProperty("categories", jsObject);
     }
 
     public Integer getNodeId() {
@@ -98,6 +113,18 @@ public class NodeMarker extends Marker {
     public boolean containsText(final String text) {
         if (text == null) return false;
         if ("".equals(text)) return true;
+
+        if (text.startsWith("category:")) {
+            final String searchString = text.replaceFirst("category: *", "").toLowerCase();
+            final JsArrayString categories = getCategories();
+            for (int i = 0; i < categories.length(); i++) {
+                final String category = categories.get(i).toLowerCase();
+                if (category.contains(searchString)) {
+                    return true;
+                }
+            }
+            return false;
+        }
 
         for (final String propertyName : m_textProperties) {
             final String value = getProperty(propertyName);

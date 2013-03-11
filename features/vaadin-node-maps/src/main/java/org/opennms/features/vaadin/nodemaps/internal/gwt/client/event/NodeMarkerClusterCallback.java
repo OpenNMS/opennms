@@ -10,6 +10,7 @@ import org.discotools.gwt.leaflet.client.popup.PopupOptions;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.NodeMarker;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.MarkerCluster;
 
+import com.google.gwt.core.client.JsArrayString;
 import com.vaadin.terminal.gwt.client.VConsole;
 
 public class NodeMarkerClusterCallback implements MarkerClusterEventCallback {
@@ -74,6 +75,7 @@ public class NodeMarkerClusterCallback implements MarkerClusterEventCallback {
         final Popup popup = new Popup(options);
         popup.setContent(sb.toString());
         popup.setLatLng(cluster.getLatLng());
+        
         /*
         final Element element = popup.getJSObject().cast();
         DomEvent.addListener(new DomEventCallback("keydown", null) {
@@ -82,7 +84,14 @@ public class NodeMarkerClusterCallback implements MarkerClusterEventCallback {
             }
         }, element);
         */
-        PopupImpl.openOn(popup.getJSObject(), cluster.getGroup().getMapObject());
+        final Map map = new Map(cluster.getGroup().getMapObject());
+        VConsole.log("current zoom: " + map.getZoom() + ", max zoom: " + map.getMaxZoom());
+
+        if (map.getZoom() == map.getMaxZoom()) {
+            VConsole.log("at max zoom, skipping popup");
+        } else {
+            PopupImpl.openOn(popup.getJSObject(), cluster.getGroup().getMapObject());
+        }
     }
 
     public static String getPopupTextForMarker(final NodeMarker marker) {
@@ -94,6 +103,21 @@ public class NodeMarkerClusterCallback implements MarkerClusterEventCallback {
         sb.append("Maint.&nbsp;Contract: ").append(marker.getMaintContract()).append("<br/>");
         sb.append("IP Address: ").append(marker.getIpAddress()).append("<br/>");
         sb.append("Severity: ").append("<a href=\"/opennms/alarm/list.htm?sortby=id&acktype=unack&limit=20&filter=node%3D").append(marker.getNodeId()).append("\" target=\"_blank\">").append(marker.getSeverityLabel()).append("</a>");
+        final JsArrayString categories = marker.getCategories();
+        if (categories.length() > 0) {
+            sb.append("<br/>");
+            if (categories.length() == 1) {
+                sb.append("Category: ");
+            } else {
+                sb.append("Categories: ");
+            }
+            for (int i = 0; i < categories.length(); i++) {
+                sb.append(categories.get(i));
+                if (i != (categories.length() - 1)) {
+                    sb.append(", ");
+                }
+            }
+        }
         sb.append("</p>");
         return sb.toString();
     }

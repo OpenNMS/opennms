@@ -45,6 +45,7 @@ import org.opennms.netmgt.dao.AssetRecordDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsAssetRecord;
+import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsGeolocation;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
@@ -61,6 +62,8 @@ import com.vaadin.ui.VerticalLayout;
 
 @ClientWidget(value = VMapWidget.class)
 public class MapWidgetComponent extends VerticalLayout {
+    private static final String[] EMPTY_STRING_ARRAY = new String[]{};
+
     public static final class NodeEntry {
 
         private Float m_longitude;
@@ -73,6 +76,7 @@ public class MapWidgetComponent extends VerticalLayout {
         private String m_maintcontract;
         private String m_ipAddress;
         private OnmsSeverity m_severity = OnmsSeverity.NORMAL;
+        private List<String> m_categories = new ArrayList<String>();
         private int m_unackedCount = 0;
 
         public NodeEntry(final OnmsNode node) {
@@ -102,6 +106,12 @@ public class MapWidgetComponent extends VerticalLayout {
             if (node.getPrimaryInterface() != null) {
                 m_ipAddress = InetAddressUtils.str(node.getPrimaryInterface().getIpAddress());
             }
+            
+            if (node.getCategories() != null && node.getCategories().size() > 0) {
+                for (final OnmsCategory category : node.getCategories()) {
+                    m_categories.add(category.getName());
+                }
+            }
         }
 
         public void setSeverity(final OnmsSeverity severity) {
@@ -128,6 +138,10 @@ public class MapWidgetComponent extends VerticalLayout {
             target.addAttribute("severityLabel", m_severity.getLabel());
             target.addAttribute("severity", m_severity.getId());
             target.addAttribute("unackedCount", String.valueOf(m_unackedCount));
+
+            if (m_categories.size() > 0) {
+                target.addAttribute("categories", m_categories.toArray(EMPTY_STRING_ARRAY));
+            }
 
             target.endTag("node");
         }

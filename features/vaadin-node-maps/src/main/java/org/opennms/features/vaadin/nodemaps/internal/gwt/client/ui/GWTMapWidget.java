@@ -36,7 +36,6 @@ import org.discotools.gwt.leaflet.client.controls.zoom.Zoom;
 import org.discotools.gwt.leaflet.client.crs.epsg.EPSG3857;
 import org.discotools.gwt.leaflet.client.layers.ILayer;
 import org.discotools.gwt.leaflet.client.layers.raster.TileLayer;
-import org.discotools.gwt.leaflet.client.map.Map;
 import org.discotools.gwt.leaflet.client.map.MapOptions;
 import org.discotools.gwt.leaflet.client.types.LatLng;
 import org.discotools.gwt.leaflet.client.types.LatLngBounds;
@@ -44,6 +43,7 @@ import org.opennms.features.vaadin.nodemaps.internal.gwt.client.MarkerProvider;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.NodeMarker;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.SearchConsumer;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.IconCreateCallback;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.Map;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.NodeMarkerClusterCallback;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.controls.alarm.AlarmControl;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.controls.alarm.AlarmControlOptions;
@@ -133,6 +133,7 @@ public class GWTMapWidget extends Widget implements MarkerProvider, SearchConsum
         options.setCenter(new LatLng(0, 0));
         options.setProperty("zoomControl", false);
         options.setZoom(1);
+        options.setMaxZoom(15);
         m_map = new Map(divId, options);
     }
 
@@ -153,7 +154,7 @@ public class GWTMapWidget extends Widget implements MarkerProvider, SearchConsum
         final Options markerClusterOptions = new Options();
         markerClusterOptions.setProperty("zoomToBoundsOnClick", false);
         markerClusterOptions.setProperty("iconCreateFunction", new IconCreateCallback());
-        markerClusterOptions.setProperty("disableClusteringAtZoom", 13);
+        // markerClusterOptions.setProperty("disableClusteringAtZoom", 13);
         m_markerClusterGroup = new MarkerClusterGroup(markerClusterOptions);
         final NodeMarkerClusterCallback callback = new NodeMarkerClusterCallback();
         m_markerClusterGroup.on("clusterclick", callback);
