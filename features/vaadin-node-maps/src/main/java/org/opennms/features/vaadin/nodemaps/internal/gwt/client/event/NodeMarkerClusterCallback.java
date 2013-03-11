@@ -7,6 +7,7 @@ import java.util.List;
 import org.discotools.gwt.leaflet.client.popup.Popup;
 import org.discotools.gwt.leaflet.client.popup.PopupImpl;
 import org.discotools.gwt.leaflet.client.popup.PopupOptions;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.Map;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.NodeMarker;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.MarkerCluster;
 
