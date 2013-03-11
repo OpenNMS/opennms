@@ -5,6 +5,7 @@ public interface SearchConsumer {
     public void setSearchString(final String searchString);
     public int getMinimumSeverity();
     public void setMinimumSeverity(final int minSeverity);
+    public boolean isSearching();
     public void refresh();
     public void clearSearch();
 }

@@ -25,6 +25,10 @@ public class DomEvent {
 
     public static void addListener(final DomEventCallback callback) {
         final Element element = callback.getWidget().getElement();
+        addListener(callback, element);
+    }
+
+    public static void addListener(final DomEventCallback callback, final Element element) {
         for (final String eventType : callback.getEventTypes()) {
             addListener(element, eventType, callback, element);
         }
@@ -35,8 +39,13 @@ public class DomEvent {
     }-*/;
 
     public static void removeListener(final DomEventCallback callback) {
+        final Element element = callback.getWidget().getElement();
+        removeListener(callback, element);
+    }
+
+    public static void removeListener(final DomEventCallback callback, final Element element) {
         for (final String eventType : callback.getEventTypes()) {
-            removeListener(callback.getWidget().getElement(), eventType, callback);
+            removeListener(element, eventType, callback);
         }
     }
 

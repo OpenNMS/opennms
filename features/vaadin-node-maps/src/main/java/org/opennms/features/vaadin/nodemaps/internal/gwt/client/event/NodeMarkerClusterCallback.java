@@ -15,9 +15,7 @@ import com.vaadin.terminal.gwt.client.VConsole;
 public class NodeMarkerClusterCallback implements MarkerClusterEventCallback {
     private static final class NodeMarkerComparator implements Comparator<NodeMarker> {
         final static int BEFORE = -1;
-
         final static int EQUAL = 0;
-
         final static int AFTER = 1;
 
         @Override
@@ -76,7 +74,14 @@ public class NodeMarkerClusterCallback implements MarkerClusterEventCallback {
         final Popup popup = new Popup(options);
         popup.setContent(sb.toString());
         popup.setLatLng(cluster.getLatLng());
-        VConsole.log("html = " + sb.toString());
+        /*
+        final Element element = popup.getJSObject().cast();
+        DomEvent.addListener(new DomEventCallback("keydown", null) {
+            @Override protected void onEvent(final NativeEvent event) {
+                VConsole.log("marker cluster popup keydown event");
+            }
+        }, element);
+        */
         PopupImpl.openOn(popup.getJSObject(), cluster.getGroup().getMapObject());
     }
 

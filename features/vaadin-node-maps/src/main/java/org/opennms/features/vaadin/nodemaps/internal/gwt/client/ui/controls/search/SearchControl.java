@@ -14,19 +14,22 @@ import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.vaadin.terminal.gwt.client.VConsole;
 
 public class SearchControl extends Control {
+    private HTMLPanel m_container;
     private TextBox m_inputBox;
-    private SearchConsumer m_searchConsumer;
     private Anchor m_submitAnchor;
+
+    private SearchConsumer m_searchConsumer;
     private SearchEventCallback m_changeCallback;
-    private SearchEventCallback m_keyDownCallback;
+
+    private SearchOptions m_options;
     private boolean m_refreshSearch = false;
     private boolean m_timerActive = false;
     private Timer m_timer;
-    private SearchOptions m_options;
 
     protected SearchControl(final JSObject element) {
         super(element);
@@ -60,8 +63,8 @@ public class SearchControl extends Control {
     public Element doOnAdd(final JavaScriptObject map) {
         VConsole.log("onAdd() called");
         
-        final Element element = SearchControlImpl.createElement("leaflet-control-search");
-        element.addClassName("leaflet-control");
+        m_container = HTMLPanel.wrap(SearchControlImpl.createElement("leaflet-control-search"));
+        m_container.addStyleName("leaflet-control");
 
         m_inputBox = new TextBox();
         m_inputBox.addStyleName("search-input");
@@ -72,19 +75,20 @@ public class SearchControl extends Control {
 
         DomEvent.stopEventPropagation(m_inputBox);
 
-        m_changeCallback = new SearchEventCallback(new String[] { "keydown", "change", "cut", "paste" }, m_inputBox, m_searchConsumer) {
+        m_changeCallback = new SearchEventCallback(new String[] { "keydown", "change", "cut", "paste", "search" }, m_inputBox, m_searchConsumer) {
             @Override protected void onEvent(final NativeEvent event) {
                 handleSearchEvent(event);
             }
         };
         DomEvent.addListener(m_changeCallback);
 
-        element.appendChild(m_inputBox.getElement());
+        m_container.add(m_inputBox);
 
         m_submitAnchor = new Anchor();
         m_submitAnchor.addStyleName("search-button");
         m_submitAnchor.setTitle("Search locations...");
         m_submitAnchor.setHref("#");
+        m_submitAnchor.setTabIndex(-1);
 
         DomEvent.stopEventPropagation(m_submitAnchor);
         DomEvent.addListener(new DomEventCallback("click", m_submitAnchor) {
@@ -94,12 +98,17 @@ public class SearchControl extends Control {
             }
         });
 
-        element.appendChild(m_submitAnchor.getElement());
+        m_container.add(m_submitAnchor);
 
-        return element;
+        return m_container.getElement();
     }
 
     private void handleSearchEvent(final NativeEvent event) {
+        final Element target = event.getEventTarget().cast();
+        if (target.equals(m_submitAnchor.getElement())) {
+            VConsole.log("event received on the anchor, preventing default");
+            event.preventDefault();
+        }
         if (event.getKeyCode() == KeyCodes.KEY_ESCAPE) {
             m_inputBox.setText("");
         }
@@ -115,13 +124,16 @@ public class SearchControl extends Control {
         m_timer.cancel();
         m_timerActive = false;
         m_searchConsumer.setSearchString(m_inputBox.getValue());
+        
+        if (m_searchConsumer.isSearching()) {
+            // update drop-box
+        }
         m_searchConsumer.refresh();
     }
 
     protected SearchControl doOnRemove(final JavaScriptObject map) {
         VConsole.log("onRemove() called");
         if (m_changeCallback != null) DomEvent.removeListener(m_changeCallback);
-        if (m_changeCallback != null) DomEvent.removeListener(m_keyDownCallback);
         return this;
     }
 }

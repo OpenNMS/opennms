@@ -50,4 +50,8 @@ public class MarkerCluster extends JavaScriptObject {
     private final native JSObject getNativeLatLng() /*-{
         return this.getLatLng();
     }-*/;
+
+    public final native void closePopup() /*-{
+        this.closePopup();
+    }-*/;
 }

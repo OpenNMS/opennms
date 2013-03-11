@@ -138,7 +138,7 @@ public class GWTMapWidget extends Widget implements MarkerProvider, SearchConsum
 
     private void addTileLayer() {
         VConsole.log("adding tile layer");
-        final String attribution = "Map data &copy; <a href=\"http://openstreetmap.org\">OpenStreetMap</a> contributors, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Tiles &copy; <a href=\"http://www.mapquest.com/\" target=\"_blank\">MapQuest</a> <img src=\"http://developer.mapquest.com/content/osm/mq_logo.png\" />";
+        final String attribution = "Map data &copy; <a tabindex=\"-1\" href=\"http://openstreetmap.org\">OpenStreetMap</a> contributors, <a tabindex=\"-1\" href=\"http://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Tiles &copy; <a tabindex=\"-1\" href=\"http://www.mapquest.com/\" target=\"_blank\">MapQuest</a> <img src=\"http://developer.mapquest.com/content/osm/mq_logo.png\" />";
         final String url = "http://otile{s}.mqcdn.com/tiles/1.0.0/{type}/{z}/{x}/{y}.png";
         final Options tileOptions = new Options();
         tileOptions.setProperty("attribution", attribution);
@@ -158,6 +158,21 @@ public class GWTMapWidget extends Widget implements MarkerProvider, SearchConsum
         final NodeMarkerClusterCallback callback = new NodeMarkerClusterCallback();
         m_markerClusterGroup.on("clusterclick", callback);
         m_markerClusterGroup.on("clustertouchend", callback);
+        /*
+        final Element mapElement = m_map.getJSObject().cast();
+        DomEvent.addListener(new DomEventCallback("keydown", null) {
+            @Override protected void onEvent(final NativeEvent event) {
+                VConsole.log("mapElement listener keydown");
+                if (event.getKeyCode() == KeyCodes.KEY_ESCAPE) m_map.closePopup();
+            }
+        }, mapElement);
+        m_markerClusterGroup.on("keydown", new MarkerClusterEventCallback() {
+            @Override public void run(final MarkerClusterEvent event) {
+                VConsole.log("markerClusterGroup listener keydown");
+                if (event.getKeyCode() == KeyCodes.KEY_ESCAPE) m_map.closePopup();
+            }
+        });
+        */
         m_map.addLayer(m_markerClusterGroup);
     }
 
@@ -182,8 +197,12 @@ public class GWTMapWidget extends Widget implements MarkerProvider, SearchConsum
 
     public boolean markerShouldBeVisible(final NodeMarker marker) {
         if (marker.getSeverity() < m_minimumSeverity) return false;
-        if (m_searchString != null && !"".equals(m_searchString) && !marker.containsText(m_searchString)) return false;
+        if (this.isSearching() && !marker.containsText(m_searchString)) return false;
         return true;
+    }
+
+    public boolean isSearching() {
+        return m_searchString != null && !"".equals(m_searchString);
     }
 
     public void refresh() {
@@ -200,17 +219,22 @@ public class GWTMapWidget extends Widget implements MarkerProvider, SearchConsum
         Scheduler.get().scheduleIncremental(new RepeatingCommand() {
             final ListIterator<NodeMarker> m_markerIterator = m_markers.listIterator();
             LatLngBounds m_bounds;
+            /*
             NodeMarker m_visibleMarker = null;
             int m_count = 0;
+            */
 
             @Override public boolean execute() {
                 if (m_markerIterator.hasNext()) {
                     final NodeMarker marker = m_markerIterator.next();
+                    marker.closePopup();
                     if (markerShouldBeVisible(marker)) {
+                        /*
                         m_count++;
                         if (m_count == 1) {
                             m_visibleMarker = marker;
                         }
+                        */
                         if (!m_markerClusterGroup.hasLayer(marker)) {
                             m_markerClusterGroup.addLayer(marker);
                         }
@@ -236,9 +260,11 @@ public class GWTMapWidget extends Widget implements MarkerProvider, SearchConsum
                     VConsole.log("Skipping zoom, we've already done it once.");
                 }
 
+                /*
                 if (m_count == 1 && m_visibleMarker != null) {
                     m_visibleMarker.openPopup();
                 }
+                */
 
                 VConsole.log("finished updating marker cluster layer");
 
