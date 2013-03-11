@@ -1,4 +1,4 @@
-package org.opennms.features.vaadin.nodemaps.internal.gwt.client;
+package org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui;
 
 import java.util.List;
 
@@ -6,6 +6,7 @@ import org.discotools.gwt.leaflet.client.Options;
 import org.discotools.gwt.leaflet.client.jsobject.JSObject;
 import org.discotools.gwt.leaflet.client.layers.ILayer;
 import org.discotools.gwt.leaflet.client.layers.others.FeatureGroup;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.MarkerClusterEventCallback;
 
 import com.google.gwt.core.client.JsArray;
 
@@ -53,5 +54,4 @@ public class MarkerClusterGroup extends FeatureGroup {
     public boolean hasLayer(final ILayer layer) {
         return MarkerClusterGroupImpl.hasLayer(getJSObject(), layer.getJSObject());
     }
-
 }

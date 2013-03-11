@@ -39,7 +39,7 @@ import org.opennms.core.utils.LogUtils;
 import org.opennms.features.geocoder.Coordinates;
 import org.opennms.features.geocoder.GeocoderException;
 import org.opennms.features.geocoder.GeocoderService;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.VMapWidget;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.VMapWidget;
 import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.dao.AssetRecordDao;
 import org.opennms.netmgt.dao.NodeDao;

@@ -1,13 +1,12 @@
-package org.opennms.features.vaadin.nodemaps.internal.gwt.client.controls.alarm;
+package org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.controls.alarm;
 
-import org.discotools.gwt.leaflet.client.Options;
 import org.discotools.gwt.leaflet.client.controls.Control;
 import org.discotools.gwt.leaflet.client.jsobject.JSObject;
 import org.discotools.gwt.leaflet.client.map.Map;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.DomEvent;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.SearchConsumer;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.DomEvent;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.SearchEventCallback;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
@@ -19,18 +18,16 @@ import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.terminal.gwt.client.VConsole;
 
 public class AlarmControl extends Control {
-    private static final AlarmControlBundle m_resources = GWT.create(AlarmControlBundle.class);
-
     private ListBox m_severityBox;
     private final SearchConsumer m_searchConsumer;
 
-    private SeverityEventCallback m_onChange;
+    private SearchEventCallback m_onChange;
 
     public AlarmControl(final SearchConsumer searchConsumer) {
-        this(searchConsumer, new Options());
+        this(searchConsumer, new AlarmControlOptions());
     }
 
-    public AlarmControl(final SearchConsumer searchConsumer, final Options options) {
+    public AlarmControl(final SearchConsumer searchConsumer, final AlarmControlOptions options) {
         super(JSObject.createJSObject());
         setJSObject(AlarmControlImpl.create(this, options.getJSObject()));
         VConsole.log("new AlarmControl()");
@@ -39,13 +36,15 @@ public class AlarmControl extends Control {
 
     public Element doOnAdd(final JavaScriptObject map) {
         VConsole.log("doOnAdd() called");
-        final AlarmControlCss css = m_resources.css();
+        final AlarmControlCss css = AlarmControlBundle.INSTANCE.css();
+        css.ensureInjected();
 
-        final Element element = AlarmControlImpl.createElement("alarmControl");
+        final Element element = AlarmControlImpl.createElement("leaflet-control-alarm");
+        element.addClassName("leaflet-control");
 
-        final Label label = new Label("label!");
+        final Label label = new Label("Show Severity >=");
         label.getElement().setAttribute("for", "alarmControl");
-        label.setStyleName(css.label());
+        label.addStyleName(css.label());
         element.appendChild(label.getElement());
 
         m_severityBox = new ListBox(false);
@@ -56,9 +55,9 @@ public class AlarmControl extends Control {
         m_severityBox.addItem("Major", "6");
         m_severityBox.addItem("Critical", "7");
 
-        DomEvent.stopClickPropagation(m_severityBox);
+        DomEvent.stopEventPropagation(m_severityBox);
 
-        m_onChange = new SeverityEventCallback("change", m_severityBox, m_searchConsumer) {
+        m_onChange = new SearchEventCallback("change", m_severityBox, m_searchConsumer) {
             @Override
             protected void onEvent(final NativeEvent event) {
                 final Widget widget = getWidget();
@@ -82,7 +81,7 @@ public class AlarmControl extends Control {
         };
         DomEvent.addListener(m_onChange);
 
-        m_severityBox.setStyleName(css.label());
+        m_severityBox.addStyleName(css.label());
         element.appendChild(m_severityBox.getElement());
 
         VConsole.log("doOnAdd() finished, returning: " + element);

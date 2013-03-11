@@ -1,4 +1,4 @@
-package org.opennms.features.vaadin.nodemaps.internal.gwt.client;
+package org.opennms.features.vaadin.nodemaps.internal.gwt.client.event;
 
 import org.discotools.gwt.leaflet.client.jsobject.JSObject;
 import org.discotools.gwt.leaflet.client.jsobject.JSObjectWrapper;

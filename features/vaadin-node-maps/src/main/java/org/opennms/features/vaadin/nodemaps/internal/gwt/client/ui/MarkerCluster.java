@@ -1,10 +1,11 @@
-package org.opennms.features.vaadin.nodemaps.internal.gwt.client;
+package org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.discotools.gwt.leaflet.client.jsobject.JSObject;
 import org.discotools.gwt.leaflet.client.types.LatLng;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.NodeMarker;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;

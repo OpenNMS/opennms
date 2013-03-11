@@ -1,4 +1,4 @@
-package org.opennms.features.vaadin.nodemaps.internal.gwt.client;
+package org.opennms.features.vaadin.nodemaps.internal.gwt.client.event;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -7,10 +7,12 @@ import java.util.List;
 import org.discotools.gwt.leaflet.client.popup.Popup;
 import org.discotools.gwt.leaflet.client.popup.PopupImpl;
 import org.discotools.gwt.leaflet.client.popup.PopupOptions;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.NodeMarker;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.MarkerCluster;
 
 import com.vaadin.terminal.gwt.client.VConsole;
 
-final class NodeMarkerClusterCallback implements MarkerClusterEventCallback {
+public class NodeMarkerClusterCallback implements MarkerClusterEventCallback {
     private static final class NodeMarkerComparator implements Comparator<NodeMarker> {
         final static int BEFORE = -1;
 
@@ -38,7 +40,7 @@ final class NodeMarkerClusterCallback implements MarkerClusterEventCallback {
         }
     }
 
-    NodeMarkerClusterCallback() {
+    public NodeMarkerClusterCallback() {
     }
 
     @Override
@@ -58,7 +60,7 @@ final class NodeMarkerClusterCallback implements MarkerClusterEventCallback {
             for (final NodeMarker marker : markers) {
                 unacked += marker.getUnackedCount();
                 nodeBuilder.append("<li>");
-                nodeBuilder.append("<a href=\"/opennms/element/node.jsp?node=").append(marker.getNodeId()).append("\" target=\"_blank\">").append(marker.getNodeLabel()).append("</a> ");
+                nodeBuilder.append("<a class=\"node\" href=\"/opennms/element/node.jsp?node=").append(marker.getNodeId()).append("\" target=\"_blank\">").append(marker.getNodeLabel()).append("</a> ");
                 nodeBuilder.append("(").append(marker.getIpAddress()).append(")").append(": ");
                 nodeBuilder.append("<a href=\"/opennms/alarm/list.htm?sortby=id&acktype=unack&limit=20&filter=node%3D").append(marker.getNodeId()).append("\" target=\"_blank\">").append(marker.getSeverityLabel()).append("</a>");
                 nodeBuilder.append("</li>");
@@ -81,7 +83,7 @@ final class NodeMarkerClusterCallback implements MarkerClusterEventCallback {
     public static String getPopupTextForMarker(final NodeMarker marker) {
         // TODO: THIS IS AWFUL
         final StringBuilder sb = new StringBuilder();
-        sb.append("<h2>Node <a href=\"/opennms/element/node.jsp?node=").append(marker.getNodeId()).append("\" target=\"_blank\">").append(marker.getNodeLabel()).append("</a></h2>");
+        sb.append("<h2>Node <a class=\"node\" href=\"/opennms/element/node.jsp?node=").append(marker.getNodeId()).append("\" target=\"_blank\">").append(marker.getNodeLabel()).append("</a></h2>");
         sb.append("<p>");
         sb.append("Description: ").append(marker.getDescription()).append("<br/>");
         sb.append("Maint.&nbsp;Contract: ").append(marker.getMaintContract()).append("<br/>");

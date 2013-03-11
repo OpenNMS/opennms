@@ -1,4 +1,4 @@
-package org.opennms.features.vaadin.nodemaps.internal.gwt.client;
+package org.opennms.features.vaadin.nodemaps.internal.gwt.client.event;
 
 import java.util.List;
 
@@ -7,6 +7,8 @@ import org.discotools.gwt.leaflet.client.jsobject.JSObjectWrapper;
 import org.discotools.gwt.leaflet.client.types.DivIcon;
 import org.discotools.gwt.leaflet.client.types.DivIconOptions;
 import org.discotools.gwt.leaflet.client.types.Point;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.NodeMarker;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.MarkerCluster;
 
 public class IconCreateCallback extends JSObjectWrapper {
 
@@ -19,7 +21,6 @@ public class IconCreateCallback extends JSObjectWrapper {
         setJSObject(getCallbackFunction());
     }
 
-    @SuppressWarnings("unchecked")
     public JSObject createIcon(final MarkerCluster cluster) {
         final DivIconOptions options = new DivIconOptions();
         options.setHtml("<div><span>" + cluster.getChildCount() + "</span></div>");
@@ -44,7 +45,7 @@ public class IconCreateCallback extends JSObjectWrapper {
     public native final JSObject getCallbackFunction() /*-{
         var self = this;
         return function(cluster) {
-            return self.@org.opennms.features.vaadin.nodemaps.internal.gwt.client.IconCreateCallback::createIcon(Lorg/opennms/features/vaadin/nodemaps/internal/gwt/client/MarkerCluster;)(cluster);
+            return self.@org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.IconCreateCallback::createIcon(Lorg/opennms/features/vaadin/nodemaps/internal/gwt/client/ui/MarkerCluster;)(cluster);
         };
     }-*/;
 }

@@ -26,10 +26,8 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.vaadin.nodemaps.internal.gwt.client;
+package org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -42,7 +40,14 @@ import org.discotools.gwt.leaflet.client.map.Map;
 import org.discotools.gwt.leaflet.client.map.MapOptions;
 import org.discotools.gwt.leaflet.client.types.LatLng;
 import org.discotools.gwt.leaflet.client.types.LatLngBounds;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.controls.alarm.AlarmControl;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.MarkerProvider;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.NodeMarker;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.SearchConsumer;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.IconCreateCallback;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.NodeMarkerClusterCallback;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.controls.alarm.AlarmControl;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.controls.alarm.AlarmControlOptions;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.controls.search.SearchControl;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.RepeatingCommand;
@@ -65,6 +70,8 @@ public class GWTMapWidget extends Widget implements MarkerProvider, SearchConsum
     private boolean m_firstUpdate = true;
     private int m_minimumSeverity = 0;
     private String m_searchString = "";
+
+    private SearchControl m_searchControl;
 
     public GWTMapWidget() {
         super();
@@ -101,10 +108,11 @@ public class GWTMapWidget extends Widget implements MarkerProvider, SearchConsum
         addMarkerLayer();
         
         // overlay controls
-        addSearchInput();
-        //addSearchControl();
+        addSearchControl();
         addAlarmControl();
         addZoomControl();
+
+        m_searchControl.focus();
 
         VConsole.log("finished initializing map");
     }
@@ -153,48 +161,16 @@ public class GWTMapWidget extends Widget implements MarkerProvider, SearchConsum
         m_map.addLayer(m_markerClusterGroup);
     }
 
-    private void addSearchInput() {
-        VConsole.log("adding search input");
-        final SearchOptions options = new SearchOptions();
-        options.setSearchCallback(new NodeMarkerSearchCallback(this) {
-           public Collection<NodeMarker> search(final Collection<NodeMarker> markers, final String text) {
-               VConsole.log("search() called for text: " + text + ", searching " + markers.size() + " markers.");
-               final List<NodeMarker> matched = new ArrayList<NodeMarker>();
-               for (final NodeMarker marker : markers) {
-                   if (marker.containsText(text)) {
-                       VConsole.log(" matched: " + marker.toString());
-                       matched.add(marker);
-                   } else {
-                       VConsole.log("!matched: " + marker.toString());
-                   }
-               }
-               return matched;
-           }
-        });
-        options.setAutoCollapse(false);
-        options.setAutoResize(false);
-        options.setTipAutoSubmit(true);
-        options.setAnimateLocation(true);
-        options.setMarkerLocation(true);
-        options.setPosition("topleft");
-        options.setInitial(false);
-        final Search search = new Search(options);
-        m_map.addControl(search);
-        search.setSize(40);
-        search.expand();
-        search.focus();
-    }
-
-    @SuppressWarnings("unused")
     private void addSearchControl() {
         VConsole.log("adding search control");
-        m_map.addControl(new SearchControl(this));
+        m_searchControl = new SearchControl(this);
+        m_map.addControl(m_searchControl);
     }
     
     private void addAlarmControl() {
         VConsole.log("adding alarm control");
-        final Options options = new Options();
-        options.setProperty("position", "topleft");
+        final AlarmControlOptions options = new AlarmControlOptions();
+        options.setPosition("topleft");
         final AlarmControl alarmControl = new AlarmControl(this, options);
         m_map.addControl(alarmControl);
     }
@@ -224,11 +200,17 @@ public class GWTMapWidget extends Widget implements MarkerProvider, SearchConsum
         Scheduler.get().scheduleIncremental(new RepeatingCommand() {
             final ListIterator<NodeMarker> m_markerIterator = m_markers.listIterator();
             LatLngBounds m_bounds;
+            NodeMarker m_visibleMarker = null;
+            int m_count = 0;
 
             @Override public boolean execute() {
                 if (m_markerIterator.hasNext()) {
                     final NodeMarker marker = m_markerIterator.next();
                     if (markerShouldBeVisible(marker)) {
+                        m_count++;
+                        if (m_count == 1) {
+                            m_visibleMarker = marker;
+                        }
                         if (!m_markerClusterGroup.hasLayer(marker)) {
                             m_markerClusterGroup.addLayer(marker);
                         }
@@ -252,6 +234,10 @@ public class GWTMapWidget extends Widget implements MarkerProvider, SearchConsum
                     m_firstUpdate = false;
                 } else {
                     VConsole.log("Skipping zoom, we've already done it once.");
+                }
+
+                if (m_count == 1 && m_visibleMarker != null) {
+                    m_visibleMarker.openPopup();
                 }
 
                 VConsole.log("finished updating marker cluster layer");

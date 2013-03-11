@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.vaadin.nodemaps.internal.gwt.client;
+package org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,6 +38,8 @@ import org.discotools.gwt.leaflet.client.types.Icon;
 import org.discotools.gwt.leaflet.client.types.IconOptions;
 import org.discotools.gwt.leaflet.client.types.LatLng;
 import org.discotools.gwt.leaflet.client.types.Point;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.NodeMarker;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.NodeMarkerClusterCallback;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.user.client.Command;
