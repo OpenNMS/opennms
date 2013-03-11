@@ -30,6 +30,7 @@ package org.opennms.netmgt.dao;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.Collection;
 
@@ -39,6 +40,7 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.model.OnmsAssetRecord;
+import org.opennms.netmgt.model.OnmsGeolocation;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
@@ -176,5 +178,36 @@ public class AssetRecordDaoTest implements InitializingBean {
         OnmsAssetRecord a = m_assetRecordDao.findByNodeId(onmsNode.getId());
         assertTrue(a.equals(assetRecord));
     }
+
+        @Test
+        @Transactional
+        public void testGeolocation() {
+            OnmsNode onmsNode = new OnmsNode(m_distPollerDao.load("localhost"));
+            onmsNode.setLabel("myNode");
+            m_nodeDao.save(onmsNode);
+            OnmsAssetRecord assetRecord = onmsNode.getAssetRecord();
+            OnmsGeolocation geo = assetRecord.getGeolocation();
+            if (geo == null) {
+                geo = new OnmsGeolocation();
+                assetRecord.setGeolocation(geo);
+            }
+            geo.setAddress1("220 Chatham Business Drive");
+            geo.setCity("Pittsboro");
+            geo.setState("NC");
+            geo.setZip("27312");
+            geo.setCountry("US");
+            m_assetRecordDao.update(assetRecord);
+            m_assetRecordDao.flush();
+
+            //Test findAll method
+            int id = assetRecord.getId();
+            OnmsAssetRecord assetRecordFromDb = m_assetRecordDao.get(id);
+            assertNotNull(assetRecordFromDb.getGeolocation());
+            assertEquals(geo.getAddress1(), assetRecordFromDb.getGeolocation().getAddress1());
+            assertEquals(geo.getCity(), assetRecordFromDb.getGeolocation().getCity());
+            assertEquals(geo.getState(), assetRecordFromDb.getGeolocation().getState());
+            assertEquals(geo.getZip(), assetRecordFromDb.getGeolocation().getZip());
+            assertEquals(geo.getCountry(), assetRecordFromDb.getGeolocation().getCountry());
+        }
 
 }
