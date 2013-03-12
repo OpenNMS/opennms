@@ -34,8 +34,10 @@ import static org.apache.karaf.tooling.exam.options.KarafDistributionOption.keep
 import static org.apache.karaf.tooling.exam.options.KarafDistributionOption.logLevel;
 import static org.ops4j.pax.exam.CoreOptions.junitBundles;
 import static org.ops4j.pax.exam.CoreOptions.maven;
+import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.ops4j.pax.exam.CoreOptions.options;
 import static org.ops4j.pax.exam.CoreOptions.systemPackage;
+import static org.ops4j.pax.exam.CoreOptions.wrappedBundle;
 import static org.ops4j.pax.exam.OptionUtils.combine;
 import static org.junit.Assert.assertNotNull;
 
@@ -61,97 +63,70 @@ import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.ops4j.pax.exam.spi.reactors.AllConfinedStagedReactorFactory;
 
 @RunWith(JUnit4TestRunner.class)
-@ExamReactorStrategy(AllConfinedStagedReactorFactory.class)
+//@ExamReactorStrategy(AllConfinedStagedReactorFactory.class)
 public class TopologyMapIntegrationTest extends KarafTestSupport {
 
     //@Inject
     //private TopologyProvider<?,?,?,?> m_topologyProvider;
-    
+
     @Before
     public void setUp() {
         //MockLogAppender.setupLogging();
     }
 
-    /*
-    @ProbeBuilder
-    @Override
-    public TestProbeBuilder probeConfiguration(TestProbeBuilder probe) {
-        probe.setHeader(Constants.DYNAMICIMPORT_PACKAGE, "*,org.apache.felix.service.*;status=provisional");
-        return probe;
-    }
-    */
-
     @Configuration
     @Override
     public Option[] config() {
+        return new Option[] {
+            karafDistributionConfiguration().frameworkUrl(
+                    // Use mvn:org.opennms.container:karaf:tar.gz as the Karaf distribution so that it has the same
+                    // settings as a running OpenNMS system
+                    maven().groupId("org.opennms.container").artifactId("karaf").versionAsInProject().type("tar.gz")
+                ).karafVersion(
+                    //MavenUtils.getArtifactVersion("org.apache.karaf", "apache-karaf")
+                    "2.3.1"
+                ).name("OpenNMS Apache Karaf").unpackDirectory(new File("target/exam")
+            ),
 
-        return combine(
-               ///super.config(),
-               /*
-               new Option[] {
-                   karafDistributionConfiguration().frameworkUrl(
-                           maven().groupId("org.apache.karaf").artifactId("apache-karaf").versionAsInProject().type("tar.gz")
-                       ).karafVersion(
-                           MavenUtils.getArtifactVersion("org.apache.karaf", "apache-karaf")
-                       ).name("Apache Karaf").unpackDirectory(new File("target/exam")),
-                   keepRuntimeFolder()//,
-                   //logLevel(LogLevelOption.LogLevel.ERROR)
-               },
-               */
-               new Option[] {
-                   karafDistributionConfiguration().frameworkUrl(
-                           // Use mvn:org.opennms.container:karaf:tar.gz as the Karaf distribution so that it has the same
-                           // settings as a running OpenNMS system
-                           maven().groupId("org.opennms.container").artifactId("karaf").versionAsInProject().type("tar.gz")
-                       ).karafVersion(
-                           MavenUtils.getArtifactVersion("org.apache.karaf", "apache-karaf")
-                       ).name("Apache Karaf").unpackDirectory(new File("target/exam"))
-                   //keepRuntimeFolder()
-               },
-               options(
-                   logLevel(LogLevelOption.LogLevel.DEBUG),
+            keepRuntimeFolder(),
 
-                   // Change the RMI/JMX ports that Karaf management runs on so that it doesn't conflict
-                   // with a running OpenNMS instance.
-                   //
-                   // Note: The next time we upgrade Karaf, this should be unnecessary because the configs in
-                   // KarafTestSupport have been changed in an identical manner.
-                   editConfigurationFilePut("etc/org.apache.karaf.management.cfg", "rmiRegistryPort", "1101"),
-                   editConfigurationFilePut("etc/org.apache.karaf.management.cfg", "rmiServerPort", "44445"),
+            // Crank the logging
+            logLevel(LogLevelOption.LogLevel.DEBUG),
 
-                   // Change the SSH port so that it doesn't conflict with a running OpenNMS instance
-                   editConfigurationFilePut("etc/org.apache.karaf.shell.cfg", "sshPort", "8201"),
+            // Change the RMI/JMX ports that Karaf management runs on so that it doesn't conflict
+            // with a running OpenNMS instance.
+            //
+            // Note: The next time we upgrade Karaf, this should be unnecessary because the configs in
+            // KarafTestSupport have been changed in an identical manner.
+            editConfigurationFilePut("etc/org.apache.karaf.management.cfg", "rmiRegistryPort", "1101"),
+            editConfigurationFilePut("etc/org.apache.karaf.management.cfg", "rmiServerPort", "44445"),
 
-                   systemPackage("org.apache.commons.logging"),
+            editConfigurationFilePut("etc/org.apache.karaf.features.cfg", "featuresBoot", "config,ssh,http,http-whiteboard,exam"),
 
-                   //mavenBundle("org.apache.felix", "org.apache.felix.configadmin").versionAsInProject(),
-                   //mavenBundle("org.ops4j.pax.logging", "pax-logging-api").versionAsInProject(), 
-                   //mavenBundle("org.ops4j.pax.logging", "pax-logging-service").versionAsInProject(), 
-                   ///mavenBundle("org.apache.aries", "org.apache.aries.util").versionAsInProject(),
-                   ///mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint").versionAsInProject(),
-                   //mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample").versionAsInProject(),
-                   //mavenBundle("org.apache.aries.jmx", "org.apache.aries.jmx.blueprint").versionAsInProject(),
-                   ///mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy").versionAsInProject(),
-                   //mavenBundle("org.osgi", "org.osgi.compendium").versionAsInProject(),
-                   
-                   //systemPackage("org.ops4j.pax.exam.options"),
-                   /****
-                   mavenBundle("org.ops4j.base", "ops4j-base-util-property").versionAsInProject(),
-                   mavenBundle("org.ops4j.base", "ops4j-base-monitors").versionAsInProject(),
-                   mavenBundle("org.ops4j.base", "ops4j-base-io").versionAsInProject(),
-                   mavenBundle("org.ops4j.base", "ops4j-base-lang").versionAsInProject(),
-                   mavenBundle("org.ops4j.base", "ops4j-base-store").versionAsInProject(),
-                   mavenBundle("org.ops4j.pax.exam", "pax-exam").versionAsInProject(),
-                   mavenBundle("org.apache.felix", "org.apache.felix.gogo.runtime").versionAsInProject(),
-                   mavenBundle("org.apache.karaf.shell", "org.apache.karaf.shell.console").versionAsInProject(),
-                   wrappedBundle(mavenBundle("org.apache.karaf.itests", "itests").versionAsInProject().classifier("tests")),
-                   ****/
-                   //mavenBundle("org.opennms.features.topology", "api").versionAsInProject(),
-                   //mavenBundle("org.opennms.features.topology.plugins.topo", "linkd").versionAsInProject(),
-                   //mavenBundle("com.vaadin", "vaadin").versionAsInProject(),
-                   junitBundles()
-            )
-        );
+            // Change the SSH port so that it doesn't conflict with a running OpenNMS instance
+            editConfigurationFilePut("etc/org.apache.karaf.shell.cfg", "sshPort", "8201"),
+
+            /**
+             * I think that we need to install org.apache.karaf.itests:itests:tests and all of its dependencies
+             * into the container so that the unit test will execute properly. This doesn't seem to work with
+             * Karaf 2.3.1... I get inconsistent behavior, almost like there is a race condition when registering
+             * services or something. *sigh*
+             */
+            //wrappedBundle(mavenBundle("org.apache.karaf.itests", "itests").versionAsInProject().classifier("tests")),
+            /*
+            mavenBundle("org.ops4j.base", "ops4j-base-util-property").versionAsInProject(),
+            mavenBundle("org.ops4j.base", "ops4j-base-monitors").versionAsInProject(),
+            mavenBundle("org.ops4j.base", "ops4j-base-io").versionAsInProject(),
+            mavenBundle("org.ops4j.base", "ops4j-base-lang").versionAsInProject(),
+            mavenBundle("org.ops4j.base", "ops4j-base-store").versionAsInProject(),
+            mavenBundle("org.apache.felix", "org.apache.felix.gogo.runtime").versionAsInProject(),
+            */
+            mavenBundle("org.apache.karaf.shell", "org.apache.karaf.shell.console").versionAsInProject().noStart(),
+            mavenBundle("org.ops4j.pax.exam", "pax-exam").versionAsInProject().noStart(),
+            mavenBundle("org.apache.karaf.itests", "itests").versionAsInProject().classifier("tests").noStart(),
+
+            junitBundles()
+        };
     }
 
     /**
