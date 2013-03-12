@@ -83,7 +83,7 @@ import com.vaadin.ui.Window;
 public class TopologyWidgetTestApplication extends Application implements CommandUpdateListener, MenuItemUpdateListener, ContextMenuHandler, WidgetUpdateListener, WidgetContext, FragmentChangedListener, GraphContainer.ChangeListener, MapViewManagerListener, VertexUpdateListener {
 
 	private static final long serialVersionUID = 6837501987137310938L;
-	private static final int HEADER_HEIGHT = 100;
+	private static int HEADER_HEIGHT = 100;
 	private static final int MENU_BAR_HEIGHT = 23;
 
 	private static final String LABEL_PROPERTY = "label";
@@ -107,6 +107,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
     private final HistoryManager m_historyManager;
     private final SelectionManager m_selectionManager;
     private String m_headerHtml;
+    private boolean m_showHeader = true;
 
 	public TopologyWidgetTestApplication(CommandManager commandManager, HistoryManager historyManager, GraphProvider topologyProvider, ProviderManager providerManager, IconRepositoryManager iconRepoManager, SelectionManager selectionManager) {
 	    
@@ -143,19 +144,23 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 		m_layout.setSizeFull();
 		m_rootLayout.addComponent(m_layout);
 		
-		Panel header = new Panel("header");
-		header.setCaption(null);
-        header.setSizeUndefined();
-        header.addStyleName("onmsheader");
-        m_rootLayout.addComponent(header, "top: 0px; left: 0px; right:0px;");
-        
-        try {
-            CustomLayout customLayout = new CustomLayout(getHeaderLayout());
-            header.setContent(customLayout);
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+		if(m_showHeader) {
+    		Panel header = new Panel("header");
+    		header.setCaption(null);
+            header.setSizeUndefined();
+            header.addStyleName("onmsheader");
+            m_rootLayout.addComponent(header, "top: 0px; left: 0px; right:0px;");
+            
+            try {
+                CustomLayout customLayout = new CustomLayout(getHeaderLayout());
+                header.setContent(customLayout);
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+		} else {
+		    HEADER_HEIGHT = 0;
+		}
         
 		Refresher refresher = new Refresher();
 		refresher.setRefreshInterval(5000);
@@ -612,6 +617,14 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 
     public void setHeaderHtml(String headerHtml) {
         m_headerHtml = headerHtml;
+    }
+    
+    /**
+     * Parameter is a String because config has String values
+     * @param boolVal
+     */
+    public void setShowHeader(String boolVal) {
+        m_showHeader = "true".equals(boolVal);
     }
 
 }
