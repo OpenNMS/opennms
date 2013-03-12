@@ -1,5 +1,7 @@
 package org.opennms.netmgt.model.topology;
 
+import java.util.List;
+
 
 /**
  * This class represents a destination in the network such as
@@ -10,14 +12,14 @@ package org.opennms.netmgt.model.topology;
  */
 public abstract class Encapsulable extends EndPoint {
 	
-	private EndPoint m_encapsulatedby;
+	private List<EndPoint> m_encapsulatedby;
 
-	public EndPoint getEncapsulatedBy() {
+	public List<EndPoint> getEncapsulatedBy() {
 		return m_encapsulatedby;
 	}
 
 	public void setEncapsulatedBy(EndPoint encapsulatedby) {
-		m_encapsulatedby = encapsulatedby;
+		m_encapsulatedby.add(encapsulatedby);
 	}
 	
 	
