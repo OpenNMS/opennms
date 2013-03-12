@@ -59,7 +59,7 @@
 	border-radius: 4px;
 	border: 1px solid #888;
 	background-color: rgba(255, 255, 255, 0.8);
-	z-index:1000;	
+	z-index:1001;	
 	box-shadow: 0 1px 7px #999;
 	margin-left: 13px;
 	margin-top: 12px;
@@ -132,4 +132,28 @@ td.severity.Normal {
 
 .leaflet-control-search .search-button:hover {
 	background: url('images/search-icon.png') no-repeat 0 -21px;
+}
+
+.leaflet-control-search .search-autocomplete {
+	max-width: 500px;
+	max-height: 300px;
+
+	display:block;
+	float:left;
+	background-color: rgba(255, 255, 255, 0.95);
+	border:1px solid #666;
+	border-radius:2px;
+	padding:0 16px 0 2px;
+	margin:2px 0 2px 2px;
+	box-shadow: 0 1px 5px #999;
+	
+	overflow-y: scroll;
+	overflow-x: auto;
+	word-wrap: break-word;
+}
+
+.leaflet-control-search .search-autocomplete ul {
+	list-style-type: none;
+	padding: 2px;
+	margin: 0;
 }

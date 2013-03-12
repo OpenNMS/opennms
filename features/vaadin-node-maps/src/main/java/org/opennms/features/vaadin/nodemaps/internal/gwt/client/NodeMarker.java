@@ -54,6 +54,10 @@ public class NodeMarker extends Marker {
         return getJSObject().getPropertyAsString(key);
     }
 
+    public String[] getTextPropertyNames() {
+        return m_textProperties;
+    }
+
     public JsArrayString getCategories() {
         return getJSObject().getProperty("categories").cast();
     }
@@ -108,66 +112,6 @@ public class NodeMarker extends Marker {
     public Integer getUnackedCount() {
         final String count = getProperty("unackedCount");
         return count == null? 0 : Integer.valueOf(count);
-    }
-
-    public boolean containsText(final String text) {
-        if (text == null) return false;
-        if ("".equals(text)) return true;
-
-        final String searchString = text.toLowerCase();
-
-        ///// handle foo: style search strings for text properties
-        for (final String propertyName : m_textProperties) {
-            final String lowerPropertyName = propertyName.toLowerCase();
-            if (searchString.startsWith(lowerPropertyName + ":")) {
-                final String searchStringWithoutPrefix = searchString.replaceFirst(lowerPropertyName + ":\\s*", "");
-                final String value = getProperty(propertyName);
-                if (value != null && value.toLowerCase().contains(searchStringWithoutPrefix)) {
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-        }
-
-        ///// special case: categories: -> category: search
-        if (searchString.startsWith("category:")) {
-            final String searchStringWithoutPrefix = searchString.replaceFirst("category:\\s*", "");
-            return matchCategories(searchStringWithoutPrefix);
-        }
-
-        ///// if no foo: style search strings, first search all text properties for a match
-        for (final String propertyName : m_textProperties) {
-            if (matchProperty(propertyName, text)) {
-                return true;
-            }
-        }
-
-        ///// otherwise, search categories
-        return matchCategories(searchString);
-    }
-
-    private boolean matchCategories(final String searchString) {
-        final JsArrayString categories = getCategories();
-        for (int i = 0; i < categories.length(); i++) {
-            final String category = categories.get(i).toLowerCase();
-            if (category.contains(searchString)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean matchProperty(final String propertyName, final String searchText) {
-        final String value = getProperty(propertyName);
-        if (value != null) {
-            final String searchString = searchText;
-            final String property = value.toLowerCase();
-            if (property.contains(searchString)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     @Override
