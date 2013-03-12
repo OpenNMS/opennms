@@ -43,12 +43,8 @@ import junit.framework.TestCase;
 import org.opennms.core.test.MockPlatformTransactionManager;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.MibObject;
-import org.opennms.netmgt.config.collector.AttributeGroup;
 import org.opennms.netmgt.config.collector.AttributeGroupType;
 import org.opennms.netmgt.config.collector.CollectionAttribute;
-import org.opennms.netmgt.config.collector.CollectionResource;
-import org.opennms.netmgt.config.collector.CollectionSet;
-import org.opennms.netmgt.config.collector.CollectionSetVisitor;
 import org.opennms.netmgt.config.collector.ServiceParameters;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.mock.MockDataCollectionConfig;
@@ -59,7 +55,6 @@ import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.snmp.SnmpInstId;
-import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.snmp4j.Snmp4JValueFactory;
@@ -96,6 +91,22 @@ public class SnmpAttributeTest extends TestCase {
     public void testNumericAttributeCounterValue() throws Exception {
         int intValue = 769;
         testPersisting(Integer.toString(intValue), new Snmp4JValueFactory().getCounter32(intValue));
+    }
+
+    public void testHexStringProtoCounter64ValueSmall() throws Exception {
+        testPersisting("769", new Snmp4JValueFactory().getOctetString(new byte[]{ 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x03, 0x01 }));
+    }
+
+    public void testHexStringProtoCounter64ValueLT2_31() throws Exception {
+        testPersisting("2000000000", new Snmp4JValueFactory().getOctetString(new byte[]{ 0x00, 0x00, 0x00, 0x00, 0x77, 0x35, (byte)0x94, 0x00 }));
+    }
+
+    public void testHexStringProtoCounter64ValueGT2_31() throws Exception {
+        testPersisting("5000000000", new Snmp4JValueFactory().getOctetString(new byte[]{ 0x00, 0x00, 0x00, 0x01, 0x2a, 0x05, (byte)0xf2, 0x00 }));
+    }
+
+    public void testHexStringProtoCounter64ValueNear2_63() throws Exception {
+        testPersisting("9223372036854775000", new Snmp4JValueFactory().getOctetString(new byte[]{ 0x7f, (byte)0xff, (byte)0xff, (byte)0xff, (byte)0xff, (byte)0xff, (byte)0xfc, (byte)0xd8 }));
     }
 
     private void testPersisting(String matchValue, SnmpValue snmpValue) throws Exception {

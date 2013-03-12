@@ -59,6 +59,8 @@ public class AssetSuggCommand implements IsSerializable {
 
     private Set<String> m_city;
 
+    private Set<String> m_coordinates;
+
     private Set<String> m_country;
 
     private Set<String> m_cpu;
@@ -129,8 +131,6 @@ public class AssetSuggCommand implements IsSerializable {
 
     private Set<String> m_zip;
 
-    private Set<String> m_coordinates;
-
     /**
      * VMware managed Object ID
      */
@@ -166,6 +166,7 @@ public class AssetSuggCommand implements IsSerializable {
         m_circuitId = new TreeSet<String>();
         m_city = new TreeSet<String>();
         m_cpu = new TreeSet<String>();
+        m_coordinates = new TreeSet<String>();
         m_country = new TreeSet<String>();
         m_department = new TreeSet<String>();
         m_description = new TreeSet<String>();
@@ -200,7 +201,6 @@ public class AssetSuggCommand implements IsSerializable {
         m_vendorFax = new TreeSet<String>();
         m_vendorPhone = new TreeSet<String>();
         m_zip = new TreeSet<String>();
-        m_coordinates = new TreeSet<String>();
         m_vmwareManagedObjectId = new TreeSet<String>();
         m_vmwareManagedEntityType = new TreeSet<String>();
         m_vmwareManagementServer = new TreeSet<String>();
@@ -260,6 +260,12 @@ public class AssetSuggCommand implements IsSerializable {
     public void addCpu(String cpu) {
         if ((cpu != null) && !"".equals(cpu)) {
             m_cpu.add(cpu);
+        }
+    }
+
+    public void addCoordinates(String coordinates) {
+        if ((coordinates != null) && !"".equals(coordinates)) {
+            m_coordinates.add(coordinates);
         }
     }
 
@@ -497,12 +503,6 @@ public class AssetSuggCommand implements IsSerializable {
         }
     }
 
-    public void addCoordinates(String coordinates) {
-        if ((coordinates != null) && !"".equals(coordinates)) {
-            m_coordinates.add(coordinates);
-        }
-    }
-
     public Collection<String> getAdditionalhardware() {
         return m_additionalhardware;
     }
@@ -533,6 +533,10 @@ public class AssetSuggCommand implements IsSerializable {
 
     public Collection<String> getCity() {
         return m_city;
+    }
+
+    public Collection<String> getCoordinates() {
+        return m_coordinates;
     }
 
     public Collection<String> getCountry() {
@@ -675,10 +679,6 @@ public class AssetSuggCommand implements IsSerializable {
         return m_zip;
     }
 
-    public Collection<String> getCoordinates() {
-        return m_coordinates;
-    }
-
     public Collection<String> getVmwareManagedObjectId() {
         return m_vmwareManagedObjectId;
     }
@@ -709,6 +709,8 @@ public class AssetSuggCommand implements IsSerializable {
         m_circuitId.add("");
         m_city.add("");
         m_cpu.add("");
+        m_coordinates.add("");
+        m_country.add("");
         m_department.add("");
         m_description.add("");
         m_displayCategory.add("");
@@ -742,7 +744,6 @@ public class AssetSuggCommand implements IsSerializable {
         m_vendorFax.add("");
         m_vendorPhone.add("");
         m_zip.add("");
-        m_coordinates.add("");
         m_vmwareManagedObjectId.add("");
         m_vmwareManagedEntityType.add("");
         m_vmwareManagementServer.add("");

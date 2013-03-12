@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.vaadin.nodemaps.internal.gwt.client;
+package org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,6 +38,8 @@ import org.discotools.gwt.leaflet.client.types.Icon;
 import org.discotools.gwt.leaflet.client.types.IconOptions;
 import org.discotools.gwt.leaflet.client.types.LatLng;
 import org.discotools.gwt.leaflet.client.types.Point;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.NodeMarker;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.NodeMarkerClusterCallback;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.user.client.Command;
@@ -81,19 +83,23 @@ public class VMapWidget extends GWTMapWidget implements Paintable {
             final double latitude = Float.valueOf(node.getFloatAttribute("latitude")).doubleValue();
             final double longitude = Float.valueOf(node.getFloatAttribute("longitude")).doubleValue();
 
-            final NodeMarker feature = new NodeMarker(new LatLng(latitude, longitude));
+            final NodeMarker marker = new NodeMarker(new LatLng(latitude, longitude));
 
             for (final String key : new String[] { "nodeId", "nodeLabel", "foreignSource", "foreignId", "description", "maintcontract", "ipAddress", "severity", "severityLabel", "unackedCount" }) {
-                if (node.hasAttribute(key)) feature.putProperty(key, node.getStringAttribute(key));
+                if (node.hasAttribute(key)) marker.putProperty(key, node.getStringAttribute(key));
             }
 
-            if (m_icons.containsKey(feature.getSeverityLabel())) {
-                feature.setIcon(m_icons.get(feature.getSeverityLabel()));
-            } else {
-                feature.setIcon(m_icons.get("Normal"));
+            if (node.hasAttribute("categories")) {
+                marker.setCategories(node.getStringArrayAttribute("categories"));
             }
-            feature.bindPopup(NodeMarkerClusterCallback.getPopupTextForMarker(feature));
-            featureCollection.add(feature);
+
+            if (m_icons.containsKey(marker.getSeverityLabel())) {
+                marker.setIcon(m_icons.get(marker.getSeverityLabel()));
+            } else {
+                marker.setIcon(m_icons.get("Normal"));
+            }
+            marker.bindPopup(NodeMarkerClusterCallback.getPopupTextForMarker(marker));
+            featureCollection.add(marker);
         }
 
         setMarkers(featureCollection);

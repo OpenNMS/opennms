@@ -74,6 +74,9 @@
     
     function validate()
     {
+        var minDurationMinsWarning = 5;
+        var warnMinDuration = true;
+
         for (var c = 0; c < document.modifyUser.dutySchedules.value; c++)
         {
             var beginName= "duty" + c + "Begin";
@@ -81,7 +84,11 @@
             
             var beginValue = new Number(document.modifyUser.elements[beginName].value);
             var endValue = new Number(document.modifyUser.elements[endName].value);
-            
+
+            var beginHour = Math.floor(beginValue / 100), endHour = Math.floor(endValue / 100);
+            var beginMin = beginValue % 100, endMin = endValue % 100
+            var duration = ((endHour * 60) + endMin) - ((beginHour * 60) + beginMin);
+
             if (!document.modifyUser.elements["deleteDuty"+c].checked)
             {
             if (isNaN(beginValue))
@@ -108,6 +115,13 @@
             {
                 alert("The end value for duty schedule " + (c+1) + " must be greater than 0 and less than 2400");
                 return false;
+            }
+            if ((duration <= minDurationMinsWarning) && warnMinDuration)
+            {
+                if (!(confirm("Warning: One or more duty schedules are unusually short in duration (" + minDurationMinsWarning + " minutes or less)\n\nSave these schedules?")))
+                    return false;
+                else
+                    warnMinDuration = false;    // only once
             }
             }
         }
@@ -153,6 +167,8 @@
           document.modifyUser.action="<%= Util.calculateUrlBase(request, "admin/userGroupView/users/updateUser") %>";
           document.modifyUser.submit();
         }
+        else
+          document.modifyUser.redirect.value="/admin/userGroupView/users/modifyUser.jsp";
     }
     
     function cancelUser()

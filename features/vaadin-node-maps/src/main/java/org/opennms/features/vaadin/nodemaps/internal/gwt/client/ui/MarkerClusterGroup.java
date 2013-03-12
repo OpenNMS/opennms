@@ -1,11 +1,12 @@
-package org.opennms.features.vaadin.nodemaps.internal.gwt.client;
+package org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui;
 
 import java.util.List;
 
 import org.discotools.gwt.leaflet.client.Options;
 import org.discotools.gwt.leaflet.client.jsobject.JSObject;
+import org.discotools.gwt.leaflet.client.layers.ILayer;
 import org.discotools.gwt.leaflet.client.layers.others.FeatureGroup;
-import org.discotools.gwt.leaflet.client.marker.Marker;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.MarkerClusterEventCallback;
 
 import com.google.gwt.core.client.JsArray;
 
@@ -22,17 +23,17 @@ public class MarkerClusterGroup extends FeatureGroup {
         this(MarkerClusterGroupImpl.create(options.getJSObject()));
     }
 
-    public MarkerClusterGroup addLayer(final Marker marker) {
-        MarkerClusterGroupImpl.addLayer(getJSObject(), marker.getJSObject());
+    public MarkerClusterGroup addLayer(final ILayer layer) {
+        MarkerClusterGroupImpl.addLayer(getJSObject(), layer.getJSObject());
         return this;
     }
 
-    public MarkerClusterGroup addLayers(final List<NodeMarker> markers) {
-        final JsArray<JSObject> markerArray = JsArray.createArray().cast();
-        for (final NodeMarker marker : markers) {
-            markerArray.push(marker.getJSObject());
+    public MarkerClusterGroup addLayers(final List<ILayer> layers) {
+        final JsArray<JSObject> layerArray = JsArray.createArray().cast();
+        for (final ILayer marker : layers) {
+            layerArray.push(marker.getJSObject());
         }
-        MarkerClusterGroupImpl.addLayers(getJSObject(), markerArray);
+        MarkerClusterGroupImpl.addLayers(getJSObject(), layerArray);
         return this;
     }
 
@@ -50,4 +51,7 @@ public class MarkerClusterGroup extends FeatureGroup {
         return MarkerClusterGroupImpl.getMapObject(getJSObject());
     }
 
+    public boolean hasLayer(final ILayer layer) {
+        return MarkerClusterGroupImpl.hasLayer(getJSObject(), layer.getJSObject());
+    }
 }

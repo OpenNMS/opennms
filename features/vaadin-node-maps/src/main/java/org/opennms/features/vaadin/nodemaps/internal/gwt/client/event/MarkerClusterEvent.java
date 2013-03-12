@@ -1,4 +1,6 @@
-package org.opennms.features.vaadin.nodemaps.internal.gwt.client;
+package org.opennms.features.vaadin.nodemaps.internal.gwt.client.event;
+
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.MarkerCluster;
 
 import com.google.gwt.dom.client.NativeEvent;
 
