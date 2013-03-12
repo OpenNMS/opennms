@@ -53,30 +53,41 @@ public class NodeMarkerClusterCallback implements MarkerClusterEventCallback {
 
         if (markers.size() == 1) {
             final NodeMarker marker = markers.get(0);
+            sb.append("<div class=\"node-marker-single\">");
             sb.append(getPopupTextForMarker(marker));
+            sb.append("</div>");
         } else {
             final StringBuilder nodeBuilder = new StringBuilder();
             int unacked = 0;
             for (final NodeMarker marker : markers) {
                 unacked += marker.getUnackedCount();
-                nodeBuilder.append("<li>");
-                nodeBuilder.append("<a class=\"node\" href=\"/opennms/element/node.jsp?node=").append(marker.getNodeId()).append("\" target=\"_blank\">").append(marker.getNodeLabel()).append("</a> ");
-                nodeBuilder.append("(").append(marker.getIpAddress()).append(")").append(": ");
+                nodeBuilder.append("<tr class=\"node-marker-" + marker.getSeverityLabel() + "\">");
+                nodeBuilder.append("<td class=\"node-marker-label\">");
+                nodeBuilder.append("<a class=\"node\" href=\"/opennms/element/node.jsp?node=").append(marker.getNodeId()).append("\" target=\"_blank\">").append(marker.getNodeLabel()).append("</a>");
+                nodeBuilder.append("</td>");
+                nodeBuilder.append("<td class=\"node-marker-ipaddress\">");
+                nodeBuilder.append(marker.getIpAddress());
+                nodeBuilder.append("</td>");
+                nodeBuilder.append("<td class=\"node-marker-severity severity " + marker.getSeverityLabel() + "\">");
                 nodeBuilder.append("<a href=\"/opennms/alarm/list.htm?sortby=id&acktype=unack&limit=20&filter=node%3D").append(marker.getNodeId()).append("\" target=\"_blank\">").append(marker.getSeverityLabel()).append("</a>");
-                nodeBuilder.append("</li>");
+                nodeBuilder.append("</td>");
+                nodeBuilder.append("</tr>");
             }
+            sb.append("<div class=\"node-marker-multiple\">");
             sb.append("<h2># of nodes: ").append(markers.size()).append(" ");
             sb.append("(").append(unacked).append(" Unacknowledged Alarms)");
             sb.append("</h2>");
-            sb.append("<ul>").append(nodeBuilder).append("</ul>");
+            sb.append("<table class=\"node-marker-list\">").append(nodeBuilder).append("</table>");
+            sb.append("</div>");
         }
         final PopupOptions options = new PopupOptions();
         options.setMaxWidth(500);
         options.setProperty("maxHeight", 250);
+        options.setProperty("className", "node-marker-popup");
         final Popup popup = new Popup(options);
         popup.setContent(sb.toString());
         popup.setLatLng(cluster.getLatLng());
-        
+
         /*
         final Element element = popup.getJSObject().cast();
         DomEvent.addListener(new DomEventCallback("keydown", null) {
@@ -103,7 +114,7 @@ public class NodeMarkerClusterCallback implements MarkerClusterEventCallback {
         sb.append("Description: ").append(marker.getDescription()).append("<br/>");
         sb.append("Maint.&nbsp;Contract: ").append(marker.getMaintContract()).append("<br/>");
         sb.append("IP Address: ").append(marker.getIpAddress()).append("<br/>");
-        sb.append("Severity: ").append("<a href=\"/opennms/alarm/list.htm?sortby=id&acktype=unack&limit=20&filter=node%3D").append(marker.getNodeId()).append("\" target=\"_blank\">").append(marker.getSeverityLabel()).append("</a>");
+        sb.append("Severity: ").append("<a class=\"severity " + marker.getSeverityLabel() + "\" href=\"/opennms/alarm/list.htm?sortby=id&acktype=unack&limit=20&filter=node%3D").append(marker.getNodeId()).append("\" target=\"_blank\">").append(marker.getSeverityLabel()).append("</a>");
         final JsArrayString categories = marker.getCategories();
         if (categories.length() > 0) {
             sb.append("<br/>");

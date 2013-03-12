@@ -66,8 +66,48 @@
 	color: black;
 }
 
+.node-marker-popup .leaflet-popup-content ul {
+	list-style-type: none;
+	padding-left: 0;
+}
+
+table.node-marker-list {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+table.node-marker-list td {
+	padding: 2px;
+}
+td.severity {
+	text-align: center;
+}
+td.severity a {
+	color: white;
+	text-decoration: none;
+}
+td.severity.Critical {
+	background-color: rgba(204,0,0,0.8);
+}
+td.severity.Major {
+	background-color: rgba(255,51,0,0.8);
+}
+td.severity.Minor {
+	background-color: rgba(255,153,0,0.8);
+}
+td.severity.Warning {
+	background-color: rgba(255,204,0,0.8);
+}
+td.severity.Normal {
+	background-color: rgba(51,102,0,0.8);
+}
+
 .leaflet-popup-content .node {
 	word-wrap: break-word;
+}
+
+.leaflet-popup-scrolled {
+	border-bottom: 0;
+	border-top: 0;
 }
 
 .leaflet-control-search .search-input {
