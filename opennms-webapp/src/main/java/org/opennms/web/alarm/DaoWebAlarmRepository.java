@@ -458,8 +458,8 @@ public class DaoWebAlarmRepository implements WebAlarmRepository {
     }
 
     @Override
-    public List<AlarmSummary> getCurrentNodeAlarmSummaries(int rows) {
-        return m_alarmDao.getNodeAlarmSummaries(rows);
+    public List<AlarmSummary> getCurrentNodeAlarmSummaries() {
+        return m_alarmDao.getNodeAlarmSummaries();
     }
 
 }

@@ -242,7 +242,7 @@ public class AlarmDaoTest {
 
 	    m_alarmDao.save(alarm);
 
-	    List<AlarmSummary> summary = m_alarmDao.getNodeAlarmSummaries(5);
+	    List<AlarmSummary> summary = m_alarmDao.getNodeAlarmSummaries();
 	    Assert.assertNotNull(summary);
 	    Assert.assertEquals(1, summary.size());
 	    AlarmSummary sum = summary.get(0);
