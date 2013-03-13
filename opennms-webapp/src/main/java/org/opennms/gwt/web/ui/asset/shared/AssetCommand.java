@@ -857,7 +857,7 @@ public class AssetCommand implements IsSerializable {
                 + ", m_address2=" + m_address2 + ", m_admin=" + m_admin + ", m_allowModify=" + m_allowModify
                 + ", m_assetNumber=" + m_assetNumber + ", m_autoenable=" + m_autoenable + ", m_autoenableOptions="
                 + m_autoenableOptions + ", m_building=" + m_building + ", m_category=" + m_category + ", m_circuitId="
-                + m_circuitId + ", m_city=" + m_city + ", m_comment=" + m_comment + ", m_connection=" + m_connection
+                + m_circuitId + ", m_city=" + m_city + ", m_coordinates=" + m_coordinates + ", m_country=" + m_country + ", m_comment=" + m_comment + ", m_connection=" + m_connection
                 + ", m_connectionOptions=" + m_connectionOptions + ", m_cpu=" + m_cpu + ", m_dateInstalled="
                 + m_dateInstalled + ", m_department=" + m_department + ", m_description=" + m_description
                 + ", m_displayCategory=" + m_displayCategory + ", m_division=" + m_division + ", m_enable=" + m_enable

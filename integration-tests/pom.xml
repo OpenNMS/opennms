@@ -9,7 +9,29 @@
   <artifactId>org.opennms.integration-tests</artifactId>
   <packaging>jar</packaging>
   <name>OpenNMS Integration Tests</name>
+  <build>
+    <plugins>
+      <!-- 
+        Generate the META-INF/maven/dependencies.properties that is required by the
+        org.apache.karaf.testing.AbstractIntegrationTest Maven URL resolver.
+      -->
+      <plugin>
+        <groupId>org.apache.servicemix.tooling</groupId>
+        <artifactId>depends-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>generate-depends-file</id>
+            <goals>
+              <goal>generate-depends-file</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
   <dependencies>
+    <!-- Contains beans for ServiceConfigurationPublicConstructorTest -->
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-asterisk</artifactId>
@@ -17,30 +39,14 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-config</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.core.test-api</groupId>
-      <artifactId>org.opennms.core.test-api.http</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
       <artifactId>opennms-jetty</artifactId>
       <scope>test</scope>
     </dependency>
+
+    <!-- Contains model code for the WillItUnmarshall test -->
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-provision-persistence</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-provision-persistence</artifactId>
-      <type>test-jar</type>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-services</artifactId>
+      <artifactId>opennms-config-model</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -66,6 +72,41 @@
     <dependency>
       <groupId>org.opennms.features.reporting</groupId>
       <artifactId>org.opennms.features.reporting.model</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <!-- OpenNMS Karaf container so that we can crank it up with the pax-exam-karaf unit test framework -->
+    <dependency>
+      <groupId>org.opennms.container</groupId>
+      <artifactId>karaf</artifactId>
+      <type>tar.gz</type>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>pax-exam-dependencies</artifactId>
+      <type>pom</type>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.topology</groupId>
+      <artifactId>api</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <!-- Needed to run Vaadin -->
+    <!--
+    <dependency>
+      <groupId>com.vaadin</groupId>
+      <artifactId>vaadin</artifactId>
+      <version>6.8.2</version>
+      <scope>provided</scope>
+    </dependency>
+    -->
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>servlet-dependencies</artifactId>
+      <type>pom</type>
     </dependency>
   </dependencies>
 </project>

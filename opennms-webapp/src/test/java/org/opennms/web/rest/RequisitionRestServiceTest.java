@@ -113,7 +113,7 @@ public class RequisitionRestServiceTest extends AbstractSpringJerseyRestTestCase
 
         // delete node
         xml = sendRequest(DELETE, url, 200);
-        xml = sendRequest(GET, url, 204);
+        xml = sendRequest(GET, url, 404);
     }
 
     @Test
@@ -166,7 +166,7 @@ public class RequisitionRestServiceTest extends AbstractSpringJerseyRestTestCase
  
         // delete interface
         xml = sendRequest(DELETE, url, 200);
-        xml = sendRequest(GET, url, 204);
+        xml = sendRequest(GET, url, 404);
 
         // confirm there is one less interface
         xml = sendRequest(GET, base, 200);
@@ -194,7 +194,7 @@ public class RequisitionRestServiceTest extends AbstractSpringJerseyRestTestCase
 
         // delete interface
         xml = sendRequest(DELETE, url, 200);
-        xml = sendRequest(GET, url, 204);
+        xml = sendRequest(GET, url, 404);
 
         // confirm there is one less interface
         xml = sendRequest(GET, base, 200);
@@ -223,7 +223,7 @@ public class RequisitionRestServiceTest extends AbstractSpringJerseyRestTestCase
         
         // delete category
         xml = sendRequest(DELETE, url, 200);
-        xml = sendRequest(GET, url, 204);
+        xml = sendRequest(GET, url, 404);
         
         // confirm there are less categories
         xml = sendRequest(GET, "/requisitions/test/nodes/4243/categories", 200);
@@ -232,7 +232,9 @@ public class RequisitionRestServiceTest extends AbstractSpringJerseyRestTestCase
         // create a category on a node that is not in the requisition
         base = "/requisitions/test/nodes/4244/categories";
         // create a category
-        sendPost(base, "<category xmlns=\"http://xmlns.opennms.org/xsd/config/model-import\" name=\"New Category\" />", 404, null);
+        
+        sendPost(base, "<category xmlns=\"http://xmlns.opennms.org/xsd/config/model-import\" name=\"New Category\" />", 303, "/nodes/4244/categories/New%20Category");
+        xml = sendRequest(GET, base + "/New%20Category", 404);
     }
     
     @Test
@@ -257,7 +259,7 @@ public class RequisitionRestServiceTest extends AbstractSpringJerseyRestTestCase
         
         // delete asset parameter
         xml = sendRequest(DELETE, url, 200);
-        xml = sendRequest(GET, url, 204);
+        xml = sendRequest(GET, url, 404);
         
         // confirm there are less assets
         xml = sendRequest(GET, "/requisitions/test/nodes/4243/assets", 200);

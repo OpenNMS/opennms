@@ -1125,9 +1125,15 @@ public class AlarmFactory extends Object {
 
             alarm.lastEventID = rs.getInt("lastEventID");
 
-            alarm.firsteventtime = new Date(rs.getTimestamp("firsteventtime").getTime());
+            Timestamp firsteventtime = rs.getTimestamp("firsteventtime");
+            if (firsteventtime != null) {
+                alarm.firsteventtime = new Date(firsteventtime.getTime());
+            }
 
-            alarm.lasteventtime = new Date(rs.getTimestamp("lasteventtime").getTime());
+            Timestamp lasteventtime = rs.getTimestamp("lasteventtime");
+            if (lasteventtime != null) {
+                alarm.lasteventtime = new Date(lasteventtime.getTime());
+            }
 
             alarm.description = rs.getString("description");
 
@@ -1146,11 +1152,17 @@ public class AlarmFactory extends Object {
 
             alarm.mouseOverText = rs.getString("MouseOverText");
 
-            alarm.suppressedUntil = new Date(rs.getTimestamp("suppressedUntil").getTime());
+            Timestamp suppressedUntil = rs.getTimestamp("suppressedUntil");
+            if (suppressedUntil != null) {
+                alarm.suppressedUntil = new Date(suppressedUntil.getTime());
+            }
 
             alarm.suppressedUser = rs.getString("suppressedUser");
 
-            alarm.suppressedTime = new Date(rs.getTimestamp("suppressedTime").getTime());
+            Timestamp suppressedTime = rs.getTimestamp("suppressedTime");
+            if (suppressedTime != null) {
+                alarm.suppressedTime = new Date(suppressedTime.getTime());
+            }
 
             alarm.acknowledgeUser = rs.getString("alarmAckUser");
 

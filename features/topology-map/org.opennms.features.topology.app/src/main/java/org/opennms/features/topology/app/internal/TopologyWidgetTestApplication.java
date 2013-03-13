@@ -28,6 +28,9 @@
 
 package org.opennms.features.topology.app.internal;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Iterator;
 import java.util.List;
 
@@ -55,28 +58,33 @@ import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.CustomLayout;
+import com.vaadin.ui.Embedded;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.MenuBar;
+import com.vaadin.ui.MenuBar.MenuItem;
+import com.vaadin.ui.Panel;
 import com.vaadin.ui.Slider;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UriFragmentUtility;
+import com.vaadin.ui.UriFragmentUtility.FragmentChangedEvent;
+import com.vaadin.ui.UriFragmentUtility.FragmentChangedListener;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.VerticalSplitPanel;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.MenuBar.MenuItem;
-import com.vaadin.ui.UriFragmentUtility.FragmentChangedEvent;
-import com.vaadin.ui.UriFragmentUtility.FragmentChangedListener;
 
 public class TopologyWidgetTestApplication extends Application implements CommandUpdateListener, MenuItemUpdateListener, ContextMenuHandler, WidgetUpdateListener, WidgetContext, FragmentChangedListener, GraphContainer.ChangeListener, MapViewManagerListener, VertexUpdateListener {
 
 	private static final long serialVersionUID = 6837501987137310938L;
+	private static int HEADER_HEIGHT = 100;
+	private static final int MENU_BAR_HEIGHT = 23;
 
 	private static final String LABEL_PROPERTY = "label";
 	private Window m_window;
@@ -98,9 +106,12 @@ public class TopologyWidgetTestApplication extends Application implements Comman
     private UriFragmentUtility m_uriFragUtil;
     private final HistoryManager m_historyManager;
     private final SelectionManager m_selectionManager;
+    private String m_headerHtml;
+    private boolean m_showHeader = true;
 
 	public TopologyWidgetTestApplication(CommandManager commandManager, HistoryManager historyManager, GraphProvider topologyProvider, ProviderManager providerManager, IconRepositoryManager iconRepoManager, SelectionManager selectionManager) {
-		m_commandManager = commandManager;
+	    
+	    m_commandManager = commandManager;
 		m_commandManager.addMenuItemUpdateListener(this);
 		m_historyManager = historyManager;
 		m_iconRepositoryManager = iconRepoManager;
@@ -132,7 +143,26 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 		m_layout = new AbsoluteLayout();
 		m_layout.setSizeFull();
 		m_rootLayout.addComponent(m_layout);
-
+		
+		if(m_showHeader) {
+		    HEADER_HEIGHT = 100;
+    		Panel header = new Panel("header");
+    		header.setCaption(null);
+            header.setSizeUndefined();
+            header.addStyleName("onmsheader");
+            m_rootLayout.addComponent(header, "top: 0px; left: 0px; right:0px;");
+            
+            try {
+                CustomLayout customLayout = new CustomLayout(getHeaderLayout());
+                header.setContent(customLayout);
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+		} else {
+		    HEADER_HEIGHT = 0;
+		}
+        
 		Refresher refresher = new Refresher();
 		refresher.setRefreshInterval(5000);
 		getMainWindow().addComponent(refresher);
@@ -249,7 +279,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 		if(m_widgetManager.widgetCount() != 0) {
 		    updateWidgetView(m_widgetManager);
 		}else {
-		    m_layout.addComponent(m_treeMapSplitPanel, "top: 23px; left: 0px; right:0px; bottom:0px;");
+		    m_layout.addComponent(m_treeMapSplitPanel, getBelowMenuPosition());
 		}
 		
 		if(m_treeWidgetManager.widgetCount() != 0) {
@@ -257,7 +287,13 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 		}
 	}
 
-	/**
+	private Embedded Embedded() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+
+    /**
 	 * Update the Accordion View with installed widgets
 	 * @param treeWidgetManager
 	 */
@@ -285,7 +321,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
     private void updateWidgetView(WidgetManager widgetManager) {
         if(widgetManager.widgetCount() == 0) {
             m_layout.removeAllComponents();
-            m_layout.addComponent(m_treeMapSplitPanel, "top: 23px; left: 0px; right:0px; bottom:0px;");
+            m_layout.addComponent(m_treeMapSplitPanel, getBelowMenuPosition());
             m_layout.requestRepaint();
         } else {
             if(m_bottomLayoutBar == null) {
@@ -298,7 +334,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
             }
 
             m_layout.removeAllComponents();
-            m_layout.addComponent(m_bottomLayoutBar, "top: 23px; left: 0px; right:0px; bottom:0px;");
+            m_layout.addComponent(m_bottomLayoutBar, getBelowMenuPosition());
             m_layout.requestRepaint();
             
         }
@@ -306,6 +342,11 @@ public class TopologyWidgetTestApplication extends Application implements Comman
         if(m_contextMenu != null && m_contextMenu.getParent() == null) {
             getMainWindow().addComponent(m_contextMenu);
         }
+    }
+
+
+    private String getBelowMenuPosition() {
+        return "top: " + (HEADER_HEIGHT + MENU_BAR_HEIGHT) + "px; left: 0px; right:0px; bottom:0px;";
     }
 
     /**
@@ -450,7 +491,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 
 		m_menuBar = commandManager.getMenuBar(m_graphContainer, getMainWindow(), m_selectionManager);
 		m_menuBar.setWidth("100%");
-		m_rootLayout.addComponent(m_menuBar, "top: 0px; left: 0px; right:0px;");
+		m_rootLayout.addComponent(m_menuBar, "top: " + HEADER_HEIGHT +"px; left: 0px; right:0px;");
 
 		m_contextMenu = commandManager.getContextMenu(m_graphContainer, getMainWindow());
 		getMainWindow().addComponent(m_contextMenu);
@@ -529,6 +570,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 
 
     int m_settingFragment = 0;
+    
     @Override
     public void fragmentChanged(FragmentChangedEvent source) {
         m_settingFragment++;
@@ -568,6 +610,22 @@ public class TopologyWidgetTestApplication extends Application implements Comman
     public void onVertexUpdate() {
         saveHistory();
     }
+    
+    private InputStream getHeaderLayout() {
+        return new ByteArrayInputStream(m_headerHtml.getBytes());
+    }
 
+
+    public void setHeaderHtml(String headerHtml) {
+        m_headerHtml = headerHtml;
+    }
+    
+    /**
+     * Parameter is a String because config has String values
+     * @param boolVal
+     */
+    public void setShowHeader(String boolVal) {
+        m_showHeader = "true".equals(boolVal);
+    }
 
 }

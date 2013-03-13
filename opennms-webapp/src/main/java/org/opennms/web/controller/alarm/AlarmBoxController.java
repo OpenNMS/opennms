@@ -34,10 +34,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.netmgt.model.alarm.AlarmSummary;
-import org.opennms.web.alarm.AcknowledgeType;
 import org.opennms.web.alarm.WebAlarmRepository;
-import org.opennms.web.alarm.filter.AlarmCriteria;
-import org.opennms.web.filter.Filter;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
@@ -50,7 +47,7 @@ import org.springframework.web.servlet.mvc.AbstractController;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 public class AlarmBoxController extends AbstractController implements InitializingBean {
-    public static final int ROWS = 12;
+    public static final int ROWS = 16;
 
     private WebAlarmRepository m_webAlarmRepository;
     private String m_successView;
@@ -67,13 +64,17 @@ public class AlarmBoxController extends AbstractController implements Initializi
                 // ignore, and let it fall back to the defaults
             }
         }
-        List<AlarmSummary> summaries = m_webAlarmRepository.getCurrentNodeAlarmSummaries(rows);
-        AlarmCriteria criteria = new AlarmCriteria(AcknowledgeType.UNACKNOWLEDGED, new Filter[] {});
-        int alarmCount = m_webAlarmRepository.countMatchingAlarms(criteria);
+        List<AlarmSummary> summaries = m_webAlarmRepository.getCurrentNodeAlarmSummaries();
+        int moreCount = summaries.size() - rows;
 
         ModelAndView modelAndView = new ModelAndView(getSuccessView());
-        modelAndView.addObject("summaries", summaries);
-        modelAndView.addObject("alarmCount", alarmCount);
+        
+        if (rows == 0 || summaries.size() < rows) {
+            modelAndView.addObject("summaries", summaries);
+        } else {
+            modelAndView.addObject("summaries", summaries.subList(0, rows));
+        }
+        modelAndView.addObject("moreCount", moreCount);
         return modelAndView;
 
     }

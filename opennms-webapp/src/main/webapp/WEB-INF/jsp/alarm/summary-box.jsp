@@ -46,7 +46,7 @@
 
 <!-- alarm/summary-box.htm -->
 <c:url var="headingLink" value="alarm/list.htm"/>
-<h3 class="o-box"><a href="${headingLink}">Nodes with Problems</a></h3>
+<h3 class="o-box"><a href="${headingLink}">Nodes w/Pending Problems</a></h3>
 <div class="boxWrapper">
   <c:choose>
     <c:when test="${empty summaries}">
@@ -64,10 +64,12 @@
               <a href="alarm/list.htm?sortby=id&acktype=unack&limit=20&display=short&filter=node%3D${summary.nodeId}">${summary.alarmCount} alarms</a> (${summary.fuzzyTimeDown})</td></tr>
         </c:forEach>
       </table>
-      <p class="noBottomMargin" align="right">
-        <c:url var="moreLink" value="alarm/list.htm"/>
-        <a href="${moreLink}">all nodes with alarms...</a>
-      </p>
+      <c:if test="${moreCount > 0}">
+        <p class="noBottomMargin" align="right">
+          <c:url var="moreLink" value="alarm/list.htm"/>
+          <a href="${moreLink}">all pending problems...</a>
+        </p>
+      </c:if>
     </c:otherwise>
   </c:choose>
 </div>

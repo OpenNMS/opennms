@@ -39,12 +39,13 @@ import org.opennms.core.utils.LogUtils;
 import org.opennms.features.geocoder.Coordinates;
 import org.opennms.features.geocoder.GeocoderException;
 import org.opennms.features.geocoder.GeocoderService;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.VMapWidget;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.VMapWidget;
 import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.dao.AssetRecordDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsAssetRecord;
+import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsGeolocation;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
@@ -61,6 +62,8 @@ import com.vaadin.ui.VerticalLayout;
 
 @ClientWidget(value = VMapWidget.class)
 public class MapWidgetComponent extends VerticalLayout {
+    private static final String[] EMPTY_STRING_ARRAY = new String[]{};
+
     public static final class NodeEntry {
 
         private Float m_longitude;
@@ -69,8 +72,11 @@ public class MapWidgetComponent extends VerticalLayout {
         private String m_nodeLabel;
         private String m_foreignSource;
         private String m_foreignId;
+        private String m_description;
+        private String m_maintcontract;
         private String m_ipAddress;
         private OnmsSeverity m_severity = OnmsSeverity.NORMAL;
+        private List<String> m_categories = new ArrayList<String>();
         private int m_unackedCount = 0;
 
         public NodeEntry(final OnmsNode node) {
@@ -91,9 +97,20 @@ public class MapWidgetComponent extends VerticalLayout {
             m_nodeLabel     = node.getLabel();
             m_foreignSource = node.getForeignSource();
             m_foreignId     = node.getForeignId();
+            
+            if (assetRecord != null) {
+                m_maintcontract = assetRecord.getMaintcontract();
+                m_description   = assetRecord.getDescription();
+            }
 
             if (node.getPrimaryInterface() != null) {
                 m_ipAddress = InetAddressUtils.str(node.getPrimaryInterface().getIpAddress());
+            }
+            
+            if (node.getCategories() != null && node.getCategories().size() > 0) {
+                for (final OnmsCategory category : node.getCategories()) {
+                    m_categories.add(category.getName());
+                }
             }
         }
 
@@ -102,25 +119,31 @@ public class MapWidgetComponent extends VerticalLayout {
         }
 
         public void visit(final PaintTarget target) throws PaintException {
-            target.startTag("node-" + m_nodeId.toString());
+            target.startTag("node");
 
             // longitude/latitude, as floats
             target.addAttribute("longitude", m_longitude);
             target.addAttribute("latitude", m_latitude);
 
             // everything else gets sent as basic string properties
-            target.addAttribute("nodeId", m_nodeId.toString());
-            target.addAttribute("nodeLabel", m_nodeLabel);
-            target.addAttribute("foreignSource", m_foreignSource);
-            target.addAttribute("foreignId", m_foreignId);
-            target.addAttribute("ipAddress", m_ipAddress);
+            if (m_nodeId        != null) target.addAttribute("nodeId", m_nodeId.toString());
+            if (m_nodeLabel     != null) target.addAttribute("nodeLabel", m_nodeLabel);
+            if (m_foreignSource != null) target.addAttribute("foreignSource", m_foreignSource);
+            if (m_foreignId     != null) target.addAttribute("foreignId", m_foreignId);
+            if (m_ipAddress     != null) target.addAttribute("ipAddress", m_ipAddress);
+            if (m_description   != null) target.addAttribute("description", m_description);
+            if (m_maintcontract != null) target.addAttribute("maintcontract", m_maintcontract);
 
             // alarm data
             target.addAttribute("severityLabel", m_severity.getLabel());
             target.addAttribute("severity", m_severity.getId());
             target.addAttribute("unackedCount", String.valueOf(m_unackedCount));
 
-            target.endTag("node-" + m_nodeId.toString());
+            if (m_categories.size() > 0) {
+                target.addAttribute("categories", m_categories.toArray(EMPTY_STRING_ARRAY));
+            }
+
+            target.endTag("node");
         }
 
         public void setUnackedCount(final int unackedCount) {

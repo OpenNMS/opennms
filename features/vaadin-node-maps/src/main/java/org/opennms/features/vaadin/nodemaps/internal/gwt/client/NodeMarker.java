@@ -33,7 +33,11 @@ import org.discotools.gwt.leaflet.client.jsobject.JSObject;
 import org.discotools.gwt.leaflet.client.marker.Marker;
 import org.discotools.gwt.leaflet.client.types.LatLng;
 
+import com.google.gwt.core.client.JsArrayString;
+
 public class NodeMarker extends Marker {
+    private String[] m_textProperties = new String[] { "nodeLabel", "ipAddress", "description", "maintcontract" };
+
     public NodeMarker(final LatLng latLng) {
         super(latLng, new Options());
     }
@@ -48,6 +52,23 @@ public class NodeMarker extends Marker {
 
     public String getProperty(final String key) {
         return getJSObject().getPropertyAsString(key);
+    }
+
+    public String[] getTextPropertyNames() {
+        return m_textProperties;
+    }
+
+    public JsArrayString getCategories() {
+        return getJSObject().getProperty("categories").cast();
+    }
+
+    public void setCategories(final String[] categories) {
+        final JsArrayString array = JsArrayString.createArray().cast();
+        for (final String category : categories) {
+            array.push(category);
+        }
+        final JSObject jsObject = array.cast();
+        getJSObject().setProperty("categories", jsObject);
     }
 
     public Integer getNodeId() {
@@ -75,6 +96,14 @@ public class NodeMarker extends Marker {
         return getProperty("severityLabel");
     }
 
+    public String getDescription() {
+        return getProperty("description");
+    }
+
+    public String getMaintContract() {
+        return getProperty("maintcontract");
+    }
+
     public int getSeverity() {
         final String severity = getProperty("severity");
         return severity == null? 0 : Integer.valueOf(severity);
@@ -89,4 +118,9 @@ public class NodeMarker extends Marker {
     public final String toString() {
         return "Feature[lat=" + getLatLng().lat() + ",lon=" + getLatLng().lng() + ",label=" + getNodeLabel() + "]";
     }
+
+    public JSObject toSearchResult() {
+        return SearchResult.create(getNodeLabel(), getLatLng());
+    }
+
 }

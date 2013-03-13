@@ -11,6 +11,8 @@
     </repository>
     <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-vmware/${project.version}/xml/features
     </repository>
+    <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-sfree/${project.version}/xml/features
+    </repository>
     <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-ncs/${project.version}/xml/features
     </repository>
     <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-dev/${project.version}/xml/features</repository>

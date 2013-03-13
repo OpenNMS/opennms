@@ -1,11 +1,11 @@
-package org.opennms.features.vaadin.nodemaps.internal.gwt.client;
+package org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.discotools.gwt.leaflet.client.jsobject.JSObject;
-import org.discotools.gwt.leaflet.client.marker.Marker;
 import org.discotools.gwt.leaflet.client.types.LatLng;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.NodeMarker;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
@@ -17,8 +17,8 @@ public class MarkerCluster extends JavaScriptObject {
         return this.getChildCount();
     }-*/;
 
-    public final List<? extends Marker> getAllChildMarkers() {
-        final List<Marker> markers = new ArrayList<Marker>();
+    public final List<NodeMarker> getAllChildMarkers() {
+        final List<NodeMarker> markers = new ArrayList<NodeMarker>();
         final JsArray<JSObject> markerObjects = getMarkerObjects();
         if (markerObjects == null) return markers;
 
@@ -49,5 +49,9 @@ public class MarkerCluster extends JavaScriptObject {
 
     private final native JSObject getNativeLatLng() /*-{
         return this.getLatLng();
+    }-*/;
+
+    public final native void closePopup() /*-{
+        this.closePopup();
     }-*/;
 }
