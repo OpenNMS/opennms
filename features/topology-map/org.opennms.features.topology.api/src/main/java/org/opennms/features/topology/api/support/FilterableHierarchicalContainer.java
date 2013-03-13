@@ -40,9 +40,9 @@ import java.util.Set;
 import org.opennms.features.topology.api.HierarchicalBeanContainer;
 
 import com.vaadin.data.Container;
+import com.vaadin.data.Container.ItemSetChangeListener;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
-import com.vaadin.data.Container.ItemSetChangeListener;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.HierarchicalContainer;
 
@@ -83,7 +83,7 @@ public class FilterableHierarchicalContainer extends HierarchicalContainer imple
     }
 
     @Override
-    public Collection<?> getItemIds() {
+    public List<?> getItemIds() {
         if(isFiltered()) {
             return m_filteredItems;
         }else {
