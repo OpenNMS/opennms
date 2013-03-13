@@ -33,12 +33,13 @@ import java.util.List;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.plugins.topo.onmsdao.internal.OnmsTopologyProvider;
 
 public class SaveOperation implements Operation {
     
     @Override
     public Undoer execute(List<VertexRef> targets, OperationContext operationContext) {
-        operationContext.getGraphContainer().getBaseTopology().save("1");
+        ((OnmsTopologyProvider)operationContext.getGraphContainer().getBaseTopology()).save();
         return null;
     }
 

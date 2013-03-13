@@ -46,7 +46,6 @@ import javax.xml.bind.JAXB;
 import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.features.topology.api.Constants;
@@ -111,7 +110,7 @@ public class SimpleGraphProviderTest {
         return m_topologyProvider.addVertex(0, 0);
     }
 
-    private GraphProvider m_topologyProvider;
+    private SimpleGraphProvider m_topologyProvider;
 
     @Before
     public void setUp() {
@@ -376,33 +375,6 @@ public class SimpleGraphProviderTest {
         
         assertEquals(0, m_topologyProvider.getVertices().size());
         
-    }
-    
-    /**
-     * TODO Refactor this test into the app bundle.
-     */
-    @Test
-    @Ignore("Since this operation is now interactive, we need to change this unit test")
-    public void testCreateGroupOperation() {
-        VertexRef vertexId = addVertexToTopr();
-        VertexRef vertexId2 = addVertexToTopr();
-        
-        GraphContainer graphContainer = EasyMock.createMock(GraphContainer.class);
-        
-        EasyMock.replay(graphContainer);
-        
-        /*
-        CreateGroupOperation groupOperation = new CreateGroupOperation(m_topologyProvider);
-        groupOperation.execute(Arrays.asList((Object)"1", (Object)"2"), getOperationContext(graphContainer));
-        
-        Item vertexItem1 = m_topologyProvider.getVertexContainer().getItem(vertexId);
-        SimpleGroup parent = (SimpleGroup) vertexItem1.getItemProperty("parent").getValue();
-        assertEquals(2, parent.getMembers().size());
-        
-        m_topologyProvider.addGroup("Test Group", Constants.GROUP_ICON_KEY);
-        
-        EasyMock.verify(graphContainer);
-        */
     }
     
     @Test

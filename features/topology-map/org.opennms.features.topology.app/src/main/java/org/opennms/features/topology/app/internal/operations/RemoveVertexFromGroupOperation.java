@@ -129,7 +129,7 @@ public class RemoveVertexFromGroupOperation implements Constants, Operation {
 				topologyProvider.setParent(graphContainer.getBaseTopology().getVertex(graphContainer.getBaseTopology().getVertexNamespace(), childId), grandParent);
 
 				// Save the topology
-				topologyProvider.save(null);
+				topologyProvider.save();
 
 				graphContainer.redoLayout();
 			}

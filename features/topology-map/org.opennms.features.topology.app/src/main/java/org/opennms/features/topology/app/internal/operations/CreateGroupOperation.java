@@ -105,7 +105,7 @@ public class CreateGroupOperation implements Constants, Operation {
 				operationContext.getGraphContainer().getBaseTopology().setParent(groupId, parentGroup);
 
 				// Save the topology
-				operationContext.getGraphContainer().getBaseTopology().save(null);
+				operationContext.getGraphContainer().getBaseTopology().save();
 
 				graphContainer.redoLayout();
 			}

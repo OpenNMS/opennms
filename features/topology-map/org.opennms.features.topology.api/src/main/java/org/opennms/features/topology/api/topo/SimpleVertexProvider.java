@@ -96,6 +96,8 @@ public class SimpleVertexProvider implements VertexProvider {
 
 	@Override
 	public boolean setParent(VertexRef child, VertexRef parent) {
+		getVertex(child).setParent(parent);
+		
 		m_parents.put(child, parent);
 		
 		List<VertexRef> children = m_children.get(parent);
@@ -148,7 +150,11 @@ public class SimpleVertexProvider implements VertexProvider {
 	
 	private void removeVertices(List<? extends VertexRef> all) {
 		for(VertexRef vertex : all) {
+			// Remove the vertex from the main map
 			m_vertexMap.remove(vertex.getId());
+			// Remove the vertex from the parent and child maps
+			m_children.remove(vertex);
+			m_parents.remove(vertex);
 		}
 	}
 	
@@ -164,7 +170,7 @@ public class SimpleVertexProvider implements VertexProvider {
 	}
 	
 	public void setVertices(List<Vertex> vertices) {
-		m_vertexMap.clear();
+		clearVertices();
 		addVertices(vertices);
 		fireVertexSetChanged();
 	}

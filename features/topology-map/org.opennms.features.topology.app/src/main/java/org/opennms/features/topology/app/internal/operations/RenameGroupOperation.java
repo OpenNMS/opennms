@@ -98,7 +98,7 @@ public class RenameGroupOperation implements Constants, Operation {
 						property.setValue(groupLabel);
 
 						// Save the topology
-						graphContainer.getBaseTopology().save(null);
+						graphContainer.getBaseTopology().save();
 
 						graphContainer.redoLayout();
 					}

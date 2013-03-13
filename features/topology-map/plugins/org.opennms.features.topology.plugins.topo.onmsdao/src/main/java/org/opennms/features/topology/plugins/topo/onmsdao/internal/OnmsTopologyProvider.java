@@ -86,6 +86,10 @@ public class OnmsTopologyProvider extends AbstractTopologyProvider implements Gr
     }
     
     @Override
+    public void save() {
+        save("1");
+    }
+
     public void save(String filename) {
         
         List<Vertex> vertices = super.getVertices();
