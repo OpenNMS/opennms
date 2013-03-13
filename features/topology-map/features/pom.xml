@@ -24,6 +24,7 @@
     <module>runtime-linkd</module>
     <module>runtime-vmware</module>
     <module>runtime-ncs</module>
+    <module>runtime-sfree</module>
     <module>dev</module>
   </modules>
 
