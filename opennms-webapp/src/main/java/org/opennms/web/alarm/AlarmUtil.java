@@ -30,7 +30,6 @@ package org.opennms.web.alarm;
 
 import java.util.Calendar;
 import java.util.NoSuchElementException;
-import java.util.StringTokenizer;
 
 import javax.servlet.ServletContext;
 
@@ -93,14 +92,13 @@ public abstract class AlarmUtil extends Object {
 
         Filter filter = null;
 
-        StringTokenizer tokens = new StringTokenizer(filterString, "=");
         String[] tempTokens = filterString.split("=");
         String type;
         String value;
         try {
-            type = tempTokens[0];//tokens.nextToken();
+            type = tempTokens[0];
             String[] values = (String[]) ArrayUtils.remove(tempTokens, 0);
-            value = org.apache.commons.lang.StringUtils.join(values, "=");//tokens.nextToken();
+            value = org.apache.commons.lang.StringUtils.join(values, "=");
         } catch (NoSuchElementException e) {
             throw new IllegalArgumentException("Could not tokenize filter string: " + filterString);
         }

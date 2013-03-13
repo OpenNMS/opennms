@@ -62,7 +62,7 @@ public class DateSqlType implements SQLType<Date> {
      * @return a {@link java.lang.String} object.
      */
     public String getValueAsString(Date value) {
-        return String.valueOf(value.getTime());
+        return value == null ? "Null" : String.valueOf(value.getTime());
     }
 
     /**
