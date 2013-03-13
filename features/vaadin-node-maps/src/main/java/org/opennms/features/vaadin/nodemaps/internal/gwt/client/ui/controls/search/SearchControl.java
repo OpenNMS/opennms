@@ -29,7 +29,7 @@ import com.google.gwt.user.cellview.client.CellList;
 import com.google.gwt.user.cellview.client.HasKeyboardSelectionPolicy.KeyboardSelectionPolicy;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
@@ -39,7 +39,7 @@ import com.vaadin.terminal.gwt.client.VConsole;
 public class SearchControl extends Control {
     private HTMLPanel m_container;
     private TextBox m_inputBox;
-    private Anchor m_submitAnchor;
+    private HTML m_submitAnchor;
 
     private SearchConsumer m_searchConsumer;
     private MarkerContainer m_markerContainer;
@@ -155,12 +155,12 @@ public class SearchControl extends Control {
         if (event.getKeyCode() == KeyCodes.KEY_ESCAPE) {
             m_inputBox.setText("");
         } else if (event.getKeyCode() == KeyCodes.KEY_DOWN) {
-            m_autoComplete.setFocus(true);
-            m_autoComplete.setVisible(true);
             final List<NodeMarker> markers = m_markerContainer.getMarkers();
             if (markers.size() > 0) {
                 m_autoComplete.getSelectionModel().setSelected(markers.get(0), true);
             }
+            m_autoComplete.setFocus(true);
+            m_autoComplete.setVisible(true);
         }
         m_refreshSearch = true;
         if (!m_timerActive) {
@@ -201,16 +201,15 @@ public class SearchControl extends Control {
     }
 
     private void initializeSubmitWidget() {
-        m_submitAnchor = new Anchor();
+        m_submitAnchor = new HTML();
         m_submitAnchor.addStyleName("search-button");
         m_submitAnchor.setTitle("Search locations...");
-        m_submitAnchor.setHref("#");
-        m_submitAnchor.setTabIndex(-1);
 
         DomEvent.stopEventPropagation(m_submitAnchor);
         DomEvent.addListener(new DomEventCallback("click", m_submitAnchor) {
             @Override
             protected void onEvent(final NativeEvent event) {
+                m_inputBox.setFocus(true);
                 handleSearchEvent(event);
             }
         });
