@@ -145,6 +145,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 		m_rootLayout.addComponent(m_layout);
 		
 		if(m_showHeader) {
+		    HEADER_HEIGHT = 100;
     		Panel header = new Panel("header");
     		header.setCaption(null);
             header.setSizeUndefined();
