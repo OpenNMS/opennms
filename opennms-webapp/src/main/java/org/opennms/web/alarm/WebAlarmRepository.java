@@ -48,128 +48,149 @@ import org.opennms.web.alarm.filter.AlarmCriteria;
 public interface WebAlarmRepository {
 
     /**
-     * <p>countMatchingAlarms</p>
+     * Count alarms matching a criteria.
      *
-     * @param criteria a {@link org.opennms.web.alarm.filter.AlarmCriteria}
-     * object.
-     * @return a int.
+     * @param criteria the criteria
+     * @return the amount of alarms
      */
     public abstract int countMatchingAlarms(AlarmCriteria criteria);
 
     /**
-     * <p>countMatchingAlarmsBySeverity</p>
+     * Count alarms by severity matching a specific criteria.
      *
-     * @param criteria a {@link org.opennms.web.alarm.filter.AlarmCriteria}
-     * object.
-     * @return an array of int.
+     * @param criteria the criteria
+     * @return an array with the amount of alarms per severity.
      */
     public abstract int[] countMatchingAlarmsBySeverity(AlarmCriteria criteria);
 
     /**
-     * <p>getAlarm</p>
+     * Gets and alarm.
      *
-     * @param alarmId a int.
-     * @return a {@link org.opennms.web.alarm.Alarm} object.
+     * @param alarmId the alarm id
+     * @return the alarm object
      */
     public abstract Alarm getAlarm(int alarmId);
 
     /**
-     * <p>getMatchingAlarms</p>
+     * Gets alarms matching a specific criteria.
      *
-     * @param criteria a {@link org.opennms.web.alarm.filter.AlarmCriteria}
-     * object.
-     * @return an array of {@link org.opennms.web.alarm.Alarm} objects.
+     * @param criteria the criteria
+     * @return a array with matching alarms
      */
     public abstract Alarm[] getMatchingAlarms(AlarmCriteria criteria);
 
     /**
-     * <p>acknowledgeMatchingAlarms</p>
+     * Acknowledge alarms matching a specific criteria.
      *
-     * @param user a {@link java.lang.String} object.
-     * @param timestamp a java$util$Date object.
-     * @param criteria a {@link org.opennms.web.alarm.filter.AlarmCriteria}
-     * object.
+     * @param user the user
+     * @param timestamp the timestamp
+     * @param criteria the criteria
      */
     public abstract void acknowledgeMatchingAlarms(String user,
             Date timestamp, AlarmCriteria criteria);
 
     /**
-     * <p>acknowledgeAlarms</p>
+     * Acknowledge Alarms.
      *
-     * @param alarmIds an array of int.
-     * @param user a {@link java.lang.String} object.
-     * @param timestamp a java$util$Date object.
+     * @param alarmIds an array of alarms ID
+     * @param user the user
+     * @param timestamp the timestamp
      */
     public void acknowledgeAlarms(int[] alarmIds, String user, Date timestamp);
 
     /**
-     * <p>acknowledgeAll</p>
+     * Acknowledge all the alarms.
      *
-     * @param user a {@link java.lang.String} object.
-     * @param timestamp a java$util$Date object.
+     * @param user the user
+     * @param timestamp the timestamp
      */
     public abstract void acknowledgeAll(String user, Date timestamp);
 
     /**
-     * <p>unacknowledgeMatchingAlarms</p>
+     * Unacknowledge Matching Alarms</p>.
      *
-     * @param criteria a {@link org.opennms.web.alarm.filter.AlarmCriteria}
-     * object.
-     * @param user a {@link java.lang.String} object.
+     * @param criteria the criteria
+     * @param user the user
      */
     public abstract void unacknowledgeMatchingAlarms(AlarmCriteria criteria, String user);
 
     /**
-     * <p>unacknowledgeAlarms</p>
+     * Unacknowledge Alarms
      *
-     * @param alarmIds an array of int.
-     * @param user a {@link java.lang.String} object.
+     * @param alarmIds an array of alarms ID
+     * @param user the user
      */
     public void unacknowledgeAlarms(int[] alarmIds, String user);
 
     /**
-     * <p>unacknowledgeAll</p>
+     * Unacknowledge all the alarms.
      *
-     * @param user a {@link java.lang.String} object.
+     * @param user the user
      */
     public abstract void unacknowledgeAll(String user);
 
     /**
-     * <p>escalateAlarms</p>
+     * Escalate Alarms.
      *
-     * @param alarmIds an array of int.
-     * @param user a {@link java.lang.String} object.
-     * @param timestamp a java$util$Date object.
+     * @param alarmIds an array of alarms ID
+     * @param user the user
+     * @param timestamp the timestamp
      */
     public abstract void escalateAlarms(int[] alarmIds, String user, Date timestamp);
 
     /**
-     * <p>clearAlarms</p>
+     * Clear Alarms
      *
-     * @param alamrIds an array of int.
-     * @param user a {@link java.lang.String} object.
-     * @param timestamp a java$util$Date object.
+     * @param alarmIds an array of alarms ID
+     * @param user the user
+     * @param timestamp the timestamp
      */
-    public abstract void clearAlarms(int[] alamrIds, String user, Date timestamp);
+    public abstract void clearAlarms(int[] alarmIds, String user, Date timestamp);
 
     /**
-     * Updates the StickyMemo of the alarm to persistence
+     * Updates the StickyMemo of the alarm to persistence.
+     * 
      * @param alarmId the alarmId of the alarm where the StickyMemo has to be persisted.
      */
-    public void updateStickyMemo(Integer alarmId, String body, String user);
+    public abstract void updateStickyMemo(Integer alarmId, String body, String user);
 
     /**
      * Updates the ReductionKeyMemo of the alarm to persistence.
-     * ReductionKeyMemo aka JournalMemo
+     * ReductionKeyMemo aka JournalMemo.
+     *
+     * @param alarmId the alarm id
+     * @param body the body
+     * @param user the user
      */
-    public void updateReductionKeyMemo(Integer alarmId, String body, String user);
+    public abstract void updateReductionKeyMemo(Integer alarmId, String body, String user);
 
-    public void removeStickyMemo(Integer alarmId);
+    /**
+     * Removes the sticky memo.
+     *
+     * @param alarmId the alarm id
+     */
+    public abstract void removeStickyMemo(Integer alarmId);
 
-    public void removeReductionKeyMemo(int alarmId);
+    /**
+     * Removes the reduction key memo.
+     *
+     * @param alarmId the alarm id
+     */
+    public abstract void removeReductionKeyMemo(int alarmId);
 
-    public List<OnmsAcknowledgment> getAcknowledgments(int alarmId);
+    /**
+     * Gets the acknowledgments.
+     *
+     * @param alarmId the alarm id
+     * @return the acknowledgments
+     */
+    public abstract List<OnmsAcknowledgment> getAcknowledgments(int alarmId);
 
-    public List<AlarmSummary> getCurrentNodeAlarmSummaries(int rows);
+    /**
+     * Gets the current node alarm summaries.
+     *
+     * @return the current node alarm summaries
+     */
+    public abstract List<AlarmSummary> getCurrentNodeAlarmSummaries();
 
 }

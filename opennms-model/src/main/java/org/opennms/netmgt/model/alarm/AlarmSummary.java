@@ -81,7 +81,7 @@ public class AlarmSummary implements Comparable<AlarmSummary> {
     }
 
     public String getFuzzyTimeDown() {
-        return FuzzyDateFormatter.calculateDifference(this.minLastEventDate, new Date());
+        return minLastEventDate == null ? "N/A" : FuzzyDateFormatter.calculateDifference(this.minLastEventDate, new Date());
     }
 
     public String toString() {
