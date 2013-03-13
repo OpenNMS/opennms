@@ -52,6 +52,7 @@ import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.controls.sear
 import com.google.gwt.core.client.JsArrayString;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.RepeatingCommand;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Style.Unit;
@@ -91,16 +92,20 @@ public class GWTMapWidget extends Widget implements MarkerProvider, SearchConsum
                 if (m_searchString == null || "".equals(m_searchString)) return true;
 
                 final String searchString = m_searchString.toLowerCase();
+                //VConsole.log("searching: search string = " + searchString);
 
                 ///// handle foo: style search strings for text properties
+                //VConsole.log("checking property:search");
                 for (final String propertyName : marker.getTextPropertyNames()) {
                     final String lowerPropertyName = propertyName.toLowerCase();
                     if (searchString.startsWith(lowerPropertyName + ":")) {
                         final String searchStringWithoutPrefix = searchString.replaceFirst(lowerPropertyName + ":\\s*", "");
-                        final String value = marker.getProperty(propertyName);
-                        if (value != null && value.toLowerCase().contains(searchStringWithoutPrefix)) {
+                        final String propertyValue = marker.getProperty(propertyName);
+                        if (propertyValue != null && propertyValue.toLowerCase().contains(searchStringWithoutPrefix)) {
+                            //VConsole.log(searchString + " matched: " + propertyValue.toLowerCase());
                             return true;
                         } else {
+                            //VConsole.log(searchString + " did not match: " + propertyValue.toLowerCase());
                             return false;
                         }
                     }
@@ -116,8 +121,9 @@ public class GWTMapWidget extends Widget implements MarkerProvider, SearchConsum
                 for (final String propertyName : marker.getTextPropertyNames()) {
                     final String value = marker.getProperty(propertyName);
                     if (value != null) {
-                        final String property = value.toLowerCase();
-                        if (property.contains(searchString)) {
+                        final String propertyValue = value.toLowerCase();
+                        if (propertyValue.contains(searchString)) {
+                            //VConsole.log(searchString + " matched: " + propertyName + "=" + propertyValue);
                             return true;
                         }
                     }
@@ -132,9 +138,11 @@ public class GWTMapWidget extends Widget implements MarkerProvider, SearchConsum
                 for (int i = 0; i < categories.length(); i++) {
                     final String category = categories.get(i).toLowerCase();
                     if (category.contains(searchString)) {
+                        //VConsole.log(searchString + " matched: " + category);
                         return true;
                     }
                 }
+                //VConsole.log(searchString + " did not match: " + marker.getCategoriesAsString());
                 return false;
             }
 
@@ -219,21 +227,6 @@ public class GWTMapWidget extends Widget implements MarkerProvider, SearchConsum
         final NodeMarkerClusterCallback callback = new NodeMarkerClusterCallback();
         m_markerClusterGroup.on("clusterclick", callback);
         m_markerClusterGroup.on("clustertouchend", callback);
-        /*
-        final Element mapElement = m_map.getJSObject().cast();
-        DomEvent.addListener(new DomEventCallback("keydown", null) {
-            @Override protected void onEvent(final NativeEvent event) {
-                VConsole.log("mapElement listener keydown");
-                if (event.getKeyCode() == KeyCodes.KEY_ESCAPE) m_map.closePopup();
-            }
-        }, mapElement);
-        m_markerClusterGroup.on("keydown", new MarkerClusterEventCallback() {
-            @Override public void run(final MarkerClusterEvent event) {
-                VConsole.log("markerClusterGroup listener keydown");
-                if (event.getKeyCode() == KeyCodes.KEY_ESCAPE) m_map.closePopup();
-            }
-        });
-        */
         m_map.addLayer(m_markerClusterGroup);
     }
 
@@ -279,41 +272,54 @@ public class GWTMapWidget extends Widget implements MarkerProvider, SearchConsum
         VConsole.log("processing " + m_markers.size() + " markers for the node layer");
         Scheduler.get().scheduleIncremental(new RepeatingCommand() {
             final ListIterator<NodeMarker> m_markerIterator = m_markers.listIterator();
-            LatLngBounds m_bounds;
 
-            @Override public boolean execute() {
+            @Override
+            public boolean execute() {
                 if (m_markerIterator.hasNext()) {
                     final NodeMarker marker = m_markerIterator.next();
-                    if (markerShouldBeVisible(marker)) {
-                        if (!m_markerClusterGroup.hasLayer(marker)) {
-                            m_markerClusterGroup.addLayer(marker);
-                        }
-                        if (m_firstUpdate) {
-                            if (m_bounds == null) {
-                                m_bounds = new LatLngBounds();
-                            }
-                            m_bounds.extend(marker.getLatLng());
-                        }
-                    } else {
-                        marker.closePopup();
-                        m_markerClusterGroup.removeLayer(marker);
+                    if (!m_markerClusterGroup.hasLayer(marker)) {
+                        m_markerClusterGroup.addLayer(marker);
                     }
                     return true;
                 }
 
-                VConsole.log("finished adding markers");
-
-                if (m_bounds != null) {
-                    VConsole.log("first update, zooming to "+ m_bounds.toBBoxString());
-                    m_map.fitBounds(m_bounds);
-                    m_firstUpdate = false;
-                } else {
-                    //VConsole.log("Skipping zoom, we've already done it once.");
-                }
-
-                //VConsole.log("finished updating marker cluster layer");
+                VConsole.log("finished adding visible markers");
 
                 return false;
+            }
+            
+        });
+        Scheduler.get().scheduleIncremental(new RepeatingCommand() {
+            final ListIterator<NodeMarker> m_markerIterator = m_markers.getDisabledMarkers().listIterator();
+
+            @Override public boolean execute() {
+                if (m_markerIterator.hasNext()) {
+                    final NodeMarker marker = m_markerIterator.next();
+                    marker.closePopup();
+                    m_markerClusterGroup.removeLayer(marker);
+                    return true;
+                }
+
+                VConsole.log("finished removing filtered markers");
+
+                return false;
+            }
+        });
+        Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+            @Override public void execute() {
+                if (m_firstUpdate) {
+                    if (m_markers.getMarkers().size() > 0) {
+                        final LatLngBounds bounds = new LatLngBounds();
+                        for (final NodeMarker marker : m_markers.getMarkers()) {
+                            bounds.extend(marker.getLatLng());
+                        }
+                        VConsole.log("first update, zooming to "+ bounds.toBBoxString());
+                        m_map.fitBounds(bounds);
+                        m_firstUpdate = false;
+                    }
+                }
+
+                VConsole.log("finished updating marker cluster layer");
             }
         });
     }

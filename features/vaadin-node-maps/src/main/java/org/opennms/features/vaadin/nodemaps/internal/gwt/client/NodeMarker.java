@@ -62,6 +62,25 @@ public class NodeMarker extends Marker {
         return getJSObject().getProperty("categories").cast();
     }
 
+    public String getCategoriesAsString() {
+        final StringBuilder catBuilder = new StringBuilder();
+        final JsArrayString categories = getCategories();
+        if (categories.length() > 0) {
+            if (categories.length() == 1) {
+                catBuilder.append("Category: ");
+            } else {
+                catBuilder.append("Categories: ");
+            }
+            for (int i = 0; i < categories.length(); i++) {
+                catBuilder.append(categories.get(i));
+                if (i != (categories.length() - 1)) {
+                    catBuilder.append(", ");
+                }
+            }
+        }
+        return catBuilder.toString();
+    }
+
     public void setCategories(final String[] categories) {
         final JsArrayString array = JsArrayString.createArray().cast();
         for (final String category : categories) {
