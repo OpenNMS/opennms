@@ -52,7 +52,7 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
             <property name="iconMap">
                 <map>
                     <entry key="sfree:group" value="theme://images/cloud.png"/>
-                    <entry key="sfree:system" value="theme://images/generic-device.png"/>
+                    <entry key="sfree:system" value="theme://images/vmware-network.png"/>
                 </map>
             </property>
         </bean>
