@@ -28,7 +28,8 @@
 
 package org.opennms.features.topology.ssh.internal;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -39,9 +40,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opennms.features.topology.ssh.internal.testframework.SudoPaintTarget;
 
-import com.vaadin.Application;
-import com.vaadin.terminal.PaintException;
-import com.vaadin.ui.Window;
+import com.vaadin.server.LegacyApplication;
+import com.vaadin.server.PaintException;
+import com.vaadin.ui.LegacyWindow;
 
 
 public class SSHTerminalTest {
@@ -50,18 +51,18 @@ public class SSHTerminalTest {
 	int testPort = 22;
 	SSHTerminal sshTerm;
 	SSHTerminal.SessionTerminal sessionTerm;
-	Application app;
-	Window mainWindow;
+	LegacyApplication app;
+	LegacyWindow mainWindow;
 
 	@SuppressWarnings("serial")
 	@Before
 	public void setUp() throws Exception {
 
-		app = new Application() {
+		app = new LegacyApplication() {
 			@Override
 			public void init() {}
 		};
-		mainWindow = new Window();
+		mainWindow = new LegacyWindow();
 		app.setMainWindow(mainWindow);
 
 		SSHWindow sshWindow = new SSHWindow(null, 200, 200);

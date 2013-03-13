@@ -28,21 +28,24 @@
 
 package org.opennms.features.topology.netutils.internal;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import com.vaadin.Application;
-import com.vaadin.ui.Window;
+import com.vaadin.server.LegacyApplication;
+import com.vaadin.ui.LegacyWindow;
 
 public class PingWindowTest {
 
 	PingWindow pingWindow;
 	PingWindow pingWindow2;
 	PingWindow pingWindow3;
-	Window mainWindow;
-	Application app;
+	LegacyWindow mainWindow;
+	LegacyApplication app;
 	
 	@Before
 	public void setUp() throws Exception {
@@ -52,8 +55,8 @@ public class PingWindowTest {
 		pingWindow2 = new PingWindow(null, "http://localhost:8080/");
 		pingWindow3 = new PingWindow(testNode1, "");
 		
-		mainWindow = new Window();
-		app = new Application() { //Empty Application
+		mainWindow = new LegacyWindow();
+		app = new LegacyApplication() { //Empty Application
 			@Override
 			public void init() {}
 		};
@@ -138,9 +141,9 @@ public class PingWindowTest {
 	
 	@Test
 	public void testAttach() {
-		assertTrue(app.getMainWindow().getChildWindows().contains(pingWindow));
+		assertTrue(app.getMainWindow().getWindows().contains(pingWindow));
 		app.getMainWindow().removeWindow(pingWindow);
-		assertFalse(app.getMainWindow().getChildWindows().contains(pingWindow));
+		assertFalse(app.getMainWindow().getWindows().contains(pingWindow));
 	}
 
 }

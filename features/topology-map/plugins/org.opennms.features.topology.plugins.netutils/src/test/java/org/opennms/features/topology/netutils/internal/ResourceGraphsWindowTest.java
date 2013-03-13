@@ -36,8 +36,8 @@ import java.net.URL;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.vaadin.Application;
-import com.vaadin.ui.Window;
+import com.vaadin.server.LegacyApplication;
+import com.vaadin.ui.LegacyWindow;
 
 public class ResourceGraphsWindowTest {
 
@@ -45,9 +45,9 @@ public class ResourceGraphsWindowTest {
 
     ResourceGraphsWindow window2;
 
-    Window mainWindow;
+    LegacyWindow mainWindow;
 
-    Application app;
+    LegacyApplication app;
 
     @Before
     public void setUp() throws Exception {
@@ -55,8 +55,8 @@ public class ResourceGraphsWindowTest {
         final URL url = new URL("http://localhost:8080/");
         window1 = new ResourceGraphsWindow(testNode1, url);
         window2 = new ResourceGraphsWindow(null, url);
-        mainWindow = new Window();
-        app = new Application() { // Empty Application
+        mainWindow = new LegacyWindow();
+        app = new LegacyApplication() { // Empty Application
             @Override
             public void init() {
             }
@@ -67,9 +67,9 @@ public class ResourceGraphsWindowTest {
     public void testAttach() {
         app.setMainWindow(mainWindow);
         app.getMainWindow().addWindow(window1);
-        assertTrue(app.getMainWindow().getChildWindows().contains(window1));
+        assertTrue(app.getMainWindow().getWindows().contains(window1));
         app.getMainWindow().removeWindow(window1);
-        assertFalse(app.getMainWindow().getChildWindows().contains(window1));
+        assertFalse(app.getMainWindow().getWindows().contains(window1));
     }
 
 }

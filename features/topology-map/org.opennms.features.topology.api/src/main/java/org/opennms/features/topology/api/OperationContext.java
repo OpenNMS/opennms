@@ -28,13 +28,13 @@
 
 package org.opennms.features.topology.api;
 
-import com.vaadin.ui.Window;
+import com.vaadin.ui.LegacyWindow;
 
 public interface OperationContext {
 	
 	enum DisplayLocation { MENUBAR, CONTEXTMENU };
 
-    Window getMainWindow();
+    LegacyWindow getMainWindow();
     GraphContainer getGraphContainer();
     DisplayLocation getDisplayLocation();
     boolean isChecked();

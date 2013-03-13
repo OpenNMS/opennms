@@ -32,8 +32,8 @@ import org.apache.sshd.ClientSession;
 
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.LegacyWindow;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
 
 /**
  * This class creates a window to hold the terminal emulator
@@ -41,7 +41,7 @@ import com.vaadin.ui.Window;
  * @author pdgrenon
  */
 @SuppressWarnings("serial")
-public class SSHWindow extends Window {
+public class SSHWindow extends LegacyWindow {
 	private SSHTerminal terminal; // The terminal emulator
 	private Label errorLabel = new Label("Could not create session");
 	private final int TERM_WIDTH = 80;
@@ -58,7 +58,7 @@ public class SSHWindow extends Window {
 	public SSHWindow(ClientSession session, int width, int height) {
 		setCaption("SSH");
 		setImmediate(true);
-		setResizable(false);
+		setResizeLazy(false);
 		setWidth("" + width + "px");
 		setHeight(""+ height + "px");
 		

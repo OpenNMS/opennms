@@ -28,13 +28,15 @@
 
 package org.opennms.features.topology.ssh.internal;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import com.vaadin.Application;
-import com.vaadin.ui.Window;
+import com.vaadin.server.LegacyApplication;
+import com.vaadin.ui.LegacyWindow;
 
 public class AuthWindowTest {
 
@@ -56,8 +58,8 @@ public class AuthWindowTest {
 	AuthWindow noHostWindow; 
 	AuthWindow emptyWindow;
 	AuthWindow invalidHostWindow;
-	Window mainWindow;
-	Application app;
+	LegacyWindow mainWindow;
+	LegacyApplication app;
 
 	@SuppressWarnings("serial")
 	@Before
@@ -68,8 +70,8 @@ public class AuthWindowTest {
 		emptyWindow = new AuthWindow(emptyHost, emptyPort);
 		invalidHostWindow = new AuthWindow(invalidHost, testPort);
 
-		mainWindow = new Window();
-		app = new Application() { //Empty Application
+		mainWindow = new LegacyWindow();
+		app = new LegacyApplication() { //Empty Application
 			@Override
 			public void init() {}
 		};
@@ -106,15 +108,15 @@ public class AuthWindowTest {
 
 	@Test
 	public void testAttach(){
-		assertTrue(app.getMainWindow().getChildWindows().contains(normalWindow));
+		assertTrue(app.getMainWindow().getWindows().contains(normalWindow));
 		app.getMainWindow().removeWindow(normalWindow);
-		assertFalse(app.getMainWindow().getChildWindows().contains(normalWindow));
+		assertFalse(app.getMainWindow().getWindows().contains(normalWindow));
 	}
 	
 	@Test
 	public void testShowSSHWindow() {
 		normalWindow.showSSHWindow();
-		assertFalse(app.getMainWindow().getChildWindows().contains(normalWindow));
+		assertFalse(app.getMainWindow().getWindows().contains(normalWindow));
 	}
 
 }

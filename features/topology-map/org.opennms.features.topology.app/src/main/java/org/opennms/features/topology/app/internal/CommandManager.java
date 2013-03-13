@@ -42,35 +42,35 @@ import org.opennms.features.topology.api.CheckedOperation;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.OperationContext.DisplayLocation;
+import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.TopoContextMenu.TopoContextMenuItem;
 import org.vaadin.peter.contextmenu.ContextMenu;
 import org.vaadin.peter.contextmenu.ContextMenu.ClickEvent;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 
+import com.vaadin.ui.LegacyWindow;
 import com.vaadin.ui.MenuBar;
-import com.vaadin.ui.Window;
 import com.vaadin.ui.MenuBar.MenuItem;
 
 public class CommandManager {
 
 	private class DefaultOperationContext implements OperationContext {
 
-		private final Window m_mainWindow;
+		private final LegacyWindow m_mainWindow;
 		private final GraphContainer m_graphContainer;
 		private final DisplayLocation m_displayLocation;
 		private boolean m_checked = false;
 
-		public DefaultOperationContext(Window mainWindow, GraphContainer graphContainer, DisplayLocation displayLocation) {
+		public DefaultOperationContext(LegacyWindow mainWindow, GraphContainer graphContainer, DisplayLocation displayLocation) {
 			m_mainWindow = mainWindow;
 			m_graphContainer = graphContainer;
 			m_displayLocation = displayLocation;
 		}
 
 		@Override
-		public Window getMainWindow() {
+		public LegacyWindow getMainWindow() {
 			return m_mainWindow;
 		}
 
@@ -149,7 +149,7 @@ public class CommandManager {
 		m_menuItemUpdateListeners.remove(listener);
 	}
 
-	MenuBar getMenuBar(GraphContainer graphContainer, Window mainWindow, SelectionManager selectionManager) {
+	MenuBar getMenuBar(GraphContainer graphContainer, LegacyWindow mainWindow, SelectionManager selectionManager) {
 		OperationContext opContext = new DefaultOperationContext(mainWindow, graphContainer, DisplayLocation.MENUBAR);
 		MenuBarBuilder menuBarBuilder = new MenuBarBuilder();
 		menuBarBuilder.setTopLevelMenuOrder(m_topLevelMenuOrder);
@@ -171,7 +171,7 @@ public class CommandManager {
 	 * @param mainWindow
 	 * @return
 	 */
-	public TopoContextMenu getContextMenu(GraphContainer graphContainer, Window mainWindow) {
+	public TopoContextMenu getContextMenu(GraphContainer graphContainer, LegacyWindow mainWindow) {
 		OperationContext opContext = new DefaultOperationContext(mainWindow, graphContainer, DisplayLocation.CONTEXTMENU);
 		ContextMenuBuilder contextMenuBuilder = new ContextMenuBuilder();
 		Map<String, Operation> operationMap = new HashMap<String, Operation>(); 
@@ -204,7 +204,7 @@ public class CommandManager {
 	}
 
 	public MenuBar.Command menuCommand(final Command command,
-			final GraphContainer graphContainer, final Window mainWindow,
+			final GraphContainer graphContainer, final LegacyWindow mainWindow,
 			final OperationContext operationContext, final SelectionManager selectionManager) {
 
 		return new MenuBar.Command() {
@@ -310,7 +310,7 @@ public class CommandManager {
 		return m_subMenuGroupOrder;
 	}
 
-	public void updateMenuItem(MenuItem menuItem, GraphContainer graphContainer, Window mainWindow, SelectionManager selectionManager) {
+	public void updateMenuItem(MenuItem menuItem, GraphContainer graphContainer, LegacyWindow mainWindow, SelectionManager selectionManager) {
 		DefaultOperationContext operationContext = new DefaultOperationContext(mainWindow, graphContainer, DisplayLocation.MENUBAR);
 		Operation operation = getOperationByMenuItemCommand(menuItem.getCommand());
 		
@@ -332,7 +332,7 @@ public class CommandManager {
 		}
 	}
 
-    public void updateContextMenuItem(Object target, TopoContextMenuItem contextItem, GraphContainer graphContainer, Window mainWindow) {
+    public void updateContextMenuItem(Object target, TopoContextMenuItem contextItem, GraphContainer graphContainer, LegacyWindow mainWindow) {
         DefaultOperationContext operationContext = new DefaultOperationContext(mainWindow, graphContainer, DisplayLocation.CONTEXTMENU);
         
         ContextMenuItem ctxMenuItem = contextItem.getItem();

@@ -36,23 +36,23 @@ import java.net.URL;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.vaadin.Application;
-import com.vaadin.ui.Window;
+import com.vaadin.server.LegacyApplication;
+import com.vaadin.ui.LegacyWindow;
 
 public class NodeInfoWindowTest {
 
 	NodeInfoWindow window;
 	NodeInfoWindow window2;
-	Window mainWindow;
-	Application app;
+	LegacyWindow mainWindow;
+	LegacyApplication app;
 	@Before
 	public void setUp() throws Exception {
 		Node testNode1 = new Node(9,"172.20.1.10","Cartman");
 		final URL url = new URL("http://localhost:8080/");
         window = new NodeInfoWindow(null, url);
 		window2 = new NodeInfoWindow(testNode1, url);
-		mainWindow = new Window();
-		app = new Application() { //Empty Application
+		mainWindow = new LegacyWindow();
+		app = new LegacyApplication() { //Empty Application
 			@Override
 			public void init() {}
 		};
@@ -62,9 +62,9 @@ public class NodeInfoWindowTest {
 	public void testAttach() {
 		app.setMainWindow(mainWindow);
 		app.getMainWindow().addWindow(window);
-		assertTrue(app.getMainWindow().getChildWindows().contains(window));
+		assertTrue(app.getMainWindow().getWindows().contains(window));
 		app.getMainWindow().removeWindow(window);
-		assertFalse(app.getMainWindow().getChildWindows().contains(window));
+		assertFalse(app.getMainWindow().getWindows().contains(window));
 	}
 
 }

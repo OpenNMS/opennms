@@ -50,10 +50,14 @@ import org.opennms.features.topology.app.internal.jung.FRLayoutAlgorithm;
 import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
 
 import com.github.wolfie.refresher.Refresher;
-import com.vaadin.Application;
 import com.vaadin.data.Property;
-import com.vaadin.terminal.Sizeable;
-import com.vaadin.terminal.ThemeResource;
+import com.vaadin.navigator.Navigator;
+import com.vaadin.server.LegacyApplication;
+import com.vaadin.server.Page;
+import com.vaadin.server.Page.UriFragmentChangedEvent;
+import com.vaadin.server.Page.UriFragmentChangedListener;
+import com.vaadin.server.Sizeable;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Alignment;
@@ -67,27 +71,24 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Layout;
+import com.vaadin.ui.LegacyWindow;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.Slider;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TextField;
-import com.vaadin.ui.UriFragmentUtility;
-import com.vaadin.ui.UriFragmentUtility.FragmentChangedEvent;
-import com.vaadin.ui.UriFragmentUtility.FragmentChangedListener;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.VerticalSplitPanel;
-import com.vaadin.ui.Window;
 
-public class TopologyWidgetTestApplication extends Application implements CommandUpdateListener, MenuItemUpdateListener, ContextMenuHandler, WidgetUpdateListener, WidgetContext, FragmentChangedListener, GraphContainer.ChangeListener, MapViewManagerListener, VertexUpdateListener {
+public class TopologyWidgetTestApplication extends LegacyApplication implements CommandUpdateListener, MenuItemUpdateListener, ContextMenuHandler, WidgetUpdateListener, WidgetContext, UriFragmentChangedListener, GraphContainer.ChangeListener, MapViewManagerListener, VertexUpdateListener, Navigator {
 
 	private static final long serialVersionUID = 6837501987137310938L;
 	private static int HEADER_HEIGHT = 100;
 	private static final int MENU_BAR_HEIGHT = 23;
 
 	private static final String LABEL_PROPERTY = "label";
-	private Window m_window;
+	private LegacyWindow m_window;
 	private TopologyComponent m_topologyComponent;
 	private VertexSelectionTree m_tree;
 	private final GraphContainer m_graphContainer;
@@ -103,7 +104,6 @@ public class TopologyWidgetTestApplication extends Application implements Comman
     private HorizontalSplitPanel m_treeMapSplitPanel;
     private VerticalSplitPanel m_bottomLayoutBar;
     private final Label m_zoomLevelLabel = new Label("0"); 
-    private UriFragmentUtility m_uriFragUtil;
     private final HistoryManager m_historyManager;
     private final SelectionManager m_selectionManager;
     private String m_headerHtml;
@@ -132,14 +132,12 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 	    m_rootLayout = new AbsoluteLayout();
 	    m_rootLayout.setSizeFull();
 	    
-	    m_window = new Window("OpenNMS Topology");
+	    m_window = new LegacyWindow("OpenNMS Topology");
         m_window.setContent(m_rootLayout);
         setMainWindow(m_window);
         
-        m_uriFragUtil = new UriFragmentUtility();
-        m_window.addComponent(m_uriFragUtil);
-        m_uriFragUtil.addListener(this);
-	    
+        Page.getCurrent().addUriFragmentChangedListener(this);
+        
 		m_layout = new AbsoluteLayout();
 		m_layout.setSizeFull();
 		m_rootLayout.addComponent(m_layout);
@@ -572,9 +570,9 @@ public class TopologyWidgetTestApplication extends Application implements Comman
     int m_settingFragment = 0;
     
     @Override
-    public void fragmentChanged(FragmentChangedEvent source) {
+    public void uriFragmentChanged(UriFragmentChangedEvent event) {
         m_settingFragment++;
-        String fragment = source.getUriFragmentUtility().getFragment();
+        String fragment = event.getUriFragment();
         m_historyManager.applyHistory(fragment, m_graphContainer);
         m_settingFragment--;
     }
@@ -583,7 +581,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
     private void saveHistory() {
         if (m_settingFragment == 0) {
             String fragment = m_historyManager.create(m_graphContainer);
-            m_uriFragUtil.setFragment(fragment, false);
+            Page.getCurrent().setUriFragment(fragment, false);
         }
     }
 
