@@ -55,8 +55,8 @@ public class AlarmDaoHibernate extends AbstractDaoHibernate<OnmsAlarm, Integer> 
         return super.findUnique(hql, reductionKey);
     }
 
-    public List<AlarmSummary> getNodeAlarmSummaries(final int rows) {
-        final List<AlarmSummary> summaries = findObjects(
+    public List<AlarmSummary> getNodeAlarmSummaries() {
+        return findObjects(
             AlarmSummary.class,
             "SELECT DISTINCT new org.opennms.netmgt.model.alarm.AlarmSummary(node.id, node.label, min(alarm.lastEventTime), max(alarm.severity), count(*)) " +
             "FROM OnmsAlarm AS alarm " +
@@ -65,11 +65,6 @@ public class AlarmDaoHibernate extends AbstractDaoHibernate<OnmsAlarm, Integer> 
             "GROUP BY node.id, node.label " +
             "ORDER BY min(alarm.lastEventTime) DESC, node.label ASC"
         );
-        if (rows == 0 || summaries.size() < rows) {
-            return summaries;
-        } else {
-            return summaries.subList(0, rows);
-        }
     }
 
 }
