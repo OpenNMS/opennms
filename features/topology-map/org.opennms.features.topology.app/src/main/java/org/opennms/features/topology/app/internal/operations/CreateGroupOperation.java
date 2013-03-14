@@ -92,6 +92,8 @@ public class CreateGroupOperation implements Constants, Operation {
 				// Add the new group
 				VertexRef groupId = operationContext.getGraphContainer().getBaseTopology().addGroup(groupLabel, GROUP_ICON_KEY);
 
+				// Find a common parent group. If none can be found, then link the group to the
+				// top of the topology
 				Vertex parentGroup = null;
 				for(VertexRef vertexRef : targets) {
 					Vertex parent = operationContext.getGraphContainer().getBaseTopology().getParent(vertexRef);
@@ -103,6 +105,10 @@ public class CreateGroupOperation implements Constants, Operation {
 						parentGroup = null;
 						break;
 					}
+				}
+
+				// Link all targets to the newly-created group
+				for(VertexRef vertexRef : targets) {
 					operationContext.getGraphContainer().getBaseTopology().setParent(vertexRef, groupId);
 				}
 

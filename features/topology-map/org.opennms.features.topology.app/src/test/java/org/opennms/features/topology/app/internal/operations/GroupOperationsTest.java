@@ -29,8 +29,10 @@
 package org.opennms.features.topology.app.internal.operations;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -250,6 +252,7 @@ public class GroupOperationsTest {
 
 		try {
 			renameGroup(graphContainer, group2, "");
+			fail("No exception thrown");
 		} catch (InvalidValueException e) {
 			// This should happen since a blank label is invalid
 		}
@@ -258,6 +261,7 @@ public class GroupOperationsTest {
 
 		try {
 			renameGroup(graphContainer, group2, group1.getLabel());
+			fail("No exception thrown");
 		} catch (InvalidValueException e) {
 			// This should happen since a group with the same label already exists
 		}
@@ -266,6 +270,7 @@ public class GroupOperationsTest {
 
 		try {
 			renameGroup(graphContainer, group2, null);
+			fail("No exception thrown");
 		} catch (InvalidValueException e) {
 			// This should happen since the label cannot be null
 		}
@@ -477,46 +482,154 @@ public class GroupOperationsTest {
 
 		Vertex vertex1 = m_topologyProvider.addVertex(0, 0);
 		Vertex vertex2 = m_topologyProvider.addVertex(0, 0);
+		Vertex group1;
 
 		GraphContainer graphContainer = EasyMock.createMock(GraphContainer.class);
 
 		EasyMock.expect(graphContainer.getBaseTopology()).andReturn(m_topologyProvider).anyTimes();
 		graphContainer.redoLayout();
+		EasyMock.expectLastCall().anyTimes();
 
 		EasyMock.replay(graphContainer);
 
-		CreateGroupOperation groupOperation = new CreateGroupOperation();
-		OperationContext context = getOperationContext(graphContainer);
-		groupOperation.execute(Arrays.asList((VertexRef)vertex1, vertex2), context);
+		assertEquals(0, m_topologyProvider.getSemanticZoomLevel(vertex1));
+		assertEquals(0, m_topologyProvider.getSemanticZoomLevel(vertex2));
 
-		assertNull("Value should be null: " + vertex1.getParent(), vertex1.getParent());
+		{
+			CreateGroupOperation groupOperation = new CreateGroupOperation();
+			OperationContext context = getOperationContext(graphContainer);
+			groupOperation.execute(Arrays.asList((VertexRef)vertex1, vertex2), context);
 
-		// Grab the window, put a value into the form field, and commit the form to complete
-		// the operation.
-		Window window = context.getMainWindow();
-		assertEquals(1, window.getChildWindows().size());
-		Window prompt = window.getChildWindows().iterator().next();
+			assertNull("Value should be null: " + vertex1.getParent(), vertex1.getParent());
+			assertNull("Value should be null: " + m_topologyProvider.getParent(vertex1), m_topologyProvider.getParent(vertex1));
+			assertNull("Value should be null: " + vertex2.getParent(), vertex2.getParent());
+			assertNull("Value should be null: " + m_topologyProvider.getParent(vertex2), m_topologyProvider.getParent(vertex2));
 
-		for (Iterator<Component> itr = prompt.getComponentIterator(); itr.hasNext();) {
-			Component component = itr.next();
-			try {
-				Form form = (Form)component;
-				Field group = form.getField("Group Label");
-				group.setValue("My New Awesome Group");
-				// Make sure that the value was set
-				assertEquals("My New Awesome Group", group.getValue());
-				form.commit();
-			} catch (ClassCastException e) {
-				LoggerFactory.getLogger(this.getClass()).info("Not a Form: " + component.getClass());
+			// Grab the window, put a value into the form field, and commit the form to complete
+			// the operation.
+			Window window = context.getMainWindow();
+			assertEquals(1, window.getChildWindows().size());
+			Window prompt = window.getChildWindows().iterator().next();
+
+			for (Iterator<Component> itr = prompt.getComponentIterator(); itr.hasNext();) {
+				Component component = itr.next();
+				try {
+					Form form = (Form)component;
+					Field field = form.getField("Group Label");
+					field.setValue("My New Awesome Group");
+					// Make sure that the value was set
+					assertEquals("My New Awesome Group", field.getValue());
+					form.commit();
+				} catch (ClassCastException e) {
+					LoggerFactory.getLogger(this.getClass()).info("Not a Form: " + component.getClass());
+				}
 			}
+
+			// Store the newly created group
+			group1 = m_topologyProvider.getParent(vertex1);vertex1.getParent();
+
+			assertEquals(0, m_topologyProvider.getSemanticZoomLevel(group1));
+			assertEquals(1, m_topologyProvider.getSemanticZoomLevel(vertex1));
+			assertEquals(1, m_topologyProvider.getSemanticZoomLevel(vertex2));
+
+			assertNotNull("Value should not be null: " + vertex1.getParent(), vertex1.getParent());
+			assertEquals("My New Awesome Group", group1.getLabel());
+			assertNotNull("Value should not be null: " + vertex2.getParent(), vertex2.getParent());
+			assertEquals("My New Awesome Group", m_topologyProvider.getParent(vertex2).getLabel());
+
+			assertEquals(2, m_topologyProvider.getChildren(group1).size());
 		}
 
-		// Refresh the contents of the vertex
-		vertex1 = m_topologyProvider.getVertex(vertex1);
-		VertexRef parent = vertex1.getParent();
-		assertNotNull("Value should not be null: " + parent, parent);
-		assertEquals("My New Awesome Group", m_topologyProvider.getVertex(parent).getLabel());
-		assertEquals(2, m_topologyProvider.getChildren(parent).size());
+		{
+			CreateGroupOperation groupOperation = new CreateGroupOperation();
+			OperationContext context = getOperationContext(graphContainer);
+			groupOperation.execute(Arrays.asList((VertexRef)vertex1, vertex2, group1), context);
+
+			// Grab the window, put a value into the form field, and commit the form to complete
+			// the operation.
+			Window window = context.getMainWindow();
+			assertEquals(1, window.getChildWindows().size());
+			Window prompt = window.getChildWindows().iterator().next();
+
+			for (Iterator<Component> itr = prompt.getComponentIterator(); itr.hasNext();) {
+				Component component = itr.next();
+				try {
+					Form form = (Form)component;
+					Field field = form.getField("Group Label");
+					field.setValue(m_topologyProvider.getParent(vertex1).getLabel());
+					// Make sure that the value was set
+					assertEquals(m_topologyProvider.getParent(vertex1).getLabel(), field.getValue());
+					try {
+						form.commit();
+						fail("No exception thrown");
+					} catch (InvalidValueException e) {
+						// This is expected since the new group's label collides with the parent group
+					}
+				} catch (ClassCastException e) {
+					LoggerFactory.getLogger(this.getClass()).info("Not a Form: " + component.getClass());
+				}
+			}
+
+			VertexRef parent = vertex1.getParent();
+			// Make sure that the parent hasn't changed after the failed create operation
+			assertEquals(group1, parent);
+
+			assertEquals(0, m_topologyProvider.getSemanticZoomLevel(group1));
+			assertEquals(1, m_topologyProvider.getSemanticZoomLevel(vertex1));
+			assertEquals(1, m_topologyProvider.getSemanticZoomLevel(vertex2));
+
+			assertNotNull("Value should not be null: " + parent, parent);
+			assertEquals("My New Awesome Group", m_topologyProvider.getParent(vertex1).getLabel());
+			assertNotNull("Value should not be null: " + vertex2.getParent(), vertex2.getParent());
+			assertEquals("My New Awesome Group", m_topologyProvider.getParent(vertex2).getLabel());
+
+			assertEquals("My New Awesome Group", m_topologyProvider.getVertex(parent).getLabel());
+			assertEquals(2, m_topologyProvider.getChildren(parent).size());
+		}
+
+		{
+			CreateGroupOperation groupOperation = new CreateGroupOperation();
+			OperationContext context = getOperationContext(graphContainer);
+			groupOperation.execute(Arrays.asList((VertexRef)vertex1, vertex2, group1), context);
+
+			// Grab the window, put a value into the form field, and commit the form to complete
+			// the operation.
+			Window window = context.getMainWindow();
+			assertEquals(1, window.getChildWindows().size());
+			Window prompt = window.getChildWindows().iterator().next();
+
+			for (Iterator<Component> itr = prompt.getComponentIterator(); itr.hasNext();) {
+				Component component = itr.next();
+				try {
+					Form form = (Form)component;
+					Field field = form.getField("Group Label");
+					field.setValue("Oh noes a new name");
+					// Make sure that the value was set
+					assertEquals("Oh noes a new name", field.getValue());
+					form.commit();
+				} catch (ClassCastException e) {
+					LoggerFactory.getLogger(this.getClass()).info("Not a Form: " + component.getClass());
+				}
+			}
+
+			VertexRef parent = vertex1.getParent();
+			assertEquals(parent, vertex2.getParent());
+			assertEquals(parent, group1.getParent());
+			assertFalse(group1.equals(parent));
+
+			assertEquals(0, m_topologyProvider.getSemanticZoomLevel(parent));
+			assertEquals(1, m_topologyProvider.getSemanticZoomLevel(group1));
+			assertEquals(1, m_topologyProvider.getSemanticZoomLevel(vertex1));
+			assertEquals(1, m_topologyProvider.getSemanticZoomLevel(vertex2));
+
+			assertNotNull("Value should not be null: " + parent, parent);
+			assertEquals("Oh noes a new name", m_topologyProvider.getParent(vertex1).getLabel());
+			assertNotNull("Value should not be null: " + vertex2.getParent(), vertex2.getParent());
+			assertEquals("Oh noes a new name", m_topologyProvider.getParent(vertex2).getLabel());
+
+			assertEquals("Oh noes a new name", m_topologyProvider.getVertex(parent).getLabel());
+			assertEquals(3, m_topologyProvider.getChildren(parent).size());
+		}
 
 		EasyMock.verify(graphContainer);
 	}
