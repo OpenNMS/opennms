@@ -1,29 +1,17 @@
 /*******************************************************************************
- * This file is part of OpenNMS(R).
- *
- * Copyright (C) 2013 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
- *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
- *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
+ * This file is part of OpenNMS(R). Copyright (C) 2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc. OpenNMS(R) is
+ * a registered trademark of The OpenNMS Group, Inc. OpenNMS(R) is free
+ * software: you can redistribute it and/or modify it under the terms of the
+ * GNU General Public License as published by the Free Software Foundation,
+ * either version 3 of the License, or (at your option) any later version.
+ * OpenNMS(R) is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details. You should have received a copy of the GNU General Public
+ * License along with OpenNMS(R). If not, see: http://www.gnu.org/licenses/
+ * For more information contact: OpenNMS(R) Licensing <license@opennms.org>
+ * http://www.opennms.org/ http://www.opennms.com/
  *******************************************************************************/
 
 package org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui;
@@ -64,13 +52,17 @@ public class GWTMapWidget extends Widget implements MarkerProvider, SearchConsum
     private final DivElement m_div;
 
     private Map m_map;
+
     private ILayer m_layer;
 
     private MarkerContainer m_markers;
+
     private MarkerClusterGroup m_markerClusterGroup;
 
     private boolean m_firstUpdate = true;
+
     private int m_minimumSeverity = 0;
+
     private String m_searchString = "";
 
     private SearchControl m_searchControl;
@@ -84,66 +76,79 @@ public class GWTMapWidget extends Widget implements MarkerProvider, SearchConsum
         m_div.getStyle().setWidth(100, Unit.PCT);
         m_div.getStyle().setHeight(100, Unit.PCT);
         setElement(m_div);
-        
+
         m_filter = new MarkerFilter() {
             @Override
             public boolean matches(final NodeMarker marker) {
-                if (marker.getSeverity() < m_minimumSeverity) return false;
-                if (m_searchString == null || "".equals(m_searchString)) return true;
+                if (marker.getSeverity() < m_minimumSeverity)
+                    return false;
+                if (m_searchString == null || "".equals(m_searchString))
+                    return true;
 
                 final String searchString = m_searchString.toLowerCase();
-                //VConsole.log("searching: search string = " + searchString);
+                // VConsole.log("searching: search string = " + searchString);
 
-                ///// handle foo: style search strings for text properties
-                //VConsole.log("checking property:search");
+                // /// handle foo: style search strings for text properties
+                // VConsole.log("checking property:search");
                 for (final String propertyName : marker.getTextPropertyNames()) {
                     final String lowerPropertyName = propertyName.toLowerCase();
                     if (searchString.startsWith(lowerPropertyName + ":")) {
                         final String searchStringWithoutPrefix = searchString.replaceFirst(lowerPropertyName + ":\\s*", "");
                         final String propertyValue = marker.getProperty(propertyName);
                         if (propertyValue != null && propertyValue.toLowerCase().contains(searchStringWithoutPrefix)) {
-                            //VConsole.log(searchString + " matched: " + propertyValue.toLowerCase());
                             return true;
                         } else {
-                            //VConsole.log(searchString + " did not match: " + propertyValue.toLowerCase());
+                            return false;
+                        }
+                    } else if (searchString.startsWith(lowerPropertyName + "=")) {
+                        final String searchStringWithoutPrefix = searchString.replaceFirst(lowerPropertyName + "=\\s*", "");
+                        final String propertyValue = marker.getProperty(propertyName);
+                        if (propertyValue != null && propertyValue.toLowerCase().equals(searchStringWithoutPrefix)) {
+                            return true;
+                        } else {
                             return false;
                         }
                     }
                 }
 
-                ///// special case: categories: -> category: search
-                if (searchString.startsWith("category:")) {
-                    final String searchStringWithoutPrefix = searchString.replaceFirst("category:\\s*", "");
-                    return matchCategories(marker, searchStringWithoutPrefix);
+                // /// special case: categories: -> category: search
+                if (searchString.startsWith("category:") || searchString.startsWith("categories:")) {
+                    final String searchStringWithoutPrefix = searchString.replaceFirst("categor(ies|y):\\s*", "");
+                    final MatchType match = matchCategories(marker, searchStringWithoutPrefix);
+                    return match != MatchType.NONE;
+                } else if (searchString.startsWith("category=") || searchString.startsWith("categories=")) {
+                    final String searchStringWithoutPrefix = searchString.replaceFirst("categor(ies|y)=\\s*", "");
+                    final MatchType match = matchCategories(marker, searchStringWithoutPrefix);
+                    return match == MatchType.EXACT;
                 }
 
-                ///// if no foo: style search strings, first search all text properties for a match
+                // /// if no foo: style search strings, first search all text
+                // properties for a match
                 for (final String propertyName : marker.getTextPropertyNames()) {
                     final String value = marker.getProperty(propertyName);
                     if (value != null) {
                         final String propertyValue = value.toLowerCase();
                         if (propertyValue.contains(searchString)) {
-                            //VConsole.log(searchString + " matched: " + propertyName + "=" + propertyValue);
                             return true;
                         }
                     }
                 }
 
-                ///// otherwise, search categories
-                return matchCategories(marker, searchString);
+                // /// otherwise, search categories
+                return matchCategories(marker, searchString) != MatchType.NONE;
             }
 
-            private boolean matchCategories(final NodeMarker marker, final String searchString) {
+            private MatchType matchCategories(final NodeMarker marker, final String searchString) {
                 final JsArrayString categories = marker.getCategories();
                 for (int i = 0; i < categories.length(); i++) {
                     final String category = categories.get(i).toLowerCase();
-                    if (category.contains(searchString)) {
-                        //VConsole.log(searchString + " matched: " + category);
-                        return true;
+                    if (category.equals(searchString)) {
+                        return MatchType.EXACT;
+                    } else if (category.contains(searchString)) {
+                        return MatchType.SUBSTRING;
                     }
                 }
-                //VConsole.log(searchString + " did not match: " + marker.getCategoriesAsString());
-                return false;
+                return MatchType.NONE;
             }
 
         };
@@ -155,7 +160,8 @@ public class GWTMapWidget extends Widget implements MarkerProvider, SearchConsum
     protected void onLoad() {
         super.onLoad();
         Scheduler.get().scheduleDeferred(new Command() {
-            @Override public void execute() {
+            @Override
+            public void execute() {
                 initializeMap(m_div.getId());
             }
         });
@@ -174,7 +180,7 @@ public class GWTMapWidget extends Widget implements MarkerProvider, SearchConsum
         // createGoogleLayer();
         addTileLayer();
         addMarkerLayer();
-        
+
         // overlay controls
         addSearchControl();
         addAlarmControl();
@@ -216,7 +222,7 @@ public class GWTMapWidget extends Widget implements MarkerProvider, SearchConsum
         m_layer = new TileLayer(url, tileOptions);
         m_map.addLayer(m_layer, true);
     }
-    
+
     private void addMarkerLayer() {
         VConsole.log("adding marker cluster layer");
         final Options markerClusterOptions = new Options();
@@ -235,7 +241,7 @@ public class GWTMapWidget extends Widget implements MarkerProvider, SearchConsum
         m_searchControl = new SearchControl(this, m_markers);
         m_map.addControl(m_searchControl);
     }
-    
+
     private void addAlarmControl() {
         VConsole.log("adding alarm control");
         final AlarmControlOptions options = new AlarmControlOptions();
@@ -287,12 +293,13 @@ public class GWTMapWidget extends Widget implements MarkerProvider, SearchConsum
 
                 return false;
             }
-            
+
         });
         Scheduler.get().scheduleIncremental(new RepeatingCommand() {
             final ListIterator<NodeMarker> m_markerIterator = m_markers.getDisabledMarkers().listIterator();
 
-            @Override public boolean execute() {
+            @Override
+            public boolean execute() {
                 if (m_markerIterator.hasNext()) {
                     final NodeMarker marker = m_markerIterator.next();
                     marker.closePopup();
@@ -306,14 +313,18 @@ public class GWTMapWidget extends Widget implements MarkerProvider, SearchConsum
             }
         });
         Scheduler.get().scheduleDeferred(new ScheduledCommand() {
-            @Override public void execute() {
+            @Override
+            public void execute() {
                 if (m_firstUpdate) {
                     if (m_markers.getMarkers().size() > 0) {
                         final LatLngBounds bounds = new LatLngBounds();
                         for (final NodeMarker marker : m_markers.getMarkers()) {
                             bounds.extend(marker.getLatLng());
                         }
-                        VConsole.log("first update, zooming to "+ bounds.toBBoxString());
+                        for (final NodeMarker marker : m_markers.getDisabledMarkers()) {
+                            bounds.extend(marker.getLatLng());
+                        }
+                        VConsole.log("first update, zooming to " + bounds.toBBoxString());
                         m_map.fitBounds(bounds);
                         m_firstUpdate = false;
                     }
@@ -377,4 +388,7 @@ public class GWTMapWidget extends Widget implements MarkerProvider, SearchConsum
         m_map = null;
     }
 
+    private enum MatchType {
+        NONE, SUBSTRING, EXACT
+    };
 }

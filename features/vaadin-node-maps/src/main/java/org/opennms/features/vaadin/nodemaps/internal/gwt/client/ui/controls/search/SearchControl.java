@@ -1,5 +1,6 @@
 package org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.controls.search;
 
+import java.util.HashMap;
 import java.util.List;
 
 import org.discotools.gwt.leaflet.client.controls.Control;
@@ -37,6 +38,17 @@ import com.google.gwt.view.client.SingleSelectionModel;
 import com.vaadin.terminal.gwt.client.VConsole;
 
 public class SearchControl extends Control {
+    private static final HashMap<String, String> m_labels;
+    static {
+        m_labels = new HashMap<String,String>();
+        m_labels.put("nodeid", "Node&nbsp;ID");
+        m_labels.put("description", "Description");
+        m_labels.put("ipaddress", "IP&nbsp;Address");
+        m_labels.put("maintcontract", "Maint.&nbsp;Contract");
+        m_labels.put("foreignsource", "Foreign&nbsp;Source");
+        m_labels.put("foreignid", "Foreign&nbsp;ID");
+    }
+
     private HTMLPanel m_container;
     private TextBox m_inputBox;
     private HTML m_submitAnchor;
@@ -189,6 +201,7 @@ public class SearchControl extends Control {
         m_inputBox.getElement().setAttribute("type", "search");
         m_inputBox.setMaxLength(40);
         m_inputBox.setVisibleLength(40);
+        m_inputBox.setValue(m_searchConsumer.getSearchString());
 
         DomEvent.stopEventPropagation(m_inputBox);
 
@@ -226,20 +239,26 @@ public class SearchControl extends Control {
                 builder.appendHtmlConstant(marker.getNodeLabel());
                 builder.appendHtmlConstant("</div>");
                 String additionalSearchInfo = null;
-                if (searchString.startsWith("category:")) {
-                    final String categoryString = marker.getCategoriesAsString();
-                    if (categoryString.length() > 0) {
-                        additionalSearchInfo = categoryString;
+                if (searchString.contains(":") || searchString.contains("=")) {
+                    final String searchKey = searchString.replaceAll("[\\:\\=].*$", "").toLowerCase();
+                    VConsole.log("searchKey = " + searchKey);
+
+                    if ("category".equals(searchKey) || "categories".equals(searchKey)) {
+                        final String categoryString = marker.getCategoriesAsString();
+                        if (categoryString.length() > 0) {
+                            additionalSearchInfo = categoryString;
+                        }
                     }
-                } else if (searchString.startsWith("nodelabel:")) {
-                    // do nothing, we already show this
-                } else if (searchString.startsWith("description")) {
-                    additionalSearchInfo = "Description: " + marker.getDescription();
-                } else if (searchString.startsWith("ipaddress")) {
-                    additionalSearchInfo = "IP Address: " + marker.getIpAddress();
-                } else if (searchString.startsWith("maintcontract")) {
-                    additionalSearchInfo = "Maint.&nbsp;Contract: " + marker.getMaintContract();
+
+                    for (final String key : marker.getTextPropertyNames()) {
+                        final String lowerKey = key.toLowerCase();
+                        if (lowerKey.equals(searchKey) && m_labels.containsKey(lowerKey)) {
+                            additionalSearchInfo = m_labels.get(lowerKey) + ": " + marker.getProperty(key);
+                            break;
+                        }
+                    }
                 }
+
                 if (additionalSearchInfo != null) {
                     builder.appendHtmlConstant("<div class=\"autocomplete-additional-info\">")
                         .appendHtmlConstant(additionalSearchInfo)
@@ -278,8 +297,11 @@ public class SearchControl extends Control {
                             m_autoComplete.getSelectionModel().setSelected(value, false);
                             hideAutocomplete();
                             m_inputBox.setFocus(true);
-                            m_inputBox.setValue(value.getNodeLabel(), true);
-                            m_searchConsumer.setSearchString(value.getNodeLabel());
+
+                            final String searchString = "nodeLabel=" + value.getNodeLabel();
+                            m_inputBox.setValue(searchString, true);
+                            m_searchConsumer.setSearchString(searchString);
+
                             m_searchConsumer.refresh();
                         }
                     });

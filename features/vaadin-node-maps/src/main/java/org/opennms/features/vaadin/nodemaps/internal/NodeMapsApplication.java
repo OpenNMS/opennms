@@ -143,13 +143,13 @@ public class NodeMapsApplication extends Application {
 
         setTheme("topo_default");
 
-        final MapWidgetComponent openlayers = new MapWidgetComponent();
-        openlayers.setNodeDao(m_nodeDao);
-        openlayers.setAssetRecordDao(m_assetDao);
-        openlayers.setAlarmDao(m_alarmDao);
-        openlayers.setGeocoderService(m_geocoderService);
-        openlayers.setTransactionOperation(m_transaction);
-        openlayers.setSizeFull();
+        final MapWidgetComponent mapPanel = new MapWidgetComponent();
+        mapPanel.setNodeDao(m_nodeDao);
+        mapPanel.setAssetRecordDao(m_assetDao);
+        mapPanel.setAlarmDao(m_alarmDao);
+        mapPanel.setGeocoderService(m_geocoderService);
+        mapPanel.setTransactionOperation(m_transaction);
+        mapPanel.setSizeFull();
 
         m_rootLayout = new AbsoluteLayout();
         m_rootLayout.setSizeFull();
@@ -158,14 +158,12 @@ public class NodeMapsApplication extends Application {
         m_window.setContent(m_rootLayout);
         m_window.addParameterHandler(new ParameterHandler() {
             @Override
-            public void handleParameters(Map<String, String[]> parameters) {
+            public void handleParameters(final Map<String, String[]> parameters) {
                 if (parameters.containsKey("nodeId")) {
                     int nodeId = parseInt(parameters.get("nodeId")[0], 0);
                     if (nodeId > 0) {
-                        openlayers.setSingleNodeId(nodeId);
+                        mapPanel.setSearchString("nodeId=" + nodeId);
                     }
-                } else {
-                    openlayers.setSingleNodeId(-1);
                 }
             }
         });
@@ -197,7 +195,7 @@ public class NodeMapsApplication extends Application {
                 VConsole.log(e);
             }
         }
-        m_rootLayout.addComponent(openlayers, mapLayerPosition);
+        m_rootLayout.addComponent(mapPanel, mapLayerPosition);
 
         final Refresher refresher = new Refresher();
         refresher.setRefreshInterval(REFRESH_INTERVAL);

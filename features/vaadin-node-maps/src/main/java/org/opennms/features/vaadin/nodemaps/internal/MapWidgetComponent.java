@@ -165,7 +165,7 @@ public class MapWidgetComponent extends VerticalLayout {
 
     private TransactionOperations m_transactionOperations;
 
-    private int singleNodeId = 0;
+    private String m_searchString;
 
     public MapWidgetComponent() {
     }
@@ -187,9 +187,6 @@ public class MapWidgetComponent extends VerticalLayout {
         final CriteriaBuilder cb = new CriteriaBuilder(OnmsNode.class);
         cb.alias("assetRecord", "asset");
         cb.orderBy("id").asc();
-
-        if (singleNodeId > 0)
-            cb.eq("id", singleNodeId);
 
         final Map<Integer,NodeEntry> nodes = new HashMap<Integer,NodeEntry>();
         final List<OnmsAssetRecord> updatedAssets = new ArrayList<OnmsAssetRecord>();
@@ -256,6 +253,8 @@ public class MapWidgetComponent extends VerticalLayout {
         }
 
         m_log.debug("pushing nodes to the UI");
+        if (m_searchString != null) target.addAttribute("initialSearchString", m_searchString);
+
         target.startTag("nodes");
         for (final NodeEntry node : nodes.values()) {
             node.visit(target);
@@ -308,7 +307,7 @@ public class MapWidgetComponent extends VerticalLayout {
         m_transactionOperations = tx;
     }
 
-    public void setSingleNodeId(int nodeId) {
-        this.singleNodeId = nodeId;
+    public void setSearchString(final String searchString) {
+        m_searchString = searchString;
     }
 }
