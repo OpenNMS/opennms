@@ -159,11 +159,14 @@ public class NodeMapsApplication extends Application {
         m_window.addParameterHandler(new ParameterHandler() {
             @Override
             public void handleParameters(final Map<String, String[]> parameters) {
-                if (parameters.containsKey("nodeId")) {
+                if (parameters.containsKey("search")) {
+                    mapPanel.setSearchString(parameters.get("search")[0].toString());
+                    /*
                     int nodeId = parseInt(parameters.get("nodeId")[0], 0);
                     if (nodeId > 0) {
                         mapPanel.setSearchString("nodeId=" + nodeId);
                     }
+                    */
                 }
             }
         });

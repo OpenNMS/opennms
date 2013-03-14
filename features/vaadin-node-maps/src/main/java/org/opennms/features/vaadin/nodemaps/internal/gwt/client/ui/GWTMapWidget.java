@@ -316,18 +316,16 @@ public class GWTMapWidget extends Widget implements MarkerProvider, SearchConsum
             @Override
             public void execute() {
                 if (m_firstUpdate) {
-                    if (m_markers.getMarkers().size() > 0) {
-                        final LatLngBounds bounds = new LatLngBounds();
-                        for (final NodeMarker marker : m_markers.getMarkers()) {
-                            bounds.extend(marker.getLatLng());
-                        }
-                        for (final NodeMarker marker : m_markers.getDisabledMarkers()) {
-                            bounds.extend(marker.getLatLng());
-                        }
-                        VConsole.log("first update, zooming to " + bounds.toBBoxString());
-                        m_map.fitBounds(bounds);
-                        m_firstUpdate = false;
+                    final LatLngBounds bounds = new LatLngBounds();
+                    for (final NodeMarker marker : m_markers.getMarkers()) {
+                        bounds.extend(marker.getLatLng());
                     }
+                    for (final NodeMarker marker : m_markers.getDisabledMarkers()) {
+                        bounds.extend(marker.getLatLng());
+                    }
+                    VConsole.log("first update, zooming to " + bounds.toBBoxString());
+                    m_map.fitBounds(bounds);
+                    m_firstUpdate = false;
                 }
 
                 VConsole.log("finished updating marker cluster layer");
