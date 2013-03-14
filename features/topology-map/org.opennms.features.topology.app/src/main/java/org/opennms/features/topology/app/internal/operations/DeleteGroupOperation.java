@@ -50,7 +50,7 @@ public class DeleteGroupOperation implements Operation {
 
 		VertexRef parent = targets.get(0);
 		
-		Vertex grandParent = graphContainer.getParent(parent);
+		Vertex grandParent = graphContainer.getBaseTopology().getParent(parent);
 
 		// Detach all children from the group
 		for(VertexRef childRef : graphContainer.getBaseTopology().getChildren(parent)) {

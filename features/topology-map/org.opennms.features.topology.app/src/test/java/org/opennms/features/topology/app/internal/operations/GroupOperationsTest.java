@@ -53,6 +53,7 @@ import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.plugins.topo.simple.SimpleGraphProvider;
 import org.slf4j.LoggerFactory;
 
+import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.Form;
@@ -119,7 +120,7 @@ public class GroupOperationsTest {
 	}
 
 	@Test
-	public void testAddVertexToGroupOperation() {
+	public void testABunchOfGroupOperations() {
 
 		m_topologyProvider.resetContainer();
 
@@ -130,8 +131,7 @@ public class GroupOperationsTest {
 
 		EasyMock.expect(graphContainer.getBaseTopology()).andReturn(m_topologyProvider).anyTimes();
 		graphContainer.redoLayout();
-		graphContainer.redoLayout();
-		graphContainer.redoLayout();
+		EasyMock.expectLastCall().anyTimes();
 
 		EasyMock.replay(graphContainer);
 
@@ -165,11 +165,11 @@ public class GroupOperationsTest {
 				Component component = itr.next();
 				try {
 					Form form = (Form)component;
-					Field group = form.getField("Group");
-					group.setValue(group1.getId());
+					Field field = form.getField("Group");
+					field.setValue(group1.getId());
 					// Make sure that the value was set, Vaadin will ignore the value
 					// if, for instance, the specified value is not in the Select list
-					assertEquals(group1.getId(), group.getValue());
+					assertEquals(group1.getId(), field.getValue());
 					form.commit();
 				} catch (ClassCastException e) {
 					LoggerFactory.getLogger(this.getClass()).info("Not a Form: " + component.getClass());
@@ -225,11 +225,11 @@ public class GroupOperationsTest {
 				Component component = itr.next();
 				try {
 					Form form = (Form)component;
-					Field group = form.getField("Group");
-					group.setValue(group1.getId());
+					Field field = form.getField("Group");
+					field.setValue(group1.getId());
 					// Make sure that the value was set, Vaadin will ignore the value
 					// if, for instance, the specified value is not in the Select list
-					assertEquals(group1.getId(), group.getValue());
+					assertEquals(group1.getId(), field.getValue());
 					form.commit();
 				} catch (ClassCastException e) {
 					LoggerFactory.getLogger(this.getClass()).info("Not a Form: " + component.getClass());
@@ -247,6 +247,35 @@ public class GroupOperationsTest {
 			assertEquals(1, m_topologyProvider.getSemanticZoomLevel(group2));
 			assertEquals(1, m_topologyProvider.getSemanticZoomLevel(vertex1));
 		}
+
+		try {
+			renameGroup(graphContainer, group2, "");
+		} catch (InvalidValueException e) {
+			// This should happen since a blank label is invalid
+		}
+
+		assertEquals("Another new group", group2.getLabel());
+
+		try {
+			renameGroup(graphContainer, group2, group1.getLabel());
+		} catch (InvalidValueException e) {
+			// This should happen since a group with the same label already exists
+		}
+
+		assertEquals("Another new group", group2.getLabel());
+
+		try {
+			renameGroup(graphContainer, group2, null);
+		} catch (InvalidValueException e) {
+			// This should happen since the label cannot be null
+		}
+
+		assertEquals("Another new group", group2.getLabel());
+
+		renameGroup(graphContainer, group2, "Valid value");
+		assertEquals("Valid value", group2.getLabel());
+		renameGroup(graphContainer, group2, "Another new group");
+		assertEquals("Another new group", group2.getLabel());
 
 		// Now let's move the vertex down to szl 2
 		{
@@ -277,11 +306,11 @@ public class GroupOperationsTest {
 				Component component = itr.next();
 				try {
 					Form form = (Form)component;
-					Field group = form.getField("Group");
-					group.setValue(group2.getId());
+					Field field = form.getField("Group");
+					field.setValue(group2.getId());
 					// Make sure that the value was set, Vaadin will ignore the value
 					// if, for instance, the specified value is not in the Select list
-					assertEquals(group2.getId(), group.getValue());
+					assertEquals(group2.getId(), field.getValue());
 					form.commit();
 				} catch (ClassCastException e) {
 					LoggerFactory.getLogger(this.getClass()).info("Not a Form: " + component.getClass());
@@ -300,7 +329,146 @@ public class GroupOperationsTest {
 			assertEquals(2, m_topologyProvider.getSemanticZoomLevel(vertex1));
 		}
 
+		// Now move it back to szl 1 by removing it from its parent group
+		{
+			RemoveVertexFromGroupOperation operation = new RemoveVertexFromGroupOperation();
+			OperationContext context = getOperationContext(graphContainer);
+			// Execute the operation on the single vertex
+			operation.execute(Collections.singletonList((VertexRef)group2), context);
+
+			// Even though we have executed the operation, it is waiting on a Window
+			// operation to commit the change so make sure the vertex hasn't been
+			// added yet.
+			vertices = m_topologyProvider.getVertices();
+			assertEquals(3, vertices.size());
+			assertEquals(1, m_topologyProvider.getChildren(group1).size());
+			assertEquals(1, m_topologyProvider.getChildren(group2).size());
+
+			assertEquals(0, m_topologyProvider.getSemanticZoomLevel(group1));
+			assertEquals(1, m_topologyProvider.getSemanticZoomLevel(group2));
+			assertEquals(2, m_topologyProvider.getSemanticZoomLevel(vertex1));
+
+			// Grab the window, put a value into the form field, and commit the form to complete
+			// the operation.
+			Window window = context.getMainWindow();
+			assertEquals(1, window.getChildWindows().size());
+			Window prompt = window.getChildWindows().iterator().next();
+
+			for (Iterator<Component> itr = prompt.getComponentIterator(); itr.hasNext();) {
+				Component component = itr.next();
+				try {
+					Form form = (Form)component;
+					Field field = form.getField("Item");
+					field.setValue(vertex1.getId());
+					// Make sure that the value was set, Vaadin will ignore the value
+					// if, for instance, the specified value is not in the Select list
+					assertEquals(vertex1.getId(), field.getValue());
+					form.commit();
+				} catch (ClassCastException e) {
+					LoggerFactory.getLogger(this.getClass()).info("Not a Form: " + component.getClass());
+				}
+			}
+
+			vertices = m_topologyProvider.getVertices();
+			assertEquals(3, vertices.size());
+
+			assertEquals(2, m_topologyProvider.getChildren(group1).size());
+			assertEquals(0, m_topologyProvider.getChildren(group2).size());
+
+			// Verify that the semantic zoom level of the vertices is correct
+			assertEquals(0, m_topologyProvider.getSemanticZoomLevel(group1));
+			assertEquals(1, m_topologyProvider.getSemanticZoomLevel(group2));
+			assertEquals(1, m_topologyProvider.getSemanticZoomLevel(vertex1));
+			assertEquals("NEW GROUP", m_topologyProvider.getVertex(vertex1.getParent()).getLabel());
+			assertEquals("NEW GROUP", m_topologyProvider.getParent(vertex1).getLabel());
+		}
+
+		// Now move it back to szl 1 by removing it from its parent group
+		{
+			RemoveVertexFromGroupOperation operation = new RemoveVertexFromGroupOperation();
+			OperationContext context = getOperationContext(graphContainer);
+			// Execute the operation on the single vertex
+			operation.execute(Collections.singletonList((VertexRef)group1), context);
+
+			// Even though we have executed the operation, it is waiting on a Window
+			// operation to commit the change so make sure the vertex hasn't been
+			// added yet.
+			vertices = m_topologyProvider.getVertices();
+			assertEquals(3, vertices.size());
+			assertEquals(2, m_topologyProvider.getChildren(group1).size());
+			assertEquals(0, m_topologyProvider.getChildren(group2).size());
+
+			assertEquals(0, m_topologyProvider.getSemanticZoomLevel(group1));
+			assertEquals(1, m_topologyProvider.getSemanticZoomLevel(group2));
+			assertEquals(1, m_topologyProvider.getSemanticZoomLevel(vertex1));
+
+			// Grab the window, put a value into the form field, and commit the form to complete
+			// the operation.
+			Window window = context.getMainWindow();
+			assertEquals(1, window.getChildWindows().size());
+			Window prompt = window.getChildWindows().iterator().next();
+
+			for (Iterator<Component> itr = prompt.getComponentIterator(); itr.hasNext();) {
+				Component component = itr.next();
+				try {
+					Form form = (Form)component;
+					Field field = form.getField("Item");
+					field.setValue(vertex1.getId());
+					// Make sure that the value was set, Vaadin will ignore the value
+					// if, for instance, the specified value is not in the Select list
+					assertEquals(vertex1.getId(), field.getValue());
+					form.commit();
+				} catch (ClassCastException e) {
+					LoggerFactory.getLogger(this.getClass()).info("Not a Form: " + component.getClass());
+				}
+			}
+
+			vertices = m_topologyProvider.getVertices();
+			assertEquals(3, vertices.size());
+
+			assertEquals(1, m_topologyProvider.getChildren(group1).size());
+			assertEquals(0, m_topologyProvider.getChildren(group2).size());
+
+			// Verify that the semantic zoom level of the vertices is correct
+			assertEquals(0, m_topologyProvider.getSemanticZoomLevel(group1));
+			assertEquals(1, m_topologyProvider.getSemanticZoomLevel(group2));
+			assertEquals(0, m_topologyProvider.getSemanticZoomLevel(vertex1));
+
+			// Make sure that the vertex is back at the top level of the hierarchy
+			assertNull(vertex1.getParent());
+			assertNull(m_topologyProvider.getVertex(vertex1.getParent()));
+			assertNull(m_topologyProvider.getParent(vertex1));
+		}
+
 		EasyMock.verify(graphContainer);
+	}
+
+	private static void renameGroup(GraphContainer graphContainer, Vertex group, String newLabel) {
+		RenameGroupOperation operation = new RenameGroupOperation();
+		OperationContext context = getOperationContext(graphContainer);
+		// Execute the operation on the single vertex
+		operation.execute(Collections.singletonList((VertexRef)group), context);
+
+		// Grab the window, put a value into the form field, and commit the form to complete
+		// the operation.
+		Window window = context.getMainWindow();
+		assertEquals(1, window.getChildWindows().size());
+		Window prompt = window.getChildWindows().iterator().next();
+
+		for (Iterator<Component> itr = prompt.getComponentIterator(); itr.hasNext();) {
+			Component component = itr.next();
+			try {
+				Form form = (Form)component;
+				Field field = form.getField("Group Label");
+				field.setValue(newLabel);
+				// Make sure that the value was set, Vaadin will ignore the value
+				// if, for instance, the specified value is not in the Select list
+				assertEquals(newLabel, field.getValue());
+				form.commit();
+			} catch (ClassCastException e) {
+				LoggerFactory.getLogger(GroupOperationsTest.class).info("Not a Form: " + component.getClass());
+			}
+		}
 	}
 
 	@Test

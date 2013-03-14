@@ -122,7 +122,7 @@ public class RemoveVertexFromGroupOperation implements Constants, Operation {
 
 				LoggerFactory.getLogger(this.getClass()).debug("Removing item from group: {}", childId);
 
-				Vertex grandParent = graphContainer.getParent(currentGroup);
+				Vertex grandParent = graphContainer.getBaseTopology().getParent(currentGroup);
 
 				GraphProvider topologyProvider = graphContainer.getBaseTopology();
 

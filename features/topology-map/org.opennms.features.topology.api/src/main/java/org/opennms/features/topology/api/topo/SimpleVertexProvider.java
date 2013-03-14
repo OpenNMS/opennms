@@ -50,9 +50,9 @@ public class SimpleVertexProvider implements VertexProvider {
 	}
 
 	private Vertex getSimpleVertex(VertexRef reference) {
-		if (getVertexNamespace().equals(reference.getNamespace())) {
+		if (reference != null && getVertexNamespace().equals(reference.getNamespace())) {
 			return m_vertexMap.get(reference.getId());
-		} 
+		}
 		return null;
 	}
 
