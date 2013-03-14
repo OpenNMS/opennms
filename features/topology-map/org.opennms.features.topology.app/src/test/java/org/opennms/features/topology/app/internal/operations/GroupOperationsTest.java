@@ -631,6 +631,32 @@ public class GroupOperationsTest {
 			assertEquals(3, m_topologyProvider.getChildren(parent).size());
 		}
 
+		{
+			assertEquals(4, m_topologyProvider.getVertices().size());
+			assertEquals(1, m_topologyProvider.getSemanticZoomLevel(group1));
+			assertEquals(1, m_topologyProvider.getSemanticZoomLevel(vertex1));
+			assertEquals(1, m_topologyProvider.getSemanticZoomLevel(vertex2));
+
+			DeleteGroupOperation groupOperation = new DeleteGroupOperation();
+			OperationContext context = getOperationContext(graphContainer);
+			groupOperation.execute(Collections.singletonList((VertexRef)vertex1), context);
+
+			// Nothing happens... we tried to delete a vertex instead of a group
+			assertEquals(4, m_topologyProvider.getVertices().size());
+			assertEquals(1, m_topologyProvider.getSemanticZoomLevel(group1));
+			assertEquals(1, m_topologyProvider.getSemanticZoomLevel(vertex1));
+			assertEquals(1, m_topologyProvider.getSemanticZoomLevel(vertex2));
+
+			groupOperation = new DeleteGroupOperation();
+			context = getOperationContext(graphContainer);
+			groupOperation.execute(Arrays.asList(vertex1.getParent()), context);
+
+			assertEquals(3, m_topologyProvider.getVertices().size());
+			assertEquals(0, m_topologyProvider.getSemanticZoomLevel(group1));
+			assertEquals(0, m_topologyProvider.getSemanticZoomLevel(vertex1));
+			assertEquals(0, m_topologyProvider.getSemanticZoomLevel(vertex2));
+		}
+
 		EasyMock.verify(graphContainer);
 	}
 }

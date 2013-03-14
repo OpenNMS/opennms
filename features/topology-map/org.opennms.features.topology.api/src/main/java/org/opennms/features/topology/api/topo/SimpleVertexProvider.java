@@ -168,6 +168,7 @@ public class SimpleVertexProvider implements VertexProvider {
 
 	private void removeVertices(List<? extends VertexRef> all) {
 		for(VertexRef vertex : all) {
+			LoggerFactory.getLogger(this.getClass()).debug("Removing vertex: {}", vertex);
 			// Remove the vertex from the main map
 			m_vertexMap.remove(vertex.getId());
 			// Remove the vertex from the parent and child maps
