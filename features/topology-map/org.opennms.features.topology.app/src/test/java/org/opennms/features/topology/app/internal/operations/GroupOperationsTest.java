@@ -34,12 +34,10 @@ import static org.junit.Assert.assertNull;
 
 import java.io.File;
 import java.net.MalformedURLException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.List;
 
 import javax.xml.bind.JAXBException;
 
@@ -48,7 +46,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
-import org.opennms.features.topology.api.Constants;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.topo.Vertex;
@@ -127,65 +124,181 @@ public class GroupOperationsTest {
 		m_topologyProvider.resetContainer();
 
 		Vertex vertex1 = m_topologyProvider.addVertex(0, 0);
-		Vertex groupId = m_topologyProvider.addGroup("NEW GROUP", null);
+		Vertex group1 = m_topologyProvider.addGroup("NEW GROUP", null);
 
 		GraphContainer graphContainer = EasyMock.createMock(GraphContainer.class);
 
 		EasyMock.expect(graphContainer.getBaseTopology()).andReturn(m_topologyProvider).anyTimes();
 		graphContainer.redoLayout();
+		graphContainer.redoLayout();
+		graphContainer.redoLayout();
 
 		EasyMock.replay(graphContainer);
 
-		List<VertexRef> targets = new ArrayList<VertexRef>();
-		targets.add(vertex1);
-
 		Collection<Vertex> vertices = m_topologyProvider.getVertices();
 		assertEquals(2, vertices.size());
-		assertEquals(0, m_topologyProvider.getChildren(groupId).size());
+		assertEquals(0, m_topologyProvider.getChildren(group1).size());
 
-		AddVertexToGroupOperation operation = new AddVertexToGroupOperation();
-		OperationContext context = getOperationContext(graphContainer);
-		// Execute the operation on the single vertex
-		operation.execute(Collections.singletonList((VertexRef)vertex1), context);
+		{
+			AddVertexToGroupOperation operation = new AddVertexToGroupOperation();
+			OperationContext context = getOperationContext(graphContainer);
+			// Execute the operation on the single vertex
+			operation.execute(Collections.singletonList((VertexRef)vertex1), context);
 
-		// Even though we have executed the operation, it is waiting on a Window
-		// operation to commit the change so make sure the vertex hasn't been
-		// added yet.
-		vertices = m_topologyProvider.getVertices();
-		assertEquals(2, vertices.size());
-		assertEquals(0, m_topologyProvider.getChildren(groupId).size());
+			// Even though we have executed the operation, it is waiting on a Window
+			// operation to commit the change so make sure the vertex hasn't been
+			// added yet.
+			vertices = m_topologyProvider.getVertices();
+			assertEquals(2, vertices.size());
+			assertEquals(0, m_topologyProvider.getChildren(group1).size());
 
-		assertEquals(0, m_topologyProvider.getSemanticZoomLevel(groupId));
-		assertEquals(0, m_topologyProvider.getSemanticZoomLevel(vertex1));
+			assertEquals(0, m_topologyProvider.getSemanticZoomLevel(group1));
+			assertEquals(0, m_topologyProvider.getSemanticZoomLevel(vertex1));
 
-		// Grab the window, put a value into the form field, and commit the form to complete
-		// the operation.
-		Window window = context.getMainWindow();
-		assertEquals(1, window.getChildWindows().size());
-		Window prompt = window.getChildWindows().iterator().next();
+			// Grab the window, put a value into the form field, and commit the form to complete
+			// the operation.
+			Window window = context.getMainWindow();
+			assertEquals(1, window.getChildWindows().size());
+			Window prompt = window.getChildWindows().iterator().next();
 
-		for (Iterator<Component> itr = prompt.getComponentIterator(); itr.hasNext();) {
-			Component component = itr.next();
-			try {
-				Form form = (Form)component;
-				Field group = form.getField("Group");
-				group.setValue(groupId.getId());
-				// Make sure that the value was set, Vaadin will ignore the value
-				// if, for instance, the specified value is not in the Select list
-				assertEquals(groupId.getId(), group.getValue());
-				form.commit();
-			} catch (ClassCastException e) {
-				LoggerFactory.getLogger(this.getClass()).info("Not a Form: " + component.getClass());
+			for (Iterator<Component> itr = prompt.getComponentIterator(); itr.hasNext();) {
+				Component component = itr.next();
+				try {
+					Form form = (Form)component;
+					Field group = form.getField("Group");
+					group.setValue(group1.getId());
+					// Make sure that the value was set, Vaadin will ignore the value
+					// if, for instance, the specified value is not in the Select list
+					assertEquals(group1.getId(), group.getValue());
+					form.commit();
+				} catch (ClassCastException e) {
+					LoggerFactory.getLogger(this.getClass()).info("Not a Form: " + component.getClass());
+				}
 			}
+
+			vertices = m_topologyProvider.getVertices();
+			assertEquals(2, vertices.size());
+
+			assertEquals(1, m_topologyProvider.getChildren(group1).size());
+
+			// Verify that the semantic zoom level of the vertices is correct
+			assertEquals(0, m_topologyProvider.getSemanticZoomLevel(group1));
+			assertEquals(1, m_topologyProvider.getSemanticZoomLevel(vertex1));
 		}
 
+		// Add a second group so that we can make sure that adding groups to other groups works also
+		Vertex group2 = m_topologyProvider.addGroup("Another new group", null);
 		vertices = m_topologyProvider.getVertices();
-		assertEquals(2, vertices.size());
+		assertEquals(3, vertices.size());
+		assertEquals(1, m_topologyProvider.getChildren(group1).size());
+		assertEquals(0, m_topologyProvider.getChildren(group2).size());
 
-		// Verify that the semantic zoom level of the vertices is correct
-		assertEquals(1, m_topologyProvider.getChildren(groupId).size());
-		assertEquals(0, m_topologyProvider.getSemanticZoomLevel(groupId));
+		assertEquals(0, m_topologyProvider.getSemanticZoomLevel(group1));
+		assertEquals(0, m_topologyProvider.getSemanticZoomLevel(group2));
 		assertEquals(1, m_topologyProvider.getSemanticZoomLevel(vertex1));
+
+		{
+			AddVertexToGroupOperation operation = new AddVertexToGroupOperation();
+			OperationContext context = getOperationContext(graphContainer);
+			// Execute the operation on the single vertex
+			operation.execute(Collections.singletonList((VertexRef)group2), context);
+
+			// Even though we have executed the operation, it is waiting on a Window
+			// operation to commit the change so make sure the vertex hasn't been
+			// added yet.
+			vertices = m_topologyProvider.getVertices();
+			assertEquals(3, vertices.size());
+			assertEquals(1, m_topologyProvider.getChildren(group1).size());
+			assertEquals(0, m_topologyProvider.getChildren(group2).size());
+
+			assertEquals(0, m_topologyProvider.getSemanticZoomLevel(group1));
+			assertEquals(0, m_topologyProvider.getSemanticZoomLevel(group2));
+			assertEquals(1, m_topologyProvider.getSemanticZoomLevel(vertex1));
+
+			// Grab the window, put a value into the form field, and commit the form to complete
+			// the operation.
+			Window window = context.getMainWindow();
+			assertEquals(1, window.getChildWindows().size());
+			Window prompt = window.getChildWindows().iterator().next();
+
+			for (Iterator<Component> itr = prompt.getComponentIterator(); itr.hasNext();) {
+				Component component = itr.next();
+				try {
+					Form form = (Form)component;
+					Field group = form.getField("Group");
+					group.setValue(group1.getId());
+					// Make sure that the value was set, Vaadin will ignore the value
+					// if, for instance, the specified value is not in the Select list
+					assertEquals(group1.getId(), group.getValue());
+					form.commit();
+				} catch (ClassCastException e) {
+					LoggerFactory.getLogger(this.getClass()).info("Not a Form: " + component.getClass());
+				}
+			}
+
+			vertices = m_topologyProvider.getVertices();
+			assertEquals(3, vertices.size());
+
+			// Verify that the semantic zoom level of the vertices is correct
+			assertEquals(2, m_topologyProvider.getChildren(group1).size());
+			assertEquals(0, m_topologyProvider.getChildren(group2).size());
+
+			assertEquals(0, m_topologyProvider.getSemanticZoomLevel(group1));
+			assertEquals(1, m_topologyProvider.getSemanticZoomLevel(group2));
+			assertEquals(1, m_topologyProvider.getSemanticZoomLevel(vertex1));
+		}
+
+		// Now let's move the vertex down to szl 2
+		{
+			AddVertexToGroupOperation operation = new AddVertexToGroupOperation();
+			OperationContext context = getOperationContext(graphContainer);
+			// Execute the operation on the single vertex
+			operation.execute(Collections.singletonList((VertexRef)vertex1), context);
+
+			// Even though we have executed the operation, it is waiting on a Window
+			// operation to commit the change so make sure the vertex hasn't been
+			// added yet.
+			vertices = m_topologyProvider.getVertices();
+			assertEquals(3, vertices.size());
+			assertEquals(2, m_topologyProvider.getChildren(group1).size());
+			assertEquals(0, m_topologyProvider.getChildren(group2).size());
+
+			assertEquals(0, m_topologyProvider.getSemanticZoomLevel(group1));
+			assertEquals(1, m_topologyProvider.getSemanticZoomLevel(group2));
+			assertEquals(1, m_topologyProvider.getSemanticZoomLevel(vertex1));
+
+			// Grab the window, put a value into the form field, and commit the form to complete
+			// the operation.
+			Window window = context.getMainWindow();
+			assertEquals(1, window.getChildWindows().size());
+			Window prompt = window.getChildWindows().iterator().next();
+
+			for (Iterator<Component> itr = prompt.getComponentIterator(); itr.hasNext();) {
+				Component component = itr.next();
+				try {
+					Form form = (Form)component;
+					Field group = form.getField("Group");
+					group.setValue(group2.getId());
+					// Make sure that the value was set, Vaadin will ignore the value
+					// if, for instance, the specified value is not in the Select list
+					assertEquals(group2.getId(), group.getValue());
+					form.commit();
+				} catch (ClassCastException e) {
+					LoggerFactory.getLogger(this.getClass()).info("Not a Form: " + component.getClass());
+				}
+			}
+
+			vertices = m_topologyProvider.getVertices();
+			assertEquals(3, vertices.size());
+
+			assertEquals(1, m_topologyProvider.getChildren(group1).size());
+			assertEquals(1, m_topologyProvider.getChildren(group2).size());
+
+			// Verify that the semantic zoom level of the vertices is correct
+			assertEquals(0, m_topologyProvider.getSemanticZoomLevel(group1));
+			assertEquals(1, m_topologyProvider.getSemanticZoomLevel(group2));
+			assertEquals(2, m_topologyProvider.getSemanticZoomLevel(vertex1));
+		}
 
 		EasyMock.verify(graphContainer);
 	}

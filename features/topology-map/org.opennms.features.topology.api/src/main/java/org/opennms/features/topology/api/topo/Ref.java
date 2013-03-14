@@ -28,7 +28,7 @@
 
 package org.opennms.features.topology.api.topo;
 
-public interface Ref {
+public interface Ref extends Comparable<Ref> {
 	
 	/**
 	 * An identifier unique to the provider that 'owns' this reference

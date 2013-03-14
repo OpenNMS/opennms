@@ -32,6 +32,7 @@ import javax.xml.bind.annotation.XmlID;
 
 import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.Connector;
+import org.opennms.features.topology.api.topo.Ref;
 import org.opennms.features.topology.api.topo.VertexRef;
 
 public class SimpleConnector implements Connector {
@@ -134,4 +135,22 @@ public class SimpleConnector implements Connector {
 		return m_vertex;
 	}
 
+	@Override
+	public int compareTo(Ref o) {
+		if (this.equals(o)) {
+			return 0;
+		} else {
+			// Order by namespace, then ID
+			if (this.getNamespace().equals(o.getNamespace())) {
+				if (this.getId().equals(o.getId())) {
+					// Shouldn't happen because equals() should return true
+					throw new IllegalStateException("equals() was inaccurate in " + this.getClass().getName());
+				} else {
+					return this.getId().compareTo(o.getId());
+				}
+			} else {
+				return this.getNamespace().compareTo(o.getNamespace());
+			}
+		}
+	}
 }

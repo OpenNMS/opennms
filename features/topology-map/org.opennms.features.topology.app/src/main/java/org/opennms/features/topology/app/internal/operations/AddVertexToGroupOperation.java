@@ -96,12 +96,14 @@ public class AddVertexToGroupOperation implements Constants, Operation {
 		item.addItemProperty("Group", new ObjectProperty<String>(null, String.class));
 
 		FormFieldFactory fieldFactory = new FormFieldFactory() {
+			private static final long serialVersionUID = 2963683658636386720L;
+
 			public Field createField(Item item, Object propertyId, Component uiContext) {
 				// Identify the fields by their Property ID.
 				String pid = (String) propertyId;
 				if ("Group".equals(pid)) {
 					Select select = new Select("Group");
-					for (Vertex childId : vertexIds) {
+					for (Vertex childId : groupIds) {
 						log.debug("Adding child: {}, {}", childId.getId(), childId.getLabel());
 						select.addItem(childId.getId());
 						select.setItemCaption(childId.getId(), childId.getLabel());

@@ -164,5 +164,24 @@ public class WrappedVertex implements VertexRef {
 	}
 
 	@Override
+	public int compareTo(Ref o) {
+		if (this.equals(o)) {
+			return 0;
+		} else {
+			// Order by namespace, then ID
+			if (this.getNamespace().equals(o.getNamespace())) {
+				if (this.getId().equals(o.getId())) {
+					// Shouldn't happen because equals() should return true
+					throw new IllegalStateException("equals() was inaccurate in " + this.getClass().getName());
+				} else {
+					return this.getId().compareTo(o.getId());
+				}
+			} else {
+				return this.getNamespace().compareTo(o.getNamespace());
+			}
+		}
+	}
+
+	@Override
 	public String toString() { return "WrappedVertex:"+namespace+":"+id+ "[label="+label+", styleName="+styleName+"]"; } 
 }

@@ -68,7 +68,6 @@ public class RemoveVertexFromGroupOperation implements Constants, Operation {
 		final GraphContainer graphContainer = operationContext.getGraphContainer();
 
 		final VertexRef currentGroup = targets.get(0);
-		final String currentGroupId = currentGroup.getId();
 		final Collection<? extends Vertex> children = graphContainer.getBaseTopology().getChildren(currentGroup);
 		for (Vertex child : children) {
 			log.debug("Child ID: {}", child.getId());
@@ -87,6 +86,8 @@ public class RemoveVertexFromGroupOperation implements Constants, Operation {
 		item.addItemProperty("Item", new ObjectProperty<String>(null, String.class));
 
 		FormFieldFactory fieldFactory = new FormFieldFactory() {
+			private static final long serialVersionUID = 243277720538924081L;
+
 			public Field createField(Item item, Object propertyId, Component uiContext) {
 				// Identify the fields by their Property ID.
 				String pid = (String) propertyId;
