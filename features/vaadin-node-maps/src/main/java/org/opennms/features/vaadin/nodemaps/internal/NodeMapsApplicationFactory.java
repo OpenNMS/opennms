@@ -31,10 +31,12 @@ package org.opennms.features.vaadin.nodemaps.internal;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.features.geocoder.GeocoderService;
 import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.dao.AssetRecordDao;
 import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.web.api.OnmsHeaderProvider;
 import org.ops4j.pax.vaadin.AbstractApplicationFactory;
 import org.springframework.transaction.support.TransactionOperations;
 
@@ -47,14 +49,11 @@ import com.vaadin.Application;
  */
 public class NodeMapsApplicationFactory extends AbstractApplicationFactory {
     private NodeDao m_nodeDao;
-
     private AssetRecordDao m_assetDao;
-
     private AlarmDao m_alarmDao;
-
     private GeocoderService m_geocoder;
-
     private TransactionOperations m_transaction;
+    private OnmsHeaderProvider m_headerProvider;
 
     /*
      * (non-Javadoc)
@@ -73,6 +72,14 @@ public class NodeMapsApplicationFactory extends AbstractApplicationFactory {
         app.setAlarmDao(m_alarmDao);
         app.setGeocoderService(m_geocoder);
         app.setTransactionOperations(m_transaction);
+        
+        if (m_headerProvider != null) {
+            try {
+                app.setHeaderHtml(m_headerProvider.getHeaderHtml(request));
+            } catch (final Exception e) {
+                LogUtils.warnf(this, e, "failed to get header HTML for request " + request.getPathInfo());
+            }
+        }
         return app;
     }
 
@@ -109,5 +116,9 @@ public class NodeMapsApplicationFactory extends AbstractApplicationFactory {
     
     public void setTransactionOperations(final TransactionOperations tx) {
         m_transaction = tx;
+    }
+    
+    public void setHeaderProvider(final OnmsHeaderProvider headerProvider) {
+        m_headerProvider = headerProvider;
     }
 }

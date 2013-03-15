@@ -28,20 +28,23 @@
 
 package org.opennms.features.topology.plugins.topo.vmware.internal;
 
-import org.opennms.features.topology.api.topo.*;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import org.opennms.features.topology.api.topo.AbstractVertex;
+import org.opennms.features.topology.api.topo.Edge;
+import org.opennms.features.topology.api.topo.EdgeRef;
+import org.opennms.features.topology.api.topo.GraphProvider;
+import org.opennms.features.topology.api.topo.Vertex;
+import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.plugins.topo.simple.SimpleGraphProvider;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
-
-import javax.xml.bind.JAXBException;
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 public class VmwareTopologyProvider extends SimpleGraphProvider implements GraphProvider {
 
@@ -244,16 +247,19 @@ public class VmwareTopologyProvider extends SimpleGraphProvider implements Graph
         AbstractVertex hostSystemVertex = addHostSystemVertex(vmwareManagementServer + "/" + vmwareManagedObjectId, hostSystem.getLabel(), primaryInterface, hostSystem.getId(), vmwareState);
 
         // set the parent vertex
-        hostSystemVertex.setParent(datacenterVertex);
+        // hostSystemVertex.setParent(datacenterVertex);
+        setParent(hostSystemVertex, datacenterVertex);
 
         for (String network : networks) {
             AbstractVertex networkVertex = addNetworkVertex(vmwareManagementServer + "/" + network, moIdToName.get(network));
-            networkVertex.setParent(datacenterVertex);
+            // networkVertex.setParent(datacenterVertex);
+            setParent(networkVertex, datacenterVertex);
             connectVertices(vmwareManagementServer + "/" + vmwareManagedObjectId + "->" + network, hostSystemVertex, networkVertex);
         }
         for (String datastore : datastores) {
             AbstractVertex datastoreVertex = addDatastoreVertex(vmwareManagementServer + "/" + datastore, moIdToName.get(datastore));
-            datastoreVertex.setParent(datacenterVertex);
+            // datastoreVertex.setParent(datacenterVertex);
+            setParent(datastoreVertex, datacenterVertex);
             connectVertices(vmwareManagementServer + "/" + vmwareManagedObjectId + "->" + datastore, hostSystemVertex, datastoreVertex);
         }
     }
@@ -338,7 +344,8 @@ public class VmwareTopologyProvider extends SimpleGraphProvider implements Graph
 
         if (containsVertexId(vmwareManagementServer + "/" + vmwareHostSystemId)) {
             // and set the parent vertex
-            virtualMachineVertex.setParent(datacenterVertex);
+            // virtualMachineVertex.setParent(datacenterVertex);
+            setParent(virtualMachineVertex, datacenterVertex);
         } else {
             addHostSystemVertex(vmwareManagementServer + "/" + vmwareHostSystemId, moIdToName.get(vmwareHostSystemId) + " (not in database)", "", -1, "unknown");
         }

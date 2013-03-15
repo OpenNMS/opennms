@@ -212,7 +212,6 @@
 			<groupId>org.opennms.osgi.features.topology</groupId>
 			<artifactId>vaadin</artifactId>
 			<type>pom</type>
-			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.gwt</groupId>
@@ -253,6 +252,11 @@
 		<dependency>
 			<groupId>org.opennms</groupId>
 			<artifactId>opennms-dao</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.opennms</groupId>
+			<artifactId>opennms-web-api</artifactId>
 			<scope>provided</scope>
 		</dependency>
 

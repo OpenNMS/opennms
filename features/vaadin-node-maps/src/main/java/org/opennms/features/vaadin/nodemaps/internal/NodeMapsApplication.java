@@ -28,6 +28,9 @@
 
 package org.opennms.features.vaadin.nodemaps.internal;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Map;
 
 import org.opennms.features.geocoder.GeocoderService;
@@ -41,7 +44,10 @@ import org.springframework.transaction.support.TransactionOperations;
 import com.github.wolfie.refresher.Refresher;
 import com.vaadin.Application;
 import com.vaadin.terminal.ParameterHandler;
+import com.vaadin.terminal.gwt.client.VConsole;
 import com.vaadin.ui.AbsoluteLayout;
+import com.vaadin.ui.CustomLayout;
+import com.vaadin.ui.Panel;
 import com.vaadin.ui.Window;
 
 /**
@@ -85,20 +91,16 @@ public class NodeMapsApplication extends Application {
     private static final int REFRESH_INTERVAL = 5 * 60 * 1000;
 
     private NodeDao m_nodeDao;
-
     private AssetRecordDao m_assetDao;
-
     private AlarmDao m_alarmDao;
-
     private GeocoderService m_geocoderService;
+    private TransactionOperations m_transaction;
+    private String m_headerHtml;
 
     private Window m_window;
-
     private AbsoluteLayout m_rootLayout;
 
     private Logger m_log = LoggerFactory.getLogger(getClass());
-
-    private TransactionOperations m_transaction;
 
     /**
      * Sets the OpenNMS Node DAO.
@@ -127,6 +129,10 @@ public class NodeMapsApplication extends Application {
         m_transaction = tx;
     }
 
+    public void setHeaderHtml(final String headerHtml) {
+        m_headerHtml = headerHtml;
+    }
+
     /*
      * (non-Javadoc)
      * @see com.vaadin.Application#init()
@@ -135,13 +141,15 @@ public class NodeMapsApplication extends Application {
     public void init() {
         m_log.debug("initializing");
 
-        final MapWidgetComponent openlayers = new MapWidgetComponent();
-        openlayers.setNodeDao(m_nodeDao);
-        openlayers.setAssetRecordDao(m_assetDao);
-        openlayers.setAlarmDao(m_alarmDao);
-        openlayers.setGeocoderService(m_geocoderService);
-        openlayers.setTransactionOperation(m_transaction);
-        openlayers.setSizeFull();
+        setTheme("topo_default");
+
+        final MapWidgetComponent mapPanel = new MapWidgetComponent();
+        mapPanel.setNodeDao(m_nodeDao);
+        mapPanel.setAssetRecordDao(m_assetDao);
+        mapPanel.setAlarmDao(m_alarmDao);
+        mapPanel.setGeocoderService(m_geocoderService);
+        mapPanel.setTransactionOperation(m_transaction);
+        mapPanel.setSizeFull();
 
         m_rootLayout = new AbsoluteLayout();
         m_rootLayout.setSizeFull();
@@ -150,20 +158,47 @@ public class NodeMapsApplication extends Application {
         m_window.setContent(m_rootLayout);
         m_window.addParameterHandler(new ParameterHandler() {
             @Override
-            public void handleParameters(Map<String, String[]> parameters) {
-                if (parameters.containsKey("nodeId")) {
+            public void handleParameters(final Map<String, String[]> parameters) {
+                if (parameters.containsKey("search")) {
+                    mapPanel.setSearchString(parameters.get("search")[0].toString());
+                    /*
                     int nodeId = parseInt(parameters.get("nodeId")[0], 0);
                     if (nodeId > 0) {
-                        openlayers.setSingleNodeId(nodeId);
+                        mapPanel.setSearchString("nodeId=" + nodeId);
                     }
-                } else {
-                    openlayers.setSingleNodeId(-1);
+                    */
                 }
             }
         });
         setMainWindow(m_window);
 
-        m_rootLayout.addComponent(openlayers, "top: 0px; left: 0px; right:0px; bottom:0px;");
+        String mapLayerPosition = "top:0px; left:0px; right:0px; bottom:0px;";
+        if (m_headerHtml != null) {
+            final Panel header = new Panel("header");
+            header.setCaption(null);
+            header.setSizeUndefined();
+            header.addStyleName("onmsheader");
+            InputStream is = null;
+            try {
+                is = new ByteArrayInputStream(m_headerHtml.getBytes());
+                final CustomLayout layout = new CustomLayout(is);
+                header.setContent(layout);
+                m_rootLayout.addComponent(header, "top: 0px; left: 0px; right:0px;");
+                mapLayerPosition = "top:100px; left:0px; right:0px; bottom:0px;";
+            } catch (final IOException e) {
+                if (is != null) {
+                    try {
+                        is.close();
+                    } catch (final IOException closeE) {
+                        VConsole.log("failed to close HTML input stream");
+                        VConsole.log(closeE);
+                    }
+                }
+                VConsole.log("failed to get header layout data");
+                VConsole.log(e);
+            }
+        }
+        m_rootLayout.addComponent(mapPanel, mapLayerPosition);
 
         final Refresher refresher = new Refresher();
         refresher.setRefreshInterval(REFRESH_INTERVAL);

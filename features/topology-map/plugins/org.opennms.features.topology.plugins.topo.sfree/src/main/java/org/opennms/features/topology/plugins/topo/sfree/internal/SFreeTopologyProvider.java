@@ -26,7 +26,7 @@ public class SFreeTopologyProvider extends AbstractTopologyProvider implements G
 	}
 
 	@Override
-	public void save(String filename) {
+	public void save() {
 		// Do nothing
 	}
 
@@ -42,9 +42,9 @@ public class SFreeTopologyProvider extends AbstractTopologyProvider implements G
 		clearEdges();
 
 		if (filename.equals(ERDOS_RENIS))
-			createERRandomTopology(100,3);		
+			createERRandomTopology(200,4);		
 		else if (filename.equals(BARABASI_ALBERT))
-			createBARandomTopology(100,3);
+			createBARandomTopology(200,4);
 	}
 
 	private void createBARandomTopology(Integer numberOfNodes, Integer averageNumberofNeighboors) {
@@ -52,43 +52,54 @@ public class SFreeTopologyProvider extends AbstractTopologyProvider implements G
 		List<AbstractEdge> edges = new ArrayList<AbstractEdge>();
 
 		for(int i=0; i<2*averageNumberofNeighboors; i++){
-			int j=(i+1)%(2*averageNumberofNeighboors);
-			SimpleLeafVertex vertexi = new SimpleLeafVertex(TOPOLOGY_NAMESPACE_SFREE, Integer.toString(i), 0, 0);
-			vertexi.setIconKey("sfree:system");
-			vertexi.setLabel("BarabasiAlbertNode"+i);
-			SimpleLeafVertex vertexj = new SimpleLeafVertex(TOPOLOGY_NAMESPACE_SFREE, Integer.toString(j), 0, 0);
-			vertexj.setIconKey("sfree:system");
-			vertexj.setLabel("BarabasiAlbertNode"+j);
-			nodes.put(i, vertexi);
-			nodes.put(j, vertexj);
-			System.err.println("Creating First Cluster: " + i);
-			System.err.println("Creating First Cluster: " + j);
-			String edgeId = "link:"+i+"-"+j;
-			SimpleConnector source = new SimpleConnector(TOPOLOGY_NAMESPACE_SFREE, nodes.get(i).getId()+"-"+edgeId+"-connector", nodes.get(i));
-			SimpleConnector target = new SimpleConnector(TOPOLOGY_NAMESPACE_SFREE, nodes.get(j).getId()+"-"+edgeId+"-connector", nodes.get(j));
-			edges.add(new AbstractEdge(TOPOLOGY_NAMESPACE_SFREE, edgeId, source, target));
+                    System.err.println("Creating First Cluster from: " + i);
+                    int j=(i+1)%(2*averageNumberofNeighboors);
+                    
+                    SimpleLeafVertex vertexi = new SimpleLeafVertex(TOPOLOGY_NAMESPACE_SFREE, Integer.toString(i), 0, 0);
+                    vertexi.setIconKey("sfree:system");
+                    vertexi.setLabel("BarabasiAlbertNode"+i);
+                    if (!nodes.containsKey(i)) {
+                        nodes.put(i, vertexi);
+                        System.err.println("Added Node: " + nodes.get(i).getId());
+                    }
+                    
+                    SimpleLeafVertex vertexj = new SimpleLeafVertex(TOPOLOGY_NAMESPACE_SFREE, Integer.toString(j), 0, 0);
+                    vertexj.setIconKey("sfree:system");
+                    vertexj.setLabel("BarabasiAlbertNode"+j);
+                    if (!nodes.containsKey(j)) {
+                        nodes.put(j, vertexj);
+                        System.err.println("Added Node: " + nodes.get(j).getId());
+                    }
+
+                    String edgeId = "link:"+i+"-"+j;
+		    SimpleConnector source = new SimpleConnector(TOPOLOGY_NAMESPACE_SFREE, nodes.get(i).getId()+"-"+edgeId+"-connector", nodes.get(i));
+		    SimpleConnector target = new SimpleConnector(TOPOLOGY_NAMESPACE_SFREE, nodes.get(j).getId()+"-"+edgeId+"-connector", nodes.get(j));
+		    edges.add(new AbstractEdge(TOPOLOGY_NAMESPACE_SFREE, edgeId, source, target));
+                    System.err.println("Added Link: " + edgeId);
 		}
 
 		Random r = new Random((new Date()).getTime());
 		for(int i=2*averageNumberofNeighboors;i<numberOfNodes;i++){
-			SimpleLeafVertex vertexi = new SimpleLeafVertex(TOPOLOGY_NAMESPACE_SFREE, Integer.toString(i),0,0);
-			vertexi.setIconKey("sfree:system");
-			vertexi.setLabel("BarabasiAlbertNode"+i);
-			nodes.put(i, vertexi);
-			System.err.println("Adding Node: " + i);
-			for(int times=0; times<averageNumberofNeighboors; times++){
-				AbstractEdge edge;
-				double d = r.nextDouble()*nodes.size(); // choose node to attach to
-				System.err.println("Generated random position: " + d);
-				Long j = (long)d;
-				System.err.println("Try Adding edge: " + j + "--->" + i);
-    			String edgeId = "link:"+i+"-"+j;
-    			SimpleConnector source = new SimpleConnector(TOPOLOGY_NAMESPACE_SFREE, nodes.get(i).getId()+"-"+edgeId+"-connector", nodes.get(i));
-    			SimpleConnector target = new SimpleConnector(TOPOLOGY_NAMESPACE_SFREE, nodes.get(j).getId()+"-"+edgeId+"-connector", nodes.get(j));
-    			edge = new AbstractEdge(TOPOLOGY_NAMESPACE_SFREE, edgeId, source, target);
-				if( i == j.intValue() ) continue;
-				edges.add(edge);
-			}// m links added
+			
+		    SimpleLeafVertex vertexi = new SimpleLeafVertex(TOPOLOGY_NAMESPACE_SFREE, Integer.toString(i),0,0);
+		    vertexi.setIconKey("sfree:system");
+		    vertexi.setLabel("BarabasiAlbertNode"+i);
+		    nodes.put(i, vertexi);
+		    System.err.println("Adding Node: " + i);
+			
+		    for(int times=0; times<averageNumberofNeighboors; times++){
+		        AbstractEdge edge;
+		        double d = r.nextDouble()*nodes.size(); // choose node to attach to
+		        System.err.println("Generated random position: " + d);
+		        Long j = (long)d;
+		        System.err.println("Try Adding edge: " + j.intValue() + "--->" + i);
+	                String edgeId = "link:"+i+"-"+j.intValue();
+	                SimpleConnector source = new SimpleConnector(TOPOLOGY_NAMESPACE_SFREE, nodes.get(i).getId()+"-"+edgeId+"-connector", nodes.get(i));
+                        SimpleConnector target = new SimpleConnector(TOPOLOGY_NAMESPACE_SFREE, nodes.get(j.intValue()).getId()+"-"+edgeId+"-connector", nodes.get(j.intValue()));
+                        edge = new AbstractEdge(TOPOLOGY_NAMESPACE_SFREE, edgeId, source, target);
+                        if( i == j.intValue() ) continue;
+                        edges.add(edge);
+		    }// m links added
 		}
 
 		addVertices(nodes.values().toArray(new Vertex[] {}));

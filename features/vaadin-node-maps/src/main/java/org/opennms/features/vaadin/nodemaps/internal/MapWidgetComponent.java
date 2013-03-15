@@ -39,12 +39,13 @@ import org.opennms.core.utils.LogUtils;
 import org.opennms.features.geocoder.Coordinates;
 import org.opennms.features.geocoder.GeocoderException;
 import org.opennms.features.geocoder.GeocoderService;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.VMapWidget;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.VMapWidget;
 import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.dao.AssetRecordDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsAssetRecord;
+import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsGeolocation;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
@@ -61,6 +62,8 @@ import com.vaadin.ui.VerticalLayout;
 
 @ClientWidget(value = VMapWidget.class)
 public class MapWidgetComponent extends VerticalLayout {
+    private static final String[] EMPTY_STRING_ARRAY = new String[]{};
+
     public static final class NodeEntry {
 
         private Float m_longitude;
@@ -73,6 +76,7 @@ public class MapWidgetComponent extends VerticalLayout {
         private String m_maintcontract;
         private String m_ipAddress;
         private OnmsSeverity m_severity = OnmsSeverity.NORMAL;
+        private List<String> m_categories = new ArrayList<String>();
         private int m_unackedCount = 0;
 
         public NodeEntry(final OnmsNode node) {
@@ -102,6 +106,12 @@ public class MapWidgetComponent extends VerticalLayout {
             if (node.getPrimaryInterface() != null) {
                 m_ipAddress = InetAddressUtils.str(node.getPrimaryInterface().getIpAddress());
             }
+            
+            if (node.getCategories() != null && node.getCategories().size() > 0) {
+                for (final OnmsCategory category : node.getCategories()) {
+                    m_categories.add(category.getName());
+                }
+            }
         }
 
         public void setSeverity(final OnmsSeverity severity) {
@@ -129,6 +139,10 @@ public class MapWidgetComponent extends VerticalLayout {
             target.addAttribute("severity", m_severity.getId());
             target.addAttribute("unackedCount", String.valueOf(m_unackedCount));
 
+            if (m_categories.size() > 0) {
+                target.addAttribute("categories", m_categories.toArray(EMPTY_STRING_ARRAY));
+            }
+
             target.endTag("node");
         }
 
@@ -151,7 +165,7 @@ public class MapWidgetComponent extends VerticalLayout {
 
     private TransactionOperations m_transactionOperations;
 
-    private int singleNodeId = 0;
+    private String m_searchString;
 
     public MapWidgetComponent() {
     }
@@ -173,9 +187,6 @@ public class MapWidgetComponent extends VerticalLayout {
         final CriteriaBuilder cb = new CriteriaBuilder(OnmsNode.class);
         cb.alias("assetRecord", "asset");
         cb.orderBy("id").asc();
-
-        if (singleNodeId > 0)
-            cb.eq("id", singleNodeId);
 
         final Map<Integer,NodeEntry> nodes = new HashMap<Integer,NodeEntry>();
         final List<OnmsAssetRecord> updatedAssets = new ArrayList<OnmsAssetRecord>();
@@ -242,6 +253,8 @@ public class MapWidgetComponent extends VerticalLayout {
         }
 
         m_log.debug("pushing nodes to the UI");
+        if (m_searchString != null) target.addAttribute("initialSearchString", m_searchString);
+
         target.startTag("nodes");
         for (final NodeEntry node : nodes.values()) {
             node.visit(target);
@@ -294,7 +307,7 @@ public class MapWidgetComponent extends VerticalLayout {
         m_transactionOperations = tx;
     }
 
-    public void setSingleNodeId(int nodeId) {
-        this.singleNodeId = nodeId;
+    public void setSearchString(final String searchString) {
+        m_searchString = searchString;
     }
 }

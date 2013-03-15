@@ -255,18 +255,42 @@ public class AlarmDaoTest implements InitializingBean {
 	    alarm.setUei(event.getEventUei());
 	    alarm.setSeverityId(event.getEventSeverity());
 	    alarm.setFirstEventTime(event.getEventTime());
-	    alarm.setSeverityId(event.getEventSeverity());
 	    alarm.setLastEvent(event);
 	    alarm.setCounter(1);
 	    alarm.setDistPoller(m_distPollerDao.load("localhost"));
 
 	    m_alarmDao.save(alarm);
 
-	    List<AlarmSummary> summary = m_alarmDao.getNodeAlarmSummaries(5);
+	    List<AlarmSummary> summary = m_alarmDao.getNodeAlarmSummaries();
 	    Assert.assertNotNull(summary);
 	    Assert.assertEquals(1, summary.size());
 	    AlarmSummary sum = summary.get(0);
 	    Assert.assertEquals(node.getLabel(), sum.getNodeLabel());
             Assert.assertEquals(alarm.getSeverity().getId(), sum.getMaxSeverity().getId());
+            Assert.assertNotSame("N/A", sum.getFuzzyTimeDown());
 	}
+
+        @Test
+        @Transactional
+        public void testAlarmSummary_AlarmWithNoEvent() {
+            OnmsNode node = m_nodeDao.findAll().iterator().next();
+
+            OnmsAlarm alarm = new OnmsAlarm();
+            alarm.setNode(node);
+            alarm.setUei("uei://org/opennms/test/badAlarmTest");
+            alarm.setSeverityId(new Integer(7));
+            alarm.setCounter(1);
+            alarm.setDistPoller(m_distPollerDao.load("localhost"));
+
+            m_alarmDao.save(alarm);
+
+            List<AlarmSummary> summary = m_alarmDao.getNodeAlarmSummaries();
+            Assert.assertNotNull(summary);
+            Assert.assertEquals(1, summary.size());
+            AlarmSummary sum = summary.get(0);
+            Assert.assertEquals(node.getLabel(), sum.getNodeLabel());
+            Assert.assertEquals(alarm.getSeverity().getId(), sum.getMaxSeverity().getId());
+            Assert.assertEquals("N/A", sum.getFuzzyTimeDown());
+        }
+
 }

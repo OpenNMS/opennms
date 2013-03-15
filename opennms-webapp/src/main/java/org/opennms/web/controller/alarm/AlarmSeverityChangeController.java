@@ -35,7 +35,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.core.utils.WebSecurityUtils;
-import org.opennms.web.alarm.AlarmFactory;
 import org.opennms.web.alarm.WebAlarmRepository;
 import org.opennms.web.servlet.MissingParameterException;
 import org.springframework.beans.factory.InitializingBean;
@@ -126,7 +125,6 @@ public class AlarmSeverityChangeController extends AbstractController implements
             m_webAlarmRepository.escalateAlarms(alarmIds, request.getRemoteUser(), new Date());
         } else if (action.equals(CLEAR_ACTION)) {
             m_webAlarmRepository.clearAlarms(alarmIds, request.getRemoteUser(), new Date());
-            AlarmFactory.clearAlarms(alarmIds, request.getRemoteUser());
         } else {
             throw new ServletException("Unknown alarm severity action: " + action);
         }

@@ -38,12 +38,14 @@
 		java.util.*,
 		java.net.*,
         java.sql.SQLException,
+        org.opennms.core.soa.ServiceRegistry,
         org.opennms.core.utils.InetAddressUtils,
         org.opennms.web.pathOutage.*,
         org.opennms.web.springframework.security.Authentication,
         org.opennms.web.svclayer.ResourceService,
         org.opennms.web.asset.Asset,
         org.opennms.web.asset.AssetModel,
+        org.opennms.web.navigate.PageNavEntry,
         org.springframework.web.context.WebApplicationContext,
         org.springframework.web.context.support.WebApplicationContextUtils"
 %>
@@ -59,7 +61,7 @@
     private ResourceService m_resourceService;
 	private AssetModel m_model = new AssetModel();
 
-    public void init() throws ServletException {
+	public void init() throws ServletException {
         try {
             m_telnetServiceId = NetworkElementFactory.getInstance(getServletContext()).getServiceIdFromName("Telnet");
         } catch (Throwable e) {
@@ -84,11 +86,11 @@
             throw new ServletException("Could not determine the SNMP service ID", e);
         }
 
-	    WebApplicationContext webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
+		final WebApplicationContext webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
 		m_resourceService = (ResourceService) webAppContext.getBean("resourceService", ResourceService.class);
     }
-    
-    public static String getStatusStringWithDefault(OnmsNode node_db) {
+
+	public static String getStatusStringWithDefault(OnmsNode node_db) {
         String status = ElementUtil.getNodeStatusString(node_db);
         if (status != null) {
             return status;
@@ -189,8 +191,20 @@
         nodeModel.put("parentRes", Integer.toString(nodeId));
         nodeModel.put("parentResType", "node");
     }
-    
+
     pageContext.setAttribute("model", nodeModel);
+
+	final WebApplicationContext webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
+	final ServiceRegistry registry = webAppContext.getBean(ServiceRegistry.class);
+	
+	final List<String> renderedLinks = new ArrayList<String>();
+	final Collection<PageNavEntry> navLinks = registry.findProviders(PageNavEntry.class);
+	for (final PageNavEntry link : navLinks) {
+	    final String text = "<a href=\"" + link.getUrl().replace("%nodeid%", String.valueOf(nodeId)) + "\">" + link.getName() + "</a>";
+	    renderedLinks.add(text);
+		System.err.println("nav link = " + text);
+	}
+	pageContext.setAttribute("navEntries", renderedLinks);
 %>
 
 <%@page import="org.opennms.core.resource.Vault"%>
@@ -301,6 +315,12 @@
         <a href="<c:out value="${createOutage}"/>">Schedule Outage</a>
       </li>
     </c:if>
+    
+    <c:forEach items="${navEntries}" var="entry">
+      <li class="o-menuitem">
+      	<c:out value="${link}" />
+      </li>
+    </c:forEach>
   </ul>
 </div>
 </div>

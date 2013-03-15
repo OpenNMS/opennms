@@ -133,7 +133,7 @@ public class GCFilterableContainer extends AbstractBeanContainer<VertexRef, Vert
 		}
 		
 		if (containsId(itemId)) {
-			return m_graphContainer.getParent(itemId);
+			return m_graphContainer.getBaseTopology().getParent(itemId);
 		}
 		
 		return null;
@@ -171,7 +171,7 @@ public class GCFilterableContainer extends AbstractBeanContainer<VertexRef, Vert
 		if (filteredRoots != null) {
 			return filteredRoots.contains(itemId) && containsId(itemId);
 		} else {
-			return containsId(itemId) && m_graphContainer.getParent(vRef(itemId)) == null;
+			return containsId(itemId) && m_graphContainer.getBaseTopology().getParent(vRef(itemId)) == null;
 		}
 
 
@@ -345,7 +345,7 @@ public class GCFilterableContainer extends AbstractBeanContainer<VertexRef, Vert
 			 LinkedHashSet<VertexRef> filteredItemIds = new LinkedHashSet<VertexRef>(getItemIds());
 
 			 for (VertexRef itemId : filteredItemIds) {
-				 Vertex itemParent = m_graphContainer.getParent(itemId);
+				 Vertex itemParent = m_graphContainer.getBaseTopology().getParent(itemId);
 				 if (itemParent == null || !filteredItemIds.contains(itemParent)) {
 					 // Parent is not included or this was a root, in both cases
 					 // this should be a filtered root

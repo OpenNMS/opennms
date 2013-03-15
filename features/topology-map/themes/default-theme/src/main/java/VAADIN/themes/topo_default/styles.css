@@ -1,5 +1,5 @@
 @CHARSET "UTF-8";
-@import "../reindeer/styles.css";
+@import "../opennms/styles.css";
 
 /** Ensure that tables don't have their font style/size overridden by GWT's standard.css */
 .v-app table td {
@@ -150,5 +150,3 @@ div.v-table-header-wrap {
 .vertex .status.critical{
 	fill:#CC0000;
 }
-
-
