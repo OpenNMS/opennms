@@ -319,7 +319,7 @@ public class PollableSnmpInterface implements ReadyRunnable {
                 log().debug("Working on interface with ifindex: " + miface.getIfindex());
                 log().debug("Interface PollStatus is " + miface.getStatus().getStatusName());
                 if (miface.getStatus().isUp()) {
-                    OnmsSnmpInterface iface = m_snmpinterfaces.get(new Integer(miface.getIfindex()));
+                    OnmsSnmpInterface iface = m_snmpinterfaces.get(Integer.valueOf(miface.getIfindex()));
 
                     log().debug("Previuos status Admin/Oper: " + iface.getIfAdminStatus() + "/" + iface.getIfOperStatus());
                     log().debug("Current status Admin/Oper: " + miface.getAdminstatus() + "/" + miface.getOperstatus());
@@ -359,8 +359,8 @@ public class PollableSnmpInterface implements ReadyRunnable {
                             sendOperUpEvent(iface);
                     }
 
-                    iface.setIfAdminStatus(new Integer(miface.getAdminstatus()));
-                    iface.setIfOperStatus(new Integer(miface.getOperstatus()));
+                    iface.setIfAdminStatus(Integer.valueOf(miface.getAdminstatus()));
+                    iface.setIfOperStatus(Integer.valueOf(miface.getOperstatus()));
                     iface.setLastSnmpPoll(now);
                                     
                     

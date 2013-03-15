@@ -389,7 +389,7 @@ public class SnmpPoller extends AbstractServiceDaemon {
     public void primarychangeHandler(Event event) {
         log().debug("primarychangeHandler: managing event: " + event.getUei());
 
-        getNetwork().delete(new Long(event.getNodeid()).intValue());
+        getNetwork().delete(Long.valueOf(event.getNodeid()).intValue());
         
         for (Parm parm : event.getParmCollection()){
             if (parm.isValid() && parm.getParmName().equals("newPrimarySnmpAddress")) {
@@ -416,7 +416,7 @@ public class SnmpPoller extends AbstractServiceDaemon {
      */
     @EventHandler(uei = EventConstants.PROVISION_SCAN_COMPLETE_UEI)
     public void scanCompletedHaldler(Event event){
-        getNetwork().refresh(new Long(event.getNodeid()).intValue());
+        getNetwork().refresh(Long.valueOf(event.getNodeid()).intValue());
     }
 
     /**
@@ -426,7 +426,7 @@ public class SnmpPoller extends AbstractServiceDaemon {
      */
     @EventHandler(uei = EventConstants.RESCAN_COMPLETED_EVENT_UEI)
     public void rescanCompletedHaldler(Event event){
-        getNetwork().refresh(new Long(event.getNodeid()).intValue());
+        getNetwork().refresh(Long.valueOf(event.getNodeid()).intValue());
     }
 
     /**
@@ -436,7 +436,7 @@ public class SnmpPoller extends AbstractServiceDaemon {
      */
     @EventHandler(uei = EventConstants.NODE_DELETED_EVENT_UEI)
     public void nodeDeletedHandler(Event event) {
-        getNetwork().delete(new Long(event.getNodeid()).intValue());
+        getNetwork().delete(Long.valueOf(event.getNodeid()).intValue());
     }
 
     /**
@@ -514,7 +514,7 @@ public class SnmpPoller extends AbstractServiceDaemon {
      */
     @EventHandler(uei = EventConstants.NODE_UP_EVENT_UEI)
     public void nodeUpHandler(Event event) {
-        getNetwork().activate(new Long(event.getNodeid()).intValue());
+        getNetwork().activate(Long.valueOf(event.getNodeid()).intValue());
 
     }
 
@@ -525,7 +525,7 @@ public class SnmpPoller extends AbstractServiceDaemon {
      */
     @EventHandler(uei = EventConstants.NODE_DOWN_EVENT_UEI)
     public void nodeDownHandler(Event event) {
-        getNetwork().suspend(new Long(event.getNodeid()).intValue());
+        getNetwork().suspend(Long.valueOf(event.getNodeid()).intValue());
     }
 
 }

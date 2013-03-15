@@ -73,7 +73,7 @@ public class MockQueryManager implements QueryManager {
 
             public void visitService(MockService s) {
                 if (ipaddr.equals(s.getInterface().getIpAddr())) {
-                    serviceIds.add(new Integer(s.getId()));
+                    serviceIds.add(Integer.valueOf(s.getId()));
                 }
             }
 

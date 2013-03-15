@@ -46,14 +46,6 @@ import org.springframework.util.Assert;
  *
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="mailto:tarus@opennms.org">Tarus Balog </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
- * @author <a href="mailto:tarus@opennms.org">Tarus Balog </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
- * @author <a href="mailto:tarus@opennms.org">Tarus Balog </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @version $Id: $
  */
 public class JdbcTrapdIpMgr implements TrapdIpMgr, InitializingBean {
     private DataSource m_dataSource;
@@ -111,7 +103,7 @@ public class JdbcTrapdIpMgr implements TrapdIpMgr, InitializingBean {
             return -1;
         }
         
-        return longValue(m_knownips.put(addr, new Long(nodeid)));
+        return longValue(m_knownips.put(addr, Long.valueOf(nodeid)));
     }
 
     /* (non-Javadoc)

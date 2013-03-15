@@ -50,7 +50,7 @@ public class IntSet {
      * @return a boolean.
      */
     public boolean add(int n) {
-        return m_set.add(new Integer(n));
+        return m_set.add(Integer.valueOf(n));
     }
 
     /*
@@ -92,7 +92,7 @@ public class IntSet {
      * @return a boolean.
      */
     public boolean contains(int n) {
-        return m_set.contains(new Integer(n));
+        return m_set.contains(Integer.valueOf(n));
     }
 
     /*
@@ -150,7 +150,7 @@ public class IntSet {
      * @return a boolean.
      */
     public boolean remove(int n) {
-        return m_set.remove(new Integer(n));
+        return m_set.remove(Integer.valueOf(n));
     }
 
     /*

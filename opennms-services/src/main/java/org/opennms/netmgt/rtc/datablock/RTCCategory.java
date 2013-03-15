@@ -40,9 +40,6 @@ import org.opennms.netmgt.config.categories.Category;
  *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
- * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
- * @version $Id: $
  */
 public class RTCCategory extends Category {
 
@@ -97,7 +94,7 @@ public class RTCCategory extends Category {
      *            the node ID to add
      */
     public void addNode(long nodeid) {
-        Long longnodeid = new Long(nodeid);
+        Long longnodeid = Long.valueOf(nodeid);
 
         if (!m_nodes.contains(longnodeid))
             m_nodes.add(longnodeid);
@@ -110,7 +107,7 @@ public class RTCCategory extends Category {
      *            the node ID to delete
      */
     public void deleteNode(long nodeid) {
-        Long longnodeid = new Long(nodeid);
+        Long longnodeid = Long.valueOf(nodeid);
 
         m_nodes.remove(longnodeid);
     }

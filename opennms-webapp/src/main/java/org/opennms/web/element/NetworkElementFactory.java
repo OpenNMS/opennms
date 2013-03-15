@@ -68,6 +68,7 @@ import org.opennms.netmgt.linkd.DbStpNodeEntry;
 import org.opennms.netmgt.linkd.DbVlanEntry;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsArpInterface;
+import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -77,7 +78,6 @@ import org.opennms.netmgt.model.OnmsRestrictions;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.PrimaryType;
-import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.web.api.Util;
 import org.opennms.web.svclayer.AggregateStatus;
 import org.springframework.beans.factory.InitializingBean;
@@ -1009,7 +1009,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     @Override
     public List<LinkInterface> getDataLinksOnInterface(int nodeId, String ipAddress){
     	Interface iface = getInterface(nodeId, ipAddress);
-    	if (iface != null && new Integer(iface.getIfIndex()) != null && iface.getIfIndex() > 0) {
+    	if (iface != null && Integer.valueOf(iface.getIfIndex()) != null && iface.getIfIndex() > 0) {
     		return getDataLinksOnInterface(nodeId, iface.getIfIndex());    		
     	}
     	return new ArrayList<LinkInterface>();
@@ -1018,7 +1018,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     @Override
     public List<LinkInterface> getDataLinksOnInterface(int id){
     	Interface iface = getInterface(id);
-    	if (iface != null && new Integer(iface.getIfIndex()) != null && iface.getIfIndex() > 0) {
+    	if (iface != null && Integer.valueOf(iface.getIfIndex()) != null && iface.getIfIndex() > 0) {
     		return getDataLinksOnInterface(iface.getNodeId(), iface.getIfIndex());    		
     	}
     	return new ArrayList<LinkInterface>();    	
@@ -1196,7 +1196,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         public IpRouteInterface mapRow(ResultSet rs, int rowNum) throws SQLException {
             IpRouteInterface ipRtIf = new IpRouteInterface();
 
-            Object element = new Integer(rs.getInt("nodeId"));
+            Object element = Integer.valueOf(rs.getInt("nodeId"));
             ipRtIf.m_nodeId = ((Integer) element).intValue();
 
             element = rs.getString("routedest");
@@ -1214,44 +1214,44 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
                         ((Timestamp) element).getTime()));
             }
 
-            element = new Integer(rs.getInt("routeifindex"));
+            element = Integer.valueOf(rs.getInt("routeifindex"));
             if (element != null) {
                 ipRtIf.m_routeifindex = ((Integer) element).intValue();
             }
 
-            element = new Integer(rs.getInt("routemetric1"));
+            element = Integer.valueOf(rs.getInt("routemetric1"));
             if (element != null) {
                 ipRtIf.m_routemetric1 = ((Integer) element).intValue();
             }
 
-            element = new Integer(rs.getInt("routemetric2"));
+            element = Integer.valueOf(rs.getInt("routemetric2"));
             if (element != null) {
                 ipRtIf.m_routemetric2 = ((Integer) element).intValue();
             }
 
-            element = new Integer(rs.getInt("routemetric3"));
+            element = Integer.valueOf(rs.getInt("routemetric3"));
             if (element != null) {
                 ipRtIf.m_routemetric4 = ((Integer) element).intValue();
             }
 
-            element = new Integer(rs.getInt("routemetric4"));
+            element = Integer.valueOf(rs.getInt("routemetric4"));
             if (element != null) {
                 ipRtIf.m_routemetric4 = ((Integer) element).intValue();
             }
 
-            element = new Integer(rs.getInt("routemetric5"));
+            element = Integer.valueOf(rs.getInt("routemetric5"));
             if (element != null) {
                 ipRtIf.m_routemetric5 = ((Integer) element).intValue();
             }
 
-            element = new Integer(rs.getInt("routetype"));
+            element = Integer.valueOf(rs.getInt("routetype"));
             if (element != null && ((Integer)element).intValue() > 0) {
                 ipRtIf.m_routetype = ((Integer) element).intValue();
             } else {
                 ipRtIf.m_routetype = DbIpRouteInterfaceEntry.ROUTE_TYPE_OTHER;
             }
 
-            element = new Integer(rs.getInt("routeproto"));
+            element = Integer.valueOf(rs.getInt("routeproto"));
             if (element != null) {
                 ipRtIf.m_routeproto = ((Integer) element).intValue();
             }
@@ -1276,7 +1276,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         public StpInterface mapRow(ResultSet rs, int rowNum) throws SQLException {
             StpInterface stpIf = new StpInterface();
 
-            Object element = new Integer(rs.getInt("nodeId"));
+            Object element = Integer.valueOf(rs.getInt("nodeId"));
             stpIf.m_nodeId = ((Integer) element).intValue();
 
             element = rs.getTimestamp("lastpolltime");
@@ -1285,12 +1285,12 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
                         ((Timestamp) element).getTime()));
             }
 
-            element = new Integer(rs.getInt("bridgeport"));
+            element = Integer.valueOf(rs.getInt("bridgeport"));
             if (element != null) {
                 stpIf.m_bridgeport = ((Integer) element).intValue();
             }
 
-            element = new Integer(rs.getInt("ifindex"));
+            element = Integer.valueOf(rs.getInt("ifindex"));
             if (element != null) {
                 stpIf.m_ifindex = ((Integer) element).intValue();
             }
@@ -1298,7 +1298,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
             element = rs.getString("stpportdesignatedroot");
             stpIf.m_stpdesignatedroot = (String) element;
 
-            element = new Integer(rs.getInt("stpportdesignatedcost"));
+            element = Integer.valueOf(rs.getInt("stpportdesignatedcost"));
             if (element != null) {
                 stpIf.m_stpportdesignatedcost = ((Integer) element).intValue();
             }
@@ -1309,19 +1309,19 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
             element = rs.getString("stpportdesignatedport");
             stpIf.m_stpdesignatedport = (String) element;
 
-            element = new Integer(rs.getInt("stpportpathcost"));
+            element = Integer.valueOf(rs.getInt("stpportpathcost"));
             if (element != null) {
                 stpIf.m_stpportpathcost = ((Integer) element).intValue();
             }
 
-            element = new Integer(rs.getInt("stpportstate"));
+            element = Integer.valueOf(rs.getInt("stpportstate"));
             if (element != null && ((Integer)element).intValue() > 0) {
                 stpIf.m_stpportstate = ((Integer) element).intValue();
             } else {
                 stpIf.m_stpportstate = DbStpInterfaceEntry.STP_PORT_DISABLED;
             }
 
-            element = new Integer(rs.getInt("stpvlan"));
+            element = Integer.valueOf(rs.getInt("stpvlan"));
             if (element != null) {
                 stpIf.m_stpvlan = ((Integer) element).intValue();
             }
@@ -1333,12 +1333,12 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
                 stpIf.m_status = DbStpInterfaceEntry.STATUS_UNKNOWN;
             }
 
-            element = new Integer(rs.getInt("dbridge"));
+            element = Integer.valueOf(rs.getInt("dbridge"));
             if (element != null) {
                 stpIf.m_stpbridgenodeid = ((Integer) element).intValue();
             }
 
-            element = new Integer(rs.getInt("droot"));
+            element = Integer.valueOf(rs.getInt("droot"));
             if (element != null) {
                 stpIf.m_stprootnodeid = ((Integer) element).intValue();
             }
@@ -1364,7 +1364,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         public StpNode mapRow(ResultSet rs, int rowNum) throws SQLException {
             StpNode stpNode = new StpNode();
 
-            Object element = new Integer(rs.getInt("nodeId"));
+            Object element = Integer.valueOf(rs.getInt("nodeId"));
             stpNode.m_nodeId = ((Integer) element).intValue();
 
             element = rs.getString("basebridgeaddress");
@@ -1379,19 +1379,19 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
                         ((Timestamp) element).getTime()));
             }
 
-            element = new Integer(rs.getInt("basenumports"));
+            element = Integer.valueOf(rs.getInt("basenumports"));
             if (element != null) {
                 stpNode.m_basenumports = ((Integer) element).intValue();
             }
 
-            element = new Integer(rs.getInt("basetype"));
+            element = Integer.valueOf(rs.getInt("basetype"));
             if (element != null && ((Integer)element).intValue() > 0) {
                 stpNode.m_basetype = ((Integer) element).intValue();
             } else {
                 stpNode.m_basetype = DbStpNodeEntry.BASE_TYPE_UNKNOWN;
             }
 
-            element = new Integer(rs.getInt("basevlan"));
+            element = Integer.valueOf(rs.getInt("basevlan"));
             if (element != null) {
                 stpNode.m_basevlan = ((Integer) element).intValue();
             }
@@ -1401,24 +1401,24 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
                 stpNode.m_basevlanname = (String) element;
             }
 
-            element = new Integer(rs.getInt("stppriority"));
+            element = Integer.valueOf(rs.getInt("stppriority"));
             if (element != null) {
                 stpNode.m_stppriority = ((Integer) element).intValue();
             }
 
-            element = new Integer(rs.getInt("stpprotocolspecification"));
+            element = Integer.valueOf(rs.getInt("stpprotocolspecification"));
             if (element != null && ((Integer)element).intValue() > 0) {
                 stpNode.m_stpprotocolspecification = ((Integer) element).intValue();
             } else {
                 stpNode.m_stpprotocolspecification = DbStpNodeEntry.STP_UNKNOWN;
             }
 
-            element = new Integer(rs.getInt("stprootcost"));
+            element = Integer.valueOf(rs.getInt("stprootcost"));
             if (element != null) {
                 stpNode.m_stprootcost = ((Integer) element).intValue();
             }
 
-            element = new Integer(rs.getInt("stprootport"));
+            element = Integer.valueOf(rs.getInt("stprootport"));
             if (element != null) {
                 stpNode.m_stprootport = ((Integer) element).intValue();
             }
@@ -1430,7 +1430,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
                 stpNode.m_status = DbStpNodeEntry.STATUS_UNKNOWN;
             }
 
-            element = new Integer(rs.getInt("stpdesignatedrootnodeid"));
+            element = Integer.valueOf(rs.getInt("stpdesignatedrootnodeid"));
             if (element != null) {
                 stpNode.m_stprootnodeid = ((Integer) element).intValue();
             }
@@ -1448,7 +1448,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         @Override
         public Vlan mapRow(ResultSet rs, int rowNum) throws SQLException {
             // Non-null field
-            Object element = new Integer(rs.getInt("nodeId"));
+            Object element = Integer.valueOf(rs.getInt("nodeId"));
             int nodeId = ((Integer) element).intValue();
 
             // Non-null field
@@ -1464,13 +1464,13 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
             String lastpolltime = Util.formatDateToUIString(new Date(
                         ((Timestamp) element).getTime()));
 
-            element = new Integer(rs.getInt("vlantype"));
+            element = Integer.valueOf(rs.getInt("vlantype"));
             int vlantype = DbVlanEntry.VLAN_TYPE_UNKNOWN;
             if (element != null) {
                 vlantype = ((Integer) element).intValue();
             }
 
-            element = new Integer(rs.getInt("vlanstatus"));
+            element = Integer.valueOf(rs.getInt("vlanstatus"));
             int vlanstatus = DbVlanEntry.VLAN_STATUS_UNKNOWN;
             if (element != null) {
                 vlanstatus= ((Integer) element).intValue();

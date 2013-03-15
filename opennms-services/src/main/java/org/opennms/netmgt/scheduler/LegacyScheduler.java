@@ -166,7 +166,7 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
             log().debug("schedule: Adding ready runnable "+runnable+" at interval " + interval);
         }
 
-        Long key = new Long(interval);
+        Long key = Long.valueOf(interval);
         if (!m_queues.containsKey(key)) {
             if (log().isDebugEnabled()) {
                 log().debug("schedule: interval queue did not exist, a new one has been created");

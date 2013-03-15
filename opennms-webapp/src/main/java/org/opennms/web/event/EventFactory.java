@@ -51,11 +51,6 @@ import org.opennms.web.filter.Filter;
  * Encapsulates all querying functionality for events.
  *
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @version $Id: $
- * @since 1.8.1
  */
 public class EventFactory {
 
@@ -1209,7 +1204,7 @@ public class EventFactory {
         while (rs.next()) {
             Event event = new Event();
 
-            Object element = new Integer(rs.getInt("eventID"));
+            Object element = Integer.valueOf(rs.getInt("eventID"));
             event.id = ((Integer) element).intValue();
 
             element = rs.getString("eventUei");
@@ -1236,7 +1231,7 @@ public class EventFactory {
             // node id can be null
             element = rs.getObject("nodeID");
             if (element == null) {
-                event.nodeID = new Integer(0);
+                event.nodeID = Integer.valueOf(0);
             } else {
                 event.nodeID = (Integer) element;
             }

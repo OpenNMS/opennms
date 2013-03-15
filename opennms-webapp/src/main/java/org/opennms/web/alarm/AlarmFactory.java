@@ -54,15 +54,6 @@ import org.opennms.web.filter.Filter;
  *
  * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
- * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
- * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @version $Id: $
- * @since 1.8.1
  */
 public class AlarmFactory extends Object {
     
@@ -1110,7 +1101,7 @@ public class AlarmFactory extends Object {
             alarm.dpName = rs.getString("dpName");
 
             // node id can be null, in which case nodeID will be 0
-            alarm.nodeID = new Integer(rs.getInt("nodeID"));
+            alarm.nodeID = Integer.valueOf(rs.getInt("nodeID"));
 
             alarm.ipAddr = rs.getString("ipAddr");
 

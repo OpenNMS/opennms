@@ -518,7 +518,7 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
             ResultSet rs = loadStmt.executeQuery();
             d.watch(rs);
             while (rs.next()) {
-                Integer id = new Integer(rs.getInt(1));
+                Integer id = Integer.valueOf(rs.getInt(1));
                 String name = rs.getString(2);
     
                 m_serviceIdToName.put(id, name);
@@ -963,7 +963,7 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
                 }
     
                 // New node or existing node?
-                ifList = nodes.get(new Integer(nodeId));
+                ifList = nodes.get(Integer.valueOf(nodeId));
                 if (ifList == null) {
                     // Create new interface entry list
                     ifList = new ArrayList<LightWeightIfEntry>();

@@ -59,10 +59,10 @@ public class FuzzyDateFormatterTest extends TestCase {
         Double realMonth = (1000 * 60 * 60 * 24 * 365.0 / 12.0);
         
         assertEquals("2 months",     FuzzyDateFormatter.calculateDifference(new Date(now.getTime() - (realMonth.longValue() * 2) ), now));
-        assertEquals("3 months",     FuzzyDateFormatter.calculateDifference(new Date(now.getTime() - (new Double(realMonth * 2.5)).longValue() ), now));
+        assertEquals("3 months",     FuzzyDateFormatter.calculateDifference(new Date(now.getTime() - (Double.valueOf(realMonth * 2.5)).longValue() ), now));
         
         // why is this not 8.0?
-        assertEquals("8 months",     FuzzyDateFormatter.calculateDifference(new Date(now.getTime() - (new Double(realMonth * 8)).longValue() ), now));
+        assertEquals("8 months",     FuzzyDateFormatter.calculateDifference(new Date(now.getTime() - (Double.valueOf(realMonth * 8)).longValue() ), now));
         
         assertEquals("1 year",       FuzzyDateFormatter.calculateDifference(new Date(now.getTime() - (1000L * 60 * 60 * 24 * 365) ), now));
         assertEquals("2 years",      FuzzyDateFormatter.calculateDifference(new Date(now.getTime() - (1000L * 60 * 60 * 24 * 548) ), now));

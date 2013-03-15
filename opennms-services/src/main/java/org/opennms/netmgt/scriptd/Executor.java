@@ -276,7 +276,7 @@ final class Executor implements Runnable, PausableFiber {
 
                 if (event.hasNodeid()) {
                     Long nodeLong = event.getNodeid();
-                    Integer nodeInt = new Integer(nodeLong.intValue());
+                    Integer nodeInt = Integer.valueOf(nodeLong.intValue());
                     node = m_nodeDao.get(nodeInt);
                     m_mgr.registerBean("node", node);
                 }
