@@ -17,7 +17,7 @@ public class NodeMapNavEntry implements ConditionalPageNavEntry {
             final OnmsNode node = (OnmsNode)target;
             if (node.getAssetRecord() != null && node.getAssetRecord().getGeolocation() != null) {
                 final OnmsGeolocation geolocation = node.getAssetRecord().getGeolocation();
-                if (geolocation.getCoordinates() != null && geolocation.getCoordinates() != Coordinates.BAD_COORDINATES) {
+                if (geolocation.getCoordinates() != null && !Coordinates.BAD_COORDINATES.equals(geolocation.getCoordinates())) {
                     return DisplayStatus.DISPLAY_LINK;
                 }
             }
