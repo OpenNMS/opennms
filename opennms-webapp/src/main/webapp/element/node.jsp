@@ -45,7 +45,7 @@
         org.opennms.web.svclayer.ResourceService,
         org.opennms.web.asset.Asset,
         org.opennms.web.asset.AssetModel,
-        org.opennms.web.navigate.PageNavEntry,
+        org.opennms.web.navigate.*,
         org.springframework.web.context.WebApplicationContext,
         org.springframework.web.context.support.WebApplicationContextUtils"
 %>
@@ -196,14 +196,23 @@
 
 	final WebApplicationContext webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
 	final ServiceRegistry registry = webAppContext.getBean(ServiceRegistry.class);
-	
+
 	final List<String> renderedLinks = new ArrayList<String>();
-	final Collection<PageNavEntry> navLinks = registry.findProviders(PageNavEntry.class);
-	for (final PageNavEntry link : navLinks) {
-	    final String text = "<a href=\"" + link.getUrl().replace("%nodeid%", String.valueOf(nodeId)) + "\">" + link.getName() + "</a>";
-	    renderedLinks.add(text);
-		System.err.println("nav link = " + text);
+	final Collection<ConditionalPageNavEntry> navLinks = registry.findProviders(ConditionalPageNavEntry.class, "(Page=node)");
+	for (final ConditionalPageNavEntry link : navLinks) {
+	    final DisplayStatus displayStatus = link.evaluate(request, node_db);
+	    switch(displayStatus) {
+		    case DISPLAY_NO_LINK:
+		        renderedLinks.add(link.getName());
+		        break;
+		    case DISPLAY_LINK:
+		        renderedLinks.add("<a href=\"" + link.getUrl().replace("%nodeid%", ""+nodeId) + "\">" + link.getName() + "</a>");
+		        break;
+		    case NO_DISPLAY:
+		        break;
+	    }
 	}
+	
 	pageContext.setAttribute("navEntries", renderedLinks);
 %>
 
@@ -318,7 +327,7 @@
     
     <c:forEach items="${navEntries}" var="entry">
       <li class="o-menuitem">
-      	<c:out value="${link}" />
+      	<c:out value="${entry}" escapeXml="false" />
       </li>
     </c:forEach>
   </ul>

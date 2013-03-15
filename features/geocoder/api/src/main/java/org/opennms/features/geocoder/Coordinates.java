@@ -3,7 +3,8 @@ package org.opennms.features.geocoder;
 import java.io.Serializable;
 
 public class Coordinates implements Serializable {
-    private static final long serialVersionUID = 7625206700618002037L;
+    private static final long serialVersionUID = 2079876989978267336L;
+    public static final String BAD_COORDINATES = Integer.MIN_VALUE + "," + Integer.MIN_VALUE;
 
     private float m_longitude;
     private float m_latitude;

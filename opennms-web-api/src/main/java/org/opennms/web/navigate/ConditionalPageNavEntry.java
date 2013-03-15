@@ -28,8 +28,9 @@
 
 package org.opennms.web.navigate;
 
+import javax.servlet.http.HttpServletRequest;
 
-public interface PageNavEntry {
+public interface ConditionalPageNavEntry extends PageNavEntry {
     /**
      * <p>getName</p>
      *
@@ -43,4 +44,13 @@ public interface PageNavEntry {
      * @return a {@link java.lang.String} object.
      */
     public abstract String getUrl();
+
+    /**
+     * <p>evaluate</p>
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param target an optional object to be evaluated when determining whether to create a link.  (may be null)
+     * @return a {@link org.opennms.web.navigate.DisplayStatus} object.
+     */
+    public abstract DisplayStatus evaluate(HttpServletRequest request, Object target);
 }

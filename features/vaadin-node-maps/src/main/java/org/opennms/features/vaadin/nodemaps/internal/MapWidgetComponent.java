@@ -151,9 +151,7 @@ public class MapWidgetComponent extends VerticalLayout {
         }
     }
 
-    private static final String BAD_COORDINATES = Integer.MIN_VALUE + "," + Integer.MIN_VALUE;
-
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
 
     private NodeDao m_nodeDao;
     private AssetRecordDao m_assetDao;
@@ -207,7 +205,7 @@ public class MapWidgetComponent extends VerticalLayout {
                         geolocation.setCoordinates(coordinates);
                         updatedAssets.add(assets);
                     }
-                    if (BAD_COORDINATES.equals(geolocation.getCoordinates())) {
+                    if (Coordinates.BAD_COORDINATES.equals(geolocation.getCoordinates())) {
                         m_log.debug("Node {} has an asset record with address, but we were unable to find valid coordinates.", node.getId());
                         continue;
                     }
@@ -282,8 +280,8 @@ public class MapWidgetComponent extends VerticalLayout {
             final Coordinates coordinates = m_geocoderService.getCoordinates(address);
             return coordinates.getLongitude() + "," + coordinates.getLatitude();
         } catch (final GeocoderException e) {
-            m_log.debug("Failed to find coordinates for address {}, returning {}", address, BAD_COORDINATES);
-            return BAD_COORDINATES;
+            m_log.debug("Failed to find coordinates for address {}, returning {}", address, Coordinates.BAD_COORDINATES);
+            return Coordinates.BAD_COORDINATES;
         }
     }
 

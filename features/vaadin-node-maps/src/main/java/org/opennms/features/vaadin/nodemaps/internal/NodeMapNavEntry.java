@@ -2,15 +2,27 @@ package org.opennms.features.vaadin.nodemaps.internal;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.opennms.features.geocoder.Coordinates;
+import org.opennms.netmgt.model.OnmsGeolocation;
+import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.web.navigate.ConditionalPageNavEntry;
 import org.opennms.web.navigate.DisplayStatus;
-import org.opennms.web.navigate.PageNavEntry;
 
-public class NodeMapNavEntry implements PageNavEntry {
+public class NodeMapNavEntry implements ConditionalPageNavEntry {
     private String m_name;
     private String m_url;
 
-    @Override public DisplayStatus evaluate(final HttpServletRequest request) {
-        return null;
+    @Override public DisplayStatus evaluate(final HttpServletRequest request, final Object target) {
+        if (target instanceof OnmsNode) {
+            final OnmsNode node = (OnmsNode)target;
+            if (node.getAssetRecord() != null && node.getAssetRecord().getGeolocation() != null) {
+                final OnmsGeolocation geolocation = node.getAssetRecord().getGeolocation();
+                if (geolocation.getCoordinates() != null && geolocation.getCoordinates() != Coordinates.BAD_COORDINATES) {
+                    return DisplayStatus.DISPLAY_LINK;
+                }
+            }
+        }
+        return DisplayStatus.NO_DISPLAY;
     }
 
     @Override public String getName() {
