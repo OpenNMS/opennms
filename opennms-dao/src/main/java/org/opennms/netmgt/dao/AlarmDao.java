@@ -51,9 +51,8 @@ public interface AlarmDao extends OnmsDao<OnmsAlarm, Integer> {
      * reflecting the max severity, the minimum last event time and alarm count;
      * ordered by the oldest.</p>
      * 
-     * @param rows The maximum number of alarm summaries to return.
      * @return A list of alarm summaries.
      */
-    List<AlarmSummary> getNodeAlarmSummaries(final int rows);
+    List<AlarmSummary> getNodeAlarmSummaries();
     
 }

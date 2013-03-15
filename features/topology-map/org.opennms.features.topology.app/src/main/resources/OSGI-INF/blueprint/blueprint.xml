@@ -10,6 +10,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
             <cm:property name="servletAlias" value="/topology"/>
             <cm:property name="widgetset" value="org.opennms.features.topology.widgetset.gwt.TopologyWidgetset"/>
             <cm:property name="theme" value="topo_default" />
+            <cm:property name="showHeader" value="true" />
         </cm:default-properties>
     </cm:property-placeholder>
     
@@ -27,13 +28,17 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         <property name="theme" value="${theme}"/>
         <property name="widgetManager" ref="widgetManager"/>
         <property name="treeWidgetManager" ref="treeWidgetManager"/>
+        <property name="showHeader" value="${showHeader}" />
     </bean>
+    
+    <reference id="onmsHeaderProvider" interface="org.opennms.web.api.OnmsHeaderProvider" availability="mandatory" />
     
     <bean id="topologyWidgetTestApplicationFactory" class="org.opennms.features.topology.app.internal.TopologyWidgetTestApplicationFactory" >
         <!-- Blueprint container bean -->
         <argument ref="blueprintContainer"/>
         <!-- Bean id of the Vaadin application prototype -->
         <argument value="topologyApplication"/>
+        <property name="headerProvider" ref="onmsHeaderProvider" />
     </bean>
     
     <service interface="org.ops4j.pax.vaadin.ApplicationFactory" ref="topologyWidgetTestApplicationFactory">

@@ -54,6 +54,10 @@ public class NodeMarker extends Marker {
         return getJSObject().getPropertyAsString(key);
     }
 
+    public String[] getTextPropertyNames() {
+        return m_textProperties;
+    }
+
     public JsArrayString getCategories() {
         return getJSObject().getProperty("categories").cast();
     }
@@ -108,36 +112,6 @@ public class NodeMarker extends Marker {
     public Integer getUnackedCount() {
         final String count = getProperty("unackedCount");
         return count == null? 0 : Integer.valueOf(count);
-    }
-
-    public boolean containsText(final String text) {
-        if (text == null) return false;
-        if ("".equals(text)) return true;
-
-        if (text.startsWith("category:")) {
-            final String searchString = text.replaceFirst("category: *", "").toLowerCase();
-            final JsArrayString categories = getCategories();
-            for (int i = 0; i < categories.length(); i++) {
-                final String category = categories.get(i).toLowerCase();
-                if (category.contains(searchString)) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        for (final String propertyName : m_textProperties) {
-            final String value = getProperty(propertyName);
-            if (value != null) {
-                final String searchString = text.toLowerCase();
-                final String property = value.toLowerCase();
-                if (property.contains(searchString)) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
     }
 
     @Override

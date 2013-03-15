@@ -9,31 +9,41 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
 					https://svn.apache.org/repos/asf/aries/tags/blueprint-0.3.1/blueprint-core/src/main/resources/org/apache/aries/blueprint/ext/blueprint-ext.xsd">
    
 
-   <bean id="topologyProvider"  class="org.opennms.features.topology.plugins.topo.sfree.internal.SFreeTopologyProvider"/>
+   <bean id="sfreeTopologyProvider"  class="org.opennms.features.topology.plugins.topo.sfree.internal.SFreeTopologyProvider"/>
     
-    <service interface="org.opennms.features.topology.api.TopologyProvider" ref="topologyProvider">
+    <service interface="org.opennms.features.topology.api.topo.VertexProvider" ref="sfreeTopologyProvider">
+        <service-properties>
+            <entry key="label" value="ScaleFree"/>
+        </service-properties>
+    </service>
+
+    <service interface="org.opennms.features.topology.api.topo.EdgeProvider" ref="sfreeTopologyProvider">
+        <service-properties>
+            <entry key="label" value="ScaleFree"/>
+        </service-properties>
+    </service>
+    
+    <service interface="org.opennms.features.topology.api.topo.GraphProvider" ref="sfreeTopologyProvider">
       	<service-properties>
-            <entry key="label" value="ScaleFreeGenerator"/>
+            <entry key="label" value="ScaleFree"/>
         </service-properties>
     </service>
         
     <service interface="org.opennms.features.topology.api.Operation" >
       	<service-properties>
-            <entry key="operation.menuLocation" value="File"/>
+            <entry key="operation.menuLocation" value="View"/>
             <entry key="operation.label" value="ScaleFree:ErdosReniy"/>
         </service-properties>
         <bean class="org.opennms.features.topology.plugins.topo.sfree.internal.operations.ErdosReniyOperation">
-            <argument ref="topologyProvider"/>
         </bean>
     </service>
 
     <service interface="org.opennms.features.topology.api.Operation" >
       	<service-properties>
-            <entry key="operation.menuLocation" value="File"/>
+            <entry key="operation.menuLocation" value="View"/>
             <entry key="operation.label" value="ScaleFree:BarabasiAlbert"/>
         </service-properties>
         <bean class="org.opennms.features.topology.plugins.topo.sfree.internal.operations.BarabasiAlbertOperation">
-            <argument ref="topologyProvider"/>
         </bean>
     </service>
 
@@ -42,11 +52,10 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
             <property name="iconMap">
                 <map>
                     <entry key="sfree:group" value="theme://images/cloud.png"/>
-                    <entry key="sfree:system" value="theme://images/generic-device.png"/>
+                    <entry key="sfree:system" value="theme://images/vmware-network.png"/>
                 </map>
             </property>
         </bean>
     </service>
-    
     
 </blueprint>

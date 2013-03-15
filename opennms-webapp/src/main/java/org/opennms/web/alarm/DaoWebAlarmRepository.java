@@ -191,7 +191,7 @@ public class DaoWebAlarmRepository implements WebAlarmRepository, InitializingBe
         alarm.reductionKey = onmsAlarm.getReductionKey();
         alarm.count = onmsAlarm.getCounter();
         alarm.severity = onmsAlarm.getSeverity();
-        alarm.lastEventID = onmsAlarm.getLastEvent().getId();
+        alarm.lastEventID = onmsAlarm.getLastEvent() == null ? 0 : onmsAlarm.getLastEvent().getId();
         alarm.firsteventtime = onmsAlarm.getFirstEventTime();
         alarm.lasteventtime = onmsAlarm.getLastEventTime();
         alarm.description = onmsAlarm.getDescription();
@@ -468,8 +468,8 @@ public class DaoWebAlarmRepository implements WebAlarmRepository, InitializingBe
 
     @Override
     @Transactional
-    public List<AlarmSummary> getCurrentNodeAlarmSummaries(int rows) {
-        return m_alarmDao.getNodeAlarmSummaries(rows);
+    public List<AlarmSummary> getCurrentNodeAlarmSummaries() {
+        return m_alarmDao.getNodeAlarmSummaries();
     }
 
 }

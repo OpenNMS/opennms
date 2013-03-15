@@ -29,8 +29,8 @@
       </plugin>
     </plugins>
   </build>
-  <dependencies>
 
+  <dependencies>
     <!-- Contains beans for ServiceConfigurationPublicConstructorTest -->
     <dependency>
       <groupId>org.opennms</groupId>
@@ -72,6 +72,7 @@
     <dependency>
       <groupId>org.opennms.features.reporting</groupId>
       <artifactId>org.opennms.features.reporting.model</artifactId>
+      <scope>test</scope>
     </dependency>
 
     <!-- OpenNMS Karaf container so that we can crank it up with the pax-exam-karaf unit test framework -->
@@ -80,17 +81,12 @@
       <artifactId>karaf</artifactId>
       <type>tar.gz</type>
       <version>${project.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>pax-exam-dependencies</artifactId>
       <type>pom</type>
-    </dependency>
-    <dependency>
-      <groupId>commons-logging</groupId>
-      <artifactId>commons-logging</artifactId>
-      <version>${commonsLoggingVersion}</version>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.topology</groupId>
@@ -106,11 +102,11 @@
       <version>6.8.2</version>
       <scope>provided</scope>
     </dependency>
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
-      <scope>provided</scope>
-    </dependency>
     -->
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>servlet-dependencies</artifactId>
+      <type>pom</type>
+    </dependency>
   </dependencies>
 </project>

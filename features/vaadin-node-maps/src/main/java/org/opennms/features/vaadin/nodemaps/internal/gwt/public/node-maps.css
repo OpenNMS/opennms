@@ -59,15 +59,55 @@
 	border-radius: 4px;
 	border: 1px solid #888;
 	background-color: rgba(255, 255, 255, 0.8);
-	z-index:1000;	
+	z-index:1001;	
 	box-shadow: 0 1px 7px #999;
 	margin-left: 13px;
 	margin-top: 12px;
 	color: black;
 }
 
+.node-marker-popup .leaflet-popup-content ul {
+	list-style-type: none;
+	padding-left: 0;
+}
+
+table.node-marker-list {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+table.node-marker-list td {
+	padding: 2px;
+}
+td.severity {
+	text-align: center;
+}
+td.severity a {
+	color: white;
+	text-decoration: none;
+}
+td.severity.Critical {
+	background-color: rgba(204,0,0,0.8);
+}
+td.severity.Major {
+	background-color: rgba(255,51,0,0.8);
+}
+td.severity.Minor {
+	background-color: rgba(255,153,0,0.8);
+}
+td.severity.Warning {
+	background-color: rgba(255,204,0,0.8);
+}
+td.severity.Normal {
+	background-color: rgba(51,102,0,0.8);
+}
+
 .leaflet-popup-content .node {
 	word-wrap: break-word;
+}
+
+.leaflet-popup-scrolled {
+	border-bottom: 0;
+	border-top: 0;
 }
 
 .leaflet-control-search .search-input {
@@ -92,4 +132,28 @@
 
 .leaflet-control-search .search-button:hover {
 	background: url('images/search-icon.png') no-repeat 0 -21px;
+}
+
+.leaflet-control-search .search-autocomplete {
+	max-width: 500px;
+	max-height: 300px;
+
+	display:block;
+	float:left;
+	background-color: rgba(255, 255, 255, 0.95);
+	border:1px solid #666;
+	border-radius:2px;
+	padding:0 16px 0 2px;
+	margin:2px 0 2px 2px;
+	box-shadow: 0 1px 5px #999;
+	
+	overflow-y: scroll;
+	overflow-x: auto;
+	word-wrap: break-word;
+}
+
+.leaflet-control-search .search-autocomplete ul {
+	list-style-type: none;
+	padding: 2px;
+	margin: 0;
 }

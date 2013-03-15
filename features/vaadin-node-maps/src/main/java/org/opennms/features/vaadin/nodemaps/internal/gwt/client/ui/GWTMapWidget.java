@@ -49,6 +49,7 @@ import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.controls.alar
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.controls.alarm.AlarmControlOptions;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.controls.search.SearchControl;
 
+import com.google.gwt.core.client.JsArrayString;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.RepeatingCommand;
 import com.google.gwt.dom.client.DivElement;
@@ -64,7 +65,7 @@ public class GWTMapWidget extends Widget implements MarkerProvider, SearchConsum
     private Map m_map;
     private ILayer m_layer;
 
-    private List<NodeMarker> m_markers;
+    private MarkerContainer m_markers;
     private MarkerClusterGroup m_markerClusterGroup;
 
     private boolean m_firstUpdate = true;
@@ -73,6 +74,8 @@ public class GWTMapWidget extends Widget implements MarkerProvider, SearchConsum
 
     private SearchControl m_searchControl;
 
+    private MarkerFilter m_filter;
+
     public GWTMapWidget() {
         super();
         m_div = Document.get().createDivElement();
@@ -80,6 +83,63 @@ public class GWTMapWidget extends Widget implements MarkerProvider, SearchConsum
         m_div.getStyle().setWidth(100, Unit.PCT);
         m_div.getStyle().setHeight(100, Unit.PCT);
         setElement(m_div);
+        
+        m_filter = new MarkerFilter() {
+            @Override
+            public boolean matches(final NodeMarker marker) {
+                if (marker.getSeverity() < m_minimumSeverity) return false;
+                if (m_searchString == null || "".equals(m_searchString)) return true;
+
+                final String searchString = m_searchString.toLowerCase();
+
+                ///// handle foo: style search strings for text properties
+                for (final String propertyName : marker.getTextPropertyNames()) {
+                    final String lowerPropertyName = propertyName.toLowerCase();
+                    if (searchString.startsWith(lowerPropertyName + ":")) {
+                        final String searchStringWithoutPrefix = searchString.replaceFirst(lowerPropertyName + ":\\s*", "");
+                        final String value = marker.getProperty(propertyName);
+                        if (value != null && value.toLowerCase().contains(searchStringWithoutPrefix)) {
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    }
+                }
+
+                ///// special case: categories: -> category: search
+                if (searchString.startsWith("category:")) {
+                    final String searchStringWithoutPrefix = searchString.replaceFirst("category:\\s*", "");
+                    return matchCategories(marker, searchStringWithoutPrefix);
+                }
+
+                ///// if no foo: style search strings, first search all text properties for a match
+                for (final String propertyName : marker.getTextPropertyNames()) {
+                    final String value = marker.getProperty(propertyName);
+                    if (value != null) {
+                        final String property = value.toLowerCase();
+                        if (property.contains(searchString)) {
+                            return true;
+                        }
+                    }
+                }
+
+                ///// otherwise, search categories
+                return matchCategories(marker, searchString);
+            }
+
+            private boolean matchCategories(final NodeMarker marker, final String searchString) {
+                final JsArrayString categories = marker.getCategories();
+                for (int i = 0; i < categories.length(); i++) {
+                    final String category = categories.get(i).toLowerCase();
+                    if (category.contains(searchString)) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+        };
+        m_markers = new MarkerContainer(m_filter);
         VConsole.log("GWTMapWidget initialized");
     }
 
@@ -179,7 +239,7 @@ public class GWTMapWidget extends Widget implements MarkerProvider, SearchConsum
 
     private void addSearchControl() {
         VConsole.log("adding search control");
-        m_searchControl = new SearchControl(this);
+        m_searchControl = new SearchControl(this, m_markers);
         m_map.addControl(m_searchControl);
     }
     
@@ -197,9 +257,7 @@ public class GWTMapWidget extends Widget implements MarkerProvider, SearchConsum
     }
 
     public boolean markerShouldBeVisible(final NodeMarker marker) {
-        if (marker.getSeverity() < m_minimumSeverity) return false;
-        if (this.isSearching() && !marker.containsText(m_searchString)) return false;
-        return true;
+        return m_filter.matches(marker);
     }
 
     public boolean isSearching() {
@@ -216,26 +274,17 @@ public class GWTMapWidget extends Widget implements MarkerProvider, SearchConsum
             return;
         }
 
+        m_markers.refresh();
+
         VConsole.log("processing " + m_markers.size() + " markers for the node layer");
         Scheduler.get().scheduleIncremental(new RepeatingCommand() {
             final ListIterator<NodeMarker> m_markerIterator = m_markers.listIterator();
             LatLngBounds m_bounds;
-            /*
-            NodeMarker m_visibleMarker = null;
-            int m_count = 0;
-            */
 
             @Override public boolean execute() {
                 if (m_markerIterator.hasNext()) {
                     final NodeMarker marker = m_markerIterator.next();
-                    marker.closePopup();
                     if (markerShouldBeVisible(marker)) {
-                        /*
-                        m_count++;
-                        if (m_count == 1) {
-                            m_visibleMarker = marker;
-                        }
-                        */
                         if (!m_markerClusterGroup.hasLayer(marker)) {
                             m_markerClusterGroup.addLayer(marker);
                         }
@@ -246,6 +295,7 @@ public class GWTMapWidget extends Widget implements MarkerProvider, SearchConsum
                             m_bounds.extend(marker.getLatLng());
                         }
                     } else {
+                        marker.closePopup();
                         m_markerClusterGroup.removeLayer(marker);
                     }
                     return true;
@@ -258,16 +308,10 @@ public class GWTMapWidget extends Widget implements MarkerProvider, SearchConsum
                     m_map.fitBounds(m_bounds);
                     m_firstUpdate = false;
                 } else {
-                    VConsole.log("Skipping zoom, we've already done it once.");
+                    //VConsole.log("Skipping zoom, we've already done it once.");
                 }
 
-                /*
-                if (m_count == 1 && m_visibleMarker != null) {
-                    m_visibleMarker.openPopup();
-                }
-                */
-
-                VConsole.log("finished updating marker cluster layer");
+                //VConsole.log("finished updating marker cluster layer");
 
                 return false;
             }
@@ -287,11 +331,11 @@ public class GWTMapWidget extends Widget implements MarkerProvider, SearchConsum
     }
 
     public List<NodeMarker> getMarkers() {
-        return m_markers;
+        return m_markers.getMarkers();
     }
 
     public void setMarkers(final List<NodeMarker> markers) {
-        m_markers = markers;
+        m_markers.setMarkers(markers);
     }
 
     @Override

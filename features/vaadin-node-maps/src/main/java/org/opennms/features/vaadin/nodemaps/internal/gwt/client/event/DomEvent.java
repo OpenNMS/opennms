@@ -7,20 +7,17 @@ import com.google.gwt.user.client.ui.Widget;
 public class DomEvent {
 
     public static void stopEventPropagation(final Widget widget) {
-        stopEventPropagation(widget.getElement());
+        for (final String event : new String[] { "keydown", "keyup", "keypress", "input", "cut", "paste", "click", "dblclick", "mousedown", "mouseup", "touchstart", "touchend", "scrollstart", "scrollstop" }) {
+            stopEventPropagation(widget, event);
+        }
     }
 
-    private static native void stopEventPropagation(final Element element) /*-{
-        var stop = $wnd.L.DomEvent.stopPropagation;
-        $wnd.L.DomEvent
-            .on(element, 'keydown', stop)
-            .on(element, 'input', stop)
-            .on(element, 'paste', stop)
-            .on(element, 'click', stop)
-            .on(element, 'mousedown', stop)
-            .on(element, 'dblclick', stop)
-            .on(element, 'touchstart', stop)
-            .on(element, 'touchend', stop);
+    public static void stopEventPropagation(final Widget widget, final String event) {
+        stopEventPropagation(widget.getElement(), event);
+    }
+
+    private static native void stopEventPropagation(final Element element, final String event) /*-{
+        $wnd.L.DomEvent.on(element, event, $wnd.L.DomEvent.stopPropagation);
     }-*/;
 
     public static void addListener(final DomEventCallback callback) {
