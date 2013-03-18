@@ -107,6 +107,7 @@
     <dependency>
       <groupId>com.vaadin</groupId>
       <artifactId>vaadin</artifactId>
+      <version>${vaadinVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.vaadin.addons</groupId>

@@ -25,10 +25,9 @@ import org.apache.sshd.ClientChannel;
 import org.apache.sshd.ClientSession;
 import org.opennms.features.topology.ssh.internal.gwt.client.ui.VTerminal;
 
-import com.vaadin.terminal.PaintException;
-import com.vaadin.terminal.PaintTarget;
+import com.vaadin.server.PaintException;
+import com.vaadin.server.PaintTarget;
 import com.vaadin.ui.AbstractComponent;
-import com.vaadin.ui.ClientWidget;
 
 /**
  * The SSHTerminal class is a custom Vaadin component that emulates VT100
@@ -36,7 +35,6 @@ import com.vaadin.ui.ClientWidget;
  * @author lmbell
  * @author pdgrenon
  */
-@ClientWidget(VTerminal.class)
 public class SSHTerminal extends AbstractComponent {
 
 

@@ -71,6 +71,12 @@
       <version>${project.version}</version>
       <type>pom</type>
     </dependency>
+    <dependency>
+    	<groupId>com.vaadin</groupId>
+    	<artifactId>vaadin-client</artifactId>
+    	<scope>provided</scope>
+    </dependency>
+    
     <!-- This is also used by gwt-maven-plugin to deduce GWT version number. -->
     <dependency>
       <groupId>com.google.gwt</groupId>

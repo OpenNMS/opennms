@@ -83,8 +83,9 @@ public class SSHWindow extends LegacyWindow {
 		 
 		int posX = (int)(getApplication().getMainWindow().getWidth() - getWidth())/2;
 		int posY = (int)(getApplication().getMainWindow().getHeight() - getHeight())/2;
-		setPositionX(posX);
-		setPositionY(posY);
+		
+		//setPositionX(posX);
+		//setPositionY(posY);
 	}
 	
 	/**

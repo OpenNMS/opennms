@@ -1,8 +1,8 @@
 package org.opennms.features.topology.api;
 
-import com.vaadin.ui.Window;
+import com.vaadin.ui.LegacyWindow;
 
 public interface WidgetContext {
-    public Window getMainWindow();
+    public LegacyWindow getMainWindow();
     public GraphContainer getGraphContainer();
 }

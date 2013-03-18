@@ -28,19 +28,19 @@
 
 package org.opennms.features.topology.ssh.internal;
 
+import java.awt.GridLayout;
+import java.awt.TextField;
+
+import javax.management.Notification;
+
 import org.apache.sshd.ClientSession;
 import org.apache.sshd.SshClient;
 
-import com.vaadin.event.ShortcutAction.KeyCode;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.GridLayout;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.layout.client.Layout.Alignment;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.LegacyWindow;
 import com.vaadin.ui.PasswordField;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.Button.ClickEvent;
 
 /**
  * This class creates a window to authorize usernames
@@ -50,7 +50,7 @@ import com.vaadin.ui.Button.ClickEvent;
  *
  */
 @SuppressWarnings("serial")
-public class AuthWindow extends Window implements Button.ClickListener{
+public class AuthWindow extends LegacyWindow implements Button.ClickListener{
 
     SSHWindow sshWindow; // The SSH window that will arise after the auth window connects
     private String m_host;  // The hostname to connect to
@@ -165,7 +165,7 @@ public class AuthWindow extends Window implements Button.ClickListener{
      */
     protected void showSSHWindow() {
         sshWindow = new SSHWindow(session, TERM_WIDTH, TERM_HEIGHT);
-        getApplication().getMainWindow().addWindow(sshWindow);
+        getApplication().getMainWindow().attachWindow(sshWindow);
         this.close();
     }
     
