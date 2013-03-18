@@ -157,3 +157,9 @@ td.severity.Normal {
 	padding: 2px;
 	margin: 0;
 }
+
+.autocomplete-additional-info {
+	font-style: italic;
+	font-size: smaller;
+	padding-left: 10px;
+}

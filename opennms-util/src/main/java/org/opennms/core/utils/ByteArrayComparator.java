@@ -48,7 +48,7 @@ public class ByteArrayComparator implements Comparator<byte[]> {
             return 1;
         } else {
             // Make shorter byte arrays "less than" longer arrays
-            int comparison = new Integer(a.length).compareTo(new Integer(b.length));
+            int comparison = Integer.valueOf(a.length).compareTo(Integer.valueOf(b.length));
             if (comparison != 0) {
                 return comparison;
             } else {

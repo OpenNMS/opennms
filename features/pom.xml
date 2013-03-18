@@ -60,5 +60,8 @@
 
     <!-- Access point monitor -->
     <module>access-point-monitor</module>
+
+    <!-- OpenNMS Vaadin Themes -->
+    <module>themes</module>
   </modules>
 </project>

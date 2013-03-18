@@ -40,6 +40,7 @@ import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.slf4j.LoggerFactory;
 
+import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.data.util.PropertysetItem;
 import com.vaadin.data.validator.AbstractValidator;
@@ -80,13 +81,19 @@ public class CreateGroupOperation implements Constants, Operation {
 			@Override
 			public void commit() {
 				// Trim the form value
-				getField("Group Label").setValue(((String)getField("Group Label").getValue()).trim());
+				String groupLabel = ((String)getField("Group Label").getValue());
+				if (groupLabel == null) {
+					throw new InvalidValueException("Group label cannot be null.");
+				}
+				getField("Group Label").setValue(groupLabel.trim());
 				super.commit();
-				String groupLabel = (String)getField("Group Label").getValue();
+				groupLabel = (String)getField("Group Label").getValue();
 
 				// Add the new group
 				VertexRef groupId = operationContext.getGraphContainer().getBaseTopology().addGroup(groupLabel, GROUP_ICON_KEY);
 
+				// Find a common parent group. If none can be found, then link the group to the
+				// top of the topology
 				Vertex parentGroup = null;
 				for(VertexRef vertexRef : targets) {
 					Vertex parent = operationContext.getGraphContainer().getBaseTopology().getParent(vertexRef);
@@ -98,6 +105,10 @@ public class CreateGroupOperation implements Constants, Operation {
 						parentGroup = null;
 						break;
 					}
+				}
+
+				// Link all targets to the newly-created group
+				for(VertexRef vertexRef : targets) {
 					operationContext.getGraphContainer().getBaseTopology().setParent(vertexRef, groupId);
 				}
 
@@ -105,7 +116,7 @@ public class CreateGroupOperation implements Constants, Operation {
 				operationContext.getGraphContainer().getBaseTopology().setParent(groupId, parentGroup);
 
 				// Save the topology
-				operationContext.getGraphContainer().getBaseTopology().save(null);
+				operationContext.getGraphContainer().getBaseTopology().save();
 
 				graphContainer.redoLayout();
 			}

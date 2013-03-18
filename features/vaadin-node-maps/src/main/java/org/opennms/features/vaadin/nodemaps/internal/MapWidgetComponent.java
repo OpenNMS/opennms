@@ -151,9 +151,7 @@ public class MapWidgetComponent extends VerticalLayout {
         }
     }
 
-    private static final String BAD_COORDINATES = Integer.MIN_VALUE + "," + Integer.MIN_VALUE;
-
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
 
     private NodeDao m_nodeDao;
     private AssetRecordDao m_assetDao;
@@ -165,7 +163,7 @@ public class MapWidgetComponent extends VerticalLayout {
 
     private TransactionOperations m_transactionOperations;
 
-    private int singleNodeId = 0;
+    private String m_searchString;
 
     public MapWidgetComponent() {
     }
@@ -188,9 +186,6 @@ public class MapWidgetComponent extends VerticalLayout {
         cb.alias("assetRecord", "asset");
         cb.orderBy("id").asc();
 
-        if (singleNodeId > 0)
-            cb.eq("id", singleNodeId);
-
         final Map<Integer,NodeEntry> nodes = new HashMap<Integer,NodeEntry>();
         final List<OnmsAssetRecord> updatedAssets = new ArrayList<OnmsAssetRecord>();
 
@@ -210,7 +205,7 @@ public class MapWidgetComponent extends VerticalLayout {
                         geolocation.setCoordinates(coordinates);
                         updatedAssets.add(assets);
                     }
-                    if (BAD_COORDINATES.equals(geolocation.getCoordinates())) {
+                    if (Coordinates.BAD_COORDINATES.equals(geolocation.getCoordinates())) {
                         m_log.debug("Node {} has an asset record with address, but we were unable to find valid coordinates.", node.getId());
                         continue;
                     }
@@ -256,6 +251,8 @@ public class MapWidgetComponent extends VerticalLayout {
         }
 
         m_log.debug("pushing nodes to the UI");
+        if (m_searchString != null) target.addAttribute("initialSearchString", m_searchString);
+
         target.startTag("nodes");
         for (final NodeEntry node : nodes.values()) {
             node.visit(target);
@@ -283,8 +280,8 @@ public class MapWidgetComponent extends VerticalLayout {
             final Coordinates coordinates = m_geocoderService.getCoordinates(address);
             return coordinates.getLongitude() + "," + coordinates.getLatitude();
         } catch (final GeocoderException e) {
-            m_log.debug("Failed to find coordinates for address {}, returning {}", address, BAD_COORDINATES);
-            return BAD_COORDINATES;
+            m_log.debug("Failed to find coordinates for address {}, returning {}", address, Coordinates.BAD_COORDINATES);
+            return Coordinates.BAD_COORDINATES;
         }
     }
 
@@ -308,7 +305,7 @@ public class MapWidgetComponent extends VerticalLayout {
         m_transactionOperations = tx;
     }
 
-    public void setSingleNodeId(int nodeId) {
-        this.singleNodeId = nodeId;
+    public void setSearchString(final String searchString) {
+        m_searchString = searchString;
     }
 }

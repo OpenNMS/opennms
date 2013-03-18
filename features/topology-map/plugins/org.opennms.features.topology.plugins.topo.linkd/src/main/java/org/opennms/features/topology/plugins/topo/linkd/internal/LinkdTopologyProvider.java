@@ -433,9 +433,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     }
     
     @Override
-    public void save(String filename) {
-        if (filename == null) 
-            filename=m_configurationFile;
+    public void save() {
         List<WrappedVertex> vertices = new ArrayList<WrappedVertex>();
         for (Vertex vertex : getVertices()) {
             if (vertex.isGroup()) {
@@ -452,7 +450,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
 
         WrappedGraph graph = new WrappedGraph(getEdgeNamespace(), vertices, edges);
         
-        JAXB.marshal(graph, new File(filename));
+        JAXB.marshal(graph, new File(m_configurationFile));
     }
 
       private static String getIfStatusString(int ifStatusNum) {

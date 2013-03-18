@@ -1,6 +1,7 @@
 package org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.controls.search;
 
-import java.util.ListIterator;
+import java.util.HashMap;
+import java.util.List;
 
 import org.discotools.gwt.leaflet.client.controls.Control;
 import org.discotools.gwt.leaflet.client.jsobject.JSObject;
@@ -12,27 +13,45 @@ import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.DomEventCa
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.SearchEventCallback;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.MarkerContainer;
 
+import com.google.gwt.cell.client.AbstractSafeHtmlCell;
+import com.google.gwt.cell.client.ValueUpdater;
 import com.google.gwt.core.client.JavaScriptObject;
-import com.google.gwt.core.client.JsArrayString;
 import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.core.client.Scheduler.RepeatingCommand;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Position;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.safehtml.shared.SafeHtml;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
+import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
+import com.google.gwt.user.cellview.client.CellList;
+import com.google.gwt.user.cellview.client.HasKeyboardSelectionPolicy.KeyboardSelectionPolicy;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.view.client.SingleSelectionModel;
 import com.vaadin.terminal.gwt.client.VConsole;
 
 public class SearchControl extends Control {
+    private static final HashMap<String, String> m_labels;
+    static {
+        m_labels = new HashMap<String,String>();
+        m_labels.put("nodeid", "Node&nbsp;ID");
+        m_labels.put("description", "Description");
+        m_labels.put("ipaddress", "IP&nbsp;Address");
+        m_labels.put("maintcontract", "Maint.&nbsp;Contract");
+        m_labels.put("foreignsource", "Foreign&nbsp;Source");
+        m_labels.put("foreignid", "Foreign&nbsp;ID");
+    }
+
     private HTMLPanel m_container;
     private TextBox m_inputBox;
-    private Anchor m_submitAnchor;
+    private HTML m_submitIcon;
 
     private SearchConsumer m_searchConsumer;
     private MarkerContainer m_markerContainer;
@@ -42,7 +61,9 @@ public class SearchControl extends Control {
     private boolean m_refreshSearch = false;
     private boolean m_timerActive = false;
     private Timer m_timer;
-    private HTML m_autocomplete;
+    private CellList<NodeMarker> m_autoComplete;
+    private NodeMarker m_selected;
+    private boolean m_userSubmitted = false;
 
     protected SearchControl(final JSObject element) {
         super(element);
@@ -68,6 +89,12 @@ public class SearchControl extends Control {
             }
             
         };
+        
+        initializeContainerWidget();
+        initializeInputWidget();
+        initializeSubmitWidget();
+        //initializeAutocompleteWidget();
+        initializeCellAutocompleteWidget();
     }
 
     public void focus() {
@@ -77,15 +104,110 @@ public class SearchControl extends Control {
     public Element doOnAdd(final JavaScriptObject map) {
         VConsole.log("onAdd() called");
         
+        m_container.add(m_inputBox);
+        m_container.add(m_submitIcon);
+        m_container.add(m_autoComplete);
+
+        return m_container.getElement();
+    }
+
+    public SearchControl doOnRemove(final JavaScriptObject map) {
+        VConsole.log("onRemove() called");
+        if (m_changeCallback != null) DomEvent.removeListener(m_changeCallback);
+        return this;
+    }
+
+    public void refreshAutocomplete() {
+        Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+            @Override public void execute() {
+                final List<NodeMarker> markers = m_markerContainer.getMarkers();
+                if (m_searchConsumer.isSearching() && !m_userSubmitted) {
+                    m_autoComplete.setVisible(true);
+                    updateAutocompleteStyle(m_autoComplete);
+                    if (markers.size() == 1) {
+                        m_selected = markers.get(0);
+                        hideAutocomplete();
+                    }
+                    m_autoComplete.setRowData(markers);
+                } else {
+                    hideAutocomplete();
+                }
+            }
+        });
+    }
+
+    protected void hideAutocomplete() {
+        Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+            @Override public void execute() {
+                m_autoComplete.setVisible(false);
+                if (m_selected != null) {
+                    m_autoComplete.getSelectionModel().setSelected(m_selected, false);
+                    m_selected = null;
+                }
+            }
+        });
+    }
+
+    protected void updateAutocompleteStyle(final Widget widget) {
+        final Style style = widget.getElement().getStyle();
+        style.setPosition(Position.ABSOLUTE);
+        final int left = 5;
+        final int top = m_container.getOffsetHeight() + 5;
+        //VConsole.log("left = " + left + ", top = " + top);
+        style.setLeft(left, Unit.PX);
+        style.setTop(top, Unit.PX);
+        DomEvent.stopEventPropagation(widget);
+    }
+
+    protected void handleSearchEvent(final NativeEvent event) {
+        VConsole.log("handleSearchEvent: type = " + event.getType());
+
+        final Element target = event.getEventTarget().cast();
+        if (target.equals(m_submitIcon.getElement())) {
+            event.preventDefault();
+            m_userSubmitted = true;
+        }
+        if (event.getKeyCode() == KeyCodes.KEY_ESCAPE) {
+            m_inputBox.setText("");
+            m_userSubmitted = false;
+        } else if (event.getKeyCode() == KeyCodes.KEY_DOWN) {
+            final List<NodeMarker> markers = m_markerContainer.getMarkers();
+            if (markers.size() > 0) {
+                m_autoComplete.getSelectionModel().setSelected(markers.get(0), true);
+            }
+            m_autoComplete.setFocus(true);
+            m_autoComplete.setVisible(true);
+        } else if (event.getKeyCode() == KeyCodes.KEY_ENTER) {
+            m_userSubmitted = true;
+        }
+        m_refreshSearch = true;
+        if (!m_timerActive) {
+            m_timerActive = true;
+            m_timer.scheduleRepeating(m_options.getSearchRefreshInterval());
+        }
+    }
+
+    protected void updateSearchResults() {
+        m_timer.cancel();
+        m_timerActive = false;
+        m_searchConsumer.setSearchString(m_inputBox.getValue());
+        m_searchConsumer.refresh();
+        this.refreshAutocomplete();
+    }
+
+    private void initializeContainerWidget() {
         m_container = HTMLPanel.wrap(SearchControlImpl.createElement("leaflet-control-search"));
         m_container.addStyleName("leaflet-control");
+    }
 
+    private void initializeInputWidget() {
         m_inputBox = new TextBox();
         m_inputBox.addStyleName("search-input");
         m_inputBox.getElement().setAttribute("placeholder", "Search...");
         m_inputBox.getElement().setAttribute("type", "search");
         m_inputBox.setMaxLength(40);
         m_inputBox.setVisibleLength(40);
+        m_inputBox.setValue(m_searchConsumer.getSearchString());
 
         DomEvent.stopEventPropagation(m_inputBox);
 
@@ -95,137 +217,120 @@ public class SearchControl extends Control {
             }
         };
         DomEvent.addListener(m_changeCallback);
+    }
 
-        m_container.add(m_inputBox);
+    private void initializeSubmitWidget() {
+        m_submitIcon = new HTML();
+        m_submitIcon.addStyleName("search-button");
+        m_submitIcon.setTitle("Search locations...");
 
-        m_submitAnchor = new Anchor();
-        m_submitAnchor.addStyleName("search-button");
-        m_submitAnchor.setTitle("Search locations...");
-        m_submitAnchor.setHref("#");
-        m_submitAnchor.setTabIndex(-1);
-
-        DomEvent.stopEventPropagation(m_submitAnchor);
-        DomEvent.addListener(new DomEventCallback("click", m_submitAnchor) {
+        DomEvent.stopEventPropagation(m_submitIcon);
+        DomEvent.addListener(new DomEventCallback("click", m_submitIcon) {
             @Override
             protected void onEvent(final NativeEvent event) {
+                m_inputBox.setFocus(true);
                 handleSearchEvent(event);
             }
         });
-
-        m_container.add(m_submitAnchor);
-
-        m_autocomplete = new HTML("No matches.");
-        m_autocomplete.setVisible(false);
-        m_autocomplete.addStyleName("search-autocomplete");
-        updateAutocompleteStyle();
-
-        m_container.add(m_autocomplete);
-
-        return m_container.getElement();
     }
 
-    private void updateAutocompleteStyle() {
-        final Style style = m_autocomplete.getElement().getStyle();
-        style.setPosition(Position.ABSOLUTE);
-        final int left = 5;
-        final int top = m_container.getOffsetHeight() + 5;
-        //VConsole.log("left = " + left + ", top = " + top);
-        style.setLeft(left, Unit.PX);
-        style.setTop(top, Unit.PX);
-        DomEvent.stopEventPropagation(m_autocomplete);
-    }
+    private void initializeCellAutocompleteWidget() {
+        final AbstractSafeHtmlRenderer<NodeMarker> renderer = new AbstractSafeHtmlRenderer<NodeMarker>() {
+            @Override
+            public SafeHtml render(final NodeMarker marker) {
+                final SafeHtmlBuilder builder = new SafeHtmlBuilder();
+                final String searchString = m_searchConsumer.getSearchString().toLowerCase();
 
-    private void handleSearchEvent(final NativeEvent event) {
+                builder.appendHtmlConstant("<div class=\"autocomplete-label\">");
+                builder.appendHtmlConstant(marker.getNodeLabel());
+                builder.appendHtmlConstant("</div>");
+                String additionalSearchInfo = null;
+                if (searchString.contains(":") || searchString.contains("=")) {
+                    final String searchKey = searchString.replaceAll("[\\:\\=].*$", "").toLowerCase();
+                    VConsole.log("searchKey = " + searchKey);
 
-        final Element target = event.getEventTarget().cast();
-        if (target.equals(m_submitAnchor.getElement())) {
-            VConsole.log("event received on the anchor, preventing default");
-            event.preventDefault();
-        }
-        if (event.getKeyCode() == KeyCodes.KEY_ESCAPE) {
-            m_inputBox.setText("");
-        }
-        m_refreshSearch = true;
-        if (!m_timerActive) {
-            m_timerActive = true;
-            m_timer.scheduleRepeating(m_options.getSearchRefreshInterval());
-        }
-    }
-
-    private void updateSearchResults() {
-        //VConsole.log("search field changed to: " + m_inputBox.getValue());
-        m_timer.cancel();
-        m_timerActive = false;
-        m_searchConsumer.setSearchString(m_inputBox.getValue());
-        m_searchConsumer.refresh();
-        this.refreshAutocomplete();
-    }
-
-    public void refreshAutocomplete() {
-        if (m_searchConsumer.isSearching()) {
-            final String searchString = m_searchConsumer.getSearchString().toLowerCase();
-
-            Scheduler.get().scheduleIncremental(new RepeatingCommand() {
-                final ListIterator<NodeMarker> m_markerIterator = m_markerContainer.listIterator();
-                final StringBuilder m_sb = new StringBuilder();
-
-                @Override public boolean execute() {
-                    if (m_markerIterator.hasNext()) {
-                        final NodeMarker marker = m_markerIterator.next();
-                        m_sb.append("<li>");
-                        m_sb.append("<div class=\"autocomplete-entry\">");
-                        m_sb.append(marker.getNodeLabel());
-                        m_sb.append("</div>");
-                        String additionalSearchInfo = null;
-                        if (searchString.startsWith("category:")) {
-                            final StringBuilder catBuilder = new StringBuilder();
-                            final JsArrayString categories = marker.getCategories();
-                            if (categories.length() > 0) {
-                                if (categories.length() == 1) {
-                                    catBuilder.append("Category: ");
-                                } else {
-                                    catBuilder.append("Categories: ");
-                                }
-                                for (int i = 0; i < categories.length(); i++) {
-                                    catBuilder.append(categories.get(i));
-                                    if (i != (categories.length() - 1)) {
-                                        catBuilder.append(", ");
-                                    }
-                                }
-                                additionalSearchInfo = catBuilder.toString();
-                            }
-                        } else if (searchString.startsWith("nodelabel:")) {
-                            // do nothing, we already show this
-                        } else if (searchString.startsWith("description")) {
-                            additionalSearchInfo = "Description: " + marker.getDescription();
-                        } else if (searchString.startsWith("ipaddress")) {
-                            additionalSearchInfo = "IP Address: " + marker.getIpAddress();
-                        } else if (searchString.startsWith("maintcontract")) {
-                            additionalSearchInfo = "Maint.&nbsp;Contract: " + marker.getMaintContract();
+                    if ("category".equals(searchKey) || "categories".equals(searchKey)) {
+                        final String categoryString = marker.getCategoriesAsString();
+                        if (categoryString.length() > 0) {
+                            additionalSearchInfo = categoryString;
                         }
-                        if (additionalSearchInfo != null) {
-                            m_sb.append("<div class=\"autocomplete-additional-info\">").append(additionalSearchInfo).append("</div>");
-                        }
-                        m_sb.append("</li>");
-                        return true;
                     }
 
-                    m_autocomplete.setHTML("<ul>" + m_sb.toString() + "</ul>");
-                    m_autocomplete.setVisible(true);
-                    updateAutocompleteStyle();
-                    
-                    return false;
+                    for (final String key : marker.getTextPropertyNames()) {
+                        final String lowerKey = key.toLowerCase();
+                        if (lowerKey.equals(searchKey) && m_labels.containsKey(lowerKey)) {
+                            additionalSearchInfo = m_labels.get(lowerKey) + ": " + marker.getProperty(key);
+                            break;
+                        }
+                    }
                 }
-            });
-        } else {
-            m_autocomplete.setVisible(false);
-            m_autocomplete.setHTML("No matches.");
-        }
-    }
 
-    protected SearchControl doOnRemove(final JavaScriptObject map) {
-        VConsole.log("onRemove() called");
-        if (m_changeCallback != null) DomEvent.removeListener(m_changeCallback);
-        return this;
+                if (additionalSearchInfo != null) {
+                    builder.appendHtmlConstant("<div class=\"autocomplete-additional-info\">")
+                        .appendHtmlConstant(additionalSearchInfo)
+                        .appendHtmlConstant("</div>");
+                }
+
+                return builder.toSafeHtml();
+            }
+        };
+
+        final AbstractSafeHtmlCell<NodeMarker> cell = new AbstractSafeHtmlCell<NodeMarker>(renderer, "keydown", "click", "dblclick", "touchstart") {
+
+            @Override
+            public void onBrowserEvent(final Context context, final com.google.gwt.dom.client.Element parent, final NodeMarker value, final NativeEvent event, final ValueUpdater<NodeMarker> valueUpdater) {
+                boolean setSearchString = false;
+                final String eventType = event.getType();
+                if ("click".equals(eventType) || "touchstart".equals(eventType)) {
+                    if (m_autoComplete.getSelectionModel().isSelected(value)) {
+                        setSearchString = true;
+                    }
+                } else if ("dblclick".equals(eventType)) {
+                    setSearchString = true;
+                } else if ("keydown".equals(eventType)) {
+                    if (event.getKeyCode() == KeyCodes.KEY_ENTER) {
+                        setSearchString = true;
+                    } else if (event.getKeyCode() == KeyCodes.KEY_ESCAPE) {
+                        m_userSubmitted = false;
+                        m_inputBox.setText("");
+                        setSearchString = false;
+                        hideAutocomplete();
+                    }
+                }
+
+                if (setSearchString) {
+                    Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+                        @Override public void execute() {
+                            m_userSubmitted = true;
+                            m_autoComplete.getSelectionModel().setSelected(value, false);
+                            hideAutocomplete();
+                            m_inputBox.setFocus(true);
+
+                            final String searchString = "nodeLabel=" + value.getNodeLabel();
+                            m_inputBox.setValue(searchString, true);
+                            m_searchConsumer.setSearchString(searchString);
+
+                            m_searchConsumer.refresh();
+                        }
+                    });
+                } else {
+                    super.onBrowserEvent(context, parent, value, event, valueUpdater);
+                }
+            }
+
+            @Override protected void render(final Context context, final SafeHtml data, final SafeHtmlBuilder builder) {
+                builder.appendHtmlConstant("<div class=\"autocomplete-entry\">");
+                if (data != null) {
+                    builder.append(data);
+                }
+                builder.appendHtmlConstant("</div>");
+            }
+        };
+
+        m_autoComplete = new CellList<NodeMarker>(cell);
+        m_autoComplete.setSelectionModel(new SingleSelectionModel<NodeMarker>());
+        m_autoComplete.setKeyboardSelectionPolicy(KeyboardSelectionPolicy.BOUND_TO_SELECTION);
+        m_autoComplete.setVisible(false);
+        m_autoComplete.addStyleName("search-autocomplete");
     }
 }

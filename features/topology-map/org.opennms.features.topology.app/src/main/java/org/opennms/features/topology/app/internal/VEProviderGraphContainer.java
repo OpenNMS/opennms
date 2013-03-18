@@ -381,11 +381,6 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
         rebuildGraph();
     }
 
-	@Override
-	public Vertex getParent(VertexRef child) {
-		return m_mergedGraphProvider.getParent(child);
-	}
-	
 	private void fireGraphChanged() {
 		for(ChangeListener listener : m_listeners) {
 			listener.graphChanged(this);

@@ -26,7 +26,7 @@ public class SFreeTopologyProvider extends AbstractTopologyProvider implements G
 	}
 
 	@Override
-	public void save(String filename) {
+	public void save() {
 		// Do nothing
 	}
 

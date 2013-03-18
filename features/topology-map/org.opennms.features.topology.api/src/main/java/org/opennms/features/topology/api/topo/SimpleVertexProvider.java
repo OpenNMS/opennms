@@ -9,17 +9,18 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.slf4j.LoggerFactory;
 
 public class SimpleVertexProvider implements VertexProvider {
-	
+
 	private final String m_namespace;
 	private final Map<String,Vertex> m_vertexMap = new LinkedHashMap<String,Vertex>();
 	private final Set<VertexListener> m_listeners = new CopyOnWriteArraySet<VertexListener>();
 	private final Map<VertexRef, VertexRef> m_parents= new HashMap<VertexRef, VertexRef>();
-	private final Map<VertexRef, List<VertexRef>> m_children = new HashMap<VertexRef, List<VertexRef>>();
+	private final Map<VertexRef, Set<VertexRef>> m_children = new HashMap<VertexRef, Set<VertexRef>>();
 
 	public SimpleVertexProvider(String namespace) {
 		m_namespace = namespace;
@@ -29,7 +30,7 @@ public class SimpleVertexProvider implements VertexProvider {
 	public String getVertexNamespace() {
 		return m_namespace;
 	}
-	
+
 	@Override
 	public boolean contributesTo(String namespace) {
 		return false;
@@ -49,9 +50,9 @@ public class SimpleVertexProvider implements VertexProvider {
 	}
 
 	private Vertex getSimpleVertex(VertexRef reference) {
-		if (getVertexNamespace().equals(reference.getNamespace())) {
+		if (reference != null && getVertexNamespace().equals(reference.getNamespace())) {
 			return m_vertexMap.get(reference.getId());
-		} 
+		}
 		return null;
 	}
 
@@ -96,24 +97,43 @@ public class SimpleVertexProvider implements VertexProvider {
 
 	@Override
 	public boolean setParent(VertexRef child, VertexRef parent) {
-		m_parents.put(child, parent);
-		
-		List<VertexRef> children = m_children.get(parent);
-		if (children == null) {
-			children = new ArrayList<VertexRef>();
-			m_children.put(parent, children);
+		// Set the parent value on the vertex object
+		getVertex(child).setParent(parent);
+
+		// Add a parent mapping
+		if (parent == null) {
+			m_parents.remove(child);
+		} else {
+			m_parents.put(child, parent);
 		}
-		boolean retval = children.add(child);
+
+		// Remove the child from any existing m_children mappings
+		for (Set<VertexRef> vertex : m_children.values()) {
+			vertex.remove(child);
+		}
+
+		boolean retval = false;
+		if (parent == null) {
+			retval = true;
+		} else {
+			// Add the child to m_children under the new parent
+			Set<VertexRef> children = m_children.get(parent);
+			if (children == null) {
+				children = new TreeSet<VertexRef>();
+				m_children.put(parent, children);
+			}
+			retval = children.add(child);
+		}
 		fireVertexSetChanged();
 		return retval;
 	}
 
 	@Override
 	public List<Vertex> getChildren(VertexRef group) {
-		List<VertexRef> children = m_children.get(group);
+		Set<VertexRef> children = m_children.get(group);
 		return children == null ? Collections.<Vertex>emptyList() : getVertices(children);
 	}
-	
+
 	private void fireVertexSetChanged() {
 		for(VertexListener listener : m_listeners) {
 			listener.vertexSetChanged(this);
@@ -145,13 +165,18 @@ public class SimpleVertexProvider implements VertexProvider {
 	public void removeVertexListener(VertexListener vertexListener) {
 		m_listeners.remove(vertexListener);
 	}
-	
+
 	private void removeVertices(List<? extends VertexRef> all) {
 		for(VertexRef vertex : all) {
+			LoggerFactory.getLogger(this.getClass()).debug("Removing vertex: {}", vertex);
+			// Remove the vertex from the main map
 			m_vertexMap.remove(vertex.getId());
+			// Remove the vertex from the parent and child maps
+			m_children.remove(vertex);
+			m_parents.remove(vertex);
 		}
 	}
-	
+
 	private void addVertices(Collection<Vertex> vertices) {
 		for(Vertex vertex : vertices) {
 			if (vertex.getNamespace() == null || vertex.getId() == null) {
@@ -162,27 +187,27 @@ public class SimpleVertexProvider implements VertexProvider {
 			m_vertexMap.put(vertex.getId(), vertex);
 		}
 	}
-	
+
 	public void setVertices(List<Vertex> vertices) {
-		m_vertexMap.clear();
+		clearVertices();
 		addVertices(vertices);
 		fireVertexSetChanged();
 	}
-	
+
 	public void add(Vertex...vertices) {
 		add(Arrays.asList(vertices));
 	}
-	
+
 	public void add(Collection<Vertex> vertices) {
 		addVertices(vertices);
 		fireVerticesAdded(vertices);
 	}
-	
+
 	public void remove(List<VertexRef> vertices) {
 		removeVertices(vertices);
 		fireVerticesRemoved(vertices);
 	}
-	
+
 	public void remove(VertexRef... vertices) {
 		remove(Arrays.asList(vertices));
 	}

@@ -193,7 +193,7 @@ public class IfSnmpCollectorTestCase extends OpenNMSTestCase {
     public final void testGetIfSpeed() {
         Long ifSpeed = m_ifSnmpc.getInterfaceSpeed(4);
         assertNotNull("ifSpeed should not be null", ifSpeed);
-        assertEquals("ifSpeed", new Long(10000000), ifSpeed);
+        assertEquals("ifSpeed", Long.valueOf(10000000), ifSpeed);
     }
 
     public final void testGetIfAlias() {

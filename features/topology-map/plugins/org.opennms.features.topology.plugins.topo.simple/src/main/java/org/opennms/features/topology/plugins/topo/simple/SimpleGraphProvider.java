@@ -63,7 +63,7 @@ public class SimpleGraphProvider extends AbstractTopologyProvider implements Gra
 
 	private static final Logger s_log = LoggerFactory.getLogger(SimpleGraphProvider.class);
 
-    private URI m_topologyLocation = null;
+	private URI m_topologyLocation = null;
 
     public SimpleGraphProvider() {
         this(TOPOLOGY_NAMESPACE_SIMPLE);
@@ -85,7 +85,7 @@ public class SimpleGraphProvider extends AbstractTopologyProvider implements Gra
 	public void setTopologyLocation(URI topologyLocation) throws MalformedURLException, JAXBException {
 		m_topologyLocation = topologyLocation;
 		
-		if (m_topologyLocation != null) {
+		if (m_topologyLocation != null && new File(m_topologyLocation).exists()) {
 			s_log.debug("Loading topology from " + m_topologyLocation);
 			load(m_topologyLocation);
 		} else {
@@ -95,8 +95,13 @@ public class SimpleGraphProvider extends AbstractTopologyProvider implements Gra
 		}
 	}
 
+	public void save(String filename) throws MalformedURLException, JAXBException {
+		m_topologyLocation = new File(filename).toURI();
+		save();
+	}
+
     @Override
-	public void save(String filename) {
+    public void save() {
         List<WrappedVertex> vertices = new ArrayList<WrappedVertex>();
         for (Vertex vertex : getVertices()) {
             if (vertex.isGroup()) {
@@ -116,7 +121,7 @@ public class SimpleGraphProvider extends AbstractTopologyProvider implements Gra
         try {
         	JAXBContext jc = JAXBContext.newInstance(WrappedGraph.class, WrappedLeafVertex.class, WrappedGroup.class, WrappedEdge.class);
         	Marshaller u = jc.createMarshaller();
-        	u.marshal(graph, new File(filename));
+        	u.marshal(graph, new File(getTopologyLocation()));
         } catch (JAXBException e) {
         	s_log.error(e.getMessage(), e);
         }
@@ -231,10 +236,10 @@ public class SimpleGraphProvider extends AbstractTopologyProvider implements Gra
 
     @Override
     public void load(String filename) throws MalformedURLException, JAXBException {
-        if (filename == null) {
-            load(getTopologyLocation());
+        if (filename != null) {
+            setTopologyLocation(new File(filename).toURI());
         } else {
-            load(new File(filename).toURI());
+            load(getTopologyLocation());
         }
     }
 }

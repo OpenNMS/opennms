@@ -60,6 +60,11 @@
       <artifactId>contextmenu</artifactId>
       <version>3.1.0</version>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.features.themes</groupId>
+      <artifactId>onms-default-theme</artifactId>
+      <version>${project.version}</version>
+    </dependency>
   </dependencies>
 
   <repositories>

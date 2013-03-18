@@ -186,7 +186,7 @@ public final class DiscoveryLink implements ReadyRunnable {
                 LogUtils.debugf(this,
                                 "run: adding to bridge node list: node with nodeid/bridgeidentifier %d/%s",
                                 linkableNode.getNodeId(),linkableNode.getBridgeIdentifiers().get(0));
-                m_bridgeNodes.put(new Integer(linkableNode.getNodeId()),
+                m_bridgeNodes.put(Integer.valueOf(linkableNode.getNodeId()),
                                   linkableNode);
             }
             if (discoveryUsingCdp && linkableNode.hasCdpInterfaces()) {
@@ -599,14 +599,14 @@ public final class DiscoveryLink implements ReadyRunnable {
                                     curNodeId, stpbridgeport);
 
                     curNode.addBackBoneBridgePorts(stpbridgeport);
-                    m_bridgeNodes.put(new Integer(curNodeId), curNode);
+                    m_bridgeNodes.put(Integer.valueOf(curNodeId), curNode);
 
                     LogUtils.debugf(this,
                                     "run: backbone port found for node %d. Adding to helper class BB port bridge port %d.",
                                     designatednodeid, designatedbridgeport);
 
                     designatedNode.addBackBoneBridgePorts(designatedbridgeport);
-                    m_bridgeNodes.put(new Integer(designatednodeid),
+                    m_bridgeNodes.put(Integer.valueOf(designatednodeid),
                                       designatedNode);
 
                     LogUtils.debugf(this,

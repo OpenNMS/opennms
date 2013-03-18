@@ -9,6 +9,7 @@ import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.criteria.Criteria;
+import org.opennms.features.topology.api.topo.AbstractRef;
 import org.opennms.features.topology.api.topo.Status;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
@@ -20,16 +21,10 @@ import com.vaadin.data.Item;
 
 public class AlarmStatusProviderTest {
     
-    private class TestVertex implements Vertex{
+    private class TestVertex extends AbstractRef implements Vertex {
 
-        @Override
-        public String getId() {
-            return String.valueOf(getNodeID());
-        }
-
-        @Override
-        public String getNamespace() {
-            return "nodes";
+        public TestVertex() {
+            super("nodes", "1", null);
         }
 
         @Override
@@ -39,11 +34,6 @@ public class AlarmStatusProviderTest {
 
         @Override
         public Item getItem() {
-            return null;
-        }
-
-        @Override
-        public String getLabel() {
             return null;
         }
 

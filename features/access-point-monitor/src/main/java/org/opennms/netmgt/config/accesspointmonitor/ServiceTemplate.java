@@ -89,7 +89,7 @@ public class ServiceTemplate implements Serializable, Comparable<ServiceTemplate
             m_passiveServiceName = new String(copy.m_passiveServiceName);
         }
         if (copy.m_interval != null) {
-            m_interval = new Long(copy.m_interval);
+            m_interval = Long.valueOf(copy.m_interval);
         }
         if (copy.m_status != null) {
             m_status = new String(copy.m_status);

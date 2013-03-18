@@ -65,6 +65,7 @@ import org.opennms.netmgt.dao.VlanDao;
 
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsArpInterface;
+import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -78,7 +79,6 @@ import org.opennms.netmgt.model.OnmsStpInterface;
 import org.opennms.netmgt.model.OnmsStpNode;
 import org.opennms.netmgt.model.OnmsVlan;
 import org.opennms.netmgt.model.PrimaryType;
-import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 
 import org.opennms.web.svclayer.AggregateStatus;
 
@@ -104,7 +104,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class NetworkElementFactory implements InitializingBean, NetworkElementFactoryInterface {
     
     @Autowired
-    NodeDao m_nodeDao;
+    private NodeDao m_nodeDao;
     
     @Autowired
     private IpInterfaceDao m_ipInterfaceDao;
@@ -139,7 +139,11 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
 	@Autowired
 	private PlatformTransactionManager m_transactionManager;
 
-    
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+    }
+
     public static NetworkElementFactoryInterface getInstance(ServletContext servletContext) {
         return getInstance(WebApplicationContextUtils.getWebApplicationContext(servletContext));    
     }
@@ -149,6 +153,24 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     }
 
     private static final Comparator<Interface> INTERFACE_COMPARATOR = new InterfaceComparator();
+
+    public static class InterfaceComparator implements Comparator<Interface> {
+        public int compare(Interface o1, Interface o2) {
+
+            // Sort by IP first if the IPs are non-0.0.0.0
+            if (!"0.0.0.0".equals(o1.getIpAddress()) && !"0.0.0.0".equals(o2.getIpAddress())) {
+                return new InetAddressComparator().compare(InetAddressUtils.addr(o1.getIpAddress()), InetAddressUtils.addr(o2.getIpAddress()));
+            } else {
+                // Sort IPs that are non-0.0.0.0 so they are first
+                if (!"0.0.0.0".equals(o1.getIpAddress())) {
+                    return -1;
+                } else if (!"0.0.0.0".equals(o2.getIpAddress())) {
+                    return 1;
+                }
+            }
+            return 0;
+        }
+    }
 
     /* (non-Javadoc)
 	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getNodeLabel(int)
@@ -708,7 +730,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
 	 */
     @Override
     public String getServiceNameFromId(int serviceId) {
-        OnmsServiceType type = getServiceTypeDao().get(serviceId);
+        OnmsServiceType type = m_serviceTypeDao.get(serviceId);
         return type == null ? null : type.getName();
     }
 
@@ -721,7 +743,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        OnmsServiceType type = getServiceTypeDao().findByName(serviceName);
+        OnmsServiceType type = m_serviceTypeDao.findByName(serviceName);
         return type == null ? -1 : type.getId();
     }
 
@@ -731,7 +753,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     @Override
     public Map<Integer, String> getServiceIdToNameMap(){
         Map<Integer,String> serviceMap = new HashMap<Integer,String>();
-        for (OnmsServiceType type : getServiceTypeDao().findAll()) {
+        for (OnmsServiceType type : m_serviceTypeDao.findAll()) {
             serviceMap.put(type.getId(), type.getName());
         }
         return serviceMap;
@@ -743,7 +765,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     @Override
     public Map<String, Integer> getServiceNameToIdMap(){
         Map<String,Integer> serviceMap = new HashMap<String,Integer>();
-        for (OnmsServiceType type : getServiceTypeDao().findAll()) {
+        for (OnmsServiceType type : m_serviceTypeDao.findAll()) {
             serviceMap.put(type.getName(), type.getId());
         }
         return serviceMap;
@@ -1004,7 +1026,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     @Override
     public List<LinkInterface> getDataLinksOnInterface(int nodeId, String ipAddress){
     	Interface iface = getInterface(nodeId, ipAddress);
-    	if (iface != null && new Integer(iface.getIfIndex()) != null && iface.getIfIndex() > 0) {
+    	if (iface != null && Integer.valueOf(iface.getIfIndex()) != null && iface.getIfIndex() > 0) {
     		return getDataLinksOnInterface(nodeId, iface.getIfIndex());    		
     	}
     	return new ArrayList<LinkInterface>();
@@ -1013,7 +1035,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     @Override
     public List<LinkInterface> getDataLinksOnInterface(int id){
     	Interface iface = getInterface(id);
-    	if (iface != null && new Integer(iface.getIfIndex()) != null && iface.getIfIndex() > 0) {
+    	if (iface != null && Integer.valueOf(iface.getIfIndex()) != null && iface.getIfIndex() > 0) {
     		return getDataLinksOnInterface(iface.getNodeId(), iface.getIfIndex());    		
     	}
     	return new ArrayList<LinkInterface>();    	
@@ -1250,22 +1272,8 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         if (element != null) {
             stpIf.setStpBridgeNodeid(element);
         }
-
-        element = getStpNodeFromStpRootIdentifier(stpIf.get_stpdesignatedroot());
-        if (element != null) {
-            stpIf.setStpRootNodeid(element);
-        }
-        
-        if (stpIf.get_ifindex() == -1 ) {
-            stpIf.setIpAddress(getIpAddress(stpIf.get_nodeId()));
-        } else {
-        	stpIf.setIpAddress(getIpAddress(stpIf.get_nodeId(), stpIf
-                    .get_ifindex()));
-        }
-
         return stpIf;
     }
-
     /**
      * This class converts data from the result set into {@link StpNode}
      * objects.
@@ -1276,23 +1284,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         if (element != null) {
             stpNode.m_stprootnodeid = element;
         }
-
         return stpNode;
-    }
-
-    /**
-     * <p>getIpAddress</p>
-     *
-     * @param nodeid a int.
-     * @return a {@link java.lang.String} object.
-     * @throws java.sql.SQLException if any.
-     */
-    private String getIpAddress(int nodeid) {
-        String retval = null;
-        for (OnmsIpInterface ipaddr : m_ipInterfaceDao.findByNodeId(nodeid)) {
-            retval = ipaddr.getIpAddress().getHostAddress();
-        }
-        return retval;
     }
 
     /**
@@ -1371,7 +1363,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     private List<OnmsNode> getNodesInCategories(String[] categoryStrings){
         List<OnmsCategory> categories = new ArrayList<OnmsCategory>();
         for(String categoryString : categoryStrings) {
-            OnmsCategory category = getCategoryDao().findByName(categoryString);
+            OnmsCategory category = m_categoryDao.findByName(categoryString);
             if(category != null) {
                 categories.add(category);
             }else {
@@ -1403,11 +1395,11 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     public List<OnmsNode> getNodesWithCategories(String[] categories1, String[] categories2, boolean onlyNodesWithDownAggregateStatus) {
         ArrayList<OnmsCategory> c1 = new ArrayList<OnmsCategory>(categories1.length);
         for (String category : categories1) {
-                c1.add(getCategoryDao().findByName(category));
+                c1.add(m_categoryDao.findByName(category));
         }
         ArrayList<OnmsCategory> c2 = new ArrayList<OnmsCategory>(categories2.length);
         for (String category : categories2) {
-                c2.add(getCategoryDao().findByName(category));
+                c2.add(m_categoryDao.findByName(category));
         }
         
         List<OnmsNode> ourNodes1 = getNodesInCategories(categories1);
@@ -1456,136 +1448,5 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         
         Collections.sort(intfs, INTERFACE_COMPARATOR);
         return intfs.toArray(new Interface[intfs.size()]);
-    }
-        
-    // FIXME: Do any of these @SuppressWarnings("unused") methods get reflected?  Or can we drop them?
-
-    @SuppressWarnings("unused")
-    private void setNodeDao(NodeDao nodeDao) {
-        m_nodeDao = nodeDao;
-    }
-
-    @SuppressWarnings("unused")
-    private NodeDao getNodeDao() {
-        return m_nodeDao;
-    }
-
-    @SuppressWarnings("unused")
-    private void setIpInterfaceDao(IpInterfaceDao ipInterfaceDao) {
-        m_ipInterfaceDao = ipInterfaceDao;
-    }
-
-    @SuppressWarnings("unused")
-    private IpInterfaceDao getIpInterfaceDao() {
-        return m_ipInterfaceDao;
-    }
-
-    @SuppressWarnings("unused")
-    private void setSnmpInterfaceDao(SnmpInterfaceDao snmpInterfaceDao) {
-        m_snmpInterfaceDao = snmpInterfaceDao;
-    }
-
-    @SuppressWarnings("unused")
-    private SnmpInterfaceDao getSnmpInterfaceDao() {
-        return m_snmpInterfaceDao;
-    }
-
-    @SuppressWarnings("unused")
-    private void setDataLinkInterfaceDao(DataLinkInterfaceDao dataLinkInterfaceDao) {
-        m_dataLinkInterfaceDao = dataLinkInterfaceDao;
-    }
-
-    @SuppressWarnings("unused")
-    private DataLinkInterfaceDao getDataLinkInterfaceDao() {
-        return m_dataLinkInterfaceDao;
-    }
-
-    @SuppressWarnings("unused")
-    private void setMonSvcDao(MonitoredServiceDao monSvcDao) {
-        m_monSvcDao = monSvcDao;
-    }
-
-    @SuppressWarnings("unused")
-    private MonitoredServiceDao getMonSvcDao() {
-        return m_monSvcDao;
-    }
-
-    @SuppressWarnings("unused")
-    private void setServiceTypeDao(ServiceTypeDao serviceTypeDao) {
-        m_serviceTypeDao = serviceTypeDao;
-    }
-
-    private ServiceTypeDao getServiceTypeDao() {
-        return m_serviceTypeDao;
-    }
-
-    @SuppressWarnings("unused")
-    private void setCategoryDao(CategoryDao categoryDao) {
-        m_categoryDao = categoryDao;
-    }
-
-    private CategoryDao getCategoryDao() {
-        return m_categoryDao;
-    }
-
-    public static class InterfaceComparator implements Comparator<Interface> {
-        public int compare(Interface o1, Interface o2) {
-
-            // Sort by IP first if the IPs are non-0.0.0.0
-            if (!"0.0.0.0".equals(o1.getIpAddress()) && !"0.0.0.0".equals(o2.getIpAddress())) {
-                return new InetAddressComparator().compare(InetAddressUtils.addr(o1.getIpAddress()), InetAddressUtils.addr(o2.getIpAddress()));
-            } else {
-                // Sort IPs that are non-0.0.0.0 so they are first
-                if (!"0.0.0.0".equals(o1.getIpAddress())) {
-                    return -1;
-                } else if (!"0.0.0.0".equals(o2.getIpAddress())) {
-                    return 1;
-                }
-            }
-            return 0;
-        }
-    }
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
-    }
-
-    public IpRouteInterfaceDao getIpRouteInterfaceDao() {
-        return m_ipRouteInterfaceDao;
-    }
-
-    @SuppressWarnings("unused")
-    private void setIpRouteInterfaceDao(IpRouteInterfaceDao ipRouteInterfaceDao) {
-        m_ipRouteInterfaceDao = ipRouteInterfaceDao;
-    }
-
-    public StpNodeDao getStpNodeDao() {
-        return m_stpNodeDao;
-    }
-
-    @SuppressWarnings("unused")
-    private void setStpNodeDao(StpNodeDao stpNodeDao) {
-        m_stpNodeDao = stpNodeDao;
-    }
-
-    public StpInterfaceDao getStpInterfaceDao() {
-        return m_stpInterfaceDao;
-    }
-
-    @SuppressWarnings("unused")
-    private void setStpInterfaceDao(StpInterfaceDao stpInterfaceDao) {
-        m_stpInterfaceDao = stpInterfaceDao;
-    }
-
-    public VlanDao getVlanDao() {
-        return m_vlanDao;
-    }
-
-    @SuppressWarnings("unused")
-    private void setVlanDao(VlanDao vlanDao) {
-        m_vlanDao = vlanDao;
-    }
-    
-    
+    }    
 }

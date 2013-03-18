@@ -28,17 +28,30 @@
 
 package org.opennms.features.topology.plugins.topo.simple.internal.operations;
 
+import java.net.MalformedURLException;
 import java.util.List;
+
+import javax.xml.bind.JAXBException;
 
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.plugins.topo.simple.SimpleGraphProvider;
+import org.slf4j.LoggerFactory;
 
 public class SaveOperation implements Operation {
     
     @Override
     public Undoer execute(List<VertexRef> targets, OperationContext operationContext) {
-        operationContext.getGraphContainer().getBaseTopology().save("graph.xml");
+        try {
+            ((SimpleGraphProvider)operationContext.getGraphContainer().getBaseTopology()).save("graph.xml");
+        } catch (MalformedURLException e) {
+            // TODO: Display the error in the UI
+            LoggerFactory.getLogger(this.getClass()).error(e.getMessage(), e);
+        } catch (JAXBException e) {
+            // TODO: Display the error in the UI
+            LoggerFactory.getLogger(this.getClass()).error(e.getMessage(), e);
+        }
         return null;
     }
 

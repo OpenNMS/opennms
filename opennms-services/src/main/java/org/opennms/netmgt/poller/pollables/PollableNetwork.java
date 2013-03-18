@@ -102,7 +102,7 @@ public class PollableNetwork extends PollableContainer {
      * @return a {@link org.opennms.netmgt.poller.pollables.PollableNode} object.
      */
     public PollableNode getNode(int nodeId) {
-        return (PollableNode)getMember(new Integer(nodeId));
+        return (PollableNode)getMember(Integer.valueOf(nodeId));
     }
 
     /**
@@ -167,7 +167,7 @@ public class PollableNetwork extends PollableContainer {
     /** {@inheritDoc} */
     protected Object createMemberKey(PollableElement member) {
         PollableNode node = (PollableNode)member;
-        return new Integer(node.getNodeId());
+        return Integer.valueOf(node.getNodeId());
     }
     
     /** {@inheritDoc} */

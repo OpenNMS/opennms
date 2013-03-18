@@ -131,7 +131,7 @@ public class ImportAssetsServlet extends HttpServlet {
                 asset.setUserLastModified(request.getRemoteUser());
                 asset.setLastModifiedDate(new Date());
 
-                if (nodesWithAssets.contains(new Integer(asset.getNodeId()))) {
+                if (nodesWithAssets.contains(Integer.valueOf(asset.getNodeId()))) {
                     logger.debug("modifyAsset call for asset:'{}'", asset);
                     this.model.modifyAsset(asset);
                 } else {
@@ -306,7 +306,7 @@ public class ImportAssetsServlet extends HttpServlet {
             ResultSet rs = stmt.executeQuery("SELECT NODEID FROM ASSETS");
 
             while (rs.next()) {
-                list.add(new Integer(rs.getInt("NODEID")));
+                list.add(Integer.valueOf(rs.getInt("NODEID")));
             }
 
             rs.close();

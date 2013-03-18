@@ -36,8 +36,6 @@ import org.discotools.gwt.leaflet.client.types.LatLng;
 import com.google.gwt.core.client.JsArrayString;
 
 public class NodeMarker extends Marker {
-    private String[] m_textProperties = new String[] { "nodeLabel", "ipAddress", "description", "maintcontract" };
-
     public NodeMarker(final LatLng latLng) {
         super(latLng, new Options());
     }
@@ -55,11 +53,45 @@ public class NodeMarker extends Marker {
     }
 
     public String[] getTextPropertyNames() {
-        return m_textProperties;
+        final JsArrayString nativeNames = getNativePropertyNames(getJSObject());
+        final String[] names = new String[nativeNames.length()];
+        for (int i = 0; i < nativeNames.length(); i++) {
+            names[i] = nativeNames.get(i);
+        }
+        return names;
     }
+
+    private native JsArrayString getNativePropertyNames(final JSObject self) /*-{
+        var props = [];
+        for (var prop in self) {
+            if (self.hasOwnProperty(prop) && typeof self[prop] === 'string') {
+                props.push(prop);
+            }
+        }
+        return props;
+    }-*/;
 
     public JsArrayString getCategories() {
         return getJSObject().getProperty("categories").cast();
+    }
+
+    public String getCategoriesAsString() {
+        final StringBuilder catBuilder = new StringBuilder();
+        final JsArrayString categories = getCategories();
+        if (categories.length() > 0) {
+            if (categories.length() == 1) {
+                catBuilder.append("Category: ");
+            } else {
+                catBuilder.append("Categories: ");
+            }
+            for (int i = 0; i < categories.length(); i++) {
+                catBuilder.append(categories.get(i));
+                if (i != (categories.length() - 1)) {
+                    catBuilder.append(", ");
+                }
+            }
+        }
+        return catBuilder.toString();
     }
 
     public void setCategories(final String[] categories) {
