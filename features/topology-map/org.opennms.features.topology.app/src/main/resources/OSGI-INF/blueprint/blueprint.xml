@@ -149,30 +149,32 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
 			</property>
 			<property name="columnGenerators">
 				<map>
+					<entry key="severity">
+						<bean class="org.opennms.features.topology.app.internal.support.SeverityGenerator"/>
+					</entry>
 					<entry key="nodeLabel">
 						<bean class="org.opennms.features.topology.app.internal.support.NodeSelectionLinkGenerator">
 							<argument value="nodeId"/>
 						</bean>
 					</entry>
+					<!--
 					<entry key="serviceType">
 						<bean class="org.opennms.features.topology.app.internal.support.OnmsServiceTypeGenerator"/>
 					</entry>
 					<entry key="ipAddr">
 						<bean class="org.opennms.features.topology.app.internal.support.InetAddressGenerator"/>
 					</entry>
+					-->
 				</map>
 			</property>
 			<property name="visibleColumns">
 				<array>
 					<value>id</value>
 					<value>severity</value>
-					<value>lastEventTime</value>
-					<value>counter</value>
 					<value>nodeLabel</value>
-					<value>ifIndex</value>
-					<value>ipAddr</value>
-					<value>serviceType</value>
 					<value>uei</value>
+					<value>counter</value>
+					<value>lastEventTime</value>
 					<value>logMsg</value>
 				</array>
 			</property>
@@ -180,13 +182,10 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
 				<array>
 					<value>ID</value>
 					<value>Severity</value>
-					<value>Last Event Time</value>
-					<value>Count</value>
 					<value>Node</value>
-					<value>ifIndex</value>
-					<value>IP Address</value>
-					<value>Service</value>
 					<value>UEI</value>
+					<value>Count</value>
+					<value>Last Event Time</value>
 					<value>Log Message</value>
 				</array>
 			</property>

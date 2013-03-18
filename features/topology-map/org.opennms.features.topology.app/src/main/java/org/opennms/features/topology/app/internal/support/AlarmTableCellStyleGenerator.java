@@ -63,6 +63,8 @@ public class AlarmTableCellStyleGenerator implements CellStyleGenerator, TableAw
 			} else if (OnmsSeverity.WARNING.getId() == severity) {
 				return "alarm-table-warning";
 			}
+		} else if ("severity".equals(propertyId)) {
+			return "bright";
 		}
 		return null;
 	}
