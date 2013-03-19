@@ -104,8 +104,7 @@ public class AlarmDaoContainer extends OnmsDaoContainer<OnmsAlarm,Integer> {
 		propertyIds.addAll(m_properties.keySet());
 
 		// nodeLabel is a transient value so we can't sort on it (yet)
-		// Update: We can sort on it as a generated column though.
-		//propertyIds.remove("nodeLabel");
+		propertyIds.remove("nodeLabel");
 
 		return Collections.unmodifiableCollection(propertyIds);
 	}

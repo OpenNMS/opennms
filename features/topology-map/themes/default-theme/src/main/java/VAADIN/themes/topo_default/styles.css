@@ -7,6 +7,10 @@
     font-size: 12px;
 }
 
+.v-table-table {
+    border-collapse: collapse;
+}
+
 /*** Vertex Styles ***/
 .vertex:hover{
 	opacity: 0.8;
@@ -91,26 +95,37 @@ div.v-table-header-wrap {
  *
  * org.opennms.features.topology.app.internal.support.AlarmTableCellStyleGenerator
  */
-.v-table-row-alarm-table-minor.v-table-row { background-color: #FFEBCD; }
-.v-table-row-alarm-table-minor.v-table-row-odd { background-color: #F8E4C6; }
 
-.v-table-row-alarm-table-critical.v-table-row { background-color: #F5CDCD; }
-.v-table-row-alarm-table-critical.v-table-row-odd { background-color: #EEC6C6; }
+/* The padding: 20px is handled by adding &nbsp;s with a ColumnGenerator */
+.v-table-cell-content-bright { /* padding-left: 20px; */ background-position: top left; background-repeat: repeat-y; }
 
-.v-table-row-alarm-table-major.v-table-row { background-color: #FFD7CD; }
-.v-table-row-alarm-table-major.v-table-row-odd { background-color: #F8D0C6; }
+.v-table-row-alarm-table-minor.v-table-row td { background-color: #FFEBCD; border-top: 2px solid #FF9900 !important; }
+.v-table-row-alarm-table-minor.v-table-row-odd td { background-color: #F8E4C6; border-top: 2px solid #FF9900 !important; }
+.v-table-row-alarm-table-minor .v-table-cell-content-bright { background-image: url(../../../images/bgMinor.png); }
 
-.v-table-row-alarm-table-warning.v-table-row { background-color: #FFF5CD; }
-.v-table-row-alarm-table-warning.v-table-row-odd { background-color: #F8EEC6; }
+.v-table-row-alarm-table-critical.v-table-row td { background-color: #F5CDCD; border-top: 2px solid #CC0000 !important; }
+.v-table-row-alarm-table-critical.v-table-row-odd td { background-color: #EEC6C6; border-top: 2px solid #CC0000 !important; }
+.v-table-row-alarm-table-critical .v-table-cell-content-bright { background-image: url(../../../images/bgCritical.png); }
 
-.v-table-row-alarm-table-indeterminate.v-table-row { background-color: #EBEBCD; }
-.v-table-row-alarm-table-indeterminate.v-table-row-odd { background-color: #E4E4C6; }
+.v-table-row-alarm-table-major.v-table-row td { background-color: #FFD7CD; border-top: 2px solid #FF3300 !important; }
+.v-table-row-alarm-table-major.v-table-row-odd td { background-color: #F8D0C6; border-top: 2px solid #FF3300 !important; }
+.v-table-row-alarm-table-major .v-table-cell-content-bright { background-image: url(../../../images/bgMajor.png); }
 
-.v-table-row-alarm-table-normal.v-table-row { background-color: #D7E1CD; }
-.v-table-row-alarm-table-normal.v-table-row-odd { background-color: #D0DAC6; }
+.v-table-row-alarm-table-warning.v-table-row td { background-color: #FFF5CD; border-top: 2px solid #FFCC00 !important; }
+.v-table-row-alarm-table-warning.v-table-row-odd td { background-color: #F8EEC6; border-top: 2px solid #FFCC00 !important; }
+.v-table-row-alarm-table-warning .v-table-cell-content-bright { background-image: url(../../../images/bgWarning.png); }
 
-.v-table-row-alarm-table-cleared.v-table-row { background-color: #EEEEEE; }
-.v-table-row-alarm-table-cleared.v-table-row-odd { background-color: #E7E7E7; }
+.v-table-row-alarm-table-indeterminate.v-table-row td { background-color: #EBEBCD; border-top: 2px solid #999000 !important; }
+.v-table-row-alarm-table-indeterminate.v-table-row-odd td { background-color: #E4E4C6; border-top: 2px solid #999000 !important; }
+.v-table-row-alarm-table-indeterminate .v-table-cell-content-bright { background-image: url(../../../images/bgIndeterminate.png); }
+
+.v-table-row-alarm-table-normal.v-table-row td { background-color: #D7E1CD; border-top: 2px solid #336600 !important; }
+.v-table-row-alarm-table-normal.v-table-row-odd td { background-color: #D0DAC6; border-top: 2px solid #336600 !important; }
+.v-table-row-alarm-table-normal .v-table-cell-content-bright { background-image: url(../../../images/bgNormal.png); }
+
+.v-table-row-alarm-table-cleared.v-table-row td { background-color: #EEEEEE; border-top: 2px solid #999 !important; }
+.v-table-row-alarm-table-cleared.v-table-row-odd td { background-color: #E7E7E7; border-top: 2px solid #999 !important; }
+.v-table-row-alarm-table-cleared .v-table-cell-content-bright { background-image: url(../../../images/bgCleared.png); }
 
 
 /******** Status Styles ********/
