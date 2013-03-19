@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.linkd;
+package org.opennms.netmgt.linkd.nb;
 
 
 import java.net.InetAddress;
@@ -144,39 +144,39 @@ public abstract class Nms10205bNetworkBuilder extends LinkdNetworkBuilder {
     static final Map<Integer,String> SRX_100_IF_IFALIAS_MAP = new HashMap<Integer, String>();
     static final Map<Integer,InetAddress> SRX_100_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
 
-    OnmsNode getMumbai() {
+    protected OnmsNode getMumbai() {
         return getNode(MUMBAI_NAME,MUMBAI_SYSOID,MUMBAI_IP,MUMBAI_IP_IF_MAP,MUMBAI_IF_IFNAME_MAP,MUMBAI_IF_MAC_MAP,MUMBAI_IF_IFDESCR_MAP,MUMBAI_IF_IFALIAS_MAP,MUMBAI_IF_NETMASK_MAP);
     }    
     
-    OnmsNode getDelhi() {
+    protected OnmsNode getDelhi() {
         return getNode(DELHI_NAME,DELHI_SYSOID,DELHI_IP,DELHI_IP_IF_MAP,DELHI_IF_IFNAME_MAP,DELHI_IF_MAC_MAP,DELHI_IF_IFDESCR_MAP,DELHI_IF_IFALIAS_MAP,DELHI_IF_NETMASK_MAP);
     }    
 
-    OnmsNode getBangalore() {
+    protected OnmsNode getBangalore() {
         return getNode(BANGALORE_NAME,BANGALORE_SYSOID,BANGALORE_IP,BANGALORE_IP_IF_MAP,BANGALORE_IF_IFNAME_MAP,BANGALORE_IF_MAC_MAP,BANGALORE_IF_IFDESCR_MAP,BANGALORE_IF_IFALIAS_MAP,BANGALORE_IF_NETMASK_MAP);        
     }
 
-    OnmsNode getBagmane() {
+    protected OnmsNode getBagmane() {
         return getNode(BAGMANE_NAME,BAGMANE_SYSOID,BAGMANE_IP,BAGMANE_IP_IF_MAP,BAGMANE_IF_IFNAME_MAP,BAGMANE_IF_MAC_MAP,BAGMANE_IF_IFDESCR_MAP,BAGMANE_IF_IFALIAS_MAP,BAGMANE_IF_NETMASK_MAP);        
     }
 
-    OnmsNode getMysore() {
+    protected OnmsNode getMysore() {
         return getNode(MYSORE_NAME,MYSORE_SYSOID,MYSORE_IP,MYSORE_IP_IF_MAP,MYSORE_IF_IFNAME_MAP,MYSORE_IF_MAC_MAP,MYSORE_IF_IFDESCR_MAP,MYSORE_IF_IFALIAS_MAP,MYSORE_IF_NETMASK_MAP);        
     }
 
-    OnmsNode getSpaceExSw1() {
+    protected OnmsNode getSpaceExSw1() {
         return getNode(SPACE_EX_SW1_NAME,SPACE_EX_SW1_SYSOID,SPACE_EX_SW1_IP,SPACE_EX_SW1_IP_IF_MAP,SPACE_EX_SW1_IF_IFNAME_MAP,SPACE_EX_SW1_IF_MAC_MAP,SPACE_EX_SW1_IF_IFDESCR_MAP,SPACE_EX_SW1_IF_IFALIAS_MAP,SPACE_EX_SW1_IF_NETMASK_MAP);
     }
 
-    OnmsNode getSpaceExSw2() {
+    protected OnmsNode getSpaceExSw2() {
         return getNode(SPACE_EX_SW2_NAME,SPACE_EX_SW2_SYSOID,SPACE_EX_SW2_IP,SPACE_EX_SW2_IP_IF_MAP,SPACE_EX_SW2_IF_IFNAME_MAP,SPACE_EX_SW2_IF_MAC_MAP,SPACE_EX_SW2_IF_IFDESCR_MAP,SPACE_EX_SW2_IF_IFALIAS_MAP,SPACE_EX_SW2_IF_NETMASK_MAP);
     }
 
-    OnmsNode getJ635042() {
+    protected OnmsNode getJ635042() {
         return getNode(J6350_42_NAME,J6350_42_SYSOID,J6350_42_IP,J6350_42_IP_IF_MAP,J6350_42_IF_IFNAME_MAP,J6350_42_IF_MAC_MAP,J6350_42_IF_IFDESCR_MAP,J6350_42_IF_IFALIAS_MAP,J6350_42_IF_NETMASK_MAP);        
     }
 
-    OnmsNode getSRX100() {
+    protected OnmsNode getSRX100() {
         return getNode(SRX_100_NAME,SRX_100_SYSOID,SRX_100_IP,SRX_100_IP_IF_MAP,SRX_100_IF_IFNAME_MAP,SRX_100_IF_MAC_MAP,SRX_100_IF_IFDESCR_MAP,SRX_100_IF_IFALIAS_MAP,SRX_100_IF_NETMASK_MAP);        
     }
 

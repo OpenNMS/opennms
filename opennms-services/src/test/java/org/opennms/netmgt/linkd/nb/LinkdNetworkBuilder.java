@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.linkd;
+package org.opennms.netmgt.linkd.nb;
 
 import static org.junit.Assert.assertEquals;
 
@@ -59,11 +59,11 @@ public abstract class LinkdNetworkBuilder {
     
     NetworkBuilder m_networkBuilder;
 
-    void setNodeDao(NodeDao nodeDao) {
+    protected void setNodeDao(NodeDao nodeDao) {
         m_nodeDao = nodeDao;
     }
 
-    void setSnmpInterfaceDao(SnmpInterfaceDao snmpInterfaceDao) {
+    protected void setSnmpInterfaceDao(SnmpInterfaceDao snmpInterfaceDao) {
         m_snmpInterfaceDao = snmpInterfaceDao;
     }
 
@@ -133,7 +133,7 @@ public abstract class LinkdNetworkBuilder {
     }
     
     
-    OnmsNode getNodeWithoutSnmp(String name, String ipaddr) {
+    protected OnmsNode getNodeWithoutSnmp(String name, String ipaddr) {
         NetworkBuilder nb = getNetworkBuilder();
         nb.addNode(name).setForeignSource("linkd").setForeignId(name).setType("A");
         nb.addInterface(ipaddr).setIsSnmpPrimary("N").setIsManaged("M");

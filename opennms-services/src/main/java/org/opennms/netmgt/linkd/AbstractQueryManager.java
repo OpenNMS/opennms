@@ -745,6 +745,7 @@ public abstract class AbstractQueryManager implements QueryManager {
 	    
 	    
     	for (OnmsStpInterface stpInterface: stpinterfaces.values()) {
+    		if (stpInterface.getStpPortDesignatedBridge() == null ) continue;
     		if (stpInterface.getStpPortDesignatedBridge().substring(5, 16).equals(snmpVlanColl.getDot1dBase().getBridgeAddress())) {
 		        LogUtils.debugf(this, "processDot1dBasePortAndStpPortTables: portdesignatedBridge is bridge itself %s. Add to linkable node skipped", snmpVlanColl.getDot1dBase().getBridgeAddress());
     			continue;

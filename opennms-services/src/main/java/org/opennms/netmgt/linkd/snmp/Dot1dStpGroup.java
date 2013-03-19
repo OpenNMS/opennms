@@ -300,7 +300,7 @@ public final class Dot1dStpGroup extends AggregateTracker {
      * @return a int.
      */
     public int getStpProtocolSpecification(){
-    	return m_store.getInt32(STP_PROTOCOL_SPEC);
+    	return (m_store.getValue(STP_PROTOCOL_SPEC) == null) ? -1 : m_store.getInt32(STP_PROTOCOL_SPEC);
     }
 	
     /**
@@ -309,7 +309,7 @@ public final class Dot1dStpGroup extends AggregateTracker {
      * @return a int.
      */
     public int getStpPriority(){
-    	return m_store.getInt32(STP_PRIORITY);
+    	return (m_store.getValue(STP_PRIORITY) == null) ? -1 : m_store.getInt32(STP_PRIORITY);
     }
 
     /**
@@ -345,7 +345,7 @@ public final class Dot1dStpGroup extends AggregateTracker {
      * @return a int.
      */
     public int getStpRootCost(){
-    	return m_store.getInt32(STP_ROOT_COST); 
+    	return (m_store.getValue(STP_ROOT_COST) == null) ? -1 :  m_store.getInt32(STP_ROOT_COST); 
     }
 
     /**
@@ -354,7 +354,7 @@ public final class Dot1dStpGroup extends AggregateTracker {
      * @return a int.
      */
     public int getStpRootPort(){
-    	return m_store.getInt32(STP_ROOT_PORT);
+    	return (m_store.getValue(STP_ROOT_PORT) == null) ? -1 :m_store.getInt32(STP_ROOT_PORT);
     }
 
     /**
@@ -450,9 +450,12 @@ public final class Dot1dStpGroup extends AggregateTracker {
     //}
 
     public OnmsStpNode getOnmsStpNode(OnmsStpNode node) {
+    	if (getStpDesignatedRoot() == null
+    			|| getStpProtocolSpecification() == -1) 
+    		return node;
     	node.setStpDesignatedRoot(getStpDesignatedRoot());
-    	node.setStpPriority(getStpPriority());
     	node.setStpProtocolSpecification(StpProtocolSpecification.get(getStpProtocolSpecification()));
+    	node.setStpPriority(getStpPriority());
     	node.setStpRootCost(getStpRootCost());
     	node.setStpRootPort(getStpRootPort());
     	return node;
