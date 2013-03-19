@@ -65,8 +65,8 @@ public class VmwareCimQuery {
                 HostSystem hostSystem = (HostSystem) managedEntity;
 
                 if (hostSystem.getSummary() != null) {
-                    if (hostSystem.getSummary().getRuntime() != null) {
-                        String powerState = hostSystem.getSummary().getRuntime().getPowerState().toString();
+                    if (hostSystem.getRuntime() != null) {
+                        String powerState = hostSystem.getRuntime().getPowerState().toString();
 
                         if (!"poweredOn".equals(powerState)) {
                             System.out.println("  Ignoring host system " + hostSystem.getName() + " (powerState=" + powerState + ")... ");

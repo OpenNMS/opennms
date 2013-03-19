@@ -38,6 +38,8 @@
 
 package org.opennms.netmgt.poller.monitors;
 
+import com.vmware.vim25.HostRuntimeInfo;
+import com.vmware.vim25.HostSystemPowerState;
 import com.vmware.vim25.mo.HostSystem;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -173,7 +175,24 @@ public class VmwareCimMonitor extends AbstractServiceMonitor {
 
             HostSystem hostSystem = vmwareViJavaAccess.getHostSystemByManagedObjectId(vmwareManagedObjectId);
 
-            String powerState = hostSystem.getSummary().runtime.getPowerState().toString();
+            String powerState = null;
+
+            if (hostSystem == null) {
+                return PollStatus.unknown("hostSystem=null");
+            } else {
+                HostRuntimeInfo hostRuntimeInfo = hostSystem.getRuntime();
+
+                if (hostRuntimeInfo == null) {
+                    return PollStatus.unknown("hostRuntimeInfo=null");
+                } else {
+                    HostSystemPowerState hostSystemPowerState = hostRuntimeInfo.getPowerState();
+                    if (hostSystemPowerState == null) {
+                        return PollStatus.unknown("hostSystemPowerState=null");
+                    } else {
+                        powerState = hostSystemPowerState.toString();
+                    }
+                }
+            }
 
             if ("poweredOn".equals(powerState)) {
                 List<CIMObject> cimObjects = null;
@@ -227,7 +246,7 @@ public class VmwareCimMonitor extends AbstractServiceMonitor {
                     serviceStatus = PollStatus.unavailable(reason.toString());
                 }
             } else {
-                serviceStatus = PollStatus.unresponsive("Host system's power state is '" + hostSystem.getSummary().runtime.getPowerState() + "'");
+                serviceStatus = PollStatus.unresponsive("Host system's power state is '" + powerState + "'");
             }
 
             vmwareViJavaAccess.disconnect();
