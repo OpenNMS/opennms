@@ -53,9 +53,9 @@ import org.opennms.netmgt.model.SnmpInterfaceBuilder;
 
 public abstract class LinkdNetworkBuilder {
 
-    private SnmpInterfaceDao m_snmpInterfaceDao;
+    protected SnmpInterfaceDao m_snmpInterfaceDao;
 
-    private NodeDao m_nodeDao;
+    protected NodeDao m_nodeDao;
     
     NetworkBuilder m_networkBuilder;
 

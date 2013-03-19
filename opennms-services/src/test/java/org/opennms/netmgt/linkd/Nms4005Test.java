@@ -51,9 +51,8 @@ import org.opennms.netmgt.config.linkd.Package;
 import org.opennms.netmgt.dao.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.SnmpInterfaceDao;
-import org.opennms.netmgt.linkd.nb.LinkdNetworkBuilder;
+import org.opennms.netmgt.linkd.nb.Nms4005NetworkBuilder;
 import org.opennms.netmgt.model.DataLinkInterface;
-import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
@@ -75,7 +74,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class Nms4005Test extends LinkdNetworkBuilder implements InitializingBean {
+public class Nms4005Test extends Nms4005NetworkBuilder implements InitializingBean {
 
     @Autowired
     private Linkd m_linkd;
@@ -97,7 +96,6 @@ public class Nms4005Test extends LinkdNetworkBuilder implements InitializingBean
         BeanUtils.assertAutowiring(this);
     }
 
-    @SuppressWarnings("deprecation")
 	@Before
     public void setUp() throws Exception {
         Properties p = new Properties();
@@ -110,56 +108,11 @@ public class Nms4005Test extends LinkdNetworkBuilder implements InitializingBean
         super.setNodeDao(m_nodeDao);
         super.setSnmpInterfaceDao(m_snmpInterfaceDao);
 
-        NetworkBuilder nb = new NetworkBuilder();
-
-        nb.addNode("cisco1").setForeignSource("linkd").setForeignId("cisco1").setSysObjectId(".1.3.6.1.4.1.9.1.122").setType("A");
-        //nb.addInterface("10.1.1.1").setIsSnmpPrimary("P").setIsManaged("M")
-        //.addSnmpInterface(3).setIfType(6).setCollectionEnabled(true).setIfSpeed(100000000).setPhysAddr("66933c17555c");
-        nb.addInterface("10.1.1.2").setIsSnmpPrimary("P").setIsManaged("M")
-        .addSnmpInterface(3).setIfType(6).setCollectionEnabled(true).setIfSpeed(100000000).setPhysAddr("c2007db90010");
-        nb.addInterface("10.1.2.1").setIsSnmpPrimary("S").setIsManaged("M")
-        .addSnmpInterface(1).setIfType(6).setCollectionEnabled(true).setIfSpeed(100000000).setPhysAddr("c2007db90000");
-        //nb.addInterface("10.1.2.2").setIsSnmpPrimary("S").setIsManaged("M")
-        //.addSnmpInterface(1).setIfType(6).setCollectionEnabled(true).setIfSpeed(100000000).setPhysAddr("c2017db90000");
-        nb.addInterface("10.1.3.1").setIsSnmpPrimary("S").setIsManaged("M")
-        .addSnmpInterface(2).setIfType(6).setCollectionEnabled(true).setIfSpeed(100000000).setPhysAddr("c2007db90001");
-        //nb.addInterface("10.1.3.2").setIsSnmpPrimary("S").setIsManaged("M")
-        //.addSnmpInterface(2).setIfType(6).setCollectionEnabled(true).setIfSpeed(100000000).setPhysAddr("c2027db90000");
-        m_nodeDao.save(nb.getCurrentNode());
-
-        nb.addNode("cisco2").setForeignSource("linkd").setForeignId("cisco2").setSysObjectId(".1.3.6.1.4.1.9.1.122").setType("A");
-        //nb.addInterface("10.1.2.1").setIsSnmpPrimary("P").setIsManaged("M")
-        //.addSnmpInterface(1).setIfType(6).setCollectionEnabled(true).setIfSpeed(100000000).setPhysAddr("c2007db90000");
-        nb.addInterface("10.1.2.2").setIsSnmpPrimary("P").setIsManaged("M")
-        .addSnmpInterface(1).setIfType(6).setCollectionEnabled(true).setIfSpeed(100000000).setPhysAddr("c2017db90000");
-        nb.addInterface("10.1.5.1").setIsSnmpPrimary("S").setIsManaged("M")
-        .addSnmpInterface(2).setIfType(6).setCollectionEnabled(true).setIfSpeed(100000000).setPhysAddr("c2017db90001");
-        //nb.addInterface("10.1.5.2").setIsSnmpPrimary("S").setIsManaged("M")
-        //.addSnmpInterface(2).setIfType(6).setCollectionEnabled(true).setIfSpeed(100000000).setPhysAddr("c2027db90010");
-        m_nodeDao.save(nb.getCurrentNode());
-
-        nb.addNode("cisco3").setForeignSource("linkd").setForeignId("cisco3").setSysObjectId(".1.3.6.1.4.1.9.1.122").setType("A");
-        //nb.addInterface("10.1.1.1").setIsSnmpPrimary("P").setIsManaged("M")
-        //.addSnmpInterface(1).setIfType(6).setCollectionEnabled(true).setIfSpeed(100000000).setPhysAddr("c2007db90001");
-        //nb.addInterface("10.1.3.1").setIsSnmpPrimary("S").setIsManaged("M")
-        //.addSnmpInterface(1).setIfType(6).setCollectionEnabled(true).setIfSpeed(100000000).setPhysAddr("c2007db90001");
-        nb.addInterface("10.1.3.2").setIsSnmpPrimary("P").setIsManaged("M")
-        .addSnmpInterface(1).setIfType(6).setCollectionEnabled(true).setIfSpeed(100000000).setPhysAddr("c2027db90000");
-        nb.addInterface("10.1.4.1").setIsSnmpPrimary("S").setIsManaged("M")
-        .addSnmpInterface(2).setIfType(6).setCollectionEnabled(true).setIfSpeed(100000000).setPhysAddr("c2027db90001");
-        //nb.addInterface("10.1.4.2").setIsSnmpPrimary("S").setIsManaged("M")
-        //.addSnmpInterface(2).setIfType(6).setCollectionEnabled(true).setIfSpeed(100000000).setPhysAddr("c2037db90000");
-        //nb.addInterface("10.1.5.1").setIsSnmpPrimary("S").setIsManaged("M")
-        //.addSnmpInterface(3).setIfType(6).setCollectionEnabled(true).setIfSpeed(100000000).setPhysAddr("c2017db90001");
-        nb.addInterface("10.1.5.2").setIsSnmpPrimary("S").setIsManaged("M")
-        .addSnmpInterface(3).setIfType(6).setCollectionEnabled(true).setIfSpeed(100000000).setPhysAddr("c2027db90010");
-        m_nodeDao.save(nb.getCurrentNode());
-
-        m_nodeDao.flush();
-
         for (Package pkg : Collections.list(m_linkdConfig.enumeratePackage())) {
             pkg.setForceIpRouteDiscoveryOnEthernet(true);
         }
+        
+        buildNetwork4005();
     }
 
     @After
