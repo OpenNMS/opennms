@@ -38,6 +38,8 @@
 
 package org.opennms.netmgt.collectd;
 
+import com.vmware.vim25.HostRuntimeInfo;
+import com.vmware.vim25.HostSystemPowerState;
 import com.vmware.vim25.mo.HostSystem;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -290,7 +292,24 @@ public class VmwareCimCollector implements ServiceCollector {
 
         HostSystem hostSystem = vmwareViJavaAccess.getHostSystemByManagedObjectId(vmwareManagedObjectId);
 
-        String powerState = hostSystem.getSummary().runtime.getPowerState().toString();
+        String powerState = null;
+
+        if (hostSystem == null) {
+            logger.debug("hostSystem=null");
+        } else {
+            HostRuntimeInfo hostRuntimeInfo = hostSystem.getRuntime();
+
+            if (hostRuntimeInfo == null) {
+                logger.debug("hostRuntimeInfo=null");
+            } else {
+                HostSystemPowerState hostSystemPowerState = hostRuntimeInfo.getPowerState();
+                if (hostSystemPowerState == null) {
+                    logger.debug("hostSystemPowerState=null");
+                } else {
+                    powerState = hostSystemPowerState.toString();
+                }
+            }
+        }
 
         logger.debug("The power state for host system '{}' is '{}'", vmwareManagedObjectId, powerState);
 

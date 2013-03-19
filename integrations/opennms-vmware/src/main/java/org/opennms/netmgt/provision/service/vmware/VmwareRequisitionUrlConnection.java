@@ -28,10 +28,7 @@
 
 package org.opennms.netmgt.provision.service.vmware;
 
-import com.vmware.vim25.CustomFieldDef;
-import com.vmware.vim25.CustomFieldStringValue;
-import com.vmware.vim25.CustomFieldValue;
-import com.vmware.vim25.GuestNicInfo;
+import com.vmware.vim25.*;
 import com.vmware.vim25.mo.*;
 import org.apache.commons.io.IOExceptionWithCause;
 import org.exolab.castor.xml.MarshalException;
@@ -282,7 +279,7 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
          * the vcenter Ip address, the username and the password
          */
 
-        String vmState = "unknown";
+        String powerState = "unknown";
         StringBuffer vmwareTopologyInfo = new StringBuffer();
 
         // putting parents to topology information
@@ -304,7 +301,22 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
 
             HostSystem hostSystem = (HostSystem) managedEntity;
 
-            vmState = hostSystem.getSummary().getRuntime().getPowerState().toString();
+            if (hostSystem == null) {
+                logger.debug("hostSystem=null");
+            } else {
+                HostRuntimeInfo hostRuntimeInfo = hostSystem.getRuntime();
+
+                if (hostRuntimeInfo == null) {
+                    logger.debug("hostRuntimeInfo=null");
+                } else {
+                    HostSystemPowerState hostSystemPowerState = hostRuntimeInfo.getPowerState();
+                    if (hostSystemPowerState == null) {
+                        logger.debug("hostSystemPowerState=null");
+                    } else {
+                        powerState = hostSystemPowerState.toString();
+                    }
+                }
+            }
 
             try {
                 for (Datastore datastore : hostSystem.getDatastores()) {
@@ -339,7 +351,22 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
             if (managedEntity instanceof VirtualMachine) {
                 VirtualMachine virtualMachine = (VirtualMachine) managedEntity;
 
-                vmState = virtualMachine.getSummary().getRuntime().getPowerState().toString();
+                if (virtualMachine == null) {
+                    logger.debug("virtualMachine=null");
+                } else {
+                    VirtualMachineRuntimeInfo virtualMachineRuntimeInfo = virtualMachine.getRuntime();
+
+                    if (virtualMachineRuntimeInfo == null) {
+                        logger.debug("virtualMachineRuntimeInfo=null");
+                    } else {
+                        VirtualMachinePowerState virtualMachinePowerState = virtualMachineRuntimeInfo.getPowerState();
+                        if (virtualMachinePowerState == null) {
+                            logger.debug("virtualMachinePowerState=null");
+                        } else {
+                            powerState = virtualMachinePowerState.toString();
+                        }
+                    }
+                }
 
                 try {
                     for (Datastore datastore : virtualMachine.getDatastores()) {
@@ -398,7 +425,7 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
         RequisitionAsset requisitionAssetTopologyInfo = new RequisitionAsset("vmwareTopologyInfo", vmwareTopologyInfo.toString());
         requisitionNode.putAsset(requisitionAssetTopologyInfo);
 
-        RequisitionAsset requisitionAssetState = new RequisitionAsset("vmwareState", vmState);
+        RequisitionAsset requisitionAssetState = new RequisitionAsset("vmwareState", powerState);
         requisitionNode.putAsset(requisitionAssetState);
 
         requisitionNode.putCategory(new RequisitionCategory("VMware" + apiVersion));
@@ -484,7 +511,7 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
      * @return true for import, false otherwise
      */
     private boolean checkHostPowerState(HostSystem hostSystem) {
-        String powerState = hostSystem.getSummary().runtime.getPowerState().toString();
+        String powerState = hostSystem.getRuntime().getPowerState().toString();
 
         if ("poweredOn".equals(powerState) && m_importHostPoweredOn) {
             return true;
@@ -509,7 +536,7 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
      * @return true for import, false otherwise
      */
     private boolean checkVMPowerState(VirtualMachine virtualMachine) {
-        String powerState = virtualMachine.getSummary().runtime.getPowerState().toString();
+        String powerState = virtualMachine.getRuntime().getPowerState().toString();
 
         if ("poweredOn".equals(powerState) && m_importVMPoweredOn) {
             return true;
