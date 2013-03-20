@@ -1,7 +1,9 @@
 package org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.controls.search;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.discotools.gwt.leaflet.client.controls.Control;
 import org.discotools.gwt.leaflet.client.jsobject.JSObject;
@@ -22,17 +24,14 @@ import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Position;
 import com.google.gwt.dom.client.Style.Unit;
-import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.cellview.client.CellList;
 import com.google.gwt.user.cellview.client.HasKeyboardSelectionPolicy.KeyboardSelectionPolicy;
 import com.google.gwt.user.client.Element;
-import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.SingleSelectionModel;
 import com.vaadin.terminal.gwt.client.VConsole;
@@ -50,20 +49,17 @@ public class SearchControl extends Control {
     }
 
     private HTMLPanel m_container;
-    private TextBox m_inputBox;
+    private SearchTextBox m_inputBox;
     private HTML m_submitIcon;
 
     private SearchConsumer m_searchConsumer;
     private MarkerContainer m_markerContainer;
     private SearchEventCallback m_changeCallback;
 
-    private SearchOptions m_options;
-    private boolean m_refreshSearch = false;
-    private boolean m_timerActive = false;
-    private Timer m_timer;
     private CellList<NodeMarker> m_autoComplete;
-    private NodeMarker m_selected;
-    private boolean m_userSubmitted = false;
+    private SearchStateManager m_stateManager;
+    private SingleSelectionModel<NodeMarker> m_selectionModel = new SingleSelectionModel<NodeMarker>();
+    private Set<Widget> m_updated = new HashSet<Widget>();
 
     protected SearchControl(final JSObject element) {
         super(element);
@@ -79,22 +75,12 @@ public class SearchControl extends Control {
         VConsole.log("new SearchControl()");
         m_searchConsumer = searchConsumer;
         m_markerContainer = markerContainer;
-        m_options = options;
 
-        m_timer = new Timer() {
-            @Override public void run() {
-                if (m_refreshSearch) { 
-                    updateSearchResults();
-                }
-            }
-            
-        };
-        
         initializeContainerWidget();
         initializeInputWidget();
         initializeSubmitWidget();
-        //initializeAutocompleteWidget();
         initializeCellAutocompleteWidget();
+        initializeSearchStateManager();
     }
 
     public void focus() {
@@ -117,82 +103,80 @@ public class SearchControl extends Control {
         return this;
     }
 
-    public void refreshAutocomplete() {
-        Scheduler.get().scheduleDeferred(new ScheduledCommand() {
-            @Override public void execute() {
-                final List<NodeMarker> markers = m_markerContainer.getMarkers();
-                if (m_searchConsumer.isSearching() && !m_userSubmitted) {
-                    m_autoComplete.setVisible(true);
-                    updateAutocompleteStyle(m_autoComplete);
-                    if (markers.size() == 1) {
-                        m_selected = markers.get(0);
-                        hideAutocomplete();
-                    }
-                    m_autoComplete.setRowData(markers);
-                } else {
-                    hideAutocomplete();
-                }
-            }
-        });
-    }
+    public void refresh() {
+        if ("".equals(m_searchConsumer.getSearchString())) {
+            m_autoComplete.setVisible(false);
+            return;
+        }
 
-    protected void hideAutocomplete() {
-        Scheduler.get().scheduleDeferred(new ScheduledCommand() {
-            @Override public void execute() {
-                m_autoComplete.setVisible(false);
-                if (m_selected != null) {
-                    m_autoComplete.getSelectionModel().setSelected(m_selected, false);
-                    m_selected = null;
-                }
-            }
-        });
+        final List<NodeMarker> markers = m_markerContainer.getMarkers();
+        m_autoComplete.setRowData(markers);
     }
 
     protected void updateAutocompleteStyle(final Widget widget) {
+        // we only need to do this once
+        if (m_updated.contains(widget)) {
+            return;
+        }
+
         final Style style = widget.getElement().getStyle();
         style.setPosition(Position.ABSOLUTE);
         final int left = 5;
         final int top = m_container.getOffsetHeight() + 5;
-        //VConsole.log("left = " + left + ", top = " + top);
         style.setLeft(left, Unit.PX);
         style.setTop(top, Unit.PX);
         DomEvent.stopEventPropagation(widget);
+        m_updated.add(widget);
     }
 
-    protected void handleSearchEvent(final NativeEvent event) {
-        VConsole.log("handleSearchEvent: type = " + event.getType());
-
-        final Element target = event.getEventTarget().cast();
-        if (target.equals(m_submitIcon.getElement())) {
-            event.preventDefault();
-            m_userSubmitted = true;
-        }
-        if (event.getKeyCode() == KeyCodes.KEY_ESCAPE) {
-            m_inputBox.setText("");
-            m_userSubmitted = false;
-        } else if (event.getKeyCode() == KeyCodes.KEY_DOWN) {
-            final List<NodeMarker> markers = m_markerContainer.getMarkers();
-            if (markers.size() > 0) {
-                m_autoComplete.getSelectionModel().setSelected(markers.get(0), true);
+    private void initializeSearchStateManager() {
+        m_stateManager = new SearchStateManager(m_inputBox) {
+            @Override
+            public void refresh() {
+                Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+                    @Override public void execute() {
+                        m_searchConsumer.setSearchString(m_inputBox.getValue());
+                        // it's the search consumer's job to trigger an update in any UI elements
+                        m_searchConsumer.refresh();
+                    }
+                });
             }
-            m_autoComplete.setFocus(true);
-            m_autoComplete.setVisible(true);
-        } else if (event.getKeyCode() == KeyCodes.KEY_ENTER) {
-            m_userSubmitted = true;
-        }
-        m_refreshSearch = true;
-        if (!m_timerActive) {
-            m_timerActive = true;
-            m_timer.scheduleRepeating(m_options.getSearchRefreshInterval());
-        }
-    }
 
-    protected void updateSearchResults() {
-        m_timer.cancel();
-        m_timerActive = false;
-        m_searchConsumer.setSearchString(m_inputBox.getValue());
-        m_searchConsumer.refresh();
-        this.refreshAutocomplete();
+            @Override
+            public void clearSearchInput() {
+                m_inputBox.setValue("");
+                m_inputBox.setFocus(true);
+            }
+
+            @Override
+            public void focusAutocomplete() {
+                m_autoComplete.setFocus(true);
+                if (m_selectionModel.getSelectedObject() == null) {
+                    final List<NodeMarker> markers = m_markerContainer.getMarkers();
+                    if (markers.size() > 0) {
+                        m_selectionModel.setSelected(markers.get(0), true);
+                    }
+                }
+            }
+
+            @Override
+            public void showAutocomplete() {
+                m_autoComplete.setVisible(true);
+                updateAutocompleteStyle(m_autoComplete);
+            }
+
+            @Override
+            public void hideAutocomplete() {
+                m_autoComplete.setVisible(false);
+                m_selectionModel.setSelected(m_selectionModel.getSelectedObject(), false);
+            }
+
+            @Override
+            public void entrySelected() {
+                VConsole.log("entry selected");
+            }
+            
+        };
     }
 
     private void initializeContainerWidget() {
@@ -201,7 +185,7 @@ public class SearchControl extends Control {
     }
 
     private void initializeInputWidget() {
-        m_inputBox = new TextBox();
+        m_inputBox = new SearchTextBox();
         m_inputBox.addStyleName("search-input");
         m_inputBox.getElement().setAttribute("placeholder", "Search...");
         m_inputBox.getElement().setAttribute("type", "search");
@@ -213,7 +197,7 @@ public class SearchControl extends Control {
 
         m_changeCallback = new SearchEventCallback(new String[] { "keydown", "change", "cut", "paste", "search" }, m_inputBox, m_searchConsumer) {
             @Override protected void onEvent(final NativeEvent event) {
-                handleSearchEvent(event);
+                m_stateManager.handleInputEvent(event);
             }
         };
         DomEvent.addListener(m_changeCallback);
@@ -229,7 +213,7 @@ public class SearchControl extends Control {
             @Override
             protected void onEvent(final NativeEvent event) {
                 m_inputBox.setFocus(true);
-                handleSearchEvent(event);
+                m_stateManager.handleSearchIconEvent(event);
             }
         });
     }
@@ -279,41 +263,7 @@ public class SearchControl extends Control {
 
             @Override
             public void onBrowserEvent(final Context context, final com.google.gwt.dom.client.Element parent, final NodeMarker value, final NativeEvent event, final ValueUpdater<NodeMarker> valueUpdater) {
-                boolean setSearchString = false;
-                final String eventType = event.getType();
-                if ("click".equals(eventType) || "touchstart".equals(eventType)) {
-                    if (m_autoComplete.getSelectionModel().isSelected(value)) {
-                        setSearchString = true;
-                    }
-                } else if ("dblclick".equals(eventType)) {
-                    setSearchString = true;
-                } else if ("keydown".equals(eventType)) {
-                    if (event.getKeyCode() == KeyCodes.KEY_ENTER) {
-                        setSearchString = true;
-                    } else if (event.getKeyCode() == KeyCodes.KEY_ESCAPE) {
-                        m_userSubmitted = false;
-                        m_inputBox.setText("");
-                        setSearchString = false;
-                        hideAutocomplete();
-                    }
-                }
-
-                if (setSearchString) {
-                    Scheduler.get().scheduleDeferred(new ScheduledCommand() {
-                        @Override public void execute() {
-                            m_userSubmitted = true;
-                            m_autoComplete.getSelectionModel().setSelected(value, false);
-                            hideAutocomplete();
-                            m_inputBox.setFocus(true);
-
-                            final String searchString = "nodeLabel=" + value.getNodeLabel();
-                            m_inputBox.setValue(searchString, true);
-                            m_searchConsumer.setSearchString(searchString);
-
-                            m_searchConsumer.refresh();
-                        }
-                    });
-                } else {
+                if (m_stateManager.handleAutocompleteEvent(event)) {
                     super.onBrowserEvent(context, parent, value, event, valueUpdater);
                 }
             }
@@ -328,7 +278,7 @@ public class SearchControl extends Control {
         };
 
         m_autoComplete = new CellList<NodeMarker>(cell);
-        m_autoComplete.setSelectionModel(new SingleSelectionModel<NodeMarker>());
+        m_autoComplete.setSelectionModel(m_selectionModel);
         m_autoComplete.setKeyboardSelectionPolicy(KeyboardSelectionPolicy.BOUND_TO_SELECTION);
         m_autoComplete.setVisible(false);
         m_autoComplete.addStyleName("search-autocomplete");
