@@ -19,9 +19,11 @@ public abstract class SearchStateManager {
             final String[] splitToken = token.split("=", 2);
             final String searchString = splitToken[1];
             m_valueItem.setValue(searchString);
-            m_state = State.SEARCHING_FINISHED.initialize(this);
+            m_state = State.SEARCHING_FINISHED;
+            m_state.initialize(this);
         } else {
-            m_state = State.NOT_SEARCHING.initialize(this);
+            m_state = State.NOT_SEARCHING;
+            m_state.initialize(this);
         }
     }
 
