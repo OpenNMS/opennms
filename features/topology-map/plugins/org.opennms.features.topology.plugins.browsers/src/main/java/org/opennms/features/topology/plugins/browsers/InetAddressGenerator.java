@@ -26,18 +26,19 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.app.internal.support;
+package org.opennms.features.topology.plugins.browsers;
 
-import org.opennms.netmgt.model.OnmsSeverity;
+import java.net.InetAddress;
+
+import org.opennms.core.utils.InetAddressUtils;
 
 import com.vaadin.data.Property;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.ColumnGenerator;
 
-public class SeverityGenerator implements ColumnGenerator {
+public class InetAddressGenerator implements ColumnGenerator {
 
-	private static final long serialVersionUID = 8625586472077387770L;
+	private static final long serialVersionUID = -3202605200928035972L;
 
 	@Override
 	public Object generateCell(Table source, Object itemId, Object columnId) {
@@ -45,18 +46,7 @@ public class SeverityGenerator implements ColumnGenerator {
 		if (property == null || property.getValue() == null) {
 			return null;
 		} else {
-			OnmsSeverity severity = (OnmsSeverity)property.getValue();
-			String label = severity.getLabel();
-			label = label.toLowerCase();
-			label = new String(label.substring(0, 1)).toUpperCase() + label.substring(1);
-			return new Label("&nbsp;&nbsp;&nbsp;&nbsp;" + escapeHtml(label), Label.CONTENT_XML);
+			return InetAddressUtils.str((InetAddress)property.getValue());
 		}
-	}
-
-	private String escapeHtml(String html) {
-		if (html == null) {
-			return null;
-		}
-		return html.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 	}
 }

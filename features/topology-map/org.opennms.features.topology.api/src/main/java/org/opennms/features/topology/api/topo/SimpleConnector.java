@@ -26,14 +26,9 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.api;
+package org.opennms.features.topology.api.topo;
 
 import javax.xml.bind.annotation.XmlID;
-
-import org.opennms.features.topology.api.topo.AbstractEdge;
-import org.opennms.features.topology.api.topo.Connector;
-import org.opennms.features.topology.api.topo.Ref;
-import org.opennms.features.topology.api.topo.VertexRef;
 
 public class SimpleConnector implements Connector {
 

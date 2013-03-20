@@ -6,7 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.opennms.features.topology.api.HierarchicalBeanContainer;
+import org.opennms.features.topology.api.support.HierarchicalBeanContainer;
 import org.opennms.netmgt.model.ncs.NCSComponent;
 import org.opennms.netmgt.model.ncs.NCSComponentRepository;
 

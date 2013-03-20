@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
+ * Copyright (C) 2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,25 +26,13 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.app.internal.support;
+package org.opennms.features.topology.api.topo;
 
-import org.opennms.netmgt.model.OnmsIpInterface;
+public class SimpleLeafVertex extends AbstractVertex {
 
-import com.vaadin.data.Property;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.Table.ColumnGenerator;
-
-public class OnmsIpInterfaceGenerator implements ColumnGenerator {
-
-	private static final long serialVersionUID = 7806832669018164281L;
-
-	@Override
-	public Object generateCell(Table source, Object itemId, Object columnId) {
-		Property property = source.getContainerProperty(itemId, columnId);
-		if (property == null || property.getValue() == null) {
-			return null;
-		} else {
-			return ((OnmsIpInterface)property.getValue()).getIpAddressAsString();
-		}
+	public SimpleLeafVertex(String namespace, String id, Integer x, Integer y) {
+		super(namespace, id);
+		if (x != null) setX(x);
+		if (y != null) setY(y);
 	}
 }

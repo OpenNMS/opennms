@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.app.internal.support;
+package org.opennms.features.topology.plugins.browsers;
 
 import java.util.Collection;
 import java.util.Collections;

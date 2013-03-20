@@ -58,27 +58,26 @@ import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomLayout;
-import com.vaadin.ui.Embedded;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.MenuBar;
-import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.Slider;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UriFragmentUtility;
-import com.vaadin.ui.UriFragmentUtility.FragmentChangedEvent;
-import com.vaadin.ui.UriFragmentUtility.FragmentChangedListener;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.VerticalSplitPanel;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.MenuBar.MenuItem;
+import com.vaadin.ui.UriFragmentUtility.FragmentChangedEvent;
+import com.vaadin.ui.UriFragmentUtility.FragmentChangedListener;
 
 public class TopologyWidgetTestApplication extends Application implements CommandUpdateListener, MenuItemUpdateListener, ContextMenuHandler, WidgetUpdateListener, WidgetContext, FragmentChangedListener, GraphContainer.ChangeListener, MapViewManagerListener, VertexUpdateListener {
 
@@ -101,7 +100,6 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 	private WidgetManager m_treeWidgetManager;
 	private Accordion m_treeAccordion;
     private HorizontalSplitPanel m_treeMapSplitPanel;
-    private VerticalSplitPanel m_bottomLayoutBar;
     private final Label m_zoomLevelLabel = new Label("0"); 
     private UriFragmentUtility m_uriFragUtil;
     private final HistoryManager m_historyManager;
@@ -278,7 +276,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 		menuBarUpdated(m_commandManager);
 		if(m_widgetManager.widgetCount() != 0) {
 		    updateWidgetView(m_widgetManager);
-		}else {
+		} else {
 		    m_layout.addComponent(m_treeMapSplitPanel, getBelowMenuPosition());
 		}
 		
@@ -286,12 +284,6 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 		    updateAccordionView(m_treeWidgetManager);
 		}
 	}
-
-	private Embedded Embedded() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
 
     /**
 	 * Update the Accordion View with installed widgets
@@ -319,26 +311,21 @@ public class TopologyWidgetTestApplication extends Application implements Comman
      * @param widgetManager
      */
     private void updateWidgetView(WidgetManager widgetManager) {
-        if(widgetManager.widgetCount() == 0) {
+        synchronized (m_layout) {
             m_layout.removeAllComponents();
-            m_layout.addComponent(m_treeMapSplitPanel, getBelowMenuPosition());
-            m_layout.requestRepaint();
-        } else {
-            if(m_bottomLayoutBar == null) {
-                m_bottomLayoutBar = new VerticalSplitPanel();
-                m_bottomLayoutBar.setFirstComponent(m_treeMapSplitPanel);
+            if(widgetManager.widgetCount() == 0) {
+                m_layout.addComponent(m_treeMapSplitPanel, getBelowMenuPosition());
+            } else {
+                VerticalSplitPanel bottomLayoutBar = new VerticalSplitPanel();
+                bottomLayoutBar.setFirstComponent(m_treeMapSplitPanel);
                 // Split the screen 70% top, 30% bottom
-                m_bottomLayoutBar.setSplitPosition(70, Sizeable.UNITS_PERCENTAGE);
-                m_bottomLayoutBar.setSizeFull();
-                m_bottomLayoutBar.setSecondComponent(getTabSheet(widgetManager, this));
+                bottomLayoutBar.setSplitPosition(70, Sizeable.UNITS_PERCENTAGE);
+                bottomLayoutBar.setSizeFull();
+                bottomLayoutBar.setSecondComponent(getTabSheet(widgetManager, this));
+                m_layout.addComponent(bottomLayoutBar, getBelowMenuPosition());
             }
-
-            m_layout.removeAllComponents();
-            m_layout.addComponent(m_bottomLayoutBar, getBelowMenuPosition());
             m_layout.requestRepaint();
-            
         }
-        
         if(m_contextMenu != null && m_contextMenu.getParent() == null) {
             getMainWindow().addComponent(m_contextMenu);
         }

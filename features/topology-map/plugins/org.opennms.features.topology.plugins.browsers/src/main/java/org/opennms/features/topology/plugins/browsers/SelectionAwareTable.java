@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.app.internal;
+package org.opennms.features.topology.plugins.browsers;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -36,8 +36,6 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import org.opennms.features.topology.api.SelectionContext;
 import org.opennms.features.topology.api.SelectionListener;
 import org.opennms.features.topology.api.SelectionNotifier;
-import org.opennms.features.topology.app.internal.support.OnmsDaoContainer;
-import org.opennms.features.topology.app.internal.support.TableAware;
 
 import com.vaadin.data.Container;
 import com.vaadin.ui.Table;

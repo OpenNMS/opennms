@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,41 +26,25 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.api;
+package org.opennms.features.topology.plugins.browsers;
 
-import com.vaadin.data.Container;
-import com.vaadin.data.util.BeanContainer;
+import org.opennms.netmgt.model.OnmsIpInterface;
 
-public abstract class HierarchicalBeanContainer<K, T> extends BeanContainer<K,T> implements Container.Hierarchical {
+import com.vaadin.data.Property;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.Table.ColumnGenerator;
 
-	private static final long serialVersionUID = 194248426656888195L;
+public class OnmsIpInterfaceGenerator implements ColumnGenerator {
 
-	public HierarchicalBeanContainer(Class<? super T> type) {
-		super(type);
-	}
+	private static final long serialVersionUID = 7806832669018164281L;
 
-	/**
-	 * This is a naive implementation of this method that just checks the size of
-	 * the collection returned by {@link #getChildren(Object)}.
-	 */
 	@Override
-	public boolean hasChildren(Object key) {
-		return getChildren(key).size() > 0;
-	}
-
-	/**
-	 * This is a naive implementation of this method that just checks to see if
-	 * {@link #getParent(Object)} returns null.
-	 */
-	@Override
-	public boolean isRoot(Object key) {
-		return (getParent(key) == null);
-	}
-
-	/**
-	 * Expose {@link #fireItemSetChange()} as a public method.
-	 */
-	public void fireItemSetChange() {
-		super.fireItemSetChange();
+	public Object generateCell(Table source, Object itemId, Object columnId) {
+		Property property = source.getContainerProperty(itemId, columnId);
+		if (property == null || property.getValue() == null) {
+			return null;
+		} else {
+			return ((OnmsIpInterface)property.getValue()).getIpAddressAsString();
+		}
 	}
 }

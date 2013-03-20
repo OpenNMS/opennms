@@ -28,13 +28,16 @@
 
 package org.opennms.features.topology.api;
 
-import org.opennms.features.topology.api.topo.AbstractVertex;
+import org.opennms.features.topology.api.topo.Edge;
+import org.opennms.features.topology.api.topo.Vertex;
 
-public class SimpleLeafVertex extends AbstractVertex {
+public interface GraphVisitor {
+	
+	public void visitGraph(Graph graph) throws Exception;
+	public void completeGraph(Graph graph) throws Exception;
+	
+	public void visitVertex(Vertex vertex) throws Exception;
+	
+	public void visitEdge(Edge edge) throws Exception;
 
-	public SimpleLeafVertex(String namespace, String id, Integer x, Integer y) {
-		super(namespace, id);
-		if (x != null) setX(x);
-		if (y != null) setY(y);
-	}
 }

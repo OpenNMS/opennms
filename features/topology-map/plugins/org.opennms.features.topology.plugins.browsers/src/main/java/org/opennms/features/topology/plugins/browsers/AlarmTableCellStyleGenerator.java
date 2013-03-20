@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.app.internal.support;
+package org.opennms.features.topology.plugins.browsers;
 
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.springframework.beans.factory.InitializingBean;

@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.app.internal.support;
+package org.opennms.features.topology.plugins.browsers;
 
 import com.vaadin.data.Property;
 import com.vaadin.ui.Table;

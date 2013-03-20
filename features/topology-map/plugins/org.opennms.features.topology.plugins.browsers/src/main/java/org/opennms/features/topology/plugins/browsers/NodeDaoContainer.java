@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.app.internal.support;
+package org.opennms.features.topology.plugins.browsers;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -42,41 +42,34 @@ import org.opennms.core.criteria.restrictions.EqRestriction;
 import org.opennms.core.criteria.restrictions.Restriction;
 import org.opennms.features.topology.api.SelectionContext;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.netmgt.dao.AlarmDao;
-import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.model.OnmsNode;
 
 import com.vaadin.data.util.BeanItem;
 
-public class AlarmDaoContainer extends OnmsDaoContainer<OnmsAlarm,Integer> {
+public class NodeDaoContainer extends OnmsDaoContainer<OnmsNode,Integer> {
 
-	private static final long serialVersionUID = -4026870931086916312L;
+	private static final long serialVersionUID = -5697472655705494537L;
 
 	private Map<Object,Class<?>> m_properties;
 
-	public AlarmDaoContainer(AlarmDao dao) {
+	public NodeDaoContainer(NodeDao dao) {
 		super(dao);
 	}
 
 	@Override
-	public Class<OnmsAlarm> getItemClass() {
-		return OnmsAlarm.class;
+	public Class<OnmsNode> getItemClass() {
+		return OnmsNode.class;
 	}
 
 	private synchronized void loadPropertiesIfNull() {
 		if (m_properties == null) {
 			m_properties = new TreeMap<Object,Class<?>>();
-			BeanItem<OnmsAlarm> item = new BeanItem<OnmsAlarm>(new OnmsAlarm());
+			BeanItem<OnmsNode> item = new BeanItem<OnmsNode>(new OnmsNode());
 			for (Object key : item.getItemPropertyIds()) {
 				m_properties.put(key, item.getItemProperty(key).getType());
 			}
 		}
-
-		// Causes problems because it is a map of values 
-		m_properties.remove("details");
-
-		// Causes referential integrity problems
-		// @see http://issues.opennms.org/browse/NMS-5750
-		m_properties.remove("distPoller");
 	}
 
 	@Override
@@ -87,7 +80,7 @@ public class AlarmDaoContainer extends OnmsDaoContainer<OnmsAlarm,Integer> {
 	}
 
 	@Override
-	protected Integer getId(OnmsAlarm bean){
+	protected Integer getId(OnmsNode bean){
 		return bean == null ? null : bean.getId();
 	}
 
@@ -103,8 +96,8 @@ public class AlarmDaoContainer extends OnmsDaoContainer<OnmsAlarm,Integer> {
 		Collection<Object> propertyIds = new HashSet<Object>();
 		propertyIds.addAll(m_properties.keySet());
 
-		// nodeLabel is a transient value so we can't sort on it (yet)
-		propertyIds.remove("nodeLabel");
+		// primaryInterface is a complex object so we can't sort on it (yet)
+		propertyIds.remove("primaryInterface");
 
 		return Collections.unmodifiableCollection(propertyIds);
 	}
@@ -115,7 +108,7 @@ public class AlarmDaoContainer extends OnmsDaoContainer<OnmsAlarm,Integer> {
 		Set<Restriction> restrictions = new HashSet<Restriction>();
 		for (VertexRef ref : selectionContext.getSelectedVertexRefs()) {
 			if ("nodes".equals(ref.getNamespace())) {
-				restrictions.add(new EqRestriction("node.id", Integer.valueOf(ref.getId())));
+				restrictions.add(new EqRestriction("id", Integer.valueOf(ref.getId())));
 			}
 		}
 

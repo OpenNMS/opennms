@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
+ * Copyright (C) 2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,25 +26,36 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.app.internal.support;
+package org.opennms.features.topology.api.topo;
 
-import org.opennms.netmgt.model.OnmsServiceType;
+import java.util.ArrayList;
+import java.util.List;
 
-import com.vaadin.data.Property;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.Table.ColumnGenerator;
+public class SimpleGroup extends AbstractVertex {
 
-public class OnmsServiceTypeGenerator implements ColumnGenerator {
+	List<AbstractVertex> m_members = new ArrayList<AbstractVertex>();
 
-	private static final long serialVersionUID = 7806832669018164281L;
+	int m_mapid;
+
+	public SimpleGroup(String namespace, String groupId) {
+		this(namespace, groupId, -1);
+	}
+
+	public SimpleGroup(String namespace, String groupId, int mapid) {
+		super(namespace, groupId);
+		m_mapid = mapid;
+	}
+
+	public int getMapid() {
+		return m_mapid;
+	}
+
+	public void setMapid(int mapid) {
+		m_mapid = mapid;
+	}
 
 	@Override
-	public Object generateCell(Table source, Object itemId, Object columnId) {
-		Property property = source.getContainerProperty(itemId, columnId);
-		if (property == null || property.getValue() == null) {
-			return null;
-		} else {
-			return ((OnmsServiceType)property.getValue()).getName();
-		}
+	public boolean isGroup() {
+		return true;
 	}
 }

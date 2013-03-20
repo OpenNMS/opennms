@@ -88,29 +88,37 @@ public class StatusSelector {
         m_bundleContext = bundleContext;
     }
     
-    public void addStatusProvider(StatusProvider statusProvider, Map<?,?> metaData) {
-        LoggerFactory.getLogger(getClass()).debug("Adding status provider: " + statusProvider);
-        
-        StatusSelectorOperation operation = new StatusSelectorOperation(statusProvider, metaData);
-        
-        m_operations.put(statusProvider, operation);
-        
-        Dictionary<String, String> properties = new Hashtable<String, String>();
-        properties.put("operation.menuLocation", "View");
-        properties.put("operation.label", operation.getLabel()+"?group=status");
-        
-        ServiceRegistration<CheckedOperation> reg = m_bundleContext.registerService(CheckedOperation.class, operation, properties);
-        
-        m_registrations.put(statusProvider, reg);
+    public synchronized void addStatusProvider(StatusProvider statusProvider, Map<?,?> metaData) {
+        try {
+            LoggerFactory.getLogger(getClass()).debug("Adding status provider: " + statusProvider);
+            
+            StatusSelectorOperation operation = new StatusSelectorOperation(statusProvider, metaData);
+            
+            m_operations.put(statusProvider, operation);
+            
+            Dictionary<String, String> properties = new Hashtable<String, String>();
+            properties.put("operation.menuLocation", "View");
+            properties.put("operation.label", operation.getLabel()+"?group=status");
+            
+            ServiceRegistration<CheckedOperation> reg = m_bundleContext.registerService(CheckedOperation.class, operation, properties);
+            
+            m_registrations.put(statusProvider, reg);
+        } catch (Throwable e) {
+            LoggerFactory.getLogger(this.getClass()).warn("Exception during addStatusProvider()", e);
+        }
     }
     
-    public void removeStatusProvider(StatusProvider statusProvider, Map<?,?> metaData) {
-        LoggerFactory.getLogger(getClass()).debug("Removing status provider: {}", statusProvider);
-        
-        m_operations.remove(statusProvider);
-        ServiceRegistration<CheckedOperation> reg = m_registrations.remove(statusProvider);
-        if(reg != null) {
-            reg.unregister();
+    public synchronized void removeStatusProvider(StatusProvider statusProvider, Map<?,?> metaData) {
+        try {
+            LoggerFactory.getLogger(getClass()).debug("Removing status provider: {}", statusProvider);
+            
+            m_operations.remove(statusProvider);
+            ServiceRegistration<CheckedOperation> reg = m_registrations.remove(statusProvider);
+            if(reg != null) {
+                reg.unregister();
+            }
+        } catch (Throwable e) {
+            LoggerFactory.getLogger(this.getClass()).warn("Exception during removeStatusProvider()", e);
         }
     }
 }

@@ -26,38 +26,47 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.api;
+package org.opennms.features.topology.api.support;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.opennms.features.topology.api.IViewContribution;
+import org.opennms.features.topology.api.WidgetContext;
+import org.osgi.service.blueprint.container.BlueprintContainer;
 
-import org.opennms.features.topology.api.topo.AbstractVertex;
+import com.vaadin.terminal.Resource;
+import com.vaadin.ui.Component;
 
-public class SimpleGroup extends AbstractVertex {
+public class BlueprintIViewContribution implements IViewContribution {
 
-	List<AbstractVertex> m_members = new ArrayList<AbstractVertex>();
+	private final BlueprintContainer m_container;
+	private final String m_beanName;
+	private String m_title;
 
-	int m_mapid;
-
-	public SimpleGroup(String namespace, String groupId) {
-		this(namespace, groupId, -1);
-	}
-
-	public SimpleGroup(String namespace, String groupId, int mapid) {
-		super(namespace, groupId);
-		m_mapid = mapid;
-	}
-
-	public int getMapid() {
-		return m_mapid;
-	}
-
-	public void setMapid(int mapid) {
-		m_mapid = mapid;
+	public BlueprintIViewContribution(BlueprintContainer container, String beanName) {
+		m_container = container;
+		m_beanName = beanName;
 	}
 
 	@Override
-	public boolean isGroup() {
-		return true;
+	public Component getView(WidgetContext widgetContext) {
+		// Get the component by asking the blueprint container to instantiate a prototype bean 
+		Component component = (Component)m_container.getComponentInstance(m_beanName);
+		return component;
+	}
+
+	/**
+	 * Returns null.
+	 */
+	@Override
+	public Resource getIcon() {
+		return null;
+	}
+
+	@Override
+	public String getTitle() {
+		return m_title;
+	}
+
+	public void setTitle(String title) {
+		m_title = title;
 	}
 }

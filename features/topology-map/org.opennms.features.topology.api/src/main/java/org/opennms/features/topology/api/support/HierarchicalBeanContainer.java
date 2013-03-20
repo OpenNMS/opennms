@@ -26,47 +26,41 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.app.internal.support;
+package org.opennms.features.topology.api.support;
 
-import org.opennms.features.topology.api.IViewContribution;
-import org.opennms.features.topology.api.WidgetContext;
-import org.osgi.service.blueprint.container.BlueprintContainer;
+import com.vaadin.data.Container;
+import com.vaadin.data.util.BeanContainer;
 
-import com.vaadin.terminal.Resource;
-import com.vaadin.ui.Component;
+public abstract class HierarchicalBeanContainer<K, T> extends BeanContainer<K,T> implements Container.Hierarchical {
 
-public class BlueprintIViewContribution implements IViewContribution {
+	private static final long serialVersionUID = 194248426656888195L;
 
-	private final BlueprintContainer m_container;
-	private final String m_beanName;
-	private String m_title;
-
-	public BlueprintIViewContribution(BlueprintContainer container, String beanName) {
-		m_container = container;
-		m_beanName = beanName;
-	}
-
-	@Override
-	public Component getView(WidgetContext widgetContext) {
-		// Get the component by asking the blueprint container to instantiate a prototype bean 
-		Component component = (Component)m_container.getComponentInstance(m_beanName);
-		return component;
+	public HierarchicalBeanContainer(Class<? super T> type) {
+		super(type);
 	}
 
 	/**
-	 * Returns null.
+	 * This is a naive implementation of this method that just checks the size of
+	 * the collection returned by {@link #getChildren(Object)}.
 	 */
 	@Override
-	public Resource getIcon() {
-		return null;
+	public boolean hasChildren(Object key) {
+		return getChildren(key).size() > 0;
 	}
 
+	/**
+	 * This is a naive implementation of this method that just checks to see if
+	 * {@link #getParent(Object)} returns null.
+	 */
 	@Override
-	public String getTitle() {
-		return m_title;
+	public boolean isRoot(Object key) {
+		return (getParent(key) == null);
 	}
 
-	public void setTitle(String title) {
-		m_title = title;
+	/**
+	 * Expose {@link #fireItemSetChange()} as a public method.
+	 */
+	public void fireItemSetChange() {
+		super.fireItemSetChange();
 	}
 }
