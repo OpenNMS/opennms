@@ -18,8 +18,6 @@ import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.MarkerContain
 import com.google.gwt.cell.client.AbstractSafeHtmlCell;
 import com.google.gwt.cell.client.ValueUpdater;
 import com.google.gwt.core.client.JavaScriptObject;
-import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Position;
@@ -133,13 +131,9 @@ public class SearchControl extends Control {
         m_stateManager = new SearchStateManager(m_inputBox) {
             @Override
             public void refresh() {
-                Scheduler.get().scheduleDeferred(new ScheduledCommand() {
-                    @Override public void execute() {
-                        m_searchConsumer.setSearchString(m_inputBox.getValue());
-                        // it's the search consumer's job to trigger an update in any UI elements
-                        m_searchConsumer.refresh();
-                    }
-                });
+                m_searchConsumer.setSearchString(m_inputBox.getValue());
+                // it's the search consumer's job to trigger an update in any UI elements
+                m_searchConsumer.refresh();
             }
 
             @Override
