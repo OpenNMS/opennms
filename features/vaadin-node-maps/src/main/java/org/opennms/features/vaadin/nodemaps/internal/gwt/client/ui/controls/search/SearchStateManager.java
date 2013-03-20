@@ -13,6 +13,7 @@ public abstract class SearchStateManager {
     public SearchStateManager(final ValueItem valueItem) {
         m_state = State.NOT_SEARCHING;
         m_valueItem = valueItem;
+        this.focusInput();
     }
 
     SearchState getState() {
@@ -109,7 +110,12 @@ public abstract class SearchStateManager {
                 default:
                     Scheduler.get().scheduleDeferred(new ScheduledCommand() {
                         @Override public void execute() {
-                            m_state = m_state.searchInputReceived(SearchStateManager.this);
+                            final String value = m_valueItem.getValue();
+                            if (value == null || "".equals(value)) {
+                                m_state = m_state.cancelSearching(SearchStateManager.this);
+                            } else {
+                                m_state = m_state.searchInputReceived(SearchStateManager.this);
+                            }
                         }
                     });
                     break;
@@ -146,7 +152,8 @@ public abstract class SearchStateManager {
         // Markers are not being filtered, input box is empty, autocomplete is hidden.
         NOT_SEARCHING {
             @Override public SearchState cancelSearching(final SearchStateManager manager) {
-                // do nothing, we're already not searching
+                // make sure input is focused
+                manager.focusInput();
                 return this;
             }
 
@@ -237,13 +244,15 @@ public abstract class SearchStateManager {
 
             @Override public SearchState finishedSearching(final SearchStateManager manager) {
                 manager.hideAutocomplete();
+                manager.focusInput();
                 manager.refresh();
                 return State.SEARCHING_FINISHED;
             }
 
             @Override public SearchState searchInputReceived(final SearchStateManager manager) {
-                // somehow we've got new search input, user has probably changed focus themselves,
+                // somehow we've got new search input, user has probably typed somethign in themselves,
                 // flip back to the input-box-has-focus state
+                manager.focusInput();
                 return SEARCHING_AUTOCOMPLETE_VISIBLE.searchInputReceived(manager);
             }
 
@@ -257,6 +266,7 @@ public abstract class SearchStateManager {
                 // the user has clicked an entry or hit enter
                 manager.hideAutocomplete();
                 manager.entrySelected();
+                manager.focusInput();
                 manager.refresh();
                 return SEARCHING_FINISHED;
             }
@@ -273,6 +283,7 @@ public abstract class SearchStateManager {
         }, SEARCHING_AUTOCOMPLETE_HIDDEN {
             @Override public SearchState cancelSearching(final SearchStateManager manager) {
                 manager.clearSearchInput();
+                manager.focusInput();
                 manager.hideAutocomplete();
                 manager.refresh();
                 return State.NOT_SEARCHING;
@@ -281,6 +292,7 @@ public abstract class SearchStateManager {
             @Override
             public SearchState finishedSearching(final SearchStateManager manager) {
                 manager.hideAutocomplete();
+                manager.focusInput();
                 manager.refresh();
                 return State.SEARCHING_FINISHED;
             }
@@ -318,6 +330,7 @@ public abstract class SearchStateManager {
         SEARCHING_FINISHED {
             @Override public SearchState cancelSearching(final SearchStateManager manager) {
                 manager.clearSearchInput();
+                manager.focusInput();
                 manager.hideAutocomplete();
                 manager.refresh();
                 return State.NOT_SEARCHING;
@@ -335,6 +348,7 @@ public abstract class SearchStateManager {
                 // user has focused the input box and started typing again
                 manager.refresh();
                 manager.showAutocomplete();
+                manager.focusInput();
                 return SEARCHING_AUTOCOMPLETE_VISIBLE;
             }
 
@@ -359,6 +373,7 @@ public abstract class SearchStateManager {
     public abstract void refresh();
     public abstract void entrySelected();
     public abstract void clearSearchInput();
+    public abstract void focusInput();
     public abstract void focusAutocomplete();
     public abstract void showAutocomplete();
     public abstract void hideAutocomplete();

@@ -7,6 +7,7 @@ import static org.junit.Assert.assertNotNull;
 import java.util.Set;
 
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -47,9 +48,10 @@ import com.vaadin.terminal.gwt.client.ValueMap;
 })
 public class SearchStateTest {
     private ValueItem m_valueItem = new TestValueItem();
+    private MockSearchStateManager m_searchManager;
 
     @BeforeClass
-    public static void setUp() throws Exception {
+    public static void setUpClass() throws Exception {
         GWTMockUtilities.disarm();
         final Console console = new TestConsole();
         Whitebox.setInternalState(VConsole.class, "impl", console);
@@ -59,152 +61,211 @@ public class SearchStateTest {
     }
 
     @AfterClass
-    public static void tearDown() {
+    public static void tearDownClass() {
         GWTMockUtilities.restore();
+    }
+
+    @Before
+    public void setUp() throws Exception {
+        m_searchManager = new MockSearchStateManager(m_valueItem);
+        m_valueItem.setValue("");
     }
 
     @Test
     public void testSimpleSearch() throws Exception {
-        final MockSearchStateManager searchManager = new MockSearchStateManager(m_valueItem);
-
-        assertNotNull(searchManager.getState());
-        assertEquals(State.NOT_SEARCHING, searchManager.getState());
-        assertEquals(false, searchManager.isAutocompleteVisible());
+        assertNotNull(m_searchManager.getState());
+        assertEquals(State.NOT_SEARCHING, m_searchManager.getState());
+        assertEquals(false, m_searchManager.isAutocompleteVisible());
 
         // start typing
-        typeCharacter(searchManager, 'a');
-        searchManager.updateMatchCount(15);
-        assertEquals(State.SEARCHING_AUTOCOMPLETE_VISIBLE, searchManager.getState());
-        assertEquals(true, searchManager.isAutocompleteVisible());
+        typeCharacter(m_searchManager, 'a');
+        m_searchManager.updateMatchCount(15);
+        assertEquals(State.SEARCHING_AUTOCOMPLETE_VISIBLE, m_searchManager.getState());
+        assertEquals(true, m_searchManager.isAutocompleteVisible());
+        assertEquals(false, m_searchManager.isAutocompleteFocused());
+        assertEquals(true, m_searchManager.isInputFocused());
 
-        typeCharacter(searchManager, 'b');
-        searchManager.updateMatchCount(2);
-        assertEquals(State.SEARCHING_AUTOCOMPLETE_VISIBLE, searchManager.getState());
-        assertEquals(true, searchManager.isAutocompleteVisible());
+        typeCharacter(m_searchManager, 'b');
+        m_searchManager.updateMatchCount(2);
+        assertEquals(State.SEARCHING_AUTOCOMPLETE_VISIBLE, m_searchManager.getState());
+        assertEquals(true, m_searchManager.isAutocompleteVisible());
+        assertEquals(false, m_searchManager.isAutocompleteFocused());
+        assertEquals(true, m_searchManager.isInputFocused());
 
-        typeCharacter(searchManager, 'c');
-        searchManager.updateMatchCount(0);
-        assertEquals(State.SEARCHING_AUTOCOMPLETE_HIDDEN, searchManager.getState());
-        assertEquals(false, searchManager.isAutocompleteVisible());
+        typeCharacter(m_searchManager, 'c');
+        m_searchManager.updateMatchCount(0);
+        assertEquals(State.SEARCHING_AUTOCOMPLETE_HIDDEN, m_searchManager.getState());
+        assertEquals(false, m_searchManager.isAutocompleteVisible());
+        assertEquals(false, m_searchManager.isAutocompleteFocused());
+        assertEquals(true, m_searchManager.isInputFocused());
 
         // hit enter
-        hitEnterInInput(searchManager);
-        assertEquals(State.SEARCHING_FINISHED, searchManager.getState());
-        assertEquals(false, searchManager.isAutocompleteVisible());
+        hitEnterInInput(m_searchManager);
+        assertEquals(State.SEARCHING_FINISHED, m_searchManager.getState());
+        assertEquals(false, m_searchManager.isAutocompleteVisible());
+        assertEquals(false, m_searchManager.isAutocompleteFocused());
+        assertEquals(true, m_searchManager.isInputFocused());
 
         // hit the cancel button
-        hitCancelX(searchManager);
-        assertEquals(State.NOT_SEARCHING, searchManager.getState());
-        assertEquals(false, searchManager.isAutocompleteVisible());
+        hitCancelX(m_searchManager);
+        assertEquals(State.NOT_SEARCHING, m_searchManager.getState());
+        assertEquals(false, m_searchManager.isAutocompleteVisible());
+        assertEquals(false, m_searchManager.isAutocompleteFocused());
+        assertEquals(true, m_searchManager.isInputFocused());
     }
 
     @Test
     public void testBackspace() throws Exception {
-        final MockSearchStateManager searchManager = new MockSearchStateManager(m_valueItem);
-
-        typeCharacter(searchManager, 'a');
-        searchManager.updateMatchCount(20);
-        typeCharacter(searchManager, 'b');
-        searchManager.updateMatchCount(15);
-        typeCharacter(searchManager, 'c');
-        searchManager.updateMatchCount(12);
-        typeCharacter(searchManager, 'd');
-        searchManager.updateMatchCount(10);
-        typeCharacter(searchManager, 'e');
-        searchManager.updateMatchCount(1);
-        typeCharacter(searchManager, (char)KeyCodes.KEY_BACKSPACE);
-        searchManager.updateMatchCount(10);
+        typeCharacter(m_searchManager, 'a');
+        m_searchManager.updateMatchCount(20);
+        typeCharacter(m_searchManager, 'b');
+        m_searchManager.updateMatchCount(15);
+        typeCharacter(m_searchManager, 'c');
+        m_searchManager.updateMatchCount(12);
+        typeCharacter(m_searchManager, 'd');
+        m_searchManager.updateMatchCount(10);
+        typeCharacter(m_searchManager, 'e');
+        m_searchManager.updateMatchCount(1);
+        typeCharacter(m_searchManager, (char)KeyCodes.KEY_BACKSPACE);
+        m_searchManager.updateMatchCount(10);
         assertEquals(4, m_valueItem.getValue().length());
-        assertEquals(State.SEARCHING_AUTOCOMPLETE_VISIBLE, searchManager.getState());
-        assertEquals(true, searchManager.isAutocompleteVisible());
+        assertEquals(State.SEARCHING_AUTOCOMPLETE_VISIBLE, m_searchManager.getState());
+        assertEquals(true, m_searchManager.isAutocompleteVisible());
+        assertEquals(false, m_searchManager.isAutocompleteFocused());
+        assertEquals(true, m_searchManager.isInputFocused());
+        
+        typeCharacter(m_searchManager, (char)KeyCodes.KEY_BACKSPACE);
+        m_searchManager.updateMatchCount(12);
+        typeCharacter(m_searchManager, (char)KeyCodes.KEY_BACKSPACE);
+        m_searchManager.updateMatchCount(15);
+        typeCharacter(m_searchManager, (char)KeyCodes.KEY_BACKSPACE);
+        m_searchManager.updateMatchCount(20);
+        typeCharacter(m_searchManager, (char)KeyCodes.KEY_BACKSPACE);
+        m_searchManager.updateMatchCount(100);
+        assertEquals(0, m_valueItem.getValue().length());
+        assertEquals(State.NOT_SEARCHING, m_searchManager.getState());
+        assertEquals(false, m_searchManager.isAutocompleteVisible());
+        assertEquals(false, m_searchManager.isAutocompleteFocused());
+        assertEquals(true, m_searchManager.isInputFocused());
     }
 
     @Test
     public void testChangeSearchTextAfterFinishing() throws Exception {
-        final MockSearchStateManager searchManager = new MockSearchStateManager(m_valueItem);
-
         // start typing
-        typeCharacter(searchManager, 'a');
-        searchManager.updateMatchCount(15);
-        assertEquals(State.SEARCHING_AUTOCOMPLETE_VISIBLE, searchManager.getState());
-        assertEquals(true, searchManager.isAutocompleteVisible());
+        typeCharacter(m_searchManager, 'a');
+        m_searchManager.updateMatchCount(15);
+        assertEquals(State.SEARCHING_AUTOCOMPLETE_VISIBLE, m_searchManager.getState());
+        assertEquals(true, m_searchManager.isAutocompleteVisible());
+        assertEquals(false, m_searchManager.isAutocompleteFocused());
+        assertEquals(true, m_searchManager.isInputFocused());
         assertEquals("a", m_valueItem.getValue());
 
-        typeCharacter(searchManager, 'b');
-        searchManager.updateMatchCount(0);
-        assertEquals(State.SEARCHING_AUTOCOMPLETE_HIDDEN, searchManager.getState());
-        assertEquals(false, searchManager.isAutocompleteVisible());
+        typeCharacter(m_searchManager, 'b');
+        m_searchManager.updateMatchCount(0);
+        assertEquals(State.SEARCHING_AUTOCOMPLETE_HIDDEN, m_searchManager.getState());
+        assertEquals(false, m_searchManager.isAutocompleteVisible());
+        assertEquals(false, m_searchManager.isAutocompleteFocused());
+        assertEquals(true, m_searchManager.isInputFocused());
         assertEquals("ab", m_valueItem.getValue());
         
         // hit enter
-        hitEnterInInput(searchManager);
-        searchManager.updateMatchCount(0);
-        assertEquals(State.SEARCHING_FINISHED, searchManager.getState());
-        assertEquals(false, searchManager.isAutocompleteVisible());
+        hitEnterInInput(m_searchManager);
+        m_searchManager.updateMatchCount(0);
+        assertEquals(State.SEARCHING_FINISHED, m_searchManager.getState());
+        assertEquals(false, m_searchManager.isAutocompleteVisible());
+        assertEquals(false, m_searchManager.isAutocompleteFocused());
+        assertEquals(true, m_searchManager.isInputFocused());
         assertEquals("ab", m_valueItem.getValue());
 
         // start typing
-        typeCharacter(searchManager, (char)KeyCodes.KEY_BACKSPACE);
-        searchManager.updateMatchCount(15);
-        assertEquals(State.SEARCHING_AUTOCOMPLETE_VISIBLE, searchManager.getState());
-        assertEquals(true, searchManager.isAutocompleteVisible());
+        typeCharacter(m_searchManager, (char)KeyCodes.KEY_BACKSPACE);
+        m_searchManager.updateMatchCount(15);
+        assertEquals(State.SEARCHING_AUTOCOMPLETE_VISIBLE, m_searchManager.getState());
+        assertEquals(true, m_searchManager.isAutocompleteVisible());
+        assertEquals(false, m_searchManager.isAutocompleteFocused());
+        assertEquals(true, m_searchManager.isInputFocused());
         assertEquals("a", m_valueItem.getValue());
     }
 
     @Test
     public void testAutocompleteKeyboardNavigation() throws Exception {
-        final MockSearchStateManager searchManager = new MockSearchStateManager(m_valueItem);
-
         // autocomplete shouldn't do anything even if we down-arrow, since we haven't started searching yet
-        typeCharacter(searchManager, (char)KeyCodes.KEY_DOWN);
-        searchManager.updateMatchCount(100);
-        assertEquals(State.NOT_SEARCHING, searchManager.getState());
-        assertEquals(false, searchManager.isAutocompleteVisible());
-        assertEquals(false, searchManager.isAutocompleteFocused());
+        typeCharacter(m_searchManager, (char)KeyCodes.KEY_DOWN);
+        m_searchManager.updateMatchCount(100);
+        assertEquals(State.NOT_SEARCHING, m_searchManager.getState());
+        assertEquals(false, m_searchManager.isAutocompleteVisible());
+        assertEquals(false, m_searchManager.isAutocompleteFocused());
+        assertEquals(true, m_searchManager.isInputFocused());
 
         // start typing
-        typeCharacter(searchManager, 'a');
-        searchManager.updateMatchCount(15);
-        assertEquals(State.SEARCHING_AUTOCOMPLETE_VISIBLE, searchManager.getState());
-        assertEquals(true, searchManager.isAutocompleteVisible());
-        assertEquals(false, searchManager.isAutocompleteFocused());
+        typeCharacter(m_searchManager, 'a');
+        m_searchManager.updateMatchCount(15);
+        assertEquals(State.SEARCHING_AUTOCOMPLETE_VISIBLE, m_searchManager.getState());
+        assertEquals(true, m_searchManager.isAutocompleteVisible());
+        assertEquals(false, m_searchManager.isAutocompleteFocused());
+        assertEquals(true, m_searchManager.isInputFocused());
 
         // hit down-arrow
-        typeCharacter(searchManager, (char)KeyCodes.KEY_DOWN);
-        searchManager.updateMatchCount(15);
-        assertEquals(State.SEARCHING_AUTOCOMPLETE_ACTIVE, searchManager.getState());
-        assertEquals(true, searchManager.isAutocompleteVisible());
-        assertEquals(true, searchManager.isAutocompleteFocused());
+        typeCharacter(m_searchManager, (char)KeyCodes.KEY_DOWN);
+        m_searchManager.updateMatchCount(15);
+        assertEquals(State.SEARCHING_AUTOCOMPLETE_ACTIVE, m_searchManager.getState());
+        assertEquals(true, m_searchManager.isAutocompleteVisible());
+        assertEquals(true, m_searchManager.isAutocompleteFocused());
+        assertEquals(false, m_searchManager.isInputFocused());
 
         // hit enter
-        hitEnterInInput(searchManager);
-        searchManager.updateMatchCount(15);
-        assertEquals(State.SEARCHING_FINISHED, searchManager.getState());
-        assertEquals(false, searchManager.isAutocompleteVisible());
-        assertEquals(false, searchManager.isAutocompleteFocused());
+        hitEnterInInput(m_searchManager);
+        m_searchManager.updateMatchCount(15);
+        assertEquals(State.SEARCHING_FINISHED, m_searchManager.getState());
+        assertEquals(false, m_searchManager.isAutocompleteVisible());
+        assertEquals(false, m_searchManager.isAutocompleteFocused());
+        assertEquals(true, m_searchManager.isInputFocused());
     }
 
     @Test
     public void testAutocompleteClick() throws Exception {
-        final MockSearchStateManager searchManager = new MockSearchStateManager(m_valueItem);
-
         // type something
-        typeCharacter(searchManager, 'a');
-        searchManager.updateMatchCount(15);
+        typeCharacter(m_searchManager, 'a');
+        m_searchManager.updateMatchCount(15);
 
         // then click on an entry in the autocomplete
-        clickAutocompleteEntry(searchManager);
-        searchManager.updateMatchCount(1);
-        assertEquals(State.SEARCHING_FINISHED, searchManager.getState());
-        assertEquals(false, searchManager.isAutocompleteVisible());
-        assertEquals(false, searchManager.isAutocompleteFocused());
+        clickAutocompleteEntry(m_searchManager);
+        m_searchManager.updateMatchCount(1);
+        assertEquals(State.SEARCHING_FINISHED, m_searchManager.getState());
+        assertEquals(false, m_searchManager.isAutocompleteVisible());
+        assertEquals(false, m_searchManager.isAutocompleteFocused());
+        assertEquals(true, m_searchManager.isInputFocused());
 
         // hit enter, nothing should really happen
-        hitEnterInInput(searchManager);
-        searchManager.updateMatchCount(1);
-        assertEquals(State.SEARCHING_FINISHED, searchManager.getState());
-        assertEquals(false, searchManager.isAutocompleteVisible());
-        assertEquals(false, searchManager.isAutocompleteFocused());
+        hitEnterInInput(m_searchManager);
+        m_searchManager.updateMatchCount(1);
+        assertEquals(State.SEARCHING_FINISHED, m_searchManager.getState());
+        assertEquals(false, m_searchManager.isAutocompleteVisible());
+        assertEquals(false, m_searchManager.isAutocompleteFocused());
+        assertEquals(true, m_searchManager.isInputFocused());
+    }
+
+    @Test
+    public void testSelectingItemInAutocompleteBoxThenSearchingAgain() throws Exception {
+        typeCharacter(m_searchManager, 'a');
+        m_searchManager.updateMatchCount(15);
+
+        typeCharacter(m_searchManager, (char)KeyCodes.KEY_DOWN);
+        m_searchManager.updateMatchCount(15);
+
+        hitEnterInAutocompleteField(m_searchManager);
+        m_searchManager.updateMatchCount(1);
+        assertEquals(State.SEARCHING_FINISHED, m_searchManager.getState());
+        assertEquals(false, m_searchManager.isAutocompleteVisible());
+        assertEquals(false, m_searchManager.isAutocompleteFocused());
+        assertEquals(true, m_searchManager.isInputFocused());
+
+        typeCharacter(m_searchManager, 'a');
+        m_searchManager.updateMatchCount(15);
+        assertEquals(State.SEARCHING_AUTOCOMPLETE_VISIBLE, m_searchManager.getState());
+        assertEquals(true, m_searchManager.isAutocompleteVisible());
+        assertEquals(false, m_searchManager.isAutocompleteFocused());
+        assertEquals(true, m_searchManager.isInputFocused());
     }
 
     protected void clickAutocompleteEntry(final MockSearchStateManager searchManager) throws Exception {
@@ -302,13 +363,21 @@ public class SearchStateTest {
 
         private boolean m_autocompleteVisible = false;
         private boolean m_autocompleteFocused = false;
+        private boolean m_inputFocused;
 
         @Override public void refresh() {
             System.err.println("refreshing data!");
         }
 
+        @Override public void focusInput() {
+            System.err.println("input focused!");
+            m_inputFocused = true;
+            m_autocompleteFocused = false;
+        }
+
         @Override public void focusAutocomplete() {
             System.err.println("focusing autocomplete!");
+            m_inputFocused = false;
             m_autocompleteFocused = true;
         }
 
@@ -329,6 +398,10 @@ public class SearchStateTest {
 
         @Override public void entrySelected() {
             System.err.println("current autocomplete entry selected!");
+        }
+
+        public boolean isInputFocused() {
+            return m_inputFocused;
         }
 
         public boolean isAutocompleteVisible() {

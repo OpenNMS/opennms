@@ -102,11 +102,6 @@ public class SearchControl extends Control {
     }
 
     public void refresh() {
-        if ("".equals(m_searchConsumer.getSearchString())) {
-            m_autoComplete.setVisible(false);
-            return;
-        }
-
         final List<NodeMarker> markers = m_markerContainer.getMarkers();
         m_autoComplete.setRowData(markers);
     }
@@ -139,7 +134,6 @@ public class SearchControl extends Control {
             @Override
             public void clearSearchInput() {
                 m_inputBox.setValue("");
-                m_inputBox.setFocus(true);
             }
 
             @Override
@@ -167,7 +161,12 @@ public class SearchControl extends Control {
 
             @Override
             public void entrySelected() {
-                VConsole.log("entry selected");
+                m_inputBox.setValue("nodeLabel=" + m_selectionModel.getSelectedObject().getNodeLabel(), false);
+            }
+
+            @Override
+            public void focusInput() {
+                m_inputBox.setFocus(true);
             }
             
         };
