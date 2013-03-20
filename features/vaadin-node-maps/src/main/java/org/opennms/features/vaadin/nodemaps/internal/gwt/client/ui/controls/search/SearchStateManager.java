@@ -9,11 +9,20 @@ import com.vaadin.terminal.gwt.client.VConsole;
 public abstract class SearchStateManager {
     private SearchState m_state;
     private ValueItem m_valueItem;
+    private ValueItem m_history;
 
-    public SearchStateManager(final ValueItem valueItem) {
-        m_state = State.NOT_SEARCHING;
+    public SearchStateManager(final ValueItem valueItem, final ValueItem history) {
         m_valueItem = valueItem;
-        this.focusInput();
+        m_history = history;
+        final String token = m_history.getValue();
+        if (token != null && token.startsWith("search-")) {
+            final String[] splitToken = token.split("=", 2);
+            final String searchString = splitToken[1];
+            m_valueItem.setValue(searchString);
+            m_state = State.SEARCHING_FINISHED.initialize(this);
+        } else {
+            m_state = State.NOT_SEARCHING.initialize(this);
+        }
     }
 
     SearchState getState() {
@@ -31,35 +40,38 @@ public abstract class SearchStateManager {
     public boolean handleAutocompleteEvent(final NativeEvent event) {
         final String eventType = event.getType();
         final int eventKeyCode = event.getKeyCode();
-        VConsole.log("handleAutocompleteEvent: received " + eventType + " (keyCode = " + eventKeyCode + ")");
+        VConsole.log("handleAutocompleteEvent(" + m_state + "): received " + eventType + " (keyCode = " + eventKeyCode + ")");
 
         if ("keydown".equals(eventType)) {
-            switch(eventKeyCode) {
+            switch (eventKeyCode) {
             case KeyCodes.KEY_ESCAPE:
                 Scheduler.get().scheduleDeferred(new ScheduledCommand() {
-                    @Override public void execute() {
+                    @Override
+                    public void execute() {
                         m_state = m_state.cancelSearching(SearchStateManager.this);
                     }
                 });
                 break;
             case KeyCodes.KEY_ENTER:
                 Scheduler.get().scheduleDeferred(new ScheduledCommand() {
-                    @Override public void execute() {
+                    @Override
+                    public void execute() {
                         m_state = m_state.currentEntrySelected(SearchStateManager.this);
                     }
                 });
                 break;
-        }
+            }
         } else if ("click".equals(eventType) || "touchstart".equals(eventType)) {
             // someone clicked on an entry
             Scheduler.get().scheduleDeferred(new ScheduledCommand() {
-                @Override public void execute() {
+                @Override
+                public void execute() {
                     m_state = m_state.currentEntrySelected(SearchStateManager.this);
                 }
             });
             return true;
         } else {
-            VConsole.log("handleAutocompleteEvent: unhandled event: " + eventType);
+            VConsole.log("handleAutocompleteEvent(" + m_state + "): unhandled event: " + eventType);
             return true;
         }
         return false;
@@ -67,70 +79,76 @@ public abstract class SearchStateManager {
 
     public void handleSearchIconEvent(final NativeEvent event) {
         final String eventType = event.getType();
-        VConsole.log("handleSearchIconEvent: received " + eventType + " (keyCode = " + event.getKeyCode() + ")");
+        VConsole.log("handleSearchIconEvent(" + m_state + "): received " + eventType + " (keyCode = " + event.getKeyCode() + ")");
 
         if ("click".equals(eventType) || "touchstart".equals(eventType)) {
             Scheduler.get().scheduleDeferred(new ScheduledCommand() {
-                @Override public void execute() {
+                @Override
+                public void execute() {
                     m_state = m_state.finishedSearching(SearchStateManager.this);
                 }
             });
         } else {
-            VConsole.log("handleSearchIconEvent: unhandled event: " + eventType);
+            VConsole.log("handleSearchIconEvent(" + m_state + "): unhandled event: " + eventType);
         }
     }
 
     public void handleInputEvent(final NativeEvent event) {
         final String eventType = event.getType();
-        VConsole.log("handleInputEvent: received " + eventType + " (keyCode = " + event.getKeyCode() + ")");
+        VConsole.log("handleInputEvent(" + m_state + "): received " + eventType + " (keyCode = " + event.getKeyCode() + ")");
 
         if ("keydown".equals(eventType)) {
-            switch(event.getKeyCode()) {
-                case KeyCodes.KEY_ESCAPE:
-                    Scheduler.get().scheduleDeferred(new ScheduledCommand() {
-                        @Override public void execute() {
+            switch (event.getKeyCode()) {
+            case KeyCodes.KEY_ESCAPE:
+                Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+                    @Override
+                    public void execute() {
+                        m_state = m_state.cancelSearching(SearchStateManager.this);
+                    }
+                });
+                break;
+            case KeyCodes.KEY_DOWN:
+                Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+                    @Override
+                    public void execute() {
+                        m_state = m_state.autocompleteStartNavigation(SearchStateManager.this);
+                    }
+                });
+                break;
+            case KeyCodes.KEY_ENTER:
+                Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+                    @Override
+                    public void execute() {
+                        m_state = m_state.finishedSearching(SearchStateManager.this);
+                    }
+                });
+                break;
+            default:
+                Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+                    @Override
+                    public void execute() {
+                        final String value = m_valueItem.getValue();
+                        if (value == null || "".equals(value)) {
                             m_state = m_state.cancelSearching(SearchStateManager.this);
+                        } else {
+                            m_state = m_state.searchInputReceived(SearchStateManager.this);
                         }
-                    });
-                    break;
-                case KeyCodes.KEY_DOWN:
-                    Scheduler.get().scheduleDeferred(new ScheduledCommand() {
-                        @Override public void execute() {
-                            m_state = m_state.autocompleteStartNavigation(SearchStateManager.this);
-                        }
-                    });
-                    break;
-                case KeyCodes.KEY_ENTER:
-                    Scheduler.get().scheduleDeferred(new ScheduledCommand() {
-                        @Override public void execute() {
-                            m_state = m_state.finishedSearching(SearchStateManager.this);
-                        }
-                    });
-                    break;
-                default:
-                    Scheduler.get().scheduleDeferred(new ScheduledCommand() {
-                        @Override public void execute() {
-                            final String value = m_valueItem.getValue();
-                            if (value == null || "".equals(value)) {
-                                m_state = m_state.cancelSearching(SearchStateManager.this);
-                            } else {
-                                m_state = m_state.searchInputReceived(SearchStateManager.this);
-                            }
-                        }
-                    });
-                    break;
+                    }
+                });
+                break;
             }
         } else if ("search".equals(eventType)) {
             final String searchString = m_valueItem.getValue();
             if ("".equals(searchString)) {
                 Scheduler.get().scheduleDeferred(new ScheduledCommand() {
-                    @Override public void execute() {
+                    @Override
+                    public void execute() {
                         m_state = m_state.cancelSearching(SearchStateManager.this);
                     }
                 });
             }
         } else {
-            VConsole.log("handleInputEvent: unhandled event: " + eventType);
+            VConsole.log("handleInputEvent(" + m_state + "): unhandled event: " + eventType);
         }
     }
 
@@ -138,8 +156,8 @@ public abstract class SearchStateManager {
         m_state = m_state.cancelSearching(this);
     }
 
-
     interface SearchState {
+        public abstract SearchState initialize(SearchStateManager manager);
         public abstract SearchState cancelSearching(SearchStateManager manager);
         public abstract SearchState finishedSearching(SearchStateManager manager);
         public abstract SearchState currentEntrySelected(SearchStateManager manager);
@@ -151,32 +169,45 @@ public abstract class SearchStateManager {
     enum State implements SearchState {
         // Markers are not being filtered, input box is empty, autocomplete is hidden.
         NOT_SEARCHING {
-            @Override public SearchState cancelSearching(final SearchStateManager manager) {
+            @Override
+            public SearchState initialize(final SearchStateManager manager) {
+                manager.focusInput();
+                manager.hideAutocomplete();
+                return this;
+            }
+
+            @Override
+            public SearchState cancelSearching(final SearchStateManager manager) {
                 // make sure input is focused
                 manager.focusInput();
                 return this;
             }
 
-            @Override public SearchState autocompleteStartNavigation(final SearchStateManager manager) {
-                // if we're not searching, starting navigation won't do anything because
+            @Override
+            public SearchState autocompleteStartNavigation(final SearchStateManager manager) {
+                // if we're not searching, starting navigation won't do
+                // anything because
                 // we don't have a search phrase yet
                 VConsole.log("WARNING: attempting to start autocomplete navigation, but we're not searching!");
                 return this;
             }
 
-            @Override public SearchState searchInputReceived(final SearchStateManager manager) {
+            @Override
+            public SearchState searchInputReceived(final SearchStateManager manager) {
                 manager.refresh();
                 manager.showAutocomplete();
                 return SEARCHING_AUTOCOMPLETE_VISIBLE;
             }
 
-            @Override public SearchState finishedSearching(final SearchStateManager manager) {
-                // if we're not searching, we can't finish  :)
+            @Override
+            public SearchState finishedSearching(final SearchStateManager manager) {
+                // if we're not searching, we can't finish :)
                 VConsole.log("WARNING: attempting to finish, but we're not searching!");
                 return this;
             }
 
-            @Override public SearchState currentEntrySelected(final SearchStateManager manager) {
+            @Override
+            public SearchState currentEntrySelected(final SearchStateManager manager) {
                 // if we're not searching, we can't select an entry
                 VConsole.log("WARNING: attempting to finish, but we're not searching!");
                 return this;
@@ -190,41 +221,61 @@ public abstract class SearchStateManager {
         },
         // Markers are being filtered, input box has content, autocomplete is visible.
         SEARCHING_AUTOCOMPLETE_VISIBLE {
-            @Override public SearchState cancelSearching(final SearchStateManager manager) {
-                manager.clearSearchInput();
-                manager.hideAutocomplete();
-                manager.refresh();
-                return State.NOT_SEARCHING;
-            }
-
-            @Override public SearchState autocompleteStartNavigation(final SearchStateManager manager) {
-                // we are already searching with autocomplete visible, but input came
-                // to the input box, so we return focus to the autocomplete box
-                manager.focusAutocomplete();
-                return SEARCHING_AUTOCOMPLETE_ACTIVE;
-            }
-
-            @Override public SearchState searchInputReceived(final SearchStateManager manager) {
-                // we're still searching, so show/update autocomplete, and then update markers
+            @Override
+            public SearchState initialize(final SearchStateManager manager) {
+                manager.focusInput();
+                manager.showAutocomplete();
                 manager.refresh();
                 return this;
             }
 
-            @Override public SearchState finishedSearching(final SearchStateManager manager) {
+            @Override
+            public SearchState cancelSearching(final SearchStateManager manager) {
+                manager.clearSearchInput();
                 manager.hideAutocomplete();
+                manager.updateHistoryToken();
+                manager.refresh();
+                return State.NOT_SEARCHING;
+            }
+
+            @Override
+            public SearchState autocompleteStartNavigation(final SearchStateManager manager) {
+                // we are already searching with autocomplete visible, but
+                // input came
+                // to the input box, so we return focus to the autocomplete
+                // box
+                manager.focusAutocomplete();
+                return SEARCHING_AUTOCOMPLETE_ACTIVE;
+            }
+
+            @Override
+            public SearchState searchInputReceived(final SearchStateManager manager) {
+                // we're still searching, so show/update autocomplete, and
+                // then update markers
+                manager.refresh();
+                return this;
+            }
+
+            @Override
+            public SearchState finishedSearching(final SearchStateManager manager) {
+                manager.hideAutocomplete();
+                manager.updateHistoryToken();
                 manager.refresh();
                 return State.SEARCHING_FINISHED;
             }
 
-            @Override public SearchState currentEntrySelected(final SearchStateManager manager) {
+            @Override
+            public SearchState currentEntrySelected(final SearchStateManager manager) {
                 // the user has clicked an entry
                 manager.hideAutocomplete();
                 manager.entrySelected();
+                manager.updateHistoryToken();
                 manager.refresh();
                 return SEARCHING_FINISHED;
             }
 
-            @Override public SearchState updateMatchCount(final SearchStateManager manager, final int matchCount) {
+            @Override
+            public SearchState updateMatchCount(final SearchStateManager manager, final int matchCount) {
                 // if there are no matches, hide the autocomplete
                 if (matchCount == 0) {
                     manager.hideAutocomplete();
@@ -234,57 +285,21 @@ public abstract class SearchStateManager {
                 }
             }
         },
+        // Markers are being filtered, input box has content, autocomplete is focused and navigable.
         SEARCHING_AUTOCOMPLETE_ACTIVE {
-            @Override public SearchState cancelSearching(final SearchStateManager manager) {
-                manager.clearSearchInput();
-                manager.hideAutocomplete();
+            @Override
+            public SearchState initialize(final SearchStateManager manager) {
+                manager.showAutocomplete();
+                manager.focusAutocomplete();
                 manager.refresh();
-                return State.NOT_SEARCHING;
-            }
-
-            @Override public SearchState finishedSearching(final SearchStateManager manager) {
-                manager.hideAutocomplete();
-                manager.focusInput();
-                manager.refresh();
-                return State.SEARCHING_FINISHED;
-            }
-
-            @Override public SearchState searchInputReceived(final SearchStateManager manager) {
-                // somehow we've got new search input, user has probably typed somethign in themselves,
-                // flip back to the input-box-has-focus state
-                manager.focusInput();
-                return SEARCHING_AUTOCOMPLETE_VISIBLE.searchInputReceived(manager);
-            }
-
-            @Override public SearchState autocompleteStartNavigation(final SearchStateManager manager) {
-                // navigation has already started
-                VConsole.log("WARNING: attempting to start navigation when it has already started");
                 return this;
             }
-            
-            @Override public SearchState currentEntrySelected(final SearchStateManager manager) {
-                // the user has clicked an entry or hit enter
-                manager.hideAutocomplete();
-                manager.entrySelected();
-                manager.focusInput();
-                manager.refresh();
-                return SEARCHING_FINISHED;
-            }
 
-            @Override public SearchState updateMatchCount(final SearchStateManager manager, final int matchCount) {
-                // if there are no matches, hide the autocomplete
-                if (matchCount == 0) {
-                    manager.hideAutocomplete();
-                    return SEARCHING_AUTOCOMPLETE_HIDDEN;
-                } else {
-                    return this;
-                }
-            }
-        }, SEARCHING_AUTOCOMPLETE_HIDDEN {
-            @Override public SearchState cancelSearching(final SearchStateManager manager) {
+            @Override
+            public SearchState cancelSearching(final SearchStateManager manager) {
                 manager.clearSearchInput();
-                manager.focusInput();
                 manager.hideAutocomplete();
+                manager.updateHistoryToken();
                 manager.refresh();
                 return State.NOT_SEARCHING;
             }
@@ -293,6 +308,74 @@ public abstract class SearchStateManager {
             public SearchState finishedSearching(final SearchStateManager manager) {
                 manager.hideAutocomplete();
                 manager.focusInput();
+                manager.updateHistoryToken();
+                manager.refresh();
+                return State.SEARCHING_FINISHED;
+            }
+
+            @Override
+            public SearchState searchInputReceived(final SearchStateManager manager) {
+                // somehow we've got new search input, user has probably typed something in themselves,
+                // flip back to the input-box-has-focus state
+                manager.focusInput();
+                return SEARCHING_AUTOCOMPLETE_VISIBLE.searchInputReceived(manager);
+            }
+
+            @Override
+            public SearchState autocompleteStartNavigation(final SearchStateManager manager) {
+                // navigation has already started
+                VConsole.log("WARNING: attempting to start navigation when it has already started");
+                return this;
+            }
+
+            @Override
+            public SearchState currentEntrySelected(final SearchStateManager manager) {
+                // the user has clicked an entry or hit enter
+                manager.hideAutocomplete();
+                manager.entrySelected();
+                manager.focusInput();
+                manager.updateHistoryToken();
+                manager.refresh();
+                return SEARCHING_FINISHED;
+            }
+
+            @Override
+            public SearchState updateMatchCount(final SearchStateManager manager, final int matchCount) {
+                // if there are no matches, hide the autocomplete
+                if (matchCount == 0) {
+                    manager.hideAutocomplete();
+                    return SEARCHING_AUTOCOMPLETE_HIDDEN;
+                } else {
+                    return this;
+                }
+            }
+        },
+        // Markers are being filtered, input box has content, autocomplete is not visible.
+        // (this happens when there are 0 matches to the current search)
+        SEARCHING_AUTOCOMPLETE_HIDDEN {
+            @Override
+            public SearchState initialize(final SearchStateManager manager) {
+                manager.focusInput();
+                manager.hideAutocomplete();
+                manager.refresh();
+                return this;
+            }
+
+            @Override
+            public SearchState cancelSearching(final SearchStateManager manager) {
+                manager.clearSearchInput();
+                manager.focusInput();
+                manager.hideAutocomplete();
+                manager.updateHistoryToken();
+                manager.refresh();
+                return State.NOT_SEARCHING;
+            }
+
+            @Override
+            public SearchState finishedSearching(final SearchStateManager manager) {
+                manager.hideAutocomplete();
+                manager.focusInput();
+                manager.updateHistoryToken();
                 manager.refresh();
                 return State.SEARCHING_FINISHED;
             }
@@ -328,23 +411,36 @@ public abstract class SearchStateManager {
         },
         // Markers are being filtered, input box has content, autocomplete is hidden.
         SEARCHING_FINISHED {
-            @Override public SearchState cancelSearching(final SearchStateManager manager) {
+            @Override
+            public SearchState initialize(final SearchStateManager manager) {
+                manager.focusInput();
+                manager.hideAutocomplete();
+                manager.refresh();
+                return this;
+            }
+
+            @Override
+            public SearchState cancelSearching(final SearchStateManager manager) {
                 manager.clearSearchInput();
                 manager.focusInput();
                 manager.hideAutocomplete();
+                manager.updateHistoryToken();
                 manager.refresh();
                 return State.NOT_SEARCHING;
             }
 
-            @Override public SearchState autocompleteStartNavigation(final SearchStateManager manager) {
+            @Override
+            public SearchState autocompleteStartNavigation(final SearchStateManager manager) {
                 // we're "finished" searching, but if the user wishes to start navigation again,
                 // they can hit the down-arrow to re-open autocomplete and resume searching
-                manager.refresh();
                 manager.showAutocomplete();
+                manager.focusAutocomplete();
+                manager.refresh();
                 return SEARCHING_AUTOCOMPLETE_ACTIVE;
             }
 
-            @Override public SearchState searchInputReceived(final SearchStateManager manager) {
+            @Override
+            public SearchState searchInputReceived(final SearchStateManager manager) {
                 // user has focused the input box and started typing again
                 manager.refresh();
                 manager.showAutocomplete();
@@ -352,21 +448,34 @@ public abstract class SearchStateManager {
                 return SEARCHING_AUTOCOMPLETE_VISIBLE;
             }
 
-            @Override public SearchState finishedSearching(final SearchStateManager manager) {
+            @Override
+            public SearchState finishedSearching(final SearchStateManager manager) {
                 // we're already finished searching... finish... again?
                 VConsole.log("WARNING: attempting to finish search, but we're already finished!");
                 return this;
             }
 
-            @Override public SearchState currentEntrySelected(final SearchStateManager manager) {
+            @Override
+            public SearchState currentEntrySelected(final SearchStateManager manager) {
                 VConsole.log("WARNING: attempting to select an entry, but we're already finished!");
                 return this;
             }
 
-            @Override public SearchState updateMatchCount(final SearchStateManager manager, final int matchCount) {
+            @Override
+            public SearchState updateMatchCount(final SearchStateManager manager, final int matchCount) {
                 // map count is updated, but search is finished, so autocomplete should stay hidden
                 return this;
             }
+        };
+
+    }
+
+    protected void updateHistoryToken() {
+        final String token = m_history.getValue();
+        final String value = m_valueItem.getValue();
+        final String newToken = (value == null || "".equals(value)) ? "" : "search-" + m_state + "=" + value;
+        if (!newToken.equals(token)) {
+            m_history.setValue(newToken);
         }
     }
 

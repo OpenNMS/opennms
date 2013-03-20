@@ -28,6 +28,7 @@ import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.cellview.client.CellList;
 import com.google.gwt.user.cellview.client.HasKeyboardSelectionPolicy.KeyboardSelectionPolicy;
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -48,6 +49,8 @@ public class SearchControl extends Control {
 
     private HTMLPanel m_container;
     private SearchTextBox m_inputBox;
+    private HistoryWrapper m_historyWrapper;
+    
     private HTML m_submitIcon;
 
     private SearchConsumer m_searchConsumer;
@@ -56,12 +59,8 @@ public class SearchControl extends Control {
 
     private CellList<NodeMarker> m_autoComplete;
     private SearchStateManager m_stateManager;
-    private SingleSelectionModel<NodeMarker> m_selectionModel = new SingleSelectionModel<NodeMarker>();
+    private SingleSelectionModel<NodeMarker> m_selectionModel;
     private Set<Widget> m_updated = new HashSet<Widget>();
-
-    protected SearchControl(final JSObject element) {
-        super(element);
-    }
 
     public SearchControl(final SearchConsumer searchConsumer, final MarkerContainer markerContainer) {
         this(searchConsumer, markerContainer, new SearchOptions());
@@ -73,6 +72,9 @@ public class SearchControl extends Control {
         VConsole.log("new SearchControl()");
         m_searchConsumer = searchConsumer;
         m_markerContainer = markerContainer;
+        m_selectionModel = new SingleSelectionModel<NodeMarker>();
+
+        m_historyWrapper = new HistoryWrapper();
 
         initializeContainerWidget();
         initializeInputWidget();
@@ -123,7 +125,7 @@ public class SearchControl extends Control {
     }
 
     private void initializeSearchStateManager() {
-        m_stateManager = new SearchStateManager(m_inputBox) {
+        m_stateManager = new SearchStateManager(m_inputBox, m_historyWrapper) {
             @Override
             public void refresh() {
                 m_searchConsumer.setSearchString(m_inputBox.getValue());
@@ -149,6 +151,10 @@ public class SearchControl extends Control {
 
             @Override
             public void showAutocomplete() {
+                final List<NodeMarker> markers = m_markerContainer.getMarkers();
+                if (markers.size() > 0) {
+                    m_selectionModel.setSelected(markers.get(0), true);
+                }
                 m_autoComplete.setVisible(true);
                 updateAutocompleteStyle(m_autoComplete);
             }
@@ -156,12 +162,14 @@ public class SearchControl extends Control {
             @Override
             public void hideAutocomplete() {
                 m_autoComplete.setVisible(false);
-                m_selectionModel.setSelected(m_selectionModel.getSelectedObject(), false);
             }
 
             @Override
             public void entrySelected() {
-                m_inputBox.setValue("nodeLabel=" + m_selectionModel.getSelectedObject().getNodeLabel(), false);
+                final NodeMarker selected = m_selectionModel.getSelectedObject();
+                if (selected != null) {
+                    m_inputBox.setValue("nodeLabel=" + selected.getNodeLabel());
+                }
             }
 
             @Override
@@ -275,5 +283,19 @@ public class SearchControl extends Control {
         m_autoComplete.setKeyboardSelectionPolicy(KeyboardSelectionPolicy.BOUND_TO_SELECTION);
         m_autoComplete.setVisible(false);
         m_autoComplete.addStyleName("search-autocomplete");
+    }
+
+    private class HistoryWrapper implements ValueItem {
+        @Override
+        public String getValue() {
+            return History.getToken();
+        }
+
+        @Override
+        public void setValue(final String value) {
+            History.newItem(value);
+        }
+        
+
     }
 }

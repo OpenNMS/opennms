@@ -24,6 +24,8 @@ import com.google.gwt.dom.client.EventTarget;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.junit.GWTMockUtilities;
+import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.impl.HistoryImpl;
 import com.vaadin.terminal.gwt.client.ApplicationConfiguration;
 import com.vaadin.terminal.gwt.client.ApplicationConnection;
 import com.vaadin.terminal.gwt.client.Console;
@@ -36,6 +38,8 @@ import com.vaadin.terminal.gwt.client.ValueMap;
     NativeEvent.class,
     EventTarget.class,
     VConsole.class,
+    History.class,
+    HistoryImpl.class,
     Scheduler.class,
     SchedulerImpl.class
 })
@@ -43,11 +47,14 @@ import com.vaadin.terminal.gwt.client.ValueMap;
     "com.google.gwt.dom.client.NativeEvent",
     "com.google.gwt.dom.client.EventTarget",
     "com.google.gwt.dom.client.InputElement",
+    "com.google.gwt.user.client.History",
+    "com.google.gwt.user.client.HistoryImpl",
     "com.google.gwt.core.client.Scheduler",
     "com.google.gwt.core.client.impl.SchedulerImpl"
 })
 public class SearchStateTest {
-    private ValueItem m_valueItem = new TestValueItem();
+    private ValueItem m_mockSearchInput = new TestValueItem();
+    private ValueItem m_mockHistory = new TestValueItem();
     private MockSearchStateManager m_searchManager;
 
     @BeforeClass
@@ -67,8 +74,9 @@ public class SearchStateTest {
 
     @Before
     public void setUp() throws Exception {
-        m_searchManager = new MockSearchStateManager(m_valueItem);
-        m_valueItem.setValue("");
+        m_mockSearchInput.setValue("");
+        m_mockHistory.setValue("");
+        m_searchManager = new MockSearchStateManager(m_mockSearchInput, m_mockHistory);
     }
 
     @Test
@@ -128,7 +136,7 @@ public class SearchStateTest {
         m_searchManager.updateMatchCount(1);
         typeCharacter(m_searchManager, (char)KeyCodes.KEY_BACKSPACE);
         m_searchManager.updateMatchCount(10);
-        assertEquals(4, m_valueItem.getValue().length());
+        assertEquals(4, m_mockSearchInput.getValue().length());
         assertEquals(State.SEARCHING_AUTOCOMPLETE_VISIBLE, m_searchManager.getState());
         assertEquals(true, m_searchManager.isAutocompleteVisible());
         assertEquals(false, m_searchManager.isAutocompleteFocused());
@@ -142,7 +150,7 @@ public class SearchStateTest {
         m_searchManager.updateMatchCount(20);
         typeCharacter(m_searchManager, (char)KeyCodes.KEY_BACKSPACE);
         m_searchManager.updateMatchCount(100);
-        assertEquals(0, m_valueItem.getValue().length());
+        assertEquals(0, m_mockSearchInput.getValue().length());
         assertEquals(State.NOT_SEARCHING, m_searchManager.getState());
         assertEquals(false, m_searchManager.isAutocompleteVisible());
         assertEquals(false, m_searchManager.isAutocompleteFocused());
@@ -158,7 +166,7 @@ public class SearchStateTest {
         assertEquals(true, m_searchManager.isAutocompleteVisible());
         assertEquals(false, m_searchManager.isAutocompleteFocused());
         assertEquals(true, m_searchManager.isInputFocused());
-        assertEquals("a", m_valueItem.getValue());
+        assertEquals("a", m_mockSearchInput.getValue());
 
         typeCharacter(m_searchManager, 'b');
         m_searchManager.updateMatchCount(0);
@@ -166,7 +174,7 @@ public class SearchStateTest {
         assertEquals(false, m_searchManager.isAutocompleteVisible());
         assertEquals(false, m_searchManager.isAutocompleteFocused());
         assertEquals(true, m_searchManager.isInputFocused());
-        assertEquals("ab", m_valueItem.getValue());
+        assertEquals("ab", m_mockSearchInput.getValue());
         
         // hit enter
         hitEnterInInput(m_searchManager);
@@ -175,7 +183,7 @@ public class SearchStateTest {
         assertEquals(false, m_searchManager.isAutocompleteVisible());
         assertEquals(false, m_searchManager.isAutocompleteFocused());
         assertEquals(true, m_searchManager.isInputFocused());
-        assertEquals("ab", m_valueItem.getValue());
+        assertEquals("ab", m_mockSearchInput.getValue());
 
         // start typing
         typeCharacter(m_searchManager, (char)KeyCodes.KEY_BACKSPACE);
@@ -184,7 +192,7 @@ public class SearchStateTest {
         assertEquals(true, m_searchManager.isAutocompleteVisible());
         assertEquals(false, m_searchManager.isAutocompleteFocused());
         assertEquals(true, m_searchManager.isInputFocused());
-        assertEquals("a", m_valueItem.getValue());
+        assertEquals("a", m_mockSearchInput.getValue());
     }
 
     @Test
@@ -268,6 +276,21 @@ public class SearchStateTest {
         assertEquals(true, m_searchManager.isInputFocused());
     }
 
+    @Test
+    public void testInitializingWithHistory() throws Exception {
+        m_mockHistory.setValue("search=ae");
+        m_searchManager = new MockSearchStateManager(m_mockSearchInput, m_mockHistory);
+        assertEquals(State.SEARCHING_FINISHED, m_searchManager.getState());
+
+        typeCharacter(m_searchManager, 'a');
+        m_searchManager.updateMatchCount(1);
+        assertEquals(State.SEARCHING_AUTOCOMPLETE_VISIBLE, m_searchManager.getState());
+        assertEquals(true, m_searchManager.isAutocompleteVisible());
+        assertEquals(false, m_searchManager.isAutocompleteFocused());
+        assertEquals(true, m_searchManager.isInputFocused());
+        assertEquals("aea", m_mockSearchInput.getValue());
+    }
+
     protected void clickAutocompleteEntry(final MockSearchStateManager searchManager) throws Exception {
         searchManager.handleAutocompleteEvent(createEvent("click", 0));
     }
@@ -277,7 +300,7 @@ public class SearchStateTest {
     }
 
     protected void hitCancelX(final MockSearchStateManager searchManager) throws Exception {
-        m_valueItem.setValue("");
+        m_mockSearchInput.setValue("");
         searchManager.handleInputEvent(createEvent("search", 0));
     }
 
@@ -286,16 +309,16 @@ public class SearchStateTest {
     }
 
     protected void typeCharacter(final MockSearchStateManager searchManager, final char keyCode) throws Exception {
-        final String value = m_valueItem.getValue();
+        final String value = m_mockSearchInput.getValue();
         if ("".equals(value) || value == null) {
-            m_valueItem.setValue("" + keyCode);
+            m_mockSearchInput.setValue("" + keyCode);
         } else if (keyCode == KeyCodes.KEY_BACKSPACE) {
             if (value.length() > 0) {
-                m_valueItem.setValue(value.substring(0, value.length() - 1));
-                VConsole.log("backspace!  old=" + value + ", new=" + m_valueItem.getValue());
+                m_mockSearchInput.setValue(value.substring(0, value.length() - 1));
+                VConsole.log("backspace!  old=" + value + ", new=" + m_mockSearchInput.getValue());
             }
         } else {
-            m_valueItem.setValue(value + keyCode);
+            m_mockSearchInput.setValue(value + keyCode);
         }
         searchManager.handleInputEvent(createEvent("keydown", keyCode));
     }
@@ -357,8 +380,8 @@ public class SearchStateTest {
     }
 
     private static class MockSearchStateManager extends SearchStateManager {
-        public MockSearchStateManager(final ValueItem valueItem) {
-            super(valueItem);
+        public MockSearchStateManager(final ValueItem searchString, final ValueItem history) {
+            super(searchString, history);
         }
 
         private boolean m_autocompleteVisible = false;
@@ -413,4 +436,5 @@ public class SearchStateTest {
         }
 
     }
+
 }
