@@ -46,6 +46,7 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.collectd.vmware.vijava.VmwarePerformanceValues;
+import org.opennms.netmgt.config.vmware.VmwareServer;
 import org.opennms.netmgt.dao.VmwareConfigDao;
 import org.sblim.wbem.cim.*;
 import org.sblim.wbem.client.CIMClient;
@@ -127,8 +128,19 @@ public class VmwareViJavaAccess {
         if (m_vmwareConfigDao == null) {
             logger.error("vmwareConfigDao should be a non-null value.");
         } else {
-            this.m_username = m_vmwareConfigDao.getServerMap().get(m_hostname).getUsername();
-            this.m_password = m_vmwareConfigDao.getServerMap().get(m_hostname).getPassword();
+            Map<String, VmwareServer> serverMap = m_vmwareConfigDao.getServerMap();
+            if (serverMap == null) {
+                logger.error("Error getting vmware-config.xml's server map.");
+            } else {
+                VmwareServer vmwareServer = serverMap.get(m_hostname);
+
+                if (vmwareServer == null) {
+                    logger.error("Error getting credentials for VMware management server '{}'.", m_hostname);
+                } else {
+                    this.m_username = vmwareServer.getUsername();
+                    this.m_password = vmwareServer.getPassword();
+                }
+            }
         }
 
         if (this.m_username == null) {
