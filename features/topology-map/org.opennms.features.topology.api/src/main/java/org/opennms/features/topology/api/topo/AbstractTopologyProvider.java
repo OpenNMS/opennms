@@ -31,9 +31,6 @@ package org.opennms.features.topology.api.topo;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.opennms.features.topology.api.SimpleConnector;
-import org.opennms.features.topology.api.SimpleGroup;
-import org.opennms.features.topology.api.SimpleLeafVertex;
 import org.slf4j.LoggerFactory;
 
 public abstract class AbstractTopologyProvider extends DelegatingVertexEdgeProvider implements GraphProvider {

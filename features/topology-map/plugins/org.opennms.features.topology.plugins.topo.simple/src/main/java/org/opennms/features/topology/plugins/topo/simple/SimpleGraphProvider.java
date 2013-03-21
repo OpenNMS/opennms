@@ -39,14 +39,14 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
-import org.opennms.features.topology.api.SimpleGroup;
-import org.opennms.features.topology.api.SimpleLeafVertex;
 import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
 import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.SimpleEdgeProvider;
+import org.opennms.features.topology.api.topo.SimpleGroup;
+import org.opennms.features.topology.api.topo.SimpleLeafVertex;
 import org.opennms.features.topology.api.topo.SimpleVertexProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.WrappedEdge;

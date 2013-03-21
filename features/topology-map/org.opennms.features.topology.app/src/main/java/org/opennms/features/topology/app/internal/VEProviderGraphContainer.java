@@ -11,6 +11,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.api.GraphVisitor;
 import org.opennms.features.topology.api.Layout;
 import org.opennms.features.topology.api.LayoutAlgorithm;
 import org.opennms.features.topology.api.MapViewManager;
@@ -20,7 +21,6 @@ import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeListener;
 import org.opennms.features.topology.api.topo.EdgeProvider;
 import org.opennms.features.topology.api.topo.GraphProvider;
-import org.opennms.features.topology.api.topo.GraphVisitor;
 import org.opennms.features.topology.api.topo.RefComparator;
 import org.opennms.features.topology.api.topo.StatusProvider;
 import org.opennms.features.topology.api.topo.Vertex;

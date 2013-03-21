@@ -46,6 +46,7 @@ import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.OperationContext.DisplayLocation;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.TopoContextMenu.TopoContextMenuItem;
+import org.slf4j.LoggerFactory;
 import org.vaadin.peter.contextmenu.ContextMenu;
 import org.vaadin.peter.contextmenu.ContextMenu.ClickEvent;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
@@ -236,12 +237,20 @@ public class CommandManager {
 		return m_commandToOperationMap.get(command);
 	}
 
-	public void onBind(Command command) {
-		addCommand(command);
+	public synchronized void onBind(Command command) {
+		try {
+			addCommand(command);
+		} catch (Throwable e) {
+			LoggerFactory.getLogger(this.getClass()).warn("Exception during onBind()", e);
+		}
 	}
 
-	public void onUnbind(Command command) {
-		removeCommand(command);
+	public synchronized void onUnbind(Command command) {
+		try {
+			removeCommand(command);
+		} catch (Throwable e) {
+			LoggerFactory.getLogger(this.getClass()).warn("Exception during onUnbind()", e);
+		}
 	}
 
 	public void onBind(Operation operation, Map<String, String> props) {

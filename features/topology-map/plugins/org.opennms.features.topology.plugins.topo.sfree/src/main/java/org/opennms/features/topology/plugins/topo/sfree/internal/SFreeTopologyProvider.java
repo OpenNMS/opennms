@@ -7,12 +7,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import org.opennms.features.topology.api.SimpleConnector;
-import org.opennms.features.topology.api.SimpleLeafVertex;
 import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.GraphProvider;
+import org.opennms.features.topology.api.topo.SimpleConnector;
+import org.opennms.features.topology.api.topo.SimpleLeafVertex;
 import org.opennms.features.topology.api.topo.Vertex;
 
 public class SFreeTopologyProvider extends AbstractTopologyProvider implements GraphProvider {

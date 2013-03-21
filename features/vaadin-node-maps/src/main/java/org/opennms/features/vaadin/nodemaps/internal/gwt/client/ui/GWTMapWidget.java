@@ -276,6 +276,14 @@ public class GWTMapWidget extends Widget implements MarkerProvider, SearchConsum
         m_markers.refresh();
 
         VConsole.log("processing " + m_markers.size() + " markers for the node layer");
+        // make the search control refresh with the new markers
+        Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+            @Override public void execute() {
+                m_searchControl.refresh();
+            }
+        });
+
+        // add new markers
         Scheduler.get().scheduleIncremental(new RepeatingCommand() {
             final ListIterator<NodeMarker> m_markerIterator = m_markers.listIterator();
 
@@ -295,6 +303,8 @@ public class GWTMapWidget extends Widget implements MarkerProvider, SearchConsum
             }
 
         });
+
+        // remove disabled markers
         Scheduler.get().scheduleIncremental(new RepeatingCommand() {
             final ListIterator<NodeMarker> m_markerIterator = m_markers.getDisabledMarkers().listIterator();
 
@@ -312,6 +322,8 @@ public class GWTMapWidget extends Widget implements MarkerProvider, SearchConsum
                 return false;
             }
         });
+
+        // zoom on first run
         Scheduler.get().scheduleDeferred(new ScheduledCommand() {
             @Override
             public void execute() {

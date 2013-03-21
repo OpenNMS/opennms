@@ -119,32 +119,37 @@ public class TopologySelector {
 		m_bundleContext = bundleContext;
 	}
 	
-	public void addGraphProvider(GraphProvider topologyProvider, Map<?,?> metaData) {
-    	
-    	LoggerFactory.getLogger(getClass()).debug("Adding graph provider: " + topologyProvider);
-    	
-    	TopologySelectorOperation operation = new TopologySelectorOperation(topologyProvider, metaData);
-    	
-    	m_operations.put(topologyProvider, operation);
-    	
-    	Dictionary<String,String> properties = new Hashtable<String,String>();
-        properties.put("operation.menuLocation", "View");
-        properties.put("operation.label", operation.getLabel()+"?group=topology");
-    	
-    	ServiceRegistration<CheckedOperation> reg = m_bundleContext.registerService(CheckedOperation.class, operation, properties);
-    	
-    	m_registrations.put(topologyProvider, reg);
+	public synchronized void addGraphProvider(GraphProvider topologyProvider, Map<?,?> metaData) {
+		try {
+        	LoggerFactory.getLogger(getClass()).debug("Adding graph provider: " + topologyProvider);
+        	
+        	TopologySelectorOperation operation = new TopologySelectorOperation(topologyProvider, metaData);
+        	
+        	m_operations.put(topologyProvider, operation);
+        	
+        	Dictionary<String,String> properties = new Hashtable<String,String>();
+            properties.put("operation.menuLocation", "View");
+            properties.put("operation.label", operation.getLabel()+"?group=topology");
+        	
+        	ServiceRegistration<CheckedOperation> reg = m_bundleContext.registerService(CheckedOperation.class, operation, properties);
+        	
+        	m_registrations.put(topologyProvider, reg);
+		} catch (Throwable e) {
+            LoggerFactory.getLogger(this.getClass()).warn("Exception during addGraphProvider()", e);
+		}
     }
     
-	public void removeGraphProvider(GraphProvider topologyProvider, Map<?,?> metaData) {
-    	
-    	LoggerFactory.getLogger(getClass()).debug("Removing graph provider: {}", topologyProvider);
-    	
-    	m_operations.remove(topologyProvider);
-    	ServiceRegistration<CheckedOperation> reg = m_registrations.remove(topologyProvider);
-    	if (reg != null) {
-    		reg.unregister();
-    	}
-    	
+	public synchronized void removeGraphProvider(GraphProvider topologyProvider, Map<?,?> metaData) {
+    	try {
+        	LoggerFactory.getLogger(getClass()).debug("Removing graph provider: {}", topologyProvider);
+        	
+        	m_operations.remove(topologyProvider);
+        	ServiceRegistration<CheckedOperation> reg = m_registrations.remove(topologyProvider);
+        	if (reg != null) {
+        		reg.unregister();
+        	}
+		} catch (Throwable e) {
+            LoggerFactory.getLogger(this.getClass()).warn("Exception during removeGraphProvider()", e);
+		}
     }
 }

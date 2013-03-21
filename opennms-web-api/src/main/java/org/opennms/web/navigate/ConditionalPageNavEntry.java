@@ -32,20 +32,6 @@ import javax.servlet.http.HttpServletRequest;
 
 public interface ConditionalPageNavEntry extends PageNavEntry {
     /**
-     * <p>getName</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public abstract String getName();
-
-    /**
-     * <p>getUrl</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public abstract String getUrl();
-
-    /**
      * <p>evaluate</p>
      *
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
