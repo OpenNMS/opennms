@@ -14,15 +14,18 @@ public abstract class SearchStateManager {
     public SearchStateManager(final ValueItem valueItem, final ValueItem history) {
         m_valueItem = valueItem;
         m_history = history;
-        final String searchString = getHistorySearchString();
-        if (searchString != null) {
-            m_valueItem.setValue(searchString);
+        
+        final String valueSearchString = m_valueItem.getValue();
+        final String historySearchString = getHistorySearchString();
+        if (historySearchString != null) {
+            m_valueItem.setValue(historySearchString);
             m_state = State.SEARCHING_FINISHED;
-            m_state.initialize(this);
+        } else if (valueSearchString != null && !"".equals(valueSearchString)) {
+            m_state = State.SEARCHING_FINISHED;
         } else {
             m_state = State.NOT_SEARCHING;
-            m_state.initialize(this);
         }
+        m_state.initialize(this);
     }
 
     SearchState getState() {
