@@ -278,7 +278,7 @@ public class SearchStateTest {
 
     @Test
     public void testInitializingWithHistory() throws Exception {
-        m_mockHistory.setValue("search=ae");
+        m_mockHistory.setValue("search/ae");
         m_searchManager = new MockSearchStateManager(m_mockSearchInput, m_mockHistory);
         assertEquals(State.SEARCHING_FINISHED, m_searchManager.getState());
 

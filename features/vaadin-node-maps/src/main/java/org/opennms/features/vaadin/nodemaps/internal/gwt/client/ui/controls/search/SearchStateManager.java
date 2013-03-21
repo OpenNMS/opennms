@@ -14,10 +14,8 @@ public abstract class SearchStateManager {
     public SearchStateManager(final ValueItem valueItem, final ValueItem history) {
         m_valueItem = valueItem;
         m_history = history;
-        final String token = m_history.getValue();
-        if (token != null && token.startsWith("search-")) {
-            final String[] splitToken = token.split("=", 2);
-            final String searchString = splitToken[1];
+        final String searchString = getHistorySearchString();
+        if (searchString != null) {
             m_valueItem.setValue(searchString);
             m_state = State.SEARCHING_FINISHED;
             m_state.initialize(this);
@@ -235,7 +233,7 @@ public abstract class SearchStateManager {
             public SearchState cancelSearching(final SearchStateManager manager) {
                 manager.clearSearchInput();
                 manager.hideAutocomplete();
-                manager.updateHistoryToken();
+                manager.updateHistorySearchString();
                 manager.refresh();
                 return State.NOT_SEARCHING;
             }
@@ -261,7 +259,7 @@ public abstract class SearchStateManager {
             @Override
             public SearchState finishedSearching(final SearchStateManager manager) {
                 manager.hideAutocomplete();
-                manager.updateHistoryToken();
+                manager.updateHistorySearchString();
                 manager.refresh();
                 return State.SEARCHING_FINISHED;
             }
@@ -271,7 +269,7 @@ public abstract class SearchStateManager {
                 // the user has clicked an entry
                 manager.hideAutocomplete();
                 manager.entrySelected();
-                manager.updateHistoryToken();
+                manager.updateHistorySearchString();
                 manager.refresh();
                 return SEARCHING_FINISHED;
             }
@@ -301,7 +299,7 @@ public abstract class SearchStateManager {
             public SearchState cancelSearching(final SearchStateManager manager) {
                 manager.clearSearchInput();
                 manager.hideAutocomplete();
-                manager.updateHistoryToken();
+                manager.updateHistorySearchString();
                 manager.refresh();
                 return State.NOT_SEARCHING;
             }
@@ -310,7 +308,7 @@ public abstract class SearchStateManager {
             public SearchState finishedSearching(final SearchStateManager manager) {
                 manager.hideAutocomplete();
                 manager.focusInput();
-                manager.updateHistoryToken();
+                manager.updateHistorySearchString();
                 manager.refresh();
                 return State.SEARCHING_FINISHED;
             }
@@ -336,7 +334,7 @@ public abstract class SearchStateManager {
                 manager.hideAutocomplete();
                 manager.entrySelected();
                 manager.focusInput();
-                manager.updateHistoryToken();
+                manager.updateHistorySearchString();
                 manager.refresh();
                 return SEARCHING_FINISHED;
             }
@@ -368,7 +366,7 @@ public abstract class SearchStateManager {
                 manager.clearSearchInput();
                 manager.focusInput();
                 manager.hideAutocomplete();
-                manager.updateHistoryToken();
+                manager.updateHistorySearchString();
                 manager.refresh();
                 return State.NOT_SEARCHING;
             }
@@ -377,7 +375,7 @@ public abstract class SearchStateManager {
             public SearchState finishedSearching(final SearchStateManager manager) {
                 manager.hideAutocomplete();
                 manager.focusInput();
-                manager.updateHistoryToken();
+                manager.updateHistorySearchString();
                 manager.refresh();
                 return State.SEARCHING_FINISHED;
             }
@@ -426,7 +424,7 @@ public abstract class SearchStateManager {
                 manager.clearSearchInput();
                 manager.focusInput();
                 manager.hideAutocomplete();
-                manager.updateHistoryToken();
+                manager.updateHistorySearchString();
                 manager.refresh();
                 return State.NOT_SEARCHING;
             }
@@ -472,10 +470,19 @@ public abstract class SearchStateManager {
 
     }
 
-    protected void updateHistoryToken() {
+    private String getHistorySearchString() {
+        final String value = m_history.getValue();
+        if (value != null && value.startsWith("search/")) {
+            return value.replaceFirst("^search\\/", "");
+        } else {
+            return null;
+        }
+    }
+
+    protected void updateHistorySearchString() {
         final String token = m_history.getValue();
         final String value = m_valueItem.getValue();
-        final String newToken = (value == null || "".equals(value)) ? "" : "search-" + m_state + "=" + value;
+        final String newToken = (value == null || "".equals(value)) ? "" : "search/" + value;
         if (!newToken.equals(token)) {
             m_history.setValue(newToken);
         }

@@ -131,6 +131,21 @@ public class SearchControl extends Control {
                 m_searchConsumer.setSearchString(m_inputBox.getValue());
                 // it's the search consumer's job to trigger an update in any UI elements
                 m_searchConsumer.refresh();
+
+                final List<NodeMarker> markers = m_markerContainer.getMarkers();
+                final NodeMarker selected = m_selectionModel.getSelectedObject();
+                final NodeMarker firstMarker = markers.size() > 0? markers.get(0) : null;
+                if (selected == null) {
+                    if (firstMarker != null) m_selectionModel.setSelected(firstMarker, true);
+                } else {
+                    if (!markers.contains(selected)) {
+                        if (firstMarker != null) {
+                            m_selectionModel.setSelected(firstMarker, true);
+                        } else {
+                            m_selectionModel.setSelected(selected, false);
+                        }
+                    }
+                }
             }
 
             @Override
