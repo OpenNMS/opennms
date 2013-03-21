@@ -14,5 +14,6 @@
     <module>daemon</module>
     <module>http-northbounder</module>
     <module>jms-northbounder</module>
+    <module>syslog-northbounder</module>
   </modules>
 </project>
