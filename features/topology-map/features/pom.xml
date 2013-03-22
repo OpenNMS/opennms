@@ -20,6 +20,7 @@
     <module>vaadin</module>
     <module>api</module>
     <module>runtime-base</module>
+    <module>runtime-browsers</module>
     <module>runtime-simple</module>
     <module>runtime-linkd</module>
     <module>runtime-vmware</module>
