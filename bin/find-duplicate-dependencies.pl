@@ -22,17 +22,19 @@ my $files = {};
 
 find({
 	wanted => sub {
-		my $filename = $_;
+		my $shortname = $_;
+		my $dir       = $File::Find::dir;
+		my $filename  = $File::Find::name;
 		return unless ($filename =~ /\.jar$/);
 
-		my ($name, $version) = $filename =~ /^(.*)-(\d+\..*?)\.jar$/;
+		my ($name, $version) = $shortname =~ /^(.*)-(\d+\..*?)\.jar$/;
 		if (not defined $name or not defined $version) {
-			if ($filename =~ /^(jtidy|vijava)-(.*)\.jar$/) {
+			if ($shortname =~ /^(jtidy|vijava)-(.*)\.jar$/) {
 				$jars->{$1}->{$2}++;
-			} elsif ($filename =~ /^(karaf|karaf-client|karaf-jaas-boot|opennms-branding|opennms_bootstrap|opennms_install|opennms_system_report)\.jar$/) {
+			} elsif ($shortname =~ /^(karaf|karaf-client|karaf-jaas-boot|opennms-branding|opennms_bootstrap|opennms_install|opennms_system_report)\.jar$/) {
 				$jars->{$1}->{0}++;
 			} else {
-				print STDERR "WARNING: not sure how to determine version for $filename!\n";
+				print STDERR "WARNING: not sure how to determine version for $shortname!\n";
 			}
 		} else {
 			if ($version =~ /SNAPSHOT-(xsds|liquibase)$/) {
@@ -50,7 +52,8 @@ find({
 			$files->{$line}->{$filename}++;
 		}
 	},
-	follow => 1
+	follow => 1,
+	no_chdir => 1,
 }, $dir);
 
 #print Dumper($files), "\n";
