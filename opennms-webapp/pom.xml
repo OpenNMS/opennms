@@ -461,11 +461,6 @@
       <artifactId>oro</artifactId>
       <scope>${onmsLibScope}</scope>
     </dependency>
-    <dependency>
-      <groupId>xalan</groupId>
-      <artifactId>xalan</artifactId>
-      <scope>test</scope>
-    </dependency>
 
     <!-- direct dependencies that should be in WEB-INF/lib -->
 
