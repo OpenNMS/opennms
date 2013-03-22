@@ -20,7 +20,6 @@
     <module>org.opennms.features.topology.plugins.browsers</module>
     <module>org.opennms.features.topology.plugins.devutils</module>
     <module>org.opennms.features.topology.plugins.layout</module>
-    <module>org.opennms.features.topology.plugins.menu</module>
     <module>org.opennms.features.topology.plugins.ncs</module>
     <module>org.opennms.features.topology.plugins.netutils</module>
     <module>org.opennms.features.topology.plugins.ssh</module>
@@ -31,8 +30,6 @@
     <module>org.opennms.features.topology.plugins.topo.sfree</module>
     <module>org.opennms.features.topology.plugins.topo.simple</module>
     <module>org.opennms.features.topology.plugins.topo.vmware</module>
-    <module>org.opennms.features.topology.plugins.ui.tree</module>
-    <module>org.opennms.features.topology.plugins.widget.simple-widget</module>
   </modules>
 
 </project>
