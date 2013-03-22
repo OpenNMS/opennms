@@ -541,8 +541,7 @@ public abstract class AbstractQueryManager implements QueryManager {
         for (final SnmpStore ent : snmpcoll.getIpRouteTable()) {
 
         	IpRouteCollectorEntry route = (IpRouteCollectorEntry) ent;
- 
-        	
+         	
             final InetAddress nexthop = route.getIpRouteNextHop();
 
             if (nexthop == null) {
@@ -564,7 +563,6 @@ public abstract class AbstractQueryManager implements QueryManager {
                 continue;
             }
 
-
             final InetAddress routedest = route.getIpRouteDest();
             if (routedest == null) {
                 LogUtils.warnf(this, "processRouteTable: route destination not found on node %d. Skipping.", node.getNodeId());
@@ -583,7 +581,7 @@ public abstract class AbstractQueryManager implements QueryManager {
 
             LogUtils.debugf(this, "processRouteTable: processing routedest/routemask/routenexthop %s/%s/%s",str(routedest),str(routemask),str(nexthop));
 
-            Integer ifindex = route.getIfIndex();
+            Integer ifindex = route.getIpRouteIfIndex();
             
             if (ifindex == null) {
                 LogUtils.warnf(this, "processRouteTable: Invalid ifIndex %d on node %d. Skipping.", ifindex, node.getNodeId());
