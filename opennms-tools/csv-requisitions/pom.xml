@@ -66,13 +66,6 @@
       <scope>test</scope>
       <version>1.11.90-SNAPSHOT</version>
     </dependency>
-    <!--
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-rrd-tcp</artifactId>
-      <version>1.11.90-SNAPSHOT</version>
-    </dependency>
--->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
