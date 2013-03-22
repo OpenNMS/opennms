@@ -5,6 +5,8 @@
     <!-- topology features -->
     <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-base/${project.version}/xml/features
     </repository>
+    <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-browsers/${project.version}/xml/features
+    </repository>
     <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-simple/${project.version}/xml/features
     </repository>
     <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-linkd/${project.version}/xml/features
@@ -31,6 +33,7 @@
         <feature>opennms-topology-runtime-linkd</feature>
         <feature>opennms-topology-runtime-ncs</feature>
         <feature>opennms-topology-runtime-vmware</feature>
+        <feature>opennms-topology-runtime-browsers</feature>
         <feature>opennms-topology-dev</feature>
         <feature>nrtg</feature>
         <feature>vaadin-snmp-events-and-metrics</feature>
