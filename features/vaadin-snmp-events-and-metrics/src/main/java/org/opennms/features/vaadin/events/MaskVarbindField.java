@@ -31,12 +31,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.opennms.netmgt.xml.eventconf.Varbind;
-
 import org.vaadin.addon.customfield.CustomField;
 
 import com.vaadin.data.Container;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanContainer;
+import com.vaadin.data.util.converter.Converter.ConversionException;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -91,7 +91,7 @@ public class MaskVarbindField extends CustomField implements Button.ClickListene
         table.setWidth("100%");
         table.setTableFieldFactory(new DefaultFieldFactory() {
             @Override
-            public Field createField(Container container, Object itemId, Object propertyId, Component uiContext) {
+            public Field<?> createField(Container container, Object itemId, Object propertyId, Component uiContext) {
                 if (propertyId.equals("vbvalueCollection")) {
                     return new CsvListFieldWrapper();
                 }

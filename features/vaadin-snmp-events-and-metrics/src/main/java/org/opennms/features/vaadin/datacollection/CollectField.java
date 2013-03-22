@@ -33,6 +33,7 @@ import org.opennms.netmgt.config.datacollection.Collect;
 import org.vaadin.addon.customfield.CustomField;
 
 import com.vaadin.data.Property;
+import com.vaadin.data.util.converter.Converter.ConversionException;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;

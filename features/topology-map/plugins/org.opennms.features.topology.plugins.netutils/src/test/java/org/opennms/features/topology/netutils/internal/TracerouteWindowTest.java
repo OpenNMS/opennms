@@ -28,12 +28,16 @@
 
 package org.opennms.features.topology.netutils.internal;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import com.vaadin.Application;
+import com.vaadin.server.VaadinRequest;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 
 public class TracerouteWindowTest {
@@ -42,7 +46,7 @@ public class TracerouteWindowTest {
 	TracerouteWindow traceWindow2;
 	TracerouteWindow traceWindow3;
 	Window mainWindow;
-	Application app;
+	UI app;
 	
 	@Before
 	public void setUp() throws Exception {
@@ -51,9 +55,9 @@ public class TracerouteWindowTest {
 		traceWindow2 = new TracerouteWindow(null, "http://localhost:8080/");
 		traceWindow3 = new TracerouteWindow(testNode1, "");
 		mainWindow = new Window();
-		app = new Application() { //Empty Application
+		app = new UI() { //Empty Application
 			@Override
-			public void init() {}
+			protected void init(VaadinRequest request) {}
 		};
 		app.setMainWindow(mainWindow);
 		app.getMainWindow().addWindow(traceWindow);

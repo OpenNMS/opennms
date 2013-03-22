@@ -39,9 +39,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.support.TransactionOperations;
 
 import com.github.wolfie.refresher.Refresher;
-import com.vaadin.Application;
-import com.vaadin.terminal.ParameterHandler;
+import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.AbsoluteLayout;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 
 /**
@@ -80,7 +80,7 @@ import com.vaadin.ui.Window;
  * 5. Create a strategy to build/display the Popups even using Vaadin Widgets or OpenLayer widgets).
  */
 @SuppressWarnings("serial")
-public class NodeMapsApplication extends Application {
+public class NodeMapsApplication extends UI {
 
     private static final int REFRESH_INTERVAL = 5 * 60 * 1000;
 
@@ -132,7 +132,7 @@ public class NodeMapsApplication extends Application {
      * @see com.vaadin.Application#init()
      */
     @Override
-    public void init() {
+    public void init(VaadinRequest request) {
         m_log.debug("initializing");
 
         final MapWidgetComponent openlayers = new MapWidgetComponent();

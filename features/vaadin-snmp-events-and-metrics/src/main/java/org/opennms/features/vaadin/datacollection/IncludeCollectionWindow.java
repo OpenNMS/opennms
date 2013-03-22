@@ -133,7 +133,7 @@ public abstract class IncludeCollectionWindow extends Window implements Button.C
 
         form.setFormFieldFactory(new FormFieldFactory() {
             @Override
-            public Field createField(Item item, Object propertyId, Component uiContext) {
+            public Field<?> createField(Item item, Object propertyId, Component uiContext) {
                 if (propertyId.equals("type"))
                     return typeField;
                 if (propertyId.equals("value"))

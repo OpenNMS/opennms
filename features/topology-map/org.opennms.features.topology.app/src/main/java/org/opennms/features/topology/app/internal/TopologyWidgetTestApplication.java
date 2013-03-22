@@ -54,16 +54,15 @@ import com.vaadin.data.Property;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.LegacyApplication;
 import com.vaadin.server.Page;
-import com.vaadin.server.Page.UriFragmentChangedEvent;
-import com.vaadin.server.Page.UriFragmentChangedListener;
 import com.vaadin.server.Sizeable;
 import com.vaadin.server.ThemeResource;
+import com.vaadin.server.Page.UriFragmentChangedEvent;
+import com.vaadin.server.Page.UriFragmentChangedListener;
+import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Embedded;
@@ -73,13 +72,15 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.LegacyWindow;
 import com.vaadin.ui.MenuBar;
-import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.Slider;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.VerticalSplitPanel;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.MenuBar.MenuItem;
 
 public class TopologyWidgetTestApplication extends LegacyApplication implements CommandUpdateListener, MenuItemUpdateListener, ContextMenuHandler, WidgetUpdateListener, WidgetContext, UriFragmentChangedListener, GraphContainer.ChangeListener, MapViewManagerListener, VertexUpdateListener, Navigator {
 
@@ -268,7 +269,7 @@ public class TopologyWidgetTestApplication extends LegacyApplication implements 
 		m_treeMapSplitPanel = new HorizontalSplitPanel();
 		m_treeMapSplitPanel.setFirstComponent(createWestLayout());
 		m_treeMapSplitPanel.setSecondComponent(mapLayout);
-		m_treeMapSplitPanel.setSplitPosition(222, Sizeable.UNITS_PIXELS);
+		m_treeMapSplitPanel.setSplitPosition(222, Unit.PIXELS);
 		m_treeMapSplitPanel.setSizeFull();
 
 		m_commandManager.addCommandUpdateListener(this);
@@ -326,7 +327,7 @@ public class TopologyWidgetTestApplication extends LegacyApplication implements 
                 m_bottomLayoutBar = new VerticalSplitPanel();
                 m_bottomLayoutBar.setFirstComponent(m_treeMapSplitPanel);
                 // Split the screen 70% top, 30% bottom
-                m_bottomLayoutBar.setSplitPosition(70, Sizeable.UNITS_PERCENTAGE);
+                m_bottomLayoutBar.setSplitPosition(70, Unit.PERCENTAGE);
                 m_bottomLayoutBar.setSizeFull();
                 m_bottomLayoutBar.setSecondComponent(getTabSheet(widgetManager, this));
             }

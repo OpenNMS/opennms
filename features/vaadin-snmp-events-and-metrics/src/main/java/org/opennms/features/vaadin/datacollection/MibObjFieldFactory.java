@@ -62,14 +62,14 @@ public class MibObjFieldFactory implements TableFieldFactory {
     }
 
     @Override
-    public Field createField(Container container, Object itemId, Object propertyId, Component uiContext) {
+    public Field<?> createField(Container container, Object itemId, Object propertyId, Component uiContext) {
         if (propertyId.equals("oid")) {
             final TextField field = new TextField();
             field.setSizeFull();
             field.setRequired(true);
             field.setImmediate(true);
             field.addValidator(new RegexpValidator("^\\.[.\\d]+$", "Invalid OID {0}"));
-            return new ProxyField(field);
+            return new ProxyField<String>(field);
         }
         if (propertyId.equals("instance")) {
             final ComboBox field = new ComboBox();
@@ -99,7 +99,7 @@ public class MibObjFieldFactory implements TableFieldFactory {
             field.setRequired(true);
             field.setImmediate(true);
             field.addValidator(new StringLengthValidator("Invalid alias. It should not contain more than 19 characters.", 1, 19, false));
-            return new ProxyField(field);
+            return new ProxyField<String>(field);
         }
         if (propertyId.equals("type")) {
             final TextField field = new TextField();
@@ -108,7 +108,7 @@ public class MibObjFieldFactory implements TableFieldFactory {
             field.setImmediate(true);
             field.addValidator(new RegexpValidator("^(gauge|counter|integer|string)?\\d*$",
                     "Invalid type {0}. Valid types are: gauge, integer, counter, string"));
-            return new ProxyField(field);
+            return new ProxyField<String>(field);
         }
         return null;
     }

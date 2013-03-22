@@ -36,6 +36,7 @@ import org.vaadin.addon.customfield.CustomField;
 import com.vaadin.data.Container;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanContainer;
+import com.vaadin.data.util.converter.Converter.ConversionException;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -93,7 +94,7 @@ public class VarbindsDecodeField extends CustomField implements Button.ClickList
         table.setWidth("100%");
         table.setTableFieldFactory(new DefaultFieldFactory() {
             @Override
-            public Field createField(Container container, Object itemId, Object propertyId, Component uiContext) {
+            public Field<?> createField(Container container, Object itemId, Object propertyId, Component uiContext) {
                 if (propertyId.equals("decodeCollection")) {
                     return new DecodeListFieldWrapper();
                 }

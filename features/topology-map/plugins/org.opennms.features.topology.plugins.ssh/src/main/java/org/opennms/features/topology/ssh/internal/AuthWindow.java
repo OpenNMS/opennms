@@ -41,6 +41,7 @@ import com.google.gwt.layout.client.Layout.Alignment;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.LegacyWindow;
 import com.vaadin.ui.PasswordField;
+import com.vaadin.ui.VerticalLayout;
 
 /**
  * This class creates a window to authorize usernames

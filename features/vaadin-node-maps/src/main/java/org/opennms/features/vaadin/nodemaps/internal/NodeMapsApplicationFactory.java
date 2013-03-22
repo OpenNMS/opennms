@@ -38,7 +38,7 @@ import org.opennms.netmgt.dao.NodeDao;
 import org.ops4j.pax.vaadin.AbstractApplicationFactory;
 import org.springframework.transaction.support.TransactionOperations;
 
-import com.vaadin.Application;
+import com.vaadin.ui.UI;
 
 /**
  * A factory for creating NodeMapsApplication objects.
@@ -63,7 +63,7 @@ public class NodeMapsApplicationFactory extends AbstractApplicationFactory {
      * .http.HttpServletRequest)
      */
     @Override
-    public Application createApplication(final HttpServletRequest request) throws ServletException {
+    public UI createApplication(final HttpServletRequest request) throws ServletException {
         if (m_nodeDao == null) {
             throw new RuntimeException("m_nodeDao cannot be null.");
         }
@@ -81,7 +81,7 @@ public class NodeMapsApplicationFactory extends AbstractApplicationFactory {
      * @see org.ops4j.pax.vaadin.ApplicationFactory#getApplicationClass()
      */
     @Override
-    public Class<? extends Application> getApplicationClass() throws ClassNotFoundException {
+    public Class<? extends UI> getApplicationClass() throws ClassNotFoundException {
         return NodeMapsApplication.class;
     }
 

@@ -46,13 +46,12 @@ import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.util.FilesystemContainer;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.Notification;
+import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.themes.Runo;
 
 import de.steinwedel.vaadin.MessageBox;

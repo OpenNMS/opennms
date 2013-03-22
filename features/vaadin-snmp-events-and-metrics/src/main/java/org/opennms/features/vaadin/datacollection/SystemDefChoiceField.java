@@ -34,6 +34,7 @@ import org.opennms.netmgt.config.datacollection.SystemDefChoice;
 import org.vaadin.addon.customfield.CustomField;
 
 import com.vaadin.data.Property;
+import com.vaadin.data.util.converter.Converter.ConversionException;
 import com.vaadin.data.validator.RegexpValidator;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.OptionGroup;

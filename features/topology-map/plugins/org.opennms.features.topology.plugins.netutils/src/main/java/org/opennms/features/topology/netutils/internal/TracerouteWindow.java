@@ -32,19 +32,20 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Scanner;
 
-import com.vaadin.terminal.ExternalResource;
+import com.vaadin.server.ExternalResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.NativeSelect;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.VerticalSplitPanel;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.Button.ClickEvent;
 
 /**
  * The TracerouteWindow class creates a Vaadin Sub-window with a form and results section
@@ -173,7 +174,7 @@ public class TracerouteWindow extends Window{
 		/*Setting first and second components for the split panel and setting the panel divider position*/
 		vSplit.setFirstComponent(topLayout);
 		vSplit.setSecondComponent(bottomLayout);
-		vSplit.setSplitPosition(splitHeight, UNITS_PIXELS);
+		vSplit.setSplitPosition(splitHeight, Unit.PIXELS);
 		vSplit.setLocked(true);
 
 		/*Adds split panel to the main layout and expands the split panel to 100% of the layout space*/

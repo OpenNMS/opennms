@@ -29,12 +29,12 @@
 package org.opennms.features.topology.ssh.internal.testframework;
 import java.util.Map;
 
-import com.vaadin.terminal.PaintException;
-import com.vaadin.terminal.PaintTarget;
-import com.vaadin.terminal.Paintable;
-import com.vaadin.terminal.Resource;
-import com.vaadin.terminal.StreamVariable;
-import com.vaadin.terminal.VariableOwner;
+import com.vaadin.client.Paintable;
+import com.vaadin.server.PaintException;
+import com.vaadin.server.PaintTarget;
+import com.vaadin.server.Resource;
+import com.vaadin.server.StreamVariable;
+import com.vaadin.server.VariableOwner;
 
 @SuppressWarnings("serial")
 public class SudoPaintTarget implements PaintTarget{

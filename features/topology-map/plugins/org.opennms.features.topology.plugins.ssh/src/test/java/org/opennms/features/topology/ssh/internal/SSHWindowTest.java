@@ -35,12 +35,13 @@ import org.apache.sshd.SshClient;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.vaadin.Application;
+import com.vaadin.server.VaadinRequest;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 
 public class SSHWindowTest {
     
-	Application app;
+    UI app;
     Window mainWindow;
     SSHWindow sshWindow;
     SSHWindow sshWindow2;
@@ -50,11 +51,11 @@ public class SSHWindowTest {
     int testPort = 22;
     
     @SuppressWarnings("serial")
-	@Before
+    @Before
     public void setup () {
-        app = new Application() {
+        app = new UI() {
             @Override
-            public void init() {}
+            protected void init(VaadinRequest request) {}
         };
         sshWindow = new SSHWindow(null, 200, 200);
         client = SshClient.setUpDefaultClient();

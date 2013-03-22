@@ -36,8 +36,9 @@ import org.vaadin.addon.customfield.CustomField;
 import com.vaadin.data.Container;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.data.validator.DoubleValidator;
-import com.vaadin.data.validator.IntegerValidator;
+import com.vaadin.data.util.converter.StringToDoubleConverter;
+import com.vaadin.data.util.converter.StringToIntegerConverter;
+import com.vaadin.data.util.converter.Converter.ConversionException;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
@@ -89,7 +90,7 @@ public class RrdField extends CustomField implements Button.ClickListener {
         step.setImmediate(true);
         step.setValidationVisible(true);
         step.setNullSettingAllowed(false);
-        step.addValidator(new IntegerValidator("Invalid integer {0}"));
+        step.setConverter(new StringToIntegerConverter());
 
         table.setCaption("RRA List");
         table.setContainerDataSource(container);
@@ -103,7 +104,7 @@ public class RrdField extends CustomField implements Button.ClickListener {
         table.setWidth("100%");
         table.setTableFieldFactory(new DefaultFieldFactory() {
             @Override
-            public Field createField(Container container, Object itemId, Object propertyId, Component uiContext) {
+            public Field<?> createField(Container container, Object itemId, Object propertyId, Component uiContext) {
                 if (propertyId.equals("cf")) {
                     final ComboBox field = new ComboBox();
                     field.setImmediate(true);
@@ -120,7 +121,7 @@ public class RrdField extends CustomField implements Button.ClickListener {
                     field.setImmediate(true);
                     field.setRequired(true);
                     field.setNullSettingAllowed(false);
-                    field.addValidator(new IntegerValidator("Invalid integer {0}"));
+                    field.setConverter(new StringToIntegerConverter());
                     return field;
                 }
                 if (propertyId.equals("xff")) {
@@ -128,7 +129,7 @@ public class RrdField extends CustomField implements Button.ClickListener {
                     field.setImmediate(true);
                     field.setRequired(true);
                     field.setNullSettingAllowed(false);
-                    field.addValidator(new DoubleValidator("Invalid double {0}"));
+                    field.setConverter(new StringToDoubleConverter());
                     return field;
                 }
                 return null;

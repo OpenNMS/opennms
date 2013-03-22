@@ -30,7 +30,8 @@ package org.opennms.features.topology.netutils.internal;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import com.vaadin.terminal.ExternalResource;
+
+import com.vaadin.server.ExternalResource;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.VerticalLayout;

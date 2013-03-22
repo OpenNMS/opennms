@@ -10,7 +10,7 @@ import org.opennms.netmgt.model.ncs.NCSComponentRepository;
 
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
-import com.vaadin.terminal.Resource;
+import com.vaadin.server.Resource;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Tree;
 

@@ -32,6 +32,7 @@ import java.util.Collection;
 import com.vaadin.data.Property;
 import com.vaadin.data.Validator;
 import com.vaadin.data.Validator.InvalidValueException;
+import com.vaadin.data.util.converter.Converter.ConversionException;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.VerticalLayout;
 
@@ -42,14 +43,14 @@ import com.vaadin.ui.VerticalLayout;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 @SuppressWarnings("serial")
-public class ProxyField extends VerticalLayout implements Field {
+public class ProxyField<T> extends VerticalLayout implements Field<T> {
 
     /**
      * Instantiates a new proxy field.
      *
      * @param field the field
      */
-    public ProxyField(Field field) {
+    public ProxyField(Field<T> field) {
         super();
         addComponent(field);
         setSizeFull();
@@ -60,8 +61,8 @@ public class ProxyField extends VerticalLayout implements Field {
      *
      * @return the field
      */
-    public Field getField() {
-        return (Field) getComponent(0);
+    public Field<T> getField() {
+        return (Field<T>)getComponent(0);
     }
 
     /* (non-Javadoc)
@@ -96,36 +97,14 @@ public class ProxyField extends VerticalLayout implements Field {
         getField().discard();
     }
 
-    /* (non-Javadoc)
-     * @see com.vaadin.data.Buffered#isWriteThrough()
-     */
     @Override
-    public boolean isWriteThrough() {
-        return getField().isWriteThrough();
+    public boolean isBuffered() {
+        return getField().isBuffered();
     }
 
-    /* (non-Javadoc)
-     * @see com.vaadin.data.Buffered#setWriteThrough(boolean)
-     */
     @Override
-    public void setWriteThrough(boolean writeThrough) throws SourceException, InvalidValueException {
-        getField().setWriteThrough(writeThrough);
-    }
-
-    /* (non-Javadoc)
-     * @see com.vaadin.data.Buffered#isReadThrough()
-     */
-    @Override
-    public boolean isReadThrough() {
-        return getField().isReadThrough();
-    }
-
-    /* (non-Javadoc)
-     * @see com.vaadin.data.Buffered#setReadThrough(boolean)
-     */
-    @Override
-    public void setReadThrough(boolean readThrough) throws SourceException {
-        getField().setReadThrough(readThrough);
+    public void setBuffered(boolean writeThrough) throws SourceException, InvalidValueException {
+        getField().setBuffered(writeThrough);
     }
 
     /* (non-Javadoc)
@@ -150,6 +129,14 @@ public class ProxyField extends VerticalLayout implements Field {
     @Override
     public void removeValidator(Validator validator) {
         getField().removeValidator(validator);
+    }
+
+    /* (non-Javadoc)
+     * @see com.vaadin.data.Validatable#removeValidator(com.vaadin.data.Validator)
+     */
+    @Override
+    public void removeAllValidators() {
+        getField().removeAllValidators();
     }
 
     /* (non-Javadoc)
@@ -196,8 +183,8 @@ public class ProxyField extends VerticalLayout implements Field {
      * @see com.vaadin.data.Property#getValue()
      */
     @Override
-    public Object getValue() {
-        return getField().getValue();
+    public T getValue() {
+        return (T)getField().getValue();
     }
 
     /* (non-Javadoc)
@@ -212,7 +199,7 @@ public class ProxyField extends VerticalLayout implements Field {
      * @see com.vaadin.data.Property#getType()
      */
     @Override
-    public Class<?> getType() {
+    public Class<T> getType() {
         return getField().getType();
     }
 
@@ -230,6 +217,22 @@ public class ProxyField extends VerticalLayout implements Field {
     @Override
     public void removeListener(ValueChangeListener listener) {
         getField().removeListener(listener);
+    }
+
+    /* (non-Javadoc)
+     * @see com.vaadin.data.Property.ValueChangeNotifier#addListener(com.vaadin.data.Property.ValueChangeListener)
+     */
+    @Override
+    public void addValueChangeListener(ValueChangeListener listener) {
+        getField().addValueChangeListener(listener);
+    }
+
+    /* (non-Javadoc)
+     * @see com.vaadin.data.Property.ValueChangeNotifier#removeListener(com.vaadin.data.Property.ValueChangeListener)
+     */
+    @Override
+    public void removeValueChangeListener(ValueChangeListener listener) {
+        getField().removeValueChangeListener(listener);
     }
 
     /* (non-Javadoc)

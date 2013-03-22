@@ -33,7 +33,7 @@ import org.opennms.netmgt.config.EventConfDao;
 import org.opennms.netmgt.model.events.EventProxy;
 
 import com.vaadin.Application;
-import com.vaadin.terminal.Sizeable;
+import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Runo;
@@ -113,7 +113,7 @@ public class MibCompilerApplication extends Application {
         final MibCompilerPanel mibPanel = new MibCompilerPanel(dataCollectionDao, eventConfDao, eventProxy, mibParser, mibConsole);
 
         mainPanel.setSizeFull();
-        mainPanel.setSplitPosition(25, Sizeable.UNITS_PERCENTAGE);
+        mainPanel.setSplitPosition(25, Unit.PERCENTAGE);
         mainPanel.addComponent(mibPanel);
         mainPanel.addComponent(mibConsole);
 

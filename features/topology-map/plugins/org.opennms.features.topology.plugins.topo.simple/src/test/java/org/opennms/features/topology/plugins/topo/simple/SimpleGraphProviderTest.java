@@ -69,7 +69,6 @@ import org.opennms.features.topology.plugins.topo.simple.internal.operations.Add
 import org.opennms.features.topology.plugins.topo.simple.internal.operations.RemoveVertexOperation;
 
 import com.vaadin.ui.LegacyWindow;
-import com.vaadin.ui.Window;
 
 public class SimpleGraphProviderTest {
 
