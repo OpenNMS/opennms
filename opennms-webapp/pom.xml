@@ -81,7 +81,7 @@
         <groupId>org.mortbay.jetty</groupId>
         <artifactId>jetty-maven-plugin</artifactId>
         <configuration>
-					<contextPath>/opennms</contextPath>
+          <contextPath>/opennms</contextPath>
           <scanIntervalSeconds>10</scanIntervalSeconds>
           <connectors>
             <connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
@@ -249,23 +249,66 @@
                 <configuration>
                   <webXmlFragment>${basedir}/target/web.xml.jspc-insert</webXmlFragment>
                   <generatedClasses>${basedir}/target/jsp-classes</generatedClasses>
+                  <useProvidedScope>true</useProvidedScope>
+                  <tldJarNamePatterns>.*\.jar$</tldJarNamePatterns>
                 </configuration>
               </execution>
             </executions>
+            <!-- add some jars to the plugin classpath so they can be searched for .tld files -->
+            <dependencies>
+              <dependency>
+                <groupId>org.opennms.dependencies</groupId>
+                <artifactId>spring-web-dependencies</artifactId>
+                <type>pom</type>
+                <version>${project.version}</version>
+              </dependency>
+              <dependency>
+                <groupId>org.opennms.dependencies</groupId>
+                <artifactId>spring-security-dependencies</artifactId>
+                <type>pom</type>
+                <version>${project.version}</version>
+              </dependency>
+            </dependencies>
           </plugin>
         </plugins>
       </build>
     </profile>
   </profiles>
   <dependencies>
-    <!-- indirect dependencies that belong in $OPENNMS_HOME/lib -->
-    <!-- these should all be <scope>provided</scope> and also included in opennms-base-assembly -->
 
+    <!-- indirect OpenNMS dependencies that belong in $OPENNMS_HOME/lib -->
+    <!-- these should all be <scope>${onmsLibScope}</scope> and also included in opennms-base-assembly -->
+
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-dao</artifactId>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-web-api</artifactId>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-reporting</artifactId>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-provision-persistence</artifactId>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-rrd-jrobin</artifactId>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-web-dependencies</artifactId>
       <type>pom</type>
-      <scope>provided</scope>
+      <scope>${onmsLibScope}</scope>
       <!-- 
         We have to exclude this Java compiler from the classpath because it
         conflicts with one bundled inside gwt-dev that is used when GWT compiles
@@ -281,8 +324,19 @@
       </exclusions>
     </dependency>
     <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.soa</artifactId>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>felix-dependencies</artifactId>
+      <type>pom</type>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>gwt-dependencies</artifactId>
       <type>pom</type>
       <scope>${onmsLibScope}</scope>
     </dependency>
@@ -293,8 +347,10 @@
       <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-web-api</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>snmp-dependencies</artifactId>
+      <type>pom</type>
+      <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.reporting</groupId>
@@ -333,83 +389,89 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.springframework-security</artifactId>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.system-report</artifactId>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+
+    <!-- indirect 3rd-party dependencies that belong in $OPENNMS_HOME/lib -->
+    <!-- these should all be <scope>${onmsLibScope}</scope> and also included in opennms-base-assembly -->
+
+    <dependency>
+      <groupId>commons-beanutils</groupId>
+      <artifactId>commons-beanutils</artifactId>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    <dependency>
+      <groupId>commons-collections</groupId>
+      <artifactId>commons-collections</artifactId>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    <dependency>
+      <groupId>commons-digester</groupId>
+      <artifactId>commons-digester</artifactId>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    <dependency>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging</artifactId>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    <dependency>
+      <groupId>commons-validator</groupId>
+      <artifactId>commons-validator</artifactId>
       <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.xmlgraphics</groupId>
       <artifactId>batik-dom</artifactId>
-      <scope>provided</scope>
+      <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.xmlgraphics</groupId>
       <artifactId>batik-svg-dom</artifactId>
-      <scope>provided</scope>
+      <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.xmlgraphics</groupId>
       <artifactId>batik-transcoder</artifactId>
-      <scope>provided</scope>
+      <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.xmlgraphics</groupId>
       <artifactId>batik-xml</artifactId>
-      <scope>provided</scope>
+      <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.xmlgraphics</groupId>
       <artifactId>batik-util</artifactId>
-      <scope>provided</scope>
+      <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
-        <groupId>org.opennms.core</groupId>
-        <artifactId>org.opennms.core.soa</artifactId>
+      <groupId>oro</groupId>
+      <artifactId>oro</artifactId>
+      <scope>${onmsLibScope}</scope>
     </dependency>
-
-    <!-- FIXME: Does this even need to be here? I had to switch it from provided
-         to runtime or it interfered with GWT. -->
     <dependency>
-      <groupId>org.opennms.features.reporting</groupId>
-      <artifactId>org.opennms.features.reporting.jasper-reports</artifactId>
-      <scope>runtime</scope>
-    </dependency> 
+      <groupId>xalan</groupId>
+      <artifactId>xalan</artifactId>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
 
     <!-- direct dependencies that should be in WEB-INF/lib -->
+
     <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>gwt-dependencies</artifactId>
-      <type>pom</type>
-    </dependency>
-    <dependency>
-      <groupId>com.google.gwt</groupId>
-      <artifactId>gwt-user</artifactId>
-      <version>${gwtVersion}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.eclipse.jetty.orbit</groupId>
-      <artifactId>org.apache.taglibs.standard.glassfish</artifactId>
-      <version>1.2.0.v201112081803</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.springframework-security</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-rrd-jrobin</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-rrd-tcp</artifactId>
-    </dependency> 
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-reporting</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-provision-persistence</artifactId>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
     </dependency>
     <dependency>
       <groupId>org.extremecomponents</groupId>
@@ -426,27 +488,28 @@
     </dependency>
     -->
     <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
+      <groupId>net.sf.json-lib</groupId>
+      <artifactId>json-lib</artifactId>
+      <classifier>jdk15</classifier>
     </dependency>
     <dependency>
       <groupId>net.sf.opencsv</groupId>
       <artifactId>opencsv</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.instrumentationLogReader</artifactId>
-    </dependency>   
-    <dependency>
-      <groupId>net.sf.json-lib</groupId>
-      <artifactId>json-lib</artifactId>
-      <classifier>jdk15</classifier>
-    </dependency>
-    <dependency>
       <groupId>ognl</groupId>
       <artifactId>ognl</artifactId>
       <version>2.6.9</version>
     </dependency>
+    <dependency>
+      <groupId>org.eclipse.jetty.orbit</groupId>
+      <artifactId>org.apache.taglibs.standard.glassfish</artifactId>
+      <version>1.2.0.v201112081803</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.instrumentationLogReader</artifactId>
+    </dependency>   
     <dependency>
       <groupId>org.tuckey</groupId>
       <artifactId>urlrewritefilter</artifactId>
@@ -455,7 +518,6 @@
       <groupId>poi</groupId>
       <artifactId>poi</artifactId>
     </dependency>
-    <!-- for RSS feeds -->
     <dependency>
       <groupId>rome</groupId>
       <artifactId>rome</artifactId>
@@ -464,7 +526,6 @@
       <groupId>struts</groupId>
       <artifactId>struts</artifactId>
     </dependency>
-    <!-- GWT components -->
     <dependency>
         <groupId>org.opennms.features</groupId>
         <artifactId>org.opennms.features.opennms-gwt-theme</artifactId>
@@ -504,9 +565,16 @@
 
     <!-- test dependencies -->
     <dependency>
+      <groupId>com.google.gwt</groupId>
+      <artifactId>gwt-user</artifactId>
+      <version>${gwtVersion}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao</artifactId>
       <type>test-jar</type>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -548,12 +616,6 @@
       <artifactId>apacheds-server-jndi</artifactId>
       <version>1.0.2</version>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.core.snmp</groupId>
-      <artifactId>org.opennms.core.snmp.api</artifactId>
-      <version>${project.version}</version>
-      <type>jar</type>
     </dependency>
   </dependencies>
 </project>

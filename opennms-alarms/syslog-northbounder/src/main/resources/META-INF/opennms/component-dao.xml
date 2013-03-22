@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd     
+    ">
+    
+    <bean name="syslogNorthbounderConfigDao" class="org.opennms.netmgt.alarmd.northbounder.syslog.SyslogNorthbounderConfigDao">
+      <property name="configResource" value="file:${opennms.home}/etc/syslog-northbounder-configuration.xml" />
+    </bean>
+
+	<bean name="syslogNorthbounderManager" class="org.opennms.netmgt.alarmd.northbounder.syslog.SyslogNorthbounderManager" />
+
+</beans>
+
