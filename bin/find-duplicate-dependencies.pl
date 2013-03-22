@@ -8,6 +8,9 @@ use Data::Dumper;
 use IPC::Run3;
 
 my $dir = shift(@ARGV);
+my $VERBOSE = shift(@ARGV);
+
+$VERBOSE = (defined $VERBOSE and $VERBOSE eq "-v");
 
 if (not -d $dir) {
 	print STDERR "usage: $0 <\$OPENNMS_HOME/lib path>\n";
@@ -69,6 +72,10 @@ for my $jar (sort keys %$files) {
 
 for my $file (sort keys %$files) {
 	next unless ($file =~ /\.class$/);
+	if (not $VERBOSE) {
+		next unless ($file =~ /org\/opennms/);
+	}
+
 	if (keys %{$files->{$file}} > 1) {
 		print "WARNING: multiple copies of class $file in separate jars: " . join(', ', sort keys %{$files->{$file}}) . "\n";
 	}
