@@ -110,8 +110,6 @@ public class Nms101Test extends Nms101NetworkBuilder implements InitializingBean
         for (Package pkg : Collections.list(m_linkdConfig.enumeratePackage())) {
             pkg.setForceIpRouteDiscoveryOnEthernet(true);
         }
-        
-        buildNetwork101();
     }
 
     @After
@@ -123,7 +121,11 @@ public class Nms101Test extends Nms101NetworkBuilder implements InitializingBean
     }
 
     /*
-     * cisco1700 --- cisco1700b
+     * cisco1700 --- cisco1700b ??????
+     * cisco1700b clearly does not have relation with this net...it has the same address
+     * of cisco2691......and the link is between cisco1700 and cisco2691
+     * what a fake....
+     * 
      */
 	@Test
     @JUnitSnmpAgents(value={
@@ -131,7 +133,9 @@ public class Nms101Test extends Nms101NetworkBuilder implements InitializingBean
         @JUnitSnmpAgent(host="10.1.5.2", port=161, resource="classpath:linkd/nms101/cisco1700.properties")
     })
     public void testSimpleConnection() throws Exception {
-        m_nodeDao.delete(m_nodeDao.findByForeignId("linkd", "cisco2691"));
+		m_nodeDao.save(getCisco1700());
+		m_nodeDao.save(getCisco1700b());
+		m_nodeDao.save(getExampleCom());
         m_nodeDao.flush();
 
         final OnmsNode cisco1700 = m_nodeDao.findByForeignId("linkd", "cisco1700");
@@ -143,14 +147,16 @@ public class Nms101Test extends Nms101NetworkBuilder implements InitializingBean
         assertTrue(m_linkd.scheduleNodeCollection(cisco1700.getId()));
         assertTrue(m_linkd.scheduleNodeCollection(cisco1700b.getId()));
 
-        assertTrue(m_linkd.runSingleCollection(cisco1700.getId()));
-        assertTrue(m_linkd.runSingleCollection(cisco1700b.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(cisco1700.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(cisco1700b.getId()));
 
+        assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
+        
         final List<DataLinkInterface> ifaces = m_dataLinkInterfaceDao.findAll();
-        assertEquals("we should have found 1 data link", 1, ifaces.size());
         for (final DataLinkInterface link: ifaces) {
             printLink(link);
         }
+        assertEquals("we should have found 1 data link", 1, ifaces.size());
     }
 
     /*
@@ -158,12 +164,14 @@ public class Nms101Test extends Nms101NetworkBuilder implements InitializingBean
      *  The CDP protocol must found all the links
      *  Either Ip Route must found links
      * 
-     *  cisco7200a (2) --- (4) cisco7200b (1) --- (4) cisco2691 (2) --- (-) cisco1700
+     *  laptop
+     *     |
+     *  cisco7200a (2) --- (4) cisco7200b (1) --- (4) cisco2691 (2) --- (2) cisco1700
      *                     (2)                    (1)    
      *                      |                      |
      *                     (1)                    (2)
-     *                  cisco3700  (-) --- (1)  cisco3600      
-     */
+     *                  cisco3700  (3) --- (1)  cisco3600      
+     */	
     @Test
     @JUnitSnmpAgents(value={
         @JUnitSnmpAgent(host="10.1.1.1", port=161, resource="classpath:linkd/nms101/cisco7200a.properties"),
@@ -175,6 +183,16 @@ public class Nms101Test extends Nms101NetworkBuilder implements InitializingBean
         @JUnitSnmpAgent(host="10.1.6.2", port=161, resource="classpath:linkd/nms101/cisco3600.properties")
     })
     public void testFakeCiscoNetwork() throws Exception {
+
+    	m_nodeDao.save(getExampleCom());
+    	m_nodeDao.save(getCisco7200a());
+    	m_nodeDao.save(getCisco7200b());
+    	m_nodeDao.save(getCisco3700());
+    	m_nodeDao.save(getCisco2691());
+    	m_nodeDao.save(getCisco1700());
+    	m_nodeDao.save(getCisco3600());
+    	m_nodeDao.flush();
+    	
         final OnmsNode laptop = m_nodeDao.findByForeignId("linkd", "laptop");
         final OnmsNode cisco7200a = m_nodeDao.findByForeignId("linkd", "cisco7200a");
         final OnmsNode cisco7200b = m_nodeDao.findByForeignId("linkd", "cisco7200b");
@@ -204,7 +222,7 @@ public class Nms101Test extends Nms101NetworkBuilder implements InitializingBean
             printLink(link);
         }
 
-        assertEquals("we should have found 9 data links", 9, ifaces.size());
+        assertEquals("we should have found 6 data links", 6, ifaces.size());
     }
     
     @Test
