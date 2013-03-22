@@ -156,7 +156,7 @@ public class Nms101Test extends Nms101NetworkBuilder implements InitializingBean
         for (final DataLinkInterface link: ifaces) {
             printLink(link);
         }
-        assertEquals("we should have found 1 data link", 1, ifaces.size());
+        assertEquals("we should have found 0 data link", 0, ifaces.size());
     }
 
     /*
