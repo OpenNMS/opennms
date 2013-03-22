@@ -329,7 +329,7 @@ public final class SnmpCollection implements ReadyRunnable {
     		if (m_msg == null) {
     			m_msg = label;
     		} else {
-    			m_msg = "/" + label;
+    			m_msg += "/" + label;
     		}
     		
     		m_trackerList.addAll(Arrays.asList(trackers));
