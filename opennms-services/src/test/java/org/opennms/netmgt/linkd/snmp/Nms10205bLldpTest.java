@@ -51,8 +51,7 @@ import static org.junit.Assert.assertEquals;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
-        "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
-        "classpath:/applicationContext-linkd-test.xml"
+        "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml"
 })
 @JUnitConfigurationEnvironment
 public class Nms10205bLldpTest extends Nms10205bNetworkBuilder implements InitializingBean {

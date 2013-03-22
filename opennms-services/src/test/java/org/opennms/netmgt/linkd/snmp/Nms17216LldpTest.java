@@ -56,8 +56,7 @@ import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations= {
-        "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
-        "classpath:/applicationContext-linkd-test.xml"
+        "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml"
 })
 @JUnitConfigurationEnvironment
 public class Nms17216LldpTest extends Nms17216NetworkBuilder implements InitializingBean {

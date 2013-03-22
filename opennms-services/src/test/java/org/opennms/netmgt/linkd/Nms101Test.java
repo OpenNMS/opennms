@@ -55,7 +55,6 @@ import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.SnmpInterfaceDao;
 import org.opennms.netmgt.linkd.nb.Nms101NetworkBuilder;
 import org.opennms.netmgt.model.DataLinkInterface;
-import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
@@ -66,19 +65,14 @@ import org.springframework.transaction.annotation.Transactional;
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations= {
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
-        "classpath:/META-INF/opennms/applicationContext-dao.xml",
-        "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
-        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
-        "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
-        "classpath:/META-INF/opennms/applicationContext-linkd.xml",
-        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
+        "classpath:/META-INF/opennms/applicationContext-linkdTest.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class Nms101LinkdTest extends Nms101NetworkBuilder implements InitializingBean {
+public class Nms101Test extends Nms101NetworkBuilder implements InitializingBean {
 
     @Autowired
     private Linkd m_linkd;
@@ -128,7 +122,9 @@ public class Nms101LinkdTest extends Nms101NetworkBuilder implements Initializin
         m_nodeDao.flush();
     }
 
-    @SuppressWarnings("deprecation")
+    /*
+     * cisco1700 --- cisco1700b
+     */
 	@Test
     @JUnitSnmpAgents(value={
         @JUnitSnmpAgent(host="10.1.5.1", port=161, resource="classpath:linkd/nms101/cisco1700b.properties"),
@@ -136,13 +132,6 @@ public class Nms101LinkdTest extends Nms101NetworkBuilder implements Initializin
     })
     public void testSimpleConnection() throws Exception {
         m_nodeDao.delete(m_nodeDao.findByForeignId("linkd", "cisco2691"));
-        m_nodeDao.flush();
-
-        final NetworkBuilder nb = new NetworkBuilder();
-        nb.addNode("cisco1700b").setForeignSource("linkd").setForeignId("cisco1700b").setSysObjectId(".1.3.6.1.4.1.9.1.200").setType("A");
-        nb.addInterface("10.1.5.1").setIsSnmpPrimary("P").setIsManaged("M")
-            .addSnmpInterface(2).setIfType(6).setCollectionEnabled(false).setIfSpeed(100000000).setPhysAddr("c00397a70000");
-        m_nodeDao.save(nb.getCurrentNode());
         m_nodeDao.flush();
 
         final OnmsNode cisco1700 = m_nodeDao.findByForeignId("linkd", "cisco1700");
@@ -164,6 +153,17 @@ public class Nms101LinkdTest extends Nms101NetworkBuilder implements Initializin
         }
     }
 
+    /*
+     *  Discover the following topology
+     *  The CDP protocol must found all the links
+     *  Either Ip Route must found links
+     * 
+     *  cisco7200a (2) --- (4) cisco7200b (1) --- (4) cisco2691 (2) --- (-) cisco1700
+     *                     (2)                    (1)    
+     *                      |                      |
+     *                     (1)                    (2)
+     *                  cisco3700  (-) --- (1)  cisco3600      
+     */
     @Test
     @JUnitSnmpAgents(value={
         @JUnitSnmpAgent(host="10.1.1.1", port=161, resource="classpath:linkd/nms101/cisco7200a.properties"),
