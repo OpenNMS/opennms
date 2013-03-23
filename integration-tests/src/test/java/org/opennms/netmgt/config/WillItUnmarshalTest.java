@@ -60,6 +60,7 @@ import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.reporting.model.basicreport.LegacyLocalReportsDefinition;
 import org.opennms.features.reporting.model.jasperreport.LocalJasperReports;
 import org.opennms.features.reporting.model.remoterepository.RemoteRepositoryConfig;
+import org.opennms.netmgt.alarmd.northbounder.syslog.SyslogNorthbounderConfig;
 import org.opennms.netmgt.config.accesspointmonitor.AccessPointMonitorConfig;
 import org.opennms.netmgt.config.ackd.AckdConfiguration;
 import org.opennms.netmgt.config.actiond.ActiondConfiguration;
@@ -373,6 +374,10 @@ public class WillItUnmarshalTest {
     @Test
     public void testScriptdConfiguration() throws Exception {
         unmarshal("scriptd-configuration.xml", ScriptdConfiguration.class);
+    }
+    @Test
+    public void testSyslogNorthbounderConfiguration() throws Exception {
+        unmarshal("syslog-northbounder-configuration.xml", SyslogNorthbounderConfig.class);
     }
     @Test
     public void testExampleScriptdConfiguration() throws Exception {
