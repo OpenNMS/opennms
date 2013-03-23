@@ -104,7 +104,7 @@ public abstract class AbstractQueryManager implements QueryManager {
 
     protected abstract int getIfIndexByName(int targetCdpNodeId, String cdpTargetDevicePort);
 
-    protected abstract List<Integer> getNodeidFromIp(InetAddress cdpTargetIpAddr);
+    protected abstract List<Integer> getNodeidFromIp(InetAddress cdpTargetIpAddr, String sysname);
 
     protected abstract List<RouterInterface> getRouteInterface(InetAddress nexthop, int ifindex);
 
@@ -466,7 +466,7 @@ public abstract class AbstractQueryManager implements QueryManager {
                     cdpTargetIpAddrString = null;
                 } else {
                     LogUtils.debugf(this, "processCdpCacheTable: Target IP address found: %s", cdpTargetIpAddrString);
-                    targetCdpNodeIds = getNodeidFromIp(cdpTargetIpAddr);
+                    targetCdpNodeIds = getNodeidFromIp(cdpTargetIpAddr,targetSysName);
                     if (targetCdpNodeIds.isEmpty()) {
                         LogUtils.infof(this, "processCdpCacheTable: No Target node IDs found: interface %s not added to linkable SNMP node. Skipping.", cdpTargetIpAddrString);
                         sendNewSuspectEvent(cdpTargetIpAddr, snmpcoll.getTarget(), snmpcoll.getPackageName());
@@ -505,6 +505,8 @@ public abstract class AbstractQueryManager implements QueryManager {
 	            } else {
 	                cdpIface.setCdpTargetIpAddr(cdpTargetIpAddr);               
 	            }
+	            
+	            cdpIface.setCdpTargetDeviceId(cdpEntry.getCdpCacheDeviceId());
 
 	            LogUtils.debugf(this, "processCdpCacheTable: Adding interface to linkable SNMP node: %s", cdpIface);
 
@@ -543,6 +545,10 @@ public abstract class AbstractQueryManager implements QueryManager {
         	IpRouteCollectorEntry route = (IpRouteCollectorEntry) ent;
          	
             final InetAddress nexthop = route.getIpRouteNextHop();
+            final InetAddress routedest = route.getIpRouteDest();
+            final InetAddress routemask = route.getIpRouteMask();
+
+            LogUtils.debugf(this, "processRouteTable: processing routedest/routemask/routenexthop %s/%s/%s",str(routedest),str(routemask),str(nexthop));
 
             if (nexthop == null) {
                 LogUtils.warnf(this, "processRouteTable: next hop not found on node %d. Skipping.", node.getNodeId());
@@ -563,13 +569,11 @@ public abstract class AbstractQueryManager implements QueryManager {
                 continue;
             }
 
-            final InetAddress routedest = route.getIpRouteDest();
             if (routedest == null) {
                 LogUtils.warnf(this, "processRouteTable: route destination not found on node %d. Skipping.", node.getNodeId());
                 continue;
             }
 
-            final InetAddress routemask = route.getIpRouteMask();
 
             if (routemask == null) {
                 LogUtils.warnf(this, "processRouteTable: route mask not found on node %d. Skipping.", node.getNodeId());
@@ -579,7 +583,6 @@ public abstract class AbstractQueryManager implements QueryManager {
                 continue;
             }
 
-            LogUtils.debugf(this, "processRouteTable: processing routedest/routemask/routenexthop %s/%s/%s",str(routedest),str(routemask),str(nexthop));
 
             Integer ifindex = route.getIpRouteIfIndex();
             
@@ -597,7 +600,18 @@ public abstract class AbstractQueryManager implements QueryManager {
             LogUtils.debugf(this, "processRouteTable: parsing routeDest/routeMask/nextHop: %s/%s/%s - ifIndex = %d", str(routedest), str(routemask), str(nexthop), ifindex);
 
         	int snmpiftype = -2;
-
+            if (ifindex == 0) {
+    			LogUtils.debugf(this,
+                        "processRouteTable: ifindex is 0. Looking local table to get a valid index.");
+            	for (OnmsIpInterface ip : getIpInterfaceDao().findByNodeId(node.getNodeId())) {
+            		if (Linkd.getNetwork(ip.getIpAddress(), ip.getSnmpInterface().getNetMask()).equals(Linkd.getNetwork(nexthop, ip.getSnmpInterface().getNetMask())))
+                	ifindex = (ip.getIfIndex());
+        			LogUtils.debugf(this,
+                            "processRouteTable: ifindex %d found for local ip %s. ",ifindex, str(ip.getIpAddress()));
+                	break;
+            	}
+            }
+       	
             if (ifindex > 0)
                 snmpiftype = getSnmpIfType(node.getNodeId(), ifindex);
 
@@ -644,7 +658,7 @@ public abstract class AbstractQueryManager implements QueryManager {
                                     str(nexthop));
                     continue;
                 }
-	            routeInterfaces.add(routeIface);
+ 	            routeInterfaces.add(routeIface);
             }
         }
         node.setRouteInterfaces(routeInterfaces);

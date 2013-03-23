@@ -37,6 +37,9 @@ import java.util.Map;
 
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.SnmpInterfaceDao;
+import org.opennms.netmgt.linkd.CdpInterface;
+import org.opennms.netmgt.linkd.Linkd;
+import org.opennms.netmgt.linkd.RouterInterface;
 import org.opennms.netmgt.linkd.snmp.CdpCacheTableEntry;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.NetworkBuilder;
@@ -139,7 +142,33 @@ public abstract class LinkdNetworkBuilder {
         nb.addInterface(ipaddr).setIsSnmpPrimary("N").setIsManaged("M");
         return nb.getCurrentNode();
     }
-    
+
+    protected void printRouteInterface(int nodeid, RouterInterface route) {
+        System.err.println("-----------------------------------------------------------");
+        System.err.println("Local Route nodeid: "+nodeid);
+        System.err.println("Local Route ifIndex: "+route.getIfindex());
+        System.err.println("Next Hop Address: " +route.getNextHop());
+        System.err.println("Next Hop Network: " +Linkd.getNetwork(route.getNextHop(), route.getNextHopNetmask()));
+        System.err.println("Next Hop Netmask: " +route.getNextHopNetmask());
+        System.err.println("Next Hop nodeid: "+route.getNextHopIfindex());
+        System.err.println("Next Hop ifIndex: "+route.getNextHopIfindex());
+        System.err.println("-----------------------------------------------------------");
+        System.err.println("");        
+    }
+
+    protected void printCdpInterface(int nodeid, CdpInterface cdp) {
+        System.err.println("-----------------------------------------------------------");
+        System.err.println("Local cdp nodeid: "+nodeid);
+        System.err.println("Local cdp ifindex: "+cdp.getCdpIfIndex());
+        System.err.println("Target cdp ipaddress: "+cdp.getCdpTargetIpAddr());
+        System.err.println("Target cdp deviceId: "+cdp.getCdpTargetDeviceId());
+        System.err.println("Target cdp nodeid: "+cdp.getCdpTargetNodeId());
+        System.err.println("Target cdp ifindex: "+cdp.getCdpTargetIfIndex());
+        System.err.println("-----------------------------------------------------------");
+        System.err.println("");        
+    	
+    }
+
     protected void printCdpRow(CdpCacheTableEntry cdpCacheTableEntry) {
         System.err.println("-----------------------------------------------------------");    
         System.err.println("getCdpCacheIfIndex: "+cdpCacheTableEntry.getCdpCacheIfIndex());
@@ -211,12 +240,13 @@ public abstract class LinkdNetworkBuilder {
         assertEquals(parentifindex,datalinkinterface.getParentIfIndex().intValue());
     }
 
-    private void printNode(OnmsNode node) {
-        System.out.println("----------------Node------------------");
-        System.out.println("nodeid: " + node.getId());
-        System.out.println("nodelabel: " + node.getLabel());
-        System.out.println("--------------------------------------");
-        System.out.println("");
+    protected void printNode(OnmsNode node) {
+        System.err.println("----------------Node------------------");
+        System.err.println("nodeid: " + node.getId());
+        System.err.println("nodelabel: " + node.getLabel());
+        System.err.println("nodesysname: " + node.getSysName());
+        System.err.println("nodesysoid: " + node.getSysObjectId());
+        System.err.println("");
         
     }
     
@@ -244,7 +274,6 @@ public abstract class LinkdNetworkBuilder {
             System.out.println(nodeStringId+"_IF_IFALIAS_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfAlias()+"\");");            
             if (snmpinterface.getNetMask() != null && !snmpinterface.getNetMask().getHostAddress().equals("127.0.0.1"))
             System.out.println(nodeStringId+"_IF_NETMASK_MAP.put("+snmpinterface.getIfIndex()+", InetAddress.getByName(\""+snmpinterface.getNetMask().getHostAddress()+"\"));");
-        
     }
-
+    
 }

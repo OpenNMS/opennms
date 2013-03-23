@@ -124,7 +124,9 @@ public class Nms101Test extends Nms101NetworkBuilder implements InitializingBean
      * cisco1700 --- cisco1700b ??????
      * cisco1700b clearly does not have relation with this net...it has the same address
      * of cisco2691......and the link is between cisco1700 and cisco2691
-     * what a fake....
+     * what a fake....very interesting test.....
+     * CDP now fails....but iproute discovery found a right route information 
+     * no way of fixing this in the actual code implementation
      * 
      */
 	@Test
@@ -150,13 +152,25 @@ public class Nms101Test extends Nms101NetworkBuilder implements InitializingBean
         assertTrue(m_linkd.runSingleSnmpCollection(cisco1700.getId()));
         assertTrue(m_linkd.runSingleSnmpCollection(cisco1700b.getId()));
 
+        for (LinkableNode node: m_linkd.getLinkableNodes()) {
+        	int nodeid = node.getNodeId();
+        	printNode(m_nodeDao.get(nodeid));
+        	for (RouterInterface route: node.getRouteInterfaces()) {
+        		printRouteInterface(nodeid, route);
+        	}
+        	
+        	for (CdpInterface cdp: node.getCdpInterfaces()) {
+        		printCdpInterface(nodeid, cdp);
+        	}
+        		
+        }
         assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
         
         final List<DataLinkInterface> ifaces = m_dataLinkInterfaceDao.findAll();
         for (final DataLinkInterface link: ifaces) {
             printLink(link);
         }
-        assertEquals("we should have found 0 data link", 0, ifaces.size());
+        assertEquals("we should have found 1 data link", 1, ifaces.size());
     }
 
     /*
@@ -185,6 +199,7 @@ public class Nms101Test extends Nms101NetworkBuilder implements InitializingBean
     public void testFakeCiscoNetwork() throws Exception {
 
     	m_nodeDao.save(getExampleCom());
+    	m_nodeDao.save(getLaptop());
     	m_nodeDao.save(getCisco7200a());
     	m_nodeDao.save(getCisco7200b());
     	m_nodeDao.save(getCisco3700());

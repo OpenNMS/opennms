@@ -103,23 +103,6 @@ public class RouterInterface extends Link {
 	}
 
 	/**
-	 * <p>getNextHopNet</p>
-	 *
-	 * @return a {@link java.net.InetAddress} object.
-	 */
-	public InetAddress getNextHopNet() {
-	    final byte[] ipAddress = m_nextHop.getAddress();
-		final byte[] netMask = m_nextHopNetmask.getAddress();
-		final byte[] netWork = new byte[4];
-
-		for (int i=0;i< 4; i++) {
-			netWork[i] = Integer.valueOf(ipAddress[i] & netMask[i]).byteValue();
-			
-		}
-		return InetAddressUtils.getInetAddress(netWork);
-	}
-	
-	/**
 	 * <p>toString</p>
 	 *
 	 * @return a {@link java.lang.String} object.

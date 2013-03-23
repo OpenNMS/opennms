@@ -51,16 +51,18 @@ public class CdpInterface extends Link {
 	 * the ip address 
 	 */
 	
-	private final int cdpIfIndex; 
+	private final int m_cdpIfIndex; 
 	
-	InetAddress cdpTargetIpAddr;
+	InetAddress m_cdpTargetIpAddr;
 	
-	int cdpTargetNodeId;
+	int m_cdpTargetNodeId;
 	
-	int cdpTargetIfIndex;
+	int m_cdpTargetIfIndex;
+	
+	String m_cdpTargetDeviceId;
 	
 	CdpInterface(int ifindex) {
-		this.cdpIfIndex = ifindex;
+		m_cdpIfIndex = ifindex;
 	}
 	
 	/**
@@ -69,7 +71,7 @@ public class CdpInterface extends Link {
 	 * @return Returns the cdpIfIndex.
 	 */
 	public int getCdpIfIndex() {
-		return cdpIfIndex;
+		return m_cdpIfIndex;
 	}
 	/**
 	 * <p>Getter for the field <code>cdpTargetIfIndex</code>.</p>
@@ -77,7 +79,7 @@ public class CdpInterface extends Link {
 	 * @return Returns the cdpTargetDevicePort.
 	 */
 	public int getCdpTargetIfIndex() {
-		return cdpTargetIfIndex;
+		return m_cdpTargetIfIndex;
 	}
 	/**
 	 * <p>Setter for the field <code>cdpTargetIfIndex</code>.</p>
@@ -85,7 +87,7 @@ public class CdpInterface extends Link {
 	 * @param ifindex a int.
 	 */
 	public void setCdpTargetIfIndex(int ifindex) {
-		this.cdpTargetIfIndex = ifindex;
+		m_cdpTargetIfIndex = ifindex;
 	}
 	/**
 	 * <p>Getter for the field <code>cdpTargetIpAddr</code>.</p>
@@ -93,7 +95,7 @@ public class CdpInterface extends Link {
 	 * @return Returns the cdpTargetIpAddr.
 	 */
 	public InetAddress getCdpTargetIpAddr() {
-		return cdpTargetIpAddr;
+		return m_cdpTargetIpAddr;
 	}
 	/**
 	 * <p>Setter for the field <code>cdpTargetIpAddr</code>.</p>
@@ -101,7 +103,7 @@ public class CdpInterface extends Link {
 	 * @param cdpTargetIpAddr The cdpTargetIpAddr to set.
 	 */
 	public void setCdpTargetIpAddr(InetAddress cdpTargetIpAddr) {
-		this.cdpTargetIpAddr = cdpTargetIpAddr;
+		m_cdpTargetIpAddr = cdpTargetIpAddr;
 	}
 	/**
 	 * <p>Getter for the field <code>cdpTargetNodeId</code>.</p>
@@ -109,7 +111,7 @@ public class CdpInterface extends Link {
 	 * @return Returns the cdpTargetNodeId.
 	 */
 	public int getCdpTargetNodeId() {
-		return cdpTargetNodeId;
+		return m_cdpTargetNodeId;
 	}
 	/**
 	 * <p>Setter for the field <code>cdpTargetNodeId</code>.</p>
@@ -117,9 +119,17 @@ public class CdpInterface extends Link {
 	 * @param cdpTargetNodeId The cdpTargetNodeId to set.
 	 */
 	public void setCdpTargetNodeId(int cdpTargetNodeId) {
-		this.cdpTargetNodeId = cdpTargetNodeId;
+		m_cdpTargetNodeId = cdpTargetNodeId;
 	}
 	
+	public String getCdpTargetDeviceId() {
+		return m_cdpTargetDeviceId;
+	}
+
+	public void setCdpTargetDeviceId(String cdpTargetDeviceId) {
+		m_cdpTargetDeviceId = cdpTargetDeviceId;
+	}
+
 	/**
 	 * <p>toString</p>
 	 *
@@ -127,10 +137,11 @@ public class CdpInterface extends Link {
 	 */
 	public String toString() {
 	    return new ToStringBuilder(this)
-	                .append("ifindex",cdpIfIndex)
-	                .append("TargetIpAddress",cdpTargetIpAddr)
-	                .append("targetNodeid",cdpTargetNodeId)
-	                .append("cdptargetIfIndex:",cdpTargetIfIndex)
+	                .append("ifindex",m_cdpIfIndex)
+	                .append("TargetIpAddress",m_cdpTargetIpAddr)
+	                .append("targetNodeid",m_cdpTargetNodeId)
+	                .append("cdptargetIfIndex:",m_cdpTargetIfIndex)
+	                .append("cdptargetDeviceId:",m_cdpTargetDeviceId)
 	                .toString();
 	} 
 }
