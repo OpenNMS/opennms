@@ -12,9 +12,13 @@ The following are set to the default values.
   <message-format>ALARM ID:${alarmId} NODE:${nodeLabel}; ${logMsg}</message-format>
 
 <!-- You could do something like the following
-  <message-format>ALARM ID:${alarmId} NODE:${nodeLabel} FIRST:${firstOccurrence} LAST:${lastOccurrence} COUNT:${count} UEI:${alarmUei} SEV:${severity} IP:${ipAddr} x733Type:${x733AlarmType} x733Cause:${x733ProbableCause} ${logMsg}</message-format>
+  <message-format>ALARM ID:${alarmId} NODE:${nodeLabel} IP:${ipAddr} 
+    FIRST:${firstOccurrence} LAST:${lastOccurrence} 
+    COUNT:${count} UEI:${alarmUei} SEV:${severity} 
+    x733Type:${x733AlarmType} x733Cause:${x733ProbableCause} 
+    ${logMsg}
+  </message-format>
 -->
-
 
 <!-- More than one destination is supported -->
   <destination>
@@ -30,8 +34,7 @@ The following are set to the default values.
   </destination>
 
 
-<!-- Highly recommended, by not required, to forward a set of Alarm UEIs -->
-<!-- A cool feature would be to use other properties for filtering, such as severity -->
+<!-- Highly recommended, but not required, to only forward a set of Alarm UEIs -->
 <!--
   <uei>uei.opennms.org/nodes/nodeDown</uei>
   <uei>uei.opennms.org/nodes/nodeUp</uei>
