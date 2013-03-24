@@ -4,7 +4,7 @@
 <!--
 The following are set to the default values.
 -->
-  <enabled>true</enabled>
+  <enabled>false</enabled>
   <nagles-delay>1000</nagles-delay>
   <batch-size>100</batch-size>
   <queue-size>300000</queue-size>
