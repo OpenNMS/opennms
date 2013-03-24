@@ -83,6 +83,9 @@ public class SyslogNorthbounder extends AbstractNorthbounder implements Initiali
 	public void afterPropertiesSet() throws Exception {
 		
 		if (m_config == null) {
+			
+			LogUtils.infof(this, "Syslog Northbounder is currently disabled, rejecting alarm.");
+			
 			String msg = "Syslog forwarding configuration is not initialized.";
 			IllegalStateException e = new IllegalStateException(msg);
 			LogUtils.errorf(this, e, msg);
@@ -93,7 +96,7 @@ public class SyslogNorthbounder extends AbstractNorthbounder implements Initiali
 		createNorthboundInstances();
 		setNaglesDelay(m_config.getNaglesDelay());
 		setMaxBatchSize(m_config.getBatchSize());
-		setMaxPreservedAlarms(m_config.getAlarmQueueSize());
+		setMaxPreservedAlarms(m_config.getQueueSize());
 	}
 
 	/**
@@ -103,6 +106,10 @@ public class SyslogNorthbounder extends AbstractNorthbounder implements Initiali
      */
 	@Override
     public boolean accepts(NorthboundAlarm alarm) {
+		
+		if (!m_config.isEnabled()) {
+			return false;
+		}
 		
 		LogUtils.debugf(this, "Validating UEI of alarm: %s", alarm.getUei());
 		

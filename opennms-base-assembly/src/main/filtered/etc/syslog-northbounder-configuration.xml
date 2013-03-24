@@ -32,6 +32,7 @@ The following are set to the default values.
 
 <!-- Highly recommended, by not required, to forward a set of Alarm UEIs -->
 <!-- A cool feature would be to use other properties for filtering, such as severity -->
+<!--
   <uei>uei.opennms.org/nodes/nodeDown</uei>
   <uei>uei.opennms.org/nodes/nodeUp</uei>
 -->
