@@ -55,6 +55,14 @@ public interface NodeDao extends OnmsDao<OnmsNode, Integer> {
     OnmsNode get(String lookupCriteria);
     
     /**
+     * Light weight call to simply get the node label without loading the entire node.
+     * 
+     * @param id
+     * @return A String representing the provisioned label for the node.  Returns null if not found.
+     */
+    String getLabelForId(Integer id);
+    
+    /**
      * <p>findByLabel</p>
      *
      * @param label a {@link java.lang.String} object.

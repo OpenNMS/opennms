@@ -48,25 +48,25 @@ public class SyslogNorthbounderConfig implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @XmlElement(name="enabled")
+    @XmlElement(name="enabled", required=false, defaultValue="false")
 	private Boolean m_enabled;
     
-    @XmlElement(name="nagles-delay")
+    @XmlElement(name="nagles-delay", required=false, defaultValue="1000")
     private Integer m_naglesDelay = 1000;
     
-    @XmlElement(name="batch-size")
+    @XmlElement(name="batch-size", required=false, defaultValue="100")
     private Integer m_batchSize = 100;
     
-    @XmlElement(name="queue-size")
-    private Integer m_alarmQueueSize = 300000;
+    @XmlElement(name="queue-size", required=false, defaultValue="300000")
+    private Integer m_queueSize = 300000;
     
-    @XmlElement(name="message-format")
-    private String m_messageFormat = "ALARM ID:${alarmId} NODE:${nodeLabel} FIRST:${firstOccurrence} LAST:${lastOccurrence} COUNT:${count} UEI:${alarmUei} SEV:${severity} IP:${ipAddr} x733Type:${x733AlarmType} x733Cause:${x733ProbableCause} ${logMsg}";
+    @XmlElement(name="message-format", required=false, defaultValue="ALARM ID:${alarmId} NODE:${nodeLabel} ${logMsg}")
+    private String m_messageFormat = "ALARM ID:${alarmId} NODE:${nodeLabel} ${logMsg}";
     
     @XmlElement(name="destination")
     private List<SyslogDestination> m_destinations;
     
-    @XmlElement(name="uei")
+    @XmlElement(name="uei", required = false)
     private List<String> m_ueis;
 
     //Getters & Setters
@@ -108,12 +108,12 @@ public class SyslogNorthbounderConfig implements Serializable {
 		m_batchSize = batchSize;
 	}
 	
-	public Integer getAlarmQueueSize() {
-		return m_alarmQueueSize;
+	public Integer getQueueSize() {
+		return m_queueSize;
 	}
 	
-	public void setAlarmQueueSize(Integer alarmQueueSize) {
-		m_alarmQueueSize = alarmQueueSize;
+	public void setQueueSize(Integer alarmQueueSize) {
+		m_queueSize = alarmQueueSize;
 	}
 	public Boolean isEnabled() {
 		return m_enabled;

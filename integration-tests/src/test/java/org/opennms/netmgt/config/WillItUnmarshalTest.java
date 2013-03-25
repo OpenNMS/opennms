@@ -377,7 +377,7 @@ public class WillItUnmarshalTest {
     }
     @Test
     public void testSyslogNorthbounderConfiguration() throws Exception {
-        unmarshal("syslog-northbounder-configuration.xml", SyslogNorthbounderConfig.class);
+        unmarshalJaxb("syslog-northbounder-configuration.xml", SyslogNorthbounderConfig.class);
     }
     @Test
     public void testExampleScriptdConfiguration() throws Exception {

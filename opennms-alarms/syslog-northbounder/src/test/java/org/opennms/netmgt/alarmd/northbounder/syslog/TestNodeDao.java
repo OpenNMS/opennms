@@ -2,6 +2,7 @@ package org.opennms.netmgt.alarmd.northbounder.syslog;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -16,6 +17,43 @@ import org.opennms.netmgt.model.SurveillanceStatus;
 
 public class TestNodeDao implements NodeDao {
 
+
+	@Override
+	public OnmsNode get(Integer id) {
+		OnmsNode node = new OnmsNode();
+		node.setId(777);
+		node.setLabel("p-brane");
+		return node;
+	}
+	
+	@Override
+	public String getLabelForId(Integer id) {
+		if (id.intValue() == 777) {
+			return "p-brane";
+		}
+		return null;
+	}
+	
+	@Override
+	public OnmsNode load(Integer id) {
+		OnmsNode node = new OnmsNode();
+		node.setId(777);
+		node.setLabel("p-brane");
+		return node;
+	}
+	
+	@Override
+	public List<OnmsNode> findAll() {
+		
+		List<OnmsNode> nodeList = new LinkedList<OnmsNode>();
+		
+		OnmsNode node = new OnmsNode();
+		node.setId(777);
+		node.setLabel("p-brane");
+		
+		nodeList.add(node);
+		return nodeList;
+	}
 
 	@Override
 	public void lock() {
@@ -67,19 +105,6 @@ public class TestNodeDao implements NodeDao {
 	}
 
 	@Override
-	public OnmsNode get(Integer id) {
-		OnmsNode node = new OnmsNode();
-		node.setId(777);
-		node.setLabel("p-brane");
-		return node;
-	}
-
-	@Override
-	public OnmsNode load(Integer id) {
-		return null;
-	}
-
-	@Override
 	public void save(OnmsNode entity) {
 	}
 
@@ -95,7 +120,7 @@ public class TestNodeDao implements NodeDao {
 	public OnmsNode get(String lookupCriteria) {
 		return null;
 	}
-
+	
 	@Override
 	public List<OnmsNode> findByLabel(String label) {
 		return null;
@@ -144,11 +169,6 @@ public class TestNodeDao implements NodeDao {
 	public List<OnmsNode> findAllByCategoryLists(
 			Collection<OnmsCategory> rowCatNames,
 			Collection<OnmsCategory> colCatNames) {
-		return null;
-	}
-
-	@Override
-	public List<OnmsNode> findAll() {
 		return null;
 	}
 
