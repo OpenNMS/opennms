@@ -7,10 +7,9 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.assemblies</groupId>
-  <artifactId>org.opennms.assemblies.remote-poller-onejar</artifactId>
+  <artifactId>org.opennms.assemblies.jmx-config-generator-onejar</artifactId>
   <packaging>jar</packaging>
-  <name>OpenNMS Remote Poller (One Jar)</name>
-  <url>http://maven.apache.org</url>
+  <name>OpenNMS Config Generator (One Jar)</name>
   <build>
     <plugins>
       <plugin>
@@ -102,7 +101,7 @@
         <groupId>org.dstovall</groupId>
         <artifactId>onejar-maven-plugin</artifactId>
         <configuration>
-          <mainClass>org.opennms.poller.remote.Main</mainClass>
+          <mainClass>org.opennms.jmxconfiggenerator.Starter</mainClass>
         </configuration>
       </plugin>
       <plugin>
@@ -127,16 +126,12 @@
     <dependency>
       <groupId>org.opennms.core.build</groupId>
       <artifactId>org.opennms.core.build.keystore</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.remote-poller</artifactId>
+      <groupId>org.opennms</groupId>
+      <artifactId>jmxconfiggenerator</artifactId>
+      <version>${project.version}</version>
     </dependency>
   </dependencies>
-  <pluginRepositories>
-    <pluginRepository>
-      <id>onejar-maven-plugin.googlecode.com</id>
-      <url>http://maven.opennms.org/content/groups/onejar.googlecode.com-release</url>
-    </pluginRepository>
-  </pluginRepositories>
 </project>

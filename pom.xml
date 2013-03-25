@@ -155,6 +155,23 @@
         <version>1.7</version>
       </plugin>
       <plugin>
+        <groupId>org.dstovall</groupId>
+        <artifactId>onejar-maven-plugin</artifactId>
+        <version>1.4.4</version>
+        <executions>
+          <execution>
+            <configuration>
+              <onejarVersion>0.96</onejarVersion>
+              <attachToBuild>true</attachToBuild>
+            </configuration>
+            <phase>package</phase>
+            <goals>
+              <goal>one-jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <groupId>org.opennms.maven.plugins</groupId>
         <artifactId>features-maven-plugin</artifactId>
         <version>1.0.1</version>
@@ -306,6 +323,14 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
         <version>2.3.1</version>
+        <configuration>
+          <keystore>${webstart.keystore}</keystore>
+          <keypass>${webstart.keypass}</keypass>
+          <storepass>${webstart.storepass}</storepass>
+          <alias>${webstart.keyalias}</alias>
+          <dnameCn>${webstart.dnameCn}</dnameCn>
+          <dnameCn>${webstart.dnameCn}</dnameCn>
+        </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -1717,6 +1742,16 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.opennms.assemblies</groupId>
+        <artifactId>org.opennms.assemblies.jmx-config-generator-onejar</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.assemblies</groupId>
+        <artifactId>org.opennms.assemblies.remote-poller-onejar</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.opennms.features</groupId>
         <artifactId>org.opennms.features.remote-poller</artifactId>
         <version>${project.version}</version>
@@ -1724,11 +1759,6 @@
       <dependency>
         <groupId>org.opennms.features</groupId>
         <artifactId>org.opennms.features.remote-poller-jnlp</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.assemblies</groupId>
-        <artifactId>org.opennms.assemblies.remote-poller-onejar</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -2624,6 +2654,10 @@
       <id>java-net-repo</id>
       <name>Java.net Repository</name>
       <url>http://maven.opennms.org/content/groups/java.net-release</url>
+    </pluginRepository>
+    <pluginRepository>
+      <id>onejar-maven-plugin.googlecode.com</id>
+      <url>http://maven.opennms.org/content/groups/onejar.googlecode.com-release</url>
     </pluginRepository>
   </pluginRepositories>
   <distributionManagement>

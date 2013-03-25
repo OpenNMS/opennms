@@ -49,6 +49,23 @@
               </artifactItems>
             </configuration>
           </execution>
+          <execution>
+            <id>copy-jmx-config-generator</id>
+            <phase>process-resources</phase>
+            <goals><goal>copy</goal></goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.opennms.assemblies</groupId>
+                  <artifactId>org.opennms.assemblies.jmx-config-generator-onejar</artifactId>
+                  <type>jar</type>
+                  <classifier>signed-jar-with-dependencies</classifier>
+                  <destFileName>opennms_jmx_config_generator.jar</destFileName>
+                </artifactItem>
+              </artifactItems>
+              <outputDirectory>${project.build.directory}/jmx</outputDirectory>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
       <plugin>
