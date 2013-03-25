@@ -102,7 +102,7 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
 		setScaleDataSource(m_graphContainer.getScaleProperty());
 	}
 	
-	private void setScaleDataSource(Property scale) {
+	private void setScaleDataSource(Property<Double> scale) {
         // Listens the new data source if possible
         if (scale != null
                 && Property.ValueChangeNotifier.class

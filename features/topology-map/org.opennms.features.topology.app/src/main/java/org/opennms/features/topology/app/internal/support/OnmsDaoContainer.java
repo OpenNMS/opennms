@@ -103,7 +103,7 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Sele
 	}
 
 	@Override
-	public Property getContainerProperty(Object itemId, Object propertyId) {
+	public Property<?> getContainerProperty(Object itemId, Object propertyId) {
 		Item item = getItem(itemId);
 		return item.getItemProperty(propertyId);
 	}
