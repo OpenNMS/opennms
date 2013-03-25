@@ -33,6 +33,7 @@ import java.net.URL;
 
 import com.vaadin.server.ExternalResource;
 import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
@@ -187,7 +188,7 @@ public class PingWindow extends Window{
 		topLayout.setComponentAlignment(nodeLabel, Alignment.MIDDLE_CENTER);
 		topLayout.addComponent(form);
 		topLayout.setSizeFull();
-		topLayout.setMargin(true, true, false, true);
+		topLayout.setMargin(new MarginInfo(true, true, false, true));
 
 		/*Sets attributes for bottom layout component*/
 		bottomLayout.setSizeFull();
@@ -213,8 +214,8 @@ public class PingWindow extends Window{
 	public void attach() {
 		super.attach();
 
-		int width = (int)getApplication().getMainWindow().getWidth();
-		int height = (int)getApplication().getMainWindow().getHeight();
+		int width = (int)getUI().getWidth();
+		int height = (int)getUI().getHeight();
 
 		int windowWidth = (int)(sizePercentage * width), windowHeight = (int)(sizePercentage * height);
 		setWidth("" + windowWidth + "px");
@@ -255,13 +256,18 @@ public class PingWindow extends Window{
         try {
             validInput = validateInput();
         } catch (NumberFormatException e) {
-            getApplication().getMainWindow().showNotification("Inputs must be integers", Notification.Type.WARNING_MESSAGE);
+
+            Notification.show("Inputs must be integers", Notification.Type.WARNING_MESSAGE);
             return null;
         }
         if (validInput) {
-            final URL baseUrl = getApplication().getURL();
-            
+            URL baseUrl;
             final StringBuilder options = new StringBuilder(baseAddress);
+            try {
+                baseUrl = getUI().getPage().getLocation().toURL();
+            
+            
+            
 
             options.append("&address=").append(ipDropdown.getValue())
                 .append("&timeout=").append(timeoutField.getValue())
@@ -270,14 +276,14 @@ public class PingWindow extends Window{
             if (numericalDataCheckBox.getValue().equals(true)) {
                 options.append("&numericOutput=true");
             }
-            try {
+            
                 return new URL(baseUrl, options.toString());
             } catch (final MalformedURLException e) {
-                getApplication().getMainWindow().showNotification("Could not build URL: " + options.toString(), Notification.Type.WARNING_MESSAGE);
+                Notification.show("Could not build URL: " + options.toString(), Notification.Type.WARNING_MESSAGE);
                 return null;
             }
         } else {
-            getApplication().getMainWindow().showNotification("Inputs must be between 0 and 9999", Notification.Type.WARNING_MESSAGE);
+            Notification.show("Inputs must be between 0 and 9999", Notification.Type.WARNING_MESSAGE);
             return null;
         }
     }

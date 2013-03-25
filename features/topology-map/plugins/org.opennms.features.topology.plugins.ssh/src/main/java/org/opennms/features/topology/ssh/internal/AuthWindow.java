@@ -28,22 +28,21 @@
 
 package org.opennms.features.topology.ssh.internal;
 
-import java.awt.GridLayout;
-import java.awt.TextField;
-
 import org.apache.sshd.ClientSession;
 import org.apache.sshd.SshClient;
 
+import com.vaadin.event.ShortcutAction.KeyCode;
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.LegacyWindow;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.PasswordField;
+import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Button.ClickEvent;
-
-import elemental.events.KeyboardEvent.KeyCode;
+import com.vaadin.ui.Window;
 
 /**
  * This class creates a window to authorize usernames
@@ -53,7 +52,7 @@ import elemental.events.KeyboardEvent.KeyCode;
  *
  */
 @SuppressWarnings("serial")
-public class AuthWindow extends LegacyWindow implements Button.ClickListener{
+public class AuthWindow extends Window implements Button.ClickListener{
 
     SSHWindow sshWindow; // The SSH window that will arise after the auth window connects
     private String m_host;  // The hostname to connect to
@@ -87,7 +86,7 @@ public class AuthWindow extends LegacyWindow implements Button.ClickListener{
         if ("".equals(m_host) || m_port == 0) {
             showOptions = true;
         }
-        setName("Auth Window");
+        setCaption("Auth Window");
         setModal(true);
         setCaption("Login");
         setWidth("260px");
@@ -97,15 +96,15 @@ public class AuthWindow extends LegacyWindow implements Button.ClickListener{
 
         Label hostLabel = new Label("Host: ");
         hostField = new TextField();
-        hostField.setMaxLength(FIELD_BUFFER);
+//        hostField.setMaxLength(FIELD_BUFFER);
 
         Label portLabel = new Label("Port: ");
         portField = new TextField();
-        portField.setMaxLength(FIELD_BUFFER);
+//        portField.setMaxLength(FIELD_BUFFER);
 
         Label usernameLabel = new Label("Username: ");
         usernameField = new TextField();
-        usernameField.setMaxLength(FIELD_BUFFER);
+//        usernameField.setMaxLength(FIELD_BUFFER);
 
         Label passwordLabel = new Label("Password: ");
         passwordField = new PasswordField();
@@ -129,12 +128,12 @@ public class AuthWindow extends LegacyWindow implements Button.ClickListener{
         grid.addComponent(passwordLabel);
         grid.addComponent(passwordField);
         grid.setSpacing(true);
-        grid.setMargin(false, false, true, false);
+        grid.setMargin(new MarginInfo(false, false, true, false));
         VerticalLayout layout = new VerticalLayout();
         layout.addComponent(grid);
         layout.addComponent(loginButton);
         layout.setComponentAlignment(loginButton, Alignment.BOTTOM_RIGHT);
-        addComponent(layout);
+        setContent(layout);
     }
 
     /**
@@ -145,8 +144,8 @@ public class AuthWindow extends LegacyWindow implements Button.ClickListener{
      * @throws NumberFormatException Port was not an integer
      */
     protected boolean validateInput() throws NumberFormatException {
-        m_host = hostField.getText();
-        m_port = Integer.parseInt(portField.getText());
+        m_host = hostField.getValue();
+        m_port = Integer.parseInt(portField.getValue());
         if (m_port < 0 || m_port > 65535) return false;
         return true;
     }
@@ -155,8 +154,8 @@ public class AuthWindow extends LegacyWindow implements Button.ClickListener{
     public void attach() {
         super.attach();
 
-        int posX = (int)(getApplication().getMainWindow().getWidth() - this.getWidth())/2;
-        int posY = (int)(getApplication().getMainWindow().getHeight() - this.getHeight())/2;
+        int posX = (int)(getUI().getWidth() - this.getWidth())/2;
+        int posY = (int)(getUI().getHeight() - this.getHeight())/2;
         setPositionX(posX);
         setPositionY(posY);
         if (showOptions) hostField.focus();
@@ -168,13 +167,13 @@ public class AuthWindow extends LegacyWindow implements Button.ClickListener{
      */
     protected void showSSHWindow() {
         sshWindow = new SSHWindow(session, TERM_WIDTH, TERM_HEIGHT);
-        getApplication().getMainWindow().attachWindow(sshWindow);
+        getUI().addWindow(sshWindow);
         this.close();
     }
     
     @Override
     public void buttonClick(ClickEvent event) {
-        String login = usernameField.getText();
+        String login = usernameField.getValue();
         String password = (String)passwordField.getValue();
         boolean validInput = false;
         try { 
@@ -182,12 +181,12 @@ public class AuthWindow extends LegacyWindow implements Button.ClickListener{
                 validInput = validateInput();
                 if (!validInput) {
                     testString = "Port must be between 1 and 65535";
-                    getApplication().getMainWindow().showNotification("Port must be between 1 and 65535", Notification.Type.WARNING_MESSAGE);
+                    Notification.show("Port must be between 1 and 65535", Notification.Type.WARNING_MESSAGE);
                 }
             } else validInput = true;
         } catch (NumberFormatException e) {
             testString = "Port must be an integer";
-            getApplication().getMainWindow().showNotification("Port must be an integer", Notification.Type.WARNING_MESSAGE);
+            Notification.show("Port must be an integer", Notification.Type.WARNING_MESSAGE);
         }
         if (validInput) {
             try {
@@ -201,16 +200,17 @@ public class AuthWindow extends LegacyWindow implements Button.ClickListener{
                     }
                     if ((ret & ClientSession.CLOSED) != 0) {
                         testString = "Failed to log in";
-                        getApplication().getMainWindow().showNotification("Failed to log in", Notification.Type.WARNING_MESSAGE);
+                        Notification.show("Failed to log in", Notification.Type.WARNING_MESSAGE);
                         return;
                     }
                     showSSHWindow();
                 } 
             } catch (Exception e) {
                 testString = "Failed to connect to host";
-                getApplication().getMainWindow().showNotification("Failed to connect to host", Notification.Type.WARNING_MESSAGE);
+                Notification.show("Failed to connect to host", Notification.Type.WARNING_MESSAGE);
             }
         }
+        
     }
 
 }

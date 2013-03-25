@@ -37,14 +37,14 @@ import org.apache.sshd.SshClient;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.vaadin.server.LegacyApplication;
-import com.vaadin.ui.LegacyWindow;
+import com.vaadin.server.VaadinRequest;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 
 public class SSHWindowTest {
     
-    LegacyApplication app;
-    LegacyWindow mainWindow;
+	UI app;
+    Window mainWindow;
     SSHWindow sshWindow;
     SSHWindow sshWindow2;
     SshClient client;
@@ -55,9 +55,9 @@ public class SSHWindowTest {
     @SuppressWarnings("serial")
     @Before
     public void setup () {
-        app = new LegacyApplication() {
+        app = new UI() {
             @Override
-            protected void init() {}
+            public void init(VaadinRequest request) {}
         };
         sshWindow = new SSHWindow(null, 200, 200);
         client = SshClient.setUpDefaultClient();
@@ -68,18 +68,18 @@ public class SSHWindowTest {
 			fail("Could not connect to host");
 		}
         sshWindow2 = new SSHWindow(session, 200, 200);
-        mainWindow = new LegacyWindow();
-        app.setMainWindow(mainWindow);
-        app.getMainWindow().addWindow(sshWindow);
-        app.getMainWindow().addWindow(sshWindow2);
+        mainWindow = new Window();
+        app.setContent(mainWindow);
+        app.addWindow(sshWindow);
+        app.addWindow(sshWindow2);
         
     }
     
     @Test
     public void testAttach() {
-    	assertTrue(app.getMainWindow().getChildWindows().contains(sshWindow));
-    	app.getMainWindow().removeWindow(sshWindow);
-    	assertFalse(app.getMainWindow().getChildWindows().contains(sshWindow));
+    	assertTrue(app.getWindows().contains(sshWindow));
+    	app.removeWindow(sshWindow);
+    	assertFalse(app.getWindows().contains(sshWindow));
     }
     
     @Test

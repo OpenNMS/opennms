@@ -165,7 +165,11 @@
 	   <artifactId>opennms-web-api</artifactId>
 	   <scope>provided</scope>
 	</dependency>
-
+    <dependency>
+       <groupId>com.vaadin</groupId>
+       <artifactId>vaadin-client</artifactId>
+       <scope>provided</scope>
+    </dependency>
   </dependencies>
   
   <repositories>

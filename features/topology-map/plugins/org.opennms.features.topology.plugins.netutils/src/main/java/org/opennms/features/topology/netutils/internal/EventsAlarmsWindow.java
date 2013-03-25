@@ -36,6 +36,7 @@ import com.vaadin.ui.Embedded;
 import com.vaadin.ui.LegacyWindow;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 
 /**
  * The EventsAlarmsWindow class constructs a custom Window component which
@@ -46,7 +47,7 @@ import com.vaadin.ui.VerticalLayout;
  * @version 1.0
  */
 @SuppressWarnings("serial")
-public class EventsAlarmsWindow extends LegacyWindow {
+public class EventsAlarmsWindow extends Window {
 
 	private final double sizePercentage = 0.80; // Window size ratio to the main window
 	private final int widthCushion = 50; //Border cushion for width of window;
@@ -89,15 +90,16 @@ public class EventsAlarmsWindow extends LegacyWindow {
 		VerticalLayout layout = new VerticalLayout();
 		layout.addComponent(tabsheet);
 		
-		addComponent(layout);
+		setContent(layout);
+		//addComponent(layout);
 	}
 	
 	@Override
 	public void attach() {
 		super.attach();
 		
-		int width = (int)getApplication().getMainWindow().getWidth();
-    	int height = (int)getApplication().getMainWindow().getHeight();
+		int width = (int)getUI().getWidth();
+    	int height = (int)getUI().getHeight();
     	
 		/*Sets the browser and window sizes based on the main window*/
 		int browserWidth = (int)(sizePercentage * width), browserHeight = (int)(sizePercentage * height);

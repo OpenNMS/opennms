@@ -43,7 +43,7 @@ import org.osgi.service.blueprint.container.BlueprintContainer;
 import org.slf4j.LoggerFactory;
 import org.slf4j.helpers.MessageFormatter;
 
-import com.vaadin.server.LegacyApplication;
+import com.vaadin.ui.UI;
 
 
 public class TopologyWidgetTestApplicationFactory extends AbstractApplicationFactory {
@@ -58,7 +58,7 @@ public class TopologyWidgetTestApplicationFactory extends AbstractApplicationFac
 	}
 	
     @Override
-	public LegacyApplication createApplication(HttpServletRequest request) throws ServletException {
+	public UI createApplication(HttpServletRequest request) throws ServletException {
         TopologyWidgetTestApplication application = (TopologyWidgetTestApplication) m_blueprintContainer.getComponentInstance(m_beanName);
         application.setHeaderHtml(getHeader(request));
         LoggerFactory.getLogger(getClass()).debug(MessageFormatter.format("created {} for servlet path {}", application, request.getServletPath()).getMessage()/* , new Exception("Show me the stack trace") */);
@@ -73,7 +73,7 @@ public class TopologyWidgetTestApplicationFactory extends AbstractApplicationFac
     }
 
     @Override
-	public Class<? extends LegacyApplication> getApplicationClass() throws ClassNotFoundException {
+	public Class<? extends UI> getApplicationClass() throws ClassNotFoundException {
 		return TopologyWidgetTestApplication.class;
 	}
 

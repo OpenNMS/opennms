@@ -89,19 +89,19 @@ public class AuthWindowTest {
 		normalWindow.buttonClick(null);
 		assertEquals("Failed to log in", normalWindow.testString);
 
-		noPortWindow.portField.setText(invalidPort);
+		noPortWindow.portField.setValue(invalidPort);
 		noPortWindow.buttonClick(null);
 		assertEquals("Port must be between 1 and 65535", noPortWindow.testString);
 		
 		invalidHostWindow.buttonClick(null);
 		assertEquals("Failed to connect to host", invalidHostWindow.testString);
 		
-		emptyWindow.portField.setText(invalidPortString);
+		emptyWindow.portField.setValue(invalidPortString);
 		emptyWindow.buttonClick(null);
 		assertEquals("Port must be an integer", emptyWindow.testString);
 		
-		emptyWindow.portField.setText(validPort);
-		emptyWindow.hostField.setText(invalidHost);
+		emptyWindow.portField.setValue(validPort);
+		emptyWindow.hostField.setValue(invalidHost);
 		emptyWindow.buttonClick(null);
 		assertEquals("Failed to connect to host", emptyWindow.testString);
 	}

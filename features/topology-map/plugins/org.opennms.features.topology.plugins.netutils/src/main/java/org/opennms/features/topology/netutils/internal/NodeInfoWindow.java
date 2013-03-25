@@ -78,15 +78,15 @@ public class NodeInfoWindow extends Window {
         VerticalLayout layout = new VerticalLayout();
         layout.addComponent(nodeInfoBrowser);
 
-        addComponent(layout);
+        setContent(layout);
     }
     
     @Override
     public void attach() {
     	super.attach();
     	
-    	int width = (int)getApplication().getMainWindow().getWidth();
-    	int height = (int)getApplication().getMainWindow().getHeight();
+    	int width = (int)getUI().getWidth();
+    	int height = (int)getUI().getHeight();
     	
     	/*Sets the browser and window sizes based on the main window*/
         int browserWidth = (int)(sizePercentage * width), browserHeight = (int)(sizePercentage * height);

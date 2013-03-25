@@ -58,10 +58,9 @@ import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.server.PaintException;
 import com.vaadin.server.PaintTarget;
 import com.vaadin.ui.AbstractComponent;
-import com.vaadin.ui.LegacyComponent;
 
 
-public class TopologyComponent extends AbstractComponent implements ChangeListener, ValueChangeListener, MapViewManagerListener, LegacyComponent {
+public class TopologyComponent extends AbstractComponent implements ChangeListener, ValueChangeListener, MapViewManagerListener {
     
     public interface VertexUpdateListener{
         public void onVertexUpdate();
@@ -110,6 +109,11 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
             ((Property.ValueChangeNotifier) scale).addListener(this);
         }
     }
+	
+	@Override
+	protected TopologyComponentState getState() {
+	    return (TopologyComponentState) super.getState();
+	}
 	
     @Override
     public void paintContent(PaintTarget target) throws PaintException {
