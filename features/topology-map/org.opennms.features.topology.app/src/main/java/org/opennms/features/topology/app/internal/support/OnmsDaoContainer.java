@@ -303,11 +303,21 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Sele
 
 	@Override
 	public void addListener(ItemSetChangeListener listener) {
-		m_itemSetChangeListeners.add(listener);
+		addItemSetChangeListener(listener);
 	}
 
 	@Override
 	public void removeListener(ItemSetChangeListener listener) {
+		removeItemSetChangeListener(listener);
+	}
+
+	@Override
+	public void addItemSetChangeListener(ItemSetChangeListener listener) {
+		m_itemSetChangeListeners.add(listener);
+	}
+
+	@Override
+	public void removeItemSetChangeListener(ItemSetChangeListener listener) {
 		m_itemSetChangeListeners.remove(listener);
 	}
 

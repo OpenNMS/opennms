@@ -57,7 +57,7 @@ import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.Widget;
-import com.vaadin.terminal.gwt.client.VConsole;
+import com.vaadin.client.VConsole;
 
 public class GWTMapWidget extends Widget implements MarkerProvider, SearchConsumer {
     private final DivElement m_div;

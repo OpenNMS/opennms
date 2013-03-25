@@ -46,7 +46,7 @@ public class AlarmTableCellStyleGenerator implements CellStyleGenerator, TableAw
 	}
 
 	@Override
-	public String getStyle(Object itemId, Object propertyId) {
+	public String getStyle(Table table, Object itemId, Object propertyId) {
 		if (propertyId == null) {
 			Integer severity = (Integer)m_table.getContainerProperty(itemId, "severityId").getValue();
 			if (OnmsSeverity.CLEARED.getId() == severity) {

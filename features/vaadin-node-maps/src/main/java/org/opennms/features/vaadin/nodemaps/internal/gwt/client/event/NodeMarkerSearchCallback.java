@@ -8,7 +8,7 @@ import org.opennms.features.vaadin.nodemaps.internal.gwt.client.MarkerProvider;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.NodeMarker;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.SearchResults;
 
-import com.vaadin.terminal.gwt.client.VConsole;
+import com.vaadin.client.VConsole;
 
 public abstract class NodeMarkerSearchCallback extends JSObjectWrapper {
     private MarkerProvider m_markerProvider;

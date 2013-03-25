@@ -45,11 +45,12 @@ import com.vaadin.data.Item;
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.data.util.PropertysetItem;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.Form;
 import com.vaadin.ui.FormFieldFactory;
-import com.vaadin.ui.Select;
+import com.vaadin.ui.LegacyWindow;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
@@ -76,7 +77,7 @@ public class AddVertexToGroupOperation implements Constants, Operation {
 			}
 		}
 
-		final Window window = operationContext.getMainWindow();
+		final LegacyWindow window = operationContext.getMainWindow();
 
 		final Window groupNamePrompt = new Window("Add Item To Group");
 		groupNamePrompt.setModal(true);
@@ -89,11 +90,11 @@ public class AddVertexToGroupOperation implements Constants, Operation {
 		item.addItemProperty("Group", new ObjectProperty<String>(null, String.class));
 
 		FormFieldFactory fieldFactory = new FormFieldFactory() {
-			public Field createField(Item item, Object propertyId, Component uiContext) {
+			public Field<?> createField(Item item, Object propertyId, Component uiContext) {
 				// Identify the fields by their Property ID.
 				String pid = (String) propertyId;
 				if ("Group".equals(pid)) {
-					Select select = new Select("Group");
+					ComboBox select = new ComboBox("Group");
 					for (Vertex childId : vertexIds) {
 						log.debug("Adding child: {}, {}", childId.getId(), childId.getLabel());
 						select.addItem(childId.getId());
@@ -133,13 +134,13 @@ public class AddVertexToGroupOperation implements Constants, Operation {
 			}
 		};
 		// Buffer changes to the datasource
-		promptForm.setWriteThrough(false);
+		promptForm.setBuffered(true);
 		// You must set the FormFieldFactory before you set the data source
 		promptForm.setFormFieldFactory(fieldFactory);
 		promptForm.setItemDataSource(item);
 
 		Button ok = new Button("OK");
-		ok.addListener(new ClickListener() {
+		ok.addClickListener(new ClickListener() {
 
 			private static final long serialVersionUID = 7388841001913090428L;
 
@@ -153,7 +154,7 @@ public class AddVertexToGroupOperation implements Constants, Operation {
 		promptForm.getFooter().addComponent(ok);
 
 		Button cancel = new Button("Cancel");
-		cancel.addListener(new ClickListener() {
+		cancel.addClickListener(new ClickListener() {
 
 			private static final long serialVersionUID = 8780989646038333243L;
 

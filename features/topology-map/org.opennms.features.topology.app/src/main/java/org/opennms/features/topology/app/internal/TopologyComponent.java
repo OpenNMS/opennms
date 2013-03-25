@@ -107,7 +107,7 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
         if (scale != null
                 && Property.ValueChangeNotifier.class
                         .isAssignableFrom(scale.getClass())) {
-            ((Property.ValueChangeNotifier) scale).addListener(this);
+            ((Property.ValueChangeNotifier) scale).addValueChangeListener(this);
         }
     }
 	

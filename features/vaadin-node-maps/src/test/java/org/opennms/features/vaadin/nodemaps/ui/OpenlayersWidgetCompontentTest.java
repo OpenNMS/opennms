@@ -16,7 +16,7 @@ import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsGeolocation;
 import org.opennms.netmgt.model.OnmsNode;
 
-import com.vaadin.terminal.PaintTarget;
+import com.vaadin.server.PaintTarget;
 
 public class OpenlayersWidgetCompontentTest {
     private NodeDao m_nodeDao;

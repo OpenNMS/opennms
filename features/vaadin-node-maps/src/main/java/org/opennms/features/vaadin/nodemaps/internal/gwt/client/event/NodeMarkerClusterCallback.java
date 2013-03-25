@@ -12,7 +12,7 @@ import org.opennms.features.vaadin.nodemaps.internal.gwt.client.NodeMarker;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.MarkerCluster;
 
 import com.google.gwt.core.client.JsArrayString;
-import com.vaadin.terminal.gwt.client.VConsole;
+import com.vaadin.client.VConsole;
 
 public class NodeMarkerClusterCallback implements MarkerClusterEventCallback {
     private static final class NodeMarkerComparator implements Comparator<NodeMarker> {

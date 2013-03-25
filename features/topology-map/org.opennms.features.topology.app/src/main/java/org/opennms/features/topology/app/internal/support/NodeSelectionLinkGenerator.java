@@ -81,7 +81,7 @@ public class NodeSelectionLinkGenerator implements ColumnGenerator, SelectionNot
 				Button button = new Button((String)cellValue);
 				button.setStyleName(BaseTheme.BUTTON_LINK);
 				button.setDescription(nodeIdProperty.getValue().toString());
-				button.addListener(new ClickListener() {
+				button.addClickListener(new ClickListener() {
 					@Override
 					public void buttonClick(ClickEvent event) {
 						SelectionContext context = new DefaultSelectionContext();

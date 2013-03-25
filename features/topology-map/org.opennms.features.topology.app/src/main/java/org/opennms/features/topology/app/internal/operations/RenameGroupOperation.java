@@ -48,6 +48,7 @@ import com.vaadin.data.validator.AbstractValidator;
 import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Form;
+import com.vaadin.ui.LegacyWindow;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
@@ -62,7 +63,7 @@ public class RenameGroupOperation implements Constants, Operation {
 
 		final GraphContainer graphContainer = operationContext.getGraphContainer();
 
-		final Window window = operationContext.getMainWindow();
+		final LegacyWindow window = operationContext.getMainWindow();
 
 		final Window groupNamePrompt = new Window("Rename Group");
 		groupNamePrompt.setModal(true);
@@ -81,9 +82,10 @@ public class RenameGroupOperation implements Constants, Operation {
 			@Override
 			public void commit() {
 				// Trim the form value
-				getField("Group Label").setValue(((String)getField("Group Label").getValue()).trim());
+				Property<String> field = getField("Group Label");
+				field.setValue(field.getValue().trim());
 				super.commit();
-				String groupLabel = (String)getField("Group Label").getValue();
+				String groupLabel = field.getValue();
 
 				//Object parentKey = targets.get(0);
 				//Object parentId = graphContainer.getVertexItemIdForVertexKey(parentKey);
@@ -93,7 +95,7 @@ public class RenameGroupOperation implements Constants, Operation {
 
 				if (parentItem != null) {
 
-					Property property = parentItem.getItemProperty("label");
+					Property<String> property = parentItem.getItemProperty("label");
 					if (property != null && !property.isReadOnly()) {
 						property.setValue(groupLabel);
 
@@ -106,19 +108,19 @@ public class RenameGroupOperation implements Constants, Operation {
 			}
 		};
 		// Buffer changes to the datasource
-		promptForm.setWriteThrough(false);
+		promptForm.setBuffered(true);
 		// Bind the item to create all of the fields
 		promptForm.setItemDataSource(item);
 		// Add validators to the fields
 		promptForm.getField("Group Label").setRequired(true);
 		promptForm.getField("Group Label").setRequiredError("Group label cannot be blank.");
 		promptForm.getField("Group Label").addValidator(new StringLengthValidator("Label must be at least one character long.", 1, -1, false));
-		promptForm.getField("Group Label").addValidator(new AbstractValidator("A group with label \"{0}\" already exists.") {
+		promptForm.getField("Group Label").addValidator(new AbstractValidator<String>("A group with label \"{0}\" already exists.") {
 
 			private static final long serialVersionUID = 79618011585921224L;
 
 			@Override
-			public boolean isValid(Object value) {
+			public boolean isValidValue(String value) {
 				try {
 					final Collection<? extends Vertex> vertexIds = graphContainer.getBaseTopology().getVertices();
 					final Collection<String> groupLabels = new ArrayList<String>();
@@ -140,10 +142,15 @@ public class RenameGroupOperation implements Constants, Operation {
 					return false;
 				}
 			}
+
+			@Override
+			public Class<String> getType() {
+				return String.class;
+			}
 		});
 
 		Button ok = new Button("OK");
-		ok.addListener(new ClickListener() {
+		ok.addClickListener(new ClickListener() {
 
 			private static final long serialVersionUID = 7388841001913090428L;
 
@@ -157,7 +164,7 @@ public class RenameGroupOperation implements Constants, Operation {
 		promptForm.getFooter().addComponent(ok);
 
 		Button cancel = new Button("Cancel");
-		cancel.addListener(new ClickListener() {
+		cancel.addClickListener(new ClickListener() {
 
 			private static final long serialVersionUID = 8780989646038333243L;
 
