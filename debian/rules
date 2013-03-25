@@ -254,6 +254,14 @@ install: build
 	rm -rf debian/temp/contrib/remote-poller
 
 	##
+	## Setup the opennms-jmx-config-generator package
+	##
+	install -d -m 755 debian/opennms-jmx-config-generator/usr/share/opennms/bin debian/opennms-jmx-config-generator/usr/bin 
+	install -m 755 debian/opennms-jmx-config-generator.bin debian/opennms-jmx-config-generator/usr/bin/opennms-jmx-config-generator
+	mv debian/opennms-common/usr/share/opennms/bin/jmx-config-generator debian/opennms-jmx-config-generator/usr/share/opennms/bin/
+	mv debian/temp/lib/opennms_jmx_config_generator.jar debian/opennms-jmx-config-generator/usr/share/java/opennms/
+
+	##
 	## Setup the opennms-webapp-jetty package
 	##
 	install -m 644 debian/opennms-webapp-jetty.overrides debian/opennms-webapp-jetty/usr/share/lintian/overrides/opennms-webapp-jetty

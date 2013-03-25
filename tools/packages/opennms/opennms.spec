@@ -145,6 +145,20 @@ The OpenNMS distributed monitor.  For details, see:
 %{extrainfo2}
 
 
+%package jmx-config-generator
+Summary:	Generate JMX Configuration
+Group:		Applications/System
+Requires(pre):	%{jdk}
+Requires:	%{jdk}
+
+%description jmx-config-generator
+Generates configuration files for monitoring/collecting from
+the Java Management Extensions.
+
+%{extrainfo}
+%{extrainfo2}
+
+
 %package webapp-jetty
 Summary:	Embedded web interface for OpenNMS
 Group:		Applications/System
@@ -535,6 +549,7 @@ find $RPM_BUILD_ROOT%{sharedir}/etc-pristine ! -type d | \
 	sort >> %{_tmppath}/files.main
 find $RPM_BUILD_ROOT%{instprefix}/bin ! -type d | \
 	sed -e "s|^$RPM_BUILD_ROOT|%attr(755,root,root) |" | \
+	grep -v '/jmx-config-generator' | \
 	grep -v '/remote-poller.sh' | \
 	grep -v '/remote-poller.jar' | \
 	sort >> %{_tmppath}/files.main
@@ -568,6 +583,7 @@ find $RPM_BUILD_ROOT%{instprefix}/lib ! -type d | \
 	grep -v 'org.opennms.protocols.xmp' | \
 	grep -v 'Xmp' | \
 	grep -v 'org.opennms.features.juniper-tca-collector' | \
+	grep -v 'opennms_jmx_config_generator' | \
 	sort >> %{_tmppath}/files.main
 find $RPM_BUILD_ROOT%{instprefix}/etc -type d | \
 	sed -e "s,^$RPM_BUILD_ROOT,%dir ," | \
@@ -624,6 +640,10 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %config(noreplace) %{_sysconfdir}/sysconfig/opennms-remote-poller
 %attr(755,root,root) %{bindir}/remote-poller.sh
 %{instprefix}/bin/remote-poller.jar
+
+%files jmx-config-generator
+%attr(755,root,root) %{bindir}/jmx-config-generator
+%{instprefix}/lib/opennms_jmx_config_generator.jar
 
 %files ncs
 %defattr(644 root root 755)
