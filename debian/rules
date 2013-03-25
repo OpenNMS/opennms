@@ -191,6 +191,14 @@ install: build
 	mv debian/opennms-common/var/lib/opennms/etc-pristine/ncs-northbounder-configuration.xml   debian/opennms-ncs/var/lib/opennms/etc-pristine/
 	
 	##
+	## opennms-jmx-config-generator
+	##
+	install -d -m 755 debian/opennms-jmx-config-generator/usr/share/opennms/bin debian/opennms-jmx-config-generator/usr/bin 
+	install -m 755 debian/opennms-jmx-config-generator.bin debian/opennms-jmx-config-generator/usr/bin/opennms-jmx-config-generator
+	mv debian/opennms-common/usr/share/opennms/bin/jmx-config-generator debian/opennms-jmx-config-generator/usr/share/opennms/bin/
+	mv debian/temp/lib/opennms_jmx_config_generator.jar debian/opennms-jmx-config-generator/usr/share/java/opennms/
+	
+	##
 	## Setup the libopennms-java package
 	##
 	mv debian/temp/lib/opennms*.jar debian/libopennms-java/usr/share/java/opennms/
@@ -251,14 +259,6 @@ install: build
 	install -m 755 debian/temp/contrib/remote-poller/remote-poller.init debian/opennms-remote-poller.init
 	install -m 640 debian/temp/contrib/remote-poller/remote-poller.sysconfig debian/opennms-remote-poller.default
 	rm -rf debian/temp/contrib/remote-poller
-
-	##
-	## Setup the opennms-jmx-config-generator package
-	##
-	install -d -m 755 debian/opennms-jmx-config-generator/usr/share/opennms/bin debian/opennms-jmx-config-generator/usr/bin 
-	install -m 755 debian/opennms-jmx-config-generator.bin debian/opennms-jmx-config-generator/usr/bin/opennms-jmx-config-generator
-	mv debian/opennms-common/usr/share/opennms/bin/jmx-config-generator debian/opennms-jmx-config-generator/usr/share/opennms/bin/
-	mv debian/temp/lib/opennms_jmx_config_generator.jar debian/opennms-jmx-config-generator/usr/share/java/opennms/
 
 	##
 	## Setup the opennms-webapp-jetty package
