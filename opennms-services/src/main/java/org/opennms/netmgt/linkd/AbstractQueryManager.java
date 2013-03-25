@@ -457,7 +457,7 @@ public abstract class AbstractQueryManager implements QueryManager {
             final int cdpAddrType = cdpEntry.getCdpCacheAddressType();
 
             Collection<Integer> targetCdpNodeIds = new ArrayList<Integer>();
-            if (cdpAddrType != CDP_ADDRESS_TYPE_IP_ADDRESS) {
+            if (cdpAddrType != CdpInterface.CDP_ADDRESS_TYPE_IP_ADDRESS) {
                 LogUtils.warnf(this, "processCdpCacheTable: CDP address type not ip: %d", cdpAddrType);
             } else {
                 if (cdpTargetIpAddr == null || cdpTargetIpAddr.isLoopbackAddress() || str(cdpTargetIpAddr).equals("0.0.0.0")) {
@@ -499,7 +499,7 @@ public abstract class AbstractQueryManager implements QueryManager {
 	            cdpIface.setCdpTargetNodeId(targetCdpNodeId);
 	            cdpIface.setCdpTargetIfIndex(cdpTargetIfindex);
 	            
-	            if (cdpTargetIpAddr == null || cdpAddrType != CDP_ADDRESS_TYPE_IP_ADDRESS) {
+	            if (cdpTargetIpAddr == null || cdpAddrType != CdpInterface.CDP_ADDRESS_TYPE_IP_ADDRESS) {
 	                cdpIface.setCdpTargetIpAddr(getIpInterfaceDao().findPrimaryInterfaceByNodeId(targetCdpNodeId).getIpAddress());
 	            } else {
 	                cdpIface.setCdpTargetIpAddr(cdpTargetIpAddr);               

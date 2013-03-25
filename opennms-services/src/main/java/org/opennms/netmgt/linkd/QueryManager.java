@@ -88,13 +88,6 @@ public interface QueryManager {
 	 */
 	public static final int SNMP_DOT1D_FDB_STATUS_MGMT = 5;
 
-	/**
-	 * the int that indicated cdp address type
-	 * 
-	 */
-
-	public static final int CDP_ADDRESS_TYPE_IP_ADDRESS = 1;
-
     /**
      * <p>getSnmpNodeList</p>
      *

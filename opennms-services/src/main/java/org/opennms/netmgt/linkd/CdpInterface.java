@@ -48,6 +48,13 @@ import org.opennms.netmgt.model.topology.Link;
 public class CdpInterface extends Link {
 	
 	/**
+	 * the int that indicated cdp address type
+	 * 
+	 */
+
+	public static final int CDP_ADDRESS_TYPE_IP_ADDRESS = 1;
+
+	/**
 	 * the ip address 
 	 */
 	
