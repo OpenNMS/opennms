@@ -20,7 +20,6 @@
     <bundle.namespace>org.opennms.features.vaadin</bundle.namespace>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <jsmiparser.version>0.13</jsmiparser.version>
-    <vaadin.customfield.version>1.0.0</vaadin.customfield.version>
     <vaadin.messagebox.version>1.1.1</vaadin.messagebox.version>
   </properties>
 
@@ -40,7 +39,6 @@
         <configuration>
           <bundles>
             <bundle>mvn:org.opennms.features/vaadin-snmp-events-and-metrics/${project.version}</bundle>
-            <bundle>wrap:mvn:org.vaadin.addons/customfield/${vaadin.customfield.version}</bundle>
             <bundle>wrap:mvn:org.vaadin.addons/messagebox/${vaadin.messagebox.version}</bundle>
           </bundles>
           <features>
@@ -123,11 +121,6 @@
       <groupId>com.vaadin</groupId>
       <artifactId>vaadin-server</artifactId>
       <version>${vaadinVersion}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.vaadin.addons</groupId>
-      <artifactId>customfield</artifactId>
-      <version>${vaadin.customfield.version}</version>
     </dependency>
     <dependency>
       <groupId>org.vaadin.addons</groupId>
