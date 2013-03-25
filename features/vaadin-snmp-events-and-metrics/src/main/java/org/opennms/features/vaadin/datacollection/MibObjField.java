@@ -53,7 +53,9 @@ import de.steinwedel.vaadin.MessageBox.EventListener;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 @SuppressWarnings("serial")
-public class MibObjField extends CustomField<ArrayList> implements Button.ClickListener {
+public class MibObjField extends CustomField<MibObjField.MibObjArrayList> implements Button.ClickListener {
+	
+	public static class MibObjArrayList extends ArrayList<MibObj> {}
 
     private static final long serialVersionUID = 3665919460707298011L;
 
@@ -112,8 +114,8 @@ public class MibObjField extends CustomField<ArrayList> implements Button.ClickL
      * @see org.vaadin.addon.customfield.CustomField#getType()
      */
     @Override
-    public Class<ArrayList> getType() {
-        return ArrayList.class;
+    public Class<MibObjArrayList> getType() {
+        return MibObjArrayList.class;
     }
 
     /* (non-Javadoc)
@@ -138,8 +140,8 @@ public class MibObjField extends CustomField<ArrayList> implements Button.ClickL
      * @see org.vaadin.addon.customfield.CustomField#getValue()
      */
     @Override
-    public ArrayList<MibObj> getValue() {
-        ArrayList<MibObj> beans = new ArrayList<MibObj>(); 
+    public MibObjArrayList getValue() {
+        MibObjArrayList beans = new MibObjArrayList(); 
         for (Object itemId: container.getItemIds()) {
             beans.add(container.getItem(itemId).getBean());
         }

@@ -45,7 +45,7 @@ public class CsvListConverter implements Converter<String, CsvListConverter.Stri
     /**
      * The Class StringList.
      */
-    public class StringList extends ArrayList<String> {}
+    public static class StringList extends ArrayList<String> {}
 
     @Override
     public String convertToPresentation(StringList propertyValue, Locale locale) {

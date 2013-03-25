@@ -62,7 +62,9 @@ import de.steinwedel.vaadin.MessageBox.EventListener;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 @SuppressWarnings("serial")
-public class VarbindsDecodeField extends CustomField<ArrayList> implements Button.ClickListener {
+public class VarbindsDecodeField extends CustomField<VarbindsDecodeField.VarbindsDecodeArrayList> implements Button.ClickListener {
+
+	public static class VarbindsDecodeArrayList extends ArrayList<Varbindsdecode> {};
 
     /** The Table. */
     private Table table = new Table();
@@ -121,8 +123,8 @@ public class VarbindsDecodeField extends CustomField<ArrayList> implements Butto
      * @see org.vaadin.addon.customfield.CustomField#getType()
      */
     @Override
-    public Class<ArrayList> getType() {
-        return ArrayList.class;
+    public Class<VarbindsDecodeArrayList> getType() {
+        return VarbindsDecodeArrayList.class;
     }
 
     /* (non-Javadoc)
@@ -147,8 +149,8 @@ public class VarbindsDecodeField extends CustomField<ArrayList> implements Butto
      * @see org.vaadin.addon.customfield.CustomField#getValue()
      */
     @Override
-    public ArrayList<Varbindsdecode> getValue() {
-        ArrayList<Varbindsdecode> beans = new ArrayList<Varbindsdecode>(); 
+    public VarbindsDecodeArrayList getValue() {
+        VarbindsDecodeArrayList beans = new VarbindsDecodeArrayList(); 
         for (Object itemId: container.getItemIds()) {
             beans.add(container.getItem(itemId).getBean());
         }

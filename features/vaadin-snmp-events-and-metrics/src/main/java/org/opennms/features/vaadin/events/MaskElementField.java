@@ -58,7 +58,9 @@ import de.steinwedel.vaadin.MessageBox.EventListener;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 @SuppressWarnings("serial")
-public class MaskElementField extends CustomField<ArrayList> implements Button.ClickListener {
+public class MaskElementField extends CustomField<MaskElementField.MaskElementArrayList> implements Button.ClickListener {
+
+	public static class MaskElementArrayList extends ArrayList<Maskelement> {}
 
 	private static final long serialVersionUID = -2755346278615977088L;
 
@@ -115,17 +117,11 @@ public class MaskElementField extends CustomField<ArrayList> implements Button.C
         setCompositionRoot(layout);
     }
 
-    /* (non-Javadoc)
-     * @see org.vaadin.addon.customfield.CustomField#getType()
-     */
     @Override
-    public Class<ArrayList> getType() {
-        return ArrayList.class;
+    public Class<MaskElementArrayList> getType() {
+        return MaskElementArrayList.class;
     }
 
-    /* (non-Javadoc)
-     * @see org.vaadin.addon.customfield.CustomField#setPropertyDataSource(com.vaadin.data.Property)
-     */
     @Override
     public void setPropertyDataSource(Property newDataSource) {
         Object value = newDataSource.getValue();
@@ -141,12 +137,9 @@ public class MaskElementField extends CustomField<ArrayList> implements Button.C
         super.setPropertyDataSource(newDataSource);
     }
 
-    /* (non-Javadoc)
-     * @see org.vaadin.addon.customfield.CustomField#getValue()
-     */
     @Override
-    public ArrayList<Maskelement> getValue() {
-        ArrayList<Maskelement> beans = new ArrayList<Maskelement>(); 
+    public MaskElementArrayList getValue() {
+        MaskElementArrayList beans = new MaskElementArrayList();
         for (Object itemId: container.getItemIds()) {
             beans.add(container.getItem(itemId).getBean());
         }

@@ -55,7 +55,9 @@ import de.steinwedel.vaadin.MessageBox.EventListener;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 @SuppressWarnings("serial")
-public class IncludeCollectionField extends CustomField<ArrayList> {
+public class IncludeCollectionField extends CustomField<IncludeCollectionField.IncludeCollectionArrayList> {
+
+	public static class IncludeCollectionArrayList extends ArrayList<IncludeCollection> {}
 
     private static final long serialVersionUID = 3677540981240383672L;
 
@@ -144,17 +146,11 @@ public class IncludeCollectionField extends CustomField<ArrayList> {
         setCompositionRoot(layout);
     }
 
-    /* (non-Javadoc)
-     * @see org.vaadin.addon.customfield.CustomField#getType()
-     */
     @Override
-    public Class<ArrayList> getType() {
-        return ArrayList.class;
+    public Class<IncludeCollectionArrayList> getType() {
+        return IncludeCollectionArrayList.class;
     }
 
-    /* (non-Javadoc)
-     * @see org.vaadin.addon.customfield.CustomField#setPropertyDataSource(com.vaadin.data.Property)
-     */
     @Override
     public void setPropertyDataSource(Property newDataSource) {
         Object value = newDataSource.getValue();
@@ -178,8 +174,8 @@ public class IncludeCollectionField extends CustomField<ArrayList> {
      * @see org.vaadin.addon.customfield.CustomField#getValue()
      */
     @Override
-    public ArrayList<IncludeCollection> getValue() {
-        ArrayList<IncludeCollection> list = new ArrayList<IncludeCollection>();
+    public IncludeCollectionArrayList getValue() {
+        IncludeCollectionArrayList list = new IncludeCollectionArrayList();
         for (Object itemId: container.getItemIds()) {
             IncludeCollectionWrapper obj = container.getItem(itemId).getBean();
             list.add(obj.createIncludeCollection());

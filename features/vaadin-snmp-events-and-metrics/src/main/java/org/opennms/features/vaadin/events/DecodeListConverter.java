@@ -47,7 +47,7 @@ public class DecodeListConverter implements Converter<String, DecodeListConverte
     /**
      * The Class DecodeList.
      */
-    public class DecodeList extends ArrayList<Decode> {}
+    public static class DecodeList extends ArrayList<Decode> {}
 
     @Override
     public String convertToPresentation(DecodeList propertyValue, Locale locale) {

@@ -58,7 +58,9 @@ import de.steinwedel.vaadin.MessageBox.EventListener;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 @SuppressWarnings("serial")
-public class MaskVarbindField extends CustomField<ArrayList> implements Button.ClickListener {
+public class MaskVarbindField extends CustomField<MaskVarbindField.VarbindArrayList> implements Button.ClickListener {
+
+	public static class VarbindArrayList extends ArrayList<Varbind> {}
 
     /** The Table. */
     private Table table = new Table();
@@ -117,8 +119,8 @@ public class MaskVarbindField extends CustomField<ArrayList> implements Button.C
      * @see org.vaadin.addon.customfield.CustomField#getType()
      */
     @Override
-    public Class<ArrayList> getType() {
-        return ArrayList.class;
+    public Class<VarbindArrayList> getType() {
+        return VarbindArrayList.class;
     }
 
     /* (non-Javadoc)
@@ -143,8 +145,8 @@ public class MaskVarbindField extends CustomField<ArrayList> implements Button.C
      * @see org.vaadin.addon.customfield.CustomField#getValue()
      */
     @Override
-    public ArrayList<Varbind> getValue() {
-        ArrayList<Varbind> beans = new ArrayList<Varbind>(); 
+    public VarbindArrayList getValue() {
+        VarbindArrayList beans = new VarbindArrayList();
         for (Object itemId: container.getItemIds()) {
             beans.add(container.getItem(itemId).getBean());
         }
