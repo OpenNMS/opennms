@@ -21,7 +21,7 @@ public class Nms101NetworkBuilder extends LinkdNetworkBuilder {
     protected static final Map<Integer,InetAddress> LAPTOP_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
 
     protected static final String CISCO7200A_IP = "10.1.1.1";
-    protected static final String CISCO7200A_NAME = "cisco7200a";
+    protected static final String CISCO7200A_NAME = "cisco7200ATM.befunk.com";
     protected static final String CISCO7200A_SYSOID = ".1.3.6.1.4.1.9.1.222";
     
     protected static final Map<InetAddress,Integer> CISCO7200A_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
@@ -32,7 +32,7 @@ public class Nms101NetworkBuilder extends LinkdNetworkBuilder {
     protected static final Map<Integer,InetAddress> CISCO7200A_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
 
     protected static final String CISCO7200B_IP = "10.1.2.2";
-    protected static final String CISCO7200B_NAME = "cisco7200b";
+    protected static final String CISCO7200B_NAME = "cisco7200";
     protected static final String CISCO7200B_SYSOID = ".1.3.6.1.4.1.9.1.222";
     
     protected static final Map<InetAddress,Integer> CISCO7200B_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
@@ -259,17 +259,18 @@ public class Nms101NetworkBuilder extends LinkdNetworkBuilder {
     	CISCO1700_IF_MAC_MAP.put(1, "d00297a60001");
     	CISCO1700_IF_IFNAME_MAP.put(4, "Nu0");
     	CISCO1700_IF_IFDESCR_MAP.put(4, "Null0");
-    	CISCO3600_IP_IF_MAP.put(InetAddress.getByName("10.1.7.2"), 2);
     	CISCO3600_IP_IF_MAP.put(InetAddress.getByName("10.1.6.2"), 1);
+    	CISCO3600_IP_IF_MAP.put(InetAddress.getByName("10.1.7.2"), 2);
+    	CISCO3600_IF_IFNAME_MAP.put(1, "Fa0/0");
+    	CISCO3600_IF_IFDESCR_MAP.put(1, "FastEthernet0/0");
+    	CISCO3600_IF_MAC_MAP.put(1, "cc0097a30000");
+    	CISCO3600_IF_NETMASK_MAP.put(1, InetAddress.getByName("255.255.255.0"));
     	CISCO3600_IF_IFNAME_MAP.put(2, "Fa1/0");
     	CISCO3600_IF_IFDESCR_MAP.put(2, "FastEthernet1/0");
     	CISCO3600_IF_MAC_MAP.put(2, "cc0097a30010");
     	CISCO3600_IF_NETMASK_MAP.put(2, InetAddress.getByName("255.255.255.0"));
     	CISCO3600_IF_IFNAME_MAP.put(4, "Nu0");
     	CISCO3600_IF_IFDESCR_MAP.put(4, "Null0");
-    	CISCO3600_IF_IFNAME_MAP.put(1, "Fa0/0");
-    	CISCO3600_IF_IFDESCR_MAP.put(1, "FastEthernet0/0");
-    	CISCO3600_IF_MAC_MAP.put(1, "cc0097a30000");
     	CISCO1700B_IP_IF_MAP.put(InetAddress.getByName("10.1.5.1"), 2);
     	CISCO1700B_IF_IFNAME_MAP.put(2, "Fa0");
     	CISCO1700B_IF_IFDESCR_MAP.put(2, "FastEthernet0");

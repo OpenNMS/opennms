@@ -51,10 +51,12 @@ import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.LinkdConfig;
 import org.opennms.netmgt.config.linkd.Package;
 import org.opennms.netmgt.dao.DataLinkInterfaceDao;
+import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.SnmpInterfaceDao;
 import org.opennms.netmgt.linkd.nb.Nms101NetworkBuilder;
 import org.opennms.netmgt.model.DataLinkInterface;
+import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
@@ -82,6 +84,9 @@ public class Nms101Test extends Nms101NetworkBuilder implements InitializingBean
 
     @Autowired
     private SnmpInterfaceDao m_snmpInterfaceDao;
+
+    @Autowired
+    private IpInterfaceDao m_ipInterfaceDao;
 
     @Autowired
     private DataLinkInterfaceDao m_dataLinkInterfaceDao;
@@ -120,84 +125,25 @@ public class Nms101Test extends Nms101NetworkBuilder implements InitializingBean
         m_nodeDao.flush();
     }
 
-    /*
-     * cisco1700 --- cisco1700b ??????
-     * cisco1700b clearly does not have relation with this net...it has the same address
-     * of cisco2691......and the link is between cisco1700 and cisco2691
-     * what a fake....very interesting test.....
-     * CDP now fails....but iproute discovery found a right route information 
-     * no way of fixing this in the actual code implementation
-     * 
-     */
 	@Test
-    @JUnitSnmpAgents(value={
-        @JUnitSnmpAgent(host="10.1.5.1", port=161, resource="classpath:linkd/nms101/cisco1700b.properties"),
-        @JUnitSnmpAgent(host="10.1.5.2", port=161, resource="classpath:linkd/nms101/cisco1700.properties")
-    })
-    public void testSimpleConnection() throws Exception {
+	public void testGetNodeidFromIpAndSysName() throws Exception {
 		m_nodeDao.save(getCisco1700());
-		m_nodeDao.save(getCisco1700b());
-		m_nodeDao.save(getExampleCom());
-        m_nodeDao.flush();
-
-        final OnmsNode cisco1700 = m_nodeDao.findByForeignId("linkd", "cisco1700");
-        final OnmsNode cisco1700b = m_nodeDao.findByForeignId("linkd", "cisco1700b");
-
-        LogUtils.debugf(this, "cisco1700  = %s", cisco1700);
-        LogUtils.debugf(this, "cisco1700b = %s", cisco1700b);
-
-        assertTrue(m_linkd.scheduleNodeCollection(cisco1700.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(cisco1700b.getId()));
-
-        assertTrue(m_linkd.runSingleSnmpCollection(cisco1700.getId()));
-        assertTrue(m_linkd.runSingleSnmpCollection(cisco1700b.getId()));
-
-        for (LinkableNode node: m_linkd.getLinkableNodes()) {
-        	int nodeid = node.getNodeId();
-        	printNode(m_nodeDao.get(nodeid));
-        	for (RouterInterface route: node.getRouteInterfaces()) {
-        		printRouteInterface(nodeid, route);
-        	}
-        	
-        	for (CdpInterface cdp: node.getCdpInterfaces()) {
-        		printCdpInterface(nodeid, cdp);
-        	}
-        		
-        }
-        assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
-        
-        final List<DataLinkInterface> ifaces = m_dataLinkInterfaceDao.findAll();
-        for (final DataLinkInterface link: ifaces) {
-            printLink(link);
-        }
-        assertEquals("we should have found 1 data link", 1, ifaces.size());
-    }
-
-    /*
-     *  Discover the following topology
-     *  The CDP protocol must found all the links
-     *  Either Ip Route must found links
-     * 
-     *  laptop
-     *     |
-     *  cisco7200a (2) --- (4) cisco7200b (1) --- (4) cisco2691 (2) --- (2) cisco1700
-     *                     (2)                    (1)    
-     *                      |                      |
-     *                     (1)                    (2)
-     *                  cisco3700  (3) --- (1)  cisco3600      
-     */	
+		
+		OnmsNode cisco1700 = m_nodeDao.findByForeignId("linkd", "cisco1700");
+		assertEquals("cisco1700", cisco1700.getSysName());
+		
+		HibernateEventWriter hew = (HibernateEventWriter) m_linkd.getQueryManager();
+		for (OnmsIpInterface ip: m_ipInterfaceDao.findByNodeId(cisco1700.getId())) {
+			System.err.println((ip));
+			List<Integer> nodeids = hew.getNodeidFromIpAndSysName(ip.getIpAddress(),cisco1700.getSysName());
+			assertEquals(1, nodeids.size());
+			assertEquals(cisco1700.getId(), nodeids.get(0));
+		}
+	}
+	
     @Test
-    @JUnitSnmpAgents(value={
-        @JUnitSnmpAgent(host="10.1.1.1", port=161, resource="classpath:linkd/nms101/cisco7200a.properties"),
-        @JUnitSnmpAgent(host="10.1.1.2", port=161, resource="classpath:linkd/nms101/laptop.properties"),
-        @JUnitSnmpAgent(host="10.1.2.2", port=161, resource="classpath:linkd/nms101/cisco7200b.properties"),
-        @JUnitSnmpAgent(host="10.1.3.2", port=161, resource="classpath:linkd/nms101/cisco3700.properties"),
-        @JUnitSnmpAgent(host="10.1.4.2", port=161, resource="classpath:linkd/nms101/cisco2691.properties"),
-        @JUnitSnmpAgent(host="10.1.5.2", port=161, resource="classpath:linkd/nms101/cisco1700.properties"),
-        @JUnitSnmpAgent(host="10.1.6.2", port=161, resource="classpath:linkd/nms101/cisco3600.properties")
-    })
-    public void testFakeCiscoNetwork() throws Exception {
-
+    @Transactional
+    public void testDefaultConfiguration() throws Exception {
     	m_nodeDao.save(getExampleCom());
     	m_nodeDao.save(getLaptop());
     	m_nodeDao.save(getCisco7200a());
@@ -207,62 +153,7 @@ public class Nms101Test extends Nms101NetworkBuilder implements InitializingBean
     	m_nodeDao.save(getCisco1700());
     	m_nodeDao.save(getCisco3600());
     	m_nodeDao.flush();
-    	
-        final OnmsNode laptop = m_nodeDao.findByForeignId("linkd", "laptop");
-        final OnmsNode cisco7200a = m_nodeDao.findByForeignId("linkd", "cisco7200a");
-        final OnmsNode cisco7200b = m_nodeDao.findByForeignId("linkd", "cisco7200b");
-        final OnmsNode cisco3700 = m_nodeDao.findByForeignId("linkd", "cisco3700");
-        final OnmsNode cisco2691 = m_nodeDao.findByForeignId("linkd", "cisco2691");
-        final OnmsNode cisco1700 = m_nodeDao.findByForeignId("linkd", "cisco1700");
-        final OnmsNode cisco3600 = m_nodeDao.findByForeignId("linkd", "cisco3600");
 
-        assertTrue(m_linkd.scheduleNodeCollection(laptop.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(cisco7200a.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(cisco7200b.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(cisco3700.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(cisco2691.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(cisco1700.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(cisco3600.getId()));
-
-        assertTrue(m_linkd.runSingleCollection(laptop.getId()));
-        assertTrue(m_linkd.runSingleCollection(cisco7200a.getId()));
-        assertTrue(m_linkd.runSingleCollection(cisco7200b.getId()));
-        assertTrue(m_linkd.runSingleCollection(cisco3700.getId()));
-        assertTrue(m_linkd.runSingleCollection(cisco2691.getId()));
-        assertTrue(m_linkd.runSingleCollection(cisco1700.getId()));
-        assertTrue(m_linkd.runSingleCollection(cisco3600.getId()));
-
-        final List<DataLinkInterface> ifaces = m_dataLinkInterfaceDao.findAll();
-        for (final DataLinkInterface link: ifaces) {
-            printLink(link);
-        }
-
-        assertEquals("we should have found 6 data links", 6, ifaces.size());
-    }
-    
-    @Test
-    public void testDiscoveryOspfGetSubNetAddress() throws Exception {
-        DiscoveryLink discovery = m_linkd.getDiscoveryLink("example1");
-        OspfNbrInterface ospfinterface = new OspfNbrInterface(InetAddress.getByName("192.168.9.1"));
-        ospfinterface.setOspfNbrIpAddr(InetAddress.getByName("192.168.15.45"));
-
-        ospfinterface.setOspfNbrNetMask(InetAddress.getByName("255.255.255.0"));        
-        assertEquals(InetAddress.getByName("192.168.15.0"), discovery.getSubnetAddress(ospfinterface));
-        
-        ospfinterface.setOspfNbrNetMask(InetAddress.getByName("255.255.0.0"));
-        assertEquals(InetAddress.getByName("192.168.0.0"), discovery.getSubnetAddress(ospfinterface));
-
-        ospfinterface.setOspfNbrNetMask(InetAddress.getByName("255.255.255.252"));
-        assertEquals(InetAddress.getByName("192.168.15.44"), discovery.getSubnetAddress(ospfinterface));
-
-        ospfinterface.setOspfNbrNetMask(InetAddress.getByName("255.255.255.240"));
-        assertEquals(InetAddress.getByName("192.168.15.32"), discovery.getSubnetAddress(ospfinterface));
-
-    }
-    
-    @Test
-    @Transactional
-    public void testDefaultConfiguration() throws Exception {
         assertEquals(true,m_linkdConfig.useBridgeDiscovery());
         assertEquals(true,m_linkdConfig.useOspfDiscovery());
         assertEquals(true,m_linkdConfig.useIpRouteDiscovery());
@@ -368,4 +259,328 @@ public class Nms101Test extends Nms101NetworkBuilder implements InitializingBean
         assertEquals("example1", example1.getName());
         assertEquals(false, pkgs.hasMoreElements());
     }
+    
+    /*
+     * cisco1700 --- cisco1700b ??????
+     * cisco1700b clearly does not have relation with this net...it has the same address
+     * of cisco2691......and the link is between cisco1700 and cisco2691
+     * what a fake....very interesting test.....
+     * CDP now fails....but iproute discovery found a right route information 
+     * no way of fixing this in the actual code implementation
+     * 
+     */
+	@Test
+    @JUnitSnmpAgents(value={
+        @JUnitSnmpAgent(host="10.1.5.1", port=161, resource="classpath:linkd/nms101/cisco1700b.properties"),
+        @JUnitSnmpAgent(host="10.1.5.2", port=161, resource="classpath:linkd/nms101/cisco1700.properties")
+    })
+    public void testSimpleFakeConnection() throws Exception {
+		m_nodeDao.save(getCisco1700());
+		m_nodeDao.save(getCisco1700b());
+		m_nodeDao.save(getExampleCom());
+        m_nodeDao.flush();
+
+        final OnmsNode cisco1700 = m_nodeDao.findByForeignId("linkd", CISCO1700_NAME);
+        final OnmsNode cisco1700b = m_nodeDao.findByForeignId("linkd", CISCO1700B_NAME);
+
+        LogUtils.debugf(this, "cisco1700  = %s", cisco1700);
+        LogUtils.debugf(this, "cisco1700b = %s", cisco1700b);
+
+        assertTrue(m_linkd.scheduleNodeCollection(cisco1700.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(cisco1700b.getId()));
+
+        assertTrue(m_linkd.runSingleSnmpCollection(cisco1700.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(cisco1700b.getId()));
+
+        for (LinkableNode node: m_linkd.getLinkableNodes()) {
+        	int nodeid = node.getNodeId();
+        	printNode(m_nodeDao.get(nodeid));
+        	for (RouterInterface route: node.getRouteInterfaces()) {
+        		printRouteInterface(nodeid, route);
+        	}
+        	
+        	for (CdpInterface cdp: node.getCdpInterfaces()) {
+        		printCdpInterface(nodeid, cdp);
+        	}
+        		
+        }
+        assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
+        
+        final List<DataLinkInterface> ifaces = m_dataLinkInterfaceDao.findAll();
+        for (final DataLinkInterface link: ifaces) {
+            printLink(link);
+        }
+        assertEquals("we should have found 1 data link", 1, ifaces.size());
+    }
+
+    /*
+     *  Discover the following topology
+     *  The CDP protocol must found all the links
+     *  Either Ip Route must found links
+     * 
+     *  laptop
+     *     |
+     *  cisco7200a (2) --- (4) cisco7200b (1) --- (4) cisco2691 (2) --- (2) cisco1700
+     *                     (2)                    (1)    
+     *                      |                      |
+     *                     (1)                    (2)
+     *                  cisco3700  (3) --- (1)  cisco3600      
+     */	
+    @Test
+    @JUnitSnmpAgents(value={
+        @JUnitSnmpAgent(host="10.1.1.1", port=161, resource="classpath:linkd/nms101/cisco7200a.properties"),
+        @JUnitSnmpAgent(host="10.1.2.2", port=161, resource="classpath:linkd/nms101/cisco7200b.properties")
+    })
+    public void testsimpleLinkCisco7200aCisco7200b() throws Exception {
+
+    	m_nodeDao.save(getCisco7200a());
+    	m_nodeDao.save(getCisco7200b());
+    	m_nodeDao.flush();
+    	
+        final OnmsNode cisco7200a = m_nodeDao.findByForeignId("linkd", CISCO7200A_NAME);
+        final OnmsNode cisco7200b = m_nodeDao.findByForeignId("linkd", CISCO7200B_NAME);
+        assertTrue(m_linkd.scheduleNodeCollection(cisco7200a.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(cisco7200b.getId()));
+ 
+        assertTrue(m_linkd.runSingleSnmpCollection(cisco7200a.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(cisco7200b.getId()));
+ 
+        assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
+        
+        final List<DataLinkInterface> ifaces = m_dataLinkInterfaceDao.findAll();
+        for (final DataLinkInterface link: ifaces) {
+            printLink(link);
+        }
+
+        assertEquals("we should have found 1 data links", 1, ifaces.size());
+    }
+
+    /*
+     *  Discover the following topology
+     *  The CDP protocol must found all the links
+     *  Either Ip Route must found links
+     * 
+     *  laptop
+     *     |
+     *  cisco7200a (2) --- (4) cisco7200b (1) --- (4) cisco2691 (2) --- (2) cisco1700
+     *                     (2)                    (1)    
+     *                      |                      |
+     *                     (1)                    (2)
+     *                  cisco3700  (3) --- (1)  cisco3600      
+     */	
+    @Test
+    @JUnitSnmpAgents(value={
+        @JUnitSnmpAgent(host="10.1.1.1", port=161, resource="classpath:linkd/nms101/cisco7200a.properties"),
+        @JUnitSnmpAgent(host="10.1.1.2", port=161, resource="classpath:linkd/nms101/laptop.properties")
+    })
+    public void testsimpleLinkCisco7200alaptop() throws Exception {
+
+    	m_nodeDao.save(getCisco7200a());
+    	m_nodeDao.save(getLaptop());
+    	m_nodeDao.flush();
+    	
+        final OnmsNode cisco7200a = m_nodeDao.findByForeignId("linkd", CISCO7200A_NAME);
+        final OnmsNode laptop = m_nodeDao.findByForeignId("linkd", LAPTOP_NAME);
+        assertTrue(m_linkd.scheduleNodeCollection(cisco7200a.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(laptop.getId()));
+ 
+        assertTrue(m_linkd.runSingleSnmpCollection(cisco7200a.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(laptop.getId()));
+ 
+        assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
+        
+        final List<DataLinkInterface> ifaces = m_dataLinkInterfaceDao.findAll();
+        for (final DataLinkInterface link: ifaces) {
+            printLink(link);
+        }
+
+        assertEquals("we should have found 1 data links", 1, ifaces.size());
+    }
+
+    /*
+     *  Discover the following topology
+     *  The CDP protocol must found all the links
+     *  Either Ip Route must found links
+     * 
+     *  laptop
+     *     |
+     *  cisco7200a (2) --- (4) cisco7200b (1) --- (4) cisco2691 (2) --- (2) cisco1700
+     *                     (2)                    (1)    
+     *                      |                      |
+     *                     (1)                    (2)
+     *                  cisco3700  (3) --- (1)  cisco3600      
+     */	
+    @Test
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host="10.1.3.2", port=161, resource="classpath:linkd/nms101/cisco3700.properties"),
+            @JUnitSnmpAgent(host="10.1.6.2", port=161, resource="classpath:linkd/nms101/cisco3600.properties")
+    })
+    public void testsimpleLinkCisco3600aCisco3700() throws Exception {
+
+    	m_nodeDao.save(getCisco3700());
+    	m_nodeDao.save(getCisco3600());
+    	m_nodeDao.flush();
+    	
+        final OnmsNode cisco3700 = m_nodeDao.findByForeignId("linkd", CISCO3600_NAME);
+        final OnmsNode cisco3600 = m_nodeDao.findByForeignId("linkd", CISCO3700_NAME);
+        assertTrue(m_linkd.scheduleNodeCollection(cisco3600.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(cisco3700.getId()));
+ 
+        assertTrue(m_linkd.runSingleSnmpCollection(cisco3600.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(cisco3700.getId()));
+ 
+        assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
+        
+        final List<DataLinkInterface> ifaces = m_dataLinkInterfaceDao.findAll();
+        for (final DataLinkInterface link: ifaces) {
+            printLink(link);
+        }
+
+        assertEquals("we should have found 1 data links", 1, ifaces.size());
+    }
+
+
+    /*
+     *  Discover the following topology
+     *  The CDP protocol must found all the links
+     *  Either Ip Route must found links
+     * 
+     *  laptop
+     *     |
+     *  cisco7200a (2) --- (4) cisco7200b (1) --- (4) cisco2691 (2) --- (2) cisco1700
+     *                     (2)                    (1)    
+     *                      |                      |
+     *                     (1)                    (2)
+     *                  cisco3700  (3) --- (1)  cisco3600      
+     */	
+    @Test
+    @JUnitSnmpAgents(value={
+        @JUnitSnmpAgent(host="10.1.1.1", port=161, resource="classpath:linkd/nms101/cisco7200a.properties"),
+        @JUnitSnmpAgent(host="10.1.1.2", port=161, resource="classpath:linkd/nms101/laptop.properties"),
+        @JUnitSnmpAgent(host="10.1.2.2", port=161, resource="classpath:linkd/nms101/cisco7200b.properties"),
+        @JUnitSnmpAgent(host="10.1.3.2", port=161, resource="classpath:linkd/nms101/cisco3700.properties"),
+        @JUnitSnmpAgent(host="10.1.4.2", port=161, resource="classpath:linkd/nms101/cisco2691.properties"),
+        @JUnitSnmpAgent(host="10.1.5.2", port=161, resource="classpath:linkd/nms101/cisco1700.properties"),
+        @JUnitSnmpAgent(host="10.1.6.2", port=161, resource="classpath:linkd/nms101/cisco3600.properties")
+    })
+    public void testCiscoNetwork() throws Exception {
+
+    	m_nodeDao.save(getExampleCom());
+    	m_nodeDao.save(getLaptop());
+    	m_nodeDao.save(getCisco7200a());
+    	m_nodeDao.save(getCisco7200b());
+    	m_nodeDao.save(getCisco3700());
+    	m_nodeDao.save(getCisco2691());
+    	m_nodeDao.save(getCisco1700());
+    	m_nodeDao.save(getCisco3600());
+    	m_nodeDao.flush();
+    	
+        final OnmsNode laptop = m_nodeDao.findByForeignId("linkd", LAPTOP_NAME);
+        final OnmsNode cisco7200a = m_nodeDao.findByForeignId("linkd", CISCO7200A_NAME);
+        final OnmsNode cisco7200b = m_nodeDao.findByForeignId("linkd", CISCO7200B_NAME);
+        final OnmsNode cisco3700  = m_nodeDao.findByForeignId("linkd", CISCO3700_NAME);
+        final OnmsNode cisco2691  = m_nodeDao.findByForeignId("linkd", CISCO2691_NAME);
+        final OnmsNode cisco1700  = m_nodeDao.findByForeignId("linkd", CISCO1700_NAME);
+        final OnmsNode cisco3600  = m_nodeDao.findByForeignId("linkd", CISCO3600_NAME);
+
+        assertTrue(m_linkd.scheduleNodeCollection(laptop.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(cisco7200a.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(cisco7200b.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(cisco3700.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(cisco2691.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(cisco1700.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(cisco3600.getId()));
+
+        assertTrue(m_linkd.runSingleSnmpCollection(laptop.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(cisco7200a.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(cisco7200b.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(cisco3700.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(cisco2691.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(cisco1700.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(cisco3600.getId()));
+
+        assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
+        
+        final List<DataLinkInterface> ifaces = m_dataLinkInterfaceDao.findAll();
+        for (final DataLinkInterface link: ifaces) {
+            printLink(link);
+        }
+
+        assertEquals("we should have found 7 data links", 7, ifaces.size());
+    }
+    
+    @Test
+    public void testDiscoveryOspfGetSubNetAddress() throws Exception {
+        DiscoveryLink discovery = m_linkd.getDiscoveryLink("example1");
+        OspfNbrInterface ospfinterface = new OspfNbrInterface(InetAddress.getByName("192.168.9.1"));
+        ospfinterface.setOspfNbrIpAddr(InetAddress.getByName("192.168.15.45"));
+
+        ospfinterface.setOspfNbrNetMask(InetAddress.getByName("255.255.255.0"));        
+        assertEquals(InetAddress.getByName("192.168.15.0"), discovery.getSubnetAddress(ospfinterface));
+        
+        ospfinterface.setOspfNbrNetMask(InetAddress.getByName("255.255.0.0"));
+        assertEquals(InetAddress.getByName("192.168.0.0"), discovery.getSubnetAddress(ospfinterface));
+
+        ospfinterface.setOspfNbrNetMask(InetAddress.getByName("255.255.255.252"));
+        assertEquals(InetAddress.getByName("192.168.15.44"), discovery.getSubnetAddress(ospfinterface));
+
+        ospfinterface.setOspfNbrNetMask(InetAddress.getByName("255.255.255.240"));
+        assertEquals(InetAddress.getByName("192.168.15.32"), discovery.getSubnetAddress(ospfinterface));
+
+    }
+    
+    /*
+     *  Discover the following topology
+     *  The CDP protocol must found all the links
+     *  Either Ip Route must found links
+     * 
+     *  laptop
+     *     |
+     *  cisco7200a (2) --- (4) cisco7200b (1) --- (4) cisco2691 (2) --- (2) cisco1700
+     *                     (2)                    (1)    
+     *                      |                      |
+     *                     (1)                    (2)
+     *                  cisco3700  (3) --- (1)  cisco3600      
+     */	
+    @Test
+    @JUnitSnmpAgents(value={
+        @JUnitSnmpAgent(host="10.1.1.1", port=161, resource="classpath:linkd/nms101/cisco7200a.properties"),
+        @JUnitSnmpAgent(host="10.1.2.2", port=161, resource="classpath:linkd/nms101/cisco7200b.properties")
+    })
+    public void testsimpleCdpLinkCisco7200aCisco7200b() throws Exception {
+
+        for (Package pkg : Collections.list(m_linkdConfig.enumeratePackage())) {
+            pkg.setUseIpRouteDiscovery(false);
+            pkg.setUseOspfDiscovery(false);
+            pkg.setUseLldpDiscovery(false);
+            pkg.setUseBridgeDiscovery(false);
+            pkg.setSaveRouteTable(false);
+            pkg.setSaveStpNodeTable(false);
+            pkg.setSaveStpInterfaceTable(false);
+            pkg.setEnableVlanDiscovery(false);
+        }
+
+    	m_nodeDao.save(getCisco7200a());
+    	m_nodeDao.save(getCisco7200b());
+    	m_nodeDao.flush();
+    	
+        final OnmsNode cisco7200a = m_nodeDao.findByForeignId("linkd", CISCO7200A_NAME);
+        final OnmsNode cisco7200b = m_nodeDao.findByForeignId("linkd", CISCO7200B_NAME);
+        assertTrue(m_linkd.scheduleNodeCollection(cisco7200a.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(cisco7200b.getId()));
+ 
+        assertTrue(m_linkd.runSingleSnmpCollection(cisco7200a.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(cisco7200b.getId()));
+ 
+        assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
+        
+        final List<DataLinkInterface> ifaces = m_dataLinkInterfaceDao.findAll();
+        for (final DataLinkInterface link: ifaces) {
+            printLink(link);
+        }
+
+        assertEquals("we should have found 1 data links", 1, ifaces.size());
+    }
+
+
 }

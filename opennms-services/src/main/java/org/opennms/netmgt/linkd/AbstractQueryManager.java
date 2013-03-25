@@ -104,7 +104,7 @@ public abstract class AbstractQueryManager implements QueryManager {
 
     protected abstract int getIfIndexByName(int targetCdpNodeId, String cdpTargetDevicePort);
 
-    protected abstract List<Integer> getNodeidFromIp(InetAddress cdpTargetIpAddr, String sysname);
+    protected abstract List<Integer> getNodeidFromIpAndSysName(InetAddress cdpTargetIpAddr, String sysname);
 
     protected abstract List<RouterInterface> getRouteInterface(InetAddress nexthop, int ifindex);
 
@@ -442,33 +442,30 @@ public abstract class AbstractQueryManager implements QueryManager {
         for (final CdpCacheTableEntry cdpEntry : snmpcoll.getCdpCacheTable()) {
 
             final int cdpIfIndex = cdpEntry.getCdpCacheIfIndex();
-
             if (cdpIfIndex < 0) {
                 LogUtils.debugf(this, "processCdpCacheTable: ifIndex not valid: %d", cdpIfIndex);
                 continue;
             }
-
             LogUtils.debugf(this, "processCdpCacheTable: ifIndex found: %d", cdpIfIndex);
 
-            Collection<Integer> targetCdpNodeIds = new ArrayList<Integer>();
             final String targetSysName = cdpEntry.getCdpCacheDeviceId();
+            LogUtils.debugf(this, "processCdpCacheTable: targetSysName found: %s", targetSysName);
 
             final InetAddress cdpTargetIpAddr = cdpEntry.getCdpCacheIpv4Address();
-            final int cdpAddrType = cdpEntry.getCdpCacheAddressType();
-            String cdpTargetIpAddrString = null;
+            LogUtils.debugf(this, "processCdpCacheTable: cdp cache ipa address found: %s", str(cdpTargetIpAddr));
 
+            final int cdpAddrType = cdpEntry.getCdpCacheAddressType();
+
+            Collection<Integer> targetCdpNodeIds = new ArrayList<Integer>();
             if (cdpAddrType != CDP_ADDRESS_TYPE_IP_ADDRESS) {
                 LogUtils.warnf(this, "processCdpCacheTable: CDP address type not ip: %d", cdpAddrType);
             } else {
-                cdpTargetIpAddrString = InetAddressUtils.str(cdpTargetIpAddr);
-                if (cdpTargetIpAddr == null || cdpTargetIpAddr.isLoopbackAddress() || cdpTargetIpAddrString.equals("0.0.0.0")) {
-                    LogUtils.debugf(this, "processCdpCacheTable: IP address is not valid: %s", cdpTargetIpAddrString);
-                    cdpTargetIpAddrString = null;
+                if (cdpTargetIpAddr == null || cdpTargetIpAddr.isLoopbackAddress() || str(cdpTargetIpAddr).equals("0.0.0.0")) {
+                    LogUtils.debugf(this, "processCdpCacheTable: IP address is not valid: %s", str(cdpTargetIpAddr));
                 } else {
-                    LogUtils.debugf(this, "processCdpCacheTable: Target IP address found: %s", cdpTargetIpAddrString);
-                    targetCdpNodeIds = getNodeidFromIp(cdpTargetIpAddr,targetSysName);
+                    targetCdpNodeIds = getNodeidFromIpAndSysName(cdpTargetIpAddr,targetSysName);
                     if (targetCdpNodeIds.isEmpty()) {
-                        LogUtils.infof(this, "processCdpCacheTable: No Target node IDs found: interface %s not added to linkable SNMP node. Skipping.", cdpTargetIpAddrString);
+                        LogUtils.infof(this, "processCdpCacheTable: No Target node IDs found: interface %s not added to linkable SNMP node. Skipping.", str(cdpTargetIpAddr));
                         sendNewSuspectEvent(cdpTargetIpAddr, snmpcoll.getTarget(), snmpcoll.getPackageName());
                         continue;
                     }
@@ -497,10 +494,12 @@ public abstract class AbstractQueryManager implements QueryManager {
 	            if (cdpTargetIfindex == -1) {
 	                LogUtils.infof(this, "processCdpCacheTable: No valid target ifIndex found but interface added to linkable SNMP node using ifindex  = -1.");
 	            }
+	            
 	            final CdpInterface cdpIface = new CdpInterface(cdpIfIndex);
 	            cdpIface.setCdpTargetNodeId(targetCdpNodeId);
 	            cdpIface.setCdpTargetIfIndex(cdpTargetIfindex);
-	            if (cdpTargetIpAddrString == null) {
+	            
+	            if (cdpTargetIpAddr == null || cdpAddrType != CDP_ADDRESS_TYPE_IP_ADDRESS) {
 	                cdpIface.setCdpTargetIpAddr(getIpInterfaceDao().findPrimaryInterfaceByNodeId(targetCdpNodeId).getIpAddress());
 	            } else {
 	                cdpIface.setCdpTargetIpAddr(cdpTargetIpAddr);               
@@ -604,11 +603,26 @@ public abstract class AbstractQueryManager implements QueryManager {
     			LogUtils.debugf(this,
                         "processRouteTable: ifindex is 0. Looking local table to get a valid index.");
             	for (OnmsIpInterface ip : getIpInterfaceDao().findByNodeId(node.getNodeId())) {
-            		if (Linkd.getNetwork(ip.getIpAddress(), ip.getSnmpInterface().getNetMask()).equals(Linkd.getNetwork(nexthop, ip.getSnmpInterface().getNetMask())))
-                	ifindex = (ip.getIfIndex());
+            		InetAddress ipaddr = ip.getIpAddress();
+            		InetAddress netmask = ip.getSnmpInterface().getNetMask();
         			LogUtils.debugf(this,
+                            "processRouteTable: parsing ip %s with netmask %s.", str(ipaddr),str(netmask));
+            		InetAddress net1 = Linkd.getNetwork(ip.getIpAddress(), netmask);
+        			LogUtils.debugf(this,
+                            "processRouteTable: found network %s.", str(net1));
+        			
+        			LogUtils.debugf(this,
+                            "processRouteTable: getting network for nexthop %s with netmask %s.", str(nexthop),str(netmask));
+        			InetAddress net2 = Linkd.getNetwork(nexthop, netmask);
+        			LogUtils.debugf(this,
+                            "processRouteTable: found network %s.", str(net2));
+        			
+            		if (str(net1).equals(str(net2))) {
+            			ifindex = (ip.getIfIndex());
+            			LogUtils.debugf(this,
                             "processRouteTable: ifindex %d found for local ip %s. ",ifindex, str(ip.getIpAddress()));
-                	break;
+            			break;
+            		}
             	}
             }
        	

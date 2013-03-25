@@ -379,7 +379,7 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
 
 	// SELECT node.nodeid FROM node LEFT JOIN ipinterface ON node.nodeid = ipinterface.nodeid WHERE nodetype = 'A' AND ipaddr = ?
 	@Override
-	protected List<Integer> getNodeidFromIp(final InetAddress cdpTargetIpAddr, final String targetSysname) {
+	protected List<Integer> getNodeidFromIpAndSysName(final InetAddress cdpTargetIpAddr, final String targetSysname) {
         List<Integer> nodeids = new ArrayList<Integer>();
         final OnmsCriteria criteria = new OnmsCriteria(OnmsIpInterface.class);
         criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
@@ -388,7 +388,8 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
         criteria.add(Restrictions.eq("node.sysName", targetSysname));
         List<OnmsIpInterface> interfaces = m_ipInterfaceDao.findMatching(criteria);
         
-	LogUtils.debugf(this, "getNodeidFromIp: Found %d nodeids matching ipAddress %s, sysname", interfaces.size(),str(cdpTargetIpAddr),targetSysname);
+        LogUtils.debugf(this, "getNodeidFromIpAndSysName: Found %d nodeids matching " +
+        		"ipAddress %s, sysname %s", interfaces.size(),str(cdpTargetIpAddr),targetSysname);
         for (final OnmsIpInterface ipinterface : interfaces) {
             nodeids.add(ipinterface.getNode().getId());
         }
@@ -445,13 +446,13 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
 	// SELECT snmpiftype FROM snmpinterface WHERE nodeid = ? AND snmpifindex = ?"
 	@Override
 	protected int getSnmpIfType(final int nodeId, final Integer ifIndex) {
-	    LogUtils.debugf(this, "getSnmpIfType(%d, %s)", nodeId, ifIndex);
+		Integer snmpIfType = -1;
 	    OnmsSnmpInterface snmpInterface = m_snmpInterfaceDao.findByNodeIdAndIfIndex(nodeId, ifIndex);
-	    if (snmpInterface == null) {
-	        return -1;
-	    } else {
-	        return snmpInterface.getIfType();
+	    if (snmpInterface != null) {
+	        snmpIfType = snmpInterface.getIfType();
 	    }
+	    LogUtils.debugf(this, "getSnmpIfType(%d, %s), found %d.", nodeId, ifIndex, snmpIfType);
+	    return snmpIfType;
 	}
 
     @Override

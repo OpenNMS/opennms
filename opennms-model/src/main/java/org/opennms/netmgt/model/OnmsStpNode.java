@@ -144,7 +144,7 @@ public class OnmsStpNode {
             case BASE_TYPE_SOURCEROUTE_ONLY: return SOURCEROUTE_ONLY;
             case BASE_TYPE_SRT: return SRT;
             default:
-                throw new IllegalArgumentException("Cannot create vlanStatus from code "+code);
+                throw new IllegalArgumentException("Cannot create BridgeBaseType from code "+code);
             }
         }
 

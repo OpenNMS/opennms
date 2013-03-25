@@ -236,12 +236,12 @@ public class Nms17216Test extends Nms17216NetworkBuilder implements Initializing
 
         HibernateEventWriter query = (HibernateEventWriter)m_linkd.getQueryManager();
         
-        List<Integer> nodeids = query.getNodeidFromIp(InetAddress.getByName("172.16.50.2"),SWITCH4_NAME);
+        List<Integer> nodeids = query.getNodeidFromIpAndSysName(InetAddress.getByName("172.16.50.2"),SWITCH4_NAME);
         
         assertEquals(1, nodeids.size());
         assertEquals(switch4.getId(),nodeids.get(0));
 
-        nodeids = query.getNodeidFromIp(InetAddress.getByName("172.16.50.1"), ROUTER3_NAME);
+        nodeids = query.getNodeidFromIpAndSysName(InetAddress.getByName("172.16.50.1"), ROUTER3_NAME);
         assertEquals(1, nodeids.size());
         assertEquals(router3.getId(),nodeids.get(0));
 
