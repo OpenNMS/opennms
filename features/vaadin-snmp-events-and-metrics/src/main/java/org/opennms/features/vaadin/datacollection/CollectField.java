@@ -36,6 +36,7 @@ import com.vaadin.data.util.converter.Converter.ConversionException;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.ListSelect;
@@ -51,19 +52,19 @@ import com.vaadin.ui.ListSelect;
 public class CollectField extends CustomField<Collect> implements Button.ClickListener {
 
     /** The group field. */
-    private ComboBox groupField = new ComboBox();
+    private final ComboBox groupField = new ComboBox();
 
     /** The list field. */
-    private ListSelect listField = new ListSelect();
+    private final ListSelect listField = new ListSelect();
 
     /** The Toolbar. */
-    private HorizontalLayout toolbar = new HorizontalLayout();
+    private final HorizontalLayout toolbar = new HorizontalLayout();
 
     /** The add button. */
-    private Button add;
+    private final Button add;
 
     /** The delete button. */
-    private Button delete;
+    private final Button delete;
 
     /**
      * Instantiates a new collect field.
@@ -84,13 +85,16 @@ public class CollectField extends CustomField<Collect> implements Button.ClickLi
         toolbar.addComponent(add);
         toolbar.setVisible(listField.isReadOnly());
 
+        setBuffered(true);
+    }
+
+    @Override
+    public Component initContent() {
         HorizontalLayout layout = new HorizontalLayout();
         layout.addComponent(listField);
         layout.addComponent(toolbar);
         layout.setComponentAlignment(toolbar, Alignment.BOTTOM_RIGHT);
-
-        setBuffered(true);
-        setCompositionRoot(layout);
+        return layout;
     }
 
     @Override

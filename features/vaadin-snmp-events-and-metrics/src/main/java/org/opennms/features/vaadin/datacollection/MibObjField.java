@@ -37,6 +37,7 @@ import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.converter.Converter.ConversionException;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Table;
@@ -60,19 +61,19 @@ public class MibObjField extends CustomField<MibObjField.MibObjArrayList> implem
     private static final long serialVersionUID = 3665919460707298011L;
 
     /** The Table. */
-    private Table table = new Table();
+    private final Table table = new Table();
 
     /** The Container. */
-    private BeanContainer<String,MibObj> container = new BeanContainer<String,MibObj>(MibObj.class);
+    private final BeanContainer<String,MibObj> container = new BeanContainer<String,MibObj>(MibObj.class);
 
     /** The Toolbar. */
-    private HorizontalLayout toolbar = new HorizontalLayout();
+    private final HorizontalLayout toolbar = new HorizontalLayout();
 
     /** The add button. */
-    private Button add;
+    private final Button add;
 
     /** The delete button. */
-    private Button delete;
+    private final Button delete;
 
     /**
      * Instantiates a new MIB object field.
@@ -100,27 +101,24 @@ public class MibObjField extends CustomField<MibObjField.MibObjArrayList> implem
         toolbar.addComponent(delete);
         toolbar.setVisible(table.isEditable());
 
+        setBuffered(true);
+        setValidationVisible(true);
+    }
+
+    @Override
+    public Component initContent() {
         VerticalLayout layout = new VerticalLayout();
         layout.addComponent(table);
         layout.addComponent(toolbar);
         layout.setComponentAlignment(toolbar, Alignment.MIDDLE_RIGHT);
-
-        setBuffered(true);
-        setValidationVisible(true);
-        setCompositionRoot(layout);
+        return layout;
     }
 
-    /* (non-Javadoc)
-     * @see org.vaadin.addon.customfield.CustomField#getType()
-     */
     @Override
     public Class<MibObjArrayList> getType() {
         return MibObjArrayList.class;
     }
 
-    /* (non-Javadoc)
-     * @see org.vaadin.addon.customfield.CustomField#setPropertyDataSource(com.vaadin.data.Property)
-     */
     @Override
     @SuppressWarnings("unchecked")
     public void setPropertyDataSource(Property newDataSource) {
@@ -136,9 +134,6 @@ public class MibObjField extends CustomField<MibObjField.MibObjArrayList> implem
         super.setPropertyDataSource(newDataSource);
     }
 
-    /* (non-Javadoc)
-     * @see org.vaadin.addon.customfield.CustomField#getValue()
-     */
     @Override
     public MibObjArrayList getValue() {
         MibObjArrayList beans = new MibObjArrayList(); 

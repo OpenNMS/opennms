@@ -65,19 +65,19 @@ public class MaskElementField extends CustomField<MaskElementField.MaskElementAr
 	private static final long serialVersionUID = -2755346278615977088L;
 
 	/** The Table. */
-    private Table table = new Table();
+    private final Table table = new Table();
 
     /** The Container. */
-    private BeanContainer<String,Maskelement> container = new BeanContainer<String,Maskelement>(Maskelement.class);
+    private final BeanContainer<String,Maskelement> container = new BeanContainer<String,Maskelement>(Maskelement.class);
 
     /** The Toolbar. */
-    private HorizontalLayout toolbar = new HorizontalLayout();
+    private final HorizontalLayout toolbar = new HorizontalLayout();
 
     /** The add button. */
-    private Button add;
+    private final Button add;
 
     /** The delete button. */
-    private Button delete;
+    private final Button delete;
 
     /**
      * Instantiates a new mask element field.
@@ -110,11 +110,15 @@ public class MaskElementField extends CustomField<MaskElementField.MaskElementAr
         toolbar.addComponent(add);
         toolbar.addComponent(delete);
         toolbar.setVisible(table.isEditable());
+    }
+
+    @Override
+    public Component initContent() {
         VerticalLayout layout = new VerticalLayout();
         layout.addComponent(table);
         layout.addComponent(toolbar);
         layout.setComponentAlignment(toolbar, Alignment.MIDDLE_RIGHT);
-        setCompositionRoot(layout);
+        return layout;
     }
 
     @Override

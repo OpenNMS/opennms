@@ -67,19 +67,19 @@ public class VarbindsDecodeField extends CustomField<VarbindsDecodeField.Varbind
 	public static class VarbindsDecodeArrayList extends ArrayList<Varbindsdecode> {};
 
     /** The Table. */
-    private Table table = new Table();
+    private final Table table = new Table();
 
     /** The Container. */
-    private BeanContainer<String,Varbindsdecode> container = new BeanContainer<String,Varbindsdecode>(Varbindsdecode.class);
+    private final BeanContainer<String,Varbindsdecode> container = new BeanContainer<String,Varbindsdecode>(Varbindsdecode.class);
 
     /** The Toolbar. */
-    private HorizontalLayout toolbar = new HorizontalLayout();
+    private final HorizontalLayout toolbar = new HorizontalLayout();
 
     /** The add button. */
-    private Button add;
+    private final Button add;
 
     /** The delete button. */
-    private Button delete;
+    private final Button delete;
 
     /**
      * Instantiates a new varbinds decode field.
@@ -112,24 +112,22 @@ public class VarbindsDecodeField extends CustomField<VarbindsDecodeField.Varbind
         toolbar.addComponent(add);
         toolbar.addComponent(delete);
         toolbar.setVisible(table.isEditable());
+    }
+
+    @Override
+    public Component initContent() {
         VerticalLayout layout = new VerticalLayout();
         layout.addComponent(table);
         layout.addComponent(toolbar);
         layout.setComponentAlignment(toolbar, Alignment.MIDDLE_RIGHT);
-        setCompositionRoot(layout);
+        return layout;
     }
 
-    /* (non-Javadoc)
-     * @see org.vaadin.addon.customfield.CustomField#getType()
-     */
     @Override
     public Class<VarbindsDecodeArrayList> getType() {
         return VarbindsDecodeArrayList.class;
     }
 
-    /* (non-Javadoc)
-     * @see org.vaadin.addon.customfield.CustomField#setPropertyDataSource(com.vaadin.data.Property)
-     */
     @Override
     public void setPropertyDataSource(Property newDataSource) {
         Object value = newDataSource.getValue();
@@ -145,9 +143,6 @@ public class VarbindsDecodeField extends CustomField<VarbindsDecodeField.Varbind
         super.setPropertyDataSource(newDataSource);
     }
 
-    /* (non-Javadoc)
-     * @see org.vaadin.addon.customfield.CustomField#getValue()
-     */
     @Override
     public VarbindsDecodeArrayList getValue() {
         VarbindsDecodeArrayList beans = new VarbindsDecodeArrayList(); 

@@ -35,6 +35,7 @@ import org.opennms.netmgt.config.datacollection.SystemDefChoice;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.converter.Converter.ConversionException;
 import com.vaadin.data.validator.RegexpValidator;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.OptionGroup;
@@ -58,10 +59,10 @@ public class SystemDefChoiceField extends CustomField<SystemDefChoice> {
     private static final List<String> OPTIONS = Arrays.asList(new String[] { SINGLE, MASK });
 
     /** The OID type. */
-    private OptionGroup oidType;
+    private final OptionGroup oidType;
 
     /** The OID value. */
-    private TextField oidValue;
+    private final TextField oidValue;
 
     /**
      * Instantiates a new system definition choice field.
@@ -78,28 +79,25 @@ public class SystemDefChoiceField extends CustomField<SystemDefChoice> {
         oidValue.setImmediate(true);
         oidValue.addValidator(new RegexpValidator("^\\.[.\\d]+$", "Invalid OID {0}"));
 
+        setBuffered(true);
+    }
+
+    @Override
+    public Component initContent() {
         HorizontalLayout layout = new HorizontalLayout();
         layout.setSpacing(true);
         layout.setWidth("100%");
         layout.addComponent(oidType);
         layout.addComponent(oidValue);
         layout.setExpandRatio(oidValue, 1);
-
-        setBuffered(true);
-        setCompositionRoot(layout);
+        return layout;
     }
 
-    /* (non-Javadoc)
-     * @see org.vaadin.addon.customfield.CustomField#getType()
-     */
     @Override
     public Class<SystemDefChoice> getType() {
         return SystemDefChoice.class;
     }
 
-    /* (non-Javadoc)
-     * @see org.vaadin.addon.customfield.CustomField#setPropertyDataSource(com.vaadin.data.Property)
-     */
     @Override
     public void setPropertyDataSource(Property newDataSource) {
         Object value = newDataSource.getValue();
@@ -113,9 +111,6 @@ public class SystemDefChoiceField extends CustomField<SystemDefChoice> {
         super.setPropertyDataSource(newDataSource);
     }
 
-    /* (non-Javadoc)
-     * @see org.vaadin.addon.customfield.CustomField#getValue()
-     */
     @Override
     public SystemDefChoice getValue() {
         SystemDefChoice dto = new SystemDefChoice();

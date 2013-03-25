@@ -63,19 +63,19 @@ public class MaskVarbindField extends CustomField<MaskVarbindField.VarbindArrayL
 	public static class VarbindArrayList extends ArrayList<Varbind> {}
 
     /** The Table. */
-    private Table table = new Table();
+    private final Table table = new Table();
 
     /** The Container. */
-    private BeanContainer<Integer,Varbind> container = new BeanContainer<Integer,Varbind>(Varbind.class);
+    private final BeanContainer<Integer,Varbind> container = new BeanContainer<Integer,Varbind>(Varbind.class);
 
     /** The Toolbar. */
-    private HorizontalLayout toolbar = new HorizontalLayout();
+    private final HorizontalLayout toolbar = new HorizontalLayout();
 
     /** The add button. */
-    private Button add;
+    private final Button add;
 
     /** The delete button. */
-    private Button delete;
+    private final Button delete;
 
     /**
      * Instantiates a new mask varbind field.
@@ -108,24 +108,22 @@ public class MaskVarbindField extends CustomField<MaskVarbindField.VarbindArrayL
         toolbar.addComponent(add);
         toolbar.addComponent(delete);
         toolbar.setVisible(table.isEditable());
+    }
+
+    @Override
+    public Component initContent() {
         VerticalLayout layout = new VerticalLayout();
         layout.addComponent(table);
         layout.addComponent(toolbar);
         layout.setComponentAlignment(toolbar, Alignment.MIDDLE_RIGHT);
-        setCompositionRoot(layout);
+        return layout;
     }
 
-    /* (non-Javadoc)
-     * @see org.vaadin.addon.customfield.CustomField#getType()
-     */
     @Override
     public Class<VarbindArrayList> getType() {
         return VarbindArrayList.class;
     }
 
-    /* (non-Javadoc)
-     * @see org.vaadin.addon.customfield.CustomField#setPropertyDataSource(com.vaadin.data.Property)
-     */
     @Override
     @SuppressWarnings("unchecked")
     public void setPropertyDataSource(Property newDataSource) {
@@ -141,9 +139,6 @@ public class MaskVarbindField extends CustomField<MaskVarbindField.VarbindArrayL
         super.setPropertyDataSource(newDataSource);
     }
 
-    /* (non-Javadoc)
-     * @see org.vaadin.addon.customfield.CustomField#getValue()
-     */
     @Override
     public VarbindArrayList getValue() {
         VarbindArrayList beans = new VarbindArrayList();

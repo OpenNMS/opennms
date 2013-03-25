@@ -64,22 +64,22 @@ import de.steinwedel.vaadin.MessageBox.EventListener;
 public class RrdField extends CustomField<Rrd> implements Button.ClickListener {
 
     /** The Step. */
-    private TextField step = new TextField();
+    private final TextField step = new TextField();
 
     /** The RRA Table. */
-    private Table table = new Table();
+    private final Table table = new Table();
 
     /** The Container. */
-    private BeanItemContainer<RRA> container = new BeanItemContainer<RRA>(RRA.class);
+    private final BeanItemContainer<RRA> container = new BeanItemContainer<RRA>(RRA.class);
 
     /** The Toolbar. */
-    private HorizontalLayout toolbar = new HorizontalLayout();
+    private final HorizontalLayout toolbar = new HorizontalLayout();
 
     /** The add button. */
-    private Button add;
+    private final Button add;
 
     /** The delete button. */
-    private Button delete;
+    private final Button delete;
 
     /**
      * Instantiates a new RRD field.
@@ -141,15 +141,17 @@ public class RrdField extends CustomField<Rrd> implements Button.ClickListener {
         toolbar.addComponent(add);
         toolbar.addComponent(delete);
         toolbar.setVisible(table.isEditable());
+        setBuffered(true);
+    }
 
+    @Override
+    public Component initContent() {
         VerticalLayout layout = new VerticalLayout();
         layout.addComponent(step);
         layout.addComponent(table);
         layout.addComponent(toolbar);
         layout.setComponentAlignment(toolbar, Alignment.MIDDLE_RIGHT);
-
-        setBuffered(true);
-        setCompositionRoot(layout);
+        return layout;
     }
 
     /**
@@ -162,17 +164,11 @@ public class RrdField extends CustomField<Rrd> implements Button.ClickListener {
         setCaption(caption);
     }
 
-    /* (non-Javadoc)
-     * @see org.vaadin.addon.customfield.CustomField#getType()
-     */
     @Override
     public Class<Rrd> getType() {
         return Rrd.class;
     }
 
-    /* (non-Javadoc)
-     * @see org.vaadin.addon.customfield.CustomField#setPropertyDataSource(com.vaadin.data.Property)
-     */
     @Override
     public void setPropertyDataSource(Property newDataSource) {
         Object value = newDataSource.getValue();
@@ -192,9 +188,6 @@ public class RrdField extends CustomField<Rrd> implements Button.ClickListener {
         super.setPropertyDataSource(newDataSource);
     }
 
-    /* (non-Javadoc)
-     * @see org.vaadin.addon.customfield.CustomField#getValue()
-     */
     @Override
     public Rrd getValue() {
         Rrd dto = new Rrd();
