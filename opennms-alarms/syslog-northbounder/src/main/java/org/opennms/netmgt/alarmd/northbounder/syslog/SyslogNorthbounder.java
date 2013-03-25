@@ -239,8 +239,9 @@ public class SyslogNorthbounder extends AbstractNorthbounder implements Initiali
 			//Implement this so we don't have load the entire node.
 			//m_nodeDao.getLabelForId();
 			
-			OnmsNode node = m_nodeDao.get(alarm.getNodeId());
-			mapping.put("nodeLabel", node.getLabel());
+			Integer id = Integer.valueOf(777);
+			String nodeLabel = m_nodeDao.getLabelForId(id);
+			mapping.put("nodeLabel", nodeLabel);
 		} else {
 			mapping.put("nodeId", "");
 			mapping.put("nodeLabel", "");

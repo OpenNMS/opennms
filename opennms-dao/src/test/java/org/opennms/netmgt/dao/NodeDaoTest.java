@@ -329,6 +329,13 @@ public class NodeDaoTest implements InitializingBean {
 
     }
     
+    @Test
+    @Transactional
+    public void testGetNodeLabelForId() {
+    	OnmsNode node = getNode1();
+    	String label = getNodeDao().getLabelForId(node.getId());
+    	assertEquals(label, node.getLabel());
+    }
     
     
     @Test

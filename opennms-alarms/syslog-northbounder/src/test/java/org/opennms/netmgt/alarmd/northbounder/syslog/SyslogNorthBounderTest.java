@@ -78,6 +78,7 @@ import org.springframework.test.context.ContextConfiguration;
 public class SyslogNorthBounderTest {
 	
 
+	private static final int TEST_NODE_ID = 777;
 	private static final String SERVER_HOST = "127.0.0.1";
 	public static final int MESSAGE_LENGTH = 1024;
 	private static final int SERVER_PORT = 8514;
@@ -200,7 +201,7 @@ public class SyslogNorthBounderTest {
 		OnmsNode node = new OnmsNode(distpoller, "p-brane");
 		node.setForeignSource("TestGroup");
 		node.setForeignId("1");
-		node.setId(777);
+		node.setId(TEST_NODE_ID);
 		
 		OnmsSnmpInterface snmpInterface = new OnmsSnmpInterface(node, 1);
 		snmpInterface.setId(1);
@@ -273,21 +274,27 @@ public class SyslogNorthBounderTest {
 			switch (i) {
 			case 1:
 				Assert.assertTrue("Alarm (OnmsSeverity: "+OnmsSeverity.get(i)+") = LEVEL_INFO.", message.contains("INFO"));
+				Assert.assertTrue(message.contains("NODE:p-brane"));
 				break;
 			case 2:
 				Assert.assertTrue("Alarm (OnmsSeverity: "+OnmsSeverity.get(i)+") = LEVEL_NOTICE.", message.contains("NOTICE"));
+				Assert.assertTrue(message.contains("NODE:p-brane"));
 				break;
 			case 3:
 				Assert.assertTrue("Alarm (OnmsSeverity: "+OnmsSeverity.get(i)+") = LEVEL_NOTICE.", message.contains("NOTICE"));
+				Assert.assertTrue(message.contains("NODE:p-brane"));
 				break;
 			case 4:
 				Assert.assertTrue("Alarm (OnmsSeverity: "+OnmsSeverity.get(i)+") = LEVEL_ERROR.", message.contains("ERROR"));
+				Assert.assertTrue(message.contains("NODE:p-brane"));
 				break;
 			case 5:
 				Assert.assertTrue("Alarm (OnmsSeverity: "+OnmsSeverity.get(i)+") = LEVEL_ERROR.", message.contains("ERROR"));
+				Assert.assertTrue(message.contains("NODE:p-brane"));
 				break;
 			case 6:
 				Assert.assertTrue("Alarm (OnmsSeverity: "+OnmsSeverity.get(i)+") = LEVEL_CRITICAL.", message.contains("CRITICAL"));
+				Assert.assertTrue(message.contains("NODE:p-brane"));
 				break;
 			}
 			i++;
