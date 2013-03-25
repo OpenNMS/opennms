@@ -163,7 +163,7 @@ public final class SnmpVlanCollection implements ReadyRunnable {
 	 * Returns true if the dot1DBridge table was collected.
 	 */
 	boolean hasDot1dBase() {
-		return (m_dot1dBase != null && !m_dot1dBase.failed());
+		return (m_dot1dBase != null && !m_dot1dBase.failed() && m_dot1dBase.getBridgeAddress() != null);
 	}
 
 	/**
@@ -177,7 +177,7 @@ public final class SnmpVlanCollection implements ReadyRunnable {
 	 * Returns true if the dot1DBridge table was collected.
 	 */
 	boolean hasDot1dBasePortTable() {
-		return (m_dot1dBaseTable != null && !m_dot1dBaseTable.failed());
+		return (m_dot1dBaseTable != null && !m_dot1dBaseTable.failed() && !m_dot1dBaseTable.isEmpty());
 	}
 
 	/**
@@ -191,7 +191,7 @@ public final class SnmpVlanCollection implements ReadyRunnable {
 	 * Returns true if the dot1DStp info was collected.
 	 */
 	boolean hasDot1dStp() {
-		return (m_dot1dStp != null && !m_dot1dStp.failed());
+		return (m_dot1dStp != null && !m_dot1dStp.failed() && m_dot1dStp.getStpDesignatedRoot() != null);
 	}
 
 	/**
@@ -205,7 +205,7 @@ public final class SnmpVlanCollection implements ReadyRunnable {
 	 * Returns true if the dot1DStpPortTable info was collected.
 	 */
 	boolean hasDot1dStpPortTable() {
-		return (m_dot1dStpTable != null && !m_dot1dStpTable.failed());
+		return (m_dot1dStpTable != null && !m_dot1dStpTable.failed() && !m_dot1dStpTable.isEmpty());
 	}
 
 	/**
@@ -219,7 +219,7 @@ public final class SnmpVlanCollection implements ReadyRunnable {
 	 * Returns true if the dot1DStpPortTable info was collected.
 	 */
 	boolean hasDot1dTpFdbTable() {
-		return (m_dot1dTpFdbTable != null && !m_dot1dTpFdbTable.failed());
+		return (m_dot1dTpFdbTable != null && !m_dot1dTpFdbTable.failed() && !m_dot1dTpFdbTable.isEmpty());
 	}
 
 	/**
@@ -233,7 +233,7 @@ public final class SnmpVlanCollection implements ReadyRunnable {
 	 * Returns true if the dot1DStpPortTable info was collected.
 	 */
 	boolean hasQBridgeDot1dTpFdbTable() {
-		return (m_dot1qTpFdbTable!= null && !m_dot1qTpFdbTable.failed());
+		return (m_dot1qTpFdbTable!= null && !m_dot1qTpFdbTable.failed() && !m_dot1qTpFdbTable.isEmpty());
 	}
 
 	/**

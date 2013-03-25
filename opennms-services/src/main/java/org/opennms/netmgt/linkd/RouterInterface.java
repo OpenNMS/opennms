@@ -33,9 +33,7 @@ import java.net.InetAddress;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.core.utils.InetAddressUtils;
 
-import org.opennms.netmgt.model.topology.Link;
-
-public class RouterInterface extends Link {
+public class RouterInterface {
 	
     private int m_ifIndex;
     private final int m_nextHopNodeId;

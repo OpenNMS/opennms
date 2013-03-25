@@ -144,7 +144,7 @@ public abstract class Nms7467NetworkBuilder extends LinkdNetworkBuilder {
      *
      */
 
-    protected static final String CISCO_C870_NAME         = "ciscorouter";
+    protected static final String CISCO_C870_NAME         = "mrmakay.internal.opennms.com";
     protected static final String CISCO_C870_IP_PRIMARY   = "10.255.255.2";
     protected static final String CISCO_C870_IP           = "172.20.1.1";
     protected static final String CISCO_C870_BRIDGEID      = "00000c83d9a8";

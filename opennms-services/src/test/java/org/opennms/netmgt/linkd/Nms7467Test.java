@@ -145,6 +145,58 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
     }
 
     @Test
+    public void testDefaultConfiguration() throws MarshalException, ValidationException, IOException {
+        
+        assertEquals(5, m_linkdConfig.getThreads());
+        assertEquals(3600000, m_linkdConfig.getInitialSleepTime());
+        assertEquals(18000000, m_linkdConfig.getSnmpPollInterval());
+        assertEquals(1800000, m_linkdConfig.getDiscoveryLinkInterval());
+        
+
+        
+        assertEquals(false, m_linkdConfig.isAutoDiscoveryEnabled());
+        assertEquals(false, m_linkdConfig.enableDiscoveryDownload());
+        assertEquals(true,m_linkdConfig.isVlanDiscoveryEnabled());
+        assertEquals(true,m_linkdConfig.useCdpDiscovery());
+        assertEquals(true,m_linkdConfig.useIpRouteDiscovery());
+        assertEquals(true,m_linkdConfig.useBridgeDiscovery());
+        assertEquals(true,m_linkdConfig.useOspfDiscovery());
+        assertEquals(true,m_linkdConfig.useLldpDiscovery());
+
+        assertEquals(true,m_linkdConfig.saveRouteTable());
+        assertEquals(true,m_linkdConfig.saveStpNodeTable());
+        assertEquals(true,m_linkdConfig.saveStpInterfaceTable());
+        assertEquals(false,m_linkdConfig.forceIpRouteDiscoveryOnEthernet());
+        
+        Enumeration<org.opennms.netmgt.config.linkd.Package> iter = m_linkdConfig.enumeratePackage();
+        org.opennms.netmgt.config.linkd.Package example1 = iter.nextElement();
+        
+        assertEquals(false, iter.hasMoreElements());   
+        assertEquals("example1",example1.getName());
+        assertEquals(false, example1.hasAutoDiscovery());
+        assertEquals(false, example1.hasDiscovery_link_interval());
+        assertEquals(false,example1.hasEnableDiscoveryDownload());
+        assertEquals(false,example1.hasEnableVlanDiscovery());
+        assertEquals(false,example1.hasForceIpRouteDiscoveryOnEthernet());
+        assertEquals(false,example1.hasSaveRouteTable());
+        assertEquals(false,example1.hasSaveStpInterfaceTable());
+        assertEquals(false,example1.hasSaveStpNodeTable());
+        assertEquals(false,example1.hasSnmp_poll_interval());
+        assertEquals(false,example1.hasUseBridgeDiscovery());
+        assertEquals(false,example1.hasUseCdpDiscovery());
+        assertEquals(false,example1.hasUseIpRouteDiscovery());
+        
+        assertEquals(false, m_linkdConfig.isInterfaceInPackage(InetAddress.getByName(CISCO_C870_IP), example1));
+        
+        m_nodeDao.save(getCiscoC870());
+        m_nodeDao.flush();
+        
+        m_linkdConfig.update();
+        assertEquals(true, m_linkdConfig.isInterfaceInPackage(InetAddress.getByName(CISCO_C870_IP), example1));
+        
+    }
+    
+    @Test
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host=CISCO_WS_C2948_IP, port=161, resource="classpath:linkd/nms7467/"+CISCO_WS_C2948_IP+"-walk.txt")
     })
@@ -156,7 +208,8 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         Package example1 = m_linkdConfig.getPackage("example1");
         example1.setUseLldpDiscovery(false);
         example1.setUseOspfDiscovery(false);
-
+        example1.setForceIpRouteDiscoveryOnEthernet(true);
+        
         final OnmsNode ciscosw = m_nodeDao.findByForeignId("linkd", CISCO_WS_C2948_NAME);
 
         assertTrue(m_linkd.scheduleNodeCollection(ciscosw.getId()));
@@ -170,10 +223,13 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         // linkabble node is not null
         assertTrue(linkNode != null);
         
-        // has only one route (next hop must be valid!) 
-        assertEquals(1,linkNode.getRouteInterfaces().size());
+        // has only one route with valid next hop must be valid but type is ethernet so skipped
+        // but it is itself so 0
+        assertEquals(0,linkNode.getRouteInterfaces().size());
         // has 5 
-        assertEquals(5, linkNode.getVlans().size());
+        assertEquals(2,m_ipRouteInterfaceDao.countAll());
+        
+        assertEquals(5, m_vlanDao.countAll());
         
         String packageName = m_linkdConfig.getFirstPackageMatch(InetAddress.getByName(CISCO_WS_C2948_IP)).getName();
 
@@ -182,16 +238,16 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         assertEquals(58,linkNode.getBridgeIdentifiers().size());
 
         // has 1 stp node entry check the bridge identifier and protocol
-        assertEquals(CISCO_WS_C2948_BRIDGEID,linkNode.getBridgeIdentifier("1"));
+        assertEquals(CISCO_WS_C2948_BRIDGEID,linkNode.getBridgeIdentifier(1));
         
         // has 50 stp entry che ifIndex must be different then -1
         // 
-        assertEquals(50, linkNode.getStpInterfaces().get("1").size());
+        assertEquals(50, linkNode.getStpInterfaces().get(1).size());
 
         // no cdp inteface also if the walk return several interfaces
         assertEquals("No cdp interface because no other node is there",0,linkNode.getCdpInterfaces().size());
         
-        for (OnmsStpInterface stpiface: linkNode.getStpInterfaces().get("1")) {
+        for (OnmsStpInterface stpiface: linkNode.getStpInterfaces().get(1)) {
             assertTrue("should have a valid ifindex", stpiface.getIfIndex().intValue() > 0);
             assertTrue("should have a valid bridgeport", stpiface.getBridgePort().intValue() > 0);
         }
@@ -217,7 +273,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         //0 atinterface in database
         assertEquals(0, m_atInterfaceDao.findAll().size());
         
-        // 1 entry in vlan
+        // 5 entry in vlan
         assertEquals(5, m_vlanDao.findAll().size());
  
         // 1 entry in stpnode
@@ -260,10 +316,10 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         // linkabble node is not null
         assertTrue(linkNode != null);
         
-        // has 3 route (next hop must be valid!) 
-        assertEquals(3,linkNode.getRouteInterfaces().size());
+        // has 0 route (next hop must be valid!) 
+        assertEquals(0,linkNode.getRouteInterfaces().size());
         // has 0 vlan 
-        assertEquals(0, linkNode.getVlans().size());
+        assertEquals(0, m_vlanDao.countAll());
         
         String packageName = m_linkdConfig.getFirstPackageMatch(InetAddress.getByName(CISCO_C870_IP)).getName();
 
@@ -272,16 +328,16 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         assertEquals(6,linkNode.getBridgeIdentifiers().size());
 
         // has 1 stp node entry check the bridge identifier and protocol
-        assertEquals(CISCO_C870_BRIDGEID,linkNode.getBridgeIdentifier("1"));
+        assertEquals(CISCO_C870_BRIDGEID,linkNode.getBridgeIdentifier(1));
         
         // has 50 stp entry che ifIndex must be different then -1
         // 
-        assertEquals(1, linkNode.getStpInterfaces().get("1").size());
+        assertEquals(1, linkNode.getStpInterfaces().get(1).size());
 
         // no cdp inteface also if the walk return several interfaces
         assertEquals("No cdp interface because no other node is there",0,linkNode.getCdpInterfaces().size());
         
-        for (OnmsStpInterface stpiface: linkNode.getStpInterfaces().get("1")) {
+        for (OnmsStpInterface stpiface: linkNode.getStpInterfaces().get(1)) {
             assertTrue("should have a valid ifindex", stpiface.getIfIndex().intValue() > 0);
             assertTrue("should have a valid bridgeport", stpiface.getBridgePort().intValue() > 0);
         }
@@ -379,7 +435,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         // has 0 route (next hop must be valid!) no ip route table
         assertEquals(0,linkNode.getRouteInterfaces().size());
         // has 0 vlan 
-        assertEquals(0, linkNode.getVlans().size());
+        assertEquals(0, m_vlanDao.countAll());
         
         String packageName = m_linkdConfig.getFirstPackageMatch(InetAddress.getByName(NETGEAR_SW_108_IP)).getName();
 
@@ -388,16 +444,16 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         assertEquals(9,linkNode.getBridgeIdentifiers().size());
 
         // has 1 stp node entry check the bridge identifier and protocol
-        assertEquals(NETGEAR_SW_108_BRIDGEID,linkNode.getBridgeIdentifier("1"));
+        assertEquals(NETGEAR_SW_108_BRIDGEID,linkNode.getBridgeIdentifier(1));
         
         // has 8 stp entry che ifIndex must be different then -1
         // 
-        assertEquals(8, linkNode.getStpInterfaces().get("1").size());
+        assertEquals(8, linkNode.getStpInterfaces().get(1).size());
 
         // no cdp inteface also if the walk return several interfaces
         assertEquals("cdp not supported",0,linkNode.getCdpInterfaces().size());
         
-        for (OnmsStpInterface stpiface: linkNode.getStpInterfaces().get("1")) {
+        for (OnmsStpInterface stpiface: linkNode.getStpInterfaces().get(1)) {
             assertTrue("should have a valid ifindex", stpiface.getIfIndex().intValue() > 0);
             assertTrue("should have a valid bridgeport", stpiface.getBridgePort().intValue() > 0);
         }
@@ -481,7 +537,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         // has 0 route (next hop must be valid!) no ip route table
         assertEquals(0,linkNode.getRouteInterfaces().size());
         // has 0 vlan 
-        assertEquals(0, linkNode.getVlans().size());
+        assertEquals(0, m_vlanDao.countAll());
         
         String packageName = m_linkdConfig.getFirstPackageMatch(InetAddress.getByName(LINUX_UBUNTU_IP)).getName();
 
@@ -568,7 +624,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         // has 1 route (next hop must be valid!) no ip route table
         assertEquals(0,linkNode.getRouteInterfaces().size());
         // has 0 vlan 
-        assertEquals(0, linkNode.getVlans().size());
+        assertEquals(0, m_vlanDao.countAll());
         
         String packageName = m_linkdConfig.getFirstPackageMatch(InetAddress.getByName(DARWIN_10_8_IP)).getName();
 
@@ -822,58 +878,6 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
     }
 
     @Test
-    public void testDefaultConfiguration() throws MarshalException, ValidationException, IOException {
-        
-        assertEquals(5, m_linkdConfig.getThreads());
-        assertEquals(3600000, m_linkdConfig.getInitialSleepTime());
-        assertEquals(18000000, m_linkdConfig.getSnmpPollInterval());
-        assertEquals(1800000, m_linkdConfig.getDiscoveryLinkInterval());
-        
-
-        
-        assertEquals(false, m_linkdConfig.isAutoDiscoveryEnabled());
-        assertEquals(false, m_linkdConfig.enableDiscoveryDownload());
-        assertEquals(true,m_linkdConfig.isVlanDiscoveryEnabled());
-        assertEquals(true,m_linkdConfig.useCdpDiscovery());
-        assertEquals(true,m_linkdConfig.useIpRouteDiscovery());
-        assertEquals(true,m_linkdConfig.useBridgeDiscovery());
-        assertEquals(true,m_linkdConfig.useOspfDiscovery());
-        assertEquals(true,m_linkdConfig.useLldpDiscovery());
-
-        assertEquals(true,m_linkdConfig.saveRouteTable());
-        assertEquals(true,m_linkdConfig.saveStpNodeTable());
-        assertEquals(true,m_linkdConfig.saveStpInterfaceTable());
-        assertEquals(false,m_linkdConfig.forceIpRouteDiscoveryOnEthernet());
-        
-        Enumeration<org.opennms.netmgt.config.linkd.Package> iter = m_linkdConfig.enumeratePackage();
-        org.opennms.netmgt.config.linkd.Package example1 = iter.nextElement();
-        
-        assertEquals(false, iter.hasMoreElements());   
-        assertEquals("example1",example1.getName());
-        assertEquals(false, example1.hasAutoDiscovery());
-        assertEquals(false, example1.hasDiscovery_link_interval());
-        assertEquals(false,example1.hasEnableDiscoveryDownload());
-        assertEquals(false,example1.hasEnableVlanDiscovery());
-        assertEquals(false,example1.hasForceIpRouteDiscoveryOnEthernet());
-        assertEquals(false,example1.hasSaveRouteTable());
-        assertEquals(false,example1.hasSaveStpInterfaceTable());
-        assertEquals(false,example1.hasSaveStpNodeTable());
-        assertEquals(false,example1.hasSnmp_poll_interval());
-        assertEquals(false,example1.hasUseBridgeDiscovery());
-        assertEquals(false,example1.hasUseCdpDiscovery());
-        assertEquals(false,example1.hasUseIpRouteDiscovery());
-        
-        assertEquals(false, m_linkdConfig.isInterfaceInPackage(InetAddress.getByName(CISCO_C870_IP), example1));
-        
-        m_nodeDao.save(getCiscoC870());
-        m_nodeDao.flush();
-        
-        m_linkdConfig.update();
-        assertEquals(true, m_linkdConfig.isInterfaceInPackage(InetAddress.getByName(CISCO_C870_IP), example1));
-        
-    }
-    
-    @Test
     public void testGetNodeidFromIp() throws UnknownHostException, SQLException {
         m_nodeDao.save(getCiscoC870());
         m_nodeDao.flush();
@@ -913,7 +917,20 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
             @JUnitSnmpAgent(host=CISCO_C870_IP, port=161, resource="classpath:linkd/nms7467/"+CISCO_C870_IP+"-walk.txt")
     })
     public void testCiscoRouterCiscoWsUsingCdp() throws Exception {
-        m_nodeDao.save(getCiscoC870());
+        Package example1 = m_linkdConfig.getPackage("example1");
+        example1.setUseLldpDiscovery(false);
+        example1.setUseOspfDiscovery(false);
+        example1.setUseIpRouteDiscovery(false);
+        example1.setUseBridgeDiscovery(false);
+        example1.setUseCdpDiscovery(true);
+        
+        example1.setSaveRouteTable(false);
+        example1.setSaveStpNodeTable(false);
+        example1.setSaveStpInterfaceTable(false);
+        example1.setEnableVlanDiscovery(false);
+
+    	
+    	m_nodeDao.save(getCiscoC870());
         m_nodeDao.save(getCiscoWsC2948());
         m_nodeDao.flush();
 
@@ -931,15 +948,8 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         assertEquals(2, linkables.size());
         
         for (LinkableNode lnode: linkables) {
-            if (ciscows.getId() == lnode.getNodeId()) {
-                assertEquals(true, lnode.hasCdpInterfaces());
-                assertEquals(1, lnode.getCdpInterfaces().size());
-            } else if (ciscorouter.getId() == lnode.getNodeId()) {
-                assertEquals(true, lnode.hasCdpInterfaces());
-                assertEquals(1, lnode.getCdpInterfaces().size());
-            } else {
-                assertTrue("Found node not added!!!!!",false);
-            }
+            assertEquals(true, lnode.hasCdpInterfaces());
+            assertEquals(1, lnode.getCdpInterfaces().size());
         }
         
 

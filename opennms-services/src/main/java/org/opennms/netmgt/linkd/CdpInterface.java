@@ -37,15 +37,13 @@ import java.net.InetAddress;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
-import org.opennms.netmgt.model.topology.Link;
-
 /**
  * <p>CdpInterface class.</p>
  *
  * @author antonio
  * @version $Id: $
  */
-public class CdpInterface extends Link {
+public class CdpInterface {
 	
 	/**
 	 * the int that indicated cdp address type

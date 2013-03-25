@@ -330,7 +330,139 @@ public class Nms1055Test extends Nms1055NetworkBuilder implements InitializingBe
                 checkLink(penrose,penrose,-1,-1,datalinkinterface);
             }
         }
-               
-
     }
+    
+    /*
+    * We want to test that the next hop router discovered 
+    * links can be discovered using the ospf neb table
+    */
+   @Test
+   @JUnitSnmpAgents(value={
+           @JUnitSnmpAgent(host=PENROSE_IP, port=161, resource="classpath:linkd/nms1055/"+PENROSE_NAME+"_"+PENROSE_IP+".txt"),
+           @JUnitSnmpAgent(host=DELAWARE_IP, port=161, resource="classpath:linkd/nms1055/"+DELAWARE_NAME+"_"+DELAWARE_IP+".txt")
+   })
+   public void testNetwork1055StpLinks() throws Exception {
+       m_nodeDao.save(getPenrose());
+       m_nodeDao.save(getDelaware());
+       m_nodeDao.flush();
+       
+       Package example1 = m_linkdConfig.getPackage("example1");
+       example1.setUseBridgeDiscovery(true);
+       example1.setUseLldpDiscovery(false);
+       example1.setUseCdpDiscovery(false);
+       example1.setUseIpRouteDiscovery(false);
+       example1.setUseOspfDiscovery(false);
+       
+       example1.setSaveRouteTable(false);
+       example1.setSaveStpInterfaceTable(false);
+       example1.setSaveStpNodeTable(false);
+
+       final OnmsNode penrose = m_nodeDao.findByForeignId("linkd", PENROSE_NAME);
+       final OnmsNode delaware = m_nodeDao.findByForeignId("linkd", DELAWARE_NAME);
+
+       assertTrue(m_linkd.scheduleNodeCollection(penrose.getId()));
+       assertTrue(m_linkd.scheduleNodeCollection(delaware.getId()));
+
+       assertTrue(m_linkd.runSingleSnmpCollection(penrose.getId()));
+       assertTrue(m_linkd.runSingleSnmpCollection(delaware.getId()));
+ 
+       assertEquals(0,m_dataLinkInterfaceDao.countAll());
+
+       assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
+
+       assertEquals(1,m_dataLinkInterfaceDao.countAll());
+
+   }
+   
+
+    
+    /*
+     * We want to test that the next hop router discovered 
+     * links can be discovered using the ospf neb table
+     */
+    @Test
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host=PENROSE_IP, port=161, resource="classpath:linkd/nms1055/"+PENROSE_NAME+"_"+PENROSE_IP+".txt"),
+            @JUnitSnmpAgent(host=DELAWARE_IP, port=161, resource="classpath:linkd/nms1055/"+DELAWARE_NAME+"_"+DELAWARE_IP+".txt"),
+            @JUnitSnmpAgent(host=PHOENIX_IP, port=161, resource="classpath:linkd/nms1055/"+PHOENIX_NAME+"_"+PHOENIX_IP+".txt"),
+            @JUnitSnmpAgent(host=AUSTIN_IP, port=161, resource="classpath:linkd/nms1055/"+AUSTIN_NAME+"_"+AUSTIN_IP+".txt"),
+            @JUnitSnmpAgent(host=SANJOSE_IP, port=161, resource="classpath:linkd/nms1055/"+SANJOSE_NAME+"_"+SANJOSE_IP+".txt"),
+            @JUnitSnmpAgent(host=RIOVISTA_IP, port=161, resource="classpath:linkd/nms1055/"+RIOVISTA_NAME+"_"+RIOVISTA_IP+".txt")
+    })
+    public void testNetwork1055OspfLinks() throws Exception {
+        m_nodeDao.save(getPenrose());
+        m_nodeDao.save(getDelaware());
+        m_nodeDao.save(getPhoenix());
+        m_nodeDao.save(getAustin());
+        m_nodeDao.save(getSanjose());
+        m_nodeDao.save(getRiovista());
+        m_nodeDao.flush();
+
+        Package example1 = m_linkdConfig.getPackage("example1");
+        example1.setUseBridgeDiscovery(false);
+        example1.setUseLldpDiscovery(false);
+        example1.setUseCdpDiscovery(false);
+        example1.setUseIpRouteDiscovery(false);
+        example1.setUseOspfDiscovery(true);
+        
+        example1.setSaveRouteTable(false);
+        example1.setSaveStpInterfaceTable(false);
+        example1.setSaveStpNodeTable(false);
+        m_linkdConfig.update();
+
+        
+        final OnmsNode penrose = m_nodeDao.findByForeignId("linkd", PENROSE_NAME);
+        final OnmsNode delaware = m_nodeDao.findByForeignId("linkd", DELAWARE_NAME);
+        final OnmsNode phoenix = m_nodeDao.findByForeignId("linkd", PHOENIX_NAME);
+        final OnmsNode austin = m_nodeDao.findByForeignId("linkd", AUSTIN_NAME);
+        final OnmsNode sanjose = m_nodeDao.findByForeignId("linkd", SANJOSE_NAME);
+        final OnmsNode riovista = m_nodeDao.findByForeignId("linkd", RIOVISTA_NAME);
+        
+        assertTrue(m_linkd.scheduleNodeCollection(penrose.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(delaware.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(phoenix.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(austin.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(sanjose.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(riovista.getId()));
+
+        assertTrue(m_linkd.runSingleSnmpCollection(penrose.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(delaware.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(phoenix.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(austin.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(sanjose.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(riovista.getId()));
+               
+        assertEquals(0,m_dataLinkInterfaceDao.countAll());
+
+
+        assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
+
+        assertEquals(5,m_dataLinkInterfaceDao.countAll());
+        final List<DataLinkInterface> links = m_dataLinkInterfaceDao.findAll();
+                
+        final int start = getStartPoint(links);
+        for (final DataLinkInterface datalinkinterface: links) {
+            Integer linkid = datalinkinterface.getId();
+            if ( linkid == start) {
+                // penrose  -> delaware --ip route next hop
+                checkLink(delaware, penrose, 598, 535, datalinkinterface);
+            } else if (linkid == start+1 ) {
+                // penrose   -> phoenix     --ip route next hop
+                checkLink(phoenix, penrose, 564, 644, datalinkinterface);
+            } else if (linkid == start+2) {
+                // phoenix  -> austin --ip route next hop
+                checkLink(austin,phoenix,554,565,datalinkinterface);
+            } else if (linkid == start+3) {
+                // phoenix  -> sanjose --ip route next hop
+                checkLink(sanjose,phoenix,564,566,datalinkinterface);
+            } else if (linkid == start+4) {
+                // austin  -> sanjose --ip route next hop
+                checkLink(sanjose,austin ,8562 , 586, datalinkinterface);
+            } else {
+                // error
+                checkLink(penrose,penrose,-1,-1,datalinkinterface);
+            }
+        }
+    }
+
 }

@@ -39,9 +39,7 @@ import org.opennms.netmgt.model.topology.Link;
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
  * @version $Id: $
  */
-public class NodeToNodeLink extends Link implements Serializable {
-
-    private static final long serialVersionUID = 3345863801030796787L;
+public class NodeToNodeLink {
 
     final int m_nodeId;
     final int m_ifIndex;

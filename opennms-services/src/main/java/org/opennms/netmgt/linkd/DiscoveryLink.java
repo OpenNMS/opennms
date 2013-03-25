@@ -436,8 +436,8 @@ public final class DiscoveryLink implements ReadyRunnable {
                            curNodeId, str(cupIpAddr),
                            curNode.getStpInterfaces().size());
 
-            for (final Map.Entry<String, List<OnmsStpInterface>> me : curNode.getStpInterfaces().entrySet()) {
-                final String vlan = me.getKey();
+            for (final Map.Entry<Integer, List<OnmsStpInterface>> me : curNode.getStpInterfaces().entrySet()) {
+                final Integer vlan = me.getKey();
                 final String curBaseBridgeAddress = curNode.getBridgeIdentifier(vlan);
 
                 LogUtils.debugf(this, "run: found bridge identifier %s",

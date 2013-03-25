@@ -37,8 +37,6 @@ import java.net.InetAddress;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
-import org.opennms.netmgt.model.topology.Link;
-
 /**
  * <p>
  * OspfInterface class.
@@ -47,7 +45,7 @@ import org.opennms.netmgt.model.topology.Link;
  * @author antonio
  * @version $Id: $
  */
-public class OspfNbrInterface extends Link {
+public class OspfNbrInterface {
 
     /**
      * the ip address

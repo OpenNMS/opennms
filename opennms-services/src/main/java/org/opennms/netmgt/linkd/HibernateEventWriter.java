@@ -396,6 +396,24 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
         return nodeids;
 	}
 
+	// SELECT node.nodeid FROM node LEFT JOIN ipinterface ON node.nodeid = ipinterface.nodeid WHERE nodetype = 'A' AND ipaddr = ?
+	@Override
+	protected List<Integer> getNodeidFromIp(final InetAddress cdpTargetIpAddr) {
+        List<Integer> nodeids = new ArrayList<Integer>();
+        final OnmsCriteria criteria = new OnmsCriteria(OnmsIpInterface.class);
+        criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
+        criteria.add(Restrictions.eq("ipAddress", cdpTargetIpAddr));
+        criteria.add(Restrictions.eq("node.type", "A"));
+        List<OnmsIpInterface> interfaces = m_ipInterfaceDao.findMatching(criteria);
+        
+        LogUtils.debugf(this, "getNodeidFromIp: Found %d nodeids matching " +
+        		"ipAddress %s", interfaces.size(),str(cdpTargetIpAddr));
+        for (final OnmsIpInterface ipinterface : interfaces) {
+            nodeids.add(ipinterface.getNode().getId());
+        }
+        return nodeids;
+	}
+
 	// SELECT node.nodeid,snmpinterface.snmpifindex,snmpinterface.snmpipadentnetmask FROM node LEFT JOIN ipinterface ON node.nodeid = ipinterface.nodeid LEFT JOIN snmpinterface ON ipinterface.snmpinterfaceid = snmpinterface.id WHERE node.nodetype = 'A' AND ipinterface.ipaddr = ?
 	@Override
 	protected List<RouterInterface> getRouteInterface(final InetAddress nexthop, int ifindex) {

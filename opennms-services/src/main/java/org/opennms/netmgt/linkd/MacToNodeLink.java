@@ -28,15 +28,13 @@
 
 package org.opennms.netmgt.linkd;
 
-import org.opennms.netmgt.model.topology.Link;
-
 /**
  * <p>MacToNodeLink class.</p>
  *
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
  * @version $Id: $
  */
-public class MacToNodeLink extends Link {
+public class MacToNodeLink {
 
 	private final String macAddress;
 	int nodeparentid;

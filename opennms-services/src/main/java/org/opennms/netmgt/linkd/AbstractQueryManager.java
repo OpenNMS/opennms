@@ -106,6 +106,8 @@ public abstract class AbstractQueryManager implements QueryManager {
 
     protected abstract List<Integer> getNodeidFromIpAndSysName(InetAddress cdpTargetIpAddr, String sysname);
 
+    protected abstract List<Integer> getNodeidFromIp(InetAddress cdpTargetIpAddr);
+
     protected abstract List<RouterInterface> getRouteInterface(InetAddress nexthop, int ifindex);
 
     protected abstract int getSnmpIfType(int nodeId, Integer ifindex);
@@ -465,6 +467,13 @@ public abstract class AbstractQueryManager implements QueryManager {
                 } else {
                     targetCdpNodeIds = getNodeidFromIpAndSysName(cdpTargetIpAddr,targetSysName);
                     if (targetCdpNodeIds.isEmpty()) {
+                		for (Integer matchingtargetnodeid : getNodeidFromIp(cdpTargetIpAddr)) {
+                			String targetNodeSysName = getNodeDao().get(matchingtargetnodeid).getSysName();
+                			if (targetNodeSysName == null || targetNodeSysName.equals(""))
+                				 targetCdpNodeIds.add(matchingtargetnodeid);
+                		}
+                    }
+                    if (targetCdpNodeIds.isEmpty()) {
                         LogUtils.infof(this, "processCdpCacheTable: No Target node IDs found: interface %s not added to linkable SNMP node. Skipping.", str(cdpTargetIpAddr));
                         sendNewSuspectEvent(cdpTargetIpAddr, snmpcoll.getTarget(), snmpcoll.getPackageName());
                         continue;
@@ -716,7 +725,6 @@ public abstract class AbstractQueryManager implements QueryManager {
             saveVlan(vlan);
 
         }
-        node.setVlans(vlans);
     }
 
     protected void storeSnmpVlanCollection(final OnmsNode onmsNode, final LinkableNode node, final OnmsVlan vlan, final SnmpVlanCollection snmpVlanColl, final Date scanTime) {
@@ -727,6 +735,7 @@ public abstract class AbstractQueryManager implements QueryManager {
             return;
         }
 
+        LogUtils.debugf(this, "storeSnmpVlanCollection: Starting Bridge MIB processing for Vlan: %s.", vlan.getVlanName());
         processDot1dBaseAndDot1dStp(onmsNode, node, vlan, snmpVlanColl,
 				scanTime);
         
@@ -785,24 +794,23 @@ public abstract class AbstractQueryManager implements QueryManager {
 	private void processDot1dBaseAndDot1dStp(final OnmsNode onmsNode,
 			final LinkableNode node, final OnmsVlan vlan,
 			final SnmpVlanCollection snmpVlanColl, final Date scanTime) {
-        LogUtils.debugf(this, "processDot1dBaseAndDot1dStp: Starting Bridge MIB processing for Vlan: %s.", vlan.getVlanName());
-
+        
         final String baseBridgeAddress = snmpVlanColl.getDot1dBase().getBridgeAddress();
         if (baseBridgeAddress == null) {
-            LogUtils.infof(this, "processDot1dBaseAndDot1dStp: Invalid base bridge address (%s) on node %d", baseBridgeAddress, node.getNodeId());
+            LogUtils.infof(this, "processDot1dBaseAndDot1dStp: Invalid base bridge address (%s) on node/vlan %d/%d", baseBridgeAddress, node.getNodeId(),vlan.getId());
             return;
         }
 
         LogUtils.debugf(this, "processDot1dBaseAndDot1dStp: Found Bridge Identifier %s for Vlan %d.", baseBridgeAddress, vlan.getVlanId());
-        node.addBridgeIdentifier(baseBridgeAddress, Integer.toString(vlan.getVlanId()));
+        node.addBridgeIdentifier(baseBridgeAddress, vlan.getVlanId());
         
         if (snmpVlanColl.hasDot1dStp()) {
             LogUtils.debugf(this, "processDot1dBaseAndDot1dStp: processing Dot1dStpGroup in stpnode");
-
             final String stpDesignatedRoot = snmpVlanColl.getDot1dStp().getStpDesignatedRoot();
 
             if (stpDesignatedRoot != null ) {
                 LogUtils.debugf(this, "processDot1dBaseAndDot1dStp: Dot1dStpGroup found valid stpDesignatedRoot %s, adding to Linkable node", stpDesignatedRoot);
+                node.setVlanStpRoot(vlan.getVlanId(), stpDesignatedRoot);
             }
         }
 
@@ -842,7 +850,7 @@ public abstract class AbstractQueryManager implements QueryManager {
             final int curfdbstatus = dot1dfdbentry.getQBridgeDot1dTpFdbStatus();
 
             if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_LEARNED) {
-                node.addMacAddress(fdbport, curMacAddress, Integer.toString((int) vlan.getVlanId()));
+                node.addMacAddress(fdbport, curMacAddress, vlan.getVlanId());
                 LogUtils.debugf(this, "processQBridgeDot1DTpFdbTable: Found learned status on bridge port.");
             } else if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_SELF) {
                 node.addBridgeIdentifier(curMacAddress);
@@ -888,7 +896,7 @@ public abstract class AbstractQueryManager implements QueryManager {
             LogUtils.debugf(this, "processDot1DTpFdbTable: MAC address (%s) found on bridge port %d on node %d", curMacAddress, fdbport, node.getNodeId());
 
             if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_LEARNED && vlan.getVlanId() != null) {
-                node.addMacAddress(fdbport, curMacAddress, vlan.getVlanId().toString());
+                node.addMacAddress(fdbport, curMacAddress, vlan.getVlanId());
                 LogUtils.debugf(this, "processDot1DTpFdbTable: Found learned status on bridge port.");
             } else if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_SELF) {
                 node.addBridgeIdentifier(curMacAddress);

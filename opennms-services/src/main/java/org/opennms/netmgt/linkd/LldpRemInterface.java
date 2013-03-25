@@ -31,9 +31,7 @@ package org.opennms.netmgt.linkd;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
-import org.opennms.netmgt.model.topology.Link;
-
-public class LldpRemInterface extends Link {
+public class LldpRemInterface {
 	
     private final Integer m_lldpRemChassidSubtype;
     private final String m_lldpRemChassisid;
