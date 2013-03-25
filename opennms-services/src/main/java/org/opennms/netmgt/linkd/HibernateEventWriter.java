@@ -347,7 +347,7 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
 
 	@Override
 	public void updateForInterface(final int nodeid, final String ipAddr, final int ifIndex, final StatusType action)  {
-	    if (!EventUtils.isNonIpInterface(ipAddr)) {
+	    if (!(ipAddr == null || ipAddr.length() == 0 || "0.0.0.0".equals(ipAddr))) {
 	        m_atInterfaceDao.setStatusForNodeAndIp(nodeid, ipAddr, action);
 	    }
 	    if (ifIndex > -1) {
