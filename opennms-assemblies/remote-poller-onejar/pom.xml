@@ -101,20 +101,9 @@
       <plugin>
         <groupId>org.dstovall</groupId>
         <artifactId>onejar-maven-plugin</artifactId>
-        <version>1.4.3</version>
-        <executions>
-          <execution>
-            <configuration>
-              <mainClass>org.opennms.poller.remote.Main</mainClass>
-              <onejarVersion>0.96</onejarVersion>
-              <attachToBuild>true</attachToBuild>
-            </configuration>
-            <phase>package</phase>
-            <goals>
-              <goal>one-jar</goal>
-            </goals>
-          </execution>
-        </executions>
+        <configuration>
+          <mainClass>org.opennms.poller.remote.Main</mainClass>
+        </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -128,12 +117,6 @@
           </execution>
         </executions>
         <configuration>
-          <keystore>${webstart.keystore}</keystore>
-          <keypass>${webstart.keypass}</keypass>
-          <storepass>${webstart.storepass}</storepass>
-          <alias>${webstart.keyalias}</alias>
-          <dnameCn>${webstart.dnameCn}</dnameCn>
-          <dnameCn>${webstart.dnameCn}</dnameCn>
           <jarPath>${project.build.directory}/${project.build.FinalName}.one-jar.${project.packaging}</jarPath>
           <signedjar>${project.build.directory}/${project.build.FinalName}-signed-${project.packaging}-with-dependencies.${project.packaging}</signedjar>
         </configuration>
