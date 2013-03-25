@@ -85,7 +85,7 @@ public class FileEditorWindow extends Window implements Button.ClickListener {
 
         editor = new TextArea();
         editor.setPropertyDataSource(new TextFileProperty(file));
-        editor.setWriteThrough(false);
+        editor.setBuffered(true);
         editor.setImmediate(false);
         editor.setSizeFull();
         editor.setRows(30);

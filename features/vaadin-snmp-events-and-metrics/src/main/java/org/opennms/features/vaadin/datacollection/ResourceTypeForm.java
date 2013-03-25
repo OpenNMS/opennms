@@ -75,7 +75,7 @@ public abstract class ResourceTypeForm extends Form implements ClickListener {
      */
     public ResourceTypeForm() {
         setCaption("Resource Type Detail");
-        setWriteThrough(false);
+        setBuffered(true);
         setVisible(false);
         setFormFieldFactory(new ResourceTypeFieldFactory());
         initToolbar();

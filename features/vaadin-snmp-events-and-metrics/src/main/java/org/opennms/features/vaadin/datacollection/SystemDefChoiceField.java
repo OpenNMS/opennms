@@ -31,11 +31,11 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.opennms.netmgt.config.datacollection.SystemDefChoice;
-import org.vaadin.addon.customfield.CustomField;
 
 import com.vaadin.data.Property;
 import com.vaadin.data.util.converter.Converter.ConversionException;
 import com.vaadin.data.validator.RegexpValidator;
+import com.vaadin.ui.CustomField;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.TextField;
@@ -46,7 +46,7 @@ import com.vaadin.ui.TextField;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 @SuppressWarnings("serial")
-public class SystemDefChoiceField extends CustomField {
+public class SystemDefChoiceField extends CustomField<SystemDefChoice> {
 
     /** The Constant SINGLE. */
     private static final String SINGLE = "Single";
@@ -85,7 +85,7 @@ public class SystemDefChoiceField extends CustomField {
         layout.addComponent(oidValue);
         layout.setExpandRatio(oidValue, 1);
 
-        setWriteThrough(false);
+        setBuffered(true);
         setCompositionRoot(layout);
     }
 
@@ -93,7 +93,7 @@ public class SystemDefChoiceField extends CustomField {
      * @see org.vaadin.addon.customfield.CustomField#getType()
      */
     @Override
-    public Class<?> getType() {
+    public Class<SystemDefChoice> getType() {
         return SystemDefChoice.class;
     }
 
@@ -117,7 +117,7 @@ public class SystemDefChoiceField extends CustomField {
      * @see org.vaadin.addon.customfield.CustomField#getValue()
      */
     @Override
-    public Object getValue() {
+    public SystemDefChoice getValue() {
         SystemDefChoice dto = new SystemDefChoice();
         String type = (String) oidType.getValue();
         if (type.equals(SINGLE)) {

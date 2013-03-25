@@ -83,7 +83,7 @@ public abstract class SystemDefForm extends Form implements ClickListener {
      */
     public SystemDefForm(final DataCollectionConfigDao dataCollectionConfigDao, final DatacollectionGroup source) {
         setCaption("System Definition Detail");
-        setWriteThrough(false);
+        setBuffered(true);
         setVisible(false);
 
         // Adding all groups already defined on this source

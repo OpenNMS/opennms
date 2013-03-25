@@ -68,7 +68,7 @@ public abstract class EventUeiWindow extends Window implements Button.ClickListe
 
         ueiBase = new TextField("UEI Base");
         ueiBase.setNullSettingAllowed(false);
-        ueiBase.setWriteThrough(false);
+        ueiBase.setBuffered(true);
         ueiBase.setWidth("100%");
         ueiBase.setRequired(true);
         ueiBase.setValue(defaultUei);

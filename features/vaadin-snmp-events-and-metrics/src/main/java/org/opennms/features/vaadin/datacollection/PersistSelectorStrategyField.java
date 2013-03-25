@@ -29,7 +29,6 @@ package org.opennms.features.vaadin.datacollection;
 
 import org.opennms.netmgt.config.datacollection.Parameter;
 import org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy;
-import org.vaadin.addon.customfield.CustomField;
 
 import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanContainer;
@@ -37,6 +36,7 @@ import com.vaadin.data.util.converter.Converter.ConversionException;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.CustomField;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
@@ -53,7 +53,7 @@ import de.steinwedel.vaadin.MessageBox.EventListener;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 @SuppressWarnings("serial")
-public class PersistSelectorStrategyField extends CustomField implements Button.ClickListener {
+public class PersistSelectorStrategyField extends CustomField<PersistenceSelectorStrategy> implements Button.ClickListener {
 
     /** The Combo Box. */
     private ComboBox combo = new ComboBox();
@@ -125,7 +125,7 @@ public class PersistSelectorStrategyField extends CustomField implements Button.
      * @see org.vaadin.addon.customfield.CustomField#getType()
      */
     @Override
-    public Class<?> getType() {
+    public Class<PersistenceSelectorStrategy> getType() {
         return PersistenceSelectorStrategy.class;
     }
 
@@ -151,7 +151,7 @@ public class PersistSelectorStrategyField extends CustomField implements Button.
      * @see org.vaadin.addon.customfield.CustomField#getValue()
      */
     @Override
-    public Object getValue() {
+    public PersistenceSelectorStrategy getValue() {
         PersistenceSelectorStrategy dto = new PersistenceSelectorStrategy();
         dto.setClazz((String) combo.getValue());
         for (Object itemId: container.getItemIds()) {

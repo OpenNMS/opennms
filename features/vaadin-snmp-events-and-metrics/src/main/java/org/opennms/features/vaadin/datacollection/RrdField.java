@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.opennms.netmgt.config.datacollection.Rrd;
-import org.vaadin.addon.customfield.CustomField;
 
 import com.vaadin.data.Container;
 import com.vaadin.data.Property;
@@ -43,6 +42,7 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.CustomField;
 import com.vaadin.ui.DefaultFieldFactory;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.HorizontalLayout;
@@ -61,7 +61,7 @@ import de.steinwedel.vaadin.MessageBox.EventListener;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 @SuppressWarnings("serial")
-public class RrdField extends CustomField implements Button.ClickListener {
+public class RrdField extends CustomField<Rrd> implements Button.ClickListener {
 
     /** The Step. */
     private TextField step = new TextField();
@@ -148,7 +148,7 @@ public class RrdField extends CustomField implements Button.ClickListener {
         layout.addComponent(toolbar);
         layout.setComponentAlignment(toolbar, Alignment.MIDDLE_RIGHT);
 
-        setWriteThrough(false);
+        setBuffered(true);
         setCompositionRoot(layout);
     }
 
@@ -166,7 +166,7 @@ public class RrdField extends CustomField implements Button.ClickListener {
      * @see org.vaadin.addon.customfield.CustomField#getType()
      */
     @Override
-    public Class<?> getType() {
+    public Class<Rrd> getType() {
         return Rrd.class;
     }
 
@@ -196,7 +196,7 @@ public class RrdField extends CustomField implements Button.ClickListener {
      * @see org.vaadin.addon.customfield.CustomField#getValue()
      */
     @Override
-    public Object getValue() {
+    public Rrd getValue() {
         Rrd dto = new Rrd();
         dto.setStep(new Integer((String) step.getValue()));
         for (Object itemId: container.getItemIds()) {

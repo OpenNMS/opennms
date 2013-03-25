@@ -66,7 +66,7 @@ public abstract class PromptWindow extends Window implements Button.ClickListene
 
         fileName = new TextField(fieldLabel);
         fileName.setNullSettingAllowed(false);
-        fileName.setWriteThrough(false);
+        fileName.setBuffered(true);
         fileName.setWidth("100%");
         fileName.setRequired(true);
         fileName.setRequiredError("This field cannot be null.");

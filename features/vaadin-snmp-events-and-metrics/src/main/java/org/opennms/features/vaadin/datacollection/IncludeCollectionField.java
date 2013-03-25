@@ -32,13 +32,13 @@ import java.util.List;
 
 import org.opennms.netmgt.config.DataCollectionConfigDao;
 import org.opennms.netmgt.config.datacollection.IncludeCollection;
-import org.vaadin.addon.customfield.CustomField;
 
 import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.converter.Converter.ConversionException;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.CustomField;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
@@ -55,7 +55,9 @@ import de.steinwedel.vaadin.MessageBox.EventListener;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 @SuppressWarnings("serial")
-public class IncludeCollectionField extends CustomField {
+public class IncludeCollectionField extends CustomField<ArrayList> {
+
+    private static final long serialVersionUID = 3677540981240383672L;
 
     /** The Include Field Table. */
     private final Table table = new Table();
@@ -138,7 +140,7 @@ public class IncludeCollectionField extends CustomField {
         layout.addComponent(toolbar);
         layout.setComponentAlignment(toolbar, Alignment.MIDDLE_RIGHT);
 
-        setWriteThrough(false);
+        setBuffered(true);
         setCompositionRoot(layout);
     }
 
@@ -146,7 +148,7 @@ public class IncludeCollectionField extends CustomField {
      * @see org.vaadin.addon.customfield.CustomField#getType()
      */
     @Override
-    public Class<?> getType() {
+    public Class<ArrayList> getType() {
         return ArrayList.class;
     }
 
@@ -176,8 +178,8 @@ public class IncludeCollectionField extends CustomField {
      * @see org.vaadin.addon.customfield.CustomField#getValue()
      */
     @Override
-    public Object getValue() {
-        List<IncludeCollection> list = new ArrayList<IncludeCollection>();
+    public ArrayList<IncludeCollection> getValue() {
+        ArrayList<IncludeCollection> list = new ArrayList<IncludeCollection>();
         for (Object itemId: container.getItemIds()) {
             IncludeCollectionWrapper obj = container.getItem(itemId).getBean();
             list.add(obj.createIncludeCollection());

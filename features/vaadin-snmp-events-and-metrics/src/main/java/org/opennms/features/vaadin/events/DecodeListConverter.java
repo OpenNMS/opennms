@@ -29,10 +29,12 @@ package org.opennms.features.vaadin.events;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import org.apache.commons.lang.StringUtils;
 import org.opennms.netmgt.xml.eventconf.Decode;
-import org.vaadin.addon.customfield.PropertyConverter;
+
+import com.vaadin.data.util.converter.Converter;
 
 /**
  * The Varbind's Decode List Converter.
@@ -40,25 +42,15 @@ import org.vaadin.addon.customfield.PropertyConverter;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 @SuppressWarnings("serial")
-public class DecodeListConverter extends PropertyConverter<ArrayList<Decode>, String> {
+public class DecodeListConverter implements Converter<String, DecodeListConverter.DecodeList> {
 
     /**
      * The Class DecodeList.
      */
     public class DecodeList extends ArrayList<Decode> {}
 
-    /**
-     * Instantiates a new decode list converter.
-     */
-    public DecodeListConverter() {
-        super(DecodeList.class);
-    }
-
-    /* (non-Javadoc)
-     * @see org.vaadin.addon.customfield.PropertyConverter#format(java.lang.Object)
-     */
     @Override
-    public String format(ArrayList<Decode> propertyValue) {
+    public String convertToPresentation(DecodeList propertyValue, Locale locale) {
         final List<String> values = new ArrayList<String>();
         for (Decode d : propertyValue) {
             values.add(d.getVarbindvalue() + '=' + d.getVarbinddecodedstring());
@@ -66,12 +58,9 @@ public class DecodeListConverter extends PropertyConverter<ArrayList<Decode>, St
         return StringUtils.join(values, ',');
     }
 
-    /* (non-Javadoc)
-     * @see org.vaadin.addon.customfield.PropertyConverter#parse(java.lang.Object)
-     */
     @Override
-    public ArrayList<Decode> parse(String fieldValue) {
-        ArrayList<Decode> list = new ArrayList<Decode>();
+    public DecodeList convertToModel(String fieldValue, Locale locale) {
+        DecodeList list = new DecodeList();
         for (String s : fieldValue.split(",")) {
             String[] parts = s.split("=");
             Decode d = new Decode();
@@ -81,5 +70,15 @@ public class DecodeListConverter extends PropertyConverter<ArrayList<Decode>, St
         }
         return list;
     }
+
+	@Override
+	public Class<DecodeList> getModelType() {
+		return DecodeList.class;
+	}
+
+	@Override
+	public Class<String> getPresentationType() {
+		return String.class;
+	}
 
 }

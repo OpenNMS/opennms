@@ -56,6 +56,9 @@ public class TracerouteWindowTest {
 		traceWindow3 = new TracerouteWindow(testNode1, "");
 		mainWindow = new LegacyWindow();
 		app = new LegacyApplication() { //Empty Application
+
+			private static final long serialVersionUID = -5754693681707385554L;
+
 			@Override
 			protected void init() {}
 		};

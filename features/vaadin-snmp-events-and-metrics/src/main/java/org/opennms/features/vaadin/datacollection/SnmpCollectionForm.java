@@ -77,7 +77,7 @@ public abstract class SnmpCollectionForm extends Form implements ClickListener {
      */
     public SnmpCollectionForm(final DataCollectionConfigDao dataCollectionConfigDao) {
         setCaption("SNMP Collection Detail");
-        setWriteThrough(false);
+        setBuffered(true);
         setVisible(false);
         setFormFieldFactory(new SnmpCollectionFieldFactory(dataCollectionConfigDao));
         initToolbar();

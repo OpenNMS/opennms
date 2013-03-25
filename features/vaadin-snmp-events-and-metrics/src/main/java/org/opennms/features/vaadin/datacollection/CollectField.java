@@ -30,24 +30,25 @@ package org.opennms.features.vaadin.datacollection;
 import java.util.List;
 
 import org.opennms.netmgt.config.datacollection.Collect;
-import org.vaadin.addon.customfield.CustomField;
 
 import com.vaadin.data.Property;
 import com.vaadin.data.util.converter.Converter.ConversionException;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.CustomField;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.ListSelect;
 
 /**
  * The Collect Field.
  * 
+ * TODO: when a new group is added, the groupField must be updated.
+ * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
-// TODO when a new group is added, the groupField must be updated.
 @SuppressWarnings("serial")
-public class CollectField extends CustomField implements Button.ClickListener {
+public class CollectField extends CustomField<Collect> implements Button.ClickListener {
 
     /** The group field. */
     private ComboBox groupField = new ComboBox();
@@ -88,21 +89,15 @@ public class CollectField extends CustomField implements Button.ClickListener {
         layout.addComponent(toolbar);
         layout.setComponentAlignment(toolbar, Alignment.BOTTOM_RIGHT);
 
-        setWriteThrough(false);
+        setBuffered(true);
         setCompositionRoot(layout);
     }
 
-    /* (non-Javadoc)
-     * @see org.vaadin.addon.customfield.CustomField#getType()
-     */
     @Override
-    public Class<?> getType() {
+    public Class<Collect> getType() {
         return Collect.class;
     }
 
-    /* (non-Javadoc)
-     * @see org.vaadin.addon.customfield.CustomField#setPropertyDataSource(com.vaadin.data.Property)
-     */
     @Override
     public void setPropertyDataSource(Property newDataSource) {
         Object value = newDataSource.getValue();
@@ -118,11 +113,8 @@ public class CollectField extends CustomField implements Button.ClickListener {
         super.setPropertyDataSource(newDataSource);
     }
 
-    /* (non-Javadoc)
-     * @see org.vaadin.addon.customfield.CustomField#getValue()
-     */
     @Override
-    public Object getValue() {
+    public Collect getValue() {
         Collect dto = new Collect();
         for (Object itemId: listField.getItemIds()) {
             dto.getIncludeGroupCollection().add((String) itemId);
@@ -130,9 +122,6 @@ public class CollectField extends CustomField implements Button.ClickListener {
         return dto;
     }
 
-    /* (non-Javadoc)
-     * @see com.vaadin.ui.AbstractComponent#setReadOnly(boolean)
-     */
     @Override
     public void setReadOnly(boolean readOnly) {
         listField.setReadOnly(readOnly);
@@ -140,9 +129,6 @@ public class CollectField extends CustomField implements Button.ClickListener {
         super.setReadOnly(readOnly);
     }
 
-    /* (non-Javadoc)
-     * @see com.vaadin.ui.Button.ClickListener#buttonClick(com.vaadin.ui.Button.ClickEvent)
-     */
     public void buttonClick(Button.ClickEvent event) {
         final Button btn = event.getButton();
         if (btn == add) {

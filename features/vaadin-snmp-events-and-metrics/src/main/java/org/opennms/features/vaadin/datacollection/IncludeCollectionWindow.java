@@ -85,7 +85,7 @@ public abstract class IncludeCollectionWindow extends Window implements Button.C
 
         form.setImmediate(true);
         form.setWidth("100%");
-        form.setWriteThrough(false);
+        form.setBuffered(true);
         form.getLayout().setMargin(true);
 
         final ComboBox valueField = new ComboBox("Value");

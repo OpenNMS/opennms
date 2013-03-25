@@ -31,7 +31,6 @@ import org.opennms.netmgt.config.datacollection.Parameter;
 import org.opennms.netmgt.config.datacollection.StorageStrategy;
 import org.opennms.netmgt.dao.support.IndexStorageStrategy;
 import org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy;
-import org.vaadin.addon.customfield.CustomField;
 
 import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanContainer;
@@ -39,6 +38,7 @@ import com.vaadin.data.util.converter.Converter.ConversionException;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.CustomField;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
@@ -55,7 +55,7 @@ import de.steinwedel.vaadin.MessageBox.EventListener;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 @SuppressWarnings("serial")
-public class StorageStrategyField extends CustomField implements Button.ClickListener {
+public class StorageStrategyField extends CustomField<StorageStrategy> implements Button.ClickListener {
 
     /** The Combo Box. */
     private ComboBox combo = new ComboBox();
@@ -119,7 +119,7 @@ public class StorageStrategyField extends CustomField implements Button.ClickLis
         layout.addComponent(toolbar);
         layout.setComponentAlignment(toolbar, Alignment.MIDDLE_RIGHT);
 
-        setWriteThrough(false);
+        setBuffered(true);
         setCompositionRoot(layout);
     }
 
@@ -127,7 +127,7 @@ public class StorageStrategyField extends CustomField implements Button.ClickLis
      * @see org.vaadin.addon.customfield.CustomField#getType()
      */
     @Override
-    public Class<?> getType() {
+    public Class<StorageStrategy> getType() {
         return StorageStrategy.class;
     }
 
@@ -153,7 +153,7 @@ public class StorageStrategyField extends CustomField implements Button.ClickLis
      * @see org.vaadin.addon.customfield.CustomField#getValue()
      */
     @Override
-    public Object getValue() {
+    public StorageStrategy getValue() {
         StorageStrategy dto = new StorageStrategy();
         dto.setClazz((String) combo.getValue());
         for (Object itemId: container.getItemIds()) {

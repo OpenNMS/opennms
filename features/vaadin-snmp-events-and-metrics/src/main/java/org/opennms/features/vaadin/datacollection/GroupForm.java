@@ -84,7 +84,7 @@ public abstract class GroupForm extends Form implements ClickListener {
      */
     public GroupForm(final DataCollectionConfigDao dataCollectionConfigDao, final DatacollectionGroup source) {
         setCaption("MIB Group Detail");
-        setWriteThrough(false);
+        setBuffered(true);
         setVisible(false);
 
         // Adding all resource types already defined on this source

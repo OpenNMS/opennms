@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.opennms.netmgt.xml.eventconf.Varbind;
-import org.vaadin.addon.customfield.CustomField;
 
 import com.vaadin.data.Container;
 import com.vaadin.data.Property;
@@ -40,10 +39,12 @@ import com.vaadin.data.util.converter.Converter.ConversionException;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.CustomField;
 import com.vaadin.ui.DefaultFieldFactory;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Runo;
 
@@ -57,7 +58,7 @@ import de.steinwedel.vaadin.MessageBox.EventListener;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 @SuppressWarnings("serial")
-public class MaskVarbindField extends CustomField implements Button.ClickListener {
+public class MaskVarbindField extends CustomField<ArrayList> implements Button.ClickListener {
 
     /** The Table. */
     private Table table = new Table();
@@ -93,7 +94,9 @@ public class MaskVarbindField extends CustomField implements Button.ClickListene
             @Override
             public Field<?> createField(Container container, Object itemId, Object propertyId, Component uiContext) {
                 if (propertyId.equals("vbvalueCollection")) {
-                    return new CsvListFieldWrapper();
+                    final TextField field = new TextField();
+                    field.setConverter(new CsvListConverter());
+                    return field;
                 }
                 return super.createField(container, itemId, propertyId, uiContext);
             }
@@ -114,7 +117,7 @@ public class MaskVarbindField extends CustomField implements Button.ClickListene
      * @see org.vaadin.addon.customfield.CustomField#getType()
      */
     @Override
-    public Class<?> getType() {
+    public Class<ArrayList> getType() {
         return ArrayList.class;
     }
 
@@ -140,7 +143,7 @@ public class MaskVarbindField extends CustomField implements Button.ClickListene
      * @see org.vaadin.addon.customfield.CustomField#getValue()
      */
     @Override
-    public Object getValue() {
+    public ArrayList<Varbind> getValue() {
         ArrayList<Varbind> beans = new ArrayList<Varbind>(); 
         for (Object itemId: container.getItemIds()) {
             beans.add(container.getItem(itemId).getBean());
