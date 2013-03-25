@@ -21,8 +21,12 @@ $PEDANTIC = (defined $PEDANTIC and $PEDANTIC eq "-p");
 $WARNINGS = 0;
 
 if (not -d $DIR) {
-	print STDERR "usage: $0 <\$OPENNMS_HOME/lib path>\n";
+	print STDERR "usage: $0 <\$OPENNMS_HOME/lib path> [-p]\n";
 	exit 1;
+}
+
+if ($PEDANTIC) {
+	print STDERR "[[running in pedantic mode]]\n";
 }
 
 my $jars  = {};
