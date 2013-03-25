@@ -57,6 +57,9 @@ public class PingWindowTest {
 		
 		mainWindow = new LegacyWindow();
 		app = new LegacyApplication() { //Empty Application
+
+			private static final long serialVersionUID = -6761162156810032609L;
+
 			@Override
 			public void init() {}
 		};

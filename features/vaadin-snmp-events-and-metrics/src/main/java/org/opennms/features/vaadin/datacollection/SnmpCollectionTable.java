@@ -74,7 +74,7 @@ public abstract class SnmpCollectionTable extends Table {
         setColumnHeaders(COLUMN_LABELS);
         setWidth("100%");
         setHeight("250px");
-        addListener(new Property.ValueChangeListener() {
+        addValueChangeListener(new Property.ValueChangeListener() {
             @SuppressWarnings("unchecked")
             public void valueChange(Property.ValueChangeEvent event) {
                 if (getValue() != null) {

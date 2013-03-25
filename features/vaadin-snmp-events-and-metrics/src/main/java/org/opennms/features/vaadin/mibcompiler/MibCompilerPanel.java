@@ -44,8 +44,10 @@ import org.opennms.netmgt.xml.eventconf.Events;
 
 import com.vaadin.data.util.HierarchicalContainer;
 import com.vaadin.event.Action;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.Tree;
 import com.vaadin.ui.VerticalLayout;
@@ -174,7 +176,7 @@ public class MibCompilerPanel extends Panel {
         initMibTree(logger);
         final Label label = new Label("<p>Use the right-click context menu over the MIB tree files, to display the compiler operations.</p>"
                                       + "<p>The file name requires to be the same as the MIB to be processed.</p>");
-        label.setContentMode(Label.CONTENT_XHTML);
+        label.setContentMode(ContentMode.HTML);
         addComponent(label);
         addComponent(mibsTree);
 
@@ -345,7 +347,7 @@ public class MibCompilerPanel extends Panel {
     private void showEventsWindow(final Logger logger, final String fileName, final String ueiBase) {
         final Events events =  mibParser.getEvents(ueiBase);
         if (events == null) {
-            getApplication().getMainWindow().showNotification("The MIB couldn't be processed for events because: " + mibParser.getFormattedErrors(), Notification.TYPE_ERROR_MESSAGE);                
+            getApplication().getMainWindow().showNotification("The MIB couldn't be processed for events because: " + mibParser.getFormattedErrors(), Notification.Type.ERROR_MESSAGE);                
         } else {
             if (events.getEventCount() > 0) {
                 try {
@@ -354,10 +356,10 @@ public class MibCompilerPanel extends Panel {
                     final EventWindow w = new EventWindow(eventsDao, eventsProxy, eventsFileName, events, logger);
                     getApplication().getMainWindow().addWindow(w);
                 } catch (Throwable t) {
-                    getApplication().getMainWindow().showNotification(t.getMessage(), Notification.TYPE_ERROR_MESSAGE);
+                    getApplication().getMainWindow().showNotification(t.getMessage(), Notification.Type.ERROR_MESSAGE);
                 }
             } else {
-                getApplication().getMainWindow().showNotification("The MIB doesn't contain any notification/trap", Notification.TYPE_WARNING_MESSAGE);
+                getApplication().getMainWindow().showNotification("The MIB doesn't contain any notification/trap", Notification.Type.WARNING_MESSAGE);
             }
         }
     }
@@ -372,7 +374,7 @@ public class MibCompilerPanel extends Panel {
         if (parseMib(logger, new File(MIBS_COMPILED_DIR, fileName))) {
             final DatacollectionGroup dcGroup = mibParser.getDataCollection();
             if (dcGroup == null) {
-                getApplication().getMainWindow().showNotification("The MIB couldn't be processed for data collection because: " + mibParser.getFormattedErrors(), Notification.TYPE_ERROR_MESSAGE);
+                getApplication().getMainWindow().showNotification("The MIB couldn't be processed for data collection because: " + mibParser.getFormattedErrors(), Notification.Type.ERROR_MESSAGE);
             } else {
                 if (dcGroup.getGroupCount() > 0) {
                     try {
@@ -380,10 +382,10 @@ public class MibCompilerPanel extends Panel {
                         final DataCollectionWindow w = new DataCollectionWindow(mibParser, dataCollectionDao, dataFileName, dcGroup, logger);
                         getApplication().getMainWindow().addWindow(w);
                     } catch (Throwable t) {
-                        getApplication().getMainWindow().showNotification(t.getMessage(), Notification.TYPE_ERROR_MESSAGE);
+                        getApplication().getMainWindow().showNotification(t.getMessage(), Notification.Type.ERROR_MESSAGE);
                     }
                 } else {
-                    getApplication().getMainWindow().showNotification("The MIB doesn't contain any metric for data collection.", Notification.TYPE_WARNING_MESSAGE);
+                    getApplication().getMainWindow().showNotification("The MIB doesn't contain any metric for data collection.", Notification.Type.WARNING_MESSAGE);
                 }
             }
         }

@@ -53,6 +53,9 @@ public class EventsAlarmsWindowTest {
 		window2 = new EventsAlarmsWindow(testNode1, url, url);
 		mainWindow = new LegacyWindow();
 		app = new LegacyApplication() { //Empty Application
+
+			private static final long serialVersionUID = -7197916089135471254L;
+
 			@Override
 			public void init() {}
 		};

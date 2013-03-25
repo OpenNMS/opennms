@@ -33,6 +33,7 @@ import java.net.URL;
 import java.util.Scanner;
 
 import com.vaadin.server.ExternalResource;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
@@ -103,7 +104,7 @@ public class TracerouteWindow extends Window{
 		/*Initialize the header of the Sub-window with the name of the selected Node*/
 		String nodeName = "<div style=\"text-align: center; font-size: 18pt; font-weight:bold;\">" + label + "</div>";
 		nodeLabel = new Label(nodeName);
-		nodeLabel.setContentMode(Label.CONTENT_XHTML);
+		nodeLabel.setContentMode(ContentMode.HTML);
 
 		/*Creating various layouts to encapsulate all of the components*/
 		VerticalLayout mainLayout = new VerticalLayout();
@@ -144,7 +145,7 @@ public class TracerouteWindow extends Window{
 
 		/*Creates the Ping button and sets up the listener*/
 		tracerouteButton = new Button("Traceroute"); 
-		tracerouteButton.addListener(new Button.ClickListener() {
+		tracerouteButton.addClickListener(new Button.ClickListener() {
 			public void buttonClick(ClickEvent event) {
 				changeBrowserURL(buildURL());
 			}
@@ -230,7 +231,7 @@ public class TracerouteWindow extends Window{
 	    try {
 	        validInput = validateInput();
 	    } catch (Exception e) {
-	        getApplication().getMainWindow().showNotification(e.getMessage(), Notification.TYPE_WARNING_MESSAGE);
+	        getApplication().getMainWindow().showNotification(e.getMessage(), Notification.Type.WARNING_MESSAGE);
 	        return null;
 	    }
 	    if (validInput) {
@@ -247,11 +248,11 @@ public class TracerouteWindow extends Window{
 	        try {
 	            return new URL(baseUrl, options.toString());
 	        } catch (final MalformedURLException e) {
-	            getApplication().getMainWindow().showNotification("Could not build URL: " + options.toString(), Notification.TYPE_WARNING_MESSAGE);
+	            getApplication().getMainWindow().showNotification("Could not build URL: " + options.toString(), Notification.Type.WARNING_MESSAGE);
 	            return null;
 	        }
 	    } else {
-	        getApplication().getMainWindow().showNotification("Invalid IP addresss", Notification.TYPE_WARNING_MESSAGE);
+	        getApplication().getMainWindow().showNotification("Invalid IP addresss", Notification.Type.WARNING_MESSAGE);
 	        return null;
 	    }
 	}

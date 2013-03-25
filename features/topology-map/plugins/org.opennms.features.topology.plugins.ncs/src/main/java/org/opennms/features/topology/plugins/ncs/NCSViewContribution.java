@@ -13,6 +13,7 @@ import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.server.Resource;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Tree;
+import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
 
 public class NCSViewContribution implements IViewContribution {
 	
@@ -28,10 +29,12 @@ public class NCSViewContribution implements IViewContribution {
 		Tree tree = new Tree("Services", new FilterableHierarchicalContainer(new NCSServiceContainer(m_ncsComponentRepository)));
 		tree.setMultiSelect(true);
 		tree.setImmediate(true);
-		tree.setItemCaptionMode(Tree.ITEM_CAPTION_MODE_PROPERTY);
+		tree.setItemCaptionMode(ItemCaptionMode.PROPERTY);
 		tree.setItemCaptionPropertyId("name");
-		tree.addListener(new ValueChangeListener() {
-			
+		tree.addValueChangeListener(new ValueChangeListener() {
+
+			private static final long serialVersionUID = -7443836886894714291L;
+
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 				Collection<Long> selectedIds = (Collection<Long>) event.getProperty().getValue();

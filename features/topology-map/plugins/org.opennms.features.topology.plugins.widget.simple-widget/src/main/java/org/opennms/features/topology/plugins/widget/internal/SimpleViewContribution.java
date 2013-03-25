@@ -54,7 +54,7 @@ public class SimpleViewContribution implements IViewContribution {
         listSelect.setHeight("100%");
         listSelect.setWidth("100%");
         listSelect.setImmediate(true);
-        listSelect.addListener(new ValueChangeListener() {
+        listSelect.addValueChangeListener(new ValueChangeListener() {
             
             @Override
             public void valueChange(ValueChangeEvent event) {

@@ -69,7 +69,7 @@ public abstract class MibUploadButton extends Upload {
             }
         });
 
-        addListener(new Upload.StartedListener() {
+        addStartedListener(new Upload.StartedListener() {
             public void uploadStarted(StartedEvent event) {
                 File pending = new File(pendingDir, event.getFilename());
                 File compiled = new File(compiledDir, event.getFilename());
@@ -83,13 +83,13 @@ public abstract class MibUploadButton extends Upload {
             }
         });
 
-        addListener(new Upload.FailedListener() {
+        addFailedListener(new Upload.FailedListener() {
             public void uploadFailed(FailedEvent event) {
                 logger.warn("An error has been found: " + event.getReason() == null? "unknown error" : event.getReason().getLocalizedMessage());
             }
         });
 
-        addListener(new Upload.SucceededListener() {
+        addSucceededListener(new Upload.SucceededListener() {
             public void uploadSucceeded(SucceededEvent event) {
                 String mibFilename = event.getFilename();
                 logger.info("File " + mibFilename + " successfuly uploaded");

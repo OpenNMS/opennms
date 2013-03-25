@@ -32,6 +32,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import com.vaadin.server.ExternalResource;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
@@ -104,7 +105,7 @@ public class PingWindow extends Window{
 		/*Initialize the header of the Sub-window with the name of the selected Node*/
 		String nodeName = "<div style=\"text-align: center; font-size: 18pt; font-weight:bold;\">" + label + "</div>";
 		nodeLabel = new Label(nodeName);
-		nodeLabel.setContentMode(Label.CONTENT_XHTML);
+		nodeLabel.setContentMode(ContentMode.HTML);
 
 		/*Creating various layouts to encapsulate all of the components*/
 		VerticalLayout mainLayout = new VerticalLayout();
@@ -168,7 +169,7 @@ public class PingWindow extends Window{
 
 		/*Creates the Ping button and sets up the listener*/
 		pingButton = new Button("Ping"); 
-		pingButton.addListener(new Button.ClickListener() {
+		pingButton.addClickListener(new Button.ClickListener() {
 			public void buttonClick(ClickEvent event) {
 				changeBrowserURL(buildURL());
 			}
@@ -254,7 +255,7 @@ public class PingWindow extends Window{
         try {
             validInput = validateInput();
         } catch (NumberFormatException e) {
-            getApplication().getMainWindow().showNotification("Inputs must be integers", Notification.TYPE_WARNING_MESSAGE);
+            getApplication().getMainWindow().showNotification("Inputs must be integers", Notification.Type.WARNING_MESSAGE);
             return null;
         }
         if (validInput) {
@@ -272,11 +273,11 @@ public class PingWindow extends Window{
             try {
                 return new URL(baseUrl, options.toString());
             } catch (final MalformedURLException e) {
-                getApplication().getMainWindow().showNotification("Could not build URL: " + options.toString(), Notification.TYPE_WARNING_MESSAGE);
+                getApplication().getMainWindow().showNotification("Could not build URL: " + options.toString(), Notification.Type.WARNING_MESSAGE);
                 return null;
             }
         } else {
-            getApplication().getMainWindow().showNotification("Inputs must be between 0 and 9999", Notification.TYPE_WARNING_MESSAGE);
+            getApplication().getMainWindow().showNotification("Inputs must be between 0 and 9999", Notification.Type.WARNING_MESSAGE);
             return null;
         }
     }

@@ -37,6 +37,7 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.themes.Runo;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -92,10 +93,10 @@ public class FileEditorWindow extends Window implements Button.ClickListener {
 
         cancel = new Button(readOnly ? "Close" : "Cancel");
         cancel.setImmediate(false);
-        cancel.addListener(this);
+        cancel.addClickListener(this);
         save = new Button("Save");
         save.setImmediate(false);
-        save.addListener(this);
+        save.addClickListener(this);
 
         HorizontalLayout toolbar = new HorizontalLayout();
         toolbar.addComponent(cancel);
@@ -115,7 +116,7 @@ public class FileEditorWindow extends Window implements Button.ClickListener {
     public void buttonClick(ClickEvent event) {
         if (event.getButton().equals(save)) {
             if (editor.isReadOnly()) {
-                showNotification("Unsupported action for readOnly viewer.", Notification.TYPE_WARNING_MESSAGE);
+                showNotification("Unsupported action for readOnly viewer.", Notification.Type.WARNING_MESSAGE);
             } else {
                 editor.commit();
                 logger.info("The file " + file + " has been changed.");

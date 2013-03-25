@@ -36,8 +36,8 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.vaadin.server.VaadinRequest;
-import com.vaadin.ui.UI;
+import com.vaadin.server.LegacyApplication;
+import com.vaadin.ui.LegacyWindow;
 import com.vaadin.ui.Window;
 
 public class TracerouteWindowTest {
@@ -45,8 +45,8 @@ public class TracerouteWindowTest {
 	TracerouteWindow traceWindow;
 	TracerouteWindow traceWindow2;
 	TracerouteWindow traceWindow3;
-	Window mainWindow;
-	UI app;
+	LegacyWindow mainWindow;
+	LegacyApplication app;
 	
 	@Before
 	public void setUp() throws Exception {
@@ -54,10 +54,10 @@ public class TracerouteWindowTest {
 		traceWindow = new TracerouteWindow(testNode1, "http://localhost:8080/");
 		traceWindow2 = new TracerouteWindow(null, "http://localhost:8080/");
 		traceWindow3 = new TracerouteWindow(testNode1, "");
-		mainWindow = new Window();
-		app = new UI() { //Empty Application
+		mainWindow = new LegacyWindow();
+		app = new LegacyApplication() { //Empty Application
 			@Override
-			protected void init(VaadinRequest request) {}
+			protected void init() {}
 		};
 		app.setMainWindow(mainWindow);
 		app.getMainWindow().addWindow(traceWindow);

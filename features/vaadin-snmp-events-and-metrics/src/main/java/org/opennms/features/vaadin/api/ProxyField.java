@@ -191,7 +191,7 @@ public class ProxyField<T> extends VerticalLayout implements Field<T> {
      * @see com.vaadin.data.Property#setValue(java.lang.Object)
      */
     @Override
-    public void setValue(Object newValue) throws ReadOnlyException, ConversionException {
+    public void setValue(T newValue) throws ReadOnlyException, ConversionException {
         getField().setValue(newValue);
     }
 
@@ -199,7 +199,7 @@ public class ProxyField<T> extends VerticalLayout implements Field<T> {
      * @see com.vaadin.data.Property#getType()
      */
     @Override
-    public Class<T> getType() {
+    public Class<? extends T> getType() {
         return getField().getType();
     }
 
@@ -208,7 +208,7 @@ public class ProxyField<T> extends VerticalLayout implements Field<T> {
      */
     @Override
     public void addListener(ValueChangeListener listener) {
-        getField().addListener(listener);
+        getField().addValueChangeListener(listener);
     }
 
     /* (non-Javadoc)
@@ -216,7 +216,7 @@ public class ProxyField<T> extends VerticalLayout implements Field<T> {
      */
     @Override
     public void removeListener(ValueChangeListener listener) {
-        getField().removeListener(listener);
+        getField().removeValueChangeListener(listener);
     }
 
     /* (non-Javadoc)
@@ -239,7 +239,7 @@ public class ProxyField<T> extends VerticalLayout implements Field<T> {
      * @see com.vaadin.data.Property.ValueChangeListener#valueChange(com.vaadin.data.Property.ValueChangeEvent)
      */
     @Override
-    public void valueChange(com.vaadin.data.Property.ValueChangeEvent event) {
+    public void valueChange(Property.ValueChangeEvent event) {
         getField().valueChange(event);
     }
 
@@ -255,7 +255,7 @@ public class ProxyField<T> extends VerticalLayout implements Field<T> {
      * @see com.vaadin.data.Property.Viewer#getPropertyDataSource()
      */
     @Override
-    public Property getPropertyDataSource() {
+    public Property<?> getPropertyDataSource() {
         return getField().getPropertyDataSource();
     }
 

@@ -102,10 +102,10 @@ public abstract class SystemDefForm extends Form implements ClickListener {
      * Initialize the Toolbar.
      */
     private void initToolbar() {
-        save.addListener((ClickListener)this);
-        cancel.addListener((ClickListener)this);
-        edit.addListener((ClickListener)this);
-        delete.addListener((ClickListener)this);
+        save.addClickListener(this);
+        cancel.addClickListener(this);
+        edit.addClickListener(this);
+        delete.addClickListener(this);
 
         HorizontalLayout toolbar = new HorizontalLayout();
         toolbar.setSpacing(true);

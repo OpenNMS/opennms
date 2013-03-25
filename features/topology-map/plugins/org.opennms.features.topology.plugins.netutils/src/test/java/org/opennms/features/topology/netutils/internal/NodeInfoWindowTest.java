@@ -53,6 +53,9 @@ public class NodeInfoWindowTest {
 		window2 = new NodeInfoWindow(testNode1, url);
 		mainWindow = new LegacyWindow();
 		app = new LegacyApplication() { //Empty Application
+
+			private static final long serialVersionUID = -6798973775063082899L;
+
 			@Override
 			public void init() {}
 		};

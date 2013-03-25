@@ -33,9 +33,9 @@ import java.net.URL;
 
 import com.vaadin.server.ExternalResource;
 import com.vaadin.ui.Embedded;
+import com.vaadin.ui.LegacyWindow;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
 
 /**
  * The EventsAlarmsWindow class constructs a custom Window component which
@@ -46,7 +46,7 @@ import com.vaadin.ui.Window;
  * @version 1.0
  */
 @SuppressWarnings("serial")
-public class EventsAlarmsWindow extends Window {
+public class EventsAlarmsWindow extends LegacyWindow {
 
 	private final double sizePercentage = 0.80; // Window size ratio to the main window
 	private final int widthCushion = 50; //Border cushion for width of window;

@@ -28,21 +28,23 @@
 
 package org.opennms.features.topology.ssh.internal;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import org.apache.sshd.ClientSession;
 import org.apache.sshd.SshClient;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.vaadin.server.VaadinRequest;
-import com.vaadin.ui.UI;
+import com.vaadin.server.LegacyApplication;
+import com.vaadin.ui.LegacyWindow;
 import com.vaadin.ui.Window;
 
 public class SSHWindowTest {
     
-    UI app;
-    Window mainWindow;
+    LegacyApplication app;
+    LegacyWindow mainWindow;
     SSHWindow sshWindow;
     SSHWindow sshWindow2;
     SshClient client;
@@ -53,9 +55,9 @@ public class SSHWindowTest {
     @SuppressWarnings("serial")
     @Before
     public void setup () {
-        app = new UI() {
+        app = new LegacyApplication() {
             @Override
-            protected void init(VaadinRequest request) {}
+            protected void init() {}
         };
         sshWindow = new SSHWindow(null, 200, 200);
         client = SshClient.setUpDefaultClient();
@@ -66,7 +68,7 @@ public class SSHWindowTest {
 			fail("Could not connect to host");
 		}
         sshWindow2 = new SSHWindow(session, 200, 200);
-        mainWindow = new Window();
+        mainWindow = new LegacyWindow();
         app.setMainWindow(mainWindow);
         app.getMainWindow().addWindow(sshWindow);
         app.getMainWindow().addWindow(sshWindow2);

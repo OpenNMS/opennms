@@ -39,6 +39,7 @@ import com.vaadin.data.util.BeanItem;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Form;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.themes.Runo;
@@ -102,10 +103,10 @@ public abstract class GroupForm extends Form implements ClickListener {
      * Initialize the Toolbar.
      */
     private void initToolbar() {
-        save.addListener((ClickListener)this);
-        cancel.addListener((ClickListener)this);
-        edit.addListener((ClickListener)this);
-        delete.addListener((ClickListener)this);
+        save.addClickListener(this);
+        cancel.addClickListener(this);
+        edit.addClickListener(this);
+        delete.addClickListener(this);
 
         HorizontalLayout toolbar = new HorizontalLayout();
         toolbar.setSpacing(true);
@@ -154,7 +155,7 @@ public abstract class GroupForm extends Form implements ClickListener {
                 setReadOnly(true);
                 saveGroup(getGroup());
             } else {
-                getWindow().showNotification("There are errors on the MIB Groups", Notification.TYPE_WARNING_MESSAGE);
+                getWindow().showNotification("There are errors on the MIB Groups", Notification.Type.WARNING_MESSAGE);
             }
         }
         if (source == cancel) {

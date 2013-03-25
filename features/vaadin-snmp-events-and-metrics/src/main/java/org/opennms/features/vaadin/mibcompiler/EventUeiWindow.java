@@ -75,10 +75,10 @@ public abstract class EventUeiWindow extends Window implements Button.ClickListe
         ueiBase.setRequiredError("UEI Base cannot be null.");
 
         okButton = new Button("Continue");
-        okButton.addListener(this);
+        okButton.addClickListener(this);
 
         cancelButton = new Button("Cancel");
-        cancelButton.addListener(this);
+        cancelButton.addClickListener(this);
 
         HorizontalLayout toolbar = new HorizontalLayout();
         toolbar.addComponent(okButton);

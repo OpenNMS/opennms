@@ -57,6 +57,9 @@ public class ResourceGraphsWindowTest {
         window2 = new ResourceGraphsWindow(null, url);
         mainWindow = new LegacyWindow();
         app = new LegacyApplication() { // Empty Application
+
+            private static final long serialVersionUID = -8945754438079223762L;
+
             @Override
             public void init() {
             }

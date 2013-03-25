@@ -43,7 +43,7 @@ public abstract class SelectionTree extends Tree {
     public SelectionTree(FilterableHierarchicalContainer container) {
         super(null, container);
         
-        this.addListener(new ValueChangeListener() {
+        this.addValueChangeListener(new ValueChangeListener() {
             
             @Override
             public void valueChange(com.vaadin.data.Property.ValueChangeEvent event) {

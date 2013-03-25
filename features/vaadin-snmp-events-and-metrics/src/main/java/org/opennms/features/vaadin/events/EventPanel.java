@@ -138,7 +138,7 @@ public abstract class EventPanel extends Panel {
         mainLayout.addComponent(eventTable);
 
         add = new Button("Add Event");
-        add.addListener(new Button.ClickListener() {
+        add.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
                 org.opennms.netmgt.xml.eventconf.Event e = new org.opennms.netmgt.xml.eventconf.Event();

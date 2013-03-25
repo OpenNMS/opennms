@@ -45,6 +45,7 @@ import com.vaadin.data.util.BeanItem;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Runo;
 
@@ -205,7 +206,7 @@ public class SnmpCollectionPanel extends VerticalLayout {
             logger.info("The data collection configuration has been saved.");
         } catch (Exception e) {
             logger.error("An error ocurred while saving the data collection configuration, " + e.getMessage());
-            getApplication().getMainWindow().showNotification("Can't save data collection configuration. " + e.getMessage(), Notification.TYPE_ERROR_MESSAGE);
+            getApplication().getMainWindow().showNotification("Can't save data collection configuration. " + e.getMessage(), Notification.Type.ERROR_MESSAGE);
         }
     }
 }

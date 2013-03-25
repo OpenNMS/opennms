@@ -31,17 +31,19 @@ package org.opennms.features.topology.ssh.internal;
 import java.awt.GridLayout;
 import java.awt.TextField;
 
-import javax.management.Notification;
-
 import org.apache.sshd.ClientSession;
 import org.apache.sshd.SshClient;
 
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.layout.client.Layout.Alignment;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.LegacyWindow;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Button.ClickEvent;
+
+import elemental.events.KeyboardEvent.KeyCode;
 
 /**
  * This class creates a window to authorize usernames
@@ -113,7 +115,7 @@ public class AuthWindow extends LegacyWindow implements Button.ClickListener{
         loginButton.setClickShortcut(KeyCode.ENTER);
         client = SshClient.setUpDefaultClient();
         client.start();
-        loginButton.addListener(this); 
+        loginButton.addClickListener(this); 
         GridLayout grid = new GridLayout(2,2);
         if (showOptions) {
             grid = new GridLayout(2,4);
@@ -143,8 +145,8 @@ public class AuthWindow extends LegacyWindow implements Button.ClickListener{
      * @throws NumberFormatException Port was not an integer
      */
     protected boolean validateInput() throws NumberFormatException {
-        m_host = (String)hostField.getValue();
-        m_port = Integer.parseInt((String)portField.getValue());
+        m_host = hostField.getText();
+        m_port = Integer.parseInt(portField.getText());
         if (m_port < 0 || m_port > 65535) return false;
         return true;
     }
@@ -172,7 +174,7 @@ public class AuthWindow extends LegacyWindow implements Button.ClickListener{
     
     @Override
     public void buttonClick(ClickEvent event) {
-        String login = (String)usernameField.getValue();
+        String login = usernameField.getText();
         String password = (String)passwordField.getValue();
         boolean validInput = false;
         try { 
@@ -180,12 +182,12 @@ public class AuthWindow extends LegacyWindow implements Button.ClickListener{
                 validInput = validateInput();
                 if (!validInput) {
                     testString = "Port must be between 1 and 65535";
-                    getApplication().getMainWindow().showNotification("Port must be between 1 and 65535", Notification.TYPE_WARNING_MESSAGE);
+                    getApplication().getMainWindow().showNotification("Port must be between 1 and 65535", Notification.Type.WARNING_MESSAGE);
                 }
             } else validInput = true;
         } catch (NumberFormatException e) {
             testString = "Port must be an integer";
-            getApplication().getMainWindow().showNotification("Port must be an integer", Notification.TYPE_WARNING_MESSAGE);
+            getApplication().getMainWindow().showNotification("Port must be an integer", Notification.Type.WARNING_MESSAGE);
         }
         if (validInput) {
             try {
@@ -199,14 +201,14 @@ public class AuthWindow extends LegacyWindow implements Button.ClickListener{
                     }
                     if ((ret & ClientSession.CLOSED) != 0) {
                         testString = "Failed to log in";
-                        getApplication().getMainWindow().showNotification("Failed to log in", Notification.TYPE_WARNING_MESSAGE);
+                        getApplication().getMainWindow().showNotification("Failed to log in", Notification.Type.WARNING_MESSAGE);
                         return;
                     }
                     showSSHWindow();
                 } 
             } catch (Exception e) {
                 testString = "Failed to connect to host";
-                getApplication().getMainWindow().showNotification("Failed to connect to host", Notification.TYPE_WARNING_MESSAGE);
+                getApplication().getMainWindow().showNotification("Failed to connect to host", Notification.Type.WARNING_MESSAGE);
             }
         }
     }

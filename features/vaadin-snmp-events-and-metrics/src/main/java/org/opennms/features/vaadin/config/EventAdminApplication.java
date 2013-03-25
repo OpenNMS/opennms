@@ -49,6 +49,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Button.ClickEvent;
@@ -120,7 +121,7 @@ public class EventAdminApplication extends Application {
         eventSource.setNullSelectionAllowed(false);
         eventSource.setContainerDataSource(container);
         eventSource.setItemCaptionPropertyId(FilesystemContainer.PROPERTY_NAME);
-        eventSource.addListener(new ComboBox.ValueChangeListener() {
+        eventSource.addValueChangeListener(new ComboBox.ValueChangeListener() {
             @Override
             public void valueChange(ValueChangeEvent event) {
                 final File file = (File) event.getProperty().getValue();
@@ -139,7 +140,7 @@ public class EventAdminApplication extends Application {
 
         final Button add = new Button("Add New Events File");
         toolbar.addComponent(add);
-        add.addListener(new Button.ClickListener() {
+        add.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
                 PromptWindow w = new PromptWindow("New Events Configuration", "Events File Name") {
@@ -157,7 +158,7 @@ public class EventAdminApplication extends Application {
 
         final Button remove = new Button("Remove Selected Events File");
         toolbar.addComponent(remove);
-        remove.addListener(new Button.ClickListener() {
+        remove.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
                 if (eventSource.getValue() == null) {
@@ -200,10 +201,10 @@ public class EventAdminApplication extends Application {
                                         layout.removeComponent(layout.getComponent(1));
                                 } catch (Exception e) {
                                     LogUtils.errorf(this, e, "an error ocurred while saving the event configuration: %s", e.getMessage());
-                                    getMainWindow().showNotification("Can't save event configuration. " + e.getMessage(), Notification.TYPE_ERROR_MESSAGE);
+                                    getMainWindow().showNotification("Can't save event configuration. " + e.getMessage(), Notification.Type.ERROR_MESSAGE);
                                 }
                             } else {
-                                getMainWindow().showNotification("Cannot delete file " + file, Notification.TYPE_WARNING_MESSAGE);
+                                getMainWindow().showNotification("Cannot delete file " + file, Notification.Type.WARNING_MESSAGE);
                             }
                         }
                     }
@@ -240,7 +241,7 @@ public class EventAdminApplication extends Application {
             }
             @Override
             public void failure() {
-                getMainWindow().showNotification("Event file " + file.getName() + " cannot be saved.", Notification.TYPE_ERROR_MESSAGE);
+                getMainWindow().showNotification("Event file " + file.getName() + " cannot be saved.", Notification.Type.ERROR_MESSAGE);
             }
         };
         eventPanel.setCaption("Events from " + file.getName());

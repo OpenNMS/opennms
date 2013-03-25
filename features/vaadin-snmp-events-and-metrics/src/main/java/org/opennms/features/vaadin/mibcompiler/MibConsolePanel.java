@@ -32,12 +32,13 @@ import java.util.Date;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.features.vaadin.api.Logger;
 
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.themes.Runo;
 
 /**
@@ -74,7 +75,7 @@ public class MibConsolePanel extends Panel implements Logger {
         addStyleName(Runo.PANEL_LIGHT);
 
         clearButton = new Button("Clear Log");
-        clearButton.addListener(new Button.ClickListener() {
+        clearButton.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
                 logContent.removeAllComponents();
@@ -97,7 +98,7 @@ public class MibConsolePanel extends Panel implements Logger {
      */
     private void logMsg(String level, String message) {
         String msg = new Date().toString() + level + message;
-        Label error = new Label(msg, Label.CONTENT_XHTML);
+        Label error = new Label(msg, ContentMode.HTML);
         logContent.addComponent(error);
         scrollIntoView();
         LogUtils.infof(this, message);
