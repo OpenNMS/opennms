@@ -193,9 +193,9 @@ install: build
 	##
 	## opennms-jmx-config-generator
 	##
-	install -d -m 755 debian/opennms-jmx-config-generator/usr/share/opennms/bin debian/opennms-jmx-config-generator/usr/bin 
+	install -d -m 755 debian/opennms-jmx-config-generator/usr/share/opennms/bin debian/opennms-jmx-config-generator/usr/bin debian/opennms-jmx-config-generator/usr/share/java/opennms
 	install -m 755 debian/opennms-jmx-config-generator.bin debian/opennms-jmx-config-generator/usr/bin/opennms-jmx-config-generator
-	mv debian/opennms-common/usr/share/opennms/bin/jmx-config-generator debian/opennms-jmx-config-generator/usr/share/opennms/bin/
+	mv debian/temp/bin/jmx-config-generator debian/opennms-jmx-config-generator/usr/share/opennms/bin/
 	mv debian/temp/lib/opennms_jmx_config_generator.jar debian/opennms-jmx-config-generator/usr/share/java/opennms/
 	
 	##
