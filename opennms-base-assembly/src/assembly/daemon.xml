@@ -67,6 +67,12 @@
       <directoryMode>0755</directoryMode>
     </fileSet>
     <fileSet>
+      <directory>target/jmx</directory>
+      <outputDirectory>lib</outputDirectory>
+      <fileMode>0644</fileMode>
+      <directoryMode>0755</directoryMode>
+    </fileSet>
+    <fileSet>
       <directory>target/remote-poller/etc</directory>
       <outputDirectory>contrib/remote-poller</outputDirectory>
       <fileMode>0644</fileMode>

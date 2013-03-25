@@ -27,6 +27,7 @@
     <module>ticketing</module>
     <module>geocoder</module>
     <module>name-cutter</module>
+    <module>opennms-jmx-tools</module>
 
     <!-- SNMP MIB Parser and Event/Collection Configuration -->
     <module>vaadin-snmp-events-and-metrics</module>
