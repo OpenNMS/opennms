@@ -224,8 +224,7 @@ install: build
 		debian/opennms-common/etc/opennms/magic-users.properties \
 		debian/opennms-common/etc/opennms/opennms.properties \
 		debian/opennms-common/etc/opennms/opennms-datasources.xml \
-		debian/opennms-common/etc/opennms/snmp-config.xml \
-		debian/opennms-common/etc/opennms/vulnscand-configuration.xml
+		debian/opennms-common/etc/opennms/snmp-config.xml
 
 	# Update paths in scripts and config files
 	sed -i -e 's,/opt/OpenNMS,/usr/share/opennms,g' debian/opennms-common/usr/share/opennms/bin/opennms
