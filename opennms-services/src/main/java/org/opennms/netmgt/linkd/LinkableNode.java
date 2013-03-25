@@ -56,7 +56,9 @@ public class LinkableNode {
 	
     private final String m_sysoid;
     
-    private String m_lldpSysname;
+    private String m_cdpDeviceId;
+    
+	private String m_lldpSysname;
     
     private String m_lldpChassisId;
     
@@ -64,13 +66,18 @@ public class LinkableNode {
     
     private InetAddress m_ospfRouterId;
     
+    public String getCdpDeviceId() {
+		return m_cdpDeviceId;
+	}
+    public void setCdpDeviceId(String cdpDeviceId) {
+		m_cdpDeviceId = cdpDeviceId;
+	}
     public InetAddress getOspfRouterId() {
         return m_ospfRouterId;
     }
     public void setOspfRouterId(InetAddress ospfRouterId) {
         m_ospfRouterId = ospfRouterId;
     }
-    
     public void setLldpSysname(String lldpSysname) {
         m_lldpSysname = lldpSysname;
     }

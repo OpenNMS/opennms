@@ -56,7 +56,6 @@ import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.SnmpInterfaceDao;
 import org.opennms.netmgt.linkd.nb.Nms101NetworkBuilder;
 import org.opennms.netmgt.model.DataLinkInterface;
-import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
@@ -124,22 +123,6 @@ public class Nms101Test extends Nms101NetworkBuilder implements InitializingBean
         }
         m_nodeDao.flush();
     }
-
-	@Test
-	public void testGetNodeidFromIpAndSysName() throws Exception {
-		m_nodeDao.save(getCisco1700());
-		
-		OnmsNode cisco1700 = m_nodeDao.findByForeignId("linkd", "cisco1700");
-		assertEquals("cisco1700", cisco1700.getSysName());
-		
-		HibernateEventWriter hew = (HibernateEventWriter) m_linkd.getQueryManager();
-		for (OnmsIpInterface ip: m_ipInterfaceDao.findByNodeId(cisco1700.getId())) {
-			System.err.println((ip));
-			List<Integer> nodeids = hew.getNodeidFromIpAndSysName(ip.getIpAddress(),cisco1700.getSysName());
-			assertEquals(1, nodeids.size());
-			assertEquals(cisco1700.getId(), nodeids.get(0));
-		}
-	}
 	
     @Test
     @Transactional

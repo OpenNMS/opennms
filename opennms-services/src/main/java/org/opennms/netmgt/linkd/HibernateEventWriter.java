@@ -234,8 +234,8 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
         }
 
         LogUtils.debugf(this, "storeSnmpCollection: hasCdpCacheTable: %b", snmpColl.hasCdpCacheTable());
-        if (snmpColl.hasCdpCacheTable()) {
-            processCdpCacheTable(node, snmpColl, scanTime);
+        if (snmpColl.hasCdpGlobalGroup() && snmpColl.hasCdpCacheTable()) {
+            processCdp(node, snmpColl, scanTime);
         }
 
         LogUtils.debugf(this, "storeSnmpCollection: hasRouteTable: %b", snmpColl.hasRouteTable());
@@ -375,25 +375,6 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
         	}
         	return interfaces.get(0).getIfIndex();
         }
-	}
-
-	// SELECT node.nodeid FROM node LEFT JOIN ipinterface ON node.nodeid = ipinterface.nodeid WHERE nodetype = 'A' AND ipaddr = ?
-	@Override
-	protected List<Integer> getNodeidFromIpAndSysName(final InetAddress cdpTargetIpAddr, final String targetSysname) {
-        List<Integer> nodeids = new ArrayList<Integer>();
-        final OnmsCriteria criteria = new OnmsCriteria(OnmsIpInterface.class);
-        criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
-        criteria.add(Restrictions.eq("ipAddress", cdpTargetIpAddr));
-        criteria.add(Restrictions.eq("node.type", "A"));
-        criteria.add(Restrictions.eq("node.sysName", targetSysname));
-        List<OnmsIpInterface> interfaces = m_ipInterfaceDao.findMatching(criteria);
-        
-        LogUtils.debugf(this, "getNodeidFromIpAndSysName: Found %d nodeids matching " +
-        		"ipAddress %s, sysname %s", interfaces.size(),str(cdpTargetIpAddr),targetSysname);
-        for (final OnmsIpInterface ipinterface : interfaces) {
-            nodeids.add(ipinterface.getNode().getId());
-        }
-        return nodeids;
 	}
 
 	// SELECT node.nodeid FROM node LEFT JOIN ipinterface ON node.nodeid = ipinterface.nodeid WHERE nodetype = 'A' AND ipaddr = ?

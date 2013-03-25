@@ -31,7 +31,6 @@ package org.opennms.netmgt.linkd;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.net.InetAddress;
 import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
@@ -233,18 +232,7 @@ public class Nms17216Test extends Nms17216NetworkBuilder implements Initializing
         assertTrue(m_linkd.runSingleSnmpCollection(router4.getId()));
        
         assertEquals(0,m_dataLinkInterfaceDao.countAll());
-
-        HibernateEventWriter query = (HibernateEventWriter)m_linkd.getQueryManager();
         
-        List<Integer> nodeids = query.getNodeidFromIpAndSysName(InetAddress.getByName("172.16.50.2"),SWITCH4_NAME);
-        
-        assertEquals(1, nodeids.size());
-        assertEquals(switch4.getId(),nodeids.get(0));
-
-        nodeids = query.getNodeidFromIpAndSysName(InetAddress.getByName("172.16.50.1"), ROUTER3_NAME);
-        assertEquals(1, nodeids.size());
-        assertEquals(router3.getId(),nodeids.get(0));
-
         final Collection<LinkableNode> nodes = m_linkd.getLinkableNodesOnPackage("example1");
 
         assertEquals(9, nodes.size());
@@ -252,22 +240,31 @@ public class Nms17216Test extends Nms17216NetworkBuilder implements Initializing
         for (LinkableNode node: nodes) {
             switch(node.getNodeId()) {
                 case 1: assertEquals(5, node.getCdpInterfaces().size());
+                assertEquals(SWITCH1_NAME, node.getCdpDeviceId());
                 break;
                 case 2: assertEquals(6, node.getCdpInterfaces().size());
+                assertEquals(SWITCH2_NAME, node.getCdpDeviceId());
                 break;
                 case 3: assertEquals(4, node.getCdpInterfaces().size());
+                assertEquals(SWITCH3_NAME, node.getCdpDeviceId());
                 break;
                 case 4: assertEquals(1, node.getCdpInterfaces().size());
+                assertEquals(SWITCH4_NAME, node.getCdpDeviceId());
                 break;
                 case 5: assertEquals(2, node.getCdpInterfaces().size());
+                assertEquals(SWITCH5_NAME, node.getCdpDeviceId());
                 break;
                 case 6: assertEquals(2, node.getCdpInterfaces().size());
+                assertEquals(ROUTER1_NAME, node.getCdpDeviceId());
                 break;
                 case 7: assertEquals(2, node.getCdpInterfaces().size());
+                assertEquals(ROUTER2_NAME, node.getCdpDeviceId());
                 break;
                 case 8: assertEquals(3, node.getCdpInterfaces().size());
+                assertEquals(ROUTER3_NAME, node.getCdpDeviceId());
                 break;
                 case 9: assertEquals(1, node.getCdpInterfaces().size());
+                assertEquals(ROUTER4_NAME, node.getCdpDeviceId());
                 break;
                 default: assertEquals(-1, node.getNodeId());
                 break;
@@ -423,7 +420,7 @@ public class Nms17216Test extends Nms17216NetworkBuilder implements Initializing
             @JUnitSnmpAgent(host=SWITCH4_IP, port=161, resource="classpath:linkd/nms17216/switch4-walk.txt"),
             @JUnitSnmpAgent(host=ROUTER3_IP, port=161, resource="classpath:linkd/nms17216/router3-walk.txt")
     })
-    public void testNetworkCdpSwitch4Router417216Links() throws Exception {
+    public void testNetwork17216Switch4Router4CdpLinks() throws Exception {
         
         m_nodeDao.save(getSwitch4());
         m_nodeDao.save(getRouter3());

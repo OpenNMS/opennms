@@ -33,8 +33,6 @@
  */
 package org.opennms.netmgt.linkd;
 
-import java.net.InetAddress;
-
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
@@ -57,8 +55,6 @@ public class CdpInterface {
 	 */
 	
 	private final int m_cdpIfIndex; 
-	
-	InetAddress m_cdpTargetIpAddr;
 	
 	int m_cdpTargetNodeId;
 	
@@ -95,22 +91,6 @@ public class CdpInterface {
 		m_cdpTargetIfIndex = ifindex;
 	}
 	/**
-	 * <p>Getter for the field <code>cdpTargetIpAddr</code>.</p>
-	 *
-	 * @return Returns the cdpTargetIpAddr.
-	 */
-	public InetAddress getCdpTargetIpAddr() {
-		return m_cdpTargetIpAddr;
-	}
-	/**
-	 * <p>Setter for the field <code>cdpTargetIpAddr</code>.</p>
-	 *
-	 * @param cdpTargetIpAddr The cdpTargetIpAddr to set.
-	 */
-	public void setCdpTargetIpAddr(InetAddress cdpTargetIpAddr) {
-		m_cdpTargetIpAddr = cdpTargetIpAddr;
-	}
-	/**
 	 * <p>Getter for the field <code>cdpTargetNodeId</code>.</p>
 	 *
 	 * @return Returns the cdpTargetNodeId.
@@ -143,7 +123,6 @@ public class CdpInterface {
 	public String toString() {
 	    return new ToStringBuilder(this)
 	                .append("ifindex",m_cdpIfIndex)
-	                .append("TargetIpAddress",m_cdpTargetIpAddr)
 	                .append("targetNodeid",m_cdpTargetNodeId)
 	                .append("cdptargetIfIndex:",m_cdpTargetIfIndex)
 	                .append("cdptargetDeviceId:",m_cdpTargetDeviceId)

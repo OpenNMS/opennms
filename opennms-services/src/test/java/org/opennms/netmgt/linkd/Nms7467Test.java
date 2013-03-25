@@ -884,7 +884,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         
         HibernateEventWriter db = (HibernateEventWriter)m_linkd.getQueryManager();
         
-        final int nodeid = db.getNodeidFromIpAndSysName(InetAddress.getByName(CISCO_C870_IP),CISCO_C870_NAME).get(0);
+        final int nodeid = db.getNodeidFromIp(InetAddress.getByName(CISCO_C870_IP)).get(0);
         assertEquals(m_nodeDao.findByForeignId("linkd", CISCO_C870_NAME).getId().intValue(), nodeid);
     }
     

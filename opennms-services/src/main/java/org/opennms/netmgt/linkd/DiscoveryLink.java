@@ -67,8 +67,8 @@ public final class DiscoveryLink implements ReadyRunnable {
     private List<LinkableNode> m_lldpNodes = new ArrayList<LinkableNode>();
 
     private List<LinkableNode> m_ospfNodes = new ArrayList<LinkableNode>();
-
-    private List<NodeToNodeLink> m_cdpLinks = new ArrayList<NodeToNodeLink>();
+    
+    private List<LinkableNode> m_cdpNodes = new ArrayList<LinkableNode>();
 
     // this is the list of MAC address just parsed by discovery process
     private List<String> m_macsParsed = new ArrayList<String>();
@@ -193,7 +193,7 @@ public final class DiscoveryLink implements ReadyRunnable {
                 LogUtils.debugf(this,
                                 "run: adding to CDP node list: node with nodeid/#cdpinterfaces %d/#%d",
                                 linkableNode.getNodeId(),linkableNode.getCdpInterfaces().size());
-                addCdpLinks(linkableNode);
+                m_cdpNodes.add(linkableNode);
             }
             if (discoveryUsingRoutes && linkableNode.hasRouteInterfaces()) {
                 LogUtils.debugf(this,
@@ -232,7 +232,7 @@ public final class DiscoveryLink implements ReadyRunnable {
 
         m_bridgeNodes.clear();
         m_routerNodes.clear();
-        m_cdpLinks.clear();
+        m_cdpNodes.clear();
         m_macsParsed.clear();
         macsExcluded.clear();
         m_lldpNodes.clear();
@@ -267,14 +267,6 @@ public final class DiscoveryLink implements ReadyRunnable {
                 LogUtils.debugf(this,
                                 "populateMacToAtInterface: Parsing AtInterface nodeid/ipaddr/macaddr: %d/%s/%s",
                                 nodeid, at.getIpAddress(), macAddress);
-                if (!m_linkd.isInterfaceInPackage(at.getIpAddress(),
-                                                  getPackageName())) {
-                    LogUtils.debugf(this,
-                                    "populateMacToAtInterface: at interface: %s does not belong to package: %s! Not adding to discoverable atinterface.",
-                                    at.getIpAddress(), getPackageName());
-                    macsExcluded.add(macAddress);
-                    continue;
-                }
                 if (isMacIdentifierOfBridgeNode(macAddress)) {
                     LogUtils.debugf(this,
                                     "populateMacToAtInterface: AtInterface %s belongs to bridge node! Not adding to discoverable atinterface.",
@@ -684,51 +676,50 @@ public final class DiscoveryLink implements ReadyRunnable {
 
     }
 
-    private boolean addCdpLink(NodeToNodeLink cdplink) {
-        for (NodeToNodeLink currcdplink : m_cdpLinks) {
-            if (currcdplink.equals(cdplink))
-                return false;
-        }
-        m_cdpLinks.add(cdplink);
-        return true;
-    }
-
-    private void addCdpLinks(LinkableNode curNode) {
-        int curCdpNodeId = curNode.getNodeId();
-        final InetAddress curCdpIpAddr = curNode.getSnmpPrimaryIpAddr();
-
+    private List<NodeToNodeLink> getCdpLinks(LinkableNode node1, LinkableNode node2) {
+        int node1Id = node1.getNodeId();
+        int node2Id = node2.getNodeId();
         LogUtils.infof(this,
-                       "run: parsing nodeid %d IP address %s with %d CDP interfaces.",
-                       curCdpNodeId, curCdpIpAddr,
-                       curNode.getCdpInterfaces().size());
-
-        for (final CdpInterface cdpIface : curNode.getCdpInterfaces()) {
-
-            final InetAddress targetIpAddr = cdpIface.getCdpTargetIpAddr();
-            final String hostAddress = str(targetIpAddr);
-            if (!m_linkd.isInterfaceInPackage(targetIpAddr, getPackageName())) {
+                       "getCdpLinks: checking cdp links between node1 %d and node2 %d",
+                       node1Id, 
+                       node2Id);
+        
+        List<NodeToNodeLink> cdplinks = new ArrayList<NodeToNodeLink>();
+        for (final CdpInterface cdpIface : node1.getCdpInterfaces()) {
+            LogUtils.debugf(this,
+                    "getCdpLinks: parsing cdp interface %s on node %d.", cdpIface,node1Id);
+            if (cdpIface.getCdpTargetNodeId() != node2Id ||
+            		!cdpIface.getCdpTargetDeviceId().equals(node2.getCdpDeviceId())) {
                 LogUtils.debugf(this,
-                                "run: IP address %s Not in package: %s.  Skipping.",
-                                hostAddress, getPackageName());
-                continue;
+                        "getCdpLinks: target node %d with cdpDeviceId %s is not node2 %d with cdpdeviceId %s Skipping.", 
+                        cdpIface.getCdpTargetNodeId(),cdpIface.getCdpTargetDeviceId(),node2Id,node2.getCdpDeviceId());
+            	continue;
             }
-
-            final int targetCdpNodeId = cdpIface.getCdpTargetNodeId();
-            if (targetCdpNodeId == curCdpNodeId) {
-                LogUtils.debugf(this,
-                                "run: node id found for IP address %s is itself.  Skipping.",
-                                hostAddress);
-                continue;
+            if (isBridgeNode(node1Id)) {
+                LinkableNode node = m_bridgeNodes.get(node1Id);
+                if (node.isBackBoneBridgePort(node.getBridgePort(cdpIface.getCdpIfIndex()))) {
+                    LogUtils.debugf(this,
+                                    "getCdpLinks: source node is bridge node, and port %d is backbone port! Skipping.", cdpIface.getCdpIfIndex());
+                    continue;
+                }
+            }
+            if (isBridgeNode(node2Id)) {
+                LinkableNode node = m_bridgeNodes.get(node2Id);
+                if (node.isBackBoneBridgePort(node.getBridgePort(cdpIface.getCdpTargetIfIndex()))) {
+                    LogUtils.debugf(this,
+                                    "getCdpLinks: target node is bridge node, and port %d is backbone port! Skipping.", cdpIface.getCdpTargetIfIndex() );
+                    continue;
+                }
             }
 
             final NodeToNodeLink link = new NodeToNodeLink(
                                                            cdpIface.getCdpTargetNodeId(),
                                                            cdpIface.getCdpTargetIfIndex());
-            link.setNodeparentid(curNode.getNodeId());
-            link.setParentifindex(cdpIface.getCdpIfIndex());
-            addCdpLink(link);
+        	link.setNodeparentid(node1Id);
+        	link.setParentifindex(cdpIface.getCdpIfIndex());
+        	cdplinks.add(link);
         }
-
+        return cdplinks;
     }
 
     private void getLinksFromCdp() {
@@ -736,43 +727,18 @@ public final class DiscoveryLink implements ReadyRunnable {
                        "run: adding links using Cisco Discovery Protocol");
 
         LogUtils.infof(this,
-                       "run: found # %d links using Cisco Discovery Protocol",
-                       m_cdpLinks.size());
+                       "run: found # %d nodes using Cisco Discovery Protocol",
+                       m_cdpNodes.size());
 
-        for (NodeToNodeLink cdplink : m_cdpLinks) {
-            int curCdpNodeId = cdplink.getNodeId();
-            int cdpIfIndex = cdplink.getIfindex();
-            int targetCdpNodeId = cdplink.getNodeparentid();
-            int cdpDestIfindex = cdplink.getParentifindex();
-            LogUtils.infof(this, "run: parsing CDP link: %s",
-                           cdplink.toString());
-
-            // not adding only if one of the port
-            // is a backbone bridge port
-            if (isBridgeNode(curCdpNodeId)) {
-                LinkableNode node = m_bridgeNodes.get(curCdpNodeId);
-                if (node.isBackBoneBridgePort(node.getBridgePort(cdpIfIndex))) {
-                    LogUtils.debugf(this,
-                                    "run: source node is bridge node, and port is backbone port! Skipping.");
-                    return;
+        for (LinkableNode linknode1: m_cdpNodes) {
+        	for (LinkableNode linknode2: m_cdpNodes) {
+                if (linknode1.getNodeId() >= linknode2.getNodeId())
+                    continue;
+                for (NodeToNodeLink cdpLink: getCdpLinks(linknode1,linknode2)) {
+                    addNodetoNodeLink(cdpLink);
                 }
-            }
-            if (isBridgeNode(targetCdpNodeId)) {
-                LinkableNode node = m_bridgeNodes.get(targetCdpNodeId);
-                if (node.isBackBoneBridgePort(node.getBridgePort(cdpDestIfindex))) {
-                    LogUtils.debugf(this,
-                                    "run: target node is bridge node, and port is backbone port! Skipping.");
-                    return;
-                }
-            }
-
-            // now add the CDP link
-            addNodetoNodeLink(cdplink);
-            LogUtils.infof(this, "run: CDP link added");
+        	}
         }
-
-        LogUtils.infof(this,
-                       "run: done addind Cisco Discovery Protocol links.");
     }
 
     // We use a simple algoritm
@@ -782,7 +748,7 @@ public final class DiscoveryLink implements ReadyRunnable {
     // the parent node is that with nodeid1 < nodeid2
     private void getLinksFromOspf() {
         LogUtils.infof(this,
-        "run: adding links using Open Short Path First Protocol");
+        "getLinksFromOspf: adding links using Open Short Path First Protocol");
         int i = 0;
         for (LinkableNode linknode1 : m_ospfNodes) {
             for (LinkableNode linknode2 : m_ospfNodes) {
@@ -795,13 +761,13 @@ public final class DiscoveryLink implements ReadyRunnable {
                 }
             }
         }
-        LogUtils.infof(this, "run: done OSPF. Found links # %d.", i);
+        LogUtils.infof(this, "getLinksFromOspf: done OSPF. Found links # %d.", i);
     }
     
     private List<NodeToNodeLink> getOspfLink(LinkableNode linknode1,
             LinkableNode linknode2) {
         LogUtils.infof(this,
-                       "run: finding OSPF links between node with id %d and node with id %d.",
+                       "getOspfLink: finding OSPF links between node with id %d and node with id %d.",
                        linknode1.getNodeId(), linknode2.getNodeId());
         List<NodeToNodeLink> links = new ArrayList<NodeToNodeLink>();
         for (OspfNbrInterface ospf: linknode1.getOspfinterfaces()) {
@@ -1259,15 +1225,9 @@ public final class DiscoveryLink implements ReadyRunnable {
                 return;
             }
         }
-        if (nnlink.getNodeId() == nnlink.getNodeparentid()) {
-            LogUtils.debugf(this,
-                            "addNodetoNodeLink: skipping self node link %s",
-                            nnlink.toString());
-        } else {
-            LogUtils.debugf(this, "addNodetoNodeLink: adding link %s",
-                            nnlink.toString());
-            m_links.add(nnlink);
-        }
+        LogUtils.debugf(this, "addNodetoNodeLink: adding link %s",
+                        nnlink.toString());
+        m_links.add(nnlink);
     }
 
     private void addLinks(Set<String> macs, int nodeid, int ifindex) {
