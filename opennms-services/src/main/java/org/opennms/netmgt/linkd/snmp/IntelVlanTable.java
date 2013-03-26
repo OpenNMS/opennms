@@ -32,8 +32,6 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.opennms.netmgt.capsd.snmp.SnmpStore;
-
 import org.opennms.netmgt.model.OnmsVlan;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;

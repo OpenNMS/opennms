@@ -39,8 +39,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.opennms.core.utils.LogUtils;
-import org.opennms.netmgt.capsd.snmp.SnmpStore;
-import org.opennms.netmgt.capsd.snmp.SnmpTable;
+import org.opennms.netmgt.linkd.snmp.SnmpStore;
+import org.opennms.netmgt.linkd.snmp.SnmpTable;
 import org.opennms.netmgt.linkd.scheduler.ReadyRunnable;
 import org.opennms.netmgt.linkd.scheduler.Scheduler;
 import org.opennms.netmgt.linkd.snmp.CdpCacheTable;

@@ -31,7 +31,6 @@ package org.opennms.netmgt.linkd.snmp;
 import java.net.InetAddress;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.capsd.snmp.NamedSnmpVar;
 
 /**
  *<p>The {@link InetCidrRouteTableEntry} class is designed to hold all the MIB-II

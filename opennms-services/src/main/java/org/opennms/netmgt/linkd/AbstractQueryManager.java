@@ -45,7 +45,6 @@ import org.hibernate.criterion.Restrictions;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 
-import org.opennms.netmgt.capsd.snmp.SnmpStore;
 import org.opennms.netmgt.dao.AtInterfaceDao;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
@@ -62,6 +61,7 @@ import org.opennms.netmgt.linkd.snmp.LldpMibConstants;
 import org.opennms.netmgt.linkd.snmp.LldpRemTableEntry;
 import org.opennms.netmgt.linkd.snmp.OspfNbrTableEntry;
 import org.opennms.netmgt.linkd.snmp.QBridgeDot1dTpFdbTableEntry;
+import org.opennms.netmgt.linkd.snmp.SnmpStore;
 import org.opennms.netmgt.linkd.snmp.Vlan;
 
 import org.opennms.netmgt.model.OnmsArpInterface.StatusType;

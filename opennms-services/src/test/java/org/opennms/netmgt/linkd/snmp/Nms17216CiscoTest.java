@@ -38,7 +38,7 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.core.utils.BeanUtils;
-import org.opennms.netmgt.capsd.snmp.SnmpStore;
+import org.opennms.netmgt.linkd.snmp.SnmpStore;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.linkd.nb.Nms17216NetworkBuilder;
 import org.opennms.netmgt.snmp.CollectionTracker;
