@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>topology</artifactId>
-    <version>1.11.4-SPACE-SNAPSHOT</version>
+    <version>1.11.91-SPACE-SNAPSHOT</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
@@ -16,7 +16,7 @@
   <packaging>pom</packaging>
 <<<<<<< HEAD
 =======
-  <version>1.11.91-SNAPSHOT</version>
+  <version>1.11.91-SPACE-SNAPSHOT</version>
 
 >>>>>>> origin/1.12
 
