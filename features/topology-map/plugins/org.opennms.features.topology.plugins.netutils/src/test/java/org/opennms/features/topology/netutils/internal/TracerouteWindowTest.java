@@ -28,19 +28,12 @@
 
 package org.opennms.features.topology.netutils.internal;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import com.vaadin.server.LegacyApplication;
-import com.vaadin.ui.LegacyWindow;
-import com.vaadin.ui.Window;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.UI;
