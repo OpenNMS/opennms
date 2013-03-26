@@ -24,7 +24,7 @@
     </c:choose>
   </c:when>
   <c:otherwise>
-    <form:input cssStyle="border:0; background: lightgrey" size="${!(empty fieldSize)? fieldSize : 10}" path="${property}" readonly="true" /> 
+    <form:input cssStyle="border:0; background: lightgrey" size="${!(empty fieldSize)? fieldSize : 48}" path="${property}" readonly="true" /> 
   </c:otherwise>
 </c:choose>
 

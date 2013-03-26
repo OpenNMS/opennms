@@ -70,7 +70,7 @@
     <!-- Form for editing node fields -->
     <tree:nodeForm>
 
-      <tree:field label="Node" property="nodeLabel" />
+      <tree:field label="Node" property="nodeLabel" size="48" />
       <tree:field label="ForeignId" property="foreignId" />
       <tree:field label="Site" property="building" />
       <tree:action label="[Add Interface]" action="addInterface" />
@@ -86,7 +86,7 @@
         <tree:field label="IP Interface" property="ipAddr" size="36"/>
         <tree:field label="Description" property="descr" />
         
-        <tree:select label="SNMP Primary" property="snmpPrimary" items="${snmpPrimaryChoices}" />
+        <tree:select label="SNMP Primary" property="snmpPrimary" items="${snmpPrimaryChoices}" fieldSize="10" />
         <tree:action label="Add Service" action="addService" />
       </tree:nodeForm>
 
@@ -97,7 +97,7 @@
         <tree:nodeForm>  
             <c:choose>
               <c:when test="${freeFormEditing == true}">
-                <tree:field label="Service" property="serviceName" />
+                <tree:field label="Service" property="serviceName" size="48" />
               </c:when>
               <c:otherwise>
                 <tree:select label="Service" property="serviceName" items="${services}" />
@@ -115,7 +115,7 @@
       <tree:nodeForm>
         <c:choose>
           <c:when test="${freeFormEditing == true}">
-            <tree:field label="Node Category" property="name" />
+            <tree:field label="Node Category" property="name" size="48" />
           </c:when>
           <c:otherwise>
             <tree:select label="Node Category" property="name" items="${categories}"/>
