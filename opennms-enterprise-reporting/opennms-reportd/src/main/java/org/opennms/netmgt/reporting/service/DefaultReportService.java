@@ -56,6 +56,10 @@ import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.reportd.Parameter;
 import org.opennms.netmgt.config.reportd.Report;
+import org.opennms.netmgt.dao.ReportCatalogDao;
+import org.opennms.netmgt.model.ReportCatalogEntry;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.util.Assert;
 
 /**
  * <p>DefaultReportService class.</p>
@@ -63,10 +67,12 @@ import org.opennms.netmgt.config.reportd.Report;
  * @author ranger
  * @version $Id: $
  */
-public class DefaultReportService implements ReportService {
+public class DefaultReportService implements ReportService,InitializingBean {
     
     private enum Format { pdf,html,xml,xls,csv };
-    
+
+    private ReportCatalogDao m_reportCatalogDao;
+
     /** {@inheritDoc} 
      * @throws ReportRunException */
     public synchronized String runReport(Report report,String reportDirectory) throws ReportRunException {
@@ -75,7 +81,7 @@ public class DefaultReportService implements ReportService {
         try {
             outputFile = generateReportName(reportDirectory,report.getReportName(), report.getReportFormat());
             JasperPrint print = runAndRender(report);
-            outputFile = saveReport(print,report.getReportFormat(),outputFile);    
+            outputFile = saveReport(print,report,outputFile);    
             
         } catch (JRException e) {
             LogUtils.errorf(this, e, "Error running report: %s", e.getMessage());
@@ -89,7 +95,42 @@ public class DefaultReportService implements ReportService {
     
     }
  
-    
+    /**
+     * <p>getReportCatalogDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.ReportCatalogDao} object.
+     */
+    public ReportCatalogDao getReportCatalogDao() {
+        return m_reportCatalogDao;
+    }
+
+    /**
+     * <p>setReportCatalogDao</p>
+     *
+     * @param reportCatalogDao a {@link org.opennms.netmgt.dao.ReportCatalogDao} object.
+     */
+    public void setReportCatalogDao(ReportCatalogDao reportCatalogDao) {
+        this.m_reportCatalogDao = reportCatalogDao;
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        Assert.notNull(m_reportCatalogDao,"No Report Catalog DAO set");
+    }
+
+    private void createReportCatalogEntry(JasperPrint jasperPrint, Report report, String fileName) throws ReportRunException {
+        ReportCatalogEntry catalogEntry = new ReportCatalogEntry();
+        catalogEntry.setDate(new Date());
+        catalogEntry.setReportId("reportd_" + report.getReportTemplate()); // FIXME Is this correct ?
+        catalogEntry.setTitle(report.getReportName());
+        catalogEntry.setLocation(fileName);
+        try {
+            m_reportCatalogDao.save(catalogEntry);
+        } catch (Exception e) {
+            throw new ReportRunException("Can't save a report catalog entry, " + e.getMessage());
+        }
+    }
+
     private String generateReportName(String reportDirectory, String reportName, String reportFormat){
         SimpleDateFormat sdf = new SimpleDateFormat();
         sdf.applyPattern("yyyyMMddHHmmss");
@@ -97,9 +138,10 @@ public class DefaultReportService implements ReportService {
     }
 
     
-    private String saveReport(JasperPrint jasperPrint, String format, String destFileName) throws JRException, Exception{
+    private String saveReport(JasperPrint jasperPrint, Report report, String destFileName) throws JRException, Exception{
+        createReportCatalogEntry(jasperPrint, report, destFileName);
         String reportName=null;
-        switch(Format.valueOf(format)){    
+        switch(Format.valueOf(report.getReportFormat())){    
         case pdf:
             JasperExportManager.exportReportToPdfFile(jasperPrint, destFileName);
             reportName = destFileName;
@@ -120,7 +162,7 @@ public class DefaultReportService implements ReportService {
             reportName = destFileName;
             break;
         default:
-            LogUtils.errorf(this, "Error Running Report: Unknown Format: %s",format);
+            LogUtils.errorf(this, "Error Running Report: Unknown Format: %s", report.getReportFormat());
         }    
         
         return reportName;
@@ -209,6 +251,5 @@ public class DefaultReportService implements ReportService {
         
         return parmMap;
     }
-    
 
 }
