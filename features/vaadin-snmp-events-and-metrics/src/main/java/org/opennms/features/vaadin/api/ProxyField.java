@@ -247,6 +247,8 @@ public class ProxyField<T> extends VerticalLayout implements Field<T> {
      * @see com.vaadin.data.Property.Viewer#setPropertyDataSource(com.vaadin.data.Property)
      */
     @Override
+    // Because of {@link com.vaadin.data.Property.Viewer#setPropertyDataSource(com.vaadin.data.Property)} API
+    @SuppressWarnings("unchecked") 
     public void setPropertyDataSource(Property newDataSource) {
         getField().setPropertyDataSource(newDataSource);
     }

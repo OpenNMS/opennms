@@ -34,7 +34,7 @@ import org.opennms.netmgt.config.EventConfDao;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.ops4j.pax.vaadin.AbstractApplicationFactory;
 
-import com.vaadin.Application;
+import com.vaadin.ui.UI;
 
 /**
  * The Class Event Administration Application Factory.
@@ -71,7 +71,7 @@ public class EventAdminApplicationFactory extends AbstractApplicationFactory {
      * @see org.ops4j.pax.vaadin.ApplicationFactory#createApplication(javax.servlet.http.HttpServletRequest)
      */
     @Override
-    public Application createApplication(HttpServletRequest request) throws ServletException {
+    public UI createApplication(HttpServletRequest request) throws ServletException {
         EventAdminApplication app = new EventAdminApplication();
         app.setEventProxy(eventProxy);
         app.setEventConfDao(eventConfDao);
@@ -82,7 +82,7 @@ public class EventAdminApplicationFactory extends AbstractApplicationFactory {
      * @see org.ops4j.pax.vaadin.ApplicationFactory#getApplicationClass()
      */
     @Override
-    public Class<? extends Application> getApplicationClass() throws ClassNotFoundException {
+    public Class<? extends UI> getApplicationClass() throws ClassNotFoundException {
         return EventAdminApplication.class;
     }
 

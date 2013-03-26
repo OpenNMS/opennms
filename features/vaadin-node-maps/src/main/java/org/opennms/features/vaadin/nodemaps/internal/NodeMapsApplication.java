@@ -28,8 +28,6 @@
 
 package org.opennms.features.vaadin.nodemaps.internal;
 
-import java.util.Map;
-
 import org.opennms.features.geocoder.GeocoderService;
 import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.dao.AssetRecordDao;
@@ -39,10 +37,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.support.TransactionOperations;
 
 import com.github.wolfie.refresher.Refresher;
+import com.vaadin.annotations.Title;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.Window;
 
 /**
  * The Class Node Maps Application.
@@ -80,6 +78,7 @@ import com.vaadin.ui.Window;
  * 5. Create a strategy to build/display the Popups even using Vaadin Widgets or OpenLayer widgets).
  */
 @SuppressWarnings("serial")
+@Title("OpenNMS Node Maps")
 public class NodeMapsApplication extends UI {
 
     private static final int REFRESH_INTERVAL = 5 * 60 * 1000;
@@ -91,8 +90,6 @@ public class NodeMapsApplication extends UI {
     private AlarmDao m_alarmDao;
 
     private GeocoderService m_geocoderService;
-
-    private Window m_window;
 
     private AbsoluteLayout m_rootLayout;
 
@@ -146,9 +143,9 @@ public class NodeMapsApplication extends UI {
         m_rootLayout = new AbsoluteLayout();
         m_rootLayout.setSizeFull();
 
-        m_window = new Window("OpenNMS Node Maps");
-        m_window.setContent(m_rootLayout);
-        m_window.addParameterHandler(new ParameterHandler() {
+        /*
+         * TODO: Figure out how to implement this in Vaadin 7
+        addParameterHandler(new ParameterHandler() {
             @Override
             public void handleParameters(Map<String, String[]> parameters) {
                 if (parameters.containsKey("nodeId")) {
@@ -161,13 +158,16 @@ public class NodeMapsApplication extends UI {
                 }
             }
         });
-        setMainWindow(m_window);
+        */
+
+        setContent(m_rootLayout);
 
         m_rootLayout.addComponent(openlayers, "top: 0px; left: 0px; right:0px; bottom:0px;");
 
+        // TODO: Change this call to use the Extension/Connector pattern
         final Refresher refresher = new Refresher();
         refresher.setRefreshInterval(REFRESH_INTERVAL);
-        m_window.addComponent(refresher);
+        //m_rootLayout.addComponent(refresher);
     }
 
     public int parseInt(String intStr, int defaultValue) {

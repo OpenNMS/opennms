@@ -50,7 +50,8 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.Form;
 import com.vaadin.ui.FormFieldFactory;
-import com.vaadin.ui.LegacyWindow;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
@@ -77,7 +78,7 @@ public class AddVertexToGroupOperation implements Constants, Operation {
 			}
 		}
 
-		final LegacyWindow window = operationContext.getMainWindow();
+		final UI window = operationContext.getMainWindow();
 
 		final Window groupNamePrompt = new Window("Add Item To Group");
 		groupNamePrompt.setModal(true);
@@ -166,7 +167,7 @@ public class AddVertexToGroupOperation implements Constants, Operation {
 		});
 		promptForm.getFooter().addComponent(cancel);
 
-		groupNamePrompt.addComponent(promptForm);
+		groupNamePrompt.setContent(promptForm);
 
 		window.addWindow(groupNamePrompt);
 

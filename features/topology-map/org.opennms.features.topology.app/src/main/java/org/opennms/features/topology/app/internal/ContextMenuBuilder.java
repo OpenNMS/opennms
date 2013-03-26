@@ -35,7 +35,6 @@ import java.util.Map.Entry;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.app.internal.TopoContextMenu.TopoContextMenuItem;
 
-@SuppressWarnings("unchecked")
 public class ContextMenuBuilder extends MenuBuilder<Command, TopoContextMenuItem> {
 
 	public TopoContextMenu get() {
@@ -43,7 +42,7 @@ public class ContextMenuBuilder extends MenuBuilder<Command, TopoContextMenuItem
         
         Set<Entry<String, Object>> sortedEntrySet = getSortedMenuItems();
         for(Entry<String, Object> entry : sortedEntrySet) {
-            if(entry.getValue() instanceof Map) {
+            if(entry.getValue() instanceof Map<?,?>) {
                 TopoContextMenuItem menuItem = cMenu.addItem(entry.getKey(), (Operation)null);
                 addMenuItems(menuItem, (Map<String, Object>) entry.getValue());
             }else {
@@ -61,7 +60,7 @@ public class ContextMenuBuilder extends MenuBuilder<Command, TopoContextMenuItem
 	    Set<Entry<String, Object>> sortedEntrySet = getSortedSubmenuGroup(subMenu.getName(), value);
 	    for(Entry<String, Object> entry : sortedEntrySet) {
 	        String commandKey = entry.getKey();
-	        if(entry.getValue() instanceof Map) {
+	        if(entry.getValue() instanceof Map<?,?>) {
 	            TopoContextMenuItem subMenuItem = subMenu.addItem(commandKey, null);
 	            addMenuItems(subMenuItem, (Map<String, Object>) entry.getValue());
 	        }else {

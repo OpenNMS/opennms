@@ -33,7 +33,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.opennms.netmgt.config.DataCollectionConfigDao;
 import org.ops4j.pax.vaadin.AbstractApplicationFactory;
 
-import com.vaadin.Application;
+import com.vaadin.ui.UI;
 
 /**
  * A factory for creating SNMP Collection Administration Application objects.
@@ -56,7 +56,7 @@ public class SnmpCollectionAdminApplicationFactory extends AbstractApplicationFa
      * @see org.ops4j.pax.vaadin.ApplicationFactory#createApplication(javax.servlet.http.HttpServletRequest)
      */
     @Override
-    public Application createApplication(HttpServletRequest request) throws ServletException {
+    public UI createApplication(HttpServletRequest request) throws ServletException {
         SnmpCollectionAdminApplication app = new SnmpCollectionAdminApplication();
         app.setDataCollectionDao(dataCollectionDao);
         return app;
@@ -66,7 +66,7 @@ public class SnmpCollectionAdminApplicationFactory extends AbstractApplicationFa
      * @see org.ops4j.pax.vaadin.ApplicationFactory#getApplicationClass()
      */
     @Override
-    public Class<? extends Application> getApplicationClass() throws ClassNotFoundException {
+    public Class<? extends UI> getApplicationClass() throws ClassNotFoundException {
         return SnmpCollectionAdminApplication.class;
     }
 

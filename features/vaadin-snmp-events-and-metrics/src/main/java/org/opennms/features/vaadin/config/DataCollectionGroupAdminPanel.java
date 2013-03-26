@@ -121,7 +121,7 @@ public class DataCollectionGroupAdminPanel extends VerticalLayout {
                         addDataCollectionGroupPanel(dataCollectionDao, file, dcGroup);
                     }
                 };
-                getApplication().getMainWindow().addWindow(w);
+                getUI().addWindow(w);
             }
         });
 

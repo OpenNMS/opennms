@@ -32,10 +32,11 @@ import org.opennms.netmgt.config.DataCollectionConfigDao;
 import org.opennms.netmgt.config.EventConfDao;
 import org.opennms.netmgt.model.events.EventProxy;
 
-import com.vaadin.Application;
-import com.vaadin.server.Sizeable.Unit;
+import com.vaadin.annotations.Theme;
+import com.vaadin.annotations.Title;
+import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.HorizontalSplitPanel;
-import com.vaadin.ui.Window;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.Runo;
 
 /**
@@ -44,7 +45,9 @@ import com.vaadin.ui.themes.Runo;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 @SuppressWarnings("serial")
-public class MibCompilerApplication extends Application {
+@Title("MIB Compiler Application")
+@Theme(Runo.THEME_NAME)
+public class MibCompilerApplication extends UI {
 
     /** The OpenNMS Event Proxy. */
     private EventProxy eventProxy;
@@ -98,15 +101,13 @@ public class MibCompilerApplication extends Application {
      * @see com.vaadin.Application#init()
      */
     @Override
-    public void init() {
+    public void init(VaadinRequest request) {
         if (eventProxy == null)
             throw new RuntimeException("eventProxy cannot be null.");
         if (eventConfDao == null)
             throw new RuntimeException("eventConfDao cannot be null.");
         if (dataCollectionDao == null)
             throw new RuntimeException("dataCollectionDao cannot be null.");
-
-        setTheme(Runo.THEME_NAME);
 
         final HorizontalSplitPanel mainPanel = new HorizontalSplitPanel();
         final MibConsolePanel mibConsole = new MibConsolePanel();
@@ -117,8 +118,7 @@ public class MibCompilerApplication extends Application {
         mainPanel.addComponent(mibPanel);
         mainPanel.addComponent(mibConsole);
 
-        final Window mainWindow = new Window("MIB Compiler Application", mainPanel);
-        setMainWindow(mainWindow);
+        setContent(mainPanel);
     }
 
 }

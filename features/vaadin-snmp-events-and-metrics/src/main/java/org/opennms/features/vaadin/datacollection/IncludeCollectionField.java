@@ -107,7 +107,7 @@ public class IncludeCollectionField extends CustomField<IncludeCollectionField.I
                         table.select(obj);
                     }
                 };
-                getApplication().getMainWindow().addWindow(w);
+                getUI().addWindow(w);
             }
         });
         edit = new Button("Edit", new Button.ClickListener() {
@@ -124,7 +124,7 @@ public class IncludeCollectionField extends CustomField<IncludeCollectionField.I
                         table.refreshRowCache();
                     }
                 };
-                getApplication().getMainWindow().addWindow(w);
+                getUI().addWindow(w);
             }
         });
         delete = new Button("Delete", new Button.ClickListener() {

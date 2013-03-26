@@ -36,16 +36,17 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.vaadin.server.LegacyApplication;
-import com.vaadin.ui.LegacyWindow;
+import com.vaadin.server.VaadinRequest;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.Window;
 
 public class PingWindowTest {
 
 	PingWindow pingWindow;
 	PingWindow pingWindow2;
 	PingWindow pingWindow3;
-	LegacyWindow mainWindow;
-	LegacyApplication app;
+	Window mainWindow;
+	UI app;
 	
 	@Before
 	public void setUp() throws Exception {
@@ -55,18 +56,17 @@ public class PingWindowTest {
 		pingWindow2 = new PingWindow(null, "http://localhost:8080/");
 		pingWindow3 = new PingWindow(testNode1, "");
 		
-		mainWindow = new LegacyWindow();
-		app = new LegacyApplication() { //Empty Application
+		mainWindow = new Window();
+		app = new UI() { //Empty Application
 
 			private static final long serialVersionUID = -6761162156810032609L;
 
 			@Override
-			public void init() {}
+			public void init(VaadinRequest request) {}
 		};
-		app.setMainWindow(mainWindow);
-		app.getMainWindow().addWindow(pingWindow);
-		app.getMainWindow().addWindow(pingWindow2);
-		app.getMainWindow().addWindow(pingWindow3);
+		app.addWindow(pingWindow);
+		app.addWindow(pingWindow2);
+		app.addWindow(pingWindow3);
 	}
 	
 	@Test
@@ -144,9 +144,9 @@ public class PingWindowTest {
 	
 	@Test
 	public void testAttach() {
-		assertTrue(app.getMainWindow().getWindows().contains(pingWindow));
-		app.getMainWindow().removeWindow(pingWindow);
-		assertFalse(app.getMainWindow().getWindows().contains(pingWindow));
+		assertTrue(app.getWindows().contains(pingWindow));
+		app.removeWindow(pingWindow);
+		assertFalse(app.getWindows().contains(pingWindow));
 	}
 
 }

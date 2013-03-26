@@ -86,7 +86,6 @@ public abstract class IncludeCollectionWindow extends Window implements Button.C
         form.setImmediate(true);
         form.setWidth("100%");
         form.setBuffered(true);
-        form.getLayout().setMargin(true);
 
         final ComboBox valueField = new ComboBox("Value");
         valueField.setEnabled(false);
@@ -152,10 +151,12 @@ public abstract class IncludeCollectionWindow extends Window implements Button.C
         toolbar.addComponent(okButton);
         toolbar.addComponent(cancelButton);
 
-        addComponent(form);
-        addComponent(toolbar);
-
-        ((VerticalLayout) getContent()).setComponentAlignment(toolbar, Alignment.BOTTOM_RIGHT);
+        VerticalLayout layout = new VerticalLayout();
+        layout.addComponent(form);
+        layout.addComponent(toolbar);
+        layout.setComponentAlignment(toolbar, Alignment.BOTTOM_RIGHT);
+        layout.setMargin(true);
+        setContent(layout);
 
         form.setItemDataSource(new BeanItem<IncludeCollectionWrapper>(wrapper));
     }

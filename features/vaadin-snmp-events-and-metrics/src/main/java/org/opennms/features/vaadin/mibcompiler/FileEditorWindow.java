@@ -103,11 +103,12 @@ public class FileEditorWindow extends Window implements Button.ClickListener {
         if (!readOnly)
             toolbar.addComponent(save);
 
-        addComponent(editor);
-        addComponent(toolbar);
-
-        ((VerticalLayout) getContent()).setExpandRatio(editor, 1.0f);
-        ((VerticalLayout) getContent()).setComponentAlignment(toolbar, Alignment.BOTTOM_RIGHT);
+        VerticalLayout layout = new VerticalLayout();
+        layout.addComponent(editor);
+        layout.addComponent(toolbar);
+        layout.setExpandRatio(editor, 1.0f);
+        layout.setComponentAlignment(toolbar, Alignment.BOTTOM_RIGHT);
+        setContent(layout);
     }
 
     /* (non-Javadoc)

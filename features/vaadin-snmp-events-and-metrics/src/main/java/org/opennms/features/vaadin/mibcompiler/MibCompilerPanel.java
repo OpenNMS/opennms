@@ -167,7 +167,9 @@ public class MibCompilerPanel extends Panel {
                 addTreeItem(filename, PENDING);
             }
         };
-        addComponent(upload);
+
+        VerticalLayout layout = new VerticalLayout();
+        layout.addComponent(upload);
 
         // Initialize MIB Tree
 
@@ -177,15 +179,17 @@ public class MibCompilerPanel extends Panel {
         final Label label = new Label("<p>Use the right-click context menu over the MIB tree files, to display the compiler operations.</p>"
                                       + "<p>The file name requires to be the same as the MIB to be processed.</p>");
         label.setContentMode(ContentMode.HTML);
-        addComponent(label);
-        addComponent(mibsTree);
+
+        layout.addComponent(label);
+        layout.addComponent(mibsTree);
 
         // Panel Setup
-
         setSizeFull();
         addStyleName(Runo.PANEL_LIGHT);
-        ((VerticalLayout) getContent()).setComponentAlignment(upload, Alignment.TOP_RIGHT);
-        ((VerticalLayout) getContent()).setExpandRatio(mibsTree, 1);
+        layout.setComponentAlignment(upload, Alignment.TOP_RIGHT);
+        layout.setExpandRatio(mibsTree, 1);
+
+        setContent(layout);
     }
 
     /**
@@ -254,11 +258,11 @@ public class MibCompilerPanel extends Panel {
                 }
                 if (action == ACTION_EDIT) {
                     Window w = new FileEditorWindow(new File(MIBS_PENDING_DIR, fileName), logger, false);
-                    getApplication().getMainWindow().addWindow(w);
+                    getUI().addWindow(w);
                 }
                 if (action == ACTION_VIEW) {
                     Window w = new FileEditorWindow(new File(MIBS_COMPILED_DIR, fileName), logger, true);
-                    getApplication().getMainWindow().addWindow(w);
+                    getUI().addWindow(w);
                 }
                 if (action == ACTION_COMPILE) {
                     if (parseMib(logger, new File(MIBS_PENDING_DIR, fileName))) {
@@ -333,7 +337,7 @@ public class MibCompilerPanel extends Panel {
                     showEventsWindow(logger, fileName, ueiBase);
                 }
             };
-            getApplication().getMainWindow().addWindow(w);
+            getUI().addWindow(w);
         }
     }
 
@@ -354,7 +358,7 @@ public class MibCompilerPanel extends Panel {
                     logger.info("Found " + events.getEventCount() + " events.");
                     final String eventsFileName = fileName.replaceFirst("\\..*$", ".events.xml");
                     final EventWindow w = new EventWindow(eventsDao, eventsProxy, eventsFileName, events, logger);
-                    getApplication().getMainWindow().addWindow(w);
+                    getUI().addWindow(w);
                 } catch (Throwable t) {
                     Notification.show(t.getMessage(), Notification.Type.ERROR_MESSAGE);
                 }
@@ -380,7 +384,7 @@ public class MibCompilerPanel extends Panel {
                     try {
                         final String dataFileName = fileName.replaceFirst("\\..*$", ".xml");
                         final DataCollectionWindow w = new DataCollectionWindow(mibParser, dataCollectionDao, dataFileName, dcGroup, logger);
-                        getApplication().getMainWindow().addWindow(w);
+                        getUI().addWindow(w);
                     } catch (Throwable t) {
                         Notification.show(t.getMessage(), Notification.Type.ERROR_MESSAGE);
                     }

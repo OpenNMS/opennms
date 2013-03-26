@@ -48,7 +48,7 @@ import com.vaadin.data.validator.AbstractValidator;
 import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Form;
-import com.vaadin.ui.LegacyWindow;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
@@ -63,7 +63,7 @@ public class RenameGroupOperation implements Constants, Operation {
 
 		final GraphContainer graphContainer = operationContext.getGraphContainer();
 
-		final LegacyWindow window = operationContext.getMainWindow();
+		final UI window = operationContext.getMainWindow();
 
 		final Window groupNamePrompt = new Window("Rename Group");
 		groupNamePrompt.setModal(true);
@@ -176,7 +176,7 @@ public class RenameGroupOperation implements Constants, Operation {
 		});
 		promptForm.getFooter().addComponent(cancel);
 
-		groupNamePrompt.addComponent(promptForm);
+		groupNamePrompt.setContent(promptForm);
 
 		window.addWindow(groupNamePrompt);
 

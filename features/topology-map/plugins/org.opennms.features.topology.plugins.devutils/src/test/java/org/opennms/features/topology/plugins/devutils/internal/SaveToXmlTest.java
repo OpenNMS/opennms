@@ -35,7 +35,7 @@ import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.plugins.topo.simple.SimpleGraphProvider;
 
 import com.vaadin.data.Property;
-import com.vaadin.ui.LegacyWindow;
+import com.vaadin.ui.UI;
 
 public class SaveToXmlTest {
 
@@ -48,8 +48,8 @@ public class SaveToXmlTest {
 		}
 
 		@Override
-		public LegacyWindow getMainWindow() {
-			return EasyMock.createMock(LegacyWindow.class);
+		public UI getMainWindow() {
+			return EasyMock.createMock(UI.class);
 		}
 
 		@Override

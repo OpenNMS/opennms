@@ -84,10 +84,11 @@ public abstract class EventUeiWindow extends Window implements Button.ClickListe
         toolbar.addComponent(okButton);
         toolbar.addComponent(cancelButton);
 
-        addComponent(ueiBase);
-        addComponent(toolbar);
-
-        ((VerticalLayout) getContent()).setComponentAlignment(toolbar, Alignment.BOTTOM_RIGHT);
+        VerticalLayout layout = new VerticalLayout();
+        layout.addComponent(ueiBase);
+        layout.addComponent(toolbar);
+        layout.setComponentAlignment(toolbar, Alignment.BOTTOM_RIGHT);
+        setContent(layout);
     }
 
     /* (non-Javadoc)

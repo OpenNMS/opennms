@@ -49,7 +49,7 @@ import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.operations.ConnectOperation;
 import org.opennms.features.topology.plugins.topo.simple.SimpleGraphProvider;
 
-import com.vaadin.ui.LegacyWindow;
+import com.vaadin.ui.UI;
 
 public class ConnectOperationTest {
 
@@ -62,8 +62,8 @@ public class ConnectOperationTest {
         }
         
         @Override
-        public LegacyWindow getMainWindow() {
-            return EasyMock.createMock(LegacyWindow.class);
+        public UI getMainWindow() {
+            return EasyMock.createMock(UI.class);
         }
 
         @Override

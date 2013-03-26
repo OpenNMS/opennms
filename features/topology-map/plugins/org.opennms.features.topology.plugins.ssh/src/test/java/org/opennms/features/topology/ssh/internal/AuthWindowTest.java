@@ -35,8 +35,9 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.vaadin.server.LegacyApplication;
-import com.vaadin.ui.LegacyWindow;
+import com.vaadin.server.VaadinRequest;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.Window;
 
 public class AuthWindowTest {
 
@@ -58,8 +59,8 @@ public class AuthWindowTest {
 	AuthWindow noHostWindow; 
 	AuthWindow emptyWindow;
 	AuthWindow invalidHostWindow;
-	LegacyWindow mainWindow;
-	LegacyApplication app;
+	Window mainWindow;
+	UI app;
 
 	@SuppressWarnings("serial")
 	@Before
@@ -70,17 +71,16 @@ public class AuthWindowTest {
 		emptyWindow = new AuthWindow(emptyHost, emptyPort);
 		invalidHostWindow = new AuthWindow(invalidHost, testPort);
 
-		mainWindow = new LegacyWindow();
-		app = new LegacyApplication() { //Empty Application
+		mainWindow = new Window();
+		app = new UI() { //Empty Application
 			@Override
-			public void init() {}
+			public void init(VaadinRequest request) {}
 		};
-		app.setMainWindow(mainWindow);
-		app.getMainWindow().addWindow(normalWindow);
-		app.getMainWindow().addWindow(noHostWindow);
-		app.getMainWindow().addWindow(noPortWindow);
-		app.getMainWindow().addWindow(emptyWindow);
-		app.getMainWindow().addWindow(invalidHostWindow);
+		app.addWindow(normalWindow);
+		app.addWindow(noHostWindow);
+		app.addWindow(noPortWindow);
+		app.addWindow(emptyWindow);
+		app.addWindow(invalidHostWindow);
 
 	}
 
@@ -108,15 +108,15 @@ public class AuthWindowTest {
 
 	@Test
 	public void testAttach(){
-		assertTrue(app.getMainWindow().getWindows().contains(normalWindow));
-		app.getMainWindow().removeWindow(normalWindow);
-		assertFalse(app.getMainWindow().getWindows().contains(normalWindow));
+		assertTrue(app.getWindows().contains(normalWindow));
+		app.removeWindow(normalWindow);
+		assertFalse(app.getWindows().contains(normalWindow));
 	}
 	
 	@Test
 	public void testShowSSHWindow() {
 		normalWindow.showSSHWindow();
-		assertFalse(app.getMainWindow().getWindows().contains(normalWindow));
+		assertFalse(app.getWindows().contains(normalWindow));
 	}
 
 }

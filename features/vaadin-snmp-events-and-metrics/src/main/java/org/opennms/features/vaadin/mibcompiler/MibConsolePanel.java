@@ -81,13 +81,17 @@ public class MibConsolePanel extends Panel implements Logger {
                 logContent.removeAllComponents();
             }
         });
-        addComponent(clearButton);
+
+        VerticalLayout layout = new VerticalLayout();
+        layout.addComponent(clearButton);
         ((VerticalLayout) getContent()).setComponentAlignment(clearButton, Alignment.TOP_RIGHT);
 
         logContent = new VerticalLayout();
-        addComponent(logContent);
+        layout.addComponent(logContent);
 
         setSizeFull();
+
+        setContent(layout);
     }
 
     /**
@@ -109,8 +113,8 @@ public class MibConsolePanel extends Panel implements Logger {
      */
     private void scrollIntoView() {
         final VerticalLayout layout = (VerticalLayout) getContent();
-        if (getApplication() != null && layout.getComponentCount() > 0)
-            getApplication().getMainWindow().scrollIntoView(layout.getComponent(layout.getComponentCount() - 1));
+        if (getUI() != null && layout.getComponentCount() > 0)
+            getUI().scrollIntoView(layout.getComponent(layout.getComponentCount() - 1));
     }
 
     /* (non-Javadoc)

@@ -23,6 +23,7 @@ import org.osgi.framework.ServiceReference;
 public final class NopLogger
     extends AbstractLogger
 {
+    @SuppressWarnings("unchecked") // Because of OSGi log service API
     public void log(ServiceReference ref, int level, String message, Throwable cause)
     {
         // Do nothing

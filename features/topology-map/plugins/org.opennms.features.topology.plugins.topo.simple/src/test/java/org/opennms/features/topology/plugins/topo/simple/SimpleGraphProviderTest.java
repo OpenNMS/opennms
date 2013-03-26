@@ -68,7 +68,7 @@ import org.opennms.features.topology.api.topo.WrappedVertex;
 import org.opennms.features.topology.plugins.topo.simple.internal.operations.AddVertexOperation;
 import org.opennms.features.topology.plugins.topo.simple.internal.operations.RemoveVertexOperation;
 
-import com.vaadin.ui.LegacyWindow;
+import com.vaadin.ui.UI;
 
 public class SimpleGraphProviderTest {
 
@@ -81,8 +81,8 @@ public class SimpleGraphProviderTest {
         }
         
         @Override
-        public LegacyWindow getMainWindow() {
-            return EasyMock.createMock(LegacyWindow.class);
+        public UI getMainWindow() {
+            return EasyMock.createMock(UI.class);
         }
 
         @Override

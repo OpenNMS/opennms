@@ -81,10 +81,12 @@ public abstract class PromptWindow extends Window implements Button.ClickListene
         toolbar.addComponent(okButton);
         toolbar.addComponent(cancelButton);
 
-        addComponent(fileName);
-        addComponent(toolbar);
+        VerticalLayout layout = new VerticalLayout();
+        layout.addComponent(fileName);
+        layout.addComponent(toolbar);
+        layout.setComponentAlignment(toolbar, Alignment.BOTTOM_RIGHT);
 
-        ((VerticalLayout) getContent()).setComponentAlignment(toolbar, Alignment.BOTTOM_RIGHT);
+        setContent(layout);
     }
 
     /* (non-Javadoc)

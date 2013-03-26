@@ -55,6 +55,7 @@ public class TracerouteWindowTest {
 		traceWindow3 = new TracerouteWindow(testNode1, "");
 		mainWindow = new VerticalLayout();
 		app = new UI() { //Empty Application
+			private static final long serialVersionUID = -2169800806621592419L;
 			@Override
 			public void init(VaadinRequest request) {}
 		};
