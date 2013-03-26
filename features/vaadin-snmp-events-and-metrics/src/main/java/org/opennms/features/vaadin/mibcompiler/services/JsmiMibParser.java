@@ -32,6 +32,7 @@ import java.io.Serializable;
 import java.math.BigInteger;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -133,6 +134,12 @@ public class JsmiMibParser implements MibParser, Serializable {
         List<URL> queue = new ArrayList<URL>();
         parser.getFileParserPhase().setInputUrls(queue);
 
+        // Create a cache of filenames to do case-insensitive lookups
+        final Map<String,File> mibDirectoryFiles = new HashMap<String,File>();
+        for (final File file : mibDirectory.listFiles()) {
+            mibDirectoryFiles.put(file.getName().toLowerCase(), file);
+        }
+
         // Parse MIB
         LogUtils.debugf(this, "Parsing %s", mibFile.getAbsolutePath());
         SmiMib mib = null;
@@ -153,7 +160,7 @@ public class JsmiMibParser implements MibParser, Serializable {
                 if (dependencies.isEmpty()) // No dependencies, everything is fine.
                     break;
                 missingDependencies.addAll(dependencies);
-                if (!addDependencyToQueue(queue))
+                if (!addDependencyToQueue(queue, mibDirectoryFiles))
                     break;
             }
         }
@@ -339,25 +346,28 @@ public class JsmiMibParser implements MibParser, Serializable {
      * Adds the dependency to the queue.
      *
      * @param queue the queue
+     * @param mibDirectoryFiles TODO
      * @return true, if successful
      */
-    private boolean addDependencyToQueue(List<URL> queue) {
+    private boolean addDependencyToQueue(final List<URL> queue, final Map<String, File> mibDirectoryFiles) {
         final List<String> dependencies = new ArrayList<String>(missingDependencies);
         boolean ok = true;
         for (String dependency : dependencies) {
             boolean found = false;
             for (String suffix : MIB_SUFFIXES) {
-                File f = new File(mibDirectory, dependency + suffix);
-                LogUtils.debugf(this, "Checking dependency file %s", f.getAbsolutePath());
-                if (f.exists()) {
-                    LogUtils.infof(this, "Adding dependency file %s", f.getAbsolutePath());
-                    addFileToQueue(queue, f);
-                    missingDependencies.remove(dependency);
-                    found = true;
-                    break;
-                } else {
-                    LogUtils.debugf(this, "Dependency file %s doesn't exist", f.getAbsolutePath());
+                final String fileName = (dependency+suffix).toLowerCase();
+                if (mibDirectoryFiles.containsKey(fileName)) {
+                    File f = mibDirectoryFiles.get(fileName);
+                    LogUtils.debugf(this, "Checking dependency file %s", f.getAbsolutePath());
+                    if (f.exists()) {
+                        LogUtils.infof(this, "Adding dependency file %s", f.getAbsolutePath());
+                        addFileToQueue(queue, f);
+                        missingDependencies.remove(dependency);
+                        found = true;
+                        break;
+                    }
                 }
+                LogUtils.debugf(this, "Dependency file %s doesn't exist", fileName);
             }
             if (!found) {
                 LogUtils.warnf(this, "Couldn't find dependency %s on %s", dependency, mibDirectory);
