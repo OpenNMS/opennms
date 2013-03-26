@@ -28,10 +28,7 @@
 
 package org.opennms.netmgt.linkd;
 
-import java.io.Serializable;
-
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.opennms.netmgt.model.topology.Link;
 
 /**
  * <p>NodeToNodeLink class.</p>

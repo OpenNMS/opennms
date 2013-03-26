@@ -60,6 +60,7 @@ import org.opennms.netmgt.dao.AtInterfaceDao;
 import org.opennms.netmgt.dao.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.IpRouteInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.SnmpInterfaceDao;
 import org.opennms.netmgt.dao.StpInterfaceDao;
 import org.opennms.netmgt.dao.StpNodeDao;
 import org.opennms.netmgt.dao.VlanDao;
@@ -98,7 +99,10 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
 
     @Autowired
     private NodeDao m_nodeDao;
-    
+
+    @Autowired
+    private SnmpInterfaceDao m_snmpInterfaceDao;
+
     @Autowired
     private StpNodeDao m_stpNodeDao;
     
@@ -132,6 +136,8 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         p.setProperty("log4j.logger.org.opennms.netmgt.config", "WARN");
         p.setProperty("log4j.logger.org.opennms.netmgt.config", "WARN");
         
+        super.setNodeDao(m_nodeDao);
+        super.setSnmpInterfaceDao(m_snmpInterfaceDao);
         MockLogAppender.setupLogging(p);
 
     }
@@ -196,6 +202,108 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         
     }
     
+    @Test
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host=CISCO_WS_C2948_IP, port=161, resource="classpath:linkd/nms7467/"+CISCO_WS_C2948_IP+"-walk.txt"),
+            @JUnitSnmpAgent(host=CISCO_C870_IP, port=161, resource="classpath:linkd/nms7467/"+CISCO_C870_IP+"-walk.txt"),
+            @JUnitSnmpAgent(host=DARWIN_10_8_IP, port=161, resource="classpath:linkd/nms7467/"+DARWIN_10_8_IP+"-walk.txt"),
+            @JUnitSnmpAgent(host=NETGEAR_SW_108_IP, port=161, resource="classpath:linkd/nms7467/"+NETGEAR_SW_108_IP+"-walk.txt"),
+            @JUnitSnmpAgent(host=LINUX_UBUNTU_IP, port=161, resource="classpath:linkd/nms7467/"+LINUX_UBUNTU_IP+"-walk.txt")
+    })
+    public void testAllTogether() throws Exception {
+
+        m_nodeDao.save(getCiscoC870());
+        m_nodeDao.save(getCiscoWsC2948());
+        m_nodeDao.save(getNetGearSw108());
+        m_nodeDao.save(getDarwin108());       
+        m_nodeDao.save(getLinuxUbuntu());
+        m_nodeDao.save(getNodeWithoutSnmp(ACCESSPOINT_NAME, ACCESSPOINT_IP));
+        m_nodeDao.save(getNodeWithoutSnmp(WORKSTATION_NAME, WORKSTATION_IP));
+
+        m_nodeDao.flush();
+
+
+        final OnmsNode ciscorouter = m_nodeDao.findByForeignId("linkd", CISCO_C870_NAME);
+        final OnmsNode ciscows = m_nodeDao.findByForeignId("linkd", CISCO_WS_C2948_NAME);
+        final OnmsNode ngsw108 = m_nodeDao.findByForeignId("linkd", NETGEAR_SW_108_NAME);
+        final OnmsNode mac = m_nodeDao.findByForeignId("linkd", DARWIN_10_8_NAME);
+        final OnmsNode linux = m_nodeDao.findByForeignId("linkd", LINUX_UBUNTU_NAME);
+        final OnmsNode ciscoap = m_nodeDao.findByForeignId("linkd", ACCESSPOINT_NAME);
+        final OnmsNode workstation = m_nodeDao.findByForeignId("linkd", WORKSTATION_NAME);
+
+
+        
+        assertEquals(7, m_nodeDao.countAll());
+
+        assertTrue(m_linkd.scheduleNodeCollection(ciscows.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(ciscorouter.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(ngsw108.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(mac.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(linux.getId()));
+        assertTrue(!m_linkd.scheduleNodeCollection(ciscoap.getId()));
+        assertTrue(!m_linkd.scheduleNodeCollection(workstation.getId()));
+
+        assertTrue(m_linkd.runSingleSnmpCollection(ciscorouter.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(ciscows.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(ngsw108.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(mac.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(linux.getId()));
+        
+        final Collection<LinkableNode> linkables = m_linkd.getLinkableNodes();
+        assertEquals(5, linkables.size());       
+
+        assertEquals(0,m_dataLinkInterfaceDao.countAll());
+                                       
+        assertEquals(5, m_linkd.getLinkableNodesOnPackage("example1").size());
+
+        assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
+
+        
+        final List<DataLinkInterface> links = m_dataLinkInterfaceDao.findAll();
+        assertEquals(6,links.size());
+        //
+        final DataLinkInterface mactongsw108link = m_dataLinkInterfaceDao.findByNodeIdAndIfIndex(mac.getId(),4);
+        
+        assertEquals(mac.getId(), mactongsw108link.getNode().getId());
+        assertEquals(4,mactongsw108link.getIfIndex().intValue());
+        assertEquals(ngsw108.getId(), mactongsw108link.getNodeParentId());
+        assertEquals(1, mactongsw108link.getParentIfIndex().intValue());        
+
+        final DataLinkInterface ngsw108linktociscows = m_dataLinkInterfaceDao.findByNodeIdAndIfIndex(ngsw108.getId(), 8);
+        
+        assertEquals(ngsw108.getId(), ngsw108linktociscows.getNode().getId());
+        assertEquals(8,ngsw108linktociscows.getIfIndex().intValue());
+        assertEquals(ciscows.getId(), ngsw108linktociscows.getNodeParentId());
+        assertEquals(9, ngsw108linktociscows.getParentIfIndex().intValue());
+
+        final DataLinkInterface ciscorouterlinktociscows2 = m_dataLinkInterfaceDao.findByNodeIdAndIfIndex(ciscows.getId(), 52);
+        assertEquals(ciscows.getId(), ciscorouterlinktociscows2.getNode().getId());
+        assertEquals(52, ciscorouterlinktociscows2.getIfIndex().intValue());
+        assertEquals(ciscorouter.getId(), ciscorouterlinktociscows2.getNodeParentId());
+        assertEquals(3, ciscorouterlinktociscows2.getParentIfIndex().intValue());
+
+        final DataLinkInterface linuxubuntulinktociscows = m_dataLinkInterfaceDao.findByNodeIdAndIfIndex(linux.getId(), 4);
+        
+        assertEquals(linux.getId(), linuxubuntulinktociscows.getNode().getId());
+        assertEquals(4,linuxubuntulinktociscows.getIfIndex().intValue());
+        assertEquals(ciscows.getId(), linuxubuntulinktociscows.getNodeParentId());
+        assertEquals(11, linuxubuntulinktociscows.getParentIfIndex().intValue());
+
+        final DataLinkInterface workstationlinktociscows = m_dataLinkInterfaceDao.findByNodeIdAndIfIndex(workstation.getId(), -1);
+        
+        assertEquals(workstation.getId(), workstationlinktociscows.getNode().getId());
+        assertEquals(-1,workstationlinktociscows.getIfIndex().intValue());
+        assertEquals(ciscows.getId(), workstationlinktociscows.getNodeParentId());
+        assertEquals(47, workstationlinktociscows.getParentIfIndex().intValue());
+
+        final DataLinkInterface ciscoaplinktociscows = m_dataLinkInterfaceDao.findByNodeIdAndIfIndex(ciscoap.getId(), -1);
+        
+        assertEquals(ciscoap.getId(), ciscoaplinktociscows.getNode().getId());
+        assertEquals(-1, ciscoaplinktociscows.getIfIndex().intValue());
+        assertEquals(ciscows.getId(), ciscoaplinktociscows.getNodeParentId());
+        assertEquals(47,ciscoaplinktociscows.getParentIfIndex().intValue());
+    }
+
     @Test
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host=CISCO_WS_C2948_IP, port=161, resource="classpath:linkd/nms7467/"+CISCO_WS_C2948_IP+"-walk.txt")
@@ -744,7 +852,10 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
             @JUnitSnmpAgent(host=NETGEAR_SW_108_IP, port=161, resource="classpath:linkd/nms7467/"+NETGEAR_SW_108_IP+"-walk.txt")
     })
     public void testLinkNetgearCiscoWs() throws Exception {
-        m_nodeDao.save(getNetGearSw108());
+    	Package example1 = m_linkdConfig.getPackage("example1");
+        example1.setForceIpRouteDiscoveryOnEthernet(false);
+
+    	m_nodeDao.save(getNetGearSw108());
         m_nodeDao.save(getCiscoWsC2948());
         m_nodeDao.flush();
 
@@ -769,6 +880,9 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
         
         final List<DataLinkInterface> links = m_dataLinkInterfaceDao.findAll();
+        for (final DataLinkInterface link: links) {
+        	printLink(link);
+        }
         assertEquals(1,links.size());
         
         final DataLinkInterface ngsw108linktociscows = links.get(0);
@@ -954,13 +1068,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         
 
         assertEquals(0,m_dataLinkInterfaceDao.countAll());
-                
-        //String ciscowspackageName = m_linkdConfig.getFirstPackageMatch(InetAddress.getByName(CISCO_WS_C2948_IP)).getName();
-        //String ciscorouterpackageName = m_linkdConfig.getFirstPackageMatch(InetAddress.getByName(CISCO_C870_IP)).getName();
-
-        //assertEquals("example1", ciscowspackageName);
-        //assertEquals("example1", ciscorouterpackageName);
-                        
+                                        
         assertEquals(2, m_linkd.getLinkableNodesOnPackage("example1").size());
 
         assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
@@ -969,13 +1077,14 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         final List<DataLinkInterface> links = m_dataLinkInterfaceDao.findAll();
         assertEquals(1,links.size());
         
-        final DataLinkInterface ciscorouterlinktociscows = links.get(0);
+        final DataLinkInterface link = links.get(0);
         
-        assertEquals(ciscorouter.getId(), ciscorouterlinktociscows.getNode().getId());
-        assertEquals(3, ciscorouterlinktociscows.getIfIndex().intValue());
-        assertEquals(ciscows.getId(), ciscorouterlinktociscows.getNodeParentId());
-        assertEquals(52,ciscorouterlinktociscows.getParentIfIndex().intValue());
-                
+        printLink(link);
+        
+        assertEquals(ciscows.getId(), link.getNode().getId());
+        assertEquals(52, link.getIfIndex().intValue());
+        assertEquals(ciscorouter.getId(), link.getNodeParentId());
+        assertEquals(3,link.getParentIfIndex().intValue());
     }
     
     /*
@@ -988,6 +1097,18 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
            @JUnitSnmpAgent(host=CISCO_WS_C2948_IP, port=161, resource="classpath:linkd/nms7467/"+CISCO_WS_C2948_IP+"-walk.txt")
    })
    public void testCiscoAccessPointCiscoWsUsingCdp() throws Exception {
+       Package example1 = m_linkdConfig.getPackage("example1");
+       example1.setUseLldpDiscovery(false);
+       example1.setUseOspfDiscovery(false);
+       example1.setUseIpRouteDiscovery(false);
+       example1.setUseBridgeDiscovery(false);
+       example1.setUseCdpDiscovery(true);
+       
+       example1.setSaveRouteTable(false);
+       example1.setSaveStpNodeTable(false);
+       example1.setSaveStpInterfaceTable(false);
+       example1.setEnableVlanDiscovery(false);
+
        m_nodeDao.save(getCiscoWsC2948());
        m_nodeDao.save(getNodeWithoutSnmp(ACCESSPOINT_NAME, ACCESSPOINT_IP));
        m_nodeDao.flush();
@@ -1034,105 +1155,4 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
                
    }
 
-   @Test
-   @JUnitSnmpAgents(value={
-           @JUnitSnmpAgent(host=CISCO_WS_C2948_IP, port=161, resource="classpath:linkd/nms7467/"+CISCO_WS_C2948_IP+"-walk.txt"),
-           @JUnitSnmpAgent(host=CISCO_C870_IP, port=161, resource="classpath:linkd/nms7467/"+CISCO_C870_IP+"-walk.txt"),
-           @JUnitSnmpAgent(host=DARWIN_10_8_IP, port=161, resource="classpath:linkd/nms7467/"+DARWIN_10_8_IP+"-walk.txt"),
-           @JUnitSnmpAgent(host=NETGEAR_SW_108_IP, port=161, resource="classpath:linkd/nms7467/"+NETGEAR_SW_108_IP+"-walk.txt"),
-           @JUnitSnmpAgent(host=LINUX_UBUNTU_IP, port=161, resource="classpath:linkd/nms7467/"+LINUX_UBUNTU_IP+"-walk.txt")
-   })
-   public void testAllTogether() throws Exception {
-
-       m_nodeDao.save(getCiscoC870());
-       m_nodeDao.save(getCiscoWsC2948());
-       m_nodeDao.save(getNetGearSw108());
-       m_nodeDao.save(getDarwin108());       
-       m_nodeDao.save(getLinuxUbuntu());
-       m_nodeDao.save(getNodeWithoutSnmp(ACCESSPOINT_NAME, ACCESSPOINT_IP));
-       m_nodeDao.save(getNodeWithoutSnmp(WORKSTATION_NAME, WORKSTATION_IP));
-
-       m_nodeDao.flush();
-
-
-       final OnmsNode ciscorouter = m_nodeDao.findByForeignId("linkd", CISCO_C870_NAME);
-       final OnmsNode ciscows = m_nodeDao.findByForeignId("linkd", CISCO_WS_C2948_NAME);
-       final OnmsNode ngsw108 = m_nodeDao.findByForeignId("linkd", NETGEAR_SW_108_NAME);
-       final OnmsNode mac = m_nodeDao.findByForeignId("linkd", DARWIN_10_8_NAME);
-       final OnmsNode linux = m_nodeDao.findByForeignId("linkd", LINUX_UBUNTU_NAME);
-       final OnmsNode ciscoap = m_nodeDao.findByForeignId("linkd", ACCESSPOINT_NAME);
-       final OnmsNode workstation = m_nodeDao.findByForeignId("linkd", WORKSTATION_NAME);
-
-
-       
-       assertEquals(7, m_nodeDao.countAll());
-
-       assertTrue(m_linkd.scheduleNodeCollection(ciscows.getId()));
-       assertTrue(m_linkd.scheduleNodeCollection(ciscorouter.getId()));
-       assertTrue(m_linkd.scheduleNodeCollection(ngsw108.getId()));
-       assertTrue(m_linkd.scheduleNodeCollection(mac.getId()));
-       assertTrue(m_linkd.scheduleNodeCollection(linux.getId()));
-       assertTrue(!m_linkd.scheduleNodeCollection(ciscoap.getId()));
-       assertTrue(!m_linkd.scheduleNodeCollection(workstation.getId()));
-
-       assertTrue(m_linkd.runSingleSnmpCollection(ciscorouter.getId()));
-       assertTrue(m_linkd.runSingleSnmpCollection(ciscows.getId()));
-       assertTrue(m_linkd.runSingleSnmpCollection(ngsw108.getId()));
-       assertTrue(m_linkd.runSingleSnmpCollection(mac.getId()));
-       assertTrue(m_linkd.runSingleSnmpCollection(linux.getId()));
-       
-       final Collection<LinkableNode> linkables = m_linkd.getLinkableNodes();
-       assertEquals(5, linkables.size());       
-
-       assertEquals(0,m_dataLinkInterfaceDao.countAll());
-                                      
-       assertEquals(5, m_linkd.getLinkableNodesOnPackage("example1").size());
-
-       assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
-
-       
-       final List<DataLinkInterface> links = m_dataLinkInterfaceDao.findAll();
-       assertEquals(6,links.size());
-       //
-       final DataLinkInterface mactongsw108link = m_dataLinkInterfaceDao.findByNodeIdAndIfIndex(mac.getId(),4);
-       
-       assertEquals(mac.getId(), mactongsw108link.getNode().getId());
-       assertEquals(4,mactongsw108link.getIfIndex().intValue());
-       assertEquals(ngsw108.getId(), mactongsw108link.getNodeParentId());
-       assertEquals(1, mactongsw108link.getParentIfIndex().intValue());        
-
-       final DataLinkInterface ngsw108linktociscows = m_dataLinkInterfaceDao.findByNodeIdAndIfIndex(ngsw108.getId(), 8);
-       
-       assertEquals(ngsw108.getId(), ngsw108linktociscows.getNode().getId());
-       assertEquals(8,ngsw108linktociscows.getIfIndex().intValue());
-       assertEquals(ciscows.getId(), ngsw108linktociscows.getNodeParentId());
-       assertEquals(9, ngsw108linktociscows.getParentIfIndex().intValue());
-
-       final DataLinkInterface ciscorouterlinktociscows2 = m_dataLinkInterfaceDao.findByNodeIdAndIfIndex(ciscows.getId(), 52);
-       assertEquals(ciscows.getId(), ciscorouterlinktociscows2.getNode().getId());
-       assertEquals(52, ciscorouterlinktociscows2.getIfIndex().intValue());
-       assertEquals(ciscorouter.getId(), ciscorouterlinktociscows2.getNodeParentId());
-       assertEquals(3, ciscorouterlinktociscows2.getParentIfIndex().intValue());
-
-       final DataLinkInterface linuxubuntulinktociscows = m_dataLinkInterfaceDao.findByNodeIdAndIfIndex(linux.getId(), 4);
-       
-       assertEquals(linux.getId(), linuxubuntulinktociscows.getNode().getId());
-       assertEquals(4,linuxubuntulinktociscows.getIfIndex().intValue());
-       assertEquals(ciscows.getId(), linuxubuntulinktociscows.getNodeParentId());
-       assertEquals(11, linuxubuntulinktociscows.getParentIfIndex().intValue());
-
-       final DataLinkInterface workstationlinktociscows = m_dataLinkInterfaceDao.findByNodeIdAndIfIndex(workstation.getId(), -1);
-       
-       assertEquals(workstation.getId(), workstationlinktociscows.getNode().getId());
-       assertEquals(-1,workstationlinktociscows.getIfIndex().intValue());
-       assertEquals(ciscows.getId(), workstationlinktociscows.getNodeParentId());
-       assertEquals(47, workstationlinktociscows.getParentIfIndex().intValue());
-
-       final DataLinkInterface ciscoaplinktociscows = m_dataLinkInterfaceDao.findByNodeIdAndIfIndex(ciscoap.getId(), -1);
-       
-       assertEquals(ciscoap.getId(), ciscoaplinktociscows.getNode().getId());
-       assertEquals(-1, ciscoaplinktociscows.getIfIndex().intValue());
-       assertEquals(ciscows.getId(), ciscoaplinktociscows.getNodeParentId());
-       assertEquals(47,ciscoaplinktociscows.getParentIfIndex().intValue());
-   }
 }

@@ -107,7 +107,7 @@ public abstract class Nms7467NetworkBuilder extends LinkdNetworkBuilder {
     /*
      * This is a cisco access point but without snmp walk available 
      */
-	protected static final String ACCESSPOINT_NAME        = "accesspoint";
+	protected static final String ACCESSPOINT_NAME        = "mrgarrison.internal.opennms.com";
 	protected static final String ACCESSPOINT_IP          = "172.20.1.5";
 
     /* 
