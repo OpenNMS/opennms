@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.ticketd;
 
+import java.util.Map;
+
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -47,7 +49,7 @@ public interface TicketerServiceLayer {
 	 *
 	 * @param alarmId a int.
 	 */
-	public void createTicketForAlarm(int alarmId);
+	public void createTicketForAlarm(int alarmId, Map<String,String> attributes);
 	
 	/**
 	 * Implement to manage updating of tickets through registered plugin.
@@ -72,5 +74,10 @@ public interface TicketerServiceLayer {
 	 * @param ticketId a {@link java.lang.String} object.
 	 */
 	public void cancelTicketForAlarm(int alarmId, String ticketId);
-
+    
+	/**
+	 * Implement to reload ticketer when requested.
+	 *
+	 */
+	public void reloadTicketer();
 }

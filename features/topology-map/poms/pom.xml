@@ -87,17 +87,6 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
-        <!--
-         | dependency pom representing the global classpath of imported bundles
-        -->
-        <type>pom</type>
-        <groupId>org.opennms.features.topology.build</groupId>
-        <artifactId>provision</artifactId>
-        <version>${project.version}</version>
-        <scope>provided</scope>
-        <optional>true</optional>
-      </dependency>
-      <dependency>
         <groupId>org.apache.karaf.shell</groupId>
         <artifactId>org.apache.karaf.shell.console</artifactId>
         <version>${karafVersion}</version>
@@ -105,6 +94,7 @@
     </dependencies>
   </dependencyManagement>
 
+<!--
   <repositories>
     <repository>
       <id>servicemix</id>
@@ -121,6 +111,7 @@
       <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
     </repository>
   </repositories>
+-->
 
   <pluginRepositories>
     <pluginRepository>

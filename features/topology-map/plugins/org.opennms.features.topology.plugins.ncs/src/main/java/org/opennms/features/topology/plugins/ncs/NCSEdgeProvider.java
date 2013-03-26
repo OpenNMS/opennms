@@ -32,13 +32,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.opennms.features.topology.api.topo.Connector;
+import org.opennms.features.topology.api.topo.AbstractEdge;
+import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeListener;
 import org.opennms.features.topology.api.topo.EdgeProvider;
 import org.opennms.features.topology.api.topo.EdgeRef;
-import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.ncs.NCSComponent;
@@ -54,40 +54,13 @@ public class NCSEdgeProvider implements EdgeProvider {
 	private static final String HTML_TOOLTIP_TAG_OPEN = "<p>";
 	private static final String HTML_TOOLTIP_TAG_END  = "</p>";
 
-	public static class NCSEdge implements Edge {
+	public static class NCSEdge extends AbstractEdge {
 		private final String m_serviceName;
-		private final NCSConnector m_source;
-		private final NCSConnector m_target;
 
 		public NCSEdge (String serviceName, NCSVertex source, NCSVertex target) {
+			super("ncs", source.getId() + ":::" + target.getId(), source, target);
 			m_serviceName = serviceName;
-			m_source = new NCSConnector(this, source);
-			m_target = new NCSConnector(this, target);
-		}
-
-		@Override
-		public String getKey() {
-			return getNamespace() + ":" + getId();
-		}
-
-		@Override
-		public String getLabel() {
-			return getId();
-		}
-
-		@Override
-		public Connector getSource() {
-			return m_source;
-		}
-
-		@Override
-		public String getStyleName() {
-			return "ncs edge";
-		}
-
-		@Override
-		public Connector getTarget() {
-			return m_target;
+			setStyleName("ncs edge");
 		}
 
 		@Override
@@ -99,89 +72,29 @@ public class NCSEdgeProvider implements EdgeProvider {
 			toolTip.append(HTML_TOOLTIP_TAG_END);
 
 			toolTip.append(HTML_TOOLTIP_TAG_OPEN);
-			toolTip.append("Source: " + m_source.getVertex().getLabel());
+			toolTip.append("Source: " + getSource().getVertex().getLabel());
 			toolTip.append(HTML_TOOLTIP_TAG_END);
 
 			toolTip.append(HTML_TOOLTIP_TAG_OPEN);
-			toolTip.append("Target: " + m_target.getVertex().getLabel());
+			toolTip.append("Target: " + getTarget().getVertex().getLabel());
 			toolTip.append(HTML_TOOLTIP_TAG_END);
 
 			return toolTip.toString();
 		}
 
 		@Override
-		public String getId() {
-			return m_source.getVertex().getId() + ":::" + m_target.getVertex().getId();
-		}
-
-		@Override
-		public String getNamespace() {
-			return "ncs";
-		}
-
-		@Override
 		public Item getItem() {
-			return new BeanItem<Edge>(this);
+			return new BeanItem<NCSEdge>(this);
 		}
 
 	}
 
-	public static class NCSConnector implements Connector {
-
-		private final NCSVertex m_vertex;
-		private final NCSEdge m_edge;
-
-		public NCSConnector(NCSEdge edge, NCSVertex vertex) {
-			m_edge = edge;
-			m_vertex = vertex;
-		}
-
-		@Override
-		public NCSEdge getEdge() {
-			return m_edge;
-		}
-
-		@Override
-		public NCSVertex getVertex() {
-			return m_vertex;
-		}
-
-		@Override
-		public String getId() {
-			return m_edge.getId() + "::" + m_vertex.getId();
-		}
-
-		@Override
-		public String getNamespace() {
-			return "ncs";
-		}
-
-	}
-
-	public static class NCSVertex implements VertexRef {
-
-		private final String m_id;
-		private final String m_label;
+	public static class NCSVertex extends AbstractVertex {
 
 		public NCSVertex(String id, String label) {
-			m_id = id;
-			m_label = label;
+			super("nodes", id);
+			setLabel(label);
 		}
-
-		public String getLabel() {
-			return m_label == null ? "???" : m_label;
-		}
-
-		@Override
-		public String getId() {
-			return m_id;
-		}
-
-		@Override
-		public String getNamespace() {
-			return "nodes";
-		}
-
 	}
 
 	private NCSComponentRepository m_dao;
@@ -225,8 +138,8 @@ public class NCSEdgeProvider implements EdgeProvider {
 	 * @param criteria An {@link NCSServiceCriteria} object
 	 */
 	@Override
-	public List<? extends Edge> getEdges(Criteria criteria) {
-		List<NCSEdge> retval = new ArrayList<NCSEdge>();
+	public List<Edge> getEdges(Criteria criteria) {
+		List<Edge> retval = new ArrayList<Edge>();
 		NCSServiceCriteria crit = (NCSServiceCriteria)criteria;
 		for (Long id : crit) {
 			NCSComponent service = m_dao.get(id);
@@ -275,20 +188,20 @@ public class NCSEdgeProvider implements EdgeProvider {
 	}
 
 	@Override
-	public List<? extends Edge> getEdges() {
+	public List<Edge> getEdges() {
 		throw new UnsupportedOperationException("Not implemented");
 		// TODO: Implement me
 	}
 
 	@Override
-	public List<? extends Edge> getEdges(
+	public List<Edge> getEdges(
 			Collection<? extends EdgeRef> references) {
 		throw new UnsupportedOperationException("Not implemented");
 		// TODO: Implement me
 	}
 
 	@Override
-	public String getNamespace() {
+	public String getEdgeNamespace() {
 		return "ncs";
 	}
 	
@@ -328,5 +241,11 @@ public class NCSEdgeProvider implements EdgeProvider {
 
 	public static Criteria createCriteria(Collection<Long> selectedIds) {
 		return new NCSServiceCriteria(selectedIds);
+	}
+
+
+	@Override
+	public void clearEdges() {
+		throw new UnsupportedOperationException("Not implemented");
 	}
 }

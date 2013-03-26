@@ -28,7 +28,10 @@
 
 package org.opennms.netmgt.dao;
 
+import java.util.List;
+
 import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.alarm.AlarmSummary;
 
 /**
  * <p>AlarmDao interface.</p>
@@ -42,5 +45,14 @@ public interface AlarmDao extends OnmsDao<OnmsAlarm, Integer> {
      * @return a {@link org.opennms.netmgt.model.OnmsAlarm} object.
      */
     OnmsAlarm findByReductionKey(String reductionKey);
+
+    /**
+     * <p>Get the list of current alarms per node with severity greater than normal,
+     * reflecting the max severity, the minimum last event time and alarm count;
+     * ordered by the oldest.</p>
+     * 
+     * @return A list of alarm summaries.
+     */
+    List<AlarmSummary> getNodeAlarmSummaries();
     
 }

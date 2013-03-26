@@ -1,0 +1,98 @@
+@CHARSET "UTF-8";
+@import "../reindeer/styles.css";
+
+/*  --------------------------------------------------
+    :: Header
+    -------------------------------------------------- */
+    #header {
+        position: relative;
+        margin: 0;
+        padding: 0;
+        background-color: #333;
+        background-image: url(images/headerbg.png);
+        background-repeat: repeat-x;
+        color: #FFF;
+        font-family: "Lucida Grande", Verdana, sans-serif;
+        height: 100px;
+        font-size: 13px;
+    }
+    #header a {
+        color:#FFF;
+        text-decoration: none;
+    }
+    
+    #header a:hover{
+        text-decoration: underline;   
+    }
+    
+    h1#headerlogo {
+        position: absolute;
+        z-index: 2;
+        margin: 0;
+        padding: 0;
+        left: 15px;
+        top: 13px;
+    }
+    #headerinfo {
+        position: relative;
+        margin: 0px;
+        padding: 10px 10px 24px;
+        text-align: right;
+    }
+    #headerinfo h2{
+        margin: 0;
+        font-size: 13px;
+    }
+    
+    #headerinfo p{
+        margin-top: 0px;
+        font-size: 11px;
+    }
+    
+    .onmsheader .v-panel-content{
+         border: 0px;   
+    }
+    
+    .onmsheader .v-panel-captionwrap{
+        height: 0px;
+    }
+    
+    #notificationOff{
+        color: #ef2929;
+    }
+
+    #notificationOn{
+        color: #73d216;
+    }
+    
+    /*  --------------------------------------------------
+    :: Navigation
+    -------------------------------------------------- */
+    /*Top Level Nav in the Grey Header area */
+    .navbar ul{ 
+        list-style: none;
+        display: inline;
+    }
+        
+    .navbar li{ 
+        padding: 0 10px 5px 0;
+        list-style: none;
+        display: inline;
+        color: #999;
+        font-size: 11px;
+        line-height: 1.25em;
+    }
+    
+    .navbar a{
+        text-decoration: none;
+    }
+    
+    #linkbar{ padding: 0 0 1em 0; }
+    #linkbar ul{ list-style: none; display: inline; padding: 0 0 0 0; }
+    #linkbar li{ list-style: none; display: inline; padding-right: 0.75em; }
+    
+    #headernavbarright {
+        position: relative;
+        float: right;
+        padding: 2px 0px 5px 0px;
+    }

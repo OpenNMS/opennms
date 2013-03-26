@@ -28,24 +28,20 @@
 
 package org.opennms.features.topology.app.internal;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.opennms.features.topology.api.IViewContribution;
-import org.opennms.features.topology.api.WidgetContext;
 import org.slf4j.LoggerFactory;
 
-import com.vaadin.ui.TabSheet;
-
 /**
- * This class listens for {@link IViewContribution} service registrations and adds them
- * to an internal {@link TabSheet}.
+ * This class listens for {@link IViewContribution} service registrations.
  */
 public class WidgetManager {
 
-    private List<IViewContribution> m_viewContributors = new ArrayList<IViewContribution>();
-    private List<WidgetUpdateListener> m_listeners = new ArrayList<WidgetUpdateListener>();
+    private List<IViewContribution> m_viewContributors = new CopyOnWriteArrayList<IViewContribution>();
+    private List<WidgetUpdateListener> m_listeners = new CopyOnWriteArrayList<WidgetUpdateListener>();
     
     public WidgetManager() {}
     
@@ -77,34 +73,15 @@ public class WidgetManager {
         return Collections.unmodifiableList(m_viewContributors);
     }
     
-    /**
-     * Gets a {@link TabSheet} view for all widgets in this manager.
-     * 
-     * @return TabSheet
-     */
-    public TabSheet getTabSheet(WidgetContext widgetContext) {
-        TabSheet tabSheet = new TabSheet();
-        
-        synchronized (m_viewContributors) {
-            for(IViewContribution viewContrib : m_viewContributors) {
-                
-                if(viewContrib.getIcon() != null) {
-                    tabSheet.addTab(viewContrib.getView(widgetContext), viewContrib.getTitle(), viewContrib.getIcon());
-                } else {
-                    tabSheet.addTab(viewContrib.getView(widgetContext), viewContrib.getTitle());
-                }
-                
-            }
-        }
-        
-        return tabSheet;
-    }
-    
-    public void onBind(IViewContribution viewContribution) {
+    public synchronized void onBind(IViewContribution viewContribution) {
         LoggerFactory.getLogger(this.getClass()).info("Binding IViewContribution {} to WidgetManager {}", viewContribution, this);
         synchronized (m_viewContributors) {
-            m_viewContributors.add(viewContribution);
-            updateWidgetListeners();
+            try {
+                m_viewContributors.add(viewContribution);
+                updateWidgetListeners();
+            } catch (Throwable e) {
+                LoggerFactory.getLogger(this.getClass()).warn("Exception during onBind()", e);
+            }
         }
     }
 
@@ -114,11 +91,15 @@ public class WidgetManager {
         }
     }
     
-    public void onUnbind(IViewContribution viewContribution) {
+    public synchronized void onUnbind(IViewContribution viewContribution) {
         LoggerFactory.getLogger(this.getClass()).info("Unbinding IViewContribution {} from WidgetManager {}", viewContribution, this);
         synchronized (m_viewContributors) {
-            m_viewContributors.remove(viewContribution);
-            updateWidgetListeners();
+            try {
+                m_viewContributors.remove(viewContribution);
+                updateWidgetListeners();
+            } catch (Throwable e) {
+                LoggerFactory.getLogger(this.getClass()).warn("Exception during onUnbind()", e);
+            }
         }
     }
 }

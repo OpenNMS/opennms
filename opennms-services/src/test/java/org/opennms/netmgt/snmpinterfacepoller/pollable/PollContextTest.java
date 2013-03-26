@@ -51,6 +51,7 @@ import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations= {
+        "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
@@ -78,23 +79,41 @@ public class PollContextTest {
         NetworkBuilder nb = new NetworkBuilder();
 
         nb.addNode("cisco2691").setForeignSource("linkd").setForeignId("cisco2691").setSysObjectId(".1.3.6.1.4.1.9.1.122").setType("A");
-        nb.addInterface("10.1.4.2").setIsSnmpPrimary("P").setIsManaged("M")
-        .addSnmpInterface(4).setIfType(6).setCollectionEnabled(false).setIfSpeed(10000000).setPhysAddr("c00397a70001").setIfOperStatus(2).setIfDescr("Null0");
-        nb.addInterface("10.1.5.1").setIsSnmpPrimary("S").setIsManaged("M")
-        .addSnmpInterface(2).setIfType(6).setCollectionEnabled(false).setIfSpeed(100000000).setPhysAddr("c00397a70000").setIfOperStatus(1).setIfDescr("FastEthernet0");
-        nb.addInterface("10.1.7.1").setIsSnmpPrimary("S").setIsManaged("M")
-        .addSnmpInterface(1).setIfType(6).setCollectionEnabled(false).setIfSpeed(100000000).setPhysAddr("c00397a70010").setIfOperStatus(1).setIfDescr("Ethernet0");
-        for (OnmsSnmpInterface iface : nb.getCurrentNode().getSnmpInterfaces()) {
-            iface.setPoll("P");
-        }
+        OnmsSnmpInterface null0 = new OnmsSnmpInterface(nb.getCurrentNode(), 4);
+        null0.setIfSpeed(10000000l);
+        null0.setPoll("P");
+        null0.setIfType(6);
+        null0.setCollectionEnabled(false);
+        null0.setIfOperStatus(2);
+        null0.setIfDescr("Null0");
+        nb.addInterface("10.1.4.2", null0).setIsSnmpPrimary("P").setIsManaged("M");
+        OnmsSnmpInterface fa0 = new OnmsSnmpInterface(nb.getCurrentNode(), 2);
+        fa0.setIfSpeed(100000000l);
+        fa0.setPoll("P");
+        fa0.setIfType(6);
+        fa0.setCollectionEnabled(false);
+        fa0.setIfOperStatus(1);
+        fa0.setIfDescr("FastEthernet0");
+        nb.addInterface("10.1.5.1", fa0).setIsSnmpPrimary("S").setIsManaged("M");
+        OnmsSnmpInterface eth0 = new OnmsSnmpInterface(nb.getCurrentNode(), 1);
+        eth0.setIfSpeed(100000000l);
+        eth0.setPoll("P");
+        eth0.setIfType(6);
+        eth0.setCollectionEnabled(false);
+        eth0.setIfOperStatus(1);
+        eth0.setIfDescr("Ethernet0");
+        nb.addInterface("10.1.7.1", eth0).setIsSnmpPrimary("S").setIsManaged("M");
         m_nodeDao.save(nb.getCurrentNode());
 
         nb.addNode("cisco1700").setForeignSource("linkd").setForeignId("cisco1700").setSysObjectId(".1.3.6.1.4.1.9.1.200").setType("A");
-        nb.addInterface("10.1.5.2").setIsSnmpPrimary("P").setIsManaged("M")
-        .addSnmpInterface(2).setIfType(6).setCollectionEnabled(true).setIfSpeed(100000000).setPhysAddr("d00297a60000");
-        for (OnmsSnmpInterface iface : nb.getCurrentNode().getSnmpInterfaces()) {
-            iface.setPoll("P");
-        }
+        OnmsSnmpInterface eth1 = new OnmsSnmpInterface(nb.getCurrentNode(), 2);
+        eth1.setIfSpeed(100000000l);
+        eth1.setPoll("P");
+        eth1.setIfType(6);
+        eth1.setCollectionEnabled(false);
+        eth1.setIfOperStatus(1);
+        eth1.setIfDescr("Ethernet1");
+        nb.addInterface("10.1.5.2", eth1).setIsSnmpPrimary("P").setIsManaged("M");
         m_nodeDao.save(nb.getCurrentNode());
 
         m_nodeDao.flush();

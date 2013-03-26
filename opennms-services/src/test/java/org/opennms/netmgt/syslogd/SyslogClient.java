@@ -130,7 +130,7 @@ public class SyslogClient {
 
     public DatagramPacket getPacket(final int priority, final String msg) {
         int pricode = MakePriorityCode(facility, priority);
-        Integer priObj = new Integer(pricode);
+        Integer priObj = Integer.valueOf(pricode);
 
         StringBuffer sb = new StringBuffer();
 

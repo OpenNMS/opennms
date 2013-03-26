@@ -49,6 +49,23 @@
               </artifactItems>
             </configuration>
           </execution>
+          <execution>
+            <id>copy-jmx-config-generator</id>
+            <phase>process-resources</phase>
+            <goals><goal>copy</goal></goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.opennms.assemblies</groupId>
+                  <artifactId>org.opennms.assemblies.jmx-config-generator-onejar</artifactId>
+                  <type>jar</type>
+                  <classifier>signed-jar-with-dependencies</classifier>
+                  <destFileName>opennms_jmx_config_generator.jar</destFileName>
+                </artifactItem>
+              </artifactItems>
+              <outputDirectory>${project.build.directory}/jmx</outputDirectory>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
       <plugin>
@@ -151,6 +168,10 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
+      <artifactId>opennms-alarm-northbounder-syslog</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
       <artifactId>opennms-correlator</artifactId>
     </dependency>
     <dependency>
@@ -247,12 +268,16 @@
       <artifactId>opennms-jetty</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
+      <groupId>org.opennms.features</groupId>
       <artifactId>opennms-integration-rt</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
+      <groupId>org.opennms.features</groupId>
       <artifactId>opennms-integration-otrs</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>opennms-integration-remedy</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -286,8 +311,18 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
+      <artifactId>opennms-vmware</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
       <artifactId>opennms-asterisk</artifactId>
       <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.notifications</groupId>
+      <artifactId>org.opennms.features.notifications.ticket-strategy</artifactId>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.features</groupId>
@@ -297,6 +332,18 @@
     <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.jdbc-collector</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.ticketing</groupId>
+      <artifactId>org.opennms.features.ticketing.drools-integration</artifactId>
+      <version>${project.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.access-point-monitor</artifactId>
+      <version>${project.version}</version>
       <scope>compile</scope>
     </dependency>
     <!-- webapp dependencies -->
@@ -336,7 +383,7 @@
     <dependency>
       <groupId>com.sun.xml</groupId>
       <artifactId>com.springsource.com.sun.xml.bind</artifactId>
-      <version>${jaxbVersion}</version>
+      <version>${springJaxbVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
@@ -464,10 +511,6 @@
     <dependency>
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>taglibs</groupId>
-      <artifactId>standard</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms.features</groupId>

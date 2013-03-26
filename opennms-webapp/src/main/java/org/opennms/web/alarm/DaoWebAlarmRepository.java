@@ -38,6 +38,7 @@ import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.dao.MemoDao;
 import org.opennms.netmgt.model.*;
 import org.opennms.netmgt.model.acknowledgments.AckService;
+import org.opennms.netmgt.model.alarm.AlarmSummary;
 import org.opennms.web.alarm.filter.AlarmCriteria;
 import org.opennms.web.alarm.filter.AlarmCriteria.AlarmCriteriaVisitor;
 import org.opennms.web.alarm.filter.AlarmIdListFilter;
@@ -130,6 +131,9 @@ public class DaoWebAlarmRepository implements WebAlarmRepository, InitializingBe
                     case SEVERITY:
                         criteria.addOrder(Order.desc("severity"));
                         break;
+                    case ACKUSER:
+                        criteria.addOrder(Order.asc("alarmAckUser"));
+                        break;
                     case REVERSE_COUNT:
                         criteria.addOrder(Order.asc("counter"));
                         break;
@@ -156,6 +160,9 @@ public class DaoWebAlarmRepository implements WebAlarmRepository, InitializingBe
                         break;
                     case REVERSE_SEVERITY:
                         criteria.addOrder(Order.asc("severity"));
+                        break;
+                    case REVERSE_ACKUSER:
+                        criteria.addOrder(Order.desc("alarmAckUser"));
                         break;
                     default:
                         break;
@@ -184,7 +191,7 @@ public class DaoWebAlarmRepository implements WebAlarmRepository, InitializingBe
         alarm.reductionKey = onmsAlarm.getReductionKey();
         alarm.count = onmsAlarm.getCounter();
         alarm.severity = onmsAlarm.getSeverity();
-        alarm.lastEventID = onmsAlarm.getLastEvent().getId();
+        alarm.lastEventID = onmsAlarm.getLastEvent() == null ? 0 : onmsAlarm.getLastEvent().getId();
         alarm.firsteventtime = onmsAlarm.getFirstEventTime();
         alarm.lasteventtime = onmsAlarm.getLastEventTime();
         alarm.description = onmsAlarm.getDescription();
@@ -458,4 +465,11 @@ public class DaoWebAlarmRepository implements WebAlarmRepository, InitializingBe
         cb.eq("ackType", AckType.ALARM);
         return m_ackDao.findMatching(cb.toCriteria());
     }
+
+    @Override
+    @Transactional
+    public List<AlarmSummary> getCurrentNodeAlarmSummaries() {
+        return m_alarmDao.getNodeAlarmSummaries();
+    }
+
 }

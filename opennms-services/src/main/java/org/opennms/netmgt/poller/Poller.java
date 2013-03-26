@@ -310,7 +310,7 @@ public class Poller extends AbstractServiceDaemon {
         Timestamp closeTime = new Timestamp(closeDate.getTime());
         final String DB_CLOSE_OUTAGES_FOR_NODE = "UPDATE outages set ifregainedservice = ?, svcRegainedEventId = ? where outages.nodeId = ? AND (outages.ifregainedservice IS NULL)";
         Updater svcUpdater = new Updater(m_dataSource, DB_CLOSE_OUTAGES_FOR_NODE);
-        svcUpdater.execute(closeTime, new Integer(eventId), new Integer(nodeId));
+        svcUpdater.execute(closeTime, Integer.valueOf(eventId), Integer.valueOf(nodeId));
     }
     
     /**
@@ -325,7 +325,7 @@ public class Poller extends AbstractServiceDaemon {
         Timestamp closeTime = new Timestamp(closeDate.getTime());
         final String DB_CLOSE_OUTAGES_FOR_IFACE = "UPDATE outages set ifregainedservice = ?, svcRegainedEventId = ? where outages.nodeId = ? AND outages.ipAddr = ? AND (outages.ifregainedservice IS NULL)";
         Updater svcUpdater = new Updater(m_dataSource, DB_CLOSE_OUTAGES_FOR_IFACE);
-        svcUpdater.execute(closeTime, new Integer(eventId), new Integer(nodeId), ipAddr);
+        svcUpdater.execute(closeTime, Integer.valueOf(eventId), Integer.valueOf(nodeId), ipAddr);
     }
     
     /**
@@ -341,7 +341,7 @@ public class Poller extends AbstractServiceDaemon {
         Timestamp closeTime = new Timestamp(closeDate.getTime());
         final String DB_CLOSE_OUTAGES_FOR_SERVICE = "UPDATE outages set ifregainedservice = ?, svcRegainedEventId = ? where outageid in (select outages.outageid from outages, service where outages.nodeid = ? AND outages.ipaddr = ? AND outages.serviceid = service.serviceId AND service.servicename = ? AND outages.ifregainedservice IS NULL)";
         Updater svcUpdater = new Updater(m_dataSource, DB_CLOSE_OUTAGES_FOR_SERVICE);
-        svcUpdater.execute(closeTime, new Integer(eventId), new Integer(nodeId), ipAddr, serviceName);
+        svcUpdater.execute(closeTime, Integer.valueOf(eventId), Integer.valueOf(nodeId), ipAddr, serviceName);
     }
 
     private void createScheduler() {

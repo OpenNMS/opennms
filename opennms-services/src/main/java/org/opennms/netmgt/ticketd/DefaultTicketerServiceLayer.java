@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.ticketd;
 
+import java.util.Map;
+
 import org.opennms.api.integration.ticketing.*;
 import org.opennms.api.integration.ticketing.Ticket.State;
 import org.opennms.core.utils.ThreadCategory;
@@ -160,11 +162,14 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
 	 * @see org.opennms.netmgt.ticketd.TicketerServiceLayer#createTicketForAlarm(int)
 	 */
 	/** {@inheritDoc} */
-	public void createTicketForAlarm(int alarmId) {
+	public void createTicketForAlarm(int alarmId, Map<String,String> attributes) {
 	    
 		OnmsAlarm alarm = m_alarmDao.get(alarmId);
         
         Ticket ticket = createTicketFromAlarm(alarm);
+        if (attributes.containsKey("user"))
+        	ticket.setUser(attributes.get("user"));
+        ticket.setAttributes(attributes);
         
         try {
             m_ticketerPlugin.saveOrUpdate(ticket);
@@ -189,7 +194,7 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
 	 * TODO: Add alarmid to Ticket class for ability to reference back to Alarm (waffling on this
 	 * since ticket isn't a persisted object and other reasons)
 	 */
-    private Ticket createTicketFromAlarm(OnmsAlarm alarm) {
+    protected Ticket createTicketFromAlarm(OnmsAlarm alarm) {
         Ticket ticket = new Ticket();
         ticket.setSummary(alarm.getLogMsg());
         ticket.setDetails(alarm.getDescription());
@@ -235,6 +240,15 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
         
 		m_alarmDao.saveOrUpdate(alarm);
 	}
+    
+    /*
+    * (non-Javadoc)
+    * @see org.opennms.netmgt.ticketd.TicketerServiceLayer#reloadTicketer()
+    */
+    /** {@inheritDoc} */
+    public void reloadTicketer() {
+        // Do nothing
+    }
     
     // TODO what if the alarm doesn't exist?
 	

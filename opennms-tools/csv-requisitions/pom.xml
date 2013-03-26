@@ -57,13 +57,18 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-provision-persistence</artifactId>
+<<<<<<< HEAD
       <version>1.11.4-SPACE-SNAPSHOT</version>
+=======
+      <version>1.11.91-SNAPSHOT</version>
+>>>>>>> origin/1.12
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-provision-persistence</artifactId>
       <type>test-jar</type>
       <scope>test</scope>
+<<<<<<< HEAD
       <version>1.11.4-SPACE-SNAPSHOT</version>
     </dependency>
     <!--
@@ -73,6 +78,10 @@
       <version>1.11.4-SPACE-SNAPSHOT</version>
     </dependency>
 -->
+=======
+      <version>1.11.91-SNAPSHOT</version>
+    </dependency>
+>>>>>>> origin/1.12
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>

@@ -2,9 +2,11 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi" 
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 
-       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd"
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+       http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd"
         >
 
     <context:annotation-config/>
@@ -316,6 +318,11 @@
         <property name="webAlarmRepository" ref="webAlarmRepository"/>
     </bean>
     
+    <bean name="/alarm/summary-box.htm" class="org.opennms.web.controller.alarm.AlarmBoxController">
+        <property name="successView" value="alarm/summary-box"/>
+        <property name="webAlarmRepository" ref="webAlarmRepository"/>
+    </bean>
+ 
     <alias name="/event/detail.htm" alias="/event/detail.jsp"/>
     <bean name="/event/detail.htm" class="org.opennms.web.controller.event.EventFilterController">
         <property name="successView" value="event/detail"/>
@@ -443,7 +450,7 @@
     </bean>
 
     <!--  "includes" -->
-    <bean name="/navBar.htm" class="org.opennms.web.controller.NavBarController">
+    <bean id="headerProvider" name="/navBar.htm" class="org.opennms.web.controller.NavBarController">
         <property name="navBarItems">
             <list>
                 <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
@@ -539,13 +546,6 @@
                 </bean>
 
                 <bean class="org.opennms.web.navigate.FileBasedNavBarEntry">
-                    <property name="name" value="Vulnerabilities"/>
-                    <property name="url" value="vulnerability/index.jsp"/>
-                    <property name="locationMatch" value="vulnerability"/>
-                    <property name="file" value="${opennms.home}/etc/vulnerabilities.enable"/>
-                </bean>
-
-                <bean class="org.opennms.web.navigate.FileBasedNavBarEntry">
                     <property name="name" value="Map"/>
                     <property name="url" value="map/index.jsp"/>
                     <property name="locationMatch" value="map"/>
@@ -572,6 +572,8 @@
             </list>
         </property>
     </bean>
+    
+  <onmsgi:service interface="org.opennms.web.api.OnmsHeaderProvider" ref="headerProvider"/>
 
     <bean name="/includes/nodeCategory-box.htm" class="org.opennms.web.controller.NodeCategoryBoxController">
         <property name="adminCategoryService" ref="adminCategoryService"/>

@@ -43,6 +43,7 @@ import edu.uci.ics.jung.graph.SparseGraph;
 
 public class FRLayoutAlgorithm extends AbstractLayoutAlgorithm {
 
+	@Override
 	public void updateLayout(final GraphContainer graphContainer) {
 		
 		Graph g = graphContainer.getGraph();
@@ -51,13 +52,13 @@ public class FRLayoutAlgorithm extends AbstractLayoutAlgorithm {
 		
 		SparseGraph<VertexRef, EdgeRef> jungGraph = new SparseGraph<VertexRef, EdgeRef>();
 
-		Collection<? extends Vertex> vertices = g.getDisplayVertices();
+		Collection<Vertex> vertices = g.getDisplayVertices();
 
 		for(Vertex v : vertices) {
 			jungGraph.addVertex(v);
 		}
 		
-		Collection<? extends Edge> edges = g.getDisplayEdges();
+		Collection<Edge> edges = g.getDisplayEdges();
 		
 		for(Edge e : edges) {
 			jungGraph.addEdge(e, e.getSource().getVertex(), e.getTarget().getVertex());

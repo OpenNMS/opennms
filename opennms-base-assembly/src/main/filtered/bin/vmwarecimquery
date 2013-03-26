@@ -1,0 +1,12 @@
+#!/bin/sh -
+
+VIJAVA_JAR=`ls -1 "${install.dir}"/lib/vijava-*.jar | head -n 1`
+VMWARE_JAR=`ls -1 "${install.dir}"/lib/opennms-vmware-*.jar | head -n 1`
+DOM4J_JAR=`ls -1 "${install.dir}"/lib/dom4j-*.jar | head -n 1`
+COMMONS_CLI_JAR=`ls -1 "${install.dir}"/lib/commons-cli-*.jar | head -n 1`
+SLF4J_API_JAR=`ls -1 "${install.dir}"/lib/slf4j-api*.jar | head -n 1`
+SLF4J_L4J_JAR=`ls -1 "${install.dir}"/lib/slf4j-log4j*.jar | head -n 1`
+LOG4J_JAR=`ls -1 "${install.dir}"/lib/log4j-*.jar | head -n 1`
+CIM_JAR=`ls -1 "${install.dir}"/lib/sblimCIMClient-*.jar | head -n 1`
+SLP_JAR=`ls -1 "${install.dir}"/lib/sblimSLPClient-*.jar | head -n 1`
+exec ${install.bin.dir}/runjava -r -- -Xmx256m -cp "$VIJAVA_JAR:$VMWARE_JAR:$JCIFS_JAR:$DOM4J_JAR:$CIM_JAR:$SLP_JAR:$SLF4J_API_JAR:$SLF4J_L4J_JAR:$LOG4J_JAR:$COMMONS_CLI_JAR" org.opennms.protocols.vmware.VmwareCimQuery "$@"

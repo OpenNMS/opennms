@@ -19,4 +19,22 @@
       </rollback>
     </changeSet>
 
+    <changeSet author="agalue" id="1.11.4-add-geolocation-to-assets">
+      <addColumn tableName="assets">
+        <column name="geolocation" type="varchar(32)" />
+      </addColumn>
+      <rollback>
+        <dropColumn tableName="assets" columnName="geolocation" />
+      </rollback>
+    </changeSet>
+
+    <changeSet author="agalue" id="1.11.4-add-country-to-assets">
+      <addColumn tableName="assets">
+        <column name="country" type="varchar(32)" />
+      </addColumn>
+      <rollback>
+        <dropColumn tableName="assets" columnName="country" />
+      </rollback>
+    </changeSet>
+
 </databaseChangeLog>

@@ -42,8 +42,7 @@
             <property name="configurationFile" value="target/saved-linkd-graph.xml"/>
     </bean>
 
-  <bean id ="refreshOperation" class="org.opennms.features.topology.plugins.topo.linkd.internal.operations.RefreshOperation">
-	  <constructor-arg ref="linkdTopologyProvider"/>
-  </bean>
+  <bean id ="refreshOperation" class="org.opennms.features.topology.plugins.topo.linkd.internal.operations.RefreshOperation"/>
+
 </beans>
 

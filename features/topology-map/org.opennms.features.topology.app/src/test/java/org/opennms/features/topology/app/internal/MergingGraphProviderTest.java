@@ -1,26 +1,34 @@
 package org.opennms.features.topology.app.internal;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.features.topology.api.topo.Edge;
-import org.opennms.features.topology.api.topo.LWEdgeRef;
-import org.opennms.features.topology.api.topo.LWVertexRef;
+import org.opennms.features.topology.api.topo.EdgeProvider;
+import org.opennms.features.topology.api.topo.GraphProvider;
+import org.opennms.features.topology.api.topo.AbstractVertexRef;
+import org.opennms.features.topology.api.topo.AbstractEdgeRef;
+import org.opennms.features.topology.api.topo.SimpleEdgeProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 
 public class MergingGraphProviderTest {
 
-	private SimpleGraphProvider m_graphProvider;
-	private SimpleEdgeProvider m_edgeProvider;
+	private GraphProvider m_graphProvider;
+	private EdgeProvider m_edgeProvider;
 	private MergingGraphProvider m_mergedProvider;
 
 	
 	@Before
 	public void setUp() {
-		
+
+		MockLogAppender.setupLogging();
+
 		m_graphProvider = new SimpleGraphBuilder("nodes")
 			.vertex("g0").vLabel("group0").vIconKey("group").vTooltip("root group").vStyleName("vertex")
 			.vertex("g1").parent("g0").vLabel("group1").vIconKey("group").vTooltip("group 1").vStyleName("vertex")
@@ -44,7 +52,6 @@ public class MergingGraphProviderTest {
 		providerManager.onEdgeProviderBind(m_edgeProvider);
 		
 		m_mergedProvider = new MergingGraphProvider(m_graphProvider, providerManager);
-
 	}
 	
 	@Test
@@ -65,13 +72,13 @@ public class MergingGraphProviderTest {
 	@Test
 	public void testGetVertex() {
 		assertEquals("vertex1", m_mergedProvider.getVertex("nodes", "v1").getLabel());
-		assertEquals("vertex2", m_mergedProvider.getVertex(new LWVertexRef("nodes", "v2")).getLabel());
+		assertEquals("vertex2", m_mergedProvider.getVertex(new AbstractVertexRef("nodes", "v2")).getLabel());
 	}
 
 	@Test
 	public void testGetEdge() {
 		assertEquals("edge1", m_mergedProvider.getEdge("nodes", "e1").getLabel());
-		assertEquals("ncsedge2", m_mergedProvider.getEdge(new LWEdgeRef("ncs", "ncs2")).getLabel());
+		assertEquals("ncsedge2", m_mergedProvider.getEdge(new AbstractEdgeRef("ncs", "ncs2")).getLabel());
 	}
 	
 	@Test
@@ -88,7 +95,7 @@ public class MergingGraphProviderTest {
 		edges = m_mergedProvider.getEdges();
 
 		assertEquals(5, edges.size());
-		assertTrue(edges.contains(new LWEdgeRef("ncs", "ncs2")));
+		assertTrue(edges.contains(new AbstractEdgeRef("ncs", "ncs2")));
 		
 	}
 }

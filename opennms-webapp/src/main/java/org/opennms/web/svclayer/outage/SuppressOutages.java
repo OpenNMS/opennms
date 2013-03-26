@@ -39,18 +39,10 @@ import org.opennms.netmgt.model.OnmsOutage;
  * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
  * @author <a href="mailto:djgregor@opennms.org">DJ Gregor</a>
  * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
- * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
- * @author <a href="mailto:djgregor@opennms.org">DJ Gregor</a>
- * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
- * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
- * @author <a href="mailto:djgregor@opennms.org">DJ Gregor</a>
- * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
- * @version $Id: $
- * @since 1.8.1
  */
 public class SuppressOutages {
-
-	private static Integer LONG_TIME = new Integer(100);
+    // me love you, LONG_TIME
+    private static Integer LONG_TIME = Integer.valueOf(100);
 
 	/**
 	 * <p>suppress</p>

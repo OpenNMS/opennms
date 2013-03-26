@@ -28,46 +28,26 @@
 
 package org.opennms.features.topology.app.internal.operations;
 
-import java.util.List;
-
-import org.opennms.features.topology.api.CheckedOperation;
-import org.opennms.features.topology.api.DisplayState;
-import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.api.LayoutAlgorithm;
 import org.opennms.features.topology.app.internal.jung.RealUltimateLayoutAlgorithm;
 
+public class RealUltimateLayoutOperation extends LayoutOperation {
 
-public class RealUltimateLayoutOperation implements CheckedOperation{
+	public RealUltimateLayoutOperation() {
+		super(new LayoutFactory() {
+		    
+		    private final RealUltimateLayoutAlgorithm m_layoutAlgorithm = new RealUltimateLayoutAlgorithm();
+		    
+			@Override
+			public LayoutAlgorithm getLayoutAlgorithm() {
+				return m_layoutAlgorithm;
+			}
+		});
+	}
 
-    @Override
-    public Undoer execute(List<VertexRef> targets,
-            OperationContext operationContext) {
-        DisplayState graphContainer = operationContext.getGraphContainer();
-        
-        graphContainer.setLayoutAlgorithm(new RealUltimateLayoutAlgorithm());
-        return null;
-    }
+	@Override
+	public String getId() {
+		return getClass().getSimpleName();
+	}
 
-    @Override
-    public boolean display(List<VertexRef> targets, OperationContext operationContext) {
-        return true;
-    }
-
-    @Override
-    public boolean enabled(List<VertexRef> targets, OperationContext operationContext) {
-        return true;
-    }
-
-    @Override
-    public String getId() {
-        return null;
-    }
-
-    @Override
-    public boolean isChecked(List<VertexRef> targets, OperationContext operationContext) {
-        if(operationContext.getGraphContainer().getLayoutAlgorithm() instanceof RealUltimateLayoutAlgorithm) {
-            return true;
-        }
-        return false;
-    }
 }

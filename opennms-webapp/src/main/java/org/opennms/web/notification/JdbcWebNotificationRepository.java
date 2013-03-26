@@ -136,15 +136,15 @@ public class JdbcWebNotificationRepository implements WebNotificationRepository,
         public Notification mapRow(ResultSet rs, int rowNum) throws SQLException {
             Notification notice = new Notification();
             
-            notice.m_notifyID = new Integer(rs.getInt("notifyid"));
+            notice.m_notifyID = Integer.valueOf(rs.getInt("notifyid"));
             notice.m_timeSent = getTimestamp("pagetime", rs);
             notice.m_timeReply = getTimestamp("respondtime", rs);
             notice.m_txtMsg = rs.getString("textmsg");
             notice.m_numMsg = rs.getString("numericmsg");
             notice.m_responder = rs.getString("answeredby");
-            notice.m_nodeID = new Integer(rs.getInt("nodeid"));
+            notice.m_nodeID = Integer.valueOf(rs.getInt("nodeid"));
             notice.m_interfaceID = rs.getString("interfaceid");
-            notice.m_eventId = new Integer(rs.getInt("eventid"));
+            notice.m_eventId = Integer.valueOf(rs.getInt("eventid"));
             
             notice.m_serviceName = rs.getString("servicename");
 

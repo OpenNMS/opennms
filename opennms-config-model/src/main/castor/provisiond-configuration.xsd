@@ -58,7 +58,7 @@
       </documentation>
     </annotation>
     <restriction base="string" >
-      <pattern value="(dns|file|http|https)://.*">
+      <pattern value="(dns|file|http|https|vmware)://.*">
       </pattern>
     </restriction>
   </simpleType>

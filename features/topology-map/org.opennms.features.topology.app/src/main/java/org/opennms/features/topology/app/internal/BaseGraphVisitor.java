@@ -1,8 +1,8 @@
 package org.opennms.features.topology.app.internal;
 
 import org.opennms.features.topology.api.Graph;
+import org.opennms.features.topology.api.GraphVisitor;
 import org.opennms.features.topology.api.topo.Edge;
-import org.opennms.features.topology.api.topo.GraphVisitor;
 import org.opennms.features.topology.api.topo.Vertex;
 
 import com.vaadin.terminal.PaintException;

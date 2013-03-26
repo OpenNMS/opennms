@@ -62,7 +62,7 @@
     </dependency>
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
-      <artifactId>jetty-jsp-2.1</artifactId>
+      <artifactId>jetty-jsp</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.ant</groupId>

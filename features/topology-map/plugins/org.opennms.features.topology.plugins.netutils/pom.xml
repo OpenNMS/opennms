@@ -211,7 +211,7 @@
 			<groupId>com.google.gwt</groupId>
 			<artifactId>gwt-user</artifactId>
 			<version>${gwtVersion}</version>
-			<scope>${scope.type}</scope>
+			<scope>provided</scope>
 		</dependency>
 
 		<dependency>

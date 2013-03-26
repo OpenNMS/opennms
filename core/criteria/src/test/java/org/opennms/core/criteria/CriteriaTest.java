@@ -36,6 +36,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import org.junit.Before;
@@ -118,8 +119,10 @@ public class CriteriaTest {
 		final CriteriaBuilder cb = new CriteriaBuilder(OnmsAlarm.class);
 
 		cb.fetch("firstEvent").fetch("lastEvent").fetch("distPoller", FetchType.LAZY);
-		assertEquals(FetchType.DEFAULT, cb.toCriteria().getFetchTypes().get(0).getFetchType());
-		assertEquals(FetchType.LAZY, cb.toCriteria().getFetchTypes().get(2).getFetchType());
+		final Iterator<Fetch> i = cb.toCriteria().getFetchTypes().iterator();
+		assertEquals(FetchType.DEFAULT, i.next().getFetchType());
+		i.next();
+		assertEquals(FetchType.LAZY, i.next().getFetchType());
 	}
 	
 	@Test
@@ -127,13 +130,13 @@ public class CriteriaTest {
 		CriteriaBuilder cb = new CriteriaBuilder(OnmsAlarm.class);
 		
 		cb.alias("node", "node").join("node.snmpInterfaces", "snmpInterface").join("node.ipInterfaces", "ipInterface");
-		assertEquals(JoinType.LEFT_JOIN, cb.toCriteria().getAliases().get(0).getType());
+		assertEquals(JoinType.LEFT_JOIN, cb.toCriteria().getAliases().iterator().next().getType());
 		assertEquals(3, cb.toCriteria().getAliases().size());
 
 		cb = new CriteriaBuilder(OnmsAlarm.class).join("monkey", "ook", JoinType.FULL_JOIN);
-		assertEquals("monkey", cb.toCriteria().getAliases().get(0).getAssociationPath());
-		assertEquals("ook", cb.toCriteria().getAliases().get(0).getAlias());
-		assertEquals(JoinType.FULL_JOIN, cb.toCriteria().getAliases().get(0).getType());
+		assertEquals("monkey", cb.toCriteria().getAliases().iterator().next().getAssociationPath());
+		assertEquals("ook", cb.toCriteria().getAliases().iterator().next().getAlias());
+		assertEquals(JoinType.FULL_JOIN, cb.toCriteria().getAliases().iterator().next().getType());
 	}
 	
 	@Test
@@ -200,5 +203,18 @@ public class CriteriaTest {
 		cb.ne("id", 8);
 		expected.add(Restrictions.not(Restrictions.eq("id", 8)));
 		assertEquals(expected, cb.toCriteria().getRestrictions());
+		
+		cb = new CriteriaBuilder(OnmsAlarm.class);
+                cb.id(1).and(Restrictions.gt("firstEventTime", d), Restrictions.lt("severity", OnmsSeverity.CRITICAL));
+                expected.clear();
+                expected.add(Restrictions.eq("id", 1));
+                expected.add(Restrictions.and(Restrictions.gt("firstEventTime", d), Restrictions.lt("severity", OnmsSeverity.CRITICAL)));
+                cb.like("description", "*foo*").ilike("uei", "*bar*");
+                expected.add(Restrictions.like("description", "*foo*"));
+                expected.add(Restrictions.ilike("uei", "*bar*"));
+		inValues.clear();
+                cb.in("nodeLabel", inValues);
+                expected.add(Restrictions.in("nodeLabel", inValues));
+                assertEquals(expected, cb.toCriteria().getRestrictions());
 	}
 }

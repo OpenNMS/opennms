@@ -130,6 +130,10 @@ public class Asset extends Object {
 
     protected String zip = "";
 
+    protected String country = "";
+
+    protected String geolocation = "";
+
     protected String building = "";
 
     protected String floor = "";
@@ -1044,6 +1048,50 @@ public class Asset extends Object {
     }
 
     /**
+     * <p>Setter for the field <code>country</code>.</p>
+     *
+     * @param country a {@link java.lang.String} object.
+     */
+    public void setCountry(String country) {
+        if (country != null) {
+            this.country = country;
+        } else {
+            this.country = "";
+        }
+    }
+
+    /**
+     * <p>Getter for the field <code>country</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getCountry() {
+        return (this.country);
+    }
+
+    /**
+     * <p>Setter for the field <code>geolocation</code>.</p>
+     *
+     * @param geolocation a {@link java.lang.String} object.
+     */
+    public void setGeolocation(String geolocation) {
+        if (geolocation != null) {
+            this.geolocation = geolocation;
+        } else {
+            this.geolocation = "";
+        }
+    }
+
+    /**
+     * <p>Getter for the field <code>geolocation</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getGeolocation() {
+        return (this.geolocation);
+    }
+
+    /**
      * <p>Setter for the field <code>building</code>.</p>
      *
      * @param building a {@link java.lang.String} object.
@@ -1554,6 +1602,10 @@ public class Asset extends Object {
         builder.append(state);
         builder.append(", zip=");
         builder.append(zip);
+        builder.append(", country=");
+        builder.append(country);
+        builder.append(", geolocation=");
+        builder.append(geolocation);
         builder.append(", building=");
         builder.append(building);
         builder.append(", floor=");

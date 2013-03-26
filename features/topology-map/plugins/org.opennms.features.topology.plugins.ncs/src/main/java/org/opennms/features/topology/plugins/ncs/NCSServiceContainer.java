@@ -6,12 +6,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.opennms.features.topology.api.HierarchicalBeanContainer;
+import org.opennms.features.topology.api.support.HierarchicalBeanContainer;
 import org.opennms.netmgt.model.ncs.NCSComponent;
 import org.opennms.netmgt.model.ncs.NCSComponentRepository;
-//import org.springframework.util.Assert;
-
-import com.vaadin.data.util.BeanItem;
 
 public class NCSServiceContainer extends HierarchicalBeanContainer<Long, NCSComponent> {
 

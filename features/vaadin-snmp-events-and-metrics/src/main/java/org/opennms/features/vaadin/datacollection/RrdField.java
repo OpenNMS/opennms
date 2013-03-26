@@ -86,6 +86,7 @@ public class RrdField extends CustomField implements Button.ClickListener {
     public RrdField() {
         step.setCaption("RRD Step (in seconds)");
         step.setRequired(true);
+        step.setImmediate(true);
         step.setValidationVisible(true);
         step.setNullSettingAllowed(false);
         step.addValidator(new IntegerValidator("Invalid integer {0}"));

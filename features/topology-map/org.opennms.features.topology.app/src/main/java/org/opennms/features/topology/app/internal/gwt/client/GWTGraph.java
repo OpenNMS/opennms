@@ -42,9 +42,9 @@ public final class GWTGraph extends JavaScriptObject {
     
     public static final native GWTGraph create() /*-{
     	return { "vertices":[], "edges":[], "idToVMap":{}, 
-    	         "scale":0, "oldScale":0, "clientX":0, "clientY":0, 
+    	         "clientX":0, "clientY":0, 
     	         "viewTransformation":{}, "panToSelection":false,
-    	         "fitToView":false };
+    	         "fitToView":false, "bounds":{"x":0, "y":0, "width":100, "height":100}};
 	}-*/;
 
     public final native JsArray<GWTVertex> getVertices()/*-{
@@ -125,21 +125,6 @@ public final class GWTGraph extends JavaScriptObject {
 		return get(vertexKey);
 	}
 
-    public native double getScale() /*-{
-        return this.scale;
-    }-*/;
-
-    public native void setScale(double scale) /*-{
-        if(this.scale != scale) {
-            this.oldScale = this.scale;
-            this.scale = scale;
-        }
-    }-*/;
-    
-    public native double getOldScale() /*-{
-        return this.oldScale;
-    }-*/;
-
     public native void setClientX(int clientX) /*-{
         this.clientX = clientX;
     }-*/;
@@ -148,36 +133,20 @@ public final class GWTGraph extends JavaScriptObject {
         this.clientY = clientY;
     }-*/;
 
-    public native int getClientX() /*-{
-        return this.clientX;
-    }-*/;
-    
-    public native int getClientY() /*-{
-        return this.clientY;
-    }-*/;
-
     public native void setViewportTransform(SVGMatrix viewportTransform) /*-{
         this.viewTransform = viewportTransform;
     }-*/;
 
-    public native void setPanToSelection(boolean panToSelection) /*-{
-        this.panToSelection = panToSelection;
-    }-*/;
-    
-    public native boolean isPanToSelection() /*-{
-        return this.panToSelection;
-    }-*/;
-
-    public native void setFitToView(boolean fitToView) /*-{
-        this.fitToView = fitToView;
-    }-*/;
-
-    public native boolean isFitToView() /*-{
-        return this.fitToView;
-    }-*/;
-
     public native void setOldScale(double oldScale) /*-{
         this.oldScale = oldScale;
+    }-*/;
+
+    public native void setBoundingBox(GWTBoundingBox bounds) /*-{
+        this.bounds = bounds;
+    }-*/;
+    
+    public native GWTBoundingBox getBoundingBox() /*-{
+        return this.bounds;
     }-*/;
 
 }

@@ -7,12 +7,12 @@ import org.osgi.framework.ServiceRegistration;
 
 public class MockNCSCompontentRepositoryActivator implements BundleActivator {
 
-    private ServiceRegistration m_registration;
+    private ServiceRegistration<NCSComponentRepository> m_registration;
 
     @Override
     public void start(final BundleContext context) throws Exception {
         final MockNCSComponentRepository repo = new MockNCSComponentRepository();
-        m_registration = context.registerService(NCSComponentRepository.class.getName(), repo, null);
+        m_registration = context.registerService(NCSComponentRepository.class, repo, null);
     }
 
     @Override

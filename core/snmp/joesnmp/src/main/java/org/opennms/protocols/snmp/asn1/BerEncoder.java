@@ -321,7 +321,7 @@ public class BerEncoder implements AsnEncoder {
             // short definiate length encoding
             //
             numBytes = (byte) (numBytes & ~LONG_LENGTH);
-            retVals[1] = new Integer(byteToInt(numBytes));
+            retVals[1] = Integer.valueOf(byteToInt(numBytes));
         } else {
             //
             // Long length encoding
@@ -331,13 +331,13 @@ public class BerEncoder implements AsnEncoder {
                 if ((buf.length - startOffset) < 1)
                     throw new AsnDecodingException("Buffer underflow error");
 
-                retVals[1] = new Integer(byteToInt(buf[startOffset++]));
+                retVals[1] = Integer.valueOf(byteToInt(buf[startOffset++]));
             } else if (numBytes == 2) {
                 if ((buf.length - startOffset) < 2)
                     throw new AsnDecodingException("Buffer underflow error");
 
                 int val = byteToInt(buf[startOffset++]) << 8 | byteToInt(buf[startOffset++]);
-                retVals[1] = new Integer(val);
+                retVals[1] = Integer.valueOf(val);
             } else {
                 throw new AsnDecodingException("Invalid ASN.1 length");
             }
@@ -346,7 +346,7 @@ public class BerEncoder implements AsnEncoder {
         //
         // create the offset object
         //
-        retVals[0] = new Integer(startOffset);
+        retVals[0] = Integer.valueOf(startOffset);
 
         return retVals;
     }
@@ -561,9 +561,9 @@ public class BerEncoder implements AsnEncoder {
         // return the data!
         //
         Object[] rVals = new Object[3];
-        rVals[0] = new Integer(startOffset);
+        rVals[0] = Integer.valueOf(startOffset);
         rVals[1] = asnType; // java.lang.Byte()
-        rVals[2] = new Integer(asnValue);
+        rVals[2] = Integer.valueOf(asnValue);
 
         return rVals;
     }
@@ -736,9 +736,9 @@ public class BerEncoder implements AsnEncoder {
         // return the data!
         //
         Object[] rVals = new Object[3];
-        rVals[0] = new Integer(startOffset);
+        rVals[0] = Integer.valueOf(startOffset);
         rVals[1] = asnType;
-        rVals[2] = new Long(asnValue);
+        rVals[2] = Long.valueOf(asnValue);
 
         return rVals;
     }
@@ -846,7 +846,7 @@ public class BerEncoder implements AsnEncoder {
         // return the data!
         //
         Object[] rVals = new Object[3];
-        rVals[0] = new Integer(startOffset);
+        rVals[0] = Integer.valueOf(startOffset);
         rVals[1] = asnType;
         rVals[2] = asnValue;
 
@@ -1023,7 +1023,7 @@ public class BerEncoder implements AsnEncoder {
         // fix the return values
         //
         Object[] rVals = new Object[3];
-        rVals[0] = new Integer(startOffset + asnLength);
+        rVals[0] = Integer.valueOf(startOffset + asnLength);
         rVals[1] = asnType;
         rVals[2] = opaque;
 
@@ -1213,7 +1213,7 @@ public class BerEncoder implements AsnEncoder {
             ids[0] = ids[1] = 0;
 
             Object[] rVals = new Object[3];
-            rVals[0] = new Integer(startOffset);
+            rVals[0] = Integer.valueOf(startOffset);
             rVals[1] = asnType;
             rVals[2] = ids;
 
@@ -1275,7 +1275,7 @@ public class BerEncoder implements AsnEncoder {
         // build the return objects
         //
         Object[] rVals = new Object[3];
-        rVals[0] = new Integer(startOffset);
+        rVals[0] = Integer.valueOf(startOffset);
         rVals[1] = asnType;
         rVals[2] = retOids;
 

@@ -29,6 +29,8 @@
 
 --%>
 
+<%@page import="org.opennms.web.alarm.filter.NegativeAcknowledgedByFilter"%>
+<%@page import="org.opennms.web.alarm.filter.AcknowledgedByFilter"%>
 <%@page language="java"
 	contentType="text/html"
 	session="true" %>
@@ -318,6 +320,10 @@
               <c:if test="${param.display == 'long'}">
               <br />
               <%=this.makeSortLink( parms, SortStyle.FIRSTEVENTTIME,  SortStyle.REVERSE_FIRSTEVENTTIME,  "firsteventtime",  "First Event Time"  )%>
+              <br />
+              <% if ( parms.ackType == AcknowledgeType.ACKNOWLEDGED ) { %>
+              <%=this.makeSortLink( parms, SortStyle.ACKUSER,  SortStyle.REVERSE_ACKUSER,  "ackuser",  "Acknowledged By"  )%>
+              <% } %>
               </c:if>
             </th>
 			<th width="48%">Log Msg</th>
@@ -463,6 +469,14 @@
               <a href="<%=this.makeLink( parms, new AfterFirstEventTimeFilter(alarms[i].getFirstEventTime()), true)%>"  class="filterLink" title="Only show alarms occurring after this one">${addAfterFilter}</a>            
               <a href="<%=this.makeLink( parms, new BeforeFirstEventTimeFilter(alarms[i].getFirstEventTime()), true)%>" class="filterLink" title="Only show alarms occurring before this one">${addBeforeFilter}</a>
             </nobr>
+          <br />
+              <% if ( parms.ackType == AcknowledgeType.ACKNOWLEDGED ) { %>
+			<nobr><%=alarm.getAcknowledgeUser()%></nobr>          
+            <nobr>
+              <a href="<%=this.makeLink( parms, new AcknowledgedByFilter(alarms[i].getAcknowledgeUser()), true)%>"  class="filterLink" title="Only show alarms ack by this user">${addPositiveFilter}</a>            
+              <a href="<%=this.makeLink( parms, new NegativeAcknowledgedByFilter(alarms[i].getAcknowledgeUser()), true)%>" class="filterLink" title="Only show alarms ack by other users">${addNegativeFilter}</a>
+            </nobr>
+			<% }%>
           </c:if>
           </td>
           <td class="divider"><%=alarms[i].getLogMessage()%></td>

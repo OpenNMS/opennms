@@ -33,6 +33,8 @@ import java.util.Hashtable;
 
 public class KeyMapper implements Serializable {
 
+    private static final long serialVersionUID = 1997604505886247127L;
+
     private int lastKey = 0;
 
     private final Hashtable<Object, String> objectKeyMap = new Hashtable<Object, String>();

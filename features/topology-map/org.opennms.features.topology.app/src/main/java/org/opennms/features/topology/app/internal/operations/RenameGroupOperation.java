@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
 
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
-import com.vaadin.data.util.BeanItem;
+import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.data.util.PropertysetItem;
 import com.vaadin.data.validator.AbstractValidator;
@@ -82,14 +82,18 @@ public class RenameGroupOperation implements Constants, Operation {
 			@Override
 			public void commit() {
 				// Trim the form value
-				getField("Group Label").setValue(((String)getField("Group Label").getValue()).trim());
+				String groupLabel = ((String)getField("Group Label").getValue());
+				if (groupLabel == null) {
+					throw new InvalidValueException("Group label cannot be null.");
+				}
+				getField("Group Label").setValue(groupLabel.trim());
 				super.commit();
-				String groupLabel = (String)getField("Group Label").getValue();
+				groupLabel = (String)getField("Group Label").getValue();
 
 				//Object parentKey = targets.get(0);
 				//Object parentId = graphContainer.getVertexItemIdForVertexKey(parentKey);
 				VertexRef parentId = targets.get(0);
-				Vertex parentVertex = parentId == null ? null : graphContainer.getVertex(parentId);
+				Vertex parentVertex = parentId == null ? null : graphContainer.getBaseTopology().getVertex(parentId);
 				Item parentItem = parentVertex == null ? null : parentVertex.getItem();
 
 				if (parentItem != null) {
@@ -99,7 +103,7 @@ public class RenameGroupOperation implements Constants, Operation {
 						property.setValue(groupLabel);
 
 						// Save the topology
-						graphContainer.getDataSource().save(null);
+						graphContainer.getBaseTopology().save();
 
 						graphContainer.redoLayout();
 					}
@@ -121,12 +125,11 @@ public class RenameGroupOperation implements Constants, Operation {
 			@Override
 			public boolean isValid(Object value) {
 				try {
-					final Collection<String> vertexIds = (Collection<String>)graphContainer.getDataSource().getVertexContainer().getItemIds();
+					final Collection<? extends Vertex> vertexIds = graphContainer.getBaseTopology().getVertices();
 					final Collection<String> groupLabels = new ArrayList<String>();
-					for (String vertexId : vertexIds) {
-						BeanItem<?> vertex = graphContainer.getDataSource().getVertexContainer().getItem(vertexId);
-						if (!(Boolean)vertex.getItemProperty("leaf").getValue()) {
-							groupLabels.add((String)vertex.getItemProperty("label").getValue());
+					for (Vertex vertexId : vertexIds) {
+						if (vertexId.isGroup()) {
+							groupLabels.add(vertexId.getLabel());
 						}
 					}
 
@@ -192,7 +195,7 @@ public class RenameGroupOperation implements Constants, Operation {
 		return targets != null && 
 		targets.size() == 1 && 
 		targets.get(0) != null && 
-		!operationContext.getGraphContainer().getVertex(targets.get(0)).isLeaf()
+		operationContext.getGraphContainer().getBaseTopology().getVertex(targets.get(0)).isGroup()
 		;
 	}
 

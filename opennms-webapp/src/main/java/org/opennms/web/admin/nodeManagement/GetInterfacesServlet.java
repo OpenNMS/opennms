@@ -53,10 +53,6 @@ import org.opennms.core.utils.WebSecurityUtils;
  *
  * @author <A HREF="mailto:jamesz@opennms.com">James Zuo </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:jamesz@opennms.com">James Zuo </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @version $Id: $
- * @since 1.8.1
  */
 public class GetInterfacesServlet extends HttpServlet {
     private static final long serialVersionUID = 6768576652872631928L;
@@ -160,7 +156,7 @@ public class GetInterfacesServlet extends HttpServlet {
                     newInterface.addService(newService);
                 }
             }
-            userSession.setAttribute("lineItems.nodemanagement", new Integer(lineCount));
+            userSession.setAttribute("lineItems.nodemanagement", Integer.valueOf(lineCount));
         } finally {
             d.cleanUp();
         }

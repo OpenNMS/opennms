@@ -44,7 +44,7 @@
     <dependency>
       <groupId>org.eclipse</groupId>
       <artifactId>osgi</artifactId>
-      <version>3.3.0-v20070530</version>
+      <version>3.5.0.v20090520</version>
       <scope>provided</scope>
       <optional>true</optional>
     </dependency>

@@ -1322,18 +1322,6 @@
     <severity>Normal</severity>
   </event>
   <event>
-    <uei>uei.opennms.org/vulnscand/specificVulnerabilityScan</uei>
-    <event-label>OpenNMS-defined vulnscand event: specificVulnerabilityScan</event-label>
-    <descr>
-      &lt;p&gt;A vulnerabilities scan has been forced.&lt;/p&gt;
-    </descr>
-    <logmsg dest='logndisplay'>
-      &lt;p&gt;A vulnerabilities scan has been forced on this
-      interface.&lt;/p&gt;
-    </logmsg>
-    <severity>Warning</severity>
-  </event>
-  <event>
     <uei>uei.opennms.org/threshold/relativeChangeExceeded</uei>
     <event-label>OpenNMS-defined threshold event: relativeChangeExceeded</event-label>
     <descr>

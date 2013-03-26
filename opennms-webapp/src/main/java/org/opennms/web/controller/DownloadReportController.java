@@ -66,7 +66,7 @@ public class DownloadReportController extends AbstractController {
         }
 
         try {
-            Integer reportCatalogEntryId = new Integer(WebSecurityUtils.safeParseInt(request.getParameter("locatorId")));
+            Integer reportCatalogEntryId = Integer.valueOf(WebSecurityUtils.safeParseInt(request.getParameter("locatorId")));
             
             String requestFormat = new String(request.getParameter("format"));
 

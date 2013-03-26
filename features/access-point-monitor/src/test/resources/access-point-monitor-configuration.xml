@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<access-point-monitor-configuration threads="30" package-scan-interval="1800000">
+	<service-template name="IsAPAdoptedOnController-Template" interval="120000" status="off">
+		<parameter key="retry" value="2"/>
+		<parameter key="oid" value=".1.3.6.1.4.1.14823.2.2.1.5.2.1.4.1.19"/>
+		<parameter key="operator" value="="/>
+		<parameter key="operand" value="1"/>
+		<parameter key="match" value="true"/>
+	</service-template>
+
+	<package name="default">
+		<filter>IPADDR != '0.0.0.0'</filter>
+		<specific>172.23.1.1</specific>
+		<include-range begin="192.168.0.0" end="192.168.255.255" />
+		<exclude-range begin="192.168.1.0" end="192.168.1.255" />
+		<service name="IsAPAdoptedOnController" template-name="IsAPAdoptedOnController-Template" status="on">
+			<parameter key="retry" value="3"/>
+		</service>
+	</package>
+
+	<monitor service="IsAPAdoptedOnController" class-name="org.opennms.netmgt.accesspointmonitor.poller.InstanceStrategy" />
+</access-point-monitor-configuration>

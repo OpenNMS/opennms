@@ -56,7 +56,7 @@ public final class ExampleActivator
         LoggerFactory.getLogger(getClass()).debug("REGISTER {}", ExampleService.class.getName());
 
         // Register our example service implementation in the OSGi service registry
-        bc.registerService( ExampleService.class.getName(), new ExampleServiceImpl(), props );
+        bc.registerService( ExampleService.class, new ExampleServiceImpl(), props );
     }
 
     /**

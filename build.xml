@@ -6,10 +6,8 @@
     <condition property="java.versionokay">
       <or>
         <!-- Don't forget to update the <fail> message below -->
-        <contains string="${java.version}" substring="1.5."/>
         <contains string="${java.version}" substring="1.6."/>
 	<contains string="${java.version}" substring="1.7."/>
-        <contains string="${java.vm.version}" substring="1.5."/>
         <contains string="${java.vm.version}" substring="1.6."/>
 	<contains string="${java.vm.version}" substring="1.7."/>
       </or>
@@ -18,7 +16,7 @@
     <fail unless="java.versionokay">
 Your Java version (java.version = ${java.version} java.vm.version = ${java.vm.version}) is not supported.  The
 build system is currently designed and tested to work with Java
-versions 1.5 and 1.6.  You can try to work around this error by
+versions 1.6 and 1.7.  You can try to work around this error by
 modifying the java.check target in the build.xml file.
     </fail>
   </target>

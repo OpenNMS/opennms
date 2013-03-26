@@ -120,6 +120,8 @@ ORDER BY
 		<field name="city" class="java.lang.String"/>
 		<field name="state" class="java.lang.String"/>
 		<field name="zip" class="java.lang.String"/>
+		<field name="country" class="java.lang.String"/>
+		<field name="geolocation" class="java.lang.String"/>
 		<field name="building" class="java.lang.String"/>
 		<field name="floor" class="java.lang.String"/>
 		<field name="room" class="java.lang.String"/>

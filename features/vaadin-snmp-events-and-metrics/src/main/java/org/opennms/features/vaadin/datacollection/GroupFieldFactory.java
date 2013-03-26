@@ -89,6 +89,7 @@ public final class GroupFieldFactory implements FormFieldFactory {
             final MibObjField f = new MibObjField(resourceTypes);
             f.setCaption("MIB Objects");
             f.setRequired(true);
+            f.setImmediate(true);
             f.setWidth("100%");
             return f;
         }

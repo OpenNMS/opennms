@@ -168,7 +168,7 @@ public class RequisitionRestService extends OnmsRestService {
      */
     @GET
     @Path("deployed")
-    @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public RequisitionCollection getDeployedRequisitions() throws ParseException {
         return m_accessService.getDeployedRequisitions();
     }
@@ -180,7 +180,7 @@ public class RequisitionRestService extends OnmsRestService {
      * @throws java.text.ParseException if any.
      */
     @GET
-    @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public RequisitionCollection getRequisitions() throws ParseException {
         return m_accessService.getRequisitions();
     }
@@ -205,7 +205,7 @@ public class RequisitionRestService extends OnmsRestService {
      */
     @GET
     @Path("{foreignSource}")
-    @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public Requisition getRequisition(@PathParam("foreignSource") final String foreignSource) {
         return m_accessService.getRequisition(foreignSource);
     }
@@ -219,7 +219,7 @@ public class RequisitionRestService extends OnmsRestService {
      */
     @GET
     @Path("{foreignSource}/nodes")
-    @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public RequisitionNodeCollection getNodes(@PathParam("foreignSource") final String foreignSource) throws ParseException {
         RequisitionNodeCollection results = m_accessService.getNodes(foreignSource);
 		
@@ -239,7 +239,7 @@ public class RequisitionRestService extends OnmsRestService {
      */
     @GET
     @Path("{foreignSource}/nodes/{foreignId}")
-    @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public RequisitionNode getNode(@PathParam("foreignSource") final String foreignSource, @PathParam("foreignId") final String foreignId) throws ParseException {
         RequisitionNode node = m_accessService.getNode(foreignSource, foreignId);
         
@@ -261,7 +261,7 @@ public class RequisitionRestService extends OnmsRestService {
      */
     @GET
     @Path("{foreignSource}/nodes/{foreignId}/interfaces")
-    @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public RequisitionInterfaceCollection getInterfacesForNode(@PathParam("foreignSource") final String foreignSource, @PathParam("foreignId") final String foreignId) throws ParseException {
         
     	RequisitionInterfaceCollection ifaces = m_accessService.getInterfacesForNode(foreignSource, foreignId);
@@ -284,7 +284,7 @@ public class RequisitionRestService extends OnmsRestService {
      */
     @GET
     @Path("{foreignSource}/nodes/{foreignId}/interfaces/{ipAddress}")
-    @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public RequisitionInterface getInterfaceForNode(@PathParam("foreignSource") final String foreignSource, @PathParam("foreignId") final String foreignId, @PathParam("ipAddress") final String ipAddress) throws ParseException {
         
     	RequisitionInterface iface = m_accessService.getInterfaceForNode(foreignSource, foreignId, ipAddress);
@@ -307,7 +307,7 @@ public class RequisitionRestService extends OnmsRestService {
      */
     @GET
     @Path("{foreignSource}/nodes/{foreignId}/interfaces/{ipAddress}/services")
-    @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public RequisitionMonitoredServiceCollection getServicesForInterface(@PathParam("foreignSource") final String foreignSource, @PathParam("foreignId") final String foreignId, @PathParam("ipAddress") final String ipAddress) throws ParseException {
 
     	RequisitionMonitoredServiceCollection services = m_accessService.getServicesForInterface(foreignSource, foreignId, ipAddress);
@@ -331,7 +331,7 @@ public class RequisitionRestService extends OnmsRestService {
      */
     @GET
     @Path("{foreignSource}/nodes/{foreignId}/interfaces/{ipAddress}/services/{service}")
-    @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public RequisitionMonitoredService getServiceForInterface(@PathParam("foreignSource") final String foreignSource, @PathParam("foreignId") final String foreignId, @PathParam("ipAddress") final String ipAddress, @PathParam("service") String service) throws ParseException {
         
     	RequisitionMonitoredService monitoredService = m_accessService.getServiceForInterface(foreignSource, foreignId, ipAddress, service);
@@ -353,7 +353,7 @@ public class RequisitionRestService extends OnmsRestService {
      */
     @GET
     @Path("{foreignSource}/nodes/{foreignId}/categories")
-    @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public RequisitionCategoryCollection getCategories(@PathParam("foreignSource") final String foreignSource, @PathParam("foreignId") final String foreignId) throws ParseException {
 
     	RequisitionCategoryCollection categories = m_accessService.getCategories(foreignSource, foreignId);
@@ -376,7 +376,7 @@ public class RequisitionRestService extends OnmsRestService {
      */
     @GET
     @Path("{foreignSource}/nodes/{foreignId}/categories/{category}")
-    @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public RequisitionCategory getCategory(@PathParam("foreignSource") final String foreignSource, @PathParam("foreignId") final String foreignId, @PathParam("category") final String category) throws ParseException {
 
     	RequisitionCategory reqCategory = m_accessService.getCategory(foreignSource, foreignId, category);
@@ -397,7 +397,7 @@ public class RequisitionRestService extends OnmsRestService {
      */
     @GET
     @Path("{foreignSource}/nodes/{foreignId}/assets")
-    @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public RequisitionAssetCollection getAssetParameters(@PathParam("foreignSource") final String foreignSource, @PathParam("foreignId") final String foreignId) throws ParseException {
         RequisitionAssetCollection assets = m_accessService.getAssetParameters(foreignSource, foreignId);
         
@@ -418,7 +418,7 @@ public class RequisitionRestService extends OnmsRestService {
      */
     @GET
     @Path("{foreignSource}/nodes/{foreignId}/assets/{parameter}")
-    @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public RequisitionAsset getAssetParameter(@PathParam("foreignSource") final String foreignSource, @PathParam("foreignId") final String foreignId, @PathParam("parameter") final String parameter) throws ParseException {
 
     	RequisitionAsset asset = m_accessService.getAssetParameter(foreignSource, foreignId, parameter);

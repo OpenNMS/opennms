@@ -128,10 +128,10 @@ public class DefaultOutageServiceIntegrationTest implements InitializingBean {
     public void testSuppression() {
         Date time = new Date();
         //Load Outage manipulate and save it.
-        OnmsOutage myOutage = m_outageService.load(new Integer(1));
-        assertTrue("Loaded the outage ", myOutage.getId().equals(new Integer(1)));
+        OnmsOutage myOutage = m_outageService.load(Integer.valueOf(1));
+        assertTrue("Loaded the outage ", myOutage.getId().equals(Integer.valueOf(1)));
         myOutage.setSuppressTime(time);
         m_outageService.update(myOutage);
-        m_outageService.load(new Integer(1));
+        m_outageService.load(Integer.valueOf(1));
     }
 }

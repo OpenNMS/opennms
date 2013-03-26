@@ -130,6 +130,19 @@
                 action-name="maintenanceExpirationWarning"
                 action-event="maintenanceExpirationWarning" />
     -->
+    
+	<!-- Enable these automations to maintain the accesspoints table -->
+    <!--
+    <automation name="addMissingAccessPointsToTable" interval="600000" active="true" 
+                trigger-name="selectAccessPointsMissingFromTable" 
+                action-name="addAccessPointToTable" />
+				
+    <automation name="updateAccessPointsTable" interval="600000" active="true"
+                action-name="updateAccessPointsTable" />
+				
+    <automation name="cleanUpAccessPointsTable" interval="600000" active="true" 
+                action-name="cleanUpAccessPointsTable" />
+    -->
   </automations>
   
   <triggers>
@@ -432,6 +445,37 @@
     <!--
     <action name="maintenanceExpirationWarning" >
       <statement>
+      </statement>
+    </action>
+    -->
+    
+    <!-- Access Point Monitor -->
+    <!--
+    <action name="addAccessPointToTable" >
+      <statement>
+        INSERT INTO accesspoints (physaddr, nodeid, pollingpackage) 
+           VALUES (${_serialnumber}, ${_nodeid}, ${_package})
+      </statement>
+    </action>
+	
+    <action name="updateAccessPointsTable">
+        <statement>
+            UPDATE accesspoints
+                SET pollingpackage = assets.pollercategory,
+             nodeid = node.nodeid
+            FROM node
+            JOIN category_node ON node.nodeid = category_node.nodeid
+            JOIN categories ON category_node.categoryid = categories.categoryid
+            JOIN assets ON node.nodeid = assets.nodeid
+             WHERE accesspoints.physaddr=assets.serialnumber
+        </statement>
+    </action>
+	
+    <action name="cleanUpAccessPointsTable">
+      <statement>
+        DELETE FROM accesspoints
+           WHERE NOT EXISTS
+           ( SELECT 1 FROM assets WHERE assets.serialnumber = accesspoints.physaddr )
       </statement>
     </action>
     -->

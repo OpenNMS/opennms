@@ -33,53 +33,20 @@ package org.opennms.netmgt.model;
  */
 public interface EntityVisitor {
 	
-	/**
-	 * <p>visitNode</p>
-	 *
-	 * @param node a {@link org.opennms.netmgt.model.OnmsNode} object.
-	 */
 	public void visitNode(OnmsNode node);
-	/**
-	 * <p>visitNodeComplete</p>
-	 *
-	 * @param node a {@link org.opennms.netmgt.model.OnmsNode} object.
-	 */
+
 	public void visitNodeComplete(OnmsNode node);
-	/**
-	 * <p>visitSnmpInterface</p>
-	 *
-	 * @param snmpIface a {@link org.opennms.netmgt.model.OnmsEntity} object.
-	 */
+
 	public void visitSnmpInterface(OnmsEntity snmpIface);
-	/**
-	 * <p>visitSnmpInterfaceComplete</p>
-	 *
-	 * @param snmpIface a {@link org.opennms.netmgt.model.OnmsEntity} object.
-	 */
+
 	public void visitSnmpInterfaceComplete(OnmsEntity snmpIface);
-	/**
-	 * <p>visitIpInterface</p>
-	 *
-	 * @param iface a {@link org.opennms.netmgt.model.OnmsIpInterface} object.
-	 */
+
 	public void visitIpInterface(OnmsIpInterface iface);
-	/**
-	 * <p>visitIpInterfaceComplete</p>
-	 *
-	 * @param iface a {@link org.opennms.netmgt.model.OnmsIpInterface} object.
-	 */
+
 	public void visitIpInterfaceComplete(OnmsIpInterface iface);
-	/**
-	 * <p>visitMonitoredService</p>
-	 *
-	 * @param monSvc a {@link org.opennms.netmgt.model.OnmsMonitoredService} object.
-	 */
+
 	public void visitMonitoredService(OnmsMonitoredService monSvc);
-	/**
-	 * <p>visitMonitoredServiceComplete</p>
-	 *
-	 * @param monSvc a {@link org.opennms.netmgt.model.OnmsMonitoredService} object.
-	 */
+
 	public void visitMonitoredServiceComplete(OnmsMonitoredService monSvc);
 
 }

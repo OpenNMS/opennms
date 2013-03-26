@@ -15,19 +15,19 @@
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
-            <version>4.2.0</version>
+            <version>4.3.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.opennms.osgi.features.topology</groupId>
             <artifactId>opennms-topology-api</artifactId>
-            <version>1.11.4-SPACE-SNAPSHOT</version>
+            <version>1.11.91-SPACE-SNAPSHOT</version>
             <type>pom</type>
         </dependency>
         <dependency>
             <groupId>org.opennms.osgi.features.topology</groupId>
             <artifactId>vaadin</artifactId>
-            <version>1.11.4-SPACE-SNAPSHOT</version>
+            <version>1.11.91-SPACE-SNAPSHOT</version>
             <type>pom</type>
         </dependency>
     </dependencies>

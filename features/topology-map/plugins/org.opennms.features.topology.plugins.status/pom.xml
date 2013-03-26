@@ -16,6 +16,10 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.topology.plugins</groupId>
   <artifactId>status</artifactId>
+<<<<<<< HEAD
+=======
+  <version>1.11.91-SNAPSHOT</version>
+>>>>>>> origin/1.12
 
   <name>${bundle.symbolicName}</name>
 
@@ -46,6 +50,31 @@
       <artifactId>org.osgi.compendium</artifactId>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-dao</artifactId>
+      <scope>provided</scope>
+     </dependency>
+     <dependency>
+        <groupId>org.opennms.core</groupId>
+        <artifactId>org.opennms.core.lib</artifactId>
+        <scope>provided</scope>
+     </dependency>
+     <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-test</artifactId>
+        <scope>test</scope>
+     </dependency>
+     <dependency>
+        <groupId>org.opennms.osgi.features.topology</groupId>
+        <artifactId>opennms-topology-api</artifactId>
+        <type>pom</type>
+     </dependency>
+     <dependency>
+        <groupId>org.opennms.osgi.features.topology</groupId>
+        <artifactId>vaadin</artifactId>
+        <type>pom</type>
+     </dependency>
   </dependencies>
 
 </project>

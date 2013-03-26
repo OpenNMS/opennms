@@ -28,7 +28,25 @@
 
 package org.opennms.netmgt.config;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.io.File;
+import java.io.FileFilter;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import javax.xml.bind.JAXBException;
+
 import junit.framework.AssertionFailedError;
+
 import org.exolab.castor.util.LocalConfiguration;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -42,6 +60,8 @@ import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.reporting.model.basicreport.LegacyLocalReportsDefinition;
 import org.opennms.features.reporting.model.jasperreport.LocalJasperReports;
 import org.opennms.features.reporting.model.remoterepository.RemoteRepositoryConfig;
+import org.opennms.netmgt.alarmd.northbounder.syslog.SyslogNorthbounderConfig;
+import org.opennms.netmgt.config.accesspointmonitor.AccessPointMonitorConfig;
 import org.opennms.netmgt.config.ackd.AckdConfiguration;
 import org.opennms.netmgt.config.actiond.ActiondConfiguration;
 import org.opennms.netmgt.config.ami.AmiConfig;
@@ -97,7 +117,9 @@ import org.opennms.netmgt.config.trapd.TrapdConfiguration;
 import org.opennms.netmgt.config.users.Userinfo;
 import org.opennms.netmgt.config.vacuumd.VacuumdConfiguration;
 import org.opennms.netmgt.config.viewsdisplay.Viewinfo;
-import org.opennms.netmgt.config.vulnscand.VulnscandConfiguration;
+import org.opennms.netmgt.config.vmware.VmwareConfig;
+import org.opennms.netmgt.config.vmware.cim.VmwareCimDatacollectionConfig;
+import org.opennms.netmgt.config.vmware.vijava.VmwareDatacollectionConfig;
 import org.opennms.netmgt.config.wmi.WmiConfig;
 import org.opennms.netmgt.config.wmi.WmiDatacollectionConfig;
 import org.opennms.netmgt.config.xmlrpcd.XmlrpcdConfiguration;
@@ -107,15 +129,6 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.StringUtils;
 import org.xml.sax.InputSource;
-
-import javax.xml.bind.JAXBException;
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.util.*;
-
-import static org.junit.Assert.*;
 
 /**
  * The name of this class is a tribute to
@@ -170,6 +183,10 @@ public class WillItUnmarshalTest {
         unmarshalAndAnticipateException("eventconf-bad-element.xml", "Invalid content was found starting with element 'bad-element'.");
     }
 
+    @Test
+    public void testAccessPointMonitorConfiguration() throws Exception {
+        unmarshal("access-point-monitor-configuration.xml", AccessPointMonitorConfig.class);
+    }
     @Test
     public void testActiondConfiguration() throws Exception {
         unmarshal("actiond-configuration.xml", ActiondConfiguration.class);
@@ -359,6 +376,10 @@ public class WillItUnmarshalTest {
         unmarshal("scriptd-configuration.xml", ScriptdConfiguration.class);
     }
     @Test
+    public void testSyslogNorthbounderConfiguration() throws Exception {
+        unmarshalJaxb("syslog-northbounder-configuration.xml", SyslogNorthbounderConfig.class);
+    }
+    @Test
     public void testExampleScriptdConfiguration() throws Exception {
         unmarshalExample("scriptd-configuration.xml", ScriptdConfiguration.class);
     }
@@ -441,10 +462,6 @@ public class WillItUnmarshalTest {
     @Test
     public void testVacuumdConfiguration() throws Exception {
         unmarshal("vacuumd-configuration.xml", VacuumdConfiguration.class);
-    }
-    @Test
-    public void testVulnscandConfiguration() throws Exception {
-        unmarshal("vulnscand-configuration.xml", VulnscandConfiguration.class);
     }
     @Test
     public void testXmlrpcdConfiguration() throws Exception {
@@ -534,10 +551,21 @@ public class WillItUnmarshalTest {
     public void testJdbcDataCollectionConfiguration() throws Exception {
         unmarshalJaxb("jdbc-datacollection-config.xml", JdbcDataCollectionConfig.class);
     }
-
     @Test
     public void testRemoteRepositoryXmlConfiguration() throws Exception {
         unmarshalJaxb("remote-repository.xml", RemoteRepositoryConfig.class);
+    }
+    @Test
+    public void testVmwareConfiguration() throws Exception {
+        unmarshalJaxb("vmware-config.xml", VmwareConfig.class);
+    }
+    @Test
+    public void testVmwareDatacollectionConfiguration() throws Exception {
+        unmarshalJaxb("vmware-datacollection-config.xml", VmwareDatacollectionConfig.class);
+    }
+    @Test
+    public void testVmwareCimDatacollectionConfiguration() throws Exception {
+        unmarshalJaxb("vmware-cim-datacollection-config.xml", VmwareCimDatacollectionConfig.class);
     }
 
     @Test

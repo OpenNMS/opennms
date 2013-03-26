@@ -277,6 +277,16 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
     }
     
     /**
+     * <p>delete</p>
+     *
+     * @param key a K object.
+     * @throws org.springframework.dao.DataAccessException if any.
+     */
+    public void delete(final K key) throws DataAccessException {
+        delete(get(key));
+    }
+    
+    /**
      * <p>deleteAll</p>
      *
      * @param entities a {@link java.util.Collection} object.
@@ -336,7 +346,8 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
     public int countMatching(final org.opennms.core.criteria.Criteria criteria) throws DataAccessException {
     	final HibernateCallback<Integer> callback = new HibernateCallback<Integer>() {
             public Integer doInHibernate(final Session session) throws HibernateException, SQLException {
-            	final Criteria hibernateCriteria = m_criteriaConverter.convert(criteria, session);
+                
+            	final Criteria hibernateCriteria = m_criteriaConverter.convertForCount(criteria, session);
             	hibernateCriteria.setProjection(Projections.rowCount());
                 return (Integer)hibernateCriteria.uniqueResult();
             }
