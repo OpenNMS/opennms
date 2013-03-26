@@ -105,9 +105,7 @@ public class Nms4005Test extends Nms4005NetworkBuilder implements InitializingBe
 
         for (Package pkg : Collections.list(m_linkdConfig.enumeratePackage())) {
             pkg.setForceIpRouteDiscoveryOnEthernet(true);
-        }
-        
-        buildNetwork4005();
+        }        
     }
 
     @After
@@ -117,7 +115,15 @@ public class Nms4005Test extends Nms4005NetworkBuilder implements InitializingBe
         }
         m_nodeDao.flush();
     }
-
+/*
+ *  (3)10.1.1.2<>R1<>10.1.3.1 (2)---(1) 10.1.3.2 <>R3<>
+ *        	   10.1.2.1                          <>R3<>
+ *          	 (1)                             <>R3<>                                  
+ *                |                              <>R3<>10.1.4.1 (2)---(1) 10.1.4.2<>R4
+ *               (1)                             <>R3<>
+ *             10.1.2.2                          <>R3<>
+ * 			   <>R2<>10.1.5.1 (2)---(3) 10.1.5.2 <>R3<>
+ */
     @Test
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host="10.1.1.2", port=161, resource="classpath:linkd/nms4005/10.1.1.2-walk.txt"),
@@ -126,23 +132,43 @@ public class Nms4005Test extends Nms4005NetworkBuilder implements InitializingBe
             @JUnitSnmpAgent(host="10.1.4.2", port=161, resource="classpath:linkd/nms4005/10.1.4.2-walk.txt")
     })
     public void testNms4005Network() throws Exception {
-        final OnmsNode cisco1 = m_nodeDao.findByForeignId("linkd", "cisco1");
-        final OnmsNode cisco2 = m_nodeDao.findByForeignId("linkd", "cisco2");
-        final OnmsNode cisco3 = m_nodeDao.findByForeignId("linkd", "cisco3");
+    	m_nodeDao.save(getR1());
+    	m_nodeDao.save(getR2());
+    	m_nodeDao.save(getR3());
+    	m_nodeDao.save(getR4());
+    	
+        final OnmsNode cisco1 = m_nodeDao.findByForeignId("linkd", R1_NAME);
+        final OnmsNode cisco2 = m_nodeDao.findByForeignId("linkd", R2_NAME);
+        final OnmsNode cisco3 = m_nodeDao.findByForeignId("linkd", R3_NAME);
+        final OnmsNode cisco4 = m_nodeDao.findByForeignId("linkd", R4_NAME);
 
         assertTrue(m_linkd.scheduleNodeCollection(cisco1.getId()));
         assertTrue(m_linkd.scheduleNodeCollection(cisco2.getId()));
         assertTrue(m_linkd.scheduleNodeCollection(cisco3.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(cisco4.getId()));
 
-        assertTrue(m_linkd.runSingleCollection(cisco1.getId()));
-        assertTrue(m_linkd.runSingleCollection(cisco2.getId()));
-        assertTrue(m_linkd.runSingleCollection(cisco3.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(cisco1.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(cisco2.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(cisco3.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(cisco4.getId()));
 
+        assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
+        
         final List<DataLinkInterface> ifaces = m_dataLinkInterfaceDao.findAll();
         for (final DataLinkInterface link: ifaces) {
             printLink(link);
         }
-        assertEquals("we should have found 3 data links", 3, ifaces.size());
+        assertEquals("we should have found 4 data links", 4, ifaces.size());
+        //Rerun collectionand discovery must be all the same...
+        assertTrue(m_linkd.runSingleSnmpCollection(cisco1.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(cisco2.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(cisco3.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(cisco4.getId()));
+
+        assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
+        
+        assertEquals("we should have found 4 data links", 4, ifaces.size());
+
     }
 
     /**
@@ -157,13 +183,21 @@ public class Nms4005Test extends Nms4005NetworkBuilder implements InitializingBe
             @JUnitSnmpAgent(host="10.1.4.2", port=161, resource="classpath:linkd/nms4005/10.1.4.2-walk.txt")
     })
     public void testNms4005NetworkWithThreads() throws Exception {
-        final OnmsNode cisco1 = m_nodeDao.findByForeignId("linkd", "cisco1");
-        final OnmsNode cisco2 = m_nodeDao.findByForeignId("linkd", "cisco2");
-        final OnmsNode cisco3 = m_nodeDao.findByForeignId("linkd", "cisco3");
+    	m_nodeDao.save(getR1());
+    	m_nodeDao.save(getR2());
+    	m_nodeDao.save(getR3());
+    	m_nodeDao.save(getR4());
+
+        final OnmsNode cisco1 = m_nodeDao.findByForeignId("linkd", R1_NAME);
+        final OnmsNode cisco2 = m_nodeDao.findByForeignId("linkd", R2_NAME);
+        final OnmsNode cisco3 = m_nodeDao.findByForeignId("linkd", R3_NAME);
+        final OnmsNode cisco4 = m_nodeDao.findByForeignId("linkd", R4_NAME);
+
 
         assertTrue(m_linkd.scheduleNodeCollection(cisco1.getId()));
         assertTrue(m_linkd.scheduleNodeCollection(cisco2.getId()));
         assertTrue(m_linkd.scheduleNodeCollection(cisco3.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(cisco4.getId()));
 
         final int NUMBER_OF_THREADS = 20;
 
@@ -171,7 +205,7 @@ public class Nms4005Test extends Nms4005NetworkBuilder implements InitializingBe
         for (int i = 0; i < NUMBER_OF_THREADS; i++) {
             Thread thread = new Thread("NMS-4005-Test-Thread-" + i) {
                 public void run() {
-                    assertTrue(m_linkd.runSingleCollection(cisco1.getId()));
+                    assertTrue(m_linkd.runSingleSnmpCollection(cisco1.getId()));
                 }
             };
             thread.start();
@@ -184,7 +218,7 @@ public class Nms4005Test extends Nms4005NetworkBuilder implements InitializingBe
         for (int i = 0; i < NUMBER_OF_THREADS; i++) {
             Thread thread = new Thread("NMS-4005-Test-Thread-" + i) {
                 public void run() {
-                    assertTrue(m_linkd.runSingleCollection(cisco2.getId()));
+                    assertTrue(m_linkd.runSingleSnmpCollection(cisco2.getId()));
                 }
             };
             thread.start();
@@ -197,7 +231,20 @@ public class Nms4005Test extends Nms4005NetworkBuilder implements InitializingBe
         for (int i = 0; i < NUMBER_OF_THREADS; i++) {
             Thread thread = new Thread("NMS-4005-Test-Thread-" + i) {
                 public void run() {
-                    assertTrue(m_linkd.runSingleCollection(cisco3.getId()));
+                    assertTrue(m_linkd.runSingleSnmpCollection(cisco3.getId()));
+                }
+            };
+            thread.start();
+            waitForMe.add(thread);
+        }
+        for (Thread thread : waitForMe) {
+            thread.join();
+        }
+        waitForMe.clear();
+        for (int i = 0; i < NUMBER_OF_THREADS; i++) {
+            Thread thread = new Thread("NMS-4005-Test-Thread-" + i) {
+                public void run() {
+                    assertTrue(m_linkd.runSingleSnmpCollection(cisco4.getId()));
                 }
             };
             thread.start();
@@ -208,10 +255,12 @@ public class Nms4005Test extends Nms4005NetworkBuilder implements InitializingBe
         }
         waitForMe.clear();
 
+        assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
+
         final List<DataLinkInterface> ifaces = m_dataLinkInterfaceDao.findAll();
         for (final DataLinkInterface link: ifaces) {
             printLink(link);
         }
-        assertEquals("we should have found 3 data links", 3, ifaces.size());
+        assertEquals("we should have found 4 data links", 4, ifaces.size());
     }
 }

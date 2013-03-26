@@ -130,8 +130,10 @@ public class Nms4930Test extends Nms4930NetworkBuilder implements InitializingBe
         assertTrue(m_linkd.scheduleNodeCollection(cisco1.getId()));
         assertTrue(m_linkd.scheduleNodeCollection(cisco2.getId()));
 
-        assertTrue(m_linkd.runSingleCollection(cisco1.getId()));
-        assertTrue(m_linkd.runSingleCollection(cisco2.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(cisco1.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(cisco2.getId()));
+
+        assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
 
         final List<DataLinkInterface> ifaces = m_dataLinkInterfaceDao.findAll();
         for (final DataLinkInterface link: ifaces) {

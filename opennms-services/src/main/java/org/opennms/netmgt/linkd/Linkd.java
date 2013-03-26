@@ -528,22 +528,6 @@ public class Linkd extends AbstractServiceDaemon {
         return true;
     }
 
-    public boolean runSingleCollection(final int nodeId) {
-            final LinkableNode node = m_queryMgr.getSnmpNode(nodeId);
-
-            for (final SnmpCollection snmpColl : getSnmpCollections(nodeId,
-                                                                    node.getSnmpPrimaryIpAddr(),
-                                                                    node.getSysoid())) {
-                snmpColl.setScheduler(m_scheduler);
-                snmpColl.run();
-
-                final DiscoveryLink link = getDiscoveryLink(snmpColl.getPackageName());
-                link.setScheduler(m_scheduler);
-                link.run();
-            }
-            return true;
-    }
-
     public boolean runSingleSnmpCollection(final int nodeId) {
             final LinkableNode node = m_queryMgr.getSnmpNode(nodeId);
 

@@ -29,12 +29,14 @@
 package org.opennms.netmgt.linkd.nb;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.SnmpInterfaceDao;
 import org.opennms.netmgt.linkd.CdpInterface;
@@ -58,6 +60,8 @@ public abstract class LinkdNetworkBuilder {
 
     protected SnmpInterfaceDao m_snmpInterfaceDao;
 
+    protected IpInterfaceDao m_ipInterfaceDao;
+
     protected NodeDao m_nodeDao;
     
     NetworkBuilder m_networkBuilder;
@@ -68,6 +72,10 @@ public abstract class LinkdNetworkBuilder {
 
     protected void setSnmpInterfaceDao(SnmpInterfaceDao snmpInterfaceDao) {
         m_snmpInterfaceDao = snmpInterfaceDao;
+    }
+
+    protected void setIpInterfaceDao(IpInterfaceDao ipInterfaceDao) {
+        m_ipInterfaceDao = ipInterfaceDao;
     }
 
     NetworkBuilder getNetworkBuilder() {
@@ -273,6 +281,23 @@ public abstract class LinkdNetworkBuilder {
             System.out.println(nodeStringId+"_IF_IFALIAS_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfAlias()+"\");");            
             if (snmpinterface.getNetMask() != null && !snmpinterface.getNetMask().getHostAddress().equals("127.0.0.1"))
             System.out.println(nodeStringId+"_IF_NETMASK_MAP.put("+snmpinterface.getIfIndex()+", InetAddress.getByName(\""+snmpinterface.getNetMask().getHostAddress()+"\"));");
+    }
+    
+    protected final void printNode(String ipAddr, String prefix) {
+
+        List<OnmsIpInterface> ips = m_ipInterfaceDao.findByIpAddress(ipAddr);
+        assertTrue("Has only one ip interface", ips.size() == 1);
+
+        OnmsIpInterface ip = ips.get(0);
+
+        for (OnmsIpInterface ipinterface: ip.getNode().getIpInterfaces()) {
+            if (ipinterface.getIfIndex() != null )
+                printipInterface(prefix, ipinterface);
+        }
+
+        for (OnmsSnmpInterface snmpinterface: ip.getNode().getSnmpInterfaces()) {
+            printSnmpInterface(prefix, snmpinterface);
+        }
     }
     
 }
