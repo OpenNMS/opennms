@@ -469,6 +469,11 @@ public class ConfigTesterTest {
     }
 
 	@Test
+    public void testSyslogNorthbounderConfiguration() {
+        testConfigFile("syslog-northbounder-configuration.xml");
+    }
+
+	@Test
 	/**
 	 * FIXME: Database access.
 	 */
