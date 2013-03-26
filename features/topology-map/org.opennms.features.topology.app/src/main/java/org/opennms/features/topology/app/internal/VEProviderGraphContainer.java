@@ -233,11 +233,11 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 
     @Override
     public double getScale() {
-        return (Double) m_scaleProperty.getValue();
+        return m_scaleProperty.getValue();
     }
     
     @Override
-    public Property getScaleProperty() {
+    public Property<Double> getScaleProperty() {
         return m_scaleProperty;
     }
     

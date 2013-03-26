@@ -155,7 +155,7 @@ public abstract class GroupForm extends Form implements ClickListener {
                 setReadOnly(true);
                 saveGroup(getGroup());
             } else {
-                getWindow().showNotification("There are errors on the MIB Groups", Notification.Type.WARNING_MESSAGE);
+                Notification.show("There are errors on the MIB Groups", Notification.Type.WARNING_MESSAGE);
             }
         }
         if (source == cancel) {

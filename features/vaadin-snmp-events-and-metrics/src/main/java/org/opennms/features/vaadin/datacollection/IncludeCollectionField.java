@@ -41,6 +41,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Button.ClickEvent;
@@ -114,7 +115,7 @@ public class IncludeCollectionField extends CustomField<IncludeCollectionField.I
             public void buttonClick(ClickEvent event) {
                 final Object value = table.getValue();
                 if (value == null) {
-                    getApplication().getMainWindow().showNotification("Please select a IncludeCollection from the table.");
+                    Notification.show("Please select a IncludeCollection from the table.");
                     return;
                 }
                 IncludeCollectionWindow w = new IncludeCollectionWindow(dataCollectionConfigDao, container, (IncludeCollectionWrapper) value) {
@@ -199,7 +200,7 @@ public class IncludeCollectionField extends CustomField<IncludeCollectionField.I
     private void deleteHandler() {
         final Object itemId = table.getValue();
         if (itemId == null) {
-            getApplication().getMainWindow().showNotification("Please select a IncludeCollection from the table.");
+            Notification.show("Please select a IncludeCollection from the table.");
             return;
         }
         MessageBox mb = new MessageBox(getApplication().getMainWindow(),

@@ -39,6 +39,7 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.AbstractSelect.NewItemHandler;
@@ -193,7 +194,7 @@ public class PersistSelectorStrategyField extends CustomField<PersistenceSelecto
     private void deleteHandler() {
         final Object itemId = table.getValue();
         if (itemId == null) {
-            getApplication().getMainWindow().showNotification("Please select a Parameter from the table.");
+            Notification.show("Please select a Parameter from the table.");
         } else {
             MessageBox mb = new MessageBox(getApplication().getMainWindow(),
                     "Are you sure?",

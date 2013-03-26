@@ -39,6 +39,7 @@ import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.server.Resource;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.ListSelect;
+import com.vaadin.ui.Notification;
 
 public class SimpleViewContribution implements IViewContribution {
     
@@ -58,8 +59,7 @@ public class SimpleViewContribution implements IViewContribution {
             
             @Override
             public void valueChange(ValueChangeEvent event) {
-                widgetContext.getMainWindow().showNotification("" + event.getProperty());
-                
+                Notification.show("" + event.getProperty());
             }
         });
         

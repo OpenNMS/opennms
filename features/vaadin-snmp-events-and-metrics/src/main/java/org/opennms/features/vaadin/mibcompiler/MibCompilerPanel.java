@@ -246,7 +246,7 @@ public class MibCompilerPanel extends Panel {
                                     mibsContainer.removeItem(fileName);
                                     logger.info("MIB " + file + " has been successfully removed.");
                                 } else {
-                                    getApplication().getMainWindow().showNotification("Can't delete " + file);
+                                    Notification.show("Can't delete " + file);
                                 }
                             }
                         }
@@ -347,7 +347,7 @@ public class MibCompilerPanel extends Panel {
     private void showEventsWindow(final Logger logger, final String fileName, final String ueiBase) {
         final Events events =  mibParser.getEvents(ueiBase);
         if (events == null) {
-            getApplication().getMainWindow().showNotification("The MIB couldn't be processed for events because: " + mibParser.getFormattedErrors(), Notification.Type.ERROR_MESSAGE);                
+            Notification.show("The MIB couldn't be processed for events because: " + mibParser.getFormattedErrors(), Notification.Type.ERROR_MESSAGE);                
         } else {
             if (events.getEventCount() > 0) {
                 try {
@@ -356,10 +356,10 @@ public class MibCompilerPanel extends Panel {
                     final EventWindow w = new EventWindow(eventsDao, eventsProxy, eventsFileName, events, logger);
                     getApplication().getMainWindow().addWindow(w);
                 } catch (Throwable t) {
-                    getApplication().getMainWindow().showNotification(t.getMessage(), Notification.Type.ERROR_MESSAGE);
+                    Notification.show(t.getMessage(), Notification.Type.ERROR_MESSAGE);
                 }
             } else {
-                getApplication().getMainWindow().showNotification("The MIB doesn't contain any notification/trap", Notification.Type.WARNING_MESSAGE);
+                Notification.show("The MIB doesn't contain any notification/trap", Notification.Type.WARNING_MESSAGE);
             }
         }
     }
@@ -374,7 +374,7 @@ public class MibCompilerPanel extends Panel {
         if (parseMib(logger, new File(MIBS_COMPILED_DIR, fileName))) {
             final DatacollectionGroup dcGroup = mibParser.getDataCollection();
             if (dcGroup == null) {
-                getApplication().getMainWindow().showNotification("The MIB couldn't be processed for data collection because: " + mibParser.getFormattedErrors(), Notification.Type.ERROR_MESSAGE);
+                Notification.show("The MIB couldn't be processed for data collection because: " + mibParser.getFormattedErrors(), Notification.Type.ERROR_MESSAGE);
             } else {
                 if (dcGroup.getGroupCount() > 0) {
                     try {
@@ -382,10 +382,10 @@ public class MibCompilerPanel extends Panel {
                         final DataCollectionWindow w = new DataCollectionWindow(mibParser, dataCollectionDao, dataFileName, dcGroup, logger);
                         getApplication().getMainWindow().addWindow(w);
                     } catch (Throwable t) {
-                        getApplication().getMainWindow().showNotification(t.getMessage(), Notification.Type.ERROR_MESSAGE);
+                        Notification.show(t.getMessage(), Notification.Type.ERROR_MESSAGE);
                     }
                 } else {
-                    getApplication().getMainWindow().showNotification("The MIB doesn't contain any metric for data collection.", Notification.Type.WARNING_MESSAGE);
+                    Notification.show("The MIB doesn't contain any metric for data collection.", Notification.Type.WARNING_MESSAGE);
                 }
             }
         }

@@ -101,7 +101,7 @@ public class DataCollectionGroupAdminPanel extends VerticalLayout {
                     addDataCollectionGroupPanel(dataCollectionDao, file, dcGroup);
                 } catch (Exception e) {
                     LogUtils.errorf(this, e, "an error ocurred while parsing the data collection configuration %s: %s", file, e.getMessage());
-                    getApplication().getMainWindow().showNotification("Can't parse file " + file + " because " + e.getMessage());
+                    Notification.show("Can't parse file " + file + " because " + e.getMessage());
                 }
             }
         });
@@ -131,7 +131,7 @@ public class DataCollectionGroupAdminPanel extends VerticalLayout {
             @Override
             public void buttonClick(ClickEvent event) {
                 if (dcGroupSource.getValue() == null) {
-                    getApplication().getMainWindow().showNotification("Please select a data collection group configuration file.");
+                    Notification.show("Please select a data collection group configuration file.");
                     return;
                 }
                 final File file = (File) dcGroupSource.getValue();
@@ -170,10 +170,10 @@ public class DataCollectionGroupAdminPanel extends VerticalLayout {
                                     removeDataCollectionGroupPanel();
                                 } catch (Exception e) {
                                     LogUtils.errorf(this, e, "an error ocurred while saving the data collection configuration: %s", e.getMessage());
-                                    getApplication().getMainWindow().showNotification("Can't save data collection configuration. " + e.getMessage(), Notification.Type.ERROR_MESSAGE);
+                                    Notification.show("Can't save data collection configuration. " + e.getMessage(), Notification.Type.ERROR_MESSAGE);
                                 }
                             } else {
-                                getApplication().getMainWindow().showNotification("Cannot delete file " + file, Notification.Type.WARNING_MESSAGE);
+                                Notification.show("Cannot delete file " + file, Notification.Type.WARNING_MESSAGE);
                             }
                         }
                     }
@@ -201,12 +201,12 @@ public class DataCollectionGroupAdminPanel extends VerticalLayout {
             }
             @Override
             public void success() {
-                getApplication().getMainWindow().showNotification("Data collection group file " + file.getName() + " has been successfuly saved.");
+                Notification.show("Data collection group file " + file.getName() + " has been successfuly saved.");
                 this.setVisible(false);
             }
             @Override
             public void failure() {
-                getApplication().getMainWindow().showNotification("Data collection group file " + file.getName() + " cannot be saved.", Notification.Type.ERROR_MESSAGE);
+                Notification.show("Data collection group file " + file.getName() + " cannot be saved.", Notification.Type.ERROR_MESSAGE);
             }
         };
         panel.setCaption("Data Collection from " + file.getName());

@@ -42,16 +42,18 @@ import org.opennms.features.topology.api.CheckedOperation;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.api.OperationContext.DisplayLocation;
 import org.opennms.features.topology.api.SelectionManager;
+import org.opennms.features.topology.api.OperationContext.DisplayLocation;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.TopoContextMenu.TopoContextMenuItem;
 import org.vaadin.peter.contextmenu.ContextMenu;
-import org.vaadin.peter.contextmenu.ContextMenu.ClickEvent;
+import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItemClickEvent;
+import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItemClickListener;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 
 import com.vaadin.ui.LegacyWindow;
 import com.vaadin.ui.MenuBar;
+import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.MenuBar.MenuItem;
 
 public class CommandManager {
@@ -94,7 +96,7 @@ public class CommandManager {
 
 	}
 	
-	private class ContextMenuListener implements ContextMenu.ClickListener {
+	private class ContextMenuListener implements ContextMenu.ContextMenuItemClickListener {
 		
 		private final OperationContext m_opContext;
 		
@@ -103,15 +105,14 @@ public class CommandManager {
 		}
 
 		@Override
-		public void contextItemClick(ClickEvent event) {
-			Operation operation = m_contextMenuItemsToOperationMap.get(event.getClickedItem());
+		public void contextMenuItemClicked(ContextMenuItemClickEvent event) {
+			Operation operation = m_contextMenuItemsToOperationMap.get(event.getSource());
 			//TODO: Do some implementation here for execute
 			if (operation != null) {
 				TopoContextMenu source = (TopoContextMenu)event.getSource();
 				operation.execute(asVertexList(source.getTarget()), m_opContext);
 			}
 		}
-		
 	}
 
 	private final List<Command> m_commandList = new CopyOnWriteArrayList<Command>();
@@ -183,7 +184,7 @@ public class CommandManager {
 			}
 		}
 		TopoContextMenu contextMenu = contextMenuBuilder.get();
-		contextMenu.addListener(new ContextMenuListener(opContext));
+		contextMenu.addItemClickListener(new ContextMenuListener(opContext));
 		
 		updateContextCommandToOperationMap(contextMenu.getItems());
 		return contextMenu;

@@ -81,6 +81,7 @@ public class AuthWindow extends Window implements Button.ClickListener{
      * @param p - The port number to connect to
      */
     public AuthWindow(String host, int port) {
+        super("Login");
         m_host = host;
         m_port = port;
         if ("".equals(m_host) || m_port == 0) {
@@ -88,7 +89,6 @@ public class AuthWindow extends Window implements Button.ClickListener{
         }
         setCaption("Auth Window");
         setModal(true);
-        setCaption("Login");
         setWidth("260px");
         setHeight("190px");
         if (showOptions) setHeight("260px");

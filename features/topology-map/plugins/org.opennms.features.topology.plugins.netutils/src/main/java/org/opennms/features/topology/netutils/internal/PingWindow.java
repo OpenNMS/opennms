@@ -256,7 +256,6 @@ public class PingWindow extends Window{
         try {
             validInput = validateInput();
         } catch (NumberFormatException e) {
-
             Notification.show("Inputs must be integers", Notification.Type.WARNING_MESSAGE);
             return null;
         }

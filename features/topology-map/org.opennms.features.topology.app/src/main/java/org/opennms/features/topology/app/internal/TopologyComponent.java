@@ -39,13 +39,13 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import org.opennms.features.topology.api.BoundingBox;
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
-import org.opennms.features.topology.api.GraphContainer.ChangeListener;
 import org.opennms.features.topology.api.MapViewManager;
 import org.opennms.features.topology.api.MapViewManagerListener;
 import org.opennms.features.topology.api.Point;
 import org.opennms.features.topology.api.SelectionContext;
 import org.opennms.features.topology.api.SelectionListener;
 import org.opennms.features.topology.api.SelectionManager;
+import org.opennms.features.topology.api.GraphContainer.ChangeListener;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.GraphVisitor;
 import org.opennms.features.topology.api.topo.Vertex;
@@ -58,6 +58,7 @@ import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.server.PaintException;
 import com.vaadin.server.PaintTarget;
 import com.vaadin.ui.AbstractComponent;
+import com.vaadin.ui.Notification;
 
 
 public class TopologyComponent extends AbstractComponent implements ChangeListener, ValueChangeListener, MapViewManagerListener {
@@ -101,12 +102,12 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
 		setScaleDataSource(m_graphContainer.getScaleProperty());
 	}
 	
-	private void setScaleDataSource(Property scale) {
+	private void setScaleDataSource(Property<Double> scale) {
         // Listens the new data source if possible
         if (scale != null
                 && Property.ValueChangeNotifier.class
                         .isAssignableFrom(scale.getClass())) {
-            ((Property.ValueChangeNotifier) scale).addListener(this);
+            ((Property.ValueChangeNotifier) scale).addValueChangeListener(this);
         }
     }
 	
@@ -115,32 +116,32 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
 	    return (TopologyComponentState) super.getState();
 	}
 	
-    @Override
-    public void paintContent(PaintTarget target) throws PaintException {
-        super.paintContent(target);
-        target.addAttribute("activeTool", m_activeTool);
-        
-        BoundingBox boundingBox = getBoundingBox();
-        //System.out.println(m_viewManager);
-        target.addAttribute("boundX", boundingBox.getX());
-        target.addAttribute("boundY", boundingBox.getY());
-        target.addAttribute("boundWidth", boundingBox.getWidth());
-        target.addAttribute("boundHeight", boundingBox.getHeight());
-        
-		Graph graph = getGraph();
-		//Set Status provider from the graph container because I may move it later
-		GraphVisitor painter = new GraphPainter(m_graphContainer, graph.getLayout(), m_iconRepoManager, m_selectionManager, target, m_graphContainer.getStatusProvider());
-
-		try {
-			graph.visit(painter);
-		} catch(PaintException e) {
-			throw e;
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-        
-        
-    }
+//    @Override
+//    public void paintContent(PaintTarget target) throws PaintException {
+//        super.paintContent(target);
+//        target.addAttribute("activeTool", m_activeTool);
+//        
+//        BoundingBox boundingBox = getBoundingBox();
+//        //System.out.println(m_viewManager);
+//        target.addAttribute("boundX", boundingBox.getX());
+//        target.addAttribute("boundY", boundingBox.getY());
+//        target.addAttribute("boundWidth", boundingBox.getWidth());
+//        target.addAttribute("boundHeight", boundingBox.getHeight());
+//        
+//		Graph graph = getGraph();
+//		//Set Status provider from the graph container because I may move it later
+//		GraphVisitor painter = new GraphPainter(m_graphContainer, graph.getLayout(), m_iconRepoManager, m_selectionManager, target, m_graphContainer.getStatusProvider());
+//
+//		try {
+//			graph.visit(painter);
+//		} catch(PaintException e) {
+//			throw e;
+//		} catch (Exception e) {
+//			throw new RuntimeException(e);
+//		}
+//        
+//        
+//    }
 
     private BoundingBox getBoundingBox() {
         
@@ -151,116 +152,116 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
      * Main vaadin method for receiving communication from the Front End
      * 
      */
-	@SuppressWarnings("unchecked")
-	@Override
-    public void changeVariables(Object source, Map<String, Object> variables) {
-        if(variables.containsKey("graph")) {
-            String graph = (String) variables.get("graph");
-            getApplication().getMainWindow().showNotification("" + graph);
-            
-        }
-        
-        if(variables.containsKey("clickedEdge")) {
-            String edgeId = (String) variables.get("clickedEdge");
-            selectEdge(edgeId);
-        }
-        
-        if(variables.containsKey("clickedBackground")) {
-            m_selectionManager.deselectAll();
-        }
-        
-        if(variables.containsKey("clickedVertex")) {
-            String vertexKey = (String) variables.get("clickedVertex");
-            if((variables.containsKey("shiftKeyPressed") && (Boolean) variables.get("shiftKeyPressed") == true) 
-                    || variables.containsKey("metaKeyPressed") && (Boolean) variables.get("metaKeyPressed") == true
-                    || (variables.containsKey("ctrlKeyPressed") && (Boolean) variables.get("ctrlKeyPressed") == true  && !(((String)variables.get("platform")).indexOf("Mac") > 0)  )) {
-        	    addVerticesToSelection(vertexKey);
-        	}else {
-        	    selectVertices(vertexKey);
-        	}
-            
-        }
-        
-        if(variables.containsKey("marqueeSelection")) {
-            String[] vertexKeys = (String[]) variables.get("marqueeSelection");
-            if(variables.containsKey("shiftKeyPressed") && (Boolean) variables.get("shiftKeyPressed") == true) {
-            	addVerticesToSelection(vertexKeys);
-            } else {
-            	selectVertices(vertexKeys);
-            }
-            
-        }
-        
-        if(variables.containsKey("updateVertices")) {
-            String[] vertices = (String[]) variables.get("updateVertices");
-            for(String vUpdate : vertices) {
-                updateVertex(vUpdate);
-            }
-            
-            fireVertexUpdated();
-            if(vertices.length > 0) {
-                requestRepaint();
-            }
-            
-        }
-        
-        if(variables.containsKey("scrollWheel")) {
-            Map<String, Object> props = (Map<String, Object>) variables.get("scrollWheel");
-            int x = (Integer) props.get("x");
-            int y = (Integer) props.get("y");
-            double scrollVal = (Double) props.get("scrollVal");
-            getViewManager().zoomToPoint(getViewManager().getScale() + scrollVal, new Point(x, y));
-        }
-        
-        if(variables.containsKey("clientCenterPoint")) {
-            Map<String, Object> props = (Map<String, Object>) variables.get("clientCenterPoint");
-            int x = (Integer) props.get("x");
-            int y = (Integer) props.get("y"); 
-            getViewManager().setCenter(new Point(x, y));
-            
-        }
-        
-        if(variables.containsKey("contextMenu")) {
-            Map<String, Object> props = (Map<String, Object>) variables.get("contextMenu");
-            
-            
-            int x = (Integer) props.get("x");
-            int y = (Integer) props.get("y");
-            
-            String type = (String) props.get("type");
-
-            Object target = null;
-            if (type.toLowerCase().equals("vertex")) {
-            	String targetKey = (String)props.get("target");
-            	target = getGraph().getVertexByKey(targetKey);
-            } else if (type.toLowerCase().equals("edge")) {
-            	String targetKey = (String)props.get("target");
-            	target = getGraph().getEdgeByKey(targetKey);
-            }
-
-            m_contextMenuHandler.show(target, x, y);
-        }
-        
-        if(variables.containsKey("mapPhysicalBounds")) {
-            Map<String, Object> bounds = (Map<String, Object>) variables.get("mapPhysicalBounds");
-            Integer width = (Integer)bounds.get("width");
-            Integer height = (Integer)bounds.get("height");
-            
-            getViewManager().setViewPort(width, height);
-            
-        }
-        
-        if(variables.containsKey("doubleClick")) {
-            Map<String, Object> props = (Map<String, Object>) variables.get("doubleClick");
-            int x = (Integer) props.get("x");
-            int y = (Integer) props.get("y");
-            
-            double scale = getViewManager().getScale() + 0.25;
-            getViewManager().zoomToPoint(scale, new Point(x, y));
-        }
-        
-        updateMenuItems();
-    }
+//	@SuppressWarnings("unchecked")
+//	@Override
+//    public void changeVariables(Object source, Map<String, Object> variables) {
+//        if(variables.containsKey("graph")) {
+//            String graph = (String) variables.get("graph");
+//            Notification.show("" + graph);
+//            
+//        }
+//        
+//        if(variables.containsKey("clickedEdge")) {
+//            String edgeId = (String) variables.get("clickedEdge");
+//            selectEdge(edgeId);
+//        }
+//        
+//        if(variables.containsKey("clickedBackground")) {
+//            m_selectionManager.deselectAll();
+//        }
+//        
+//        if(variables.containsKey("clickedVertex")) {
+//            String vertexKey = (String) variables.get("clickedVertex");
+//            if((variables.containsKey("shiftKeyPressed") && (Boolean) variables.get("shiftKeyPressed") == true) 
+//                    || variables.containsKey("metaKeyPressed") && (Boolean) variables.get("metaKeyPressed") == true
+//                    || (variables.containsKey("ctrlKeyPressed") && (Boolean) variables.get("ctrlKeyPressed") == true  && !(((String)variables.get("platform")).indexOf("Mac") > 0)  )) {
+//        	    addVerticesToSelection(vertexKey);
+//        	}else {
+//        	    selectVertices(vertexKey);
+//        	}
+//            
+//        }
+//        
+//        if(variables.containsKey("marqueeSelection")) {
+//            String[] vertexKeys = (String[]) variables.get("marqueeSelection");
+//            if(variables.containsKey("shiftKeyPressed") && (Boolean) variables.get("shiftKeyPressed") == true) {
+//            	addVerticesToSelection(vertexKeys);
+//            } else {
+//            	selectVertices(vertexKeys);
+//            }
+//            
+//        }
+//        
+//        if(variables.containsKey("updateVertices")) {
+//            String[] vertices = (String[]) variables.get("updateVertices");
+//            for(String vUpdate : vertices) {
+//                updateVertex(vUpdate);
+//            }
+//            
+//            fireVertexUpdated();
+//            if(vertices.length > 0) {
+//                requestRepaint();
+//            }
+//            
+//        }
+//        
+//        if(variables.containsKey("scrollWheel")) {
+//            Map<String, Object> props = (Map<String, Object>) variables.get("scrollWheel");
+//            int x = (Integer) props.get("x");
+//            int y = (Integer) props.get("y");
+//            double scrollVal = (Double) props.get("scrollVal");
+//            getViewManager().zoomToPoint(getViewManager().getScale() + scrollVal, new Point(x, y));
+//        }
+//        
+//        if(variables.containsKey("clientCenterPoint")) {
+//            Map<String, Object> props = (Map<String, Object>) variables.get("clientCenterPoint");
+//            int x = (Integer) props.get("x");
+//            int y = (Integer) props.get("y"); 
+//            getViewManager().setCenter(new Point(x, y));
+//            
+//        }
+//        
+//        if(variables.containsKey("contextMenu")) {
+//            Map<String, Object> props = (Map<String, Object>) variables.get("contextMenu");
+//            
+//            
+//            int x = (Integer) props.get("x");
+//            int y = (Integer) props.get("y");
+//            
+//            String type = (String) props.get("type");
+//
+//            Object target = null;
+//            if (type.toLowerCase().equals("vertex")) {
+//            	String targetKey = (String)props.get("target");
+//            	target = getGraph().getVertexByKey(targetKey);
+//            } else if (type.toLowerCase().equals("edge")) {
+//            	String targetKey = (String)props.get("target");
+//            	target = getGraph().getEdgeByKey(targetKey);
+//            }
+//
+//            m_contextMenuHandler.show(target, x, y);
+//        }
+//        
+//        if(variables.containsKey("mapPhysicalBounds")) {
+//            Map<String, Object> bounds = (Map<String, Object>) variables.get("mapPhysicalBounds");
+//            Integer width = (Integer)bounds.get("width");
+//            Integer height = (Integer)bounds.get("height");
+//            
+//            getViewManager().setViewPort(width, height);
+//            
+//        }
+//        
+//        if(variables.containsKey("doubleClick")) {
+//            Map<String, Object> props = (Map<String, Object>) variables.get("doubleClick");
+//            int x = (Integer) props.get("x");
+//            int y = (Integer) props.get("y");
+//            
+//            double scale = getViewManager().getScale() + 0.25;
+//            getViewManager().zoomToPoint(scale, new Point(x, y));
+//        }
+//        
+//        updateMenuItems();
+//    }
 
 	private void selectVertices(String... vertexKeys) {
 		List<VertexRef> vertexRefs = new ArrayList<VertexRef>(vertexKeys.length);

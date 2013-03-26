@@ -30,7 +30,6 @@ package org.opennms.features.vaadin.events;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.opennms.netmgt.xml.eventconf.Varbind;
 import org.opennms.netmgt.xml.eventconf.Varbindsdecode;
 
 import com.vaadin.data.Container;
@@ -44,6 +43,7 @@ import com.vaadin.ui.CustomField;
 import com.vaadin.ui.DefaultFieldFactory;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
@@ -190,7 +190,7 @@ public class VarbindsDecodeField extends CustomField<VarbindsDecodeField.Varbind
     private void deleteHandler() {
         final Object itemId = table.getValue();
         if (itemId == null) {
-            getApplication().getMainWindow().showNotification("Please select a Varbind Decode from the table.");
+            Notification.show("Please select a Varbind Decode from the table.");
         } else {
             MessageBox mb = new MessageBox(getApplication().getMainWindow(),
                                            "Are you sure?",

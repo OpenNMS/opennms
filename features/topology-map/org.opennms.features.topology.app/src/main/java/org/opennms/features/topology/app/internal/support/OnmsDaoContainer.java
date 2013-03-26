@@ -103,7 +103,7 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Sele
 	}
 
 	@Override
-	public Property getContainerProperty(Object itemId, Object propertyId) {
+	public Property<?> getContainerProperty(Object itemId, Object propertyId) {
 		Item item = getItem(itemId);
 		return item.getItemProperty(propertyId);
 	}
@@ -303,11 +303,21 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Sele
 
 	@Override
 	public void addListener(ItemSetChangeListener listener) {
-		m_itemSetChangeListeners.add(listener);
+		addItemSetChangeListener(listener);
 	}
 
 	@Override
 	public void removeListener(ItemSetChangeListener listener) {
+		removeItemSetChangeListener(listener);
+	}
+
+	@Override
+	public void addItemSetChangeListener(ItemSetChangeListener listener) {
+		m_itemSetChangeListeners.add(listener);
+	}
+
+	@Override
+	public void removeItemSetChangeListener(ItemSetChangeListener listener) {
 		m_itemSetChangeListeners.remove(listener);
 	}
 

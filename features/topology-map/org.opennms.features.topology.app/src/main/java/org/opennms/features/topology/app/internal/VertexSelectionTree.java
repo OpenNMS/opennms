@@ -24,7 +24,7 @@ public class VertexSelectionTree extends Tree implements SelectionListener {
         m_graphContainer = graphContainer;
         m_selectionManager = selectionManager;
         
-        this.addListener(new ValueChangeListener() {
+        this.addValueChangeListener(new ValueChangeListener() {
             
             @Override
             public void valueChange(com.vaadin.data.Property.ValueChangeEvent event) {
