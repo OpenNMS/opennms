@@ -231,7 +231,7 @@ public class TracerouteWindow extends Window{
 	    try {
 	        validInput = validateInput();
 	    } catch (Exception e) {
-	        getApplication().getMainWindow().showNotification(e.getMessage(), Notification.Type.WARNING_MESSAGE);
+	        Notification.show(e.getMessage(), Notification.Type.WARNING_MESSAGE);
 	        return null;
 	    }
 	    if (validInput) {
@@ -248,11 +248,11 @@ public class TracerouteWindow extends Window{
 	        try {
 	            return new URL(baseUrl, options.toString());
 	        } catch (final MalformedURLException e) {
-	            getApplication().getMainWindow().showNotification("Could not build URL: " + options.toString(), Notification.Type.WARNING_MESSAGE);
+	            Notification.show("Could not build URL: " + options.toString(), Notification.Type.WARNING_MESSAGE);
 	            return null;
 	        }
 	    } else {
-	        getApplication().getMainWindow().showNotification("Invalid IP addresss", Notification.Type.WARNING_MESSAGE);
+	        Notification.show("Invalid IP addresss", Notification.Type.WARNING_MESSAGE);
 	        return null;
 	    }
 	}

@@ -40,6 +40,7 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.ListSelect;
+import com.vaadin.ui.Notification;
 
 /**
  * The Collect Field.
@@ -156,7 +157,7 @@ public class CollectField extends CustomField<Collect> implements Button.ClickLi
     private void deleteHandler() {
         final Object itemId = listField.getValue();
         if (itemId == null) {
-            getApplication().getMainWindow().showNotification("Please select a MIB Group from the table.");
+            Notification.show("Please select a MIB Group from the table.");
         } else {
             listField.removeItem(itemId);
         }

@@ -43,6 +43,7 @@ import com.vaadin.ui.CustomField;
 import com.vaadin.ui.DefaultFieldFactory;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
@@ -186,7 +187,7 @@ public class MaskVarbindField extends CustomField<MaskVarbindField.VarbindArrayL
     private void deleteHandler() {
         final Object itemId = table.getValue();
         if (itemId == null) {
-            getApplication().getMainWindow().showNotification("Please select a Mask Varbind from the table.");
+            Notification.show("Please select a Mask Varbind from the table.");
         } else {
             MessageBox mb = new MessageBox(getApplication().getMainWindow(),
                                            "Are you sure?",

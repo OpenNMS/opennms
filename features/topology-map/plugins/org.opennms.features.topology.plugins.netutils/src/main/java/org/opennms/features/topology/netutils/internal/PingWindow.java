@@ -255,7 +255,7 @@ public class PingWindow extends Window{
         try {
             validInput = validateInput();
         } catch (NumberFormatException e) {
-            getApplication().getMainWindow().showNotification("Inputs must be integers", Notification.Type.WARNING_MESSAGE);
+            Notification.show("Inputs must be integers", Notification.Type.WARNING_MESSAGE);
             return null;
         }
         if (validInput) {
@@ -273,11 +273,11 @@ public class PingWindow extends Window{
             try {
                 return new URL(baseUrl, options.toString());
             } catch (final MalformedURLException e) {
-                getApplication().getMainWindow().showNotification("Could not build URL: " + options.toString(), Notification.Type.WARNING_MESSAGE);
+                Notification.show("Could not build URL: " + options.toString(), Notification.Type.WARNING_MESSAGE);
                 return null;
             }
         } else {
-            getApplication().getMainWindow().showNotification("Inputs must be between 0 and 9999", Notification.Type.WARNING_MESSAGE);
+            Notification.show("Inputs must be between 0 and 9999", Notification.Type.WARNING_MESSAGE);
             return null;
         }
     }

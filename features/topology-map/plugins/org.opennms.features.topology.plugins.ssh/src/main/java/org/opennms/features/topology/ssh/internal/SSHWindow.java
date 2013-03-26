@@ -56,7 +56,7 @@ public class SSHWindow extends LegacyWindow {
 	 * @param height The height of the window
 	 */
 	public SSHWindow(ClientSession session, int width, int height) {
-		setCaption("SSH");
+		super("SSH");
 		setImmediate(true);
 		setResizeLazy(false);
 		setWidth("" + width + "px");

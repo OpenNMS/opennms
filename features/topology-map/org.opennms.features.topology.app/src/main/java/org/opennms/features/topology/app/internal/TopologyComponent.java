@@ -39,13 +39,13 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import org.opennms.features.topology.api.BoundingBox;
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
-import org.opennms.features.topology.api.GraphContainer.ChangeListener;
 import org.opennms.features.topology.api.MapViewManager;
 import org.opennms.features.topology.api.MapViewManagerListener;
 import org.opennms.features.topology.api.Point;
 import org.opennms.features.topology.api.SelectionContext;
 import org.opennms.features.topology.api.SelectionListener;
 import org.opennms.features.topology.api.SelectionManager;
+import org.opennms.features.topology.api.GraphContainer.ChangeListener;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.GraphVisitor;
 import org.opennms.features.topology.api.topo.Vertex;
@@ -59,6 +59,7 @@ import com.vaadin.server.PaintException;
 import com.vaadin.server.PaintTarget;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.LegacyComponent;
+import com.vaadin.ui.Notification;
 
 
 public class TopologyComponent extends AbstractComponent implements ChangeListener, ValueChangeListener, MapViewManagerListener, LegacyComponent {
@@ -152,7 +153,7 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
     public void changeVariables(Object source, Map<String, Object> variables) {
         if(variables.containsKey("graph")) {
             String graph = (String) variables.get("graph");
-            getApplication().getMainWindow().showNotification("" + graph);
+            Notification.show("" + graph);
             
         }
         

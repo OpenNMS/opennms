@@ -37,10 +37,12 @@ import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.topo.VertexRef;
 
+import com.vaadin.ui.Notification;
+
 public class ExampleOperation implements Operation {
 
     public Undoer execute(List<VertexRef> targets, OperationContext operationContext) {
-        operationContext.getMainWindow().showNotification("This is an Example Operation, there isn't much to it");
+        Notification.show("This is an Example Operation, there isn't much to it");
         return null;
     }
 

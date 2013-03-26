@@ -116,7 +116,7 @@ public class FileEditorWindow extends Window implements Button.ClickListener {
     public void buttonClick(ClickEvent event) {
         if (event.getButton().equals(save)) {
             if (editor.isReadOnly()) {
-                showNotification("Unsupported action for readOnly viewer.", Notification.Type.WARNING_MESSAGE);
+                Notification.show("Unsupported action for readOnly viewer.", Notification.Type.WARNING_MESSAGE);
             } else {
                 editor.commit();
                 logger.info("The file " + file + " has been changed.");

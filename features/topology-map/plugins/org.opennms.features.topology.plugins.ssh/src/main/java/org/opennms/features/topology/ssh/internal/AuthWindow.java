@@ -82,6 +82,7 @@ public class AuthWindow extends LegacyWindow implements Button.ClickListener{
      * @param p - The port number to connect to
      */
     public AuthWindow(String host, int port) {
+        super("Login");
         m_host = host;
         m_port = port;
         if ("".equals(m_host) || m_port == 0) {
@@ -89,7 +90,6 @@ public class AuthWindow extends LegacyWindow implements Button.ClickListener{
         }
         setName("Auth Window");
         setModal(true);
-        setCaption("Login");
         setWidth("260px");
         setHeight("190px");
         if (showOptions) setHeight("260px");
@@ -182,12 +182,12 @@ public class AuthWindow extends LegacyWindow implements Button.ClickListener{
                 validInput = validateInput();
                 if (!validInput) {
                     testString = "Port must be between 1 and 65535";
-                    getApplication().getMainWindow().showNotification("Port must be between 1 and 65535", Notification.Type.WARNING_MESSAGE);
+                    Notification.show("Port must be between 1 and 65535", Notification.Type.WARNING_MESSAGE);
                 }
             } else validInput = true;
         } catch (NumberFormatException e) {
             testString = "Port must be an integer";
-            getApplication().getMainWindow().showNotification("Port must be an integer", Notification.Type.WARNING_MESSAGE);
+            Notification.show("Port must be an integer", Notification.Type.WARNING_MESSAGE);
         }
         if (validInput) {
             try {
@@ -201,14 +201,14 @@ public class AuthWindow extends LegacyWindow implements Button.ClickListener{
                     }
                     if ((ret & ClientSession.CLOSED) != 0) {
                         testString = "Failed to log in";
-                        getApplication().getMainWindow().showNotification("Failed to log in", Notification.Type.WARNING_MESSAGE);
+                        Notification.show("Failed to log in", Notification.Type.WARNING_MESSAGE);
                         return;
                     }
                     showSSHWindow();
                 } 
             } catch (Exception e) {
                 testString = "Failed to connect to host";
-                getApplication().getMainWindow().showNotification("Failed to connect to host", Notification.Type.WARNING_MESSAGE);
+                Notification.show("Failed to connect to host", Notification.Type.WARNING_MESSAGE);
             }
         }
     }
