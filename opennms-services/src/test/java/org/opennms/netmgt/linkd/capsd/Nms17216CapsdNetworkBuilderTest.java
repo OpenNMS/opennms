@@ -31,7 +31,6 @@ package org.opennms.netmgt.linkd.capsd;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Properties;
 
 import org.exolab.castor.xml.MarshalException;
@@ -48,8 +47,6 @@ import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.capsd.Capsd;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.linkd.nb.Nms17216NetworkBuilder;
-import org.opennms.netmgt.model.OnmsIpInterface;
-import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -98,329 +95,48 @@ public class Nms17216CapsdNetworkBuilderTest extends Nms17216NetworkBuilder impl
         Properties p = new Properties();
         p.setProperty("log4j.logger.org.hibernate.SQL", "WARN");
 
+        super.setIpInterfaceDao(m_interfaceDao);
         MockLogAppender.setupLogging(p);
-        assertTrue("Capsd must not be null", m_capsd != null);
-//        assertTrue("Linkd must not be null", m_linkd != null);
-        
+        assertTrue("Capsd must not be null", m_capsd != null);        
     }
 
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=ROUTER1_IP, port=161, resource="classpath:linkd/nms17216/router1-walk.txt")
-    })
-    @Transactional
-    public final void testRouter1() throws MarshalException, ValidationException, IOException {
-        m_capsd.init();
-        m_capsd.start();
-        m_capsd.scanSuspectInterface(ROUTER1_IP);
-        
-
-        List<OnmsIpInterface> ips = m_interfaceDao.findByIpAddress(ROUTER1_IP);
-        assertTrue("Has only one ip interface", ips.size() == 1);
-
-        OnmsIpInterface ip = ips.get(0);
-
-        for (OnmsIpInterface ipinterface: ip.getNode().getIpInterfaces()) {
-            if (ipinterface.getIfIndex() != null )
-                System.out.println("ROUTER1_IP_IF_MAP.put(InetAddress.getByName(\""+ipinterface.getIpHostName()+"\"), "+ipinterface.getIfIndex()+");");
-        }
-
-        for (OnmsSnmpInterface snmpinterface: ip.getNode().getSnmpInterfaces()) {
-            if ( snmpinterface.getIfName() != null)
-            System.out.println("ROUTER1_IF_IFNAME_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfName()+"\");");
-            if (snmpinterface.getIfDescr() != null)
-            System.out.println("ROUTER1_IF_IFDESCR_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfDescr()+"\");");
-            if (snmpinterface.getPhysAddr() != null)
-            System.out.println("ROUTER1_IF_MAC_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getPhysAddr()+"\");");            
-            if (snmpinterface.getIfAlias() != null)
-            System.out.println("ROUTER1_IF_IFALIAS_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfAlias()+"\");");            
-        }
-        
-        m_capsd.stop();
-
-        
-    }
-
-    @Test
-    @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=ROUTER2_IP, port=161, resource="classpath:linkd/nms17216/router2-walk.txt")
-    })
-    @Transactional
-    public final void testRouter2() throws MarshalException, ValidationException, IOException {
-        m_capsd.init();
-        m_capsd.start();
-        m_capsd.scanSuspectInterface(ROUTER2_IP);
-        
-
-        List<OnmsIpInterface> ips = m_interfaceDao.findByIpAddress(ROUTER2_IP);
-        assertTrue("Has only one ip interface", ips.size() == 1);
-
-        OnmsIpInterface ip = ips.get(0);
-
-        for (OnmsIpInterface ipinterface: ip.getNode().getIpInterfaces()) {
-            if (ipinterface.getIfIndex() != null )
-                System.out.println("ROUTER2_IP_IF_MAP.put(InetAddress.getByName(\""+ipinterface.getIpHostName()+"\"), "+ipinterface.getIfIndex()+");");
-        }
-
-        for (OnmsSnmpInterface snmpinterface: ip.getNode().getSnmpInterfaces()) {
-            if ( snmpinterface.getIfName() != null)
-            System.out.println("ROUTER2_IF_IFNAME_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfName()+"\");");
-            if (snmpinterface.getIfDescr() != null)
-            System.out.println("ROUTER2_IF_IFDESCR_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfDescr()+"\");");
-            if (snmpinterface.getPhysAddr() != null)
-            System.out.println("ROUTER2_IF_MAC_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getPhysAddr()+"\");");            
-            if (snmpinterface.getIfAlias() != null)
-            System.out.println("ROUTER2_IF_IFALIAS_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfAlias()+"\");");            
-        }
-        
-        m_capsd.stop();
-    }
-    
-    @Test
-    @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=ROUTER3_IP, port=161, resource="classpath:linkd/nms17216/router3-walk.txt")
-    })
-    @Transactional
-    public final void testRouter3() throws MarshalException, ValidationException, IOException {
-        m_capsd.init();
-        m_capsd.start();
-        m_capsd.scanSuspectInterface(ROUTER3_IP);
-        
-
-        List<OnmsIpInterface> ips = m_interfaceDao.findByIpAddress(ROUTER3_IP);
-        assertTrue("Has only one ip interface", ips.size() == 1);
-
-        OnmsIpInterface ip = ips.get(0);
-
-        for (OnmsIpInterface ipinterface: ip.getNode().getIpInterfaces()) {
-            if (ipinterface.getIfIndex() != null )
-                System.out.println("ROUTER3_IP_IF_MAP.put(InetAddress.getByName(\""+ipinterface.getIpHostName()+"\"), "+ipinterface.getIfIndex()+");");
-        }
-
-        for (OnmsSnmpInterface snmpinterface: ip.getNode().getSnmpInterfaces()) {
-            if ( snmpinterface.getIfName() != null)
-            System.out.println("ROUTER3_IF_IFNAME_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfName()+"\");");
-            if (snmpinterface.getIfDescr() != null)
-            System.out.println("ROUTER3_IF_IFDESCR_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfDescr()+"\");");
-            if (snmpinterface.getPhysAddr() != null)
-            System.out.println("ROUTER3_IF_MAC_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getPhysAddr()+"\");");            
-            if (snmpinterface.getIfAlias() != null)
-            System.out.println("ROUTER3_IF_IFALIAS_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfAlias()+"\");");            
-        }
-        
-        m_capsd.stop();
-    }
-
-    @Test
-    @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=ROUTER4_IP, port=161, resource="classpath:linkd/nms17216/router4-walk.txt")
-    })
-    @Transactional
-    public final void testRouter4() throws MarshalException, ValidationException, IOException {
-        m_capsd.init();
-        m_capsd.start();
-        m_capsd.scanSuspectInterface(ROUTER4_IP);
-        
-
-        List<OnmsIpInterface> ips = m_interfaceDao.findByIpAddress(ROUTER4_IP);
-        assertTrue("Has only one ip interface", ips.size() == 1);
-
-        OnmsIpInterface ip = ips.get(0);
-
-        for (OnmsIpInterface ipinterface: ip.getNode().getIpInterfaces()) {
-            if (ipinterface.getIfIndex() != null )
-                System.out.println("ROUTER4_IP_IF_MAP.put(InetAddress.getByName(\""+ipinterface.getIpHostName()+"\"), "+ipinterface.getIfIndex()+");");
-        }
-
-        for (OnmsSnmpInterface snmpinterface: ip.getNode().getSnmpInterfaces()) {
-            if ( snmpinterface.getIfName() != null)
-            System.out.println("ROUTER4_IF_IFNAME_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfName()+"\");");
-            if (snmpinterface.getIfDescr() != null)
-            System.out.println("ROUTER4_IF_IFDESCR_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfDescr()+"\");");
-            if (snmpinterface.getPhysAddr() != null)
-            System.out.println("ROUTER4_IF_MAC_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getPhysAddr()+"\");");            
-            if (snmpinterface.getIfAlias() != null)
-            System.out.println("ROUTER4_IF_IFALIAS_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfAlias()+"\");");            
-        }
-        
-        m_capsd.stop();
-    }
-
-    @Test
-    @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SWITCH1_IP, port=161, resource="classpath:linkd/nms17216/switch1-walk.txt")
-    })
-    @Transactional
-    public final void testSwitch1() throws MarshalException, ValidationException, IOException {
-        m_capsd.init();
-        m_capsd.start();
-        m_capsd.scanSuspectInterface(SWITCH1_IP);
-        
-
-        List<OnmsIpInterface> ips = m_interfaceDao.findByIpAddress(SWITCH1_IP);
-        assertTrue("Has only one ip interface", ips.size() == 1);
-
-        OnmsIpInterface ip = ips.get(0);
-
-        for (OnmsIpInterface ipinterface: ip.getNode().getIpInterfaces()) {
-            if (ipinterface.getIfIndex() != null )
-                System.out.println("SWITCH1_IP_IF_MAP.put(InetAddress.getByName(\""+ipinterface.getIpHostName()+"\"), "+ipinterface.getIfIndex()+");");
-        }
-
-        for (OnmsSnmpInterface snmpinterface: ip.getNode().getSnmpInterfaces()) {
-            if ( snmpinterface.getIfName() != null)
-            System.out.println("SWITCH1_IF_IFNAME_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfName()+"\");");
-            if (snmpinterface.getIfDescr() != null)
-            System.out.println("SWITCH1_IF_IFDESCR_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfDescr()+"\");");
-            if (snmpinterface.getPhysAddr() != null)
-            System.out.println("SWITCH1_IF_MAC_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getPhysAddr()+"\");");            
-            if (snmpinterface.getIfAlias() != null)
-            System.out.println("SWITCH1_IF_IFALIAS_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfAlias()+"\");");            
-        }
-        
-        m_capsd.stop();
-    }
-
-    @Test
-    @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SWITCH2_IP, port=161, resource="classpath:linkd/nms17216/switch2-walk.txt")
-    })
-    @Transactional
-    public final void testSwitch2() throws MarshalException, ValidationException, IOException {
-        m_capsd.init();
-        m_capsd.start();
-        m_capsd.scanSuspectInterface(SWITCH2_IP);
-        
-
-        List<OnmsIpInterface> ips = m_interfaceDao.findByIpAddress(SWITCH2_IP);
-        assertTrue("Has only one ip interface", ips.size() == 1);
-
-        OnmsIpInterface ip = ips.get(0);
-
-        for (OnmsIpInterface ipinterface: ip.getNode().getIpInterfaces()) {
-            if (ipinterface.getIfIndex() != null )
-                System.out.println("SWITCH2_IP_IF_MAP.put(InetAddress.getByName(\""+ipinterface.getIpHostName()+"\"), "+ipinterface.getIfIndex()+");");
-        }
-
-        for (OnmsSnmpInterface snmpinterface: ip.getNode().getSnmpInterfaces()) {
-            if ( snmpinterface.getIfName() != null)
-            System.out.println("SWITCH2_IF_IFNAME_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfName()+"\");");
-            if (snmpinterface.getIfDescr() != null)
-            System.out.println("SWITCH2_IF_IFDESCR_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfDescr()+"\");");
-            if (snmpinterface.getPhysAddr() != null)
-            System.out.println("SWITCH2_IF_MAC_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getPhysAddr()+"\");");            
-            if (snmpinterface.getIfAlias() != null)
-                System.out.println("SWITCH2_IF_IFALIAS_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfAlias()+"\");");            
-        }
-        
-        m_capsd.stop();
-    }
-
-    @Test
-    @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SWITCH3_IP, port=161, resource="classpath:linkd/nms17216/switch3-walk.txt")
-    })
-    @Transactional
-    public final void testSwitch3() throws MarshalException, ValidationException, IOException {
-        m_capsd.init();
-        m_capsd.start();
-        m_capsd.scanSuspectInterface(SWITCH3_IP);
-        
-
-        List<OnmsIpInterface> ips = m_interfaceDao.findByIpAddress(SWITCH3_IP);
-        assertTrue("Has only one ip interface", ips.size() == 1);
-
-        OnmsIpInterface ip = ips.get(0);
-
-        for (OnmsIpInterface ipinterface: ip.getNode().getIpInterfaces()) {
-            if (ipinterface.getIfIndex() != null )
-                System.out.println("SWITCH3_IP_IF_MAP.put(InetAddress.getByName(\""+ipinterface.getIpHostName()+"\"), "+ipinterface.getIfIndex()+");");
-        }
-
-        for (OnmsSnmpInterface snmpinterface: ip.getNode().getSnmpInterfaces()) {
-            if ( snmpinterface.getIfName() != null)
-            System.out.println("SWITCH3_IF_IFNAME_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfName()+"\");");
-            if (snmpinterface.getIfDescr() != null)
-            System.out.println("SWITCH3_IF_IFDESCR_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfDescr()+"\");");
-            if (snmpinterface.getPhysAddr() != null)
-            System.out.println("SWITCH3_IF_MAC_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getPhysAddr()+"\");");            
-            if (snmpinterface.getIfAlias() != null)
-                System.out.println("SWITCH3_IF_IFALIAS_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfAlias()+"\");");            
-        }
-        
-        m_capsd.stop();
-    }
-
-    @Test
-    @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SWITCH4_IP, port=161, resource="classpath:linkd/nms17216/switch4-walk.txt")
-    })
-    @Transactional
-    public final void testSwitch4() throws MarshalException, ValidationException, IOException {
-        m_capsd.init();
-        m_capsd.start();
-        m_capsd.scanSuspectInterface(SWITCH4_IP);
-        
-
-        List<OnmsIpInterface> ips = m_interfaceDao.findByIpAddress(SWITCH4_IP);
-        assertTrue("Has only one ip interface", ips.size() == 1);
-
-        OnmsIpInterface ip = ips.get(0);
-
-        for (OnmsIpInterface ipinterface: ip.getNode().getIpInterfaces()) {
-            if (ipinterface.getIfIndex() != null )
-                System.out.println("SWITCH4_IP_IF_MAP.put(InetAddress.getByName(\""+ipinterface.getIpHostName()+"\"), "+ipinterface.getIfIndex()+");");
-        }
-
-        for (OnmsSnmpInterface snmpinterface: ip.getNode().getSnmpInterfaces()) {
-            if ( snmpinterface.getIfName() != null)
-            System.out.println("SWITCH4_IF_IFNAME_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfName()+"\");");
-            if (snmpinterface.getIfDescr() != null)
-            System.out.println("SWITCH4_IF_IFDESCR_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfDescr()+"\");");
-            if (snmpinterface.getPhysAddr() != null)
-            System.out.println("SWITCH4_IF_MAC_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getPhysAddr()+"\");");            
-            if (snmpinterface.getIfAlias() != null)
-                System.out.println("SWITCH4_IF_IFALIAS_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfAlias()+"\");");            
-        }
-        
-        m_capsd.stop();
-    }
-
-    @Test
-    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host=ROUTER1_IP, port=161, resource="classpath:linkd/nms17216/router1-walk.txt"),
+            @JUnitSnmpAgent(host=ROUTER2_IP, port=161, resource="classpath:linkd/nms17216/router2-walk.txt"),
+            @JUnitSnmpAgent(host=ROUTER3_IP, port=161, resource="classpath:linkd/nms17216/router3-walk.txt"),
+            @JUnitSnmpAgent(host=ROUTER4_IP, port=161, resource="classpath:linkd/nms17216/router4-walk.txt"),
+            @JUnitSnmpAgent(host=SWITCH1_IP, port=161, resource="classpath:linkd/nms17216/switch1-walk.txt"),
+            @JUnitSnmpAgent(host=SWITCH2_IP, port=161, resource="classpath:linkd/nms17216/switch2-walk.txt"),
+            @JUnitSnmpAgent(host=SWITCH3_IP, port=161, resource="classpath:linkd/nms17216/switch3-walk.txt"),
+            @JUnitSnmpAgent(host=SWITCH4_IP, port=161, resource="classpath:linkd/nms17216/switch4-walk.txt"),
             @JUnitSnmpAgent(host=SWITCH5_IP, port=161, resource="classpath:linkd/nms17216/switch5-walk.txt")
     })
     @Transactional
-    public final void testSwitch5() throws MarshalException, ValidationException, IOException {
+    public final void testCapsdNms17216() throws MarshalException, ValidationException, IOException {
         m_capsd.init();
         m_capsd.start();
+        m_capsd.scanSuspectInterface(ROUTER1_IP);
+        m_capsd.scanSuspectInterface(ROUTER2_IP);
+        m_capsd.scanSuspectInterface(ROUTER3_IP);
+        m_capsd.scanSuspectInterface(ROUTER4_IP);
+        m_capsd.scanSuspectInterface(SWITCH1_IP);
+        m_capsd.scanSuspectInterface(SWITCH2_IP);
+        m_capsd.scanSuspectInterface(SWITCH3_IP);
+        m_capsd.scanSuspectInterface(SWITCH4_IP);
         m_capsd.scanSuspectInterface(SWITCH5_IP);
-        
 
-        List<OnmsIpInterface> ips = m_interfaceDao.findByIpAddress(SWITCH5_IP);
-        assertTrue("Has only one ip interface", ips.size() == 1);
-
-        OnmsIpInterface ip = ips.get(0);
-
-        for (OnmsIpInterface ipinterface: ip.getNode().getIpInterfaces()) {
-            if (ipinterface.getIfIndex() != null )
-                System.out.println("SWITCH5_IP_IF_MAP.put(InetAddress.getByName(\""+ipinterface.getIpHostName()+"\"), "+ipinterface.getIfIndex()+");");
-        }
-
-        for (OnmsSnmpInterface snmpinterface: ip.getNode().getSnmpInterfaces()) {
-            if ( snmpinterface.getIfName() != null)
-            System.out.println("SWITCH5_IF_IFNAME_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfName()+"\");");
-            if (snmpinterface.getIfDescr() != null)
-            System.out.println("SWITCH5_IF_IFDESCR_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfDescr()+"\");");
-            if (snmpinterface.getPhysAddr() != null)
-            System.out.println("SWITCH5_IF_MAC_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getPhysAddr()+"\");");            
-            if (snmpinterface.getIfAlias() != null)
-                System.out.println("SWITCH5_IF_IFALIAS_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfAlias()+"\");");            
-        }
+        printNode(ROUTER1_IP,"ROUTER1");
+        printNode(ROUTER2_IP,"ROUTER2");
+        printNode(ROUTER3_IP,"ROUTER3");
+        printNode(ROUTER4_IP,"ROUTER4");
+        printNode(SWITCH1_IP,"SWITCH1");
+        printNode(SWITCH2_IP,"SWITCH2");
+        printNode(SWITCH3_IP,"SWITCH3");
+        printNode(SWITCH4_IP,"SWITCH4");
+        printNode(SWITCH5_IP,"SWITCH5");
         
         m_capsd.stop();
     }
-
-
 }

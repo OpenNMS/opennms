@@ -74,8 +74,6 @@ import org.springframework.transaction.annotation.Transactional;
         // override snmp-config configuration
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml"
 })
-// TODO: this class should be the starting point for Integration tests
-// either with linkd and capsd
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 public class Nms4005CapsdNetworkBuilderTest extends Nms4005NetworkBuilder implements InitializingBean {

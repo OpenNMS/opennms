@@ -31,7 +31,6 @@ package org.opennms.netmgt.linkd.capsd;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Properties;
 
 import org.exolab.castor.xml.MarshalException;
@@ -48,8 +47,6 @@ import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.capsd.Capsd;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.linkd.nb.Nms101NetworkBuilder;
-import org.opennms.netmgt.model.OnmsIpInterface;
-import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -99,147 +96,11 @@ public class Nms101CapsdNetworkBuilderTest extends Nms101NetworkBuilder implemen
         Properties p = new Properties();
         p.setProperty("log4j.logger.org.hibernate.SQL", "WARN");
 
+        super.setIpInterfaceDao(m_interfaceDao);
+        
         MockLogAppender.setupLogging(p);
         assertTrue("Capsd must not be null", m_capsd != null);        
     }
-
-    private final void printLaptop() {
-
-        List<OnmsIpInterface> ips = m_interfaceDao.findByIpAddress(LAPTOP_IP);
-        assertTrue("Has only one ip interface", ips.size() == 1);
-
-        OnmsIpInterface ip = ips.get(0);
-
-        for (OnmsIpInterface ipinterface: ip.getNode().getIpInterfaces()) {
-            if (ipinterface.getIfIndex() != null )
-                printipInterface("LAPTOP", ipinterface);
-        }
-
-        for (OnmsSnmpInterface snmpinterface: ip.getNode().getSnmpInterfaces()) {
-            printSnmpInterface("LAPTOP", snmpinterface);
-        }
-    }
-
-    private final void printCisco7200a() {
-
-        List<OnmsIpInterface> ips = m_interfaceDao.findByIpAddress(CISCO7200A_IP);
-        assertTrue("Has only one ip interface", ips.size() == 1);
-
-        OnmsIpInterface ip = ips.get(0);
-
-        for (OnmsIpInterface ipinterface: ip.getNode().getIpInterfaces()) {
-            if (ipinterface.getIfIndex() != null )
-                printipInterface("CISCO7200A", ipinterface);
-        }
-
-        for (OnmsSnmpInterface snmpinterface: ip.getNode().getSnmpInterfaces()) {
-            printSnmpInterface("CISCO7200A", snmpinterface);
-        }
-    }
-
-    private final void printCisco7200b() {
-
-        List<OnmsIpInterface> ips = m_interfaceDao.findByIpAddress(CISCO7200B_IP);
-        assertTrue("Has only one ip interface", ips.size() == 1);
-
-        OnmsIpInterface ip = ips.get(0);
-
-        for (OnmsIpInterface ipinterface: ip.getNode().getIpInterfaces()) {
-            if (ipinterface.getIfIndex() != null )
-                printipInterface("CISCO7200B", ipinterface);
-        }
-
-        for (OnmsSnmpInterface snmpinterface: ip.getNode().getSnmpInterfaces()) {
-            printSnmpInterface("CISCO7200B", snmpinterface);
-        }
-    }
-
-
-    private final void printCisco3700() {
-
-        List<OnmsIpInterface> ips = m_interfaceDao.findByIpAddress(CISCO3700_IP);
-        assertTrue("Has only one ip interface", ips.size() == 1);
-
-        OnmsIpInterface ip = ips.get(0);
-
-        for (OnmsIpInterface ipinterface: ip.getNode().getIpInterfaces()) {
-            if (ipinterface.getIfIndex() != null )
-                printipInterface("CISCO3700", ipinterface);
-        }
-
-        for (OnmsSnmpInterface snmpinterface: ip.getNode().getSnmpInterfaces()) {
-            printSnmpInterface("CISCO3700", snmpinterface);
-        }
-    }
-
-    private final void printCisco2691() {
-
-        List<OnmsIpInterface> ips = m_interfaceDao.findByIpAddress(CISCO2691_IP);
-        assertTrue("Has only one ip interface", ips.size() == 1);
-
-        OnmsIpInterface ip = ips.get(0);
-
-        for (OnmsIpInterface ipinterface: ip.getNode().getIpInterfaces()) {
-            if (ipinterface.getIfIndex() != null )
-                printipInterface("CISCO2691", ipinterface);
-        }
-
-        for (OnmsSnmpInterface snmpinterface: ip.getNode().getSnmpInterfaces()) {
-            printSnmpInterface("CISCO2691", snmpinterface);
-        }
-    }
-
-    private final void printCisco1700b() {
-
-        List<OnmsIpInterface> ips = m_interfaceDao.findByIpAddress(CISCO1700B_IP);
-        assertTrue("Has only one ip interface", ips.size() == 1);
-
-        OnmsIpInterface ip = ips.get(0);
-
-        for (OnmsIpInterface ipinterface: ip.getNode().getIpInterfaces()) {
-            if (ipinterface.getIfIndex() != null )
-                printipInterface("CISCO1700B", ipinterface);
-        }
-
-        for (OnmsSnmpInterface snmpinterface: ip.getNode().getSnmpInterfaces()) {
-            printSnmpInterface("CISCO1700B", snmpinterface);
-        }
-    }
-
-    private final void printCisco1700() {
-
-        List<OnmsIpInterface> ips = m_interfaceDao.findByIpAddress(CISCO1700_IP);
-        assertTrue("Has only one ip interface", ips.size() == 1);
-
-        OnmsIpInterface ip = ips.get(0);
-
-        for (OnmsIpInterface ipinterface: ip.getNode().getIpInterfaces()) {
-            if (ipinterface.getIfIndex() != null )
-                printipInterface("CISCO1700", ipinterface);
-        }
-
-        for (OnmsSnmpInterface snmpinterface: ip.getNode().getSnmpInterfaces()) {
-            printSnmpInterface("CISCO1700", snmpinterface);
-        }
-    }
-
-    private final void printCisco3600() {
-
-        List<OnmsIpInterface> ips = m_interfaceDao.findByIpAddress(CISCO3600_IP);
-        assertTrue("Has only one ip interface", ips.size() == 1);
-
-        OnmsIpInterface ip = ips.get(0);
-
-        for (OnmsIpInterface ipinterface: ip.getNode().getIpInterfaces()) {
-            if (ipinterface.getIfIndex() != null )
-                printipInterface("CISCO3600", ipinterface);
-        }
-
-        for (OnmsSnmpInterface snmpinterface: ip.getNode().getSnmpInterfaces()) {
-            printSnmpInterface("CISCO3600", snmpinterface);
-        }
-    }
-
 
     @Test
     @JUnitSnmpAgents(value={
@@ -252,7 +113,7 @@ public class Nms101CapsdNetworkBuilderTest extends Nms101NetworkBuilder implemen
             @JUnitSnmpAgent(host=CISCO3600_IP, port=161, resource="classpath:linkd/nms101/cisco3600.properties")
     })
     @Transactional
-    public final void testNetGeneration() throws MarshalException, ValidationException, IOException {
+    public final void testcapsdNms101() throws MarshalException, ValidationException, IOException {
         m_capsd.init();
         m_capsd.start();
 
@@ -264,13 +125,13 @@ public class Nms101CapsdNetworkBuilderTest extends Nms101NetworkBuilder implemen
         m_capsd.scanSuspectInterface(CISCO1700_IP);
         m_capsd.scanSuspectInterface(CISCO3600_IP);
 
-        printLaptop();
-        printCisco7200a();
-        printCisco7200b();
-        printCisco3700();
-        printCisco2691();
-        printCisco1700();
-        printCisco3600();
+        printNode(LAPTOP_IP,"LAPTOP");
+        printNode(CISCO7200A_IP,"CISCO7200A");
+        printNode(CISCO7200B_IP,"CISCO7200B");
+        printNode(CISCO3700_IP ,"CISCO3700");
+        printNode(CISCO2691_IP ,"CISCO2691");
+        printNode(CISCO1700_IP ,"CISCO1700");
+        printNode(CISCO3600_IP ,"CISCO3600");
         
         m_capsd.stop();
 
@@ -287,7 +148,7 @@ public class Nms101CapsdNetworkBuilderTest extends Nms101NetworkBuilder implemen
 
         m_capsd.scanSuspectInterface(CISCO1700B_IP);
 
-        printCisco1700b();
+        printNode(CISCO1700B_IP,"CISCO1700B");
         
         m_capsd.stop();
 

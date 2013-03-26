@@ -31,7 +31,6 @@ package org.opennms.netmgt.linkd.capsd;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Properties;
 
 import org.exolab.castor.xml.MarshalException;
@@ -48,8 +47,6 @@ import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.capsd.Capsd;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.linkd.nb.Nms1055NetworkBuilder;
-import org.opennms.netmgt.model.OnmsIpInterface;
-import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,8 +74,6 @@ import org.springframework.transaction.annotation.Transactional;
         // override snmp-config configuration
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml"
 })
-// TODO: this class should be the starting point for Integration tests
-// either with linkd and capsd
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 public class Nms1055CapsdNetworkBuilderTest extends Nms1055NetworkBuilder implements InitializingBean {
@@ -100,105 +95,10 @@ public class Nms1055CapsdNetworkBuilderTest extends Nms1055NetworkBuilder implem
         Properties p = new Properties();
         p.setProperty("log4j.logger.org.hibernate.SQL", "WARN");
 
+        super.setIpInterfaceDao(m_ipInterfaceDao);
+
         MockLogAppender.setupLogging(p);
         assertTrue("Capsd must not be null", m_capsd != null);        
-    }
-
-    private final void printPenrose() {
-
-        List<OnmsIpInterface> ips = m_interfaceDao.findByIpAddress(PENROSE_IP);
-        assertTrue("Has only one ip interface", ips.size() == 1);
-
-        OnmsIpInterface ip = ips.get(0);
-
-        for (OnmsIpInterface ipinterface: ip.getNode().getIpInterfaces()) {
-            if (ipinterface.getIfIndex() != null )
-                printipInterface("PENROSE", ipinterface);
-        }
-
-        for (OnmsSnmpInterface snmpinterface: ip.getNode().getSnmpInterfaces()) {
-            printSnmpInterface("PENROSE", snmpinterface);
-        }
-    }
-
-    private final void printDelaware() {
-        List<OnmsIpInterface> ips = m_interfaceDao.findByIpAddress(DELAWARE_IP);
-        assertTrue("Has only one ip interface", ips.size() == 1);
-
-        OnmsIpInterface ip = ips.get(0);
-
-        for (OnmsIpInterface ipinterface: ip.getNode().getIpInterfaces()) {
-            if (ipinterface.getIfIndex() != null )
-                printipInterface("DELAWARE", ipinterface);
-        }
-
-        for (OnmsSnmpInterface snmpinterface: ip.getNode().getSnmpInterfaces()) {
-            printSnmpInterface("DELAWARE", snmpinterface);
-        }
-    }
-
-    private final void printPhoenix() {
-        List<OnmsIpInterface> ips = m_interfaceDao.findByIpAddress(PHOENIX_IP);
-        assertTrue("Has only one ip interface", ips.size() == 1);
-
-        OnmsIpInterface ip = ips.get(0);
-
-        for (OnmsIpInterface ipinterface: ip.getNode().getIpInterfaces()) {
-            if (ipinterface.getIfIndex() != null )
-                printipInterface("PHOENIX", ipinterface);
-        }
-
-        for (OnmsSnmpInterface snmpinterface: ip.getNode().getSnmpInterfaces()) {
-            printSnmpInterface("PHOENIX", snmpinterface);
-        }
-    }
-
-    private final void printAustin() {
-        List<OnmsIpInterface> ips = m_interfaceDao.findByIpAddress(AUSTIN_IP);
-        assertTrue("Has only one ip interface", ips.size() == 1);
-
-        OnmsIpInterface ip = ips.get(0);
-
-        for (OnmsIpInterface ipinterface: ip.getNode().getIpInterfaces()) {
-            if (ipinterface.getIfIndex() != null )
-                printipInterface("AUSTIN", ipinterface);
-        }
-
-        for (OnmsSnmpInterface snmpinterface: ip.getNode().getSnmpInterfaces()) {
-            printSnmpInterface("AUSTIN", snmpinterface);        
-        }
-    }
-
-    private final void printSanjose() {
-        List<OnmsIpInterface> ips = m_interfaceDao.findByIpAddress(SANJOSE_IP);
-        assertTrue("Has only one ip interface", ips.size() == 1);
-
-        OnmsIpInterface ip = ips.get(0);
-
-        for (OnmsIpInterface ipinterface: ip.getNode().getIpInterfaces()) {
-            if (ipinterface.getIfIndex() != null )
-                printipInterface("SANJOSE", ipinterface);
-        }
-
-        for (OnmsSnmpInterface snmpinterface: ip.getNode().getSnmpInterfaces()) {
-            printSnmpInterface("SANJOSE", snmpinterface);
-        }
-    }
-    
-    private final void printRiovista() {
-        List<OnmsIpInterface> ips = m_interfaceDao.findByIpAddress(RIOVISTA_IP);
-        assertTrue("Has only one ip interface", ips.size() == 1);
-
-        OnmsIpInterface ip = ips.get(0);
-
-        for (OnmsIpInterface ipinterface: ip.getNode().getIpInterfaces()) {
-            if (ipinterface.getIfIndex() != null )
-                printipInterface("RIOVISTA", ipinterface);
-        }
-
-        for (OnmsSnmpInterface snmpinterface: ip.getNode().getSnmpInterfaces()) {
-            printSnmpInterface("RIOVISTA", snmpinterface);
-        }
     }
 
     @Test
@@ -211,7 +111,7 @@ public class Nms1055CapsdNetworkBuilderTest extends Nms1055NetworkBuilder implem
             @JUnitSnmpAgent(host=RIOVISTA_IP, port=161, resource="classpath:linkd/nms1055/"+RIOVISTA_NAME+"_"+RIOVISTA_IP+".txt")
     })
     @Transactional
-    public final void testPenrose() throws MarshalException, ValidationException, IOException {
+    public final void testCapsdNms1055() throws MarshalException, ValidationException, IOException {
         m_capsd.init();
         m_capsd.start();
 
@@ -222,12 +122,12 @@ public class Nms1055CapsdNetworkBuilderTest extends Nms1055NetworkBuilder implem
         m_capsd.scanSuspectInterface(SANJOSE_IP);
         m_capsd.scanSuspectInterface(RIOVISTA_IP);
 
-        printPenrose();
-        printDelaware();
-        printPhoenix();
-        printAustin();
-        printSanjose();
-        printRiovista();
+        printNode(PENROSE_IP,"PENROSE");
+        printNode(DELAWARE_IP,"DELAWARE");
+        printNode(PHOENIX_IP,"PHOENIX");
+        printNode(AUSTIN_IP,"AUSTIN");
+        printNode(SANJOSE_IP,"SANJOSE");
+        printNode(RIOVISTA_IP,"RIOVISTA");
 
         m_capsd.stop();
 

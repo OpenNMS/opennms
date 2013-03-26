@@ -31,7 +31,6 @@ package org.opennms.netmgt.linkd.capsd;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Properties;
 
 import org.exolab.castor.xml.MarshalException;
@@ -48,8 +47,6 @@ import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.capsd.Capsd;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.linkd.nb.Nms10205bNetworkBuilder;
-import org.opennms.netmgt.model.OnmsIpInterface;
-import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -98,6 +95,8 @@ public class Nms10205bCapsdNetworkBuilderTest extends Nms10205bNetworkBuilder im
         Properties p = new Properties();
         p.setProperty("log4j.logger.org.hibernate.SQL", "WARN");
 
+        super.setIpInterfaceDao(m_interfaceDao);
+        
         MockLogAppender.setupLogging(p);
         assertTrue("Capsd must not be null", m_capsd != null);
     }
@@ -115,7 +114,7 @@ public class Nms10205bCapsdNetworkBuilderTest extends Nms10205bNetworkBuilder im
             @JUnitSnmpAgent(host=SRX_100_IP, port=161, resource="classpath:linkd/nms10205b/"+"SRX-100_"+SRX_100_IP+".txt")
     })
     @Transactional
-    public final void testToGenerateNetworkData() throws MarshalException, ValidationException, IOException {
+    public final void testCapsdNms10205b() throws MarshalException, ValidationException, IOException {
         m_capsd.init();
         m_capsd.start();
 
@@ -129,161 +128,16 @@ public class Nms10205bCapsdNetworkBuilderTest extends Nms10205bNetworkBuilder im
         m_capsd.scanSuspectInterface(J6350_42_IP);
         m_capsd.scanSuspectInterface(SRX_100_IP);
 
-        printBagmane();
-        printBangalore();
-        printDelhi();
-        printJ635042();
-        printMumbai();
-        printMysore();
-        printSpaceExSw1();
-        printSpaceExSw2();
-        printSRX100();
-        
+        printNode(MUMBAI_IP,"MUMBAI");
+        printNode(DELHI_IP,"DELHI");
+        printNode(BANGALORE_IP,"BANGALORE");
+        printNode(BAGMANE_IP,"BAGMANE");
+        printNode(MYSORE_IP,"MYSORE");
+        printNode(SPACE_EX_SW1_IP,"SPACE_EX_SW1");
+        printNode(SPACE_EX_SW2_IP,"SPACE_EX_SW2");
+        printNode(J6350_42_IP,"J6350_42");
+        printNode(SRX_100_IP,"SRX_100");
+
         m_capsd.stop();        
-    }
-        
-    private final void printMumbai() {
-        List<OnmsIpInterface> ips = m_interfaceDao.findByIpAddress(MUMBAI_IP);
-        assertTrue("Has only one ip interface", ips.size() == 1);
-
-        OnmsIpInterface ip = ips.get(0);
-
-        for (OnmsIpInterface ipinterface: ip.getNode().getIpInterfaces()) {
-            if (ipinterface.getIfIndex() != null )
-                printipInterface("MUMBAI", ipinterface);
-        }
-
-        for (OnmsSnmpInterface snmpinterface: ip.getNode().getSnmpInterfaces()) {
-            printSnmpInterface("MUMBAI", snmpinterface);
-        }        
-    }
-    
-    private final void printDelhi() {        
-        List<OnmsIpInterface> ips = m_interfaceDao.findByIpAddress(DELHI_IP);
-        assertTrue("Has only one ip interface", ips.size() == 1);
-
-        OnmsIpInterface ip = ips.get(0);
-
-        for (OnmsIpInterface ipinterface: ip.getNode().getIpInterfaces()) {
-            if (ipinterface.getIfIndex() != null )
-                printipInterface("DELHI", ipinterface);
-        }
-
-        for (OnmsSnmpInterface snmpinterface: ip.getNode().getSnmpInterfaces()) {
-            printSnmpInterface("DELHI", snmpinterface);
-        }        
-    }
-
-    private final void printBangalore() {
-        List<OnmsIpInterface> ips = m_interfaceDao.findByIpAddress(BANGALORE_IP);
-        assertTrue("Has only one ip interface", ips.size() == 1);
-
-        OnmsIpInterface ip = ips.get(0);
-
-        for (OnmsIpInterface ipinterface: ip.getNode().getIpInterfaces()) {
-            if (ipinterface.getIfIndex() != null )
-                printipInterface("BANGALORE", ipinterface);
-        }
-
-        for (OnmsSnmpInterface snmpinterface: ip.getNode().getSnmpInterfaces()) {
-            printSnmpInterface("BANGALORE", snmpinterface);
-        }        
-    }
-
-    private final void printBagmane() {
-        List<OnmsIpInterface> ips = m_interfaceDao.findByIpAddress(BAGMANE_IP);
-        assertTrue("Has only one ip interface", ips.size() == 1);
-
-        OnmsIpInterface ip = ips.get(0);
-
-        for (OnmsIpInterface ipinterface: ip.getNode().getIpInterfaces()) {
-            if (ipinterface.getIfIndex() != null )
-                printipInterface("BAGMANE", ipinterface);
-        }
-
-        for (OnmsSnmpInterface snmpinterface: ip.getNode().getSnmpInterfaces()) {
-            printSnmpInterface("BAGMANE", snmpinterface);
-        }        
-        
-    }
-
-    private final void printMysore() {
-        List<OnmsIpInterface> ips = m_interfaceDao.findByIpAddress(MYSORE_IP);
-        assertTrue("Has only one ip interface", ips.size() == 1);
-
-        OnmsIpInterface ip = ips.get(0);
-
-        for (OnmsIpInterface ipinterface: ip.getNode().getIpInterfaces()) {
-            if (ipinterface.getIfIndex() != null )
-                printipInterface("MYSORE", ipinterface);
-        }
-
-        for (OnmsSnmpInterface snmpinterface: ip.getNode().getSnmpInterfaces()) {
-            printSnmpInterface("MYSORE", snmpinterface);
-        }         
-    }
-
-    private final void printSpaceExSw1() {
-        List<OnmsIpInterface> ips = m_interfaceDao.findByIpAddress(SPACE_EX_SW1_IP);
-        assertTrue("Has only one ip interface", ips.size() == 1);
-
-        OnmsIpInterface ip = ips.get(0);
-
-        for (OnmsIpInterface ipinterface: ip.getNode().getIpInterfaces()) {
-            if (ipinterface.getIfIndex() != null )
-                printipInterface("SPACE_EX_SW1", ipinterface);
-        }
-
-        for (OnmsSnmpInterface snmpinterface: ip.getNode().getSnmpInterfaces()) {
-            printSnmpInterface("SPACE_EX_SW1", snmpinterface);
-        }        
-    }
-
-    private final void printSpaceExSw2() {
-        List<OnmsIpInterface> ips = m_interfaceDao.findByIpAddress(SPACE_EX_SW2_IP);
-        assertTrue("Has only one ip interface", ips.size() == 1);
-
-        OnmsIpInterface ip = ips.get(0);
-
-        for (OnmsIpInterface ipinterface: ip.getNode().getIpInterfaces()) {
-            if (ipinterface.getIfIndex() != null )
-                printipInterface("SPACE_EX_SW2", ipinterface);
-        }
-
-        for (OnmsSnmpInterface snmpinterface: ip.getNode().getSnmpInterfaces()) {
-            printSnmpInterface("SPACE_EX_SW2", snmpinterface);
-        }
-    }
-  
-    private final void printJ635042() {
-        List<OnmsIpInterface> ips = m_interfaceDao.findByIpAddress(J6350_42_IP);
-        assertTrue("Has only one ip interface", ips.size() == 1);
-
-        OnmsIpInterface ip = ips.get(0);
-
-        for (OnmsIpInterface ipinterface: ip.getNode().getIpInterfaces()) {
-            if (ipinterface.getIfIndex() != null )
-                printipInterface("J6350_42", ipinterface);
-        }
-
-        for (OnmsSnmpInterface snmpinterface: ip.getNode().getSnmpInterfaces()) {
-            printSnmpInterface("J6350_42", snmpinterface);
-        }        
-    }
-
-    private final void printSRX100() {
-        List<OnmsIpInterface> ips = m_interfaceDao.findByIpAddress(SRX_100_IP);
-        assertTrue("Has only one ip interface", ips.size() == 1);
-
-        OnmsIpInterface ip = ips.get(0);
-
-        for (OnmsIpInterface ipinterface: ip.getNode().getIpInterfaces()) {
-            if (ipinterface.getIfIndex() != null )
-                printipInterface("SRX_100", ipinterface);
-        }
-
-        for (OnmsSnmpInterface snmpinterface: ip.getNode().getSnmpInterfaces()) {
-            printSnmpInterface("SRX_100", snmpinterface);
-        }
-    }
+    }    
 }
