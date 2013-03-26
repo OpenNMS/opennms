@@ -14,11 +14,6 @@
   <name>OpenNMS :: Topology :: Themes</name>
 
   <packaging>pom</packaging>
-<<<<<<< HEAD
-=======
-  <version>1.11.91-SPACE-SNAPSHOT</version>
-
->>>>>>> origin/1.12
 
   <modules>
     <module>default-theme</module>

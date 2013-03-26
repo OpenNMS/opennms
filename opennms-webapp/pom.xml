@@ -176,11 +176,7 @@
                 <configuration>
                     <artifacts>
                         <artifact>
-<<<<<<< HEAD
                             <file>target/opennms-webapp-1.11.91-SPACE-SNAPSHOT/WEB-INF/lib/opennms-webapp-1.11.91-SPACE-SNAPSHOT.jar</file>
-=======
-                            <file>target/opennms-webapp-1.11.91-SPACE-SNAPSHOT/WEB-INF/lib/opennms-webapp-1.11.91-SPACE-SNAPSHOT.jar</file>
->>>>>>> origin/1.12
                             <type>jar</type>
                         </artifact>
                     </artifacts>

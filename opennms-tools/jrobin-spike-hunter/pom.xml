@@ -9,10 +9,6 @@
   <artifactId>spike-hunter</artifactId>
   <packaging>jar</packaging>
   <name>spike-hunter</name>
-<<<<<<< HEAD
-=======
-  <version>1.11.91-SPACE-SNAPSHOT</version>
->>>>>>> origin/1.12
   <url>http://maven.apache.org</url>
   <dependencies>
     <dependency>
@@ -25,11 +21,7 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-config</artifactId>
       <scope>compile</scope>
-<<<<<<< HEAD
       <version>${project.version}</version>
-=======
-      <version>1.11.91-SPACE-SNAPSHOT</version>
->>>>>>> origin/1.12
     </dependency>
     <dependency>
       <groupId>org.jrobin</groupId>

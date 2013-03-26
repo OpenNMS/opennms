@@ -40,8 +40,6 @@
           </instructions>
         </configuration>
       </plugin>
-<<<<<<< HEAD
-=======
 -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
@@ -61,7 +59,6 @@
           </execution>
         </executions>
       </plugin>
->>>>>>> origin/1.12
     </plugins>
   </build>
   <dependencies>

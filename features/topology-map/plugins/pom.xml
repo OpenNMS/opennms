@@ -14,10 +14,6 @@
   <name>OpenNMS :: Topology :: Plugins</name>
 
   <packaging>pom</packaging>
-<<<<<<< HEAD
-=======
-  <version>1.11.91-SPACE-SNAPSHOT</version>
->>>>>>> origin/1.12
 
   <modules>
     <module>org.opennms.features.topology.plugins.browsers</module>

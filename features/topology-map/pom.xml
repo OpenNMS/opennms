@@ -10,10 +10,6 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features</groupId>
   <artifactId>topology</artifactId>
-<<<<<<< HEAD
-=======
-  <version>1.11.91-SPACE-SNAPSHOT</version>
->>>>>>> origin/1.12
 
   <name>org.opennms.features.topology (OSGi project)</name>
 

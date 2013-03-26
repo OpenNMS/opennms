@@ -10,10 +10,6 @@
   <artifactId>mib2events</artifactId>
   <packaging>jar</packaging>
   <name>mib2events</name>
-<<<<<<< HEAD
-=======
-  <version>1.11.91-SPACE-SNAPSHOT</version>
->>>>>>> origin/1.12
   <url>http://maven.apache.org</url>
   <dependencies>
     <dependency>
@@ -26,11 +22,7 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-config-model</artifactId>
       <scope>compile</scope>
-<<<<<<< HEAD
       <version>${project.version}</version>
-=======
-      <version>1.11.91-SPACE-SNAPSHOT</version>
->>>>>>> origin/1.12
     </dependency>
     <dependency>
       <groupId>net.percederberg.grammatica</groupId>
