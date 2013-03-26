@@ -31,7 +31,6 @@ package org.opennms.netmgt.linkd;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
@@ -102,10 +101,7 @@ public class Nms4930Test extends Nms4930NetworkBuilder implements InitializingBe
 
         super.setNodeDao(m_nodeDao);
         super.setSnmpInterfaceDao(m_snmpInterfaceDao);
-
-        for (Package pkg : Collections.list(m_linkdConfig.enumeratePackage())) {
-            pkg.setForceIpRouteDiscoveryOnEthernet(true);
-        }
+ 
         buildNetwork4005();
         
     }
@@ -118,13 +114,34 @@ public class Nms4930Test extends Nms4930NetworkBuilder implements InitializingBe
         m_nodeDao.flush();
     }
 
+    /*
+     * The main fact is that this devices have only the Bridge MIb walk
+     * dlink_DES has STP disabled
+     * dlink_DGS has STP enabled but root is itself
+     * no way to find links....
+     * Also there is no At interface information
+     * c2007db90010 --> 10.1.1.2  ---nothing in the bridge forwarding table...
+     * no way to get links...
+     * 
+     */
     @Test
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host="10.1.1.2", port=161, resource="classpath:linkd/nms4930/dlink_DES-3026.properties"),
             @JUnitSnmpAgent(host="10.1.2.2", port=161, resource="classpath:linkd/nms4930/dlink_DGS-3612G.properties")
     })
     public void testNms4930Network() throws Exception {
-        final OnmsNode cisco1 = m_nodeDao.findByForeignId("linkd", "cisco1");
+
+        Package example1 = m_linkdConfig.getPackage("example1");
+        example1.setUseLldpDiscovery(false);
+        example1.setUseOspfDiscovery(false);
+        example1.setUseCdpDiscovery(false);
+        example1.setUseIpRouteDiscovery(false);
+        example1.setUseBridgeDiscovery(true);
+
+        example1.setSaveRouteTable(false);
+        example1.setEnableVlanDiscovery(false);
+        
+    	final OnmsNode cisco1 = m_nodeDao.findByForeignId("linkd", "cisco1");
         final OnmsNode cisco2 = m_nodeDao.findByForeignId("linkd", "cisco2");
 
         assertTrue(m_linkd.scheduleNodeCollection(cisco1.getId()));
