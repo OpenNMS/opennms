@@ -95,7 +95,7 @@ public class Nms1055CapsdNetworkBuilderTest extends Nms1055NetworkBuilder implem
         Properties p = new Properties();
         p.setProperty("log4j.logger.org.hibernate.SQL", "WARN");
 
-        super.setIpInterfaceDao(m_ipInterfaceDao);
+        super.setIpInterfaceDao(m_interfaceDao);
 
         MockLogAppender.setupLogging(p);
         assertTrue("Capsd must not be null", m_capsd != null);        

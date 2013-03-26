@@ -100,7 +100,7 @@ public class Nms7467CapsdIntegrationTest extends Nms7467NetworkBuilder implement
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=CISCO_WS_C2948_IP, port=161, resource="classpath:linkd/nms7467"+CISCO_WS_C2948_IP+"-walk.txt")
+            @JUnitSnmpAgent(host=CISCO_WS_C2948_IP, port=161, resource="classpath:linkd/nms7467/"+CISCO_WS_C2948_IP+"-walk.txt")
     })
     @Transactional
     public final void testCiscoWSC2948CapsdCollection() throws MarshalException, ValidationException, IOException {
@@ -134,7 +134,7 @@ public class Nms7467CapsdIntegrationTest extends Nms7467NetworkBuilder implement
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=NETGEAR_SW_108_IP, port=161, resource="classpath:linkd/nms7467"+NETGEAR_SW_108_IP+"-walk.txt")
+            @JUnitSnmpAgent(host=NETGEAR_SW_108_IP, port=161, resource="classpath:linkd/nms7467/"+NETGEAR_SW_108_IP+"-walk.txt")
     })
     @Transactional
     public final void testNETGEARSW108CapsdCollection() throws MarshalException, ValidationException, IOException {
@@ -167,7 +167,7 @@ public class Nms7467CapsdIntegrationTest extends Nms7467NetworkBuilder implement
     
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=CISCO_C870_IP_PRIMARY, port=161, resource="classpath:linkd/nms7467"+CISCO_C870_IP+"-walk.txt")
+            @JUnitSnmpAgent(host=CISCO_C870_IP_PRIMARY, port=161, resource="classpath:linkd/nms7467/"+CISCO_C870_IP+"-walk.txt")
     })
     @Transactional
     public final void testCISCO870CapsdCollection() throws MarshalException, ValidationException, IOException {
@@ -202,7 +202,7 @@ public class Nms7467CapsdIntegrationTest extends Nms7467NetworkBuilder implement
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=LINUX_UBUNTU_IP, port=161, resource="classpath:linkd/nms7467"+LINUX_UBUNTU_IP+"-walk.txt")
+            @JUnitSnmpAgent(host=LINUX_UBUNTU_IP, port=161, resource="classpath:linkd/nms7467/"+LINUX_UBUNTU_IP+"-walk.txt")
     })
     @Transactional
     public final void testLINUXUBUNTUCapsdCollection() throws MarshalException, ValidationException, IOException {
@@ -242,7 +242,7 @@ public class Nms7467CapsdIntegrationTest extends Nms7467NetworkBuilder implement
     
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=DARWIN_10_8_IP, port=161, resource="classpath:linkd/nms7467"+DARWIN_10_8_IP+"-walk.txt")
+            @JUnitSnmpAgent(host=DARWIN_10_8_IP, port=161, resource="classpath:linkd/nms7467/"+DARWIN_10_8_IP+"-walk.txt")
     })
     @Transactional
     public final void testDARWIN108CapsdCollection() throws MarshalException, ValidationException, IOException {
