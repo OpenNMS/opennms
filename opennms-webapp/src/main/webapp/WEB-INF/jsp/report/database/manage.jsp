@@ -81,6 +81,9 @@
 					<td>${report.reportId}</td>
 					<td>${report.date}</td>
 					<td>
+                    <c:if test="${empty formatMap[report.reportId]}">
+                        <a href="report/database/downloadReport.htm?fileName=${report.location}">Download</a>
+                    </c:if>
 					<c:forEach items='${formatMap[report.reportId]}' var="format">
 						<a href="report/database/downloadReport.htm?locatorId=${report.id}&format=${format}">${format}</a>
 					</c:forEach>
