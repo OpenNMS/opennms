@@ -167,7 +167,7 @@ public abstract class GroupForm extends Form implements ClickListener {
         }
         if (source == delete) {
             // FIXME You cannot delete a group if it is being used on any systemDef
-            MessageBox mb = new MessageBox(getApplication().getMainWindow(),
+            MessageBox mb = new MessageBox(getUI().getWindows().iterator().next(),
                                            "Are you sure?",
                                            MessageBox.Icon.QUESTION,
                                            "Do you really want to remove the Group " + getGroup().getName() + "?<br/>This action cannot be undone.",

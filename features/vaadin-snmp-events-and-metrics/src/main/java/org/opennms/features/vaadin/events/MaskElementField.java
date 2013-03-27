@@ -191,7 +191,7 @@ public class MaskElementField extends CustomField<MaskElementField.MaskElementAr
         if (itemId == null) {
             Notification.show("Please select a Mask Element from the table.");
         } else {
-            MessageBox mb = new MessageBox(getApplication().getMainWindow(),
+            MessageBox mb = new MessageBox(getUI().getWindows().iterator().next(),
                                            "Are you sure?",
                                            MessageBox.Icon.QUESTION,
                                            "Do you really want to remove the selected Mask Element field ?<br/>This action cannot be undone.",

@@ -132,7 +132,7 @@ public class SnmpCollectionPanel extends VerticalLayout {
 
         final Button refresh = new Button("Refresh SNMP Collections", new Button.ClickListener() {
             public void buttonClick(Button.ClickEvent event) {
-                MessageBox mb = new MessageBox(getApplication().getMainWindow(),
+                MessageBox mb = new MessageBox(getUI().getWindows().iterator().next(),
                                                "Are you sure?",
                                                MessageBox.Icon.QUESTION,
                                                "By doing this all unsafed changes in SNMP collection will be lost.",

@@ -234,7 +234,7 @@ public class MibCompilerPanel extends Panel {
             public void handleAction(Action action, Object sender, Object target) {
                 final String fileName = (String) target;
                 if (action == ACTION_DELETE) {
-                    MessageBox mb = new MessageBox(getApplication().getMainWindow(),
+                    MessageBox mb = new MessageBox(getUI().getWindows().iterator().next(),
                                                    "Are you sure?",
                                                    MessageBox.Icon.QUESTION,
                                                    "Do you really want to delete " + fileName + "?<br/>This cannot be undone.",

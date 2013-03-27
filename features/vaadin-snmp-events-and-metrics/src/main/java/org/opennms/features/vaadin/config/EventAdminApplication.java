@@ -170,7 +170,7 @@ public class EventAdminApplication extends UI {
                     return;
                 }
                 final File file = (File) eventSource.getValue();
-                MessageBox mb = new MessageBox(getMainWindow(),
+                MessageBox mb = new MessageBox(getUI().getWindows().iterator().next(),
                                                "Are you sure?",
                                                MessageBox.Icon.QUESTION,
                                                "Do you really want to remove the file " + file.getName() + "?<br/>This cannot be undone and OpenNMS won't be able to handle the events configured on this file.",

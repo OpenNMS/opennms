@@ -476,7 +476,7 @@ public class TopologyWidgetTestApplication extends UI implements CommandUpdateLi
 		}
 
 		if(m_contextMenu != null) {
-			getMainWindow().removeComponent(m_contextMenu);
+			m_contextMenu.detach();
 		}
 
 		m_menuBar = commandManager.getMenuBar(m_graphContainer, this, m_selectionManager);
@@ -484,10 +484,11 @@ public class TopologyWidgetTestApplication extends UI implements CommandUpdateLi
 		m_rootLayout.addComponent(m_menuBar, "top: " + HEADER_HEIGHT +"px; left: 0px; right:0px;");
 
 		m_contextMenu = commandManager.getContextMenu(m_graphContainer, this);
-		getMainWindow().addComponent(m_contextMenu);
+		m_contextMenu.setAsContextMenuOf(this);
 		updateMenuItems();
 	}
-	
+
+	@Override
 	public void show(Object target, int left, int top) {
 		updateContextMenuItems(target, m_contextMenu.getItems());
 		updateSubMenuDisplay(m_contextMenu.getItems());
@@ -496,7 +497,7 @@ public class TopologyWidgetTestApplication extends UI implements CommandUpdateLi
 	}
 
 
-	private void updateSubMenuDisplay(List<TopoContextMenuItem> items) {
+	private static void updateSubMenuDisplay(List<TopoContextMenuItem> items) {
 		for (TopoContextMenuItem item : items) {
 			if (!item.hasChildren()) continue;
 			else updateSubMenuDisplay(item.getChildren());
@@ -605,15 +606,16 @@ public class TopologyWidgetTestApplication extends UI implements CommandUpdateLi
         return new ByteArrayInputStream(m_headerHtml.getBytes());
     }
 
-
+    //@Override
     public void setHeaderHtml(String headerHtml) {
         m_headerHtml = headerHtml;
     }
-    
+
     /**
      * Parameter is a String because config has String values
      * @param boolVal
      */
+    //@Override
     public void setShowHeader(String boolVal) {
         m_showHeader = "true".equals(boolVal);
     }

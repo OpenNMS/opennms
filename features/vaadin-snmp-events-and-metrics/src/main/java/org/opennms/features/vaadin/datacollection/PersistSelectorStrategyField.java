@@ -196,7 +196,7 @@ public class PersistSelectorStrategyField extends CustomField<PersistenceSelecto
         if (itemId == null) {
             Notification.show("Please select a Parameter from the table.");
         } else {
-            MessageBox mb = new MessageBox(getApplication().getMainWindow(),
+            MessageBox mb = new MessageBox(getUI().getWindows().iterator().next(),
                     "Are you sure?",
                     MessageBox.Icon.QUESTION,
                     "Do you really want to remove the selected parameter ?<br/>This action cannot be undone.",

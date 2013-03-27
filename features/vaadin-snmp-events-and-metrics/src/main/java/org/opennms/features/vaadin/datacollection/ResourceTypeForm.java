@@ -31,11 +31,11 @@ import org.opennms.netmgt.config.datacollection.ResourceType;
 
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Form;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.themes.Runo;
-import com.vaadin.ui.Form;
-import com.vaadin.ui.HorizontalLayout;
 
 import de.steinwedel.vaadin.MessageBox;
 import de.steinwedel.vaadin.MessageBox.ButtonType;
@@ -145,7 +145,7 @@ public abstract class ResourceTypeForm extends Form implements ClickListener {
         }
         if (source == delete) {
             // FIXME You cannot delete a resource type if it is being used on any group
-            MessageBox mb = new MessageBox(getApplication().getMainWindow(),
+            MessageBox mb = new MessageBox(getUI().getWindows().iterator().next(),
                                            "Are you sure?",
                                            MessageBox.Icon.QUESTION,
                                            "Do you really want to remove the Resource Type " + getResourceType().getName() + "?<br/>This action cannot be undone.",

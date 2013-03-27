@@ -47,6 +47,7 @@ import com.vaadin.client.ApplicationConnection;
 import com.vaadin.client.Paintable;
 import com.vaadin.client.UIDL;
 import com.vaadin.client.VConsole;
+import com.vaadin.server.Page;
 
 public class VMapWidget extends GWTMapWidget implements Paintable {
 
@@ -113,7 +114,7 @@ public class VMapWidget extends GWTMapWidget implements Paintable {
     private void initializeIcons() {
         if (m_icons == null) {
             m_icons = new HashMap<String,Icon>();
-            final String basepath = m_client.getAppUri();
+            final String basepath = Page.getCurrent().getLocation().toString();
             for (final String severity : new String[] { "Normal", "Warning", "Minor", "Major", "Critical" }) {
                 IconOptions options = new IconOptions();
                 options.setIconSize(new Point(25,41));

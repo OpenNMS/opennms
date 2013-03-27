@@ -80,7 +80,7 @@ public class DataCollectionWindow extends Window {
             }
             @Override
             public void success() {
-                MessageBox mb = new MessageBox(getApplication().getMainWindow(),
+                MessageBox mb = new MessageBox(getUI().getWindows().iterator().next(),
                                                "Graph Templates",
                                                MessageBox.Icon.QUESTION,
                                                "Do you want to generate the default graph templates?<br/>All the existing templates will be overriden.",

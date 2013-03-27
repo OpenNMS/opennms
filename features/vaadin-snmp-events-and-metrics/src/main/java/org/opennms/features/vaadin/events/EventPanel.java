@@ -250,7 +250,7 @@ public abstract class EventPanel extends Panel {
         if (eventCount == 0) {
             saveFile(file, events, logger);
         } else {
-            MessageBox mb = new MessageBox(getApplication().getMainWindow(),
+            MessageBox mb = new MessageBox(getUI().getWindows().iterator().next(),
                                            "Are you sure?",
                                            MessageBox.Icon.QUESTION,
                                            eventCount + " of the new events are already on the configuration files. Do you really want to override those events ?",

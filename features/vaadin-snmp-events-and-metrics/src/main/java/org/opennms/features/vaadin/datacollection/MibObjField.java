@@ -192,7 +192,7 @@ public class MibObjField extends CustomField<MibObjField.MibObjArrayList> implem
         if (itemId == null) {
             Notification.show("Please select a MIB Object from the table.");
         } else {
-            MessageBox mb = new MessageBox(getApplication().getMainWindow(),
+            MessageBox mb = new MessageBox(getUI().getWindows().iterator().next(),
                                            "Are you sure?",
                                            MessageBox.Icon.QUESTION,
                                            "Do you really want to remove the selected MIB Object?<br/>This action cannot be undone.",

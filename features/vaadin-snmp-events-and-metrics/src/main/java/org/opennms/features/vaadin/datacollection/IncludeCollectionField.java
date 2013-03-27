@@ -203,7 +203,7 @@ public class IncludeCollectionField extends CustomField<IncludeCollectionField.I
             Notification.show("Please select a IncludeCollection from the table.");
             return;
         }
-        MessageBox mb = new MessageBox(getApplication().getMainWindow(),
+        MessageBox mb = new MessageBox(getUI().getWindows().iterator().next(),
                                        "Are you sure?",
                                        MessageBox.Icon.QUESTION,
                                        "Do you really want to remove the selected Include Collection field<br/>This action cannot be undone.",

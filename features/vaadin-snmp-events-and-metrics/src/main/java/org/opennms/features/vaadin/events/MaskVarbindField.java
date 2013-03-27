@@ -189,7 +189,7 @@ public class MaskVarbindField extends CustomField<MaskVarbindField.VarbindArrayL
         if (itemId == null) {
             Notification.show("Please select a Mask Varbind from the table.");
         } else {
-            MessageBox mb = new MessageBox(getApplication().getMainWindow(),
+            MessageBox mb = new MessageBox(getUI().getWindows().iterator().next(),
                                            "Are you sure?",
                                            MessageBox.Icon.QUESTION,
                                            "Do you really want to remove the selected Mask Varbind field?<br/>This action cannot be undone.",
