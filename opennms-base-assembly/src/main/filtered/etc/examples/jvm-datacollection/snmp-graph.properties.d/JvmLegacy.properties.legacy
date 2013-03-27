@@ -1,16 +1,16 @@
-reports=free.memory,
-jvm.thread.count,
-jvm.thread.daemon,
-jvm.thread.peak, 
-jvm.mempool.eden,
-jvm.mempool.perm,
-jvm.mempool.oldgen,
-jvm.mempool.survivor, 
-jvm.gc.copy,
-jvm.gc.msc,
-jvm.gc.parnew,
-jvm.gc.cms,
-jvm.gc.psms,
+reports=free.memory, \
+jvm.thread.count, \
+jvm.thread.daemon, \
+jvm.thread.peak, \
+jvm.mempool.eden, \
+jvm.mempool.perm, \
+jvm.mempool.oldgen, \
+jvm.mempool.survivor, \
+jvm.gc.copy, \
+jvm.gc.msc, \
+jvm.gc.parnew, \
+jvm.gc.cms, \
+jvm.gc.psms, \
 jvm.gc.pss
 
 ###
