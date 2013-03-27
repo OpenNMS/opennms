@@ -1,0 +1,15 @@
+<mbeans>
+  <mbean name="OpenNMS Queued" objectname="OpenNMS:Name=Queued">
+    <attrib name="CreatesCompleted" alias="ONMSQueCreates" type="counter"/>
+    <attrib name="DequeuedItems" alias="ONMSQueItemDeque" type="counter"/>
+    <attrib name="DequeuedOperations" alias="ONMSQueDequeOps" type="counter"/>
+    <attrib name="EnqueuedOperations" alias="ONMSQueEnqueOps" type="counter"/>
+    <attrib name="Errors" alias="ONMSQueErrors" type="counter"/>
+    <attrib name="PromotionCount" alias="ONMSQuePromo" type="counter"/>
+    <attrib name="SignificantOpsCompleted" alias="ONMSQueSigOpsCompl" type="counter"/>
+    <attrib name="SignificantOpsDequeued" alias="ONMSQueSigOpsDeque" type="counter"/>
+    <attrib name="SignificantOpsEnqueued" alias="ONMSQueSigOpsEnque" type="counter"/>
+    <attrib name="TotalOperationsPending" alias="ONMSQueOpsPend" type="gauge"/>
+    <attrib name="UpdatesCompleted" alias="ONMSQueUpdates" type="counter"/>
+  </mbean>
+</mbeans>
