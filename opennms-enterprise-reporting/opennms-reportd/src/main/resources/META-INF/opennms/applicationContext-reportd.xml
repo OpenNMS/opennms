@@ -59,6 +59,7 @@
   </bean>
 
   <bean id="reportService" class="org.opennms.netmgt.reporting.service.DefaultReportService" >
+    <property name="reportCatalogDao" ref="reportCatalogDao" />
   </bean>
 
  <bean id="javamailConfigResourceLocation" class="java.lang.String">
