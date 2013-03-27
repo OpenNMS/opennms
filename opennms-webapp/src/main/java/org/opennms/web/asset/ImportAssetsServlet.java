@@ -191,7 +191,7 @@ public class ImportAssetsServlet extends HttpServlet {
             while ((line = reader.readNext()) != null) {
                 count++;
                 try {
-                    logger.debug("asset line is:'{}'", line);
+                    logger.debug("asset line is:'{}'", (Object)line);
                     if (line.length != 59) {
                         logger.error("csv test row length was not 58 line length: '{}' line was:'{}', line length", line.length, line);
                         throw new NoSuchElementException();
@@ -199,7 +199,7 @@ public class ImportAssetsServlet extends HttpServlet {
 
                     // skip the first line if it's the headers
                     if (line[0].equals("Node Label")) {
-                        logger.debug("line was header. line:'{}'", line);
+                        logger.debug("line was header. line:'{}'", (Object)line);
                         continue;
                     }
                     
