@@ -29,6 +29,7 @@
 package org.opennms.netmgt.alarmd.northbounder.syslog;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -42,8 +43,8 @@ import org.opennms.netmgt.alarmd.api.support.AbstractNorthbounder;
 import org.opennms.netmgt.alarmd.northbounder.syslog.SyslogDestination.SyslogFacility;
 import org.opennms.netmgt.alarmd.northbounder.syslog.SyslogDestination.SyslogProtocol;
 import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
+import org.apache.commons.lang.StringUtils;
 import org.productivity.java.syslog4j.Syslog;
 import org.productivity.java.syslog4j.SyslogConfigIF;
 import org.productivity.java.syslog4j.SyslogConstants;
@@ -166,6 +167,12 @@ public class SyslogNorthbounder extends AbstractNorthbounder implements Initiali
         	 * Iterate over the list of alarms to be forwarded N.
         	 */
         	for (NorthboundAlarm alarm : alarms) {
+        		
+        		Integer count = alarm.getCount();
+				if (count > 1 && dest.isFirstOccurrenceOnly()) {
+        			LogUtils.debugf(this, "Destination %s is configured for new alarm instances only.  Alarm has count of %d.", dest.getName(), count);
+        			continue;
+        		}
 
         		LogUtils.debugf(this, "Creating formatted log message for alarm: %d.", alarm.getId());
         		
@@ -266,9 +273,59 @@ public class SyslogNorthbounder extends AbstractNorthbounder implements Initiali
 			mapping.put("x733ProbableCause", "");
 		}
 		
+		buildParmMappings(alarm, mapping);
+		
 		alarmMappings.put(alarm.getId(), mapping);
 		return mapping;
 	}
+
+	protected void buildParmMappings(final NorthboundAlarm alarm, final Map<String, String> mapping) {
+		List<EventParm<?>> parmCollection = new LinkedList<EventParm<?>>();
+		String parms = alarm.getEventParms();
+
+		char separator = ';';
+		String[] parmArray = StringUtils.split(parms, separator);
+		for (String string : parmArray) {
+			
+			char nameValueDelim = '=';
+			String[] nameValueArray = StringUtils.split(string, nameValueDelim);
+			String parmName = nameValueArray[0];
+			String parmValue = StringUtils.split(nameValueArray[1], '(')[0];
+			
+			EventParm<String> eventParm = new EventParm<String>(parmName, parmValue);
+			parmCollection.add(eventParm);
+		}
+
+		for (int i = 0; i < parmCollection.size(); i++) {
+			EventParm<?> parm = parmCollection.get(i);
+			Integer parmOffset = i +1;
+			mapping.put("parm[name-#"+parmOffset+"]", parm.getParmName());
+			mapping.put("parm[#"+parmOffset+"]", parm.getParmValue().toString());
+			mapping.put("parm["+parm.getParmName()+"]", parm.getParmValue().toString());
+		}
+	}
+	
+	
+	protected class EventParm<T extends Object> {
+		private String m_parmName;
+		private T m_parmValue;
+		
+		EventParm(String name, T value) {
+			m_parmName = name;
+			m_parmValue = value;
+		}
+		
+		public String getParmName() {
+			return m_parmName;
+		}
+
+		public T getParmValue() {
+			return (T) m_parmValue;
+		}
+		
+	}
+	
+	
 
 	private String nullSafeToString(Object obj, String defaultString) {
 		if (obj != null) {
