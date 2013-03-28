@@ -109,7 +109,8 @@ public class ExportAssetsServlet extends HttpServlet {
                 "State",
                 "Zip",
                 "Country",
-                "Geolocation",
+                "Longitude",
+                "Latitude",
                 "Building",
                 "Floor",
                 "Room",
@@ -179,7 +180,8 @@ public class ExportAssetsServlet extends HttpServlet {
             entries.add(asset.getState());
             entries.add(asset.getZip());
             entries.add(asset.getCountry());
-            entries.add(asset.getGeolocation());
+            entries.add(asset.getLongitude().toString());
+            entries.add(asset.getLatitude().toString());
             entries.add(asset.getBuilding());
             entries.add(asset.getFloor());
             entries.add(asset.getRoom());
