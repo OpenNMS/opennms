@@ -42,8 +42,8 @@ import org.opennms.features.topology.api.CheckedOperation;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.OperationContext.DisplayLocation;
+import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.TopoContextMenu.TopoContextMenuItem;
 import org.vaadin.peter.contextmenu.ContextMenu;
@@ -51,8 +51,8 @@ import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItemClickEvent;
 
 import com.vaadin.ui.MenuBar;
-import com.vaadin.ui.UI;
 import com.vaadin.ui.MenuBar.MenuItem;
+import com.vaadin.ui.UI;
 
 public class CommandManager {
 
@@ -338,8 +338,8 @@ public class CommandManager {
         Operation operation = m_contextMenuItemsToOperationMap.get(ctxMenuItem);
      
         List<VertexRef> targets = asVertexList(target);
-        ctxMenuItem.setVisible(operation.display(targets, operationContext));
-        ctxMenuItem.setEnabled(operation.enabled(targets, operationContext));   
+        //ctxMenuItem.setVisible(operation.display(targets, operationContext));
+        //ctxMenuItem.setEnabled(operation.enabled(targets, operationContext));   
     }
 
 	private List<VertexRef> asVertexList(Object target) {

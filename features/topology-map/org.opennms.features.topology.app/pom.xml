@@ -41,6 +41,7 @@
 		      </excludes>
 		    </configuration>
 		</plugin>
+		
 <!--       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>gwt-maven-plugin</artifactId>

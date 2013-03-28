@@ -41,9 +41,9 @@ import org.opennms.features.topology.app.internal.gwt.client.d3.D3;
 import org.opennms.features.topology.app.internal.gwt.client.d3.D3Behavior;
 import org.opennms.features.topology.app.internal.gwt.client.d3.D3Drag;
 import org.opennms.features.topology.app.internal.gwt.client.d3.D3Events;
+import org.opennms.features.topology.app.internal.gwt.client.d3.D3Events.Handler;
 import org.opennms.features.topology.app.internal.gwt.client.d3.D3Transform;
 import org.opennms.features.topology.app.internal.gwt.client.d3.Func;
-import org.opennms.features.topology.app.internal.gwt.client.d3.D3Events.Handler;
 import org.opennms.features.topology.app.internal.gwt.client.handler.DragHandlerManager;
 import org.opennms.features.topology.app.internal.gwt.client.handler.DragObject;
 import org.opennms.features.topology.app.internal.gwt.client.handler.MarqueeSelectHandler;
@@ -338,9 +338,9 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
             Func<String, GWTEdge> edgeIdentifierFunction = new Func<String, GWTEdge>() {
 
 				public String call(GWTEdge edge, int index) {
-				    if(m_client.getTooltipTitleInfo(VTopologyComponent.this, edge) == null) {
-				        m_client.registerTooltip(VTopologyComponent.this, edge, new TooltipInfo(edge.getTooltipText()));
-				    }
+//				    if(m_client.getTooltipTitleInfo(VTopologyComponent.this, edge) == null) {
+//				        m_client.registerTooltip(VTopologyComponent.this, edge, new TooltipInfo(edge.getTooltipText()));
+//				    }
 					String edgeId = edge.getId();
 					return edgeId;
 				}
@@ -531,7 +531,7 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 			public void call(GWTVertex t, int index) {
 				if(m_client != null) {
 					Event event = (Event) D3.getEvent();
-					m_client.handleTooltipEvent(event, VTopologyComponent.this, t);
+					//m_client.handleTooltipEvent(event, VTopologyComponent.this, t);
 					event.stopPropagation();
 					event.preventDefault();
 				}
@@ -545,7 +545,7 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 			public void call(GWTEdge edge, int index) {
 				if(m_client != null) {
 					Event event = D3.getEvent().cast();
-					m_client.handleTooltipEvent(event, VTopologyComponent.this, edge);
+					//m_client.handleTooltipEvent(event, VTopologyComponent.this, edge);
 					event.stopPropagation();
 					event.preventDefault();
 				}
@@ -729,7 +729,7 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 
 				if(m_client != null) {
 					TooltipInfo ttInfo = new TooltipInfo(child.getStringAttribute("tooltipText"));
-					m_client.registerTooltip(this, vertex, ttInfo);
+					//m_client.registerTooltip(this, vertex, ttInfo);
 				}
 				
 			}else if(child.getTag().equals("edge")) {

@@ -76,11 +76,11 @@ public class TopoContextMenu extends ContextMenu {
 		}
 
 		public String getName() {
-			return m_item.getName();
+			return "henry";//m_item.getName();
 		}
 
         public void setSeparatorVisible(boolean b) {
-            m_item.setSeparatorVisible(b);
+            //m_item.setSeparatorVisible(b);
         }
 		
 	}

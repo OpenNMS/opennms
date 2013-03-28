@@ -3,18 +3,17 @@
 <module >
 <!-- At build time the other topology widgets get injected here -->
 
-    <inherits name="com.github.wolfie.refresher.RefresherApplicationWidgetset" />
 
-    <inherits name="com.vaadin.terminal.gwt.DefaultWidgetSet" />
+    <inherits name="com.vaadin.DefaultWidgetSet" />
 
-
-    <inherits name="org.opennms.features.topology.app.internal.gwt.TopologyAppWidgetSet" />
-
-    <inherits name="org.opennms.features.topology.ssh.internal.gwt.TerminalWidgetSet" />
+    <inherits name="com.github.wolfie.refresher.RefresherWidgetset" />
 
     <inherits name="org.vaadin.peter.contextmenu.ContextmenuWidgetset" />
+
+    <inherits name="org.opennms.features.topology.app.internal.gwt.TopologyAppWidgetSet" />
     
-    <inherits name="com.google.gwt.user.theme.standard.Standard" />
-    <inherits name="com.google.gwt.xml.XML" />
-    <inherits name="com.google.gwt.touch.Touch"/>
+
+    
+
+    
 </module>

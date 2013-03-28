@@ -49,19 +49,20 @@ import org.opennms.features.topology.app.internal.TopologyComponent.VertexUpdate
 import org.opennms.features.topology.app.internal.jung.FRLayoutAlgorithm;
 import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
 
-import com.github.wolfie.refresher.Refresher;
 import com.vaadin.annotations.Theme;
 import com.vaadin.data.Property;
 import com.vaadin.server.Page;
-import com.vaadin.server.ThemeResource;
-import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.Page.UriFragmentChangedEvent;
 import com.vaadin.server.Page.UriFragmentChangedListener;
+import com.vaadin.server.ThemeResource;
+import com.vaadin.server.VaadinRequest;
 import com.vaadin.shared.ui.slider.SliderOrientation;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.HorizontalLayout;
@@ -69,6 +70,7 @@ import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.MenuBar;
+import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.Slider;
 import com.vaadin.ui.TabSheet;
@@ -76,9 +78,6 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.VerticalSplitPanel;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.MenuBar.MenuItem;
 
 @SuppressWarnings("serial")
 @Theme("topo_default")
@@ -156,8 +155,8 @@ public class TopologyWidgetTestApplication extends UI implements CommandUpdateLi
             HEADER_HEIGHT = 0;
         }
         
-        Refresher refresher = new Refresher();
-        refresher.setRefreshInterval(5000);
+        //Refresher refresher = new Refresher();
+        //refresher.setRefreshInterval(5000);
         //getMainWindow().addComponent(refresher);
 
         m_graphContainer.setLayoutAlgorithm(new FRLayoutAlgorithm());
@@ -477,6 +476,7 @@ public class TopologyWidgetTestApplication extends UI implements CommandUpdateLi
 
 		if(m_contextMenu != null) {
 			m_contextMenu.detach();
+
 		}
 
 		m_menuBar = commandManager.getMenuBar(m_graphContainer, this, m_selectionManager);
@@ -503,12 +503,12 @@ public class TopologyWidgetTestApplication extends UI implements CommandUpdateLi
 			else updateSubMenuDisplay(item.getChildren());
 			boolean shouldDisplay = false;
 			for (TopoContextMenuItem child : item.getChildren()) {
-				if (child.getItem().isVisible()) {
-					shouldDisplay = true;
-					break;
-				}
+//				if (child.getItem().isVisible()) {
+//					shouldDisplay = true;
+//					break;
+//				}
 			}
-			item.getItem().setVisible(shouldDisplay);
+			//item.getItem().setVisible(shouldDisplay);
 		}
 	}
 
