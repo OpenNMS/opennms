@@ -28,7 +28,11 @@
 
 package org.opennms.gwt.web.ui.asset.server;
 
-import com.google.gwt.user.server.rpc.RemoteServiceServlet;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.gwt.web.ui.asset.client.AssetService;
 import org.opennms.gwt.web.ui.asset.shared.AssetCommand;
@@ -45,10 +49,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
+import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 /**
  * @author <a href="mailto:ronny@opennms.org">Ronny Trommer</a>
@@ -238,7 +239,8 @@ public class AssetServiceImpl extends RemoteServiceServlet implements AssetServi
             suggestion.addCategory(asset.getCategory());
             suggestion.addCircuitId(asset.getCircuitId());
             suggestion.addCity(asset.getGeolocation().getCity());
-            suggestion.addCoordinates(asset.getGeolocation().getCoordinates());
+            suggestion.addLongitude(asset.getGeolocation().getLongitude().toString());
+            suggestion.addLatitude(asset.getGeolocation().getLatitude().toString());
             suggestion.addCountry(asset.getGeolocation().getCountry());
             suggestion.addCpu(asset.getCpu());
             suggestion.addDepartment(asset.getDepartment());

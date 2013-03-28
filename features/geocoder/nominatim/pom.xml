@@ -36,30 +36,6 @@
           </instructions>
         </configuration>
       </plugin>
-<!-- FIXME: WHY DOESN'T THIS ATTACH?!?
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>build-helper-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>attach-artifacts</id>
-            <phase>install</phase>
-            <goals>
-              <goal>attach-artifact</goal>
-            </goals>
-            <configuration>
-              <artifacts>
-                <artifact>
-                  <file>${project.build.outputDirectory}/classes/${project.artifactId}.cfg</file>
-                  <type>cfg</type>
-                  <classifier>nominatim</classifier>
-                </artifact>
-              </artifacts>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
--->
     </plugins>
   </build>
 

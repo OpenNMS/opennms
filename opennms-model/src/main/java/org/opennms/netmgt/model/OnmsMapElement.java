@@ -28,21 +28,22 @@
 
 package org.opennms.netmgt.model;
 
-import javax.persistence.FetchType;
-import javax.persistence.Id;
+import java.io.Serializable;
+
 import javax.persistence.Column;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.ManyToOne;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlID;
-import java.io.Serializable;
 
 /**
  * <p>OnmsMapElement class.</p>
