@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<jmx-datacollection-config rrdRepository="/opt/opennms/share/rrd/snmp/">
+  <jmx-collection name="ActiveMQ">
+    <rrd step="300">
+      <rra>RRA:AVERAGE:0.5:1:2016</rra>
+      <rra>RRA:AVERAGE:0.5:12:1488</rra>
+      <rra>RRA:AVERAGE:0.5:288:366</rra>
+      <rra>RRA:MAX:0.5:288:366</rra>
+      <rra>RRA:MIN:0.5:288:366</rra>
+    </rrd>
+    <import-mbeans>jmx-datacollection/Jvm/1.6/JvmBasic0.xml</import-mbeans>
+    <import-mbeans>jmx-datacollection/ActiveMQ/5.6/ActiveMQBasic0.xml</import-mbeans>
+  </jmx-collection>
+  <jmx-collection name="Cassandra">
+    <rrd step="300">
+      <rra>RRA:AVERAGE:0.5:1:2016</rra>
+      <rra>RRA:AVERAGE:0.5:12:1488</rra>
+      <rra>RRA:AVERAGE:0.5:288:366</rra>
+      <rra>RRA:MAX:0.5:288:366</rra>
+      <rra>RRA:MIN:0.5:288:366</rra>
+    </rrd>
+    <import-mbeans>jmx-datacollection/Cassandra/1.1.2/CassandraBasic0.xml</import-mbeans>
+    <import-mbeans>jmx-datacollection/Jvm/1.6/JvmBasic0.xml</import-mbeans>
+  </jmx-collection>
+  <!-- renamed from jsr160 -->
+  <jmx-collection name="OpenNMS-JVM">
+    <rrd step="300">
+      <rra>RRA:AVERAGE:0.5:1:2016</rra>
+      <rra>RRA:AVERAGE:0.5:12:1488</rra>
+      <rra>RRA:AVERAGE:0.5:288:366</rra>
+      <rra>RRA:MAX:0.5:288:366</rra>
+      <rra>RRA:MIN:0.5:288:366</rra>
+    </rrd>
+    <import-mbeans>jmx-datacollection/Jvm/1.6/JvmBasic0.xml</import-mbeans>
+    <import-mbeans>jmx-datacollection/OpenNMS/1.10/OpenNMSBasic0.xml</import-mbeans>
+    <!--
+	This imports provide the legacy configurateion for jsr160 collection.
+	Beans provided by OpenNMS are included in OpenNMSLegacy.
+	Beans provided by the underlaying Jvm are included in JvmLegacy.xml.
+	Use this imports instead of the JvmBasic0.xml and OpenNMSBaisc0.xml just
+	if you need to stay at legacy datastructure. So you can keep your existing data.
+    -->
+    <!--import-mbeans>jmx-datacollection/Jvm/1.6/JvmLegacy.xml</import-mbeans-->
+    <!--import-mbeans>jmx-datacollection/OpenNMS/1.10/OpenNMSLegacy.xml</import-mbeans-->
+  </jmx-collection>
+  <jmx-collection name="jboss">
+    <rrd step="300">
+      <rra>RRA:AVERAGE:0.5:1:2016</rra>
+      <rra>RRA:AVERAGE:0.5:12:1488</rra>
+      <rra>RRA:AVERAGE:0.5:288:366</rra>
+      <rra>RRA:MAX:0.5:288:366</rra>
+      <rra>RRA:MIN:0.5:288:366</rra>
+    </rrd>
+    <import-mbeans>jmx-datacollection/JBoss/4/JBossBasic0.xml</import-mbeans>
+  </jmx-collection>
+</jmx-datacollection-config>

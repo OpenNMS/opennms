@@ -132,7 +132,9 @@ public class Asset extends Object {
 
     protected String country = "";
 
-    protected String geolocation = "";
+    protected Float longitude = null;
+
+    protected Float latitude = null;
 
     protected String building = "";
 
@@ -1070,25 +1072,43 @@ public class Asset extends Object {
     }
 
     /**
-     * <p>Setter for the field <code>geolocation</code>.</p>
+     * <p>Setter for the field <code>longitude</code>.</p>
      *
-     * @param geolocation a {@link java.lang.String} object.
+     * @param longitude a {@link java.lang.Float} object.
      */
-    public void setGeolocation(String geolocation) {
-        if (geolocation != null) {
-            this.geolocation = geolocation;
-        } else {
-            this.geolocation = "";
+    public void setLongitude(Float longitude) {
+        if (longitude != null) {
+            this.longitude = longitude;
         }
     }
 
     /**
-     * <p>Getter for the field <code>geolocation</code>.</p>
+     * <p>Getter for the field <code>longitude</code>.</p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return a {@link java.lang.Float} object.
      */
-    public String getGeolocation() {
-        return (this.geolocation);
+    public Float getLongitude() {
+        return (this.longitude);
+    }
+
+    /**
+     * <p>Setter for the field <code>longitude</code>.</p>
+     *
+     * @param longitude a {@link java.lang.Float} object.
+     */
+    public void setLatitude(Float latitude) {
+        if (latitude != null) {
+            this.latitude = latitude;
+        }
+    }
+
+    /**
+     * <p>Getter for the field <code>latitude</code>.</p>
+     *
+     * @return a {@link java.lang.Float} object.
+     */
+    public Float getLatitude() {
+        return (this.latitude);
     }
 
     /**
@@ -1604,8 +1624,10 @@ public class Asset extends Object {
         builder.append(zip);
         builder.append(", country=");
         builder.append(country);
-        builder.append(", geolocation=");
-        builder.append(geolocation);
+        builder.append(", longitude=");
+        builder.append(longitude);
+        builder.append(", latitude=");
+        builder.append(latitude);
         builder.append(", building=");
         builder.append(building);
         builder.append(", floor=");

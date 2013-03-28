@@ -20,7 +20,8 @@ public class OnmsGeolocation implements Serializable {
     private String m_state;
     private String m_zip;
     private String m_country;
-    private String m_coordinates;
+    private Float m_longitude;
+    private Float m_latitude;
 
     /**
      *--# address1         : Address of geographical location of asset, line 1.
@@ -137,16 +138,29 @@ public class OnmsGeolocation implements Serializable {
     }
 
     /**
-     * Coordinates, as a String, in "longitude,latitude" format
+     * The longitude coordinate of this node.
      * @return
      */
-    @Column(name="geolocation", length=32)
-    public String getCoordinates() {
-        return m_coordinates;
+    @Column(name="longitude")
+    public Float getLongitude() {
+        return m_longitude;
     }
 
-    public void setCoordinates(final String coordinates) {
-        m_coordinates = coordinates;
+    public void setLongitude(final Float longitude) {
+        m_longitude = longitude;
+    }
+
+    /**
+     * The latitude coordinate of this node.
+     * @return
+     */
+    @Column(name="latitude")
+    public Float getLatitude() {
+        return m_latitude;
+    }
+
+    public void setLatitude(final Float latitude) {
+        m_latitude = latitude;
     }
 
     @Override

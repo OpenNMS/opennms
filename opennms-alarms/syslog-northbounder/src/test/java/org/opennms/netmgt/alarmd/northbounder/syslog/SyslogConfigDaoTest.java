@@ -30,7 +30,7 @@ package org.opennms.netmgt.alarmd.northbounder.syslog;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.springframework.core.io.ByteArrayResource;
@@ -83,6 +83,7 @@ public class SyslogConfigDaoTest {
 			"    <send-local-name>false</send-local-name>" +
 			"    <send-local-time>false</send-local-time>" +
 			"    <truncate-message>true</truncate-message>" +
+			"    <first-occurrence-only>true</first-occurrence-only>" +
 			">\n" +
 			"   </destination>" +
 			"</syslog-northbounder-config>\n" +
@@ -119,6 +120,8 @@ public class SyslogConfigDaoTest {
 		assertEquals(false, syslogDestination.isSendLocalTime());
 		assertEquals(true, syslogDestination.isTruncateMessage());
 		
+		assertEquals(false, syslogDestination.isFirstOccurrenceOnly());
+		
 		assertEquals("uei.opennms.org/nodes/nodeDown", config.getUeis().get(0));
 		assertEquals("uei.opennms.org/nodes/nodeUp", config.getUeis().get(1));
 		
@@ -137,6 +140,7 @@ public class SyslogConfigDaoTest {
 		
 		assertNotNull(config);
 		assertEquals(null, config.getUeis());
+		assertTrue(config.getDestinations().get(0).isFirstOccurrenceOnly());
 		
 	}
 	

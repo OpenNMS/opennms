@@ -1,0 +1,342 @@
+<mbeans>
+  <mbean name="org.apache.cassandra.metrics.ClientRequestMetrics" objectname="org.apache.cassandra.metrics:type=ClientRequestMetrics,name=WriteUnavailables">
+    <attrib name="Count" alias="0Cnt" type="gauge"/>
+  </mbean>
+  <mbean name="org.apache.cassandra.metrics.ClientRequestMetrics" objectname="org.apache.cassandra.metrics:type=ClientRequestMetrics,name=ReadUnavailables">
+    <attrib name="Count" alias="1Cnt" type="gauge"/>
+  </mbean>
+  <mbean name="org.apache.cassandra.metrics.ClientRequestMetrics" objectname="org.apache.cassandra.metrics:type=ClientRequestMetrics,name=ReadTimeouts">
+    <attrib name="Count" alias="2Cnt" type="gauge"/>
+  </mbean>
+  <mbean name="org.apache.cassandra.metrics.ClientRequestMetrics" objectname="org.apache.cassandra.metrics:type=ClientRequestMetrics,name=WriteTimeouts">
+    <attrib name="Count" alias="3Cnt" type="gauge"/>
+  </mbean>
+  <mbean name="org.apache.cassandra.internal.MemtablePostFlusher" objectname="org.apache.cassandra.internal:type=MemtablePostFlusher">
+    <attrib name="TotalBlockedTasks" alias="0TotalBlockedTasks" type="gauge"/>
+    <attrib name="CurrentlyBlockedTasks" alias="0CurrenBlockedTasks" type="gauge"/>
+    <attrib name="ActiveCount" alias="0ActiveCnt" type="gauge"/>
+    <attrib name="PendingTasks" alias="0PendingTasks" type="gauge"/>
+    <attrib name="CompletedTasks" alias="0CompletedTasks" type="gauge"/>
+  </mbean>
+  <mbean name="org.apache.cassandra.internal.FlushWriter" objectname="org.apache.cassandra.internal:type=FlushWriter">
+    <attrib name="TotalBlockedTasks" alias="1TotalBlockedTasks" type="gauge"/>
+    <attrib name="CurrentlyBlockedTasks" alias="1CurrenBlockedTasks" type="gauge"/>
+    <attrib name="ActiveCount" alias="1ActiveCnt" type="gauge"/>
+    <attrib name="PendingTasks" alias="1PendingTasks" type="gauge"/>
+    <attrib name="CompletedTasks" alias="1CompletedTasks" type="gauge"/>
+  </mbean>
+  <mbean name="org.apache.cassandra.internal.commitlog_archiver" objectname="org.apache.cassandra.internal:type=commitlog_archiver">
+    <attrib name="TotalBlockedTasks" alias="2TotalBlockedTasks" type="gauge"/>
+    <attrib name="CurrentlyBlockedTasks" alias="2CurrenBlockedTasks" type="gauge"/>
+    <attrib name="ActiveCount" alias="2ActiveCnt" type="gauge"/>
+    <attrib name="PendingTasks" alias="2PendingTasks" type="gauge"/>
+    <attrib name="CompletedTasks" alias="2CompletedTasks" type="gauge"/>
+  </mbean>
+  <mbean name="org.apache.cassandra.internal.HintedHandoff" objectname="org.apache.cassandra.internal:type=HintedHandoff">
+    <attrib name="TotalBlockedTasks" alias="3TotalBlockedTasks" type="gauge"/>
+    <attrib name="CurrentlyBlockedTasks" alias="3CurrenBlockedTasks" type="gauge"/>
+    <attrib name="ActiveCount" alias="3ActiveCnt" type="gauge"/>
+    <attrib name="PendingTasks" alias="3PendingTasks" type="gauge"/>
+    <attrib name="CompletedTasks" alias="3CompletedTasks" type="gauge"/>
+  </mbean>
+  <mbean name="org.apache.cassandra.net.MessagingService" objectname="org.apache.cassandra.net:type=MessagingService">
+    <attrib name="TotalTimeouts" alias="0TotalTimeouts" type="gauge"/>
+    <attrib name="RecentTotalTimouts" alias="0RecentTotalTimouts" type="gauge"/>
+  </mbean>
+  <mbean name="org.apache.cassandra.db.DynamicEndpointSnitch" objectname="org.apache.cassandra.db:type=DynamicEndpointSnitch,instance=304840113">
+    <attrib name="UpdateInterval" alias="0UpdateInterval" type="gauge"/>
+    <attrib name="ResetInterval" alias="0ResetInterval" type="gauge"/>
+    <attrib name="BadnessThreshold" alias="0BadnessThreshold" type="gauge"/>
+  </mbean>
+  <mbean name="org.apache.cassandra.db.ColumnFamilies" objectname="org.apache.cassandra.db:type=ColumnFamilies,keyspace=system,columnfamily=Versions">
+    <attrib name="LiveDiskSpaceUsed" alias="0LiveDiskSpaceUsed" type="gauge"/>
+    <attrib name="MinRowSize" alias="0MinRowSize" type="gauge"/>
+    <attrib name="MaxRowSize" alias="0MaxRowSize" type="gauge"/>
+    <attrib name="MeanRowSize" alias="0MeanRowSize" type="gauge"/>
+    <attrib name="MemtableColumnsCount" alias="0MemtableColumnsCnt" type="gauge"/>
+    <attrib name="MemtableDataSize" alias="0MemtableDataSize" type="gauge"/>
+    <attrib name="MemtableSwitchCount" alias="0MemtableSwitchCnt" type="gauge"/>
+    <attrib name="ReadCount" alias="0ReadCnt" type="gauge"/>
+    <attrib name="RecentReadLatencyMicros" alias="0ReceReadLatenMicro" type="gauge"/>
+    <attrib name="TotalReadLatencyMicros" alias="0TotaReadLatenMicro" type="gauge"/>
+    <attrib name="PendingTasks" alias="4PendingTasks" type="gauge"/>
+    <attrib name="WriteCount" alias="0WriteCnt" type="gauge"/>
+    <attrib name="TotalWriteLatencyMicros" alias="0TotaWritLatenMicro" type="gauge"/>
+    <attrib name="RecentWriteLatencyMicros" alias="0ReceWritLatenMicro" type="gauge"/>
+    <attrib name="TotalDiskSpaceUsed" alias="0TotalDiskSpaceUsed" type="gauge"/>
+    <attrib name="LiveSSTableCount" alias="0LiveSSTableCnt" type="gauge"/>
+    <attrib name="BloomFilterFalsePositives" alias="0BloFilteFalsePosit" type="gauge"/>
+    <attrib name="RecentBloomFilterFalsePositives" alias="0RecBloFiltFalsPosi" type="gauge"/>
+    <attrib name="BloomFilterFalseRatio" alias="0BloFilteFalseRatio" type="gauge"/>
+    <attrib name="RecentBloomFilterFalseRatio" alias="0RecBloFiltFalsRati" type="gauge"/>
+    <attrib name="BloomFilterDiskSpaceUsed" alias="0BloFilDiskSpacUsed" type="gauge"/>
+    <attrib name="CompressionRatio" alias="0CompRatio" type="gauge"/>
+    <attrib name="UnleveledSSTables" alias="0UnleveledSSTables" type="gauge"/>
+  </mbean>
+  <mbean name="org.apache.cassandra.db.ColumnFamilies" objectname="org.apache.cassandra.db:type=ColumnFamilies,keyspace=system,columnfamily=Schema">
+    <attrib name="LiveDiskSpaceUsed" alias="1LiveDiskSpaceUsed" type="gauge"/>
+    <attrib name="MinRowSize" alias="1MinRowSize" type="gauge"/>
+    <attrib name="MaxRowSize" alias="1MaxRowSize" type="gauge"/>
+    <attrib name="MeanRowSize" alias="1MeanRowSize" type="gauge"/>
+    <attrib name="MemtableColumnsCount" alias="1MemtableColumnsCnt" type="gauge"/>
+    <attrib name="MemtableDataSize" alias="1MemtableDataSize" type="gauge"/>
+    <attrib name="MemtableSwitchCount" alias="1MemtableSwitchCnt" type="gauge"/>
+    <attrib name="ReadCount" alias="1ReadCnt" type="gauge"/>
+    <attrib name="RecentReadLatencyMicros" alias="1ReceReadLatenMicro" type="gauge"/>
+    <attrib name="TotalReadLatencyMicros" alias="1TotaReadLatenMicro" type="gauge"/>
+    <attrib name="PendingTasks" alias="5PendingTasks" type="gauge"/>
+    <attrib name="WriteCount" alias="1WriteCnt" type="gauge"/>
+    <attrib name="TotalWriteLatencyMicros" alias="1TotaWritLatenMicro" type="gauge"/>
+    <attrib name="RecentWriteLatencyMicros" alias="1ReceWritLatenMicro" type="gauge"/>
+    <attrib name="TotalDiskSpaceUsed" alias="1TotalDiskSpaceUsed" type="gauge"/>
+    <attrib name="LiveSSTableCount" alias="1LiveSSTableCnt" type="gauge"/>
+    <attrib name="BloomFilterFalsePositives" alias="1BloFilteFalsePosit" type="gauge"/>
+    <attrib name="RecentBloomFilterFalsePositives" alias="1RecBloFiltFalsPosi" type="gauge"/>
+    <attrib name="BloomFilterFalseRatio" alias="1BloFilteFalseRatio" type="gauge"/>
+    <attrib name="RecentBloomFilterFalseRatio" alias="1RecBloFiltFalsRati" type="gauge"/>
+    <attrib name="BloomFilterDiskSpaceUsed" alias="1BloFilDiskSpacUsed" type="gauge"/>
+    <attrib name="CompressionRatio" alias="1CompRatio" type="gauge"/>
+    <attrib name="UnleveledSSTables" alias="1UnleveledSSTables" type="gauge"/>
+  </mbean>
+  <mbean name="org.apache.cassandra.db.ColumnFamilies" objectname="org.apache.cassandra.db:type=ColumnFamilies,keyspace=system,columnfamily=schema_columns">
+    <attrib name="LiveDiskSpaceUsed" alias="2LiveDiskSpaceUsed" type="gauge"/>
+    <attrib name="MinRowSize" alias="2MinRowSize" type="gauge"/>
+    <attrib name="MaxRowSize" alias="2MaxRowSize" type="gauge"/>
+    <attrib name="MeanRowSize" alias="2MeanRowSize" type="gauge"/>
+    <attrib name="MemtableColumnsCount" alias="2MemtableColumnsCnt" type="gauge"/>
+    <attrib name="MemtableDataSize" alias="2MemtableDataSize" type="gauge"/>
+    <attrib name="MemtableSwitchCount" alias="2MemtableSwitchCnt" type="gauge"/>
+    <attrib name="ReadCount" alias="2ReadCnt" type="gauge"/>
+    <attrib name="RecentReadLatencyMicros" alias="2ReceReadLatenMicro" type="gauge"/>
+    <attrib name="TotalReadLatencyMicros" alias="2TotaReadLatenMicro" type="gauge"/>
+    <attrib name="PendingTasks" alias="6PendingTasks" type="gauge"/>
+    <attrib name="WriteCount" alias="2WriteCnt" type="gauge"/>
+    <attrib name="TotalWriteLatencyMicros" alias="2TotaWritLatenMicro" type="gauge"/>
+    <attrib name="RecentWriteLatencyMicros" alias="2ReceWritLatenMicro" type="gauge"/>
+    <attrib name="TotalDiskSpaceUsed" alias="2TotalDiskSpaceUsed" type="gauge"/>
+    <attrib name="LiveSSTableCount" alias="2LiveSSTableCnt" type="gauge"/>
+    <attrib name="BloomFilterFalsePositives" alias="2BloFilteFalsePosit" type="gauge"/>
+    <attrib name="RecentBloomFilterFalsePositives" alias="2RecBloFiltFalsPosi" type="gauge"/>
+    <attrib name="BloomFilterFalseRatio" alias="2BloFilteFalseRatio" type="gauge"/>
+    <attrib name="RecentBloomFilterFalseRatio" alias="2RecBloFiltFalsRati" type="gauge"/>
+    <attrib name="BloomFilterDiskSpaceUsed" alias="2BloFilDiskSpacUsed" type="gauge"/>
+    <attrib name="CompressionRatio" alias="2CompRatio" type="gauge"/>
+    <attrib name="UnleveledSSTables" alias="2UnleveledSSTables" type="gauge"/>
+  </mbean>
+  <mbean name="org.apache.cassandra.db.CompactionManager" objectname="org.apache.cassandra.db:type=CompactionManager">
+    <attrib name="PendingTasks" alias="7PendingTasks" type="gauge"/>
+    <attrib name="CompletedTasks" alias="4CompletedTasks" type="gauge"/>
+    <attrib name="TotalBytesCompacted" alias="0TotalBytesCompacte" type="gauge"/>
+    <attrib name="TotalCompactionsCompleted" alias="0TotalCompacComplet" type="gauge"/>
+  </mbean>
+  <mbean name="org.apache.cassandra.db.ColumnFamilies" objectname="org.apache.cassandra.db:type=ColumnFamilies,keyspace=system,columnfamily=LocationInfo">
+    <attrib name="LiveDiskSpaceUsed" alias="3LiveDiskSpaceUsed" type="gauge"/>
+    <attrib name="MinRowSize" alias="3MinRowSize" type="gauge"/>
+    <attrib name="MaxRowSize" alias="3MaxRowSize" type="gauge"/>
+    <attrib name="MeanRowSize" alias="3MeanRowSize" type="gauge"/>
+    <attrib name="MemtableColumnsCount" alias="3MemtableColumnsCnt" type="gauge"/>
+    <attrib name="MemtableDataSize" alias="3MemtableDataSize" type="gauge"/>
+    <attrib name="MemtableSwitchCount" alias="3MemtableSwitchCnt" type="gauge"/>
+    <attrib name="ReadCount" alias="3ReadCnt" type="gauge"/>
+    <attrib name="RecentReadLatencyMicros" alias="3ReceReadLatenMicro" type="gauge"/>
+    <attrib name="TotalReadLatencyMicros" alias="3TotaReadLatenMicro" type="gauge"/>
+    <attrib name="PendingTasks" alias="8PendingTasks" type="gauge"/>
+    <attrib name="WriteCount" alias="3WriteCnt" type="gauge"/>
+    <attrib name="TotalWriteLatencyMicros" alias="3TotaWritLatenMicro" type="gauge"/>
+    <attrib name="RecentWriteLatencyMicros" alias="3ReceWritLatenMicro" type="gauge"/>
+    <attrib name="TotalDiskSpaceUsed" alias="3TotalDiskSpaceUsed" type="gauge"/>
+    <attrib name="LiveSSTableCount" alias="3LiveSSTableCnt" type="gauge"/>
+    <attrib name="BloomFilterFalsePositives" alias="3BloFilteFalsePosit" type="gauge"/>
+    <attrib name="RecentBloomFilterFalsePositives" alias="3RecBloFiltFalsPosi" type="gauge"/>
+    <attrib name="BloomFilterFalseRatio" alias="3BloFilteFalseRatio" type="gauge"/>
+    <attrib name="RecentBloomFilterFalseRatio" alias="3RecBloFiltFalsRati" type="gauge"/>
+    <attrib name="BloomFilterDiskSpaceUsed" alias="3BloFilDiskSpacUsed" type="gauge"/>
+    <attrib name="CompressionRatio" alias="3CompRatio" type="gauge"/>
+    <attrib name="UnleveledSSTables" alias="3UnleveledSSTables" type="gauge"/>
+  </mbean>
+  <mbean name="org.apache.cassandra.db.Caches" objectname="org.apache.cassandra.db:type=Caches">
+    <attrib name="KeyCacheHits" alias="0KeyCacheHits" type="gauge"/>
+    <attrib name="RowCacheHits" alias="0RowCacheHits" type="gauge"/>
+    <attrib name="KeyCacheRequests" alias="0KeyCacheRequests" type="gauge"/>
+    <attrib name="RowCacheRequests" alias="0RowCacheRequests" type="gauge"/>
+    <attrib name="KeyCacheRecentHitRate" alias="0KeyCachReceHitRate" type="gauge"/>
+    <attrib name="RowCacheRecentHitRate" alias="0RowCachReceHitRate" type="gauge"/>
+    <attrib name="RowCacheCapacityInBytes" alias="0RowCachCapaInBytes" type="gauge"/>
+    <attrib name="KeyCacheCapacityInBytes" alias="0KeyCachCapaInBytes" type="gauge"/>
+    <attrib name="RowCacheSize" alias="0RowCacheSize" type="gauge"/>
+    <attrib name="KeyCacheSize" alias="0KeyCacheSize" type="gauge"/>
+  </mbean>
+  <mbean name="org.apache.cassandra.db.StorageService" objectname="org.apache.cassandra.db:type=StorageService">
+    <attrib name="Load" alias="0Load" type="gauge"/>
+    <attrib name="CurrentGenerationNumber" alias="0CurrentGeneratiNum" type="gauge"/>
+    <attrib name="ExceptionCount" alias="0ExceptionCnt" type="gauge"/>
+  </mbean>
+  <mbean name="org.apache.cassandra.db.ColumnFamilies" objectname="org.apache.cassandra.db:type=ColumnFamilies,keyspace=system,columnfamily=schema_columnfamilies">
+    <attrib name="LiveDiskSpaceUsed" alias="4LiveDiskSpaceUsed" type="gauge"/>
+    <attrib name="MinRowSize" alias="4MinRowSize" type="gauge"/>
+    <attrib name="MaxRowSize" alias="4MaxRowSize" type="gauge"/>
+    <attrib name="MeanRowSize" alias="4MeanRowSize" type="gauge"/>
+    <attrib name="MemtableColumnsCount" alias="4MemtableColumnsCnt" type="gauge"/>
+    <attrib name="MemtableDataSize" alias="4MemtableDataSize" type="gauge"/>
+    <attrib name="MemtableSwitchCount" alias="4MemtableSwitchCnt" type="gauge"/>
+    <attrib name="ReadCount" alias="4ReadCnt" type="gauge"/>
+    <attrib name="RecentReadLatencyMicros" alias="4ReceReadLatenMicro" type="gauge"/>
+    <attrib name="TotalReadLatencyMicros" alias="4TotaReadLatenMicro" type="gauge"/>
+    <attrib name="PendingTasks" alias="9PendingTasks" type="gauge"/>
+    <attrib name="WriteCount" alias="4WriteCnt" type="gauge"/>
+    <attrib name="TotalWriteLatencyMicros" alias="4TotaWritLatenMicro" type="gauge"/>
+    <attrib name="RecentWriteLatencyMicros" alias="4ReceWritLatenMicro" type="gauge"/>
+    <attrib name="TotalDiskSpaceUsed" alias="4TotalDiskSpaceUsed" type="gauge"/>
+    <attrib name="LiveSSTableCount" alias="4LiveSSTableCnt" type="gauge"/>
+    <attrib name="BloomFilterFalsePositives" alias="4BloFilteFalsePosit" type="gauge"/>
+    <attrib name="RecentBloomFilterFalsePositives" alias="4RecBloFiltFalsPosi" type="gauge"/>
+    <attrib name="BloomFilterFalseRatio" alias="4BloFilteFalseRatio" type="gauge"/>
+    <attrib name="RecentBloomFilterFalseRatio" alias="4RecBloFiltFalsRati" type="gauge"/>
+    <attrib name="BloomFilterDiskSpaceUsed" alias="4BloFilDiskSpacUsed" type="gauge"/>
+    <attrib name="CompressionRatio" alias="4CompRatio" type="gauge"/>
+    <attrib name="UnleveledSSTables" alias="4UnleveledSSTables" type="gauge"/>
+  </mbean>
+  <mbean name="org.apache.cassandra.db.ColumnFamilies" objectname="org.apache.cassandra.db:type=ColumnFamilies,keyspace=system,columnfamily=Migrations">
+    <attrib name="LiveDiskSpaceUsed" alias="5LiveDiskSpaceUsed" type="gauge"/>
+    <attrib name="MinRowSize" alias="5MinRowSize" type="gauge"/>
+    <attrib name="MaxRowSize" alias="5MaxRowSize" type="gauge"/>
+    <attrib name="MeanRowSize" alias="5MeanRowSize" type="gauge"/>
+    <attrib name="MemtableColumnsCount" alias="5MemtableColumnsCnt" type="gauge"/>
+    <attrib name="MemtableDataSize" alias="5MemtableDataSize" type="gauge"/>
+    <attrib name="MemtableSwitchCount" alias="5MemtableSwitchCnt" type="gauge"/>
+    <attrib name="ReadCount" alias="5ReadCnt" type="gauge"/>
+    <attrib name="RecentReadLatencyMicros" alias="5ReceReadLatenMicro" type="gauge"/>
+    <attrib name="TotalReadLatencyMicros" alias="5TotaReadLatenMicro" type="gauge"/>
+    <attrib name="PendingTasks" alias="10PendingTasks" type="gauge"/>
+    <attrib name="WriteCount" alias="5WriteCnt" type="gauge"/>
+    <attrib name="TotalWriteLatencyMicros" alias="5TotaWritLatenMicro" type="gauge"/>
+    <attrib name="RecentWriteLatencyMicros" alias="5ReceWritLatenMicro" type="gauge"/>
+    <attrib name="TotalDiskSpaceUsed" alias="5TotalDiskSpaceUsed" type="gauge"/>
+    <attrib name="LiveSSTableCount" alias="5LiveSSTableCnt" type="gauge"/>
+    <attrib name="BloomFilterFalsePositives" alias="5BloFilteFalsePosit" type="gauge"/>
+    <attrib name="RecentBloomFilterFalsePositives" alias="5RecBloFiltFalsPosi" type="gauge"/>
+    <attrib name="BloomFilterFalseRatio" alias="5BloFilteFalseRatio" type="gauge"/>
+    <attrib name="RecentBloomFilterFalseRatio" alias="5RecBloFiltFalsRati" type="gauge"/>
+    <attrib name="BloomFilterDiskSpaceUsed" alias="5BloFilDiskSpacUsed" type="gauge"/>
+    <attrib name="CompressionRatio" alias="5CompRatio" type="gauge"/>
+    <attrib name="UnleveledSSTables" alias="5UnleveledSSTables" type="gauge"/>
+  </mbean>
+  <mbean name="org.apache.cassandra.db.ColumnFamilies" objectname="org.apache.cassandra.db:type=ColumnFamilies,keyspace=system,columnfamily=IndexInfo">
+    <attrib name="LiveDiskSpaceUsed" alias="6LiveDiskSpaceUsed" type="gauge"/>
+    <attrib name="MinRowSize" alias="6MinRowSize" type="gauge"/>
+    <attrib name="MaxRowSize" alias="6MaxRowSize" type="gauge"/>
+    <attrib name="MeanRowSize" alias="6MeanRowSize" type="gauge"/>
+    <attrib name="MemtableColumnsCount" alias="6MemtableColumnsCnt" type="gauge"/>
+    <attrib name="MemtableDataSize" alias="6MemtableDataSize" type="gauge"/>
+    <attrib name="MemtableSwitchCount" alias="6MemtableSwitchCnt" type="gauge"/>
+    <attrib name="ReadCount" alias="6ReadCnt" type="gauge"/>
+    <attrib name="RecentReadLatencyMicros" alias="6ReceReadLatenMicro" type="gauge"/>
+    <attrib name="TotalReadLatencyMicros" alias="6TotaReadLatenMicro" type="gauge"/>
+    <attrib name="PendingTasks" alias="11PendingTasks" type="gauge"/>
+    <attrib name="WriteCount" alias="6WriteCnt" type="gauge"/>
+    <attrib name="TotalWriteLatencyMicros" alias="6TotaWritLatenMicro" type="gauge"/>
+    <attrib name="RecentWriteLatencyMicros" alias="6ReceWritLatenMicro" type="gauge"/>
+    <attrib name="TotalDiskSpaceUsed" alias="6TotalDiskSpaceUsed" type="gauge"/>
+    <attrib name="LiveSSTableCount" alias="6LiveSSTableCnt" type="gauge"/>
+    <attrib name="BloomFilterFalsePositives" alias="6BloFilteFalsePosit" type="gauge"/>
+    <attrib name="RecentBloomFilterFalsePositives" alias="6RecBloFiltFalsPosi" type="gauge"/>
+    <attrib name="BloomFilterFalseRatio" alias="6BloFilteFalseRatio" type="gauge"/>
+    <attrib name="RecentBloomFilterFalseRatio" alias="6RecBloFiltFalsRati" type="gauge"/>
+    <attrib name="BloomFilterDiskSpaceUsed" alias="6BloFilDiskSpacUsed" type="gauge"/>
+    <attrib name="CompressionRatio" alias="6CompRatio" type="gauge"/>
+    <attrib name="UnleveledSSTables" alias="6UnleveledSSTables" type="gauge"/>
+  </mbean>
+  <mbean name="org.apache.cassandra.db.ColumnFamilies" objectname="org.apache.cassandra.db:type=ColumnFamilies,keyspace=system,columnfamily=schema_keyspaces">
+    <attrib name="LiveDiskSpaceUsed" alias="7LiveDiskSpaceUsed" type="gauge"/>
+    <attrib name="MinRowSize" alias="7MinRowSize" type="gauge"/>
+    <attrib name="MaxRowSize" alias="7MaxRowSize" type="gauge"/>
+    <attrib name="MeanRowSize" alias="7MeanRowSize" type="gauge"/>
+    <attrib name="MemtableColumnsCount" alias="7MemtableColumnsCnt" type="gauge"/>
+    <attrib name="MemtableDataSize" alias="7MemtableDataSize" type="gauge"/>
+    <attrib name="MemtableSwitchCount" alias="7MemtableSwitchCnt" type="gauge"/>
+    <attrib name="ReadCount" alias="7ReadCnt" type="gauge"/>
+    <attrib name="RecentReadLatencyMicros" alias="7ReceReadLatenMicro" type="gauge"/>
+    <attrib name="TotalReadLatencyMicros" alias="7TotaReadLatenMicro" type="gauge"/>
+    <attrib name="PendingTasks" alias="12PendingTasks" type="gauge"/>
+    <attrib name="WriteCount" alias="7WriteCnt" type="gauge"/>
+    <attrib name="TotalWriteLatencyMicros" alias="7TotaWritLatenMicro" type="gauge"/>
+    <attrib name="RecentWriteLatencyMicros" alias="7ReceWritLatenMicro" type="gauge"/>
+    <attrib name="TotalDiskSpaceUsed" alias="7TotalDiskSpaceUsed" type="gauge"/>
+    <attrib name="LiveSSTableCount" alias="7LiveSSTableCnt" type="gauge"/>
+    <attrib name="BloomFilterFalsePositives" alias="7BloFilteFalsePosit" type="gauge"/>
+    <attrib name="RecentBloomFilterFalsePositives" alias="7RecBloFiltFalsPosi" type="gauge"/>
+    <attrib name="BloomFilterFalseRatio" alias="7BloFilteFalseRatio" type="gauge"/>
+    <attrib name="RecentBloomFilterFalseRatio" alias="7RecBloFiltFalsRati" type="gauge"/>
+    <attrib name="BloomFilterDiskSpaceUsed" alias="7BloFilDiskSpacUsed" type="gauge"/>
+    <attrib name="CompressionRatio" alias="7CompRatio" type="gauge"/>
+    <attrib name="UnleveledSSTables" alias="7UnleveledSSTables" type="gauge"/>
+  </mbean>
+  <mbean name="org.apache.cassandra.db.StorageProxy" objectname="org.apache.cassandra.db:type=StorageProxy">
+    <attrib name="RecentReadLatencyMicros" alias="8ReceReadLatenMicro" type="gauge"/>
+    <attrib name="TotalReadLatencyMicros" alias="8TotaReadLatenMicro" type="gauge"/>
+    <attrib name="TotalWriteLatencyMicros" alias="8TotaWritLatenMicro" type="gauge"/>
+    <attrib name="RecentWriteLatencyMicros" alias="8ReceWritLatenMicro" type="gauge"/>
+    <attrib name="ReadOperations" alias="0ReadOperations" type="gauge"/>
+    <attrib name="RangeOperations" alias="0RangeOperations" type="gauge"/>
+    <attrib name="TotalRangeLatencyMicros" alias="0TotaRangLatenMicro" type="gauge"/>
+    <attrib name="RecentRangeLatencyMicros" alias="0ReceRangLatenMicro" type="gauge"/>
+    <attrib name="WriteOperations" alias="0WriteOperations" type="gauge"/>
+    <attrib name="TotalHints" alias="0TotalHints" type="gauge"/>
+    <attrib name="HintsInProgress" alias="0HintsInProgress" type="gauge"/>
+  </mbean>
+  <mbean name="org.apache.cassandra.db.ColumnFamilies" objectname="org.apache.cassandra.db:type=ColumnFamilies,keyspace=system,columnfamily=NodeIdInfo">
+    <attrib name="LiveDiskSpaceUsed" alias="8LiveDiskSpaceUsed" type="gauge"/>
+    <attrib name="MinRowSize" alias="8MinRowSize" type="gauge"/>
+    <attrib name="MaxRowSize" alias="8MaxRowSize" type="gauge"/>
+    <attrib name="MeanRowSize" alias="8MeanRowSize" type="gauge"/>
+    <attrib name="MemtableColumnsCount" alias="8MemtableColumnsCnt" type="gauge"/>
+    <attrib name="MemtableDataSize" alias="8MemtableDataSize" type="gauge"/>
+    <attrib name="MemtableSwitchCount" alias="8MemtableSwitchCnt" type="gauge"/>
+    <attrib name="ReadCount" alias="8ReadCnt" type="gauge"/>
+    <attrib name="RecentReadLatencyMicros" alias="9ReceReadLatenMicro" type="gauge"/>
+    <attrib name="TotalReadLatencyMicros" alias="9TotaReadLatenMicro" type="gauge"/>
+    <attrib name="PendingTasks" alias="13PendingTasks" type="gauge"/>
+    <attrib name="WriteCount" alias="8WriteCnt" type="gauge"/>
+    <attrib name="TotalWriteLatencyMicros" alias="9TotaWritLatenMicro" type="gauge"/>
+    <attrib name="RecentWriteLatencyMicros" alias="9ReceWritLatenMicro" type="gauge"/>
+    <attrib name="TotalDiskSpaceUsed" alias="8TotalDiskSpaceUsed" type="gauge"/>
+    <attrib name="LiveSSTableCount" alias="8LiveSSTableCnt" type="gauge"/>
+    <attrib name="BloomFilterFalsePositives" alias="8BloFilteFalsePosit" type="gauge"/>
+    <attrib name="RecentBloomFilterFalsePositives" alias="8RecBloFiltFalsPosi" type="gauge"/>
+    <attrib name="BloomFilterFalseRatio" alias="8BloFilteFalseRatio" type="gauge"/>
+    <attrib name="RecentBloomFilterFalseRatio" alias="8RecBloFiltFalsRati" type="gauge"/>
+    <attrib name="BloomFilterDiskSpaceUsed" alias="8BloFilDiskSpacUsed" type="gauge"/>
+    <attrib name="CompressionRatio" alias="8CompRatio" type="gauge"/>
+    <attrib name="UnleveledSSTables" alias="8UnleveledSSTables" type="gauge"/>
+  </mbean>
+  <mbean name="org.apache.cassandra.db.ColumnFamilies" objectname="org.apache.cassandra.db:type=ColumnFamilies,keyspace=system,columnfamily=HintsColumnFamily">
+    <attrib name="LiveDiskSpaceUsed" alias="9LiveDiskSpaceUsed" type="gauge"/>
+    <attrib name="MinRowSize" alias="9MinRowSize" type="gauge"/>
+    <attrib name="MaxRowSize" alias="9MaxRowSize" type="gauge"/>
+    <attrib name="MeanRowSize" alias="9MeanRowSize" type="gauge"/>
+    <attrib name="MemtableColumnsCount" alias="9MemtableColumnsCnt" type="gauge"/>
+    <attrib name="MemtableDataSize" alias="9MemtableDataSize" type="gauge"/>
+    <attrib name="MemtableSwitchCount" alias="9MemtableSwitchCnt" type="gauge"/>
+    <attrib name="ReadCount" alias="9ReadCnt" type="gauge"/>
+    <attrib name="RecentReadLatencyMicros" alias="10ReceReadLateMicro" type="gauge"/>
+    <attrib name="TotalReadLatencyMicros" alias="10TotaReadLateMicro" type="gauge"/>
+    <attrib name="PendingTasks" alias="14PendingTasks" type="gauge"/>
+    <attrib name="WriteCount" alias="9WriteCnt" type="gauge"/>
+    <attrib name="TotalWriteLatencyMicros" alias="10TotaWritLateMicro" type="gauge"/>
+    <attrib name="RecentWriteLatencyMicros" alias="10ReceWritLateMicro" type="gauge"/>
+    <attrib name="TotalDiskSpaceUsed" alias="9TotalDiskSpaceUsed" type="gauge"/>
+    <attrib name="LiveSSTableCount" alias="9LiveSSTableCnt" type="gauge"/>
+    <attrib name="BloomFilterFalsePositives" alias="9BloFilteFalsePosit" type="gauge"/>
+    <attrib name="RecentBloomFilterFalsePositives" alias="9RecBloFiltFalsPosi" type="gauge"/>
+    <attrib name="BloomFilterFalseRatio" alias="9BloFilteFalseRatio" type="gauge"/>
+    <attrib name="RecentBloomFilterFalseRatio" alias="9RecBloFiltFalsRati" type="gauge"/>
+    <attrib name="BloomFilterDiskSpaceUsed" alias="9BloFilDiskSpacUsed" type="gauge"/>
+    <attrib name="CompressionRatio" alias="9CompRatio" type="gauge"/>
+    <attrib name="UnleveledSSTables" alias="9UnleveledSSTables" type="gauge"/>
+  </mbean>
+  <mbean name="org.apache.cassandra.db.Commitlog" objectname="org.apache.cassandra.db:type=Commitlog">
+    <attrib name="PendingTasks" alias="15PendingTasks" type="gauge"/>
+    <attrib name="CompletedTasks" alias="5CompletedTasks" type="gauge"/>
+    <attrib name="TotalCommitlogSize" alias="0TotalCommitlogSize" type="gauge"/>
+  </mbean>
+</mbeans>

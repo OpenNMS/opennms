@@ -133,7 +133,8 @@ public class AssetServiceMockup extends RemoteServiceServlet implements AssetSer
 		asset.setAddress2("Address2");
 		asset.setCity("City");
 		asset.setCountry("Country");
-		asset.setCoordinates("Coordinates");
+		asset.setLongitude("Longitude");
+		asset.setLatitude("Latitude");
 		asset.setState("State");
 		asset.setZip("Zip");
 		asset.setBuilding("Building");

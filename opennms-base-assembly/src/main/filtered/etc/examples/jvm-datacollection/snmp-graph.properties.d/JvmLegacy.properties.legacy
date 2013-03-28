@@ -1,0 +1,282 @@
+reports=free.memory, \
+jvm.thread.count, \
+jvm.thread.daemon, \
+jvm.thread.peak, \
+jvm.mempool.eden, \
+jvm.mempool.perm, \
+jvm.mempool.oldgen, \
+jvm.mempool.survivor, \
+jvm.gc.copy, \
+jvm.gc.msc, \
+jvm.gc.parnew, \
+jvm.gc.cms, \
+jvm.gc.psms, \
+jvm.gc.pss
+
+###
+## JVM
+###
+report.free.memory.name=Free Memory
+report.free.memory.columns=FreeMemory, TotalMemory
+report.free.memory.type=interfaceSnmp
+report.free.memory.command=--title="Memory Usage" \
+ DEF:freemem={rrd1}:FreeMemory:AVERAGE \
+ DEF:minFreemem={rrd1}:FreeMemory:MIN \
+ DEF:maxFreemem={rrd1}:FreeMemory:MAX \
+ DEF:totalmem={rrd2}:TotalMemory:AVERAGE \
+ DEF:minTotalmem={rrd2}:TotalMemory:MIN \
+ DEF:maxTotalmem={rrd2}:TotalMemory:MAX \
+ CDEF:percentfree=freemem,totalmem,/,100,* \
+ CDEF:minPercentfree=minFreemem,minTotalmem,/,100,* \
+ CDEF:maxPercentfree=maxFreemem,maxTotalmem,/,100,* \
+ LINE2:percentfree#0000ff:"%FreeMemory" \
+ GPRINT:percentfree:AVERAGE:" Avg  \\: %5.2lf %s" \
+ GPRINT:percentfree:MIN:"Min  \\: %5.2lf %s" \
+ GPRINT:percentfree:MAX:"Max  \\: %5.2lf %s\\n"
+
+report.jvm.thread.count.name=JVM Threading
+report.jvm.thread.count.columns=ThreadCount
+report.jvm.thread.count.type=interfaceSnmp
+report.jvm.thread.count.command=--title="JVM Thread Count" \
+ DEF:threads={rrd1}:ThreadCount:AVERAGE \
+ LINE2:threads#0000ff:"Threads" \
+ GPRINT:threads:AVERAGE:" Avg \\: %8.2lf %s\\n"
+
+report.jvm.thread.daemon.name=JVM Daemon Threads
+report.jvm.thread.daemon.columns=DaemonThreadCount
+report.jvm.thread.daemon.type=interfaceSnmp
+report.jvm.thread.daemon.command=--title="JVM Daemon Thread Count" \
+ DEF:dthreads={rrd1}:DaemonThreadCount:AVERAGE \
+ LINE2:dthreads#0000ff:"Daemon Threads" \
+ GPRINT:dthreads:AVERAGE:" Avg \\: %5.2lf %s\\n"
+
+report.jvm.thread.peak.name=JVM Peak Thread Count
+report.jvm.thread.peak.columns=PeakThreadCount
+report.jvm.thread.peak.type=interfaceSnmp
+report.jvm.thread.peak.command=--title="JVM Peak Thread Count" \
+ DEF:threads={rrd1}:PeakThreadCount:AVERAGE \
+ LINE2:threads#0000ff:"Threads" \
+ GPRINT:threads:AVERAGE:" Avg \\: %5.2lf %s\\n"
+
+#report.jvm.mempool.eden
+report.jvm.mempool.eden.name=JVM Memory Pool: Eden Space
+report.jvm.mempool.eden.columns=EdenUsage.used, EdenUsage.max
+report.jvm.mempool.eden.type=interfaceSnmp
+report.jvm.mempool.eden.command=--title="JVM Memory Pool: Eden Space" \
+ DEF:used={rrd1}:EdenUsage.used:AVERAGE \
+ DEF:max={rrd2}:EdenUsage.max:AVERAGE \
+ LINE2:used#0000ff:"Bytes Used" \
+ GPRINT:used:AVERAGE:" Avg \\: %5.2lf %s " \
+ GPRINT:used:MIN:" Min \\: %5.2lf %s " \
+ GPRINT:used:MAX:" Max \\: %5.2lf %s " \
+ LINE2:max#ff0000:"Bytes Allocated" \
+ GPRINT:max:AVERAGE:"Avg \\: %5.2lf %s " \
+ GPRINT:max:MIN:"Min \\: %5.2lf %s " \
+ GPRINT:max:MAX:"Max \\: %5.2lf %s\\n"
+
+#report.jvm.mempool.perm
+report.jvm.mempool.perm.name=JVM Memory Pool: Perm Space
+report.jvm.mempool.perm.columns=PermUsage.used, PermUsage.max
+report.jvm.mempool.perm.type=interfaceSnmp
+report.jvm.mempool.perm.command=--title="JVM Memory Pool: Perm Space" \
+ DEF:used={rrd1}:PermUsage.used:AVERAGE \
+ DEF:max={rrd2}:PermUsage.max:AVERAGE \
+ LINE2:used#0000ff:"Bytes Used" \
+ GPRINT:used:AVERAGE:" Avg \\: %5.2lf %s " \
+ GPRINT:used:MIN:" Min \\: %5.2lf %s " \
+ GPRINT:used:MAX:" Max \\: %5.2lf %s " \
+ LINE2:max#ff0000:"Bytes Allocated" \
+ GPRINT:max:AVERAGE:"Avg \\: %5.2lf %s " \
+ GPRINT:max:MIN:"Min \\: %5.2lf %s " \
+ GPRINT:max:MAX:"Max \\: %5.2lf %s\\n"
+
+#report.jvm.mempool.survivor
+report.jvm.mempool.survivor.name=JVM Memory Pool: Survivor Space
+report.jvm.mempool.survivor.columns=SurvUsage.used, SurvUsage.max
+report.jvm.mempool.survivor.type=interfaceSnmp
+report.jvm.mempool.survivor.command=--title="JVM Memory Pool: Survivor Space" \
+ DEF:used={rrd1}:SurvUsage.used:AVERAGE \
+ DEF:max={rrd2}:SurvUsage.max:AVERAGE \
+ LINE2:used#0000ff:"Bytes Used" \
+ GPRINT:used:AVERAGE:" Avg \\: %5.2lf %s " \
+ GPRINT:used:MIN:" Min \\: %5.2lf %s " \
+ GPRINT:used:MAX:" Max \\: %5.2lf %s " \
+ LINE2:max#ff0000:"Bytes Allocated" \
+ GPRINT:max:AVERAGE:"Avg \\: %5.2lf %s " \
+ GPRINT:max:MIN:"Min \\: %5.2lf %s " \
+ GPRINT:max:MAX:"Max \\: %5.2lf %s\\n"
+
+#report.jvm.mempool.oldgen
+report.jvm.mempool.oldgen.name=JVM Memory Pool: OldGen Space
+report.jvm.mempool.oldgen.columns=OGenUsage.used, OGenUsage.max
+report.jvm.mempool.oldgen.type=interfaceSnmp
+report.jvm.mempool.oldgen.command=--title="JVM Memory Pool: Old Gen Space" \
+ DEF:used={rrd1}:OGenUsage.used:AVERAGE \
+ DEF:max={rrd2}:OGenUsage.max:AVERAGE \
+ LINE2:used#0000ff:"Bytes Used" \
+ GPRINT:used:AVERAGE:" Avg \\: %5.2lf %s " \
+ GPRINT:used:MIN:" Min \\: %5.2lf %s " \
+ GPRINT:used:MAX:" Max \\: %5.2lf %s " \
+ LINE2:max#ff0000:"Bytes Allocated" \
+ GPRINT:max:AVERAGE:"Avg \\: %5.2lf %s " \
+ GPRINT:max:MIN:"Min \\: %5.2lf %s " \
+ GPRINT:max:MAX:"Max \\: %5.2lf %s\\n"
+
+#JAVA GC COLLECTORS
+
+#report.jvm.gc.copy
+report.jvm.gc.copy.name=JVM GarbageCollector: Copy
+report.jvm.gc.copy.columns=Copy.CollCnt, Copy.CollTime, Copy.Duration
+report.jvm.gc.copy.type=interfaceSnmp
+report.jvm.gc.copy.command=--title="JVM GarbageCollector: Copy" \
+ DEF:collCnt={rrd1}:Copy.CollCnt:AVERAGE \
+ DEF:collTime={rrd2}:Copy.CollTime:AVERAGE \
+ DEF:duration={rrd3}:Copy.Duration:AVERAGE \
+ CDEF:collPerMin=collCnt,5,/ \
+ CDEF:avgCollTime=collTime,collCnt,/,1000,/ \
+ CDEF:collTimePerMin=avgCollTime,collPerMin,* \
+ LINE2:collCnt#ff0000:"CollectionCount" \
+ GPRINT:collCnt:AVERAGE:" Avg \\: %5.2lf %s " \
+ LINE2:collTime#00ff00:"CollectionTime" \
+ GPRINT:collTime:AVERAGE:" Avg \\: %5.2lf %s " \
+ LINE2:duration#0000ff:"CollectionDuration" \
+ GPRINT:duration:AVERAGE:" Avg \\: %5.2lf %s " \
+ GPRINT:duration:MIN:" Min \\: %5.2lf %s " \
+ GPRINT:duration:MAX:" Max \\: %5.2lf %s " \
+ LINE2:avgCollTime#0000aa:"AvgCollTime" \
+ GPRINT:avgCollTime:AVERAGE:" Avg \\: %5.2lf %s " \
+ LINE2:collPerMin#0000aa:"CollPerMin" \
+ GPRINT:collPerMin:AVERAGE:" Avg \\: %5.2lf %s " \
+ LINE2:collTimePerMin#aa0000:"CollTimePerMin" \
+ GPRINT:collTimePerMin:AVERAGE:" Avg \\: %5.2lf %s\\n"
+
+
+#report.jvm.gc.msc
+report.jvm.gc.msc.name=JVM GarbageCollector: MarkSweepCompact
+report.jvm.gc.msc.columns=MSC.CollCnt, MSC.CollTime, MSC.Duration
+report.jvm.gc.msc.type=interfaceSnmp
+report.jvm.gc.msc.command=--title="JVM GarbageCollector: MarkSweepCompact" \
+ DEF:collCnt={rrd1}:MSC.CollCnt:AVERAGE \
+ DEF:collTime={rrd2}:MSC.CollTime:AVERAGE \
+ DEF:duration={rrd3}:MSC.Duration:AVERAGE \
+ CDEF:collPerMin=collCnt,5,/ \
+ CDEF:avgCollTime=collTime,collCnt,/,1000,/ \
+ CDEF:collTimePerMin=avgCollTime,collPerMin,* \
+ LINE2:collCnt#ff0000:"CollectionCount" \
+ GPRINT:collCnt:AVERAGE:" Avg \\: %5.2lf %s " \
+ LINE2:collTime#00ff00:"CollectionTime" \
+ GPRINT:collTime:AVERAGE:" Avg \\: %5.2lf %s " \
+ LINE2:duration#0000ff:"CollectionDuration" \
+ GPRINT:duration:AVERAGE:" Avg \\: %5.2lf %s " \
+ GPRINT:duration:MIN:" Min \\: %5.2lf %s " \
+ GPRINT:duration:MAX:" Max \\: %5.2lf %s " \
+ LINE2:collPerMin#0000aa:"CollPerMin" \
+ GPRINT:collPerMin:AVERAGE:" Avg \\: %5.2lf %s " \
+ LINE2:collTimePerMin#aa0000:"CollTimePerMin" \
+ GPRINT:collTimePerMin:AVERAGE:" Avg \\: %5.2lf %s\\n"
+
+#report.jvm.gc.parnew
+report.jvm.gc.parnew.name=JVM GarbageCollector: ParNew
+report.jvm.gc.parnew.columns=ParNew.CollCnt, ParNew.CollTime, ParNew.Duration
+report.jvm.gc.parnew.type=interfaceSnmp
+report.jvm.gc.parnew.command=--title="JVM GarbageCollector: ParNew" \
+ DEF:collCnt={rrd1}:ParNew.CollCnt:AVERAGE \
+ DEF:collTime={rrd2}:ParNew.CollTime:AVERAGE \
+ DEF:duration={rrd3}:ParNew.Duration:AVERAGE \
+ CDEF:collPerMin=collCnt,5,/ \
+ CDEF:avgCollTime=collTime,collCnt,/,1000,/ \
+ CDEF:collTimePerMin=avgCollTime,collPerMin,* \
+ LINE2:collCnt#ff0000:"CollectionCount" \
+ GPRINT:collCnt:AVERAGE:" Avg \\: %5.2lf %s " \
+ LINE2:collTime#00ff00:"CollectionTime" \
+ GPRINT:collTime:AVERAGE:" Avg \\: %5.2lf %s " \
+ LINE2:duration#0000ff:"CollectionDuration" \
+ GPRINT:duration:AVERAGE:" Avg \\: %5.2lf %s " \
+ GPRINT:duration:MIN:" Min \\: %5.2lf %s " \
+ GPRINT:duration:MAX:" Max \\: %5.2lf %s " \
+ LINE2:avgCollTime#0000aa:"AvgCollTime" \
+ GPRINT:avgCollTime:AVERAGE:" Avg \\: %5.2lf %s " \
+ LINE2:collPerMin#0000aa:"CollPerMin" \
+ GPRINT:collPerMin:AVERAGE:" Avg \\: %5.2lf %s " \
+ LINE2:collTimePerMin#aa0000:"CollTimePerMin" \
+ GPRINT:collTimePerMin:AVERAGE:" Avg \\: %5.2lf %s\\n"
+
+#report.jvm.gc.cms
+report.jvm.gc.cms.name=JVM GarbageCollector: ConcurrentMarkSweep
+report.jvm.gc.cms.columns=CMS.CollCnt, CMS.CollTime, CMS.Duration
+report.jvm.gc.cms.type=interfaceSnmp
+report.jvm.gc.cms.command=--title="JVM GarbageCollector: ConcurrentMarkSweep" \
+ DEF:collCnt={rrd1}:CMS.CollCnt:AVERAGE \
+ DEF:collTime={rrd2}:CMS.CollTime:AVERAGE \
+ DEF:duration={rrd3}:CMS.Duration:AVERAGE \
+ CDEF:collPerMin=collCnt,5,/ \
+ CDEF:avgCollTime=collTime,collCnt,/,1000,/ \
+ CDEF:collTimePerMin=avgCollTime,collPerMin,* \
+ LINE2:collCnt#ff0000:"CollectionCount" \
+ GPRINT:collCnt:AVERAGE:" Avg \\: %5.2lf %s " \
+ LINE2:collTime#00ff00:"CollectionTime" \
+ GPRINT:collTime:AVERAGE:" Avg \\: %5.2lf %s " \
+ LINE2:duration#0000ff:"CollectionDuration" \
+ GPRINT:duration:AVERAGE:" Avg \\: %5.2lf %s " \
+ GPRINT:duration:MIN:" Min \\: %5.2lf %s " \
+ GPRINT:duration:MAX:" Max \\: %5.2lf %s " \
+ LINE2:avgCollTime#0000aa:"AvgCollTime" \
+ GPRINT:avgCollTime:AVERAGE:" Avg \\: %5.2lf %s " \
+ LINE2:collPerMin#0000aa:"CollPerMin" \
+ GPRINT:collPerMin:AVERAGE:" Avg \\: %5.2lf %s " \
+ LINE2:collTimePerMin#aa0000:"CollTimePerMin" \
+ GPRINT:collTimePerMin:AVERAGE:" Avg \\: %5.2lf %s\\n"
+
+#report.jvm.gc.psms
+report.jvm.gc.psms.name=JVM GarbageCollector: PS MarkSweep
+report.jvm.gc.psms.columns=PSMS.CollCnt, PSMS.CollTime, PSMS.Duration
+report.jvm.gc.psms.type=interfaceSnmp
+report.jvm.gc.psms.command=--title="JVM GarbageCollector: PS MarkSweep" \
+ DEF:collCnt={rrd1}:PSMS.CollCnt:AVERAGE \
+ DEF:collTime={rrd2}:PSMS.CollTime:AVERAGE \
+ DEF:duration={rrd3}:PSMS.Duration:AVERAGE \
+ CDEF:collPerMin=collCnt,5,/ \
+ CDEF:avgCollTime=collTime,collCnt,/,1000,/ \
+ CDEF:collTimePerMin=avgCollTime,collPerMin,* \
+ LINE2:collCnt#ff0000:"CollectionCount" \
+ GPRINT:collCnt:AVERAGE:" Avg \\: %5.2lf %s " \
+ LINE2:collTime#00ff00:"CollectionTime" \
+ GPRINT:collTime:AVERAGE:" Avg \\: %5.2lf %s " \
+ LINE2:duration#0000ff:"CollectionDuration" \
+ GPRINT:duration:AVERAGE:" Avg \\: %5.2lf %s " \
+ GPRINT:duration:MIN:" Min \\: %5.2lf %s " \
+ GPRINT:duration:MAX:" Max \\: %5.2lf %s " \
+ LINE2:avgCollTime#0000aa:"AvgCollTime" \
+ GPRINT:avgCollTime:AVERAGE:" Avg \\: %5.2lf %s " \
+ LINE2:collPerMin#0000aa:"CollPerMin" \
+ GPRINT:collPerMin:AVERAGE:" Avg \\: %5.2lf %s " \
+ LINE2:collTimePerMin#aa0000:"CollTimePerMin" \
+ GPRINT:collTimePerMin:AVERAGE:" Avg \\: %5.2lf %s\\n"
+
+#report.jvm.gc.pss
+report.jvm.gc.pss.name=JVM GarbageCollector: PS Scavenge
+report.jvm.gc.pss.columns=PSS.CollCnt, PSS.CollTime, PSS.Duration
+report.jvm.gc.pss.type=interfaceSnmp
+report.jvm.gc.pss.command=--title="JVM GarbageCollector: PS Scavenge" \
+ DEF:collCnt={rrd1}:PSS.CollCnt:AVERAGE \
+ DEF:collTime={rrd2}:PSS.CollTime:AVERAGE \
+ DEF:duration={rrd3}:PSS.Duration:AVERAGE \
+ CDEF:collPerMin=collCnt,5,/ \
+ CDEF:avgCollTime=collTime,collCnt,/,1000,/ \
+ CDEF:collTimePerMin=avgCollTime,collPerMin,* \
+ LINE2:collCnt#ff0000:"CollectionCount" \
+ GPRINT:collCnt:AVERAGE:" Avg \\: %5.2lf %s " \
+ LINE2:collTime#00ff00:"CollectionTime" \
+ GPRINT:collTime:AVERAGE:" Avg \\: %5.2lf %s " \
+ LINE2:duration#0000ff:"CollectionDuration" \
+ GPRINT:duration:AVERAGE:" Avg \\: %5.2lf %s " \
+ GPRINT:duration:MIN:" Min \\: %5.2lf %s " \
+ GPRINT:duration:MAX:" Max \\: %5.2lf %s " \
+ LINE2:avgCollTime#0000aa:"AvgCollTime" \
+ GPRINT:avgCollTime:AVERAGE:" Avg \\: %5.2lf %s " \
+ LINE2:collPerMin#0000aa:"CollPerMin" \
+ GPRINT:collPerMin:AVERAGE:" Avg \\: %5.2lf %s " \
+ LINE2:collTimePerMin#aa0000:"CollTimePerMin" \
+ GPRINT:collTimePerMin:AVERAGE:" Avg \\: %5.2lf %s\\n"
+
+
