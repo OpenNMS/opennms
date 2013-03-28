@@ -71,6 +71,7 @@ import org.opennms.netmgt.config.categories.Catinfo;
 import org.opennms.netmgt.config.charts.ChartConfiguration;
 import org.opennms.netmgt.config.collectd.CollectdConfiguration;
 import org.opennms.netmgt.config.collectd.jmx.JmxDatacollectionConfig;
+import org.opennms.netmgt.config.collectd.jmx.Mbeans;
 import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.config.destinationPaths.DestinationPaths;
@@ -567,7 +568,43 @@ public class WillItUnmarshalTest {
     public void testVmwareCimDatacollectionConfiguration() throws Exception {
         unmarshalJaxb("vmware-cim-datacollection-config.xml", VmwareCimDatacollectionConfig.class);
     }
-
+    @Test
+    public void testExampleJvmDatacollectionCollectdConfiguration() throws Exception {
+        unmarshalExample("jvm-datacollection/collectd-configuration.xml", CollectdConfiguration.class);
+    }
+    @Test
+    public void testExampleJvmDatacollectionJmxDatacollectionConfig() throws Exception {
+        unmarshalJaxbExample("jvm-datacollection/jmx-datacollection-config.xml", JmxDatacollectionConfig.class);
+    }
+    @Test
+    public void testExampleJvmDatacollectionJmxDatacollectionConfigActiveMQ() throws Exception {
+        unmarshalJaxbExample("jvm-datacollection/jmx-datacollection/ActiveMQ/5.6/ActiveMQBasic0.xml", Mbeans.class);
+    }    
+    @Test
+    public void testExampleJvmDatacollectionJmxDatacollectionConfigCassandra() throws Exception {
+        unmarshalJaxbExample("jvm-datacollection/jmx-datacollection/Cassandra/1.1.2/CassandraBasic0.xml", Mbeans.class);
+    }
+    @Test
+    public void testExampleJvmDatacollectionJmxDatacollectionConfigJboss() throws Exception {
+        unmarshalJaxbExample("jvm-datacollection/jmx-datacollection/JBoss/4/JBossBasic0.xml", Mbeans.class);
+    }
+    @Test
+    public void testExampleJvmDatacollectionJmxDatacollectionConfigJvmBasic() throws Exception {
+        unmarshalJaxbExample("jvm-datacollection/jmx-datacollection/Jvm/1.6/JvmBasic0.xml", Mbeans.class);
+    }
+    @Test
+    public void testExampleJvmDatacollectionJmxDatacollectionConfigJvmLegacy() throws Exception {
+        unmarshalJaxbExample("jvm-datacollection/jmx-datacollection/Jvm/1.6/JvmLegacy.xml", Mbeans.class);
+    }
+    @Test
+    public void testExampleJvmDatacollectionJmxDatacollectionConfigOpenNMSBasic() throws Exception {
+        unmarshalJaxbExample("jvm-datacollection/jmx-datacollection/OpenNMS/1.10/OpenNMSBasic0.xml", Mbeans.class);
+    }
+    @Test
+    public void testExampleJvmDatacollectionJmxDatacollectionConfigOpenNMSLegacy() throws Exception {
+        unmarshalJaxbExample("jvm-datacollection/jmx-datacollection/OpenNMS/1.10/OpenNMSLegacy.xml", Mbeans.class);
+    }
+    
     @Test
     public void testCheckAllDaemonXmlConfigFilesTested() {
         File someConfigFile = ConfigurationTestUtils.getFileForConfigFile("discovery-configuration.xml");
@@ -576,6 +613,7 @@ public class WillItUnmarshalTest {
         assertTrue("daemon configuration directory is a directory at " + configDir.getAbsolutePath(), configDir.isDirectory());
 
         String[] configFiles = configDir.list(new FilenameFilter() {
+            @Override
             public boolean accept(File file, String name) {
                 return name.endsWith(".xml");
             } });
@@ -615,6 +653,7 @@ public class WillItUnmarshalTest {
         assertTrue("directory to search for configuration files in is not a directory at " + directory.getAbsolutePath(), directory.isDirectory());
 
         String[] configFiles = directory.list(new FilenameFilter() {
+            @Override
             public boolean accept(File file, String name) {
                 return name.endsWith(".xml");
             } });
@@ -623,6 +662,7 @@ public class WillItUnmarshalTest {
         }
         
         File[] subDirectories = directory.listFiles(new FileFilter() {
+            @Override
             public boolean accept(File file) {
                 return file.isDirectory() && !file.getName().startsWith(".");
             }
@@ -642,6 +682,7 @@ public class WillItUnmarshalTest {
         assertTrue("events directory is a directory at " + eventsDirFile.getAbsolutePath(), eventsDirFile.isDirectory());
         
         File[] includedEventFiles = eventsDirFile.listFiles(new FilenameFilter() {
+            @Override
             public boolean accept(File file, String name) {
                 return name.endsWith(".xml");
             } });
@@ -667,6 +708,7 @@ public class WillItUnmarshalTest {
         assertTrue("events directory is a directory at " + groupDirFile.getAbsolutePath(), groupDirFile.isDirectory());
 
         File[] includedGroupFiles = groupDirFile.listFiles(new FilenameFilter() {
+            @Override
             public boolean accept(File file, String name) {
                 return name.endsWith(".xml");
             } });
