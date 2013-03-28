@@ -43,6 +43,7 @@ import org.opennms.netmgt.xml.event.Event;
  * This class tests some of the quirky behaviors of presisting events.
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
+@SuppressWarnings("deprecation")
 public class JdbcEventWriterTest extends PopulatedTemporaryDatabaseTestCase {
     private JdbcEventWriter m_jdbcEventWriter;
 

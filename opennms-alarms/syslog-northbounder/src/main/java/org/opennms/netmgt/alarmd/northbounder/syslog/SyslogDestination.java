@@ -124,6 +124,9 @@ public class SyslogDestination implements Serializable {
     
     @XmlElement(name="truncate-message", defaultValue="false", required=false)
 	private boolean m_truncateMessage = false;
+    
+    @XmlElement(name="first-occurrence-only", defaultValue="false", required=false)
+    private boolean m_firstOccurrenceOnly = false;
 	
 
 	public SyslogDestination() {
@@ -209,6 +212,14 @@ public class SyslogDestination implements Serializable {
 	
 	public void setTruncateMessage(boolean truncateMessage) {
 		m_truncateMessage = truncateMessage;
+	}
+
+	public boolean isFirstOccurrenceOnly() {
+		return m_firstOccurrenceOnly;
+	}
+
+	public void setFirstOccurrenceOnly(boolean firstOccurrenceOnly) {
+		m_firstOccurrenceOnly = firstOccurrenceOnly;
 	}
 	
 }
