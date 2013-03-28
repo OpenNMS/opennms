@@ -232,9 +232,13 @@ public class SyslogNorthBounderTest {
 			onmsAlarm.setNode(node);
 			onmsAlarm.setSeverityId(i);
 			onmsAlarm.setIpAddr(InetAddress.getByName("127.0.0.1"));
+			onmsAlarm.setCounter(i);
 			onmsAlarm.setLogMsg("Node Down");
 			onmsAlarm.setX733AlarmType(NorthboundAlarm.x733AlarmType.get(i).name());
 			onmsAlarm.setX733ProbableCause(NorthboundAlarm.x733ProbableCause.get(i).getId());
+			String eventparms = "foreignSource=fabric(string,text);foreignId=space-0256012012000038(string,text);reason=Aborting node scan : Agent timed out while scanning the system table(string,text);" +
+					".1.3.6.1.4.1.2636.3.18.1.7.1.2.732=207795895(TimeTicks,text)";
+			onmsAlarm.setEventParms(eventparms );
 			NorthboundAlarm a = new NorthboundAlarm(onmsAlarm);
 
 			Assert.assertFalse(nb.accepts(a));
@@ -303,24 +307,6 @@ public class SyslogNorthBounderTest {
 		// TODO: Verify facility and level of each log message
 
 	}
-
-	/**
-	 * Helper method.
-	 * 
-	 * @return List<SyslogDestination> destinations
-	 */
-	private List<SyslogDestination> createTestUdpBasedDestionation() {
-		List<SyslogDestination> dests = new ArrayList<SyslogDestination>();
-
-		SyslogProtocol protocol = SyslogProtocol.UDP;
-		SyslogFacility facility = SyslogFacility.DAEMON;
-		SyslogDestination dest = new SyslogDestination("test", protocol,
-				facility);
-		dest.setHost(SERVER_HOST);
-		dest.setPort(SERVER_PORT);
-		dests.add(dest);
-		return dests;
-	}
 	
 	private String generateConfigXml() {
 		return "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
@@ -329,7 +315,8 @@ public class SyslogNorthBounderTest {
 				"  <nagles-delay>1000</nagles-delay>\n" + 
 				"  <batch-size>30</batch-size>\n" + 
 				"  <queue-size>30000</queue-size>\n" + 
-				"  <message-format>ALARM ID:${alarmId} NODE:${nodeLabel}; ${logMsg}</message-format>\n" + 
+				"  <message-format>ALARM ID:${alarmId} NODE:${nodeLabel}; PARM-1-NAME: ${parm[name-#1]} PARM-1:${parm[#1]} PARM-2-NAME: ${parm[name-#2]} " +
+				"PARM-3-NAME: ${parm[name-#3]} PARM-foreignSource:${parm[foreignSource]} PARM-4-NAME: ${parm[name-#4]} PARM-4: ${parm[#4]} ${logMsg}</message-format>\n" + 
 				"  <destination>\n" + 
 				"    <destination-name>localTest</destination-name>\n" + 
 				"    <host>"+SERVER_HOST+"</host>\n" + 
@@ -339,7 +326,8 @@ public class SyslogNorthBounderTest {
 				"    <max-message-length>1024</max-message-length>\n" + 
 				"    <send-local-name>true</send-local-name>\n" + 
 				"    <send-local-time>true</send-local-time>\n" + 
-				"    <truncate-message>false</truncate-message>\n" + 
+				"    <truncate-message>false</truncate-message>\n" +
+				"    <first-occurrence-only>false</first-occurrence-only>" + 
 				"  </destination>\n" + 
 				"  <uei>uei.opennms.org/nodes/nodeDown</uei>\n" + 
 				"  <uei>uei.opennms.org/nodes/nodeUp</uei>\n" + 
