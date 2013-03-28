@@ -254,7 +254,7 @@ public final class NamedSnmpVar implements Collectable {
     /**
      * <p>getTrackersFor</p>
      *
-     * @param columns an array of {@link org.opennms.netmgt.capsd.snmp.NamedSnmpVar} objects.
+     * @param columns an array of {@link org.opennms.netmgt.linkd.snmp.NamedSnmpVar} objects.
      * @return an array of {@link org.opennms.netmgt.snmp.CollectionTracker} objects.
      */
     public static CollectionTracker[] getTrackersFor(final NamedSnmpVar[] columns) {

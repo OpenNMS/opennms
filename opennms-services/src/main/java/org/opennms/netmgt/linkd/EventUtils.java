@@ -44,7 +44,7 @@ public final class EventUtils {
      *
      * @param e
      *            the event
-     * @throws org.opennms.netmgt.capsd.InsufficientInformationException
+     * @throws org.opennms.netmgt.linkd.InsufficientInformationException
      *             if  neither an interface nor an ifIndex is available
      */
     static public void checkInterfaceOrIfIndex(Event e) throws InsufficientInformationException {
@@ -63,7 +63,7 @@ public final class EventUtils {
      *
      * @param e
      *            the event
-     * @throws org.opennms.netmgt.capsd.InsufficientInformationException
+     * @throws org.opennms.netmgt.linkd.InsufficientInformationException
      *             if a node id is not available
      */
     static public void checkNodeId(Event e) throws InsufficientInformationException {

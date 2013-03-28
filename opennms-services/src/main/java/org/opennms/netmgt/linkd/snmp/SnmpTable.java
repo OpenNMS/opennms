@@ -59,7 +59,7 @@ public abstract class SnmpTable<T extends SnmpStore> extends AggregateTracker im
      *
      * @param address a {@link java.net.InetAddress} object.
      * @param tableName a {@link java.lang.String} object.
-     * @param columns an array of {@link org.opennms.netmgt.capsd.snmp.NamedSnmpVar} objects.
+     * @param columns an array of {@link org.opennms.netmgt.linkd.snmp.NamedSnmpVar} objects.
      * @param <T> a T object.
      */
     protected SnmpTable(InetAddress address, String tableName, NamedSnmpVar[] columns) {

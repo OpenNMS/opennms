@@ -56,7 +56,7 @@ public class SnmpStore extends AbstractSnmpStore {
     /**
      * <p>Constructor for SnmpStore.</p>
      *
-     * @param list an array of {@link org.opennms.netmgt.capsd.snmp.NamedSnmpVar} objects.
+     * @param list an array of {@link org.opennms.netmgt.linkd.snmp.NamedSnmpVar} objects.
      */
     public SnmpStore(NamedSnmpVar[] list) {
         super();
@@ -77,7 +77,7 @@ public class SnmpStore extends AbstractSnmpStore {
     /**
      * <p>getElements</p>
      *
-     * @return an array of {@link org.opennms.netmgt.capsd.snmp.NamedSnmpVar} objects.
+     * @return an array of {@link org.opennms.netmgt.linkd.snmp.NamedSnmpVar} objects.
      */
     public NamedSnmpVar[] getElements() {
         return ms_elemList;
