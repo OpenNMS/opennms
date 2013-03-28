@@ -273,7 +273,8 @@ public class AssetServiceImplTest implements InitializingBean {
                 assetRecord.getGeolocation().setState("NC");
                 assetRecord.getGeolocation().setZip("27312");
                 assetRecord.getGeolocation().setCountry("US");
-                assetRecord.getGeolocation().setCoordinates("35.717582,-79.161800");
+                assetRecord.getGeolocation().setLatitude(35.717582f);
+                assetRecord.getGeolocation().setLongitude(-79.161800f);
 		m_assetRecordDao.update(assetRecord);
 		m_assetRecordDao.flush();
 
@@ -295,7 +296,8 @@ public class AssetServiceImplTest implements InitializingBean {
                 assertEquals(assetRecord.getGeolocation().getCity(), updated.getGeolocation().getCity());
                 assertEquals(assetRecord.getGeolocation().getZip(), updated.getGeolocation().getZip());
                 assertEquals(assetRecord.getGeolocation().getCountry(), updated.getGeolocation().getCountry());
-                assertEquals(assetRecord.getGeolocation().getCoordinates(), updated.getGeolocation().getCoordinates());
+                assertEquals(assetRecord.getGeolocation().getLongitude(), updated.getGeolocation().getLongitude());
+                assertEquals(assetRecord.getGeolocation().getLatitude(), updated.getGeolocation().getLatitude());
 	}
 
 	@Test

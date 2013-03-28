@@ -28,10 +28,10 @@
 
 package org.opennms.netmgt.model;
 
-import org.junit.Test;
-
 import junit.framework.Assert;
 import junit.framework.TestCase;
+
+import org.junit.Test;
 
 public class OnmsSeverityTest extends TestCase {
 
