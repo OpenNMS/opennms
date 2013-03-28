@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.linkd;
 
-import org.opennms.netmgt.capsd.InsufficientInformationException;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
