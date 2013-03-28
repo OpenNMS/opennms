@@ -28,9 +28,10 @@
 
 package org.opennms.features.topology.ssh.internal.gwt.client.ui;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
-
-import static org.junit.Assert.*;
 import org.junit.Test;
 import org.opennms.features.topology.ssh.internal.testframework.SudoKeyDownEvent;
 import org.opennms.features.topology.ssh.internal.testframework.SudoKeyPressEvent;

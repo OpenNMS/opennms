@@ -338,8 +338,11 @@ public class CommandManager {
         Operation operation = m_contextMenuItemsToOperationMap.get(ctxMenuItem);
      
         List<VertexRef> targets = asVertexList(target);
-        //ctxMenuItem.setVisible(operation.display(targets, operationContext));
-        //ctxMenuItem.setEnabled(operation.enabled(targets, operationContext));   
+        // TODO: Figure out how to do this in the new contextmenu
+        /*
+        ctxMenuItem.setVisible(operation.display(targets, operationContext));
+        ctxMenuItem.setEnabled(operation.enabled(targets, operationContext));
+        */   
     }
 
 	private List<VertexRef> asVertexList(Object target) {

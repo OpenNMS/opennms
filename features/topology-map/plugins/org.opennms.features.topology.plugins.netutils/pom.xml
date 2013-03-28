@@ -196,7 +196,6 @@
 
 	<dependencies>
 	<!-- NECESSARY DEPENDENCIES -->
-
 	    <dependency>
 	      <groupId>junit</groupId>
 	      <artifactId>junit</artifactId>
@@ -207,12 +206,6 @@
             <version>${project.version}</version>
             <type>pom</type>
         </dependency>
-		<dependency>
-			<groupId>com.google.gwt</groupId>
-			<artifactId>gwt-user</artifactId>
-			<version>${gwtVersion}</version>
-			<scope>provided</scope>
-		</dependency>
 
 		<dependency>
             <groupId>org.slf4j</groupId>

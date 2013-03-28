@@ -38,14 +38,12 @@ import org.junit.Test;
 
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.Window;
 
 public class PingWindowTest {
 
 	PingWindow pingWindow;
 	PingWindow pingWindow2;
 	PingWindow pingWindow3;
-	Window mainWindow;
 	UI app;
 	
 	@Before
@@ -56,7 +54,6 @@ public class PingWindowTest {
 		pingWindow2 = new PingWindow(null, "http://localhost:8080/");
 		pingWindow3 = new PingWindow(testNode1, "");
 		
-		mainWindow = new Window();
 		app = new UI() { //Empty Application
 
 			private static final long serialVersionUID = -6761162156810032609L;
@@ -67,6 +64,7 @@ public class PingWindowTest {
 		app.addWindow(pingWindow);
 		app.addWindow(pingWindow2);
 		app.addWindow(pingWindow3);
+		UI.setCurrent(app);
 	}
 	
 	@Test

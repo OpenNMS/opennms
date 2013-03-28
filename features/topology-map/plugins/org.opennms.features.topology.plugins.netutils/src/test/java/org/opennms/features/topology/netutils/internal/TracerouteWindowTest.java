@@ -35,16 +35,13 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.vaadin.server.VaadinRequest;
-import com.vaadin.ui.Layout;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
 
 public class TracerouteWindowTest {
 
 	TracerouteWindow traceWindow;
 	TracerouteWindow traceWindow2;
 	TracerouteWindow traceWindow3;
-	Layout mainWindow;
 	UI app;
 	
 	@Before
@@ -53,16 +50,15 @@ public class TracerouteWindowTest {
 		traceWindow = new TracerouteWindow(testNode1, "http://localhost:8080/");
 		traceWindow2 = new TracerouteWindow(null, "http://localhost:8080/");
 		traceWindow3 = new TracerouteWindow(testNode1, "");
-		mainWindow = new VerticalLayout();
 		app = new UI() { //Empty Application
 			private static final long serialVersionUID = -2169800806621592419L;
 			@Override
 			public void init(VaadinRequest request) {}
 		};
-		app.setContent(mainWindow);
-		mainWindow.addComponent(traceWindow);
-		mainWindow.addComponent(traceWindow2);
-		mainWindow.addComponent(traceWindow3);
+		app.addWindow(traceWindow);
+		app.addWindow(traceWindow2);
+		app.addWindow(traceWindow3);
+		UI.setCurrent(app);
 	}
 	
 	@Test
