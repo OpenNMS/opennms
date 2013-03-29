@@ -72,7 +72,12 @@ public class NodeMarker extends Marker {
     }-*/;
 
     public JsArrayString getCategories() {
-        return getJSObject().getProperty("categories").cast();
+        final JSObject property = getJSObject().getProperty("categories");
+        if (property == null) {
+            return JsArrayString.createArray().cast();
+        } else {
+            return property.cast();
+        }
     }
 
     public String getCategoriesAsString() {
