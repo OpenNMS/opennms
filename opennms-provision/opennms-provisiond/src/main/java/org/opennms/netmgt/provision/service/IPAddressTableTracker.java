@@ -33,6 +33,7 @@ import static org.opennms.core.utils.InetAddressUtils.normalize;
 import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.net.InetAddress;
+import java.util.Arrays;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
@@ -116,14 +117,25 @@ public class IPAddressTableTracker extends TableTracker {
             }
             // End NMS-4906 Lame Force 10 agent!
 
+            // we ignore zones anyways, make sure we truncate to just the address part, since InetAddress doesn't know how to parse zone bytes
+            if (addressType == TYPE_IPV4Z) {
+                addressLength = 4;
+            } else if (addressType == TYPE_IPV6Z) {
+                addressLength = 16;
+            }
+
             if (addressIndex < 0 || addressIndex + addressLength > instanceIds.length) {
                 LogUtils.warnf(this, "BAD AGENT: Returned instanceId %s does not enough bytes to contain address!. Skipping.", instance);
                 return null;
             }
 
             if (addressType == TYPE_IPV4 || addressType == TYPE_IPV6 || addressType == TYPE_IPV6Z) {
-                final InetAddress address = getInetAddress(instanceIds, addressIndex, addressLength);
-                return str(address);
+                try {
+                    final InetAddress address = getInetAddress(instanceIds, addressIndex, addressLength);
+                    return str(address);
+                } catch (final IllegalArgumentException e) {
+                    LogUtils.warnf(this, e, "Failed to parse address: %s, index %d, length %d", Arrays.toString(instanceIds), addressIndex, addressLength);
+                }
             }
             return null;
         }
