@@ -180,7 +180,7 @@ public abstract class WebSecurityUtils {
      * @param Set of fieldnames as Strings that are allowed for html content. All fieldnames in lowercase. null -> no html
      * @return a {@link java.lang.Object} object.
      */
-    public static Object sanitizeBeanStringProperties(Object bean, Set<String> allowHtmlFields) {
+    public static <T> T sanitizeBeanStringProperties(T bean, Set<String> allowHtmlFields) {
     	BeanWrapper beanWrapper = new BeanWrapperImpl(bean.getClass());
     	
     	// get all bean property descriptors
