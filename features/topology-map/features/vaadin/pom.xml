@@ -40,24 +40,35 @@
     <dependency>
       <groupId>com.vaadin</groupId>
       <artifactId>vaadin-server</artifactId>
-      <version>${vaadinVersion}</version>
     </dependency>
     <dependency>
       <groupId>com.vaadin</groupId>
       <artifactId>vaadin-client-compiled</artifactId>
-      <version>${vaadinVersion}</version>
     </dependency>
     <dependency>
       <groupId>com.vaadin</groupId>
       <artifactId>vaadin-client</artifactId>
-      <version>${vaadinVersion}</version>
     </dependency>
     <dependency>
       <groupId>com.vaadin</groupId>
       <artifactId>vaadin-themes</artifactId>
-      <version>${vaadinVersion}</version>
     </dependency>
-
+    <dependency>
+        <groupId>com.vaadin</groupId>
+        <artifactId>vaadin-shared</artifactId>
+        <version>${vaadinVersion}</version>
+    </dependency>
+    <dependency>
+        <groupId>com.vaadin</groupId>
+        <artifactId>vaadin-shared-deps</artifactId>
+        <version>1.0.2</version>
+    </dependency>
+    <dependency>
+        <groupId>org.jsoup</groupId>
+        <artifactId>jsoup</artifactId>
+        <version>1.7.2</version>
+    </dependency>
+    
     <dependency>
       <groupId>org.ops4j.pax.vaadin</groupId>
       <artifactId>service</artifactId>
