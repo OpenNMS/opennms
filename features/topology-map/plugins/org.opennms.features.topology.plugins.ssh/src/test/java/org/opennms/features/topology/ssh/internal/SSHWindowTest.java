@@ -39,12 +39,10 @@ import org.junit.Test;
 
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.Window;
 
 public class SSHWindowTest {
     
 	UI app;
-    Window mainWindow;
     SSHWindow sshWindow;
     SSHWindow sshWindow2;
     SshClient client;
@@ -68,8 +66,6 @@ public class SSHWindowTest {
 			fail("Could not connect to host");
 		}
         sshWindow2 = new SSHWindow(session, 200, 200);
-        mainWindow = new Window();
-        app.setContent(mainWindow);
         app.addWindow(sshWindow);
         app.addWindow(sshWindow2);
         

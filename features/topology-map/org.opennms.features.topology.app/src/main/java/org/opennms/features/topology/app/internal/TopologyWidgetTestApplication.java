@@ -501,14 +501,17 @@ public class TopologyWidgetTestApplication extends UI implements CommandUpdateLi
 		for (TopoContextMenuItem item : items) {
 			if (!item.hasChildren()) continue;
 			else updateSubMenuDisplay(item.getChildren());
+			// TODO: Figure out how to do this in the new contextmenu
+			/*
 			boolean shouldDisplay = false;
 			for (TopoContextMenuItem child : item.getChildren()) {
-//				if (child.getItem().isVisible()) {
-//					shouldDisplay = true;
-//					break;
-//				}
+				if (child.getItem().isVisible()) {
+					shouldDisplay = true;
+					break;
+				}
 			}
-			//item.getItem().setVisible(shouldDisplay);
+			item.getItem().setVisible(shouldDisplay);
+			*/
 		}
 	}
 

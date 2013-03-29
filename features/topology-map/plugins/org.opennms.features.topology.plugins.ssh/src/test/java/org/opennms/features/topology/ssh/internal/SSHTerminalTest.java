@@ -38,13 +38,10 @@ import org.apache.sshd.ClientSession;
 import org.apache.sshd.SshClient;
 import org.junit.Before;
 import org.junit.Test;
-import org.opennms.features.topology.ssh.internal.testframework.SudoPaintTarget;
 
-import com.vaadin.server.PaintException;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
 
 
 public class SSHTerminalTest {
@@ -68,7 +65,7 @@ public class SSHTerminalTest {
 		app.setContent(mainWindow);
 
 		SSHWindow sshWindow = new SSHWindow(null, 200, 200);
-		mainWindow.addComponent(sshWindow);
+		app.addWindow(sshWindow);
 
 		SshClient client = SshClient.setUpDefaultClient();
 		client.start();
@@ -80,6 +77,7 @@ public class SSHTerminalTest {
 		}
 		sshTerm = new SSHTerminal(sshWindow, session, 200, 200);
 		sshWindow.setContent(sshTerm);
+		UI.setCurrent(app);
 	}
 
 //	@Test

@@ -105,16 +105,6 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features.topology.plugins</groupId>
-      <artifactId>menu</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.topology.plugins.ui</groupId>
-      <artifactId>tree</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
       <groupId>org.opennms.features.topology</groupId>
       <artifactId>netutils</artifactId>
       <version>${project.version}</version>

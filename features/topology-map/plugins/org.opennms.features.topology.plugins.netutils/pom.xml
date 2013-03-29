@@ -196,10 +196,13 @@
 
 	<dependencies>
 	<!-- NECESSARY DEPENDENCIES -->
-
 	    <dependency>
 	      <groupId>junit</groupId>
 	      <artifactId>junit</artifactId>
+	    </dependency>
+	    <dependency>
+	      <groupId>org.easymock</groupId>
+	      <artifactId>easymock</artifactId>
 	    </dependency>
 		<dependency>
             <groupId>org.opennms.osgi.features.topology</groupId>
@@ -207,12 +210,6 @@
             <version>${project.version}</version>
             <type>pom</type>
         </dependency>
-		<dependency>
-			<groupId>com.google.gwt</groupId>
-			<artifactId>gwt-user</artifactId>
-			<version>${gwtVersion}</version>
-			<scope>provided</scope>
-		</dependency>
 
 		<dependency>
             <groupId>org.slf4j</groupId>

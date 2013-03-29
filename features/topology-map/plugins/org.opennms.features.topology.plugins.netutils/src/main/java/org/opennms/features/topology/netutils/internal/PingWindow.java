@@ -74,7 +74,7 @@ public class PingWindow extends Window{
 	private int splitHeight = 240; //Height from top of the window to the split location in pixels
 	private int topHeight = 280; //Set height size for everything above the split
 	private final String noLabel = "no such label"; //Label given to vertexes that have no real label.
-	private String baseAddress;
+	private String pingUrl;
 	
 	/**
 	 * The PingWindow method constructs a PingWindow component with a size proportionate to the 
@@ -83,9 +83,9 @@ public class PingWindow extends Window{
 	 * @param width Width of Main window
 	 * @param height Height of Main window
 	 */
-	public PingWindow(final Node node, final String baseAddress){
+	public PingWindow(final Node node, final String pingUrl){
 
-		this.baseAddress = baseAddress;
+		this.pingUrl = pingUrl;
 
 		String label = "";
 		String ipAddress = "";
@@ -260,22 +260,20 @@ public class PingWindow extends Window{
             return null;
         }
         if (validInput) {
-            URL baseUrl;
-            final StringBuilder options = new StringBuilder(baseAddress);
+            final StringBuilder options = new StringBuilder(pingUrl);
             try {
-                baseUrl = getUI().getPage().getLocation().toURL();
-            
-            
-            
+                URL baseUrl = getUI().getPage().getLocation().toURL();
 
-            options.append("&address=").append(ipDropdown.getValue())
-                .append("&timeout=").append(timeoutField.getValue())
-                .append("&numberOfRequests=").append(requestsField.getValue())
-                .append("&packetSize=").append(Integer.parseInt(packetSizeDropdown.getValue().toString()) - 8);
-            if (numericalDataCheckBox.getValue().equals(true)) {
-                options.append("&numericOutput=true");
-            }
-            
+                options.append(pingUrl.contains("?") ? "&" : "?");
+
+                options.append("address=").append(ipDropdown.getValue())
+                    .append("&timeout=").append(timeoutField.getValue())
+                    .append("&numberOfRequests=").append(requestsField.getValue())
+                    .append("&packetSize=").append(Integer.parseInt(packetSizeDropdown.getValue().toString()) - 8);
+                if (numericalDataCheckBox.getValue().equals(true)) {
+                    options.append("&numericOutput=true");
+                }
+
                 return new URL(baseUrl, options.toString());
             } catch (final MalformedURLException e) {
                 Notification.show("Could not build URL: " + options.toString(), Notification.Type.WARNING_MESSAGE);
