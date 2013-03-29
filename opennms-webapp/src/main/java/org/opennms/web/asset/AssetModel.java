@@ -33,14 +33,17 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import org.opennms.core.resource.Vault;
 import org.opennms.core.utils.DBUtils;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.WebSecurityUtils;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * <p>AssetModel class.</p>
@@ -181,8 +184,8 @@ public class AssetModel {
             stmt.setString(58, asset.admin);
             stmt.setString(59, asset.snmpcommunity);
             stmt.setString(60, asset.rackunitheight);
-            stmt.setFloat(61, asset.longitude);
-            stmt.setFloat(62, asset.latitude);
+            stmt.setFloat(61, safeFloat(asset.longitude));
+            stmt.setFloat(62, safeFloat(asset.latitude));
             stmt.setString(63, asset.country);
 
             stmt.execute();
@@ -190,7 +193,7 @@ public class AssetModel {
             d.cleanUp();
         }
     }
-
+    
     /**
      * <p>modifyAsset</p>
      *
@@ -266,8 +269,18 @@ public class AssetModel {
             stmt.setString(57, asset.admin);
             stmt.setString(58, asset.snmpcommunity);
             stmt.setString(59, asset.rackunitheight);
-            stmt.setFloat(60, asset.longitude);
-            stmt.setFloat(61, asset.latitude);
+            final Float longitude = safeFloat(asset.longitude);
+            if (longitude == null) {
+                stmt.setNull(60, Types.FLOAT);
+            } else {
+                stmt.setFloat(60, longitude);
+            }
+            final Float latitude = safeFloat(asset.latitude);
+            if (latitude == null) {
+                stmt.setNull(61, Types.FLOAT);
+            } else {
+                stmt.setFloat(61, latitude);
+            }
             stmt.setString(62, asset.country);
             stmt.setInt(63, asset.nodeId);
 
@@ -441,8 +454,14 @@ public class AssetModel {
             asset.setAdmin(rs.getString("admin"));
             asset.setSnmpcommunity(rs.getString("snmpcommunity"));
             asset.setRackunitheight(rs.getString("rackunitheight"));
-            asset.setLongitude(rs.getFloat("longitude"));
-            asset.setLatitude(rs.getFloat("latitude"));
+            final Object longitude = rs.getObject("longitude");
+            if (longitude != null) {
+                asset.setLongitude(Float.valueOf(rs.getFloat("longitude")).toString());
+            }
+            final Object latitude = rs.getObject("latitude");
+            if (latitude != null) {
+                asset.setLatitude(Float.valueOf(rs.getFloat("latitude")).toString());
+            }
             asset.setCountry(rs.getString("country"));
 
             // Convert from java.sql.Timestamp to java.util.Date, since it looks more pretty or something
@@ -543,4 +562,15 @@ public class AssetModel {
         new String[] { "GeoLocation Latitude", "latitude" },
         new String[] { "Country", "country" }
     };
+
+    private Float safeFloat(final String value) {
+        if (StringUtils.hasLength(value)) {
+            try {
+                return Float.valueOf(value);
+            } catch (final NumberFormatException e) {
+                LogUtils.tracef(this, e, "Failed to parse float value from %s", value);
+            }
+        }
+        return null;
+    }
 }
