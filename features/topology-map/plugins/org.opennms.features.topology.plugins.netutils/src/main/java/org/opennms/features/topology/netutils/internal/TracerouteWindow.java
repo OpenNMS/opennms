@@ -33,9 +33,8 @@ import java.net.URL;
 import java.util.Scanner;
 
 import com.vaadin.server.ExternalResource;
-import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.server.Page;
 import com.vaadin.shared.ui.MarginInfo;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
@@ -58,7 +57,7 @@ import com.vaadin.ui.Button.ClickEvent;
  * @version 1.0
  */
 @SuppressWarnings("serial")
-public class TracerouteWindow extends Window{
+public class TracerouteWindow extends Window {
 
 	private final double sizePercentage = 0.80; // Window size proportionate to main window
 	protected NativeSelect ipDropdown = null; //Dropdown component for IP Address
@@ -229,35 +228,37 @@ public class TracerouteWindow extends Window{
 	 * @throws MalformedURLException
 	 */
 	protected URL buildURL() {
-	    boolean validInput = false;
-	    try {
-	        validInput = validateInput();
-	    } catch (Exception e) {
-	        Notification.show(e.getMessage(), Notification.Type.WARNING_MESSAGE);
-	        return null;
-	    }
-	    if (validInput) {
-	        final StringBuilder options = new StringBuilder(tracerouteUrl);
-	        try {
-	        final URL baseUrl = Page.getCurrent().getLocation().toURL();
-	        
-	        options.append("&address=").append(ipDropdown.getValue());
-	        if (!("".equals(forcedHopField.getValue().toString()))) {
-	            options.append("&hopAddress=").append(forcedHopField.getValue());
-	        }
-	        if (numericalDataCheckBox.getValue().equals(true)) {
-	            options.append("&numericOutput=true");
-	        }
-	        
-	            return new URL(baseUrl, options.toString());
-	        } catch (final MalformedURLException e) {
-	            Notification.show("Could not build URL: " + options.toString(), Notification.Type.WARNING_MESSAGE);
-	            return null;
-	        }
-	    } else {
-	        Notification.show("Invalid IP addresss", Notification.Type.WARNING_MESSAGE);
-	        return null;
-	    }
+		boolean validInput = false;
+		try {
+			validInput = validateInput();
+		} catch (Exception e) {
+			Notification.show(e.getMessage(), Notification.Type.WARNING_MESSAGE);
+			return null;
+		}
+		if (validInput) {
+			final StringBuilder options = new StringBuilder(tracerouteUrl);
+			try {
+				URL baseUrl = getUI().getPage().getLocation().toURL();
+
+				options.append(tracerouteUrl.contains("?") ? "&" : "?");
+
+				options.append("address=").append(ipDropdown.getValue());
+				if (!("".equals(forcedHopField.getValue().toString()))) {
+					options.append("&hopAddress=").append(forcedHopField.getValue());
+				}
+				if (numericalDataCheckBox.getValue().equals(true)) {
+					options.append("&numericOutput=true");
+				}
+
+				return new URL(baseUrl, options.toString());
+			} catch (final MalformedURLException e) {
+				Notification.show("Could not build URL: " + options.toString(), Notification.Type.WARNING_MESSAGE);
+				return null;
+			}
+		} else {
+			Notification.show("Invalid IP addresss", Notification.Type.WARNING_MESSAGE);
+			return null;
+		}
 	}
 
 	/**

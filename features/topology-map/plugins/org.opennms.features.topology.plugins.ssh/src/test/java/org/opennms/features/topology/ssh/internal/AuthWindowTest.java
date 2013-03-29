@@ -81,7 +81,7 @@ public class AuthWindowTest {
 		app.addWindow(noPortWindow);
 		app.addWindow(emptyWindow);
 		app.addWindow(invalidHostWindow);
-
+		UI.setCurrent(app);
 	}
 
 	@Test
