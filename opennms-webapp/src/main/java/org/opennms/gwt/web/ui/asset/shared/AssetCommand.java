@@ -70,9 +70,9 @@ public class AssetCommand implements IsSerializable {
 
     private ArrayList<String> m_connectionOptions;
 
-    private String m_longitude;
+    private Float m_longitude;
     
-    private String m_latitude;
+    private Float m_latitude;
 
     private String m_country;
 
@@ -270,11 +270,11 @@ public class AssetCommand implements IsSerializable {
         return m_connectionOptions;
     }
 
-    public String getLongitude() {
+    public Float getLongitude() {
         return m_longitude;
     }
 
-    public String getLatitude() {
+    public Float getLatitude() {
         return m_latitude;
     }
 
@@ -596,11 +596,11 @@ public class AssetCommand implements IsSerializable {
         m_connectionOptions = connectionOptions;
     }
 
-    public void setLongitude(String longitude) {
+    public void setLongitude(Float longitude) {
         m_longitude = longitude;
     }
 
-    public void setLatitude(String latitude) {
+    public void setLatitude(Float latitude) {
         m_latitude = latitude;
     }
 
