@@ -47,15 +47,6 @@ import au.com.bytecode.opencsv.CSVWriter;
  *
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski</A>
  * @author <A HREF="mailto:ranger@opennms.org">Benjamin Reed</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski</A>
- * @author <A HREF="mailto:ranger@opennms.org">Benjamin Reed</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski</A>
- * @author <A HREF="mailto:ranger@opennms.org">Benjamin Reed</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- * @version $Id: $
- * @since 1.8.1
  */
 public class ExportAssetsServlet extends HttpServlet {
     private static final long serialVersionUID = 2L;
@@ -108,9 +99,6 @@ public class ExportAssetsServlet extends HttpServlet {
                 "City",
                 "State",
                 "Zip",
-                "Country",
-                "Longitude",
-                "Latitude",
                 "Building",
                 "Floor",
                 "Room",
@@ -147,7 +135,10 @@ public class ExportAssetsServlet extends HttpServlet {
 		"Additional hardware",
 		"Admin",
 		"SNMP Community",
-		"Rack unit height"
+		"Rack unit height",
+                "Country",
+                "Longitude",
+                "Latitude"
         };
         
         out.writeNext(header);
@@ -179,9 +170,6 @@ public class ExportAssetsServlet extends HttpServlet {
             entries.add(asset.getCity());
             entries.add(asset.getState());
             entries.add(asset.getZip());
-            entries.add(asset.getCountry());
-            entries.add(asset.getLongitude().toString());
-            entries.add(asset.getLatitude().toString());
             entries.add(asset.getBuilding());
             entries.add(asset.getFloor());
             entries.add(asset.getRoom());
@@ -219,6 +207,9 @@ public class ExportAssetsServlet extends HttpServlet {
             entries.add(asset.getAdmin());
             entries.add(asset.getSnmpcommunity());
             entries.add(asset.getRackunitheight());
+            entries.add(asset.getLongitude());
+            entries.add(asset.getLatitude());
+            entries.add(asset.getCountry());
             
             out.writeNext(entries.toArray(new String[0]));
         }

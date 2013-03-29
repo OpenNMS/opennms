@@ -192,7 +192,7 @@ public class ImportAssetsServlet extends HttpServlet {
                 count++;
                 try {
                     logger.debug("asset line is:'{}'", line);
-                    if (line.length != 59) {
+                    if (line.length != 62) {
                         logger.error("csv test row length was not 58 line length: '{}' line was:'{}', line length", line.length, line);
                         throw new NoSuchElementException();
                     }
@@ -267,6 +267,9 @@ public class ImportAssetsServlet extends HttpServlet {
                     asset.setAdmin(Util.decode(line[56]));
                     asset.setSnmpcommunity(Util.decode(line[57]));
                     asset.setRackunitheight(Util.decode(line[58]));
+                    asset.setLongitude(Util.decode(line[59]));
+                    asset.setLatitude(Util.decode(line[60]));
+                    asset.setCountry(Util.decode(line[61]));
             
                     list.add(asset);
                     logger.debug("decoded asset:'{}'", asset);

@@ -148,12 +148,12 @@
 						name="{con.zip}" value="" helpText="{con.zipHelp}" maxLength="64" />
 					<onms_fs:FieldSetSuggestBox ui:field="sCountry"
 						name="{con.country}" value="" helpText="{con.countryHelp}" maxLength="64" />
-					<onms_fs:FieldSetSuggestBox ui:field="sLongitude"
+					<onms_fs:FieldSetTextBox ui:field="sLongitude"
 						name="{con.longitude}" value="" helpText="{con.longitudeHelp}"
-						maxLength="16" />
-					<onms_fs:FieldSetSuggestBox ui:field="sLatitude"
+						maxLength="32" />
+					<onms_fs:FieldSetTextBox ui:field="sLatitude"
 						name="{con.latitude}" value="" helpText="{con.latitudeHelp}"
-						maxLength="16" />
+						maxLength="32" />
 					<br />
 					<onms_fs:FieldSetSuggestBox ui:field="sDivision"
 						name="{con.division}" value="" helpText="{con.divisionHelp}"
