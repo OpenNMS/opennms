@@ -473,8 +473,8 @@ public class AssetNodePageImpl extends Composite implements AssetPagePresenter.D
         m_asset.setState(sState.getValue());
         m_asset.setZip(sZip.getValue());
         m_asset.setCountry(sCountry.getValue());
-        m_asset.setLongitude(sLongitude.getValue());
-        m_asset.setLatitude(sLatitude.getValue());
+        m_asset.setLongitude(Float.valueOf(sLongitude.getValue()));
+        m_asset.setLatitude(Float.valueOf(sLatitude.getValue()));
         m_asset.setBuilding(sBuilding.getValue());
         m_asset.setFloor(sFloor.getValue());
         m_asset.setRoom(sRoom.getValue());
@@ -585,8 +585,8 @@ public class AssetNodePageImpl extends Composite implements AssetPagePresenter.D
         sState.setValue(asset.getState());
         sZip.setValue(asset.getZip());
         sCountry.setValue(asset.getCountry());
-        sLongitude.setValue(asset.getLongitude());
-        sLatitude.setValue(asset.getLatitude());
+        sLongitude.setValue(asset.getLongitude() == null? null : asset.getLongitude().toString());
+        sLatitude.setValue(asset.getLatitude() == null? null : asset.getLatitude().toString());
         sBuilding.setValue(asset.getBuilding());
         sFloor.setValue(asset.getFloor());
         sRoom.setValue(asset.getRoom());

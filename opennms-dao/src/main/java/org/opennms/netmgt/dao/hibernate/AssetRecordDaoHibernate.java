@@ -100,7 +100,8 @@ public class AssetRecordDaoHibernate extends AbstractDaoHibernate<OnmsAssetRecor
         projList.add(Projections.alias(Projections.property("geolocation.city"), "city"));
         projList.add(Projections.alias(Projections.property("comment"), "comment"));
         projList.add(Projections.alias(Projections.property("connection"), "connection"));
-        projList.add(Projections.alias(Projections.property("geolocation.coordinates"), "coordinates"));
+        projList.add(Projections.alias(Projections.property("geolocation.longitude"), "longitude"));
+        projList.add(Projections.alias(Projections.property("geolocation.latitude"), "latitude"));
         projList.add(Projections.alias(Projections.property("cpu"), "cpu"));
         projList.add(Projections.alias(Projections.property("department"), "department"));
         projList.add(Projections.alias(Projections.property("description"), "description"));

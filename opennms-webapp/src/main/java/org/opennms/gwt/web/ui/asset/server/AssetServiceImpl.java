@@ -40,6 +40,7 @@ import org.opennms.gwt.web.ui.asset.shared.AssetSuggCommand;
 import org.opennms.netmgt.dao.AssetRecordDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsAssetRecord;
+import org.opennms.netmgt.model.OnmsGeolocation;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.web.api.SecurityContextService;
 import org.opennms.web.springframework.security.Authentication;
@@ -232,16 +233,17 @@ public class AssetServiceImpl extends RemoteServiceServlet implements AssetServi
         // Map all distinct asset properties
         for (OnmsAssetRecord asset : distinctAssetProperties) {
             suggestion.addAdditionalhardware(asset.getAdditionalhardware());
-            suggestion.addAddress1(asset.getGeolocation().getAddress1());
-            suggestion.addAddress2(asset.getGeolocation().getAddress2());
+            final OnmsGeolocation geolocation = asset.getGeolocation();
+            suggestion.addAddress1(geolocation.getAddress1());
+            suggestion.addAddress2(geolocation.getAddress2());
             suggestion.addAdmin(asset.getAdmin());
             suggestion.addBuilding(asset.getBuilding());
             suggestion.addCategory(asset.getCategory());
             suggestion.addCircuitId(asset.getCircuitId());
-            suggestion.addCity(asset.getGeolocation().getCity());
-            suggestion.addLongitude(asset.getGeolocation().getLongitude().toString());
-            suggestion.addLatitude(asset.getGeolocation().getLatitude().toString());
-            suggestion.addCountry(asset.getGeolocation().getCountry());
+            suggestion.addCity(geolocation.getCity());
+            suggestion.addLongitude(geolocation.getLongitude() == null? null : geolocation.getLongitude().toString());
+            suggestion.addLatitude(geolocation.getLatitude() == null? null : geolocation.getLatitude().toString());
+            suggestion.addCountry(geolocation.getCountry());
             suggestion.addCpu(asset.getCpu());
             suggestion.addDepartment(asset.getDepartment());
             suggestion.addDescription(asset.getDescription());
@@ -268,14 +270,14 @@ public class AssetServiceImpl extends RemoteServiceServlet implements AssetServi
             suggestion.addRegion(asset.getRegion());
             suggestion.addRoom(asset.getRoom());
             suggestion.addSnmpcommunity(asset.getSnmpcommunity());
-            suggestion.addState(asset.getGeolocation().getState());
+            suggestion.addState(geolocation.getState());
             suggestion.addStoragectrl(asset.getStoragectrl());
             suggestion.addSupportPhone(asset.getSupportPhone());
             suggestion.addThresholdCategory(asset.getThresholdCategory());
             suggestion.addVendor(asset.getVendor());
             suggestion.addVendorFax(asset.getVendorFax());
             suggestion.addVendorPhone(asset.getVendorPhone());
-            suggestion.addZip(asset.getGeolocation().getZip());
+            suggestion.addZip(geolocation.getZip());
 
             // VMware monitoring assets
             suggestion.addVmwareManagedObjectId(asset.getVmwareManagedObjectId());
@@ -284,7 +286,7 @@ public class AssetServiceImpl extends RemoteServiceServlet implements AssetServi
 
             // VMware topology assets
             suggestion.addVmwareTopologyInfo(asset.getVmwareTopologyInfo());
-            suggestion.addVmwareState(asset.getGeolocation().getState());
+            suggestion.addVmwareState(geolocation.getState());
 
         }
         return suggestion;
