@@ -342,7 +342,7 @@
   
 
   <!-- Asset box, if info available --> 
-  <c:if test="${! empty model.asset && (! empty model.asset.description || ! empty model.asset.comments || ! empty model.asset.longitude || ! empty model.asset.latitude)}">
+  <c:if test="${! empty model.asset && (! empty model.asset.description || ! empty model.asset.comments)}">
     <h3 class="o-box">Asset Information</h3>
     <table class="o-box">
       <tr>

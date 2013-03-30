@@ -60,10 +60,6 @@ public class AssetSuggCommand implements IsSerializable {
 
     private Set<String> m_city;
 
-    private Set<String> m_longitude;
-
-    private Set<String> m_latitude;
-    
     private Set<String> m_country;
 
     private Set<String> m_cpu;
@@ -169,8 +165,6 @@ public class AssetSuggCommand implements IsSerializable {
         m_circuitId = new TreeSet<String>();
         m_city = new TreeSet<String>();
         m_cpu = new TreeSet<String>();
-        m_longitude = new TreeSet<String>();
-        m_latitude = new TreeSet<String>();
         m_country = new TreeSet<String>();
         m_department = new TreeSet<String>();
         m_description = new TreeSet<String>();
@@ -264,18 +258,6 @@ public class AssetSuggCommand implements IsSerializable {
     public void addCpu(String cpu) {
         if ((cpu != null) && !"".equals(cpu)) {
             m_cpu.add(cpu);
-        }
-    }
-
-    public void addLongitude(final String longitude) {
-        if (longitude != null) {
-            m_longitude.add(longitude);
-        }
-    }
-
-    public void addLatitude(final String latitude) {
-        if (latitude != null) {
-            m_latitude.add(latitude);
         }
     }
 
@@ -545,14 +527,6 @@ public class AssetSuggCommand implements IsSerializable {
         return m_city;
     }
 
-    public Collection<String> getLongitude() {
-        return m_longitude;
-    }
-
-    public Collection<String> getLatitude() {
-        return m_latitude;
-    }
-
     public Collection<String> getCountry() {
         return m_country;
     }
@@ -723,8 +697,6 @@ public class AssetSuggCommand implements IsSerializable {
         m_circuitId.add("");
         m_city.add("");
         m_cpu.add("");
-        m_longitude.add("");
-        m_latitude.add("");
         m_country.add("");
         m_department.add("");
         m_description.add("");

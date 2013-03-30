@@ -161,9 +161,9 @@ public class AssetNodePageImpl extends Composite implements AssetPagePresenter.D
     @UiField
     FieldSetSuggestBox sCountry;
     @UiField
-    FieldSetSuggestBox sLongitude;
+    FieldSetTextBox sLongitude;
     @UiField
-    FieldSetSuggestBox sLatitude;
+    FieldSetTextBox sLatitude;
     @UiField
     FieldSetSuggestBox sBuilding;
     @UiField
@@ -473,8 +473,8 @@ public class AssetNodePageImpl extends Composite implements AssetPagePresenter.D
         m_asset.setState(sState.getValue());
         m_asset.setZip(sZip.getValue());
         m_asset.setCountry(sCountry.getValue());
-        m_asset.setLongitude(sLongitude.getValue());
-        m_asset.setLatitude(sLatitude.getValue());
+        m_asset.setLongitude(s2f(sLongitude.getValue()));
+        m_asset.setLatitude(s2f(sLatitude.getValue()));
         m_asset.setBuilding(sBuilding.getValue());
         m_asset.setFloor(sFloor.getValue());
         m_asset.setRoom(sRoom.getValue());
@@ -585,8 +585,8 @@ public class AssetNodePageImpl extends Composite implements AssetPagePresenter.D
         sState.setValue(asset.getState());
         sZip.setValue(asset.getZip());
         sCountry.setValue(asset.getCountry());
-        sLongitude.setValue(asset.getLongitude());
-        sLatitude.setValue(asset.getLatitude());
+        sLongitude.setValue(f2s(asset.getLongitude()));
+        sLatitude.setValue(f2s(asset.getLatitude()));
         sBuilding.setValue(asset.getBuilding());
         sFloor.setValue(asset.getFloor());
         sRoom.setValue(asset.getRoom());
@@ -598,6 +598,20 @@ public class AssetNodePageImpl extends Composite implements AssetPagePresenter.D
         sAdmin.setValue(asset.getAdmin());
     }
 
+    private String f2s(final Float value) {
+        return value == null? null : value.toString();
+    }
+
+    private Float s2f(final String value) {
+        if (value != null && !"".equals(value)) {
+            try {
+                return Float.valueOf(value);
+            } catch (final NumberFormatException e) {
+                // ignore and return null if it's not a valid float
+            }
+        }
+        return null;
+    }
     private void setDataSNMP(AssetCommand asset) {
 
         if ((asset.getSnmpSysObjectId().equals("")) || (asset.getSnmpSysObjectId() == null)) {
@@ -667,8 +681,6 @@ public class AssetNodePageImpl extends Composite implements AssetPagePresenter.D
         sState.setSuggestions(assetSugg.getState());
         sZip.setSuggestions(assetSugg.getZip());
         sCountry.setSuggestions(assetSugg.getCountry());
-        sLongitude.setSuggestions(assetSugg.getLongitude());
-        sLatitude.setSuggestions(assetSugg.getLatitude());
         sBuilding.setSuggestions(assetSugg.getBuilding());
         sFloor.setSuggestions(assetSugg.getFloor());
         sRoom.setSuggestions(assetSugg.getRoom());
