@@ -25,7 +25,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         <argument>
             <bean class="org.opennms.features.topology.app.internal.DefaultSelectionManager"/>
         </argument>
-        <property name="theme" value="${theme}"/>
+        <!-- <property name="theme" value="${theme}"/> -->
         <property name="widgetManager" ref="widgetManager"/>
         <property name="treeWidgetManager" ref="treeWidgetManager"/>
         <property name="showHeader" value="${showHeader}" />
