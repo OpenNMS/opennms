@@ -213,12 +213,6 @@
 			<artifactId>vaadin</artifactId>
 			<type>pom</type>
 		</dependency>
-		<dependency>
-			<groupId>com.google.gwt</groupId>
-			<artifactId>gwt-user</artifactId>
-			<optional>true</optional>
-			<scope>provided</scope>
-		</dependency>
 
 		<!-- Node Maps Dependencies -->
 
