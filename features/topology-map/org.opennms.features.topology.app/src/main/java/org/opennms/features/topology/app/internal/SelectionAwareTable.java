@@ -53,7 +53,7 @@ public class SelectionAwareTable extends Table implements SelectionListener, Sel
 	 *  Leave OnmsDaoContainer without generics; the Aries blueprint code cannot match up
 	 *  the arguments if you put the generic types in.
 	 */
-	public SelectionAwareTable(String caption, OnmsDaoContainer<?,? extends Serializable> container) {
+	public SelectionAwareTable(String caption, OnmsDaoContainer container) {
 		super(caption, container);
 		m_container = container;
 	}

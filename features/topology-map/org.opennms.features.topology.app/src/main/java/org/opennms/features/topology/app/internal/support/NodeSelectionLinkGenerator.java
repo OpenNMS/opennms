@@ -70,7 +70,7 @@ public class NodeSelectionLinkGenerator implements ColumnGenerator, SelectionNot
 
 	@Override
 	public Object generateCell(Table source, Object itemId, Object columnId) {
-		final Property<String> nodeIdProperty = source.getContainerProperty(itemId, m_nodeIdProperty);
+		final Property<Integer> nodeIdProperty = source.getContainerProperty(itemId, m_nodeIdProperty);
 		Object cellValue = m_generator.generateCell(source, itemId, columnId);
 		if (cellValue == null) {
 			return null;
@@ -78,9 +78,9 @@ public class NodeSelectionLinkGenerator implements ColumnGenerator, SelectionNot
 			if (nodeIdProperty.getValue() == null) {
 				return cellValue;
 			} else {
-				Button button = new Button((String)cellValue);
+				Button button = new Button(cellValue.toString());
 				button.setStyleName(BaseTheme.BUTTON_LINK);
-				button.setDescription(nodeIdProperty.getValue());
+				button.setDescription(nodeIdProperty.getValue().toString());
 				button.addClickListener(new ClickListener() {
 					@Override
 					public void buttonClick(ClickEvent event) {

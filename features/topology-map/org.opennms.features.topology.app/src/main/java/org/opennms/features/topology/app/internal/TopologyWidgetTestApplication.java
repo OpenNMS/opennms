@@ -136,7 +136,7 @@ public class TopologyWidgetTestApplication extends UI implements CommandUpdateLi
         m_layout.setSizeFull();
         m_rootLayout.addComponent(m_layout);
         
-        if(m_showHeader) {
+        if(m_showHeader && m_headerHtml != null) {
             HEADER_HEIGHT = 100;
             Panel header = new Panel("header");
             header.setCaption(null);
@@ -286,14 +286,16 @@ public class TopologyWidgetTestApplication extends UI implements CommandUpdateLi
 	 * @param treeWidgetManager
 	 */
     private void updateAccordionView(WidgetManager treeWidgetManager) {
-        m_treeAccordion.removeAllComponents();
-        
-        m_treeAccordion.addTab(m_tree, m_tree.getTitle());
-        for(IViewContribution widget : treeWidgetManager.getWidgets()) {
-            if(widget.getIcon() != null) {
-                m_treeAccordion.addTab(widget.getView(this), widget.getTitle(), widget.getIcon());
-            }else {
-                m_treeAccordion.addTab(widget.getView(this), widget.getTitle());
+        if (m_treeAccordion != null) {
+            m_treeAccordion.removeAllComponents();
+            
+            m_treeAccordion.addTab(m_tree, m_tree.getTitle());
+            for(IViewContribution widget : treeWidgetManager.getWidgets()) {
+                if(widget.getIcon() != null) {
+                    m_treeAccordion.addTab(widget.getView(this), widget.getTitle(), widget.getIcon());
+                }else {
+                    m_treeAccordion.addTab(widget.getView(this), widget.getTitle());
+                }
             }
         }
     }
@@ -307,24 +309,26 @@ public class TopologyWidgetTestApplication extends UI implements CommandUpdateLi
      * @param widgetManager
      */
     private void updateWidgetView(WidgetManager widgetManager) {
-        if(widgetManager.widgetCount() == 0) {
-            m_layout.removeAllComponents();
-            m_layout.addComponent(m_treeMapSplitPanel, getBelowMenuPosition());
-            m_layout.requestRepaint();
-        } else {
-            if(m_bottomLayoutBar == null) {
-                m_bottomLayoutBar = new VerticalSplitPanel();
-                m_bottomLayoutBar.setFirstComponent(m_treeMapSplitPanel);
-                // Split the screen 70% top, 30% bottom
-                m_bottomLayoutBar.setSplitPosition(70, Unit.PERCENTAGE);
-                m_bottomLayoutBar.setSizeFull();
-                m_bottomLayoutBar.setSecondComponent(getTabSheet(widgetManager, this));
-            }
+        if (m_layout != null) {
+            if(widgetManager.widgetCount() == 0) {
+                m_layout.removeAllComponents();
+                m_layout.addComponent(m_treeMapSplitPanel, getBelowMenuPosition());
+                m_layout.requestRepaint();
+            } else {
+                if(m_bottomLayoutBar == null) {
+                    m_bottomLayoutBar = new VerticalSplitPanel();
+                    m_bottomLayoutBar.setFirstComponent(m_treeMapSplitPanel);
+                    // Split the screen 70% top, 30% bottom
+                    m_bottomLayoutBar.setSplitPosition(70, Unit.PERCENTAGE);
+                    m_bottomLayoutBar.setSizeFull();
+                    m_bottomLayoutBar.setSecondComponent(getTabSheet(widgetManager, this));
+                }
 
-            m_layout.removeAllComponents();
-            m_layout.addComponent(m_bottomLayoutBar, getBelowMenuPosition());
-            m_layout.requestRepaint();
-            
+                m_layout.removeAllComponents();
+                m_layout.addComponent(m_bottomLayoutBar, getBelowMenuPosition());
+                m_layout.requestRepaint();
+                
+            }
         }
         
         // TODO: Integrate contextmenu with the Connector/Extension pattern
