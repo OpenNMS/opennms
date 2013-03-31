@@ -37,7 +37,7 @@ import com.vaadin.annotations.Title;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.themes.Runo;
+import com.vaadin.ui.themes.Reindeer;
 
 /**
  * The Class MIB Compiler Application.
@@ -46,7 +46,7 @@ import com.vaadin.ui.themes.Runo;
  */
 @SuppressWarnings("serial")
 @Title("MIB Compiler Application")
-@Theme(Runo.THEME_NAME)
+@Theme(Reindeer.THEME_NAME)
 public class MibCompilerApplication extends UI {
 
     /** The OpenNMS Event Proxy. */

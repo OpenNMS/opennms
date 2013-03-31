@@ -54,10 +54,9 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.themes.Reindeer;
 import com.vaadin.ui.themes.Runo;
-import com.vaadin.util.CurrentInstance;
 
 import de.steinwedel.vaadin.MessageBox;
 import de.steinwedel.vaadin.MessageBox.ButtonType;
@@ -70,7 +69,7 @@ import de.steinwedel.vaadin.MessageBox.EventListener;
  */
 @SuppressWarnings("serial")
 @Title("Events Administration")
-@Theme(Runo.THEME_NAME)
+@Theme(Reindeer.THEME_NAME)
 public class EventAdminApplication extends UI {
 
     /** The OpenNMS Event Proxy. */

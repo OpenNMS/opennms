@@ -37,10 +37,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.support.TransactionOperations;
 
 import com.github.wolfie.refresher.Refresher;
+import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.UI;
+import com.vaadin.ui.themes.Reindeer;
 
 /**
  * The Class Node Maps Application.
@@ -79,6 +81,7 @@ import com.vaadin.ui.UI;
  */
 @SuppressWarnings("serial")
 @Title("OpenNMS Node Maps")
+@Theme(Reindeer.THEME_NAME)
 public class NodeMapsApplication extends UI {
 
     private static final int REFRESH_INTERVAL = 5 * 60 * 1000;
