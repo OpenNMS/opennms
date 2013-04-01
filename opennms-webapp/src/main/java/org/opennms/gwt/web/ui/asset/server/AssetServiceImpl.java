@@ -262,6 +262,9 @@ public class AssetServiceImpl extends RemoteServiceServlet implements AssetServi
         Boolean isSaved = false;
         m_onmsNode = m_nodeDao.get(nodeId);
         m_onmsAssetRecord = m_onmsNode.getAssetRecord();
+        OnmsGeolocation geolocation = m_onmsAssetRecord.getGeolocation();
+
+        logger.debug("gelocation before: {}", geolocation);
 
         // copy the transfer object for rpc back to the hibernate model
         final AssetCommand sanitizeBeanStringProperties = WebSecurityUtils.sanitizeBeanStringProperties(assetCommand, m_allowHtmlFields);
@@ -270,9 +273,15 @@ public class AssetServiceImpl extends RemoteServiceServlet implements AssetServi
 
         BeanUtils.copyProperties(sanitizeBeanStringProperties, m_onmsAssetRecord);
 
+        geolocation = m_onmsAssetRecord.getGeolocation();
+        logger.debug("gelocation after: {}", geolocation);
+
         // logger.debug("copyProperties finished");
 
-        final OnmsGeolocation geolocation = m_onmsAssetRecord.getGeolocation();
+        if (geolocation == null) {
+            geolocation = new OnmsGeolocation();
+            m_onmsAssetRecord.setGeolocation(geolocation);
+        }
         
         // logger.debug("geolocation: {}", geolocation);
 
