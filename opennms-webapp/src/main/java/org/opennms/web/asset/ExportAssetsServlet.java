@@ -49,8 +49,7 @@ import au.com.bytecode.opencsv.CSVWriter;
  * @author <A HREF="mailto:ranger@opennms.org">Benjamin Reed</A>
  */
 public class ExportAssetsServlet extends HttpServlet {
-    private static final long serialVersionUID = 2L;
-    
+    private static final long serialVersionUID = -4854445395857220978L;
     protected AssetModel model;
 
     /**
@@ -207,9 +206,9 @@ public class ExportAssetsServlet extends HttpServlet {
             entries.add(asset.getAdmin());
             entries.add(asset.getSnmpcommunity());
             entries.add(asset.getRackunitheight());
+            entries.add(asset.getCountry());
             entries.add(asset.getLongitude());
             entries.add(asset.getLatitude());
-            entries.add(asset.getCountry());
             
             out.writeNext(entries.toArray(new String[0]));
         }
