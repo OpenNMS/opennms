@@ -471,7 +471,7 @@ public class PollerBackEndTest extends TestCase {
 
         verifyMocks();
 
-        assertSame(locators, results);
+        assertEquals(0, results.size());
 
 
     }
