@@ -29,35 +29,6 @@
 				debugger can then be connected to port 8998. Note that e.g. a Jetty server 
 				should be running with the server side parts - use the goal jetty:run . -->
 			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>gwt-maven-plugin</artifactId>
-				<configuration>
-					<webappDirectory>target/gwt/VAADIN/widgetsets</webappDirectory>
-					<extraJvmArgs>-Xmx512M -Xss1024k</extraJvmArgs>
-				</configuration>
-				<executions>
-					<execution>
-						<goals>
-							<goal>resources</goal>
-							<goal>compile</goal>
-						</goals>
-					</execution>
-				</executions>
-				<dependencies>
-					<dependency>
-						<groupId>com.google.gwt</groupId>
-						<artifactId>gwt-dev</artifactId>
-						<version>${gwtVersion}</version>
-					</dependency>
-					<dependency>
-						<groupId>com.google.gwt</groupId>
-						<artifactId>gwt-user</artifactId>
-						<version>${gwtVersion}</version>
-					</dependency>
-				</dependencies>
-			</plugin>
-
-			<plugin>
 				<!--
 				 | the following instructions build a simple set of public/private classes into an OSGi bundle
 				-->
@@ -76,12 +47,22 @@
 			<plugin>
 				<groupId>com.vaadin</groupId>
 				<artifactId>vaadin-maven-plugin</artifactId>
-				<version>1.0.2</version>
+				<version>${vaadin.plugin.version}</version>
 				<executions>
 					<execution>
-						<configuration></configuration>
+						<configuration>
+						  <webappDirectory>${basedir}/target/gwt/VAADIN/widgetsets</webappDirectory>
+						  <noServer>true</noServer>
+                         <!-- Remove draftCompile when project is ready -->
+                         <draftCompile>false</draftCompile>
+                         <compileReport>true</compileReport>
+                         <style>OBF</style>
+                         <strict>false</strict>
+						</configuration>
 						<goals>
-							<goal>update-widgetset</goal>
+						  <goal>resources</goal>
+						  <goal>update-widgetset</goal>
+						  <goal>compile</goal>
 						</goals>
 					</execution>
 				</executions>

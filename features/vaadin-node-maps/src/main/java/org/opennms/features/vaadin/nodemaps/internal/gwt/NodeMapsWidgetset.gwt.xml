@@ -2,8 +2,8 @@
 <!DOCTYPE module PUBLIC "-//Google Inc.//DTD Google Web Toolkit 2.3.0//EN" "http://google-web-toolkit.googlecode.com/svn/tags/2.3.0/distro-source/core/src/gwt-module.dtd">
 <module>
 
-    <inherits name="com.vaadin.terminal.gwt.DefaultWidgetSet" />
-    <inherits name="com.github.wolfie.refresher.RefresherApplicationWidgetset" />
+    
+    
     <inherits name="org.vaadin.peter.contextmenu.ContextmenuWidgetset" />
     <inherits name="org.discotools.gwt.leaflet.Core" />
 
@@ -19,4 +19,8 @@
     <!-- <stylesheet src="leaflet-search/leaflet-search.css" /> -->
     <stylesheet src="node-maps.css" />
 
+
+    <inherits name="com.vaadin.DefaultWidgetSet" />
+
+    <inherits name="com.github.wolfie.refresher.RefresherWidgetset" />
 </module>

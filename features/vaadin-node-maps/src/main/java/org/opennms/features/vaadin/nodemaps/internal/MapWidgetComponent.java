@@ -29,37 +29,29 @@
 package org.opennms.features.vaadin.nodemaps.internal;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.features.geocoder.Coordinates;
 import org.opennms.features.geocoder.GeocoderException;
 import org.opennms.features.geocoder.GeocoderService;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.VMapWidget;
 import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.dao.AssetRecordDao;
 import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsCategory;
-import org.opennms.netmgt.model.OnmsGeolocation;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionOperations;
 
 import com.vaadin.server.PaintException;
 import com.vaadin.server.PaintTarget;
 import com.vaadin.ui.VerticalLayout;
 
-@ClientWidget(value = VMapWidget.class)
+
 public class MapWidgetComponent extends VerticalLayout {
     private static final String[] EMPTY_STRING_ARRAY = new String[]{};
 
@@ -176,101 +168,101 @@ public class MapWidgetComponent extends VerticalLayout {
         m_geocoderService = geocoder;
     }
 
-    @Override
-    public void paintContent(final PaintTarget target) throws PaintException {
-        super.paintContent(target);
-
-        if (m_nodeDao == null) return;
-
-        m_log.debug("getting nodes");
-        final CriteriaBuilder cb = new CriteriaBuilder(OnmsNode.class);
-        cb.alias("assetRecord", "asset");
-        cb.orderBy("id").asc();
-
-        if (singleNodeId > 0)
-            cb.eq("id", singleNodeId);
-
-        final Map<Integer,NodeEntry> nodes = new HashMap<Integer,NodeEntry>();
-        final List<OnmsAssetRecord> updatedAssets = new ArrayList<OnmsAssetRecord>();
-
-        for (final OnmsNode node : m_nodeDao.findMatching(cb.toCriteria())) {
-            m_log.trace("processing node {}", node.getId());
-
-            final OnmsAssetRecord assets = node.getAssetRecord();
-            if (assets != null && assets.getGeolocation() != null) {
-                final OnmsGeolocation geolocation = assets.getGeolocation();
-
-                final String addressString = geolocation.asAddressString();
-                if (addressString != null && !"".equals(addressString)) {
-                    final String coordinateString = geolocation.getCoordinates();
-                    if (coordinateString == null || "".equals(coordinateString)) {
-                        m_log.debug("Node {} has an asset record with address \"{}\", but no coordinates.", new Object[] { node.getId(), addressString });
-                        final String coordinates = getCoordinates(addressString);
-                        geolocation.setCoordinates(coordinates);
-                        updatedAssets.add(assets);
-                    }
-                    if (BAD_COORDINATES.equals(geolocation.getCoordinates())) {
-                        m_log.debug("Node {} has an asset record with address, but we were unable to find valid coordinates.", node.getId());
-                        continue;
-                    }
-
-                    nodes.put(node.getId(), new NodeEntry(node));
-                }
-            }
-        }
-
-        int lastId = -1;
-        int unackedCount = 0;
-
-        if (!nodes.isEmpty()) {
-            m_log.debug("getting alarms for nodes");
-            final CriteriaBuilder ab = new CriteriaBuilder(OnmsAlarm.class);
-            ab.alias("node", "node");
-            ab.ge("severity", OnmsSeverity.WARNING);
-            ab.in("node.id", nodes.keySet());
-            ab.orderBy("node.id").asc();
-            ab.orderBy("severity").desc();
-    
-            for (final OnmsAlarm alarm : m_alarmDao.findMatching(ab.toCriteria())) {
-                final int nodeId = alarm.getNodeId();
-                m_log.debug("nodeId = {}, lastId = {}, unackedCount = {}", new Object[] { nodeId, lastId, unackedCount });
-                if (nodeId != lastId) {
-                    m_log.debug("  setting severity for node {} to {}", new Object[] { nodeId, alarm.getSeverity().getLabel() });
-                    nodes.get(nodeId).setSeverity(alarm.getSeverity());
-                    if (lastId != -1) {
-                        nodes.get(nodeId).setUnackedCount(unackedCount);
-                        unackedCount = 0;
-                    }
-                }
-                if (alarm.getAckUser() == null) {
-                    unackedCount++;
-                }
-    
-                lastId = nodeId;
-            }
-        }
-
-        if (lastId != -1) {
-            nodes.get(lastId).setUnackedCount(unackedCount);
-        }
-
-        m_log.debug("pushing nodes to the UI");
-        target.startTag("nodes");
-        for (final NodeEntry node : nodes.values()) {
-            node.visit(target);
-        }
-        target.endTag("nodes");
-
-        m_log.debug("saving {} updated asset records to the database", updatedAssets.size());
-        m_transactionOperations.execute(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(final TransactionStatus status) {
-                for (final OnmsAssetRecord asset : updatedAssets) {
-                    m_assetDao.saveOrUpdate(asset);
-                }
-            }
-        });
-    }
+//    @Override
+//    public void paintContent(final PaintTarget target) throws PaintException {
+//        super.paintContent(target);
+//
+//        if (m_nodeDao == null) return;
+//
+//        m_log.debug("getting nodes");
+//        final CriteriaBuilder cb = new CriteriaBuilder(OnmsNode.class);
+//        cb.alias("assetRecord", "asset");
+//        cb.orderBy("id").asc();
+//
+//        if (singleNodeId > 0)
+//            cb.eq("id", singleNodeId);
+//
+//        final Map<Integer,NodeEntry> nodes = new HashMap<Integer,NodeEntry>();
+//        final List<OnmsAssetRecord> updatedAssets = new ArrayList<OnmsAssetRecord>();
+//
+//        for (final OnmsNode node : m_nodeDao.findMatching(cb.toCriteria())) {
+//            m_log.trace("processing node {}", node.getId());
+//
+//            final OnmsAssetRecord assets = node.getAssetRecord();
+//            if (assets != null && assets.getGeolocation() != null) {
+//                final OnmsGeolocation geolocation = assets.getGeolocation();
+//
+//                final String addressString = geolocation.asAddressString();
+//                if (addressString != null && !"".equals(addressString)) {
+//                    final String coordinateString = geolocation.getCoordinates();
+//                    if (coordinateString == null || "".equals(coordinateString)) {
+//                        m_log.debug("Node {} has an asset record with address \"{}\", but no coordinates.", new Object[] { node.getId(), addressString });
+//                        final String coordinates = getCoordinates(addressString);
+//                        geolocation.setCoordinates(coordinates);
+//                        updatedAssets.add(assets);
+//                    }
+//                    if (BAD_COORDINATES.equals(geolocation.getCoordinates())) {
+//                        m_log.debug("Node {} has an asset record with address, but we were unable to find valid coordinates.", node.getId());
+//                        continue;
+//                    }
+//
+//                    nodes.put(node.getId(), new NodeEntry(node));
+//                }
+//            }
+//        }
+//
+//        int lastId = -1;
+//        int unackedCount = 0;
+//
+//        if (!nodes.isEmpty()) {
+//            m_log.debug("getting alarms for nodes");
+//            final CriteriaBuilder ab = new CriteriaBuilder(OnmsAlarm.class);
+//            ab.alias("node", "node");
+//            ab.ge("severity", OnmsSeverity.WARNING);
+//            ab.in("node.id", nodes.keySet());
+//            ab.orderBy("node.id").asc();
+//            ab.orderBy("severity").desc();
+//    
+//            for (final OnmsAlarm alarm : m_alarmDao.findMatching(ab.toCriteria())) {
+//                final int nodeId = alarm.getNodeId();
+//                m_log.debug("nodeId = {}, lastId = {}, unackedCount = {}", new Object[] { nodeId, lastId, unackedCount });
+//                if (nodeId != lastId) {
+//                    m_log.debug("  setting severity for node {} to {}", new Object[] { nodeId, alarm.getSeverity().getLabel() });
+//                    nodes.get(nodeId).setSeverity(alarm.getSeverity());
+//                    if (lastId != -1) {
+//                        nodes.get(nodeId).setUnackedCount(unackedCount);
+//                        unackedCount = 0;
+//                    }
+//                }
+//                if (alarm.getAckUser() == null) {
+//                    unackedCount++;
+//                }
+//    
+//                lastId = nodeId;
+//            }
+//        }
+//
+//        if (lastId != -1) {
+//            nodes.get(lastId).setUnackedCount(unackedCount);
+//        }
+//
+//        m_log.debug("pushing nodes to the UI");
+//        target.startTag("nodes");
+//        for (final NodeEntry node : nodes.values()) {
+//            node.visit(target);
+//        }
+//        target.endTag("nodes");
+//
+//        m_log.debug("saving {} updated asset records to the database", updatedAssets.size());
+//        m_transactionOperations.execute(new TransactionCallbackWithoutResult() {
+//            @Override
+//            protected void doInTransactionWithoutResult(final TransactionStatus status) {
+//                for (final OnmsAssetRecord asset : updatedAssets) {
+//                    m_assetDao.saveOrUpdate(asset);
+//                }
+//            }
+//        });
+//    }
 
     /**
      * Given an address, return the coordinates for that address.

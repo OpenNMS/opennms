@@ -1,4 +1,4 @@
-package org.opennms.features.topology.app.internal;
+package org.opennms.features.topology.app.internal.gwt.client;
 
 import com.vaadin.shared.AbstractComponentState;
 
