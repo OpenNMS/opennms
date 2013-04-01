@@ -73,8 +73,9 @@
     <!-- OSGi Dependencies -->
 
     <dependency> <!-- Required by pax/vaadin -->
-      <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>servlet-dependencies</artifactId>
+      <type>pom</type>
       <scope>provided</scope>
     </dependency>
 

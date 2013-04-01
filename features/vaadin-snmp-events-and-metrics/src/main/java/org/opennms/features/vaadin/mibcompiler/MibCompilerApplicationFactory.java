@@ -57,11 +57,8 @@ public class MibCompilerApplicationFactory extends AbstractApplicationFactory {
     /** The MIB parser. */
     private MibParser mibParser;
 
-    /* (non-Javadoc)
-     * @see org.ops4j.pax.vaadin.ApplicationFactory#createApplication(javax.servlet.http.HttpServletRequest)
-     */
     @Override
-    public UI createApplication(HttpServletRequest request) throws ServletException {
+    public UI getUI() {
         if (eventProxy == null)
             throw new RuntimeException("eventProxy cannot be null.");
         if (eventConfDao == null)
@@ -76,6 +73,11 @@ public class MibCompilerApplicationFactory extends AbstractApplicationFactory {
         app.setDataCollectionDao(dataCollectionDao);
         app.setMibParser(mibParser);
         return app;
+    }
+
+    @Override
+    public UI createApplication(HttpServletRequest request) throws ServletException {
+        return getUI();
     }
 
     /* (non-Javadoc)

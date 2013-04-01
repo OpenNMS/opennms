@@ -56,7 +56,7 @@ public class EventWindow extends Window {
      */
     public EventWindow(final EventConfDao eventConfDao, final EventProxy eventProxy, final String fileName, final Events events, final Logger logger) throws Exception {
         super(fileName); // Using fileName for as the window's name.
-        setScrollable(true);
+        //setScrollable(true);
         setModal(false);
         setClosable(false);
         setDraggable(false);

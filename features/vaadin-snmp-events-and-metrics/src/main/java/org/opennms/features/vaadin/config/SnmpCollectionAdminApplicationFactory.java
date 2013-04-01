@@ -56,10 +56,16 @@ public class SnmpCollectionAdminApplicationFactory extends AbstractApplicationFa
      * @see org.ops4j.pax.vaadin.ApplicationFactory#createApplication(javax.servlet.http.HttpServletRequest)
      */
     @Override
-    public UI createApplication(HttpServletRequest request) throws ServletException {
+    public UI getUI() {
         SnmpCollectionAdminApplication app = new SnmpCollectionAdminApplication();
         app.setDataCollectionDao(dataCollectionDao);
         return app;
+    }
+
+
+    @Override
+    public UI createApplication(HttpServletRequest request) throws ServletException {
+        return getUI();
     }
 
     /* (non-Javadoc)

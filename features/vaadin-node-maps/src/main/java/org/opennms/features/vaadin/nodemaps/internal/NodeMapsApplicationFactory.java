@@ -64,16 +64,7 @@ public class NodeMapsApplicationFactory extends AbstractApplicationFactory {
      */
     @Override
     public UI createApplication(final HttpServletRequest request) throws ServletException {
-        if (m_nodeDao == null) {
-            throw new RuntimeException("m_nodeDao cannot be null.");
-        }
-        final NodeMapsApplication app = new NodeMapsApplication();
-        app.setNodeDao(m_nodeDao);
-        app.setAssetRecordDao(m_assetDao);
-        app.setAlarmDao(m_alarmDao);
-        app.setGeocoderService(m_geocoder);
-        app.setTransactionOperations(m_transaction);
-        return app;
+        return getUI();
     }
 
     /*
@@ -109,5 +100,19 @@ public class NodeMapsApplicationFactory extends AbstractApplicationFactory {
     
     public void setTransactionOperations(final TransactionOperations tx) {
         m_transaction = tx;
+    }
+
+    @Override
+    public UI getUI() {
+        if (m_nodeDao == null) {
+            throw new RuntimeException("m_nodeDao cannot be null.");
+        }
+        final NodeMapsApplication app = new NodeMapsApplication();
+        app.setNodeDao(m_nodeDao);
+        app.setAssetRecordDao(m_assetDao);
+        app.setAlarmDao(m_alarmDao);
+        app.setGeocoderService(m_geocoder);
+        app.setTransactionOperations(m_transaction);
+        return app;
     }
 }

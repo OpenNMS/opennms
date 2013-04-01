@@ -215,7 +215,7 @@ public abstract class EventPanel extends Panel {
         final File configDir = new File(ConfigFileConstants.getHome(), "etc/events/");
         final File file = new File(configDir, fileName);
         if (file.exists()) {
-            MessageBox mb = new MessageBox(getApplication().getMainWindow(),
+            MessageBox mb = new MessageBox(getUI().getWindows().iterator().next(),
                                            "Are you sure?",
                                            MessageBox.Icon.QUESTION,
                                            "Do you really want to override the existig file?<br/>All current information will be lost.",

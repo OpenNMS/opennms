@@ -72,10 +72,7 @@ public class EventAdminApplicationFactory extends AbstractApplicationFactory {
      */
     @Override
     public UI createApplication(HttpServletRequest request) throws ServletException {
-        EventAdminApplication app = new EventAdminApplication();
-        app.setEventProxy(eventProxy);
-        app.setEventConfDao(eventConfDao);
-        return app;
+        return getUI();
     }
 
     /* (non-Javadoc)
@@ -86,4 +83,11 @@ public class EventAdminApplicationFactory extends AbstractApplicationFactory {
         return EventAdminApplication.class;
     }
 
+    @Override
+    public UI getUI() {
+        EventAdminApplication app = new EventAdminApplication();
+        app.setEventProxy(eventProxy);
+        app.setEventConfDao(eventConfDao);
+        return app;
+    }
 }

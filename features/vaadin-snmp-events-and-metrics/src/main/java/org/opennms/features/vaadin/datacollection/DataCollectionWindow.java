@@ -66,7 +66,7 @@ public class DataCollectionWindow extends Window {
      */
     public DataCollectionWindow(final MibParser parser, final DataCollectionConfigDao dataCollectionConfigDao, final String fileName, final DatacollectionGroup dcGroup, final Logger logger) throws Exception {
         super(fileName); // Using fileName for as the window's name.
-        setScrollable(true);
+        //setScrollable(true);
         setModal(false);
         setClosable(false);
         setDraggable(false);
