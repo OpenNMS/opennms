@@ -34,7 +34,6 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.StringReader;
 import java.net.InetAddress;
-import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -46,8 +45,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
-import org.opennms.netmgt.alarmd.northbounder.syslog.SyslogDestination.SyslogFacility;
-import org.opennms.netmgt.alarmd.northbounder.syslog.SyslogDestination.SyslogProtocol;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -172,12 +169,10 @@ public class SyslogNorthBounderTest {
 	/**
 	 * This tests forwarding of 7 alarms, one for each OpenNMS severity to
 	 * verify the LOG_LEVEL agrees with the Severity based on our algorithm.
-	 * 
-	 * @throws InterruptedException
-	 * @throws IOException
+	 * @throws Exception 
 	 */
 	@Test
-	public void testForwardAlarms() throws InterruptedException, IOException {
+	public void testForwardAlarms() throws Exception {
 		
 		String xml = generateConfigXml();
 		
@@ -187,12 +182,18 @@ public class SyslogNorthBounderTest {
 		dao.setConfigResource(resource);
 		dao.afterPropertiesSet();
 
-		SyslogNorthbounder nb = new SyslogNorthbounder();
 		SyslogNorthbounderConfig config = dao.getConfig();
 		
-		nb.setNodeDao(new TestNodeDao());
-		nb.setConfig(config);
+		List<SyslogDestination> destinations = config.getDestinations();
+
+		List<SyslogNorthbounder> nbis = new LinkedList<SyslogNorthbounder>();
 		
+		for (SyslogDestination syslogDestination : destinations) {
+			SyslogNorthbounder nbi = new SyslogNorthbounder(config, syslogDestination);
+			nbi.setNodeDao(new TestNodeDao());
+			nbi.afterPropertiesSet();
+			nbis.add(nbi);
+		}
 
 		int j = 7;
 		List<NorthboundAlarm> alarms = new LinkedList<NorthboundAlarm>();
@@ -219,39 +220,39 @@ public class SyslogNorthBounderTest {
 		onmsIf.setIpHostName("p-brane");
 		onmsIf.setIsSnmpPrimary(PrimaryType.PRIMARY);
 		
-		
 		ipInterfaces.add(onmsIf);
 		
 		node.setIpInterfaces(ipInterfaces);
 
-		
-		for (int i = 1; i <=j; ++i) {
-			OnmsAlarm onmsAlarm = new OnmsAlarm();
-			onmsAlarm.setId(i);
-			onmsAlarm.setUei("uei.opennms.org/test/syslogNorthBounder");
-			onmsAlarm.setNode(node);
-			onmsAlarm.setSeverityId(i);
-			onmsAlarm.setIpAddr(InetAddress.getByName("127.0.0.1"));
-			onmsAlarm.setCounter(i);
-			onmsAlarm.setLogMsg("Node Down");
-			onmsAlarm.setX733AlarmType(NorthboundAlarm.x733AlarmType.get(i).name());
-			onmsAlarm.setX733ProbableCause(NorthboundAlarm.x733ProbableCause.get(i).getId());
-			String eventparms = "foreignSource=fabric(string,text);foreignId=space-0256012012000038(string,text);reason=Aborting node scan : Agent timed out while scanning the system table(string,text);" +
-					".1.3.6.1.4.1.2636.3.18.1.7.1.2.732=207795895(TimeTicks,text)";
-			onmsAlarm.setEventParms(eventparms );
-			NorthboundAlarm a = new NorthboundAlarm(onmsAlarm);
+		for (SyslogNorthbounder nbi : nbis) {
 
-			Assert.assertFalse(nb.accepts(a));
-			onmsAlarm.setUei("uei.opennms.org/nodes/nodeDown");
-			a = new NorthboundAlarm(onmsAlarm);
-			Assert.assertTrue(nb.accepts(a));
-			
-			alarms.add(a);
-		}
-		
+			for (int i = 1; i <=j; ++i) {
+				OnmsAlarm onmsAlarm = new OnmsAlarm();
+				onmsAlarm.setId(i);
+				onmsAlarm.setUei("uei.opennms.org/test/syslogNorthBounder");
+				onmsAlarm.setNode(node);
+				onmsAlarm.setSeverityId(i);
+				onmsAlarm.setIpAddr(InetAddress.getByName("127.0.0.1"));
+				onmsAlarm.setCounter(i);
+				onmsAlarm.setLogMsg("Node Down");
+				onmsAlarm.setX733AlarmType(NorthboundAlarm.x733AlarmType.get(i).name());
+				onmsAlarm.setX733ProbableCause(NorthboundAlarm.x733ProbableCause.get(i).getId());
+				String eventparms = "foreignSource=fabric(string,text);foreignId=space-0256012012000038(string,text);reason=Aborting node scan : Agent timed out while scanning the system table(string,text);" +
+						".1.3.6.1.4.1.2636.3.18.1.7.1.2.732=207795895(TimeTicks,text)";
+				onmsAlarm.setEventParms(eventparms );
+				NorthboundAlarm a = new NorthboundAlarm(onmsAlarm);
 
-		nb.forwardAlarms(alarms);
-		Thread.sleep(1000);
+				Assert.assertFalse(nbi.accepts(a));
+				onmsAlarm.setUei("uei.opennms.org/nodes/nodeDown");
+				a = new NorthboundAlarm(onmsAlarm);
+				Assert.assertTrue(nbi.accepts(a));
+
+				alarms.add(a);
+			}
+			nbi.forwardAlarms(alarms);
+		}		
+
+		Thread.sleep(100);
 
 		BufferedReader r = new BufferedReader(new StringReader(m_logStream.readStream()));
 
@@ -303,8 +304,6 @@ public class SyslogNorthBounderTest {
 			}
 			i++;
 		}
-
-		// TODO: Verify facility and level of each log message
 
 	}
 	

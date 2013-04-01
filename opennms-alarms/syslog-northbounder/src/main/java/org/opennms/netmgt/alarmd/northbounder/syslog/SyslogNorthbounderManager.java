@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.alarmd.northbounder.syslog;
 
+import java.util.List;
+
 import org.opennms.core.soa.Registration;
 import org.opennms.core.soa.ServiceRegistry;
 import org.opennms.netmgt.alarmd.api.Northbounder;
@@ -58,14 +60,14 @@ public class SyslogNorthbounderManager implements InitializingBean, DisposableBe
 		Assert.notNull(m_serviceRegistry);
 		
 		SyslogNorthbounderConfig config = m_configDao.getConfig();
-
-		SyslogNorthbounder northbounder = new SyslogNorthbounder(config);
-		northbounder.setNodeDao(m_nodeDao);
 		
-		northbounder.afterPropertiesSet();
-		
-		m_registration = m_serviceRegistry.register(northbounder, Northbounder.class);
-		
+		List<SyslogDestination> destinations = config.getDestinations();
+		for (SyslogDestination syslogDestination : destinations) {
+			SyslogNorthbounder nbi = new SyslogNorthbounder(config, syslogDestination);
+			nbi.setNodeDao(m_nodeDao);
+			nbi.afterPropertiesSet();
+			m_registration = m_serviceRegistry.register(nbi, Northbounder.class);
+		}
 
 	}
 	
