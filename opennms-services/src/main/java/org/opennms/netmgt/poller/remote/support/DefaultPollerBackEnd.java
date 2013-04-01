@@ -339,7 +339,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
     public Collection<ServiceMonitorLocator> getServiceMonitorLocators(final DistributionContext context) {
         try {
             final List<ServiceMonitorLocator> locators = new ArrayList<ServiceMonitorLocator>();
-            final List<String> ex = Arrays.asList(System.getProperty("excludeServiceMonitorsFromRemotePoller", "").split(","));
+            final List<String> ex = Arrays.asList(System.getProperty("excludeServiceMonitorsFromRemotePoller", "").split("\\s*,\\s*"));
 
             for (final ServiceMonitorLocator locator : m_pollerConfig.getServiceMonitorLocators(context)) {
                 if (!ex.contains(locator.getServiceName())) {
