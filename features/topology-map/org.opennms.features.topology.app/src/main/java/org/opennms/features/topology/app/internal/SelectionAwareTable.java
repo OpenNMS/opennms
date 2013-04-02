@@ -130,4 +130,14 @@ public class SelectionAwareTable extends Table implements SelectionListener, Sel
 		} catch (ClassCastException e) {}
 		super.setCellStyleGenerator(generator);
 	}
+
+	@Override
+	public String toString() {
+		Object value = getValue();
+		if (value == null) {
+			return null;
+		} else {
+			return value.toString();
+		}
+	}
 }
