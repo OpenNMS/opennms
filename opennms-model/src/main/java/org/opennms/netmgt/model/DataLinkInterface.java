@@ -181,7 +181,6 @@ public class DataLinkInterface  implements Serializable, Comparable<DataLinkInte
         m_parentIfIndex = parentIfIndex;
     }
 
-    @XmlAttribute(name="status")
     public StatusType getStatus() {
         return m_status;
     }
