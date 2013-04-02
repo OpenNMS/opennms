@@ -28,6 +28,10 @@
 
 package org.opennms.netmgt.linkd.snmp;
 
+import org.opennms.core.utils.LogUtils;
+import org.opennms.netmgt.model.OnmsStpInterface;
+import org.opennms.netmgt.model.OnmsStpInterface.StpPortStatus;
+
 /**
  *<P>The Dot1dStpPortTableEntry class is designed to hold all the MIB-II
  * information for one entry in the MIB II dot1dBridge.dot1dStp.dot1dStpPortTable.
@@ -190,10 +194,8 @@ public final class Dot1dStpPortTableEntry extends SnmpStore {
 	 *
 	 * @return a int.
 	 */
-	public int getDot1dStpPort() {
-		Integer dot1dStpPort = getInt32(Dot1dStpPortTableEntry.STP_PORT);
-		if (dot1dStpPort == null) return -1;
-		return dot1dStpPort;
+	public Integer getDot1dStpPort() {
+		return getInt32(Dot1dStpPortTableEntry.STP_PORT);
 	}
 
 	/**
@@ -201,10 +203,8 @@ public final class Dot1dStpPortTableEntry extends SnmpStore {
 	 *
 	 * @return a int.
 	 */
-	public int getDot1dStpPortPriority() {
-		Integer dot1dStpPortPriority = getInt32(Dot1dStpPortTableEntry.STP_PORT_PRIORITY);
-		if (dot1dStpPortPriority == null) return -1;
-		return dot1dStpPortPriority;
+	public Integer getDot1dStpPortPriority() {
+		return getInt32(Dot1dStpPortTableEntry.STP_PORT_PRIORITY);
 	}
 	
 	/**
@@ -212,10 +212,8 @@ public final class Dot1dStpPortTableEntry extends SnmpStore {
 	 *
 	 * @return a int.
 	 */
-	public int getDot1dStpPortState() {
-		Integer val = getInt32(Dot1dStpPortTableEntry.STP_PORT_STATE);
-		if (val == null) return -1;
-		return val;
+	public Integer getDot1dStpPortState() {
+		return getInt32(Dot1dStpPortTableEntry.STP_PORT_STATE);
 	}
 	
 	/**
@@ -223,10 +221,8 @@ public final class Dot1dStpPortTableEntry extends SnmpStore {
 	 *
 	 * @return a int.
 	 */
-	public int getDot1dStpPortEnable() {
-		Integer val = getInt32(Dot1dStpPortTableEntry.STP_PORT_ENABLE);
-		if (val == null) return -1;
-		return val;
+	public Integer getDot1dStpPortEnable() {
+		return getInt32(Dot1dStpPortTableEntry.STP_PORT_ENABLE);
 	}
 
 	/**
@@ -234,10 +230,8 @@ public final class Dot1dStpPortTableEntry extends SnmpStore {
 	 *
 	 * @return a int.
 	 */
-	public int getDot1dStpPortPathCost() {
-		Integer val = getInt32(Dot1dStpPortTableEntry.STP_PORT_PATH_COST);
-		if (val == null) return -1;
-		return val;
+	public Integer getDot1dStpPortPathCost() {
+		return getInt32(Dot1dStpPortTableEntry.STP_PORT_PATH_COST);
 	}
 
 	/**
@@ -254,10 +248,8 @@ public final class Dot1dStpPortTableEntry extends SnmpStore {
 	 *
 	 * @return a int.
 	 */
-	public int getDot1dStpPortDesignatedCost() {
-		Integer val =  getInt32(Dot1dStpPortTableEntry.STP_PORT_DESIGNATED_COST);
-		if (val == null) return -1;
-		return val;
+	public Integer getDot1dStpPortDesignatedCost() {
+		return  getInt32(Dot1dStpPortTableEntry.STP_PORT_DESIGNATED_COST);
 	}
 
 	/**
@@ -284,10 +276,24 @@ public final class Dot1dStpPortTableEntry extends SnmpStore {
 	 *
 	 * @return a int.
 	 */
-	public int getDot1dStpPortForwardTransitions() {
-		Integer val = getInt32(Dot1dStpPortTableEntry.STP_PORT_FORW_TRANS);
-		if (val == null) return -1;
-		return val;
+	public Integer getDot1dStpPortForwardTransitions() {
+		return getInt32(Dot1dStpPortTableEntry.STP_PORT_FORW_TRANS);
 	}
 
+	public OnmsStpInterface getOnmsStpInterface(OnmsStpInterface stpInterface) {
+        
+        if (getDot1dStpPortDesignatedBridge() != null) 
+            stpInterface.setStpPortDesignatedBridge(getDot1dStpPortDesignatedBridge());
+        if (getDot1dStpPortDesignatedRoot() != null) 
+            stpInterface.setStpPortDesignatedPort(getDot1dStpPortDesignatedRoot());
+        if (getDot1dStpPortState() != null)
+        	stpInterface.setStpPortState(StpPortStatus.get(getDot1dStpPortState()));
+        if (getDot1dStpPortPathCost() != null)
+        	stpInterface.setStpPortPathCost(getDot1dStpPortPathCost());
+        if (getDot1dStpPortDesignatedRoot() != null)
+        	stpInterface.setStpPortDesignatedRoot(getDot1dStpPortDesignatedRoot());
+        if (getDot1dStpPortDesignatedCost() !=  null)
+        	stpInterface.setStpPortDesignatedCost(getDot1dStpPortDesignatedCost());
+        return stpInterface;
+	}
 }

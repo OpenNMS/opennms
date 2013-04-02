@@ -44,14 +44,14 @@ public class StpInterface
         int     m_nodeId;
         int     m_bridgeport;
 		int     m_ifindex;
-		String  m_stpportstate;
-		int     m_stpportpathcost;
-		int     m_stpportdesignatedcost;
+		String  m_stpportstate="";
+		String  m_stpportpathcost="";
+		String  m_stpportdesignatedcost="";
 		int     m_stpvlan;
-		String  m_ipaddr;
-		String  m_stpdesignatedroot;
-        String  m_stpdesignatedbridge;
-		String  m_stpdesignatedport;
+		String  m_ipaddr="";
+		String  m_stpdesignatedroot="";
+        String  m_stpdesignatedbridge="";
+		String  m_stpdesignatedport="";
         String  m_lastPollTime;
         String  m_status;
         int		m_stprootnodeid;
@@ -68,15 +68,21 @@ public class StpInterface
                 m_nodeId = stpinterf.getNode().getId();
                 m_bridgeport = stpinterf.getBridgePort();
 				m_ifindex = stpinterf.getIfIndex();
-				m_stpportstate = StpPortStatus.getStpPortStatusString(stpinterf.getStpPortState().getIntCode());
-				m_stpportpathcost = stpinterf.getStpPortPathCost();
-				m_stpportdesignatedcost = stpinterf.getStpPortDesignatedCost();
 				m_stpvlan = stpinterf.getVlan();
-                m_stpdesignatedbridge = stpinterf.getStpPortDesignatedBridge();
-                m_stpdesignatedroot = stpinterf.getStpPortDesignatedRoot();
-				m_stpdesignatedport = stpinterf.getStpPortDesignatedPort();
 				m_lastPollTime = Util.formatDateToUIString(stpinterf.getLastPollTime()); 
                 m_status = StatusType.getStatusString(stpinterf.getStatus().getCharCode());
+				if (stpinterf.getStpPortState() != null)
+					m_stpportstate = StpPortStatus.getStpPortStatusString(stpinterf.getStpPortState().getIntCode());
+				if (stpinterf.getStpPortPathCost() != null )
+					m_stpportpathcost = stpinterf.getStpPortPathCost().toString();
+				if (stpinterf.getStpPortDesignatedCost() != null)
+					m_stpportdesignatedcost = stpinterf.getStpPortDesignatedCost().toString();
+				if (stpinterf.getStpPortDesignatedBridge() != null)
+					m_stpdesignatedbridge = stpinterf.getStpPortDesignatedBridge();
+                if (stpinterf.getStpPortDesignatedRoot() != null)
+                	m_stpdesignatedroot = stpinterf.getStpPortDesignatedRoot();
+                if (stpinterf.getStpPortDesignatedPort() != null)
+                	m_stpdesignatedport = stpinterf.getStpPortDesignatedPort();
         }
 
         public void setStpRootNodeid(Integer stprootnodeid) {
@@ -182,7 +188,7 @@ public class StpInterface
 		 *
 		 * @return a int.
 		 */
-		public int get_stpportdesignatedcost() {
+		public String get_stpportdesignatedcost() {
 			return m_stpportdesignatedcost;
 		}
 
@@ -191,7 +197,7 @@ public class StpInterface
 		 *
 		 * @return a int.
 		 */
-		public int get_stpportpathcost() {
+		public String get_stpportpathcost() {
 			return m_stpportpathcost;
 		}
 

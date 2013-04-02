@@ -69,7 +69,6 @@ import org.opennms.netmgt.model.OnmsAtInterface;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsIpRouteInterface;
-import org.opennms.netmgt.model.OnmsStpInterface.StpPortStatus;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.OnmsStpInterface;
@@ -781,7 +780,7 @@ public abstract class AbstractQueryManager implements QueryManager {
     	for (OnmsStpInterface stpInterface: stpinterfaces.values()) {
     		if (stpInterface.getStpPortDesignatedBridge() == null ) continue;
     		if (stpInterface.getStpPortDesignatedBridge().substring(5, 16).equals(snmpVlanColl.getDot1dBase().getBridgeAddress())) {
-		        LogUtils.debugf(this, "processDot1dBasePortAndStpPortTables: portdesignatedBridge is bridge itself %s. Add to linkable node skipped", snmpVlanColl.getDot1dBase().getBridgeAddress());
+		        LogUtils.debugf(this, "processDot1dBasePortAndStpPortTables: portdesignatedBridge is bridge itself %s. Nothing to add to linkable node ", snmpVlanColl.getDot1dBase().getBridgeAddress());
     			continue;
     		}
 	        LogUtils.debugf(this, "processDot1dBasePortAndStpPortTables: portdesignatedBridge/port %s/%d added to linkable node skipped", 
@@ -923,34 +922,18 @@ public abstract class AbstractQueryManager implements QueryManager {
 
         for (final Dot1dStpPortTableEntry dot1dstpptentry : snmpVlanColl.getDot1dStpPortTable()) {
 
-            final int stpport = dot1dstpptentry.getDot1dStpPort();
+            final Integer stpport = dot1dstpptentry.getDot1dStpPort();
 
-            if (stpport == -1) {
-                LogUtils.infof(this, "processDot1StpPortTable: Found invalid STP port. Skipping.");
+            if (stpport == null) {
+                LogUtils.infof(this, "processDot1StpPortTable: Found invalid bridge port. Skipping.");
                 continue;
             }
 
-            final OnmsStpInterface stpInterface = stpinterfaces.get(stpport);
+            final OnmsStpInterface stpInterface = dot1dstpptentry.getOnmsStpInterface(stpinterfaces.get(stpport));
 
-            String stpPortDesignatedBridge = dot1dstpptentry.getDot1dStpPortDesignatedBridge();
-            String stpPortDesignatedPort = dot1dstpptentry.getDot1dStpPortDesignatedPort();
-
-            if (stpPortDesignatedBridge == null) {
-                LogUtils.infof(this, "processDot1StpPortTable: Designated bridge (%s) is invalid on node %d. Skipping.", stpPortDesignatedBridge, node.getNodeId());
-                stpPortDesignatedBridge = "0000000000000000";
-            } 
-            if (stpPortDesignatedPort == null ) {
-                LogUtils.infof(this, "processDot1StpPortTable: Designated port (%s) is invalid on node %d. Skipping.", stpPortDesignatedPort, node.getNodeId());
-                stpPortDesignatedPort = "0000";
-            } 
-            stpInterface.setStpPortState(StpPortStatus.get(dot1dstpptentry.getDot1dStpPortState()));
-            stpInterface.setStpPortPathCost(dot1dstpptentry.getDot1dStpPortPathCost());
-            stpInterface.setStpPortDesignatedBridge(stpPortDesignatedBridge);
-            stpInterface.setStpPortDesignatedRoot(dot1dstpptentry.getDot1dStpPortDesignatedRoot());
-            stpInterface.setStpPortDesignatedCost(dot1dstpptentry.getDot1dStpPortDesignatedCost());
-            stpInterface.setStpPortDesignatedPort(stpPortDesignatedPort);
-            LogUtils.debugf(this, "processDot1StpPortTable: found stpport/designatedbridge/designatedport %d/%s/%s", stpport,stpPortDesignatedBridge,stpPortDesignatedPort);
-
+            LogUtils.debugf(this, "processDot1StpPortTable: found stpport/designatedbridge/designatedport %d/%s/%s", stpport
+            		,stpInterface.getStpPortDesignatedBridge(),
+            		stpInterface.getStpPortDesignatedPort());
         }
         return stpinterfaces;
     }
