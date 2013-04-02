@@ -89,8 +89,6 @@ import com.vaadin.ui.VerticalSplitPanel;
 public class TopologyWidgetTestApplication extends UI implements CommandUpdateListener, MenuItemUpdateListener, ContextMenuHandler, WidgetUpdateListener, WidgetContext, UriFragmentChangedListener, GraphContainer.ChangeListener, MapViewManagerListener, VertexUpdateListener {
 
 	private static final long serialVersionUID = 6837501987137310938L;
-	private static int HEADER_HEIGHT = 100;
-	private static final int MENU_BAR_HEIGHT = 23;
 
 	private static final String LABEL_PROPERTY = "label";
 	private TopologyComponent m_topologyComponent;
@@ -100,7 +98,7 @@ public class TopologyWidgetTestApplication extends UI implements CommandUpdateLi
 	private MenuBar m_menuBar;
 	private TopoContextMenu m_contextMenu;
 	private AbsoluteLayout m_layout;
-	private AbsoluteLayout m_rootLayout;
+	private VerticalLayout m_rootLayout;
 	private final IconRepositoryManager m_iconRepositoryManager;
 	private WidgetManager m_widgetManager;
 	private WidgetManager m_treeWidgetManager;
@@ -140,24 +138,21 @@ public class TopologyWidgetTestApplication extends UI implements CommandUpdateLi
     protected void init(VaadinRequest request) {
         m_headerHtml =  getHeader(new HttpServletRequestVaadinImpl(request));
 
-        m_rootLayout = new AbsoluteLayout();
+        m_rootLayout = new VerticalLayout();
         m_rootLayout.setSizeFull();
         
         setContent(m_rootLayout);
         
         Page.getCurrent().addUriFragmentChangedListener(this);
         
-        m_layout = new AbsoluteLayout();
-        m_layout.setSizeFull();
-        m_rootLayout.addComponent(m_layout);
-        
         if(m_showHeader && m_headerHtml != null) {
-            HEADER_HEIGHT = 100;
             Panel header = new Panel("header");
             header.setCaption(null);
-            header.setSizeUndefined();
             header.addStyleName("onmsheader");
-            m_rootLayout.addComponent(header, "top: 0px; left: 0px; right:0px;");
+            header.setWidth(100, Unit.PERCENTAGE);
+            // Set expand ratio so that extra space is not allocated to this vertical component
+            m_rootLayout.setExpandRatio(header, 0);
+            m_rootLayout.addComponent(header, 0);
             
             try {
                 CustomLayout customLayout = new CustomLayout(getHeaderLayout());
@@ -166,9 +161,13 @@ public class TopologyWidgetTestApplication extends UI implements CommandUpdateLi
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-        } else {
-            HEADER_HEIGHT = 0;
         }
+        
+        m_layout = new AbsoluteLayout();
+        m_layout.setSizeFull();
+        // Set expand ratio so that all extra space is allocated to this vertical component
+        m_rootLayout.setExpandRatio(m_layout, 1);
+        m_rootLayout.addComponent(m_layout, 1);
         
         //Refresher refresher = new Refresher();
         //refresher.setRefreshInterval(5000);
@@ -287,7 +286,7 @@ public class TopologyWidgetTestApplication extends UI implements CommandUpdateLi
         if(m_widgetManager.widgetCount() != 0) {
             updateWidgetView(m_widgetManager);
         }else {
-            m_layout.addComponent(m_treeMapSplitPanel, getBelowMenuPosition());
+            m_layout.addComponent(m_treeMapSplitPanel);
         }
         
         if(m_treeWidgetManager.widgetCount() != 0) {
@@ -327,7 +326,7 @@ public class TopologyWidgetTestApplication extends UI implements CommandUpdateLi
         if (m_layout != null) {
             if(widgetManager.widgetCount() == 0) {
                 m_layout.removeAllComponents();
-                m_layout.addComponent(m_treeMapSplitPanel, getBelowMenuPosition());
+                m_layout.addComponent(m_treeMapSplitPanel);
                 m_layout.requestRepaint();
             } else {
                 if(m_bottomLayoutBar == null) {
@@ -340,7 +339,7 @@ public class TopologyWidgetTestApplication extends UI implements CommandUpdateLi
                 }
 
                 m_layout.removeAllComponents();
-                m_layout.addComponent(m_bottomLayoutBar, getBelowMenuPosition());
+                m_layout.addComponent(m_bottomLayoutBar);
                 m_layout.requestRepaint();
                 
             }
@@ -350,11 +349,6 @@ public class TopologyWidgetTestApplication extends UI implements CommandUpdateLi
         if(m_contextMenu != null && m_contextMenu.getParent() == null) {
             //getMainWindow().addComponent(m_contextMenu);
         }
-    }
-
-
-    private String getBelowMenuPosition() {
-        return "top: " + (HEADER_HEIGHT + MENU_BAR_HEIGHT) + "px; left: 0px; right:0px; bottom:0px;";
     }
 
     /**
@@ -498,8 +492,10 @@ public class TopologyWidgetTestApplication extends UI implements CommandUpdateLi
 		}
 
 		m_menuBar = commandManager.getMenuBar(m_graphContainer, this, m_selectionManager);
-		m_menuBar.setWidth("100%");
-		m_rootLayout.addComponent(m_menuBar, "top: " + HEADER_HEIGHT +"px; left: 0px; right:0px;");
+		m_menuBar.setWidth(100, Unit.PERCENTAGE);
+		// Set expand ratio so that extra space is not allocated to this vertical component
+		m_rootLayout.setExpandRatio(m_menuBar, 0);
+		m_rootLayout.addComponent(m_menuBar, 1);
 
 		m_contextMenu = commandManager.getContextMenu(m_graphContainer, this);
 		m_contextMenu.setAsContextMenuOf(this);
