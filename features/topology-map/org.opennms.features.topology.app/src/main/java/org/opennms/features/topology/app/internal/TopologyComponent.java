@@ -45,6 +45,7 @@ import org.opennms.features.topology.api.SelectionContext;
 import org.opennms.features.topology.api.SelectionListener;
 import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.topo.Edge;
+import org.opennms.features.topology.api.topo.GraphVisitor;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.gwt.client.TopologyComponentState;
@@ -108,6 +109,24 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
 	@Override
 	protected TopologyComponentState getState() {
 	    return (TopologyComponentState) super.getState();
+	}
+	
+	public void updateGraph() {
+	    BoundingBox boundingBox = getBoundingBox();
+	    getState().setBoundX(boundingBox.getX());
+	    getState().setBoundY(boundingBox.getY());
+	    getState().setBoundWidth(boundingBox.getWidth());
+	    getState().setBoundHeight(boundingBox.getHeight());
+	    getState().setActiveTool(m_activeTool);
+	    
+	    Graph graph = getGraph();
+	    GraphVisitor painter = new GraphPainter(m_graphContainer, graph.getLayout(), m_iconRepoManager, m_selectionManager, m_graphContainer.getStatusProvider(), getState());
+	    try {
+            graph.visit(painter);
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 	}
 	
 //    @Override
@@ -355,6 +374,7 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
     public void setActiveTool(String toolname) {
         if(!m_activeTool.equals(toolname)) {
             m_activeTool = toolname;
+            getState().setActiveTool(toolname);
             requestRepaint();
         }
     }

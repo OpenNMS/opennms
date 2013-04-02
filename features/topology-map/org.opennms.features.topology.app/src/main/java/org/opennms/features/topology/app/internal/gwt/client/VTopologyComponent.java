@@ -33,7 +33,6 @@ import static org.opennms.features.topology.app.internal.gwt.client.d3.Transitio
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -74,11 +73,9 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.client.ApplicationConnection;
-import com.vaadin.client.Paintable;
-import com.vaadin.client.TooltipInfo;
 import com.vaadin.client.UIDL;
 
-public class VTopologyComponent extends Composite implements Paintable, SVGTopologyMap, TopologyView.Presenter<VTopologyComponent.TopologyViewRenderer> {
+public class VTopologyComponent extends Composite implements SVGTopologyMap, TopologyView.Presenter<VTopologyComponent.TopologyViewRenderer> {
     
     public interface TopologyViewRenderer{
         void draw(GWTGraph graph, TopologyView<TopologyViewRenderer> topologyView, GWTBoundingBox oldBBox);
@@ -689,74 +686,53 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 			}
 		};
 	}
+	
+	 public void updateGraph(ApplicationConnection applicationConnection, TopologyComponentState state) {
+	     updateFromUIDL(null, applicationConnection, state);
+	}
 
-
-	public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
+	public void updateFromUIDL(UIDL xx, ApplicationConnection client, TopologyComponentState componentState) {
 	    
-		if(client.updateComponent(this, uidl, true)) {
-			return;
-		}
 		GWTGraph graph = GWTGraph.create();
 		
 		m_client = client;
-		m_paintableId = uidl.getId();
-		setActiveTool(uidl.getStringAttribute("activeTool"));
+		setActiveTool(componentState.getActiveTool());
         
-		UIDL graphUIDL = uidl.getChildByTagName("graph");
-		Iterator<?> children = graphUIDL.getChildIterator();
-		
 		GWTVertex.setBackgroundImage(client.translateVaadinUri("theme://images/vertex_circle_selector.png"));
-		while(children.hasNext()) {
-			UIDL child = (UIDL) children.next();
+		for(SharedVertex sharedVertex : componentState.getVertices()) {
+		    
+		    GWTVertex vertex = GWTVertex.create(sharedVertex.getKey(), sharedVertex.getX(), sharedVertex.getY());
+            
+            vertex.setInitialX(sharedVertex.getInitialX());
+            vertex.setInitialY(sharedVertex.getInitialY());
+            
+            boolean selected = sharedVertex.getSelected();
+            vertex.setSelected(selected);
 
-			if(child.getTag().equals("vertex")) {
-				String vertexKey = child.getStringAttribute("key");
+            vertex.setIconUrl(client.translateVaadinUri(sharedVertex.getIconUrl()));
 
-				GWTVertex vertex = GWTVertex.create(vertexKey, child.getIntAttribute("x"), child.getIntAttribute("y"));
-				
-				vertex.setInitialX(child.getIntAttribute("initialX"));
-				vertex.setInitialY(child.getIntAttribute("initialY"));
-				
-				boolean selected = child.getBooleanAttribute("selected");
-				vertex.setSelected(selected);
+            vertex.setLabel(sharedVertex.getLabel());
+            
+            vertex.setStatus(sharedVertex.getStatus());
 
-				vertex.setIconUrl(client.translateVaadinUri(child.getStringAttribute("iconUrl")));
-
-				if (child.hasAttribute("label")) {
-					vertex.setLabel(child.getStringAttribute("label"));
-				}
-				
-				if(child.hasAttribute("status")) {
-				    vertex.setStatus(child.getStringAttribute("status"));
-				}
-
-				graph.addVertex(vertex);
-
-				// TODO: Figure out how to do this in the new GWT
-				/*
-				if(m_client != null) {
-					TooltipInfo ttInfo = new TooltipInfo(child.getStringAttribute("tooltipText"));
-					m_client.registerTooltip(this, vertex, ttInfo);
-				}
-				*/
-				
-			}else if(child.getTag().equals("edge")) {
-				String edgeKey = child.getStringAttribute("key");
-				String sourceKey = child.getStringAttribute("source");
-				String targetKey = child.getStringAttribute("target");
-				
-				GWTVertex source = graph.findVertexById(sourceKey);
-				GWTVertex target = graph.findVertexById( targetKey );
-				GWTEdge edge = GWTEdge.create(edgeKey, source, target);
-				boolean selected = child.getBooleanAttribute("selected");
-				String cssClass = child.getStringAttribute("cssClass");
-				edge.setSelected(selected);
-				edge.setCssClass(cssClass);
-				String ttText = child.getStringAttribute("tooltipText");
-				edge.setTooltipText(ttText);
-				graph.addEdge(edge);
-
-			}
+            graph.addVertex(vertex);
+		}
+		
+		for(SharedEdge sharedEdge : componentState.getEdges()) {
+		    String edgeKey = sharedEdge.getKey();
+            String sourceKey = sharedEdge.getSourceKey();
+            String targetKey = sharedEdge.getTargetKey();
+            
+            GWTVertex source = graph.findVertexById(sourceKey);
+            GWTVertex target = graph.findVertexById( targetKey );
+            GWTEdge edge = GWTEdge.create(edgeKey, source, target);
+            boolean selected = sharedEdge.getSelected();
+            String cssClass = sharedEdge.getCssClass();
+            edge.setSelected(selected);
+            edge.setCssClass(cssClass);
+            String ttText = sharedEdge.getTooltipText();
+            edge.setTooltipText(ttText);
+            graph.addEdge(edge);
 		}
 		
 		JsArray<GWTEdge> edges = graph.getEdges();
@@ -781,10 +757,10 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 		    }
 		}
         
-        int x = uidl.getIntAttribute("boundX");
-        int y = uidl.getIntAttribute("boundY");
-        int width = uidl.getIntAttribute("boundWidth");
-        int height = uidl.getIntAttribute("boundHeight");
+        int x = componentState.getBoundX();
+        int y = componentState.getBoundY();
+        int width = componentState.getBoundWidth();
+        int height = componentState.getBoundHeight();
         
         GWTBoundingBox oldBBox = m_graph.getBoundingBox();
         graph.setBoundingBox(GWTBoundingBox.create(x, y, width, height));

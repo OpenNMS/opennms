@@ -60,7 +60,6 @@ public class TopologyWidgetTestApplicationFactory extends AbstractApplicationFac
     @Override
 	public UI createApplication(HttpServletRequest request) throws ServletException {
         TopologyWidgetTestApplication application = (TopologyWidgetTestApplication) m_blueprintContainer.getComponentInstance(m_beanName);
-        application.setHeaderHtml(getHeader(request));
         LoggerFactory.getLogger(getClass()).debug(MessageFormatter.format("created {} for servlet path {}", application, request.getServletPath()).getMessage()/* , new Exception("Show me the stack trace") */);
         return application;
 	}
