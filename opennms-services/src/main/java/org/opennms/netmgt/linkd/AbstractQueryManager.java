@@ -638,9 +638,12 @@ public abstract class AbstractQueryManager implements QueryManager {
                 LogUtils.warnf(this, "processRouteTable: interface has an invalid ifType (%d).", snmpiftype);
             }
             
-            if (!getLinkd().forceIpRoutediscoveryOnEthernet(snmpcoll.getPackageName())) {
+            if (getLinkd().forceIpRoutediscoveryOnEthernet(snmpcoll.getPackageName())) {
                 LogUtils.debugf(this,
-                                "processRouteTable: forceIpRoutediscoveryOnEthernet is false, validation of the SNMP interface type");
+                        "processRouteTable: forceIpRoutediscoveryOnEthernet is true, no validation for SNMP interface type");
+            } else {
+                LogUtils.debugf(this,
+                                "processRouteTable: forceIpRoutediscoveryOnEthernet is false, checking SNMP interface type");
 
                 if (snmpiftype == SNMP_IF_TYPE_ETHERNET) {
                     LogUtils.debugf(this,
@@ -673,7 +676,7 @@ public abstract class AbstractQueryManager implements QueryManager {
             for (RouterInterface routeIface: routeIfaces) {
                 if (node.getNodeId() == routeIface.getNextHopNodeid()) {
                     LogUtils.debugf(this,
-                                    "processRouteTable: node id found for IP next hop address %s is itself. Skipping.",
+                                    "processRouteTable: node for IP next hop address %s is itself. Skipping.",
                                     str(nexthop));
                     continue;
                 }

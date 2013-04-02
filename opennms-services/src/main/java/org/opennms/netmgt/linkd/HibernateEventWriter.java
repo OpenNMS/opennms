@@ -399,44 +399,25 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
 	@Override
 	protected List<RouterInterface> getRouteInterface(final InetAddress nexthop, int ifindex) {
         
-		final OnmsCriteria criteria = new OnmsCriteria(OnmsIpInterface.class);
-        criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
-        criteria.createAlias("snmpInterface", "snmpInterface", OnmsCriteria.LEFT_JOIN);
-        criteria.add(Restrictions.eq("ipAddress", nexthop));
-        criteria.add(Restrictions.eq("node.type", "A"));
-        final List<OnmsIpInterface> interfaces = m_ipInterfaceDao.findMatching(criteria);
-		
         List<RouterInterface> routes = new ArrayList<RouterInterface>();
-        if (interfaces.isEmpty()) {
-        	return getRouterInterfaceWithoutSnmpData(nexthop,ifindex);
-        } 
+
+        final List<OnmsIpInterface> interfaces = m_ipInterfaceDao.findByIpAddress(str(nexthop));
+		
+        LogUtils.debugf(this, "getRouteInterface: Found %d interface matching " +
+            		"ipAddress %s", interfaces.size(),str(nexthop));
 
         for (OnmsIpInterface ipInterface : interfaces) {
+			RouterInterface route = null;
         	final OnmsNode node = ipInterface.getNode();
 			final OnmsSnmpInterface snmpInterface = ipInterface.getSnmpInterface();
-
-			RouterInterface route = new RouterInterface(node.getId(), snmpInterface.getIfIndex(), snmpInterface.getNetMask());
+			if (snmpInterface == null || snmpInterface.getNetMask() == null) {
+				route = new RouterInterface(node.getId(), -1);
+			} else {
+				route = new RouterInterface(node.getId(), snmpInterface.getIfIndex(), snmpInterface.getNetMask());
+			}
 			route.setNextHop(nexthop);
 			route.setIfindex(ifindex);
-			routes.add(route);
-        }
-        return routes;
-	}
-
-	// SELECT node.nodeid FROM node LEFT JOIN ipinterface ON node.nodeid = ipinterface.nodeid WHERE nodetype = 'A' AND ipaddr = ?
-	private 	 List<RouterInterface> getRouterInterfaceWithoutSnmpData(final InetAddress nexthop, int ifindex) {
-        final OnmsCriteria criteria = new OnmsCriteria(OnmsIpInterface.class);
-        criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
-        criteria.add(Restrictions.eq("ipAddress", nexthop));
-        criteria.add(Restrictions.eq("node.type", "A"));
-        final List<OnmsIpInterface> interfaces = m_ipInterfaceDao.findMatching(criteria);
-        List<RouterInterface> routes = new ArrayList<RouterInterface>();
-		
-        for (OnmsIpInterface ipInterface : interfaces) {
-        	final OnmsNode node = ipInterface.getNode();
-			RouterInterface route = new RouterInterface(node.getId(), -1);
-			route.setNextHop(nexthop);
-			route.setIfindex(ifindex);
+            LogUtils.debugf(this, "getRouteInterface: adding %s route interface" ,route.toString());
 			routes.add(route);
         }
         return routes;
