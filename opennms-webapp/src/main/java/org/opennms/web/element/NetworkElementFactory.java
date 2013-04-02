@@ -1008,14 +1008,14 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         OnmsCriteria criteria = new OnmsCriteria(org.opennms.netmgt.model.DataLinkInterface.class);
         criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
         criteria.add(Restrictions.eq("node.id", nodeId));
-        criteria.add(Restrictions.ne("status", "D"));
+        criteria.add(Restrictions.ne("status", StatusType.DELETED));
         criteria.addOrder(Order.asc("ifIndex"));
 
         List<LinkInterface> ifaces = getDataLinkInterface(m_dataLinkInterfaceDao.findMatching(criteria),nodeId);
 
         criteria = new OnmsCriteria(org.opennms.netmgt.model.DataLinkInterface.class);
         criteria.add(Restrictions.eq("nodeParentId", nodeId));
-        criteria.add(Restrictions.ne("status", "D"));
+        criteria.add(Restrictions.ne("status", StatusType.DELETED));
 
         ifaces.addAll(getDataLinkInterface(m_dataLinkInterfaceDao.findMatching(criteria),nodeId));
         
@@ -1051,14 +1051,14 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
         criteria.add(Restrictions.eq("node.id", nodeId));
         criteria.add(Restrictions.eq("ifIndex", ifIndex));
-        criteria.add(Restrictions.ne("status", "D"));
+        criteria.add(Restrictions.ne("status", StatusType.DELETED));
 
         List<LinkInterface> ifaces = getDataLinkInterface(m_dataLinkInterfaceDao.findMatching(criteria),nodeId);
 
         criteria = new OnmsCriteria(org.opennms.netmgt.model.DataLinkInterface.class);
         criteria.add(Restrictions.eq("nodeParentId", nodeId));
         criteria.add(Restrictions.eq("parentIfIndex", ifIndex));
-        criteria.add(Restrictions.ne("status", "D"));
+        criteria.add(Restrictions.ne("status", StatusType.DELETED));
         criteria.addOrder(Order.asc("parentIfIndex"));
 
         ifaces.addAll(getDataLinkInterface(m_dataLinkInterfaceDao.findMatching(criteria),nodeId));
@@ -1152,7 +1152,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         final OnmsCriteria criteria = new OnmsCriteria(OnmsVlan.class);
         criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
         criteria.add(Restrictions.eq("node.id", nodeID));
-        criteria.add(Restrictions.ne("status", "D"));
+        criteria.add(Restrictions.ne("status", StatusType.DELETED));
 
         List<Vlan> vlans = getVlans(m_vlanDao.findMatching(criteria));
         return vlans.toArray(new Vlan[vlans.size()]);
@@ -1177,7 +1177,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         final OnmsCriteria criteria = new OnmsCriteria(OnmsStpInterface.class);
         criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
         criteria.add(Restrictions.eq("node.id", nodeID));
-        criteria.add(Restrictions.ne("status", "D"));
+        criteria.add(Restrictions.ne("status", StatusType.DELETED));
 
         List<StpInterface> stpinterfaces = new ArrayList<StpInterface>();
     	for (OnmsStpInterface onmsStpInterface: m_stpInterfaceDao.findMatching(criteria)) {
@@ -1220,7 +1220,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
         criteria.add(Restrictions.eq("node.id", nodeID));
         criteria.add(Restrictions.eq("ifIndex", ifindex));
-        criteria.add(Restrictions.ne("status", "D"));
+        criteria.add(Restrictions.ne("status", StatusType.DELETED));
 
         List<StpInterface> stpinterfaces = new ArrayList<StpInterface>();
     	for (OnmsStpInterface onmsStpInterface: m_stpInterfaceDao.findMatching(criteria)) {
@@ -1245,7 +1245,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     	final OnmsCriteria criteria = new OnmsCriteria(OnmsStpNode.class);
         criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
         criteria.add(Restrictions.eq("node.id", nodeID));
-        criteria.add(Restrictions.ne("status", "D"));
+        criteria.add(Restrictions.ne("status", StatusType.DELETED));
 
     	List<StpNode> nodes = new ArrayList<StpNode>();
     	
