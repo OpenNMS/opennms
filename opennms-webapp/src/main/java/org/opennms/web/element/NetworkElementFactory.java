@@ -1093,21 +1093,23 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     private LinkInterface createLinkInterface(DataLinkInterface dliface, boolean isParent) {
 
         Integer nodeid = dliface.getNode().getId();
-        Integer linkedNodeid = dliface.getNodeParentId();
         Integer ifindex = dliface.getIfIndex();
+
+        Integer linkedNodeid = dliface.getNodeParentId();
         Integer linkedIfindex = dliface.getParentIfIndex();
 
         if (isParent) {
             nodeid = dliface.getNodeParentId();
-            linkedNodeid = dliface.getNode().getId();
             ifindex = dliface.getParentIfIndex();
+            
+            linkedNodeid = dliface.getNode().getId();
             linkedIfindex = dliface.getIfIndex();
         } 
     		
         Interface iface = getInterfaceForLink(nodeid, ifindex);
         Interface linkedIface = getInterfaceForLink(linkedNodeid, linkedIfindex); 
     		
-        return new LinkInterface(dliface, iface, linkedIface);
+        return new LinkInterface(dliface, isParent, iface, linkedIface);
     }
 	
     private Interface getInterfaceForLink(int nodeid, int ifindex) {

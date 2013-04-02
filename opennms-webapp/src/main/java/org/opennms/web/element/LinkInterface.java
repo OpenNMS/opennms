@@ -61,17 +61,24 @@ public class LinkInterface
         	linktypeMap.put(1777, "Summary Link");        	
         }
 
-        LinkInterface( DataLinkInterface dl, Interface iface, Interface linkedIface)
+        LinkInterface( DataLinkInterface dl, boolean isParent, Interface iface, Interface linkedIface)
         {
-        	m_nodeId = dl.getNodeId();
-        	m_ifindex = dl.getIfIndex();
-        	m_linkedNodeId = dl.getNodeParentId();
-        	m_linkedIfindex = dl.getParentIfIndex();
-                m_iface = iface;
-                m_linkedInterface = linkedIface;
-                m_lastPollTime = Util.formatDateToUIString(dl.getLastPollTime()); 
-                m_status = StatusType.getStatusString(dl.getStatus().getCharCode());
-                m_linktypeid = dl.getLinkTypeId();                
+        	if (isParent) {
+            	m_nodeId = dl.getNodeParentId();
+            	m_ifindex = dl.getParentIfIndex();
+            	m_linkedNodeId = dl.getNodeId();
+            	m_linkedIfindex = dl.getIfIndex();
+        	} else {
+            	m_nodeId = dl.getNodeId();
+            	m_ifindex = dl.getIfIndex();
+            	m_linkedNodeId = dl.getNodeParentId();
+            	m_linkedIfindex = dl.getParentIfIndex();
+        	}
+            m_iface = iface;
+            m_linkedInterface = linkedIface;
+            m_lastPollTime = Util.formatDateToUIString(dl.getLastPollTime()); 
+            m_status = StatusType.getStatusString(dl.getStatus().getCharCode());
+            m_linktypeid = dl.getLinkTypeId();                
         }
 
 		/**
