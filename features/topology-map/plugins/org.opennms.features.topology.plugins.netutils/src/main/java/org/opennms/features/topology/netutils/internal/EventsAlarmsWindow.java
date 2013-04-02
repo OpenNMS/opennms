@@ -33,7 +33,6 @@ import java.net.URL;
 
 import com.vaadin.server.ExternalResource;
 import com.vaadin.ui.Embedded;
-import com.vaadin.ui.LegacyWindow;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
