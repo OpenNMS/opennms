@@ -61,7 +61,7 @@ import org.springframework.test.context.ContextConfiguration;
 @ContextConfiguration(locations="classpath:META-INF/opennms/emptyContext.xml")
 @JUnitConfigurationEnvironment
 @JUnitHttpServer(port=10342)
-public class PageSequenceMonitorTest {
+public class PageSequenceMonitorEnhancedTest {
 	
 	PageSequenceMonitor m_monitor;
 	Map<String, Object> m_params;
