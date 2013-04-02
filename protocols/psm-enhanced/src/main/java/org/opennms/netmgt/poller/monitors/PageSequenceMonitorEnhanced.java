@@ -1,31 +1,28 @@
-/*******************************************************************************
+/**
+ * *****************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc. OpenNMS(R) is Copyright (C)
+ * 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
+ * OpenNMS(R) is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * OpenNMS(R) is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
+ * You should have received a copy of the GNU General Public License along with
+ * OpenNMS(R). If not, see: http://www.gnu.org/licenses/
  *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * For more information contact: OpenNMS(R) Licensing <license@opennms.org>
+ * http://www.opennms.org/ http://www.opennms.com/
+ ******************************************************************************
+ */
 package org.opennms.netmgt.poller.monitors;
 
 import java.io.ByteArrayInputStream;
@@ -77,6 +74,7 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.EmptyKeyRelaxedTrustProvider;
 import org.opennms.core.utils.EmptyKeyRelaxedTrustSSLContext;
 import org.opennms.core.utils.HttpResponseRange;
@@ -92,24 +90,31 @@ import org.opennms.netmgt.config.pagesequence.Page;
 import org.opennms.netmgt.config.pagesequence.PageSequence;
 import org.opennms.netmgt.config.pagesequence.Parameter;
 import org.opennms.netmgt.config.pagesequence.SessionVariable;
+import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
- * This class is designed to be used by the service poller framework to test the availability
- * of the HTTP service on remote interfaces. The class implements the ServiceMonitor interface
- * that allows it to be used along with other plug-ins by the service poller framework.
+ * This class is designed to be used by the service poller framework to test the
+ * availability of the HTTP service on remote interfaces. The class implements
+ * the ServiceMonitor interface that allows it to be used along with other
+ * plug-ins by the service poller framework.
  *
  * @author <a mailto:brozow@opennms.org>Mathew Brozowski</a>
  * @version $Id: $
  */
 @Distributable
 public class PageSequenceMonitorEnhanced extends AbstractServiceMonitor {
-    
-    protected class SequenceTracker{
-        
+
+    private static NodeDao s_nodeDao;
+
+    protected class SequenceTracker {
+
         TimeoutTracker m_tracker;
+
         public SequenceTracker(Map<String, Object> parameterMap, int defaultSequenceRetry, int defaultTimeout) {
             Map<String, Object> parameters = new HashMap<String, Object>();
             parameters.put("retry", ParameterMap.getKeyedInteger(parameterMap, "sequence-retry", defaultSequenceRetry));
@@ -117,23 +122,27 @@ public class PageSequenceMonitorEnhanced extends AbstractServiceMonitor {
             parameters.put("strict-timeout", ParameterMap.getKeyedBoolean(parameterMap, "strict-timeout", false));
             m_tracker = new TimeoutTracker(parameters, defaultSequenceRetry, defaultTimeout);
         }
+
         public void reset() {
             m_tracker.reset();
         }
+
         public boolean shouldRetry() {
             return m_tracker.shouldRetry();
         }
+
         public void nextAttempt() {
             m_tracker.nextAttempt();
         }
+
         public void startAttempt() {
             m_tracker.startAttempt();
         }
+
         public double elapsedTimeInMillis() {
             return m_tracker.elapsedTimeInMillis();
         }
     }
-    
     private static final int DEFAULT_SEQUENCE_RETRY = 0;
 
     //FIXME: This should be wired with Spring
@@ -144,6 +153,7 @@ public class PageSequenceMonitorEnhanced extends AbstractServiceMonitor {
     }
 
     public static class PageSequenceMonitorException extends RuntimeException {
+
         private static final long serialVersionUID = 1346757238604080088L;
 
         public PageSequenceMonitorException(String message) {
@@ -158,15 +168,15 @@ public class PageSequenceMonitorEnhanced extends AbstractServiceMonitor {
             super(message, cause);
         }
     }
-
     private static final int DEFAULT_TIMEOUT = 3000;
     private static final int DEFAULT_RETRY = 0;
 
     public static class HttpPageSequence {
+
         final PageSequence m_sequence;
         final List<HttpPage> m_pages;
         Properties m_sequenceProperties;
-        Map<String,String> m_parameters = new HashMap<String,String>();
+        Map<String, String> m_parameters = new HashMap<String, String>();
 
         HttpPageSequence(PageSequence sequence) {
             m_sequence = sequence;
@@ -179,11 +189,11 @@ public class PageSequenceMonitorEnhanced extends AbstractServiceMonitor {
             m_sequenceProperties = new Properties();
         }
 
-        public Map<String,String> getParameters() {
+        public Map<String, String> getParameters() {
             return m_parameters;
         }
 
-        public void setParameters(Map<String,String> parameters) {
+        public void setParameters(Map<String, String> parameters) {
             m_parameters = parameters;
         }
 
@@ -191,7 +201,7 @@ public class PageSequenceMonitorEnhanced extends AbstractServiceMonitor {
             return m_pages;
         }
 
-        private void execute(DefaultHttpClient client, MonitoredService svc, Map<String,Number> responseTimes) {
+        private void execute(DefaultHttpClient client, MonitoredService svc, Map<String, Number> responseTimes) {
             // Clear the sequence properties before each run
             clearSequenceProperties();
 
@@ -234,10 +244,12 @@ public class PageSequenceMonitorEnhanced extends AbstractServiceMonitor {
     }
 
     public interface PageSequenceHttpUriRequest extends HttpUriRequest {
+
         public void setQueryParameters(List<NameValuePair> parms);
     }
 
     public static class PageSequenceHttpPost extends HttpPost implements PageSequenceHttpUriRequest {
+
         public PageSequenceHttpPost(URI uri) {
             super(uri);
         }
@@ -266,15 +278,14 @@ public class PageSequenceMonitorEnhanced extends AbstractServiceMonitor {
             try {
                 String query = URLEncodedUtils.format(parms, "UTF-8");
                 uriWithQueryString = URIUtils.createURI(
-                                             uri.getScheme(), 
-                                             uri.getHost(), 
-                                             uri.getPort(), 
-                                             uri.getPath(),
-                                             // Do we need to merge any existing query params?
-                                             // Probably not... shouldn't be any.
-                                             query, 
-                                             uri.getFragment()
-                );
+                        uri.getScheme(),
+                        uri.getHost(),
+                        uri.getPort(),
+                        uri.getPath(),
+                        // Do we need to merge any existing query params?
+                        // Probably not... shouldn't be any.
+                        query,
+                        uri.getFragment());
                 this.setURI(uriWithQueryString);
             } catch (URISyntaxException e) {
                 ThreadCategory.getInstance("Cannot add query parameters to URI: " + this.getClass()).warn(e.getMessage(), e);
@@ -283,6 +294,7 @@ public class PageSequenceMonitorEnhanced extends AbstractServiceMonitor {
     }
 
     public static class HttpPage {
+
         private final Page m_page;
         private final HttpResponseRange m_range;
         private final Pattern m_successPattern;
@@ -290,7 +302,6 @@ public class PageSequenceMonitorEnhanced extends AbstractServiceMonitor {
         private final Pattern m_locationPattern;
         private final HttpPageSequence m_parentSequence;
         private double m_responseTime;
-
         private final List<NameValuePair> m_parms = new ArrayList<NameValuePair>();
 
         HttpPage(HttpPageSequence parent, Page page) {
@@ -362,7 +373,7 @@ public class PageSequenceMonitorEnhanced extends AbstractServiceMonitor {
                     String[] streetCred = userInfo.split(":", 2);
                     if (streetCred.length == 2) {
                         client.getCredentialsProvider().setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(streetCred[0], streetCred[1]));
-                    } else { 
+                    } else {
                         log().warn("Illegal value found for username/password HTTP credentials: " + userInfo);
                     }
                 }
@@ -370,7 +381,7 @@ public class PageSequenceMonitorEnhanced extends AbstractServiceMonitor {
                 long startTime = System.nanoTime();
                 HttpResponse response = client.execute(method);
                 long endTime = System.nanoTime();
-                m_responseTime = (endTime - startTime)/1000000.0;
+                m_responseTime = (endTime - startTime) / 1000000.0;
 
                 int code = response.getStatusLine().getStatusCode();
                 if (!getRange().contains(code)) {
@@ -385,7 +396,7 @@ public class PageSequenceMonitorEnhanced extends AbstractServiceMonitor {
 //TODO Markus please replace this old style log checks
 //                        if (log().isDebugEnabled()) {
 //                            log().debug("locationMatch was set, but no Location: header was returned at " + uri, new Exception());
-                            LogUtils.debugf(this,"locationMatch was set, but no Location: header was returned at %s", uri);                            
+                        LogUtils.debugf(this, "locationMatch was set, but no Location: header was returned at %s", uri);
 //                        }
                         throw new PageSequenceMonitorException("locationMatch was set, but no Location: header was returned at " + uri);
                     }
@@ -440,9 +451,9 @@ public class PageSequenceMonitorEnhanced extends AbstractServiceMonitor {
                 log().debug("I have " + seqProps.size() + " sequence properties.");
             }
             for (NameValuePair nvp : m_parms) {
-                String value = PropertiesUtils.substitute((String)nvp.getValue(), getServiceProperties(svc), getSequenceProperties());
+                String value = PropertiesUtils.substitute((String) nvp.getValue(), getServiceProperties(svc), getSequenceProperties());
                 expandedParms.add(new BasicNameValuePair(nvp.getName(), value));
-                if (log().isDebugEnabled() && !nvp.getValue().equals(value) ) {
+                if (log().isDebugEnabled() && !nvp.getValue().equals(value)) {
                     log().debug("Expanded parm with name '" + nvp.getName() + "' from '" + nvp.getValue() + "' to '" + value + "'");
                 }
             }
@@ -453,8 +464,9 @@ public class PageSequenceMonitorEnhanced extends AbstractServiceMonitor {
             for (SessionVariable varBinding : m_page.getSessionVariableCollection()) {
                 String vbName = varBinding.getName();
                 String vbValue = matcher.group(varBinding.getMatchGroup());
-                if (vbValue == null)
+                if (vbValue == null) {
                     vbValue = "";
+                }
                 props.put(vbName, vbValue);
                 if (log().isDebugEnabled()) {
                     log().debug("Just set session variable '" + vbName + "' to '" + vbValue + "'");
@@ -462,6 +474,15 @@ public class PageSequenceMonitorEnhanced extends AbstractServiceMonitor {
             }
 
             setSequenceProperties(props);
+        }
+
+        private Properties getNodeAssetProperties(MonitoredService svc) {
+            Properties assetProperties = new Properties();
+            s_nodeDao = (NodeDao) BeanUtils.getFactory("commonContext", ClassPathXmlApplicationContext.class).getBean("nodeDao");
+            OnmsNode node = s_nodeDao.get(svc.getNodeId());
+            assetProperties.put("Assets.comment", node.getAssetRecord().getComment());
+            // TODO: Welcome to hell, here's your accordion.
+            return assetProperties;
         }
 
         private String getUserAgent() {
@@ -479,7 +500,9 @@ public class PageSequenceMonitorEnhanced extends AbstractServiceMonitor {
             if (m_page.getRequireIPv4()) {
                 try {
                     InetAddress address = InetAddressUtils.resolveHostname(host, false);
-                    if (!(address instanceof Inet4Address)) throw new UnknownHostException();
+                    if (!(address instanceof Inet4Address)) {
+                        throw new UnknownHostException();
+                    }
                     host = InetAddressUtils.str(address);
                 } catch (UnknownHostException e) {
                     throw new PageSequenceMonitorException("failed to find IPv4 address for hostname: " + host);
@@ -585,6 +608,7 @@ public class PageSequenceMonitorEnhanced extends AbstractServiceMonitor {
     }
 
     public static class PageSequenceMonitorParameters {
+
         public static final String KEY = PageSequenceMonitorParameters.class.getName();
 
         @SuppressWarnings("unchecked")
@@ -596,7 +620,6 @@ public class PageSequenceMonitorEnhanced extends AbstractServiceMonitor {
             }
             return parms;
         }
-
         private final Map<String, String> m_parameterMap;
         private final HttpParams m_clientParams;
         private final HttpPageSequence m_pageSequence;
@@ -677,30 +700,32 @@ public class PageSequenceMonitorEnhanced extends AbstractServiceMonitor {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public PollStatus poll(final MonitoredService svc, final Map<String, Object> parameterMap) {
         DefaultHttpClient client = null;
         PollStatus serviceStatus = PollStatus.unavailable("Poll not completed yet");
 
-        Map<String,Number> responseTimes = new LinkedHashMap<String,Number>();
-        
+        Map<String, Number> responseTimes = new LinkedHashMap<String, Number>();
+
         SequenceTracker tracker = new SequenceTracker(parameterMap, DEFAULT_SEQUENCE_RETRY, DEFAULT_TIMEOUT);
-        for(tracker.reset(); tracker.shouldRetry() && !serviceStatus.isAvailable(); tracker.nextAttempt() ) {
+        for (tracker.reset(); tracker.shouldRetry() && !serviceStatus.isAvailable(); tracker.nextAttempt()) {
             try {
                 PageSequenceMonitorParameters parms = PageSequenceMonitorParameters.get(parameterMap);
-    
+
                 client = parms.createHttpClient();
-                
+
                 tracker.startAttempt();
                 responseTimes.put("response-time", Double.NaN);
                 parms.getPageSequence().execute(client, svc, responseTimes);
-    
+
                 double responseTime = tracker.elapsedTimeInMillis();
                 serviceStatus = PollStatus.available();
                 responseTimes.put("response-time", responseTime);
                 serviceStatus.setProperties(responseTimes);
-    
+
             } catch (PageSequenceMonitorException e) {
                 serviceStatus = PollStatus.unavailable(e.getMessage());
                 serviceStatus.setProperties(responseTimes);
@@ -715,7 +740,7 @@ public class PageSequenceMonitorEnhanced extends AbstractServiceMonitor {
                 //}
             }
         }
-        
+
         return serviceStatus;
     }
 }
