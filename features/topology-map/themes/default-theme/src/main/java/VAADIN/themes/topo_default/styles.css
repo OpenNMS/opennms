@@ -163,7 +163,7 @@ div.v-table-header-wrap {
         background-repeat: repeat-x;
         color: #FFF;
         font-family: "Lucida Grande", Verdana, sans-serif;
-        height: 100px;
+        /* height: 100px; */
         font-size: 13px;
     }
     #header a {
@@ -242,7 +242,9 @@ div.v-table-header-wrap {
     #linkbar li{ list-style: none; display: inline; padding-right: 0.75em; }
     
     #headernavbarright {
+        /*
         position: relative;
         float: right;
+        */
         padding: 2px 0px 5px 0px;
     }
