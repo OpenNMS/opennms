@@ -430,18 +430,18 @@ if [ "%{skip_compile}" = 1 ]; then
 	TOPDIR=`pwd`
 	for dir in . opennms-tools; do
 		pushd $dir
-			"$TOPDIR"/compile.pl -N $EXTRA_OPTIONS -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" -Dopennms.home="%{instprefix}" '-P!jspc' install
+			"$TOPDIR"/compile.pl -N $EXTRA_OPTIONS -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" -Dopennms.home="%{instprefix}" install
 		popd
 	done
 else
 	echo "=== RUNNING COMPILE ==="
 	./compile.pl $EXTRA_OPTIONS -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
-	    -Dopennms.home="%{instprefix}" '-P!jspc' install
+	    -Dopennms.home="%{instprefix}" install
 fi
 
 echo "=== BUILDING ASSEMBLIES ==="
 ./assemble.pl $EXTRA_OPTIONS -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
-	-Dopennms.home="%{instprefix}" -Dbuild.profile=full '-P!jspc' install
+	-Dopennms.home="%{instprefix}" -Dbuild.profile=full install
 
 pushd opennms-tools
 	../compile.pl $EXTRA_OPTIONS -N -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
