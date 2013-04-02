@@ -43,16 +43,16 @@ import org.opennms.web.api.Util;
 public class StpNode
 {
     int     m_nodeId;
-    int     m_basenumports;
+    String     m_basenumports="";
 	String  m_basetype;
-	String  m_stpprotocolspecification;
-	int     m_stppriority;
-	int     m_stprootcost;
-	int     m_stprootport;
+	String  m_stpprotocolspecification="";
+	String     m_stppriority="";
+	String     m_stprootcost="";
+	String     m_stprootport="";
 	int     m_basevlan;
-	String  m_basevlanname;
+	String  m_basevlanname="default";
     String  m_basebridgeaddress;
-	String  m_stpdesignatedroot;
+	String  m_stpdesignatedroot="";
     String  m_lastPollTime;
     String  m_status;
     int 	m_stprootnodeid;
@@ -66,18 +66,27 @@ public class StpNode
     StpNode(OnmsStpNode node)
     {
         m_nodeId = node.getNode().getId();
-        m_basenumports = node.getBaseNumPorts();
-		m_basetype = BridgeBaseType.getBridgeBaseTypeString(node.getBaseType().getIntCode());
-		m_stpprotocolspecification = StpProtocolSpecification.getStpProtocolSpecificationString(node.getStpProtocolSpecification().getIntCode());
-		m_stppriority = node.getStpPriority();
-		m_stprootcost = node.getStpRootCost();
-		m_stprootport = node.getStpRootPort();
-		m_basevlan = node.getBaseVlan();
-		m_basevlanname = node.getBaseVlanName();
         m_basebridgeaddress = node.getBaseBridgeAddress();
-        m_stpdesignatedroot = node.getStpDesignatedRoot();
+		m_basevlan = node.getBaseVlan();
         m_lastPollTime = Util.formatDateToUIString(node.getLastPollTime()); 
         m_status = StatusType.getStatusString(node.getStatus().getCharCode());
+		
+        if (node.getBaseNumPorts() != null)
+			m_basenumports = node.getBaseNumPorts().toString();
+		if (node.getBaseType() != null)
+			m_basetype = BridgeBaseType.getBridgeBaseTypeString(node.getBaseType().getIntCode());
+		if (node.getStpProtocolSpecification() != null)
+			m_stpprotocolspecification = StpProtocolSpecification.getStpProtocolSpecificationString(node.getStpProtocolSpecification().getIntCode());
+		if (node.getStpPriority() != null)
+			m_stppriority = node.getStpPriority().toString();
+		if (node.getStpRootCost() != null)
+			m_stprootcost = node.getStpRootCost().toString();
+		if (node.getStpRootPort() != null)
+			m_stprootport = node.getStpRootPort().toString();
+		if (node.getBaseVlanName() != null)
+			m_basevlanname = node.getBaseVlanName();
+        if (node.getStpDesignatedRoot() != null)
+        	m_stpdesignatedroot = node.getStpDesignatedRoot();
     }
 
     /**
@@ -108,7 +117,7 @@ public class StpNode
 	 *
 	 * @return a int.
 	 */
-	public int get_basenumports() {
+	public String get_basenumports() {
 		return m_basenumports;
 	}
 
@@ -179,7 +188,7 @@ public class StpNode
 	 *
 	 * @return a int.
 	 */
-	public int get_stppriority() {
+	public String get_stppriority() {
 		return m_stppriority;
 	}
 
@@ -206,7 +215,7 @@ public class StpNode
 	 *
 	 * @return a int.
 	 */
-	public int get_stprootcost() {
+	public String get_stprootcost() {
 		return m_stprootcost;
 	}
 
@@ -215,7 +224,7 @@ public class StpNode
 	 *
 	 * @return a int.
 	 */
-	public int get_stprootport() {
+	public String get_stprootport() {
 		return m_stprootport;
 	}
 

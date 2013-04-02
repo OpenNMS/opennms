@@ -1270,9 +1270,11 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
 
     private StpInterface getStpInterface(OnmsStpInterface onmsStpInterface)  {
         StpInterface stpIf = new StpInterface(onmsStpInterface);
+        if (stpIf.get_stpdesignatedbridge() != null) {
         Integer element = getStpNodeFromStpRootIdentifier(stpIf.get_stpdesignatedbridge());
-        if (element != null) {
-            stpIf.setStpBridgeNodeid(element);
+	        if (element != null) {
+	            stpIf.setStpBridgeNodeid(element);
+	        }
         }
         return stpIf;
     }
@@ -1282,9 +1284,11 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
      */
     private StpNode getStpNode(OnmsStpNode node) {
         StpNode stpNode = new StpNode(node);
-        Integer element = getStpNodeFromStpRootIdentifier(node.getStpDesignatedRoot());
-        if (element != null) {
-            stpNode.m_stprootnodeid = element;
+        if (node.getStpDesignatedRoot() != null) {
+        	Integer element = getStpNodeFromStpRootIdentifier(node.getStpDesignatedRoot());
+        	if (element != null) {
+        		stpNode.m_stprootnodeid = element;
+        	}
         }
         return stpNode;
     }

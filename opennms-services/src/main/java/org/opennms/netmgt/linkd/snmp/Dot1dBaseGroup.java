@@ -160,12 +160,8 @@ public final class Dot1dBaseGroup extends AggregateTracker
      *
      * @return a int.
      */
-    public int getNumberOfPorts() {
-    	Integer nop = m_store.getInt32(BASE_NUM_PORTS);
-    	if (nop == null) {
-            return -1;
-        }
-    	return nop;
+    public Integer getNumberOfPorts() {
+    	return m_store.getInt32(BASE_NUM_PORTS);
     }
 
     /**

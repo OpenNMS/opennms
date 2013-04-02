@@ -180,7 +180,7 @@ public class OnmsStpNode {
 		public static final int STP_PROTOCOL_SPECIFICATION_DECLB100 = 2;
 		public static final int STP_PROTOCOL_SPECIFICATION_IEEE8021D = 3;
     	
-        private static final Integer[] s_order = {1,2,3,4};
+        private static final Integer[] s_order = {1,2,3};
 
         private Integer m_stpprotocolspecification;
 
