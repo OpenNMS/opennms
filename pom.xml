@@ -2203,6 +2203,45 @@
         <scope>test</scope>
       </dependency>
       <dependency>
+        <groupId>geoGoogle</groupId>
+        <artifactId>geoGoogle</artifactId>
+        <version>1.5.1-20110518onms1</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>commons-collections</groupId>
+            <artifactId>commons-collections</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>javax.xml</groupId>
+            <artifactId>jaxb-api</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-impl</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>javax.xml</groupId>
+            <artifactId>jaxb-api</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
         <version>10.0.1</version>
@@ -2227,6 +2266,11 @@
         <groupId>org.ops4j.pax.vaadin</groupId>
         <artifactId>service</artifactId>
         <version>${paxVaadinVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>ognl</groupId>
+        <artifactId>ognl</artifactId>
+        <version>2.6.9</version>
       </dependency>
       <dependency>
         <groupId>net.sf.opencsv</groupId>
@@ -2451,6 +2495,11 @@
         <groupId>org.eclipse.jetty.aggregate</groupId>
         <artifactId>jetty-all-server</artifactId>
         <version>${jettyVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.jetty.orbit</groupId>
+        <artifactId>org.apache.taglibs.standard.glassfish</artifactId>
+        <version>1.2.0.v201112081803</version>
       </dependency>
       <dependency>
         <groupId>org.osgi</groupId>
