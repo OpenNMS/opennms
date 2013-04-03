@@ -10,7 +10,7 @@
     </parent>
 
     <groupId>org.opennms.container</groupId>
-    <artifactId>servlet</artifactId>
+    <artifactId>org.opennms.container.servlet</artifactId>
     <packaging>war</packaging>
     <name>OpenNMS OSGi Container - Web Servlet</name>
 
