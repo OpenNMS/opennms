@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.linkd.snmp;
 
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.model.OnmsStpInterface;
 import org.opennms.netmgt.model.OnmsStpInterface.StpPortStatus;
 
@@ -284,14 +283,14 @@ public final class Dot1dStpPortTableEntry extends SnmpStore {
         
         if (getDot1dStpPortDesignatedBridge() != null) 
             stpInterface.setStpPortDesignatedBridge(getDot1dStpPortDesignatedBridge());
-        if (getDot1dStpPortDesignatedRoot() != null) 
-            stpInterface.setStpPortDesignatedPort(getDot1dStpPortDesignatedRoot());
+        if (getDot1dStpPortDesignatedRoot() != null)
+        	stpInterface.setStpPortDesignatedRoot(getDot1dStpPortDesignatedRoot());
+        if (getDot1dStpPortDesignatedPort() != null) 
+            stpInterface.setStpPortDesignatedPort(getDot1dStpPortDesignatedPort());
         if (getDot1dStpPortState() != null)
         	stpInterface.setStpPortState(StpPortStatus.get(getDot1dStpPortState()));
         if (getDot1dStpPortPathCost() != null)
         	stpInterface.setStpPortPathCost(getDot1dStpPortPathCost());
-        if (getDot1dStpPortDesignatedRoot() != null)
-        	stpInterface.setStpPortDesignatedRoot(getDot1dStpPortDesignatedRoot());
         if (getDot1dStpPortDesignatedCost() !=  null)
         	stpInterface.setStpPortDesignatedCost(getDot1dStpPortDesignatedCost());
         return stpInterface;
