@@ -231,7 +231,7 @@ public class JsmiMibParser implements MibParser, Serializable {
                 String groupName = getGroupName(v);
                 String resourceType = getResourceType(v);
                 Group group = getGroup(dcGroup, groupName, resourceType);
-                String typeName = getType(v.getType().getPrimitiveType());
+                String typeName = getMetricType(v.getType().getPrimitiveType());
                 if (typeName != null) {
                     String alias = cutter.trimByCamelCase(v.getId(), 19); // RRDtool/JRobin DS size restriction.
                     MibObj mibObj = new MibObj();
@@ -278,12 +278,12 @@ public class JsmiMibParser implements MibParser, Serializable {
                 String resourceType = getResourceType(v);
                 if (resourceType == null)
                     resourceType = "nodeSnmp";
-                String typeName = getType(v.getType().getPrimitiveType());
+                String typeName = getMetricType(v.getType().getPrimitiveType());
                 if (v.getId().contains("Index")) { // Treat SNMP Indexes as strings.
                     typeName = "string";
                 }
                 int order = 1;
-                if (typeName != null && !typeName.equals("string")) {
+                if (typeName != null && !typeName.toLowerCase().contains("string")) {
                     String name = groupName + '.' + v.getId();
                     String alias = cutter.trimByCamelCase(v.getId(), 19); // RRDtool/JRobin DS size restriction.
                     String descr = v.getDescription().replaceAll("[\n\r]", "").replaceAll("\\s+", " ");
@@ -310,6 +310,12 @@ public class JsmiMibParser implements MibParser, Serializable {
         return graphs;
     }
 
+    /**
+     * Gets the group name.
+     *
+     * @param var the SMI Variable
+     * @return the group name
+     */
     private String getGroupName(SmiVariable var) {
         if (var.getNode().getParent().getSingleValue() instanceof SmiRow) {
             return var.getNode().getParent().getParent().getSingleValue().getId();
@@ -317,6 +323,12 @@ public class JsmiMibParser implements MibParser, Serializable {
         return var.getNode().getParent().getSingleValue().getId();
     }
 
+    /**
+     * Gets the resource type.
+     *
+     * @param var the SMI Variable
+     * @return the resource type
+     */
     private String getResourceType(SmiVariable var) {
         if (var.getNode().getParent().getSingleValue() instanceof SmiRow) {
             return var.getNode().getParent().getSingleValue().getId();
@@ -346,7 +358,7 @@ public class JsmiMibParser implements MibParser, Serializable {
      * Adds the dependency to the queue.
      *
      * @param queue the queue
-     * @param mibDirectoryFiles TODO
+     * @param mibDirectoryFiles
      * @return true, if successful
      */
     private boolean addDependencyToQueue(final List<URL> queue, final Map<String, File> mibDirectoryFiles) {
@@ -399,20 +411,21 @@ public class JsmiMibParser implements MibParser, Serializable {
      */
 
     /**
-     * Gets the type.
-     *
+     * Gets the metric type.
+     * <p>This should be consistent with NumericAttributeType and StringAttributeType.</p>
+     * <p>For this reason the valid types are: counter, gauge, timeticks, integer, octetstring, string.</p>
+     * <p>Any derivative is also valid, for example: Counter32, Integer64, etc...</p>
+     * 
      * @param type the type
      * @return the type
      */
-    private String getType(SmiPrimitiveType type) {
+    private String getMetricType(SmiPrimitiveType type) {
         if (type.equals(SmiPrimitiveType.ENUM)) // ENUM are just informational elements.
-            return "string";
-        if (type.equals(SmiPrimitiveType.TIME_TICKS)) // TimeTicks will be treated as strings.
             return "string";
         if (type.equals(SmiPrimitiveType.OBJECT_IDENTIFIER)) // ObjectIdentifier will be treated as strings.
             return "string";
-        if (type.equals(SmiPrimitiveType.OCTET_STRING)) // OctetString should be treated as string.
-            return "string";
+        if (type.equals(SmiPrimitiveType.UNSIGNED_32)) // Unsigned32 will be treated as integer.
+            return "integer";
         return type.toString().replaceAll("_", "").toLowerCase();
     }
 
@@ -448,7 +461,6 @@ public class JsmiMibParser implements MibParser, Serializable {
     /*
      * Event processing methods
      * 
-     * FIXME: This works for notifications (SmiNotificationType) not with SmiTrapType (which is different)
      */
 
     /**

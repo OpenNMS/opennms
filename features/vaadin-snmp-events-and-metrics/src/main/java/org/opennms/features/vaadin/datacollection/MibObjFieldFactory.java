@@ -106,8 +106,8 @@ public class MibObjFieldFactory implements TableFieldFactory {
             field.setSizeFull();
             field.setRequired(true);
             field.setImmediate(true);
-            field.addValidator(new RegexpValidator("^(gauge|counter|integer|string)?\\d*$",
-                    "Invalid type {0}. Valid types are: gauge, integer, counter, string"));
+            field.addValidator(new RegexpValidator("^(?i)(counter|gauge|timeticks|integer|octetstring|string)?\\d*$", // Based on NumericAttributeType and StringAttributeType
+                    "Invalid type {0}. Valid types are: counter, gauge, timeticks, integer, octetstring, string"));
             return new ProxyField(field);
         }
         return null;

@@ -35,12 +35,14 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Statement;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.Map.Entry;
+import java.util.logging.Logger;
 
 import javax.sql.DataSource;
 
@@ -478,6 +480,11 @@ public class TemporaryDatabase implements DataSource {
     @Override
     public int getLoginTimeout() throws SQLException {
         return m_dataSource.getLoginTimeout();
+    }
+
+    /** {@inheritDoc} */
+    public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+        throw new SQLFeatureNotSupportedException("getParentLogger not supported");
     }
 
     public SimpleJdbcTemplate getJdbcTemplate() {
