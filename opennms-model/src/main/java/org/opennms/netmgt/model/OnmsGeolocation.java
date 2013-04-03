@@ -178,10 +178,26 @@ public class OnmsGeolocation implements Serializable {
             }
         }
 
-        if (sb.length() > 0 && this.getCity() != null) sb.append(", ").append(this.getCity());
-        if (sb.length() > 0 && this.getState() != null) sb.append(", ").append(this.getState());
-        if (sb.length() > 0 && this.getZip() != null) sb.append(" ").append(this.getZip());
-        if (sb.length() > 0 && this.getCountry() != null) sb.append(", ").append(this.getCountry());
+        if (this.getCity() != null) {
+            if (sb.length() > 0) sb.append(", ");
+            sb.append(this.getCity());
+        }
+        if (this.getState() != null) {
+            if (sb.length() > 0) sb.append(", ");
+            sb.append(this.getState());
+        }
+        if (this.getZip() != null) {
+            if (this.getState() != null) {
+                sb.append(" ");
+            } else if (sb.length() > 0) {
+                sb.append(", ");
+            }
+            sb.append(this.getZip());
+        }
+        if (this.getCountry() != null) {
+            if (sb.length() > 0) sb.append(", ");
+            sb.append(this.getCountry());
+        }
 
         return sb.toString();
     }
