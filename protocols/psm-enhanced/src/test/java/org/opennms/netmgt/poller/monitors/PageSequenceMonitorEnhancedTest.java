@@ -31,17 +31,22 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.persistence.Column;
+
+import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.annotations.JUnitHttpServer;
 import org.opennms.core.test.annotations.Webapp;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.db.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.mock.MockMonitoredService;
+import org.opennms.netmgt.model.OnmsAssetRecord;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.test.mock.MockLogAppender;
@@ -58,14 +63,16 @@ import org.springframework.test.context.ContextConfiguration;
 @JUnitHttpServer(port = 10342)
 public class PageSequenceMonitorEnhancedTest {
 
+	private static final int NODE_ID = 1;
+	
     PageSequenceMonitorEnhanced m_monitor;
     Map<String, Object> m_params;
 
     @Before
     public void setUp() throws Exception {
         MockLogAppender.setupLogging();
-
-        m_monitor = new PageSequenceMonitorEnhanced();
+        
+        m_monitor = new PageSequenceMonitorEnhanced(createDummyNodeDao());
         m_monitor.initialize(Collections.<String, Object>emptyMap());
 
         m_params = new HashMap<String, Object>();
@@ -73,13 +80,23 @@ public class PageSequenceMonitorEnhancedTest {
         m_params.put("retries", "1");
 
     }
+    
+    private NodeDao createDummyNodeDao() {
+    	NodeDao nodeDao = EasyMock.createMock(NodeDao.class);
+        OnmsNode onmsNode = EasyMock.createMock(OnmsNode.class);
+        EasyMock.expect(onmsNode.getAssetRecord()).andReturn(new OnmsAssetRecord()).anyTimes(); 
+        EasyMock.expect(nodeDao.get(Integer.valueOf(NODE_ID))).andReturn(onmsNode).anyTimes();
+        EasyMock.replay(onmsNode);
+        EasyMock.replay(nodeDao);
+        return nodeDao;
+    }
 
     protected MonitoredService getHttpService(String hostname) throws Exception {
         return getHttpService(hostname, InetAddressUtils.addr(hostname));
     }
 
     protected MonitoredService getHttpService(String hostname, InetAddress inetAddress) throws Exception {
-        MonitoredService svc = new MockMonitoredService(1, hostname, inetAddress, "HTTP");
+        MonitoredService svc = new MockMonitoredService(NODE_ID, hostname, inetAddress, "HTTP");
         m_monitor.initialize(svc);
         return svc;
     }
@@ -104,8 +121,6 @@ public class PageSequenceMonitorEnhancedTest {
         MockLogAppender.assertNoWarningsOrGreater();
     }
 
-    //TODO markus please check this test later
-    @Ignore
     @Test
     public void testSimple() throws Exception {
         setPageSequenceParam("localhost");
@@ -432,8 +447,21 @@ public class PageSequenceMonitorEnhancedTest {
     }
     @Test
     public void testAssetRecordSubstitution() throws Exception {
+    	// Overwrite default behaviour for NodeDao
+    	NodeDao nodeDao = EasyMock.createMock(NodeDao.class);
+        OnmsNode onmsNode = EasyMock.createMock(OnmsNode.class);
+        EasyMock.expect(onmsNode.getAssetRecord()).andReturn(new OnmsAssetRecord() {
+        	@Override
+        	@Column(name = "comment", length = 1024)
+        	public String getComment() {
+        		return "ebaystatic.com";
+        	}
+        }).anyTimes(); 
+        EasyMock.expect(nodeDao.get(Integer.valueOf(NODE_ID))).andReturn(onmsNode).anyTimes();
+        EasyMock.replay(onmsNode);
+        EasyMock.replay(nodeDao);
         
-        
+        m_monitor.setNodeDao(nodeDao);
         m_params.put("page-sequence", ""
                 + "<?xml version=\"1.0\"?>"
                 + "<page-sequence>\n"

@@ -62,7 +62,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
     JUnitHttpServerExecutionListener.class
 })
 */
-@ContextConfiguration(locations="classpath:META-INF/opennms/emptyContext.xml")
+@ContextConfiguration(locations="classpath:META-INF/opennms/applicationContext-dao.xml")
 //@JUnitHttpServer(port=10342)
 public class PageSequenceMonitorOpenNMSTest /* implements SystemReportPlugin */ {
 

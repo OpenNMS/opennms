@@ -25,13 +25,7 @@ package org.opennms.netmgt.poller.monitors;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
-
-import org.apache.http.client.params.CookiePolicy;
-
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.URI;
@@ -40,12 +34,10 @@ import java.net.UnknownHostException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -53,8 +45,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.net.ssl.SSLContext;
+
 import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.http.Header;
 import org.apache.http.HttpHost;
@@ -67,10 +59,12 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.params.ClientPNames;
+import org.apache.http.client.params.CookiePolicy;
 import org.apache.http.client.utils.URIUtils;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
+import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
 import org.apache.http.message.BasicNameValuePair;
@@ -81,7 +75,7 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.utils.BeanUtils;
+import org.opennms.core.soa.support.DefaultServiceRegistry;
 import org.opennms.core.utils.EmptyKeyRelaxedTrustProvider;
 import org.opennms.core.utils.EmptyKeyRelaxedTrustSSLContext;
 import org.opennms.core.utils.HttpResponseRange;
@@ -102,7 +96,6 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  * This class is designed to be used by the service poller framework to test the availability of the HTTP service on
@@ -115,20 +108,24 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 @Distributable
 public class PageSequenceMonitorEnhanced extends AbstractServiceMonitor {
 
-    private static NodeDao s_nodeDao;
+    private static final int DEFAULT_TIMEOUT = 3000;
+    private static final int DEFAULT_RETRY = 0;
+    private static final int DEFAULT_SEQUENCE_RETRY = 0;
 
+    private NodeDao s_nodeDao;
     
-    private static class MyInvocationHandler implements InvocationHandler {
-
-        @Override
-        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-            System.out.println("start: " + method.getName());
-            Object returnValue = method.invoke(proxy, args);
-            System.out.println("end: " + method.getName());
-            return returnValue;
-        }
+    public PageSequenceMonitorEnhanced() {
+    	this (DefaultServiceRegistry.INSTANCE.findProvider(NodeDao.class));
     }
-
+    
+    protected PageSequenceMonitorEnhanced(NodeDao nodeDao) {
+    	this.s_nodeDao = nodeDao;
+    }
+    
+    protected void setNodeDao(NodeDao nodeDao) {
+    	s_nodeDao = nodeDao;
+    }
+    
     protected class SequenceTracker {
 
         TimeoutTracker m_tracker;
@@ -161,7 +158,6 @@ public class PageSequenceMonitorEnhanced extends AbstractServiceMonitor {
             return m_tracker.elapsedTimeInMillis();
         }
     }
-    private static final int DEFAULT_SEQUENCE_RETRY = 0;
 
     //FIXME: This should be wired with Spring
     // Make sure that the {@link EmptyKeyRelaxedTrustSSLContext} algorithm
@@ -186,8 +182,6 @@ public class PageSequenceMonitorEnhanced extends AbstractServiceMonitor {
             super(message, cause);
         }
     }
-    private static final int DEFAULT_TIMEOUT = 3000;
-    private static final int DEFAULT_RETRY = 0;
 
     public static class HttpPageSequence {
 
@@ -196,20 +190,12 @@ public class PageSequenceMonitorEnhanced extends AbstractServiceMonitor {
         Properties m_sequenceProperties;
         Map<String, String> m_parameters = new HashMap<String, String>();
 
-        HttpPageSequence(MonitoredService svc, PageSequence sequence) {
+        HttpPageSequence(PageSequence sequence) {
             m_sequence = sequence;
 
             m_pages = new ArrayList<HttpPage>(m_sequence.getPageCount());
             for (Page page : m_sequence.getPage()) {
-                substitute(svc, page);
-//                PropertiesUtils.substitute(new , symbolsArray)
-//                 HttpPage newHttpPage = (HttpPage) Proxy.newProxyInstance(HttpPage.class.getClassLoader(),
-//                                          new Class[] { HttpPage.class },
-//                                          new MyInvocationHandler());
-//                newHttpPage.set
-                HttpPage newHttpPage = new HttpPage(this, page);
-//                substitute(newHttpPage);
-                m_pages.add(newHttpPage);
+                m_pages.add(new HttpPage(this, page));
             }
 
             m_sequenceProperties = new Properties();
@@ -242,7 +228,7 @@ public class PageSequenceMonitorEnhanced extends AbstractServiceMonitor {
                 if (log().isDebugEnabled()) {
                     log().debug("Executing HttpPage: " + page.toString());
                 }
-                page.execute(client, svc);
+                page.execute(client, svc, m_sequenceProperties);
                 if (page.getDsName() != null) {
                     if (log().isDebugEnabled()) {
                         log().debug("Recording response time " + page.getResponseTime() + " for ds " + page.getDsName());
@@ -318,7 +304,7 @@ public class PageSequenceMonitorEnhanced extends AbstractServiceMonitor {
             }
         }
     }
-    
+
     public static class HttpPage {
 
         private final Page m_page;
@@ -361,13 +347,13 @@ public class PageSequenceMonitorEnhanced extends AbstractServiceMonitor {
             return retval.toString();
         }
 
-        void execute(DefaultHttpClient client, MonitoredService svc) {
+        void execute(DefaultHttpClient client, MonitoredService svc, Properties sequenceProperties) {
             try {
-                URI uri = getURI();
+                URI uri = getURI(svc);
                 PageSequenceHttpUriRequest method = getMethod(uri);
 
-                if (getVirtualHost() != null) {
-                    method.getParams().setParameter(ClientPNames.VIRTUAL_HOST, new HttpHost(getVirtualHost(), uri.getPort()));
+                if (getVirtualHost(svc) != null) {
+                    method.getParams().setParameter(ClientPNames.VIRTUAL_HOST, new HttpHost(getVirtualHost(svc), uri.getPort()));
                 }
 
                 if (getUserAgent() != null) {
@@ -450,7 +436,7 @@ public class PageSequenceMonitorEnhanced extends AbstractServiceMonitor {
                         }
                         throw new PageSequenceMonitorException("failed to find '" + getSuccessPattern() + "' in page content at " + uri);
                     }
-                    updateSequenceProperties(m_parentSequence.getSequenceProperties(), matcher);
+                    updateSequenceProperties(sequenceProperties, matcher);
                 }
 
             } catch (NoSuchAlgorithmException e) {
@@ -468,20 +454,21 @@ public class PageSequenceMonitorEnhanced extends AbstractServiceMonitor {
 
         private List<NameValuePair> expandParms(MonitoredService svc) {
             List<NameValuePair> expandedParms = new ArrayList<NameValuePair>();
-//            Properties svcProps = getServiceProperties(svc);
-//            if (svcProps != null && log().isDebugEnabled()) {
-//                log().debug("I have " + svcProps.size() + " service properties.");
-//            }
-//            Properties seqProps = getSequenceProperties();
-//            if (seqProps != null && log().isDebugEnabled()) {
-//                log().debug("I have " + seqProps.size() + " sequence properties.");
-//            }
-//            Properties assetProps = getNodeAssetProperties(svc);
-//            if (assetProps != null && log().isDebugEnabled()) {
-//                log().debug("I have " + assetProps.size() + "asset properties");
+            Properties svcProps = getServiceProperties(svc);
+            if (svcProps != null && log().isDebugEnabled()) {
+                log().debug("I have " + svcProps.size() + " service properties.");
+            }
+            Properties seqProps = getSequenceProperties();
+            if (seqProps != null && log().isDebugEnabled()) {
+                log().debug("I have " + seqProps.size() + " sequence properties.");
+            }
+            // TODO MVR should we add this again or can we remove it completely?
+//            Properties nodeAssetProps = getNodeAssetProperties(svc);
+//            if (nodeAssetProps != null && log().isDebugEnabled()) {
+//                log().debug("I have " + nodeAssetProps.size() + " nodeAsset properties.");
 //            }
             for (NameValuePair nvp : m_parms) {
-                String value = nvp.getValue(); //substitute((String) nvp.getValue(), svcProps, seqProps, assetProps);
+                String value = PropertiesUtils.substitute((String) nvp.getValue(), svcProps, seqProps);
                 expandedParms.add(new BasicNameValuePair(nvp.getName(), value));
                 if (log().isDebugEnabled() && !nvp.getValue().equals(value)) {
                     log().debug("Expanded parm with name '" + nvp.getName() + "' from '" + nvp.getValue() + "' to '" + value + "'");
@@ -502,19 +489,21 @@ public class PageSequenceMonitorEnhanced extends AbstractServiceMonitor {
                     log().debug("Just set session variable '" + vbName + "' to '" + vbValue + "'");
                 }
             }
-            // TODO MVR was ist mit den SequenceProperties? Die müssen wir auch noch substituten bzw. fürs substitute verwenden *Grrr*
+            setSequenceProperties(props);
         }
 
         private String getUserAgent() {
             return m_page.getUserAgent();
         }
 
-        private String getVirtualHost() {
-            return m_page.getVirtualHost();
+        private String getVirtualHost(MonitoredService svc) {
+            return PropertiesUtils.substitute(m_page.getVirtualHost(), getServiceProperties(svc), getSequenceProperties());
         }
 
-        private URI getURI() throws URISyntaxException {
-            String host = getHost();
+        private URI getURI(MonitoredService svc) throws URISyntaxException {
+            Properties svcProps = getServiceProperties(svc);
+            Properties seqProps = getSequenceProperties();
+            String host = getHost(seqProps, svcProps);
             if (m_page.getRequireIPv4()) {
                 try {
                     InetAddress address = InetAddressUtils.resolveHostname(host, false);
@@ -535,27 +524,36 @@ public class PageSequenceMonitorEnhanced extends AbstractServiceMonitor {
             } else {
                 // Just leave the hostname as-is, let httpclient resolve it using the platform preferences
             }
-            return URIUtils.createURI(getScheme(), host, getPort(), getPath(), getQuery(), getFragment());
+            return URIUtils.createURI(getScheme(), host, getPort(), getPath(seqProps, svcProps), getQuery(seqProps, svcProps), getFragment(seqProps, svcProps));
         }
 
-        private String getFragment() {
-            return m_page.getFragment();
+        private String getFragment(Properties... p) {
+            return PropertiesUtils.substitute(m_page.getFragment(), p);
         }
 
-        private String getQuery() {
-            return m_page.getQuery();
+        private String getQuery(Properties... p) {
+            return PropertiesUtils.substitute(m_page.getQuery(), p);
         }
 
-        private String getPath() {
-            return m_page.getPath();
+        private String getPath(Properties... p) {
+            return PropertiesUtils.substitute(m_page.getPath(), p);
         }
 
-        private int getPort() {
-            return m_page.getPort();
+        private int getPort(Properties... p) {
+            return Integer.valueOf(PropertiesUtils.substitute(String.valueOf(m_page.getPort()), p));
         }
 
-        private String getHost() {
-            return m_page.getHost();
+        private String getHost(Properties... p) {
+            return PropertiesUtils.substitute(m_page.getHost(), p);
+        }
+
+        private Properties getServiceProperties(MonitoredService svc) {
+            Properties properties = new Properties();
+            properties.put("ipaddr", svc.getIpAddr());
+            properties.put("nodeid", svc.getNodeId());
+            properties.put("nodelabel", svc.getNodeLabel());
+            properties.put("svcname", svc.getSvcName());
+            return properties;
         }
 
         private String getUserInfo() {
@@ -621,10 +619,10 @@ public class PageSequenceMonitorEnhanced extends AbstractServiceMonitor {
         public static final String KEY = PageSequenceMonitorParameters.class.getName();
 
         @SuppressWarnings("unchecked")
-        static synchronized PageSequenceMonitorParameters get(MonitoredService svc, Map paramterMap) {
+        static synchronized PageSequenceMonitorParameters get(NodeDao nodeDao, MonitoredService svc, Map paramterMap) {
             PageSequenceMonitorParameters parms = (PageSequenceMonitorParameters) paramterMap.get(KEY);
             if (parms == null) {
-                parms = new PageSequenceMonitorParameters(svc, paramterMap);
+                parms = new PageSequenceMonitorParameters(nodeDao, svc, paramterMap);
                 paramterMap.put(KEY, parms);
             }
             return parms;
@@ -634,16 +632,17 @@ public class PageSequenceMonitorEnhanced extends AbstractServiceMonitor {
         private final HttpPageSequence m_pageSequence;
 
         @SuppressWarnings("unchecked")
-        PageSequenceMonitorParameters(MonitoredService svc, Map<String, String> parameterMap) {
+        PageSequenceMonitorParameters(NodeDao nodeDao, MonitoredService svc, Map<String, String> parameterMap) {
             m_parameterMap = parameterMap;
             String pageSequence = getStringParm("page-sequence", null);
             if (pageSequence == null) {
                 throw new IllegalArgumentException("page-sequence must be set in monitor parameters");
             }
             // Perform parameter expansion on the page-sequence string
-//            pageSequence = substitute(pageSequence, m_parameterMap);
+            pageSequence = PropertiesUtils.substitute(pageSequence, m_parameterMap);
+            pageSequence = PropertiesUtils.substitute(pageSequence, getNodeAssetProperties(nodeDao, svc));
             PageSequence sequence = parsePageSequence(pageSequence);
-            m_pageSequence = new HttpPageSequence(svc, sequence);
+            m_pageSequence = new HttpPageSequence(sequence);
             m_pageSequence.setParameters(m_parameterMap);
 
             m_clientParams = createClientParams();
@@ -667,15 +666,14 @@ public class PageSequenceMonitorEnhanced extends AbstractServiceMonitor {
             } catch (UnsupportedEncodingException e) {
                 throw new IllegalArgumentException("UTF-8 encoding not supported", e);
             }
-
         }
 
-        private String getStringParm(String key, String defaultValue) {
-            return ParameterMap.getKeyedString(this.getParameterMap(), key, defaultValue);
+        private String getStringParm(String key, String deflt) {
+            return ParameterMap.getKeyedString(this.getParameterMap(), key, deflt);
         }
 
-        private int getIntParm(String key, int defaultValue) {
-            return ParameterMap.getKeyedInteger(getParameterMap(), key, defaultValue);
+        private int getIntParm(String key, int defValue) {
+            return ParameterMap.getKeyedInteger(getParameterMap(), key, defValue);
         }
 
         private HttpParams createClientParams() {
@@ -709,122 +707,33 @@ public class PageSequenceMonitorEnhanced extends AbstractServiceMonitor {
         }
     }
 
-//    // TODO MVR
-//    private static class AssetRecordSymbolTable implements PropertiesUtils.SymbolTable {
-//
-//        @Override
-//        public String getSymbolValue(String symbol) {
-//            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-//        }
-//    }
-//
-//    private static String substitute(String initialString, PropertiesUtils.SymbolTable symbolTable) {
-//        return PropertiesUtils.substitute(initialString, symbolTable);
-//    }
-//
-//    private static String substitute(String initialString, Properties... properties) {
-//        return PropertiesUtils.substitute(initialString, properties);
-//    }
-//
-//    private static String substitute(String pageSequence, Map<String, String> parameterMap) {
-//        return PropertiesUtils.substitute(pageSequence, parameterMap);
-//    }
-    
-    private static void substitute(MonitoredService svc, Object bean) {
-        Properties[] properties = new Properties[]{getNodeAssetProperties(svc), getServiceProperties(svc)};
-        for (Entry<String, String> eachEntry : describe(bean).entrySet()) {
-            try {
-                PropertyUtils.setProperty(bean, eachEntry.getKey(), PropertiesUtils.substitute(eachEntry.getValue(), properties));
-            } catch (IllegalAccessException ex) {
-                // TODO MVR logging + exception handling
-                Logger.getLogger(PageSequenceMonitorEnhanced.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (InvocationTargetException ex) {
-                // TODO MVR logging + exception handling
-                Logger.getLogger(PageSequenceMonitorEnhanced.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (NoSuchMethodException ex) {
-                // TODO MVR logging + exception handling
-                Logger.getLogger(PageSequenceMonitorEnhanced.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-    }
-    
-    // TODO MVR comment: 
-    // updates the parameterMap and substitutes all string values in the map with values from propertiees....
-    private static void substituteValuesInParameterMap(MonitoredService svc, Map<String, Object> parameterMap) {
-        Properties[] properties = new Properties[]{getNodeAssetProperties(svc), getServiceProperties(svc)};
-        for (Entry<String, Object> eachEntry : parameterMap.entrySet()) {
-            if (eachEntry.getValue() instanceof String) {
-                parameterMap.put(eachEntry.getKey(), PropertiesUtils.substitute((String) eachEntry.getValue(), properties));
-            } else {
-                for (Entry<String, String> eachSubEntry : describe(eachEntry.getValue()).entrySet()) {
-                    parameterMap.put(eachSubEntry.getKey(), PropertiesUtils.substitute(eachSubEntry.getValue(), properties));
-                }
-            }
-        }
-    }
-
-    // TODO MVR comment, map die zurückgegeben wird ist nicht substituted!
-    private static Map<String, String> describe(Object bean) {
-        Map<String, String> propertyMap = new HashMap<String, String>();
-        if (bean != null) {
-            try {
-                Map descriptionMap = PropertyUtils.describe(bean);
-                for (Object eachEntryObject : descriptionMap.entrySet()) {
-                    Entry<Object, Object> eachEntry = (Entry<Object, Object>) eachEntryObject;
-                    if (eachEntry.getValue() != null && eachEntry.getValue() instanceof String) {
-                        String eachKey = (String) eachEntry.getKey();
-                        propertyMap.put(eachKey, eachEntry.getValue().toString());
-                    }
-                }
-            } catch (IllegalAccessException ex) {
-                Logger.getLogger(PageSequenceMonitorEnhanced.class.getName()).log(Level.SEVERE, null, ex);
-                // TODO MVR error handling + logging
-            } catch (InvocationTargetException ex) {
-                Logger.getLogger(PageSequenceMonitorEnhanced.class.getName()).log(Level.SEVERE, null, ex);
-                // TODO MVR error handling + logging
-            } catch (NoSuchMethodException ex) {
-                Logger.getLogger(PageSequenceMonitorEnhanced.class.getName()).log(Level.SEVERE, null, ex);
-                // TODO MVR error handling + logging
-            }
-        }
-        return propertyMap;
-    }
-
-    private static Properties getServiceProperties(MonitoredService svc) {
-        Properties properties = new Properties();
-        properties.put("ipaddr", svc.getIpAddr());
-        properties.put("nodeid", svc.getNodeId());
-        properties.put("nodelabel", svc.getNodeLabel());
-        properties.put("svcname", svc.getSvcName());
-        return properties;
-    }
-
-    private static Properties getNodeAssetProperties(MonitoredService svc) {
+    private static Properties getNodeAssetProperties(NodeDao nodeDao, MonitoredService svc) {
         Properties assetProperties = new Properties();
 
-//        // get the DAO for the node
-//        s_nodeDao = (NodeDao) BeanUtils.getFactory("commonContext", ClassPathXmlApplicationContext.class).getBean("nodeDao");
-//        OnmsNode node = s_nodeDao.get(svc.getNodeId());
-//
-//        // get all AssetRecord properties
-//        final List<String> propertiesToIgnore = Arrays.asList(new String[]{"class"});
-//        try {
-//            Map propertyMap = PropertyUtils.describe(node.getAssetRecord());
-//            for (Object eachPropertyKey : propertyMap.keySet()) {
-//                String eachStringPropertyKey = (String) eachPropertyKey;
-//                if (propertiesToIgnore.contains(eachStringPropertyKey)) continue;
-//                assetProperties.put("AssetRecord." + eachStringPropertyKey, propertyMap.get(eachPropertyKey));
-//            }
-//        } catch (IllegalAccessException ex) {
-//            // TODO MVR logging and Exception handling ...
-//            Logger.getLogger(PageSequenceMonitorEnhanced.class.getName()).log(Level.SEVERE, null, ex);
-//        } catch (InvocationTargetException ex) {
-//            // TODO MVR logging and Exception handling ...
-//            Logger.getLogger(PageSequenceMonitorEnhanced.class.getName()).log(Level.SEVERE, null, ex);
-//        } catch (NoSuchMethodException ex) {
-//            // TODO MVR logging and Exception handling ...
-//            Logger.getLogger(PageSequenceMonitorEnhanced.class.getName()).log(Level.SEVERE, null, ex);
-//        }
+        // get the DAO for the node
+//        s_nodeDao = (NodeDao) BeanUtils.getFactory("daoContext", ClassPathXmlApplicationContext.class).getBean("nodeDao");
+        OnmsNode node = nodeDao.get(svc.getNodeId());
+
+        // get all AssetRecord properties
+        final List<String> propertiesToIgnore = Arrays.asList(new String[]{"class"});
+        try {
+            Map propertyMap = PropertyUtils.describe(node.getAssetRecord());
+            for (Object eachPropertyKey : propertyMap.keySet()) {
+                String eachStringPropertyKey = (String) eachPropertyKey;
+                if (propertiesToIgnore.contains(eachStringPropertyKey)) continue;
+                if (propertyMap.get(eachPropertyKey) == null) continue;
+                assetProperties.put("AssetRecord." + eachStringPropertyKey, propertyMap.get(eachPropertyKey));
+            }
+        } catch (IllegalAccessException ex) {
+            // TODO MVR logging and Exception handling ...
+            Logger.getLogger(PageSequenceMonitorEnhanced.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InvocationTargetException ex) {
+            // TODO MVR logging and Exception handling ...
+            Logger.getLogger(PageSequenceMonitorEnhanced.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (NoSuchMethodException ex) {
+            // TODO MVR logging and Exception handling ...
+            Logger.getLogger(PageSequenceMonitorEnhanced.class.getName()).log(Level.SEVERE, null, ex);
+        }
         return assetProperties;
     }
 
@@ -838,12 +747,11 @@ public class PageSequenceMonitorEnhanced extends AbstractServiceMonitor {
 
         Map<String, Number> responseTimes = new LinkedHashMap<String, Number>();
 
-        substituteValuesInParameterMap(svc, parameterMap);
-
         SequenceTracker tracker = new SequenceTracker(parameterMap, DEFAULT_SEQUENCE_RETRY, DEFAULT_TIMEOUT);
         for (tracker.reset(); tracker.shouldRetry() && !serviceStatus.isAvailable(); tracker.nextAttempt()) {
             try {
-                PageSequenceMonitorParameters parms = PageSequenceMonitorParameters.get(svc, parameterMap);
+                PageSequenceMonitorParameters parms = PageSequenceMonitorParameters.get(s_nodeDao, svc, parameterMap);
+
                 client = parms.createHttpClient();
 
                 tracker.startAttempt();
