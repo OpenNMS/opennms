@@ -50,9 +50,13 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
+import org.hibernate.annotations.Type;
+
 import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
+import org.opennms.netmgt.xml.bind.StatusTypeXmlAdapter;
 
 @XmlRootElement(name = "link")
 @Entity
@@ -181,6 +185,9 @@ public class DataLinkInterface  implements Serializable, Comparable<DataLinkInte
         m_parentIfIndex = parentIfIndex;
     }
 
+    @XmlAttribute(name="status")
+    @Type(type="org.opennms.netmgt.model.StatusTypeUserType")
+    @XmlJavaTypeAdapter(StatusTypeXmlAdapter.class)
     public StatusType getStatus() {
         return m_status;
     }

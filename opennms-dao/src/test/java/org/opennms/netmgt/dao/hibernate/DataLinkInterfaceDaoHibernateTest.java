@@ -131,7 +131,19 @@ public class DataLinkInterfaceDaoHibernateTest implements InitializingBean {
         }
         assertEquals(3, dlis.size());
     }
-    
+
+    @Test
+    public void testFindByStatus() throws Exception {
+        OnmsCriteria criteria = new OnmsCriteria(DataLinkInterface.class);
+        criteria.add(Restrictions.eq("status", StatusType.ACTIVE));
+        
+        final List<DataLinkInterface> dlis = m_dataLinkInterfaceDao.findMatching(criteria);
+        for (final DataLinkInterface iface : dlis) {
+            LogUtils.debugf(this, "dli = %s", iface);
+        }
+        assertEquals(3, dlis.size());
+    }
+
     @Test
     @Transactional // why is this necessary?
     public void testSaveDataLinkInterface() {
