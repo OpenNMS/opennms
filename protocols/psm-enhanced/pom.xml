@@ -74,5 +74,10 @@
             <artifactId>opennms-dao</artifactId>
             <type>test-jar</type>
         </dependency>
+        <dependency>
+            <groupId>commons-beanutils</groupId>
+            <artifactId>commons-beanutils</artifactId>
+        </dependency>
+            
     </dependencies>
 </project>

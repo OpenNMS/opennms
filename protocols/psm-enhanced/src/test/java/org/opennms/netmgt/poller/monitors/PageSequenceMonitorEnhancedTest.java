@@ -2,26 +2,23 @@
  * *****************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc. OpenNMS(R) is Copyright (C)
- * 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc. OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify it under
- * the terms of the GNU General Public License as published by the Free Software
- * Foundation, either version 3 of the License, or (at your option) any later
+ * OpenNMS(R) is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
  * version.
  *
- * OpenNMS(R) is distributed in the hope that it will be useful, but WITHOUT ANY
- * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
- * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * OpenNMS(R) is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with
- * OpenNMS(R). If not, see: http://www.gnu.org/licenses/
+ * You should have received a copy of the GNU General Public License along with OpenNMS(R). If not, see:
+ * http://www.gnu.org/licenses/
  *
  * For more information contact: OpenNMS(R) Licensing <license@opennms.org>
  * http://www.opennms.org/ http://www.opennms.com/
- ******************************************************************************
+ * *****************************************************************************
  */
 package org.opennms.netmgt.poller.monitors;
 
@@ -87,6 +84,21 @@ public class PageSequenceMonitorEnhancedTest {
         return svc;
     }
 
+    private void setPageSequenceParam(String virtualHost) {
+        String virtualHostParam;
+        if (virtualHost == null) {
+            virtualHostParam = "";
+        } else {
+            virtualHostParam = "virtual-host=\"" + virtualHost + "\"";
+        }
+
+        m_params.put("page-sequence", ""
+                + "<?xml version=\"1.0\"?>"
+                + "<page-sequence>\n"
+                + "  <page path=\"/index.html\" port=\"10342\" user-agent=\"Mozilla/4.0 (compatible; MSIE 5.5; Windows NT 5.0)\" successMatch=\"It was written by monkeys.\" " + virtualHostParam + "/>\n"
+                + "</page-sequence>\n");
+    }
+
     @After
     public void tearDown() throws Exception {
         MockLogAppender.assertNoWarningsOrGreater();
@@ -108,21 +120,6 @@ public class PageSequenceMonitorEnhancedTest {
         m_params.put("retries", "0");
         PollStatus notLikely = m_monitor.poll(getHttpService("bogus", InetAddressUtils.addr("1.1.1.1")), m_params);
         assertTrue("should not be available", notLikely.isUnavailable());
-    }
-
-    private void setPageSequenceParam(String virtualHost) {
-        String virtualHostParam;
-        if (virtualHost == null) {
-            virtualHostParam = "";
-        } else {
-            virtualHostParam = "virtual-host=\"" + virtualHost + "\"";
-        }
-
-        m_params.put("page-sequence", ""
-                + "<?xml version=\"1.0\"?>"
-                + "<page-sequence>\n"
-                + "  <page path=\"/index.html\" port=\"10342\" user-agent=\"Mozilla/4.0 (compatible; MSIE 5.5; Windows NT 5.0)\" successMatch=\"It was written by monkeys.\" " + virtualHostParam + "/>\n"
-                + "</page-sequence>\n");
     }
 
     @Test
@@ -430,6 +427,18 @@ public class PageSequenceMonitorEnhancedTest {
                 + "  <page host=\"localhost\" path=\"/opennms/\" port=\"10342\" requireIPv4=\"true\"/>\n"
                 + "</page-sequence>\n");
 
+        PollStatus status = m_monitor.poll(getHttpService("localhost"), m_params);
+        assertTrue("Expected available but was " + status + ": reason = " + status.getReason(), status.isAvailable());
+    }
+    @Test
+    public void testAssetRecordSubstitution() throws Exception {
+        
+        
+        m_params.put("page-sequence", ""
+                + "<?xml version=\"1.0\"?>"
+                + "<page-sequence>\n"
+                + "  <page scheme=\"https\" host=\"scgi.ebay.com\" path=\"/ws/eBayISAPI.dll\" query=\"RegisterEnterInfo\" port=\"443\" user-agent=\"Mozilla/4.0 (compatible; MSIE 5.5; Windows NT 5.0)\" successMatch=\"${AssetRecord.comment}\"/>\n"
+                + "</page-sequence>\n");
         PollStatus status = m_monitor.poll(getHttpService("localhost"), m_params);
         assertTrue("Expected available but was " + status + ": reason = " + status.getReason(), status.isAvailable());
     }
