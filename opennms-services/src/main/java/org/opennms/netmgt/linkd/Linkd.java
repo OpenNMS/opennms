@@ -56,6 +56,7 @@ import org.opennms.netmgt.linkd.scheduler.Scheduler;
 import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
+import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -292,7 +293,7 @@ public class Linkd extends AbstractServiceDaemon {
             coll = new SnmpCollection(
                                       this,
                                       nodeid,
-                                      SnmpPeerFactory.getInstance().getAgentConfig(ipaddr));
+                                      getSnmpAgentConfig(ipaddr));
         } catch (final Throwable t) {
             LogUtils.errorf(this,
                             t,
@@ -302,6 +303,10 @@ public class Linkd extends AbstractServiceDaemon {
         return coll;
     }
 
+    public SnmpAgentConfig getSnmpAgentConfig(InetAddress ipaddr) {
+    	return SnmpPeerFactory.getInstance().getAgentConfig(ipaddr);
+    }
+    
     public boolean saveRouteTable(String pkgName) {
     	Package pkg = m_linkdConfig.getPackage(pkgName);
     	return pkg.hasSaveRouteTable() ? pkg.getSaveRouteTable()
@@ -572,8 +577,7 @@ public class Linkd extends AbstractServiceDaemon {
                 ReadyRunnable rr = getReadyRunnable(collection);
                 if (rr == null) {
                     LogUtils.warnf(this,
-                                   "wakeUpNodeCollection: found null ReadyRunnable");
-                    return;
+                                   "wakeUpNodeCollection: found null ReadyRunnable for nodeid %d", nodeid);
                 } else {
                     rr.wakeUp();
                 }
@@ -664,7 +668,7 @@ public class Linkd extends AbstractServiceDaemon {
                                                                         node.getSnmpPrimaryIpAddr(),
                                                                         node.getSysoid());
             LogUtils.debugf(this,
-                            "suspendNodeCollection: fetched SnmpCollections from scratch, iterating over %d objects to wake them up",
+                            "suspendNodeCollection: fetched SnmpCollections from scratch, iterating over %d objects to suspend them down",
                             collections.size());
             for (SnmpCollection collection : collections) {
                 ReadyRunnable rr = getReadyRunnable(collection);

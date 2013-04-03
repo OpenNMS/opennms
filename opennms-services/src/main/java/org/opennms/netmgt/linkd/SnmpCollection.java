@@ -72,9 +72,17 @@ public final class SnmpCollection implements ReadyRunnable {
     /**
      * The SnmpPeer object used to communicate via SNMP with the remote host.
      */
-    private final SnmpAgentConfig m_agentConfig;
+    private SnmpAgentConfig m_agentConfig;
 
-    /**
+    public SnmpAgentConfig getAgentConfig() {
+		return m_agentConfig;
+	}
+
+	public void setAgentConfig(SnmpAgentConfig agentConfig) {
+		m_agentConfig = agentConfig;
+	}
+
+	/**
      * The node ID of the system used to collect the SNMP information
      */
     private final int m_nodeid;
@@ -326,11 +334,19 @@ public final class SnmpCollection implements ReadyRunnable {
      */
     public void run() {
         if (suspendCollection) {
+            EventBuilder builder = new EventBuilder(
+                    "uei.opennms.org/internal/linkd/nodeLinkDiscoverySuspended",
+                    "Linkd");
+            builder.setNodeid(m_nodeid);
+            builder.setInterface(m_address);
+            m_linkd.getEventForwarder().sendNow(builder.getEvent());
             LogUtils.debugf(this, "run: address: %s Suspended!",
                             str(m_address));
         } else {
             runCollection();
         }
+        runned = true;
+        reschedule();
     }
     
     private class TrackerBuilder {
@@ -528,9 +544,6 @@ public final class SnmpCollection implements ReadyRunnable {
         builder.setInterface(m_address);
         m_linkd.getEventForwarder().sendNow(builder.getEvent());
 
-        // reschedule itself
-        reschedule();
-        runned = true;
     }
 
 	@SuppressWarnings("unchecked")
@@ -713,6 +726,7 @@ public final class SnmpCollection implements ReadyRunnable {
      * </p>
      */
     public void wakeUp() {
+    	setAgentConfig(m_linkd.getSnmpAgentConfig(m_address));
         this.suspendCollection = false;
     }
 
@@ -728,7 +742,7 @@ public final class SnmpCollection implements ReadyRunnable {
         if (runned) {
             m_scheduler.unschedule(this, poll_interval);
         } else {
-            m_scheduler.unschedule(this, poll_interval + initial_sleep_time);
+            m_scheduler.unschedule(this, initial_sleep_time);
         }
     }
 
@@ -827,8 +841,7 @@ public final class SnmpCollection implements ReadyRunnable {
         if (run instanceof SnmpCollection
                 && this.getPackageName().equals(run.getPackageName())) {
             SnmpCollection c = (SnmpCollection) run;
-            if (c.getTarget().equals(m_address) && c.getPort() == getPort()
-                    && c.getReadCommunity().equals(getReadCommunity()))
+            if (c.getTarget().equals(m_address))
                 return true;
         }
         return false;
