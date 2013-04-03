@@ -84,7 +84,7 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.container</groupId>
-      <artifactId>servlet</artifactId>
+      <artifactId>org.opennms.container.servlet</artifactId>
       <type>war</type>
       <scope>runtime</scope>
       <version>${project.version}</version>
