@@ -10,7 +10,6 @@
   <artifactId>mib2events</artifactId>
   <packaging>jar</packaging>
   <name>mib2events</name>
-  <version>1.13.0-SNAPSHOT</version>
   <url>http://maven.apache.org</url>
   <dependencies>
     <dependency>
