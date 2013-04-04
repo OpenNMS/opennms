@@ -188,7 +188,7 @@ public class PageSequenceMonitorEnhancedTest {
         m_params.put("page-sequence", ""
                 + "<?xml version=\"1.0\"?>"
                 + "<page-sequence>\n"
-                + "  <page scheme=\"https\" path=\"/ws/eBayISAPI.dll\" query=\"RegisterEnterInfo\" port=\"443\" user-agent=\"Mozilla/4.0 (compatible; MSIE 5.5; Windows NT 5.0)\" successMatch=\"ebaystatic.com/\" virtual-host=\"scgi.ebay.com\" disable-host-verification=\"true\"/>\n"
+                + "  <page scheme=\"https\" path=\"/ws/eBayISAPI.dll\" query=\"RegisterEnterInfo\" port=\"443\" user-agent=\"Mozilla/4.0 (compatible; MSIE 5.5; Windows NT 5.0)\" successMatch=\"ebaystatic.com/\" virtual-host=\"scgi.ebay.com\" disable-ssl-verification=\"true\"/>\n"
                 + "</page-sequence>\n");
 
         try {
