@@ -606,7 +606,9 @@ public class PageSequenceMonitorEnhanced extends AbstractServiceMonitor {
 
         @SuppressWarnings("unchecked")
         static synchronized PageSequenceMonitorParameters get(NodeDao nodeDao, MonitoredService svc, Map paramterMap) {
-            return new PageSequenceMonitorParameters(nodeDao, svc, paramterMap);
+            // We do not cache here anymore because otherwise the values returned from nodeDao would be cached and that
+        	// is a behaviour we do want.
+        	return new PageSequenceMonitorParameters(nodeDao, svc, paramterMap);
         }
         
         private final Map<String, String> m_parameterMap;
@@ -682,26 +684,33 @@ public class PageSequenceMonitorEnhanced extends AbstractServiceMonitor {
 
         protected DefaultHttpClient createHttpClient() {
             DefaultHttpClient client = new DefaultHttpClient(getClientParams());
-
             client.setHttpRequestRetryHandler(new DefaultHttpRequestRetryHandler(getRetries(), false));
-
             return client;
         }
     }
 
-	private static Properties getNodeAssetProperties(NodeDao nodeDao, MonitoredService svc) {
+    /**
+     * Returns all Properties which are stored in table "asset" for the node <code>svc.getNodeId()</code>.
+     * Only Properties are returned which are not null.
+     * 
+     * @param nodeDao The NodeDao to access the "asset"-properties for the given node in <code>svc</code>
+     * @param svc The Service to be monitored. Is needed to retrieve the node id.
+     * @return Properties from table "asset" which are not null.
+     */
+    private static Properties getNodeAssetProperties(NodeDao nodeDao, MonitoredService svc) {
 		Properties assetProperties = new Properties();
 		OnmsNode node = nodeDao.get(svc.getNodeId()); // get the DAO for the node
 
 		// get all AssetRecord properties
-		final List<String> propertiesToIgnore = Arrays.asList(new String[] { "class" }); // ignore class-property
+		final List<String> propertiesToIgnore = Arrays.asList(new String[] { "class" }); // ignore class-property 
 		try {
+			// We use apache PropertyUtils to retrieve all available Properties.
 			@SuppressWarnings("rawtypes")
 			Map propertyMap = PropertyUtils.describe(node.getAssetRecord());
 			for (Object eachPropertyKey : propertyMap.keySet()) {
 				String eachStringPropertyKey = (String) eachPropertyKey;
-				if (propertiesToIgnore.contains(eachStringPropertyKey)) continue;
-				if (propertyMap.get(eachPropertyKey) == null) continue;
+				if (propertiesToIgnore.contains(eachStringPropertyKey)) continue; // ignore, so continue
+				if (propertyMap.get(eachPropertyKey) == null) continue; // is null, so continue
 				assetProperties.put("AssetRecord." + eachStringPropertyKey, propertyMap.get(eachPropertyKey));
 			}
 		} catch (IllegalAccessException ex) {
