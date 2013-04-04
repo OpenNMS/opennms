@@ -28,14 +28,15 @@
 
 package org.opennms.features.vaadin.nodemaps.internal;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.opennms.features.geocoder.GeocoderService;
 import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.dao.AssetRecordDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.ops4j.pax.vaadin.AbstractApplicationFactory;
+import org.ops4j.pax.vaadin.ScriptTag;
 import org.springframework.transaction.support.TransactionOperations;
 
 import com.vaadin.ui.UI;
@@ -56,24 +57,20 @@ public class NodeMapsApplicationFactory extends AbstractApplicationFactory {
 
     private TransactionOperations m_transaction;
 
-    /*
-     * (non-Javadoc)
-     * @see
-     * org.ops4j.pax.vaadin.ApplicationFactory#createApplication(javax.servlet
-     * .http.HttpServletRequest)
-     */
     @Override
-    public UI createApplication(final HttpServletRequest request) throws ServletException {
-        return getUI();
+    public Class<? extends UI> getUIClass() {
+        return NodeMapsApplication.class;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.ops4j.pax.vaadin.ApplicationFactory#getApplicationClass()
-     */
     @Override
-    public Class<? extends UI> getApplicationClass() throws ClassNotFoundException {
-        return NodeMapsApplication.class;
+    public List<ScriptTag> getAdditionalScripts() {
+        final List<ScriptTag> tags = new ArrayList<ScriptTag>();
+        tags.add(new ScriptTag("http://maps.google.com/maps/api/js?sensor=false", "text/javascript", null));
+        tags.add(new ScriptTag("openlayers/OpenLayers.js", "text/javascript", null));
+        tags.add(new ScriptTag("Google.js", "text/javascript", null));
+        tags.add(new ScriptTag("markercluster/leaflet.markercluster.js", "text/javascript", null));
+        tags.add(new ScriptTag("libs/leaflet/c1d410f2703f0832618c997225e7360f6a292c58/leaflet-src.js", "text/javascript", null));
+        return tags;
     }
 
     /**

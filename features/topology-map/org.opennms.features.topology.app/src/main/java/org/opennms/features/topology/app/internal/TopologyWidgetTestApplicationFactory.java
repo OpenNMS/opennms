@@ -33,48 +33,26 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-
-import org.opennms.web.api.OnmsHeaderProvider;
 import org.ops4j.pax.vaadin.AbstractApplicationFactory;
 import org.ops4j.pax.vaadin.ScriptTag;
 import org.osgi.service.blueprint.container.BlueprintContainer;
-import org.slf4j.LoggerFactory;
-import org.slf4j.helpers.MessageFormatter;
 
 import com.vaadin.ui.UI;
-
 
 public class TopologyWidgetTestApplicationFactory extends AbstractApplicationFactory {
     
 	private final BlueprintContainer m_blueprintContainer;
 	private final String m_beanName;
-	private OnmsHeaderProvider m_headerProvider;
 	
 	public TopologyWidgetTestApplicationFactory(BlueprintContainer container, String beanName) {
 		m_blueprintContainer = container;
 		m_beanName = beanName;
 	}
-	
+
     @Override
-	public UI createApplication(HttpServletRequest request) throws ServletException {
-        TopologyWidgetTestApplication application = (TopologyWidgetTestApplication) m_blueprintContainer.getComponentInstance(m_beanName);
-        LoggerFactory.getLogger(getClass()).debug(MessageFormatter.format("created {} for servlet path {}", application, request.getServletPath()).getMessage()/* , new Exception("Show me the stack trace") */);
-        return application;
-	}
-
-
-    private String getHeader(HttpServletRequest request) {
-        if(m_headerProvider == null) return "";
-        
-        return m_headerProvider.getHeaderHtml(request);
+    public Class<? extends UI> getUIClass() {
+        return TopologyWidgetTestApplication.class;
     }
-
-    @Override
-	public Class<? extends UI> getApplicationClass() throws ClassNotFoundException {
-		return TopologyWidgetTestApplication.class;
-	}
 
     @Override
     public Map<String, String> getAdditionalHeaders() {
@@ -91,15 +69,9 @@ public class TopologyWidgetTestApplicationFactory extends AbstractApplicationFac
         return tags;
     }
     
-    public void setHeaderProvider(OnmsHeaderProvider headerProvider) {
-        m_headerProvider = headerProvider;
-    }
-
     @Override
     public UI getUI() {
         TopologyWidgetTestApplication application = (TopologyWidgetTestApplication) m_blueprintContainer.getComponentInstance(m_beanName);
-        //application.setHeaderHtml(getHeader(request));
-        //LoggerFactory.getLogger(getClass()).debug(MessageFormatter.format("created {} for servlet path {}", application, request.getServletPath()).getMessage()/* , new Exception("Show me the stack trace") */);
         return application;
     }
 }
