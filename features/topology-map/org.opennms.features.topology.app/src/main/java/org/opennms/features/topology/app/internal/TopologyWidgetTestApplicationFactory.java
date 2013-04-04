@@ -74,4 +74,5 @@ public class TopologyWidgetTestApplicationFactory extends AbstractApplicationFac
         TopologyWidgetTestApplication application = (TopologyWidgetTestApplication) m_blueprintContainer.getComponentInstance(m_beanName);
         return application;
     }
+
 }

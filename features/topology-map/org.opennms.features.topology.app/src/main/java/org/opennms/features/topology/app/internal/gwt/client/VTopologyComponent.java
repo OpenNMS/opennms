@@ -73,7 +73,9 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.client.ApplicationConnection;
+import com.vaadin.client.MouseEventDetailsBuilder;
 import com.vaadin.client.UIDL;
+import com.vaadin.shared.MouseEventDetails;
 
 public class VTopologyComponent extends Composite implements SVGTopologyMap, TopologyView.Presenter<VTopologyComponent.TopologyViewRenderer> {
     
@@ -390,6 +392,7 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
     
     private TopologyView<TopologyViewRenderer> m_topologyView;
     private List<GraphUpdateListener> m_graphListenerList = new ArrayList<GraphUpdateListener>();
+    private TopologyComponentServerRpc m_serverRpc;
 
 	public VTopologyComponent() {
 		initWidget(uiBinder.createAndBindUi(this));
@@ -498,7 +501,8 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 	}
 
 	private void deselectAllItems(boolean immediate) {
-	    m_client.updateVariable(m_paintableId, "deselectAllItems", true, immediate);
+	    //m_client.updateVariable(m_paintableId, "deselectAllItems", true, immediate);
+	    m_serverRpc.deselectAllItems();
     }
 
     private Handler<GWTVertex> vertexContextMenuHandler() {
@@ -561,7 +565,8 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 
             @Override
             public void call(GWTEdge edge, int index) {
-                m_client.updateVariable(m_paintableId, "clickedEdge", edge.getId(), true);
+                //m_client.updateVariable(m_paintableId, "clickedEdge", edge.getId(), true);
+                m_serverRpc.edgeClicked(edge.getId());
                 D3.getEvent().preventDefault();
                 D3.getEvent().stopPropagation();
             }
@@ -577,16 +582,19 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 				SVGGElement vertexElement = event.getCurrentEventTarget().cast();
 				vertexElement.getParentElement().appendChild(vertexElement);
 				
-				m_client.updateVariable(m_paintableId, "clickedVertex", vertex.getId(), false);
-				m_client.updateVariable(m_paintableId, "shiftKeyPressed", event.getShiftKey(), false);
-				m_client.updateVariable(m_paintableId, "metaKeyPressed", event.getMetaKey(), false);
-				m_client.updateVariable(m_paintableId, "ctrlKeyPressed", event.getCtrlKey(), false);
-				m_client.updateVariable(m_paintableId, "platform", Navigator.getPlatform(), false);
+//				m_client.updateVariable(m_paintableId, "clickedVertex", vertex.getId(), false);
+//				m_client.updateVariable(m_paintableId, "shiftKeyPressed", event.getShiftKey(), false);
+//				m_client.updateVariable(m_paintableId, "metaKeyPressed", event.getMetaKey(), false);
+//				m_client.updateVariable(m_paintableId, "ctrlKeyPressed", event.getCtrlKey(), false);
+//				m_client.updateVariable(m_paintableId, "platform", Navigator.getPlatform(), false);
+//				m_client.sendPendingVariableChanges();
 				
 				event.preventDefault();
 				event.stopPropagation();
-
-				m_client.sendPendingVariableChanges();
+				
+				final MouseEventDetails mouseDetails = MouseEventDetailsBuilder.buildMouseEventDetails(event, getElement());
+				m_serverRpc.vertexClicked(vertex.getId(), mouseDetails, Navigator.getPlatform());
+				
 				
 			}
 		};
@@ -629,8 +637,9 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
     			        //}
     			    }
     			    
-    			    m_client.updateVariable(getPaintableId(), "updateVertices", values.toArray(new String[] {}), false);
-    			    m_client.sendPendingVariableChanges();
+//    			    m_client.updateVariable(getPaintableId(), "updateVertices", values.toArray(new String[] {}), false);
+//    			    m_client.sendPendingVariableChanges();
+    			    m_serverRpc.updateVertices(values);
     			    
     				D3.getEvent().preventDefault();
     				D3.getEvent().stopPropagation();
@@ -776,7 +785,8 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 	    dimensions.put("width", width);
 	    dimensions.put("height", height);
 	    
-	    m_client.updateVariable(getPaintableId(), "mapPhysicalBounds", dimensions, true);
+//	    m_client.updateVariable(getPaintableId(), "mapPhysicalBounds", dimensions, true);
+	    m_serverRpc.mapPhysicalBounds(width, height);
 	    
 	}
 
@@ -855,15 +865,20 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 		map.put("y", y);
 		map.put("type", type);
 
-		m_client.updateVariable(getPaintableId(), "contextMenu", map, true);
+//		m_client.updateVariable(getPaintableId(), "contextMenu", map, true);
+		m_serverRpc.contextMenu(map);
 	}
 	
     @Override
     public void setVertexSelection(List<String> vertIds) {
-        m_client.updateVariable(getPaintableId(), "marqueeSelection", vertIds.toArray(new String[]{}), false);
-        m_client.updateVariable(m_paintableId, "shiftKeyPressed", D3.getEvent().getShiftKey(), false);
+//        m_client.updateVariable(getPaintableId(), "marqueeSelection", vertIds.toArray(new String[]{}), false);
+//        m_client.updateVariable(m_paintableId, "shiftKeyPressed", D3.getEvent().getShiftKey(), false);
+//        m_client.sendPendingVariableChanges();
         
-        m_client.sendPendingVariableChanges();
+        final MouseEventDetails mouseDetails  = MouseEventDetailsBuilder.buildMouseEventDetails(D3.getEvent(), getElement());
+        m_serverRpc.marqueeSelection(vertIds.toArray(new String[] {}), mouseDetails);
+        
+        
     }
 
     /**
@@ -894,7 +909,8 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
         Map<String, Object> point = new HashMap<String, Object>();
         point.put("x", (int)Math.round(pos.getX()));
         point.put("y", (int)Math.round(pos.getY()));
-        m_client.updateVariable(getPaintableId(), "clientCenterPoint", point, true);
+//        m_client.updateVariable(getPaintableId(), "clientCenterPoint", point, true);
+        m_serverRpc.clientCenterPoint((int)Math.round(pos.getX()) , (int)Math.round(pos.getY()));
     }
 
     @Override
@@ -908,7 +924,8 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 
     @Override
     public void onBackgroundClick() {
-        m_client.updateVariable(m_paintableId, "clickedBackground", true, true);
+        //m_client.updateVariable(m_paintableId, "clickedBackground", true, true);
+        m_serverRpc.backgroundClicked();
     }
 
     @Override
@@ -933,7 +950,8 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
         props.put("x", x);
         props.put("y", y);
         props.put("scrollVal", scrollVal);
-        m_client.updateVariable(getPaintableId(), "scrollWheel", props, true);
+//        m_client.updateVariable(getPaintableId(), "scrollWheel", props, true);
+        m_serverRpc.scrollWheel(props);
     }
     
     public static final native void eval(JavaScriptObject elem) /*-{
@@ -954,6 +972,10 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
         props.put("x", (int)center.getX());
         props.put("y", (int)center.getY());
         getClient().updateVariable(getPaintableId(), "doubleClick", props, true);
+    }
+
+    public void setComponentServerRpc(TopologyComponentServerRpc rpc) {
+        m_serverRpc = rpc;
     }
 
 }
