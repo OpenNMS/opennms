@@ -6,6 +6,17 @@
 
 	<!-- Start 1.11 -->
 
+	<section id="introduction-1.11.90">
+		<title>Release 1.11.90</title>
+
+		<para>
+			Release 1.11.90 is the first release candidate for the OpenNMS 1.12 series.
+		</para>
+		<para>
+			The codename for 1.11.90 is <emphasis>John Roderick</emphasis>
+		</para>
+	</section>
+
 	<section id="introduction-1.11.3">
 		<title>Release 1.11.3</title>
 
