@@ -1,5 +1,6 @@
 package org.opennms.features.topology.app.internal.gwt.client;
 
+import com.vaadin.client.communication.RpcProxy;
 import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.AbstractComponentConnector;
 import com.vaadin.shared.ui.Connect;
@@ -7,9 +8,12 @@ import com.vaadin.shared.ui.Connect;
 @Connect(org.opennms.features.topology.app.internal.TopologyComponent.class)
 public class TopologyComponentConnector extends AbstractComponentConnector{
 
+   TopologyComponentServerRpc m_rpc = RpcProxy.create(TopologyComponentServerRpc.class, this);
    @Override
    public VTopologyComponent getWidget() {
-       return (VTopologyComponent) super.getWidget();
+       VTopologyComponent widget = (VTopologyComponent) super.getWidget();
+       widget.setComponentServerRpc(m_rpc);
+       return widget;
    }
    
    @Override

@@ -72,7 +72,7 @@ public class TopologyWidgetTestApplicationFactory extends AbstractApplicationFac
     }
 
     @Override
-	public Class<? extends UI> getApplicationClass() throws ClassNotFoundException {
+	public Class<? extends UI> getUIClass() {
 		return TopologyWidgetTestApplication.class;
 	}
 
@@ -102,4 +102,5 @@ public class TopologyWidgetTestApplicationFactory extends AbstractApplicationFac
         //LoggerFactory.getLogger(getClass()).debug(MessageFormatter.format("created {} for servlet path {}", application, request.getServletPath()).getMessage()/* , new Exception("Show me the stack trace") */);
         return application;
     }
+
 }

@@ -151,8 +151,8 @@ public class TopologyWidgetTestApplication extends UI implements CommandUpdateLi
             header.addStyleName("onmsheader");
             header.setWidth(100, Unit.PERCENTAGE);
             // Set expand ratio so that extra space is not allocated to this vertical component
-            m_rootLayout.setExpandRatio(header, 0);
             m_rootLayout.addComponent(header, 0);
+            m_rootLayout.setExpandRatio(header, 0);
             
             try {
                 CustomLayout customLayout = new CustomLayout(getHeaderLayout());
@@ -166,8 +166,8 @@ public class TopologyWidgetTestApplication extends UI implements CommandUpdateLi
         m_layout = new AbsoluteLayout();
         m_layout.setSizeFull();
         // Set expand ratio so that all extra space is allocated to this vertical component
-        m_rootLayout.setExpandRatio(m_layout, 1);
         m_rootLayout.addComponent(m_layout, 1);
+        m_rootLayout.setExpandRatio(m_layout, 1);
         
         //Refresher refresher = new Refresher();
         //refresher.setRefreshInterval(5000);
@@ -494,8 +494,8 @@ public class TopologyWidgetTestApplication extends UI implements CommandUpdateLi
 		m_menuBar = commandManager.getMenuBar(m_graphContainer, this, m_selectionManager);
 		m_menuBar.setWidth(100, Unit.PERCENTAGE);
 		// Set expand ratio so that extra space is not allocated to this vertical component
-		m_rootLayout.setExpandRatio(m_menuBar, 0);
 		m_rootLayout.addComponent(m_menuBar, 1);
+		m_rootLayout.setExpandRatio(m_menuBar, 0);
 
 		m_contextMenu = commandManager.getContextMenu(m_graphContainer, this);
 		m_contextMenu.setAsContextMenuOf(this);
