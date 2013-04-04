@@ -684,30 +684,34 @@ public class PageSequenceMonitorEnhanced extends AbstractServiceMonitor {
         }
     }
 
-    private static Properties getNodeAssetProperties(NodeDao nodeDao, MonitoredService svc) {
-        Properties assetProperties = new Properties();
-        OnmsNode node = nodeDao.get(svc.getNodeId()); // get the DAO for the node
+	private static Properties getNodeAssetProperties(NodeDao nodeDao, MonitoredService svc) {
+		try {
+			Properties assetProperties = new Properties();
+			OnmsNode node = nodeDao.get(svc.getNodeId()); // get the DAO for the node
 
-        // get all AssetRecord properties
-        final List<String> propertiesToIgnore = Arrays.asList(new String[]{"class"}); // ignore class-property
-        try {
-            @SuppressWarnings("rawtypes")
-			Map propertyMap = PropertyUtils.describe(node.getAssetRecord());
-            for (Object eachPropertyKey : propertyMap.keySet()) {
-                String eachStringPropertyKey = (String) eachPropertyKey;
-                if (propertiesToIgnore.contains(eachStringPropertyKey)) continue;
-                if (propertyMap.get(eachPropertyKey) == null) continue;
-                assetProperties.put("AssetRecord." + eachStringPropertyKey, propertyMap.get(eachPropertyKey));
-            }
-        } catch (IllegalAccessException ex) {
-        	LogUtils.errorf(PageSequenceMonitorEnhanced.class,  ex, "Couldn't get bean information with 'PropertyUtils.describe(node.getAssetRecord)'");
-        } catch (InvocationTargetException ex) {
-        	LogUtils.errorf(PageSequenceMonitorEnhanced.class,  ex, "Couldn't get bean information with 'PropertyUtils.describe(node.getAssetRecord)'");
-        } catch (NoSuchMethodException ex) {
-        	LogUtils.errorf(PageSequenceMonitorEnhanced.class,  ex, "Couldn't get bean information with 'PropertyUtils.describe(node.getAssetRecord)'");
-        }
-        return assetProperties;
-    }
+			// get all AssetRecord properties
+			final List<String> propertiesToIgnore = Arrays.asList(new String[] { "class" }); // ignore class-property
+			try {
+				@SuppressWarnings("rawtypes")
+				Map propertyMap = PropertyUtils.describe(node.getAssetRecord());
+				for (Object eachPropertyKey : propertyMap.keySet()) {
+					String eachStringPropertyKey = (String) eachPropertyKey;
+					if (propertiesToIgnore.contains(eachStringPropertyKey)) continue;
+					if (propertyMap.get(eachPropertyKey) == null) continue;
+					assetProperties.put("AssetRecord." + eachStringPropertyKey, propertyMap.get(eachPropertyKey));
+				}
+			} catch (IllegalAccessException ex) {
+				LogUtils.errorf(PageSequenceMonitorEnhanced.class, ex, "Couldn't get bean information with 'PropertyUtils.describe(node.getAssetRecord)'");
+			} catch (InvocationTargetException ex) {
+				LogUtils.errorf(PageSequenceMonitorEnhanced.class, ex, "Couldn't get bean information with 'PropertyUtils.describe(node.getAssetRecord)'");
+			} catch (NoSuchMethodException ex) {
+				LogUtils.errorf(PageSequenceMonitorEnhanced.class, ex, "Couldn't get bean information with 'PropertyUtils.describe(node.getAssetRecord)'");
+			}
+			return assetProperties;
+		} finally {
+			nodeDao.clear(); // we do not want to cache anything!
+		}
+	}
 
     /**
      * {@inheritDoc}

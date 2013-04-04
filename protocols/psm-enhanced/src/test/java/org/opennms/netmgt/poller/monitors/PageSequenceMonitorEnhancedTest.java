@@ -82,8 +82,8 @@ public class PageSequenceMonitorEnhancedTest {
     }
     
     private NodeDao createDummyNodeDao() {
-    	NodeDao nodeDao = EasyMock.createMock(NodeDao.class);
-        OnmsNode onmsNode = EasyMock.createMock(OnmsNode.class);
+    	NodeDao nodeDao = EasyMock.createNiceMock(NodeDao.class);
+        OnmsNode onmsNode = EasyMock.createNiceMock(OnmsNode.class);
         EasyMock.expect(onmsNode.getAssetRecord()).andReturn(new OnmsAssetRecord()).anyTimes(); 
         EasyMock.expect(nodeDao.get(Integer.valueOf(NODE_ID))).andReturn(onmsNode).anyTimes();
         EasyMock.replay(onmsNode);
@@ -445,18 +445,26 @@ public class PageSequenceMonitorEnhancedTest {
         PollStatus status = m_monitor.poll(getHttpService("localhost"), m_params);
         assertTrue("Expected available but was " + status + ": reason = " + status.getReason(), status.isAvailable());
     }
+    
     @Test
     public void testAssetRecordSubstitution() throws Exception {
     	// Overwrite default behaviour for NodeDao
-    	NodeDao nodeDao = EasyMock.createMock(NodeDao.class);
-        OnmsNode onmsNode = EasyMock.createMock(OnmsNode.class);
+    	NodeDao nodeDao = EasyMock.createNiceMock(NodeDao.class);
+        OnmsNode onmsNode = EasyMock.createNiceMock(OnmsNode.class);
         EasyMock.expect(onmsNode.getAssetRecord()).andReturn(new OnmsAssetRecord() {
         	@Override
         	@Column(name = "comment", length = 1024)
         	public String getComment() {
         		return "ebaystatic.com";
         	}
-        }).anyTimes(); 
+        });
+        EasyMock.expect(onmsNode.getAssetRecord()).andReturn(new OnmsAssetRecord() {
+        	@Override
+        	@Column(name = "comment", length = 1024)
+        	public String getComment() {
+        		return "NOT_AVAILABLE";
+        	}
+        });
         EasyMock.expect(nodeDao.get(Integer.valueOf(NODE_ID))).andReturn(onmsNode).anyTimes();
         EasyMock.replay(onmsNode);
         EasyMock.replay(nodeDao);
@@ -469,5 +477,8 @@ public class PageSequenceMonitorEnhancedTest {
                 + "</page-sequence>\n");
         PollStatus status = m_monitor.poll(getHttpService("localhost"), m_params);
         assertTrue("Expected available but was " + status + ": reason = " + status.getReason(), status.isAvailable());
+        
+        status = m_monitor.poll(getHttpService("localhost"), m_params);
+        assertTrue("Expected unavailable but was " + status + ": reason = " + status.getReason(), status.isUnavailable());
     }
 }
