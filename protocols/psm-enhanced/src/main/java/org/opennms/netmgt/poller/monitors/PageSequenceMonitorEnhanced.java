@@ -39,8 +39,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -111,17 +109,38 @@ public class PageSequenceMonitorEnhanced extends AbstractServiceMonitor {
     private static final int DEFAULT_TIMEOUT = 3000;
     private static final int DEFAULT_RETRY = 0;
     private static final int DEFAULT_SEQUENCE_RETRY = 0;
+    
+    //FIXME: This should be wired with Spring
+    // Make sure that the {@link EmptyKeyRelaxedTrustSSLContext} algorithm
+    // is available to JSSE
+    static {
+        java.security.Security.addProvider(new EmptyKeyRelaxedTrustProvider());
+    }
 
+    /**
+     * The NodeDao is used to get all information from the table "asset" for the node which is provided by the {@link MonitoredService}.
+     */
     private NodeDao s_nodeDao;
     
+    /**
+     * Creates an instance of {@linkplain PageSequenceMonitorEnhanced} and uses the {@link NodeDao} which is provided by the {@link DefaultServiceRegistry}.
+     */
     public PageSequenceMonitorEnhanced() {
     	this (DefaultServiceRegistry.INSTANCE.findProvider(NodeDao.class));
     }
     
+    /**
+     * For Test purposes it is allowed to specify a NodeDao.
+     * @param nodeDao The NodeDao to use. For test purposes only. Should mock the originally Dao.
+     */
     protected PageSequenceMonitorEnhanced(NodeDao nodeDao) {
     	this.s_nodeDao = nodeDao;
     }
     
+    /**
+     * For Test purposes it is allowed to set the NodeDao. 
+     * @param nodeDao The NodeDao to use. For test purposes only.
+     */
     protected void setNodeDao(NodeDao nodeDao) {
     	s_nodeDao = nodeDao;
     }
@@ -157,13 +176,6 @@ public class PageSequenceMonitorEnhanced extends AbstractServiceMonitor {
         public double elapsedTimeInMillis() {
             return m_tracker.elapsedTimeInMillis();
         }
-    }
-
-    //FIXME: This should be wired with Spring
-    // Make sure that the {@link EmptyKeyRelaxedTrustSSLContext} algorithm
-    // is available to JSSE
-    static {
-        java.security.Security.addProvider(new EmptyKeyRelaxedTrustProvider());
     }
 
     public static class PageSequenceMonitorException extends RuntimeException {
@@ -225,14 +237,10 @@ public class PageSequenceMonitorEnhanced extends AbstractServiceMonitor {
             }
 
             for (HttpPage page : getPages()) {
-                if (log().isDebugEnabled()) {
-                    log().debug("Executing HttpPage: " + page.toString());
-                }
+            	LogUtils.debugf(this, "Executing HttpPage: " + page.toString());
                 page.execute(client, svc, m_sequenceProperties);
                 if (page.getDsName() != null) {
-                    if (log().isDebugEnabled()) {
-                        log().debug("Recording response time " + page.getResponseTime() + " for ds " + page.getDsName());
-                    }
+                	LogUtils.debugf(this, "Recording response time " + page.getResponseTime() + " for ds " + page.getDsName());
                     responseTimes.put(page.getDsName(), page.getResponseTime());
                 }
             }
@@ -248,10 +256,6 @@ public class PageSequenceMonitorEnhanced extends AbstractServiceMonitor {
 
         protected void clearSequenceProperties() {
             m_sequenceProperties.clear();
-        }
-
-        private ThreadCategory log() {
-            return ThreadCategory.getInstance(getClass());
         }
     }
 
@@ -386,7 +390,7 @@ public class PageSequenceMonitorEnhanced extends AbstractServiceMonitor {
                     if (streetCred.length == 2) {
                         client.getCredentialsProvider().setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(streetCred[0], streetCred[1]));
                     } else {
-                        log().warn("Illegal value found for username/password HTTP credentials: " + userInfo);
+                    	LogUtils.warnf(this, "Illegal value found for username/password HTTP credentials: " + userInfo);
                     }
                 }
 
@@ -405,18 +409,12 @@ public class PageSequenceMonitorEnhanced extends AbstractServiceMonitor {
                 if (getLocationPattern() != null) {
                     Header locationHeader = response.getFirstHeader("location");
                     if (locationHeader == null) {
-//TODO Markus please replace this old style log checks
-//                        if (log().isDebugEnabled()) {
-//                            log().debug("locationMatch was set, but no Location: header was returned at " + uri, new Exception());
                         LogUtils.debugf(this, "locationMatch was set, but no Location: header was returned at %s", uri);
-//                        }
                         throw new PageSequenceMonitorException("locationMatch was set, but no Location: header was returned at " + uri);
                     }
                     Matcher matcher = getLocationPattern().matcher(locationHeader.getValue());
                     if (!matcher.find()) {
-                        if (log().isDebugEnabled()) {
-                            log().debug("failed to find '" + getLocationPattern() + "' in Location: header at " + uri + ":\n" + locationHeader.getValue(), new Exception());
-                        }
+                        LogUtils.debugf(this, "failed to find '" + getLocationPattern() + "' in Location: header at " + uri + ":\n" + locationHeader.getValue());
                         throw new PageSequenceMonitorException("failed to find '" + getLocationPattern() + "' in Location: header at " + uri);
                     }
                 }
@@ -431,23 +429,18 @@ public class PageSequenceMonitorEnhanced extends AbstractServiceMonitor {
                 if (getSuccessPattern() != null) {
                     Matcher matcher = getSuccessPattern().matcher(responseString);
                     if (!matcher.find()) {
-                        if (log().isDebugEnabled()) {
-                            log().debug("failed to find '" + getSuccessPattern() + "' in page content at " + uri + ":\n" + responseString.trim(), new Exception());
-                        }
+                    	LogUtils.debugf(this, "failed to find '" + getSuccessPattern() + "' in page content at " + uri + ":\n" + responseString.trim());
                         throw new PageSequenceMonitorException("failed to find '" + getSuccessPattern() + "' in page content at " + uri);
                     }
                     updateSequenceProperties(sequenceProperties, matcher);
                 }
 
             } catch (NoSuchAlgorithmException e) {
-                // Should never happen
-                throw new PageSequenceMonitorException("Could not find appropriate SSL context provider: " + e.getMessage(), e);
+                throw new PageSequenceMonitorException("Could not find appropriate SSL context provider: " + e.getMessage(), e); // Should never happen
             } catch (URISyntaxException e) {
                 throw new IllegalArgumentException("unable to construct URL for page: " + e, e);
             } catch (IOException e) {
-                if (log().isDebugEnabled()) {
-                    log().debug("I/O Error " + e, e);
-                }
+                LogUtils.debugf(this, e, "I/O Error " + e);
                 throw new PageSequenceMonitorException("I/O Error " + e, e);
             }
         }
@@ -455,24 +448,13 @@ public class PageSequenceMonitorEnhanced extends AbstractServiceMonitor {
         private List<NameValuePair> expandParms(MonitoredService svc) {
             List<NameValuePair> expandedParms = new ArrayList<NameValuePair>();
             Properties svcProps = getServiceProperties(svc);
-            if (svcProps != null && log().isDebugEnabled()) {
-                log().debug("I have " + svcProps.size() + " service properties.");
-            }
             Properties seqProps = getSequenceProperties();
-            if (seqProps != null && log().isDebugEnabled()) {
-                log().debug("I have " + seqProps.size() + " sequence properties.");
-            }
-            // TODO MVR should we add this again or can we remove it completely?
-//            Properties nodeAssetProps = getNodeAssetProperties(svc);
-//            if (nodeAssetProps != null && log().isDebugEnabled()) {
-//                log().debug("I have " + nodeAssetProps.size() + " nodeAsset properties.");
-//            }
+            LogUtils.debugf(this, "I have " + svcProps.size() + " service properties.");
+            LogUtils.debugf(this, "I have " + seqProps.size() + " sequence properties.");
             for (NameValuePair nvp : m_parms) {
                 String value = PropertiesUtils.substitute((String) nvp.getValue(), svcProps, seqProps);
                 expandedParms.add(new BasicNameValuePair(nvp.getName(), value));
-                if (log().isDebugEnabled() && !nvp.getValue().equals(value)) {
-                    log().debug("Expanded parm with name '" + nvp.getName() + "' from '" + nvp.getValue() + "' to '" + value + "'");
-                }
+                LogUtils.debugf(this, "Expanded parm with name '" + nvp.getName() + "' from '" + nvp.getValue() + "' to '" + value + "'");
             }
             return expandedParms;
         }
@@ -485,9 +467,7 @@ public class PageSequenceMonitorEnhanced extends AbstractServiceMonitor {
                     vbValue = "";
                 }
                 props.put(vbName, vbValue);
-                if (log().isDebugEnabled()) {
-                    log().debug("Just set session variable '" + vbName + "' to '" + vbValue + "'");
-                }
+                LogUtils.debugf(this, "Just set session variable '" + vbName + "' to '" + vbValue + "'");
             }
             setSequenceProperties(props);
         }
@@ -608,10 +588,6 @@ public class PageSequenceMonitorEnhanced extends AbstractServiceMonitor {
         public String getDsName() {
             return m_page.getDsName();
         }
-
-        private ThreadCategory log() {
-            return ThreadCategory.getInstance(getClass());
-        }
     }
 
     public static class PageSequenceMonitorParameters {
@@ -627,12 +603,13 @@ public class PageSequenceMonitorEnhanced extends AbstractServiceMonitor {
             }
             return parms;
         }
+        
         private final Map<String, String> m_parameterMap;
         private final HttpParams m_clientParams;
         private final HttpPageSequence m_pageSequence;
 
         @SuppressWarnings("unchecked")
-        PageSequenceMonitorParameters(NodeDao nodeDao, MonitoredService svc, Map<String, String> parameterMap) {
+        protected PageSequenceMonitorParameters(NodeDao nodeDao, MonitoredService svc, Map<String, String> parameterMap) {
             m_parameterMap = parameterMap;
             String pageSequence = getStringParm("page-sequence", null);
             if (pageSequence == null) {
@@ -648,15 +625,15 @@ public class PageSequenceMonitorEnhanced extends AbstractServiceMonitor {
             m_clientParams = createClientParams();
         }
 
-        Map<String, String> getParameterMap() {
+        protected Map<String, String> getParameterMap() {
             return m_parameterMap;
         }
 
-        HttpPageSequence getPageSequence() {
+        protected HttpPageSequence getPageSequence() {
             return m_pageSequence;
         }
 
-        PageSequence parsePageSequence(String sequenceString) {
+        protected PageSequence parsePageSequence(String sequenceString) {
             try {
                 return CastorUtils.unmarshal(PageSequence.class, new ByteArrayInputStream(sequenceString.getBytes("UTF-8")));
             } catch (MarshalException e) {
@@ -698,7 +675,7 @@ public class PageSequenceMonitorEnhanced extends AbstractServiceMonitor {
             return m_clientParams;
         }
 
-        DefaultHttpClient createHttpClient() {
+        protected DefaultHttpClient createHttpClient() {
             DefaultHttpClient client = new DefaultHttpClient(getClientParams());
 
             client.setHttpRequestRetryHandler(new DefaultHttpRequestRetryHandler(getRetries(), false));
@@ -709,15 +686,13 @@ public class PageSequenceMonitorEnhanced extends AbstractServiceMonitor {
 
     private static Properties getNodeAssetProperties(NodeDao nodeDao, MonitoredService svc) {
         Properties assetProperties = new Properties();
-
-        // get the DAO for the node
-//        s_nodeDao = (NodeDao) BeanUtils.getFactory("daoContext", ClassPathXmlApplicationContext.class).getBean("nodeDao");
-        OnmsNode node = nodeDao.get(svc.getNodeId());
+        OnmsNode node = nodeDao.get(svc.getNodeId()); // get the DAO for the node
 
         // get all AssetRecord properties
-        final List<String> propertiesToIgnore = Arrays.asList(new String[]{"class"});
+        final List<String> propertiesToIgnore = Arrays.asList(new String[]{"class"}); // ignore class-property
         try {
-            Map propertyMap = PropertyUtils.describe(node.getAssetRecord());
+            @SuppressWarnings("rawtypes")
+			Map propertyMap = PropertyUtils.describe(node.getAssetRecord());
             for (Object eachPropertyKey : propertyMap.keySet()) {
                 String eachStringPropertyKey = (String) eachPropertyKey;
                 if (propertiesToIgnore.contains(eachStringPropertyKey)) continue;
@@ -725,14 +700,11 @@ public class PageSequenceMonitorEnhanced extends AbstractServiceMonitor {
                 assetProperties.put("AssetRecord." + eachStringPropertyKey, propertyMap.get(eachPropertyKey));
             }
         } catch (IllegalAccessException ex) {
-            // TODO MVR logging and Exception handling ...
-            Logger.getLogger(PageSequenceMonitorEnhanced.class.getName()).log(Level.SEVERE, null, ex);
+        	LogUtils.errorf(PageSequenceMonitorEnhanced.class,  ex, "Couldn't get bean information with 'PropertyUtils.describe(node.getAssetRecord)'");
         } catch (InvocationTargetException ex) {
-            // TODO MVR logging and Exception handling ...
-            Logger.getLogger(PageSequenceMonitorEnhanced.class.getName()).log(Level.SEVERE, null, ex);
+        	LogUtils.errorf(PageSequenceMonitorEnhanced.class,  ex, "Couldn't get bean information with 'PropertyUtils.describe(node.getAssetRecord)'");
         } catch (NoSuchMethodException ex) {
-            // TODO MVR logging and Exception handling ...
-            Logger.getLogger(PageSequenceMonitorEnhanced.class.getName()).log(Level.SEVERE, null, ex);
+        	LogUtils.errorf(PageSequenceMonitorEnhanced.class,  ex, "Couldn't get bean information with 'PropertyUtils.describe(node.getAssetRecord)'");
         }
         return assetProperties;
     }
@@ -762,19 +734,13 @@ public class PageSequenceMonitorEnhanced extends AbstractServiceMonitor {
                 serviceStatus = PollStatus.available();
                 responseTimes.put("response-time", responseTime);
                 serviceStatus.setProperties(responseTimes);
-
             } catch (PageSequenceMonitorException e) {
                 serviceStatus = PollStatus.unavailable(e.getMessage());
                 serviceStatus.setProperties(responseTimes);
             } catch (IllegalArgumentException e) {
-                log().error("Invalid parameters to monitor: " + e.getMessage(), e);
+            	LogUtils.errorf(this, e, "Invalid parameters to monitor: " + e.getMessage());
                 serviceStatus = PollStatus.unavailable("Invalid parameter to monitor: " + e.getMessage() + ".  See log for details.");
                 serviceStatus.setProperties(responseTimes);
-            } finally {
-                // Do we need to do any cleanup?
-                //if (client != null) {
-                //    client.getHttpConnectionManager().closeIdleConnections(0);
-                //}
             }
         }
 
