@@ -22,6 +22,17 @@
 	</properties>
 
 	<build>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+			</resource>
+			<resource>
+				<directory>src/main/java</directory>
+				<includes>
+					<include>org/opennms/features/vaadin/nodemaps/internal/gwt/public/**</include>
+				</includes>
+			</resource>
+		</resources>
 		<plugins>
 			<!-- Compiles your custom GWT components with the GWT compiler -->
 			<!-- A hosted mode browser for client-side widget debugging can be run 
@@ -51,18 +62,24 @@
 				<executions>
 					<execution>
 						<configuration>
-						  <webappDirectory>${basedir}/target/gwt/VAADIN/widgetsets</webappDirectory>
-						  <noServer>true</noServer>
-                         <!-- Remove draftCompile when project is ready -->
-                         <draftCompile>false</draftCompile>
-                         <compileReport>true</compileReport>
-                         <style>OBF</style>
-                         <strict>false</strict>
+							<webappDirectory>${basedir}/target/gwt/VAADIN/widgetsets</webappDirectory>
+							<noServer>true</noServer>
+							<!-- Remove draftCompile when project is ready -->
+							<draftCompile>false</draftCompile>
+							<!-- <compileReport>true</compileReport> -->
+							<style>OBF</style>
+							<strict>false</strict>
+							<!--
+								This is necessary because ECJ is sneaking into our classpath from the webapp dependencies 
+								and it conflicts with an embedded ECJ inside GWT 2.0+.
+								@see http://code.google.com/p/google-web-toolkit/issues/detail?id=4479
+							-->
+							<gwtSdkFirstInClasspath>true</gwtSdkFirstInClasspath>
 						</configuration>
 						<goals>
-						  <goal>resources</goal>
-						  <goal>update-widgetset</goal>
-						  <goal>compile</goal>
+							<goal>resources</goal>
+							<goal>update-widgetset</goal>
+							<goal>compile</goal>
 						</goals>
 					</execution>
 				</executions>
@@ -148,22 +165,6 @@
 		</pluginManagement>
 	</build>
 
-	<repositories>
-		<repository>
-			<id>vaadin-snapshots</id>
-			<url>http://oss.sonatype.org/content/repositories/vaadin-snapshots/</url>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-			<snapshots>
-			</snapshots>
-		</repository>
-		<repository>
-			<id>vaadin-addons</id>
-			<url>http://maven.vaadin.com/vaadin-addons</url>
-		</repository>
-	</repositories>
-
 	<pluginRepositories>
 		<pluginRepository>
 			<id>codehaus-snapshots</id>
@@ -194,12 +195,12 @@
 			<artifactId>vaadin</artifactId>
 			<type>pom</type>
 		</dependency>
-    <dependency> <!-- Required by pax/vaadin -->
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>servlet-dependencies</artifactId>
-      <type>pom</type>
-      <scope>provided</scope>
-    </dependency>
+		<dependency> <!-- Required by pax/vaadin -->
+			<groupId>org.opennms.dependencies</groupId>
+			<artifactId>servlet-dependencies</artifactId>
+			<type>pom</type>
+			<scope>provided</scope>
+		</dependency>
 
 		<!-- Node Maps Dependencies -->
 

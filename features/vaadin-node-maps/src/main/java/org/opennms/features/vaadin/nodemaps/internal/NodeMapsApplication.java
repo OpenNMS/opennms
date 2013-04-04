@@ -37,6 +37,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.support.TransactionOperations;
 
 import com.github.wolfie.refresher.Refresher;
+import com.vaadin.annotations.JavaScript;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
 import com.vaadin.server.VaadinRequest;
@@ -82,6 +83,16 @@ import com.vaadin.ui.themes.Reindeer;
 @SuppressWarnings("serial")
 @Title("OpenNMS Node Maps")
 @Theme(Reindeer.THEME_NAME)
+@JavaScript({ 
+    //"http://cdn.leafletjs.com/leaflet-0.4.5/leaflet.js"
+    //"http://cdn.leafletjs.com/leaflet-0.4.5/leaflet-src.js"
+    //"http://cdn.leafletjs.com/leaflet-0.5.1/leaflet.js",
+    "http://cdn.leafletjs.com/leaflet-0.5.1/leaflet-src.js",
+    "http://maps.google.com/maps/api/js?sensor=false",
+    "gwt/public/openlayers/OpenLayers.js",
+    "gwt/public/Google.js",
+    "gwt/public/markercluster/leaflet.markercluster.js"
+})
 public class NodeMapsApplication extends UI {
 
     private static final int REFRESH_INTERVAL = 5 * 60 * 1000;
