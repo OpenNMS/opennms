@@ -458,7 +458,19 @@ public class PageSequenceMonitorEnhanced extends AbstractServiceMonitor {
             }
             return expandedParms;
         }
-
+        
+        /**
+         * This method updates a Properties object which lets the user
+         * carry around some matching bits of one page in a sequence
+         * which can be used in subsequent pages in that sequence.
+         * 
+         * For example, we could look in the first page for a successMatch
+         * of "Welcome to the (.*?) web site", then in a subsequent page
+         * have a successMatch of "Thanks for visiting ${1} today".
+         * 
+         * @param props the Properties used to carry around the matches.
+         * @param matcher the Matcher for the current step in the sequence.
+         */
         private void updateSequenceProperties(Properties props, Matcher matcher) {
             for (SessionVariable varBinding : m_page.getSessionVariableCollection()) {
                 String vbName = varBinding.getName();
@@ -592,16 +604,9 @@ public class PageSequenceMonitorEnhanced extends AbstractServiceMonitor {
 
     public static class PageSequenceMonitorParameters {
 
-        public static final String KEY = PageSequenceMonitorParameters.class.getName();
-
         @SuppressWarnings("unchecked")
         static synchronized PageSequenceMonitorParameters get(NodeDao nodeDao, MonitoredService svc, Map paramterMap) {
-            PageSequenceMonitorParameters parms = (PageSequenceMonitorParameters) paramterMap.get(KEY);
-            if (parms == null) {
-                parms = new PageSequenceMonitorParameters(nodeDao, svc, paramterMap);
-                paramterMap.put(KEY, parms);
-            }
-            return parms;
+            return new PageSequenceMonitorParameters(nodeDao, svc, paramterMap);
         }
         
         private final Map<String, String> m_parameterMap;
@@ -685,32 +690,28 @@ public class PageSequenceMonitorEnhanced extends AbstractServiceMonitor {
     }
 
 	private static Properties getNodeAssetProperties(NodeDao nodeDao, MonitoredService svc) {
-		try {
-			Properties assetProperties = new Properties();
-			OnmsNode node = nodeDao.get(svc.getNodeId()); // get the DAO for the node
+		Properties assetProperties = new Properties();
+		OnmsNode node = nodeDao.get(svc.getNodeId()); // get the DAO for the node
 
-			// get all AssetRecord properties
-			final List<String> propertiesToIgnore = Arrays.asList(new String[] { "class" }); // ignore class-property
-			try {
-				@SuppressWarnings("rawtypes")
-				Map propertyMap = PropertyUtils.describe(node.getAssetRecord());
-				for (Object eachPropertyKey : propertyMap.keySet()) {
-					String eachStringPropertyKey = (String) eachPropertyKey;
-					if (propertiesToIgnore.contains(eachStringPropertyKey)) continue;
-					if (propertyMap.get(eachPropertyKey) == null) continue;
-					assetProperties.put("AssetRecord." + eachStringPropertyKey, propertyMap.get(eachPropertyKey));
-				}
-			} catch (IllegalAccessException ex) {
-				LogUtils.errorf(PageSequenceMonitorEnhanced.class, ex, "Couldn't get bean information with 'PropertyUtils.describe(node.getAssetRecord)'");
-			} catch (InvocationTargetException ex) {
-				LogUtils.errorf(PageSequenceMonitorEnhanced.class, ex, "Couldn't get bean information with 'PropertyUtils.describe(node.getAssetRecord)'");
-			} catch (NoSuchMethodException ex) {
-				LogUtils.errorf(PageSequenceMonitorEnhanced.class, ex, "Couldn't get bean information with 'PropertyUtils.describe(node.getAssetRecord)'");
+		// get all AssetRecord properties
+		final List<String> propertiesToIgnore = Arrays.asList(new String[] { "class" }); // ignore class-property
+		try {
+			@SuppressWarnings("rawtypes")
+			Map propertyMap = PropertyUtils.describe(node.getAssetRecord());
+			for (Object eachPropertyKey : propertyMap.keySet()) {
+				String eachStringPropertyKey = (String) eachPropertyKey;
+				if (propertiesToIgnore.contains(eachStringPropertyKey)) continue;
+				if (propertyMap.get(eachPropertyKey) == null) continue;
+				assetProperties.put("AssetRecord." + eachStringPropertyKey, propertyMap.get(eachPropertyKey));
 			}
-			return assetProperties;
-		} finally {
-			nodeDao.clear(); // we do not want to cache anything!
+		} catch (IllegalAccessException ex) {
+			LogUtils.errorf(PageSequenceMonitorEnhanced.class, ex, "Couldn't get bean information with 'PropertyUtils.describe(node.getAssetRecord)'");
+		} catch (InvocationTargetException ex) {
+			LogUtils.errorf(PageSequenceMonitorEnhanced.class, ex, "Couldn't get bean information with 'PropertyUtils.describe(node.getAssetRecord)'");
+		} catch (NoSuchMethodException ex) {
+			LogUtils.errorf(PageSequenceMonitorEnhanced.class, ex, "Couldn't get bean information with 'PropertyUtils.describe(node.getAssetRecord)'");
 		}
+		return assetProperties;
 	}
 
     /**
