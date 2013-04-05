@@ -141,7 +141,7 @@ public class NodeMapsApplication extends Application {
     public void init() {
         m_log.debug("initializing");
 
-        setTheme("topo_default");
+        setTheme("opennms");
 
         final MapWidgetComponent mapPanel = new MapWidgetComponent();
         mapPanel.setNodeDao(m_nodeDao);
