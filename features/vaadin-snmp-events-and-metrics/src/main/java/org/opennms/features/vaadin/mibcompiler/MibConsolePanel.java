@@ -84,7 +84,7 @@ public class MibConsolePanel extends Panel implements Logger {
 
         VerticalLayout layout = new VerticalLayout();
         layout.addComponent(clearButton);
-        ((VerticalLayout) getContent()).setComponentAlignment(clearButton, Alignment.TOP_RIGHT);
+        layout.setComponentAlignment(clearButton, Alignment.TOP_RIGHT);
 
         logContent = new VerticalLayout();
         layout.addComponent(logContent);
