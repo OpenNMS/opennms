@@ -87,11 +87,13 @@ import com.vaadin.ui.themes.Reindeer;
     //"http://cdn.leafletjs.com/leaflet-0.4.5/leaflet.js"
     //"http://cdn.leafletjs.com/leaflet-0.4.5/leaflet-src.js"
     //"http://cdn.leafletjs.com/leaflet-0.5.1/leaflet.js",
+
     "http://cdn.leafletjs.com/leaflet-0.5.1/leaflet-src.js",
-    "http://maps.google.com/maps/api/js?sensor=false",
     "gwt/public/openlayers/OpenLayers.js",
-    "gwt/public/Google.js",
     "gwt/public/markercluster/leaflet.markercluster.js"
+
+    //"http://maps.google.com/maps/api/js?sensor=false&output=embed",
+    //"gwt/public/Google.js",
 })
 public class NodeMapsApplication extends UI {
 

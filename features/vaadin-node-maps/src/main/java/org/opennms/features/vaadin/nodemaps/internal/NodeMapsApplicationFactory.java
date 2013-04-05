@@ -62,17 +62,6 @@ public class NodeMapsApplicationFactory extends AbstractApplicationFactory {
         return NodeMapsApplication.class;
     }
 
-    @Override
-    public List<ScriptTag> getAdditionalScripts() {
-        final List<ScriptTag> tags = new ArrayList<ScriptTag>();
-        tags.add(new ScriptTag("http://maps.google.com/maps/api/js?sensor=false", "text/javascript", null));
-        tags.add(new ScriptTag("openlayers/OpenLayers.js", "text/javascript", null));
-        tags.add(new ScriptTag("Google.js", "text/javascript", null));
-        tags.add(new ScriptTag("markercluster/leaflet.markercluster.js", "text/javascript", null));
-        tags.add(new ScriptTag("libs/leaflet/c1d410f2703f0832618c997225e7360f6a292c58/leaflet-src.js", "text/javascript", null));
-        return tags;
-    }
-
     /**
      * Sets the OpenNMS Node DAO.
      * 

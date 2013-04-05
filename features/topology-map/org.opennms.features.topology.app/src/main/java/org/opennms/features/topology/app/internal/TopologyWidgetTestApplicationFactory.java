@@ -28,13 +28,10 @@
 
 package org.opennms.features.topology.app.internal;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.ops4j.pax.vaadin.AbstractApplicationFactory;
-import org.ops4j.pax.vaadin.ScriptTag;
 import org.osgi.service.blueprint.container.BlueprintContainer;
 
 import com.vaadin.ui.UI;
@@ -58,17 +55,11 @@ public class TopologyWidgetTestApplicationFactory extends AbstractApplicationFac
     public Map<String, String> getAdditionalHeaders() {
         final Map<String,String> headers = new HashMap<String,String>();
         headers.put("X-UA-Compatible", "chrome=1");
+        //headers.put("X-Frame-Options", "ALLOW-FROM http://cdn.leafletjs.com/");
+        //headers.put("X-Frame-Options", "ALLOW-FROM http://maps.google.com/");
         return headers;
     }
 
-    @Override
-    public List<ScriptTag> getAdditionalScripts() {
-        final List<ScriptTag> tags = new ArrayList<ScriptTag>();
-        tags.add(new ScriptTag("http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js", "text/javascript", null));
-        tags.add(new ScriptTag(null, "text/javascript", "CFInstall.check({ mode: \"overlay\" });"));
-        return tags;
-    }
-    
     @Override
     public UI getUI() {
         TopologyWidgetTestApplication application = (TopologyWidgetTestApplication) m_blueprintContainer.getComponentInstance(m_beanName);
