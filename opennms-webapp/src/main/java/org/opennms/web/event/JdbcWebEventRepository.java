@@ -60,8 +60,6 @@ import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
  * <p>JdbcWebEventRepository class.</p>
  *
  * @author ranger
- * @version $Id: $
- * @since 1.8.1
  */
 public class JdbcWebEventRepository implements WebEventRepository, InitializingBean {
     
@@ -136,7 +134,7 @@ public class JdbcWebEventRepository implements WebEventRepository, InitializingB
 
         public Event mapRow(ResultSet rs, int rowNum) throws SQLException {
             Event event = new Event();
-            event.id = new Integer(rs.getInt("eventID"));
+            event.id = Integer.valueOf(rs.getInt("eventID"));
             event.uei = rs.getString("eventUei");
             event.snmp = rs.getString("eventSnmp");
             event.time = new Date((rs.getTimestamp("eventTime")).getTime());
@@ -148,7 +146,7 @@ public class JdbcWebEventRepository implements WebEventRepository, InitializingB
             // node id can be null
             Object element = rs.getObject("nodeID");
             if (element == null) {
-                event.nodeID = new Integer(0);
+                event.nodeID = Integer.valueOf(0);
             } else {
                 event.nodeID = (Integer) element;
             }

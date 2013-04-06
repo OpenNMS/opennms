@@ -671,7 +671,7 @@ public class ManagerDefaultImpl implements Manager {
                 java.util.Map<Integer, Set<Integer>> parent_child = dbManager.getMapsStructure();
                 List<Integer> childList = new ArrayList<Integer>();
 
-                preorderVisit(new Integer(element.getId()), childList,
+                preorderVisit(Integer.valueOf(element.getId()), childList,
                               parent_child);
 
                 for (int i = 0; i < childList.size(); i++) {
@@ -982,21 +982,21 @@ public class ManagerDefaultImpl implements Manager {
         Set<Integer> childSet = new TreeSet<Integer>();
         for (VElement elem : parentMap.getElements().values()) {
             if (elem.getType().equals(MapsConstants.MAP_TYPE)) {
-                childSet.add(new Integer(elem.getId()));
+                childSet.add(Integer.valueOf(elem.getId()));
             }
         }
 
         log.debug("List of sub-maps before preorder visit "
                 + childSet.toString());
 
-        maps.put(new Integer(parentMap.getId()), childSet);
+        maps.put(Integer.valueOf(parentMap.getId()), childSet);
 
         while (childSet.size() > 0) {
             childSet = preorderVisit(childSet, maps);
 
             log.debug("List of sub-maps  " + childSet.toString());
 
-            if (childSet.contains(new Integer(mapId))) {
+            if (childSet.contains(Integer.valueOf(mapId))) {
                 return true;
             }
         }
@@ -1082,7 +1082,7 @@ public class ManagerDefaultImpl implements Manager {
             java.util.Map<Integer, Double> avails) throws MapsException {
     
 
-        if (deletedNodeids.contains(new Integer(ve.getId())) ) {
+        if (deletedNodeids.contains(Integer.valueOf(ve.getId())) ) {
             ve.setAvail(mapsPropertiesFactory.getUndefinedAvail().getMin());
             ve.setStatus(mapsPropertiesFactory.getUnknownStatus().getId());
             ve.setSeverity(mapsPropertiesFactory.getIndeterminateSeverity().getId());
@@ -1095,8 +1095,8 @@ public class ManagerDefaultImpl implements Manager {
         ve.setStatus(mapsPropertiesFactory.getDefaultStatus().getId());
         ve.setSeverity(mapsPropertiesFactory.getDefaultSeverity().getId());
 
-        if (nodesBySource.contains(new Integer(ve.getId()))) {
-            Object id = new Integer(ve.getId());
+        if (nodesBySource.contains(Integer.valueOf(ve.getId()))) {
+            Object id = Integer.valueOf(ve.getId());
             log.debug("refresh: getting status from alternative source "
                             + dataSource.getClass().getName());
             int status = mapsPropertiesFactory.getStatus(dataSource.getStatus(id));
@@ -1123,15 +1123,15 @@ public class ManagerDefaultImpl implements Manager {
             return ve;
         } 
        
-        AlarmInfo oi = outagedNodes.get(new Integer(ve.getId()));
+        AlarmInfo oi = outagedNodes.get(Integer.valueOf(ve.getId()));
         if (oi != null) {
             ve.setStatus(oi.getStatus());
             ve.setSeverity(oi.getSeverity());
         }
         if (mapsPropertiesFactory.isAvailEnabled()
-                && (new Integer(ve.getId()) != null)
-                && (avails.get(new Integer(ve.getId())) != null)) {
-            ve.setAvail(avails.get(new Integer(ve.getId())).doubleValue());
+                && (Integer.valueOf(ve.getId()) != null)
+                && (avails.get(Integer.valueOf(ve.getId())) != null)) {
+            ve.setAvail(avails.get(Integer.valueOf(ve.getId())).doubleValue());
         }
         return ve;
     } 
@@ -1285,7 +1285,7 @@ public class ManagerDefaultImpl implements Manager {
                         + "/" + alarmSeverity);
             }
 
-            AlarmInfo alarminfo = alarmedNodes.get(new Integer(
+            AlarmInfo alarminfo = alarmedNodes.get(Integer.valueOf(
                                                                veleminfo.getId()));
 
             if (alarminfo != null) {
@@ -1298,7 +1298,7 @@ public class ManagerDefaultImpl implements Manager {
                 int curSeverity = alarmSeverity;
                 alarminfo = new AlarmInfo(curStatus, curSeverity);
             }
-            alarmedNodes.put(new Integer(veleminfo.getId()), alarminfo);
+            alarmedNodes.put(Integer.valueOf(veleminfo.getId()), alarminfo);
             if (log.isDebugEnabled()) {
                 log.debug("global element node status/severity "
                         + alarmStatus + "/" + alarmSeverity);
@@ -1560,7 +1560,7 @@ public class ManagerDefaultImpl implements Manager {
             throws MapsException {
         Map<Integer,String> maps = new HashMap<Integer,String>();
         for (VMapInfo mapinfo :mapInfo) {
-            maps.put(new Integer(mapinfo.getId()),mapinfo.getName());
+            maps.put(Integer.valueOf(mapinfo.getId()),mapinfo.getName());
         }
         Map<Integer,String> elemInfoMap = new HashMap<Integer,String>();
         for (VElementInfo elem: elemInfo) {
@@ -1570,7 +1570,7 @@ public class ManagerDefaultImpl implements Manager {
         java.util.Map<String, Set<Integer>> nodelabelMap = new HashMap<String, Set<Integer>>();
         for (int i = 0; i < elems.length; i++) {
             DbElement elem = elems[i];
-            Integer mapId = new Integer(elem.getMapId());
+            Integer mapId = Integer.valueOf(elem.getMapId());
             if (!maps.containsKey(mapId))
                 continue;
 

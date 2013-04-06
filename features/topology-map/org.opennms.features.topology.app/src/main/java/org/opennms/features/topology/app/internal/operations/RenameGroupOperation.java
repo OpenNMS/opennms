@@ -42,6 +42,7 @@ import org.slf4j.LoggerFactory;
 
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
+import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.data.util.PropertysetItem;
 import com.vaadin.data.validator.AbstractValidator;
@@ -83,9 +84,13 @@ public class RenameGroupOperation implements Constants, Operation {
 			public void commit() {
 				// Trim the form value
 				Property<String> field = getField("Group Label");
-				field.setValue(field.getValue().trim());
-				super.commit();
 				String groupLabel = field.getValue();
+				if (groupLabel == null) {
+					throw new InvalidValueException("Group label cannot be null.");
+				}
+				field.setValue(groupLabel.trim());
+				super.commit();
+				groupLabel = field.getValue();
 
 				//Object parentKey = targets.get(0);
 				//Object parentId = graphContainer.getVertexItemIdForVertexKey(parentKey);
@@ -100,7 +105,7 @@ public class RenameGroupOperation implements Constants, Operation {
 						property.setValue(groupLabel);
 
 						// Save the topology
-						graphContainer.getBaseTopology().save(null);
+						graphContainer.getBaseTopology().save();
 
 						graphContainer.redoLayout();
 					}

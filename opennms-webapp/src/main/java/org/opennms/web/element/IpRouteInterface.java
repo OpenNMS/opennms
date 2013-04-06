@@ -28,10 +28,10 @@
 
 package org.opennms.web.element;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.opennms.netmgt.linkd.DbIpRouteInterfaceEntry;
+import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
+import org.opennms.netmgt.model.OnmsIpRouteInterface;
+import org.opennms.netmgt.model.OnmsIpRouteInterface.RouteType;
+import org.opennms.web.api.Util;
 
 
 
@@ -43,28 +43,19 @@ import org.opennms.netmgt.linkd.DbIpRouteInterfaceEntry;
 public class IpRouteInterface
 {
         int     m_nodeId;
-		int     m_routeifindex;
-		int     m_routemetric1;
-		int     m_routemetric2;
-		int     m_routemetric3;
-		int     m_routemetric4;
-		int     m_routemetric5;
-		int     m_routetype;
-		int     m_routeproto;
-        String  m_routedest;
-		String  m_routemask;
-		String  m_routenexthop;
+	int     m_routeifindex;
+	int     m_routemetric1;
+	int     m_routemetric2;
+	int     m_routemetric3;
+	int     m_routemetric4;
+	int     m_routemetric5;
+	String  m_routetype;
+	String  m_routeproto;
+    String  m_routedest;
+	String  m_routemask;
+	String  m_routenexthop;
         String  m_lastPollTime;
-        char    m_status;
-
-        private static final Map<Character, String> statusMap = new HashMap<Character, String>();
-
-        static {
-            statusMap.put( DbIpRouteInterfaceEntry.STATUS_ACTIVE, "Active" );
-            statusMap.put( DbIpRouteInterfaceEntry.STATUS_UNKNOWN, "Unknown" );
-            statusMap.put( DbIpRouteInterfaceEntry.STATUS_DELETED, "Deleted" );
-            statusMap.put( DbIpRouteInterfaceEntry.STATUS_NOT_POLLED, "Not Active" );
-        }
+        String  m_status;
 
         /* package-protected so only the NetworkElementFactory can instantiate */
         IpRouteInterface()
@@ -72,36 +63,22 @@ public class IpRouteInterface
         }
 
         /* package-protected so only the NetworkElementFactory can instantiate */
-        IpRouteInterface(int     nodeId,
-	int     routeifindex,
-	int     routemetric1,
-	int     routemetric2,
-	int     routemetric3,
-	int     routemetric4,
-	int     routemetric5,
-	int     routetype,
-	int     routeproto,
-	String  routedest,
-	String  routemask,
-	String  routenexthop,
-	String  lastPollTime,
-	char    status
-        )
+        IpRouteInterface(OnmsIpRouteInterface iproute)
         {
-            m_nodeId = nodeId;
-            m_routeifindex = routeifindex;
-			m_routemetric1 = routemetric1;
-			m_routemetric2 = routemetric2;
-			m_routemetric3 = routemetric3;
-			m_routemetric4 = routemetric4;
-			m_routemetric5 = routemetric5;
-			m_routetype = routetype;
-			m_routeproto= routeproto;
-			m_routenexthop = routenexthop;
-			m_routedest = routedest;
-			m_routemask = routemask;
-			m_lastPollTime = lastPollTime; 
-            m_status = status;
+            m_nodeId = iproute.getNode().getId();
+            m_routeifindex = iproute.getRouteIfIndex();
+            m_routemetric1 = iproute.getRouteMetric1();
+            m_routemetric2 = iproute.getRouteMetric2();
+            m_routemetric3 = iproute.getRouteMetric3();
+            m_routemetric4 = iproute.getRouteMetric4();
+            m_routemetric5 = iproute.getRouteMetric5();
+            m_routetype = RouteType.getRouteTypeString(iproute.getRouteType().getIntCode());
+            m_routeproto= ElementUtil.getIpRouteProtocolString(iproute.getRouteProto());
+            m_routenexthop = iproute.getRouteNextHop();
+            m_routedest = iproute.getRouteDest();
+            m_routemask = iproute.getRouteMask();
+            m_lastPollTime = Util.formatDateToUIString(iproute.getLastPollTime()); 
+            m_status = StatusType.getStatusString(iproute.getStatus().getCharCode());
         }
 
         /**
@@ -148,7 +125,7 @@ public class IpRouteInterface
 		 *
 		 * @return a char.
 		 */
-		public char get_status() {
+		public String get_status() {
 			return m_status;
 		}
 
@@ -229,7 +206,7 @@ public class IpRouteInterface
 		 *
 		 * @return a int.
 		 */
-		public int get_routeproto() {
+		public String get_routeproto() {
 			return m_routeproto;
 		}
 
@@ -238,7 +215,7 @@ public class IpRouteInterface
 		 *
 		 * @return a int.
 		 */
-		public int get_routetype() {
+		public String get_routetype() {
 			return m_routetype;
 		}
 

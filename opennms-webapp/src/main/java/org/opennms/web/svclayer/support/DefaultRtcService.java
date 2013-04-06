@@ -174,7 +174,7 @@ public class DefaultRtcService implements RtcService, InitializingBean {
         Map<OnmsMonitoredService, Long> map = new HashMap<OnmsMonitoredService, Long>();
         for (OnmsOutage outage : outages) {
             if (map.get(outage.getMonitoredService()) == null) {
-                map.put(outage.getMonitoredService(), new Long(0));
+                map.put(outage.getMonitoredService(), Long.valueOf(0));
             }
             
             Date begin;

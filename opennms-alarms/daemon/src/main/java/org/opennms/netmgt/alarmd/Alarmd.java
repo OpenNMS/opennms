@@ -31,6 +31,7 @@ package org.opennms.netmgt.alarmd;
 import java.util.List;
 import java.util.Map;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 import org.opennms.netmgt.alarmd.api.Northbounder;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
@@ -39,6 +40,7 @@ import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.model.events.annotations.EventHandler;
 import org.opennms.netmgt.model.events.annotations.EventListener;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Parm;
 import org.springframework.beans.factory.DisposableBean;
 
 /**
@@ -65,6 +67,8 @@ public class Alarmd implements SpringServiceDaemon, DisposableBean {
     private AlarmPersister m_persister;
     
     
+    
+    
     //Get all events
     /**
      * <p>onEvent</p>
@@ -73,6 +77,11 @@ public class Alarmd implements SpringServiceDaemon, DisposableBean {
      */
     @EventHandler(uei = EventHandler.ALL_UEIS)
     public void onEvent(Event e) {
+    	
+    	if (e.getUei().equals("uei.opennms.org/internal/reloadDaemonConfig")) {
+    		return;
+    	}
+    	
         OnmsAlarm alarm = m_persister.persist(e);
         
         if (alarm != null) {
@@ -85,7 +94,38 @@ public class Alarmd implements SpringServiceDaemon, DisposableBean {
         
     }
 
-    /**
+    @EventHandler(uei = "uei.opennms.org/internal/reloadDaemonConfig")
+    private void handleReloadEvent(Event e) {
+    	LogUtils.infof(this, "Received reload configuration event: %s", e);
+
+    	//Currently, Alarmd has no configuration... I'm sure this will change soon.
+
+
+    	List<Parm> parmCollection = e.getParmCollection();
+    	for (Parm parm : parmCollection) {
+
+    		String parmName = parm.getParmName();
+    		if("daemonName".equals(parmName)) {
+    			if (parm.getValue() == null || parm.getValue().getContent() == null) {
+    				LogUtils.warnf(this, "The daemonName parameter has no value, ignoring.");
+    				return;
+    			}
+
+    			List<Northbounder> nbis = getNorthboundInterfaces();
+    			for (Northbounder nbi : nbis) {
+    				if (parm.getValue().getContent().contains(nbi.getName())) {
+    					LogUtils.debugf(this, "Handling reload event for NBI: %s", nbi.getName());
+    					LogUtils.debugf(this, "Reloading NBI configuration not yet implemented.", nbi.getName());
+    					return;
+    				}
+    			}
+    		}
+    	}
+    }
+
+
+
+	/**
      * <p>setPersister</p>
      *
      * @param persister a {@link org.opennms.netmgt.alarmd.AlarmPersister} object.

@@ -333,7 +333,7 @@ public abstract class JMXThresholder implements ServiceThresholder {
 
         // Add nodeId as an attribute of the interface for retrieval
         // by the check() method.
-        iface.setAttribute(NODE_ID_KEY, new Integer(nodeId));
+        iface.setAttribute(NODE_ID_KEY, Integer.valueOf(nodeId));
 
         // Debug
         final String hostAddress = InetAddressUtils.str(ipAddr);

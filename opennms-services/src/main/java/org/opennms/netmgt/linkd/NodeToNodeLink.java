@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.linkd;
 
-import java.io.Serializable;
-
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 /**
@@ -38,9 +36,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
  * @version $Id: $
  */
-public class NodeToNodeLink implements Serializable {
-
-    private static final long serialVersionUID = 3345863801030796787L;
+public class NodeToNodeLink {
 
     final int m_nodeId;
     final int m_ifIndex;

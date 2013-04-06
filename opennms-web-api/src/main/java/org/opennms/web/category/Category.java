@@ -207,19 +207,19 @@ public class Category {
     private synchronized long getServiceCount() {
         if (m_serviceCount == null) {
             if (m_rtcCategory == null) {
-                m_serviceCount = new Long(0);
-                m_serviceDownCount = new Long(0);
-                m_servicePercentage = new Double(0);
+                m_serviceCount = Long.valueOf(0);
+                m_serviceDownCount = Long.valueOf(0);
+                m_servicePercentage = Double.valueOf(0);
             } else {
                 long[] counts = getServiceCounts(m_rtcCategory);
 
-                m_serviceCount = new Long(counts[0]);
-                m_serviceDownCount = new Long(counts[1]);
+                m_serviceCount = Long.valueOf(counts[0]);
+                m_serviceDownCount = Long.valueOf(counts[1]);
 
                 if (m_serviceCount.longValue() == 0) {
-                    m_servicePercentage = new Double(100.0);
+                    m_servicePercentage = Double.valueOf(100.0);
                 } else {
-                    m_servicePercentage = new Double(((double) (m_serviceCount.longValue() - m_serviceDownCount.longValue())) / (double) m_serviceCount.longValue() * 100.0);
+                    m_servicePercentage = Double.valueOf(((double) (m_serviceCount.longValue() - m_serviceDownCount.longValue())) / (double) m_serviceCount.longValue() * 100.0);
                 }
             }
         }

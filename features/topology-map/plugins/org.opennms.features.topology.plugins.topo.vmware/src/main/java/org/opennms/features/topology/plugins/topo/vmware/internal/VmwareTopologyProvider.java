@@ -28,18 +28,23 @@
 
 package org.opennms.features.topology.plugins.topo.vmware.internal;
 
-import org.opennms.features.topology.api.topo.*;
-import org.opennms.features.topology.plugins.topo.simple.SimpleGraphProvider;
-import org.opennms.netmgt.dao.IpInterfaceDao;
-import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.model.OnmsIpInterface;
-import org.opennms.netmgt.model.OnmsNode;
-
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import org.opennms.features.topology.api.topo.AbstractVertex;
+import org.opennms.features.topology.api.topo.Edge;
+import org.opennms.features.topology.api.topo.EdgeRef;
+import org.opennms.features.topology.api.topo.GraphProvider;
+import org.opennms.features.topology.api.topo.Vertex;
+import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.plugins.topo.simple.SimpleGraphProvider;
+import org.opennms.netmgt.dao.IpInterfaceDao;
+import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsNode;
 
 public class VmwareTopologyProvider extends SimpleGraphProvider implements GraphProvider {
 

@@ -31,6 +31,10 @@ package org.opennms.web.element;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.opennms.netmgt.model.DataLinkInterface;
+import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
+import org.opennms.web.api.Util;
+
 /**
  * <p>DataLinkInterface class.</p>
  *
@@ -41,46 +45,40 @@ public class LinkInterface
         private final Interface m_iface;
         private final Interface m_linkedInterface;
         private final String  m_lastPollTime;
-        private final char    m_status;
+        private final String  m_status;
         private final Integer m_linktypeid;
         
-		private final Integer m_nodeId;
+	private final Integer m_nodeId;
         private final Integer m_ifindex;
         private final Integer m_linkedNodeId;
         private final Integer m_linkedIfindex;
 
-        private static final Map<Character, String> statusMap = new HashMap<Character, String>();
-
         private static final Map<Integer, String> linktypeMap = new HashMap<Integer, String>();
-        
-        static {
-            statusMap.put( 'A', "Active" );
-            statusMap.put( 'K', "Unknown" );
-            statusMap.put( 'D', "Deleted" );
-            statusMap.put( 'N', "Not Active" );
-            statusMap.put( 'B', "Bad" );
-            statusMap.put( 'G', "Good" );
-        }
-        
-
+                
         static {
         	linktypeMap.put(9999, "Unknown");
         	linktypeMap.put(777, "DWO connection");
         	linktypeMap.put(1777, "Summary Link");        	
         }
 
-        LinkInterface( Integer nodeid, Integer ifindex, Integer linkedNodeid, Integer linkedIfindex, Interface iface, Interface linkedIface, String lastPollTime,
-                char status, Integer linktypeid)
+        LinkInterface( DataLinkInterface dl, boolean isParent, Interface iface, Interface linkedIface)
         {
-        		m_nodeId = nodeid;
-        		m_ifindex = ifindex;
-        		m_linkedNodeId = linkedNodeid;
-        		m_linkedIfindex = linkedIfindex;
-                m_iface = iface;
-                m_linkedInterface = linkedIface;
-			    m_lastPollTime = lastPollTime; 
-                m_status = status;
-                m_linktypeid = linktypeid;                
+        	if (isParent) {
+            	m_nodeId = dl.getNodeParentId();
+            	m_ifindex = dl.getParentIfIndex();
+            	m_linkedNodeId = dl.getNodeId();
+            	m_linkedIfindex = dl.getIfIndex();
+        	} else {
+            	m_nodeId = dl.getNodeId();
+            	m_ifindex = dl.getIfIndex();
+            	m_linkedNodeId = dl.getNodeParentId();
+            	m_linkedIfindex = dl.getParentIfIndex();
+        	}
+            m_iface = iface;
+            m_linkedInterface = linkedIface;
+            m_lastPollTime = Util.formatDateToUIString(dl.getLastPollTime()); 
+            m_status = StatusType.getStatusString(dl.getStatus().getCharCode());
+            m_linktypeid = dl.getLinkTypeId();                
         }
 
 		/**
@@ -128,18 +126,10 @@ public class LinkInterface
 		 *
 		 * @return a char.
 		 */
-		public char getStatus() {
+		public String getStatus() {
 			return m_status;
 		}
-		
-        /**
-         */
-        public String getStatusString() {
-            if (statusMap.containsKey(m_status))
-            	return statusMap.get( new Character(m_status) );
-            return null;
-        }
-        
+		        
         public Integer getLinktypeId() {
         	return m_linktypeid;
         }

@@ -28,8 +28,8 @@
 
 package org.opennms.netmgt.linkd.snmp;
 
-import org.opennms.netmgt.capsd.snmp.NamedSnmpVar;
-import org.opennms.netmgt.capsd.snmp.SnmpStore;
+import org.opennms.netmgt.model.OnmsVlan.VlanStatus;
+import org.opennms.netmgt.model.OnmsVlan.VlanType;
 
 /**
  *<P>The ExtremeNetworkVlanTableEntry class is designed to hold all the MIB-II
@@ -46,8 +46,7 @@ import org.opennms.netmgt.capsd.snmp.SnmpStore;
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213</A>
  * @version $Id: $
  */
-public final class ExtremeNetworkVlanTableEntry extends SnmpStore
-implements VlanCollectorEntry {
+public final class ExtremeNetworkVlanTableEntry extends Vlan {
 
 	// Lookup strings for specific table entries
 	//
@@ -74,15 +73,15 @@ implements VlanCollectorEntry {
 	 * this class.</P>
 	 */
 	public static NamedSnmpVar[] enVlan_elemList = new NamedSnmpVar[] {
-	    new NamedSnmpVar(NamedSnmpVar.SNMPINT32, EXTREME_VLAN_IFINDEX, ".1.3.6.1.4.1.1916.1.2.1.2.1.1", 1),
-	    new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, VLAN_NAME, VLAN_NAME_OID, 2),
-	    new NamedSnmpVar(NamedSnmpVar.SNMPINT32, VLAN_TYPE, ".1.3.6.1.4.1.1916.1.2.1.2.1.3", 3),
-	    new NamedSnmpVar(NamedSnmpVar.SNMPINT32, EXTREME_VLAN_GLOBAL_ID, ".1.3.6.1.4.1.1916.1.2.1.2.1.4", 4),
-	    new NamedSnmpVar(NamedSnmpVar.SNMPINT32, VLAN_STATUS, ".1.3.6.1.4.1.1916.1.2.1.2.1.6", 5),
-	    new NamedSnmpVar(NamedSnmpVar.SNMPINT32, EXTREME_VLAN_IGNORE_STP_FLAG, ".1.3.6.1.4.1.1916.1.2.1.2.1.7", 6),
-	    new NamedSnmpVar(NamedSnmpVar.SNMPINT32, EXTREME_VLAN_IGNORE_BPDU_FLAG, ".1.3.6.1.4.1.1916.1.2.1.2.1.8", 7),
-	    new NamedSnmpVar(NamedSnmpVar.SNMPINT32, EXTREME_VLAN_IFLOOP_MODE_FLAG, ".1.3.6.1.4.1.1916.1.2.1.2.1.9", 8),
-	    new NamedSnmpVar(NamedSnmpVar.SNMPINT32, VLAN_INDEX, VLAN_INDEX_OID, 9)
+//	    new NamedSnmpVar(NamedSnmpVar.SNMPINT32, EXTREME_VLAN_IFINDEX, ".1.3.6.1.4.1.1916.1.2.1.2.1.1", 1),
+	    new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, VLAN_NAME, VLAN_NAME_OID, 1),
+	    new NamedSnmpVar(NamedSnmpVar.SNMPINT32, VLAN_TYPE, ".1.3.6.1.4.1.1916.1.2.1.2.1.3", 2),
+//	    new NamedSnmpVar(NamedSnmpVar.SNMPINT32, EXTREME_VLAN_GLOBAL_ID, ".1.3.6.1.4.1.1916.1.2.1.2.1.4", 4),
+	    new NamedSnmpVar(NamedSnmpVar.SNMPINT32, VLAN_STATUS, ".1.3.6.1.4.1.1916.1.2.1.2.1.6", 3),
+//	    new NamedSnmpVar(NamedSnmpVar.SNMPINT32, EXTREME_VLAN_IGNORE_STP_FLAG, ".1.3.6.1.4.1.1916.1.2.1.2.1.7", 6),
+//	    new NamedSnmpVar(NamedSnmpVar.SNMPINT32, EXTREME_VLAN_IGNORE_BPDU_FLAG, ".1.3.6.1.4.1.1916.1.2.1.2.1.8", 7),
+//	    new NamedSnmpVar(NamedSnmpVar.SNMPINT32, EXTREME_VLAN_IFLOOP_MODE_FLAG, ".1.3.6.1.4.1.1916.1.2.1.2.1.9", 8),
+	    new NamedSnmpVar(NamedSnmpVar.SNMPINT32, VLAN_INDEX, VLAN_INDEX_OID, 4)
 	};
 
 	/**
@@ -105,6 +104,24 @@ implements VlanCollectorEntry {
 	 */
 	public ExtremeNetworkVlanTableEntry() {
 		super(enVlan_elemList);
+	}
+
+	@Override
+	protected boolean hasVlanIndexOid() {
+		return true;
+	}
+
+	@Override
+	public VlanStatus getVlanStatus() {
+		
+		return VlanStatus.get(VlanStatus.ROWSTATUS_STARTING_INDEX + getInt32(VLAN_STATUS));
+	}
+
+	@Override
+	public VlanType getVlanType() {
+		if (getInt32(VLAN_TYPE) == 1)
+			return VlanType.EXTREME_LAYER2;
+		return VlanType.UNKNOWN;		
 	}
 	
 }

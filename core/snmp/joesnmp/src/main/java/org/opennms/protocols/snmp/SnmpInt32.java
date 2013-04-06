@@ -247,6 +247,6 @@ public class SnmpInt32 extends Object implements SnmpSyntax, Cloneable, Serializ
     }
 
     public static Integer toInteger(SnmpInt32 val) {
-        return (val == null ? null : new Integer(val.getValue()));
+        return (val == null ? null : Integer.valueOf(val.getValue()));
     }
 }

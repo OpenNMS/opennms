@@ -53,7 +53,7 @@ public class VMapWidget extends GWTMapWidget implements Paintable {
 
     private ApplicationConnection m_client;
     private String m_uidlId;
-    
+    private boolean m_firstRun = true;
     private Map<String,Icon> m_icons;
 
     public VMapWidget() {
@@ -73,6 +73,10 @@ public class VMapWidget extends GWTMapWidget implements Paintable {
         m_uidlId = uidl.getId();
 
         initializeIcons();
+
+        if (uidl.hasAttribute("initialSearchString")) {
+            setSearchString(uidl.getStringAttribute("initialSearchString"));
+        }
 
         final UIDL nodeUIDL = uidl.getChildByTagName("nodes");
 

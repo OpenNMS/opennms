@@ -31,9 +31,8 @@ package org.opennms.netmgt.linkd;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 import static org.opennms.core.utils.InetAddressUtils.str;
 
-import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
-import java.sql.SQLException;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -54,8 +53,10 @@ import org.opennms.netmgt.config.linkd.Package;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.linkd.scheduler.ReadyRunnable;
 import org.opennms.netmgt.linkd.scheduler.Scheduler;
+import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
+import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -117,6 +118,24 @@ public class Linkd extends AbstractServiceDaemon {
      */
     private volatile EventForwarder m_eventForwarder;
 
+	/**
+	 * <p>getNextHopNet</p>
+	 *
+	 * @return a {@link java.net.InetAddress} object.
+	 */
+	public static InetAddress getNetwork(InetAddress ipaddress, InetAddress netmask) {
+	    final byte[] ipAddress = ipaddress.getAddress();
+		final byte[] netMask = netmask.getAddress();
+		final byte[] netWork = new byte[4];
+
+		for (int i=0;i< 4; i++) {
+			netWork[i] = Integer.valueOf(ipAddress[i] & netMask[i]).byteValue();
+			
+		}
+		return InetAddressUtils.getInetAddress(netWork);
+	}
+	
+
     /**
      * <p>
      * Constructor for Linkd.
@@ -148,13 +167,8 @@ public class Linkd extends AbstractServiceDaemon {
         m_newSuspectEventsIpAddr.add(addr("127.0.0.1"));
         m_newSuspectEventsIpAddr.add(addr("0.0.0.0"));
 
-        try {
-            m_nodes = m_queryMgr.getSnmpNodeList();
-            m_queryMgr.updateDeletedNodes();
-        } catch (SQLException e) {
-            LogUtils.errorf(this, e, "SQL exception executing on database");
-            throw new UndeclaredThrowableException(e);
-        }
+        m_nodes = m_queryMgr.getSnmpNodeList();
+        m_queryMgr.updateDeletedNodes();
 
         Assert.notNull(m_nodes);
         scheduleCollection();
@@ -232,10 +246,6 @@ public class Linkd extends AbstractServiceDaemon {
                                                                    : m_linkdConfig.useCdpDiscovery());
         discoveryLink.setDiscoveryUsingRoutes(pkg.hasUseIpRouteDiscovery() ? pkg.getUseIpRouteDiscovery()
                                                                           : m_linkdConfig.useIpRouteDiscovery());
-        discoveryLink.setEnableDownloadDiscovery(pkg.hasEnableDiscoveryDownload() ? pkg.getEnableDiscoveryDownload()
-                                                                                 : m_linkdConfig.enableDiscoveryDownload());
-        discoveryLink.setForceIpRouteDiscoveryOnEtherNet(pkg.hasForceIpRouteDiscoveryOnEthernet() ? pkg.getForceIpRouteDiscoveryOnEthernet()
-                                                                                                 : m_linkdConfig.forceIpRouteDiscoveryOnEthernet());
         discoveryLink.setDiscoveryUsingLldp(pkg.hasUseLldpDiscovery() ? pkg.getUseLldpDiscovery()
                                                                      : m_linkdConfig.useLldpDiscovery());
         discoveryLink.setDiscoveryUsingOspf(pkg.hasUseOspfDiscovery() ? pkg.getUseOspfDiscovery()
@@ -283,7 +293,7 @@ public class Linkd extends AbstractServiceDaemon {
             coll = new SnmpCollection(
                                       this,
                                       nodeid,
-                                      SnmpPeerFactory.getInstance().getAgentConfig(ipaddr));
+                                      getSnmpAgentConfig(ipaddr));
         } catch (final Throwable t) {
             LogUtils.errorf(this,
                             t,
@@ -293,6 +303,33 @@ public class Linkd extends AbstractServiceDaemon {
         return coll;
     }
 
+    public SnmpAgentConfig getSnmpAgentConfig(InetAddress ipaddr) {
+    	return SnmpPeerFactory.getInstance().getAgentConfig(ipaddr);
+    }
+    
+    public boolean saveRouteTable(String pkgName) {
+    	Package pkg = m_linkdConfig.getPackage(pkgName);
+    	return pkg.hasSaveRouteTable() ? pkg.getSaveRouteTable()
+                : m_linkdConfig.saveRouteTable();
+    }
+    
+    public boolean saveStpNodeTable(String pkgName) {
+    	Package pkg = m_linkdConfig.getPackage(pkgName);
+    	return pkg.hasSaveStpNodeTable() ? pkg.getSaveStpNodeTable()
+                : m_linkdConfig.saveStpNodeTable();
+    }
+
+    public boolean saveStpInterfaceTable(String pkgName) {
+    	Package pkg = m_linkdConfig.getPackage(pkgName);
+    	return pkg.hasSaveStpInterfaceTable() ? pkg.getSaveStpInterfaceTable()
+                : m_linkdConfig.saveStpInterfaceTable();
+    }
+    
+    public boolean forceIpRoutediscoveryOnEthernet(String pkgName) {
+    	Package pkg = m_linkdConfig.getPackage(pkgName);
+    	return pkg.hasForceIpRouteDiscoveryOnEthernet() ? pkg.getForceIpRouteDiscoveryOnEthernet()
+                : m_linkdConfig.forceIpRouteDiscoveryOnEthernet();
+    }
     private void populateSnmpCollection(final SnmpCollection coll,
             final Package pkg, final String sysoid) {
         coll.setPackageName(pkg.getName());
@@ -316,31 +353,21 @@ public class Linkd extends AbstractServiceDaemon {
                                                                  : m_linkdConfig.useCdpDiscovery());
         final boolean useIpRouteDiscovery = (pkg.hasUseIpRouteDiscovery() ? pkg.getUseIpRouteDiscovery()
                                                                          : m_linkdConfig.useIpRouteDiscovery());
-        final boolean saveRouteTable = (pkg.hasSaveRouteTable() ? pkg.getSaveRouteTable()
-                                                               : m_linkdConfig.saveRouteTable());
         final boolean useLldpDiscovery = (pkg.hasUseLldpDiscovery() ? pkg.getUseLldpDiscovery()
                                                                    : m_linkdConfig.useLldpDiscovery());
         final boolean useOspfDiscovery = (pkg.hasUseOspfDiscovery() ? pkg.getUseOspfDiscovery()
                                                                     : m_linkdConfig.useOspfDiscovery());
         final boolean useBridgeDiscovery = (pkg.hasUseBridgeDiscovery() ? pkg.getUseBridgeDiscovery()
                                                                        : m_linkdConfig.useBridgeDiscovery());
-        final boolean saveStpNodeTable = (pkg.hasSaveStpNodeTable() ? pkg.getSaveStpNodeTable()
-                                                                   : m_linkdConfig.saveStpNodeTable());
-        final boolean saveStpInterfaceTable = (pkg.hasSaveStpInterfaceTable() ? pkg.getSaveStpInterfaceTable()
-                                                                             : m_linkdConfig.saveStpInterfaceTable());
-
         coll.setIpRouteClass(ipRouteClassName);
         coll.setInitialSleepTime(initialSleepTime);
         coll.setPollInterval(snmpPollInterval);
         coll.collectCdp(useCdpDiscovery);
-        coll.SaveIpRouteTable(saveRouteTable);
-        coll.collectIpRoute(useIpRouteDiscovery || saveRouteTable);
+        coll.collectIpRoute(useIpRouteDiscovery || saveRouteTable(pkg.getName()));
         coll.collectLldp(useLldpDiscovery);
         coll.collectOspf(useOspfDiscovery);
         coll.collectBridge(useBridgeDiscovery);
-        coll.saveStpNodeTable(saveStpNodeTable);
-        coll.collectStp(useBridgeDiscovery || saveStpNodeTable || saveStpInterfaceTable);
-        coll.saveStpInterfaceTable(saveStpInterfaceTable);
+        coll.collectStp(useBridgeDiscovery || saveStpNodeTable(pkg.getName()) || saveStpInterfaceTable(pkg.getName()));
  
         if ( (pkg.hasEnableVlanDiscovery()  && pkg.getEnableVlanDiscovery()) 
                 || 
@@ -489,21 +516,14 @@ public class Linkd extends AbstractServiceDaemon {
         LogUtils.debugf(this,
                         "scheduleNodeCollection: Loading node %d from database",
                         nodeid);
-        try {
-            node = m_queryMgr.getSnmpNode(nodeid);
-            if (node == null) {
-                LogUtils.warnf(this,
-                               "scheduleNodeCollection: Failed to get linkable node from database with ID %d. Exiting",
-                               nodeid);
-                return false;
-            }
-        } catch (final SQLException sqlE) {
-            LogUtils.errorf(this,
-                            sqlE,
-                            "scheduleNodeCollection: SQL Exception while syncing node object with ID %d with database information.",
-                            nodeid);
+        node = m_queryMgr.getSnmpNode(nodeid);
+        if (node == null) {
+            LogUtils.warnf(this,
+                           "scheduleNodeCollection: Failed to get linkable node from database with ID %d. Exiting",
+                           nodeid);
             return false;
         }
+
         synchronized (m_nodes) {
             LogUtils.debugf(this, "adding node %s to the collection", node);
             m_nodes.add(node);
@@ -513,32 +533,7 @@ public class Linkd extends AbstractServiceDaemon {
         return true;
     }
 
-    public boolean runSingleCollection(final int nodeId) {
-        try {
-            final LinkableNode node = m_queryMgr.getSnmpNode(nodeId);
-
-            for (final SnmpCollection snmpColl : getSnmpCollections(nodeId,
-                                                                    node.getSnmpPrimaryIpAddr(),
-                                                                    node.getSysoid())) {
-                snmpColl.setScheduler(m_scheduler);
-                snmpColl.run();
-
-                final DiscoveryLink link = getDiscoveryLink(snmpColl.getPackageName());
-                link.setScheduler(m_scheduler);
-                link.run();
-            }
-
-            return true;
-        } catch (final SQLException e) {
-            LogUtils.debugf(this,
-                            "runSingleCollection: unable to get linkable node from database with ID %d",
-                            nodeId);
-        }
-        return false;
-    }
-
     public boolean runSingleSnmpCollection(final int nodeId) {
-        try {
             final LinkableNode node = m_queryMgr.getSnmpNode(nodeId);
 
             for (final SnmpCollection snmpColl : getSnmpCollections(nodeId,
@@ -549,28 +544,14 @@ public class Linkd extends AbstractServiceDaemon {
             }
 
             return true;
-        } catch (final SQLException e) {
-            LogUtils.debugf(this,
-                            "runSingleSnmpCollection: unable to get linkable node from database with ID %d",
-                            nodeId);
-        }
-        return false;
     }
 
     public boolean runSingleLinkDiscovery(final String packageName) {
-        try {
-
             final DiscoveryLink link = getDiscoveryLink(packageName);
             link.setScheduler(m_scheduler);
             link.run();
 
             return true;
-        } catch (final Exception e) {
-            LogUtils.debugf(this,
-                            "runSingleLinkDiscovery: got exception %s: ",
-                            e.getLocalizedMessage());
-        }
-        return false;
     }
 
     void wakeUpNodeCollection(int nodeid) {
@@ -596,8 +577,7 @@ public class Linkd extends AbstractServiceDaemon {
                 ReadyRunnable rr = getReadyRunnable(collection);
                 if (rr == null) {
                     LogUtils.warnf(this,
-                                   "wakeUpNodeCollection: found null ReadyRunnable");
-                    return;
+                                   "wakeUpNodeCollection: found null ReadyRunnable for nodeid %d", nodeid);
                 } else {
                     rr.wakeUp();
                 }
@@ -611,13 +591,7 @@ public class Linkd extends AbstractServiceDaemon {
                         "deleteNode: deleting LinkableNode for node %s",
                         nodeid);
 
-        try {
-            m_queryMgr.update(nodeid, QueryManager.ACTION_DELETE);
-        } catch (SQLException sqlE) {
-            LogUtils.errorf(this,
-                            sqlE,
-                            "deleteNode: SQL Exception while syncing node object with database information.");
-        }
+            m_queryMgr.update(nodeid, StatusType.DELETED);
 
         LinkableNode node = removeNode(nodeid);
 
@@ -666,14 +640,9 @@ public class Linkd extends AbstractServiceDaemon {
                         "deleteInterface: marking table entries as deleted for node %d with IP address %s and ifIndex %s",
                         nodeid, ipAddr, (ifIndex > -1 ? "" + ifIndex : "N/A"));
 
-        try {
             m_queryMgr.updateForInterface(nodeid, ipAddr, ifIndex,
-                                          QueryManager.ACTION_DELETE);
-        } catch (SQLException sqlE) {
-            LogUtils.errorf(this, sqlE,
-                            "deleteInterface: SQL Exception while updating database.");
-        }
-
+                                          StatusType.DELETED);
+   
         // database changed need reload packageiplist
         m_linkdConfig.update();
 
@@ -684,14 +653,8 @@ public class Linkd extends AbstractServiceDaemon {
                         "suspendNodeCollection: suspend collection LinkableNode for node %d",
                         nodeid);
 
-        try {
-            m_queryMgr.update(nodeid, QueryManager.ACTION_UPTODATE);
-        } catch (SQLException sqlE) {
-            LogUtils.errorf(this,
-                            sqlE,
-                            "suspendNodeCollection: SQL Exception while syncing node object with database information.");
-        }
-
+            m_queryMgr.update(nodeid, StatusType.INACTIVE);
+   
         LinkableNode node = getNode(nodeid);
 
         if (node == null) {
@@ -705,7 +668,7 @@ public class Linkd extends AbstractServiceDaemon {
                                                                         node.getSnmpPrimaryIpAddr(),
                                                                         node.getSysoid());
             LogUtils.debugf(this,
-                            "suspendNodeCollection: fetched SnmpCollections from scratch, iterating over %d objects to wake them up",
+                            "suspendNodeCollection: fetched SnmpCollections from scratch, iterating over %d objects to suspend them down",
                             collections.size());
             for (SnmpCollection collection : collections) {
                 ReadyRunnable rr = getReadyRunnable(collection);
@@ -754,15 +717,7 @@ public class Linkd extends AbstractServiceDaemon {
         node = new LinkableNode(node.getNodeId(),
                                 node.getSnmpPrimaryIpAddr(), node.getSysoid());
 
-        try {
-            node = m_queryMgr.storeSnmpCollection(node, snmpcoll);
-        } catch (SQLException e) {
-            LogUtils.errorf(this,
-                            e,
-                            "Failed to save on db snmpcollection/package: %s/%s",
-                            snmpcoll.getPackageName(), snmpcoll.getInfo());
-            return;
-        }
+        node = m_queryMgr.storeSnmpCollection(node, snmpcoll);
         if (node != null) {
             synchronized (m_nodes) {
                 m_nodes.add(node);
@@ -779,14 +734,7 @@ public class Linkd extends AbstractServiceDaemon {
      */
     void updateDiscoveryLinkCollection(final DiscoveryLink discover) {
 
-        try {
-            m_queryMgr.storeDiscoveryLink(discover);
-        } catch (SQLException e) {
-            LogUtils.errorf(this,
-                            e,
-                            "Failed to save discoverylink on database for package: %s",
-                            discover.getPackageName());
-        }
+        m_queryMgr.storeDiscoveryLink(discover);
     }
 
     /**
@@ -964,33 +912,42 @@ public class Linkd extends AbstractServiceDaemon {
     }
 
     // Here all the information related to the
-    // mapping between ipaddress and mac address is stored
-    // also the correlated ifindex is found
+    // mapping between ipaddress and mac address are stored
     public void addAtInterface(AtInterface atinterface) {
+    	LogUtils.debugf(this, "addAtInterface: adding at interface %s/%s", atinterface.getIpAddress().getHostAddress(),atinterface.getMacAddress());
         for (String packageName : m_activepackages) {
-            if (isInterfaceInPackage(atinterface.getIpAddress(), packageName)) {
-                List<AtInterface> atis = new ArrayList<AtInterface>();
-                if (!m_macToAtinterface.containsKey(packageName)) {
-                    m_macToAtinterface.put(packageName,
-                                           new HashMap<String, List<AtInterface>>());
-                }
-                if (m_macToAtinterface.get(packageName).containsKey(atinterface.getMacAddress())) {
-                    atis = m_macToAtinterface.get(packageName).get(atinterface.getMacAddress());
-                }
-                boolean add = true;
-                for (AtInterface at : atis) {
-                    if (at.getNodeid() == atinterface.getNodeid()
-                            && at.getIpAddress().equals(atinterface.getIpAddress()))
-                        add = false;
-                }
-                if (add) {
-                    atis.add(atinterface);
-                    m_macToAtinterface.get(packageName).put(atinterface.getMacAddress(),
-                                                            atis);
-                }
-
+        	if (!m_macToAtinterface.containsKey(packageName)) {
+               	LogUtils.debugf(this, "addAtInterface: creating map for package %s.",packageName);
+                               m_macToAtinterface.put(packageName,
+                                       new HashMap<String, List<AtInterface>>());
             }
-
+        	if (!isInterfaceInPackage(atinterface.getIpAddress(), packageName)) {
+            	LogUtils.debugf(this, "addAtInterface: ip %s not in package %s. Skipping", atinterface.getIpAddress().getHostAddress(),packageName);
+            	continue;
+            }
+            List<AtInterface> atis = new ArrayList<AtInterface>();
+            
+            if (m_macToAtinterface.get(packageName).containsKey(atinterface.getMacAddress())) {
+                atis = m_macToAtinterface.get(packageName).get(atinterface.getMacAddress());
+            }
+            boolean add = true;
+            for (AtInterface at : atis) {
+            	LogUtils.debugf(this, "addAtInterface: found ip %s on package %s.", atinterface.getIpAddress().getHostAddress(),packageName);
+            	if (atinterface.equals(at)) {
+                	LogUtils.debugf(this, "addAtInterface: Interface/package %s/%s found not adding.", atinterface.getIpAddress().getHostAddress(),packageName);
+                    add = false;
+            	}
+            }
+            if (add) {
+            	LogUtils.debugf(this, "addAtInterface: add ip/mac/ifindex %s/%s/%d on package %s.", 
+            			atinterface.getIpAddress().getHostAddress(),
+            			atinterface.getMacAddress(),
+            			atinterface.getIfIndex(),
+            			packageName);
+                atis.add(atinterface);
+                m_macToAtinterface.get(packageName).put(atinterface.getMacAddress(),
+                                                        atis);
+            }
         }
 
     }

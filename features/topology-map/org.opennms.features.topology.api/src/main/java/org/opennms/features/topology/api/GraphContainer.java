@@ -33,7 +33,6 @@ import java.util.Collection;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.StatusProvider;
-import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 
 import com.vaadin.data.Property;
@@ -47,8 +46,6 @@ public interface GraphContainer extends DisplayState {
 	GraphProvider getBaseTopology();
 
 	void setBaseTopology(GraphProvider graphProvider);
-
-	Vertex getParent(VertexRef child);
 
 	Criteria getCriteria(String namespace);
 

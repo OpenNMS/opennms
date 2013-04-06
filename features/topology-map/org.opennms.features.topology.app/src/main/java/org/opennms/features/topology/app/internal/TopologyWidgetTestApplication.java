@@ -109,7 +109,6 @@ public class TopologyWidgetTestApplication extends UI implements CommandUpdateLi
 	private WidgetManager m_treeWidgetManager;
 	private Accordion m_treeAccordion;
     private HorizontalSplitPanel m_treeMapSplitPanel;
-    private VerticalSplitPanel m_bottomLayoutBar;
     private final Label m_zoomLevelLabel = new Label("0"); 
     private final HistoryManager m_historyManager;
     private final SelectionManager m_selectionManager;
@@ -259,7 +258,6 @@ public class TopologyWidgetTestApplication extends UI implements CommandUpdateLi
             }
         });
 
-        
         VerticalLayout toolbar = new VerticalLayout();
         toolbar.setWidth("31px");
         toolbar.addComponent(panBtn);
@@ -329,27 +327,22 @@ public class TopologyWidgetTestApplication extends UI implements CommandUpdateLi
      */
     private void updateWidgetView(WidgetManager widgetManager) {
         if (m_layout != null) {
-            if(widgetManager.widgetCount() == 0) {
+            synchronized (m_layout) {
                 m_layout.removeAllComponents();
-                m_layout.addComponent(m_treeMapSplitPanel);
-                m_layout.requestRepaint();
-            } else {
-                if(m_bottomLayoutBar == null) {
-                    m_bottomLayoutBar = new VerticalSplitPanel();
-                    m_bottomLayoutBar.setFirstComponent(m_treeMapSplitPanel);
+                if(widgetManager.widgetCount() == 0) {
+                    m_layout.addComponent(m_treeMapSplitPanel);
+                } else {
+                    VerticalSplitPanel bottomLayoutBar = new VerticalSplitPanel();
+                    bottomLayoutBar.setFirstComponent(m_treeMapSplitPanel);
                     // Split the screen 70% top, 30% bottom
-                    m_bottomLayoutBar.setSplitPosition(70, Unit.PERCENTAGE);
-                    m_bottomLayoutBar.setSizeFull();
-                    m_bottomLayoutBar.setSecondComponent(getTabSheet(widgetManager, this));
+                    bottomLayoutBar.setSplitPosition(70, Unit.PERCENTAGE);
+                    bottomLayoutBar.setSizeFull();
+                    bottomLayoutBar.setSecondComponent(getTabSheet(widgetManager, this));
+                    m_layout.addComponent(bottomLayoutBar);
                 }
-
-                m_layout.removeAllComponents();
-                m_layout.addComponent(m_bottomLayoutBar);
                 m_layout.requestRepaint();
-                
             }
         }
-        
         // TODO: Integrate contextmenu with the Connector/Extension pattern
         if(m_contextMenu != null && m_contextMenu.getParent() == null) {
             //getMainWindow().addComponent(m_contextMenu);

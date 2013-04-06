@@ -28,10 +28,10 @@
 
 package org.opennms.gwt.web.ui.asset.shared;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
-
 import java.util.ArrayList;
 import java.util.Date;
+
+import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
  * @author <a href="mailto:MarkusNeumannMarkus@gmail.com">Markus Neumann</a> </br>
@@ -70,7 +70,9 @@ public class AssetCommand implements IsSerializable {
 
     private ArrayList<String> m_connectionOptions;
 
-    private String m_coordinates;
+    private Float m_longitude;
+    
+    private Float m_latitude;
 
     private String m_country;
 
@@ -268,8 +270,12 @@ public class AssetCommand implements IsSerializable {
         return m_connectionOptions;
     }
 
-    public String getCoordinates() {
-        return m_coordinates;
+    public Float getLongitude() {
+        return m_longitude;
+    }
+
+    public Float getLatitude() {
+        return m_latitude;
     }
 
     public String getCountry() {
@@ -590,8 +596,12 @@ public class AssetCommand implements IsSerializable {
         m_connectionOptions = connectionOptions;
     }
 
-    public void setCoordinates(String coordinates) {
-        m_coordinates = coordinates;
+    public void setLongitude(Float longitude) {
+        m_longitude = longitude;
+    }
+
+    public void setLatitude(Float latitude) {
+        m_latitude = latitude;
     }
 
     public void setCountry(String country) {
@@ -857,11 +867,12 @@ public class AssetCommand implements IsSerializable {
                 + ", m_address2=" + m_address2 + ", m_admin=" + m_admin + ", m_allowModify=" + m_allowModify
                 + ", m_assetNumber=" + m_assetNumber + ", m_autoenable=" + m_autoenable + ", m_autoenableOptions="
                 + m_autoenableOptions + ", m_building=" + m_building + ", m_category=" + m_category + ", m_circuitId="
-                + m_circuitId + ", m_city=" + m_city + ", m_coordinates=" + m_coordinates + ", m_country=" + m_country + ", m_comment=" + m_comment + ", m_connection=" + m_connection
+                + m_circuitId + ", m_city=" + m_city + ", m_longitude=" + m_longitude + ", m_latitude=" + m_latitude
+                + ", m_country=" + m_country + ", m_comment=" + m_comment + ", m_connection=" + m_connection
                 + ", m_connectionOptions=" + m_connectionOptions + ", m_cpu=" + m_cpu + ", m_dateInstalled="
                 + m_dateInstalled + ", m_department=" + m_department + ", m_description=" + m_description
                 + ", m_displayCategory=" + m_displayCategory + ", m_division=" + m_division + ", m_enable=" + m_enable
-                + ", m_floor=" + m_floor + ", m_coordinates=" + m_coordinates + ", m_country=" + m_country
+                + ", m_floor=" + m_floor + ", m_country=" + m_country
                 + ", m_hdd1=" + m_hdd1 + ", m_hdd2=" + m_hdd2 + ", m_hdd3=" + m_hdd3
                 + ", m_hdd4=" + m_hdd4 + ", m_hdd5=" + m_hdd5 + ", m_hdd6=" + m_hdd6 + ", m_id=" + m_id
                 + ", m_inputpower=" + m_inputpower + ", m_lastModifiedBy=" + m_lastModifiedBy + ", m_lastModifiedDate="

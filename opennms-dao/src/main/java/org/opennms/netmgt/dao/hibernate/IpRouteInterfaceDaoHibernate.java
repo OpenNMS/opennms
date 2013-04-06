@@ -28,11 +28,13 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
-import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
 import org.hibernate.criterion.Restrictions;
+
 import org.opennms.netmgt.dao.IpRouteInterfaceDao;
+import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsIpRouteInterface;
 
@@ -49,32 +51,32 @@ public class IpRouteInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpRou
         criteria.add(Restrictions.eq("node.type", "D"));
         
         for (final OnmsIpRouteInterface ipRouteIface : findMatching(criteria)) {
-        	ipRouteIface.setStatus('D');
+        	ipRouteIface.setStatus(StatusType.DELETED);
         	saveOrUpdate(ipRouteIface);
         }
 	}
 
     @Override
-    public void deactivateForNodeIdIfOlderThan(final int nodeid, final Timestamp scanTime) {
+    public void deactivateForNodeIdIfOlderThan(final int nodeid, final Date scanTime) {
         final OnmsCriteria criteria = new OnmsCriteria(OnmsIpRouteInterface.class);
         criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
         criteria.add(Restrictions.eq("node.id", nodeid));
         criteria.add(Restrictions.lt("lastPollTime", scanTime));
-        criteria.add(Restrictions.eq("status", "A"));
+        criteria.add(Restrictions.eq("status", StatusType.ACTIVE));
         
         for (final OnmsIpRouteInterface item : findMatching(criteria)) {
-            item.setStatus('N');
+            item.setStatus(StatusType.INACTIVE);
             saveOrUpdate(item);
         }
     }
 
     @Override
-    public void deleteForNodeIdIfOlderThan(final int nodeid, final Timestamp scanTime) {
+    public void deleteForNodeIdIfOlderThan(final int nodeid, final Date scanTime) {
         final OnmsCriteria criteria = new OnmsCriteria(OnmsIpRouteInterface.class);
         criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
         criteria.add(Restrictions.eq("node.id", nodeid));
         criteria.add(Restrictions.lt("lastPollTime", scanTime));
-        criteria.add(Restrictions.not(Restrictions.eq("status", "A")));
+        criteria.add(Restrictions.not(Restrictions.eq("status", StatusType.ACTIVE)));
         
         for (final OnmsIpRouteInterface item : findMatching(criteria)) {
             delete(item);
@@ -83,7 +85,7 @@ public class IpRouteInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpRou
 
 
     @Override
-    public void setStatusForNode(final Integer nodeid, final Character action) {
+    public void setStatusForNode(final Integer nodeid, final StatusType action) {
         // UPDATE iprouteinterface set status = ? WHERE nodeid = ?
 
         final OnmsCriteria criteria = new OnmsCriteria(OnmsIpRouteInterface.class);
@@ -97,7 +99,7 @@ public class IpRouteInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpRou
     }
 
     @Override
-    public void setStatusForNodeAndIfIndex(final Integer nodeid, final Integer ifIndex, final Character action) {
+    public void setStatusForNodeAndIfIndex(final Integer nodeid, final Integer ifIndex, final StatusType action) {
         // UPDATE iprouteinterface set status = ? WHERE nodeid = ? AND routeifindex = ?
 
         final OnmsCriteria criteria = new OnmsCriteria(OnmsIpRouteInterface.class);

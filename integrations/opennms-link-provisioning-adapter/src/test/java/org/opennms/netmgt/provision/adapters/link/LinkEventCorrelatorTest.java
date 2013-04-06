@@ -48,6 +48,7 @@ import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsLinkState;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.netmgt.model.OnmsLinkState.LinkState;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.provision.adapters.link.endpoint.dao.DefaultEndPointConfigurationDao;
@@ -95,7 +96,7 @@ public class LinkEventCorrelatorTest {
         final OnmsNode node = new OnmsNode(new OnmsDistPoller("localhost", "127.0.0.1"), "pittsboro-2");
         node.setId(2);
         final Collection<DataLinkInterface> dlis = new ArrayList<DataLinkInterface>();
-        m_dataLinkInterface = new DataLinkInterface(node, 1, 1, 1, "U", new Date());
+        m_dataLinkInterface = new DataLinkInterface(node, 1, 1, 1, StatusType.UNKNOWN, new Date());
         dlis.add(m_dataLinkInterface);
         
         expect(m_nodeLinkService.getLinkContainingNodeId(1)).andStubReturn(dlis);

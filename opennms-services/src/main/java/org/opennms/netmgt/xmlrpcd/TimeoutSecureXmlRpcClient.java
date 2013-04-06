@@ -95,7 +95,7 @@ public class TimeoutSecureXmlRpcClient
             String method = args[2];
             Vector<Object> v = new Vector<Object>();
             for (int i=3; i<args.length; i++) try {
-                v.addElement (new Integer (Integer.parseInt (args[i])));
+                v.addElement (Integer.valueOf(Integer.parseInt (args[i])));
             } catch (NumberFormatException nfx) {
                 v.addElement (args[i]);
             }

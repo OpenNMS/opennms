@@ -28,12 +28,13 @@
 
 package org.opennms.gwt.web.ui.asset.shared;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
-import org.opennms.gwt.web.ui.asset.client.tools.fieldsets.FieldSetSuggestBox;
-
 import java.util.Collection;
 import java.util.Set;
 import java.util.TreeSet;
+
+import org.opennms.gwt.web.ui.asset.client.tools.fieldsets.FieldSetSuggestBox;
+
+import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
  * @author <a href="mailto:MarkusNeumannMarkus@gmail.com">Markus Neumann</a>
@@ -58,8 +59,6 @@ public class AssetSuggCommand implements IsSerializable {
     private Set<String> m_circuitId;
 
     private Set<String> m_city;
-
-    private Set<String> m_coordinates;
 
     private Set<String> m_country;
 
@@ -166,7 +165,6 @@ public class AssetSuggCommand implements IsSerializable {
         m_circuitId = new TreeSet<String>();
         m_city = new TreeSet<String>();
         m_cpu = new TreeSet<String>();
-        m_coordinates = new TreeSet<String>();
         m_country = new TreeSet<String>();
         m_department = new TreeSet<String>();
         m_description = new TreeSet<String>();
@@ -260,12 +258,6 @@ public class AssetSuggCommand implements IsSerializable {
     public void addCpu(String cpu) {
         if ((cpu != null) && !"".equals(cpu)) {
             m_cpu.add(cpu);
-        }
-    }
-
-    public void addCoordinates(String coordinates) {
-        if ((coordinates != null) && !"".equals(coordinates)) {
-            m_coordinates.add(coordinates);
         }
     }
 
@@ -535,10 +527,6 @@ public class AssetSuggCommand implements IsSerializable {
         return m_city;
     }
 
-    public Collection<String> getCoordinates() {
-        return m_coordinates;
-    }
-
     public Collection<String> getCountry() {
         return m_country;
     }
@@ -709,7 +697,6 @@ public class AssetSuggCommand implements IsSerializable {
         m_circuitId.add("");
         m_city.add("");
         m_cpu.add("");
-        m_coordinates.add("");
         m_country.add("");
         m_department.add("");
         m_description.add("");

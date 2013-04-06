@@ -28,10 +28,10 @@
 
 package org.opennms.web.element;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.opennms.netmgt.linkd.DbStpInterfaceEntry;
+import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
+import org.opennms.netmgt.model.OnmsStpInterface.StpPortStatus;
+import org.opennms.netmgt.model.OnmsStpInterface;
+import org.opennms.web.api.Util;
 
 
 /**
@@ -44,49 +44,18 @@ public class StpInterface
         int     m_nodeId;
         int     m_bridgeport;
 		int     m_ifindex;
-		int     m_stpportstate;
-		int     m_stpportpathcost;
-		int     m_stpportdesignatedcost;
+		String  m_stpportstate="";
+		String  m_stpportpathcost="";
+		String  m_stpportdesignatedcost="";
 		int     m_stpvlan;
-		String  m_ipaddr;
-		String  m_stpdesignatedroot;
-        String  m_stpdesignatedbridge;
-		String  m_stpdesignatedport;
+		String  m_ipaddr="";
+		String  m_stpdesignatedroot="";
+        String  m_stpdesignatedbridge="";
+		String  m_stpdesignatedport="";
         String  m_lastPollTime;
-        char    m_status;
+        String  m_status;
         int		m_stprootnodeid;
         int		m_stpbridgenodeid;
-
-        /**
-         * <p>String identifiers for the enumeration of values:</p>
-         * <ul>
-         * <li>{@link DbStpInterfaceEntry#STP_PORT_DISABLED}</li>
-         * <li>{@link DbStpInterfaceEntry#STP_PORT_BLOCKING}</li>
-         * <li>{@link DbStpInterfaceEntry#STP_PORT_LISTENING}</li>
-         * <li>{@link DbStpInterfaceEntry#STP_PORT_LEARNING}</li>
-         * <li>{@link DbStpInterfaceEntry#STP_PORT_FORWARDING}</li>
-         * <li>{@link DbStpInterfaceEntry#STP_PORT_BROKEN}</li>
-         * </ul>
-         */ 
-        public static final String[] STP_PORT_STATUS = new String[] {
-            null,         //0 (not a valid index)
-            "Disabled",   //1
-            "Blocking",   //2
-            "Listening",  //3
-            "Learning",   //4
-            "Forwarding", //5
-            "Broken",     //6
-          };
-
-        private static final Map<Character, String> statusMap = new HashMap<Character, String>();
-      	
-        static {
-            statusMap.put( DbStpInterfaceEntry.STATUS_ACTIVE, "Active" );
-            statusMap.put( DbStpInterfaceEntry.STATUS_UNKNOWN, "Unknown" );
-            statusMap.put( DbStpInterfaceEntry.STATUS_DELETED, "Deleted" );
-            statusMap.put( DbStpInterfaceEntry.STATUS_NOT_POLLED, "Not Active" );
-        }
-
 
         /* package-protected so only the NetworkElementFactory can instantiate */
         StpInterface()
@@ -94,36 +63,38 @@ public class StpInterface
         }
 
         /* package-protected so only the NetworkElementFactory can instantiate */
-        StpInterface(        int     nodeId,
-	int     bridgeport,
-	int     ifindex,
-	int     stpportstate,
-	int     stpportpathcost,
-	int     stpportdesignatedcost,
-	int     stpvlan,
-	String  stpdesignatedroot,
-	String  stpdesignatedbridge,
-	String  stpdesignatedport,
-	String  lastPollTime,
-	char    status,
-	int		stprootnodeid,
-	int 	stpbridgenodeid
-)
+        StpInterface(OnmsStpInterface stpinterf)
         {
-                m_nodeId = nodeId;
-                m_bridgeport = bridgeport;
-				m_ifindex = ifindex;
-				m_stpportstate = stpportstate;
-				m_stpportpathcost = stpportpathcost;
-				m_stpportdesignatedcost = stpportdesignatedcost;
-				m_stpvlan = stpvlan;
-                m_stpdesignatedbridge = stpdesignatedbridge;
-                m_stpdesignatedroot = stpdesignatedroot;
-				m_stpdesignatedport = stpdesignatedport;
-				m_lastPollTime = lastPollTime; 
-                m_status = status;
-                m_stprootnodeid = stprootnodeid;
-                m_stpbridgenodeid = stpbridgenodeid;
+                m_nodeId = stpinterf.getNode().getId();
+                m_bridgeport = stpinterf.getBridgePort();
+				m_ifindex = stpinterf.getIfIndex();
+				m_stpvlan = stpinterf.getVlan();
+				m_lastPollTime = Util.formatDateToUIString(stpinterf.getLastPollTime()); 
+                m_status = StatusType.getStatusString(stpinterf.getStatus().getCharCode());
+				if (stpinterf.getStpPortState() != null)
+					m_stpportstate = StpPortStatus.getStpPortStatusString(stpinterf.getStpPortState().getIntCode());
+				if (stpinterf.getStpPortPathCost() != null )
+					m_stpportpathcost = stpinterf.getStpPortPathCost().toString();
+				if (stpinterf.getStpPortDesignatedCost() != null)
+					m_stpportdesignatedcost = stpinterf.getStpPortDesignatedCost().toString();
+				if (stpinterf.getStpPortDesignatedBridge() != null)
+					m_stpdesignatedbridge = stpinterf.getStpPortDesignatedBridge();
+                if (stpinterf.getStpPortDesignatedRoot() != null)
+                	m_stpdesignatedroot = stpinterf.getStpPortDesignatedRoot();
+                if (stpinterf.getStpPortDesignatedPort() != null)
+                	m_stpdesignatedport = stpinterf.getStpPortDesignatedPort();
+        }
+
+        public void setStpRootNodeid(Integer stprootnodeid) {
+        m_stprootnodeid = stprootnodeid;
+        }
+        
+        public void setStpBridgeNodeid(Integer stpbridgenodeid) {
+            m_stpbridgenodeid = stpbridgenodeid;
+        }
+
+        public void setIpAddress(String ipaddr) {
+        	m_ipaddr = ipaddr;
         }
 
         /**
@@ -181,7 +152,7 @@ public class StpInterface
 		 *
 		 * @return a char.
 		 */
-		public char get_status() {
+		public String get_status() {
 			return m_status;
 		}
 
@@ -217,7 +188,7 @@ public class StpInterface
 		 *
 		 * @return a int.
 		 */
-		public int get_stpportdesignatedcost() {
+		public String get_stpportdesignatedcost() {
 			return m_stpportdesignatedcost;
 		}
 
@@ -226,7 +197,7 @@ public class StpInterface
 		 *
 		 * @return a int.
 		 */
-		public int get_stpportpathcost() {
+		public String get_stpportpathcost() {
 			return m_stpportpathcost;
 		}
 
@@ -235,7 +206,7 @@ public class StpInterface
 		 *
 		 * @return a int.
 		 */
-		public int get_stpportstate() {
+		public String get_stpportstate() {
 			return m_stpportstate;
 		}
 
@@ -245,11 +216,7 @@ public class StpInterface
 		 * @return a {@link java.lang.String} object.
 		 */
 		public String getStpPortState() {
-		    try {
-		        return STP_PORT_STATUS[m_stpportstate];
-		    } catch (ArrayIndexOutOfBoundsException e) {
-		        return STP_PORT_STATUS[DbStpInterfaceEntry.STP_PORT_DISABLED];
-		    }
+			return m_stpportstate;
 		}
 			
 		/**
@@ -285,14 +252,6 @@ public class StpInterface
 		public String get_ipaddr() {
 			return m_ipaddr;
 		}
-		/**
-		 * <p>set_ipaddr</p>
-		 *
-		 * @param m_ipaddr The m_ipaddr to set.
-		 */
-		public void set_ipaddr(String m_ipaddr) {
-			this.m_ipaddr = m_ipaddr;
-		}
 		
 	    /**
 	     * <p>getStatusString</p>
@@ -300,7 +259,7 @@ public class StpInterface
 	     * @return a {@link java.lang.String} object.
 	     */
 	    public String getStatusString() {
-	        return statusMap.get( new Character(m_status) );
+	        return m_status;
 	    }
 
 	    /**

@@ -458,7 +458,7 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 	}
 
 	@Override
-	public void save(String filename) {
+	public void save() {
 		// TODO Do nothing?
 	}
 
@@ -729,7 +729,7 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 		}
 
 		@Override
-		public void save(String filename) {
+		public void save() {
 			// Do nothing
 		}
 

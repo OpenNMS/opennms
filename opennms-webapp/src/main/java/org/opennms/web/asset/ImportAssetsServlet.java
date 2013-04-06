@@ -47,6 +47,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.IOUtils;
 import org.opennms.core.resource.Vault;
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.web.api.Util;
@@ -61,17 +62,13 @@ import au.com.bytecode.opencsv.CSVReader;
  *
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski</A>
  * @author <A HREF="mailto:ranger@opennms.org">Benjamin Reed</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- * @version $Id: $
- * @since 1.8.1
  */
 public class ImportAssetsServlet extends HttpServlet {
+    private static final long serialVersionUID = 8282814214167099107L;
     private Logger logger = LoggerFactory.getLogger(ImportAssetsServlet.class.getName());
-    private static final long serialVersionUID = 2L;
     private List<String> errors = new ArrayList<String>();
 
     private class AssetException extends Exception {
-
         private static final long serialVersionUID = 2498335935646001342L;
 
         public AssetException(String message) {
@@ -131,7 +128,7 @@ public class ImportAssetsServlet extends HttpServlet {
                 asset.setUserLastModified(request.getRemoteUser());
                 asset.setLastModifiedDate(new Date());
 
-                if (nodesWithAssets.contains(new Integer(asset.getNodeId()))) {
+                if (nodesWithAssets.contains(Integer.valueOf(asset.getNodeId()))) {
                     logger.debug("modifyAsset call for asset:'{}'", asset);
                     this.model.modifyAsset(asset);
                 } else {
@@ -180,7 +177,8 @@ public class ImportAssetsServlet extends HttpServlet {
      * @throws org.opennms.web.asset.ImportAssetsServlet$AssetException if any.
      */
     public List<Asset> decodeAssetsText(String text) throws AssetException {
-        CSVReader reader = new CSVReader(new StringReader(text));
+        CSVReader csvReader = null;
+        StringReader stringReader = null;
         String[] line;
         List<Asset> list = new ArrayList<Asset>();
         text = text.trim();
@@ -188,22 +186,25 @@ public class ImportAssetsServlet extends HttpServlet {
         int count = 0;
 
         try {
-            while ((line = reader.readNext()) != null) {
+            stringReader = new StringReader(text);
+            csvReader = new CSVReader(stringReader);
+
+            while ((line = csvReader.readNext()) != null) {
                 count++;
                 try {
-                    logger.debug("asset line is:'{}'", line);
-                    if (line.length != 59) {
-                        logger.error("csv test row length was not 58 line length: '{}' line was:'{}', line length", line.length, line);
+                    logger.debug("asset line is:'{}'", (Object)line);
+                    if (line.length <= 37) {
+                        logger.error("csv test row length was not at least 37 line length: '{}' line was:'{}', line length", line.length, line);
                         throw new NoSuchElementException();
                     }
 
                     // skip the first line if it's the headers
                     if (line[0].equals("Node Label")) {
-                        logger.debug("line was header. line:'{}'", line);
+                        logger.debug("line was header. line:'{}'", (Object)line);
                         continue;
                     }
                     
-                    Asset asset = new Asset();
+                    final Asset asset = new Asset();
 
                     asset.setNodeId(WebSecurityUtils.safeParseInt(line[1]));
                     asset.setCategory(Util.decode(line[2]));
@@ -241,35 +242,45 @@ public class ImportAssetsServlet extends HttpServlet {
                     asset.setDisplayCategory(Util.decode(line[34]));
                     asset.setNotifyCategory(Util.decode(line[35]));
                     asset.setPollerCategory(Util.decode(line[36]));
-                    asset.setThresholdCategory(Util.decode(line[37]));
-                    asset.setUsername(Util.decode(line[38]));
-                    asset.setPassword(Util.decode(line[39]));
-                    asset.setEnable(Util.decode(line[40]));
-                    asset.setConnection(Util.decode(line[41]));
-                    asset.setAutoenable(Util.decode(line[42]));
-                    asset.setComments(Util.decode(line[43]));
                     
-                    asset.setCpu(Util.decode(line[44]));
-                    asset.setRam(Util.decode(line[45]));                   
-                    asset.setStoragectrl(Util.decode(line[46]));
-                    
-                    asset.setHdd1(Util.decode(line[47]));
-                    asset.setHdd2(Util.decode(line[48]));
-                    asset.setHdd3(Util.decode(line[49]));
-                    asset.setHdd4(Util.decode(line[50]));
-                    asset.setHdd5(Util.decode(line[51]));
-                    asset.setHdd6(Util.decode(line[52]));
+                    if (line.length > 37) {
+                        asset.setThresholdCategory(Util.decode(line[37]));
+                        asset.setUsername(Util.decode(line[38]));
+                        asset.setPassword(Util.decode(line[39]));
+                        asset.setEnable(Util.decode(line[40]));
+                        asset.setConnection(Util.decode(line[41]));
+                        asset.setAutoenable(Util.decode(line[42]));
+                        asset.setComments(Util.decode(line[43]));
+                    }
 
-                    asset.setNumpowersupplies(Util.decode(line[53]));
-                    asset.setInputpower(Util.decode(line[54]));
+                    if (line.length > 44) {
+                        asset.setCpu(Util.decode(line[44]));
+                        asset.setRam(Util.decode(line[45]));
+                        asset.setStoragectrl(Util.decode(line[46]));
+                        asset.setHdd1(Util.decode(line[47]));
+                        asset.setHdd2(Util.decode(line[48]));
+                        asset.setHdd3(Util.decode(line[49]));
+                        asset.setHdd4(Util.decode(line[50]));
+                        asset.setHdd5(Util.decode(line[51]));
+                        asset.setHdd6(Util.decode(line[52]));
+    
+                        asset.setNumpowersupplies(Util.decode(line[53]));
+                        asset.setInputpower(Util.decode(line[54]));
+    
+                        asset.setAdditionalhardware(Util.decode(line[55]));
+                        asset.setAdmin(Util.decode(line[56]));
+                        asset.setSnmpcommunity(Util.decode(line[57]));
+                        asset.setRackunitheight(Util.decode(line[58]));
+                    }
 
-                    asset.setAdditionalhardware(Util.decode(line[55]));
-                    asset.setAdmin(Util.decode(line[56]));
-                    asset.setSnmpcommunity(Util.decode(line[57]));
-                    asset.setRackunitheight(Util.decode(line[58]));
-            
+                    if (line.length > 59) {
+                        asset.setCountry(Util.decode(line[59]));
+                        asset.setLongitude(Util.decode(line[60]));
+                        asset.setLatitude(Util.decode(line[61]));
+                    }
+
                     list.add(asset);
-                    logger.debug("decoded asset:'{}'", asset);
+                    logger.debug("decoded asset:'{}'", (Object)asset);
 
                 } catch (NoSuchElementException e) {
                     errors.add("Ignoring malformed import for entry " + count + ", not enough values.");
@@ -281,6 +292,9 @@ public class ImportAssetsServlet extends HttpServlet {
         } catch (IOException e) {
             logger.error("An error occurred reading the CSV input. Message:'{}'", e.getMessage());
             throw new AssetException("An error occurred reading the CSV input.", e);
+        } finally {
+            IOUtils.closeQuietly(stringReader);
+            IOUtils.closeQuietly(csvReader);
         }
 
         if (list.size() == 0) {
@@ -306,7 +320,7 @@ public class ImportAssetsServlet extends HttpServlet {
             ResultSet rs = stmt.executeQuery("SELECT NODEID FROM ASSETS");
 
             while (rs.next()) {
-                list.add(new Integer(rs.getInt("NODEID")));
+                list.add(Integer.valueOf(rs.getInt("NODEID")));
             }
 
             rs.close();

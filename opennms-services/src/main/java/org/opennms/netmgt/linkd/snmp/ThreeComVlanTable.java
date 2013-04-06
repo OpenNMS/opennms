@@ -30,7 +30,6 @@ package org.opennms.netmgt.linkd.snmp;
 
 import java.net.InetAddress;
 
-import org.opennms.netmgt.capsd.snmp.SnmpTable;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 
@@ -46,7 +45,7 @@ import org.opennms.netmgt.snmp.SnmpObjId;
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213 </A>
  * @version $Id: $
  */
-public class ThreeComVlanTable extends SnmpTable<ThreeComVlanTableEntry> {
+public class ThreeComVlanTable extends VlanTableBasic {
 
 	/**
 	 * <p>Constructor for ThreeComVlanTable.</p>
@@ -61,6 +60,6 @@ public class ThreeComVlanTable extends SnmpTable<ThreeComVlanTableEntry> {
     protected ThreeComVlanTableEntry createTableEntry(SnmpObjId base, SnmpInstId inst, Object val) {
         return new ThreeComVlanTableEntry();
     }
-
+    
 }
 

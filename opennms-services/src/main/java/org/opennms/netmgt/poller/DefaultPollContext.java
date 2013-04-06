@@ -382,11 +382,11 @@ public class DefaultPollContext implements PollContext, EventListener {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put(
                 "retry",
-                new Long(
+                Long.valueOf(
                          OpennmsServerConfigFactory.getInstance().getDefaultCriticalPathRetries()));
         map.put(
                 "timeout",
-                new Long(
+                Long.valueOf(
                          OpennmsServerConfigFactory.getInstance().getDefaultCriticalPathTimeout()));
 
         result = p.isProtocolSupported(addr, map);

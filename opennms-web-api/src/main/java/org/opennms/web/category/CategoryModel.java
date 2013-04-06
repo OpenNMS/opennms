@@ -354,7 +354,7 @@ public class CategoryModel extends Object {
             while (rs.next()) {
             	nodeid = rs.getInt(1);
                 avail = rs.getDouble(2);
-                retMap.put(new Integer(nodeid), new Double(avail));
+                retMap.put(Integer.valueOf(nodeid), Double.valueOf(avail));
             }
         } catch (final SQLException e) {
             LogUtils.warnf(this, e, "Failed to get node availability for nodeIds %s", nodeIds);

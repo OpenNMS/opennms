@@ -414,7 +414,7 @@ abstract public class InetAddressUtils {
                 return false;
             } else {
                 // Compare the IPv6 scope IDs
-                return new Integer(((Inet6Address)addr1).getScopeId()).compareTo(((Inet6Address)addr2).getScopeId()) == 0;
+                return Integer.valueOf(((Inet6Address)addr1).getScopeId()).compareTo(((Inet6Address)addr2).getScopeId()) == 0;
             }
         }
     }

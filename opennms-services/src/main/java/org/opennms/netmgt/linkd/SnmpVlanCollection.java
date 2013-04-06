@@ -56,7 +56,9 @@ import org.opennms.netmgt.snmp.SnmpWalker;
  * @author <a href="http://www.opennms.org">OpenNMS </a>
  *  
  */
-final class SnmpVlanCollection implements ReadyRunnable {
+public final class SnmpVlanCollection implements ReadyRunnable {
+	private String m_packageName;
+	
 	/**
 	 * The SnmpPeer object used to communicate via SNMP with the remote host.
 	 */
@@ -161,7 +163,7 @@ final class SnmpVlanCollection implements ReadyRunnable {
 	 * Returns true if the dot1DBridge table was collected.
 	 */
 	boolean hasDot1dBase() {
-		return (m_dot1dBase != null && !m_dot1dBase.failed());
+		return (m_dot1dBase != null && !m_dot1dBase.failed() && m_dot1dBase.getBridgeAddress() != null);
 	}
 
 	/**
@@ -175,7 +177,7 @@ final class SnmpVlanCollection implements ReadyRunnable {
 	 * Returns true if the dot1DBridge table was collected.
 	 */
 	boolean hasDot1dBasePortTable() {
-		return (m_dot1dBaseTable != null && !m_dot1dBaseTable.failed());
+		return (m_dot1dBaseTable != null && !m_dot1dBaseTable.failed() && !m_dot1dBaseTable.isEmpty());
 	}
 
 	/**
@@ -189,7 +191,7 @@ final class SnmpVlanCollection implements ReadyRunnable {
 	 * Returns true if the dot1DStp info was collected.
 	 */
 	boolean hasDot1dStp() {
-		return (m_dot1dStp != null && !m_dot1dStp.failed());
+		return (m_dot1dStp != null && !m_dot1dStp.failed() && m_dot1dStp.getStpDesignatedRoot() != null);
 	}
 
 	/**
@@ -203,7 +205,7 @@ final class SnmpVlanCollection implements ReadyRunnable {
 	 * Returns true if the dot1DStpPortTable info was collected.
 	 */
 	boolean hasDot1dStpPortTable() {
-		return (m_dot1dStpTable != null && !m_dot1dStpTable.failed());
+		return (m_dot1dStpTable != null && !m_dot1dStpTable.failed() && !m_dot1dStpTable.isEmpty());
 	}
 
 	/**
@@ -217,7 +219,7 @@ final class SnmpVlanCollection implements ReadyRunnable {
 	 * Returns true if the dot1DStpPortTable info was collected.
 	 */
 	boolean hasDot1dTpFdbTable() {
-		return (m_dot1dTpFdbTable != null && !m_dot1dTpFdbTable.failed());
+		return (m_dot1dTpFdbTable != null && !m_dot1dTpFdbTable.failed() && !m_dot1dTpFdbTable.isEmpty());
 	}
 
 	/**
@@ -231,7 +233,7 @@ final class SnmpVlanCollection implements ReadyRunnable {
 	 * Returns true if the dot1DStpPortTable info was collected.
 	 */
 	boolean hasQBridgeDot1dTpFdbTable() {
-		return (m_dot1qTpFdbTable!= null && !m_dot1qTpFdbTable.failed());
+		return (m_dot1qTpFdbTable!= null && !m_dot1qTpFdbTable.failed() && !m_dot1qTpFdbTable.isEmpty());
 	}
 
 	/**
@@ -363,5 +365,13 @@ final class SnmpVlanCollection implements ReadyRunnable {
 	        .append("dot1dTpFdbTable", m_dot1dTpFdbTable)
 	        .append("dot1qTpFdbTable", m_dot1qTpFdbTable)
 	        .toString();
+	}
+
+	public void setPackageName(String packageName) {
+		m_packageName = packageName;
+	}
+	
+	public String getPackageName() {
+		return m_packageName;
 	}
 }

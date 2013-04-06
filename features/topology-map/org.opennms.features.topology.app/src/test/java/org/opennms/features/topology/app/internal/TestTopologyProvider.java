@@ -59,7 +59,7 @@ public class TestTopologyProvider extends AbstractTopologyProvider implements Gr
     }
 
     @Override
-    public void save(String filename) {
+    public void save() {
         // Do nothing
     }
 

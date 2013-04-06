@@ -32,7 +32,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.features.geocoder.Coordinates;
 import org.opennms.features.geocoder.GeocoderException;
 import org.opennms.features.geocoder.GeocoderService;
@@ -41,6 +40,7 @@ import org.opennms.netmgt.dao.AssetRecordDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsCategory;
+import org.opennms.netmgt.model.OnmsGeolocation;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.slf4j.Logger;
@@ -50,7 +50,6 @@ import org.springframework.transaction.support.TransactionOperations;
 import com.vaadin.server.PaintException;
 import com.vaadin.server.PaintTarget;
 import com.vaadin.ui.VerticalLayout;
-
 
 public class MapWidgetComponent extends VerticalLayout {
     private static final String[] EMPTY_STRING_ARRAY = new String[]{};
@@ -73,15 +72,9 @@ public class MapWidgetComponent extends VerticalLayout {
         public NodeEntry(final OnmsNode node) {
             final OnmsAssetRecord assetRecord = node.getAssetRecord();
             if (assetRecord != null && assetRecord.getGeolocation() != null) {
-                final String coordinateString = assetRecord.getGeolocation().getCoordinates();
-                final Coordinates coordinates;
-                try {
-                    coordinates = new Coordinates(coordinateString);
-                    m_longitude = coordinates.getLongitude();
-                    m_latitude  = coordinates.getLatitude();
-                } catch (final GeocoderException e) {
-                    LogUtils.debugf(this, "failed to parse coordinates: %s", coordinateString);
-                }
+                final OnmsGeolocation geolocation = assetRecord.getGeolocation();
+                m_longitude = geolocation.getLongitude();
+                m_latitude  = geolocation.getLatitude();
             }
 
             m_nodeId        = node.getId();
@@ -142,9 +135,7 @@ public class MapWidgetComponent extends VerticalLayout {
         }
     }
 
-    private static final String BAD_COORDINATES = Integer.MIN_VALUE + "," + Integer.MIN_VALUE;
-
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
 
     private NodeDao m_nodeDao;
     private AssetRecordDao m_assetDao;
@@ -156,7 +147,7 @@ public class MapWidgetComponent extends VerticalLayout {
 
     private TransactionOperations m_transactionOperations;
 
-    private int singleNodeId = 0;
+    private String m_searchString;
 
     public MapWidgetComponent() {
     }
@@ -179,9 +170,6 @@ public class MapWidgetComponent extends VerticalLayout {
 //        cb.alias("assetRecord", "asset");
 //        cb.orderBy("id").asc();
 //
-//        if (singleNodeId > 0)
-//            cb.eq("id", singleNodeId);
-//
 //        final Map<Integer,NodeEntry> nodes = new HashMap<Integer,NodeEntry>();
 //        final List<OnmsAssetRecord> updatedAssets = new ArrayList<OnmsAssetRecord>();
 //
@@ -191,23 +179,41 @@ public class MapWidgetComponent extends VerticalLayout {
 //            final OnmsAssetRecord assets = node.getAssetRecord();
 //            if (assets != null && assets.getGeolocation() != null) {
 //                final OnmsGeolocation geolocation = assets.getGeolocation();
-//
 //                final String addressString = geolocation.asAddressString();
-//                if (addressString != null && !"".equals(addressString)) {
-//                    final String coordinateString = geolocation.getCoordinates();
-//                    if (coordinateString == null || "".equals(coordinateString)) {
-//                        m_log.debug("Node {} has an asset record with address \"{}\", but no coordinates.", new Object[] { node.getId(), addressString });
-//                        final String coordinates = getCoordinates(addressString);
-//                        geolocation.setCoordinates(coordinates);
-//                        updatedAssets.add(assets);
-//                    }
-//                    if (BAD_COORDINATES.equals(geolocation.getCoordinates())) {
-//                        m_log.debug("Node {} has an asset record with address, but we were unable to find valid coordinates.", node.getId());
+//
+//                final Float longitude = geolocation.getLongitude();
+//                final Float latitude = geolocation.getLatitude();
+//
+//                if (longitude != null && latitude != null) {
+//                    if (longitude == Float.NEGATIVE_INFINITY || latitude == Float.NEGATIVE_INFINITY) {
+//                        // we've already cached it as bad, skip it
+//                        continue;
+//                    } else {
+//                        // we've already got good coordinates, return the node
+//                        nodes.put(node.getId(), new NodeEntry(node));
 //                        continue;
 //                    }
+//                } else if (addressString == null || "".equals(addressString)) {
+//                    // no real address info, skip it
+//                    continue;
+//                } else {
+//                    m_log.debug("Node {} has an asset record with address \"{}\", but no coordinates.", new Object[] { node.getId(), addressString });
+//                    final Coordinates coordinates = getCoordinates(addressString);
+//                    geolocation.setLongitude(coordinates.getLongitude());
+//                    geolocation.setLatitude(coordinates.getLatitude());
+//                    updatedAssets.add(assets);
 //
-//                    nodes.put(node.getId(), new NodeEntry(node));
+//                    if (coordinates.getLongitude() == Float.NEGATIVE_INFINITY || coordinates.getLatitude() == Float.NEGATIVE_INFINITY) {
+//                        // we got bad coordinates
+//                        m_log.debug("Node {} has an asset record with address, but we were unable to find valid coordinates.", node.getId());
+//                        continue;
+//                    } else {
+//                        // valid coordinates, add to the list
+//                        nodes.put(node.getId(), new NodeEntry(node));
+//                    }
 //                }
+//            } else {
+//                // no asset information
 //            }
 //        }
 //
@@ -247,6 +253,8 @@ public class MapWidgetComponent extends VerticalLayout {
 //        }
 //
 //        m_log.debug("pushing nodes to the UI");
+//        if (m_searchString != null) target.addAttribute("initialSearchString", m_searchString);
+//
 //        target.startTag("nodes");
 //        for (final NodeEntry node : nodes.values()) {
 //            node.visit(target);
@@ -267,16 +275,19 @@ public class MapWidgetComponent extends VerticalLayout {
     /**
      * Given an address, return the coordinates for that address.
      * @param address the complete address, in a format a geolocator can understand
-     * @return the coordinates for the given address, in "longitude,latitude" format
+     * @return the coordinates for the given address
      */
-    private String getCoordinates(final String address) {
+    private Coordinates getCoordinates(final String address) {
+        Coordinates coordinates = null;
         try {
-            final Coordinates coordinates = m_geocoderService.getCoordinates(address);
-            return coordinates.getLongitude() + "," + coordinates.getLatitude();
+            coordinates = m_geocoderService.getCoordinates(address);
         } catch (final GeocoderException e) {
-            m_log.debug("Failed to find coordinates for address {}, returning {}", address, BAD_COORDINATES);
-            return BAD_COORDINATES;
+            m_log.debug("Failed to find coordinates for address {}", address);
         }
+        if (coordinates == null) {
+            coordinates = new Coordinates(Float.NEGATIVE_INFINITY, Float.NEGATIVE_INFINITY);
+        }
+        return coordinates;
     }
 
     public void setNodeDao(final NodeDao nodeDao) {
@@ -299,7 +310,7 @@ public class MapWidgetComponent extends VerticalLayout {
         m_transactionOperations = tx;
     }
 
-    public void setSingleNodeId(int nodeId) {
-        this.singleNodeId = nodeId;
+    public void setSearchString(final String searchString) {
+        m_searchString = searchString;
     }
 }

@@ -67,7 +67,7 @@ public class InetAddressComparator implements Comparator<InetAddress> {
                         return 1;
                     } else {
                         // Two Inet6Address instances
-                        int scopeComparison = new Integer(((Inet6Address)addr1).getScopeId()).compareTo(((Inet6Address)addr2).getScopeId());
+                        int scopeComparison = Integer.valueOf(((Inet6Address)addr1).getScopeId()).compareTo(((Inet6Address)addr2).getScopeId());
                         if (scopeComparison == 0) {
                             // If the scope IDs are identical, then compare the addresses
                             return new ByteArrayComparator().compare(addr1.getAddress(), addr2.getAddress());

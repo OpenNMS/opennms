@@ -140,8 +140,9 @@ public class OnmsOSGiBridgeActivator implements RegistrationHook, ServiceListene
 	}
 	
 	private void registerWithOnmsRegistry(ServiceReference<?> reference) {
-				
-		// skip this service if this should not be exported
+	        System.err.println("registerWithOnmsRegistry: " + reference.getBundle());
+
+	        // skip this service if this should not be exported
 		if (!isOnmsExported(reference)) return;
 		
 		// skip this service if its came from the opennms registry originally
@@ -149,7 +150,6 @@ public class OnmsOSGiBridgeActivator implements RegistrationHook, ServiceListene
 		
 		// if this service is already registered then skip it
 		if (m_osgiReference2onmsRegistrationMap.containsKey(reference)) return;
-		
 		
 		String[] classNames = (String[]) reference.getProperty(Constants.OBJECTCLASS);
 		
@@ -177,14 +177,13 @@ public class OnmsOSGiBridgeActivator implements RegistrationHook, ServiceListene
 			
 			properties.put(REGISTRATION_SOURCE, OSGI_SOURCE);
 			
-			
-			Registration onmsRegistration = getRegistry().register(provider, properties, providerInterfaces);
-			
-			
+	                System.err.println("registering...");
+
+	                final Registration onmsRegistration = getRegistry().register(provider, properties, providerInterfaces);
+	                System.err.println("OnmsOSGiBridgeActivator: registry = " + getRegistry());
 			m_osgiReference2onmsRegistrationMap.put(reference, onmsRegistration);
-			
-		
-		} catch (ClassNotFoundException e) {
+			System.err.println("registered provider " + provider + " for interfaces: " + Arrays.toString(providerInterfaces) + " with properties: " + properties);
+		} catch (final ClassNotFoundException e) {
 			System.err.println("Unable to find class used by exported OSGi service");
 			e.printStackTrace();
 		}
@@ -200,12 +199,11 @@ public class OnmsOSGiBridgeActivator implements RegistrationHook, ServiceListene
 
 	private Class<?>[] findClasses(String[] classNames) throws ClassNotFoundException {
 		Class<?>[] providerInterfaces = new Class<?>[classNames.length];
-		
 
 		for(int i = 0; i < classNames.length; i++) {
 			providerInterfaces[i] = Class.forName(classNames[i]);
 		}
-		
+
 		return providerInterfaces;
 
 	}

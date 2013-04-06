@@ -28,11 +28,8 @@
 
 package org.opennms.netmgt.linkd.snmp;
 
-import org.opennms.netmgt.capsd.snmp.NamedSnmpVar;
-import org.opennms.netmgt.capsd.snmp.SnmpStore;
-import org.opennms.netmgt.snmp.SnmpObjId;
-import org.opennms.netmgt.snmp.SnmpResult;
-import org.opennms.netmgt.snmp.SnmpUtils;
+import org.opennms.netmgt.model.OnmsVlan.VlanStatus;
+import org.opennms.netmgt.model.OnmsVlan.VlanType;
 
 /**
  *<P>The Dot1qStaticVlanTableEntry class is designed to hold all the MIB-II
@@ -48,8 +45,7 @@ import org.opennms.netmgt.snmp.SnmpUtils;
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213</A>
  * @version $Id: $
  */
-public final class Dot1qStaticVlanTableEntry extends SnmpStore
-implements VlanCollectorEntry {
+public final class Dot1qStaticVlanTableEntry extends Vlan {
 
 	// Lookup strings for specific table entries
 	//
@@ -60,11 +56,8 @@ implements VlanCollectorEntry {
 	/** Constant <code>VLAN_STATICUNTAGGEDPORTS="dot1qVlanStaticUntaggedPorts"</code> */
 	public final static String VLAN_STATICUNTAGGEDPORTS = "dot1qVlanStaticUntaggedPorts";
 
-	private static String VLAN_INDEX_OID=".1.3.6.1.2.1.17.7.1.4.3.1.0";
 	private static String VLAN_NAME_OID=".1.3.6.1.2.1.17.7.1.4.3.1.1";
 	
-	private boolean hasVlanIndex = false;
-
 	/**
 	 * <P>The keys that will be supported by default from the 
 	 * TreeMap base class. Each of the elements in the list
@@ -73,12 +66,11 @@ implements VlanCollectorEntry {
 	 * this class.</P>
 	 */
 	public static final NamedSnmpVar[] hpVlan_elemList = new NamedSnmpVar[] {
-	    new NamedSnmpVar(NamedSnmpVar.SNMPINT32, VLAN_INDEX,VLAN_INDEX_OID,1),
-	    new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, VLAN_NAME,VLAN_NAME_OID,2),
-	    new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, VLAN_STATICEGRESSPORTS, ".1.3.6.1.2.1.17.7.1.4.3.1.2", 4),
-	    new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, VLAN_FORBIDDENEGRESSPORTS, ".1.3.6.1.2.1.17.7.1.4.3.1.3", 5),
-	    new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, VLAN_STATICUNTAGGEDPORTS, ".1.3.6.1.2.1.17.7.1.4.3.1.4", 6),
-	    new NamedSnmpVar(NamedSnmpVar.SNMPINT32, VLAN_STATUS, ".1.3.6.1.2.1.17.7.1.4.3.1.5", 5)
+	    new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, VLAN_NAME,VLAN_NAME_OID,1),
+	    new NamedSnmpVar(NamedSnmpVar.SNMPINT32, VLAN_STATUS, ".1.3.6.1.2.1.17.7.1.4.3.1.5", 2)
+//	    new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, VLAN_STATICEGRESSPORTS, ".1.3.6.1.2.1.17.7.1.4.3.1.2", 4),
+//	    new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, VLAN_FORBIDDENEGRESSPORTS, ".1.3.6.1.2.1.17.7.1.4.3.1.3", 5),
+//	    new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, VLAN_STATICUNTAGGEDPORTS, ".1.3.6.1.2.1.17.7.1.4.3.1.4", 6),
 	};
 
 	/**
@@ -103,15 +95,18 @@ implements VlanCollectorEntry {
 		super(hpVlan_elemList);
 	}
 
-	/** {@inheritDoc} */
 	@Override
-	public void storeResult(SnmpResult res) {
-		if (!hasVlanIndex) {
-			int vlanid = res.getInstance().getLastSubId();
-			super.storeResult(new SnmpResult(SnmpObjId.get(VLAN_INDEX_OID), res.getInstance(), 
-						SnmpUtils.getValueFactory().getInt32(vlanid)));
-			hasVlanIndex = true;
-		}
-		super.storeResult(res);
+	protected boolean hasVlanIndexOid() {
+		return false;
+	}
+
+	@Override
+	public VlanStatus getVlanStatus() {
+		return VlanStatus.get(VlanStatus.ROWSTATUS_STARTING_INDEX+getInt32(VLAN_STATUS));
+	}
+
+	@Override
+	public VlanType getVlanType() {
+		return VlanType.CISCO_VTP_ETHERNET;
 	}
 }

@@ -44,7 +44,7 @@
 	</jsp:param>
     <jsp:param name="meta">
 	  <jsp:attribute name="value">
-        <link media="screen" href="css/dashboard.css" type="text/css" rel="stylesheet">
+        <link media="screen" href="../css/dashboard.css" type="text/css" rel="stylesheet">
 	  </jsp:attribute>
 	</jsp:param>
 	

@@ -31,7 +31,6 @@ package org.opennms.netmgt.linkd.snmp;
 import java.net.InetAddress;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.capsd.snmp.NamedSnmpVar;
 
 /**
  *<p>The {@link InetCidrRouteTableEntry} class is designed to hold all the MIB-II
@@ -259,85 +258,13 @@ public final class InetCidrRouteTableEntry extends IpRouteCollectorEntry
        super(ms_elemList);
    }
    
-    public InetAddress getInetCidrRouteDest() {
-        return getIPAddress(InetCidrRouteTableEntry.IP_ROUTE_DEST); 
-    }
-
-   public int getInetCidrRouteIfIndex() {
-       Integer val = getInt32(InetCidrRouteTableEntry.IP_ROUTE_IFINDEX);
-       if (val == null ) return -1;
-       return val;
-   }
-   
-   public int getInetCidrRouteMetric1() {
-       Integer val = getInt32(InetCidrRouteTableEntry.IP_ROUTE_METRIC1);
-       if (val == null ) return -1;
-       return val;
-   }
-
-   public int getInetCidrRouteMetric2() {
-       Integer val = getInt32(InetCidrRouteTableEntry.IP_ROUTE_METRIC2);
-       if (val == null ) return -1;
-       return val;
-       
-   }
-
-   public int getInetCidrRouteMetric3() {
-       Integer val = getInt32(InetCidrRouteTableEntry.IP_ROUTE_METRIC3);
-       if (val == null ) return -1;
-       return val;
-
-   }
-
-   public int getInetCidrRouteMetric4() {
-       Integer val = getInt32(InetCidrRouteTableEntry.IP_ROUTE_METRIC4);
-       if (val == null ) return -1;
-       return val;
-
-   }
-
-   public InetAddress getInetCidrRouteNextHop() {
-       return getIPAddress(InetCidrRouteTableEntry.IP_ROUTE_NXTHOP);
-   }
-
-   public int getInetCidrRouteType() {
-       Integer val = getInt32(InetCidrRouteTableEntry.IP_ROUTE_TYPE);
-       if (val == null ) return -1;
-       return val;
-       
-   }
-
-   public int getInetCidrRouteProto() {
-       Integer val = getInt32(InetCidrRouteTableEntry.IP_ROUTE_PROTO);
-       if (val == null ) return -1;
-       return val;
-       
-   }
-
-   public int getInetCidrRouteAge() {
-       Integer val = getInt32(InetCidrRouteTableEntry.IP_ROUTE_AGE);
-       if (val == null ) return -1;
-       return val;
-       
-   }
-
-   public InetAddress getInetCidrRouteMask() throws java.net.UnknownHostException {
+   @Override
+   public InetAddress getIpRouteMask() {
        final Integer prefix = getInt32(InetCidrRouteTableEntry.IP_ROUTE_PFX_LEN);
        final Integer mask = 0xffffffff << (32 - prefix);
        final Integer value = mask;
        final byte[] bytes = new byte[]{ (byte)(value >>> 24), (byte)(value >> 16 & 0xff), (byte)(value >> 8 & 0xff), (byte)(value & 0xff) };
        final InetAddress netAddr = InetAddressUtils.getInetAddress(bytes);
        return netAddr;
-   }
-
-   public int getInetCidrRouteMetric5() {
-       Integer val = getInt32(InetCidrRouteTableEntry.IP_ROUTE_METRIC5);
-       if (val == null ) return -1;
-       return val;
-
-   }
-
-   public String getInetCidrRouteInfo() {
-       return getObjectID(InetCidrRouteTableEntry.IP_ROUTE_INFO);
    }
 }

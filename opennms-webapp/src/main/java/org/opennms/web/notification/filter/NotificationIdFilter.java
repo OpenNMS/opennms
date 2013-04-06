@@ -35,8 +35,6 @@ import org.opennms.web.filter.SQLType;
  * <p>NotificationIdFilter class.</p>
  *
  * @author ranger
- * @version $Id: $
- * @since 1.8.1
  */
 public class NotificationIdFilter extends EqualsFilter<Integer> {
     /** Constant <code>TYPE="notificationIdFilter"</code> */
@@ -48,7 +46,7 @@ public class NotificationIdFilter extends EqualsFilter<Integer> {
      * @param notificationId a int.
      */
     public NotificationIdFilter(int notificationId){
-        super(TYPE, SQLType.INT, "NOTIFICATIONS.NOTIFYID", "notifyId", new Integer(notificationId));
+        super(TYPE, SQLType.INT, "NOTIFICATIONS.NOTIFYID", "notifyId", Integer.valueOf(notificationId));
     }
 
 }

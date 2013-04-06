@@ -6,7 +6,7 @@
 		<relativePath>../topology-map/poms/compiled/</relativePath>
 		<groupId>org.opennms.features.topology.build</groupId>
 		<artifactId>compiled-bundle-settings</artifactId>
-		<version>1.11.90-SNAPSHOT</version>
+		<version>1.13.0-SNAPSHOT</version>
 	</parent>
 	<groupId>org.opennms.features</groupId>
 	<artifactId>vaadin-node-maps</artifactId>
@@ -187,6 +187,18 @@
 	</pluginRepositories>
 
 	<dependencies>
+		<!-- OSGi Dependencies -->
+
+		<dependency>
+			<groupId>org.osgi</groupId>
+			<artifactId>org.osgi.core</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.osgi</groupId>
+			<artifactId>org.osgi.compendium</artifactId>
+			<scope>provided</scope>
+		</dependency>
 
 		<!-- Vaadin Dependencies -->
 
@@ -236,9 +248,19 @@
 			<artifactId>opennms-dao</artifactId>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.opennms</groupId>
+			<artifactId>opennms-web-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
 
 		<!-- Tests Dependencies -->
 
+		<dependency>
+			<groupId>org.easymock</groupId>
+			<artifactId>easymock</artifactId>
+			<scope>test</scope>
+		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -250,16 +272,23 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.opennms</groupId>
-			<artifactId>opennms-test</artifactId>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-module-junit4</artifactId>
+			<version>1.5</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.opennms.core.test-api</groupId>
-			<artifactId>org.opennms.core.test-api.lib</artifactId>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-api-easymock</artifactId>
+			<version>1.5</version>
 			<scope>test</scope>
+		</dependency>  
+		<dependency>
+		    <groupId>com.googlecode.gwt-test-utils</groupId>
+		    <artifactId>gwt-test-utils</artifactId>
+		    <version>0.44</version>
+		    <scope>test</scope>
 		</dependency>
-
 	</dependencies>
 
 </project>

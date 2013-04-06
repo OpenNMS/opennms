@@ -28,6 +28,24 @@
 
 package org.opennms.gwt.web.ui.asset.client.view;
 
+import java.util.ArrayList;
+
+import org.opennms.gwt.web.ui.asset.client.AssetPageConstants;
+import org.opennms.gwt.web.ui.asset.client.presenter.AssetPagePresenter;
+import org.opennms.gwt.web.ui.asset.client.tools.DisclosurePanelCookie;
+import org.opennms.gwt.web.ui.asset.client.tools.fieldsets.FieldSet;
+import org.opennms.gwt.web.ui.asset.client.tools.fieldsets.FieldSetDateBox;
+import org.opennms.gwt.web.ui.asset.client.tools.fieldsets.FieldSetListBox;
+import org.opennms.gwt.web.ui.asset.client.tools.fieldsets.FieldSetPasswordBox;
+import org.opennms.gwt.web.ui.asset.client.tools.fieldsets.FieldSetSuggestBox;
+import org.opennms.gwt.web.ui.asset.client.tools.fieldsets.FieldSetTextArea;
+import org.opennms.gwt.web.ui.asset.client.tools.fieldsets.FieldSetTextBox;
+import org.opennms.gwt.web.ui.asset.client.tools.fieldsets.FieldSetTextDisplay;
+import org.opennms.gwt.web.ui.asset.client.tools.validation.StringAsIntegerValidator;
+import org.opennms.gwt.web.ui.asset.client.tools.validation.StringBasicValidator;
+import org.opennms.gwt.web.ui.asset.shared.AssetCommand;
+import org.opennms.gwt.web.ui.asset.shared.AssetSuggCommand;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -38,17 +56,15 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.*;
-import org.opennms.gwt.web.ui.asset.client.AssetPageConstants;
-import org.opennms.gwt.web.ui.asset.client.presenter.AssetPagePresenter;
-import org.opennms.gwt.web.ui.asset.client.tools.DisclosurePanelCookie;
-import org.opennms.gwt.web.ui.asset.client.tools.fieldsets.*;
-import org.opennms.gwt.web.ui.asset.client.tools.validation.StringAsIntegerValidator;
-import org.opennms.gwt.web.ui.asset.client.tools.validation.StringBasicValidator;
-import org.opennms.gwt.web.ui.asset.shared.AssetCommand;
-import org.opennms.gwt.web.ui.asset.shared.AssetSuggCommand;
-
-import java.util.ArrayList;
+import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * @author <a href="mailto:MarkusNeumannMarkus@gmail.com">Markus Neumann</a>
@@ -145,7 +161,9 @@ public class AssetNodePageImpl extends Composite implements AssetPagePresenter.D
     @UiField
     FieldSetSuggestBox sCountry;
     @UiField
-    FieldSetSuggestBox sCoordinates;
+    FieldSetTextBox sLongitude;
+    @UiField
+    FieldSetTextBox sLatitude;
     @UiField
     FieldSetSuggestBox sBuilding;
     @UiField
@@ -335,7 +353,8 @@ public class AssetNodePageImpl extends Composite implements AssetPagePresenter.D
         fieldSetList.add(sState);
         fieldSetList.add(sZip);
         fieldSetList.add(sCountry);
-        fieldSetList.add(sCoordinates);
+        fieldSetList.add(sLongitude);
+        fieldSetList.add(sLatitude);
         fieldSetList.add(sBuilding);
         fieldSetList.add(sFloor);
         fieldSetList.add(sRoom);
@@ -454,7 +473,8 @@ public class AssetNodePageImpl extends Composite implements AssetPagePresenter.D
         m_asset.setState(sState.getValue());
         m_asset.setZip(sZip.getValue());
         m_asset.setCountry(sCountry.getValue());
-        m_asset.setCoordinates(sCoordinates.getValue());
+        m_asset.setLongitude(s2f(sLongitude.getValue()));
+        m_asset.setLatitude(s2f(sLatitude.getValue()));
         m_asset.setBuilding(sBuilding.getValue());
         m_asset.setFloor(sFloor.getValue());
         m_asset.setRoom(sRoom.getValue());
@@ -565,7 +585,8 @@ public class AssetNodePageImpl extends Composite implements AssetPagePresenter.D
         sState.setValue(asset.getState());
         sZip.setValue(asset.getZip());
         sCountry.setValue(asset.getCountry());
-        sCoordinates.setValue(asset.getCoordinates());
+        sLongitude.setValue(f2s(asset.getLongitude()));
+        sLatitude.setValue(f2s(asset.getLatitude()));
         sBuilding.setValue(asset.getBuilding());
         sFloor.setValue(asset.getFloor());
         sRoom.setValue(asset.getRoom());
@@ -577,6 +598,20 @@ public class AssetNodePageImpl extends Composite implements AssetPagePresenter.D
         sAdmin.setValue(asset.getAdmin());
     }
 
+    private String f2s(final Float value) {
+        return value == null? null : value.toString();
+    }
+
+    private Float s2f(final String value) {
+        if (value != null && !"".equals(value)) {
+            try {
+                return Float.valueOf(value);
+            } catch (final NumberFormatException e) {
+                // ignore and return null if it's not a valid float
+            }
+        }
+        return null;
+    }
     private void setDataSNMP(AssetCommand asset) {
 
         if ((asset.getSnmpSysObjectId().equals("")) || (asset.getSnmpSysObjectId() == null)) {
@@ -646,7 +681,6 @@ public class AssetNodePageImpl extends Composite implements AssetPagePresenter.D
         sState.setSuggestions(assetSugg.getState());
         sZip.setSuggestions(assetSugg.getZip());
         sCountry.setSuggestions(assetSugg.getCountry());
-        sCoordinates.setSuggestions(assetSugg.getCoordinates());
         sBuilding.setSuggestions(assetSugg.getBuilding());
         sFloor.setSuggestions(assetSugg.getFloor());
         sRoom.setSuggestions(assetSugg.getRoom());

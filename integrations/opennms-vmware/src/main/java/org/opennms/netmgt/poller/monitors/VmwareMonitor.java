@@ -28,17 +28,21 @@
 
 package org.opennms.netmgt.poller.monitors;
 
+import com.vmware.vim25.HostRuntimeInfo;
+import com.vmware.vim25.HostSystemPowerState;
+import com.vmware.vim25.VirtualMachinePowerState;
+import com.vmware.vim25.VirtualMachineRuntimeInfo;
 import com.vmware.vim25.mo.HostSystem;
 import com.vmware.vim25.mo.VirtualMachine;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.TimeoutTracker;
-import org.opennms.protocols.vmware.VmwareViJavaAccess;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
+import org.opennms.protocols.vmware.VmwareViJavaAccess;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -143,12 +147,39 @@ public class VmwareMonitor extends AbstractServiceMonitor {
 
             if ("HostSystem".equals(vmwareManagedEntityType)) {
                 HostSystem hostSystem = vmwareViJavaAccess.getHostSystemByManagedObjectId(vmwareManagedObjectId);
-                powerState = hostSystem.getSummary().runtime.getPowerState().toString();
-
+                if (hostSystem == null) {
+                    return PollStatus.unknown("hostSystem=null");
+                } else {
+                    HostRuntimeInfo hostRuntimeInfo = hostSystem.getRuntime();
+                    if (hostRuntimeInfo == null) {
+                        return PollStatus.unknown("hostRuntimeInfo=null");
+                    } else {
+                        HostSystemPowerState hostSystemPowerState = hostRuntimeInfo.getPowerState();
+                        if (hostSystemPowerState == null) {
+                            return PollStatus.unknown("hostSystemPowerState=null");
+                        } else {
+                            powerState = hostSystemPowerState.toString();
+                        }
+                    }
+                }
             } else {
                 if ("VirtualMachine".equals(vmwareManagedEntityType)) {
                     VirtualMachine virtualMachine = vmwareViJavaAccess.getVirtualMachineByManagedObjectId(vmwareManagedObjectId);
-                    powerState = virtualMachine.getSummary().runtime.getPowerState().toString();
+                    if (virtualMachine == null) {
+                        return PollStatus.unknown("virtualMachine=null");
+                    } else {
+                        VirtualMachineRuntimeInfo virtualMachineRuntimeInfo = virtualMachine.getRuntime();
+                        if (virtualMachineRuntimeInfo == null) {
+                            return PollStatus.unknown("virtualMachineRuntimeInfo=null");
+                        } else {
+                            VirtualMachinePowerState virtualMachinePowerState = virtualMachineRuntimeInfo.getPowerState();
+                            if (virtualMachinePowerState == null) {
+                                return PollStatus.unknown("virtualMachinePowerState=null");
+                            } else {
+                                powerState = virtualMachinePowerState.toString();
+                            }
+                        }
+                    }
                 } else {
                     logger.warn("Error getting '{}' for '{}'", vmwareManagedEntityType, vmwareManagedObjectId);
 
@@ -175,6 +206,7 @@ public class VmwareMonitor extends AbstractServiceMonitor {
      *
      * @param nodeDao the NodeDao object to use
      */
+
     public void setNodeDao(NodeDao nodeDao) {
         m_nodeDao = nodeDao;
     }

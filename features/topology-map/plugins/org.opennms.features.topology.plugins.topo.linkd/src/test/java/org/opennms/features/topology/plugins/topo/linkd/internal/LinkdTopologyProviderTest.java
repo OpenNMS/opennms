@@ -49,12 +49,12 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.features.topology.api.Constants;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.api.SimpleLeafVertex;
 import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.AbstractVertexRef;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.RefComparator;
+import org.opennms.features.topology.api.topo.SimpleLeafVertex;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexListener;
 import org.opennms.features.topology.api.topo.VertexProvider;
@@ -130,7 +130,8 @@ public class LinkdTopologyProviderTest {
 
 	@Test
 	public void testSave() {
-		m_topologyProvider.save("target/test-map.xml");
+		m_topologyProvider.setConfigurationFile("target/test-map.xml");
+		m_topologyProvider.save();
 		m_databasePopulator.check(m_topologyProvider);
 	}
 
@@ -150,39 +151,51 @@ public class LinkdTopologyProviderTest {
 	public void test() throws Exception {
 		new File("target/test-classes/test.xml").delete();
 		m_topologyProvider.setConfigurationFile("target/test-classes/test.xml");
+		
+		// Load 8 vertices
 		assertEquals(8, m_topologyProvider.getVertices().size());
 
+		// Add v0 vertex
 		Vertex vertexA = m_topologyProvider.addVertex(50, 100);
 		assertEquals(9, m_topologyProvider.getVertices().size());
+		assertEquals("v0", vertexA.getId());
 		//LoggerFactory.getLogger(this.getClass()).debug(m_topologyProvider.getVertices().get(0).toString());
 		assertTrue(m_topologyProvider.containsVertexId(vertexA));
 		assertTrue(m_topologyProvider.containsVertexId("v0"));
 		assertFalse(m_topologyProvider.containsVertexId("v1"));
 		((AbstractVertex)vertexA).setIpAddress("10.0.0.4");
-		VertexRef ref0 = new AbstractVertexRef(m_topologyProvider.getVertexNamespace(), "v0");
-		VertexRef ref1 = new AbstractVertexRef(m_topologyProvider.getVertexNamespace(), "v1");
-		assertEquals(1, m_topologyProvider.getVertices(Collections.singletonList(ref0)).size());
-		assertEquals(0, m_topologyProvider.getVertices(Collections.singletonList(ref1)).size());
 
+		// Search by VertexRef
+		VertexRef vertexAref = new AbstractVertexRef(m_topologyProvider.getVertexNamespace(), "v0");
+		VertexRef vertexBref = new AbstractVertexRef(m_topologyProvider.getVertexNamespace(), "v1");
+		assertEquals(1, m_topologyProvider.getVertices(Collections.singletonList(vertexAref)).size());
+		assertEquals(0, m_topologyProvider.getVertices(Collections.singletonList(vertexBref)).size());
+
+		// Add v1 vertex
 		Vertex vertexB = m_topologyProvider.addVertex(100, 50);
+		assertEquals("v1", vertexB.getId());
 		assertTrue(m_topologyProvider.containsVertexId(vertexB));
 		assertTrue(m_topologyProvider.containsVertexId("v1"));
-		assertEquals(1, m_topologyProvider.getVertices(Collections.singletonList(ref1)).size());
+		assertEquals(1, m_topologyProvider.getVertices(Collections.singletonList(vertexBref)).size());
 
+		// Added 3 more vertices
 		Vertex vertexC = m_topologyProvider.addVertex(100, 150);
 		Vertex vertexD = m_topologyProvider.addVertex(150, 100);
 		Vertex vertexE = m_topologyProvider.addVertex(200, 200);
 		assertEquals(13, m_topologyProvider.getVertices().size());
 
+		// Add 2 groups
 		Vertex group1 = m_topologyProvider.addGroup("Group 1", Constants.GROUP_ICON_KEY);
 		Vertex group2 = m_topologyProvider.addGroup("Group 2", Constants.GROUP_ICON_KEY);
 		assertEquals(15, m_topologyProvider.getVertices().size());
 
+		// Link v0, v1 to Group 1 and v2, v3 to Group 2
 		m_topologyProvider.setParent(vertexA, group1);
 		m_topologyProvider.setParent(vertexB, group1);
 		m_topologyProvider.setParent(vertexC, group2);
 		m_topologyProvider.setParent(vertexD, group2);
-		
+
+		// Connect various vertices together
 		m_topologyProvider.connectVertices(vertexA, vertexB);
 		m_topologyProvider.connectVertices(vertexA, vertexC);
 		m_topologyProvider.connectVertices(vertexB, vertexC);
@@ -199,56 +212,59 @@ public class LinkdTopologyProviderTest {
 		assertEquals(50, wrappedVertex.x.intValue());
 		assertEquals(100, wrappedVertex.y.intValue());
 		
-		assertEquals(1, m_topologyProvider.getVertices(Collections.singletonList(ref0)).size());
-		assertEquals(1, m_topologyProvider.getVertices(Collections.singletonList(ref1)).size());
+		assertEquals(1, m_topologyProvider.getVertices(Collections.singletonList(vertexAref)).size());
+		assertEquals(1, m_topologyProvider.getVertices(Collections.singletonList(vertexBref)).size());
 		assertEquals(15, m_topologyProvider.getVertices().size());
-		assertEquals(3, m_topologyProvider.getEdgeIdsForVertex(m_topologyProvider.getVertex(ref0)).length);
-		assertEquals(3, m_topologyProvider.getEdgeIdsForVertex(m_topologyProvider.getVertex(ref1)).length);
+		assertEquals(3, m_topologyProvider.getEdgeIdsForVertex(m_topologyProvider.getVertex(vertexAref)).length);
+		assertEquals(3, m_topologyProvider.getEdgeIdsForVertex(m_topologyProvider.getVertex(vertexBref)).length);
 		assertEquals(0, m_topologyProvider.getSemanticZoomLevel(group1));
 		assertEquals(0, m_topologyProvider.getSemanticZoomLevel(group2));
 		assertEquals(1, m_topologyProvider.getSemanticZoomLevel(vertexA));
 		assertEquals(1, m_topologyProvider.getSemanticZoomLevel(vertexB));
 		assertEquals(1, m_topologyProvider.getSemanticZoomLevel(vertexC));
 		assertEquals(1, m_topologyProvider.getSemanticZoomLevel(vertexD));
+		assertEquals(0, m_topologyProvider.getSemanticZoomLevel(vertexE));
 		
-		m_topologyProvider.save(m_topologyProvider.getConfigurationFile());
+		m_topologyProvider.save();
 		
 		m_topologyProvider.resetContainer();
 		
 		// Ensure that the topology provider has been erased
-		assertEquals(0, m_topologyProvider.getVertices(Collections.singletonList(ref0)).size());
-		assertEquals(0, m_topologyProvider.getVertices(Collections.singletonList(ref1)).size());
+		assertEquals(0, m_topologyProvider.getVertices(Collections.singletonList(vertexAref)).size());
+		assertEquals(0, m_topologyProvider.getVertices(Collections.singletonList(vertexBref)).size());
 		assertEquals(0, m_topologyProvider.getVertices().size());
-		assertEquals(0, m_topologyProvider.getEdgeIdsForVertex(m_topologyProvider.getVertex(ref0)).length);
-		assertEquals(0, m_topologyProvider.getEdgeIdsForVertex(m_topologyProvider.getVertex(ref1)).length);
+		assertEquals(0, m_topologyProvider.getEdgeIdsForVertex(m_topologyProvider.getVertex(vertexAref)).length);
+		assertEquals(0, m_topologyProvider.getEdgeIdsForVertex(m_topologyProvider.getVertex(vertexBref)).length);
 		assertEquals(0, m_topologyProvider.getSemanticZoomLevel(group1));
 		assertEquals(0, m_topologyProvider.getSemanticZoomLevel(group2));
 		assertEquals(0, m_topologyProvider.getSemanticZoomLevel(vertexA));
 		assertEquals(0, m_topologyProvider.getSemanticZoomLevel(vertexB));
 		assertEquals(0, m_topologyProvider.getSemanticZoomLevel(vertexC));
 		assertEquals(0, m_topologyProvider.getSemanticZoomLevel(vertexD));
+		assertEquals(0, m_topologyProvider.getSemanticZoomLevel(vertexE));
 		
-		m_topologyProvider.load(null);
+		m_topologyProvider.refresh();
 		
 		// Ensure that all of the content has been reloaded properly
 		
 		// Plain vertices should not be reloaded from the XML
-		assertEquals(0, m_topologyProvider.getVertices(Collections.singletonList(ref0)).size());
-		assertEquals(0, m_topologyProvider.getVertices(Collections.singletonList(ref1)).size());
+		assertEquals(0, m_topologyProvider.getVertices(Collections.singletonList(vertexAref)).size());
+		assertEquals(0, m_topologyProvider.getVertices(Collections.singletonList(vertexBref)).size());
 		// Groups should be reloaded
 		assertEquals(1, m_topologyProvider.getVertices(Collections.singletonList(group1)).size());
 		assertEquals(1, m_topologyProvider.getVertices(Collections.singletonList(group2)).size());
 		assertEquals(10, m_topologyProvider.getVertices().size());
-		assertEquals(0, m_topologyProvider.getEdgeIdsForVertex(m_topologyProvider.getVertex(ref0)).length);
-		assertEquals(0, m_topologyProvider.getEdgeIdsForVertex(m_topologyProvider.getVertex(ref1)).length);
+		assertEquals(0, m_topologyProvider.getEdgeIdsForVertex(m_topologyProvider.getVertex(vertexAref)).length);
+		assertEquals(0, m_topologyProvider.getEdgeIdsForVertex(m_topologyProvider.getVertex(vertexBref)).length);
 		assertEquals(0, m_topologyProvider.getEdgeIdsForVertex(m_topologyProvider.getVertex(group1)).length);
 		assertEquals(0, m_topologyProvider.getEdgeIdsForVertex(m_topologyProvider.getVertex(group2)).length);
 		assertEquals(0, m_topologyProvider.getSemanticZoomLevel(group1));
 		assertEquals(0, m_topologyProvider.getSemanticZoomLevel(group2));
-		assertEquals(1, m_topologyProvider.getSemanticZoomLevel(vertexA));
-		assertEquals(1, m_topologyProvider.getSemanticZoomLevel(vertexB));
-		assertEquals(1, m_topologyProvider.getSemanticZoomLevel(vertexC));
-		assertEquals(1, m_topologyProvider.getSemanticZoomLevel(vertexD));
+		assertEquals(0, m_topologyProvider.getSemanticZoomLevel(vertexA));
+		assertEquals(0, m_topologyProvider.getSemanticZoomLevel(vertexB));
+		assertEquals(0, m_topologyProvider.getSemanticZoomLevel(vertexC));
+		assertEquals(0, m_topologyProvider.getSemanticZoomLevel(vertexD));
+		assertEquals(0, m_topologyProvider.getSemanticZoomLevel(vertexE));
 	}
 	
 	@Test

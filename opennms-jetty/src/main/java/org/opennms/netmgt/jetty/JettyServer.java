@@ -161,6 +161,12 @@ public class JettyServer extends AbstractServiceDaemon {
     protected void addContext(HandlerCollection handlers, File name, String contextPath) {
         log().warn("adding context: " + contextPath + " -> " + name.getAbsolutePath());
         WebAppContext wac = new WebAppContext();
+	/*
+	 * Tell jetty to scan all of the jar files in the classpath for taglibs and other resources since
+         * most of our jars are installed in ${opennms.home}/lib.  This is only required for jetty7
+         * See: http://wiki.eclipse.org/Jetty/Howto/Configure_JSP
+         */
+	wac.setAttribute("org.eclipse.jetty.server.webapp.ContainerIncludeJarPattern",".*/[^/]*\\.jar$");
         wac.setWar(name.getAbsolutePath());
         wac.setContextPath(contextPath);
         handlers.addHandler(wac);

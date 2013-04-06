@@ -34,7 +34,7 @@ import javax.xml.bind.JAXBException;
 
 public interface GraphProvider extends VertexProvider, EdgeProvider {
 
-	void save(String filename);
+	void save();
 
 	void load(String filename) throws MalformedURLException, JAXBException;
 

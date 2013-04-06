@@ -71,8 +71,6 @@ import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
  * <p>JdbcWebAlarmRepository class.</p>
  *
  * @author ranger
- * @version $Id: $
- * @since 1.8.1
  */
 @Deprecated
 public class JdbcWebAlarmRepository implements WebAlarmRepository, InitializingBean {
@@ -183,7 +181,7 @@ public class JdbcWebAlarmRepository implements WebAlarmRepository, InitializingB
             alarm.dpName = rs.getString("dpName");
 
             // node id can be null, in which case nodeID will be 0
-            alarm.nodeID = new Integer(rs.getInt("nodeID"));
+            alarm.nodeID = Integer.valueOf(rs.getInt("nodeID"));
             alarm.ipAddr = rs.getString("ipAddr");
 
             // This causes serviceID to be null if the column in the database is null
