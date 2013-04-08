@@ -6,6 +6,18 @@
 
 	<!-- Start 1.10 -->
 
+	<section id="introduction-1.10.9">
+		<title>Release 1.10.9</title>
+
+		<para>
+			Release 1.10.9 is the latest in the stable series of OpenNMS releases.
+			It contains a number of bugfixes and enhancements.
+		</para>
+		<para>
+			The codename for 1.10.9 is <emphasis>Nose Flute</emphasis>.
+		</para>
+	</section>
+
 	<section id="introduction-1.10.8">
 		<title>Release 1.10.8</title>
 
@@ -14,7 +26,7 @@
 			It contains a number of bugfixes and enhancements.
 		</para>
 		<para>
-			The codename for 1.10.8 is <emphasis>Trikiti</emphasis>
+			The codename for 1.10.8 is <emphasis>Trikiti</emphasis>.
 		</para>
 	</section>
 
@@ -38,7 +50,7 @@
 			It contains a number of bugfixes and enhancements.
 		</para>
 		<para>
-			The codename for 1.10.6 is <emphasis>Cornamuse</emphasis>
+			The codename for 1.10.6 is <emphasis>Cornamuse</emphasis>.
 		</para>
 	</section>
 
@@ -50,7 +62,7 @@
 			It contains a few minor bugfixes and enhancements.
 		</para>
 		<para>
-			The codename for 1.10.5 is <emphasis>Tromboon</emphasis>
+			The codename for 1.10.5 is <emphasis>Tromboon</emphasis>.
 		</para>
 	</section>
 
@@ -62,7 +74,7 @@
 			It contains a few minor bugfixes and enhancements.
 		</para>
 		<para>
-			The codename for 1.10.4 is <emphasis>Archlute</emphasis>
+			The codename for 1.10.4 is <emphasis>Archlute</emphasis>.
 		</para>
 	</section>
 
@@ -75,7 +87,7 @@
 			using provisiond.
 		</para>
 		<para>
-			The codename for 1.10.3 is <emphasis>Fiscorn</emphasis>
+			The codename for 1.10.3 is <emphasis>Fiscorn</emphasis>.
 		</para>
 	</section>
 
@@ -88,7 +100,7 @@
          Windows installer fixes, and some minor enhancements.
 		</para>
 		<para>
-			The codename for 1.10.2 is <emphasis>Charango</emphasis>
+			The codename for 1.10.2 is <emphasis>Charango</emphasis>.
 		</para>
 	</section>
 
@@ -100,7 +112,7 @@
 			It contains plenty of bugfixes, as well as a few minor enhancements.
 		</para>
 		<para>
-			The codename for 1.10.1 is <emphasis>Hurdy Gurdy</emphasis>
+			The codename for 1.10.1 is <emphasis>Hurdy Gurdy</emphasis>.
 		</para>
 	</section>
 
@@ -111,7 +123,7 @@
 			Release 1.10.0 is the first in the latest series of stable releases.
 		</para>
 		<para>
-			The codename for 1.10.0 is <emphasis>Alboka</emphasis>
+			The codename for 1.10.0 is <emphasis>Alboka</emphasis>.
 		</para>
 	</section>
 
@@ -126,7 +138,7 @@
 			next stable release.
 		</para>
 		<para>
-			The codename for 1.9.93 is <emphasis>Kora</emphasis>
+			The codename for 1.9.93 is <emphasis>Kora</emphasis>.
 		</para>
 	</section>
 
@@ -139,7 +151,7 @@
 			next stable release.
 		</para>
 		<para>
-			The codename for 1.9.92 is <emphasis>Superbone</emphasis>
+			The codename for 1.9.92 is <emphasis>Superbone</emphasis>.
 		</para>
 	</section>
 
@@ -152,7 +164,7 @@
 			next stable release.
 		</para>
 		<para>
-			The codename for 1.9.91 is <emphasis>Crumhorn</emphasis>
+			The codename for 1.9.91 is <emphasis>Crumhorn</emphasis>.
 		</para>
 	</section>
 
@@ -165,7 +177,7 @@
 			next stable release.
 		</para>
 		<para>
-			The codename for 1.9.90 is <emphasis>Balafon</emphasis>
+			The codename for 1.9.90 is <emphasis>Balafon</emphasis>.
 		</para>
 	</section>
 
@@ -178,7 +190,7 @@
 			feature-complete and stable.
 		</para>
 		<para>
-			The codename for 1.9.8 is <emphasis>Pulalu</emphasis>
+			The codename for 1.9.8 is <emphasis>Pulalu</emphasis>.
 		</para>
 	</section>
 
@@ -191,7 +203,7 @@
 			feature-complete and stable.
 		</para>
 		<para>
-			The codename for 1.9.7 is <emphasis>Naqara</emphasis>
+			The codename for 1.9.7 is <emphasis>Naqara</emphasis>.
 		</para>
 	</section>
 
@@ -204,7 +216,7 @@
 			feature-complete and stable.
 		</para>
 		<para>
-			The codename for 1.9.6 is <emphasis>Barbat</emphasis>
+			The codename for 1.9.6 is <emphasis>Barbat</emphasis>.
 		</para>
 	</section>
 
@@ -217,7 +229,7 @@
 			feature-complete and stable.
 		</para>
 		<para>
-			The codename for 1.9.5 is <emphasis>Canjo</emphasis>
+			The codename for 1.9.5 is <emphasis>Canjo</emphasis>.
 		</para>
 	</section>
 
@@ -230,7 +242,7 @@
 			feature-complete and stable.
 		</para>
 		<para>
-			The codename for 1.9.4 is <emphasis>Guzheng</emphasis>
+			The codename for 1.9.4 is <emphasis>Guzheng</emphasis>.
 		</para>
 	</section>
 
@@ -243,7 +255,7 @@
 			feature-complete and stable.
 		</para>
 		<para>
-			The codename for 1.9.3 is <emphasis>Recorder</emphasis>
+			The codename for 1.9.3 is <emphasis>Recorder</emphasis>.
 		</para>
 	</section>
 
@@ -256,7 +268,7 @@
 			feature-complete and stable.
 		</para>
 		<para>
-			The codename for 1.9.2 is <emphasis>Psaltery</emphasis>
+			The codename for 1.9.2 is <emphasis>Psaltery</emphasis>.
 		</para>
 	</section>
 
@@ -273,7 +285,7 @@
 			features</ulink> were added.
 		</para>
 		<para>
-			The codename for 1.9.1 is <emphasis>Oboe</emphasis>
+			The codename for 1.9.1 is <emphasis>Oboe</emphasis>.
 		</para>
 	</section>
 
@@ -290,7 +302,7 @@
 			features</ulink> were added.
 		</para>
 		<para>
-			The codename for 1.9.0 is <emphasis>Timple</emphasis>
+			The codename for 1.9.0 is <emphasis>Timple</emphasis>.
 		</para>
 	</section>
 
