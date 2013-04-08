@@ -322,6 +322,7 @@
 				<listitem><para>Enhance poller with CIFS file and folder monitor (Issue <ulink url='http://issues.opennms.org/browse/NMS-5725'>NMS-5725</ulink>)</para></listitem>
 				<listitem><para>Nodes with &quot;Most Recent Outages&quot; list (Issue <ulink url='http://issues.opennms.org/browse/NMS-5754'>NMS-5754</ulink>)</para></listitem>
 				<listitem><para>Add a shell wrapper for the ILR (Issue <ulink url='http://issues.opennms.org/browse/NMS-5766'>NMS-5766</ulink>)</para></listitem>
+				<listitem><para>"Nodes w/Active Problems" : A new box for the home page based on alarms similar to the Outages Box (Issue <ulink url='http://issues.opennms.org/browse/NMS-5807'>NMS-5807</ulink>)</para></listitem>
 			</itemizedlist>
 		</section>
 	</section>
