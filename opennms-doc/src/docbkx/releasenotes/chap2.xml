@@ -277,6 +277,55 @@
 
 	<!-- Start 1.10 -->
 
+	<section id="opennms-1.10.9">
+		<title>Changes in OpenNMS 1.10.9</title>
+
+		<section id="opennms-1.10.9-sub-task">
+			<title>Sub-task</title>
+
+			<itemizedlist>
+				<listitem><para>Add the ack user in alarm list (Issue <ulink url='http://issues.opennms.org/browse/NMS-5546'>NMS-5546</ulink>)</para></listitem>
+				<listitem><para>Enabler Filter for LDAP (Issue <ulink url='http://issues.opennms.org/browse/NMS-5547'>NMS-5547</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+		<section id="opennms-1.10.9-bug">
+			<title>Bug</title>
+
+			<itemizedlist>
+				<listitem><para>HRULE not working in JRobin graphs (Issue <ulink url='http://issues.opennms.org/browse/NMS-2793'>NMS-2793</ulink>)</para></listitem>
+				<listitem><para>Event acknowledgement button, checkboxes, description should be hidden (Issue <ulink url='http://issues.opennms.org/browse/NMS-3923'>NMS-3923</ulink>)</para></listitem>
+				<listitem><para>XmlCollector data collection failures (Issue <ulink url='http://issues.opennms.org/browse/NMS-5464'>NMS-5464</ulink>)</para></listitem>
+				<listitem><para>OpenNMS start-up error -  javax.jmdns.impl.tasks.state.DNSStateTask (Issue <ulink url='http://issues.opennms.org/browse/NMS-5535'>NMS-5535</ulink>)</para></listitem>
+				<listitem><para>Ifspeed displayed is not right (Issue <ulink url='http://issues.opennms.org/browse/NMS-5536'>NMS-5536</ulink>)</para></listitem>
+				<listitem><para>No decode for nodelabel in nodeUp/nodeDown event (Issue <ulink url='http://issues.opennms.org/browse/NMS-5548'>NMS-5548</ulink>)</para></listitem>
+				<listitem><para>Error save and restart Discovery (Issue <ulink url='http://issues.opennms.org/browse/NMS-5606'>NMS-5606</ulink>)</para></listitem>
+				<listitem><para>XmlCollector &amp; thresholding exception (Issue <ulink url='http://issues.opennms.org/browse/NMS-5642'>NMS-5642</ulink>)</para></listitem>
+				<listitem><para>NullPointerException in auto-action code path (Issue <ulink url='http://issues.opennms.org/browse/NMS-5708'>NMS-5708</ulink>)</para></listitem>
+				<listitem><para>HostResourceSwRunMonitor doesn&#39;t work well with processes like cron (with many forks) (Issue <ulink url='http://issues.opennms.org/browse/NMS-5710'>NMS-5710</ulink>)</para></listitem>
+				<listitem><para>Missing isSnmpPrimary in NetworkElementFactory for Interface objects. (Issue <ulink url='http://issues.opennms.org/browse/NMS-5720'>NMS-5720</ulink>)</para></listitem>
+				<listitem><para>Service Registration Strategy Runs up CPU on Mac OS 10.8 (Issue <ulink url='http://issues.opennms.org/browse/NMS-5730'>NMS-5730</ulink>)</para></listitem>
+				<listitem><para>Bits of event-acknowledgement UI still showing (Issue <ulink url='http://issues.opennms.org/browse/NMS-5733'>NMS-5733</ulink>)</para></listitem>
+				<listitem><para>Monitoring big file system using hrStorageTable with Net-SNMP breaks Collectd  (Issue <ulink url='http://issues.opennms.org/browse/NMS-5747'>NMS-5747</ulink>)</para></listitem>
+				<listitem><para>promoteQueueData should not be stored on the events table. (Issue <ulink url='http://issues.opennms.org/browse/NMS-5752'>NMS-5752</ulink>)</para></listitem>
+				<listitem><para>Allow ILR to output durations in milliseconds (Issue <ulink url='http://issues.opennms.org/browse/NMS-5755'>NMS-5755</ulink>)</para></listitem>
+				<listitem><para>Live threshold merging fails if threshold with new ds-type added to existing group (Issue <ulink url='http://issues.opennms.org/browse/NMS-5764'>NMS-5764</ulink>)</para></listitem>
+				<listitem><para>Remote poller dies on startup if LDAP, RADIUS, NSClient present in poller configuration (Issue <ulink url='http://issues.opennms.org/browse/NMS-5777'>NMS-5777</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+		<section id="opennms-1.10.9-enhancement">
+			<title>Enhancement</title>
+
+			<itemizedlist>
+				<listitem><para>reportd persistant-reports aren&#39;t listed. (Issue <ulink url='http://issues.opennms.org/browse/NMS-4056'>NMS-4056</ulink>)</para></listitem>
+				<listitem><para>Need ability to hand-edit service and category names in requisition web editor (Issue <ulink url='http://issues.opennms.org/browse/NMS-4858'>NMS-4858</ulink>)</para></listitem>
+				<listitem><para>varbind based notification filtering doesn&#39;t support regular expression (Issue <ulink url='http://issues.opennms.org/browse/NMS-5399'>NMS-5399</ulink>)</para></listitem>
+				<listitem><para>Enhance poller with CIFS file and folder monitor (Issue <ulink url='http://issues.opennms.org/browse/NMS-5725'>NMS-5725</ulink>)</para></listitem>
+				<listitem><para>Nodes with &quot;Most Recent Outages&quot; list (Issue <ulink url='http://issues.opennms.org/browse/NMS-5754'>NMS-5754</ulink>)</para></listitem>
+				<listitem><para>Add a shell wrapper for the ILR (Issue <ulink url='http://issues.opennms.org/browse/NMS-5766'>NMS-5766</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+	</section>
+
 	<section id="opennms-1.10.8">
 		<title>Changes in OpenNMS 1.10.8</title>
 
