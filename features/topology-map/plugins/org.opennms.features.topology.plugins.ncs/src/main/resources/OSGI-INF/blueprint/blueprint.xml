@@ -29,5 +29,14 @@
 	</bean>
 
 	<service interface="org.opennms.features.topology.api.topo.EdgeProvider" ref="ncsEdgeProvider"/>
+	
+	<service interface="org.opennms.features.topology.api.Operation">
+	   <service-properties>
+            <entry key="operation.menuLocation" value="View"/>
+            <entry key="operation.label" value="Show NCS Path"/>
+            <entry key="operation.contextMenuLocation" value="NCS"/>
+        </service-properties>
+	   <bean class="org.opennms.features.topology.plugins.ncs.operation.ShowNCSPathOperation" ></bean>
+	</service>
 
 </blueprint>
