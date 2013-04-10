@@ -85,8 +85,13 @@ public class RequisitionFileUtils {
     public static List<File> findSnapshots(final ForeignSourceRepository repository, final String foreignSource) {
         final List<File> files = new ArrayList<File>();
 
-        final URL url = repository.getRequisitionURL(foreignSource);
-        
+        URL url = null;
+        try {
+            url = repository.getRequisitionURL(foreignSource);
+        } catch (final ForeignSourceRepositoryException e) {
+            LogUtils.debugf(RequisitionFileUtils.class, e, "Can't find snapshots for %s, an exception occurred getting the requisition URL!", foreignSource);
+        }
+
         if (url != null) {
             final String sourceFileName = url.getFile();
             if (sourceFileName != null) {
@@ -103,8 +108,7 @@ public class RequisitionFileUtils {
         return files;
     }
 
-    private static boolean isSnapshot(final String foreignSource,
-            final File entry) {
+    private static boolean isSnapshot(final String foreignSource, final File entry) {
         return !entry.isDirectory() && entry.getName().matches(foreignSource + ".xml.\\d+");
     }
 
