@@ -3,7 +3,7 @@
 use Cwd;
 use File::Basename;
 use File::Find;
-use File::Path;
+use File::Path qw(remove_tree);
 use File::Spec;
 use Getopt::Long qw(:config permute bundling pass_through);
 use IO::Handle;
