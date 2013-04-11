@@ -26,15 +26,22 @@
 package org.opennms.features.jmxconfiggenerator.webui.ui;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import org.opennms.features.jmxconfiggenerator.webui.JmxConfigGeneratorApplication;
+import org.opennms.features.jmxconfiggenerator.webui.data.ModelChangeListener;
 import org.opennms.features.jmxconfiggenerator.webui.data.UiModel;
 import org.opennms.features.jmxconfiggenerator.webui.data.UiModel.OutputDataKey;
-import org.opennms.features.jmxconfiggenerator.webui.data.ModelChangeListener;
 
 import com.vaadin.Application;
 import com.vaadin.terminal.DownloadStream;
@@ -51,13 +58,31 @@ import com.vaadin.ui.TextArea;
 import com.vaadin.ui.VerticalLayout;
 
 /**
+ * Represents the result view. It shows all generated configurations (including
+ * some description texts) to the user.
  * 
  * @author Markus von Rüden <mvr@opennms.com>
  */
 public class ConfigResultView extends CustomComponent implements ModelChangeListener<UiModel>, Button.ClickListener {
 
+	/**
+	 * The name of the downlaodable zip archive.
+	 */
+	private static String DOWNLOAD_FILE_NAME = "jmx-config-files.zip";
+
+	/**
+	 * The TabSheet for the config and description content.
+	 */
 	private TabSheet tabSheet = new TabSheet();
+
+	/**
+	 * Stores the content.
+	 */
 	private Map<UiModel.OutputDataKey, TabContent> tabContentMap = new HashMap<UiModel.OutputDataKey, TabContent>();
+
+	/**
+	 * Panel for previous and download buttons.
+	 */
 	private final ButtonPanel buttonPanel = new ButtonPanel(this);
 	private final JmxConfigGeneratorApplication app;
 
@@ -78,12 +103,12 @@ public class ConfigResultView extends CustomComponent implements ModelChangeList
 
 		// add all tabs
 		for (TabContent eachContent : tabContentMap.values())
-			tabSheet.addTab(eachContent, eachContent.getLabelText());
+			tabSheet.addTab(eachContent, eachContent.getCaption());
 		tabSheet.setSelectedTab(0); // select first component!
 
-		buttonPanel.getNext().setCaption("download");
+		buttonPanel.getNext().setCaption("download all");
 		buttonPanel.getNext().setIcon(IconProvider.getIcon(IconProvider.BUTTON_SAVE));
-		
+
 		mainLayout.setExpandRatio(tabSheet, 1);
 		setCompositionRoot(mainLayout);
 	}
@@ -102,23 +127,31 @@ public class ConfigResultView extends CustomComponent implements ModelChangeList
 	 *            The ClickEvent which indicates the download action.
 	 */
 	private void downloadConfigFile(ClickEvent event) {
-		final TabContent selectedTabContent = getSelectedTabContent();
-		event.getButton()
-				.getWindow()
-				.open(new DownloadResource(selectedTabContent.getText(), selectedTabContent.getDownloadFilename(),
-						getApplication()));
+		// key: filename, value: file content
+		Map<String, String> zipContentMap = new HashMap<String, String>();
+		// create map for the downloadable zip file
+		for (OutputDataKey eachKey : tabContentMap.keySet()) {
+			// config file
+			zipContentMap.put(eachKey.getDownloadFilename(), tabContentMap.get(eachKey).getConfigContent());
+			// description file
+			zipContentMap.put(flatten(eachKey.getDescriptionFilename()), tabContentMap.get(eachKey)
+					.getDescriptionText());
+		}
+		// initiate download
+		event.getButton().getWindow().open(new DownloadResource(zipContentMap, DOWNLOAD_FILE_NAME, getApplication()));
 	}
 
 	/**
-	 * Returns the currently selected TabContent-Object from
-	 * {@linkplain #tabContentMap}. If no Tab is selected null is returned.
+	 * Removes all directory-entries if there are any and simply returns the
+	 * filename.
 	 * 
-	 * @return The currently selected TabContent-Object, or null if there is no
-	 *         tab selected.
+	 * @param filename
+	 *            The path to the file including the filename (e.g.
+	 *            /descriptions/abc.txt)
+	 * @return returns only the filename (e.g. abc.txt)
 	 */
-	private TabContent getSelectedTabContent() {
-		Component selectedTab = tabSheet.getSelectedTab();
-		return selectedTab == null ? null : (TabContent) selectedTab;
+	private String flatten(String filename) {
+		return new File(filename).getName();
 	}
 
 	@Override
@@ -126,7 +159,7 @@ public class ConfigResultView extends CustomComponent implements ModelChangeList
 		if (newValue == null) return;
 		for (Entry<UiModel.OutputDataKey, String> eachEntry : newValue.getOutputMap().entrySet()) {
 			if (tabContentMap.get(eachEntry.getKey()) != null) {
-				tabContentMap.get(eachEntry.getKey()).setText(eachEntry.getValue());
+				tabContentMap.get(eachEntry.getKey()).setConfigContent(eachEntry.getValue());
 			}
 		}
 	}
@@ -141,15 +174,25 @@ public class ConfigResultView extends CustomComponent implements ModelChangeList
 	 */
 	private static class DownloadResource extends StreamResource {
 
-		public DownloadResource(final String downloadString, final String filename, Application application) {
+		/**
+		 * 
+		 * @param zipContentMap
+		 *            key: Filename, value: File content
+		 * @param application
+		 * @param filename
+		 *            The filename for the downloadable zip file.
+		 */
+		public DownloadResource(final Map<String, String> zipContentMap, final String filename,
+				final Application application) {
 			super(new StreamSource() {
 				@Override
 				public InputStream getStream() {
-					return new ByteArrayInputStream(downloadString.getBytes());
+
+					return new ByteArrayInputStream(getZipByteArray(zipContentMap));
 				}
 			}, filename, application);
-			// for "older" browsers to force a download, otherwise it may not be
-			// downloaded
+			// for "older" browsers to force a download,
+			// otherwise it may not be downloaded
 			setMIMEType("application/unknown");
 		}
 
@@ -164,52 +207,79 @@ public class ConfigResultView extends CustomComponent implements ModelChangeList
 			ds.setParameter("Content-Disposition", "attachment; filename=\"" + getFilename() + "\"");
 			return ds;
 		}
+
+		/**
+		 * Creates a byte-Array which represents the content from the
+		 * zipContentMap in zipped form. The files are defined by the given Map.
+		 * The key of the map defines the name in the zip archive. The value of
+		 * the map defines file's content.
+		 * 
+		 * @param zipContentMap
+		 *            The map which contains the filenames and file contents for
+		 *            the zip archive to create.
+		 * @return a byte-Array which represents the zip file.
+		 */
+		private static byte[] getZipByteArray(Map<String, String> zipContentMap) {
+			try {
+				// create output streams ...
+				ByteArrayOutputStream arrayOutputStream = new ByteArrayOutputStream();
+				ZipOutputStream out = new ZipOutputStream(arrayOutputStream);
+
+				// Compress the files
+				for (Entry<String, String> eachEntry : zipContentMap.entrySet()) {
+					out.putNextEntry(new ZipEntry(eachEntry.getKey()));
+					out.write(eachEntry.getValue().getBytes());
+					out.closeEntry();
+				}
+				out.close(); // Complete the ZIP file
+				arrayOutputStream.close();
+				return arrayOutputStream.toByteArray();
+			} catch (IOException e) {
+				; // TODO error Handling
+			}
+			return new byte[0];
+		}
 	}
 
-	private class TabContent extends Panel {
+	private class TabContent extends HorizontalSplitPanel {
 
-		private final TextArea contentTextArea = new TextArea();
+		/**
+		 * TextArea for the configuration content (e.g. the SNMP-Graph-Properties)
+		 */
+		private final TextArea configTextArea = new TextArea();
 
-		private final String labelText;
-
-		private final Label description;
-
-		private final OutputDataKey key;
+		/**
+		 * Label for the description content (e.g. an explanation of the SNMP-Graph-Properties and what to do with that file).
+		 */
+		private final Label descriptionLabel;
 
 		private TabContent(OutputDataKey key) {
-			this.key = key;
 			setSizeFull();
-			HorizontalSplitPanel contentPanel = new HorizontalSplitPanel();
-			contentPanel.setLocked(false);
-			contentPanel.setSplitPosition(50, UNITS_PERCENTAGE);
-			setContent(contentPanel);
-			getContent().setSizeFull();
-			contentTextArea.setSizeFull();
-			labelText = key.name();
-			description = new Label(UIHelper.loadContentFromFile(getClass(), getDescriptionFilename()),
+			setLocked(false);
+			setSplitPosition(50, UNITS_PERCENTAGE);
+			configTextArea.setSizeFull();
+			descriptionLabel = new Label(UIHelper.loadContentFromFile(getClass(), key.getDescriptionFilename()),
 					Label.CONTENT_RAW);
-			addComponent(contentTextArea);
-			addComponent(description);
+			addComponent(configTextArea);
+			addComponent(descriptionLabel);
+			setCaption(key.name());
 		}
 
-		public String getLabelText() {
-			return labelText;
+		public String getDescriptionText() {
+			return (String) descriptionLabel.getValue();
 		}
 
-		public void setText(String newText) {
-			contentTextArea.setValue(newText);
+		/**
+		 * Sets the content of the {@linkplain #configTextArea}.
+		 * 
+		 * @param newConfigContent The new configuration content.
+		 */
+		public void setConfigContent(String newConfigContent) {
+			configTextArea.setValue(newConfigContent);
 		}
 
-		public String getText() {
-			return contentTextArea.getValue() == null ? "" : (String) contentTextArea.getValue();
-		}
-
-		private String getDescriptionFilename() {
-			return key.getDescriptionFilename();
-		}
-
-		private String getDownloadFilename() {
-			return key.getDownloadFilename();
+		public String getConfigContent() {
+			return configTextArea.getValue() == null ? "" : (String) configTextArea.getValue();
 		}
 	}
 }

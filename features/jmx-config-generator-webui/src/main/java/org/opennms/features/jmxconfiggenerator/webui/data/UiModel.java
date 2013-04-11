@@ -53,7 +53,7 @@ public class UiModel {
 		}
 
 		public String getDownloadFilename() {
-			return name() + ".txt";
+			return name() + ".properties";
 		}
 	}
 
