@@ -326,7 +326,9 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Sele
 
 	@Override
 	public void addSelectionListener(SelectionListener listener) {
-		m_selectionListeners.add(listener);
+		if (listener != null) {
+			m_selectionListeners.add(listener);
+		}
 	}
 	
 	@Override
