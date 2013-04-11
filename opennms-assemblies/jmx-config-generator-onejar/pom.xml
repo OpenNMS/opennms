@@ -101,7 +101,7 @@
         <groupId>org.dstovall</groupId>
         <artifactId>onejar-maven-plugin</artifactId>
         <configuration>
-          <mainClass>org.opennms.jmxconfiggenerator.Starter</mainClass>
+          <mainClass>org.opennms.features.jmxconfiggenerator.Starter</mainClass>
         </configuration>
       </plugin>
       <plugin>
@@ -129,7 +129,7 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
+      <groupId>org.opennms.features</groupId>
       <artifactId>jmxconfiggenerator</artifactId>
       <version>${project.version}</version>
     </dependency>

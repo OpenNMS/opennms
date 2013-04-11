@@ -1,0 +1,34 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+	xsi:schemaLocation="
+http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0 https://svn.apache.org/repos/asf/aries/tags/blueprint-0.3.1/blueprint-cm/src/main/resources/org/apache/aries/blueprint/compendium/cm/blueprint-cm-1.1.0.xsd
+http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/aries/tags/blueprint-0.3.1/blueprint-core/src/main/resources/org/apache/aries/blueprint/ext/blueprint-ext.xsd">
+
+	<bean id="jmxConfigToolApplicationFactory"
+		class="org.opennms.features.jmxconfiggenerator.webui.JmxConfigToolApplicationFactory" />
+
+	<service interface="org.ops4j.pax.vaadin.ApplicationFactory"
+		ref="jmxConfigToolApplicationFactory">
+		<service-properties>
+			<entry key="alias" value="/jmx-config-tool" />
+			<!-- <entry key="widgetset" value="${widgetset}"/> -->
+		</service-properties>
+	</service>
+        
+        
+        <bean id="jmxconfiggeneratoruiLink" class="org.opennms.features.jmxconfiggenerator.webui.AdminPageNavEntry">
+            <property name="url" value="admin/jmxConfigGenerator.jsp" />
+            <property name="name" value="JMX Config Generator Web UI ALPHA" />
+        </bean>
+
+
+        <service id="jmxconfiggeneratoruiService" interface="org.opennms.web.navigate.PageNavEntry" ref="jmxconfiggeneratoruiLink">
+            <service-properties>
+                <entry key="Page" value="admin" />
+                <entry key="Category" value="operations" />
+                <entry key="registration.export" value="true" />
+            </service-properties>
+        </service>
+
+</blueprint>
