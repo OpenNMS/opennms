@@ -263,14 +263,11 @@ public class CommandManager {
 	}
 
 	private void removeCommand(Operation operation) {
-		Iterator<Command> it = m_commandList.iterator();
-		while (it.hasNext()) {
-			Command command = it.next();
+		for (Command command : m_commandList) {
 			if (command.getOperation() == operation) {
-				it.remove(); 
+				removeCommand(command); 
 			}
 		}
-		updateCommandListeners();
 	}
 
 	private void removeCommand(Command command) {
