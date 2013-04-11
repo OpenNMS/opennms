@@ -39,6 +39,7 @@ import org.opennms.features.topology.api.HistoryManager;
 import org.opennms.features.topology.api.IViewContribution;
 import org.opennms.features.topology.api.MapViewManager;
 import org.opennms.features.topology.api.MapViewManagerListener;
+import org.opennms.features.topology.api.SelectionContext;
 import org.opennms.features.topology.api.SelectionListener;
 import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.SelectionNotifier;
@@ -79,7 +80,7 @@ import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.UriFragmentUtility.FragmentChangedEvent;
 import com.vaadin.ui.UriFragmentUtility.FragmentChangedListener;
 
-public class TopologyWidgetTestApplication extends Application implements CommandUpdateListener, MenuItemUpdateListener, ContextMenuHandler, WidgetUpdateListener, WidgetContext, FragmentChangedListener, GraphContainer.ChangeListener, MapViewManagerListener, VertexUpdateListener {
+public class TopologyWidgetTestApplication extends Application implements CommandUpdateListener, MenuItemUpdateListener, ContextMenuHandler, WidgetUpdateListener, WidgetContext, FragmentChangedListener, GraphContainer.ChangeListener, MapViewManagerListener, VertexUpdateListener, SelectionListener {
 
 	private static final long serialVersionUID = 6837501987137310938L;
 	private static int HEADER_HEIGHT = 100;
@@ -103,7 +104,6 @@ public class TopologyWidgetTestApplication extends Application implements Comman
     private final Label m_zoomLevelLabel = new Label("0"); 
     private UriFragmentUtility m_uriFragUtil;
     private final HistoryManager m_historyManager;
-    private final SelectionManager m_selectionManager;
     private String m_headerHtml;
     private boolean m_showHeader = true;
 
@@ -113,12 +113,15 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 		m_commandManager.addMenuItemUpdateListener(this);
 		m_historyManager = historyManager;
 		m_iconRepositoryManager = iconRepoManager;
-		m_selectionManager = selectionManager;
 
 		// Create a per-session GraphContainer instance
 		m_graphContainer = new VEProviderGraphContainer(topologyProvider, providerManager);
+		m_graphContainer.setSelectionManager(selectionManager);
 		m_graphContainer.addChangeListener(this);
 		m_graphContainer.getMapViewManager().addListener(this);
+
+		// Ensure that selection changes trigger a history save operation
+		selectionManager.addSelectionListener(this);
 	}
 
 
@@ -169,7 +172,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 
 		final Property scale = m_graphContainer.getScaleProperty();
 
-		m_topologyComponent = new TopologyComponent(m_graphContainer, m_iconRepositoryManager, m_selectionManager, this);
+		m_topologyComponent = new TopologyComponent(m_graphContainer, m_iconRepositoryManager, this);
 		m_topologyComponent.setSizeFull();
 		m_topologyComponent.addMenuItemStateListener(this);
 		m_topologyComponent.addVertexUpdateListener(this);
@@ -349,10 +352,10 @@ public class TopologyWidgetTestApplication extends Application implements Comman
             // Create a new view instance
             Component view = viewContrib.getView(widgetContext);
             try {
-                m_selectionManager.addSelectionListener((SelectionListener)view);
+                m_graphContainer.getSelectionManager().addSelectionListener((SelectionListener)view);
             } catch (ClassCastException e) {}
             try {
-                ((SelectionNotifier)view).addSelectionListener(m_selectionManager);
+                ((SelectionNotifier)view).addSelectionListener(m_graphContainer.getSelectionManager());
             } catch (ClassCastException e) {}
             if(viewContrib.getIcon() != null) {
                 tabSheet.addTab(view, viewContrib.getTitle(), viewContrib.getIcon());
@@ -424,7 +427,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
     private VertexSelectionTree createTree() {
 	    //final FilterableHierarchicalContainer container = new FilterableHierarchicalContainer(m_graphContainer.getVertexContainer());
 	    
-		VertexSelectionTree tree = new VertexSelectionTree("Nodes", m_graphContainer, m_selectionManager);
+		VertexSelectionTree tree = new VertexSelectionTree("Nodes", m_graphContainer);
 		tree.setMultiSelect(true);
 		tree.setImmediate(true);
 		tree.setItemCaptionPropertyId(LABEL_PROPERTY);
@@ -434,7 +437,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 			tree.expandItemsRecursively(item);
 		}
 		
-		m_selectionManager.addSelectionListener(tree);
+		m_graphContainer.getSelectionManager().addSelectionListener(tree);
 
 		return tree;
 	}
@@ -461,7 +464,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 			if(menuItem.hasChildren()) {
 				updateMenuItems(menuItem.getChildren());
 			}else {
-				m_commandManager.updateMenuItem(menuItem, m_graphContainer, getMainWindow(), m_selectionManager);
+				m_commandManager.updateMenuItem(menuItem, m_graphContainer, getMainWindow());
 			}
 		}
 	}
@@ -476,7 +479,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 			getMainWindow().removeComponent(m_contextMenu);
 		}
 
-		m_menuBar = commandManager.getMenuBar(m_graphContainer, getMainWindow(), m_selectionManager);
+		m_menuBar = commandManager.getMenuBar(m_graphContainer, getMainWindow());
 		m_menuBar.setWidth("100%");
 		m_rootLayout.addComponent(m_menuBar, "top: " + HEADER_HEIGHT +"px; left: 0px; right:0px;");
 
@@ -615,4 +618,8 @@ public class TopologyWidgetTestApplication extends Application implements Comman
         m_showHeader = "true".equals(boolVal);
     }
 
+    @Override
+    public void selectionChanged(SelectionContext selectionManager) {
+        saveHistory();
+    }
 }

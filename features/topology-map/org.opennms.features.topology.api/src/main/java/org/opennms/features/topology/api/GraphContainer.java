@@ -55,6 +55,10 @@ public interface GraphContainer extends DisplayState {
 
 	void removeChangeListener(ChangeListener listener);
 
+	SelectionManager getSelectionManager();
+
+	void setSelectionManager(SelectionManager selectionManager);
+
 	Graph getGraph();
 
 	Collection<VertexRef> getVertexRefForest(Collection<VertexRef> vertexRefs);

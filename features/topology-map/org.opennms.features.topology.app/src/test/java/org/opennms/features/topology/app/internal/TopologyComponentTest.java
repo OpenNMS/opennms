@@ -49,7 +49,6 @@ import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
 
-import com.vaadin.data.util.BeanItem;
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
 
@@ -80,16 +79,16 @@ public class TopologyComponentTest {
         assertEquals(2, topoProvider.getVertices().size());
         assertEquals(1, topoProvider.getEdges().size());
         GraphContainer graphContainer = new VEProviderGraphContainer(topoProvider, new ProviderManager());
-        TopologyComponent topoComponent = getTopologyComponent(graphContainer, selectionManager);
+        graphContainer.setSelectionManager(selectionManager);
+        TopologyComponent topoComponent = getTopologyComponent(graphContainer);
         
         topoComponent.paintContent(target);
         
         EasyMock.verify(target);
     }
 
-    private static TopologyComponent getTopologyComponent(GraphContainer dataSource, SelectionManager selectionManager) {
-    	BeanItem<GraphContainer> item = new BeanItem<GraphContainer>(dataSource);
-        TopologyComponent topologyComponent = new TopologyComponent(dataSource, new IconRepositoryManager(), selectionManager, null);
+    private static TopologyComponent getTopologyComponent(GraphContainer dataSource) {
+        TopologyComponent topologyComponent = new TopologyComponent(dataSource, new IconRepositoryManager(), null);
         return topologyComponent;
     }
     
@@ -124,7 +123,8 @@ public class TopologyComponentTest {
         assertEquals(2, topoProvider.getVertices().size());
         assertEquals(1, topoProvider.getEdges().size());
         GraphContainer graphContainer = new VEProviderGraphContainer(topoProvider, new ProviderManager());
-        TopologyComponent topoComponent = getTopologyComponent(graphContainer, selectionManager);
+        graphContainer.setSelectionManager(selectionManager);
+        TopologyComponent topoComponent = getTopologyComponent(graphContainer);
         
         AbstractVertex newVertex = topoProvider.addVertex(0, 0);
         newVertex.setLabel("New Vertex");
@@ -181,7 +181,8 @@ public class TopologyComponentTest {
         
         TestTopologyProvider topologyProvider = new TestTopologyProvider("test");
         GraphContainer graphContainer = new VEProviderGraphContainer(topologyProvider, new ProviderManager());
-        TopologyComponent topoComponent = getTopologyComponent(graphContainer, selectionManager);
+        graphContainer.setSelectionManager(selectionManager);
+        TopologyComponent topoComponent = getTopologyComponent(graphContainer);
         
         Collection<Vertex> vertIds = topologyProvider.getVertices();
         assertEquals(2, vertIds.size());
@@ -225,7 +226,8 @@ public class TopologyComponentTest {
 
         TestTopologyProvider topoProvider = new TestTopologyProvider("test");
         GraphContainer graphContainer = new VEProviderGraphContainer(topoProvider, new ProviderManager());
-        TopologyComponent topoComponent = getTopologyComponent(graphContainer, selectionManager);
+        graphContainer.setSelectionManager(selectionManager);
+        TopologyComponent topoComponent = getTopologyComponent(graphContainer);
         Graph graph = topoComponent.getGraph();
         
         Collection<? extends Edge> edges = graph.getDisplayEdges();

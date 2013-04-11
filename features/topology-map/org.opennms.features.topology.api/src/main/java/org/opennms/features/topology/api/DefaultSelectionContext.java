@@ -37,8 +37,8 @@ import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.VertexRef;
 
 public class DefaultSelectionContext implements SelectionContext {
-	private final Set<VertexRef> m_selectedVertices = new HashSet<VertexRef>();
-	private final Set<EdgeRef> m_selectedEdges = new HashSet<EdgeRef>();
+	private final Set<VertexRef> m_selectedVertices = Collections.synchronizedSet(new HashSet<VertexRef>());
+	private final Set<EdgeRef> m_selectedEdges = Collections.synchronizedSet(new HashSet<EdgeRef>());
 
 	@Override
 	public boolean isVertexRefSelected(VertexRef vertexRef) {
@@ -73,46 +73,39 @@ public class DefaultSelectionContext implements SelectionContext {
 
 	@Override
 	public boolean selectVertexRefs(Collection<? extends VertexRef> vertexRefs) {
-		int selectionSize = getSelectedVertexRefs().size();
-		for(VertexRef vertexRef : vertexRefs) {
+		Set<VertexRef> oldSet = new HashSet<VertexRef>();
+		oldSet.addAll(getSelectedVertexRefs());
+
+		for (VertexRef vertexRef : vertexRefs) {
 			setVertexRefSelected(vertexRef, true);
 		}
-		int selectionSizeAfterRemoval = getSelectedVertexRefs().size();
 
-		if(selectionSize != selectionSizeAfterRemoval) {
-			return true;
-		} else {
+		if (oldSet.equals(getSelectedVertexRefs())) {
 			return false;
+		} else {
+			return true;
 		}
 	}
 
 	@Override
 	public boolean deselectVertexRefs(Collection<? extends VertexRef> vertexRefs) {
-		int selectionSize = getSelectedVertexRefs().size();
-		for(VertexRef vertexRef : vertexRefs) {
+		Set<VertexRef> oldSet = new HashSet<VertexRef>();
+		oldSet.addAll(getSelectedVertexRefs());
+
+		for (VertexRef vertexRef : vertexRefs) {
 			setVertexRefSelected(vertexRef, false);
 		}
-		int selectionSizeAfterRemoval = getSelectedVertexRefs().size();
 
-		if(selectionSize != selectionSizeAfterRemoval) {
-			return true;
-		} else {
+		if (oldSet.equals(getSelectedVertexRefs())) {
 			return false;
+		} else {
+			return true;
 		}
 	}
 
 	@Override
 	public boolean deselectAll() {
-		int vertSelectionSize = m_selectedVertices.size();
-		int edgeSelectionSize = m_selectedEdges.size();
-
-		doDeselectAll();
-
-		if(vertSelectionSize > m_selectedVertices.size() || edgeSelectionSize > m_selectedEdges.size()) {
-			return true;
-		} else {
-			return false;
-		}
+		return (setSelectedVertexRefs(Collections.<VertexRef>emptySet())) || setSelectedEdgeRefs(Collections.<EdgeRef>emptySet());
 	}
 
 	private void doDeselectAll() {
@@ -126,6 +119,7 @@ public class DefaultSelectionContext implements SelectionContext {
 
 		selectVertexRefs(vertexRefs);
 
+		// TODO: Can we return a more accurate value here?
 		return true;
 	}
 
