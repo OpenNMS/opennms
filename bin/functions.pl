@@ -3,7 +3,7 @@
 use Cwd;
 use File::Basename;
 use File::Find;
-use File::Path qw(remove_tree);
+use File::Path qw(rmtree);
 use File::Spec;
 use Getopt::Long qw(:config permute bundling pass_through);
 use IO::Handle;
@@ -194,8 +194,9 @@ sub clean_m2_repository {
 		},
 		File::Spec->catfile($ENV{'HOME'}, '.m2', 'repository')
 	);
-	info("cleaning up old m2_repo directories: " . sort keys %dirs);
-	remove_tree(keys %dirs);
+	my @remove = sort keys %dirs;
+	info("cleaning up old m2_repo directories: " . @remove);
+	rmtree(\@remove);
 }
 
 sub get_dependencies {
