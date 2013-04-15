@@ -38,7 +38,6 @@ import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -583,11 +582,11 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
         public static final String KEY = PageSequenceMonitorParameters.class.getName();
 
         @SuppressWarnings({ "unchecked" })
-        static synchronized PageSequenceMonitorParameters get(Map paramterMap) {
-            PageSequenceMonitorParameters parms = (PageSequenceMonitorParameters) paramterMap.get(KEY);
+        static synchronized PageSequenceMonitorParameters get(Map parameterMap) {
+            PageSequenceMonitorParameters parms = (PageSequenceMonitorParameters) parameterMap.get(KEY);
             if (parms == null) {
-                parms = new PageSequenceMonitorParameters(paramterMap);
-                paramterMap.put(KEY, parms);
+                parms = new PageSequenceMonitorParameters(parameterMap);
+                parameterMap.put(KEY, parms);
             }
             return parms;
         }
@@ -613,7 +612,7 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
         }
 
         Map<String, String> getParameterMap() {
-            return Collections.unmodifiableMap(m_parameterMap);
+            return m_parameterMap;
         }
 
         HttpPageSequence getPageSequence() {
@@ -634,7 +633,7 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
         }
 
         private String getStringParm(String key, String deflt) {
-            return ParameterMap.getKeyedString(this.getParameterMap(), key, deflt);
+            return ParameterMap.getKeyedString(getParameterMap(), key, deflt);
         }
 
         private int getIntParm(String key, int defValue) {

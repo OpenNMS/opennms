@@ -33,6 +33,7 @@ import static org.opennms.core.utils.InetAddressUtils.str;
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -358,14 +359,22 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
     @Transactional(readOnly=true)
     @Override
     public Collection<ServiceMonitorLocator> getServiceMonitorLocators(final DistributionContext context) {
-    	try {
-	        final Collection<ServiceMonitorLocator> locators = m_pollerConfig.getServiceMonitorLocators(context);
-	        LogUtils.debugf(this, "getServiceMonitorLocators: Returning %d locators", locators.size());
-	        return locators;
-    	} catch (final Exception e) {
-    		LogUtils.warnf(this, e, "An error occurred getting the service monitor locators for distribution context: %s", context);
-    		return Collections.emptyList();
-    	}
+        try {
+            final List<ServiceMonitorLocator> locators = new ArrayList<ServiceMonitorLocator>();
+            final List<String> ex = Arrays.asList(System.getProperty("excludeServiceMonitorsFromRemotePoller", "").trim().split("\\s*,\\s*"));
+
+            for (final ServiceMonitorLocator locator : m_pollerConfig.getServiceMonitorLocators(context)) {
+                if (!ex.contains(locator.getServiceName())) {
+                    locators.add(locator);
+                }
+            }
+            
+            LogUtils.debugf(this, "getServiceMonitorLocators: Returning %d locators", locators.size());
+            return locators;
+        } catch (final Exception e) {
+            LogUtils.warnf(this, e, "An error occurred getting the service monitor locators for distribution context: %s", context);
+            return Collections.emptyList();
+        }
     }
 
     private boolean logicalStatusChanged(final OnmsLocationSpecificStatus currentStatus, final OnmsLocationSpecificStatus newStatus) {

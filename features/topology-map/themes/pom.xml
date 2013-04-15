@@ -15,6 +15,7 @@
 
   <packaging>pom</packaging>
 
+
   <modules>
     <module>default-theme</module>
   </modules>

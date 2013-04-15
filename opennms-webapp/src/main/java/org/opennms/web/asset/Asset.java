@@ -132,9 +132,9 @@ public class Asset extends Object {
 
     protected String country = "";
 
-    protected Float longitude = null;
+    protected String longitude = "";
 
-    protected Float latitude = null;
+    protected String latitude = "";
 
     protected String building = "";
 
@@ -1074,40 +1074,44 @@ public class Asset extends Object {
     /**
      * <p>Setter for the field <code>longitude</code>.</p>
      *
-     * @param longitude a {@link java.lang.Float} object.
+     * @param longitude a {@link java.lang.String} object.
      */
-    public void setLongitude(Float longitude) {
+    public void setLongitude(String longitude) {
         if (longitude != null) {
             this.longitude = longitude;
+        } else {
+            this.longitude = "";
         }
     }
 
     /**
      * <p>Getter for the field <code>longitude</code>.</p>
      *
-     * @return a {@link java.lang.Float} object.
+     * @return a {@link java.lang.String} object.
      */
-    public Float getLongitude() {
+    public String getLongitude() {
         return (this.longitude);
     }
 
     /**
-     * <p>Setter for the field <code>longitude</code>.</p>
+     * <p>Setter for the field <code>latitude</code>.</p>
      *
-     * @param longitude a {@link java.lang.Float} object.
+     * @param latitude a {@link java.lang.String} object.
      */
-    public void setLatitude(Float latitude) {
+    public void setLatitude(String latitude) {
         if (latitude != null) {
             this.latitude = latitude;
+        } else {
+            this.latitude = "";
         }
     }
 
     /**
      * <p>Getter for the field <code>latitude</code>.</p>
      *
-     * @return a {@link java.lang.Float} object.
+     * @return a {@link java.lang.String} object.
      */
-    public Float getLatitude() {
+    public String getLatitude() {
         return (this.latitude);
     }
 
