@@ -48,12 +48,16 @@ import java.util.concurrent.locks.ReentrantLock;
  * @version $Id: $
  */
 public class PropertiesCache {
-    
+
+    public static final String CHECK_LAST_MODIFY_STRING = "org.opennms.utils.propertiesCache.enableCheckFileModified";
+
     private static class PropertiesHolder {
         private Properties m_properties;
         private final File m_file;
         private final Lock lock = new ReentrantLock();
-        
+        private long m_lastModify = 0;
+        private boolean m_checkLastModify = Boolean.getBoolean(CHECK_LAST_MODIFY_STRING);
+
         PropertiesHolder(File file) {
             m_file = file;
             m_properties = null;
@@ -69,6 +73,9 @@ public class PropertiesCache {
                 in = new FileInputStream(m_file);
                 Properties prop = new Properties();
                 prop.load(in);
+                if (m_checkLastModify) {
+                    m_lastModify = m_file.lastModified();
+                }
                 return prop;
             } finally {
                 if (in != null) {
@@ -95,6 +102,10 @@ public class PropertiesCache {
             try {
                 if (m_properties == null) {
                     readWithDefault(new Properties());
+                } else {
+                    if (m_checkLastModify && m_file.canRead() && m_lastModify != m_file.lastModified()) {
+                        m_properties = read();
+                    }
                 }
                 return m_properties;
             } finally {
