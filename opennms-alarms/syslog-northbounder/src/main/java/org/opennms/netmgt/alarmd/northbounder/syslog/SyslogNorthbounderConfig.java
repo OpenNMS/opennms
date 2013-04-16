@@ -121,5 +121,15 @@ public class SyslogNorthbounderConfig implements Serializable {
 	public void setEnabled(Boolean enabled) {
 		m_enabled = enabled;
 	}
+	
+	public SyslogDestination getDestination(String destinationName) {
+		SyslogDestination destination = null;
+		for (SyslogDestination dest : m_destinations) {
+			if (dest.getName().equals(destinationName)) {
+				destination = dest;
+			}
+		}
+		return destination;
+	}
 
 }

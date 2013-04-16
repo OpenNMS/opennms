@@ -231,7 +231,7 @@ public class JsmiMibParserTest {
             for (MibObj mo : mibGroup.getMibObjCollection()) {
                 Assert.assertEquals("ifEntry", mo.getInstance());
                 Assert.assertTrue(mo.getOid().startsWith(".1.3.6.1.2.1.2.2.1"));
-                Assert.assertTrue(mo.getType().matches("^([Ii]nteger|[Gg]auge|[Ss]tring|[Oo]ctet[Ss]tring|[Cc]ounter).*"));
+                Assert.assertTrue(mo.getType().matches("^(?i)(counter|gauge|timeticks|integer|octetstring|string)?\\d*$"));
             }
         } else {
             Assert.fail("The IF-MIB.txt file couldn't be parsed successfully.");

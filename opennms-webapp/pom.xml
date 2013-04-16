@@ -268,6 +268,17 @@
                 <type>pom</type>
                 <version>${project.version}</version>
               </dependency>
+              <dependency>
+                <groupId>org.extremecomponents</groupId>
+                <artifactId>extremecomponents</artifactId>
+                <version>1.0.1</version>
+                <exclusions>
+                  <exclusion>
+                    <groupId>taglibs</groupId>
+                    <artifactId>standard</artifactId>
+                  </exclusion>
+                </exclusions>
+              </dependency>
             </dependencies>
           </plugin>
         </plugins>
@@ -353,6 +364,53 @@
       <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.gwt-ksc-add</artifactId>
+      <version>${project.version}</version>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.gwt-ksc-combobox</artifactId>
+      <version>${project.version}</version>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.gwt-suggestion-combobox</artifactId>
+      <version>${project.version}</version>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.gwt-graph-resources-list</artifactId>
+      <version>${project.version}</version>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.gwt-snmpselect-list</artifactId>
+      <version>${project.version}</version>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.instrumentationLogReader</artifactId>
+      <scope>${onmsLibScope}</scope>
+    </dependency>   
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.node-page-list</artifactId>
+      <version>${project.version}</version>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.opennms-gwt-theme</artifactId>
+      <version>${project.version}</version>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.reporting</groupId>
       <artifactId>org.opennms.features.reporting.core</artifactId>
       <scope>${onmsLibScope}</scope>
@@ -432,6 +490,27 @@
       <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    <dependency>
+      <groupId>net.sf.json-lib</groupId>
+      <artifactId>json-lib</artifactId>
+      <classifier>jdk15</classifier>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    <dependency>
+      <groupId>net.sf.opencsv</groupId>
+      <artifactId>opencsv</artifactId>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    <dependency>
+      <groupId>ognl</groupId>
+      <artifactId>ognl</artifactId>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    <dependency>
       <groupId>org.apache.xmlgraphics</groupId>
       <artifactId>batik-dom</artifactId>
       <scope>${onmsLibScope}</scope>
@@ -457,20 +536,14 @@
       <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
-      <groupId>oro</groupId>
-      <artifactId>oro</artifactId>
+      <groupId>org.eclipse.jetty.orbit</groupId>
+      <artifactId>org.apache.taglibs.standard.glassfish</artifactId>
       <scope>${onmsLibScope}</scope>
-    </dependency>
-
-    <!-- direct dependencies that should be in WEB-INF/lib -->
-
-    <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
     </dependency>
     <dependency>
       <groupId>org.extremecomponents</groupId>
       <artifactId>extremecomponents</artifactId>
+      <scope>${onmsLibScope}</scope>
     </dependency>
     <!--
 
@@ -480,82 +553,33 @@
     <dependency>
       <groupId>org.jmesa</groupId>
       <artifactId>jmesa</artifactId>
+      <scope>${onmsLibScope}</scope>
     </dependency>
     -->
     <dependency>
-      <groupId>net.sf.json-lib</groupId>
-      <artifactId>json-lib</artifactId>
-      <classifier>jdk15</classifier>
-    </dependency>
-    <dependency>
-      <groupId>net.sf.opencsv</groupId>
-      <artifactId>opencsv</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>ognl</groupId>
-      <artifactId>ognl</artifactId>
-      <version>2.6.9</version>
-    </dependency>
-    <dependency>
-      <groupId>org.eclipse.jetty.orbit</groupId>
-      <artifactId>org.apache.taglibs.standard.glassfish</artifactId>
-      <version>1.2.0.v201112081803</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.instrumentationLogReader</artifactId>
-    </dependency>   
-    <dependency>
       <groupId>org.tuckey</groupId>
       <artifactId>urlrewritefilter</artifactId>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    <dependency>
+      <groupId>oro</groupId>
+      <artifactId>oro</artifactId>
+      <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
       <groupId>poi</groupId>
       <artifactId>poi</artifactId>
+      <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
       <groupId>rome</groupId>
       <artifactId>rome</artifactId>
+      <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
       <groupId>struts</groupId>
       <artifactId>struts</artifactId>
-    </dependency>
-    <dependency>
-        <groupId>org.opennms.features</groupId>
-        <artifactId>org.opennms.features.opennms-gwt-theme</artifactId>
-        <version>${project.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>org.opennms.features</groupId>
-        <artifactId>org.opennms.features.node-page-list</artifactId>
-        <version>${project.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>org.opennms.features</groupId>
-        <artifactId>org.opennms.features.gwt-ksc-add</artifactId>
-        <version>${project.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>org.opennms.features</groupId>
-        <artifactId>org.opennms.features.gwt-ksc-combobox</artifactId>
-        <version>${project.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>org.opennms.features</groupId>
-        <artifactId>org.opennms.features.gwt-suggestion-combobox</artifactId>
-        <version>${project.version}</version>
-        <scope>compile</scope>
-    </dependency>
-    <dependency>
-        <groupId>org.opennms.features</groupId>
-        <artifactId>org.opennms.features.gwt-graph-resources-list</artifactId>
-        <version>${project.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>org.opennms.features</groupId>
-        <artifactId>org.opennms.features.gwt-snmpselect-list</artifactId>
-        <version>${project.version}</version>
+      <scope>${onmsLibScope}</scope>
     </dependency>
 
     <!-- test dependencies -->

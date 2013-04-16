@@ -127,7 +127,7 @@ xsi:schemaLocation="
         <value>Foreign ID</value>
         <value>Label</value>
         <value>Label Source</value>
-        <value>Last Capsd Poll</value>
+        <value>Last Capabilities Scan</value>
         <value>Primary Interface</value>
         <value>sysObjectId</value>
         <value>sysName</value>
