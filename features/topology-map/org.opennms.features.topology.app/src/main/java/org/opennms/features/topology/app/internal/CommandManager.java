@@ -150,7 +150,7 @@ public class CommandManager {
 		m_menuItemUpdateListeners.remove(listener);
 	}
 
-	MenuBar getMenuBar(GraphContainer graphContainer, Window mainWindow, SelectionManager selectionManager) {
+	MenuBar getMenuBar(GraphContainer graphContainer, Window mainWindow) {
 		OperationContext opContext = new DefaultOperationContext(mainWindow, graphContainer, DisplayLocation.MENUBAR);
 		MenuBarBuilder menuBarBuilder = new MenuBarBuilder();
 		menuBarBuilder.setTopLevelMenuOrder(m_topLevelMenuOrder);
@@ -158,7 +158,7 @@ public class CommandManager {
 		
 		for (Command command : m_commandList) {
 			String menuPosition = command.getMenuPosition();
-			MenuBar.Command menuCommand = menuCommand(command, graphContainer, mainWindow, opContext, selectionManager);
+			MenuBar.Command menuCommand = menuCommand(command, graphContainer, mainWindow, opContext);
 			updateCommandToOperationMap(command, menuCommand);
 			menuBarBuilder.addMenuCommand(menuCommand, menuPosition);
 		}
@@ -206,12 +206,12 @@ public class CommandManager {
 
 	public MenuBar.Command menuCommand(final Command command,
 			final GraphContainer graphContainer, final Window mainWindow,
-			final OperationContext operationContext, final SelectionManager selectionManager) {
+			final OperationContext operationContext) {
 
 		return new MenuBar.Command() {
 
 			public void menuSelected(MenuItem selectedItem) {
-				List<VertexRef> targets = new ArrayList<VertexRef>(selectionManager.getSelectedVertexRefs());
+				List<VertexRef> targets = new ArrayList<VertexRef>(graphContainer.getSelectionManager().getSelectedVertexRefs());
 
 				DefaultOperationContext context = (DefaultOperationContext) operationContext;
 				context.setChecked(selectedItem.isChecked());
@@ -263,14 +263,11 @@ public class CommandManager {
 	}
 
 	private void removeCommand(Operation operation) {
-		Iterator<Command> it = m_commandList.iterator();
-		while (it.hasNext()) {
-			Command command = it.next();
+		for (Command command : m_commandList) {
 			if (command.getOperation() == operation) {
-				it.remove(); 
+				removeCommand(command); 
 			}
 		}
-		updateCommandListeners();
 	}
 
 	private void removeCommand(Command command) {
@@ -319,13 +316,13 @@ public class CommandManager {
 		return m_subMenuGroupOrder;
 	}
 
-	public void updateMenuItem(MenuItem menuItem, GraphContainer graphContainer, Window mainWindow, SelectionManager selectionManager) {
+	public void updateMenuItem(MenuItem menuItem, GraphContainer graphContainer, Window mainWindow) {
 		DefaultOperationContext operationContext = new DefaultOperationContext(mainWindow, graphContainer, DisplayLocation.MENUBAR);
 		Operation operation = getOperationByMenuItemCommand(menuItem.getCommand());
 		
 		//Check for null because separators have no Operation
 		if(operation != null) {
-    		List<VertexRef> selectedVertices = new ArrayList<VertexRef>(selectionManager.getSelectedVertexRefs());
+    		List<VertexRef> selectedVertices = new ArrayList<VertexRef>(graphContainer.getSelectionManager().getSelectedVertexRefs());
 			boolean visibility = operation.display(selectedVertices, operationContext);
     		menuItem.setVisible(visibility);
     		boolean enabled = operation.enabled(selectedVertices, operationContext);

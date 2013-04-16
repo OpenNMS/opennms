@@ -17,11 +17,6 @@ public class MemoryHistoryManager extends AbstractHistoryManager {
 
     @Override
     protected SavedHistory getHistory(String fragmentId) {
-        SavedHistory hist = null;
-        if(m_historyMap.containsKey(fragmentId)) {
-            hist = m_historyMap.get(fragmentId);
-        }
-        return hist;
+        return m_historyMap.get(fragmentId);
     }
-
 }

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+        <action>
+            <actionName>CUSTOM-vaadin:update-widgetset</actionName>
+            <displayName>vaadin:update-widgetset</displayName>
+            <goals>
+                <goal>vaadin:update-widgetset</goal>
+            </goals>
+            <properties>
+                <skipTests>true</skipTests>
+            </properties>
+        </action>
+    </actions>

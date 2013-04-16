@@ -73,9 +73,11 @@ public class SelectionAwareTable extends Table implements SelectionListener, Sel
 	 */
 	@Override
 	public void addSelectionListener(SelectionListener listener) {
-		m_container.addSelectionListener(listener);
-		for (SelectionNotifier notifier : m_selectionNotifiers) {
-			notifier.addSelectionListener(listener);
+		if (listener != null) {
+			m_container.addSelectionListener(listener);
+			for (SelectionNotifier notifier : m_selectionNotifiers) {
+				notifier.addSelectionListener(listener);
+			}
 		}
 	}
 
