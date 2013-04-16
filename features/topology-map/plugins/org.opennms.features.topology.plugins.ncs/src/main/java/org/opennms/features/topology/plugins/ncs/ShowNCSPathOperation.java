@@ -1,4 +1,4 @@
-package org.opennms.features.topology.plugins.ncs.operations;
+package org.opennms.features.topology.plugins.ncs;
 
 import java.util.List;
 

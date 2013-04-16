@@ -36,7 +36,7 @@
             <entry key="operation.label" value="Show NCS Path"/>
             <entry key="operation.contextMenuLocation" value="NCS"/>
         </service-properties>
-	   <bean class="org.opennms.features.topology.plugins.ncs.operation.ShowNCSPathOperation" ></bean>
+	   <bean class="org.opennms.features.topology.plugins.ncs.ShowNCSPathOperation" ></bean>
 	</service>
 
 </blueprint>
