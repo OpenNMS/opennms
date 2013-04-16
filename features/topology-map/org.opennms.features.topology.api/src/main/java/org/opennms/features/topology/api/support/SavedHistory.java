@@ -44,7 +44,9 @@ public class SavedHistory {
     @XmlJavaTypeAdapter(VertexRefPointMapAdapter.class)
     public Map<VertexRef, Point> m_locations = new HashMap<VertexRef, Point>();
 
-    ///private Set<VertexRef> m_selectedVertices;
+    @XmlElement(name="selection")
+    @XmlJavaTypeAdapter(VertexRefSetAdapter.class)
+    private Set<VertexRef> m_selectedVertices;
 
     /**
      * A map of key-value settings for the HistoryOperation components that are registered.
@@ -86,7 +88,7 @@ public class SavedHistory {
         m_szl = szl;
         m_boundBox = box;
         m_locations = locations;
-        ///m_selectedVertices = selectedVertices;
+        m_selectedVertices = selectedVertices;
         m_settings.putAll(operationSettings);
         LoggerFactory.getLogger(this.getClass()).debug("Created " + toString());
     }
@@ -135,7 +137,6 @@ public class SavedHistory {
         }
         retval.append(String.format(",(%X)", locationsCrc.getValue()));
 
-        /***
         CRC32 selectionsCrc = new CRC32();
         for(VertexRef entry : m_selectedVertices) {
             try {
@@ -146,7 +147,6 @@ public class SavedHistory {
             }
         }
         retval.append(String.format(",(%X)", selectionsCrc.getValue()));
-        ***/
 
         return retval.toString();
     }
@@ -162,7 +162,7 @@ public class SavedHistory {
         graphContainer.setSemanticZoomLevel(getSemanticZoomLevel());
 
         // Apply the selected vertices
-        ///graphContainer.getSelectionManager().setSelectedVertexRefs(m_selectedVertices);
+        graphContainer.getSelectionManager().setSelectedVertexRefs(m_selectedVertices);
 
         graphContainer.getMapViewManager().setBoundingBox(getBoundingBox());
     }
@@ -179,11 +179,9 @@ public class SavedHistory {
         for (Map.Entry<String,String> entry : m_settings.entrySet()) {
             retval.append(",[").append(entry.getKey()).append("->").append(entry.getValue()).append("]");
         }
-        /***
         for (VertexRef entry : m_selectedVertices) {
             retval.append(",[").append(entry.getNamespace()).append(":").append(entry.getId()).append("]");
         }
-        ***/
         return retval.toString();
     }
 }

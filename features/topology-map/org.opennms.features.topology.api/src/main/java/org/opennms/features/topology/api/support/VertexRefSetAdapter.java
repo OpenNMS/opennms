@@ -28,32 +28,24 @@
 
 package org.opennms.features.topology.api.support;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
-import org.opennms.features.topology.api.Point;
 import org.opennms.features.topology.api.topo.AbstractVertexRef;
 import org.opennms.features.topology.api.topo.VertexRef;
 
 /**
  */
-public class VertexRefPointMapAdapter extends XmlAdapter<VertexRefPointMapAdapter.VertexRefPointMap, Map<VertexRef,Point>> {
+public class VertexRefSetAdapter extends XmlAdapter<VertexRefSetAdapter.VertexRefSet, Set<VertexRef>> {
 
-	public static final class VertexRefPointMap {
-		public List<VertexRefPointEntry> entry = new ArrayList<VertexRefPointEntry>(0);
+	public static final class VertexRefSet {
+		public Set<VertexRefEntry> entry = new HashSet<VertexRefEntry>(0);
 	}
 
-	public static final class VertexRefPointEntry {
-		public VertexRefKey key;
-		public PointValue value;
-	}
-
-	public static final class VertexRefKey {
+	public static final class VertexRefEntry {
 		@XmlAttribute
 		public String namespace;
 		@XmlAttribute
@@ -62,31 +54,17 @@ public class VertexRefPointMapAdapter extends XmlAdapter<VertexRefPointMapAdapte
 		public String label;
 	}
 
-	public static final class PointValue {
-		@XmlAttribute
-		public int x;
-		@XmlAttribute
-		public int y;
-	}
-
 	@Override
-	public VertexRefPointMapAdapter.VertexRefPointMap marshal(Map<VertexRef,Point> v) throws Exception {
-		if (v == null) {
+	public VertexRefSetAdapter.VertexRefSet marshal(Set<VertexRef> v) throws Exception {
+		if(v == null) {
 			return null;
 		} else {
-			VertexRefPointMap retval = new VertexRefPointMap();
-			for (VertexRef key : v.keySet()) {
-				VertexRefPointEntry entry = new VertexRefPointEntry();
-				VertexRefKey newKey = new VertexRefKey();
-				newKey.namespace = key.getNamespace();
-				newKey.id = key.getId();
-				newKey.label = key.getLabel();
-				Point value = v.get(key);
-				PointValue newValue = new PointValue();
-				newValue.x = value.getX();
-				newValue.y = value.getY();
-				entry.key = newKey;
-				entry.value = newValue;
+			VertexRefSet retval = new VertexRefSet();
+			for (VertexRef key : v) {
+				VertexRefEntry entry = new VertexRefEntry();
+				entry.namespace = key.getNamespace();
+				entry.id = key.getId();
+				entry.label = key.getLabel();
 				retval.entry.add(entry);
 			}
 			return retval;
@@ -94,15 +72,14 @@ public class VertexRefPointMapAdapter extends XmlAdapter<VertexRefPointMapAdapte
 	}
 
 	@Override
-	public Map<VertexRef,Point> unmarshal(VertexRefPointMapAdapter.VertexRefPointMap v) throws Exception {
+	public Set<VertexRef> unmarshal(VertexRefSetAdapter.VertexRefSet v) throws Exception {
 		if (v == null) {
 			return null;
 		} else {
-			Map<VertexRef, Point> retval = new HashMap<VertexRef, Point>();
-			for (VertexRefPointEntry entry : v.entry) {
-				VertexRef ref = new AbstractVertexRef(entry.key.namespace, entry.key.id, entry.key.label);
-				Point point = new Point(entry.value.x, entry.value.y);
-				retval.put(ref, point);
+			Set<VertexRef> retval = new HashSet<VertexRef>();
+			for (VertexRefEntry entry : v.entry) {
+				VertexRef ref = new AbstractVertexRef(entry.namespace, entry.id, entry.label);
+				retval.add(ref);
 			}
 			return retval;
 		}
