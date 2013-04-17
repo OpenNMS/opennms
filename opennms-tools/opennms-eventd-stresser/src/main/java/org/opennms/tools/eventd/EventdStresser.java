@@ -44,6 +44,13 @@ public class EventdStresser
 	private static final String PROPERTY_TRAP_COMMUNITY = "trap.community";
 
 	private static final String PROPERTY_TRAP_PORT = "trap.port";
+	
+	private static final String PROPERTY_PERSIST_WAIT = "persist.wait";
+
+	private static final String PROPERTY_DELETE_ALL_EVENTS = "delete.all.events";
+	
+	private static final String PROPERTY_DELETE_TEST_EVENTS = "delete.test.events";
+	
 
 	private static InetAddress m_agentAddress;;
 	
@@ -59,6 +66,13 @@ public class EventdStresser
 	private static Integer m_batchDelay = Integer.valueOf(1);
 	private static Integer m_batchSize = m_trapCount;
 	private static int m_batchCount = 1;
+	private static int m_persistWait = 60;
+
+	private static boolean m_deleteAllEvents = false;
+
+	private static boolean m_deleteTestEvents = false;
+
+	private static long m_sleepMillis = 0;
 	
 	/**
 	 * EventdStresser Main
@@ -70,7 +84,7 @@ public class EventdStresser
 		
         setIpAddresses();
         
-        System.out.println( "Commensing the Eventd Stress Test..." );        
+        System.out.println( "Commencing the Eventd Stress Test..." );        
 		executeStressTest();
 		
     }
@@ -117,6 +131,9 @@ public class EventdStresser
     	System.out.println(REPORT_SPACING+PROPERTY_TRAP_RATE+printDefault(m_trapRate));
     	System.out.println(REPORT_SPACING+PROPERTY_BATCH_DELAY+printDefault(m_batchDelay));
     	System.out.println(REPORT_SPACING+PROPERTY_BATCH_SIZE+printDefault(m_batchSize));
+    	System.out.println(REPORT_SPACING+PROPERTY_PERSIST_WAIT+printDefault(m_persistWait));
+    	System.out.println(REPORT_SPACING+PROPERTY_DELETE_ALL_EVENTS+printDefault(m_deleteAllEvents));
+    	System.out.println(REPORT_SPACING+PROPERTY_DELETE_TEST_EVENTS+printDefault(m_deleteTestEvents));
     	
     	System.out.println();
     	System.out.println("Example:");
@@ -134,7 +151,19 @@ public class EventdStresser
 
 	private static void processSystemProperties() throws IllegalArgumentException, NumberFormatException {
 		
-    	String property = System.getProperty(PROPERTY_AGENT_IPADDRESS);
+		String property = System.getProperty(PROPERTY_DELETE_ALL_EVENTS);
+		if (property != null) {
+			m_deleteAllEvents = Boolean.valueOf(property);
+			System.out.println("Using delete all events flag: "+m_deleteAllEvents);
+		}
+		
+		property = System.getProperty(PROPERTY_DELETE_TEST_EVENTS);
+		if (property != null) {
+			m_deleteTestEvents = Boolean.valueOf(property);
+			System.out.println("Using delete test events flag: "+m_deleteTestEvents);
+		}
+		
+    	property = System.getProperty(PROPERTY_AGENT_IPADDRESS);
     	if (property != null) {
     		try {
     			m_agentAddress = InetAddress.getByName(property);
@@ -175,11 +204,7 @@ public class EventdStresser
     	}
     	
     	property = System.getProperty(PROPERTY_TRAP_RATE);
-    	
-    	System.out.println(System.getProperties());
-    	
     	if (property != null) {
-    		System.out.println("Default Trap rate: "+m_trapRate);
     		m_trapRate = Integer.getInteger(PROPERTY_TRAP_RATE).doubleValue();
     		System.out.println("Using Trap rate: "+m_trapRate);
     	}
@@ -195,7 +220,13 @@ public class EventdStresser
     		m_batchSize = Integer.getInteger(PROPERTY_BATCH_SIZE);
     		System.out.println("Using batch size: "+m_batchSize);
     	}
-    	
+
+    	property = System.getProperty(PROPERTY_PERSIST_WAIT);
+    	if (property != null) {
+    		m_persistWait = Integer.getInteger(PROPERTY_PERSIST_WAIT);
+    		System.out.println("Using Event persistence wait period of: "+m_persistWait);
+    	}
+
     	m_batchCount = m_trapCount.intValue() / m_batchSize.intValue();
     	System.out.println("Using batch count: "+m_batchCount);
     	
@@ -203,38 +234,61 @@ public class EventdStresser
 
 	public static void stressEventd(final SnmpTrapBuilder builder) throws ClassNotFoundException, SQLException, IllegalStateException, InterruptedException  {
     	
-    	System.out.println("Delete events from opennms DB");
     	Connection connection = createConnection();
-    	deleteAllEvents(connection);
     	PoolingConnection pool = new PoolingConnection(connection);
+		if (m_deleteAllEvents) {
+	    	System.out.println("Delete events from opennms DB");
+	    	deleteAllEvents(connection);
+		}
 
     	int initialEventCount = getEventCount(pool).intValue();
     	System.out.println("Initial Event Count: "+initialEventCount);
     	
-    	long startTimeInMillis = Calendar.getInstance().getTimeInMillis();
-
     	if (m_batchCount < 1) {
     		throw new IllegalArgumentException("Batch count of < 1 is not allowed.");
     	} else if (m_batchCount > m_trapCount ){
     		throw new IllegalArgumentException("Batch count is > than trap count.");
     	}
     	
-    	int trapsSent = sendTraps(builder, pool, startTimeInMillis);
+    	long startTimeInMillis = Calendar.getInstance().getTimeInMillis();
+    	int trapsSent = sendTraps(builder, pool, startTimeInMillis, initialEventCount);
 		
-    	int finalEventCount = 0;
-    	long beginQueueCheck = Calendar.getInstance().getTimeInMillis();
+    	int currentEventCount = getEventCount(pool)-initialEventCount;
+    	int finalEventCount = currentEventCount;
+    	long beginPersistenceCheck = Calendar.getInstance().getTimeInMillis();
     	
-    	System.out.println("Watching Event Queue to complete persistence...");
-    	while (finalEventCount < trapsSent) {
+    	System.out.println("Watching Event Queue to complete persistence for "+m_persistWait+" milliseconds...");
+    	int equalCount = 0;
+    	while (currentEventCount < trapsSent) {
     		Thread.sleep(1000);
-    		finalEventCount = getEventCount(pool).intValue();
-        	System.out.println("Persist wait time (secs): "+((System.currentTimeMillis() - startTimeInMillis)/1000));
+    		m_sleepMillis+=1000;
+    		
+    		currentEventCount = getEventCount(pool).intValue()-initialEventCount;
+    		
+    		if (currentEventCount == finalEventCount) {
+    			equalCount++;
+    		} else {
+    			equalCount = 0;
+    		}
+    		
+    		finalEventCount = currentEventCount;
+    		
+        	System.out.println("Persist wait time (secs): "+((System.currentTimeMillis() - beginPersistenceCheck)/1000));
     		System.out.println("Current Event count: "+ Integer.valueOf(finalEventCount).toString());
     		
-    		if (Calendar.getInstance().getTimeInMillis() - beginQueueCheck > 10000) {
-    			System.out.println("Waited 60 secs for queue to flush.  Apparently missed "+(trapsSent - finalEventCount)+ " traps :(");
+    		if (Calendar.getInstance().getTimeInMillis() - beginPersistenceCheck > m_persistWait) {
+    			System.out.println("Waited "+((System.currentTimeMillis() - beginPersistenceCheck)/1000)+" millisecs for queue to flush.  Apparently missed "+(trapsSent - finalEventCount)+ " traps :(");
     			break;
     		}
+    		
+    		if (equalCount > 3) {
+    			System.out.println("Appears that event persistence is completed.");
+    			break;
+    		}
+    	}
+    	
+    	if (m_deleteTestEvents ) {
+    		deleteTestEvents();
     	}
     	
     	pool.close();
@@ -244,16 +298,21 @@ public class EventdStresser
     }
 
 	private static void systemReport(long beginMillis, int trapsSent, int finalEventCount) {
+		
 		System.out.println("  Traps sent: "+trapsSent);
-    	System.out.println("Events in DB: "+finalEventCount);
-    	Long totalSeconds = (Calendar.getInstance().getTimeInMillis() - beginMillis)/1000;
+    	System.out.println("Events persisted DB: "+finalEventCount);
+    	long totalMillis = Calendar.getInstance().getTimeInMillis() - beginMillis;
+    	//long processingMillis = totalMillis - m_sleepMillis;
+		//Long processingSeconds = processingMillis/1000;
+    	Long totalSeconds = totalMillis/1000L; 
     	System.out.println("Total Elapsed time (secs): "+totalSeconds);
-    	System.out.println("Events per second (persisted): "+trapsSent/totalSeconds.doubleValue());
+    	System.out.println("Events per second (persisted): "+finalEventCount/totalSeconds.doubleValue());
     	System.out.println();
 	}
 	
-	private static int sendTraps(final SnmpTrapBuilder builder, PoolingConnection pool, long beginMillis) throws IllegalStateException, InterruptedException, SQLException {
+	private static int sendTraps(final SnmpTrapBuilder builder, PoolingConnection pool, long beginMillis, int initialEventCount) throws IllegalStateException, InterruptedException, SQLException {
 		
+		m_sleepMillis = 0;
 		int totalTrapsSent = 0;
 		
 		System.out.println("Sending "+m_trapCount+" traps in "+m_batchCount+" batches with a batch interval of "+m_batchDelay.toString()+" seconds...");
@@ -272,6 +331,7 @@ public class EventdStresser
 					batchTrapsSent += sendTrap(builder);
 				} else {
 					Thread.sleep(1);
+					m_sleepMillis++;
 				}
 
 				batchElapsedMillis = Calendar.getInstance().getTimeInMillis() - batchBegin;					
@@ -288,9 +348,11 @@ public class EventdStresser
 			System.out.println("   Actual time to send: "+(batchElapsedMillis/1000.0 + " seconds"));
 			System.out.println("Elapsed Time (secs): "+((System.currentTimeMillis() - beginMillis)/1000L));
 			System.out.println("         Traps sent: "+ Integer.valueOf(totalTrapsSent).toString());
-			System.out.println("Current Event count: "+ getEventCount(pool).toString());
+			Integer currentEventCount = getEventCount(pool) - initialEventCount;
+			System.out.println("Current Event count: "+ currentEventCount.toString());
 			System.out.println();
 			Thread.sleep(m_batchDelay.longValue()*1000L);
+			m_sleepMillis+=m_batchDelay.longValue()*1000L;
 		}
 		
 		int remainingTraps = m_trapCount - totalTrapsSent;
@@ -305,6 +367,7 @@ public class EventdStresser
 				batchTrapsSent += sendTrap(builder);
 			} else {
 				Thread.sleep(1);
+				m_sleepMillis++;
 			}
 
 			elapsedMillis = Calendar.getInstance().getTimeInMillis() - batchBegin;					
@@ -314,7 +377,8 @@ public class EventdStresser
 		totalTrapsSent+=batchTrapsSent;
 		System.out.println("Elapsed Time (secs): "+((System.currentTimeMillis() - beginMillis)/1000L));
 		System.out.println("         Traps sent: "+ Integer.valueOf(totalTrapsSent).toString());
-		System.out.println("Current Event count: "+ getEventCount(pool).toString());
+		Integer currentEventCount = getEventCount(pool)-initialEventCount;
+		System.out.println("Current Event count: "+ currentEventCount.toString());
 		return totalTrapsSent;
 	}
 
@@ -329,9 +393,16 @@ public class EventdStresser
 		return trapsSent;
 	}
 
-	private static void deleteAllEvents(Connection connection) throws SQLException {
+	private static int deleteAllEvents(Connection connection) throws SQLException {
 		int rows = connection.createStatement().executeUpdate("delete from events");
-    	System.out.println("Row deleted: "+rows);
+    	System.out.println("Rows deleted: "+rows);
+    	return rows;
+	}
+	
+	private static int deleteTestEvents() throws SQLException, ClassNotFoundException {
+		int rows = createConnection().createStatement().executeUpdate("delete from events where (eventuei = 'MATCH-ANY-UEI' or eventuei = 'uei.opennms.org/traps/eventTrap')");
+    	System.out.println("Rows deleted: "+rows);
+		return rows;
 	}
 
 	private static Connection createConnection() throws ClassNotFoundException, SQLException {
@@ -343,7 +414,7 @@ public class EventdStresser
     
     synchronized public static Integer getEventCount(PoolingConnection pool) throws SQLException {
     	Statement statement = pool.createStatement();
-    	ResultSet result = statement.executeQuery("select count(*) from events");
+    	ResultSet result = statement.executeQuery("select count(*) from events where (eventuei = 'MATCH-ANY-UEI' or eventuei = 'uei.opennms.org/traps/eventTrap')");
     	result.next();
     	int count = result.getInt(1);
     	result.close();
