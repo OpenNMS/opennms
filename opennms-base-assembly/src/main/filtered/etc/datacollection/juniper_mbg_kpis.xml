@@ -124,25 +124,11 @@
 	<storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
 	</resourceType>
 
-	<resourceType name="jnxMbgPgwSMSpicStatusTable-index" label="jnxMbgPgwSMSpicStatusTable-index" resourceLabel="Gateway: ${subIndex(0,1)}, SPIC: ${StatusName}">
+	<resourceType name="jnxMbgPgwSMSpicStatusTable-index" label="jnxMbgPgwSMSpicStatusTable-index" resourceLabel="Gateway: ${subIndex(0,1)}">
 	<persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
 	<storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
 	</resourceType>
 
-        <resourceType name="jnxMbgPgwApnSMClRateStatsTable-index" label="jnxMbgPgwApnSMClRateStatsTable-index" resourceLabel="Gateway: ${subIndex(0,1)}">
-	<persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-	<storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
-	</resourceType>
-
-        <resourceType name="jnxMbgDBPPeerStatusTable-index" label="jnxMbgDBPPeerStatusTable-index" resourceLabel="Gateway: ${subIndex(0,1)}, Diameter Peer: ${DBPPeerName}">
-	<persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-	<storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
-	</resourceType>
-
-	<resourceType name="jnxMbgDBPPeerStatsTable-index" label="jnxMbgDBPPeerStatsTable-index" resourceLabel="Gateway: ${subIndex(0,1)}, Diameter Peer: ${DBPPeerStatsName}">
-	<persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-	<storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
-	</resourceType>
 	
 	<!-- Ends Gallardo New Tables -->
 
@@ -306,9 +292,6 @@
 		<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.11.1.4" instance="jnxMbgRadiusAuthSrvrTable-index" alias="InetPort" type="COUNTER"/>
 		<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.11.1.5" instance="jnxMbgRadiusAuthSrvrTable-index" alias="RtngInstance" type="String"/>
 		<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.11.1.6" instance="jnxMbgRadiusAuthSrvrTable-index" alias="Status" type="Integer"/>
-              <mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.11.1.7" instance="jnxMbgRadiusAuthSrvrTable-index" alias="Requests" type="Counter64"/>
-              <mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.11.1.9" instance="jnxMbgRadiusAuthSrvrTable-index" alias="Accepts" type="Counter64"/>
-              <mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.11.1.15" instance="jnxMbgRadiusAuthSrvrTable-index" alias="Timeouts" type="Counter64"/>
 		<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.11.1.18" instance="jnxMbgRadiusAuthSrvrTable-index" alias="RTTAvg" type="gauge"/>
 		<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.11.1.19" instance="jnxMbgRadiusAuthSrvrTable-index" alias="RTTMin" type="gauge"/>
 		<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.11.1.20" instance="jnxMbgRadiusAuthSrvrTable-index" alias="RTTMax" type="gauge"/>
@@ -325,9 +308,6 @@
 		<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.12.1.4" instance="jnxMbgRadiusAcctSrvrTable-index" alias="InetPort" type="COUNTER"/>
 		<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.12.1.5" instance="jnxMbgRadiusAcctSrvrTable-index" alias="RtngInstance" type="String"/>
 		<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.12.1.6" instance="jnxMbgRadiusAcctSrvrTable-index" alias="Status" type="Integer"/>
-              <mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.12.1.7" instance="jnxMbgRadiusAcctSrvrTable-index" alias="Requests" type="Counter64" />
-              <mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.12.1.9" instance="jnxMbgRadiusAcctSrvrTable-index" alias="Resp" type="Counter64" />
-              <mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.12.1.13" instance="jnxMbgRadiusAcctSrvrTable-index" alias="Timeouts" type="Counter64" />
 		<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.12.1.16" instance="jnxMbgRadiusAcctSrvrTable-index" alias="RTTAvg" type="gauge"/>
 		<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.12.1.17" instance="jnxMbgRadiusAcctSrvrTable-index" alias="RTTMin" type="gauge"/>
 		<mibObj oid=".1.3.6.1.4.1.2636.3.66.3.1.12.1.18" instance="jnxMbgRadiusAcctSrvrTable-index" alias="RTTMax" type="gauge"/>
@@ -512,14 +492,17 @@
 
 <!--Start of  jnxMbgPgwSMClRateStatsTable-->
 	<group name="jnxMbgPgwSMClRateStatsTable" ifType="all">
-		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.8.1.1" instance="jnxMbgPgwSMClRateStatsTable-index" alias="ClRateIntervalMin" type="gauge"/>
-		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.8.1.2" instance="jnxMbgPgwSMClRateStatsTable-index" alias="ClRateSuccSessnEst" type="gauge"/>
-		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.8.1.3" instance="jnxMbgPgwSMClRateStatsTable-index" alias="ClRateSuccSessnDel" type="gauge"/>
-		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.8.1.4" instance="jnxMbgPgwSMClRateStatsTable-index" alias="ClRateStatsGnInpPkt" type="gauge"/>
-		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.8.1.5" instance="jnxMbgPgwSMClRateStatsTable-index" alias="ClRateStatsGnInpByt" type="gauge"/>
-		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.8.1.6" instance="jnxMbgPgwSMClRateStatsTable-index" alias="ClRateStatsGnOutPkt" type="gauge"/>
-		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.8.1.7" instance="jnxMbgPgwSMClRateStatsTable-index" alias="ClRateStatsGnOutByt" type="gauge"/>
-	
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.8.1.1" instance="jnxMbgPgwSMClRateStatsTable-index" alias="ClRateIntervalMin" type="counter"/>
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.8.1.2" instance="jnxMbgPgwSMClRateStatsTable-index" alias="ClRateSuccSessnEst" type="Counter64"/>
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.8.1.3" instance="jnxMbgPgwSMClRateStatsTable-index" alias="ClRateSuccSessnDel" type="Counter64"/>
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.8.1.4" instance="jnxMbgPgwSMClRateStatsTable-index" alias="ClRateStatsGnInpPkt" type="Counter64"/>
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.8.1.5" instance="jnxMbgPgwSMClRateStatsTable-index" alias="ClRateStatsGnInpByt" type="Counter64"/>
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.8.1.6" instance="jnxMbgPgwSMClRateStatsTable-index" alias="ClRateStatsGnOutPkt" type="Counter64"/>
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.8.1.7" instance="jnxMbgPgwSMClRateStatsTable-index" alias="ClRateStatsGnOutByt" type="Counter64"/>
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.8.1.8" instance="jnxMbgPgwSMClRateStatsTable-index" alias="ClRateActvPrepaidBr" type="Counter64"/>
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.8.1.9" instance="jnxMbgPgwSMClRateStatsTable-index" alias="ClRateActvPostpaidB" type="Counter64"/>
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.8.1.10" instance="jnxMbgPgwSMClRateStatsTable-index" alias="ClRateActvGbrBr" type="Counter64"/>
+		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.8.1.11" instance="jnxMbgPgwSMClRateStatsTable-index" alias="ClRateActvNonGbrBr" type="Counter64"/>
 	</group>
 <!-- End of jnxMbgPgwSMClRateStatsTable -->
 
@@ -542,42 +525,6 @@
 	</group>
 <!-- End of jnxMbgPgwSMSpicStatusTable -->
 
-<!--Start of  jnxMbgPgwApnSMClRateStatsTable-->
-	<group name="jnxMbgPgwApnSMClRateStatsTable" ifType="all">
-		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.10.1.1" instance="jnxMbgPgwApnSMClRateStatsTable-index" alias="ApnCRName" type="String" />
-		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.10.1.2" instance="jnxMbgPgwApnSMClRateStatsTable-index" alias="CRIntervalMin" type="gauge" />
-		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.10.1.3" instance="jnxMbgPgwApnSMClRateStatsTable-index" alias="CRPrepaidBrAct" type="gauge" />
-		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.10.1.4" instance="jnxMbgPgwApnSMClRateStatsTable-index" alias="CRPrepaidBrDeact" type="gauge" />
-		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.10.1.5" instance="jnxMbgPgwApnSMClRateStatsTable-index" alias="CRPostpaidBrAct" type="gauge" />
-		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.10.1.6" instance="jnxMbgPgwApnSMClRateStatsTable-index" alias="CRPostpaidBrDeact" type="gauge" />
-		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.10.1.7" instance="jnxMbgPgwApnSMClRateStatsTable-index" alias="CROnlineAuthTimeout" type="gauge" />
-		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.10.1.8" instance="jnxMbgPgwApnSMClRateStatsTable-index" alias="CRQuotaThdUpdReq" type="gauge" />
-		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.10.1.9" instance="jnxMbgPgwApnSMClRateStatsTable-index" alias="CROnlineRarRcvd" type="gauge" />
-		<mibObj oid=".1.3.6.1.4.1.2636.3.66.1.1.1.10.1.10" instance="jnxMbgPgwApnSMClRateStatsTable-index" alias="CROnlineRarSucc" type="gauge" />
-	</group>
-<!-- End of jnxMbgPgwApnSMClRateStatsTable --> 
-
-
-<!--Start of  jnxMbgDBPPeerStatusTable-->
-	<group name="jnxMbgDBPPeerStatusTable" ifType="all">
-		<mibObj oid=".1.3.6.1.4.1.2636.3.66.9.2.1.1.4" instance="jnxMbgDBPPeerStatusTable-index" alias="DBPPeerName" type="String" />
-		<mibObj oid=".1.3.6.1.4.1.2636.3.66.9.2.1.1.5" instance="jnxMbgDBPPeerStatusTable-index" alias="DBPPeerState" type="gauge" />
-              <mibObj oid=".1.3.6.1.4.1.2636.3.66.9.2.1.1.7" instance="jnxMbgDBPPeerStatusTable-index" alias="DBPPeerDWCurrStatus" type="gauge" />		
-	</group>
-<!-- End of jnxMbgDBPPeerStatusTable -->
-
-
-<!--Start of  jnxMbgDBPPeerStatsTable-->
-	<group name="jnxMbgDBPPeerStatsTable" ifType="all">
-		<mibObj oid=".1.3.6.1.4.1.2636.3.66.9.3.1.1.1" instance="jnxMbgDBPPeerStatsTable-index" alias="DBPPeerStatsName" type="String" />
-		<mibObj oid=".1.3.6.1.4.1.2636.3.66.9.3.1.1.12" instance="jnxMbgDBPPeerStatsTable-index" alias="DBPPeerStatsCERsIn" type="gauge" />
-		<mibObj oid=".1.3.6.1.4.1.2636.3.66.9.3.1.1.13" instance="jnxMbgDBPPeerStatsTable-index" alias="DBPPeerStatsCERsOut" type="gauge" />
-		<mibObj oid=".1.3.6.1.4.1.2636.3.66.9.3.1.1.14" instance="jnxMbgDBPPeerStatsTable-index" alias="DBPPeerStatsCEAsIn" type="gauge" />
-		<mibObj oid=".1.3.6.1.4.1.2636.3.66.9.3.1.1.15" instance="jnxMbgDBPPeerStatsTable-index" alias="DBPPeerStatsCEAsOut" type="gauge" />	
-	</group>
-<!-- End of jnxMbgDBPPeerStatsTable -->
-
-     
       <systemDef name="Juniper MBG MX480">
 	<sysoid>.1.3.6.1.4.1.2636.1.1.1.2.25</sysoid>
         <collect>
@@ -599,7 +546,6 @@
 			<includeGroup>jnxMbgSgwCgLpsStatsTable</includeGroup>
 			<includeGroup>jnxMbgSgwGtpCPerPeerStatsTable</includeGroup>
 			<includeGroup>jnxMbgSgwGtpCGlbStatsTable</includeGroup>
-                        <includeGroup>jnxMbgPgwApnSMClRateStatsTable</includeGroup>
 			
 			<!-- Starts New Gallardo Tables -->
                         <includeGroup>jnxMbgPgwCgGlobalStatsTable</includeGroup>
@@ -608,8 +554,6 @@
                         <includeGroup>jnxMbgPgwSMClRateStatsTable</includeGroup>
                         <includeGroup>jnxMbgPgwSMSpicStatusTable</includeGroup>
                         <includeGroup>jnxMbgSgwCgGlobalStatsTable</includeGroup>
-                        <includeGroup>jnxMbgDBPPeerStatusTable</includeGroup>
-		          <includeGroup>jnxMbgDBPPeerStatsTable</includeGroup>
                      <!-- Ends New Gallardo Tables -->
 
 		</collect>
@@ -637,7 +581,6 @@
 			<includeGroup>jnxMbgSgwCgLpsStatsTable</includeGroup>
 			<includeGroup>jnxMbgSgwGtpCPerPeerStatsTable</includeGroup>
 			<includeGroup>jnxMbgSgwGtpCGlbStatsTable</includeGroup>
-                        <includeGroup>jnxMbgPgwApnSMClRateStatsTable</includeGroup>
 
                      <!-- Starts New Gallardo Tables -->
                         <includeGroup>jnxMbgPgwCgGlobalStatsTable</includeGroup>
@@ -646,8 +589,6 @@
                         <includeGroup>jnxMbgPgwSMClRateStatsTable</includeGroup>
                         <includeGroup>jnxMbgPgwSMSpicStatusTable</includeGroup>
                         <includeGroup>jnxMbgSgwCgGlobalStatsTable</includeGroup>
-                        <includeGroup>jnxMbgDBPPeerStatusTable</includeGroup>
-		          <includeGroup>jnxMbgDBPPeerStatsTable</includeGroup>
                      <!-- Ends New Gallardo Tables -->
 
 
@@ -675,7 +616,6 @@
 			<includeGroup>jnxMbgSgwCgLpsStatsTable</includeGroup>
 			<includeGroup>jnxMbgSgwGtpCPerPeerStatsTable</includeGroup>
 			<includeGroup>jnxMbgSgwGtpCGlbStatsTable</includeGroup>
-                        <includeGroup>jnxMbgPgwApnSMClRateStatsTable</includeGroup>
 
                     <!-- Starts New Gallardo Tables -->
                         <includeGroup>jnxMbgPgwCgGlobalStatsTable</includeGroup>
@@ -684,8 +624,6 @@
                         <includeGroup>jnxMbgPgwSMClRateStatsTable</includeGroup>
                         <includeGroup>jnxMbgPgwSMSpicStatusTable</includeGroup>
                         <includeGroup>jnxMbgSgwCgGlobalStatsTable</includeGroup>
-                        <includeGroup>jnxMbgDBPPeerStatusTable</includeGroup>
-		          <includeGroup>jnxMbgDBPPeerStatsTable</includeGroup>
                      <!-- Ends New Gallardo Tables -->
 
  
