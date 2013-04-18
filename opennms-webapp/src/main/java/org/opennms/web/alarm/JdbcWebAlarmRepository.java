@@ -38,16 +38,16 @@ import java.util.List;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
+import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.TroubleTicketState;
+import org.opennms.netmgt.model.alarm.AlarmSummary;
 import org.opennms.web.alarm.filter.AlarmCriteria;
 import org.opennms.web.alarm.filter.AlarmIdFilter;
 import org.opennms.web.alarm.filter.AlarmIdListFilter;
 import org.opennms.web.alarm.filter.AlarmTypeFilter;
 import org.opennms.web.alarm.filter.SeverityBetweenFilter;
 import org.opennms.web.alarm.filter.SeverityFilter;
-import org.opennms.netmgt.model.alarm.AlarmSummary;
-import org.opennms.web.alarm.filter.*;
 import org.opennms.web.alarm.filter.AlarmCriteria.AlarmCriteriaVisitor;
 import org.opennms.web.alarm.filter.AlarmCriteria.BaseAlarmCriteriaVisitor;
 import org.opennms.web.filter.AndFilter;
@@ -175,44 +175,41 @@ public class JdbcWebAlarmRepository implements WebAlarmRepository, InitializingB
 
     private static class AlarmMapper implements ParameterizedRowMapper<Alarm> {
         public Alarm mapRow(ResultSet rs, int rowNum) throws SQLException {
-            Alarm alarm = new Alarm();
-            alarm.id = rs.getInt("alarmID");
-            alarm.uei = rs.getString("eventUei");
-            alarm.dpName = rs.getString("dpName");
-
-            // node id can be null, in which case nodeID will be 0
-            alarm.nodeID = Integer.valueOf(rs.getInt("nodeID"));
-            alarm.ipAddr = rs.getString("ipAddr");
-
-            // This causes serviceID to be null if the column in the database is null
-            alarm.serviceID = ((Integer) rs.getObject("serviceID"));
-            alarm.reductionKey = rs.getString("reductionKey");
-            alarm.count = rs.getInt("counter");
-            alarm.severity = OnmsSeverity.get(rs.getInt("severity"));
-            alarm.lastEventID = rs.getInt("lastEventID");
-            alarm.firsteventtime = getTimestamp("firsteventtime", rs);
-            alarm.lasteventtime = getTimestamp("lasteventtime", rs);
-            alarm.description = rs.getString("description");
-            alarm.logMessage = rs.getString("logmsg");
-            alarm.operatorInstruction = rs.getString("OperInstruct");
-            alarm.troubleTicket = rs.getString("TTicketID");
-
-            Integer stateCode = (Integer) rs.getObject("TTicketState");
+            Integer stateCode = (Integer)rs.getObject("TTicketState");
+            TroubleTicketState ttstate = null;
             for (TroubleTicketState state : TroubleTicketState.values()) {
                 if (stateCode != null && state.ordinal() == stateCode.intValue()) {
-                    alarm.troubleTicketState = state;
+                    ttstate = state;
                 }
             }
 
-            alarm.mouseOverText = rs.getString("MouseOverText");
-            alarm.suppressedUntil = getTimestamp("suppressedUntil", rs);
-            alarm.suppressedUser = rs.getString("suppressedUser");
-            alarm.suppressedTime = getTimestamp("suppressedTime", rs);
-            alarm.acknowledgeUser = rs.getString("alarmAckUser");
-            alarm.acknowledgeTime = getTimestamp("alarmAckTime", rs);
-
-            alarm.nodeLabel = rs.getString("nodeLabel");
-            alarm.serviceName = rs.getString("serviceName");
+            Alarm alarm = new Alarm(
+                rs.getInt("alarmID"), 
+                rs.getString("eventUei"), 
+                rs.getString("dpName"), 
+                // node id can be null, in which case nodeID will be 0
+                Integer.valueOf(rs.getInt("nodeID")), 
+                rs.getString("ipAddr"), 
+                // This causes serviceID to be null if the column in the database is null
+                (Integer) rs.getObject("serviceID"), 
+                rs.getString("reductionKey"), 
+                rs.getInt("counter"), 
+                rs.getInt("severity"), 
+                rs.getInt("lastEventID"), 
+                getTimestamp("firsteventtime", rs), 
+                getTimestamp("lasteventtime", rs), 
+                rs.getString("description"), 
+                rs.getString("logmsg"), 
+                rs.getString("OperInstruct"), 
+                rs.getString("TTicketID"), 
+                ttstate, 
+                rs.getString("MouseOverText"), 
+                getTimestamp("suppressedUntil", rs), 
+                rs.getString("suppressedUser"), 
+                getTimestamp("suppressedTime", rs), 
+                rs.getString("alarmAckUser"), 
+                getTimestamp("alarmAckTime", rs)
+            );
 
             return alarm;
 
@@ -361,7 +358,7 @@ public class JdbcWebAlarmRepository implements WebAlarmRepository, InitializingB
 
         String sql = getSql("UPDATE ALARMS SET SEVERITY =?, ALARMTYPE =? ", criteria);
         LogUtils.infof(this, sql);
-        jdbc().update(sql, paramSetter(criteria, OnmsSeverity.CLEARED.getId(), Alarm.RESOLUTION_TYPE));
+        jdbc().update(sql, paramSetter(criteria, OnmsSeverity.CLEARED.getId(), OnmsAlarm.RESOLUTION_TYPE));
 
     }
 
@@ -373,15 +370,15 @@ public class JdbcWebAlarmRepository implements WebAlarmRepository, InitializingB
      * @param timestamp a java$util$Date object.
      */
     public void escalateAlarms(int[] alarmIds, String user, Date timestamp) {
-        ConditionalFilter condFilter = new AndFilter(new AlarmTypeFilter(Alarm.PROBLEM_TYPE), new SeverityFilter(OnmsSeverity.CLEARED));
-        ConditionalFilter condFilter2 = new AndFilter(new AlarmTypeFilter(Alarm.PROBLEM_TYPE), new SeverityBetweenFilter(OnmsSeverity.CLEARED, OnmsSeverity.CRITICAL));
+        ConditionalFilter condFilter = new AndFilter(new AlarmTypeFilter(OnmsAlarm.PROBLEM_TYPE), new SeverityFilter(OnmsSeverity.CLEARED));
+        ConditionalFilter condFilter2 = new AndFilter(new AlarmTypeFilter(OnmsAlarm.PROBLEM_TYPE), new SeverityBetweenFilter(OnmsSeverity.CLEARED, OnmsSeverity.CRITICAL));
         ConditionalFilter orCondFilter = new OrFilter(condFilter, condFilter2);
 
         AlarmCriteria criteria = new AlarmCriteria(new AlarmIdListFilter(alarmIds), orCondFilter);
 
         String sql = getSql("UPDATE ALARMS SET SEVERITY = ( CASE WHEN SEVERITY =? THEN ? ELSE ( CASE WHEN SEVERITY <? THEN SEVERITY + 1 ELSE ? END) END), ALARMTYPE =? ", criteria);
         LogUtils.infof(this, sql);
-        jdbc().update(sql, paramSetter(criteria, OnmsSeverity.CLEARED.getId(), OnmsSeverity.WARNING.getId(), OnmsSeverity.CRITICAL.getId(), OnmsSeverity.CRITICAL.getId(), Alarm.PROBLEM_TYPE));
+        jdbc().update(sql, paramSetter(criteria, OnmsSeverity.CLEARED.getId(), OnmsSeverity.WARNING.getId(), OnmsSeverity.CRITICAL.getId(), OnmsSeverity.CRITICAL.getId(), OnmsAlarm.PROBLEM_TYPE));
     }
 
     public List<OnmsAcknowledgment> getAcknowledgments(int alarmId) {
