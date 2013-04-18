@@ -32,16 +32,12 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import org.opennms.core.utils.LogUtils;
 
-import org.opennms.netmgt.correlation.ncs.NCSCorrelationService.AttrParmMap;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.model.ncs.NCSComponent;
 import org.opennms.netmgt.model.ncs.NCSComponentRepository;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.netmgt.xml.event.Value;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -143,37 +139,6 @@ public class DefaultNCSCorrelationService implements NCSCorrelationService {
 
         return matching;
     }
-    
-    @Override
-    public List<NCSComponent> findComponentsByNodeIdAndByParmName(Event e, String Name, int index) {
-        assert e.getNodeid() != null;
-        assert e.getNodeid() != 0;
-        
-        LogUtils.tracef(this,"Node Id '%s' in the Event '%s'",e.getNodeid().intValue(), e.getDbid());
-        List<NCSComponent> components = m_componentRepo.findComponentsByNodeId(e.getNodeid().intValue());
-        LogUtils.tracef(this,"Node Id '%s' in the Event '%s' - Total NCS component identified '%d'",
-        		e.getNodeid().intValue(), 
-        		e.getDbid(),
-        		components.size());
-
-        List<NCSComponent> matching = new LinkedList<NCSComponent>();
-        for(NCSComponent component : components)
-        {
-            if (matches(component, e, index, Name)) {
-            	LogUtils.tracef(this,"Node Id '%s' in the Event '%s' - NCS component is added '%s'",
-            			e.getNodeid().intValue(), 
-                		e.getDbid(),
-            			component.getId());
-                matching.add(component);
-            }
-        }
-
-        LogUtils.tracef(this,"Node Id '%s' in the Event '%s' - Total component impacted '%s'",
-    			e.getNodeid().intValue(), 
-        		e.getDbid(),
-        		matching.size());
-        return matching;
-    }
 
     private boolean matches(NCSComponent component, Event e, AttrParmMap[] parameterMap) {
         for(AttrParmMap map : parameterMap) {
@@ -184,30 +149,6 @@ public class DefaultNCSCorrelationService implements NCSCorrelationService {
         
         return true;
     }
-    
-    private boolean matches(NCSComponent component, Event event, int index,String Name) {
-    	
-    	List<Parm> parms = event.getParmCollection();
-    	Parm parm = parms.get(index - 1); // get the second index
-        
-        LogUtils.tracef(this,"%s parameter name in event db %s " + event.getDbid(), parm.getParmName()); 
-        String attrVal = component.getAttributes().get(Name);
-        String parmName = parm.getParmName();
-        
-        if (parmName == null ) {
-        	LogUtils.tracef(this,"Event parameter is null. No matching NCS component found for event %s " + event.getDbid());
-        	return false;
-        } else if (attrVal == null) {
-        	LogUtils.tracef(this,"%s No matching NCS component found for parameter name %s " + event.getDbid(), parmName);
-        	return false;
-        } else if (attrVal.equals(parmName)) {
-        	LogUtils.tracef(this,"%s Matching NCS component found for parameter name %s " + event.getDbid(), parm.getParmName());
-        	return true;
-        }
-       
-        return false;
-        
-      }
 
 
 }

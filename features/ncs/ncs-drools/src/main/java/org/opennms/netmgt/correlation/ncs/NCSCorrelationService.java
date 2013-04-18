@@ -71,7 +71,5 @@ public interface NCSCorrelationService {
 	List<NCSComponent> findComponentsByNodeIdAndAttrParmMaps(Event e, AttrParmMap... parameterMap);
 	
 	List<NCSComponent> findComponentsByNodeIdAndEventParameters(Event e, String... parameterNames);
-	
-	List<NCSComponent> findComponentsByNodeIdAndByParmName(Event e, String Name, int index );
 
 }
