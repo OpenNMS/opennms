@@ -100,7 +100,6 @@ final public class CLIPinger {
         try {
             host = InetAddress.getByName(s_arguments.get(0));
             Pinger p = PingerFactory.getInstance();
-            System.out.println("Doing this " + s_count + " times");
             for (int i = 0; i < s_count; i++) {
                 Number rtt = p.ping(host, s_timeout, s_retries);
                 if (rtt == null) {
