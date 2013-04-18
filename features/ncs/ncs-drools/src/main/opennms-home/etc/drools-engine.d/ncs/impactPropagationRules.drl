@@ -38,21 +38,13 @@ global org.opennms.netmgt.correlation.ncs.NCSCorrelationService correlationServi
  * ImpactEventSent indicates that we sent the impact event
  *
  */
-
-rule "component up arrive event"
-        salience 200
-when
-        $cue : ComponentUpEvent( $c : component )
-then
-        println( "Component Up Arrive: " + $cue );
-end
  
 rule "component down event"
 	salience 100
 when
 	$cde: ComponentDownEvent( $c : component, $e : event )
 then
-	println( "Component '" + $c.getName() + "' is impacted! " + "Component Id " +  $c.getId() );	
+	println( "Component '" + $c.getName() + "' is impacted!" );
 	insert( new ComponentImpacted( $c, $cde ) );
 	insert( new DependenciesNeeded( $c, $cde ) ); 
 end
@@ -63,7 +55,7 @@ when
 	ComponentImpacted ( $c : target, $cause : cause )
 	not ImpactEventSent( component == $c )
 then
-	println( "Sending impact event for '" + $c.getName() + "'" + " Component Id " + $c.getId() );
+	println( "Sending impact event for '" + $c.getName() + "'");
 	sendComponentImpactedEvent( engine, $c, $cause.getEvent() );
 	insert( new ImpactEventSent( $c, $cause ) );
 end
@@ -75,7 +67,7 @@ rule "propagate impact"
 		DependsOn( $parent : a, b == $child )
 	
 	then
-		println( "Parent component '" + $parent.getName() + "' is impacted!" + " Parent Id " + $parent.getId() );
+		println( "Parent component '" + $parent.getName() + "' is impacted!" );
 		insert( new ComponentImpacted( $parent, $cde ) );
 		insert( new DependenciesNeeded( $parent, $cde ) ); 
 	
@@ -84,8 +76,8 @@ end
 rule "component up event"
 	salience 100
 when
-	$cde : ComponentDownEvent( $c : component, $downEventDbId : event.dbid )
-	$cue : ComponentUpEvent( component == $c, event.dbid > $downEventDbId )
+	$cde : ComponentDownEvent( $c : component, $downEvent : event )
+	$cue : ComponentUpEvent( component == $c )
 then
 	println( "Found resolution for " + $cde );
 	retract( $cde );
@@ -123,16 +115,6 @@ then
 	sendComponentResolvedEvent( engine, $c, $cause.getEvent() );
 end
 
-rule "clean up single UP event"
-        salience 150
-when
-  $cue : ComponentUpEvent( $c : component )
-        not( ComponentDownEvent( component == $c ) )
-then
-        println( "Cleanup up single UP event " + $cue );
-        retract( $cue );
-end
-
 function void println(Object msg)
 {
 	System.err.println(new Date() + " : " + msg);
@@ -161,7 +143,6 @@ function void sendComponentResolvedEvent( DroolsCorrelationEngine engine, Compon
 	bldr.addParam("cause", e.getDbid() );
 	engine.sendEvent(bldr.getEvent());
 }
-
 
 
 
