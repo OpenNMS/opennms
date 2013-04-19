@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -30,41 +30,26 @@ package org.opennms.netmgt.snmp;
 
 import java.net.InetAddress;
 
-public final class SnmpAgentAddress {
-    private final InetAddress m_address;
-    private final Integer m_port;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
 
-    public SnmpAgentAddress(final InetAddress agentAddress, final Integer agentPort) {
-    	if (agentAddress == null) throw new NullPointerException("agentAddress cannot be null");
-    	if (agentPort == null) throw new NullPointerException("agentPort cannot be null");
-        
-        m_address = agentAddress;
-        m_port = agentPort;
-        
+/**
+ * InetAddresssXmlAdapter
+ *
+ * @author brozow
+ * @version $Id: $
+ */
+public class InetAddrXmlAdapter extends XmlAdapter<String, InetAddress> {
+
+    /** {@inheritDoc} */
+    @Override
+    public String marshal(InetAddress inetAddr) throws Exception {
+    	return InetAddrUtils.str(inetAddr);
     }
 
-    public InetAddress getAddress() {
-        return m_address;
+    /** {@inheritDoc} */
+    @Override
+    public InetAddress unmarshal(String ipAddr) throws Exception {
+    	return InetAddrUtils.addr(ipAddr);
     }
-    
-    public Integer getPort() {
-        return m_port;
-    }
-    
-    public boolean equals(final Object obj) {
-        if (!(obj instanceof SnmpAgentAddress)) return false;
-        final SnmpAgentAddress that = (SnmpAgentAddress)obj;
-        return m_address.equals(that.m_address) && m_port.equals(that.m_port);
-    }
-    
-    public int hashCode() {
-    	int hashCode = 1;
-    	hashCode = hashCode*37 + m_address.hashCode();
-    	hashCode = hashCode*37 + m_port.hashCode();
-    	return hashCode;
-    }
-    
-    public String toString() {
-    	return InetAddrUtils.str(m_address) + ":" + m_port;
-    }
+
 }

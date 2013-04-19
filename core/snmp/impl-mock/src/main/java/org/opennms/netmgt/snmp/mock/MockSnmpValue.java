@@ -30,9 +30,10 @@ package org.opennms.netmgt.snmp.mock;
 
 import java.math.BigInteger;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.snmp.AbstractSnmpValue;
+import org.opennms.netmgt.snmp.InetAddrUtils;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpValue;
 
@@ -101,11 +102,19 @@ public class MockSnmpValue extends AbstractSnmpValue {
     public static class IpAddressSnmpValue extends MockSnmpValue {
     	
     	public IpAddressSnmpValue(InetAddress addr) {
-    		this(InetAddressUtils.str(addr));
+    		this(InetAddrUtils.str(addr));
     	}
     	
     	public IpAddressSnmpValue(byte[] bytes) {
-    		this(InetAddressUtils.toIpAddrString(bytes));
+    		this(addrStr(bytes));
+    	}
+    	
+    	public static String addrStr(byte[] bytes) {
+    		try {
+				return InetAddrUtils.str(InetAddress.getByAddress(bytes));
+			} catch (UnknownHostException e) {
+				throw new RuntimeException(e);
+			}
     	}
 
         public IpAddressSnmpValue(String value) {
@@ -114,7 +123,7 @@ public class MockSnmpValue extends AbstractSnmpValue {
 
         public InetAddress toInetAddress() {
             try {
-                return InetAddressUtils.addr(toString());
+                return InetAddrUtils.addr(toString());
             } catch (Exception e) {
                 return super.toInetAddress();
             }
