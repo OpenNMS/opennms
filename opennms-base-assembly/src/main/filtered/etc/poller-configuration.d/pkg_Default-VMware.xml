@@ -1,0 +1,31 @@
+  <package name="Default-VMware">
+    <filter>IPADDR != '0.0.0.0'</filter>
+    <include-range begin="1.1.1.1" end="254.254.254.254" />
+    <include-range begin="::1" end="ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff" />
+    <rrd step="300">
+      <rra>RRA:AVERAGE:0.5:1:2016</rra>
+      <rra>RRA:AVERAGE:0.5:12:1488</rra>
+      <rra>RRA:AVERAGE:0.5:288:366</rra>
+      <rra>RRA:MAX:0.5:288:366</rra>
+      <rra>RRA:MIN:0.5:288:366</rra>
+    </rrd>
+    <service name="VMwareCim-HostSystem" interval="300000" user-defined="false" status="on">
+      <parameter key="retry" value="2"/>
+      <parameter key="timeout" value="3000"/>
+    </service>
+    <service name="VMware-ManagedEntity" interval="300000" user-defined="false" status="on">
+      <parameter key="retry" value="2"/>
+      <parameter key="timeout" value="3000"/>
+    </service>
+    <downtime interval="30000" begin="0" end="300000" />
+    <!-- 30s, 0, 5m -->
+    
+    <downtime interval="300000" begin="300000" end="43200000" />
+    <!-- 5m, 5m, 12h -->
+    
+    <downtime interval="600000" begin="43200000" end="432000000" />
+    <!-- 10m, 12h, 5d -->
+    
+    <downtime begin="432000000" delete="true" />
+    <!-- anything after 5 days delete -->
+  </package>
