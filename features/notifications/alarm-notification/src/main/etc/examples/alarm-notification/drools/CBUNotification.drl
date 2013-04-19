@@ -1,0 +1,28 @@
+package org.opennms.netmgt.notification;
+
+import org.opennms.netmgt.notification.ScriptInvoker;
+import org.opennms.core.utils.LogUtils;
+
+
+rule "name_rule1"
+salience 104
+when
+	$nbiAlarm: NBIAlarm( $ipaddr : ipaddr matches("10.216.114.103") );
+	
+then
+	forwardAlarm($nbiAlarm);
+end
+
+function void forwardAlarm(NBIAlarm nbiAlarm){
+
+	 String alarmXML = nbiAlarm.getAlarmXML();
+	 String scriptName = nbiAlarm.getScriptName() ;
+     boolean isErrorHandlingEnabled = nbiAlarm.isErrorHandlingEnabled() ;
+     Integer numberOfRetries= nbiAlarm.getNumberOfRetries() ;
+     Integer retryInterval= nbiAlarm.getRetryInterval() ;    
+   	 ScriptInvoker scriptInvoker = new ScriptInvoker(alarmXML, scriptName, isErrorHandlingEnabled,numberOfRetries,retryInterval);
+   	 boolean scriptInvokerResult = scriptInvoker.invokeScript();
+	 LogUtils.debugf(AlarmNorthbounder.class,"Result of ScriptInvoker in finding the script : " + scriptInvokerResult);  	 
+
+}
+

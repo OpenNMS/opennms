@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  <xs:element name="alarm-northbounder-config">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="notification"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="notification">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="script"/>
+        <xs:element ref="ueis"/>
+      </xs:sequence>
+      <xs:attribute name="enable" use="required" type="xs:boolean"/>
+      <xs:attribute name="name" use="required" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="script">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="scriptname" type="xs:string"/>
+        <xs:element ref="errorhandling"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="errorhandling">
+    <xs:complexType>
+      <xs:sequence minOccurs="0">
+        <xs:element name="retry_interval_inseconds" type="xs:integer"/>
+        <xs:element name="number_of_retries" type="xs:integer"/>
+      </xs:sequence>
+      <xs:attribute name="enable" use="required" type="xs:boolean"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ueis">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="uei"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="uei">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="filter"/>
+      </xs:sequence>
+      <xs:attribute name="name" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="filter">
+    <xs:complexType>
+      <xs:attribute name="devicefamily" type="xs:string"/>
+      <xs:attribute name="severity" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

@@ -1195,6 +1195,11 @@
         <version>${project.version}</version>
         <scope>test</scope>
       </dependency>
+      <dependency>       
+        <groupId>org.opennms.features.notifications</groupId>
+        <artifactId>org.opennms.features.notifications.alarm-notification</artifactId>
+        <version>${project.version}</version>
+      </dependency>
       <dependency>
         <groupId>org.opennms.features</groupId>
         <artifactId>org.opennms.features.request-tracker</artifactId>

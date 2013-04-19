@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  <xs:element name="alarms">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="alarm"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="alarm">
+    <xs:complexType>
+      <xs:sequence>
+      	<xs:element name="uiclear" type="xs:string"/>
+        <xs:element name="alarmid" type="xs:string"/>
+        <xs:element name="eventuei" type="xs:string"/>
+        <xs:element name="ipaddr" type="xs:string"/>
+        <xs:element name="ifindex" type="xs:string"/>
+        <xs:element name="ifname" type="xs:string"/>
+        <xs:element name="serviceid" type="xs:string"/>
+        <xs:element name="reductionkey" type="xs:string"/>
+        <xs:element name="alarmtype" type="xs:string"/>
+        <xs:element name="counter" type="xs:string"/>
+        <xs:element name="severity" type="xs:string"/>
+        <xs:element name="firsteventtime" type="xs:string"/>
+        <xs:element name="lasteventtime" type="xs:string"/>
+        <xs:element name="description" type="xs:string"/>
+        <xs:element name="logmsg" type="xs:string"/>
+        <xs:element name="operinstruct" type="xs:string"/>
+        <xs:element name="tticketid" type="xs:string"/>
+        <xs:element name="tticketstate" type="xs:string"/>
+        <xs:element name="suppresseduntil" type="xs:string"/>
+        <xs:element name="suppresseduser" type="xs:string"/>
+        <xs:element name="suppressedtime" type="xs:string"/>
+        <xs:element name="alarmackuser" type="xs:string"/>
+        <xs:element name="alarmacktime" type="xs:string"/>
+        <xs:element name="managedobjectinstance" type="xs:string"/>
+        <xs:element name="managedobjecttype" type="xs:string"/>
+        <xs:element name="applicationdn" type="xs:string"/>
+        <xs:element name="ossprimarykey" type="xs:string"/>
+        <xs:element name="x733alarmtype" type="xs:string"/>
+        <xs:element name="x733probablecause" type="xs:string"/>
+        <xs:element name="qosalarmstate" type="xs:string"/>
+        <xs:element name="clearkey" type="xs:string"/>
+        <xs:element name="eventparms" type="xs:string"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

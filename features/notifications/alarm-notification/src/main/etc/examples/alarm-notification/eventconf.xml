@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+	<!--  Clear Event to be added for alarm notfication  -->
+	<event>
+		<uei>uei.opennms.org/vacuumd/juniper/alarmCleared</uei>
+		<event-label>Internal trap event : Alarm_Clear</event-label>
+		<descr>
+			&lt;p&gt;The alarm cleared event is generated when the error event generated is
+			cleared from UI.;
+		</descr>
+		<logmsg dest='logonly'>Alarm clear event received:on node %nodeid% for
+			alarm with reduction key %parm[reductionKey]%</logmsg>
+		<severity>Normal</severity>
+		<!-- Removed this alarm in preference to the translated version -->
+		<alarm-data reduction-key="%parm[alarmid]%" alarm-type="2" />
+	</event>
+</events>

@@ -12,5 +12,6 @@
   <name>OpenNMS Notification Strategies</name>
   <modules>
     <module>ticket-strategy</module>
+    <module>alarm-notification</module>
   </modules>
 </project>

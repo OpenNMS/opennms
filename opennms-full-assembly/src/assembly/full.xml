@@ -19,5 +19,6 @@
     <componentDescriptor>src/assembly/components/xml.xml</componentDescriptor>
     <componentDescriptor>src/assembly/components/xmp.xml</componentDescriptor>
     <componentDescriptor>src/assembly/components/osgi.xml</componentDescriptor>
+    <componentDescriptor>src/assembly/components/notifications.xml</componentDescriptor>
   </componentDescriptors>
 </assembly>

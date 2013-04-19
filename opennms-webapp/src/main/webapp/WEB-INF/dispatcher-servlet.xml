@@ -297,9 +297,15 @@
         <property name="redirectView" value="/event/list.htm"/>
     </bean>
 
+    <!-- Bean for AlarmDetailController-->
     <alias name="/alarm/detail.htm" alias="/alarm/detail.jsp"/>
     <bean name="/alarm/detail.htm" class="org.opennms.web.controller.alarm.AlarmDetailController">
-        <property name="webAlarmRepository" ref="webAlarmRepository"/>
+	<property name="successView" value="alarm/detail"/>
+	<property name="defaultShortLimit" value="20"/>
+	<property name="defaultSortStyle" value="ID"/>
+	<property name="defaultAcknowledgeType" value="UNACKNOWLEDGED"/>
+	<property name="webAlarmRepository" ref="webAlarmRepository"/>
+	<property name="webEventRepository" ref="webEventRepository"/>
     </bean>
 
     <bean name="/alarm/saveSticky.htm" class="org.opennms.web.controller.alarm.AlarmDetailController">

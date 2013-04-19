@@ -516,6 +516,18 @@
       <type>xml</type>
       <classifier>features</classifier>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.features.notifications</groupId>
+      <artifactId>org.opennms.features.notifications.alarm-notification</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.notifications</groupId>
+      <artifactId>org.opennms.features.notifications.alarm-notification</artifactId>
+      <version>${project.version}</version>
+      <type>tar.gz</type>
+      <classifier>etc</classifier>
+    </dependency>
   </dependencies>
 
   <repositories>

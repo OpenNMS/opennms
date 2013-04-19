@@ -10,5 +10,6 @@
     <componentDescriptor>src/assembly/components/rxtx.xml</componentDescriptor>
     <componentDescriptor>src/assembly/components/webapps.xml</componentDescriptor>
     <componentDescriptor>src/assembly/components/osgi.xml</componentDescriptor>
+    <componentDescriptor>src/assembly/components/notifications.xml</componentDescriptor>
   </componentDescriptors>
 </assembly>

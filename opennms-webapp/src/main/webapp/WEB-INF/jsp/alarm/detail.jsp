@@ -32,24 +32,27 @@
 <%@page language="java"
         contentType="text/html"
         session="true"
-        import="java.util.List,
+        import="java.util.*,
+	java.text.SimpleDateFormat,
+	org.opennms.web.filter.Filter,
         org.opennms.core.utils.WebSecurityUtils,
         org.opennms.web.controller.alarm.*,
         org.opennms.web.alarm.*,
+	org.opennms.web.event.SortStyle,
+	org.opennms.web.event.Event,
+	org.opennms.web.event.EventQueryParms,
+	org.opennms.web.event.EventUtil,
+	org.opennms.netmgt.EventConstants,
+	org.opennms.web.event.AcknowledgeType,
         org.opennms.netmgt.model.OnmsAcknowledgment,
         org.opennms.netmgt.model.OnmsSeverity,
+	org.opennms.web.servlet.XssRequestWrapper,
         org.opennms.web.springframework.security.Authentication"
         %>
-
-<%@page import="org.opennms.web.alarm.Alarm" %>
-
 
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@taglib tagdir="/WEB-INF/tags/form" prefix="form" %>
-
-<%@page import="org.opennms.web.servlet.XssRequestWrapper"%>
-<%@page import="org.opennms.web.alarm.Alarm" %>
 
 <%!
     public String alarmTicketLink(Alarm alarm) {
@@ -64,14 +67,32 @@
 %>
 
 <%
+    
+    //Get the required attributes value
     XssRequestWrapper req = new XssRequestWrapper(request);
-    Alarm alarm = (Alarm) request.getAttribute("alarm");
+    
+    String alarmIdString = req.getParameter( "id" );
+    
+    Alarm alarm = (Alarm) req.getAttribute("alarm");
 
-    if (alarm == null) {
-        throw new ServletException("Missing alarm request attribute.");
-    }
+    EventQueryParms parms = (EventQueryParms)req.getAttribute( "parms" );
+    pageContext.setAttribute("parms", parms);
+    
+    Event[] events = (Event[])req.getAttribute("events");
+    pageContext.setAttribute("events", events);
 
-    pageContext.setAttribute("alarm", alarm);
+    int eventCount = req.getAttribute( "eventCount" ) == null ? -1 : (Integer)req.getAttribute( "eventCount" );
+
+    HashMap<Integer, List<OnmsAcknowledgment>> alarmsAcknowledgments = (HashMap<Integer, List<OnmsAcknowledgment>>)req.getAttribute("alarmsAcknowledgments"); 
+    pageContext.setAttribute("alarmsAcknowledgments", alarmsAcknowledgments);
+    
+    //Date format for an alarm events
+    SimpleDateFormat formater = new SimpleDateFormat("MM/dd/yy hh:mm:ss aaa",Locale.ENGLISH);
+		
+    if(alarm == null){%>
+	<h3>An alarm with this id [ <%=alarmIdString%> ] was not found in Database</h3>
+    <%}else{
+	    pageContext.setAttribute("alarm", alarm);
 
     String action = null;
     String ackButtonName = null;
@@ -95,7 +116,7 @@
         showClear = true;
     }
     
-    List<OnmsAcknowledgment> acks = (List<OnmsAcknowledgment>) request.getAttribute("acknowledgments");
+	    List<OnmsAcknowledgment> acks = (List<OnmsAcknowledgment>) req.getAttribute("acknowledgments");
 %>
 
 <%@page import="org.opennms.core.resource.Vault"%>
@@ -109,6 +130,7 @@
 
 <h3>Alarm <%=alarm.getId()%></h3>
 
+	<!-- Table for Alarm Details -->
 <table>
     <tr class="<%=alarm.getSeverity().getLabel()%>">
         <th width="100em">Severity</th>
@@ -206,6 +228,7 @@
     </tr>
 </table>
 
+	<!-- Table for Log Message  Details-->
 <table>
     <tr class="<%=alarm.getSeverity().getLabel()%>">
         <th>Log&nbsp;Message</th>
@@ -215,6 +238,7 @@
     </tr>
 </table>
 
+	<!--  Table for Acknowledged Details-->
 <% if (acks != null) {%>
 <table>
     <tr class="<%=alarm.getSeverity().getLabel()%>">
@@ -226,12 +250,13 @@
     <tr class="<%=alarm.getSeverity().getLabel()%>">
         <td><%=ack.getAckUser()%></td>
         <td><%=ack.getAckAction()%></td>
-        <td><%=ack.getAckTime()%></td>
+			<td><%=org.opennms.web.api.Util.formatDateToUIString(ack.getAckTime())%></td>
     </tr>
     <% }%>
 </table>
 <% }%>
 
+	<!-- Table for Description details -->
 <table>
     <tr class="<%=alarm.getSeverity().getLabel()%>">
         <th>Description</th>
@@ -240,7 +265,271 @@
         <td><%=alarm.getDescription()%></td>
     </tr>
 </table>
-
+	
+	<!--  START : Table for Alarm events details -->
+	<table>
+		<tr>
+			<th colspan="7">Alarm History</th>
+		</tr>
+		<%if(events!=null){%>
+		<tr>
+			<th class="divider" width="50em">Event ID</th>
+			<th class="divider" width="50em">Alarm ID</th>
+			<th>Creation Time</th>
+			<th class="divider" width="100em">Severity</th>
+			<th>Operation Time</th>
+			<th>User</th>
+			<th>Operation</th>
+		</tr>
+		<% for( int i=0; i < events.length; i++ ) {
+			
+			//Get an event from eventList
+			Event event = events[i];
+			pageContext.setAttribute("event", event);
+			
+			//Get the alarm acknowledgment size
+			int alarmAckSize = 0;
+			int eventAlarmId = event.getAlarmId();
+			List<OnmsAcknowledgment> currAlarmAcknowledgment = alarmsAcknowledgments.get(eventAlarmId);
+			if(currAlarmAcknowledgment!=null){
+				alarmAckSize = currAlarmAcknowledgment.size();
+			}
+		
+			//Find the duplicate Alarm Id for the events
+			boolean isAlarmsWithSameId = true;
+			for(int j=0;j<i;j++){
+				Event preEvent = events[j];
+				int preEventAlarmId = preEvent.getAlarmId();
+				if(eventAlarmId == preEventAlarmId){
+					isAlarmsWithSameId = false;
+				}
+			}
+			
+			if(alarmAckSize>0){
+				
+				int rowSpanCount = 0;
+				int firstRow = 0;
+				Calendar eventCreatTime = this.getDateFormat(formater.parse(org.opennms.web.api.Util.formatDateToUIString(event.getCreateTime())));
+				
+				if(isAlarmsWithSameId){
+				
+					//Find the row span count to draw the row of table
+					for (OnmsAcknowledgment ack : currAlarmAcknowledgment) {
+						Calendar ackTime = this.getDateFormat(formater.parse(org.opennms.web.api.Util.formatDateToUIString(ack.getAckTime())));
+						if((eventCreatTime.compareTo(ackTime)) < 0){
+							rowSpanCount++;
+						}
+					}
+					
+					if(rowSpanCount == 0){%>
+						<tr class="<%= event.getSeverity().getLabel() %>">
+							<td class="divider">
+							    <% if( event.getId() > 0 ) { %>
+								<%=event.getId()%>
+							    <% } else {%>
+							      -
+							    <% } %>
+							</td>
+							<td class="divider" >
+								<% if( eventAlarmId > 0 ) { %>
+									<%=eventAlarmId%>
+								<% } else {%>
+								-
+								<% } %>
+							</td>
+							<td class="divider" ><%=org.opennms.web.api.Util.formatDateToUIString(event.getCreateTime())%></td>
+							<td class="divider" ><%= event.getSeverity().getLabel() %></td>
+							<td class="divider" > - </td>
+							<td class="divider" > - </td>
+							<td class="divider" > - </td>
+						</tr>
+					<%
+					}else{
+						for (int ackIterator=alarmAckSize-1; ackIterator >=0 ; ackIterator--)  {
+						
+							//Get the acknowledgment time
+							OnmsAcknowledgment ack = currAlarmAcknowledgment.get(ackIterator);
+							Calendar ackTime = this.getDateFormat(formater.parse(org.opennms.web.api.Util.formatDateToUIString(ack.getAckTime())));
+						
+							//Comparison of event creation time with acknowledgment time
+							if((eventCreatTime.compareTo(ackTime)) < 0){
+								if(firstRow == 0){
+									firstRow++;
+								%>
+									<tr class="<%= event.getSeverity().getLabel() %>">
+										<td rowspan="<%=rowSpanCount%>" class="divider">
+										    <% if( event.getId() > 0 ) { %>
+											<%=event.getId()%>
+										    <% } else {%>
+										      -
+										    <% } %>
+										</td>
+										<td rowspan="<%=rowSpanCount%>" class="divider" >
+											<% if( eventAlarmId > 0 ) { %>
+												<%=eventAlarmId%>
+											<% } else {%>
+											-
+											<% } %>
+										</td>
+										<td rowspan="<%=rowSpanCount%>" class="divider" ><%=org.opennms.web.api.Util.formatDateToUIString(event.getCreateTime())%></td>
+										<td rowspan="<%=rowSpanCount%>" class="divider" ><%= event.getSeverity().getLabel() %></td>
+										<td class="divider" ><%=org.opennms.web.api.Util.formatDateToUIString(ack.getAckTime())%></td>
+										<td class="divider" ><%=ack.getAckUser()%></td>
+										<td class="divider" ><%=ack.getAckAction()%></td>
+									</tr>
+								<%}else{%>
+									<tr class="<%= event.getSeverity().getLabel() %>">
+										<td class="divider" ><%=org.opennms.web.api.Util.formatDateToUIString(ack.getAckTime())%></td>
+										<td class="divider" ><%=ack.getAckUser()%></td>
+										<td class="divider" ><%=ack.getAckAction()%></td>
+									</tr>
+								<%}
+							}
+						}
+					}%><%
+				}else{
+					
+					//Get the previous event creation time
+					Event previousEvent = events[i-1];
+					Calendar preEventCreatTime = this.getDateFormat(formater.parse(org.opennms.web.api.Util.formatDateToUIString(previousEvent.getCreateTime())));
+					
+					//Find the row span count to draw the row of table
+					for (OnmsAcknowledgment ack : currAlarmAcknowledgment) {
+						Calendar ackTime = this.getDateFormat(formater.parse(org.opennms.web.api.Util.formatDateToUIString(ack.getAckTime())));
+						if((((eventCreatTime.compareTo(ackTime)) < 0) && ((preEventCreatTime.compareTo(ackTime)) > 0))){
+							rowSpanCount++;
+						}
+					}
+					
+					if(rowSpanCount == 0){%>
+						<tr class="<%= event.getSeverity().getLabel() %>">
+							<td class="divider">
+							    <% if( event.getId() > 0 ) { %>
+								<%=event.getId()%>
+							    <% } else {%>
+							      -
+							    <% } %>
+							</td>
+							<td class="divider" >
+								<% if( eventAlarmId > 0 ) { %>
+									<%=eventAlarmId%>
+								<% } else {%>
+									-
+								<% } %>
+							</td>
+							<td class="divider" ><%=org.opennms.web.api.Util.formatDateToUIString(event.getCreateTime())%></td>
+							<td class="divider" ><%= event.getSeverity().getLabel() %></td>
+							<td class="divider" > - </td>
+							<td class="divider" > - </td>
+							<td class="divider" > - </td>
+						</tr>
+					<%
+					}else{
+						for (int ackIterator=alarmAckSize-1; ackIterator >=0 ; ackIterator--)  {
+							
+							//Get the acknowledgment time
+							OnmsAcknowledgment ack = currAlarmAcknowledgment.get(ackIterator);
+							Calendar ackTime = this.getDateFormat(formater.parse(org.opennms.web.api.Util.formatDateToUIString(ack.getAckTime())));
+							
+							//Comparison of event creation time with acknowledgment time
+							if((((eventCreatTime.compareTo(ackTime)) < 0) && ((preEventCreatTime.compareTo(ackTime)) > 0))){
+								if(firstRow == 0){
+									firstRow++;%>
+									<tr class="<%= event.getSeverity().getLabel() %>">
+										<td rowspan="<%=rowSpanCount%>" class="divider">
+										    <% if( event.getId() > 0 ) { %>
+											<%=event.getId()%>
+										    <% } else {%>
+										      -
+										    <% } %>
+										</td>
+										<td rowspan="<%=rowSpanCount%>" class="divider" >
+											<% if( eventAlarmId > 0 ) { %>
+												<%=eventAlarmId%>
+											<% } else {%>
+											-
+											<% } %>
+										</td>
+										<td rowspan="<%=rowSpanCount%>" class="divider" ><%=org.opennms.web.api.Util.formatDateToUIString(event.getCreateTime())%></td>
+										<td rowspan="<%=rowSpanCount%>" class="divider" ><%= event.getSeverity().getLabel() %></td>
+										<td class="divider" ><%=org.opennms.web.api.Util.formatDateToUIString(ack.getAckTime())%></td>
+										<td class="divider" ><%=ack.getAckUser()%></td>
+										<td class="divider" ><%=ack.getAckAction()%></td>
+									</tr><%
+								}else{%>
+									<tr class="<%= event.getSeverity().getLabel() %>">
+										<td class="divider" ><%=org.opennms.web.api.Util.formatDateToUIString(ack.getAckTime())%></td>
+										<td class="divider" ><%=ack.getAckUser()%></td>
+										<td class="divider" ><%=ack.getAckAction()%></td>
+									</tr><%
+								}
+							}
+						}
+					}%><%
+				}//isDuplicateAlarmId%><%
+			}else{%>
+				<tr class="<%= event.getSeverity().getLabel() %>">
+					<td class="divider">
+					    <% if( event.getId() > 0 ) { %>
+						<%=event.getId()%>
+					    <% } else {%>
+					      -
+					    <% } %>
+					</td>
+					<td class="divider" >
+						<% if( eventAlarmId > 0 ) { %>
+							<%=eventAlarmId%>
+						<% } else {%>
+							-
+						<% } %>
+					</td>
+					<td class="divider" ><%=org.opennms.web.api.Util.formatDateToUIString(event.getCreateTime())%></td>
+					<td class="divider" ><%= event.getSeverity().getLabel() %></td>
+					<td class="divider" > - </td>
+					<td class="divider" > - </td>
+					<td class="divider" > - </td>
+				</tr><%
+			} //isAcknowledgmentAvailable%><%
+		}%>
+		<!-- PageNavigation Row-->
+		<tr>
+			<td colspan="7">
+				<div>
+					<div style="float:left;">
+						<% 
+							if( events.length > 0 ) { 
+						%>
+						      <% String baseUrl = this.makeLink(parms,alarm); %>
+						      <% if ( eventCount == -1 ) { %>
+							<jsp:include page="/includes/resultsIndexNoCount.jsp" flush="false" >
+							  <jsp:param name="itemCount"    value="<%=events.length%>" />
+							  <jsp:param name="baseurl"  value="<%=baseUrl%>"    />
+							  <jsp:param name="limit"    value="<%=parms.limit%>"      />
+							  <jsp:param name="multiple" value="<%=parms.multiple%>"   />
+							</jsp:include>
+						      <% } else { %>
+							<jsp:include page="/includes/resultsIndex.jsp" flush="false" >
+							  <jsp:param name="count"    value="<%=eventCount%>" />
+							  <jsp:param name="baseurl"  value="<%=baseUrl%>"    />
+							  <jsp:param name="limit"    value="<%=parms.limit%>"      />
+							  <jsp:param name="multiple" value="<%=parms.multiple%>"   />
+							</jsp:include>
+						      <% } %>
+						<% } %>  
+					</div>
+					<div style="float:right;"><p>Number of events  in this page : <%=events.length%></p></div>
+				</div>
+			</td>
+		</tr><%
+		}else{%>
+		<tr class="<%=alarm.getSeverity().getLabel()%>">
+			<td colspan="7">There is no events for this alarm</td>
+		</tr>
+		<%}%>
+	</table>
+	<!--  END : Table for Alarm events details -->
+	
+	<!-- Table for Sticky Memo Details -->
 <table>
     <tr class="<%=alarm.getSeverity().getLabel()%>">
         <th colspan="3" width="50%">Sticky Memo</th>
@@ -287,6 +576,7 @@
 
 </table>
 
+	<!-- Table for Operator Instructions Details-->
 <table>
     <tr class="<%=alarm.getSeverity().getLabel()%>">
         <th>Operator&nbsp;Instructions</th>
@@ -303,7 +593,8 @@
     </tr>
 </table>
 
-<% if (request.isUserInRole(Authentication.ROLE_ADMIN) || !request.isUserInRole(Authentication.ROLE_READONLY)) {%>
+	<!-- Table for Acknowledgment and Severity Actions Details -->
+	<% if (req.isUserInRole(Authentication.ROLE_ADMIN) || !request.isUserInRole(Authentication.ROLE_READONLY)) {%>
 <table>
     <tbody>
         <tr class="<%=alarm.getSeverity().getLabel()%>">
@@ -314,7 +605,7 @@
                 <form method="post" action="alarm/acknowledge">
                     <input type="hidden" name="actionCode" value="<%=action%>" />
                     <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
-                    <input type="hidden" name="redirect" value="<%= "detail.htm" + "?" + request.getQueryString()%>" />
+			    <input type="hidden" name="redirect" value="<%= this.getLink(alarm.getId(), parms.filters)%>" />
                     <input type="submit" value="<%=ackButtonName%>" />
                 </form>
             </td>
@@ -326,7 +617,8 @@
             <td>
                 <form method="post" action="alarm/changeSeverity">
                     <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
-                    <input type="hidden" name="redirect" value="<%= "detail.htm" + "?" + request.getQueryString()%>" />	  
+			    <input type="hidden" name="redirect" value="<%= this.getLink(alarm.getId(), parms.filters)%>" />
+			    
                     <select name="actionCode">
                         <%if (showEscalate) {%>
                         <option value="<%=escalateAction%>">Escalate</option>
@@ -378,6 +670,64 @@
 </form>
 
 <% } // alarmTroubleTicketEnabled %>
-<% } // isUserInRole%>
-
+<% } // isUserInRole%><%
+   }//isValidAlarmId%>
+    
 <jsp:include page="/includes/footer.jsp" flush="false" />
+
+<%!
+    String urlBase = "alarm/detail.htm";
+    
+    public String getFiltersAsString(List<Filter> filters ) {
+    
+        StringBuffer buffer = new StringBuffer();
+
+        if( filters != null ) {
+            for( int i=0; i < filters.size(); i++ ) {
+                buffer.append( "&amp;filter=" );
+                String filterString = EventUtil.getFilterString((Filter)filters.get(i));
+                buffer.append( java.net.URLEncoder.encode(filterString) );
+            }
+        }      
+    
+        return( buffer.toString() );
+    }
+    
+    public String makeLink( int alarm, List<Filter> filters) {
+    
+      StringBuffer buffer = new StringBuffer( this.urlBase );
+      buffer.append( "?id=" );
+      buffer.append( alarm );
+      buffer.append( this.getFiltersAsString(filters) );
+      
+      return( buffer.toString() );
+      
+    }
+    
+    public String makeLink( EventQueryParms parms , Alarm alarm) {
+      return( this.makeLink( alarm.getId(), parms.filters) );
+    }
+    
+   public String getLink( int alarm, List<Filter> filters) {
+    
+      String urlDetail = "detail.htm";
+      StringBuffer buffer = new StringBuffer( urlDetail );
+      buffer.append( "?id=" );
+      buffer.append( alarm );
+      buffer.append( this.getFiltersAsString(filters) );
+      
+      return( buffer.toString() );
+      
+    }
+    
+    public Calendar getDateFormat(Date date){
+    
+	Calendar calendar = Calendar.getInstance();  
+	calendar.setTime(date);
+	
+	Calendar calDate = new GregorianCalendar(calendar.get(Calendar.YEAR),calendar.get(Calendar.MONTH),calendar.get(Calendar.DAY_OF_MONTH),calendar.get(Calendar.HOUR_OF_DAY),calendar.get(Calendar.MINUTE),calendar.get(Calendar.SECOND));
+	
+	return calDate;
+    }
+
+%>

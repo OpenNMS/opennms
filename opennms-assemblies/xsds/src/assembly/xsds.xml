@@ -39,6 +39,7 @@
         <include>org.opennms.protocols:org.opennms.protocols.nsclient:jar:xsds:${project.version}</include>
         <include>org.opennms.protocols:org.opennms.protocols.xml:jar:xsds:${project.version}</include>
         <include>org.opennms.protocols:org.opennms.protocols.xmp:jar:xsds:${project.version}</include>
+        <include>org.opennms.features.notifications:org.opennms.features.notifications.alarm-notification:jar:xsds:${project.version}</include>
       </includes>
       <fileMode>0644</fileMode>
       <directoryMode>0755</directoryMode>

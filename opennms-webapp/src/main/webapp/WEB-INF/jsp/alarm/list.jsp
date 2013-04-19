@@ -353,8 +353,14 @@
 
           
           <td class="divider bright" valign="middle" rowspan="1">
-            
-            <a style="vertical-align:middle" href="<%= Util.calculateUrlBase(request, "alarm/detail.htm?id=" + alarms[i].getId()) %>"><%=alarms[i].getId()%></a>
+           
+	   <!-- Get the events details for this Alarm Id -->
+	   <%if(alarms[i].getNodeId() != 0){%>
+		<a style="vertical-align:middle" href="alarm/detail.htm?id=<%=alarms[i].getId()%>&amp;filter=node%3D<%=alarms[i].getNodeId()%>&amp;filter=exactUei%3D<%=alarm.getUei()%>"><%=alarms[i].getId()%></a>
+	    <%}else{%>
+		<a style="vertical-align:middle" href="alarm/detail.htm?id=<%=alarms[i].getId()%>&amp;filter=exactUei%3D<%=alarm.getUei()%>&amp;filter=interface%3D<%=alarms[i].getIpAddress()%>"><%=alarms[i].getId()%></a>
+	    <%}//isNodeIdValid%>
+
             <c:if test="<%= alarms[i].getStickyMemo().getId() != null%>">
                 <img style="vertical-align:middle" src="images/AlarmMemos/StickyMemo.png" width="20" height="20" 
 		     title="<%=alarms[i].getStickyMemo().getBody() %>"/>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd		
+	">
+	
+	<bean name="alarmNotificationConfigDao" class="org.opennms.netmgt.notification.parser.AlarmNotificationConfigDao">
+	  <property name="configResource" value="file:${opennms.home}/etc/alarm-notification/alarmNotificationConf.xml" />
+	</bean>
+	
+	<bean name="alarmNorthbounderManager" class="org.opennms.netmgt.notification.AlarmNorthbounderManager" />
+	
+	<bean name="droolsFileLoader" class="org.opennms.netmgt.notification.filter.DroolsFileLoader" />
+	
+	<bean id="nodeDao" class="org.opennms.netmgt.dao.hibernate.NodeDaoHibernate">
+    	<property name="sessionFactory" ref="sessionFactory"/>
+  	</bean>
+
+	<bean id="snmpInterfaceDao" class="org.opennms.netmgt.dao.hibernate.SnmpInterfaceDaoHibernate">
+    	<property name="sessionFactory" ref="sessionFactory"/>
+  	</bean>
+	
+	 <bean id="ipInterfaceDao" class="org.opennms.netmgt.dao.hibernate.IpInterfaceDaoHibernate">
+		<property name="sessionFactory" ref="sessionFactory"/>
+  	</bean>
+  	
+</beans>

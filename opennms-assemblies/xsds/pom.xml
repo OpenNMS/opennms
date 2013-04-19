@@ -157,5 +157,11 @@
       <version>${project.version}</version>
       <classifier>xsds</classifier>
     </dependency>
+      <dependency>
+      <groupId>org.opennms.features.notifications</groupId>
+      <artifactId>org.opennms.features.notifications.alarm-notification</artifactId>
+      <version>${project.version}</version>
+      <classifier>xsds</classifier>
+    </dependency>
   </dependencies>
 </project>
