@@ -116,7 +116,7 @@ when
 then
         println( "Found Event " + $e.getUei() );
         retract( $e );
-        List<NCSComponent> list = correlationService.findComponentsByNodeIdAndAttrParmMaps($e, "mplsL3VpnVrfName", 2);
+        List<NCSComponent> list = correlationService.findComponentsByNodeIdAndByParmName($e,  "mplsL3VpnVrfName", 2);
         println(" Found matching components: " + list );
         for ( NCSComponent ncs : list ) {
                 Component c = new Component( ncs );
@@ -131,7 +131,7 @@ when
 then
         println( "Found Event " + $e.getUei() );
         retract( $e );
-        List<NCSComponent> list = correlationService.findComponentsByNodeIdAndAttrParmMaps($e, "mplsL3VpnVrfName", 2);
+        List<NCSComponent> list = correlationService.findComponentsByNodeIdAndByParmName($e,  "mplsL3VpnVrfName", 2);
         for ( NCSComponent ncs : list ) {
                 Component c = new Component( ncs );
                 insert( new ComponentUpEvent( c, $e ) );
@@ -327,5 +327,6 @@ function void sendResolvedComponentEvent( DroolsCorrelationEngine engine, Compon
 	bldr.addParam("cause", e.getDbid() );
 	engine.sendEvent(bldr.getEvent());
 }
+
 
 
