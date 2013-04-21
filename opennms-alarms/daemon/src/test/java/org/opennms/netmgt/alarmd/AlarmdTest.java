@@ -116,6 +116,11 @@ public class AlarmdTest implements TemporaryDatabaseAware<MockDatabase>, Initial
         public List<NorthboundAlarm> getAlarms() {
             return m_alarms;
         }
+
+		@Override
+		public String getName() {
+			return "MockNorthbounder";
+		}
     }
 
     private MockNetwork m_mockNetwork = new MockNetwork();

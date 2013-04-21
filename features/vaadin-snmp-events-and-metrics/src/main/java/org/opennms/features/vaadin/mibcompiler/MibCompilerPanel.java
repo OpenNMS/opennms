@@ -310,7 +310,7 @@ public class MibCompilerPanel extends Panel {
         } else {
             List<String> dependencies = mibParser.getMissingDependencies();
             if (dependencies.isEmpty()) {
-                logger.error("Found problem when compiling the MIB: <pre>" + mibParser.getFormattedErrors() + "</pre>");
+                logger.error("Problem found when compiling the MIB: <pre>" + mibParser.getFormattedErrors() + "</pre>");
             } else {
                 logger.error("Dependencies required: <b>" + dependencies + "</b>");
             }

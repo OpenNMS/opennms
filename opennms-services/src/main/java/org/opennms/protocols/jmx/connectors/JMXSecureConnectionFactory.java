@@ -118,7 +118,13 @@ public class JMXSecureConnectionFactory {
                         throw e;
                     }
 
-                    Security.addProvider(new com.sun.security.sasl.Provider());
+                    // We don't need to add this provider manually... it is included in the JVM
+                    // by default in Java5+
+                    //
+                    // @see $JAVA_HOME/jre/lib/security/java.security
+                    //
+                    //Security.addProvider(new com.sun.security.sasl.Provider());
+
                     String[] creds;
                     if (sunCacao.equals("true"))
                         creds = new String[]{"com.sun.cacao.user\001" + username, password};

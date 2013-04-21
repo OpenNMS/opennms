@@ -28,18 +28,31 @@
 
 package org.opennms.netmgt.model;
 
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.PropertyAccessorFactory;
-import org.springframework.core.style.ToStringCreator;
+import java.beans.PropertyDescriptor;
+import java.io.Serializable;
+import java.util.Date;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
-import java.beans.PropertyDescriptor;
-import java.io.Serializable;
-import java.util.Date;
+
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.PropertyAccessorFactory;
+import org.springframework.core.style.ToStringCreator;
 
 /**
  * Represents the asset information for a node.
@@ -1643,14 +1656,30 @@ public class OnmsAssetRecord implements Serializable {
     @Transient
     @Deprecated
     @XmlElement
-    public String getCoordinates() {
-        return m_geolocation == null ? null : m_geolocation.getCoordinates();
+    public Float getLongitude() {
+        return m_geolocation == null ? null : m_geolocation.getLongitude();
     }
 
     @Deprecated
-    public void setCoordinates(final String coordinates) {
+    public void setLongitude(final Float longitude) {
         if (m_geolocation != null)
-            m_geolocation.setCoordinates(coordinates);
+            m_geolocation.setLongitude(longitude);
+    }
+
+    /**
+     * PROXY METHOD: do not delete until {@link OnmsGeolocation} is truly a separate table, or projection mapping will fail.
+     */
+    @Transient
+    @Deprecated
+    @XmlElement
+    public Float getLatitude() {
+        return m_geolocation == null ? null : m_geolocation.getLatitude();
+    }
+
+    @Deprecated
+    public void setLatitude(final Float latitude) {
+        if (m_geolocation != null)
+            m_geolocation.setLatitude(latitude);
     }
 
     /**
@@ -1795,7 +1824,8 @@ public class OnmsAssetRecord implements Serializable {
         .append("state", m_geolocation == null ? null : m_geolocation.getState())
         .append("zip", m_geolocation == null ? null : m_geolocation.getZip())
         .append("country", m_geolocation == null ? null : m_geolocation.getCountry())
-        .append("geolocation", m_geolocation == null ? null : m_geolocation.getCoordinates())
+        .append("longitude", m_geolocation == null ? null : m_geolocation.getLongitude())
+        .append("latitude", m_geolocation == null ? null : m_geolocation.getLatitude())
         .append("building", getBuilding())
         .append("floor", getFloor())
         .append("room", getRoom())

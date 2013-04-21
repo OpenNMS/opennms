@@ -48,11 +48,6 @@ import org.opennms.web.notification.filter.NodeFilter;
  * Encapsulates all querying functionality for notices
  *
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @version $Id: $
- * @since 1.8.1
  */
 public class NoticeFactory {
 
@@ -699,7 +694,7 @@ public class NoticeFactory {
         while (rs.next()) {
             Notification notice = new Notification();
 
-            Object element = new Integer(rs.getInt("notifyid"));
+            Object element = Integer.valueOf(rs.getInt("notifyid"));
             notice.m_notifyID = ((Integer) element).intValue();
 
             element = rs.getTimestamp("pagetime");
@@ -721,16 +716,16 @@ public class NoticeFactory {
             element = rs.getString("answeredby");
             notice.m_responder = (String) element;
 
-            element = new Integer(rs.getInt("nodeid"));
+            element = Integer.valueOf(rs.getInt("nodeid"));
             notice.m_nodeID = ((Integer) element).intValue();
 
             element = rs.getString("interfaceid");
             notice.m_interfaceID = (String) element;
 
-            element = new Integer(rs.getInt("eventid"));
+            element = Integer.valueOf(rs.getInt("eventid"));
             notice.m_eventId = ((Integer) element).intValue();
 
-            element = new Integer(rs.getInt("serviceid"));
+            element = Integer.valueOf(rs.getInt("serviceid"));
             if (element != null) {
                 notice.m_serviceId = ((Integer) element).intValue();
                 element = NetworkElementFactory.getInstance(servletContext).getServiceNameFromId(notice.m_serviceId);

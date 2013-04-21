@@ -70,7 +70,7 @@ public class PollableNetwork {
         nodeGroup.setPackageName(packageName);
         nodeGroup.initialize();
         m_members.put(nodeGroup.getIpaddress(), nodeGroup);
-        m_node.put(new Integer(nodeGroup.getNodeid()), nodeGroup.getIpaddress());
+        m_node.put(Integer.valueOf(nodeGroup.getNodeid()), nodeGroup.getIpaddress());
         return nodeGroup;
     }
     
@@ -120,7 +120,7 @@ public class PollableNetwork {
         PollableInterface pi = getInterface(ipaddress);
         if (pi != null) {
             m_members.remove(ipaddress);
-            m_node.remove(new Integer(pi.getNodeid()));
+            m_node.remove(Integer.valueOf(pi.getNodeid()));
             pi.delete();
         }
     }
@@ -192,7 +192,7 @@ public class PollableNetwork {
      * @return a {@link java.lang.String} object.
      */
     public String getIp(int nodeid) {
-        return m_node.get(new Integer(nodeid));
+        return m_node.get(Integer.valueOf(nodeid));
     }
     
     private PollableInterface getInterface(String ipaddress) {

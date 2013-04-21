@@ -1921,6 +1921,13 @@
      <logmsg dest="logndisplay">&lt;p&gt;Linkd link discovery completed.&lt;/p&gt;</logmsg>
      <severity>Normal</severity>
   </event>
+  <event>
+     <uei>uei.opennms.org/internal/linkd/nodeLinkDiscoverySuspended</uei>
+     <event-label>OpenNMS-defined Linkd Event: nodeLinkDiscoverySuspended</event-label>
+     <descr>&lt;p&gt;The Linkd process suspended its attempt to discover links for this node.&lt;/p&gt;</descr>
+     <logmsg dest="logndisplay">&lt;p&gt;Linkd link discovery suspended.&lt;/p&gt;</logmsg>
+     <severity>Warning</severity>
+  </event>
 
 
   <event-file>events/Translator.default.events.xml</event-file>

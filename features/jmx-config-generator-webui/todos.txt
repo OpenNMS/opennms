@@ -1,0 +1,72 @@
+/**
+ * *****************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2012 The OpenNMS Group, Inc. OpenNMS(R) is Copyright (C)
+ * 1999-2012 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * OpenNMS(R). If not, see: http://www.gnu.org/licenses/
+ *
+ * For more information contact: OpenNMS(R) Licensing <license@opennms.org>
+ * http://www.opennms.org/ http://www.opennms.com/
+ ******************************************************************************
+ */
+ Author: Markus von Rüden
+ Date: 2013-04-11
+ 
+ The "jmxconfiggenerator.webui" is not finished yet.
+ Therefore several todos have to be completed before the "tool" 
+ is ready for production use. The following lists does sum up all 
+ open issues/todos but may not be complete.
+ 
+ 
+- In the MBeans Configuration View the tree view on the left does not show any
+  validation error indicators if any element fails validation. So it is very hard
+  to find any errors
+  
+- In the OpenNMS Configuration View the configuration snippet for the collectd-configuration.xml 
+  is not yet generated.
+  
+ - In the OpenNMS Configuration View the "download" button just downloads the configuration
+   in the currently selected tab, but should behave like a "download all" button.
+   
+ - In the OpenNMS Configuration View the order of the tabs is not fixed, but should be
+   because it may cause some trouble for the user. It should always be for example: 
+   collectd-configuration.xml, <service>.xml, <service>-graph.properties
+   
+- The header (1. Introduction View, etc...) should have an OpenNMS style
+
+- The whole application should have an OpenNMS style
+
+- All buttons should have a size where the icons does not look that akward
+
+- All "next" buttons should have the caption on the left and not on the right side 
+  (except the download button on the ResultConfigView)
+  
+- The code should be more documented.
+
+- Take care of the todos in the code.
+
+- The MBeansView should be handled as one component, especially the validation.
+  At the moment the validation is implemented at least twice (in each component plus in the MBeansView).
+  There should be something like a "ValidationRegistry" which allows using the same validation in the
+  whole view and in all sub views.
+  The registry should be used e.g. like this:
+  	MBeansViewValidationRegistry.getInstance().registerValidator(MBeans.class, new NameValidator());
+  	MBeansViewValidationRegistry.getInstance().getValidators(MBeans.class);
+  Be aware, that we can use the ValidationRegistry for the whole application or simply for the MBeansView.
+  Currently I would just use it for the MBeansView. The other views are not that complex
+  
+  

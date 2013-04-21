@@ -34,9 +34,13 @@
  */
 package org.opennms.netmgt.model;
 
+import java.io.Serializable;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.persistence.Column;
+import javax.persistence.Embeddable;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -56,6 +60,8 @@ import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
+
 
 /**
  * <p>BridgeStpInterface class.</p>
@@ -67,17 +73,136 @@ import javax.xml.bind.annotation.XmlTransient;
 @Table(name="stpInterface", uniqueConstraints = {@UniqueConstraint(columnNames={"nodeId", "bridgePort", "stpVlan"})})
 public class OnmsStpInterface {
 
+    @Embeddable
+    public static class StpPortStatus implements Comparable<StpPortStatus>, Serializable {
+        
+    	
+    	/**
+		 * 
+		 */
+		private static final long serialVersionUID = 7669097061380115150L;
+
+		public static final int STP_PORT_STATUS_UNKNOWN = 0;
+    	public static final int STP_PORT_STATUS_DISABLED = 1;
+    	public static final int STP_PORT_STATUS_BLOCKING = 2;
+    	public static final int STP_PORT_STATUS_LISTENING = 3;
+    	public static final int STP_PORT_STATUS_LEARNING = 4;
+    	public static final int STP_PORT_STATUS_FORWARDING = 5;
+    	public static final int STP_PORT_STATUS_BROKEN = 6;
+    	
+        private static final Integer[] s_order = {0,1,2,3,4,5,6};
+
+        private Integer m_stpPortStatus;
+
+        private static final Map<Integer, String> stpPortStatusMap = new HashMap<Integer, String>();
+        
+        static {
+            stpPortStatusMap.put(0, "Unknown" );
+            stpPortStatusMap.put(1, "disabled" );
+            stpPortStatusMap.put(2, "blocking" );
+            stpPortStatusMap.put(3, "listening" );
+            stpPortStatusMap.put(4, "learning" );
+            stpPortStatusMap.put(5, "forwarding" );
+            stpPortStatusMap.put(6, "broken" );
+        }
+
+        @SuppressWarnings("unused")
+        private StpPortStatus() {
+        }
+
+        public StpPortStatus(Integer stpPortStatus) {
+            m_stpPortStatus = stpPortStatus;
+        }
+
+        @Column(name="stpPortState")
+        public Integer getIntCode() {
+            return m_stpPortStatus;
+        }
+
+        public void setIntCode(Integer stpPortStatus) {
+            m_stpPortStatus = stpPortStatus;
+        }
+
+        public int compareTo(StpPortStatus o) {
+            return getIndex(m_stpPortStatus) - getIndex(o.m_stpPortStatus);
+        }
+
+        private static int getIndex(Integer code) {
+            for (int i = 0; i < s_order.length; i++) {
+                if (s_order[i] == code) {
+                    return i;
+                }
+            }
+            throw new IllegalArgumentException("illegal stpPortStatus code '"+code+"'");
+        }
+
+        public boolean equals(Object o) {
+            if (o instanceof StpPortStatus) {
+                return m_stpPortStatus.intValue() == ((StpPortStatus)o).m_stpPortStatus.intValue();
+            }
+            return false;
+        }
+
+        public int hashCode() {
+            return toString().hashCode();
+        }
+
+        public String toString() {
+            return String.valueOf(m_stpPortStatus);
+        }
+
+        public static StpPortStatus get(Integer code) {
+            if (code == null)
+                return StpPortStatus.UNKNOWN;
+            switch (code) {
+            case STP_PORT_STATUS_UNKNOWN: return UNKNOWN;
+            case STP_PORT_STATUS_DISABLED: return DISABLED;
+            case STP_PORT_STATUS_BLOCKING: return BLOCKING;
+            case STP_PORT_STATUS_LISTENING: return LISTENING;
+            case STP_PORT_STATUS_LEARNING: return LEARNING;
+            case STP_PORT_STATUS_FORWARDING: return FORWARDING;
+            case STP_PORT_STATUS_BROKEN: return BROKEN;
+
+            default:
+                throw new IllegalArgumentException("Cannot create vlanStatus from code "+code);
+            }
+        }
+
+        /**
+         * <p>getPortStatusString</p>
+         *
+         * @return a {@link java.lang.String} object.
+         */
+        /**
+         */
+        public static String getStpPortStatusString(Integer code) {
+            if (stpPortStatusMap.containsKey(code))
+                    return stpPortStatusMap.get( code);
+            return null;
+        }
+        
+        public static StpPortStatus UNKNOWN = new StpPortStatus(STP_PORT_STATUS_UNKNOWN);
+        public static StpPortStatus DISABLED = new StpPortStatus(STP_PORT_STATUS_DISABLED);
+        public static StpPortStatus BLOCKING = new StpPortStatus(STP_PORT_STATUS_BLOCKING);
+        public static StpPortStatus LISTENING = new StpPortStatus(STP_PORT_STATUS_LISTENING);
+        public static StpPortStatus LEARNING = new StpPortStatus(STP_PORT_STATUS_LEARNING);
+        public static StpPortStatus FORWARDING = new StpPortStatus(STP_PORT_STATUS_FORWARDING);
+        public static StpPortStatus BROKEN = new StpPortStatus(STP_PORT_STATUS_BROKEN);
+
+
+    }
+
     private Integer m_id;
 	private OnmsNode m_node;
 	private Integer m_bridgePort;
 	private Integer m_ifIndex = -1;
-	private Integer m_stpPortState;
+	private StpPortStatus m_stpPortState;
 	private Integer m_stpPortPathCost;
 	private String m_stpPortDesignatedRoot;
 	private Integer m_stpPortDesignatedCost;
 	private String m_stpPortDesignatedBridge;
 	private String m_stpPortDesignatedPort;
-	private Character m_status;
+	private StatusType m_status = StatusType.UNKNOWN;
 	private Date m_lastPollTime;
 	private Integer m_vlan;
 
@@ -139,11 +264,11 @@ public class OnmsStpInterface {
 
 	@XmlElement
 	@Column
-	public Integer getStpPortState() {
+	public StpPortStatus getStpPortState() {
 		return m_stpPortState;
 	}
 
-	public void setStpPortState(final Integer stpPortState) {
+	public void setStpPortState(final StpPortStatus stpPortState) {
 		m_stpPortState = stpPortState;
 	}
 
@@ -179,11 +304,11 @@ public class OnmsStpInterface {
 
 	@XmlAttribute
 	@Column(nullable=false)
-	public Character getStatus() {
+	public StatusType getStatus() {
 		return m_status;
 	}
 
-	public void setStatus(final Character status) {
+	public void setStatus(final StatusType status) {
 		m_status = status;
 	}
 

@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="
+	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+	http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
+	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+	">
+
+    <context:annotation-config />
+    <tx:annotation-driven/>
+    <aop:aspectj-autoproxy proxy-target-class="true" />
+
+    <!-- 
+    <bean id="queryManager" class="org.opennms.netmgt.linkd.DbEventWriter">
+      <property name="jdbcTemplate" ref="jdbcTemplate" />
+      <property name="nodeDao" ref="nodeDao" />
+      <property name="ipInterfaceDao" ref="ipInterfaceDao" />
+      <property name="snmpInterfaceDao" ref="snmpInterfaceDao" />
+      <property name="atInterfaceDao" ref="atInterfaceDao" />
+    </bean>
+    -->
+    
+  <bean id="dataSource" class="org.opennms.core.db.DataSourceFactoryBean" />
+    
+  <bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+    <property name="dataSource" ref="dataSource" />
+    <property name="packagesToScan">
+      <list>
+        <value>org.opennms.netmgt.dao.hibernate</value>
+        <value>org.opennms.netmgt.model</value>
+      </list>
+    </property>
+    <!--  property name="schemaUpdate" value="true">
+      </property -->
+    <property name="annotatedPackages">
+      <list>
+        <value>org.opennms.netmgt.dao.hibernate</value>
+        <value>org.opennms.netmgt.model</value>
+      </list>
+    </property>
+    <property name="hibernateProperties">
+      <value>
+        hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+        hibernate.cache.use_second_level_cache=false
+        hibernate.cache=false
+        hibernate.cache.use_query_cache=false
+        hibernate.jdbc.batch_size=0
+        <!-- hibernate.format_sql=true -->
+      </value>
+    </property>
+  </bean>
+
+  <bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+    <property name="sessionFactory" ref="sessionFactory" />
+    <property name="nestedTransactionAllowed" value="true"/>
+  </bean>
+  
+  <bean id="transactionTemplate" class="org.springframework.transaction.support.TransactionTemplate">
+    <property name="transactionManager" ref="transactionManager" />
+  </bean>
+
+  <bean id="nodeDao" class="org.opennms.netmgt.dao.hibernate.NodeDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  
+  <bean id="ipInterfaceDao" class="org.opennms.netmgt.dao.hibernate.IpInterfaceDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+
+  <bean id="snmpInterfaceDao" class="org.opennms.netmgt.dao.hibernate.SnmpInterfaceDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+
+  <bean id="atInterfaceDao" class="org.opennms.netmgt.dao.hibernate.AtInterfaceDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+
+  <bean id="vlanDao" class="org.opennms.netmgt.dao.hibernate.VlanDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+
+  <bean id="stpNodeDao" class="org.opennms.netmgt.dao.hibernate.StpNodeDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+
+  <bean id="stpInterfaceDao" class="org.opennms.netmgt.dao.hibernate.StpInterfaceDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  
+    <bean id="ipRouteInterfaceDao" class="org.opennms.netmgt.dao.hibernate.IpRouteInterfaceDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  
+    <bean id="dataLinkInterfaceDao" class="org.opennms.netmgt.dao.hibernate.DataLinkInterfaceDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  
+    <bean id="queryManager" class="org.opennms.netmgt.linkd.HibernateEventWriter">
+      <property name="nodeDao" ref="nodeDao" />
+      <property name="ipInterfaceDao" ref="ipInterfaceDao" />
+      <property name="snmpInterfaceDao" ref="snmpInterfaceDao" />
+      <property name="atInterfaceDao" ref="atInterfaceDao" />
+      <property name="vlanDao" ref="vlanDao" />
+      <property name="stpNodeDao" ref="stpNodeDao" />
+      <property name="stpInterfaceDao" ref="stpInterfaceDao" />
+      <property name="ipRouteInterfaceDao" ref="ipRouteInterfaceDao" />
+      <property name="dataLinkInterfaceDao" ref="dataLinkInterfaceDao" />
+    </bean>
+
+    <bean id="scheduler" class="org.opennms.netmgt.linkd.scheduler.Scheduler">
+      <constructor-arg value="Linkd" />
+      <constructor-arg>
+        <util:property-path path="linkdConfig.threads" />
+      </constructor-arg>
+    </bean>
+
+    <bean id="receiver" class="org.opennms.netmgt.linkd.LinkdEventProcessor">
+      <property name="linkd" ref="daemon"/>
+    </bean>
+
+    <bean id="daemonListener" class="org.opennms.netmgt.model.events.AnnotationBasedEventListenerAdapter">
+      <property name="annotatedListener" ref="receiver" />
+      <property name="eventSubscriptionService" ref="eventSubscriptionService" />
+    </bean>
+
+    <bean name="daemon" class="org.opennms.netmgt.linkd.Linkd">
+      <property name="eventForwarder" ref="eventForwarder" />
+    </bean>
+
+   <bean id="linkdConfig-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+      <property name="staticMethod"><value>org.opennms.netmgt.config.LinkdConfigFactory.init</value></property>
+    </bean>
+ 
+    <bean id="linkdConfig" class="org.opennms.netmgt.config.LinkdConfigFactory" depends-on="linkdConfig-init" factory-method="getInstance"/>
+</beans>

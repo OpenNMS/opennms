@@ -34,7 +34,9 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.util.Properties;
+import java.util.logging.Logger;
 
 import javax.sql.DataSource;
 
@@ -136,6 +138,11 @@ public class C3P0ConnectionFactory extends BaseConnectionFactory {
     @Override
     public int getLoginTimeout() throws SQLException {
         return m_pool.getLoginTimeout();
+    }
+
+    /** {@inheritDoc} */
+    public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+        throw new SQLFeatureNotSupportedException("getParentLogger not supported");
     }
 
     @Override

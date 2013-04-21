@@ -2,6 +2,8 @@
 
 use Cwd;
 use File::Basename;
+use File::Find;
+use File::Path qw(rmtree);
 use File::Spec;
 use Getopt::Long qw(:config permute bundling pass_through);
 use IO::Handle;
@@ -177,6 +179,24 @@ sub clean_git {
 	my @command = ($GIT, "clean", "-fdx", ".");
 	info("running:", @command);
 	handle_errors_and_exit_on_failure(system(@command));
+}
+
+sub clean_m2_repository {
+	my %dirs;
+	find(
+		{
+			wanted => sub {
+				my ($dev,$ino,$mode,$nlink,$uid,$gid) = lstat($_);
+				if (int(-C _) > 7) {
+					$dirs{$File::Find::dir}++;
+				}
+			}
+		},
+		File::Spec->catfile($ENV{'HOME'}, '.m2', 'repository')
+	);
+	my @remove = sort keys %dirs;
+	info("cleaning up old m2_repo directories: " . @remove);
+	rmtree(\@remove);
 }
 
 sub get_dependencies {

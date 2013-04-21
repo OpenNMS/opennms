@@ -45,7 +45,7 @@
         org.opennms.web.svclayer.ResourceService,
         org.opennms.web.asset.Asset,
         org.opennms.web.asset.AssetModel,
-        org.opennms.web.navigate.PageNavEntry,
+        org.opennms.web.navigate.*,
         org.springframework.web.context.WebApplicationContext,
         org.springframework.web.context.support.WebApplicationContextUtils"
 %>
@@ -196,14 +196,23 @@
 
 	final WebApplicationContext webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
 	final ServiceRegistry registry = webAppContext.getBean(ServiceRegistry.class);
-	
+
 	final List<String> renderedLinks = new ArrayList<String>();
-	final Collection<PageNavEntry> navLinks = registry.findProviders(PageNavEntry.class);
-	for (final PageNavEntry link : navLinks) {
-	    final String text = "<a href=\"" + link.getUrl().replace("%nodeid%", String.valueOf(nodeId)) + "\">" + link.getName() + "</a>";
-	    renderedLinks.add(text);
-		System.err.println("nav link = " + text);
+	final Collection<ConditionalPageNavEntry> navLinks = registry.findProviders(ConditionalPageNavEntry.class, "(Page=node)");
+	for (final ConditionalPageNavEntry link : navLinks) {
+	    final DisplayStatus displayStatus = link.evaluate(request, node_db);
+	    switch(displayStatus) {
+		    case DISPLAY_NO_LINK:
+		        renderedLinks.add(link.getName());
+		        break;
+		    case DISPLAY_LINK:
+		        renderedLinks.add("<a href=\"" + link.getUrl().replace("%nodeid%", ""+nodeId) + "\">" + link.getName() + "</a>");
+		        break;
+		    case NO_DISPLAY:
+		        break;
+	    }
 	}
+	
 	pageContext.setAttribute("navEntries", renderedLinks);
 %>
 
@@ -318,7 +327,7 @@
     
     <c:forEach items="${navEntries}" var="entry">
       <li class="o-menuitem">
-      	<c:out value="${link}" />
+      	<c:out value="${entry}" escapeXml="false" />
       </li>
     </c:forEach>
   </ul>
@@ -333,7 +342,7 @@
   
 
   <!-- Asset box, if info available --> 
-  <c:if test="${! empty model.asset && (! empty model.asset.description || ! empty model.asset.comments || ! empty model.asset.geolocation)}">
+  <c:if test="${! empty model.asset && (! empty model.asset.description || ! empty model.asset.comments)}">
     <h3 class="o-box">Asset Information</h3>
     <table class="o-box">
       <tr>
@@ -345,13 +354,6 @@
         <th>Comments</th>
         <td>${model.asset.comments}</td>
       </tr>
-
-      <c:if test="${! empty model.asset.geolocation}">
-        <tr>
-          <th>Geo Coordinates</th>
-          <td><a href="node-maps?nodeId=${model.id}">${model.asset.geolocation}</a></td>
-        </tr>
-      </c:if>
     </table>
   </c:if>
 
@@ -413,10 +415,10 @@
     <table class="o-box">
       <thead>
         <tr>
-          <th>ID</th>
-          <th>Name</th>
-          <th>Type</th>
-          <th>Status</th>
+          <th>Vlan ID</th>
+          <th>Vlan Name</th>
+          <th>Vlan Type</th>
+          <th>Vlan Status</th>
           <th>Status</th>
           <th>Last Poll Time</th>
         </tr>

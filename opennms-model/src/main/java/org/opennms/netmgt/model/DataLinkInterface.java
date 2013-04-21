@@ -50,8 +50,13 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
+import org.hibernate.annotations.Type;
+
+import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
+import org.opennms.netmgt.xml.bind.StatusTypeXmlAdapter;
 
 @XmlRootElement(name = "link")
 @Entity
@@ -70,7 +75,7 @@ public class DataLinkInterface  implements Serializable, Comparable<DataLinkInte
     @Column(name="parentifindex", nullable=false)
     private Integer m_parentIfIndex;
     @Column(name="status", length=1, nullable=false)
-    private String m_status;
+    private StatusType m_status;
     @Column(name="linktypeid", nullable=true)
     private Integer m_linkTypeId;
     @Temporal(TemporalType.TIMESTAMP)
@@ -86,12 +91,22 @@ public class DataLinkInterface  implements Serializable, Comparable<DataLinkInte
     public DataLinkInterface() {
     }
 
-    public DataLinkInterface(final OnmsNode node, final int ifIndex, final int nodeParentId, final int parentIfIndex, final String status, final Date lastPollTime) {
+    public DataLinkInterface(final OnmsNode node, final int ifIndex, final int nodeParentId, final int parentIfIndex, final StatusType status, final Date lastPollTime) {
         m_node = node;
         m_ifIndex = ifIndex;
         m_nodeParentId = nodeParentId;
         m_parentIfIndex = parentIfIndex;
         m_status = status;
+        m_lastPollTime = lastPollTime;
+        m_linkTypeId = -1;
+    }
+
+    public DataLinkInterface(final OnmsNode node, final int ifIndex, final int nodeParentId, final int parentIfIndex, final Date lastPollTime) {
+        m_node = node;
+        m_ifIndex = ifIndex;
+        m_nodeParentId = nodeParentId;
+        m_parentIfIndex = parentIfIndex;
+        m_status = StatusType.UNKNOWN;
         m_lastPollTime = lastPollTime;
         m_linkTypeId = -1;
     }
@@ -171,11 +186,13 @@ public class DataLinkInterface  implements Serializable, Comparable<DataLinkInte
     }
 
     @XmlAttribute(name="status")
-    public String getStatus() {
+    @Type(type="org.opennms.netmgt.model.StatusTypeUserType")
+    @XmlJavaTypeAdapter(StatusTypeXmlAdapter.class)
+    public StatusType getStatus() {
         return m_status;
     }
 
-    public void setStatus(final String status) {
+    public void setStatus(final StatusType status) {
         m_status = status;
     }
 

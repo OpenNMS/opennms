@@ -36,9 +36,8 @@ import java.util.StringTokenizer;
 /**
  * Convenience class for looking up string and integer values in a parameter
  * map.
- *
- * @author ranger
- * @version $Id: $
+ * 
+ * @deprecated This class *modifies* the maps that are passed in, we should really do it another way.
  */
 public abstract class ParameterMap {
 	
@@ -55,8 +54,8 @@ public abstract class ParameterMap {
 	 * @param key a {@link java.lang.String} object.
 	 * @param defValue a long.
 	 */
-	@SuppressWarnings("unchecked")
-    public static long getKeyedLong(final Map map, final String key, final long defValue) {
+    @SuppressWarnings("unchecked")
+    public static long getKeyedLong(@SuppressWarnings("rawtypes") final Map map, final String key, final long defValue) {
 	    
 	    if (map == null) return defValue;
 	    
@@ -90,7 +89,7 @@ public abstract class ParameterMap {
      * @param key a {@link java.lang.String} object.
      * @param defValue a int.
      */
-    public static int getKeyedInteger(@SuppressWarnings("unchecked") final Map map, final String key, final int defValue) {
+    public static int getKeyedInteger(@SuppressWarnings("rawtypes") final Map map, final String key, final int defValue) {
     	return new Long(ParameterMap.getKeyedLong(map, key, new Long(defValue))).intValue();
     }
 
@@ -106,7 +105,7 @@ public abstract class ParameterMap {
      * @param defValues an array of int.
      */
     @SuppressWarnings("unchecked")
-    public final static int[] getKeyedIntegerArray(final Map map, final String key, final int[] defValues) {
+    public final static int[] getKeyedIntegerArray(@SuppressWarnings("rawtypes") final Map map, final String key, final int[] defValues) {
         
         if (map == null) return defValues;
         
@@ -153,7 +152,7 @@ public abstract class ParameterMap {
      * @param defValue a {@link java.lang.String} object.
      */
     @SuppressWarnings("unchecked")
-    public static String getKeyedString(final Map map, final String key, final String defValue) {
+    public static String getKeyedString(@SuppressWarnings("rawtypes") final Map map, final String key, final String defValue) {
         
         if (map == null) return defValue;
 
@@ -183,7 +182,7 @@ public abstract class ParameterMap {
      * @param defValue a boolean.
      */
     @SuppressWarnings("unchecked")
-    public static boolean getKeyedBoolean(final Map map, final String key, final boolean defValue) {
+    public static boolean getKeyedBoolean(@SuppressWarnings("rawtypes") final Map map, final String key, final boolean defValue) {
         
         if (map == null) return defValue;
         

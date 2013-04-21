@@ -1,7 +1,7 @@
 <%@ tag dynamic-attributes="attrMap" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<input
+<input size="48"
   <c:forEach var="attr" items="${attrMap}">
     <c:choose>
       <c:when test="${attr.key=='disabled'}">

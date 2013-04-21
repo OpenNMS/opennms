@@ -96,11 +96,11 @@ public class HibernateTrapdIpMgr implements TrapdIpMgr, InitializingBean {
         // Only add the address if it doesn't exist on the map. If it exists, only replace the current one if the new address is primary.
         boolean add = true;
         if (m_knownips.containsKey(InetAddressUtils.getInetAddress(addr))) {
-            OnmsIpInterface intf = m_ipInterfaceDao.findByNodeIdAndIpAddress(new Integer((int) nodeid), addr);
+            OnmsIpInterface intf = m_ipInterfaceDao.findByNodeIdAndIpAddress(Integer.valueOf((int) nodeid), addr);
             add = intf != null && intf.isPrimary();
             log().info("setNodeId: address found " + intf + ". Should be added? " + add);
         }
-        return add ? longValue(m_knownips.put(InetAddressUtils.getInetAddress(addr), new Integer((int) nodeid))) : -1;
+        return add ? longValue(m_knownips.put(InetAddressUtils.getInetAddress(addr), Integer.valueOf((int) nodeid))) : -1;
     }
 
     /* (non-Javadoc)

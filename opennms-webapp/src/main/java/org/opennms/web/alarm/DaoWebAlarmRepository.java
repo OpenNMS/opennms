@@ -28,29 +28,35 @@
 
 package org.opennms.web.alarm;
 
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Restrictions;
-import org.opennms.core.criteria.CriteriaBuilder;
-import org.opennms.core.utils.BeanUtils;
-import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.dao.AcknowledgmentDao;
-import org.opennms.netmgt.dao.AlarmDao;
-import org.opennms.netmgt.dao.MemoDao;
-import org.opennms.netmgt.model.*;
-import org.opennms.netmgt.model.acknowledgments.AckService;
-import org.opennms.netmgt.model.alarm.AlarmSummary;
-import org.opennms.web.alarm.filter.AlarmCriteria;
-import org.opennms.web.alarm.filter.AlarmCriteria.AlarmCriteriaVisitor;
-import org.opennms.web.alarm.filter.AlarmIdListFilter;
-import org.opennms.web.filter.Filter;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
+import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.core.utils.BeanUtils;
+import org.opennms.netmgt.dao.AcknowledgmentDao;
+import org.opennms.netmgt.dao.AlarmDao;
+import org.opennms.netmgt.dao.MemoDao;
+import org.opennms.netmgt.model.AckAction;
+import org.opennms.netmgt.model.AckType;
+import org.opennms.netmgt.model.OnmsAcknowledgment;
+import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsCriteria;
+import org.opennms.netmgt.model.OnmsMemo;
+import org.opennms.netmgt.model.OnmsReductionKeyMemo;
+import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.model.acknowledgments.AckService;
+import org.opennms.netmgt.model.alarm.AlarmSummary;
+import org.opennms.web.alarm.filter.AlarmCriteria;
+import org.opennms.web.alarm.filter.AlarmIdListFilter;
+import org.opennms.web.alarm.filter.AlarmCriteria.AlarmCriteriaVisitor;
+import org.opennms.web.filter.Filter;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * <p>DaoWebAlarmRepository class.</p>
@@ -177,41 +183,7 @@ public class DaoWebAlarmRepository implements WebAlarmRepository, InitializingBe
         if (onmsAlarm == null) {
             return null;
         }
-        Alarm alarm = new Alarm();
-        alarm.id = onmsAlarm.getId();
-        alarm.uei = onmsAlarm.getUei();
-        alarm.dpName = onmsAlarm.getDistPoller() != null ? onmsAlarm.getDistPoller().getName() : "";
-
-        // node id can be null, in which case nodeID will be 0
-        alarm.nodeID = onmsAlarm.getNode() != null ? onmsAlarm.getNode().getId() : 0;
-        alarm.ipAddr = onmsAlarm.getIpAddr() == null ? null : InetAddressUtils.toIpAddrString(onmsAlarm.getIpAddr());
-
-        // This causes serviceID to be null if the column in the database is null
-        alarm.serviceID = onmsAlarm.getServiceType() != null ? onmsAlarm.getServiceType().getId() : 0;
-        alarm.reductionKey = onmsAlarm.getReductionKey();
-        alarm.count = onmsAlarm.getCounter();
-        alarm.severity = onmsAlarm.getSeverity();
-        alarm.lastEventID = onmsAlarm.getLastEvent() == null ? 0 : onmsAlarm.getLastEvent().getId();
-        alarm.firsteventtime = onmsAlarm.getFirstEventTime();
-        alarm.lasteventtime = onmsAlarm.getLastEventTime();
-        alarm.description = onmsAlarm.getDescription();
-        alarm.logMessage = onmsAlarm.getLogMsg();
-        alarm.operatorInstruction = onmsAlarm.getOperInstruct();
-        alarm.troubleTicket = onmsAlarm.getTTicketId();
-        alarm.troubleTicketState = onmsAlarm.getTTicketState();
-
-        alarm.mouseOverText = onmsAlarm.getMouseOverText();
-        alarm.suppressedUntil = onmsAlarm.getSuppressedUntil();
-        alarm.suppressedUser = onmsAlarm.getSuppressedUser();
-        alarm.suppressedTime = onmsAlarm.getSuppressedTime();
-        alarm.acknowledgeUser = onmsAlarm.getAckUser();
-        alarm.acknowledgeTime = onmsAlarm.getAckTime();
-        alarm.parms = onmsAlarm.getEventParms();
-        alarm.stickyMemo = mapOnmsMemoToMemo(onmsAlarm.getStickyMemo(), alarm.stickyMemo);
-        alarm.reductionKeyMemo = mapOnmsMemoToReductionKeyMemo(onmsAlarm.getReductionKeyMemo(), onmsAlarm.getReductionKey());
-        alarm.nodeLabel = onmsAlarm.getNode() != null ? onmsAlarm.getNode().getLabel() : "";
-        alarm.serviceName = onmsAlarm.getServiceType() != null ? onmsAlarm.getServiceType().getName() : "";
-
+        Alarm alarm = new Alarm(onmsAlarm);
         return alarm;
     }
 
@@ -364,30 +336,6 @@ public class DaoWebAlarmRepository implements WebAlarmRepository, InitializingBe
     @Transactional
     public void unacknowledgeAlarms(int[] alarmIds, String user) {
         unacknowledgeMatchingAlarms(new AlarmCriteria(new AlarmIdListFilter(alarmIds)), user);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    private ReductionKeyMemo mapOnmsMemoToReductionKeyMemo(OnmsMemo onmsMemo, String reductionKey) {
-        ReductionKeyMemo reductionKeyMemo = new ReductionKeyMemo();
-        mapOnmsMemoToMemo(onmsMemo, reductionKeyMemo);
-        reductionKeyMemo.setReductionKey(reductionKey);
-        return reductionKeyMemo;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    private Memo mapOnmsMemoToMemo(OnmsMemo onmsMemo, Memo memo) {
-        if (onmsMemo != null && memo != null) {
-            memo.setId(onmsMemo.getId());
-            memo.setAuthor(onmsMemo.getAuthor() == null ? "" : onmsMemo.getAuthor());
-            memo.setBody(onmsMemo.getBody() == null ? "" : onmsMemo.getBody());
-            memo.setCreated(onmsMemo.getCreated());
-            memo.setUpdated(onmsMemo.getUpdated());
-        }
-        return memo;
     }
 
     /**

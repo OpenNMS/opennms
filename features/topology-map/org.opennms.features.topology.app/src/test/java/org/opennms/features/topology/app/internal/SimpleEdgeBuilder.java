@@ -1,8 +1,8 @@
 package org.opennms.features.topology.app.internal;
 
-import org.opennms.features.topology.api.SimpleConnector;
 import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.AbstractVertexRef;
+import org.opennms.features.topology.api.topo.SimpleConnector;
 import org.opennms.features.topology.api.topo.SimpleEdgeProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 

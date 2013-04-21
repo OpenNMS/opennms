@@ -92,13 +92,13 @@
 
     function next()
     {
-        if (document.sendevent.uei.selectedIndex==-1)
+        if (document.getElementById("input.uei").selectedIndex==0)
         {
             alert("Please select a uei to associate with this event.");
         }
         else
         {
-            document.sendevent.submit();
+            document.getElementById("form.sendevent").submit();
         }
     }
 
@@ -195,12 +195,13 @@
 <h3>Send Event to OpenNMS</h3>
 
 <form method="post" name="sendevent"
+      id="form.sendevent"
       action="admin/postevent.jsp" >
       <table width="50%" cellspacing="2" cellpadding="2" border="0">
         <tr>
           <td valign="top" align="left">
             <h4>Events</h4>
-            <select NAME="uei" SIZE="1" >
+            <select NAME="uei" SIZE="1" id="input.uei" >
                <option value="">--Select One--</option>
                <%=buildEventSelect()%>
             </select>

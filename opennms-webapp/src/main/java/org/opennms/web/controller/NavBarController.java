@@ -35,6 +35,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.opennms.netmgt.config.NotifdConfigFactory;
+import org.opennms.web.api.OnmsHeaderProvider;
 import org.opennms.web.navigate.DisplayStatus;
 import org.opennms.web.navigate.NavBarEntry;
 import org.opennms.web.navigate.NavBarModel;
@@ -50,7 +52,7 @@ import org.springframework.web.servlet.mvc.AbstractController;
  * @version $Id: $
  * @since 1.8.1
  */
-public class NavBarController extends AbstractController implements InitializingBean {
+public class NavBarController extends AbstractController implements InitializingBean, OnmsHeaderProvider {
     private List<NavBarEntry> m_navBarItems;
     
     /**
@@ -93,5 +95,57 @@ public class NavBarController extends AbstractController implements Initializing
      */
     public void setNavBarItems(List<NavBarEntry> navBarItems) {
         m_navBarItems = navBarItems;
+    }
+
+    @Override
+    public String getHeaderHtml(HttpServletRequest request) {
+        return createHeaderHtml(request);
+    }
+    
+    private String createHeaderHtml(HttpServletRequest request) {
+        return "<div id='header'>" +
+              "<h1 id='headerlogo'><a href='index.jsp'><img src=\"../images/logo.png\" alt='OpenNMS Web Console Home'></a></h1>" +
+          "<div id='headerinfo'>" +
+          "<h2>Topology Map</h2>" +
+          "<p align=\"right\" >" + 
+          "User: <a href=\"/opennms/account/selfService/index.jsp\" title=\"Account self-service\"><strong>" + request.getRemoteUser() + "</strong></a>" +
+          "&nbsp;(Notices " + getNoticeStatus() + " )" + 
+          " - <a href=\"opennms/j_spring_security_logout\">Log out</a><br></p>"+
+          "</div>" +
+          "<div id='headernavbarright'>" +
+          "<div class='navbar'>" +
+          createNavBarHtml(request) +
+          "</div>" +
+          "</div>" +
+          "<div class='spacer'><!-- --></div>" +
+          "</div>";
+    }
+
+    private String getNoticeStatus() {
+        String noticeStatus;
+        try {
+            noticeStatus = NotifdConfigFactory.getPrettyStatus();
+            if ("Off".equals(noticeStatus)) {
+              noticeStatus="<b id=\"notificationOff\">Off</b>";
+            } else {
+              noticeStatus="<b id=\"notificationOn\">On</b>";
+            }
+        } catch (Throwable t) {
+            noticeStatus = "<b id=\"notificationOff\">Unknown</b>";
+        }
+        return noticeStatus;
+    }
+
+    private String createNavBarHtml(HttpServletRequest request) {
+        StringBuilder strBuilder = new StringBuilder();
+        strBuilder.append("<ul>");
+        
+        for (NavBarEntry entry : getNavBarItems()) {
+            if(entry.evaluate(request) == DisplayStatus.DISPLAY_LINK) {
+                strBuilder.append("<li><a href=\"" + entry.getUrl() +  "\" >" + entry.getName() + "</a></li>");
+            }
+        }
+        strBuilder.append("</ul>");
+        return strBuilder.toString();
     }
 }

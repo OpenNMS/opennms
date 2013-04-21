@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.opennms.features.topology.api.IconRepository;
+import org.slf4j.LoggerFactory;
 
 public class IconRepositoryManager {
     
@@ -73,12 +74,20 @@ public class IconRepositoryManager {
         m_iconRepos.add(iconRepo);
     }
     
-    public void onBind(IconRepository iconRepo) {
-        addRepository(iconRepo);
+    public synchronized void onBind(IconRepository iconRepo) {
+        try {
+            addRepository(iconRepo);
+        } catch (Throwable e) {
+            LoggerFactory.getLogger(this.getClass()).warn("Exception during onBind()", e);
+        }
     }
     
-    public void onUnbind(IconRepository iconRepo) {
-        m_iconRepos.remove(iconRepo);
+    public synchronized void onUnbind(IconRepository iconRepo) {
+        try {
+            m_iconRepos.remove(iconRepo);
+        } catch (Throwable e) {
+            LoggerFactory.getLogger(this.getClass()).warn("Exception during onUnbind()", e);
+        }
     }
     
     public String lookupIconUrlForExactKey(String key) {

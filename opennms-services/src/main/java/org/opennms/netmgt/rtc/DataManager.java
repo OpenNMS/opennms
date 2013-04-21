@@ -201,7 +201,7 @@ public class DataManager extends Object {
     private char getServiceStatus(long nodeid, InetAddress ip, String svc) {
     	
     	JdbcTemplate template = new JdbcTemplate(getConnectionFactory());
-    	String status= (String)template.queryForObject(RTCConstants.DB_GET_SERVICE_STATUS, new Object[] { new Long(nodeid), InetAddressUtils.str(ip), svc }, String.class);
+    	String status= (String)template.queryForObject(RTCConstants.DB_GET_SERVICE_STATUS, new Object[] { Long.valueOf(nodeid), InetAddressUtils.str(ip), svc }, String.class);
 
     	if (status == null) return '\0';
     	return status.charAt(0);
@@ -627,7 +627,7 @@ public class DataManager extends Object {
             List<Long> catNodes = cat.getNodes();
 
             // check if the category contains this node
-            Long tmpNodeid = new Long(rtcN.getNodeID());
+            Long tmpNodeid = Long.valueOf(rtcN.getNodeID());
             int nIndex = catNodes.indexOf(tmpNodeid);
             if (nIndex != -1) {
                 // remove from the category if it is the only service left.
@@ -713,7 +713,7 @@ public class DataManager extends Object {
     	
     	m_map.deleteNode(nodeid);
     	
-    	populateNodesFromDB("ifsvc.nodeid = ?", new Object[] { new Long(nodeid) });
+    	populateNodesFromDB("ifsvc.nodeid = ?", new Object[] { Long.valueOf(nodeid) });
     	
     }
 

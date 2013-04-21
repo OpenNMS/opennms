@@ -33,8 +33,8 @@ import java.net.InetAddress;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
-import javax.persistence.CascadeType;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;

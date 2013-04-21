@@ -180,6 +180,7 @@ public class OnmsOSGiBridgeActivator implements RegistrationHook, ServiceListene
 	                System.err.println("registering...");
 
 	                final Registration onmsRegistration = getRegistry().register(provider, properties, providerInterfaces);
+	                System.err.println("OnmsOSGiBridgeActivator: registry = " + getRegistry());
 			m_osgiReference2onmsRegistrationMap.put(reference, onmsRegistration);
 			System.err.println("registered provider " + provider + " for interfaces: " + Arrays.toString(providerInterfaces) + " with properties: " + properties);
 		} catch (final ClassNotFoundException e) {

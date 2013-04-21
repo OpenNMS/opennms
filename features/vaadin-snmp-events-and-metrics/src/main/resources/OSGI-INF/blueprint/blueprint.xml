@@ -1,7 +1,7 @@
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
-xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
-xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+           xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 
 					http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
 					http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0 
 					https://svn.apache.org/repos/asf/aries/tags/blueprint-0.3.1/blueprint-cm/src/main/resources/org/apache/aries/blueprint/compendium/cm/blueprint-cm-1.1.0.xsd
@@ -14,38 +14,51 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
 
     <bean id="mibParser" class="org.opennms.features.vaadin.mibcompiler.services.JsmiMibParser" />
 
-	<bean id="mibCompilerApplicationFactory" class="org.opennms.features.vaadin.mibcompiler.MibCompilerApplicationFactory" >
-       <property name="eventProxy" ref="eventProxy" />
-       <property name="eventConfDao" ref="eventConfDao" />
-       <property name="dataCollectionDao" ref="dataCollectionConfigDao" />
-       <property name="mibParser" ref="mibParser" />
+    <bean id="mibCompilerApplicationFactory" class="org.opennms.features.vaadin.mibcompiler.MibCompilerApplicationFactory" >
+        <property name="eventProxy" ref="eventProxy" />
+        <property name="eventConfDao" ref="eventConfDao" />
+        <property name="dataCollectionDao" ref="dataCollectionConfigDao" />
+        <property name="mibParser" ref="mibParser" />
     </bean>
 
-	<bean id="eventAdminApplicationFactory" class="org.opennms.features.vaadin.config.EventAdminApplicationFactory">
-       <property name="eventProxy" ref="eventProxy" />
-       <property name="eventConfDao" ref="eventConfDao" />
-	</bean>
+    <bean id="eventAdminApplicationFactory" class="org.opennms.features.vaadin.config.EventAdminApplicationFactory">
+        <property name="eventProxy" ref="eventProxy" />
+        <property name="eventConfDao" ref="eventConfDao" />
+    </bean>
 
-	<bean id="snmpCollectionAdminApplicationFactory" class="org.opennms.features.vaadin.config.SnmpCollectionAdminApplicationFactory">
-       <property name="dataCollectionDao" ref="dataCollectionConfigDao" />
-	</bean>
+    <bean id="snmpCollectionAdminApplicationFactory" class="org.opennms.features.vaadin.config.SnmpCollectionAdminApplicationFactory">
+        <property name="dataCollectionDao" ref="dataCollectionConfigDao" />
+    </bean>
+        
+    <bean id="snmpCollectionAdminUiLink" class="org.opennms.features.vaadin.mibcompiler.AdminPageNavEntry">
+        <property name="url" value="admin/mibCompiler.jsp" />
+        <property name="name" value="SNMP MIB Compiler" />
+    </bean>
 
-	<service id="mibCompilerService" interface="org.ops4j.pax.vaadin.ApplicationFactory" ref="mibCompilerApplicationFactory">
-		<service-properties>
-			<entry key="alias" value="/mib-compiler" />
-		</service-properties>
-	</service>
+    <service id="mibCompilerService" interface="org.ops4j.pax.vaadin.ApplicationFactory" ref="mibCompilerApplicationFactory">
+        <service-properties>
+            <entry key="alias" value="/mib-compiler" />
+        </service-properties>
+    </service>
 
-	<service id="eventsAdminService" interface="org.ops4j.pax.vaadin.ApplicationFactory" ref="eventAdminApplicationFactory">
-		<service-properties>
-			<entry key="alias" value="/admin-events" />
-		</service-properties>
-	</service>
+    <service id="eventsAdminService" interface="org.ops4j.pax.vaadin.ApplicationFactory" ref="eventAdminApplicationFactory">
+        <service-properties>
+            <entry key="alias" value="/admin-events" />
+        </service-properties>
+    </service>
 
-	<service id="snmpCollectionsService" interface="org.ops4j.pax.vaadin.ApplicationFactory" ref="snmpCollectionAdminApplicationFactory">
-		<service-properties>
-			<entry key="alias" value="/admin-snmp-collections" />
-		</service-properties>
-	</service>
+    <service id="snmpCollectionsService" interface="org.ops4j.pax.vaadin.ApplicationFactory" ref="snmpCollectionAdminApplicationFactory">
+        <service-properties>
+            <entry key="alias" value="/admin-snmp-collections" />
+        </service-properties>
+    </service>
+
+    <service id="snmpCollectionAdminUiService" interface="org.opennms.web.navigate.PageNavEntry" ref="snmpCollectionAdminUiLink">
+        <service-properties>
+            <entry key="Page" value="admin" />
+            <entry key="Category" value="operations" />
+            <entry key="registration.export" value="true" />
+        </service-properties>
+    </service>
 
 </blueprint>

@@ -76,6 +76,7 @@
         <entry key="statsd-configuration.xml" value="statisticsDaemonConfigDao"/>
         <entry key="surveillance-views.xml" value="surveillanceViewConfigDao"/>
         <entry key="syslogd-configuration.xml" value="syslogdConfigFactory"/>
+        <entry key="syslog-northbounder-configuration.xml" value="syslogNorthbounderConfigDao"/>
         <!-- <entry key="threshd-configuration.xml" value="threshdConfigFactory"/> --><!-- database access -->
         <entry key="thresholds.xml" value="thresholdingConfigFactory"/>
         <entry key="tl1d-configuration.xml" value="tl1ConfigurationDao"/>
@@ -554,6 +555,10 @@ org.opennms.netmgt.filter.FilterParseException: SQL Exception occurred getting I
 
   <bean id="syslogdConfigFactory" class="org.opennms.netmgt.config.SyslogdConfigFactory" depends-on="syslogdConfigFactory-init" factory-method="getInstance"/>
   
+  <bean name="syslogNorthbounderConfigDao" class="org.opennms.netmgt.alarmd.northbounder.syslog.SyslogNorthbounderConfigDao">
+    <property name="configResource" value="file:${opennms.home}/etc/syslog-northbounder-configuration.xml" />
+  </bean>
+
   <bean id="threshdConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.netmgt.config.ThreshdConfigFactory.init</value></property>
   </bean>

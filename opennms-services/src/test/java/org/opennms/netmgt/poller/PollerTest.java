@@ -1318,7 +1318,7 @@ public class PollerTest {
 		private Integer getRegainedEventId() {
 			if (m_regainedSvcEvent == null)
 				return null;
-			return new Integer(m_regainedSvcEvent.getDbid());
+			return Integer.valueOf(m_regainedSvcEvent.getDbid());
 		}
 	}
 
