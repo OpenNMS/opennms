@@ -1,27 +1,48 @@
 <features xmlns="http://karaf.apache.org/xmlns/features/v1.0.0" name="opennms-all">
-  <!-- karaf base features -->
-  <repository>mvn:org.opennms.container/karaf/${project.version}/xml/features</repository>
+    <!-- karaf base features -->
+    <repository>mvn:org.opennms.container/karaf/${project.version}/xml/features</repository>
 
-  <!-- topology features -->
-  <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-base/${project.version}/xml/features</repository>
-  <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-simple/${project.version}/xml/features</repository>
-  <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-linkd/${project.version}/xml/features</repository>
-  <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-ncs/${project.version}/xml/features</repository>
-  <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-dev/${project.version}/xml/features</repository>
+    <!-- topology features -->
+    <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-base/${project.version}/xml/features 
+    </repository>
+    <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-browsers/${project.version}/xml/features
+    </repository>
+    <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-simple/${project.version}/xml/features
+    </repository>
+    <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-linkd/${project.version}/xml/features
+    </repository>
+    <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-vmware/${project.version}/xml/features
+    </repository>
+    <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-sfree/${project.version}/xml/features
+    </repository>
+    <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-ncs/${project.version}/xml/features
+    </repository>
+    <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-dev/${project.version}/xml/features</repository>
 
-  <!-- nrtg features -->
-  <repository>mvn:org.opennms.osgi.features.nrtg/nrtg/${project.version}/xml/features</repository>
+    <!-- nrtg features -->
+    <repository>mvn:org.opennms.osgi.features.nrtg/nrtg/${project.version}/xml/features</repository>
 
-  <!-- MIB Parser and Event/Collection features -->
-  <repository>mvn:org.opennms.features/vaadin-snmp-events-and-metrics/${project.version}/xml/features</repository>
+    <!-- MIB Parser and Event/Collection features -->
+    <repository>mvn:org.opennms.features/vaadin-snmp-events-and-metrics/${project.version}/xml/features</repository>
 
-  <feature name="opennms-all" description="OpenNMS :: All" version="${project.version}">
-    <feature>opennms-topology-runtime-simple</feature>
-    <feature>opennms-topology-runtime-linkd</feature>
-    <feature>opennms-topology-runtime-ncs</feature>
-    <feature>opennms-topology-dev</feature>
-    <feature>nrtg</feature>
-    <feature>vaadin-snmp-events-and-metrics</feature>
-  </feature>
+    <!-- node maps -->
+    <repository>mvn:org.opennms.features/vaadin-node-maps/${project.version}/xml/features</repository>
+  
+    <!-- JMX Config Generator features -->
+    <repository>mvn:org.opennms.features/jmxconfiggenerator/${project.version}/xml/features</repository>
+    <repository>mvn:org.opennms.features/jmxconfiggenerator.webui/${project.version}/xml/features</repository>
+
+    <feature name="opennms-all" description="OpenNMS :: All" version="${project.version}">
+       <feature>opennms-topology-runtime-simple</feature>
+       <feature>opennms-topology-runtime-linkd</feature>
+       <feature>opennms-topology-runtime-ncs</feature>
+       <feature>opennms-topology-runtime-vmware</feature>
+       <feature>opennms-topology-runtime-browsers</feature>
+       <feature>opennms-topology-dev</feature>
+       <feature>nrtg</feature>
+       <feature>vaadin-snmp-events-and-metrics</feature>
+       <feature>vaadin-node-maps</feature>
+       <feature>jmxconfiggenerator.webui</feature>
+   </feature>
 
 </features>

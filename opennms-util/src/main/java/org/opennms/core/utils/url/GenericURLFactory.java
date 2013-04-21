@@ -71,6 +71,7 @@ public class GenericURLFactory implements URLStreamHandlerFactory {
     private GenericURLFactory() {
         // Map the protocol dns against the DNS implementation
         addURLConnection("dns", "org.opennms.netmgt.provision.service.dns.DnsRequisitionUrlConnection", 53);
+        addURLConnection("vmware", "org.opennms.netmgt.provision.service.vmware.VmwareRequisitionUrlConnection", 443);
     }
 
     /**
@@ -160,16 +161,15 @@ public class GenericURLFactory implements URLStreamHandlerFactory {
     @SuppressWarnings("unchecked")
     public URLStreamHandler createURLStreamHandler(String protocol) {
         Class<? extends URLConnection> c = null;
-
         if (!urlConnections.containsKey(protocol)) {
             logger.warn("No protocol mapping with '{}' found. Return null", protocol);
             return null; // No existing protocol mapping
         }
 
         try {
-            c = (Class<? extends URLConnection>)Class.forName(urlConnections.get(protocol));
+            c = (Class<? extends URLConnection>) Class.forName(urlConnections.get(protocol));
         } catch (ClassNotFoundException e) {
-            logger.error("Class not found for protocol '{}' and return null. Error message: '{}'", protocol, e.getMessage());
+            logger.warn("Class not found for protocol '{}' and return null. Error message: '{}'", protocol, e.getMessage());
             return null; // We couldn't load a class for the protocol
         }
         return new GenericURLStreamHandler(c, urlDefaultPorts.get(protocol)); // Return the stream handler for the customized protocol

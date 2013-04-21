@@ -10,7 +10,7 @@ export PROV_GROUP=testGroup
 shuSetUp() 
 {
     # verify that the server is up before we run tests
-    curl --user admin:admin -sSf -X GET ${BASE_URL}/requisitions -o /dev/null
+    curl --user ${REST_USER}:${REST_PASSWD} -sSf -X GET ${BASE_URL}/requisitions -o /dev/null
     shuAssert "Expected server to respond" $?
 }
 
@@ -30,7 +30,7 @@ shuAssertRequisitionExists()
     local result=/tmp/provisionTest.data.assertReqExists.$$
     local foreignSource=$1
 
-    curl --user admin:admin -sSf -X GET ${BASE_URL}/requisitions > ${result}
+    curl --user ${REST_USER}:${REST_PASSWD} -sSf -X GET ${BASE_URL}/requisitions > ${result}
     shuAssert "Failed to get current requisitions" $?
 
     perl xpath.pl ${result} "//model-import[@foreign-source='$foreignSource']" > /dev/null
@@ -44,7 +44,7 @@ shuAssertNodeInRequisition()
     local foreignSource=$1
     local foreignId=$2
 
-    curl --user admin:admin -sSf -X GET ${BASE_URL}/requisitions > ${result}
+    curl --user ${REST_USER}:${REST_PASSWD} -sSf -X GET ${BASE_URL}/requisitions > ${result}
     shuAssert "Failed to get current requisitions" $?
 
     perl xpath.pl ${result} "//model-import[@foreign-source='$foreignSource']" > /dev/null
@@ -60,7 +60,7 @@ shuAssertRequisitionNodeCount()
     local foreignSource=$1
     local expectedCount=$2
 
-    curl --user admin:admin -sSf -X GET ${BASE_URL}/requisitions/${foreignSource}/nodes > ${result}
+    curl --user ${REST_USER}:${REST_PASSWD} -sSf -X GET ${BASE_URL}/requisitions/${foreignSource}/nodes > ${result}
     shuAssert "Failed to get current requisitions" $?
 
     perl xpath.pl ${result} "//nodes[@count='${expectedCount}']" > /dev/null
@@ -74,7 +74,7 @@ shuDenyNodeInRequisition()
     local foreignSource=$1
     local foreignId=$2
 
-    curl --user admin:admin -sSf -X GET ${BASE_URL}/requisitions > ${result}
+    curl --user ${REST_USER}:${REST_PASSWD} -sSf -X GET ${BASE_URL}/requisitions > ${result}
     shuAssert "Failed to get current requisitions" $?
 
     perl xpath.pl ${result} "//model-import[@foreign-source='$foreignSource']" > /dev/null
@@ -89,7 +89,7 @@ shuAssertRequisitionEmpty()
     local result=/tmp/provisionTest.data.assertRequisitionEmpty.$$
     local foreignSource=$1
 
-    curl --user admin:admin -sSf -X GET ${BASE_URL}/requisitions > ${result}
+    curl --user ${REST_USER}:${REST_PASSWD} -sSf -X GET ${BASE_URL}/requisitions > ${result}
     shuAssert "Failed to get current requisitions" $?
 
     perl xpath.pl ${result} "//model-import[@foreign-source='$foreignSource']" > /dev/null
@@ -105,7 +105,7 @@ isNodeInDB()
     local foreignId=$2
     local result=/tmp/provisionTest.data.isNodeInDB.$$
 
-    curl --user admin:admin -sSf -X GET "${BASE_URL}/nodes?foreignSource=${foreignSource}&foreignId=${foreignId}" > ${result}
+    curl --user ${REST_USER}:${REST_PASSWD} -sSf -X GET "${BASE_URL}/nodes?foreignSource=${foreignSource}&foreignId=${foreignId}" > ${result}
     shuAssert "Failure querying database for ${foreignSource}:${foreignId}" $?
 
     perl xpath.pl ${result} "/nodes/node[@foreignSource='${foreignSource}' and @foreignId='${foreignId}']" >/dev/null
@@ -320,7 +320,7 @@ TestGetSnmpConfig()
     local config=/tmp/provisionTest.data.req.$$
     local ip=192.168.39.1
     local expectedCommunity=public
-    local expectedTimeout=1800
+    local expectedTimeout=10000
 
     getSnmpConfig ${BASE_URL} ${ip}  > ${config}
     shuAssert "Unexpected failure getting snmp config data for ${ip}" $?
@@ -348,10 +348,10 @@ TestSetSnmpConfig()
     shuAssertTimeoutEquals ${config} ${expectedTimeout}
 
     setSnmpConfig ${BASE_URL} ${ip} community=public timeout=1800
-    shuAssert "Unexpected failure resetting snmp config data for ${ip}" $?
+    shuAssert "Unexpected failure resetting snmp config data for ${ip}: $(cat ${config})" $?
 
     getSnmpConfig ${BASE_URL} ${ip}  > ${config}
-    shuAssert "Unexpected failure getting snmp config data for ${ip}" $?
+    shuAssert "Unexpected failure getting snmp config data for ${ip}: $(cat ${config})" $?
 
     shuAssertCommunityEquals ${config} public
     shuAssertTimeoutEquals ${config} 1800

@@ -46,6 +46,7 @@ import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsLinkState;
+import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.netmgt.model.OnmsLinkState.LinkState;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
@@ -156,7 +157,7 @@ public class DefaultNodeLinkService implements NodeLinkService, InitializingBean
 		} else if (!nodeEndPoint) {
 			state = state.nodeDown(null);
 		}
-		dli.setStatus(state.getDataLinkInterfaceStateType());
+		dli.setStatus(StatusType.get(state.getDataLinkInterfaceStateType()));
 		onmsLinkState.setLinkState(state);
 		
         dli.setLastPollTime(new Date());
@@ -228,7 +229,7 @@ public class DefaultNodeLinkService implements NodeLinkService, InitializingBean
         
         if(dataLinkInterface.size() > 0){
             DataLinkInterface dataLink = dataLinkInterface.iterator().next();
-            dataLink.setStatus(status);
+            dataLink.setStatus(StatusType.get(status));
             
             m_dataLinkDao.update(dataLink);
             m_dataLinkDao.flush();

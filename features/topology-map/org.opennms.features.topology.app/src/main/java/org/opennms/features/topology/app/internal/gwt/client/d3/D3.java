@@ -28,6 +28,7 @@
 
 package org.opennms.features.topology.app.internal.gwt.client.d3;
 
+import org.opennms.features.topology.app.internal.gwt.client.GWTBoundingBox;
 import org.opennms.features.topology.app.internal.gwt.client.d3.D3Events.Handler;
 import org.opennms.features.topology.app.internal.gwt.client.d3.D3Events.XMLHandler;
 
@@ -80,6 +81,90 @@ public class D3 extends JavaScriptObject {
 			return func.@org.opennms.features.topology.app.internal.gwt.client.d3.Func::call(Ljava/lang/Object;I)(d,i);
 		}
 		return this.attr(attrName, f);
+    }-*/;
+    
+    public final native D3 attrTween(String attrName, Func<?, ?>func) /*-{
+        var f = function(d, i){
+            return func.@org.opennms.features.topology.app.internal.gwt.client.d3.Func::call(Ljava/lang/Object;I)(d,i);
+        }
+        return this.attrTween(attrName, f);
+    }-*/;
+    
+    public final native D3 attrTweenZoom(String string, GWTBoundingBox boundingBox,GWTBoundingBox oldBBox, int width, int height) /*-{
+        var width = 1000,
+            height = 600;
+        
+        function matchAspect(p){
+            var R = width/height;
+            var r = p[2]/p[3];
+            return [
+                    p[0],
+                    p[1],
+                    r < R ? p[3]*R : p[2],
+                    r < R ? p[3] : p[2]/R
+                   ];
+        }
+        
+        function transform(p) {
+            var k = width / p[2];
+            var retVal = "translate(" + (center[0] - p[0] * k) + "," + (center[1] - p[1] * k) + ")scale(" + k + ")";
+            $wnd.console.log(retVal);
+            return retVal;
+        }
+        
+        var p0 = [250, 200, 30, 90],
+            p1 = [560, 300, 200, 120];
+        
+        var s = [oldBBox.width/2 + oldBBox.x, oldBBox.height/2 + oldBBox.y, oldBBox.width, oldBBox.height];
+        var e = [boundingBox.width/2 + boundingBox.x, boundingBox.height/2 + boundingBox.y, boundingBox.width, boundingBox.height];
+        $wnd.console.log("s: " + s);
+        $wnd.console.log("e: " + e);
+        var start = matchAspect(s);
+        var end = matchAspect(e);
+        var center = [width / 2, height / 2],
+              i = $wnd.d3.interpolateZoom(start, end);
+        $wnd.console.log("start: " + start);
+        $wnd.console.log("end: " + end);
+        $wnd.console.log(i)
+        
+        return this.attr("transform", transform(start)).transition().duration(i.duration * 2).attrTween(string, function(){ function(t){ return transform(i(t))} });
+    }-*/;
+    
+    public final native void zoomTransition(D3 selection, int width, int height, JsArrayInteger p0, JsArrayInteger p1) /*-{
+		transition(p0, p1);
+		
+		function matchAspect(p) {
+			var R = width/height;
+			var r = p[2]/p[3];
+			return [
+			        p[0],
+			        p[1],
+			        r < R ? p[3]*R : p[2],
+			        r < R ? p[3] : p[2]/R
+			       ];
+		}
+		     
+		
+		function transition(s, e) {
+		  var start = matchAspect(s);
+		  var end = matchAspect(e);
+		  var center = [width / 2, height / 2],
+		      i = $wnd.d3.interpolateZoom(start, end);
+		  
+		  selection
+		      .attr("transform", transform(start))
+		    .transition()
+		      .delay(250)
+		      .duration(i.duration * 2)
+		      .attrTween("transform", function() { return function(t) { return transform(i(t)); }; })
+		      //.each("end", function() { $wnd.d3.select(this).call(transition, e, s); });
+		
+		  function transform(p) {
+		    var k = width / p[2];
+		    var retVal = "translate(" + (center[0] - p[0] * k) + "," + (center[1] - p[1] * k) + ")scale(" + k + ")";
+		    return retVal;
+		  }
+		}
     }-*/;
     
     public final native void timer(BooleanFunc func) /*-{
@@ -335,7 +420,6 @@ public class D3 extends JavaScriptObject {
     public final native String style(String style) /*-{
         return this.style(style);
     }-*/;
-
 
 
 }

@@ -28,14 +28,24 @@
 
 package org.opennms.netmgt.dao.support;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
 
-import junit.framework.TestCase;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
+import org.opennms.core.utils.PropertiesCache;
 import org.opennms.netmgt.mock.MockResourceType;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsResource;
@@ -47,27 +57,26 @@ import org.opennms.test.ThrowableAnticipator;
 /**
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
-public class ResourceTypeUtilsTest extends TestCase {
+public class ResourceTypeUtilsTest {
     private FileAnticipator m_fileAnticipator;
     private File m_snmp;
     private File m_node;
     private File m_intf;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        
+    @Before
+    public void setUp() throws Exception {
         m_fileAnticipator = new FileAnticipator();
         
         RrdUtils.setStrategy(new NullRrdStrategy());
     }
     
-    @Override
-    protected void tearDown() {
+    @After
+    public void tearDown() throws Exception {
         m_fileAnticipator.tearDown();
     }
     
 
+    @Test
     public void testLoadPropertiesNullRrdDirectory() {
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new IllegalArgumentException("rrdDirectory argument must not be null"));
@@ -80,6 +89,7 @@ public class ResourceTypeUtilsTest extends TestCase {
         ta.verifyAnticipated();
     }
 
+    @Test
     public void testLoadPropertiesNullRelativePath() {
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new IllegalArgumentException("relativePath argument must not be null"));
@@ -92,6 +102,7 @@ public class ResourceTypeUtilsTest extends TestCase {
         ta.verifyAnticipated();
     }
     
+    @Test
     public void testLoadPropertiesEmpty() throws Exception {
         OnmsResource childResource = createResource();
         createPropertiesFile(childResource, "", false);
@@ -102,6 +113,7 @@ public class ResourceTypeUtilsTest extends TestCase {
         assertEquals("properties size", 0, p.size());
     }
     
+    @Test
     public void testLoadPropertiesNonEmpty() throws Exception {
         OnmsResource childResource = createResource();
         createPropertiesFile(childResource, "foo=bar", false);
@@ -114,6 +126,7 @@ public class ResourceTypeUtilsTest extends TestCase {
         assertEquals("property 'foo' value", "bar", p.get("foo"));
     }
 
+    @Test
     public void testLoadPropertiesDoesNotExist() throws Exception {
         OnmsResource childResource = createResource();
         createPropertiesFile(childResource, "", true);
@@ -122,10 +135,39 @@ public class ResourceTypeUtilsTest extends TestCase {
         assertNull("no properties file was created, so the properties object should be null", p);
     }
     
+    @Test
     public void testGetAttributesAtRelativePathWithBogusDirectory() {
         File bogusRrdDirectory = new File("/foo/bogus/blam/cheese/this/really/should/never/exist");
         assertFalse("bogus RRD directory " + bogusRrdDirectory + " should not exist", bogusRrdDirectory.exists());
         ResourceTypeUtils.getAttributesAtRelativePath(bogusRrdDirectory, "also-should-never-exist");
+    }
+
+    /*
+     * This test is associated with issue NMS-5806:
+     * http://issues.opennms.org/browse/NMS-5806
+     */
+    @Test
+    public void testUpdateFileOutsideResourceTypeUtils() throws Exception {
+        System.setProperty(PropertiesCache.CHECK_LAST_MODIFY_STRING, "true");
+
+        // Be sure that the file doesn't exist.
+        File resourceDir = new File("target/");
+        File propertiesFile = new File(resourceDir, "strings.properties");
+        propertiesFile.delete();
+
+        // Creating a new strings.properties file and adding one value to it
+        ResourceTypeUtils.updateStringProperty(resourceDir, "2012", "year");
+        assertEquals("2012", ResourceTypeUtils.getStringProperty(resourceDir, "year"));
+        Thread.sleep(1000l); // Simulate a delay, to be sure that we are going to have a different lastModifyTime
+
+        // Externally updating the strings.proeprties file
+        Properties properties = new Properties();
+        properties.load(new FileInputStream(propertiesFile));
+        properties.setProperty("year", "2013");
+        properties.store(new FileWriter(propertiesFile), "Updated!");
+
+        // Verify that after the external update, we can get the updated value
+        assertEquals("2013", ResourceTypeUtils.getStringProperty(resourceDir, "year"));
     }
 
 

@@ -32,18 +32,16 @@ import java.net.InetAddress;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.core.utils.InetAddressUtils;
+
 public class RouterInterface {
 	
     private int m_ifIndex;
-    private int m_metric;
-    private InetAddress m_routeDest;
-    private InetAddress m_routeMask;
-    private InetAddress m_nextHop;
     private final int m_nextHopNodeId;
     private final int m_nextHopIfIndex;
     private final InetAddress m_nextHopNetmask;
-    private int m_snmpIfType; 
-	
+    private InetAddress m_nextHop;
+    
+
 	RouterInterface(final int nextHopNodeId, final int nextHopIfIndex, final InetAddress nextHopNetmask) {
 		m_nextHopNodeId = nextHopNodeId;
 		m_nextHopIfIndex = nextHopIfIndex;
@@ -64,62 +62,13 @@ public class RouterInterface {
 	public int getIfindex() {
 		return m_ifIndex;
 	}
-	/**
-	 * <p>Getter for the field <code>metric</code>.</p>
-	 *
-	 * @return Returns the metric.
-	 */
-	public int getMetric() {
-		return m_metric;
-	}
-	/**
-	 * <p>Setter for the field <code>metric</code>.</p>
-	 *
-	 * @param metric The metric to set.
-	 */
-	public void setMetric(final int metric) {
-		m_metric = metric;
-	}
-	/**
-	 * <p>Getter for the field <code>nextHop</code>.</p>
-	 *
-	 * @return Returns the nextHop.
-	 */
-	public InetAddress getNextHop() {
-		return m_nextHop;
-	}
-	/**
-	 * <p>Setter for the field <code>nextHop</code>.</p>
-	 *
-	 * @param nextHop The nextHop to set.
-	 */
-	public void setNextHop(final InetAddress nextHop) {
-		m_nextHop = nextHop;
-	}
-	/**
-	 * <p>Getter for the field <code>snmpiftype</code>.</p>
-	 *
-	 * @return Returns the snmpiftype.
-	 */
-	public int getSnmpiftype() {
-		return m_snmpIfType;
-	} 
-	
-	/**
-	 * <p>Setter for the field <code>snmpiftype</code>.</p>
-	 *
-	 * @param snmpiftype The snmpiftype to set.
-	 */
-	public void setSnmpiftype(final int snmpiftype) {
-		m_snmpIfType = snmpiftype;
-	}
-	
+		
 	/**
 	 * <p>getNetmask</p>
 	 *
 	 * @return a {@link java.net.InetAddress} object.
 	 */
-	public InetAddress getNetmask() {
+	public InetAddress getNextHopNetmask() {
 		return m_nextHopNetmask;
 	}
 	/**
@@ -147,76 +96,10 @@ public class RouterInterface {
 		m_ifIndex = ifindex;
 	}
 	
-	/**
-	 * <p>getNextHopNet</p>
-	 *
-	 * @return a {@link java.net.InetAddress} object.
-	 */
-	public InetAddress getNextHopNet() {
-	    final byte[] ipAddress = m_nextHop.getAddress();
-		final byte[] netMask = m_nextHopNetmask.getAddress();
-		final byte[] netWork = new byte[4];
-
-		for (int i=0;i< 4; i++) {
-			netWork[i] = Integer.valueOf(ipAddress[i] & netMask[i]).byteValue();
-			
-		}
-		return InetAddressUtils.getInetAddress(netWork);
+	public InetAddress getNextHop() {
+		return m_nextHop;
 	}
 
-	/**
-	 * <p>getRouteNet</p>
-	 *
-	 * @return a {@link java.net.InetAddress} object.
-	 */
-	public InetAddress getRouteNet() {
-	    final byte[] ipAddress = m_routeDest.getAddress();
-		final byte[] netMask = m_routeMask.getAddress();
-		final byte[] netWork = new byte[4];
-
-		for (int i=0;i< 4; i++) {
-			netWork[i] = Integer.valueOf(ipAddress[i] & netMask[i]).byteValue();
-			
-		}
-		return InetAddressUtils.getInetAddress(netWork);
-	}
-
-	/**
-	 * <p>getRouteDest</p>
-	 *
-	 * @return a {@link java.net.InetAddress} object.
-	 */
-	public InetAddress getRouteDest() {
-		return m_routeDest;
-	}
-
-	/**
-	 * <p>setRouteDest</p>
-	 *
-	 * @param routedest a {@link java.net.InetAddress} object.
-	 */
-	public void setRouteDest(final InetAddress routedest) {
-		m_routeDest = routedest;
-	}
-
-	/**
-	 * <p>Getter for the field <code>routemask</code>.</p>
-	 *
-	 * @return a {@link java.net.InetAddress} object.
-	 */
-	public InetAddress getRoutemask() {
-		return m_routeMask;
-	}
-
-	/**
-	 * <p>Setter for the field <code>routemask</code>.</p>
-	 *
-	 * @param routemask a {@link java.net.InetAddress} object.
-	 */
-	public void setRoutemask(final InetAddress routemask) {
-		m_routeMask = routemask;
-	}
-	
 	/**
 	 * <p>toString</p>
 	 *
@@ -225,15 +108,15 @@ public class RouterInterface {
 	public String toString() {
 	    return new ToStringBuilder(this)
 	    .append("ifIndex", m_ifIndex)
-	    .append("metric", m_metric)
-	    .append("routeDest", m_routeDest)
-	    .append("routeMask", m_routeMask)
 	    .append("nextHop", m_nextHop)
 	    .append("nextHopNodeId", m_nextHopNodeId)
 	    .append("nextHopIfIndex", m_nextHopIfIndex)
 	    .append("nextHopNetmask", m_nextHopNetmask)
-	    .append("snmpIfType", m_snmpIfType)
 	    .toString();
+	}
+	
+	public void setNextHop(InetAddress nexthop) {
+		m_nextHop = nexthop;
 	}
 }
 

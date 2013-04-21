@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.opennms-tools</groupId>
     <artifactId>org.opennms.opennms-tools.syslog-profiler</artifactId>
-    <version>1.11.4-SNAPSHOT</version>
+    <version>1.13.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.opennms-tools.syslog-profiler</groupId>
@@ -34,10 +34,12 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-test</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.tests</groupId>
       <artifactId>org.opennms.tests.mock-elements</artifactId>
+      <scope>test</scope>
     </dependency>
     -->
   </dependencies>

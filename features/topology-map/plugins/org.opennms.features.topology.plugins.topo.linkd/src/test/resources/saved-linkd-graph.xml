@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<graph>
+    <group>
+        <iconKey>group</iconKey>
+        <id>linkdg5</id>
+        <label>Almost Top Group</label>
+        <locked>false</locked>
+        <parent>linkdg20</parent>
+        <selected>false</selected>
+        <x>0</x>
+        <y>0</y>
+    </group>
+    <group>
+        <iconKey>group</iconKey>
+        <id>linkdg10</id>
+        <label>Group 32</label>
+        <locked>false</locked>
+        <parent>linkdg21</parent>
+        <selected>false</selected>
+        <x>0</x>
+        <y>0</y>
+        <members>linkdg17</members>
+    </group>
+    <group>
+        <iconKey>group</iconKey>
+        <id>linkdg14</id>
+        <label>FGHKDKL</label>
+        <locked>false</locked>
+        <parent>linkdg16</parent>
+        <selected>false</selected>
+        <x>0</x>
+        <y>0</y>
+    </group>
+    <group>
+        <iconKey>group</iconKey>
+        <id>linkdg16</id>
+        <label>Hello Again</label>
+        <locked>false</locked>
+        <parent>linkdg18</parent>
+        <selected>false</selected>
+        <x>0</x>
+        <y>0</y>
+        <members>linkdg14</members>
+    </group>
+    <group>
+        <iconKey>group</iconKey>
+        <id>linkdg17</id>
+        <label>Big Group</label>
+        <locked>false</locked>
+        <parent>linkdg10</parent>
+        <selected>false</selected>
+        <x>0</x>
+        <y>0</y>
+    </group>
+    <group>
+        <iconKey>group</iconKey>
+        <id>linkdg18</id>
+        <label>Smaller Group</label>
+        <locked>false</locked>
+        <parent>linkdg20</parent>
+        <selected>false</selected>
+        <x>0</x>
+        <y>0</y>
+        <members>linkdg16</members>
+    </group>
+    <group>
+        <iconKey>group</iconKey>
+        <id>linkdg20</id>
+        <label>Top Three</label>
+        <locked>false</locked>
+        <selected>false</selected>
+        <x>0</x>
+        <y>0</y>
+        <members>linkdg5</members>
+        <members>linkdg18</members>
+    </group>
+    <group>
+        <iconKey>group</iconKey>
+        <id>linkdg21</id>
+        <label>Bottom Four</label>
+        <locked>false</locked>
+        <selected>false</selected>
+        <x>0</x>
+        <y>0</y>
+        <members>linkdg10</members>
+    </group>
+</graph>

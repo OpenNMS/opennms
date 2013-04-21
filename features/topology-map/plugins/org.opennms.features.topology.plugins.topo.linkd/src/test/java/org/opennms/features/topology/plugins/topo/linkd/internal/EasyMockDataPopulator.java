@@ -33,23 +33,25 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-import org.junit.Assert;
-
 import org.easymock.EasyMock;
+import org.junit.Assert;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.api.topo.AbstractEdge;
+import org.opennms.features.topology.api.topo.AbstractVertexRef;
+import org.opennms.features.topology.api.topo.GraphProvider;
+import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.netmgt.dao.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.SnmpInterfaceDao;
-
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
-
+import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -252,14 +254,14 @@ public class EasyMockDataPopulator {
         nodes.add(node8);
         setNodes(nodes);
         
-        final DataLinkInterface dli12 = new DataLinkInterface(getNode2(), -1, getNode1().getId(), -1, "A", new Date());
-        final DataLinkInterface dli23 = new DataLinkInterface(getNode3(), -1, getNode2().getId(), -1, "A", new Date());
-        final DataLinkInterface dli34 = new DataLinkInterface(getNode4(), -1, getNode3().getId(), -1, "A", new Date());
-        final DataLinkInterface dli45 = new DataLinkInterface(getNode5(), -1, getNode4().getId(), -1, "A", new Date());
-        final DataLinkInterface dli56 = new DataLinkInterface(getNode6(), -1, getNode5().getId(), -1, "A", new Date());
-        final DataLinkInterface dli67 = new DataLinkInterface(getNode7(), -1, getNode6().getId(), -1, "A", new Date());
-        final DataLinkInterface dli78 = new DataLinkInterface(getNode8(), -1, getNode7().getId(), -1, "A", new Date());
-        final DataLinkInterface dli81 = new DataLinkInterface(getNode1(), -1, getNode8().getId(), -1, "A", new Date());
+        final DataLinkInterface dli12 = new DataLinkInterface(getNode2(), -1, getNode1().getId(), -1,StatusType.ACTIVE, new Date());
+        final DataLinkInterface dli23 = new DataLinkInterface(getNode3(), -1, getNode2().getId(), -1, StatusType.ACTIVE, new Date());
+        final DataLinkInterface dli34 = new DataLinkInterface(getNode4(), -1, getNode3().getId(), -1, StatusType.ACTIVE, new Date());
+        final DataLinkInterface dli45 = new DataLinkInterface(getNode5(), -1, getNode4().getId(), -1, StatusType.ACTIVE, new Date());
+        final DataLinkInterface dli56 = new DataLinkInterface(getNode6(), -1, getNode5().getId(), -1, StatusType.ACTIVE, new Date());
+        final DataLinkInterface dli67 = new DataLinkInterface(getNode7(), -1, getNode6().getId(), -1, StatusType.ACTIVE, new Date());
+        final DataLinkInterface dli78 = new DataLinkInterface(getNode8(), -1, getNode7().getId(), -1, StatusType.ACTIVE, new Date());
+        final DataLinkInterface dli81 = new DataLinkInterface(getNode1(), -1, getNode8().getId(), -1, StatusType.ACTIVE, new Date());
         
         dli12.setId(10012);
         dli23.setId(10023);
@@ -437,10 +439,11 @@ public class EasyMockDataPopulator {
         this.m_nodeDao = nodeDao;
     }
 
-    public void check(LinkdTopologyProvider topologyProvider) {
-        Assert.assertTrue(topologyProvider.getVertexIds().size()==8);
+    public void check(GraphProvider topologyProvider) {
+        String vertexNamespace = topologyProvider.getVertexNamespace();
+        Assert.assertEquals(8, topologyProvider.getVertices().size());
         
-        Assert.assertTrue(topologyProvider.getEdgeIds().size()==8);
+        Assert.assertEquals(8, topologyProvider.getEdges().size());
 
         Assert.assertTrue(topologyProvider.containsVertexId("1"));
         Assert.assertTrue(topologyProvider.containsVertexId("2"));
@@ -452,32 +455,64 @@ public class EasyMockDataPopulator {
         Assert.assertTrue(topologyProvider.containsVertexId("8"));
         Assert.assertTrue(!topologyProvider.containsVertexId("15"));
         
-        Assert.assertTrue(topologyProvider.getEdgeIdsForVertex("1").size() == 2);
-        Assert.assertTrue(topologyProvider.getEdgeIdsForVertex("2").size() == 2);
-        Assert.assertTrue(topologyProvider.getEdgeIdsForVertex("3").size() == 2);
-        Assert.assertTrue(topologyProvider.getEdgeIdsForVertex("4").size() == 2);
-        Assert.assertTrue(topologyProvider.getEdgeIdsForVertex("5").size() == 2);
-        Assert.assertTrue(topologyProvider.getEdgeIdsForVertex("6").size() == 2);
-        Assert.assertTrue(topologyProvider.getEdgeIdsForVertex("7").size() == 2);
-        Assert.assertTrue(topologyProvider.getEdgeIdsForVertex("8").size() == 2);
+        Assert.assertEquals(2, topologyProvider.getEdgeIdsForVertex(new AbstractVertexRef(vertexNamespace, "1")).length);
+        Assert.assertEquals(2, topologyProvider.getEdgeIdsForVertex(new AbstractVertexRef(vertexNamespace, "2")).length);
+        Assert.assertEquals(2, topologyProvider.getEdgeIdsForVertex(new AbstractVertexRef(vertexNamespace, "3")).length);
+        Assert.assertEquals(2, topologyProvider.getEdgeIdsForVertex(new AbstractVertexRef(vertexNamespace, "4")).length);
+        Assert.assertEquals(2, topologyProvider.getEdgeIdsForVertex(new AbstractVertexRef(vertexNamespace, "5")).length);
+        Assert.assertEquals(2, topologyProvider.getEdgeIdsForVertex(new AbstractVertexRef(vertexNamespace, "6")).length);
+        Assert.assertEquals(2, topologyProvider.getEdgeIdsForVertex(new AbstractVertexRef(vertexNamespace, "7")).length);
+        Assert.assertEquals(2, topologyProvider.getEdgeIdsForVertex(new AbstractVertexRef(vertexNamespace, "8")).length);
         
-        String[] edgeidsforvertex1 = { "10012","10081" };
-        String[] edgeidsforvertex2 = { "10012","10023" };
-        String[] edgeidsforvertex3 = { "10023", "10034"};
-        String[] edgeidsforvertex4 = { "10034", "10045" };
-        String[] edgeidsforvertex5 = { "10045", "10056" };
-        String[] edgeidsforvertex6 = { "10056","10067" };
-        String[] edgeidsforvertex7 = { "10067","10078" };
-        String[] edgeidsforvertex8 = { "10078","10081" };
+        /**
+         * This is a little hokey because it relies on the fact that edges are only judged to be equal based
+         * on the namespace and id tuple.
+         */
+        Vertex mockVertex = EasyMock.createMock(Vertex.class);
+        EasyMock.expect(mockVertex.getId()).andReturn("1").anyTimes();
+        EasyMock.expect(mockVertex.getLabel()).andReturn(null).anyTimes();
+        EasyMock.replay(mockVertex);
+        AbstractEdge[] edgeidsforvertex1 = {
+            new AbstractEdge("nodes", "10012", mockVertex, mockVertex),
+            new AbstractEdge("nodes", "10081", mockVertex, mockVertex)
+        };
+        AbstractEdge[] edgeidsforvertex2 = {
+            new AbstractEdge("nodes", "10012", mockVertex, mockVertex),
+            new AbstractEdge("nodes", "10023", mockVertex, mockVertex)
+        };
+        AbstractEdge[] edgeidsforvertex3 = {
+            new AbstractEdge("nodes", "10023", mockVertex, mockVertex),
+            new AbstractEdge("nodes", "10034", mockVertex, mockVertex)
+        };
+        AbstractEdge[] edgeidsforvertex4 = {
+            new AbstractEdge("nodes", "10034", mockVertex, mockVertex),
+            new AbstractEdge("nodes", "10045", mockVertex, mockVertex)
+        };
+        AbstractEdge[] edgeidsforvertex5 = {
+            new AbstractEdge("nodes", "10045", mockVertex, mockVertex),
+            new AbstractEdge("nodes", "10056", mockVertex, mockVertex)
+        };
+        AbstractEdge[] edgeidsforvertex6 = {
+            new AbstractEdge("nodes", "10056", mockVertex, mockVertex),
+            new AbstractEdge("nodes", "10067", mockVertex, mockVertex)
+        };
+        AbstractEdge[] edgeidsforvertex7 = {
+            new AbstractEdge("nodes", "10067", mockVertex, mockVertex),
+            new AbstractEdge("nodes", "10078", mockVertex, mockVertex)
+        };
+        AbstractEdge[] edgeidsforvertex8 = {
+            new AbstractEdge("nodes", "10078", mockVertex, mockVertex),
+            new AbstractEdge("nodes", "10081", mockVertex, mockVertex)
+        };
 
-        Assert.assertArrayEquals(topologyProvider.getEdgeIdsForVertex("1").toArray(), edgeidsforvertex1);
-        Assert.assertArrayEquals(topologyProvider.getEdgeIdsForVertex("2").toArray(), edgeidsforvertex2);
-        Assert.assertArrayEquals(topologyProvider.getEdgeIdsForVertex("3").toArray(), edgeidsforvertex3);
-        Assert.assertArrayEquals(topologyProvider.getEdgeIdsForVertex("4").toArray(), edgeidsforvertex4);
-        Assert.assertArrayEquals(topologyProvider.getEdgeIdsForVertex("5").toArray(), edgeidsforvertex5);
-        Assert.assertArrayEquals(topologyProvider.getEdgeIdsForVertex("6").toArray(), edgeidsforvertex6);
-        Assert.assertArrayEquals(topologyProvider.getEdgeIdsForVertex("7").toArray(), edgeidsforvertex7);
-        Assert.assertArrayEquals(topologyProvider.getEdgeIdsForVertex("8").toArray(), edgeidsforvertex8);
+        Assert.assertArrayEquals(topologyProvider.getEdgeIdsForVertex(new AbstractVertexRef(vertexNamespace, "1")), edgeidsforvertex1);
+        Assert.assertArrayEquals(topologyProvider.getEdgeIdsForVertex(new AbstractVertexRef(vertexNamespace, "2")), edgeidsforvertex2);
+        Assert.assertArrayEquals(topologyProvider.getEdgeIdsForVertex(new AbstractVertexRef(vertexNamespace, "3")), edgeidsforvertex3);
+        Assert.assertArrayEquals(topologyProvider.getEdgeIdsForVertex(new AbstractVertexRef(vertexNamespace, "4")), edgeidsforvertex4);
+        Assert.assertArrayEquals(topologyProvider.getEdgeIdsForVertex(new AbstractVertexRef(vertexNamespace, "5")), edgeidsforvertex5);
+        Assert.assertArrayEquals(topologyProvider.getEdgeIdsForVertex(new AbstractVertexRef(vertexNamespace, "6")), edgeidsforvertex6);
+        Assert.assertArrayEquals(topologyProvider.getEdgeIdsForVertex(new AbstractVertexRef(vertexNamespace, "7")), edgeidsforvertex7);
+        Assert.assertArrayEquals(topologyProvider.getEdgeIdsForVertex(new AbstractVertexRef(vertexNamespace, "8")), edgeidsforvertex8);
         
     }
 

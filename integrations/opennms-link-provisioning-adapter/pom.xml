@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms-integrations</artifactId>
-    <version>1.11.4-SNAPSHOT</version>
+    <version>1.13.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-link-provisioning-adapter</artifactId>
@@ -103,10 +103,15 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao</artifactId>
     </dependency>
+    <!-- 
+      We have to use a different version of the JAXB implementation
+      here because the NamespacePrefixMapper class isn't accessible
+      from the JAXB implementation inside the Java6 JVM.
+    -->
     <dependency>
       <groupId>com.sun.xml</groupId>
       <artifactId>com.springsource.com.sun.xml.bind</artifactId>
-      <version>${jaxbVersion}</version>
+      <version>${springJaxbVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
@@ -123,10 +128,12 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao</artifactId>
       <type>test-jar</type>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-test</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.core</groupId>
@@ -136,18 +143,22 @@
     <dependency>
       <groupId>org.opennms.core.test-api</groupId>
       <artifactId>org.opennms.core.test-api.db</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.core.test-api</groupId>
       <artifactId>org.opennms.core.test-api.http</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.core.test-api</groupId>
       <artifactId>org.opennms.core.test-api.services</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.core.test-api</groupId>
       <artifactId>org.opennms.core.test-api.snmp</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -155,21 +166,20 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-services</artifactId>
-    </dependency>
-    <dependency>
       <groupId>xmlunit</groupId>
       <artifactId>xmlunit</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.tests</groupId>
       <artifactId>org.opennms.tests.mock-elements</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>snmp-test-dependencies</artifactId>
       <type>pom</type>
+      <scope>test</scope>
     </dependency>
   </dependencies>
   <repositories>

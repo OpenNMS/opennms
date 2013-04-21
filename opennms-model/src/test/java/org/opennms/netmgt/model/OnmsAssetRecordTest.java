@@ -94,8 +94,8 @@ public class OnmsAssetRecordTest {
         OnmsDistPoller distPoller = new OnmsDistPoller("localhost", "127.0.0.1");
         rec1.setNode(new OnmsNode(distPoller));
         rec1.getNode().setId(1);
-        rec1.setAddress1("220 Chatham Business Drive");
-        rec1.setAddress2(null);
+        rec1.setGeolocation(new OnmsGeolocation());
+        rec1.getGeolocation().setAddress1("220 Chatham Business Drive");
         String building = "Club House";
         rec1.setBuilding(building);
         
@@ -104,13 +104,13 @@ public class OnmsAssetRecordTest {
         rec2.setNode(new OnmsNode(distPoller));
         rec2.getNode().setId(1);
         String newAddress1 = "7025 Kit Creek Rd";
-        rec2.setAddress1(newAddress1);
+        rec2.getGeolocation().setAddress1(newAddress1);
         String newAddress2 = "P.O. Box 14987";
-        rec2.setAddress2(newAddress2);
+        rec2.getGeolocation().setAddress2(newAddress2);
         
         rec1.mergeRecord(rec2);
-        Assert.assertEquals(newAddress1, rec1.getAddress1());
-        Assert.assertEquals(newAddress2, rec1.getAddress2());
+        Assert.assertEquals(newAddress1, rec1.getGeolocation().getAddress1());
+        Assert.assertEquals(newAddress2, rec1.getGeolocation().getAddress2());
         Assert.assertEquals(building, rec1.getBuilding());
     }
 
@@ -122,9 +122,9 @@ public class OnmsAssetRecordTest {
         rec1.setNode(new OnmsNode(distPoller));
         rec1.getNode().setId(1);
         String originalAddress1 = "220 Chatham Business Drive";
-        rec1.setAddress1(originalAddress1);
+        rec1.getGeolocation().setAddress1(originalAddress1);
         String originalAddress2 = null;
-        rec1.setAddress2(originalAddress2);
+        rec1.getGeolocation().setAddress2(originalAddress2);
         String building = "Club House";
         rec1.setBuilding(building);
         
@@ -132,12 +132,12 @@ public class OnmsAssetRecordTest {
         rec2.setId(null);
         rec2.setNode(new OnmsNode(distPoller));
         rec2.getNode().setId(2);
-        rec2.setAddress1("7025 Kit Creek Rd");
-        rec2.setAddress2("P.O. Box 14987");
+        rec2.getGeolocation().setAddress1("7025 Kit Creek Rd");
+        rec2.getGeolocation().setAddress2("P.O. Box 14987");
         
         rec1.mergeRecord(rec2);
-        Assert.assertEquals(originalAddress1, rec1.getAddress1());
-        Assert.assertEquals(originalAddress2, rec1.getAddress2());
+        Assert.assertEquals(originalAddress1, rec1.getGeolocation().getAddress1());
+        Assert.assertEquals(originalAddress2, rec1.getGeolocation().getAddress2());
         Assert.assertEquals(building, rec1.getBuilding());
     }
 }

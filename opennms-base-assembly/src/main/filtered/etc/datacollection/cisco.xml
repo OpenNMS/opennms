@@ -1024,4 +1024,11 @@
         </collect>
       </systemDef>
 
+      <systemDef name="Cisco TelePresence MCU 4501"> 
+         <sysoid>.1.2.826.0.1.4616240.1.1.4501</sysoid> 
+         <collect> 
+          <includeGroup>mib2-interfaces</includeGroup> 
+        </collect> 
+      </systemDef> 
+
 </datacollection-group>

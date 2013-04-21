@@ -44,6 +44,7 @@ import java.util.regex.Pattern;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.apache.commons.io.IOUtils;
 import org.opennms.netmgt.collectd.CollectionAgent;
 import org.opennms.netmgt.collectd.CollectionException;
 import org.opennms.netmgt.collectd.ServiceCollector;
@@ -114,6 +115,7 @@ public class Sftp3gppXmlCollectionHandler extends AbstractXmlCollectionHandler {
                             log().debug("collect(multiple): retrieving file " + fileName + " from " + agent.getHostAddress());
                             InputStream is = connection.getFile(fileName);
                             Document doc = builder.parse(is);
+                            IOUtils.closeQuietly(is);
                             fillCollectionSet(agent, collectionSet, source, doc);
                             setLastFilename(resourceDir, url.getPath(), fileName);
                             deleteFile(connection, fileName);

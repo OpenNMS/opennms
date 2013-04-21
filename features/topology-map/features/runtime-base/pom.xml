@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms.features.topology</groupId>
     <artifactId>features</artifactId>
-    <version>1.11.4-SNAPSHOT</version>
+    <version>1.13.0-SNAPSHOT</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
@@ -36,7 +36,7 @@
                 <contents>
                     servletAlias=/topology
                     widgetset=org.opennms.features.topology.widgetset.gwt.TopologyWidgetset
-		    theme=topo_default
+                    theme=topo_default
                 </contents>
             </config>
             <config>
@@ -46,7 +46,7 @@
                     submenu.File.groups=start,new,close,save,print,open,import,additions,end
                     submenu.Edit.groups=start,undo,cut,find,add,layout,end,additions
                     submenu.View.groups=start,layout,topology,grouping,additions,end
-		    submenu.Help.groups=start,main,tools,updates,end,additions
+                    submenu.Help.groups=start,main,tools,updates,end,additions
                     submenu.Default.groups=start,main,end,additions
                 </contents>
             </config>
@@ -54,10 +54,10 @@
                 <name>org.opennms.features.topology.app.icons</name>
                 <contents>
                     # The following properties are mappings of vertex types to icons,
-		    # the icon must be a url.
+                    # the icon must be a url.
                     #
                     # Prefix your url with theme:// to designate that url to the image is in the theme bundle
-		    # 
+                    #
                     server=theme://images/server.png 
                 </contents>
             </config>
@@ -91,10 +91,10 @@
       <artifactId>app</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <!-- topologyProvider to graphProvider adapter -->
+    <!-- topology HistoryManager -->
     <dependency>
       <groupId>org.opennms.features.topology.plugins.topo</groupId>
-      <artifactId>adapter</artifactId>
+      <artifactId>history</artifactId>
       <version>${project.version}</version>
     </dependency>
     
@@ -102,21 +102,6 @@
     <dependency>
       <groupId>org.opennms.features.topology.plugins</groupId>
       <artifactId>layout</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.topology.plugins</groupId>
-      <artifactId>menu</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.topology.plugins</groupId>
-      <artifactId>status</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.topology.plugins.ui</groupId>
-      <artifactId>tree</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

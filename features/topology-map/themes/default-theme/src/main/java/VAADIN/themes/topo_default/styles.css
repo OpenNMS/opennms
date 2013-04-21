@@ -1,5 +1,15 @@
 @CHARSET "UTF-8";
-@import "../reindeer/styles.css";
+@import "../opennms/styles.css";
+
+/** Ensure that tables don't have their font style/size overridden by GWT's standard.css */
+.v-app table td {
+    font-family: Arial,Helvetica,Tahoma,Verdana,sans-serif;
+    font-size: 12px;
+}
+
+.v-table-table {
+    border-collapse: collapse;
+}
 
 /*** Vertex Styles ***/
 .vertex:hover{
@@ -13,6 +23,7 @@
 
 .vertex.selected .highlight{
     opacity: 1;
+    stroke: #00ffff;
 }
 
 /*** End Vertex Styles***/
@@ -48,6 +59,10 @@ div.v-button-down .v-button-wrap{
     background-image: url(../reindeer/button/img/button-sprites.png);
 }
 
+div.v-table-header-wrap {
+    text-transform: none;
+}
+
 .semantic-zoom-button .v-button-wrap{
 	padding: 7px 4px 0 1px;
 }
@@ -66,4 +81,87 @@ div.v-button-down .v-button-wrap{
 
 .edge.ncs.selected {
 	stroke: #00ffff;
+}
+
+.map-controls {
+	background-color: #eeeeee;
+	border-left: 1px solid #dddddd;
+	
+}
+
+
+/**
+ * Table row CSS. Coordinate these class names with the values inside:
+ *
+ * org.opennms.features.topology.app.internal.support.AlarmTableCellStyleGenerator
+ */
+
+/* The padding: 20px is handled by adding &nbsp;s with a ColumnGenerator */
+.v-table-cell-content-bright { /* padding-left: 20px; */ background-position: top left; background-repeat: repeat-y; }
+
+.v-table-row-alarm-table-minor.v-table-row td { background-color: #FFEBCD; border-top: 2px solid #FF9900 !important; }
+.v-table-row-alarm-table-minor.v-table-row-odd td { background-color: #F8E4C6; border-top: 2px solid #FF9900 !important; }
+.v-table-row-alarm-table-minor .v-table-cell-content-bright { background-image: url(../../../images/bgMinor.png); }
+
+.v-table-row-alarm-table-critical.v-table-row td { background-color: #F5CDCD; border-top: 2px solid #CC0000 !important; }
+.v-table-row-alarm-table-critical.v-table-row-odd td { background-color: #EEC6C6; border-top: 2px solid #CC0000 !important; }
+.v-table-row-alarm-table-critical .v-table-cell-content-bright { background-image: url(../../../images/bgCritical.png); }
+
+.v-table-row-alarm-table-major.v-table-row td { background-color: #FFD7CD; border-top: 2px solid #FF3300 !important; }
+.v-table-row-alarm-table-major.v-table-row-odd td { background-color: #F8D0C6; border-top: 2px solid #FF3300 !important; }
+.v-table-row-alarm-table-major .v-table-cell-content-bright { background-image: url(../../../images/bgMajor.png); }
+
+.v-table-row-alarm-table-warning.v-table-row td { background-color: #FFF5CD; border-top: 2px solid #FFCC00 !important; }
+.v-table-row-alarm-table-warning.v-table-row-odd td { background-color: #F8EEC6; border-top: 2px solid #FFCC00 !important; }
+.v-table-row-alarm-table-warning .v-table-cell-content-bright { background-image: url(../../../images/bgWarning.png); }
+
+.v-table-row-alarm-table-indeterminate.v-table-row td { background-color: #EBEBCD; border-top: 2px solid #999000 !important; }
+.v-table-row-alarm-table-indeterminate.v-table-row-odd td { background-color: #E4E4C6; border-top: 2px solid #999000 !important; }
+.v-table-row-alarm-table-indeterminate .v-table-cell-content-bright { background-image: url(../../../images/bgIndeterminate.png); }
+
+.v-table-row-alarm-table-normal.v-table-row td { background-color: #D7E1CD; border-top: 2px solid #336600 !important; }
+.v-table-row-alarm-table-normal.v-table-row-odd td { background-color: #D0DAC6; border-top: 2px solid #336600 !important; }
+.v-table-row-alarm-table-normal .v-table-cell-content-bright { background-image: url(../../../images/bgNormal.png); }
+
+.v-table-row-alarm-table-cleared.v-table-row td { background-color: #EEEEEE; border-top: 2px solid #999 !important; }
+.v-table-row-alarm-table-cleared.v-table-row-odd td { background-color: #E7E7E7; border-top: 2px solid #999 !important; }
+.v-table-row-alarm-table-cleared .v-table-cell-content-bright { background-image: url(../../../images/bgCleared.png); }
+
+
+/******** Status Styles ********/
+.vertex .status.cleared,
+.vertex .status.normal, 
+.vertex .status.indeterminate,
+.vertex .status.warning, 
+.vertex .status.minor,
+.vertex .status.major,
+.vertex .status.critical {
+	opacity: 1;
+}
+
+.vertex .status.cleared{
+	fill:#999;
+}
+
+.vertex .status.normal{
+	fill:#336600;
+}
+
+.vertex .status.indeterminate{
+	fill:#999000;
+}
+
+.vertex .status.warning{
+	fill:#FFCC00;
+}
+
+.vertex .status.minor{
+	fill:#FF9900;
+}
+.vertex .status.major{
+	fill:#FF3300;
+}
+
+.vertex .status.critical{
+	fill:#CC0000;
 }

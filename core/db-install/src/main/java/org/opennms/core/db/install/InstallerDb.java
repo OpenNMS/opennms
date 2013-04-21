@@ -53,6 +53,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -74,7 +75,7 @@ public class InstallerDb {
     private static final String IPLIKE_SQL_RESOURCE = "iplike.sql";
 
     public static final float POSTGRES_MIN_VERSION = 7.4f;
-    public static final float POSTGRES_MAX_VERSION_PLUS_ONE = 9.2f;
+    public static final float POSTGRES_MAX_VERSION_PLUS_ONE = 9.9f;
 
     private static final int s_fetch_size = 1024;
     
@@ -2157,7 +2158,9 @@ public class InstallerDb {
      */
     public void insertData() throws Exception {
 
-    	for (final String table : getInserts().keySet()) {
+        for (final Entry<String,List<Insert>> entry : getInserts().entrySet()) {
+            final String table = entry.getKey();
+            final List<Insert> inserts = entry.getValue();
             Status status = Status.OK;
 
             m_out.print("- inserting initial table data for \"" + table + "\"... ");
@@ -2166,7 +2169,7 @@ public class InstallerDb {
             // any of them are done so inserts don't interfere with
             // other inserts criteria
             final List<Insert> toBeInserted = new LinkedList<Insert>();
-            for (final Insert insert : getInserts().get(table)) {
+            for (final Insert insert : inserts) {
                 if (insert.isCriteriaMet()) {
                     toBeInserted.add(insert);
                 }

@@ -93,7 +93,7 @@ public class OutageRestService extends OnmsRestService {
      * @return a {@link org.opennms.netmgt.model.OnmsOutage} object.
      */
     @GET
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Path("{outageId}")
     @Transactional
     public OnmsOutage getOutage(@PathParam("outageId") final String outageId) {
@@ -129,7 +129,7 @@ public class OutageRestService extends OnmsRestService {
      * @return a {@link org.opennms.netmgt.model.OnmsOutageCollection} object.
      */
     @GET
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Transactional
     public OnmsOutageCollection getOutages() {
         readLock();
@@ -155,7 +155,7 @@ public class OutageRestService extends OnmsRestService {
      * @return a {@link org.opennms.netmgt.model.OnmsOutageCollection} object.
      */
     @GET
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Transactional
     @Path("forNode/{nodeId}")
     public OnmsOutageCollection forNodeId(@PathParam("nodeId") final int nodeId) {

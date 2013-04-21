@@ -472,7 +472,7 @@ public class PollerBackEndTest extends TestCase {
 
         Collection<ServiceMonitorLocator> results = m_backEnd.getServiceMonitorLocators(DistributionContext.REMOTE_MONITOR);
 
-        assertSame(locators, results);
+        assertEquals(0, results.size());
 
 
     }

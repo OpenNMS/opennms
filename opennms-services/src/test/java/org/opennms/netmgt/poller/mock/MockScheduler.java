@@ -58,7 +58,7 @@ public class MockScheduler implements Scheduler {
 
     
     public void schedule(long interval, ReadyRunnable schedule) {
-        Long nextTime = new Long(getCurrentTime()+interval);
+        Long nextTime = Long.valueOf(getCurrentTime()+interval);
         //MockUtil.println("Scheduled "+schedule+" for "+nextTime);
         List<ReadyRunnable> entries = m_scheduleEntries.get(nextTime);
         if (entries == null) {

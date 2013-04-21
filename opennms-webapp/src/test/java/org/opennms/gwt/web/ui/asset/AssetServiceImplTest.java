@@ -205,7 +205,8 @@ public class AssetServiceImplTest implements InitializingBean {
 		OnmsAssetRecord assetRecord = onmsNode.getAssetRecord();
 		assetRecord.setAssetNumber("imported-id: " + onmsNode.getId());
 		assetRecord.setAdmin("supermario");
-		assetRecord.setZip("myzip");
+		assetRecord.getGeolocation().setAddress1("my address");
+		assetRecord.getGeolocation().setZip("myzip");
 		m_assetRecordDao.update(assetRecord);
 		m_assetRecordDao.flush();
 
@@ -215,7 +216,8 @@ public class AssetServiceImplTest implements InitializingBean {
 		assetRecord = onmsNode.getAssetRecord();
 		assetRecord.setAssetNumber("imported-id: 23");
 		assetRecord.setAdmin("mediummario");
-		assetRecord.setZip("yourzip");
+                assetRecord.getGeolocation().setAddress1("youraddress");
+		assetRecord.getGeolocation().setZip("yourzip");
 		m_assetRecordDao.update(assetRecord);
 		m_assetRecordDao.flush();
 
@@ -266,7 +268,13 @@ public class AssetServiceImplTest implements InitializingBean {
 		assetRecord.setAssetNumber("imported-id: " + onmsNode.getId());
 		assetRecord.setAdmin("supermario");
 		assetRecord.setLastModifiedDate(new Date());
-		assetRecord.setZip("myzip");
+		assetRecord.getGeolocation().setAddress1("220 Chatham Business Drive");
+                assetRecord.getGeolocation().setCity("Pittsboro");
+                assetRecord.getGeolocation().setState("NC");
+                assetRecord.getGeolocation().setZip("27312");
+                assetRecord.getGeolocation().setCountry("US");
+                assetRecord.getGeolocation().setLatitude(35.717582f);
+                assetRecord.getGeolocation().setLongitude(-79.161800f);
 		m_assetRecordDao.update(assetRecord);
 		m_assetRecordDao.flush();
 
@@ -281,6 +289,15 @@ public class AssetServiceImplTest implements InitializingBean {
 		assetServiceImpl.setAssetRecordDao(m_assetRecordDao);
 		System.out.println();
 		assertTrue(assetServiceImpl.saveOrUpdateAssetByNodeId(onmsNode.getId(), assetCommand));
+		
+		OnmsAssetRecord updated = m_assetRecordDao.get(assetRecord.getId());
+		assertEquals(assetRecord.getGeolocation().getAddress1(), updated.getGeolocation().getAddress1());
+                assertEquals(assetRecord.getGeolocation().getState(), updated.getGeolocation().getState());
+                assertEquals(assetRecord.getGeolocation().getCity(), updated.getGeolocation().getCity());
+                assertEquals(assetRecord.getGeolocation().getZip(), updated.getGeolocation().getZip());
+                assertEquals(assetRecord.getGeolocation().getCountry(), updated.getGeolocation().getCountry());
+                assertEquals(assetRecord.getGeolocation().getLongitude(), updated.getGeolocation().getLongitude());
+                assertEquals(assetRecord.getGeolocation().getLatitude(), updated.getGeolocation().getLatitude());
 	}
 
 	@Test
@@ -293,7 +310,7 @@ public class AssetServiceImplTest implements InitializingBean {
 		assetRecord.setAssetNumber("imported-id: 666");
 		assetRecord.setAdmin("medium mario");
 		assetRecord.setLastModifiedDate(new Date());
-		assetRecord.setZip("his zip");
+		assetRecord.getGeolocation().setZip("his zip");
 		m_assetRecordDao.update(assetRecord);
 		m_assetRecordDao.flush();
 
@@ -304,7 +321,7 @@ public class AssetServiceImplTest implements InitializingBean {
 		assetRecord.setAssetNumber("imported-id: 999");
 		assetRecord.setAdmin("super mario");
 		assetRecord.setLastModifiedDate(new Date());
-		assetRecord.setZip("your zip");
+		assetRecord.getGeolocation().setZip("your zip");
 		m_assetRecordDao.update(assetRecord);
 		m_assetRecordDao.flush();
 

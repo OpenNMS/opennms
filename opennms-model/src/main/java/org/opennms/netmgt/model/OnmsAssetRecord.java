@@ -33,6 +33,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -44,8 +45,10 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
@@ -58,212 +61,341 @@ import org.springframework.core.style.ToStringCreator;
  */
 @XmlRootElement(name = "assetRecord")
 @Entity
-@Table(name="assets")
+@Table(name = "assets")
 public class OnmsAssetRecord implements Serializable {
-
-    private static final long serialVersionUID = 509128305684814487L;
-    
-    /** Constant <code>AUTOENABLED="A"</code> */
+    /**
+     * Constant <code>AUTOENABLED="A"</code>
+     */
     public static final String AUTOENABLED = "A";
 
-    //public enum Autoenable {AUTOENABLED};
-    
-    /** Constant <code>SSH_CONNECTION="ssh"</code> */
+    /**
+     * Constant <code>SSH_CONNECTION="ssh"</code>
+     */
     public static final String SSH_CONNECTION = "ssh";
 
-    /** Constant <code>TELNET_CONNECTION="telnet"</code> */
+    //public enum Autoenable {AUTOENABLED};
+
+    /**
+     * Constant <code>TELNET_CONNECTION="telnet"</code>
+     */
     public static final String TELNET_CONNECTION = "telnet";
 
-    /** Constant <code>RSH_CONNECTION="rsh"</code> */
+    /**
+     * Constant <code>RSH_CONNECTION="rsh"</code>
+     */
     public static final String RSH_CONNECTION = "rsh";
-    
+
+    private static final long serialVersionUID = -2532676045548726818L;
+
     //public enum AssetConnections {TELNET_CONNECTION,SSH_CONNECTION,RSH_CONNECTION};
 
     private Integer m_id;
-    
-    /** identifier field */
+
+    /**
+     * identifier field
+     */
     private String m_category = "Unspecified";
 
-    /** identifier field */
+    /**
+     * identifier field
+     */
     private String m_manufacturer;
 
-    /** identifier field */
+    /**
+     * identifier field
+     */
     private String m_vendor;
 
-    /** identifier field */
+    /**
+     * identifier field
+     */
     private String m_modelNumber;
 
-    /** identifier field */
+    /**
+     * identifier field
+     */
     private String m_serialNumber;
 
-    /** identifier field */
+    /**
+     * identifier field
+     */
     private String m_description;
 
-    /** identifier field */
+    /**
+     * identifier field
+     */
     private String m_circuitId;
 
-    /** identifier field */
+    /**
+     * identifier field
+     */
     private String m_assetNumber;
 
-    /** identifier field */
+    /**
+     * identifier field
+     */
     private String m_operatingSystem;
 
-    /** identifier field */
+    /**
+     * identifier field
+     */
     private String m_rack;
 
-    /** identifier field */
+    /**
+     * identifier field
+     */
     private String m_slot;
 
-    /** identifier field */
+    /**
+     * identifier field
+     */
     private String m_port;
 
-    /** identifier field */
+    /**
+     * identifier field
+     */
     private String m_region;
 
-    /** identifier field */
+    /**
+     * identifier field
+     */
     private String m_division;
 
-    /** identifier field */
+    /**
+     * identifier field
+     */
     private String m_department;
 
-    /** identifier field */
-    private String m_address1;
-
-    /** identifier field */
-    private String m_address2;
-
-    /** identifier field */
-    private String m_city;
-
-    /** identifier field */
-    private String m_state;
-
-    /** identifier field */
-    private String m_zip;
-
-    /** identifier field */
+    /**
+     * identifier field
+     */
     private String m_building;
 
-    /** identifier field */
+    /**
+     * identifier field
+     */
     private String m_floor;
 
-    /** identifier field */
+    /**
+     * identifier field
+     */
     private String m_room;
 
-    /** identifier field */
+    /**
+     * identifier field
+     */
     private String m_vendorPhone;
 
-    /** identifier field */
+    /**
+     * identifier field
+     */
     private String m_vendorFax;
 
-    /** identifier field */
+    /**
+     * identifier field
+     */
     private String m_vendorAssetNumber;
 
-    /** identifier field */
+    /**
+     * identifier field
+     */
     private String m_username;
 
-    /** identifier field */
+    /**
+     * identifier field
+     */
     private String m_password;
 
-    /** identifier field */
+    /**
+     * identifier field
+     */
     private String m_enable;
 
-    /** identifier field */
+    /**
+     * identifier field
+     */
     private String m_connection;
 
-    /** identifier field */
+    /**
+     * identifier field
+     */
     private String m_autoenable;
 
-    /** identifier field */
+    /**
+     * identifier field
+     */
     private String m_lastModifiedBy = "";
 
-    /** identifier field */
+    /**
+     * identifier field
+     */
     private Date m_lastModifiedDate = new Date();
 
-    /** identifier field */
+    /**
+     * identifier field
+     */
     private String m_dateInstalled;
 
-    /** identifier field */
+    /**
+     * identifier field
+     */
     private String m_lease;
 
-    /** identifier field */
+    /**
+     * identifier field
+     */
     private String m_leaseExpires;
 
-    /** identifier field */
+    /**
+     * identifier field
+     */
     private String m_supportPhone;
 
-    /** identifier field */
+    /**
+     * identifier field
+     */
     private String m_maintcontract;
 
-    /** identifier field */
+    /**
+     * identifier field
+     */
     private String m_maintContractExpiration;
 
-    /** identifier field */
+    /**
+     * identifier field
+     */
     private String m_displayCategory;
 
-    /** identifier field */
+    /**
+     * identifier field
+     */
     private String m_notifyCategory;
 
-    /** identifier field */
+    /**
+     * identifier field
+     */
     private String m_pollerCategory;
 
-    /** identifier field */
+    /**
+     * identifier field
+     */
     private String m_thresholdCategory;
 
-    /** identifier field */
+    /**
+     * identifier field
+     */
     private String m_comment;
 
-    /** identifier field */
+    /**
+     * identifier field
+     */
     private String m_cpu;
 
-    /** identifier field */
+    /**
+     * identifier field
+     */
     private String m_ram;
 
-    /** identifier field */
+    /**
+     * identifier field
+     */
     private String m_storagectrl;
 
-    /** identifier field */
+    /**
+     * identifier field
+     */
     private String m_hdd1;
 
-    /** identifier field */
+    /**
+     * identifier field
+     */
     private String m_hdd2;
 
-    /** identifier field */
+    /**
+     * identifier field
+     */
     private String m_hdd3;
 
-    /** identifier field */
+    /**
+     * identifier field
+     */
     private String m_hdd4;
 
-    /** identifier field */
+    /**
+     * identifier field
+     */
     private String m_hdd5;
 
-    /** identifier field */
+    /**
+     * identifier field
+     */
     private String m_hdd6;
 
-    /** identifier field */
+    /**
+     * identifier field
+     */
     private String m_numpowersupplies;
 
-    /** identifier field */
+    /**
+     * identifier field
+     */
     private String m_inputpower;
 
-    /** identifier field */
+    /**
+     * identifier field
+     */
     private String m_additionalhardware;
 
-    /** identifier field */
+    /**
+     * identifier field
+     */
     private String m_admin;
 
-    /** identifier field */
+    /**
+     * identifier field
+     */
     private String m_snmpcommunity;
 
-    /** identifier field */
+    /**
+     * identifier field
+     */
     private String m_rackunitheight;
 
-    /** persistent field */
+    /**
+     * persistent field
+     */
     private OnmsNode m_node;
 
     private String m_managedObjectType;
 
     private String m_managedObjectInstance;
+
+    private OnmsGeolocation m_geolocation = new OnmsGeolocation();
+
+    /**
+     * VMware managed Object ID
+     */
+    private String m_vmwareManagedObjectId;
+
+    /**
+     * VMware managed entity Type (virtualMachine | hostSystem)
+     */
+    private String m_vmwareManagedEntityType;
+
+    /**
+     * VMware management Server
+     */
+    private String m_vmwareManagementServer;
+
+    /**
+     * VMware composite field for topology information
+     */
+    private String m_vmwareTopologyInfo;
+
+    /**
+     * VMware managed entity state
+     */
+    private String m_vmwareState;
 
     /**
      * default constructor
@@ -277,13 +409,13 @@ public class OnmsAssetRecord implements Serializable {
      * @return a {@link java.lang.Integer} object.
      */
     @Id
-    @Column(nullable=false)
-    @SequenceGenerator(name="opennmsSequence", sequenceName="opennmsNxtId")
-    @GeneratedValue(generator="opennmsSequence")    
+    @Column(nullable = false)
+    @SequenceGenerator(name = "opennmsSequence", sequenceName = "opennmsNxtId")
+    @GeneratedValue(generator = "opennmsSequence")
     public Integer getId() {
         return m_id;
     }
-    
+
     /**
      * <p>setId</p>
      *
@@ -299,8 +431,8 @@ public class OnmsAssetRecord implements Serializable {
      * @return a {@link org.opennms.netmgt.model.OnmsNode} object.
      */
     @XmlIDREF
-    @OneToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="nodeId")
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "nodeId")
     public OnmsNode getNode() {
         return m_node;
     }
@@ -314,15 +446,13 @@ public class OnmsAssetRecord implements Serializable {
         m_node = node;
     }
 
-
-
     /**
-     *--# category         : A broad idea of what this asset does (examples are
-     *--#                    desktop, printer, server, infrastructure, etc.).
+     * --# category         : A broad idea of what this asset does (examples are
+     * --#                    desktop, printer, server, infrastructure, etc.).
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="category", length=64)
+    @Column(name = "category", length = 64)
     public String getCategory() {
         return m_category;
     }
@@ -337,11 +467,11 @@ public class OnmsAssetRecord implements Serializable {
     }
 
     /**
-     *--# manufacturer     : Name of the manufacturer of this asset.
+     * --# manufacturer     : Name of the manufacturer of this asset.
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="manufacturer", length=64)
+    @Column(name = "manufacturer", length = 64)
     public String getManufacturer() {
         return m_manufacturer;
     }
@@ -356,11 +486,11 @@ public class OnmsAssetRecord implements Serializable {
     }
 
     /**
-     *--# vendor           : Vendor from whom this asset was purchased.
+     * --# vendor           : Vendor from whom this asset was purchased.
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="vendor", length=64)
+    @Column(name = "vendor", length = 64)
     public String getVendor() {
         return m_vendor;
     }
@@ -375,11 +505,11 @@ public class OnmsAssetRecord implements Serializable {
     }
 
     /**
-     *--# modelNumber      : The model number of this asset.
+     * --# modelNumber      : The model number of this asset.
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="modelNumber", length=64)
+    @Column(name = "modelNumber", length = 64)
     public String getModelNumber() {
         return m_modelNumber;
     }
@@ -394,11 +524,11 @@ public class OnmsAssetRecord implements Serializable {
     }
 
     /**
-     *--# serialNumber     : The serial number of this asset.
+     * --# serialNumber     : The serial number of this asset.
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="serialNumber", length=64)
+    @Column(name = "serialNumber", length = 64)
     public String getSerialNumber() {
         return m_serialNumber;
     }
@@ -413,11 +543,11 @@ public class OnmsAssetRecord implements Serializable {
     }
 
     /**
-     *--# description      : A free-form description.
+     * --# description      : A free-form description.
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="description", length=128)
+    @Column(name = "description", length = 128)
     public String getDescription() {
         return m_description;
     }
@@ -432,11 +562,11 @@ public class OnmsAssetRecord implements Serializable {
     }
 
     /**
-     *--# circuitId        : The electrical/network circuit this asset connects to.
+     * --# circuitId        : The electrical/network circuit this asset connects to.
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="circuitId", length=64)
+    @Column(name = "circuitId", length = 64)
     public String getCircuitId() {
         return m_circuitId;
     }
@@ -451,11 +581,11 @@ public class OnmsAssetRecord implements Serializable {
     }
 
     /**
-     *--# assetNumber      : A business-specified asset number.
+     * --# assetNumber      : A business-specified asset number.
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="assetNumber", length=64)
+    @Column(name = "assetNumber", length = 64)
     public String getAssetNumber() {
         return m_assetNumber;
     }
@@ -470,11 +600,11 @@ public class OnmsAssetRecord implements Serializable {
     }
 
     /**
-     *--# operatingSystem  : The operating system, if any.
+     * --# operatingSystem  : The operating system, if any.
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="operatingSystem", length=64)
+    @Column(name = "operatingSystem", length = 64)
     public String getOperatingSystem() {
         return m_operatingSystem;
     }
@@ -489,11 +619,11 @@ public class OnmsAssetRecord implements Serializable {
     }
 
     /**
-     *--# rack             : For servers, the rack it is installed in.
+     * --# rack             : For servers, the rack it is installed in.
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="rack", length=64)
+    @Column(name = "rack", length = 64)
     public String getRack() {
         return m_rack;
     }
@@ -508,11 +638,11 @@ public class OnmsAssetRecord implements Serializable {
     }
 
     /**
-     *--# slot             : For servers, the slot in the rack it is installed in.
+     * --# slot             : For servers, the slot in the rack it is installed in.
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="slot", length=64)
+    @Column(name = "slot", length = 64)
     public String getSlot() {
         return m_slot;
     }
@@ -527,11 +657,11 @@ public class OnmsAssetRecord implements Serializable {
     }
 
     /**
-     *--# port             : For servers, the port in the slot it is installed in.
+     * --# port             : For servers, the port in the slot it is installed in.
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="port", length=64)
+    @Column(name = "port", length = 64)
     public String getPort() {
         return m_port;
     }
@@ -546,11 +676,11 @@ public class OnmsAssetRecord implements Serializable {
     }
 
     /**
-     *--# region           : A broad geographical or organizational area.
+     * --# region           : A broad geographical or organizational area.
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="region", length=64)
+    @Column(name = "region", length = 64)
     public String getRegion() {
         return m_region;
     }
@@ -565,11 +695,11 @@ public class OnmsAssetRecord implements Serializable {
     }
 
     /**
-     *--# division         : A broad geographical or organizational area.
+     * --# division         : A broad geographical or organizational area.
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="division", length=64)
+    @Column(name = "division", length = 64)
     public String getDivision() {
         return m_division;
     }
@@ -584,11 +714,11 @@ public class OnmsAssetRecord implements Serializable {
     }
 
     /**
-     *--# department       : The department this asset belongs to.
+     * --# department       : The department this asset belongs to.
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="department", length=64)
+    @Column(name = "department", length = 64)
     public String getDepartment() {
         return m_department;
     }
@@ -602,107 +732,22 @@ public class OnmsAssetRecord implements Serializable {
         m_department = department;
     }
 
+    @Embedded
+    @XmlTransient
+    public OnmsGeolocation getGeolocation() {
+        return m_geolocation;
+    }
+
+    public void setGeolocation(final OnmsGeolocation geolocation) {
+        m_geolocation = geolocation;
+    }
+
     /**
-     *--# address1         : Address of geographical location of asset, line 1.
+     * --# building         : The building where this asset resides.
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="address1", length=256)
-    public String getAddress1() {
-        return m_address1;
-    }
-
-    /**
-     * <p>setAddress1</p>
-     *
-     * @param address1 a {@link java.lang.String} object.
-     */
-    public void setAddress1(String address1) {
-        m_address1 = address1;
-    }
-
-    /**
-     *--# address2         : Address of geographical location of asset, line 2.
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    @Column(name="address2", length=256)
-    public String getAddress2() {
-        return m_address2;
-    }
-
-    /**
-     * <p>setAddress2</p>
-     *
-     * @param address2 a {@link java.lang.String} object.
-     */
-    public void setAddress2(String address2) {
-        m_address2 = address2;
-    }
-
-    /**
-     *--# city             : The city where this asset resides.
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    @Column(name="city", length=64)
-    public String getCity() {
-        return m_city;
-    }
-
-    /**
-     * <p>setCity</p>
-     *
-     * @param city a {@link java.lang.String} object.
-     */
-    public void setCity(String city) {
-        m_city = city;
-    }
-
-    /**
-     *--# state            : The state where this asset resides.
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    @Column(name="state", length=64)
-    public String getState() {
-        return m_state;
-    }
-
-    /**
-     * <p>setState</p>
-     *
-     * @param state a {@link java.lang.String} object.
-     */
-    public void setState(String state) {
-        m_state = state;
-    }
-
-    /**
-     *--# zip              : The zip code where this asset resides.
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    @Column(name="zip", length=64)
-    public String getZip() {
-        return m_zip;
-    }
-
-    /**
-     * <p>setZip</p>
-     *
-     * @param zip a {@link java.lang.String} object.
-     */
-    public void setZip(String zip) {
-        m_zip = zip;
-    }
-
-    /**
-     *--# building         : The building where this asset resides.
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    @Column(name="building", length=64)
+    @Column(name = "building", length = 64)
     public String getBuilding() {
         return m_building;
     }
@@ -717,11 +762,11 @@ public class OnmsAssetRecord implements Serializable {
     }
 
     /**
-     *--# floor            : The floor of the building where this asset resides.
+     * --# floor            : The floor of the building where this asset resides.
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="floor", length=64)
+    @Column(name = "floor", length = 64)
     public String getFloor() {
         return m_floor;
     }
@@ -736,11 +781,11 @@ public class OnmsAssetRecord implements Serializable {
     }
 
     /**
-     *--# room             : The room where this asset resides.
+     * --# room             : The room where this asset resides.
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="room", length=64)
+    @Column(name = "room", length = 64)
     public String getRoom() {
         return m_room;
     }
@@ -755,11 +800,11 @@ public class OnmsAssetRecord implements Serializable {
     }
 
     /**
-     *--# vendorPhone      : A contact number for the vendor.
+     * --# vendorPhone      : A contact number for the vendor.
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="vendorPhone", length=64)
+    @Column(name = "vendorPhone", length = 64)
     public String getVendorPhone() {
         return m_vendorPhone;
     }
@@ -774,11 +819,11 @@ public class OnmsAssetRecord implements Serializable {
     }
 
     /**
-     *--# vendorFax        : A fax number for the vendor.
+     * --# vendorFax        : A fax number for the vendor.
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="vendorFax", length=64)
+    @Column(name = "vendorFax", length = 64)
     public String getVendorFax() {
         return m_vendorFax;
     }
@@ -797,7 +842,7 @@ public class OnmsAssetRecord implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="vendorAssetNumber", length=64)
+    @Column(name = "vendorAssetNumber", length = 64)
     public String getVendorAssetNumber() {
         return m_vendorAssetNumber;
     }
@@ -812,11 +857,11 @@ public class OnmsAssetRecord implements Serializable {
     }
 
     /**
-     *--# userLastModified : The last user who modified this record.
+     * --# userLastModified : The last user who modified this record.
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="userLastModified", length=20)
+    @Column(name = "userLastModified", length = 20)
     public String getLastModifiedBy() {
         return m_lastModifiedBy;
     }
@@ -831,12 +876,12 @@ public class OnmsAssetRecord implements Serializable {
     }
 
     /**
-     *--# lastModifiedDate : The last time this record was modified.
+     * --# lastModifiedDate : The last time this record was modified.
      *
      * @return a {@link java.util.Date} object.
      */
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="lastModifiedDate")
+    @Column(name = "lastModifiedDate")
     public Date getLastModifiedDate() {
         return m_lastModifiedDate;
     }
@@ -851,11 +896,11 @@ public class OnmsAssetRecord implements Serializable {
     }
 
     /**
-     *--# dateInstalled    : The date the asset was installed.
+     * --# dateInstalled    : The date the asset was installed.
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="dateInstalled", length=64)
+    @Column(name = "dateInstalled", length = 64)
     public String getDateInstalled() {
         return m_dateInstalled;
     }
@@ -870,11 +915,11 @@ public class OnmsAssetRecord implements Serializable {
     }
 
     /**
-     *--# lease            : The lease number of this asset.
+     * --# lease            : The lease number of this asset.
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="lease", length=64)
+    @Column(name = "lease", length = 64)
     public String getLease() {
         return m_lease;
     }
@@ -889,11 +934,11 @@ public class OnmsAssetRecord implements Serializable {
     }
 
     /**
-     *--# leaseExpires     : The date the lease expires for this asset.
+     * --# leaseExpires     : The date the lease expires for this asset.
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="leaseExpires", length=64)
+    @Column(name = "leaseExpires", length = 64)
     public String getLeaseExpires() {
         return m_leaseExpires;
     }
@@ -908,11 +953,11 @@ public class OnmsAssetRecord implements Serializable {
     }
 
     /**
-     *--# supportPhone     : A support phone number for this asset.
+     * --# supportPhone     : A support phone number for this asset.
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="supportPhone", length=64)
+    @Column(name = "supportPhone", length = 64)
     public String getSupportPhone() {
         return m_supportPhone;
     }
@@ -927,11 +972,11 @@ public class OnmsAssetRecord implements Serializable {
     }
 
     /**
-     *--# maintcontract    : The maintenance contract number for this asset.
+     * --# maintcontract    : The maintenance contract number for this asset.
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="maintcontract", length=64)
+    @Column(name = "maintcontract", length = 64)
     public String getMaintcontract() {
         return m_maintcontract;
     }
@@ -946,11 +991,10 @@ public class OnmsAssetRecord implements Serializable {
     }
 
     /**
-     *--# maintContractNumber: The maintenance contract number for this asset.
-     *
-     * @deprecated This field is provided for backwards compatibility with OpenNMS < 1.10
+     * --# maintContractNumber: The maintenance contract number for this asset.
      *
      * @return a {@link java.lang.String} object.
+     * @deprecated This field is provided for backwards compatibility with OpenNMS < 1.10
      */
     @Transient
     public String getMaintContractNumber() {
@@ -959,10 +1003,9 @@ public class OnmsAssetRecord implements Serializable {
 
     /**
      * <p>setMaintContractNumber</p>
-     * 
-     * @deprecated This field is provided for backwards compatibility with OpenNMS < 1.10
      *
      * @param maintcontract a {@link java.lang.String} object.
+     * @deprecated This field is provided for backwards compatibility with OpenNMS < 1.10
      */
     public void setMaintContractNumber(String maintcontract) {
         setMaintcontract(maintcontract);
@@ -973,7 +1016,7 @@ public class OnmsAssetRecord implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="maintContractExpires", length=64)
+    @Column(name = "maintContractExpires", length = 64)
     public String getMaintContractExpiration() {
         return m_maintContractExpiration;
     }
@@ -992,7 +1035,7 @@ public class OnmsAssetRecord implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="displayCategory", length=64)
+    @Column(name = "displayCategory", length = 64)
     public String getDisplayCategory() {
         return m_displayCategory;
     }
@@ -1011,7 +1054,7 @@ public class OnmsAssetRecord implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="notifyCategory", length=64)
+    @Column(name = "notifyCategory", length = 64)
     public String getNotifyCategory() {
         return m_notifyCategory;
     }
@@ -1030,7 +1073,7 @@ public class OnmsAssetRecord implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="pollerCategory", length=64)
+    @Column(name = "pollerCategory", length = 64)
     public String getPollerCategory() {
         return m_pollerCategory;
     }
@@ -1049,7 +1092,7 @@ public class OnmsAssetRecord implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="thresholdCategory", length=64)
+    @Column(name = "thresholdCategory", length = 64)
     public String getThresholdCategory() {
         return m_thresholdCategory;
     }
@@ -1068,7 +1111,7 @@ public class OnmsAssetRecord implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="comment", length=1024)
+    @Column(name = "comment", length = 1024)
     public String getComment() {
         return m_comment;
     }
@@ -1081,17 +1124,17 @@ public class OnmsAssetRecord implements Serializable {
     public void setComment(String comment) {
         m_comment = comment;
     }
-    
+
     /**
      * <p>getManagedObjectType</p>
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="managedObjectType", length=512)
+    @Column(name = "managedObjectType", length = 512)
     public String getManagedObjectType() {
         return m_managedObjectType;
     }
-    
+
     /**
      * <p>setManagedObjectType</p>
      *
@@ -1100,17 +1143,17 @@ public class OnmsAssetRecord implements Serializable {
     public void setManagedObjectType(String mot) {
         m_managedObjectType = mot;
     }
-    
+
     /**
      * <p>getManagedObjectInstance</p>
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="managedObjectInstance", length=512)
+    @Column(name = "managedObjectInstance", length = 512)
     public String getManagedObjectInstance() {
         return m_managedObjectInstance;
     }
-    
+
     /**
      * <p>setManagedObjectInstance</p>
      *
@@ -1119,14 +1162,13 @@ public class OnmsAssetRecord implements Serializable {
     public void setManagedObjectInstance(String moi) {
         m_managedObjectInstance = moi;
     }
-    
 
     /**
      * <p>getUsername</p>
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="username", length=32)
+    @Column(name = "username", length = 32)
     public String getUsername() {
         return m_username;
     }
@@ -1145,7 +1187,7 @@ public class OnmsAssetRecord implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="password", length=32)
+    @Column(name = "password", length = 32)
     public String getPassword() {
         return m_password;
     }
@@ -1164,7 +1206,7 @@ public class OnmsAssetRecord implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="enable", length=32)
+    @Column(name = "enable", length = 32)
     public String getEnable() {
         return m_enable;
     }
@@ -1183,7 +1225,7 @@ public class OnmsAssetRecord implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="connection", length=32)
+    @Column(name = "connection", length = 32)
     public String getConnection() {
         return m_connection;
     }
@@ -1195,7 +1237,7 @@ public class OnmsAssetRecord implements Serializable {
      */
     public void setConnection(String connection) {
         if (connection == null) {
-            m_connection = connection;            
+            m_connection = connection;
         } else {
             if (connection.equalsIgnoreCase(TELNET_CONNECTION))
                 m_connection = TELNET_CONNECTION;
@@ -1213,7 +1255,7 @@ public class OnmsAssetRecord implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="autoenable", length=1)
+    @Column(name = "autoenable", length = 1)
     public String getAutoenable() {
         return m_autoenable;
     }
@@ -1224,7 +1266,7 @@ public class OnmsAssetRecord implements Serializable {
      * @param autoenable a {@link java.lang.String} object.
      */
     public void setAutoenable(String autoenable) {
-            m_autoenable = autoenable;
+        m_autoenable = autoenable;
     }
 
     /**
@@ -1232,7 +1274,7 @@ public class OnmsAssetRecord implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="cpu", length=1)
+    @Column(name = "cpu", length = 1)
     public String getCpu() {
         return m_cpu;
     }
@@ -1243,7 +1285,7 @@ public class OnmsAssetRecord implements Serializable {
      * @param cpu a {@link java.lang.String} object.
      */
     public void setCpu(String cpu) {
-            m_cpu = cpu;
+        m_cpu = cpu;
     }
 
     /**
@@ -1251,7 +1293,7 @@ public class OnmsAssetRecord implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="ram", length=1)
+    @Column(name = "ram", length = 1)
     public String getRam() {
         return m_ram;
     }
@@ -1262,7 +1304,7 @@ public class OnmsAssetRecord implements Serializable {
      * @param ram a {@link java.lang.String} object.
      */
     public void setRam(String ram) {
-            m_ram = ram;
+        m_ram = ram;
     }
 
     /**
@@ -1270,7 +1312,7 @@ public class OnmsAssetRecord implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="snmpcommunity", length=1)
+    @Column(name = "snmpcommunity", length = 1)
     public String getSnmpcommunity() {
         return m_snmpcommunity;
     }
@@ -1281,7 +1323,7 @@ public class OnmsAssetRecord implements Serializable {
      * @param snmpcommunity a {@link java.lang.String} object.
      */
     public void setSnmpcommunity(String snmpcommunity) {
-            m_snmpcommunity = snmpcommunity;
+        m_snmpcommunity = snmpcommunity;
     }
 
     /**
@@ -1289,7 +1331,7 @@ public class OnmsAssetRecord implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="rackunitheight", length=2)
+    @Column(name = "rackunitheight", length = 2)
     public String getRackunitheight() {
         return m_rackunitheight;
     }
@@ -1300,7 +1342,7 @@ public class OnmsAssetRecord implements Serializable {
      * @param snmpcommunity a {@link java.lang.String} object.
      */
     public void setRackunitheight(String rackunitheight) {
-            m_rackunitheight = rackunitheight;
+        m_rackunitheight = rackunitheight;
     }
 
     /**
@@ -1308,7 +1350,7 @@ public class OnmsAssetRecord implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="admin", length=1)
+    @Column(name = "admin", length = 1)
     public String getAdmin() {
         return m_admin;
     }
@@ -1319,7 +1361,7 @@ public class OnmsAssetRecord implements Serializable {
      * @param admin a {@link java.lang.String} object.
      */
     public void setAdmin(String admin) {
-            m_admin = admin;
+        m_admin = admin;
     }
 
     /**
@@ -1327,7 +1369,7 @@ public class OnmsAssetRecord implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="additionalhardware", length=1)
+    @Column(name = "additionalhardware", length = 1)
     public String getAdditionalhardware() {
         return m_additionalhardware;
     }
@@ -1338,7 +1380,7 @@ public class OnmsAssetRecord implements Serializable {
      * @param additionalhardware a {@link java.lang.String} object.
      */
     public void setAdditionalhardware(String additionalhardware) {
-            m_additionalhardware = additionalhardware;
+        m_additionalhardware = additionalhardware;
     }
 
     /**
@@ -1346,7 +1388,7 @@ public class OnmsAssetRecord implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="inputpower", length=1)
+    @Column(name = "inputpower", length = 1)
     public String getInputpower() {
         return m_inputpower;
     }
@@ -1357,7 +1399,7 @@ public class OnmsAssetRecord implements Serializable {
      * @param inputpower a {@link java.lang.String} object.
      */
     public void setInputpower(String inputpower) {
-            m_inputpower = inputpower;
+        m_inputpower = inputpower;
     }
 
     /**
@@ -1365,7 +1407,7 @@ public class OnmsAssetRecord implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="numpowersupplies", length=1)
+    @Column(name = "numpowersupplies", length = 1)
     public String getNumpowersupplies() {
         return m_numpowersupplies;
     }
@@ -1376,7 +1418,7 @@ public class OnmsAssetRecord implements Serializable {
      * @param numpowersupplies a {@link java.lang.String} object.
      */
     public void setNumpowersupplies(String numpowersupplies) {
-            m_numpowersupplies = numpowersupplies;
+        m_numpowersupplies = numpowersupplies;
     }
 
     /**
@@ -1384,7 +1426,7 @@ public class OnmsAssetRecord implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="hdd6", length=1)
+    @Column(name = "hdd6", length = 1)
     public String getHdd6() {
         return m_hdd6;
     }
@@ -1395,7 +1437,7 @@ public class OnmsAssetRecord implements Serializable {
      * @param hdd6 a {@link java.lang.String} object.
      */
     public void setHdd6(String hdd6) {
-            m_hdd6 = hdd6;
+        m_hdd6 = hdd6;
     }
 
     /**
@@ -1403,7 +1445,7 @@ public class OnmsAssetRecord implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="hdd5", length=1)
+    @Column(name = "hdd5", length = 1)
     public String getHdd5() {
         return m_hdd5;
     }
@@ -1414,7 +1456,7 @@ public class OnmsAssetRecord implements Serializable {
      * @param hdd5 a {@link java.lang.String} object.
      */
     public void setHdd5(String hdd5) {
-            m_hdd5 = hdd5;
+        m_hdd5 = hdd5;
     }
 
     /**
@@ -1422,7 +1464,7 @@ public class OnmsAssetRecord implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="hdd4", length=1)
+    @Column(name = "hdd4", length = 1)
     public String getHdd4() {
         return m_hdd4;
     }
@@ -1433,7 +1475,7 @@ public class OnmsAssetRecord implements Serializable {
      * @param hdd4 a {@link java.lang.String} object.
      */
     public void setHdd4(String hdd4) {
-            m_hdd4 = hdd4;
+        m_hdd4 = hdd4;
     }
 
     /**
@@ -1441,7 +1483,7 @@ public class OnmsAssetRecord implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="hdd3", length=1)
+    @Column(name = "hdd3", length = 1)
     public String getHdd3() {
         return m_hdd3;
     }
@@ -1452,7 +1494,7 @@ public class OnmsAssetRecord implements Serializable {
      * @param hdd3 a {@link java.lang.String} object.
      */
     public void setHdd3(String hdd3) {
-            m_hdd3 = hdd3;
+        m_hdd3 = hdd3;
     }
 
     /**
@@ -1460,7 +1502,7 @@ public class OnmsAssetRecord implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="hdd2", length=1)
+    @Column(name = "hdd2", length = 1)
     public String getHdd2() {
         return m_hdd2;
     }
@@ -1471,7 +1513,7 @@ public class OnmsAssetRecord implements Serializable {
      * @param hdd2 a {@link java.lang.String} object.
      */
     public void setHdd2(String hdd2) {
-            m_hdd2 = hdd2;
+        m_hdd2 = hdd2;
     }
 
     /**
@@ -1479,7 +1521,7 @@ public class OnmsAssetRecord implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="hdd1", length=1)
+    @Column(name = "hdd1", length = 1)
     public String getHdd1() {
         return m_hdd1;
     }
@@ -1490,7 +1532,7 @@ public class OnmsAssetRecord implements Serializable {
      * @param hdd1 a {@link java.lang.String} object.
      */
     public void setHdd1(String hdd1) {
-            m_hdd1 = hdd1;
+        m_hdd1 = hdd1;
     }
 
     /**
@@ -1498,7 +1540,7 @@ public class OnmsAssetRecord implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="storagectrl", length=1)
+    @Column(name = "storagectrl", length = 1)
     public String getStoragectrl() {
         return m_storagectrl;
     }
@@ -1509,104 +1551,358 @@ public class OnmsAssetRecord implements Serializable {
      * @param storagectrl a {@link java.lang.String} object.
      */
     public void setStoragectrl(String storagectrl) {
-            m_storagectrl = storagectrl;
+        m_storagectrl = storagectrl;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * PROXY METHOD: do not delete until {@link OnmsGeolocation} is truly a separate table, or projection mapping will fail.
+     */
+    @Transient
+    @Deprecated
+    @XmlElement
+    public String getAddress1() {
+        return m_geolocation == null ? null : m_geolocation.getAddress1();
+    }
+
+    @Deprecated
+    public void setAddress1(final String address1) {
+        if (m_geolocation != null)
+            m_geolocation.setAddress1(address1);
+    }
+
+    /**
+     * PROXY METHOD: do not delete until {@link OnmsGeolocation} is truly a separate table, or projection mapping will fail.
+     */
+    @Transient
+    @Deprecated
+    @XmlElement
+    public String getAddress2() {
+        return m_geolocation == null ? null : m_geolocation.getAddress2();
+    }
+
+    @Deprecated
+    public void setAddress2(final String address2) {
+        if (m_geolocation != null)
+            m_geolocation.setAddress2(address2);
+    }
+
+    /**
+     * PROXY METHOD: do not delete until {@link OnmsGeolocation} is truly a separate table, or projection mapping will fail.
+     */
+    @Transient
+    @Deprecated
+    @XmlElement
+    public String getCity() {
+        return m_geolocation == null ? null : m_geolocation.getCity();
+    }
+
+    @Deprecated
+    public void setCity(final String city) {
+        if (m_geolocation != null)
+            m_geolocation.setCity(city);
+    }
+
+    /**
+     * PROXY METHOD: do not delete until {@link OnmsGeolocation} is truly a separate table, or projection mapping will fail.
+     */
+    @Transient
+    @Deprecated
+    @XmlElement
+    public String getState() {
+        return m_geolocation == null ? null : m_geolocation.getState();
+    }
+
+    @Deprecated
+    public void setState(final String state) {
+        if (m_geolocation != null)
+            m_geolocation.setState(state);
+    }
+
+    /**
+     * PROXY METHOD: do not delete until {@link OnmsGeolocation} is truly a separate table, or projection mapping will fail.
+     */
+    @Transient
+    @Deprecated
+    @XmlElement
+    public String getZip() {
+        return m_geolocation == null ? null : m_geolocation.getZip();
+    }
+
+    @Deprecated
+    public void setZip(final String zip) {
+        if (m_geolocation != null)
+            m_geolocation.setZip(zip);
+    }
+
+    /**
+     * PROXY METHOD: do not delete until {@link OnmsGeolocation} is truly a separate table, or projection mapping will fail.
+     */
+    @Transient
+    @Deprecated
+    @XmlElement
+    public String getCountry() {
+        return m_geolocation == null ? null : m_geolocation.getCountry();
+    }
+
+    @Deprecated
+    public void setCountry(final String country) {
+        if (m_geolocation != null)
+            m_geolocation.setCountry(country);
+    }
+
+    /**
+     * PROXY METHOD: do not delete until {@link OnmsGeolocation} is truly a separate table, or projection mapping will fail.
+     */
+    @Transient
+    @Deprecated
+    @XmlElement
+    public Float getLongitude() {
+        return m_geolocation == null ? null : m_geolocation.getLongitude();
+    }
+
+    @Deprecated
+    public void setLongitude(final Float longitude) {
+        if (m_geolocation != null)
+            m_geolocation.setLongitude(longitude);
+    }
+
+    /**
+     * PROXY METHOD: do not delete until {@link OnmsGeolocation} is truly a separate table, or projection mapping will fail.
+     */
+    @Transient
+    @Deprecated
+    @XmlElement
+    public Float getLatitude() {
+        return m_geolocation == null ? null : m_geolocation.getLatitude();
+    }
+
+    @Deprecated
+    public void setLatitude(final Float latitude) {
+        if (m_geolocation != null)
+            m_geolocation.setLatitude(latitude);
+    }
+
+    /**
+     * <p>getVmwareManagedEntityType</p>
+     * <p/>
+     * Set the VMware management entity type defines if the machine is a virtual machine or a host system
+     *
+     * @return a {@link java.lang.String} object
+     */
+    @Column(name = "vmwareManagedEntityType", length = 70)
+    public String getVmwareManagedEntityType() {
+        return m_vmwareManagedEntityType;
+    }
+
+    /**
+     * <p>setVmwareManagedEntityType</p>
+     * <p/>
+     * Set the VMware management entity type defines if the machine is a virtual machine or a host system
+     *
+     * @param vmwareManagedEntityType a {@link java.lang.String} object
+     */
+    public void setVmwareManagedEntityType(String vmwareManagedEntityType) {
+        m_vmwareManagedEntityType = vmwareManagedEntityType;
+    }
+
+    /**
+     * <p>getVmwareManagedObjectId</p>
+     * <p/>
+     * Get the VMware managed object ID as a unique identifier for VMware API
+     *
+     * @return a {@link java.lang.String} object
+     */
+    @Column(name = "vmwareManagedObjectId", length = 70)
+    public String getVmwareManagedObjectId() {
+        return m_vmwareManagedObjectId;
+    }
+
+    /**
+     * <p>setVmwareManagedObjectId</p>
+     * <p/>
+     * Set the VMware managed object ID as a unique identifier for VMware API
+     *
+     * @return a {@link java.lang.String} object
+     */
+    public void setVmwareManagedObjectId(String vmwareManagedObjectId) {
+        m_vmwareManagedObjectId = vmwareManagedObjectId;
+    }
+
+    /**
+     * <p>getVmwareManagementServer</p>
+     * <p/>
+     * Get the vCenter host or ip address
+     *
+     * @return a {@link java.lang.String} object
+     */
+    @Column(name = "vmwareManagementServer", length = 70)
+    public String getVmwareManagementServer() {
+        return m_vmwareManagementServer;
+    }
+
+    /**
+     * <p>setVmwareManagementServer</p>
+     * <p/>
+     * Set the vCenter host or ip address
+     *
+     * @param vmwareManagementServer a {@link java.lang.String} object
+     */
+    public void setVmwareManagementServer(String vmwareManagementServer) {
+        m_vmwareManagementServer = vmwareManagementServer;
+    }
+
+    /**
+     * <p>getVmwareState</p>
+     * <p/>
+     * Get the VMware managed entity state
+     *
+     * @return a {@link java.lang.String} object
+     */
+    @Column(name = "vmwareState", length = 255)
+    public String getVmwareState() {
+        return m_vmwareState;
+    }
+
+    /**
+     * <p>setVmwareState</p>
+     * <p/>
+     * Set the VMware managed entity state
+     *
+     * @param vmwareState a {@link java.lang.String} object
+     */
+    public void setVmwareState(String vmwareState) {
+        m_vmwareState = vmwareState;
+    }
+
+    /**
+     * <p>getVmwareTopologyInfo</p>
+     * <p/>
+     * Get the VMware topology information
+     *
+     * @return a {@link java.lang.String} object
+     */
+    @Column(name = "vmwareTopologyInfo", length = 1023)
+    public String getVmwareTopologyInfo() {
+        return m_vmwareTopologyInfo;
+    }
+
+    /**
+     * <p>setVmwareTopologyInfo</p>
+     * <p/>
+     * Set the VMware topology information
+     *
+     * @param vmwareTopologyInfo a {@link java.lang.String} object
+     */
+    public void setVmwareTopologyInfo(String vmwareTopologyInfo) {
+        m_vmwareTopologyInfo = vmwareTopologyInfo;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         return new ToStringCreator(this)
-            .append("category", getCategory())
-            .append("manufacturer", getManufacturer())
-            .append("vendor", getVendor())
-            .append("modelnumber", getModelNumber())
-            .append("serialnumber", getSerialNumber())
-            .append("description", getDescription())
-            .append("circuitid", getCircuitId())
-            .append("assetnumber", getAssetNumber())
-            .append("operatingsystem", getOperatingSystem())
-            .append("rack", getRack())
-            .append("slot", getSlot())
-            .append("port", getPort())
-            .append("region", getRegion())
-            .append("division", getDivision())
-            .append("department", getDepartment())
-            .append("address1", getAddress1())
-            .append("address2", getAddress2())
-            .append("city", getCity())
-            .append("state", getState())
-            .append("zip", getZip())
-            .append("building", getBuilding())
-            .append("floor", getFloor())
-            .append("room", getRoom())
-            .append("username", getUsername())
-            .append("password", getPassword())
-            .append("enable",getEnable())
-            .append("autoenable",getAutoenable())
-            .append("connection", getConnection())
-            .append("vendorphone", getVendorPhone())
-            .append("vendorfax", getVendorFax())
-            .append("vendorassetnumber", getVendorAssetNumber())
-            .append("userlastmodified", getLastModifiedBy())
-            .append("lastmodifieddate", getLastModifiedDate())
-            .append("dateinstalled", getDateInstalled())
-            .append("lease", getLease())
-            .append("leaseexpires", getLeaseExpires())
-            .append("supportphone", getSupportPhone())
-            .append("maintcontract", getMaintcontract())
-            .append("maintcontractexpires", getMaintContractExpiration())
-            .append("displaycategory", getDisplayCategory())
-            .append("notifycategory", getNotifyCategory())
-            .append("pollercategory", getPollerCategory())
-            .append("thresholdcategory", getThresholdCategory())
-            .append("comment", getComment())
-            .append("cpu", getCpu())
-            .append("ram", getRam())
-            .append("storagectrl", getStoragectrl())
-            .append("hdd1", getHdd1())
-            .append("hdd2", getHdd2())
-            .append("hdd3", getHdd3())
-            .append("hdd4", getHdd4())
-            .append("hdd5", getHdd5())
-            .append("hdd6", getHdd6())
-            .append("numpowersupplies", getNumpowersupplies())
-            .append("inputpower", getInputpower())
-            .append("additionalhardware", getAdditionalhardware())
-            .append("admin", getAdmin())
-            .append("snmpcommunity", getSnmpcommunity())
-            .append("rackunitheight", getRackunitheight())
-            .toString();
+        .append("category", getCategory())
+        .append("manufacturer", getManufacturer())
+        .append("vendor", getVendor())
+        .append("modelnumber", getModelNumber())
+        .append("serialnumber", getSerialNumber())
+        .append("description", getDescription())
+        .append("circuitid", getCircuitId())
+        .append("assetnumber", getAssetNumber())
+        .append("operatingsystem", getOperatingSystem())
+        .append("rack", getRack())
+        .append("slot", getSlot())
+        .append("port", getPort())
+        .append("region", getRegion())
+        .append("division", getDivision())
+        .append("department", getDepartment())
+        .append("address1", m_geolocation == null ? null : m_geolocation.getAddress1())
+        .append("address2", m_geolocation == null ? null : m_geolocation.getAddress2())
+        .append("city", m_geolocation == null ? null : m_geolocation.getCity())
+        .append("state", m_geolocation == null ? null : m_geolocation.getState())
+        .append("zip", m_geolocation == null ? null : m_geolocation.getZip())
+        .append("country", m_geolocation == null ? null : m_geolocation.getCountry())
+        .append("longitude", m_geolocation == null ? null : m_geolocation.getLongitude())
+        .append("latitude", m_geolocation == null ? null : m_geolocation.getLatitude())
+        .append("building", getBuilding())
+        .append("floor", getFloor())
+        .append("room", getRoom())
+        .append("username", getUsername())
+        .append("password", getPassword())
+        .append("enable", getEnable())
+        .append("autoenable", getAutoenable())
+        .append("connection", getConnection())
+        .append("vendorphone", getVendorPhone())
+        .append("vendorfax", getVendorFax())
+        .append("vendorassetnumber", getVendorAssetNumber())
+        .append("userlastmodified", getLastModifiedBy())
+        .append("lastmodifieddate", getLastModifiedDate())
+        .append("dateinstalled", getDateInstalled())
+        .append("lease", getLease())
+        .append("leaseexpires", getLeaseExpires())
+        .append("supportphone", getSupportPhone())
+        .append("maintcontract", getMaintcontract())
+        .append("maintcontractexpires", getMaintContractExpiration())
+        .append("displaycategory", getDisplayCategory())
+        .append("notifycategory", getNotifyCategory())
+        .append("pollercategory", getPollerCategory())
+        .append("thresholdcategory", getThresholdCategory())
+        .append("comment", getComment())
+        .append("cpu", getCpu())
+        .append("ram", getRam())
+        .append("storagectrl", getStoragectrl())
+        .append("hdd1", getHdd1())
+        .append("hdd2", getHdd2())
+        .append("hdd3", getHdd3())
+        .append("hdd4", getHdd4())
+        .append("hdd5", getHdd5())
+        .append("hdd6", getHdd6())
+        .append("numpowersupplies", getNumpowersupplies())
+        .append("inputpower", getInputpower())
+        .append("additionalhardware", getAdditionalhardware())
+        .append("admin", getAdmin())
+        .append("snmpcommunity", getSnmpcommunity())
+        .append("rackunitheight", getRackunitheight())
+        .append("vmwareManagedObjectId", getVmwareManagedObjectId())
+        .append("vmwareManagedEntityType", getVmwareManagedEntityType())
+        .append("vmwareManagementServer", getVmwareManagementServer())
+        .append("vmwareTopologyInfo", getVmwareTopologyInfo())
+        .append("vmwareState", getVmwareState()).toString();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean equals(Object obj) {
         boolean equals = false;
-        
+
         if (this == obj) {
             return true;
         }
-        
+
         if (obj == null || obj.getClass() != this.getClass()) {
             throw new IllegalArgumentException("the Operation Object passed is either null or of the wrong class");
         }
 
-        OnmsAssetRecord cmpAsset = (OnmsAssetRecord)obj;
-        
+        OnmsAssetRecord cmpAsset = (OnmsAssetRecord) obj;
+
         Integer newNodeId = cmpAsset.getNode().getId();
-        
+
         if (newNodeId == null) {
             return false;
         }
-        
+
         if (m_node.getId().equals(cmpAsset.getNode().getId())) {
             equals = true;
         }
-        
+
         return equals;
-        
+
     }
-    
+
     /**
      * Used to merge the contents of one asset record to another.  If equals implementation
      * returns false, the merge is aborted.
@@ -1614,24 +1910,24 @@ public class OnmsAssetRecord implements Serializable {
      * @param newRecord a {@link org.opennms.netmgt.model.OnmsAssetRecord} object.
      */
     public void mergeRecord(OnmsAssetRecord newRecord) {
-        
+
         if (!this.equals(newRecord)) {
             return;
         }
-        
+
         //this works because all asset properties are strings
         //if the model dependencies ever change to not include spring, this will break
         BeanWrapper currentBean = PropertyAccessorFactory.forBeanPropertyAccess(this);
         BeanWrapper newBean = PropertyAccessorFactory.forBeanPropertyAccess(newRecord);
         PropertyDescriptor[] pds = newBean.getPropertyDescriptors();
-        
+
         for (PropertyDescriptor pd : pds) {
             String propertyName = pd.getName();
-            
+
             if (propertyName.equals("class")) {
                 continue;
             }
-            
+
             // This should never fail since both of these objects are of the same type
             if (newBean.getPropertyValue(propertyName) != null) {
                 currentBean.setPropertyValue(propertyName, newBean.getPropertyValue(propertyName));

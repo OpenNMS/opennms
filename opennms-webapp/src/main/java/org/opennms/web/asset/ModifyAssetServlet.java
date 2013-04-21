@@ -53,7 +53,7 @@ import org.opennms.web.servlet.MissingParameterException;
  * @since 1.8.1
  */
 public class ModifyAssetServlet extends HttpServlet {
-    private static final long serialVersionUID = 9203659232262966182L;
+    private static final long serialVersionUID = 1476437673416953289L;
     private static Set<String> s_allowHtmlFields;
     
     protected AssetModel model;
@@ -159,6 +159,9 @@ public class ModifyAssetServlet extends HttpServlet {
         asset.setCity(getRequestParameter(request, "city"));
         asset.setState(getRequestParameter(request, "state"));
         asset.setZip(getRequestParameter(request, "zip"));
+        asset.setCountry(getRequestParameter(request, "country"));
+        asset.setLongitude(getRequestParameter(request, "longitude"));
+        asset.setLatitude(getRequestParameter(request, "latitude"));
         asset.setBuilding(getRequestParameter(request, "building"));
         asset.setFloor(getRequestParameter(request, "floor"));
         asset.setRoom(getRequestParameter(request, "room"));

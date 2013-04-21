@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.assemblies</artifactId>
-    <version>1.11.4-SNAPSHOT</version>
+    <version>1.13.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.assemblies</groupId>
@@ -66,22 +66,6 @@
           <primaryWar>org.opennms:opennms-webapp</primaryWar>
         </configuration>
       </plugin>
-      <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <configuration>
-          <descriptors>
-            <descriptor>src/assembly/lib.xml</descriptor>
-          </descriptors>
-        </configuration>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
     </plugins>
   </build>
   <dependencies>
@@ -100,7 +84,7 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.container</groupId>
-      <artifactId>servlet</artifactId>
+      <artifactId>org.opennms.container.servlet</artifactId>
       <type>war</type>
       <scope>runtime</scope>
       <version>${project.version}</version>

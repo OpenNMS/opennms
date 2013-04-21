@@ -76,6 +76,7 @@
         <entry key="statsd-configuration.xml" value="statisticsDaemonConfigDao"/>
         <entry key="surveillance-views.xml" value="surveillanceViewConfigDao"/>
         <entry key="syslogd-configuration.xml" value="syslogdConfigFactory"/>
+        <entry key="syslog-northbounder-configuration.xml" value="syslogNorthbounderConfigDao"/>
         <!-- <entry key="threshd-configuration.xml" value="threshdConfigFactory"/> --><!-- database access -->
         <entry key="thresholds.xml" value="thresholdingConfigFactory"/>
         <entry key="tl1d-configuration.xml" value="tl1ConfigurationDao"/>
@@ -84,9 +85,13 @@
         <entry key="users.xml" value="userFactory"/>
         <entry key="vacuumd-configuration.xml" value="vacuumdConfigFactory"/>
         <entry key="viewsdisplay.xml" value="viewsDisplayFactory"/>
-        <entry key="vulnscand-configuration.xml" value="vulnscandConfigFactory"/>
         <entry key="wmi-config.xml" value="wmiPeerFactory"/>
         <entry key="wmi-datacollection-config.xml" value="wmiDataCollectionConfigFactory"/>
+
+        <!-- VMware configuration files -->
+        <entry key="vmware-cim-datacollection-config.xml" value="VmwareCimDatacollectionConfigDao"/>
+        <entry key="vmware-datacollection-config.xml" value="VmwareDatacollectionConfigDao"/>
+        <entry key="vmware-config.xml" value="VmwareConfigDao"/>
         <entry key="xmlrpcd-configuration.xml" value="xmlrpcdConfigFactory"/>
         <!-- <entry key="xmp-config.xml" value="xmpConfigFactory"/> --><!-- Not part of standard build -->
         <!-- <entry key="xmp-datacollection-config.xml" value="xmpCollectionFactory"/> --><!-- Not part of standard build -->
@@ -550,6 +555,10 @@ org.opennms.netmgt.filter.FilterParseException: SQL Exception occurred getting I
 
   <bean id="syslogdConfigFactory" class="org.opennms.netmgt.config.SyslogdConfigFactory" depends-on="syslogdConfigFactory-init" factory-method="getInstance"/>
   
+  <bean name="syslogNorthbounderConfigDao" class="org.opennms.netmgt.alarmd.northbounder.syslog.SyslogNorthbounderConfigDao">
+    <property name="configResource" value="file:${opennms.home}/etc/syslog-northbounder-configuration.xml" />
+  </bean>
+
   <bean id="threshdConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.netmgt.config.ThreshdConfigFactory.init</value></property>
   </bean>
@@ -596,12 +605,6 @@ org.opennms.netmgt.filter.FilterParseException: SQL Exception occurred getting I
 
   <bean id="viewsDisplayFactory" class="org.opennms.netmgt.config.ViewsDisplayFactory" depends-on="viewsDisplayFactory-init" factory-method="getInstance"/>
 
-  <bean id="vulnscandConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.VulnscandConfigFactory.init</value></property>
-  </bean>
-
-  <bean id="vulnscandConfigFactory" class="org.opennms.netmgt.config.VulnscandConfigFactory" depends-on="vulnscandConfigFactory-init" factory-method="getInstance"/>
-
   <bean id="wmiPeerFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.netmgt.config.WmiPeerFactory.init</value></property>
   </bean>
@@ -613,6 +616,19 @@ org.opennms.netmgt.filter.FilterParseException: SQL Exception occurred getting I
   </bean>
 
   <bean id="wmiDataCollectionConfigFactory" class="org.opennms.netmgt.config.WmiDataCollectionConfigFactory" depends-on="wmiDataCollectionConfigFactory-init" factory-method="getInstance"/>
+
+  <!-- VMware configuration files -->
+  <bean id="VmwareCimDatacollectionConfigDao" class="org.opennms.netmgt.dao.jaxb.VmwareCimDatacollectionConfigDaoJaxb">
+    <property name="configResource" value="file:${opennms.home}/etc/vmware-cim-datacollection-config.xml"/>
+  </bean>
+
+  <bean id="VmwareDatacollectionConfigDao" class="org.opennms.netmgt.dao.jaxb.VmwareDatacollectionConfigDaoJaxb">
+    <property name="configResource" value="file:${opennms.home}/etc/vmware-datacollection-config.xml"/>
+  </bean>
+
+  <bean id="VmwareConfigDao" class="org.opennms.netmgt.dao.jaxb.VmwareConfigDaoJaxb">
+    <property name="configResource" value="file:${opennms.home}/etc/vmware-config.xml"/>
+  </bean>
 
   <bean id="xmlrpcdConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.netmgt.config.XmlrpcdConfigFactory.init</value></property>

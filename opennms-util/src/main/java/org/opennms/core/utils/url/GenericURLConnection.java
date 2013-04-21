@@ -69,7 +69,7 @@ public abstract class GenericURLConnection extends URLConnection {
     /**
      * Delimiter for URL arguments
      */
-    private static final String URL_QUERY_ARGS_DELIMITER = "&";
+    private static final String URL_QUERY_ARGS_DELIMITERS = "[&;]";
 
     /**
      * Delimiter for argument and values
@@ -153,7 +153,7 @@ public abstract class GenericURLConnection extends URLConnection {
             }
 
             // queryString is everthing behind "?"
-            String[] queryArgs = queryString.split(URL_QUERY_ARGS_DELIMITER);
+            String[] queryArgs = queryString.split(URL_QUERY_ARGS_DELIMITERS);
 
             for (String queryArg : queryArgs) {
 

@@ -25,5 +25,79 @@
     <cron-schedule>0 0 0 * * ? *</cron-schedule>
   </requisition-def>
   -->
-  
+
+  <!-- sample, import virtual machines and host systems from a VMware vCenter server
+
+    import-url-resource should look like
+
+      vmware://HOSTNAME_OR_IP_ADDRESS[/foreignSource-Name][?parameters]
+
+    where possible parameters are:
+
+       importVMPoweredOn -
+         Controls whether powered on machines should be imported.
+         Default: true
+
+       importVMPoweredOff -
+         Controls whether powered off machines should be imported.
+         Default: false
+
+       importVMSuspended -
+         Controls whether suspended machines should be imported.
+         Default: false
+
+       importVMAll -
+         Imports all virtual machines and ignores importVMPoweredOn,
+         importVMPoweredOff and importVMSuspended parameters
+         Default: false
+
+       importHostPoweredOn -
+         Controls whether powered on host systems should be imported.
+         Default: true
+
+       importHostPoweredOff -
+         Controls whether powered off host systems should be imported.
+         Default: false
+
+       importHostStandBy -
+         Controls whether stand-by host systems should be imported.
+         Default: false
+
+       importHostUnknown -
+         Controls whether host systems with a unknown power state should be imported.
+         Default: false
+
+       importHostAll -
+         Imports all host systems and ignores importHostPoweredOn,
+         importHostPoweredOff and importHostSuspended parameters
+         Default: false
+
+       key -
+         Use this key to lookup a user defined attributes for entities being imported, only virtual machines
+         and host systems with a matching key=value pair will be imported. Can only be in conjunction with the 'value'
+         parameter.
+
+       value -
+         This value must match the user defined attribute with the name defined by the parameter 'key' on the VMware
+         management server for an entity to be imported, can only be used in conjunction with the 'key' parameter.
+
+       virtualMachineServices -
+         Bound this services to imported virtual machines, values should be seperated by ','.
+         Default: VMware-ManagedEntity,VMware-VirtualMachine
+
+       hostSystemServices -
+         Bound this services to imported host systems, values should be seperated by ','.
+         Default: VMware-ManagedEntity,VMware-HostSystem,VMwareCim-HostSystem
+
+     Examples for import-url-resource:
+       vmware://vcenter.mydomain.org?importHostPoweredOff=true
+       vmware://172.16.123.100/vCenterImport?key=shouldImport;value=1
+       vmware://[2001:db8:0:8d3:0:8a2e:70:7344]?virtualMachineServices=VM-SERVICE1,VM-SERVICE2
+
+  <requisition-def import-name="the-import-name-to-use" import-url-resource="vmware://ip-address-or-hostname/foreignSource-Name?parameters">
+    <cron-schedule>0 0 0 * * ? *</cron-schedule>
+  </requisition-def>
+
+  -->
+
 </provisiond-configuration>

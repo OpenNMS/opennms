@@ -1,82 +1,86 @@
 <?xml version="1.0"?>
 <datacollection-config rrdRepository="${install.share.dir}/rrd/snmp/">
-  <snmp-collection name="default" snmpStorageFlag="select">
-    <rrd step="300">
-      <rra>RRA:AVERAGE:0.5:1:2016</rra>
-      <rra>RRA:AVERAGE:0.5:12:1488</rra>
-      <rra>RRA:AVERAGE:0.5:288:366</rra>
-      <rra>RRA:MAX:0.5:288:366</rra>
-      <rra>RRA:MIN:0.5:288:366</rra>
-    </rrd>
+    <snmp-collection name="default" snmpStorageFlag="select">
+        <rrd step="300">
+            <rra>RRA:AVERAGE:0.5:1:2016</rra>
+            <rra>RRA:AVERAGE:0.5:12:1488</rra>
+            <rra>RRA:AVERAGE:0.5:288:366</rra>
+            <rra>RRA:MAX:0.5:288:366</rra>
+            <rra>RRA:MIN:0.5:288:366</rra>
+        </rrd>
 
-    <include-collection dataCollectionGroup="MIB2"/>
-    <include-collection dataCollectionGroup="3Com"/>
-    <include-collection dataCollectionGroup="Acme Packet"/>
-    <include-collection dataCollectionGroup="AKCP sensorProbe"/>
-    <include-collection dataCollectionGroup="Alvarion"/>
-    <include-collection dataCollectionGroup="APC"/>
-    <include-collection dataCollectionGroup="Ascend"/>
-    <include-collection dataCollectionGroup="Asterisk"/>
-    <include-collection dataCollectionGroup="Bluecat"/>
-    <include-collection dataCollectionGroup="Bluecoat"/>
-    <include-collection dataCollectionGroup="Brocade"/>
-    <include-collection dataCollectionGroup="Checkpoint"/>
-    <include-collection dataCollectionGroup="Cisco"/>
-    <include-collection dataCollectionGroup="Colubris"/>
-    <include-collection dataCollectionGroup="Concord"/>
-    <include-collection dataCollectionGroup="Cyclades"/>
-    <include-collection dataCollectionGroup="Dell"/>
-    <include-collection dataCollectionGroup="Ericsson"/>
-    <include-collection dataCollectionGroup="Equallogic"/>
-    <include-collection dataCollectionGroup="Extreme Networks"/>
-    <include-collection dataCollectionGroup="F5"/>
-    <include-collection dataCollectionGroup="Fortinet"/>
-    <include-collection dataCollectionGroup="Force10"/>
-    <include-collection dataCollectionGroup="Foundry Networks"/>
-    <include-collection dataCollectionGroup="HP"/>
-    <include-collection dataCollectionGroup="IBM"/>
-    <include-collection dataCollectionGroup="IP Unity"/>
-    <include-collection dataCollectionGroup="Juniper"/>
-    <include-collection dataCollectionGroup="Kyocera"/>
-    <include-collection dataCollectionGroup="Lexmark"/>
-    <include-collection dataCollectionGroup="Liebert"/>
-    <include-collection dataCollectionGroup="Makelsan"/>
-    <include-collection dataCollectionGroup="MGE"/>
-    <include-collection dataCollectionGroup="Microsoft"/>
-    <include-collection dataCollectionGroup="Mikrotik"/>
-    <include-collection dataCollectionGroup="Network Appliance"/>
-    <include-collection dataCollectionGroup="Netbotz"/>
-    <include-collection dataCollectionGroup="NetEnforcer"/>
-    <include-collection dataCollectionGroup="Netscaler"/>
-    <include-collection dataCollectionGroup="Net-SNMP"/>
-    <include-collection dataCollectionGroup="Nortel"/>
-    <include-collection dataCollectionGroup="Novell"/>
-    <include-collection dataCollectionGroup="pfSense"/>
-    <include-collection dataCollectionGroup="Powerware"/>
-    <include-collection dataCollectionGroup="Riverbed"/>
-    <include-collection dataCollectionGroup="Savin or Ricoh Printers"/>
-    <include-collection dataCollectionGroup="ServerTech"/>
-    <include-collection dataCollectionGroup="SofaWare"/>
-    <include-collection dataCollectionGroup="SUN Microsystems"/>
-    <include-collection dataCollectionGroup="Trango"/>
-    <include-collection dataCollectionGroup="WMI"/>
-    <include-collection dataCollectionGroup="XMP"/>
-    <include-collection dataCollectionGroup="Zeus"/>
-  </snmp-collection>
+        <include-collection dataCollectionGroup="MIB2"/>
+        <include-collection dataCollectionGroup="3Com"/>
+        <include-collection dataCollectionGroup="Acme Packet"/>
+        <include-collection dataCollectionGroup="AKCP sensorProbe"/>
+        <include-collection dataCollectionGroup="Alvarion"/>
+        <include-collection dataCollectionGroup="APC"/>
+        <include-collection dataCollectionGroup="Ascend"/>
+        <include-collection dataCollectionGroup="Asterisk"/>
+        <include-collection dataCollectionGroup="Bluecat"/>
+        <include-collection dataCollectionGroup="Bluecoat"/>
+        <include-collection dataCollectionGroup="Brocade"/>
+        <include-collection dataCollectionGroup="Checkpoint"/>
+        <include-collection dataCollectionGroup="Cisco"/>
+        <include-collection dataCollectionGroup="Colubris"/>
+        <include-collection dataCollectionGroup="Concord"/>
+        <include-collection dataCollectionGroup="Cyclades"/>
+        <include-collection dataCollectionGroup="Dell"/>
+        <include-collection dataCollectionGroup="Ericsson"/>
+        <include-collection dataCollectionGroup="Equallogic"/>
+        <include-collection dataCollectionGroup="Extreme Networks"/>
+        <include-collection dataCollectionGroup="F5"/>
+        <include-collection dataCollectionGroup="Fortinet"/>
+        <include-collection dataCollectionGroup="Force10"/>
+        <include-collection dataCollectionGroup="Foundry Networks"/>
+        <include-collection dataCollectionGroup="HP"/>
+        <include-collection dataCollectionGroup="IBM"/>
+        <include-collection dataCollectionGroup="IP Unity"/>
+        <include-collection dataCollectionGroup="Juniper"/>
+        <include-collection dataCollectionGroup="Kyocera"/>
+        <include-collection dataCollectionGroup="Lexmark"/>
+        <include-collection dataCollectionGroup="Liebert"/>
+        <include-collection dataCollectionGroup="Makelsan"/>
+        <include-collection dataCollectionGroup="MGE"/>
+        <include-collection dataCollectionGroup="Microsoft"/>
+        <include-collection dataCollectionGroup="Mikrotik"/>
+        <include-collection dataCollectionGroup="Network Appliance"/>
+        <include-collection dataCollectionGroup="Netbotz"/>
+        <include-collection dataCollectionGroup="NetEnforcer"/>
+        <include-collection dataCollectionGroup="Netscaler"/>
+        <include-collection dataCollectionGroup="Net-SNMP"/>
+        <include-collection dataCollectionGroup="Nortel"/>
+        <include-collection dataCollectionGroup="Novell"/>
+        <include-collection dataCollectionGroup="pfSense"/>
+        <include-collection dataCollectionGroup="Powerware"/>
+        <include-collection dataCollectionGroup="Riverbed"/>
+        <include-collection dataCollectionGroup="Savin or Ricoh Printers"/>
+        <include-collection dataCollectionGroup="ServerTech"/>
+        <include-collection dataCollectionGroup="SofaWare"/>
+        <include-collection dataCollectionGroup="SUN Microsystems"/>
+        <include-collection dataCollectionGroup="Trango"/>
+        <include-collection dataCollectionGroup="WMI"/>
+        <include-collection dataCollectionGroup="XMP"/>
+        <include-collection dataCollectionGroup="Zeus"/>
+        <include-collection dataCollectionGroup="VMware3"/>
+        <include-collection dataCollectionGroup="VMware4"/>
+        <include-collection dataCollectionGroup="VMware5"/>
+        <include-collection dataCollectionGroup="VMware-Cim"/>
+    </snmp-collection>
 
-  <!-- We need a dedicated collection with a different RRD setup for EJN equipment because
-       the data in the EJN SNMP MIB is only updated once every 15 min by default or alternatively
-       once every 3 min with the hidden "set services epg pgw snmp update-every-three-minutes"
-       config option -->
-  <snmp-collection name="ejn" snmpStorageFlag="select">
-    <rrd step="180">
-      <rra>RRA:AVERAGE:0.5:1:3360</rra>
-      <rra>RRA:AVERAGE:0.5:20:1488</rra>
-      <rra>RRA:AVERAGE:0.5:480:366</rra>
-      <rra>RRA:MAX:0.5:480:366</rra>
-      <rra>RRA:MIN:0.5:480:366</rra>
-    </rrd>
+    <!-- We need a dedicated collection with a different RRD setup for EJN equipment because
+  the data in the EJN SNMP MIB is only updated once every 15 min by default or alternatively
+  once every 3 min with the hidden "set services epg pgw snmp update-every-three-minutes"
+  config option -->
+    <snmp-collection name="ejn" snmpStorageFlag="select">
+        <rrd step="180">
+            <rra>RRA:AVERAGE:0.5:1:3360</rra>
+            <rra>RRA:AVERAGE:0.5:20:1488</rra>
+            <rra>RRA:AVERAGE:0.5:480:366</rra>
+            <rra>RRA:MAX:0.5:480:366</rra>
+            <rra>RRA:MIN:0.5:480:366</rra>
+        </rrd>
 
-    <include-collection dataCollectionGroup="ejn"/>
-  </snmp-collection>
+        <include-collection dataCollectionGroup="ejn"/>
+    </snmp-collection>
 </datacollection-config>

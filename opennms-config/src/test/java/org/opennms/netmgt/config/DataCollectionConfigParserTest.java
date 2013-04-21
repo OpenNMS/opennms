@@ -28,9 +28,6 @@
 
 package org.opennms.netmgt.config;
 
-import java.io.File;
-import java.util.Map;
-
 import org.apache.log4j.Level;
 import org.junit.After;
 import org.junit.Assert;
@@ -39,13 +36,12 @@ import org.junit.Test;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.xml.CastorUtils;
-import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
-import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
-import org.opennms.netmgt.config.datacollection.Group;
-import org.opennms.netmgt.config.datacollection.SnmpCollection;
-import org.opennms.netmgt.config.datacollection.SystemDef;
+import org.opennms.netmgt.config.datacollection.*;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
+
+import java.io.File;
+import java.util.Map;
 
 /**
  * DataCollectionConfigParserTest
@@ -54,8 +50,8 @@ import org.springframework.core.io.Resource;
  */
 public class DataCollectionConfigParserTest {
 
-    private static final int resourceTypesCount = 106;
-    private static final int systemDefCount = 147;
+    private static final int resourceTypesCount = 150;
+    private static final int systemDefCount = 148;
     private static final int groupsCount = 227;
     private Level errorLevel;
 
@@ -111,7 +107,7 @@ public class DataCollectionConfigParserTest {
 
         // Validate SNMP Collection
         Assert.assertEquals(0, collection.getResourceTypeCount()); // Resource Types should live on a special collection
-        Assert.assertEquals(141, collection.getSystems().getSystemDefCount());
+        Assert.assertEquals(142, collection.getSystems().getSystemDefCount());
         Assert.assertEquals(167, collection.getGroups().getGroupCount()); // Unused groups will be ignored
     }
 
@@ -155,8 +151,8 @@ public class DataCollectionConfigParserTest {
 
         // Validate SNMP Collection
         Assert.assertEquals(0, collection.getResourceTypeCount()); // Resource Types should live on a special collection
-        Assert.assertEquals(70, collection.getSystems().getSystemDefCount());
-        Assert.assertEquals(26, collection.getGroups().getGroupCount());
+        Assert.assertEquals(71, collection.getSystems().getSystemDefCount());
+        Assert.assertEquals(27, collection.getGroups().getGroupCount());
     }
 
     @Test
@@ -177,8 +173,8 @@ public class DataCollectionConfigParserTest {
 
         // Validate SNMP Collection
         Assert.assertEquals(0, collection.getResourceTypeCount()); // Resource Types should live on a special collection
-        Assert.assertEquals(40, collection.getSystems().getSystemDefCount()); // 48 systemDef to exclude
-        Assert.assertEquals(25, collection.getGroups().getGroupCount()); //  1 group to exclude (used only on Cisco PIX or Cisco AS)
+        Assert.assertEquals(41, collection.getSystems().getSystemDefCount()); // 48 systemDef to exclude
+        Assert.assertEquals(26, collection.getGroups().getGroupCount()); //  1 group to exclude (used only on Cisco PIX or Cisco AS)
     }
 
     @Test
@@ -222,8 +218,8 @@ public class DataCollectionConfigParserTest {
 
         // Validate SNMP Collection
         Assert.assertEquals(0, collection.getResourceTypeCount()); // Resource Types should live on a special collection
-        Assert.assertEquals(70, collection.getSystems().getSystemDefCount());
-        Assert.assertEquals(13, collection.getGroups().getGroupCount());
+        Assert.assertEquals(71, collection.getSystems().getSystemDefCount());
+        Assert.assertEquals(14, collection.getGroups().getGroupCount());
 
         // Test Precedence ~ any group/systemDef directly defined inside the SNMP collection will have precedence over any definition
         // from external files. That means, the definitions from external files will be ignored and won't be included in the collection.

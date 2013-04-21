@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms.features.nrtg</groupId>
     <artifactId>protocol-collectors</artifactId>
-    <version>1.11.4-SNAPSHOT</version>
+    <version>1.13.0-SNAPSHOT</version>
   </parent>
   <groupId>org.opennms.features.nrtg.protocolcollector</groupId>
   <artifactId>nrtg-protocolcollector-snmp</artifactId>

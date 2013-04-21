@@ -11,117 +11,110 @@ import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.api.GraphVisitor;
 import org.opennms.features.topology.api.Layout;
 import org.opennms.features.topology.api.LayoutAlgorithm;
+import org.opennms.features.topology.api.MapViewManager;
 import org.opennms.features.topology.api.SelectionManager;
-import org.opennms.features.topology.api.TopologyProvider;
 import org.opennms.features.topology.api.topo.AbstractEdge;
-import org.opennms.features.topology.api.topo.Connector;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeListener;
 import org.opennms.features.topology.api.topo.EdgeProvider;
-import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.GraphProvider;
-import org.opennms.features.topology.api.topo.GraphVisitor;
+import org.opennms.features.topology.api.topo.RefComparator;
+import org.opennms.features.topology.api.topo.StatusProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexListener;
 import org.opennms.features.topology.api.topo.VertexProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.plugins.topo.adapter.TPGraphProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.vaadin.data.Item;
+import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanItem;
 
 public class VEProviderGraphContainer implements GraphContainer, VertexListener, EdgeListener {
     
+    @SuppressWarnings("serial")
+    public class ScaleProperty implements Property, Property.ValueChangeNotifier{
+        private Double m_scale;
+        private Set<ValueChangeListener> m_listeners = new CopyOnWriteArraySet<Property.ValueChangeListener>();
+        
+        public ScaleProperty(double scale) {
+            m_scale = scale;
+        }
+        
+        @Override
+        public void addListener(ValueChangeListener listener) {
+            m_listeners.add(listener);
+        }
+
+        @Override
+        public void removeListener(ValueChangeListener listener) {
+            m_listeners.remove(listener);
+        }
+
+        @Override
+        public Object getValue() {
+            return m_scale;
+        }
+
+        @Override
+        public void setValue(Object newValue) throws ReadOnlyException, ConversionException {
+            if(newValue instanceof Number) {
+                double oldScale = m_scale;
+                m_scale = ((Number) newValue).doubleValue();
+                if(oldScale != m_scale) {
+                    fireValueChange();
+                }
+            } else {
+                throw new ConversionException("Scale must be number");
+            }
+        }
+
+        private void fireValueChange() {
+            ValueChangeEvent event = new ValueChangeEvent() {
+
+                @Override
+                public Property getProperty() {
+                    return ScaleProperty.this;
+                }
+            };
+            for(ValueChangeListener listener : m_listeners) {
+                listener.valueChange(event);
+            }
+        }
+
+        @Override
+        public Class<?> getType() {
+            return Double.class;
+        }
+
+        @Override
+        public boolean isReadOnly() {
+            return false;
+        }
+
+        @Override
+        public void setReadOnly(boolean newStatus) {
+            
+        }
+        
+    }
+    
     public class PseudoEdge extends AbstractEdge {
 
-        private String m_styleName;
-        private Vertex m_source;
-        private Vertex m_target;
-        
         public PseudoEdge(String namespace, String id, String styleName, Vertex source, Vertex target) {
-        	super(namespace, id);
-        	m_styleName = styleName;
-            m_source = source;
-            m_target = target;
-        }
-
-        @Override
-        public String getStyleName() {
-            return m_styleName;
-        }
-        
-        @Override
-        public String getKey() {
-            return getNamespace()+":" + getId();
+            super(namespace, id, source, target);
+            setLabel(source.getLabel() + " :: " + target.getLabel());
+            setStyleName(styleName);
         }
 
         @Override
         public Item getItem() {
             return new BeanItem<PseudoEdge>(this);
-        }
-
-        @Override
-        public Connector getSource() {
-            return new Connector() {
-
-                @Override
-                public String getNamespace() {
-                    return PseudoEdge.this.getNamespace();
-                }
-
-                @Override
-                public String getId() {
-                    return PseudoEdge.this.getId()+":source";
-                }
-
-                @Override
-                public EdgeRef getEdge() {
-                    return PseudoEdge.this;
-                }
-
-                @Override
-                public VertexRef getVertex() {
-                    return PseudoEdge.this.m_source;
-                }
-
-            };
-        }
-
-        @Override
-        public Connector getTarget() {
-            return new Connector() {
-
-                @Override
-                public String getNamespace() {
-                    return PseudoEdge.this.getNamespace();
-                }
-
-                @Override
-                public String getId() {
-                    return PseudoEdge.this.getId()+":target";
-                }
-
-                @Override
-                public EdgeRef getEdge() {
-                    return PseudoEdge.this;
-                }
-
-                @Override
-                public VertexRef getVertex() {
-                    return PseudoEdge.this.m_target;
-                }
-
-            };
-        }
-
-        @Override
-        public String getLabel() {
-            return m_source.getLabel()+" :: " + m_target.getLabel();
         }
 
         @Override
@@ -133,12 +126,12 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 
     public class VEGraph implements Graph {
     	
-    	private final Collection<? extends Vertex> m_displayVertices;
-    	private final Collection<? extends Edge> m_displayEdges;
+    	private final Collection<Vertex> m_displayVertices;
+    	private final Collection<Edge> m_displayEdges;
     	private final Layout m_layout;
     	
-        public VEGraph(Layout layout, Collection<? extends Vertex> displayVertices,
-				Collection<? extends Edge> displayEdges) {
+        public VEGraph(Layout layout, Collection<Vertex> displayVertices,
+				Collection<Edge> displayEdges) {
 			m_displayVertices = displayVertices;
 			m_displayEdges = displayEdges;
 			m_layout = layout;
@@ -150,12 +143,12 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
         }
 
         @Override
-        public Collection<? extends Vertex> getDisplayVertices() {
+        public Collection<Vertex> getDisplayVertices() {
         	return Collections.unmodifiableCollection(m_displayVertices);
         }
 
         @Override
-        public Collection<? extends Edge> getDisplayEdges() {
+        public Collection<Edge> getDisplayEdges() {
         	return Collections.unmodifiableCollection(m_displayEdges);
         }
 
@@ -200,30 +193,23 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     private static final Logger s_log = LoggerFactory.getLogger(VEProviderGraphContainer.class);
 
     private int m_semanticZoomLevel = 0;
-    private double m_scale = 1.0;
+    private Property m_scaleProperty = new ScaleProperty(0.0);
     private LayoutAlgorithm m_layoutAlgorithm;
-    private SelectionManager m_selectionManager = new DefaultSelectionManager(); 
-    
+    private SelectionManager m_selectionManager;
+    private StatusProvider m_statusProvider;
     private MergingGraphProvider m_mergedGraphProvider;
-    private TopologyProvider m_dataSource;
+    private MapViewManager m_viewManager = new DefaultMapViewManager();
 
     private final Layout m_layout;
     private VEGraph m_graph;
-    
-    public VEProviderGraphContainer(TopologyProvider dataSource, ProviderManager providerManager) {
-    	m_dataSource = dataSource;
-    	m_mergedGraphProvider = new MergingGraphProvider(new TPGraphProvider(dataSource), providerManager);
-		m_layout = new DefaultLayout(this);
-		rebuildGraph();
-	}
     
     public VEProviderGraphContainer(GraphProvider graphProvider, ProviderManager providerManager) {
     	m_mergedGraphProvider = new MergingGraphProvider(graphProvider, providerManager);
     	m_layout = new DefaultLayout(this);
     	rebuildGraph();
     }
-    
-	private Set<ChangeListener> m_listeners = new CopyOnWriteArraySet<ChangeListener>();
+
+    private Set<ChangeListener> m_listeners = new CopyOnWriteArraySet<ChangeListener>();
 
     @Override
     public int getSemanticZoomLevel() {
@@ -232,23 +218,36 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 
     @Override
     public void setSemanticZoomLevel(int level) {
+        int oldLevel = m_semanticZoomLevel;
         m_semanticZoomLevel = level;
-        rebuildGraph();
+        
+        if(oldLevel != m_semanticZoomLevel) {
+            rebuildGraph();
+        }
+        
     }
 
     @Override
     public double getScale() {
-        return m_scale;
+        return (Double) m_scaleProperty.getValue();
     }
-
+    
+    @Override
+    public Property getScaleProperty() {
+        return m_scaleProperty;
+    }
+    
     @Override
     public void setScale(double scale) {
-        m_scale = scale;
+        m_scaleProperty.setValue(scale);
     }
     @Override
     public void setLayoutAlgorithm(LayoutAlgorithm layoutAlgorithm) {
-        m_layoutAlgorithm = layoutAlgorithm;
-        redoLayout();
+        if(m_layoutAlgorithm != layoutAlgorithm) {
+            m_layoutAlgorithm = layoutAlgorithm;
+            redoLayout();
+        }
+        
     }
 
     @Override
@@ -269,7 +268,7 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 
     @Override
     public GraphProvider getBaseTopology() {
-        return m_mergedGraphProvider;
+        return m_mergedGraphProvider.getBaseGraphProvider();
     }
 
     @Override
@@ -277,8 +276,23 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
         m_mergedGraphProvider.setBaseGraphProvider(graphProvider);
         rebuildGraph();
     }
-
     
+    @Override
+    public void setStatusProvider(StatusProvider statusProvider) {
+        m_statusProvider = statusProvider;
+        rebuildGraph();
+    }
+
+    @Override
+    public SelectionManager getSelectionManager() {
+        return m_selectionManager;
+    }
+
+    @Override
+    public void setSelectionManager(SelectionManager selectionManager) {
+        m_selectionManager = selectionManager;
+    }
+
     public void addVertexProvider(VertexProvider vertexProvider) {
         m_mergedGraphProvider.addVertexProvider(vertexProvider);
         rebuildGraph();
@@ -348,7 +362,7 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 	}
     
     private boolean refEquals(VertexRef a, VertexRef b) {
-    	return a.getNamespace().equals(b.getNamespace()) && a.getId().equals(b.getId());
+        return new RefComparator().compare(a, b) == 0;
     }
     
     private Vertex getDisplayVertex(VertexRef vertexRef) {
@@ -361,38 +375,10 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     		return getDisplayVertex(parent);
     	}
     }
-    
-
-    @Override
-    public Vertex getVertex(VertexRef ref) {
-    	return m_mergedGraphProvider.getVertex(ref);
-    }
-
-    @Override
-    public Edge getEdge(EdgeRef ref) {
-    	return m_mergedGraphProvider.getEdge(ref);
-    }
-
-    @Override
-    public TopologyProvider getDataSource() {
-    	return m_dataSource;
-    }
-
-    @Override
-    public void setDataSource(TopologyProvider topologyProvider) {
-    	m_dataSource = topologyProvider;
-    	TPGraphProvider graphProvider = new TPGraphProvider(topologyProvider);
-    	m_mergedGraphProvider.setBaseGraphProvider(graphProvider);
-    }
 
     @Override
     public Graph getGraph() {
         return m_graph;
-    }
-
-    @Override
-    public SelectionManager getSelectionManager() {
-    	return m_selectionManager;
     }
 
     @Override
@@ -406,11 +392,6 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
         rebuildGraph();
     }
 
-	@Override
-	public Vertex getParent(VertexRef child) {
-		return m_mergedGraphProvider.getParent(child);
-	}
-	
 	private void fireGraphChanged() {
 		for(ChangeListener listener : m_listeners) {
 			listener.graphChanged(this);
@@ -428,27 +409,7 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 	}
 
 	@Override
-	public Collection<? extends Vertex> getVertices() {
-		return m_mergedGraphProvider.getVertices();
-	}
-
-	@Override
-	public Collection<? extends Vertex> getChildren(VertexRef vRef) {
-		return m_mergedGraphProvider.getChildren(vRef);
-	}
-
-	@Override
-	public Collection<? extends Vertex> getRootGroup() {
-		return m_mergedGraphProvider.getRootGroup();
-	}
-
-	@Override
-	public boolean hasChildren(VertexRef vRef) {
-		return m_mergedGraphProvider.hasChildren(vRef);
-	}
-
-	@Override
-	public Collection<VertexRef> getVertexRefForest(Collection<? extends VertexRef> vertexRefs) {
+	public Collection<VertexRef> getVertexRefForest(Collection<VertexRef> vertexRefs) {
 		Set<VertexRef> processed = new LinkedHashSet<VertexRef>();
 		for(VertexRef vertexRef : vertexRefs) {
 			addRefTreeToSet(vertexRef, processed);
@@ -459,7 +420,7 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 	public void addRefTreeToSet(VertexRef vertexId, Set<VertexRef> processed) {
 		processed.add(vertexId);
 
-		for(VertexRef childId : getChildren(vertexId)) {
+		for(VertexRef childId : getBaseTopology().getChildren(vertexId)) {
 			if (!processed.contains(childId)) {
 				addRefTreeToSet(childId, processed);
 			}
@@ -473,8 +434,8 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 
 	@Override
 	public void edgeSetChanged(EdgeProvider provider,
-			List<? extends Edge> added, List<? extends Edge> updated,
-			List<String> removedEdgeIds) {
+			Collection<? extends Edge> added, Collection<? extends Edge> updated,
+			Collection<String> removedEdgeIds) {
 		rebuildGraph();
 	}
 
@@ -485,11 +446,18 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 
 	@Override
 	public void vertexSetChanged(VertexProvider provider,
-			List<? extends Vertex> added, List<? extends Vertex> update,
-			List<String> removedVertexIds) {
+			Collection<? extends Vertex> added, Collection<? extends Vertex> update,
+			Collection<String> removedVertexIds) {
 		rebuildGraph();
 	}
 
+    @Override
+    public MapViewManager getMapViewManager() {
+        return m_viewManager;
+    }
 
-
+    @Override
+    public StatusProvider getStatusProvider() {
+        return m_statusProvider;
+    }
 }

@@ -28,10 +28,8 @@
 
 package org.opennms.web.element;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.opennms.netmgt.linkd.DbAtInterfaceEntry;
+import org.opennms.netmgt.model.OnmsArpInterface;
+import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 
 /**
  * <p>AtInterface class.</p>
@@ -46,33 +44,18 @@ public class AtInterface
         private final String  m_ipaddr;
         private final String  m_physaddr;
         private final String  m_lastPollTime;
-        private final char    m_status;
-
-        private static final Map<Character, String> statusMap = new HashMap<Character, String>();
-
-        static {
-            statusMap.put( DbAtInterfaceEntry.STATUS_ACTIVE, "Active" );
-            statusMap.put( DbAtInterfaceEntry.STATUS_UNKNOWN, "Unknown" );
-            statusMap.put( DbAtInterfaceEntry.STATUS_DELETED, "Deleted" );
-            statusMap.put( DbAtInterfaceEntry.STATUS_NOT_POLLED, "Not Active" );
-        }
+        private final String  m_status;
 
         /* package-protected so only the NetworkElementFactory can instantiate */
-        AtInterface(   int nodeId,
-                int sourcenodeid,
-				int ifindex,
-                String ipaddr,
-                String physaddr,
-                String lastPollTime,
-                char status)
+        AtInterface(OnmsArpInterface iface)
         {
-                m_nodeId = nodeId;
-                m_sourcenodeid = sourcenodeid;
-				m_ifindex = ifindex;
-                m_ipaddr = ipaddr;
-                m_physaddr = physaddr;
-                m_lastPollTime = lastPollTime; 
-                m_status = status;
+                m_nodeId = iface.getNode().getId();
+                m_sourcenodeid = iface.getSourceNode().getId();
+				m_ifindex = iface.getIfIndex();
+                m_ipaddr = iface.getIpAddress();
+                m_physaddr = iface.getPhysAddr();
+                m_lastPollTime = iface.getLastPoll().toString(); 
+                m_status = StatusType.getStatusString(iface.getStatus().getCharCode());
         }
 
         /**
@@ -148,7 +131,7 @@ public class AtInterface
 		 *
 		 * @return a char.
 		 */
-		public char get_status() {
+		public String get_status() {
 			return m_status;
 		}
 

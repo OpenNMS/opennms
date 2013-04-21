@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>1.11.4-SNAPSHOT</version>
+    <version>1.13.0-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   <groupId>org.opennms</groupId>
@@ -263,13 +263,6 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.opennms.assemblies</groupId>
-      <artifactId>org.opennms.assemblies.webapp-full</artifactId>
-      <type>tar.gz</type>
-      <classifier>lib</classifier>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-webapp</artifactId>
       <type>tar.gz</type>
@@ -287,13 +280,6 @@
       <groupId>org.opennms.assemblies</groupId>
       <artifactId>org.opennms.assemblies.http-remoting</artifactId>
       <type>war</type>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.assemblies</groupId>
-      <artifactId>org.opennms.assemblies.http-remoting</artifactId>
-      <type>tar.gz</type>
-      <classifier>lib</classifier>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -375,6 +361,11 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-rancid-provisioning-adapter</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.protocols</groupId>
+      <artifactId>org.opennms.protocols.cifs</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

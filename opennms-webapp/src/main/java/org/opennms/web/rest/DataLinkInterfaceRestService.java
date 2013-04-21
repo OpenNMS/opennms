@@ -80,7 +80,7 @@ public class DataLinkInterfaceRestService extends OnmsRestService {
     ResourceContext m_context;
 
     @GET
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Transactional(readOnly=true)
     public DataLinkInterfaceList getLinks() {
         readLock();
@@ -96,7 +96,7 @@ public class DataLinkInterfaceRestService extends OnmsRestService {
     }
 
     @GET
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Path("{linkId}")
     @Transactional(readOnly=true)
     public DataLinkInterface getLink(@PathParam("linkId") final Integer linkId) {

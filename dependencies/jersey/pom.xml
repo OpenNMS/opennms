@@ -3,7 +3,7 @@
   <parent>
     <artifactId>dependencies</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.11.4-SNAPSHOT</version>
+    <version>1.13.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.dependencies</groupId>
@@ -37,9 +37,19 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>com.sun.jersey.contribs</groupId>
-      <artifactId>jersey-apache-client</artifactId>
+      <groupId>com.sun.jersey</groupId>
+      <artifactId>jersey-atom</artifactId>
       <version>${jerseyVersion}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>rome</groupId>
+          <artifactId>rome</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>jdom</groupId>
+          <artifactId>jdom</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>com.sun.jersey</groupId>
@@ -98,6 +108,26 @@
           <artifactId>spring-webmvc</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.jersey.contribs</groupId>
+      <artifactId>jersey-apache-client</artifactId>
+      <version>${jerseyVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.jersey.contribs</groupId>
+      <artifactId>jersey-multipart</artifactId>
+      <version>${jerseyVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.jersey.contribs.jersey-oauth</groupId>
+      <artifactId>oauth-client</artifactId>
+      <version>${jerseyVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.jersey.contribs.jersey-oauth</groupId>
+      <artifactId>oauth-signature</artifactId>
+      <version>${jerseyVersion}</version>
     </dependency>
     <dependency>
       <groupId>javax.ws.rs</groupId>

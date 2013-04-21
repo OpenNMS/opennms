@@ -28,25 +28,25 @@
 
 package org.opennms.core.criteria.restrictions;
 
-import java.util.List;
+import java.util.Collection;
 
 public class InRestriction extends AttributeValueRestriction {
 
-	public InRestriction(final String attribute, final List<?> value) {
-		super(RestrictionType.IN, attribute, value);
-	}
+    public InRestriction(final String attribute, final Collection<?> collection) {
+        super(RestrictionType.IN, attribute, collection);
+    }
 
-	public List<?> getValues() {
-		return (List<?>)this.getValue();
-	}
+    public Collection<?> getValues() {
+        return (Collection<?>) this.getValue();
+    }
 
-	@Override
-	public void visit(final RestrictionVisitor visitor) {
-		visitor.visitIn(this);
-	}
+    @Override
+    public void visit(final RestrictionVisitor visitor) {
+        visitor.visitIn(this);
+    }
 
-	@Override
-	public String toString() {
-		return "InRestriction [attribute=" + getAttribute() + ", values=" + getValues() + "]";
-	}
+    @Override
+    public String toString() {
+        return "InRestriction [attribute=" + getAttribute() + ", values=" + getValues() + "]";
+    }
 }

@@ -130,6 +130,12 @@ public class Asset extends Object {
 
     protected String zip = "";
 
+    protected String country = "";
+
+    protected String longitude = "";
+
+    protected String latitude = "";
+
     protected String building = "";
 
     protected String floor = "";
@@ -1044,6 +1050,72 @@ public class Asset extends Object {
     }
 
     /**
+     * <p>Setter for the field <code>country</code>.</p>
+     *
+     * @param country a {@link java.lang.String} object.
+     */
+    public void setCountry(String country) {
+        if (country != null) {
+            this.country = country;
+        } else {
+            this.country = "";
+        }
+    }
+
+    /**
+     * <p>Getter for the field <code>country</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getCountry() {
+        return (this.country);
+    }
+
+    /**
+     * <p>Setter for the field <code>longitude</code>.</p>
+     *
+     * @param longitude a {@link java.lang.String} object.
+     */
+    public void setLongitude(String longitude) {
+        if (longitude != null) {
+            this.longitude = longitude;
+        } else {
+            this.longitude = "";
+        }
+    }
+
+    /**
+     * <p>Getter for the field <code>longitude</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getLongitude() {
+        return (this.longitude);
+    }
+
+    /**
+     * <p>Setter for the field <code>latitude</code>.</p>
+     *
+     * @param latitude a {@link java.lang.String} object.
+     */
+    public void setLatitude(String latitude) {
+        if (latitude != null) {
+            this.latitude = latitude;
+        } else {
+            this.latitude = "";
+        }
+    }
+
+    /**
+     * <p>Getter for the field <code>latitude</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getLatitude() {
+        return (this.latitude);
+    }
+
+    /**
      * <p>Setter for the field <code>building</code>.</p>
      *
      * @param building a {@link java.lang.String} object.
@@ -1554,6 +1626,12 @@ public class Asset extends Object {
         builder.append(state);
         builder.append(", zip=");
         builder.append(zip);
+        builder.append(", country=");
+        builder.append(country);
+        builder.append(", longitude=");
+        builder.append(longitude);
+        builder.append(", latitude=");
+        builder.append(latitude);
         builder.append(", building=");
         builder.append(building);
         builder.append(", floor=");

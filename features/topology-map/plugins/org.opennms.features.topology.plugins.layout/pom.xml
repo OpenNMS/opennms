@@ -5,7 +5,7 @@
     <relativePath>../../poms/compiled/</relativePath>
     <groupId>org.opennms.features.topology.build</groupId>
     <artifactId>compiled-bundle-settings</artifactId>
-    <version>1.11.4-SNAPSHOT</version>
+    <version>1.13.0-SNAPSHOT</version>
   </parent>
 
   <properties>
@@ -16,7 +16,6 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.topology.plugins</groupId>
   <artifactId>layout</artifactId>
-  <version>1.11.4-SNAPSHOT</version>
 
   <name>${bundle.symbolicName}</name>
 

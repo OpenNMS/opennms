@@ -310,7 +310,7 @@ public class MibCompilerPanel extends Panel {
         } else {
             List<String> dependencies = mibParser.getMissingDependencies();
             if (dependencies.isEmpty()) {
-                logger.error("Found problem when compiling the MIB: <pre>" + mibParser.getFormattedErrors() + "</pre>");
+                logger.error("Problem found when compiling the MIB: <pre>" + mibParser.getFormattedErrors() + "</pre>");
             } else {
                 logger.error("Dependencies required: <b>" + dependencies + "</b>");
             }
@@ -378,7 +378,7 @@ public class MibCompilerPanel extends Panel {
                 if (dcGroup.getGroupCount() > 0) {
                     try {
                         final String dataFileName = fileName.replaceFirst("\\..*$", ".xml");
-                        final DataCollectionWindow w = new DataCollectionWindow(dataCollectionDao, dataFileName, dcGroup, logger);
+                        final DataCollectionWindow w = new DataCollectionWindow(mibParser, dataCollectionDao, dataFileName, dcGroup, logger);
                         getApplication().getMainWindow().addWindow(w);
                     } catch (Throwable t) {
                         getApplication().getMainWindow().showNotification(t.getMessage(), Notification.TYPE_ERROR_MESSAGE);

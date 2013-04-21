@@ -28,11 +28,14 @@
 
 package org.opennms.web.controller;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.OutputStream;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.lf5.util.StreamUtils;
 import org.opennms.api.reporting.ReportFormat;
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.reporting.core.svclayer.ReportStoreService;
@@ -56,6 +59,23 @@ public class DownloadReportController extends AbstractController {
     protected ModelAndView handleRequestInternal(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 
+        String fileName = request.getParameter("fileName");
+        if (fileName != null) {
+            if (fileName.toLowerCase().endsWith(".pdf")) {
+                response.setContentType("application/pdf;charset=UTF-8");
+
+            }
+            if (fileName.toLowerCase().endsWith(".csv")) {
+                response.setContentType("text/csv;charset=UTF-8");
+            }
+            response.setHeader("Content-disposition", "inline; filename=" + fileName);
+            response.setHeader("Pragma", "public");
+            response.setHeader("Cache-Control", "cache");
+            response.setHeader("Cache-Control", "must-revalidate");
+            StreamUtils.copy(new FileInputStream(new File(fileName)), response.getOutputStream());
+            return null;
+        }
+
         String[] requiredParameters = new String[] { "locatorId", "format" };
 
         for (String requiredParameter : requiredParameters) {
@@ -66,7 +86,7 @@ public class DownloadReportController extends AbstractController {
         }
 
         try {
-            Integer reportCatalogEntryId = new Integer(WebSecurityUtils.safeParseInt(request.getParameter("locatorId")));
+            Integer reportCatalogEntryId = Integer.valueOf(WebSecurityUtils.safeParseInt(request.getParameter("locatorId")));
             
             String requestFormat = new String(request.getParameter("format"));
 

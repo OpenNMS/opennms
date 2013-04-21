@@ -480,7 +480,7 @@ public class MockNetworkTest extends TestCase {
         List<Integer> svcs = queryManager.getActiveServiceIdsForInterface("192.168.1.2");
 
         for (MockService svc : expectedSvcs) {
-            assertTrue(svcs.contains(new Integer(svc.getId())));
+            assertTrue(svcs.contains(Integer.valueOf(svc.getId())));
         }
 
         List<IfKey> ifKeys = queryManager.getInterfacesWithService("HTTP");

@@ -227,7 +227,7 @@ public class ScheduleTest extends TestCase {
         assertEquals(currentTime, m_scheduler.getCurrentTime());
         assertEquals(entryCount, m_scheduler.getEntryCount());
         if (entryCount > 0)
-            assertNotNull(m_scheduler.getEntries().get(new Long(currentTime+interval)));
+            assertNotNull(m_scheduler.getEntries().get(Long.valueOf(currentTime+interval)));
         
     }
 

@@ -30,6 +30,7 @@ package org.opennms.netmgt.linkd.snmp;
 
 
 import org.opennms.core.utils.LogUtils;
+
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;

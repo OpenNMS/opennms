@@ -31,6 +31,7 @@ import java.io.File;
 import java.util.List;
 
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
+import org.opennms.netmgt.model.PrefabGraph;
 import org.opennms.netmgt.xml.eventconf.Events;
 
 /**
@@ -90,5 +91,12 @@ public interface MibParser {
      * @return the data collection group
      */
     DatacollectionGroup getDataCollection();
+
+    /**
+     * Gets the prefab graph templates.
+     *
+     * @return the prefab graph templates.
+     */
+    List<PrefabGraph> getPrefabGraphs();
 
 }

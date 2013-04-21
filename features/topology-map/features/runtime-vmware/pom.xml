@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <parent>
+    <groupId>org.opennms.features.topology</groupId>
+    <artifactId>features</artifactId>
+    <version>1.13.0-SNAPSHOT</version>
+  </parent>
+
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.opennms.osgi.features.topology</groupId>
+  <artifactId>opennms-topology-runtime-vmware</artifactId>
+
+  <name>OpenNMS :: Topology :: Runtime (VMware)</name>
+
+  <description>Runtime and plugins for the OpenNMS VMware topology web app.</description>
+
+  <packaging>pom</packaging>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.opennms.maven.plugins</groupId>
+        <artifactId>features-maven-plugin</artifactId>
+        <configuration>
+          <repositories>
+            <repository>mvn:${project.groupId}/opennms-topology-runtime-base/${project.version}/xml/features</repository>
+          </repositories>
+          <features>
+            <feature>opennms-topology-runtime-base</feature>
+          </features>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.opennms.osgi.features.topology</groupId>
+      <artifactId>opennms-topology-runtime-base</artifactId>
+      <version>${project.version}</version>
+      <classifier>features</classifier>
+      <type>xml</type>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.opennms.features.topology.plugins.topo</groupId>
+      <artifactId>vmware</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
+
+</project>

@@ -28,44 +28,25 @@
 
 package org.opennms.features.topology.app.internal.operations;
 
-import java.util.List;
-
-import org.opennms.features.topology.api.CheckedOperation;
-import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.api.LayoutAlgorithm;
 import org.opennms.features.topology.app.internal.jung.CircleLayoutAlgorithm;
 
+public class CircleLayoutOperation extends LayoutOperation {
 
-public class CircleLayoutOperation implements CheckedOperation{
+	public CircleLayoutOperation() {
+		super(new LayoutFactory() {
+		    
+		    private final CircleLayoutAlgorithm m_layoutAlgorithm = new CircleLayoutAlgorithm();
+			@Override
+			public LayoutAlgorithm getLayoutAlgorithm() {
+				return m_layoutAlgorithm;
+			}
+		});
+	}
 
-    @Override
-    public Undoer execute(List<VertexRef> targets, OperationContext operationContext) {
-        operationContext.getGraphContainer().setLayoutAlgorithm(new CircleLayoutAlgorithm());
-        
-        return null;
-    }
+	@Override
+	public String getId() {
+		return getClass().getSimpleName();
+	}
 
-    @Override
-    public boolean display(List<VertexRef> targets, OperationContext operationContext) {
-        return true;
-    }
-
-    @Override
-    public boolean enabled(List<VertexRef> targets, OperationContext operationContext) {
-        return true;
-    }
-
-    @Override
-    public String getId() {
-        return null;
-    }
-
-    @Override
-    public boolean isChecked(List<VertexRef> targets, OperationContext context) {
-        if(context.getGraphContainer().getLayoutAlgorithm() instanceof CircleLayoutAlgorithm ) {
-            return true;
-        }
-        
-        return false;
-    }
 }

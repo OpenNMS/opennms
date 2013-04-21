@@ -29,59 +29,82 @@
 package org.opennms.features.topology.plugins.topo.linkd.internal.operations;
 
 import java.util.List;
+import java.util.Map;
 
-import org.opennms.features.topology.api.CheckedOperation;
+import org.opennms.features.topology.api.AbstractCheckedOperation;
+import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.plugins.topo.linkd.internal.LinkdTopologyProvider;
 import org.slf4j.LoggerFactory;
 
-public class HideNodesWithoutLinksOperation implements CheckedOperation {
+public class HideNodesWithoutLinksOperation extends AbstractCheckedOperation {
 
-    LinkdTopologyProvider m_topologyProvider;
-    public HideNodesWithoutLinksOperation(LinkdTopologyProvider topologyProvider) {
-        m_topologyProvider=topologyProvider;
-    }
+	private final LinkdTopologyProvider m_topologyProvider;
 
-    @Override
-    public Undoer execute(List<VertexRef> targets,
-            OperationContext operationContext) {
-        log("executing Hide Nodes Without Link Checked Operation");
-        log("found addNodeWithoutLinks: " + m_topologyProvider.isAddNodeWithoutLink());
-        m_topologyProvider.setAddNodeWithoutLink(!m_topologyProvider.isAddNodeWithoutLink());
-        log("switched addNodeWithoutLinks to: " + m_topologyProvider.isAddNodeWithoutLink());
-        m_topologyProvider.load(null);
-        if (operationContext != null && operationContext.getGraphContainer() != null) {
-            log("operationcontext and GraphContainer not null: executing redoLayout");
-            operationContext.getGraphContainer().redoLayout();
-        }
-        return null;
-    }
+	public HideNodesWithoutLinksOperation(LinkdTopologyProvider topologyProvider) {
+		m_topologyProvider = topologyProvider;
+	}
 
-    @Override
-    public boolean display(List<VertexRef> targets,
-            OperationContext operationContext) {
-        return true;
-    }
+	@Override
+	public Undoer execute(List<VertexRef> targets, OperationContext operationContext) {
+		if (enabled(targets, operationContext)) {
+			execute(operationContext.getGraphContainer());
+		}
+		return null;
+	}
+	
+	private void execute(GraphContainer container) {
+		LoggerFactory.getLogger(this.getClass()).debug("switched addNodeWithoutLinks to: " + !m_topologyProvider.isAddNodeWithoutLink());
+		m_topologyProvider.setAddNodeWithoutLink(!m_topologyProvider.isAddNodeWithoutLink());
+		m_topologyProvider.refresh();
+		container.redoLayout();
+	}
 
-    @Override
-    public boolean enabled(List<VertexRef> targets,
-            OperationContext operationContext) {
-        return true;
-    }
+	@Override
+	public boolean display(List<VertexRef> targets, OperationContext operationContext) {
+		return true;
+	}
 
-    @Override
-    public String getId() {
-        return "LinkdTopologyProviderHidesNodesWithoutLinksOperation";
-    }
+	/**
+	 * This is kinda unreliable because we are just matching on namespace... but that's all we can do with
+	 * the API as it is now.
+	 */
+	@Override
+	protected boolean enabled(GraphContainer container) {
+		GraphProvider activeGraphProvider = container.getBaseTopology();
+		return m_topologyProvider.getVertexNamespace().equals(activeGraphProvider.getVertexNamespace());
+	}
 
-    @Override
-    public boolean isChecked(List<VertexRef> targets,
-            OperationContext operationContext) {
-        return !m_topologyProvider.isAddNodeWithoutLink();
-    }
+	@Override
+	public String getId() {
+		return "LinkdTopologyProviderHidesNodesWithoutLinksOperation";
+	}
 
-    private void log(final String string) {
-        LoggerFactory.getLogger(getClass()).debug("{}: {}", getId(), string);
-    }
+	@Override
+	protected boolean isChecked(GraphContainer container) {
+		if (enabled(container)) {
+			return !m_topologyProvider.isAddNodeWithoutLink();
+		} else {
+			return false;
+		}
+	}
+
+	@Override
+	public void applyHistory(GraphContainer container, Map<String, String> settings) {
+		if ("true".equals(settings.get(this.getClass().getName()))) {
+			if (m_topologyProvider.isAddNodeWithoutLink()) {
+				execute(container);
+			} else {
+				// Hiding is enabled and isAddNodeWithoutLink() is already false
+			}
+		} else {
+			if (m_topologyProvider.isAddNodeWithoutLink()) {
+				// Adding is enabled and isAddNodeWithoutLink() is already true
+			} else {
+				execute(container);
+			}
+		}
+	}
 }

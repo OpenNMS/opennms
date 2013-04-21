@@ -4,7 +4,7 @@
   <groupId>org.opennms.jasper</groupId>
   <artifactId>jrobin-provider</artifactId>
   <packaging>jar</packaging>
-  <version>1.0.1-SNAPSHOT</version>
+  <version>1.13.0-SNAPSHOT</version>
   <name>JRobin iReport Fields Provider</name>
   <build>
     <pluginManagement>
@@ -46,7 +46,7 @@
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>jasper-dependencies</artifactId>
-      <version>1.11.4-SNAPSHOT</version>
+      <version>1.13.0-SNAPSHOT</version>
       <type>pom</type>
     </dependency>
     <dependency>

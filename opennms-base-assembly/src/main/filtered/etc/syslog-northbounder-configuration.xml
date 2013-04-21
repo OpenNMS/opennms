@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<syslog-northbounder-config>
+
+<!--
+The following are set to the default values.
+-->
+  <enabled>false</enabled>
+  <nagles-delay>1000</nagles-delay>
+  <batch-size>100</batch-size>
+  <queue-size>300000</queue-size>
+
+  <message-format>ALARM ID:${alarmId} NODE:${nodeLabel}; ${logMsg}</message-format>
+
+<!-- You could do something like the following
+  <message-format>ALARM ID:${alarmId} NODE:${nodeLabel} IP:${ipAddr} 
+    FIRST:${firstOccurrence} LAST:${lastOccurrence} 
+    COUNT:${count} UEI:${alarmUei} SEV:${severity} 
+    x733Type:${x733AlarmType} x733Cause:${x733ProbableCause} 
+    ${logMsg}
+  </message-format>
+-->
+
+<!-- More than one destination is supported -->
+  <destination>
+    <destination-name>localTest</destination-name>
+    <host>127.0.0.1</host>
+    <port>514</port>
+    <ip-protocol>UDP</ip-protocol>
+    <facility>LOCAL0</facility>
+    <max-message-length>1024</max-message-length>
+    <send-local-name>true</send-local-name>
+    <send-local-time>true</send-local-time>
+    <truncate-message>false</truncate-message>
+  </destination>
+
+
+<!-- Highly recommended, but not required, to only forward a set of Alarm UEIs -->
+<!--
+  <uei>uei.opennms.org/nodes/nodeDown</uei>
+  <uei>uei.opennms.org/nodes/nodeUp</uei>
+-->
+</syslog-northbounder-config>

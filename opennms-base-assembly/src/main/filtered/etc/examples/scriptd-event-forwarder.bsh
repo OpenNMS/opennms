@@ -1,0 +1,123 @@
+
+void forwardEvent(Event event) {
+    if (event.snmp == null) {
+        try {
+
+            log.debug("Forwarding an OpenNMS event.");
+
+            SnmpTrapBuilder trap = snmpTrapHelper.createV1Trap(".1.3.6.1.4.1.5813.1", "172.20.1.11", 6, 1, 0);
+
+            /*  This sends an enterprise id of ".1.3.6.1.4.1.5813.1" from agent "172.20.1.11" (einstein), 
+	        which should be the IP address of the OpenNMS system, generic value of 6 and specific value of 1 */
+
+            t_dbid = new Integer(event.dbid);
+            if (t_dbid != null)
+                snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.1", "OctetString", "text", t_dbid.toString());
+            else
+                snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.1", "OctetString", "text", "null");
+            if (event.distPoller != null)
+                snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.2", "OctetString", "text", event.distPoller);
+            else
+                snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.2", "OctetString", "text", "null");
+            if (event.creationTime != null)
+                snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.3", "OctetString", "text", event.creationTime);
+            else
+                snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.3", "OctetString", "text", "null");
+            if (event.masterStation != null)
+                snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.4", "OctetString", "text", event.masterStation);
+            else
+                snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.4", "OctetString", "text", "null");
+            if (event.uei != null)
+                snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.6", "OctetString", "text", event.uei);
+            else
+                snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.6", "OctetString", "text", "null");
+            if (event.source != null)
+                snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.7", "OctetString", "text", event.source);
+            else
+                snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.7", "OctetString", "text", "null");
+            t_nodeid = new Long(event.nodeid);
+            if (t_nodeid != null)
+                snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.8", "OctetString", "text", t_nodeid.toString());
+            else
+                snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.8", "OctetString", "text", "null");
+            if (event.time != null)
+                snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.9", "OctetString", "text", event.time);
+            else
+                snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.9", "OctetString", "text", "null");
+            if (event.host != null)
+                snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.10", "OctetString", "text", event.host);
+            else
+                snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.10", "OctetString", "text", "null");
+            t_interface = event.getInterface();
+            if (t_interface != null)
+                snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.11", "OctetString", "text", t_interface);
+            else
+                snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.11", "OctetString", "text", "null");
+            if (event.snmphost != null)
+                snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.12", "OctetString", "text", event.snmphost);
+            else
+                snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.12", "OctetString", "text", "einstein.example.com");
+
+            /* The snmphost field must be changed to the hostname of the OpenNMS system sending the event */
+
+            if (event.service != null)
+                snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.13", "OctetString", "text", event.service);
+            else
+                snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.13", "OctetString", "text", "null");
+            if (event.descr != null) {
+                descrString = event.descr.replaceAll("&lt;.*&gt;", " ").replaceAll("\\s+", " ");
+                snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.16", "OctetString", "text", descrString);
+            }
+            else
+                snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.16", "OctetString", "text", "null");
+            if (event.logmsg.content != null) {
+                logString = event.logmsg.content.replaceAll("&lt;.*&gt;", " ").replaceAll("\\s+", " ");
+                snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.17", "OctetString", "text", logString);
+            }
+            else
+                snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.17", "OctetString", "text", "null");
+            if (event.severity != null)
+                snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.18", "OctetString", "text", event.severity);
+            else
+                snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.18", "OctetString", "text", "null");
+            if (event.pathoutage != null)
+                snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.19", "OctetString", "text", event.pathoutage);
+            else
+                snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.19", "OctetString", "text", "null");
+            if (event.operinstruct != null)
+                snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.20", "OctetString", "text", event.operinstruct);
+            else
+                snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.20", "OctetString", "text", "null");
+
+            String retParmVal = null;
+            if (t_interface != null) {
+                retParmVal = event.getInterface();
+                try {
+                    java.net.InetAddress inet = InetAddressUtils.addr(retParmVal);
+                    retParmVal = inet.getHostName();
+                } catch (java.net.UnknownHostException e) {
+                }
+            }
+            if (retParmVal != null)
+                snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.21", "OctetString", "text", retParmVal);
+            else
+                snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.21", "OctetString", "text", "null");
+
+            node = bsf.lookupBean("node");
+            if (node != null) 
+                snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.22", "OctetString", "text", node.label);
+            else
+                snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.22", "OctetString", "text", "null");
+
+            trap.send("172.20.1.15", 162, "public");
+
+            /* 172.20.1.15 is the destination for the trap, the port (162) and the community string (usually public for traps) */
+
+        } catch (e) {
+            sw = new StringWriter();
+            pw = new PrintWriter(sw);
+            e.printStackTrace(pw);
+            log.debug(sw.toString());
+        }
+    }
+}

@@ -73,6 +73,16 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
         }
         return get(Integer.parseInt(lookupCriteria));
     }
+    
+    /**
+     * Test the ability to simply retrieve a String object (node label) without
+     * having to return a bulky Node object.
+     */
+    public String getLabelForId(Integer id) {
+    	String label = null;
+    	label = findObjects(String.class, "select n.label from OnmsNode as n where n.id = ?", id).get(0);
+    	return label;
+    }
 
     /** {@inheritDoc} */
     public List<OnmsNode> findNodes(final OnmsDistPoller distPoller) {
@@ -264,8 +274,8 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
                             }
 
                             // Implements Hibernate API
-                            @SuppressWarnings("unchecked")
-                            public List transformList(List collection) {
+                            @SuppressWarnings("rawtypes")
+							public List transformList(List collection) {
                                 return collection;
                             }
                 		    

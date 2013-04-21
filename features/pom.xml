@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>1.11.4-SNAPSHOT</version>
+    <version>1.13.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.opennms.features</artifactId>
@@ -14,7 +14,6 @@
     <module>instrumentationLogReader</module>
     <module>jdbc-collector</module>
     <module>juniper-tca-collector</module>
-    <module>mdns</module>
     <module>ncs</module>
     <module>poller</module>
     <module>provisioning</module>
@@ -26,15 +25,22 @@
     <module>springframework-security</module>
     <module>system-report</module>
     <module>ticketing</module>
+    <module>geocoder</module>
+    <module>name-cutter</module>
 
+    <!-- Jmx config generator -->
+    <module>jmx-config-generator</module>
+    <module>jmx-config-generator-webui</module>   
+ 
     <!-- SNMP MIB Parser and Event/Collection Configuration -->
     <module>vaadin-snmp-events-and-metrics</module>
 
     <!-- Near Real Time Graphing -->
     <module>nrtg</module>
 
-    <!-- Topoology Map -->
+    <!-- Topology Map -->
     <module>topology-map</module>
+    <module>vaadin-node-maps</module>
 
     <!-- SMS monitoring -->
     <module>phonebook</module>
@@ -58,5 +64,8 @@
 
     <!-- Access point monitor -->
     <module>access-point-monitor</module>
+
+    <!-- OpenNMS Vaadin Themes -->
+    <module>themes</module>
   </modules>
 </project>

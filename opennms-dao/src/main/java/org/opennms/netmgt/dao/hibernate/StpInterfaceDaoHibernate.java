@@ -28,11 +28,12 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
-import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
 import org.hibernate.criterion.Restrictions;
 import org.opennms.netmgt.dao.StpInterfaceDao;
+import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsStpInterface;
 
@@ -49,33 +50,33 @@ public class StpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsStpInterf
         criteria.add(Restrictions.eq("node.type", "D"));
         
         for (final OnmsStpInterface stpIface : findMatching(criteria)) {
-        	stpIface.setStatus('D');
+        	stpIface.setStatus(StatusType.DELETED);
         	saveOrUpdate(stpIface);
         }
 	}
 
 	
     @Override
-    public void deactivateForNodeIdIfOlderThan(final int nodeid, final Timestamp scanTime) {
+    public void deactivateForNodeIdIfOlderThan(final int nodeid, final Date scanTime) {
         final OnmsCriteria criteria = new OnmsCriteria(OnmsStpInterface.class);
         criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
         criteria.add(Restrictions.eq("node.id", nodeid));
         criteria.add(Restrictions.lt("lastPollTime", scanTime));
-        criteria.add(Restrictions.eq("status", "A"));
+        criteria.add(Restrictions.eq("status", StatusType.ACTIVE));
         
         for (final OnmsStpInterface item : findMatching(criteria)) {
-            item.setStatus('N');
+            item.setStatus(StatusType.INACTIVE);
             saveOrUpdate(item);
         }
     }
 
     @Override
-    public void deleteForNodeIdIfOlderThan(final int nodeid, final Timestamp scanTime) {
+    public void deleteForNodeIdIfOlderThan(final int nodeid, final Date scanTime) {
         final OnmsCriteria criteria = new OnmsCriteria(OnmsStpInterface.class);
         criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
         criteria.add(Restrictions.eq("node.id", nodeid));
         criteria.add(Restrictions.lt("lastPollTime", scanTime));
-        criteria.add(Restrictions.not(Restrictions.eq("status", "A")));
+        criteria.add(Restrictions.not(Restrictions.eq("status", StatusType.ACTIVE)));
         
         for (final OnmsStpInterface item : findMatching(criteria)) {
             delete(item);
@@ -83,7 +84,7 @@ public class StpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsStpInterf
     }
 
     @Override
-    public void setStatusForNode(final Integer nodeid, final Character action) {
+    public void setStatusForNode(final Integer nodeid, final StatusType action) {
         // UPDATE stpinterface set status = ? WHERE nodeid = ?
 
         final OnmsCriteria criteria = new OnmsCriteria(OnmsStpInterface.class);
@@ -97,7 +98,7 @@ public class StpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsStpInterf
     }
 
     @Override
-    public void setStatusForNodeAndIfIndex(final Integer nodeid, final Integer ifIndex, final Character action) {
+    public void setStatusForNodeAndIfIndex(final Integer nodeid, final Integer ifIndex, final StatusType action) {
         // UPDATE stpinterface set status = ? WHERE nodeid = ? AND ifindex = ?
 
         final OnmsCriteria criteria = new OnmsCriteria(OnmsStpInterface.class);

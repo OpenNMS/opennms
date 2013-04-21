@@ -31,10 +31,16 @@ package org.opennms.netmgt.dao;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+import java.util.Collection;
 import java.util.Date;
+import java.util.List;
+
+import junit.framework.Assert;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.criteria.Criteria;
+import org.opennms.core.criteria.restrictions.EqRestriction;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.BeanUtils;
@@ -43,6 +49,7 @@ import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.test.JUnitConfigurationEnvironment;
+import org.opennms.netmgt.model.alarm.AlarmSummary;
 import org.opennms.test.ThrowableAnticipator;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -178,6 +185,15 @@ public class AlarmDaoTest implements InitializingBean {
         OnmsAlarm newAlarm = m_alarmDao.load(alarm.getId());
         assertEquals("uei://org/opennms/test/EventDaoTest", newAlarm.getUei());
         assertEquals(alarm.getLastEvent().getId(), newAlarm.getLastEvent().getId());
+        
+        Collection<OnmsAlarm> alarms;
+        Criteria criteria = new Criteria(OnmsAlarm.class);
+        criteria.addRestriction(new EqRestriction("node.id", node.getId()));
+        alarms = m_alarmDao.findMatching(criteria);
+        assertEquals(1, alarms.size());
+        newAlarm = alarms.iterator().next();
+        assertEquals("uei://org/opennms/test/EventDaoTest", newAlarm.getUei());
+        assertEquals(alarm.getLastEvent().getId(), newAlarm.getLastEvent().getId());
     }
     
 	@Test
@@ -216,4 +232,65 @@ public class AlarmDaoTest implements InitializingBean {
         
         ta.verifyAnticipated();
     }
+
+	@Test
+	@Transactional
+	public void testAlarmSummary() {
+	    OnmsEvent event = new OnmsEvent();
+	    event.setEventLog("Y");
+	    event.setEventDisplay("Y");
+	    event.setEventCreateTime(new Date());
+	    event.setDistPoller(m_distPollerDao.load("localhost"));
+	    event.setEventTime(new Date());
+	    event.setEventSeverity(new Integer(7));
+	    event.setEventUei("uei://org/opennms/test/EventDaoTest");
+	    event.setEventSource("test");
+	    m_eventDao.save(event);
+
+	    OnmsNode node = m_nodeDao.findAll().iterator().next();
+
+	    OnmsAlarm alarm = new OnmsAlarm();
+
+	    alarm.setNode(node);
+	    alarm.setUei(event.getEventUei());
+	    alarm.setSeverityId(event.getEventSeverity());
+	    alarm.setFirstEventTime(event.getEventTime());
+	    alarm.setLastEvent(event);
+	    alarm.setCounter(1);
+	    alarm.setDistPoller(m_distPollerDao.load("localhost"));
+
+	    m_alarmDao.save(alarm);
+
+	    List<AlarmSummary> summary = m_alarmDao.getNodeAlarmSummaries();
+	    Assert.assertNotNull(summary);
+	    Assert.assertEquals(1, summary.size());
+	    AlarmSummary sum = summary.get(0);
+	    Assert.assertEquals(node.getLabel(), sum.getNodeLabel());
+            Assert.assertEquals(alarm.getSeverity().getId(), sum.getMaxSeverity().getId());
+            Assert.assertNotSame("N/A", sum.getFuzzyTimeDown());
+	}
+
+        @Test
+        @Transactional
+        public void testAlarmSummary_AlarmWithNoEvent() {
+            OnmsNode node = m_nodeDao.findAll().iterator().next();
+
+            OnmsAlarm alarm = new OnmsAlarm();
+            alarm.setNode(node);
+            alarm.setUei("uei://org/opennms/test/badAlarmTest");
+            alarm.setSeverityId(new Integer(7));
+            alarm.setCounter(1);
+            alarm.setDistPoller(m_distPollerDao.load("localhost"));
+
+            m_alarmDao.save(alarm);
+
+            List<AlarmSummary> summary = m_alarmDao.getNodeAlarmSummaries();
+            Assert.assertNotNull(summary);
+            Assert.assertEquals(1, summary.size());
+            AlarmSummary sum = summary.get(0);
+            Assert.assertEquals(node.getLabel(), sum.getNodeLabel());
+            Assert.assertEquals(alarm.getSeverity().getId(), sum.getMaxSeverity().getId());
+            Assert.assertEquals("N/A", sum.getFuzzyTimeDown());
+        }
+
 }

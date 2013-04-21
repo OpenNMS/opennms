@@ -260,7 +260,7 @@ public class ReportDefinitionTest extends TestCase {
         packageReport.setEnabled(true);
         packageReport.setPackage(new StatsdPackage());
         packageReport.setReport(null);
-        packageReport.setRetainInterval(new Long(86400 * 1000));
+        packageReport.setRetainInterval(Long.valueOf(86400 * 1000));
         packageReport.setSchedule("hmm");
         return packageReport;
     }

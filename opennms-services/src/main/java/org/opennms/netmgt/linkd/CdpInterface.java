@@ -33,8 +33,6 @@
  */
 package org.opennms.netmgt.linkd;
 
-import java.net.InetAddress;
-
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
@@ -46,19 +44,26 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 public class CdpInterface {
 	
 	/**
+	 * the int that indicated cdp address type
+	 * 
+	 */
+
+	public static final int CDP_ADDRESS_TYPE_IP_ADDRESS = 1;
+
+	/**
 	 * the ip address 
 	 */
 	
-	private final int cdpIfIndex; 
+	private final int m_cdpIfIndex; 
 	
-	InetAddress cdpTargetIpAddr;
+	int m_cdpTargetNodeId;
 	
-	int cdpTargetNodeId;
+	int m_cdpTargetIfIndex;
 	
-	int cdpTargetIfIndex;
+	String m_cdpTargetDeviceId;
 	
 	CdpInterface(int ifindex) {
-		this.cdpIfIndex = ifindex;
+		m_cdpIfIndex = ifindex;
 	}
 	
 	/**
@@ -67,7 +72,7 @@ public class CdpInterface {
 	 * @return Returns the cdpIfIndex.
 	 */
 	public int getCdpIfIndex() {
-		return cdpIfIndex;
+		return m_cdpIfIndex;
 	}
 	/**
 	 * <p>Getter for the field <code>cdpTargetIfIndex</code>.</p>
@@ -75,7 +80,7 @@ public class CdpInterface {
 	 * @return Returns the cdpTargetDevicePort.
 	 */
 	public int getCdpTargetIfIndex() {
-		return cdpTargetIfIndex;
+		return m_cdpTargetIfIndex;
 	}
 	/**
 	 * <p>Setter for the field <code>cdpTargetIfIndex</code>.</p>
@@ -83,23 +88,7 @@ public class CdpInterface {
 	 * @param ifindex a int.
 	 */
 	public void setCdpTargetIfIndex(int ifindex) {
-		this.cdpTargetIfIndex = ifindex;
-	}
-	/**
-	 * <p>Getter for the field <code>cdpTargetIpAddr</code>.</p>
-	 *
-	 * @return Returns the cdpTargetIpAddr.
-	 */
-	public InetAddress getCdpTargetIpAddr() {
-		return cdpTargetIpAddr;
-	}
-	/**
-	 * <p>Setter for the field <code>cdpTargetIpAddr</code>.</p>
-	 *
-	 * @param cdpTargetIpAddr The cdpTargetIpAddr to set.
-	 */
-	public void setCdpTargetIpAddr(InetAddress cdpTargetIpAddr) {
-		this.cdpTargetIpAddr = cdpTargetIpAddr;
+		m_cdpTargetIfIndex = ifindex;
 	}
 	/**
 	 * <p>Getter for the field <code>cdpTargetNodeId</code>.</p>
@@ -107,7 +96,7 @@ public class CdpInterface {
 	 * @return Returns the cdpTargetNodeId.
 	 */
 	public int getCdpTargetNodeId() {
-		return cdpTargetNodeId;
+		return m_cdpTargetNodeId;
 	}
 	/**
 	 * <p>Setter for the field <code>cdpTargetNodeId</code>.</p>
@@ -115,9 +104,17 @@ public class CdpInterface {
 	 * @param cdpTargetNodeId The cdpTargetNodeId to set.
 	 */
 	public void setCdpTargetNodeId(int cdpTargetNodeId) {
-		this.cdpTargetNodeId = cdpTargetNodeId;
+		m_cdpTargetNodeId = cdpTargetNodeId;
 	}
 	
+	public String getCdpTargetDeviceId() {
+		return m_cdpTargetDeviceId;
+	}
+
+	public void setCdpTargetDeviceId(String cdpTargetDeviceId) {
+		m_cdpTargetDeviceId = cdpTargetDeviceId;
+	}
+
 	/**
 	 * <p>toString</p>
 	 *
@@ -125,10 +122,10 @@ public class CdpInterface {
 	 */
 	public String toString() {
 	    return new ToStringBuilder(this)
-	                .append("ifindex",cdpIfIndex)
-	                .append("TargetIpAddress",cdpTargetIpAddr)
-	                .append("targetNodeid",cdpTargetNodeId)
-	                .append("cdptargetIfIndex:",cdpTargetIfIndex)
+	                .append("ifindex",m_cdpIfIndex)
+	                .append("targetNodeid",m_cdpTargetNodeId)
+	                .append("cdptargetIfIndex:",m_cdpTargetIfIndex)
+	                .append("cdptargetDeviceId:",m_cdpTargetDeviceId)
 	                .toString();
 	} 
 }

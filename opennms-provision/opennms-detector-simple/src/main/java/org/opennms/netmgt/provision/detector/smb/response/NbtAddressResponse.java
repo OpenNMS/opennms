@@ -54,6 +54,13 @@ public class NbtAddressResponse {
     
     /**
      * <p>validateAddressIsNotSame</p>
+     * 
+     * TODO: In ticket 1608, Antonio is asking why this validation is used.
+     * Maybe the behavior needs to be changed?
+     * 
+     * "Something weird is here....why the address must be different?"
+     * 
+     * @see https://mynms.opennms.com/Ticket/Display.html?id=1608
      *
      * @return a boolean.
      */

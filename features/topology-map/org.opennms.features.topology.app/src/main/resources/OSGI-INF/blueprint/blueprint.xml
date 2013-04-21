@@ -10,26 +10,35 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
             <cm:property name="servletAlias" value="/topology"/>
             <cm:property name="widgetset" value="org.opennms.features.topology.widgetset.gwt.TopologyWidgetset"/>
             <cm:property name="theme" value="topo_default" />
+            <cm:property name="showHeader" value="true" />
         </cm:default-properties>
     </cm:property-placeholder>
     
-    <reference id="topologyProvider" interface="org.opennms.features.topology.api.TopologyProvider" availability="mandatory" />
+    <reference id="topologyProvider" interface="org.opennms.features.topology.api.topo.GraphProvider" availability="mandatory" />
 
     <bean id="topologyApplication" class="org.opennms.features.topology.app.internal.TopologyWidgetTestApplication" scope="prototype">
         <argument ref="commandManager"/>
+        <argument ref="historyManager"/>
         <argument ref="topologyProvider"/>
         <argument ref="providerManager" />
         <argument ref="iconRepoManager"/>
+        <argument>
+            <bean class="org.opennms.features.topology.app.internal.DefaultSelectionManager"/>
+        </argument>
         <property name="theme" value="${theme}"/>
         <property name="widgetManager" ref="widgetManager"/>
         <property name="treeWidgetManager" ref="treeWidgetManager"/>
+        <property name="showHeader" value="${showHeader}" />
     </bean>
+    
+    <reference id="onmsHeaderProvider" interface="org.opennms.web.api.OnmsHeaderProvider" availability="mandatory" />
     
     <bean id="topologyWidgetTestApplicationFactory" class="org.opennms.features.topology.app.internal.TopologyWidgetTestApplicationFactory" >
         <!-- Blueprint container bean -->
         <argument ref="blueprintContainer"/>
         <!-- Bean id of the Vaadin application prototype -->
         <argument value="topologyApplication"/>
+        <property name="headerProvider" ref="onmsHeaderProvider" />
     </bean>
     
     <service interface="org.ops4j.pax.vaadin.ApplicationFactory" ref="topologyWidgetTestApplicationFactory">
@@ -43,8 +52,16 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
     	<property name="bundleContext" ref="blueprintBundleContext" />
     </bean>
     
-    <reference-list interface="org.opennms.features.topology.api.TopologyProvider" availability="mandatory">
-        <reference-listener bind-method="addTopologyProvider" unbind-method="removeTopologyProvider" ref="topologySelector" />
+    <reference-list interface="org.opennms.features.topology.api.topo.GraphProvider" availability="mandatory">
+        <reference-listener bind-method="addGraphProvider" unbind-method="removeGraphProvider" ref="topologySelector" />
+    </reference-list>
+    
+    <bean id="statusSelector" class="org.opennms.features.topology.app.internal.operations.StatusSelector">
+        <property name="bundleContext" ref="blueprintBundleContext" />
+    </bean>
+
+    <reference-list interface="org.opennms.features.topology.api.topo.StatusProvider" availability="optional">
+        <reference-listener bind-method="addStatusProvider" unbind-method="removeStatusProvider" ref="statusSelector" />
     </reference-list>
 
     <!-- default icon repository -->    
@@ -101,7 +118,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
     <reference-list interface="org.opennms.features.topology.api.topo.VertexProvider" availability="optional">
         <reference-listener bind-method="onVertexProviderBind" unbind-method="onVertexProviderUnbind" ref="providerManager"/>
     </reference-list>
-
+    
     <bean id="widgetManager" class="org.opennms.features.topology.app.internal.WidgetManager" />
     <bean id="treeWidgetManager" class="org.opennms.features.topology.app.internal.WidgetManager" />
     
@@ -113,7 +130,6 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="treeWidgetManager"/>
     </reference-list>
     
-    
     <service interface="org.osgi.service.cm.ManagedService" >
         <service-properties>
             <entry key="service.pid" value="org.opennms.features.topology.app.menu"/>
@@ -123,8 +139,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         </bean>
     </service>
     
-    <bean id="commandManager" class="org.opennms.features.topology.app.internal.CommandManager">
-    </bean>
+    <bean id="commandManager" class="org.opennms.features.topology.app.internal.CommandManager" />
     
     <reference-list interface="org.opennms.features.topology.app.internal.Command" availability="optional">
         <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="commandManager">
@@ -240,7 +255,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         <service-properties>
             <!-- <entry key="operation.menuLocation" value="View"/> -->
             <entry key="operation.contextMenuLocation" value=""/>
-            <entry key="operation.label" value="Add Item To Group"/>
+            <entry key="operation.label" value="Add This Item To a Group"/>
         </service-properties>
         <bean class="org.opennms.features.topology.app.internal.operations.AddVertexToGroupOperation"/>
     </service>
@@ -249,7 +264,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         <service-properties>
             <!-- <entry key="operation.menuLocation" value="View"/> -->
             <entry key="operation.contextMenuLocation" value=""/>
-            <entry key="operation.label" value="Remove Item From Group"/>
+            <entry key="operation.label" value="Remove This Item From a Group"/>
         </service-properties>
         <bean class="org.opennms.features.topology.app.internal.operations.RemoveVertexFromGroupOperation"/>
     </service>
@@ -281,5 +296,8 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         </service-properties>
         <bean class="org.opennms.features.topology.app.internal.operations.SpringLayoutOperation"/>
     </service>
+    
+    <reference id="historyManager" interface="org.opennms.features.topology.api.HistoryManager" availability="mandatory">
+    </reference>
 
 </blueprint>

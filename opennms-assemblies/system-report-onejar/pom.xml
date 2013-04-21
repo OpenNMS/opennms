@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.assemblies</artifactId>
-    <version>1.11.4-SNAPSHOT</version>
+    <version>1.13.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.assemblies</groupId>
@@ -21,20 +21,9 @@
       <plugin>
         <groupId>org.dstovall</groupId>
         <artifactId>onejar-maven-plugin</artifactId>
-        <version>1.4.3</version>
-        <executions>
-          <execution>
-            <configuration>
-              <mainClass>org.opennms.systemreport.SystemReport</mainClass>
-              <onejarVersion>0.96</onejarVersion>
-              <attachToBuild>true</attachToBuild>
-            </configuration>
-            <phase>package</phase>
-            <goals>
-              <goal>one-jar</goal>
-            </goals>
-          </execution>
-        </executions>
+        <configuration>
+          <mainClass>org.opennms.systemreport.SystemReport</mainClass>
+        </configuration>
       </plugin>
     </plugins>
   </build>
@@ -49,10 +38,4 @@
       <artifactId>org.opennms.features.system-report</artifactId>
     </dependency>
   </dependencies>
-  <pluginRepositories>
-    <pluginRepository>
-      <id>onejar-maven-plugin.googlecode.com</id>
-      <url>http://maven.opennms.org/content/groups/onejar.googlecode.com-release</url>
-    </pluginRepository>
-  </pluginRepositories>
 </project>

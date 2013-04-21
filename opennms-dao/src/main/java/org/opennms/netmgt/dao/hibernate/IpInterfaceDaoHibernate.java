@@ -161,12 +161,20 @@ public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterfac
         }
     }
 
-	@Override
-	public OnmsIpInterface findPrimaryInterfaceByNodeId(final Integer nodeId) {
-		Assert.notNull(nodeId, "nodeId cannot be null");
-		// SELECT ipaddr FROM ipinterface WHERE nodeid = ? AND issnmpprimary = 'P'
+    @Override
+    public OnmsIpInterface findPrimaryInterfaceByNodeId(final Integer nodeId) {
+        Assert.notNull(nodeId, "nodeId cannot be null");
+        // SELECT ipaddr FROM ipinterface WHERE nodeid = ? AND issnmpprimary = 'P'
 
-        return findUnique("from OnmsIpInterface as ipInterface where ipInterface.node.id = ? and ipInterface.isSnmpPrimary = 'P'", nodeId);
-	}
-
+        List<OnmsIpInterface> primaryInterfaces = find("from OnmsIpInterface as ipInterface where ipInterface.node.id = ? and ipInterface.isSnmpPrimary = 'P' order by ipLastCapsdPoll desc", nodeId);
+        if (primaryInterfaces.size() < 1) {
+            return null;
+        } else {
+            OnmsIpInterface retval = primaryInterfaces.iterator().next();
+            if (primaryInterfaces.size() > 1) {
+                logger.warn("Multiple primary SNMP interfaces for node " + nodeId + ", returning most recently scanned interface: " + retval.getInterfaceId());
+            }
+            return retval;
+        }
+    }
 }

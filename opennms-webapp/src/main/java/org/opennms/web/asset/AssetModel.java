@@ -33,14 +33,17 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import org.opennms.core.resource.Vault;
 import org.opennms.core.utils.DBUtils;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.WebSecurityUtils;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * <p>AssetModel class.</p>
@@ -119,7 +122,7 @@ public class AssetModel {
             Connection conn = Vault.getDbConnection();
             d.watch(conn);
 
-            PreparedStatement stmt = conn.prepareStatement("INSERT INTO ASSETS (nodeID,category,manufacturer,vendor,modelNumber,serialNumber,description,circuitId,assetNumber,operatingSystem,rack,slot,port,region,division,department,address1,address2,city,state,zip,building,floor,room,vendorPhone,vendorFax,userLastModified,lastModifiedDate,dateInstalled,lease,leaseExpires,supportPhone,maintContract,vendorAssetNumber,maintContractExpires,displayCategory,notifyCategory,pollerCategory,thresholdCategory,comment,username,password,enable,connection,autoenable,cpu,ram,storagectrl,hdd1,hdd2,hdd3,hdd4,hdd5,hdd6,numpowersupplies,inputpower,additionalhardware,admin,snmpcommunity,rackunitheight) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+            PreparedStatement stmt = conn.prepareStatement("INSERT INTO ASSETS (nodeID,category,manufacturer,vendor,modelNumber,serialNumber,description,circuitId,assetNumber,operatingSystem,rack,slot,port,region,division,department,address1,address2,city,state,zip,building,floor,room,vendorPhone,vendorFax,userLastModified,lastModifiedDate,dateInstalled,lease,leaseExpires,supportPhone,maintContract,vendorAssetNumber,maintContractExpires,displayCategory,notifyCategory,pollerCategory,thresholdCategory,comment,username,password,enable,connection,autoenable,cpu,ram,storagectrl,hdd1,hdd2,hdd3,hdd4,hdd5,hdd6,numpowersupplies,inputpower,additionalhardware,admin,snmpcommunity,rackunitheight,longitude,latitude,country) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
             d.watch(stmt);
             stmt.setInt(1, asset.nodeId);
             stmt.setString(2, asset.category);
@@ -181,13 +184,16 @@ public class AssetModel {
             stmt.setString(58, asset.admin);
             stmt.setString(59, asset.snmpcommunity);
             stmt.setString(60, asset.rackunitheight);
+            stmt.setFloat(61, safeFloat(asset.longitude));
+            stmt.setFloat(62, safeFloat(asset.latitude));
+            stmt.setString(63, asset.country);
 
             stmt.execute();
         } finally {
             d.cleanUp();
         }
     }
-
+    
     /**
      * <p>modifyAsset</p>
      *
@@ -202,7 +208,7 @@ public class AssetModel {
             Connection conn = Vault.getDbConnection();
             d.watch(conn);
 
-            PreparedStatement stmt = conn.prepareStatement("UPDATE ASSETS SET category=?,manufacturer=?,vendor=?,modelNumber=?,serialNumber=?,description=?,circuitId=?,assetNumber=?,operatingSystem=?,rack=?,slot=?,port=?,region=?,division=?,department=?,address1=?,address2=?,city=?,state=?,zip=?,building=?,floor=?,room=?,vendorPhone=?,vendorFax=?,userLastModified=?,lastModifiedDate=?,dateInstalled=?,lease=?,leaseExpires=?,supportPhone=?,maintContract=?,vendorAssetNumber=?,maintContractExpires=?,displayCategory=?,notifyCategory=?,pollerCategory=?,thresholdCategory=?,comment=?, username=?, password=?,enable=?,connection=?,autoenable=?,cpu=?,ram=?,storagectrl=?,hdd1=?,hdd2=?,hdd3=?,hdd4=?,hdd5=?,hdd6=?,numpowersupplies=?,inputpower=?,additionalhardware=?,admin=?,snmpcommunity=?,rackunitheight=? WHERE nodeid=?");
+            PreparedStatement stmt = conn.prepareStatement("UPDATE ASSETS SET category=?,manufacturer=?,vendor=?,modelNumber=?,serialNumber=?,description=?,circuitId=?,assetNumber=?,operatingSystem=?,rack=?,slot=?,port=?,region=?,division=?,department=?,address1=?,address2=?,city=?,state=?,zip=?,building=?,floor=?,room=?,vendorPhone=?,vendorFax=?,userLastModified=?,lastModifiedDate=?,dateInstalled=?,lease=?,leaseExpires=?,supportPhone=?,maintContract=?,vendorAssetNumber=?,maintContractExpires=?,displayCategory=?,notifyCategory=?,pollerCategory=?,thresholdCategory=?,comment=?, username=?, password=?,enable=?,connection=?,autoenable=?,cpu=?,ram=?,storagectrl=?,hdd1=?,hdd2=?,hdd3=?,hdd4=?,hdd5=?,hdd6=?,numpowersupplies=?,inputpower=?,additionalhardware=?,admin=?,snmpcommunity=?,rackunitheight=?,longitude=?,latitude=?,country=? WHERE nodeid=?");
             d.watch(stmt);
             stmt.setString(1, asset.category);
             stmt.setString(2, asset.manufacturer);
@@ -263,7 +269,20 @@ public class AssetModel {
             stmt.setString(57, asset.admin);
             stmt.setString(58, asset.snmpcommunity);
             stmt.setString(59, asset.rackunitheight);
-            stmt.setInt(60, asset.nodeId);
+            final Float longitude = safeFloat(asset.longitude);
+            if (longitude == null) {
+                stmt.setNull(60, Types.FLOAT);
+            } else {
+                stmt.setFloat(60, longitude);
+            }
+            final Float latitude = safeFloat(asset.latitude);
+            if (latitude == null) {
+                stmt.setNull(61, Types.FLOAT);
+            } else {
+                stmt.setFloat(61, latitude);
+            }
+            stmt.setString(62, asset.country);
+            stmt.setInt(63, asset.nodeId);
 
             stmt.execute();
         } finally {
@@ -435,6 +454,15 @@ public class AssetModel {
             asset.setAdmin(rs.getString("admin"));
             asset.setSnmpcommunity(rs.getString("snmpcommunity"));
             asset.setRackunitheight(rs.getString("rackunitheight"));
+            final Object longitude = rs.getObject("longitude");
+            if (longitude != null) {
+                asset.setLongitude(Float.valueOf(rs.getFloat("longitude")).toString());
+            }
+            final Object latitude = rs.getObject("latitude");
+            if (latitude != null) {
+                asset.setLatitude(Float.valueOf(rs.getFloat("latitude")).toString());
+            }
+            asset.setCountry(rs.getString("country"));
 
             // Convert from java.sql.Timestamp to java.util.Date, since it looks more pretty or something
             asset.lastModifiedDate = new Date(rs.getTimestamp("lastModifiedDate").getTime());
@@ -529,6 +557,20 @@ public class AssetModel {
         new String[] { "Additional hardware", "additionalhardware" },
         new String[] { "Admin", "admin" },
         new String[] { "SNMP community", "snmpcommunity" },
-	new String[] { "Rack unit height", "rackunitheight" }
+	new String[] { "Rack unit height", "rackunitheight" },
+        new String[] { "GeoLocation Longitude", "longitude" },
+        new String[] { "GeoLocation Latitude", "latitude" },
+        new String[] { "Country", "country" }
     };
+
+    private Float safeFloat(final String value) {
+        if (StringUtils.hasLength(value)) {
+            try {
+                return Float.valueOf(value);
+            } catch (final NumberFormatException e) {
+                LogUtils.tracef(this, e, "Failed to parse float value from %s", value);
+            }
+        }
+        return null;
+    }
 }

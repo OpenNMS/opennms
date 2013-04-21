@@ -99,7 +99,7 @@ public class AccessPointStatusUserType implements UserType {
             st.setInt(index, ((AccessPointStatus) value).getId());
         } else if (value instanceof String) {
             try {
-                st.setInt(index, ((AccessPointStatus) value).getId());
+                st.setInt(index, AccessPointStatus.get((String)value).getId());
             } catch (final IllegalArgumentException e) {
                 throw new HibernateException("unable to set status " + value, e);
             }

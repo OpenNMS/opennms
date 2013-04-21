@@ -28,8 +28,11 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
+import java.util.List;
+
 import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.alarm.AlarmSummary;
 
 /**
  * <p>AlarmDaoHibernate class.</p>
@@ -50,6 +53,18 @@ public class AlarmDaoHibernate extends AbstractDaoHibernate<OnmsAlarm, Integer> 
     public OnmsAlarm findByReductionKey(String reductionKey) {
         String hql = "from OnmsAlarm as alarms where alarms.reductionKey = ?";
         return super.findUnique(hql, reductionKey);
+    }
+
+    public List<AlarmSummary> getNodeAlarmSummaries() {
+        return findObjects(
+            AlarmSummary.class,
+            "SELECT DISTINCT new org.opennms.netmgt.model.alarm.AlarmSummary(node.id, node.label, min(alarm.lastEventTime), max(alarm.severity), count(*)) " +
+            "FROM OnmsAlarm AS alarm " +
+            "LEFT JOIN alarm.node AS node " +
+            "WHERE node.id IS NOT NULL AND alarm.alarmAckTime IS NULL AND alarm.severity > 3 " +
+            "GROUP BY node.id, node.label " +
+            "ORDER BY min(alarm.lastEventTime) DESC, node.label ASC"
+        );
     }
 
 }

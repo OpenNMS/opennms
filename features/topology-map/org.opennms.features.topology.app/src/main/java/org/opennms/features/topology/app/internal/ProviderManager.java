@@ -12,6 +12,10 @@ import org.opennms.features.topology.api.topo.VertexProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * This class acts as a global manager of VertexProvider and EdgeProvider registrations.
+ * It relays bind and unbind events to each GraphProvider.
+ */
 public class ProviderManager {
 	
 	public static interface ProviderListener {
@@ -42,35 +46,51 @@ public class ProviderManager {
 		return Collections.unmodifiableCollection(m_edgeProviders.values());
 	}
 	
-    public void onEdgeProviderBind(EdgeProvider newProvider) {
-    	s_log.info("ProviderManager onEdgeProviderBind({}}", newProvider);
-    	EdgeProvider oldProvider = m_edgeProviders.put(newProvider.getNamespace(), newProvider);
-    	
-    	fireEdgeProviderAdded(oldProvider, newProvider);
-    }
+	public synchronized void onEdgeProviderBind(EdgeProvider newProvider) {
+		s_log.info("ProviderManager onEdgeProviderBind({}}", newProvider);
+		try {
+			EdgeProvider oldProvider = m_edgeProviders.put(newProvider.getEdgeNamespace(), newProvider);
 
-	public void onEdgeProviderUnbind(EdgeProvider edgeProvider) {
-    	s_log.info("ProviderManager onEdgeProviderUnbind({}}", edgeProvider);
-    	if (edgeProvider == null) return;
-    	EdgeProvider removedProvider = m_edgeProviders.remove(edgeProvider.getNamespace());
-    	
-    	fireEdgeProviderRemoved(removedProvider);
-    }
+			fireEdgeProviderAdded(oldProvider, newProvider);
+		} catch (Throwable e) {
+			LoggerFactory.getLogger(this.getClass()).warn("Exception during onEdgeProviderBind()", e);
+		}
+	}
 
-	public void onVertexProviderBind(VertexProvider newProvider) {
-    	s_log.info("ProviderManager onVertexProviderBind({}}", newProvider);
-    	VertexProvider oldProvider = m_vertexProviders.put(newProvider.getNamespace(), newProvider);
-    	
-    	fireVertexProviderAdded(oldProvider, newProvider);
-    }
+	public synchronized void onEdgeProviderUnbind(EdgeProvider edgeProvider) {
+		s_log.info("ProviderManager onEdgeProviderUnbind({}}", edgeProvider);
+		if (edgeProvider == null) return;
+		try {
+			EdgeProvider removedProvider = m_edgeProviders.remove(edgeProvider.getEdgeNamespace());
 
-    public void onVertexProviderUnbind(VertexProvider vertexProvider) {
-    	s_log.info("ProviderManager onVertexProviderUnbind({}}", vertexProvider);
-    	if (vertexProvider == null) return;
-    	VertexProvider removedProvider = m_vertexProviders.remove(vertexProvider.getNamespace());
-    	
-    	fireVertexProviderRemoved(removedProvider);
-    }
+			fireEdgeProviderRemoved(removedProvider);
+		} catch (Throwable e) {
+			LoggerFactory.getLogger(this.getClass()).warn("Exception during onEdgeProviderUnbind()", e);
+		}
+	}
+
+	public synchronized void onVertexProviderBind(VertexProvider newProvider) {
+		s_log.info("ProviderManager onVertexProviderBind({}}", newProvider);
+		try {
+			VertexProvider oldProvider = m_vertexProviders.put(newProvider.getVertexNamespace(), newProvider);
+
+			fireVertexProviderAdded(oldProvider, newProvider);
+		} catch (Throwable e) {
+			LoggerFactory.getLogger(this.getClass()).warn("Exception during onVertexProviderBind()", e);
+		}
+	}
+
+	public synchronized void onVertexProviderUnbind(VertexProvider vertexProvider) {
+		s_log.info("ProviderManager onVertexProviderUnbind({}}", vertexProvider);
+		if (vertexProvider == null) return;
+		try {
+			VertexProvider removedProvider = m_vertexProviders.remove(vertexProvider.getVertexNamespace());
+
+			fireVertexProviderRemoved(removedProvider);
+		} catch (Throwable e) {
+			LoggerFactory.getLogger(this.getClass()).warn("Exception during onVertexProviderUnbind()", e);
+		}
+	}
     
     private void fireEdgeProviderAdded(EdgeProvider oldProvider, EdgeProvider newProvider) {
     	for(ProviderListener listener : m_listeners) {

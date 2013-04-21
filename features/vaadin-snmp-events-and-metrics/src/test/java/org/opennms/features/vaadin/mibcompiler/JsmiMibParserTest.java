@@ -28,6 +28,7 @@
 package org.opennms.features.vaadin.mibcompiler;
 
 import java.io.File;
+import java.io.StringWriter;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,9 +41,11 @@ import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.vaadin.mibcompiler.api.MibParser;
 import org.opennms.features.vaadin.mibcompiler.services.JsmiMibParser;
 import org.opennms.features.vaadin.mibcompiler.services.OnmsProblemEventHandler;
+import org.opennms.features.vaadin.mibcompiler.services.PrefabGraphDumper;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.config.datacollection.Group;
 import org.opennms.netmgt.config.datacollection.MibObj;
+import org.opennms.netmgt.model.PrefabGraph;
 import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.netmgt.xml.eventconf.Maskelement;
@@ -228,10 +231,55 @@ public class JsmiMibParserTest {
             for (MibObj mo : mibGroup.getMibObjCollection()) {
                 Assert.assertEquals("ifEntry", mo.getInstance());
                 Assert.assertTrue(mo.getOid().startsWith(".1.3.6.1.2.1.2.2.1"));
-                Assert.assertTrue(mo.getType().matches("^([Ii]nteger|[Gg]auge|[Ss]tring|[Oo]ctet[Ss]tring|[Cc]ounter).*"));
+                Assert.assertTrue(mo.getType().matches("^(?i)(counter|gauge|timeticks|integer|octetstring|string)?\\d*$"));
             }
         } else {
             Assert.fail("The IF-MIB.txt file couldn't be parsed successfully.");
+        }
+    }
+
+    /**
+     * Test name cutter
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void testNameCutter() throws Exception {
+        if (parser.parseMib(new File(MIB_DIR, "Clavister-MIB.mib"))) {
+            DatacollectionGroup dcGroup = parser.getDataCollection();
+            Assert.assertNotNull(dcGroup);
+            System.out.println(JaxbUtils.marshal(dcGroup));
+            int count = 0;
+            for (Group group : dcGroup.getGroupCollection()) {
+                for (MibObj mo : group.getMibObjCollection()) {
+                    if (mo.getAlias().length() > 19) { // Character restriction.
+                        count++;
+                    }
+                }
+            }
+            // Without the name-cutter the number will be 80.
+            Assert.assertEquals(0, count);
+        } else {
+            Assert.fail("The Clavister-MIB.mib file couldn't be parsed successfully.");
+        }
+    }
+
+    /**
+     * Test generate graph templates.
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void testGenerateGraphTemplates() throws Exception {
+        if (parser.parseMib(new File(MIB_DIR, "Clavister-MIB.mib"))) {
+            List<PrefabGraph> graphs = parser.getPrefabGraphs();
+            StringWriter writer = new StringWriter();
+            PrefabGraphDumper dumper = new PrefabGraphDumper();
+            dumper.dump(graphs, writer);
+            System.out.println(writer.getBuffer().toString());
+            Assert.assertEquals(100074, writer.getBuffer().toString().length());
+        } else {
+            Assert.fail("The Clavister-MIB.mib file couldn't be parsed successfully.");
         }
     }
 

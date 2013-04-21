@@ -51,6 +51,16 @@
 
   <input type="hidden" id="groupName" name="groupName" value="${fn:escapeXml(nodeEditForm.groupName)}"/> 
  
+ <p>
+ <c:choose>
+  <c:when test="${freeFormEditing == true}">
+   Free-form editing of service and category names is ON. <tree:action label="[Disable?]" action="toggleFreeForm" />
+  </c:when>
+  <c:otherwise>
+   Free-form editing of service and category names is OFF. <tree:action label="[Enable?]" action="toggleFreeForm" />
+  </c:otherwise>
+ </c:choose>
+ </p>
  <tree:actionButton label="Done" action="done" />
  <tree:actionButton label="Add Node" action="addNode"/> 
 
@@ -60,7 +70,7 @@
     <!-- Form for editing node fields -->
     <tree:nodeForm>
 
-      <tree:field label="Node" property="nodeLabel" />
+      <tree:field label="Node" property="nodeLabel" size="48" />
       <tree:field label="ForeignId" property="foreignId" />
       <tree:field label="Site" property="building" />
       <tree:action label="[Add Interface]" action="addInterface" />
@@ -76,7 +86,7 @@
         <tree:field label="IP Interface" property="ipAddr" size="36"/>
         <tree:field label="Description" property="descr" />
         
-        <tree:select label="SNMP Primary" property="snmpPrimary" items="${snmpPrimaryChoices}" />
+        <tree:select label="SNMP Primary" property="snmpPrimary" items="${snmpPrimaryChoices}" fieldSize="10" />
         <tree:action label="Add Service" action="addService" />
       </tree:nodeForm>
 
@@ -85,7 +95,14 @@
       
         <!--  Form for editing a service -->
         <tree:nodeForm>  
-            <tree:select label="Service" property="serviceName" items="${services}" />
+            <c:choose>
+              <c:when test="${freeFormEditing == true}">
+                <tree:field label="Service" property="serviceName" size="48" />
+              </c:when>
+              <c:otherwise>
+                <tree:select label="Service" property="serviceName" items="${services}" />
+              </c:otherwise>
+            </c:choose>
         </tree:nodeForm>
       </tree:tree>
 
@@ -96,7 +113,14 @@
     
       <!--  Form for editing a category -->
       <tree:nodeForm>
-        <tree:select label="Node Category" property="name" items="${categories}"/>
+        <c:choose>
+          <c:when test="${freeFormEditing == true}">
+            <tree:field label="Node Category" property="name" size="48" />
+          </c:when>
+          <c:otherwise>
+            <tree:select label="Node Category" property="name" items="${categories}"/>
+          </c:otherwise>
+        </c:choose>
       </tree:nodeForm>
       
     </tree:tree>

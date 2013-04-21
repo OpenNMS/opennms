@@ -378,7 +378,7 @@ public abstract class SnmpTrapForwarderHelper extends AbstractEventForwarder imp
 
 	private SnmpTrapBuilder buildEventTrap(Event event, SnmpTrapBuilder trap, String severity) {
 		try {
-			 Integer t_dbid = new Integer(event.getDbid());
+			 Integer t_dbid = Integer.valueOf(event.getDbid());
              if (t_dbid.intValue() > 0)
                      snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.20.1.1.0", "OctetString", "text", t_dbid.toString());
              else
@@ -405,8 +405,8 @@ public abstract class SnmpTrapForwarderHelper extends AbstractEventForwarder imp
                      snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.20.1.7.0", "OctetString", "text", "null");
              String label=null;
              if (event.hasNodeid()) {
-            	 	label = DbHelper.getNodeLabel(new Integer(new Long(event.getNodeid()).toString()));
-            	 	snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.20.1.8.0", "OctetString", "text", new Long(event.getNodeid()).toString());
+            	 	label = DbHelper.getNodeLabel(Integer.valueOf(Long.valueOf(event.getNodeid()).toString()));
+            	 	snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.20.1.8.0", "OctetString", "text", Long.valueOf(event.getNodeid()).toString());
              } else
                      snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.20.1.8.0", "OctetString", "text", "null");
              if (event.getTime() != null)

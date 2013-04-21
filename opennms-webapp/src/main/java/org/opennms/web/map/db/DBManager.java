@@ -909,8 +909,8 @@ public class DBManager extends Manager {
             statement.setString(1, MapsConstants.MAP_TYPE);
             rs = statement.executeQuery();
             while (rs.next()) {
-                Integer parentId = new Integer(rs.getInt("mapid"));
-                Integer childId = new Integer(rs.getInt("elementid"));
+                Integer parentId = Integer.valueOf(rs.getInt("mapid"));
+                Integer childId = Integer.valueOf(rs.getInt("elementid"));
 
                 Set<Integer> childs = maps.get(parentId);
 
@@ -1425,7 +1425,7 @@ public class DBManager extends Manager {
         if (mapElements != null) {
             for (int i = 0; i < mapElements.length; i++) {
                 if (mapElements[i].isNode()) {
-                    nodeIds.add(new Integer(mapElements[i].getId()));
+                    nodeIds.add(Integer.valueOf(mapElements[i].getId()));
                 } else {
                     nodeIds.addAll(getNodeidsOnElement(mapElements[i]));
                 }
@@ -1500,7 +1500,7 @@ public class DBManager extends Manager {
                 while (rs.next()) {
                     nodeid = rs.getInt(1);
                     avail = rs.getDouble(2);
-                    retMap.put(new Integer(nodeid), new Double(avail));
+                    retMap.put(Integer.valueOf(nodeid), Double.valueOf(avail));
                 }
             } catch (Throwable e) {
                 throw new MapsException(e);
@@ -1557,7 +1557,7 @@ public class DBManager extends Manager {
             Vector<Integer> elements = new Vector<Integer>();
             while (rs.next()) {
                 int nId = rs.getInt(1);
-                elements.add(new Integer(nId));
+                elements.add(Integer.valueOf(nId));
             }
             return elements;
         } catch (Throwable e) {
@@ -1580,7 +1580,7 @@ public class DBManager extends Manager {
             throws MapsException {
         Set<Integer> elementNodeIds = new HashSet<Integer>();
         if (elem.isNode()) {
-            elementNodeIds.add(new Integer(elem.getId()));
+            elementNodeIds.add(Integer.valueOf(elem.getId()));
             // This is not OK now
             // elementNodeIds.addAll(getNodesFromParentNode(elem.getId()));
         } else if (elem.isMap()) {
@@ -1588,7 +1588,7 @@ public class DBManager extends Manager {
             DbElement[] elemNodeElems = getNodeElementsOfMap(curMapId);
             if (elemNodeElems != null && elemNodeElems.length > 0) {
                 for (int i = 0; i < elemNodeElems.length; i++) {
-                    elementNodeIds.add(new Integer(elemNodeElems[i].getId()));
+                    elementNodeIds.add(Integer.valueOf(elemNodeElems[i].getId()));
                 }
             }
 
@@ -1775,27 +1775,27 @@ public class DBManager extends Manager {
                 int snmpifoperstatus = -1;
                 int snmpifadminstatus = -1;
 
-                Object element = new Integer(rs.getInt("id"));
+                Object element = Integer.valueOf(rs.getInt("id"));
                 if (element != null) {
                     id = ((Integer) element);
                 }
     
-                element = new Integer(rs.getInt("nodeid"));
+                element = Integer.valueOf(rs.getInt("nodeid"));
                 if (element != null) {
                     nodeid = ((Integer) element);
                 }
 
-                element = new Integer(rs.getInt("ifindex"));
+                element = Integer.valueOf(rs.getInt("ifindex"));
                 if (element != null) {
                     ifindex = ((Integer) element);
                 }
 
-                element = new Integer(rs.getInt("nodeparentid"));
+                element = Integer.valueOf(rs.getInt("nodeparentid"));
                 if (element != null) {
                     nodeparentid = ((Integer) element);
                 }
 
-                element = new Integer(rs.getInt("parentifindex"));
+                element = Integer.valueOf(rs.getInt("parentifindex"));
                 if (element != null) {
                     parentifindex = ((Integer) element);
                 }
@@ -1805,27 +1805,27 @@ public class DBManager extends Manager {
                     status = ((String) element);
                 }
                 
-                element = new Integer(rs.getInt("linktypeid"));
+                element = Integer.valueOf(rs.getInt("linktypeid"));
                 if (element != null) {
                     linktypeid = ((Integer) element);
                 }
 
-                element = new Integer(rs.getInt("snmpiftype"));
+                element = Integer.valueOf(rs.getInt("snmpiftype"));
                 if (element != null) {
                     snmpiftype = ((Integer) element);
                 }
     
-                element = new Long(rs.getLong("snmpifspeed"));
+                element = Long.valueOf(rs.getLong("snmpifspeed"));
                 if (element != null) {
                     snmpifspeed = ((Long) element);
                 }
     
-                element = new Integer(rs.getInt("snmpifoperstatus"));
+                element = Integer.valueOf(rs.getInt("snmpifoperstatus"));
                 if (element != null) {
                     snmpifoperstatus = ((Integer) element);
                 }
     
-                element = new Integer(rs.getInt("snmpifadminstatus"));
+                element = Integer.valueOf(rs.getInt("snmpifadminstatus"));
                 if (element != null) {
                     snmpifadminstatus = ((Integer) element);
                 }
@@ -1872,27 +1872,27 @@ public class DBManager extends Manager {
                 int snmpifoperstatus = -1;
                 int snmpifadminstatus = -1;
 
-                Object element = new Integer(rs.getInt("id"));
+                Object element = Integer.valueOf(rs.getInt("id"));
                 if (element != null) {
                     id = ((Integer) element);
                 }
 
-                element = new Integer(rs.getInt("nodeid"));
+                element = Integer.valueOf(rs.getInt("nodeid"));
                 if (element != null) {
                     nodeid = ((Integer) element);
                 }
 
-                element = new Integer(rs.getInt("ifindex"));
+                element = Integer.valueOf(rs.getInt("ifindex"));
                 if (element != null) {
                     ifindex = ((Integer) element);
                 }
 
-                element = new Integer(rs.getInt("nodeparentid"));
+                element = Integer.valueOf(rs.getInt("nodeparentid"));
                 if (element != null) {
                     nodeparentid = ((Integer) element);
                 }
 
-                element = new Integer(rs.getInt("parentifindex"));
+                element = Integer.valueOf(rs.getInt("parentifindex"));
                 if (element != null) {
                     parentifindex = ((Integer) element);
                 }
@@ -1902,27 +1902,27 @@ public class DBManager extends Manager {
                     status = ((String) element);
                 }
                 
-                element = new Integer(rs.getInt("linktypeid"));
+                element = Integer.valueOf(rs.getInt("linktypeid"));
                 if (element != null) {
                     linktypeid = ((Integer) element);
                 }
 
-                element = new Integer(rs.getInt("snmpiftype"));
+                element = Integer.valueOf(rs.getInt("snmpiftype"));
                 if (element != null) {
                     snmpiftype = ((Integer) element);
                 }
 
-                element = new Long(rs.getLong("snmpifspeed"));
+                element = Long.valueOf(rs.getLong("snmpifspeed"));
                 if (element != null) {
                     snmpifspeed = ((Long) element);
                 }
 
-                element = new Integer(rs.getInt("snmpifoperstatus"));
+                element = Integer.valueOf(rs.getInt("snmpifoperstatus"));
                 if (element != null) {
                     snmpifoperstatus = ((Integer) element);
                 }
 
-                element = new Integer(rs.getInt("snmpifadminstatus"));
+                element = Integer.valueOf(rs.getInt("snmpifadminstatus"));
                 if (element != null) {
                     snmpifadminstatus = ((Integer) element);
                 }
@@ -1960,27 +1960,27 @@ public class DBManager extends Manager {
                 int snmpifoperstatus = -1;
                 int snmpifadminstatus = -1;
 
-                Object element = new Integer(rs.getInt("id"));
+                Object element = Integer.valueOf(rs.getInt("id"));
                 if (element != null) {
                     id = ((Integer) element);
                 }
 
-                element = new Integer(rs.getInt("nodeid"));
+                element = Integer.valueOf(rs.getInt("nodeid"));
                 if (element != null) {
                     nodeid = ((Integer) element);
                 }
 
-                element = new Integer(rs.getInt("ifindex"));
+                element = Integer.valueOf(rs.getInt("ifindex"));
                 if (element != null) {
                     ifindex = ((Integer) element);
                 }
 
-                element = new Integer(rs.getInt("nodeparentid"));
+                element = Integer.valueOf(rs.getInt("nodeparentid"));
                 if (element != null) {
                     nodeparentid = ((Integer) element);
                 }
 
-                element = new Integer(rs.getInt("parentifindex"));
+                element = Integer.valueOf(rs.getInt("parentifindex"));
                 if (element != null) {
                     parentifindex = ((Integer) element);
                 }
@@ -1990,7 +1990,7 @@ public class DBManager extends Manager {
                     status = ((String) element);
                 }
                 
-                element = new Integer(rs.getInt("linktypeid"));
+                element = Integer.valueOf(rs.getInt("linktypeid"));
                 if (element != null) {
                     linktypeid = ((Integer) element);
                 }
@@ -2035,7 +2035,7 @@ public class DBManager extends Manager {
             rs = statement.executeQuery(sqlQuery);
             // add all matching nodes (id) with the source to the Set.
             while (rs.next()) {
-                nodes.add(new Integer(rs.getInt(1)));
+                nodes.add(Integer.valueOf(rs.getInt(1)));
             }
         } catch (Throwable e) {
             throw new MapsException(
@@ -2060,7 +2060,7 @@ public class DBManager extends Manager {
             rs = statement.executeQuery(sqlQuery);
             // add all matching nodes (id) with the source to the Set.
             while (rs.next()) {
-                nodes.add(new Integer(rs.getInt(1)));
+                nodes.add(Integer.valueOf(rs.getInt(1)));
             }
             rs.close();
             statement.close();

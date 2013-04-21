@@ -1575,7 +1575,7 @@ public final class RescanProcessor implements Runnable {
             rs = loadStmt.executeQuery();
             d.watch(rs);
             while (rs.next()) {
-                Integer id = new Integer(rs.getInt(1));
+                Integer id = Integer.valueOf(rs.getInt(1));
                 String name = rs.getString(2);
                 serviceNames.put(id, name);
             }

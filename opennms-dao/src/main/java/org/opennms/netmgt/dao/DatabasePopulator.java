@@ -37,6 +37,7 @@ import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsEvent;
@@ -337,15 +338,15 @@ public class DatabasePopulator {
         getOnmsMapElementDao().save(mapElement);
         getOnmsMapElementDao().flush();
         
-        final DataLinkInterface dli = new DataLinkInterface(node1, 1, node1.getId(), 1, "A", new Date());
+        final DataLinkInterface dli = new DataLinkInterface(node1, 1, node1.getId(), 1, StatusType.ACTIVE, new Date());
         getDataLinkInterfaceDao().save(dli);
         getDataLinkInterfaceDao().flush();
         
-        final DataLinkInterface dli2 = new DataLinkInterface(node1, 2, node1.getId(), 1, "A", new Date());
+        final DataLinkInterface dli2 = new DataLinkInterface(node1, 2, node1.getId(), 1, StatusType.ACTIVE, new Date());
         getDataLinkInterfaceDao().save(dli2);
         getDataLinkInterfaceDao().flush();
         
-        final DataLinkInterface dli3 = new DataLinkInterface(node2, 1, node1.getId(), 1, "A", new Date());
+        final DataLinkInterface dli3 = new DataLinkInterface(node2, 1, node1.getId(), 1, StatusType.ACTIVE, new Date());
         getDataLinkInterfaceDao().save(dli3);
         getDataLinkInterfaceDao().flush();
         

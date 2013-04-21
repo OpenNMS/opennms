@@ -205,8 +205,6 @@ public final class LinkdConfigFactory extends LinkdConfigManager {
         try {
             updateUrlIpMap();
             updatePackageIpListMap();
-            updateVlanClassNames();
-            updateIpRouteClassNames();
         } finally {
             getWriteLock().unlock();
         }

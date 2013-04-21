@@ -146,6 +146,14 @@
 						name="{con.city}" value="" helpText="{con.cityHelp}" maxLength="64" />
 					<onms_fs:FieldSetSuggestBox ui:field="sZip"
 						name="{con.zip}" value="" helpText="{con.zipHelp}" maxLength="64" />
+					<onms_fs:FieldSetSuggestBox ui:field="sCountry"
+						name="{con.country}" value="" helpText="{con.countryHelp}" maxLength="64" />
+					<onms_fs:FieldSetTextBox ui:field="sLongitude"
+						name="{con.longitude}" value="" helpText="{con.longitudeHelp}"
+						maxLength="32" />
+					<onms_fs:FieldSetTextBox ui:field="sLatitude"
+						name="{con.latitude}" value="" helpText="{con.latitudeHelp}"
+						maxLength="32" />
 					<br />
 					<onms_fs:FieldSetSuggestBox ui:field="sDivision"
 						name="{con.division}" value="" helpText="{con.divisionHelp}"
@@ -256,7 +264,7 @@
 
 				<g:HTMLPanel styleName="disclosureBodyPanel">
 					<onms_fs:FieldSetSuggestBox ui:field="sCpu"
-						name="{con.cpu}" value="" helpText="{con.cpuHelp}" maxLength="64" />
+						name="{con.cpu}" value="" helpText="{con.cpuHelp}" maxLength="32" />
 					<onms_fs:FieldSetSuggestBox ui:field="sRam"
 						name="{con.ram}" value="" helpText="{con.ramHelp}" maxLength="10" />
 					<onms_fs:FieldSetSuggestBox ui:field="sAdditionalhardware"
@@ -267,24 +275,51 @@
 						helpText="{con.numpowersuppliesHelp}" maxLength="1" />
 					<onms_fs:FieldSetSuggestBox ui:field="sInputpower"
 						name="{con.inputpower}" value="" helpText="{con.inputpowerHelp}"
-						maxLength="11" />
+						maxLength="6" />
 					<onms_fs:FieldSetSuggestBox ui:field="sStoragectrl"
 						name="{con.storagectrl}" value="" helpText="{con.storagectrlHelp}"
-						maxLength="64" />
+						maxLength="32" />
 					<onms_fs:FieldSetSuggestBox ui:field="sHdd1"
-						name="{con.hdd} 1" value="" helpText="{con.hddHelp}" maxLength="64" />
+						name="{con.hdd} 1" value="" helpText="{con.hddHelp}" maxLength="32" />
 					<onms_fs:FieldSetSuggestBox ui:field="sHdd2"
-						name="{con.hdd} 2" value="" helpText="{con.hddHelp}" maxLength="64" />
+						name="{con.hdd} 2" value="" helpText="{con.hddHelp}" maxLength="32" />
 					<onms_fs:FieldSetSuggestBox ui:field="sHdd3"
-						name="{con.hdd} 3" value="" helpText="{con.hddHelp}" maxLength="64" />
+						name="{con.hdd} 3" value="" helpText="{con.hddHelp}" maxLength="32" />
 					<onms_fs:FieldSetSuggestBox ui:field="sHdd4"
-						name="{con.hdd} 4" value="" helpText="{con.hddHelp}" maxLength="64" />
+						name="{con.hdd} 4" value="" helpText="{con.hddHelp}" maxLength="32" />
 					<onms_fs:FieldSetSuggestBox ui:field="sHdd5"
-						name="{con.hdd} 5" value="" helpText="{con.hddHelp}" maxLength="64" />
+						name="{con.hdd} 5" value="" helpText="{con.hddHelp}" maxLength="32" />
 					<onms_fs:FieldSetSuggestBox ui:field="sHdd6"
-						name="{con.hdd} 6" value="" helpText="{con.hddHelp}" maxLength="64" />
+						name="{con.hdd} 6" value="" helpText="{con.hddHelp}" maxLength="32" />
 				</g:HTMLPanel>
 			</onms:DisclosurePanelCookie>
+
+            <onms:DisclosurePanelCookie cookieName="VMWare"
+                                        ui:field="vmwareDiscPanel">
+
+                <g:HTMLPanel styleName="disclosureBodyPanel">
+                    <h3>
+                        <g:Label ui:field="vmwareHeader" text="{con.vmwareHeader}" />
+                    </h3>
+                </g:HTMLPanel>
+                <g:HTMLPanel styleName="disclosureBodyPanel">
+                    <onms_fs:FieldSetSuggestBox ui:field="sVmwareManagedObjectId"
+                                              name="{con.vmwareManagedObjectId}" value="" helpText="{con.vmwareManagedObjectIdHelp}"
+                                              maxLength="70" />
+                    <onms_fs:FieldSetSuggestBox ui:field="sVmwareManagedEntityType"
+                                              name="{con.vmwareManagedEntityType}" value="" helpText="{con.vmwareManagedEntityType}"
+                                              maxLength="70" />
+                    <onms_fs:FieldSetSuggestBox ui:field="sVmwareManagementServer"
+                                              name="{con.vmwareManagementServer}" value="" helpText="{con.vmwareManagementServerHelp}"
+                                              maxLength="70" />
+                    <onms_fs:FieldSetSuggestBox ui:field="sVmwareTopologyInfo"
+                                                name="{con.vmwareTopologyInfo}" value="" helpText="{con.vmwareTopologyInfoHelp}"
+                                                maxLength="1023" />
+                    <onms_fs:FieldSetSuggestBox ui:field="sVmwareState"
+                                                name="{con.vmwareState}" value="" helpText="{con.vmwareStateHelp}"
+                                                maxLength="255" />
+                </g:HTMLPanel>
+            </onms:DisclosurePanelCookie>
 
 			<onms:DisclosurePanelCookie cookieName="comments"
 				ui:field="commentsDiscPanel">

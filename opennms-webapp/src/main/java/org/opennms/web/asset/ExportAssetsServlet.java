@@ -47,19 +47,9 @@ import au.com.bytecode.opencsv.CSVWriter;
  *
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski</A>
  * @author <A HREF="mailto:ranger@opennms.org">Benjamin Reed</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski</A>
- * @author <A HREF="mailto:ranger@opennms.org">Benjamin Reed</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski</A>
- * @author <A HREF="mailto:ranger@opennms.org">Benjamin Reed</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- * @version $Id: $
- * @since 1.8.1
  */
 public class ExportAssetsServlet extends HttpServlet {
-    private static final long serialVersionUID = 2L;
-    
+    private static final long serialVersionUID = -4854445395857220978L;
     protected AssetModel model;
 
     /**
@@ -144,7 +134,10 @@ public class ExportAssetsServlet extends HttpServlet {
 		"Additional hardware",
 		"Admin",
 		"SNMP Community",
-		"Rack unit height"
+		"Rack unit height",
+                "Country",
+                "Longitude",
+                "Latitude"
         };
         
         out.writeNext(header);
@@ -213,6 +206,9 @@ public class ExportAssetsServlet extends HttpServlet {
             entries.add(asset.getAdmin());
             entries.add(asset.getSnmpcommunity());
             entries.add(asset.getRackunitheight());
+            entries.add(asset.getCountry());
+            entries.add(asset.getLongitude());
+            entries.add(asset.getLatitude());
             
             out.writeNext(entries.toArray(new String[0]));
         }

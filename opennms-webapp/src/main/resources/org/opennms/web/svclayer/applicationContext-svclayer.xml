@@ -103,6 +103,8 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
   </bean>
   
   <onmsgi:service interface="org.opennms.netmgt.dao.GraphDao" ref="graphDao"/>
+  
+  
 
   <!-- Admin applications bean -->
   <bean id="adminApplicationService" class="org.opennms.web.svclayer.support.DefaultAdminApplicationService">
@@ -279,4 +281,5 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
     <constructor-arg name="remoteRepositoryConfigDao" ref="defaultRemoteRepositoryConfigDao"/>
     <constructor-arg name="localReportRepository" ref="legacyLocalReportRepository"/>
   </bean>
+  <bean id="foreignSourceAndRequistionAccessService" class="org.opennms.web.rest.RequisitionAccessService"></bean>
 </beans>

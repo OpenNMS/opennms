@@ -376,5 +376,14 @@ public class SnmpUtilsTest extends MockSnmpAgentTestCase implements TrapProcesso
         
     }
     
+    @Test
+    public void testGetProtoCounter64Value() {
+        SnmpValueFactory valueFactory = SnmpUtils.getValueFactory();
+        assertNotNull(valueFactory);
+
+        byte[] ourBytes = new byte[]{ 0x00, 0x00, (byte)0xde, (byte)0xad, (byte)0xbe, (byte)0xef, (byte)0xca, (byte)0xfe };
+        SnmpValue octStr = valueFactory.getOctetString(ourBytes);
+        assertEquals("Expecting 0x0000deadbeefcafe", new Long(0x0000deadbeefcafeL), SnmpUtils.getProtoCounter64Value(octStr));
+    }
     
 }

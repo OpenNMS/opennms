@@ -457,7 +457,7 @@ public class OpenNMSProvisioner implements Provisioner {
         
         final Map<String, Object> m = new HashMap<String, Object>();
         m.put("serviceid", serviceId);
-        m.put("interval", new Integer((int)svc.getInterval()));
+        m.put("interval", Integer.valueOf((int)svc.getInterval()));
         
         for(int i = 0; i < svc.getParameterCount(); i++) {
         	final Parameter param = svc.getParameter(i);
@@ -502,9 +502,9 @@ public class OpenNMSProvisioner implements Provisioner {
             final Downtime dt = pkg.getDowntime(i);
             final String suffix = (i == 0 ? "" : ""+i);
             if ((dt.hasEnd()) || (dt.getDelete() != null && !"false".equals(dt.getDelete()))) {
-                m.put("downtime_interval"+suffix, new Integer((int)dt.getInterval()));
+                m.put("downtime_interval"+suffix, Integer.valueOf((int)dt.getInterval()));
                 int duration = (!dt.hasEnd() ? Integer.MAX_VALUE : (int)(dt.getEnd() - dt.getBegin()));
-                m.put("downtime_duration"+suffix, new Integer(duration));
+                m.put("downtime_duration"+suffix, Integer.valueOf(duration));
             }   
         }
         

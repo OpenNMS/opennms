@@ -51,15 +51,6 @@ import org.opennms.web.outage.filter.ServiceFilter;
  *
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
  * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
- * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
- * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @version $Id: $
- * @since 1.8.1
  */
 public class OutageFactory extends Object {
 
@@ -598,19 +589,19 @@ public class OutageFactory extends Object {
             // can be null
             intElement = rs.getInt("svcLostEventID");
             if (!rs.wasNull()) {
-                outage.lostServiceEventId = new Integer(intElement);
+                outage.lostServiceEventId = Integer.valueOf(intElement);
             }
 
             // can be null
             intElement = rs.getInt("svcRegainedEventID");
             if (!rs.wasNull()) {
-                outage.regainedServiceEventId = new Integer(intElement);
+                outage.regainedServiceEventId = Integer.valueOf(intElement);
             }
 
             // can be null
             intElement = rs.getInt("notifyid");
             if (!rs.wasNull()) {
-                outage.lostServiceNotificationId = new Integer(intElement);
+                outage.lostServiceNotificationId = Integer.valueOf(intElement);
             }
 
             // can be null

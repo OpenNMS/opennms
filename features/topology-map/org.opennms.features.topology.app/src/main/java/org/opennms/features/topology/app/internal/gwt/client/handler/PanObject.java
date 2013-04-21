@@ -31,11 +31,9 @@ package org.opennms.features.topology.app.internal.gwt.client.handler;
 import org.opennms.features.topology.app.internal.gwt.client.GWTVertex;
 import org.opennms.features.topology.app.internal.gwt.client.VTopologyComponent.TopologyViewRenderer;
 import org.opennms.features.topology.app.internal.gwt.client.d3.D3;
-import org.opennms.features.topology.app.internal.gwt.client.svg.SVGElement;
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGGElement;
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGMatrix;
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGPoint;
-import org.opennms.features.topology.app.internal.gwt.client.svg.SVGRect;
 import org.opennms.features.topology.app.internal.gwt.client.view.TopologyView;
 
 import com.google.gwt.user.client.Event;
@@ -53,27 +51,17 @@ public class PanObject extends DragObject{
 		SVGGElement g = topologyView.getSVGViewPort().cast();
 		m_stateTf = g.getCTM().inverse();
 
-		m_stateOrigin = getEventPoint(D3.getEvent()).matrixTransform(m_stateTf); 
-
+		SVGPoint eventPoint = getEventPoint(D3.getEvent());
+        m_stateOrigin = topologyView.getPoint((int)eventPoint.getX(), (int)eventPoint.getY()); 
 	}
 
 	@Override
 	public void move() {
 		Event event = D3.getEvent().cast();
-		SVGPoint p = getEventPoint(event).matrixTransform(m_stateTf);
-
-		SVGElement svg = getContainerElement().cast();
-		SVGGElement g = getDraggableElement().cast();
-		SVGRect gBox = g.getBBox();
+		SVGPoint eventPoint = getEventPoint(event);
+        SVGPoint p = eventPoint.matrixTransform(m_stateTf);
 
 		SVGMatrix m = m_stateTf.inverse().translate(p.getX() - m_stateOrigin.getX(), p.getY() - m_stateOrigin.getY() );
-
-		double mapWidth = gBox.getWidth() * m.getA();
-		double mapHeight = gBox.getHeight() * m.getA();
-
-		double boundaryX = calculateBoundsX(mapWidth, svg.getOffsetWidth(), m.getE());
-
-		double boundaryY = calculateBoundsY(mapHeight, svg.getOffsetHeight(), m.getF());
 
 		String matrixTransform = "matrix(" + m.getA() +
 				", " + m.getB() +
@@ -81,27 +69,7 @@ public class PanObject extends DragObject{
 				", " + m.getD() +
 				", " + m.getE() + 
 				", " + m.getF() + ")";
-		
 		getDraggableElement().setAttribute("transform", matrixTransform);
 	}
-
-	private double calculateBoundsY(double mapHeight, int offsetHeight,
-			double y) {
-		double boundaryY;
-		if(mapHeight > offsetHeight) {
-			boundaryY = Math.min(0, Math.max(offsetHeight - mapHeight, y));
-		}else {
-			boundaryY = Math.max(0, Math.min(offsetHeight - mapHeight, y));
-		}
-		return boundaryY;
-	}
-
-	private double calculateBoundsX(double mapWidth, int offsetWidth, double x) {
-		double boundaryX;
-		if(mapWidth > offsetWidth) {
-			return Math.min(0, Math.max(offsetWidth - mapWidth, x));
-		}else {
-			return Math.max(0, Math.min(offsetWidth - mapWidth, x));
-		}
-	}
+	
 }

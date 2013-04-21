@@ -37,7 +37,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.opennms.features.topology.api.HierarchicalBeanContainer;
 
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;

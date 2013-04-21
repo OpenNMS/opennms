@@ -36,7 +36,9 @@
         org.opennms.netmgt.config.*,
         org.opennms.netmgt.config.poller.*,
         org.opennms.core.utils.WebSecurityUtils,
+        org.opennms.core.resource.Vault,
         org.opennms.web.element.*,
+        org.opennms.web.pathOutage.*,
         org.opennms.netmgt.model.OnmsNode,
         org.opennms.netmgt.EventConstants,
         org.opennms.netmgt.xml.event.Event,
@@ -46,6 +48,7 @@
         org.exolab.castor.xml.ValidationException,
         java.net.*,
         java.io.*,
+        java.sql.*,
         java.text.NumberFormat,
         java.text.SimpleDateFormat
         "
@@ -112,7 +115,7 @@
 		SimpleDateFormat shortDF = new SimpleDateFormat("MMM", Locale.US);
 		SimpleDateFormat longDF  = new SimpleDateFormat("MMMM");
 		for (int mon = 0; mon < 12; mon++) {
-			Date tempDate = new GregorianCalendar(0, mon, 1).getTime();
+			java.util.Date tempDate = new GregorianCalendar(0, mon, 1).getTime();
 			sb.append("<option value=\"").append(shortDF.format(tempDate)).append("\" ");
 			sb.append((month==(mon+1))?"selected":"");
 			sb.append(">").append(longDF.format(tempDate)).append("</option>");
@@ -120,6 +123,79 @@
 		sb.append("</select>");
 		
 		return sb.toString();
+	}
+	
+	private static final String GET_DEPENDENCY_NODES_BY_NODEID="select po.nodeid from pathoutage po left join ipinterface intf on po.criticalpathip=intf.ipaddr where intf.nodeid=?";
+
+    private static final String GET_NODES_IN_PATH = "SELECT DISTINCT pathoutage.nodeid FROM pathoutage, ipinterface WHERE pathoutage.criticalpathip=? AND pathoutage.nodeid=ipinterface.nodeid AND ipinterface.ismanaged!='D' ORDER BY nodeid";
+
+    private static Set<Integer> getAllDependencyNodesByCriticalPath(String criticalpathip) throws SQLException {
+	    Set<Integer> allPathNodes = getDependencyNodesByCriticalPath(criticalpathip);
+	    Set<Integer> currentNodes=allPathNodes;
+	    while (currentNodes.size() > 0) {
+	        Set<Integer> nextIterationNodes=new TreeSet<Integer>();
+	        for (Integer pathnodeid : currentNodes ) {
+	            nextIterationNodes.addAll(getDependencyNodesByNodeid(pathnodeid));
+	        }
+	        allPathNodes.addAll(nextIterationNodes);
+	        currentNodes=nextIterationNodes;
+	    }
+	    return allPathNodes;        
+    }
+    
+
+    private static Set<Integer> getDependencyNodesByCriticalPath(String criticalpathip) throws SQLException {
+	    Connection conn = Vault.getDbConnection();
+	    Set<Integer> pathNodes = new TreeSet<Integer>();
+        try {
+            PreparedStatement stmt = conn.prepareStatement(GET_NODES_IN_PATH);
+            stmt.setString(1, criticalpathip);
+
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                pathNodes.add(rs.getInt(1));
+            }
+            rs.close();
+            stmt.close();
+        } finally {
+            Vault.releaseDbConnection(conn);
+        }
+	    return pathNodes;
+        
+    }
+    
+	private static Set<Integer> getAllDependencyNodesByNodeid(int nodeid) throws SQLException {
+	    Set<Integer> allPathNodes = getDependencyNodesByNodeid(nodeid);
+	    Set<Integer> currentNodes=allPathNodes;
+	    while (currentNodes.size() > 0) {
+	        Set<Integer> nextIterationNodes=new TreeSet<Integer>();
+	        for (Integer pathnodeid : currentNodes ) {
+	            nextIterationNodes.addAll(getDependencyNodesByNodeid(pathnodeid));
+	        }
+	        allPathNodes.addAll(nextIterationNodes);
+	        currentNodes=nextIterationNodes;
+	    }
+	    return allPathNodes;
+	}
+	
+	private static Set<Integer> getDependencyNodesByNodeid(int nodeid) throws SQLException {
+	    Connection conn = Vault.getDbConnection();
+	    Set<Integer> pathNodes = new TreeSet<Integer>();
+        try {
+            PreparedStatement stmt = conn.prepareStatement(GET_DEPENDENCY_NODES_BY_NODEID);
+            stmt.setInt(1, nodeid);
+
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                pathNodes.add(rs.getInt(1));
+            }
+            rs.close();
+            stmt.close();
+        } finally {
+            Vault.releaseDbConnection(conn);
+        }
+	    
+	    return pathNodes;
 	}
 	
 	public void sendOutagesChangedEvent() throws ServletException {
@@ -442,6 +518,12 @@ Could not find an outage to edit because no outage name parameter was specified 
 				} else {
 					int newNodeId = WebSecurityUtils.safeParseInt(newNode);
 					addNode(theOutage, newNodeId);
+					if (request.getParameter("addPathOutageNodeRadio") != null) {
+						for (Integer pathOutageNodeid: getAllDependencyNodesByNodeid(newNodeId)) {
+						    addNode(theOutage,pathOutageNodeid.intValue());
+						}
+					}
+
 				}
 			} else if (request.getParameter("addInterfaceButton") != null) {
 				String newIface = request.getParameter("newInterface");
@@ -451,6 +533,11 @@ Could not find an outage to edit because no outage name parameter was specified 
 					org.opennms.netmgt.config.poller.Interface newInterface = new org.opennms.netmgt.config.poller.Interface();
 					newInterface.setAddress(newIface);
 					addInterface(theOutage, newInterface);
+					if (request.getParameter("addPathOutageInterfaceRadio") != null) {
+						for (Integer pathOutageNodeid: getAllDependencyNodesByCriticalPath(newIface)) {
+						    addNode(theOutage,pathOutageNodeid.intValue());
+						}
+					}
 				}
 			} else if (request.getParameter("matchAny") != null) {
 				//To turn on matchAny, all normal nodes and interfaces are removed
@@ -753,6 +840,7 @@ function updateOutageTypeDisplay(selectElement) {
 							<p style="font-weight: bold; margin-bottom: 2px;">Search (max 200 results):</p>
 							<div class="ui-widget">
 								<select id="newNodeSelect" name="newNodeSelect" style="display: none"></select>
+								<input type="radio"  value="addPathOutageDependency" name="addPathOutageNodeRadio"/> Add with path outage dependency
 								<input type="submit" value="Add" name="addNodeButton"/>
 							</div>
 						</form>
@@ -797,6 +885,7 @@ function updateOutageTypeDisplay(selectElement) {
 							<p style="font-weight: bold; margin-bottom: 2px;">Search (max 200 results):</p>
 							<div class="ui-widget">
 								<select id="newInterfaceSelect" name="newInterfaceSelect" style="display: none"></select>
+								<input type="radio"  value="addPathOutageDependency" name="addPathOutageInterfaceRadio"/> Add with path outage dependency
 								<input type="submit" value="Add" name="addInterfaceButton"/>
 							</div>
 						</form>

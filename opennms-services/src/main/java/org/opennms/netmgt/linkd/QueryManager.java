@@ -28,8 +28,9 @@
 
 package org.opennms.netmgt.linkd;
 
-import java.sql.SQLException;
 import java.util.List;
+
+import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 
 /**
  * <p>QueryManager interface.</p>
@@ -38,6 +39,14 @@ import java.util.List;
  * @version $Id: $
  */
 public interface QueryManager {
+
+    public static final int SNMP_IF_TYPE_ETHERNET = 6;
+
+    public static final int SNMP_IF_TYPE_PROP_VIRTUAL = 53;
+
+    public static final int SNMP_IF_TYPE_L2_VLAN = 135;
+
+    public static final int SNMP_IF_TYPE_L3_VLAN = 136;
 
 	/**
 	 * The status of the info in FDB table entry The meanings of the value is
@@ -79,26 +88,13 @@ public interface QueryManager {
 	 */
 	public static final int SNMP_DOT1D_FDB_STATUS_MGMT = 5;
 
-	/**
-	 * the int that indicated cdp address type
-	 * 
-	 */
-
-	public static final int CDP_ADDRESS_TYPE_IP_ADDRESS = 1;
-
-	/** Constant <code>ACTION_UPTODATE='N'</code> */
-	static final char ACTION_UPTODATE = 'N';
-
-	/** Constant <code>ACTION_DELETE='D'</code> */
-	static final char ACTION_DELETE = 'D';
-
     /**
      * <p>getSnmpNodeList</p>
      *
      * @return a {@link java.util.List} object.
      * @throws java.sql.SQLException if any.
      */
-    List<LinkableNode> getSnmpNodeList() throws SQLException;
+    List<LinkableNode> getSnmpNodeList();
 
     /**
      * <p>getSnmpNode</p>
@@ -107,14 +103,14 @@ public interface QueryManager {
      * @return a {@link org.opennms.netmgt.linkd.LinkableNode} object.
      * @throws java.sql.SQLException if any.
      */
-    LinkableNode getSnmpNode(int nodeid) throws SQLException;
+    LinkableNode getSnmpNode(int nodeid);
 
     /**
      * <p>updateDeletedNodes</p>
      *
      * @throws java.sql.SQLException if any.
      */
-    void updateDeletedNodes() throws SQLException;
+    void updateDeletedNodes();
 
     /**
      * <p>storeSnmpCollection</p>
@@ -124,7 +120,7 @@ public interface QueryManager {
      * @return a {@link org.opennms.netmgt.linkd.LinkableNode} object.
      * @throws java.sql.SQLException if any.
      */
-    LinkableNode storeSnmpCollection(LinkableNode node, SnmpCollection snmpColl) throws SQLException;
+    LinkableNode storeSnmpCollection(LinkableNode node, SnmpCollection snmpColl);
     
     /**
      * <p>storeDiscoveryLink</p>
@@ -132,7 +128,7 @@ public interface QueryManager {
      * @param discoveryLink a {@link org.opennms.netmgt.linkd.DiscoveryLink} object.
      * @throws java.sql.SQLException if any.
      */
-    void storeDiscoveryLink(DiscoveryLink discoveryLink) throws SQLException;
+    void storeDiscoveryLink(DiscoveryLink discoveryLink);
     
     /**
      * <p>update</p>
@@ -141,7 +137,7 @@ public interface QueryManager {
      * @param action a char.
      * @throws java.sql.SQLException if any.
      */
-    void update(int nodeid, char action) throws SQLException;
+    void update(int nodeid, StatusType action);
     
     /**
      * <p>updateForInterface</p>
@@ -152,7 +148,7 @@ public interface QueryManager {
      * @param action a char.
      * @throws java.sql.SQLException if any.
      */
-    void updateForInterface(int nodeid, String ipAddr, int ifIndex, char action) throws SQLException;
+    void updateForInterface(int nodeid, String ipAddr, int ifIndex, StatusType action);
     
     Linkd getLinkd();
 	void setLinkd(final Linkd linkd);

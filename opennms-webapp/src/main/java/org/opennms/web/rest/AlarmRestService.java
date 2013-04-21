@@ -85,7 +85,7 @@ public class AlarmRestService extends AlarmRestServiceBase {
      * @return a {@link org.opennms.netmgt.model.OnmsAlarm} object.
      */
     @GET
-    @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Path("{alarmId}")
     @Transactional
     public OnmsAlarm getAlarm(@PathParam("alarmId")
@@ -126,7 +126,7 @@ public class AlarmRestService extends AlarmRestServiceBase {
      * @return a {@link org.opennms.netmgt.model.OnmsAlarmCollection} object.
      */
     @GET
-    @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Transactional
     public OnmsAlarmCollection getAlarms() {
         readLock();

@@ -69,7 +69,7 @@ public class DefaultOutageServiceTest {
 	    assertNotNull(outageService);
 	    assertNotNull(outageDao);
 	    
-		Integer outageId = new Integer(505);
+		Integer outageId = Integer.valueOf(505);
 		OnmsOutage outage = new OnmsOutage();
 
 		outage.setId(505);
@@ -89,14 +89,14 @@ public class DefaultOutageServiceTest {
 	    assertNotNull(outageService);
 	    assertNotNull(outageDao);
 	    
-		Integer expectedCount = new Integer(1);
+		Integer expectedCount = Integer.valueOf(1);
 
 		expect(outageDao.currentOutageCount()).andReturn(expectedCount);
 		replay(outageDao);
 		Integer count = outageService.getCurrentOutageCount();
 		verify(outageDao);
 		assertTrue("A good system should have outages ", count
-				.equals(new Integer(1)));
+				.equals(Integer.valueOf(1)));
 
 	}
 
@@ -104,7 +104,7 @@ public class DefaultOutageServiceTest {
 	public void testSuppressedOutageCount() {
 
 		fail("Needs to be upgraded to hibernate");
-//		Integer expectedCount = new Integer(1);
+//		Integer expectedCount = Integer.valueOf(1);
 //
 //		expect(outageDao.currentSuppressedOutageCount()).andReturn(
 //				expectedCount);

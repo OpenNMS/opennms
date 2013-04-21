@@ -1,0 +1,154 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="
+    http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+">
+
+  <reference id="alarmDao" interface="org.opennms.netmgt.dao.AlarmDao" availability="mandatory" />
+  <reference id="nodeDao" interface="org.opennms.netmgt.dao.NodeDao" availability="mandatory" />
+
+  <!-- Wrap the DAO in a Vaadin container -->
+  <bean id="alarmDaoContainer" class="org.opennms.features.topology.plugins.browsers.AlarmDaoContainer" scope="prototype">
+    <argument ref="alarmDao" />
+  </bean>
+  
+  <bean id="alarmTable" class="org.opennms.features.topology.plugins.browsers.SelectionAwareTable" scope="prototype">
+    <argument value="Alarms"/>
+    <argument ref="alarmDaoContainer" />
+    <property name="columnReorderingAllowed" value="true"/>
+    <property name="columnCollapsingAllowed" value="true"/>
+    <property name="cellStyleGenerator">
+      <bean class="org.opennms.features.topology.plugins.browsers.AlarmTableCellStyleGenerator"/>
+    </property>
+    <property name="columnGenerators">
+      <map>
+        <entry key="severity">
+          <bean class="org.opennms.features.topology.plugins.browsers.SeverityGenerator"/>
+        </entry>
+        <entry key="nodeLabel">
+          <bean class="org.opennms.features.topology.plugins.browsers.NodeSelectionLinkGenerator">
+            <argument value="nodeId"/>
+          </bean>
+        </entry>
+        <!--
+        <entry key="serviceType">
+          <bean class="org.opennms.features.topology.plugins.browsers.OnmsServiceTypeGenerator"/>
+        </entry>
+        <entry key="ipAddr">
+          <bean class="org.opennms.features.topology.plugins.browsers.InetAddressGenerator"/>
+        </entry>
+        -->
+      </map>
+    </property>
+    <property name="visibleColumns">
+      <array>
+        <value>id</value>
+        <value>severity</value>
+        <value>nodeLabel</value>
+        <value>uei</value>
+        <value>counter</value>
+        <value>lastEventTime</value>
+        <value>logMsg</value>
+      </array>
+    </property>
+    <property name="columnHeaders">
+      <array>
+        <value>ID</value>
+        <value>Severity</value>
+        <value>Node</value>
+        <value>UEI</value>
+        <value>Count</value>
+        <value>Last Event Time</value>
+        <value>Log Message</value>
+      </array>
+    </property>
+  </bean>
+  
+  <bean id="alarmViewContribution" class="org.opennms.features.topology.api.support.BlueprintIViewContribution">
+    <argument ref="blueprintContainer" />
+    <argument value="alarmTable" />
+    <property name="title" value="Alarms" />
+  </bean>
+
+  <service interface="org.opennms.features.topology.api.IViewContribution" ref="alarmViewContribution">
+    <description>Alarm table IViewContribution service.</description>
+    <service-properties>
+      <entry key="location" value="bottom"/>
+    </service-properties>
+  </service>
+
+  <!-- Wrap the DAO in a Vaadin container -->
+  <bean id="nodeDaoContainer" class="org.opennms.features.topology.plugins.browsers.NodeDaoContainer" scope="prototype">
+    <argument ref="nodeDao" />
+  </bean>
+
+  <bean id="nodeTable" class="org.opennms.features.topology.plugins.browsers.SelectionAwareTable" scope="prototype">
+    <argument value="Nodes"/>
+    <argument ref="nodeDaoContainer" />
+    <property name="columnReorderingAllowed" value="true"/>
+    <property name="columnCollapsingAllowed" value="true"/>
+    <property name="columnGenerators">
+      <map>
+        <entry key="id">
+          <bean class="org.opennms.features.topology.plugins.browsers.NodeSelectionLinkGenerator">
+            <argument value="id"/>
+          </bean>
+        </entry>
+        <entry key="label">
+          <bean class="org.opennms.features.topology.plugins.browsers.NodeSelectionLinkGenerator">
+            <argument value="id"/>
+          </bean>
+        </entry>
+        <entry key="primaryInterface">
+          <bean class="org.opennms.features.topology.plugins.browsers.OnmsIpInterfaceGenerator"/>
+        </entry>
+      </map>
+    </property>
+    <property name="visibleColumns">
+      <array>
+        <value>id</value>
+        <value>foreignSource</value>
+        <value>foreignId</value>
+        <value>label</value>
+        <value>labelSource</value>
+        <value>lastCapsdPoll</value>
+        <value>primaryInterface</value>
+        <value>sysObjectId</value>
+        <value>sysName</value>
+        <value>sysDescription</value>
+        <value>sysContact</value>
+        <value>sysLocation</value>
+      </array>
+    </property>
+    <property name="columnHeaders">
+      <array>
+        <value>ID</value>
+        <value>Foreign Source</value>
+        <value>Foreign ID</value>
+        <value>Label</value>
+        <value>Label Source</value>
+        <value>Last Capabilities Scan</value>
+        <value>Primary Interface</value>
+        <value>sysObjectId</value>
+        <value>sysName</value>
+        <value>sysDescription</value>
+        <value>sysContact</value>
+        <value>sysLocation</value>
+      </array>
+    </property>
+  </bean>
+
+  <bean id="nodeViewContribution" class="org.opennms.features.topology.api.support.BlueprintIViewContribution">
+    <argument ref="blueprintContainer" />
+    <argument value="nodeTable" />
+    <property name="title" value="Nodes" />
+  </bean>
+
+  <service interface="org.opennms.features.topology.api.IViewContribution" ref="nodeViewContribution">
+    <description>Node table IViewContribution service.</description>
+    <service-properties>
+      <entry key="location" value="bottom"/>
+    </service-properties>
+  </service>
+
+</blueprint>

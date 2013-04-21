@@ -92,11 +92,11 @@ public class DaoWebAlarmRepositoryTest implements InitializingBean {
         Alarm alarm = m_alarmRepo.getAlarm(1);
         assertNotNull(alarm);
         
-        assertEquals(1, alarm.id);
-        assertEquals("uei.opennms.org/test", alarm.uei);
-        assertEquals("localhost", alarm.dpName);
-        assertEquals(1, alarm.count);
-        assertEquals(3, alarm.severity.getId());
+        assertEquals(1, alarm.getId());
+        assertEquals("uei.opennms.org/test", alarm.getUei());
+        assertEquals("localhost", alarm.getDpName());
+        assertEquals(1, alarm.getCount());
+        assertEquals(3, alarm.getSeverity().getId());
         
     }
     
@@ -214,22 +214,29 @@ public class DaoWebAlarmRepositoryTest implements InitializingBean {
 
     @Test
     @Transactional
-    public void testAcknowledgeUnacknowledgeAllAlarms() {
+    public void testAcknowledgeUnacknowledgeAllAlarms(){
         String user = "TestUser";
-        m_alarmRepo.acknowledgeAll("TestUser", new Date());
+        m_alarmRepo.acknowledgeAll(user, new Date());
         
-        int matchingAlarmCount = m_alarmRepo.countMatchingAlarms(new AlarmCriteria(new AcknowledgedByFilter("TestUser")));
+        int matchingAlarmCount = m_alarmRepo.countMatchingAlarms(new AlarmCriteria(new AcknowledgedByFilter(user)));
         assertEquals(1, matchingAlarmCount);
         
         m_alarmRepo.unacknowledgeAll(user);
         
-        matchingAlarmCount = m_alarmRepo.countMatchingAlarms(new AlarmCriteria(new AcknowledgedByFilter("TestUser")));
+        matchingAlarmCount = m_alarmRepo.countMatchingAlarms(new AlarmCriteria(new AcknowledgedByFilter(user)));
         assertEquals(0, matchingAlarmCount);
     }
     
     @Test
+    @Transactional
+    public void testCountMatchingBySeverity(){
+        int[] matchingAlarmCount = m_alarmRepo.countMatchingAlarmsBySeverity(new AlarmCriteria(new SeverityFilter(OnmsSeverity.NORMAL)));
+        assertEquals(8, matchingAlarmCount.length);
+    }
+    
+    @Test
     @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
-    public void testEscalateAlarms() {
+    public void testEscalateAlarms(){
         int[] alarmIds = {1};
         m_alarmRepo.escalateAlarms(alarmIds, "TestUser", new Date());
         
@@ -237,7 +244,7 @@ public class DaoWebAlarmRepositoryTest implements InitializingBean {
         
         assertNotNull(alarms);
         
-        assertEquals(OnmsSeverity.WARNING.getId(), alarms[0].severity.getId());
+        assertEquals(OnmsSeverity.WARNING.getId(), alarms[0].getSeverity().getId());
     }
     
     @Test
@@ -246,14 +253,14 @@ public class DaoWebAlarmRepositoryTest implements InitializingBean {
         Alarm alarm = m_alarmRepo.getAlarm(1);
         
         assertNotNull(alarm);
-        assertEquals(OnmsSeverity.NORMAL.getId(), alarm.severity.getId());
+        assertEquals(OnmsSeverity.NORMAL.getId(), alarm.getSeverity().getId());
         
         int[] alarmIds = {1};
         m_alarmRepo.clearAlarms(alarmIds, "TestUser", new Date());
         
         alarm = m_alarmRepo.getAlarm(1);
         assertNotNull(alarm);
-        assertEquals(OnmsSeverity.CLEARED.getId(), alarm.severity.getId());
+        assertEquals(OnmsSeverity.CLEARED.getId(), alarm.getSeverity().getId());
     }
 
     @Test

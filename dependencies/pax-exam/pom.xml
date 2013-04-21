@@ -3,13 +3,14 @@
   <parent>
     <artifactId>dependencies</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.11.4-SNAPSHOT</version>
+    <version>1.13.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>pax-exam-dependencies</artifactId>
   <packaging>pom</packaging>
   <name>OpenNMS Apache Pax Exam Dependencies</name>
+  
   <dependencies>
     <!--
     <dependency>
@@ -28,7 +29,6 @@
       <artifactId>pax-exam-junit4</artifactId>
       <version>${paxExamVersion}</version>
     </dependency>
-    <!--
     <dependency>
       <groupId>org.ops4j.pax.exam</groupId>
       <artifactId>pax-exam-link-mvn</artifactId>
@@ -36,24 +36,27 @@
     </dependency>
     <dependency>
       <groupId>org.ops4j.pax.url</groupId>
-      <artifactId>pax-url-aether</artifactId>
-      <version>1.5.0</version>
+      <artifactId>pax-url-mvn</artifactId>
+      <version>1.3.5</version>
     </dependency>
-    -->
     <!--
       Declare the version of the Karaf container so that it is available inside
       unit tests.
     -->
+    <!--
     <dependency>
       <groupId>org.apache.karaf</groupId>
       <artifactId>apache-karaf</artifactId>
       <version>${karafVersion}</version>
       <type>tar.gz</type>
     </dependency>
+    -->
     <!-- 
       This test-jar contains the org.apache.karaf.itests.KarafTestSupport class
       which provides useful utility functions when running Pax Exam testing inside
       Karaf.
+
+      @see org.apache.karaf.itests.KarafTestSupport
     -->
     <dependency>
       <groupId>org.apache.karaf.itests</groupId>
@@ -61,9 +64,11 @@
       <version>${karafVersion}</version>
       <classifier>tests</classifier>
     </dependency>
-    <!-- 
+    <!--
       This JAR provides a org.ops4j.pax.exam.TestContainerFactory that will launch
       a Karaf container to perform unit tests.
+
+      @see org.apache.karaf.tooling.exam.container.internal.KarafTestContainerFactory
     -->
     <dependency>
       <groupId>org.apache.karaf.tooling.exam</groupId>

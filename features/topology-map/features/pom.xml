@@ -5,7 +5,7 @@
     <relativePath>../poms/compiled/</relativePath>
     <groupId>org.opennms.features.topology.build</groupId>
     <artifactId>compiled-bundle-settings</artifactId>
-    <version>1.11.4-SNAPSHOT</version>
+    <version>1.13.0-SNAPSHOT</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
@@ -20,9 +20,12 @@
     <module>vaadin</module>
     <module>api</module>
     <module>runtime-base</module>
+    <module>runtime-browsers</module>
     <module>runtime-simple</module>
     <module>runtime-linkd</module>
+    <module>runtime-vmware</module>
     <module>runtime-ncs</module>
+    <module>runtime-sfree</module>
     <module>dev</module>
   </modules>
 

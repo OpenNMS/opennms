@@ -274,7 +274,7 @@ public class JniPinger implements Pinger {
         
 	    final long threadId = JniPingRequest.getNextTID();
         for (int seqNum = 0; seqNum < count; seqNum++) {
-            final JniPingRequest request = new JniPingRequest(host, m_pingerId, seqNum, threadId, timeout == 0? DEFAULT_TIMEOUT : timeout, DEFAULT_PACKET_SIZE, 0, cb);
+            final JniPingRequest request = new JniPingRequest(host, m_pingerId, seqNum, threadId, timeout == 0? DEFAULT_TIMEOUT : timeout, 0, DEFAULT_PACKET_SIZE, cb);
             s_pingTracker.sendRequest(request);
             Thread.sleep(pingInterval);
         }

@@ -83,7 +83,7 @@ public class AlarmStatsRestService extends AlarmRestServiceBase {
     UriInfo m_uriInfo;
 
     @GET
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public AlarmStatistics getStats() {
         readLock();
         try {
@@ -95,7 +95,7 @@ public class AlarmStatsRestService extends AlarmRestServiceBase {
 
     @GET
     @Path("/by-severity")
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public AlarmStatisticsBySeverity getStatsForEachSeverity(@QueryParam("severities") final String severitiesString) {
         readLock();
 

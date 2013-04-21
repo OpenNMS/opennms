@@ -3,15 +3,13 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.11.4-SNAPSHOT</version>
+    <version>1.13.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-integrations</artifactId>
   <packaging>pom</packaging>
   <name>OpenNMS Integrations</name>
   <modules>
-    <module>opennms-integration-otrs</module>
-    <module>opennms-integration-rt</module>
     <module>opennms-dns-provisioning-adapter</module>
     <module>opennms-reverse-dns-provisioning-adapter</module>
     <module>opennms-link-provisioning-adapter</module>
@@ -21,5 +19,6 @@
     <module>opennms-rws</module>
     <module>opennms-snmp-asset-provisioning-adapter</module>
     <module>opennms-jasper-extensions</module>
+    <module>opennms-vmware</module>
   </modules>
 </project>

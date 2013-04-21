@@ -416,10 +416,10 @@ public class DefaultQueryManager implements QueryManager {
                 String sql = "insert into outages (outageId, svcLostEventId, nodeId, ipAddr, serviceId, ifLostService) values ("+outageId+", ?, ?, ?, ?, ?)";
                 
                 Object values[] = {
-                        new Integer(dbId),
-                        new Integer(nodeId),
+                        Integer.valueOf(dbId),
+                        Integer.valueOf(nodeId),
                         ipAddr,
-                        new Integer(serviceId),
+                        Integer.valueOf(serviceId),
                         convertEventTimeToTimeStamp(time),
                 };
 
@@ -450,11 +450,11 @@ public class DefaultQueryManager implements QueryManager {
                 String sql = "update outages set svcRegainedEventId=?, ifRegainedService=? where nodeId = ? and ipAddr = ? and serviceId = ? and ifRegainedService is null";
                 
                 Object values[] = {
-                        new Integer(dbId),
+                        Integer.valueOf(dbId),
                         convertEventTimeToTimeStamp(time),
-                        new Integer(nodeId),
+                        Integer.valueOf(nodeId),
                         ipAddr,
-                        new Integer(serviceId),
+                        Integer.valueOf(serviceId),
                 };
 
                 Updater updater = new Updater(getDataSource(), sql);

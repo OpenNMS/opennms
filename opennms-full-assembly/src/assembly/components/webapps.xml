@@ -17,61 +17,12 @@
       <unpackOptions>
         <excludes>
           <exclude>index.html</exclude>
-          <exclude>WEB-INF/lib/*</exclude>
         </excludes>
       </unpackOptions>
       <useProjectArtifact>false</useProjectArtifact>
       <useTransitiveDependencies>false</useTransitiveDependencies>
       <outputDirectory>jetty-webapps/opennms</outputDirectory>
       <includes><include>org.opennms.assemblies:org.opennms.assemblies.webapp-full:war:${project.version}</include></includes>
-      <fileMode>0644</fileMode>
-      <directoryMode>0755</directoryMode>
-    </dependencySet>
-    <dependencySet>
-      <!-- for jetty, just a few dependencies should go in WEB-INF/lib -->
-      <unpack>true</unpack>
-      <unpackOptions>
-        <includes>
-          <include>ncs-alarm-gui*.jar</include>
-          <include>opennms-webapp-*.jar</include>
-          <include>*remote-poller-gwt*.jar</include>
-          <include>gwt*.jar</include>
-          <include>extremecomponents-*.jar</include>
-          <!-- Include an implementation of the JSTL tags -->
-          <include>org.apache.taglibs.standard.glassfish-*.jar</include>
-        </includes>
-        <excludes>
-          <exclude>javax.servlet.*.jar</exclude>
-          <exclude>servlet-api-*.jar</exclude>
-        </excludes>
-      </unpackOptions>
-      <useProjectArtifact>false</useProjectArtifact>
-      <useTransitiveDependencies>false</useTransitiveDependencies>
-      <outputDirectory>jetty-webapps/opennms/WEB-INF/lib</outputDirectory>
-      <includes><include>org.opennms.assemblies:org.opennms.assemblies.webapp-full:tar.gz:lib:${project.version}</include></includes>
-      <fileMode>0644</fileMode>
-      <directoryMode>0755</directoryMode>
-    </dependencySet>
-    <dependencySet>
-      <!-- for jetty, all other webapp dependencies should go in normal lib/ -->
-      <unpack>true</unpack>
-      <unpackOptions>
-        <excludes>
-          <exclude>ncs-alarm-gui*.jar</exclude>
-          <exclude>opennms-webapp-*.jar</exclude>
-          <exclude>*remote-poller-gwt*.jar</exclude>
-          <exclude>gwt*.jar</exclude>
-          <exclude>extremecomponents-*.jar</exclude>
-          <exclude>org.apache.taglibs.standard.glassfish-*.jar</exclude>
-          <exclude>javax.servlet.*.jar</exclude>
-          <exclude>servlet-api-*.jar</exclude>
-          <exclude>com.springsource.javax.xml.bind*.jar</exclude>
-        </excludes>
-      </unpackOptions>
-      <useProjectArtifact>false</useProjectArtifact>
-      <useTransitiveDependencies>false</useTransitiveDependencies>
-      <outputDirectory>lib</outputDirectory>
-      <includes><include>org.opennms.assemblies:org.opennms.assemblies.webapp-full:tar.gz:lib:${project.version}</include></includes>
       <fileMode>0644</fileMode>
       <directoryMode>0755</directoryMode>
     </dependencySet>
@@ -101,61 +52,10 @@
     <!-- Remoting webapp -->
     <dependencySet>
       <unpack>true</unpack>
-      <unpackOptions>
-        <excludes>
-          <exclude>WEB-INF/lib/*</exclude>
-        </excludes>
-      </unpackOptions>
       <useProjectArtifact>false</useProjectArtifact>
       <useTransitiveDependencies>false</useTransitiveDependencies>
       <outputDirectory>jetty-webapps/opennms-remoting</outputDirectory>
       <includes><include>org.opennms.assemblies:org.opennms.assemblies.http-remoting:war:${project.version}</include></includes>
-      <fileMode>0644</fileMode>
-      <directoryMode>0755</directoryMode>
-    </dependencySet>
-    <dependencySet>
-      <!-- for jetty, just a few dependencies should go in WEB-INF/lib -->
-      <unpack>true</unpack>
-      <unpackOptions>
-        <includes>
-          <include>opennms-webapp-*.jar</include>
-          <include>*remote-poller-gwt*.jar</include>
-          <include>gwt*.jar</include>
-          <include>extremecomponents-*.jar</include>
-          <!-- Include an implementation of the JSTL tags -->
-          <include>org.apache.taglibs.standard.glassfish-*.jar</include>
-        </includes>
-        <excludes>
-          <exclude>javax.servlet.*.jar</exclude>
-          <exclude>servlet-api-*.jar</exclude>
-        </excludes>
-      </unpackOptions>
-      <useProjectArtifact>false</useProjectArtifact>
-      <useTransitiveDependencies>false</useTransitiveDependencies>
-      <outputDirectory>jetty-webapps/opennms-remoting/WEB-INF/lib</outputDirectory>
-      <includes><include>org.opennms.assemblies:org.opennms.assemblies.http-remoting:tar.gz:lib:${project.version}</include></includes>
-      <fileMode>0644</fileMode>
-      <directoryMode>0755</directoryMode>
-    </dependencySet>
-    <dependencySet>
-      <!-- for jetty, all other webapp dependencies should go in normal lib/ -->
-      <unpack>true</unpack>
-      <unpackOptions>
-        <excludes>
-          <exclude>opennms-webapp-*.jar</exclude>
-          <exclude>*remote-poller-gwt*.jar</exclude>
-          <exclude>gwt*.jar</exclude>
-          <exclude>extremecomponents-*.jar</exclude>
-          <exclude>org.apache.taglibs.standard.glassfish-*.jar</exclude>
-          <exclude>javax.servlet.*.jar</exclude>
-          <exclude>servlet-api-*.jar</exclude>
-          <exclude>com.springsource.javax.xml.bind*.jar</exclude>
-        </excludes>
-      </unpackOptions>
-      <useProjectArtifact>false</useProjectArtifact>
-      <useTransitiveDependencies>false</useTransitiveDependencies>
-      <outputDirectory>lib</outputDirectory>
-      <includes><include>org.opennms.assemblies:org.opennms.assemblies.http-remoting:tar.gz:lib:${project.version}</include></includes>
       <fileMode>0644</fileMode>
       <directoryMode>0755</directoryMode>
     </dependencySet>

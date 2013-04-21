@@ -1322,18 +1322,6 @@
     <severity>Normal</severity>
   </event>
   <event>
-    <uei>uei.opennms.org/vulnscand/specificVulnerabilityScan</uei>
-    <event-label>OpenNMS-defined vulnscand event: specificVulnerabilityScan</event-label>
-    <descr>
-      &lt;p&gt;A vulnerabilities scan has been forced.&lt;/p&gt;
-    </descr>
-    <logmsg dest='logndisplay'>
-      &lt;p&gt;A vulnerabilities scan has been forced on this
-      interface.&lt;/p&gt;
-    </logmsg>
-    <severity>Warning</severity>
-  </event>
-  <event>
     <uei>uei.opennms.org/threshold/relativeChangeExceeded</uei>
     <event-label>OpenNMS-defined threshold event: relativeChangeExceeded</event-label>
     <descr>
@@ -1705,7 +1693,7 @@
     <descr>
       This event is generated to invoke the promotion data of the Queueing RRD Strategy.
     </descr>
-    <logmsg dest='logonly'>
+    <logmsg dest='donotpersist'>
       A request has been generated to promote data from the queue for the file(s): %parm[filesToPromote]%.
     </logmsg>
     <severity>Normal</severity>
@@ -1932,6 +1920,13 @@
      <descr>&lt;p&gt;The Linkd process has finished its attempt to discover links for this node.&lt;/p&gt;</descr>
      <logmsg dest="logndisplay">&lt;p&gt;Linkd link discovery completed.&lt;/p&gt;</logmsg>
      <severity>Normal</severity>
+  </event>
+  <event>
+     <uei>uei.opennms.org/internal/linkd/nodeLinkDiscoverySuspended</uei>
+     <event-label>OpenNMS-defined Linkd Event: nodeLinkDiscoverySuspended</event-label>
+     <descr>&lt;p&gt;The Linkd process suspended its attempt to discover links for this node.&lt;/p&gt;</descr>
+     <logmsg dest="logndisplay">&lt;p&gt;Linkd link discovery suspended.&lt;/p&gt;</logmsg>
+     <severity>Warning</severity>
   </event>
 
 

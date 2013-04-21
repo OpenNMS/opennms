@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.11.4-SNAPSHOT</version>
+    <version>1.13.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-config-model</artifactId>
@@ -142,7 +142,6 @@
               org.opennms.netmgt.config.vacuumd.*;version="${project.version}",
               org.opennms.netmgt.config.views.*;version="${project.version}",
               org.opennms.netmgt.config.viewsdisplay.*;version="${project.version}",
-              org.opennms.netmgt.config.vulnscand.*;version="${project.version}",
               org.opennms.netmgt.config.webuiColors.*;version="${project.version}",
               org.opennms.netmgt.config.wmi.*;version="${project.version}",
               org.opennms.netmgt.config.xmlrpcd.*;version="${project.version}",

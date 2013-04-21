@@ -43,8 +43,6 @@ import org.eclipse.jetty.server.nio.SelectChannelConnector;
 import org.eclipse.jetty.server.ssl.SslSocketConnector;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
-import org.opennms.serviceregistration.ServiceRegistrationFactory;
-import org.opennms.serviceregistration.ServiceRegistrationStrategy;
 
 /**
  * Implements Web Application within OpenNMS as a Service Daemon.
@@ -57,7 +55,6 @@ public class JettyServer extends AbstractServiceDaemon {
     int m_port = 8080;
 
     private Server m_server;
-    private Map<String,ServiceRegistrationStrategy> services = new ConcurrentHashMap<String,ServiceRegistrationStrategy>();
     
     /**
      * <p>Constructor for JettyServer.</p>
@@ -142,13 +139,11 @@ public class JettyServer extends AbstractServiceDaemon {
                         contextPath = "/" + file.getName();
                     }
                     addContext(handlers, file, contextPath);
-                    registerService(port, contextPath);
                 }
             }
             if (rootDir != null) {
                 // If we deferred a ROOT context, handle that now
                 addContext(handlers, rootDir, "/");
-                registerService(port, "/");
             }
         }
 
@@ -166,31 +161,15 @@ public class JettyServer extends AbstractServiceDaemon {
     protected void addContext(HandlerCollection handlers, File name, String contextPath) {
         log().warn("adding context: " + contextPath + " -> " + name.getAbsolutePath());
         WebAppContext wac = new WebAppContext();
+	/*
+	 * Tell jetty to scan all of the jar files in the classpath for taglibs and other resources since
+         * most of our jars are installed in ${opennms.home}/lib.  This is only required for jetty7
+         * See: http://wiki.eclipse.org/Jetty/Howto/Configure_JSP
+         */
+	wac.setAttribute("org.eclipse.jetty.server.webapp.ContainerIncludeJarPattern",".*/[^/]*\\.jar$");
         wac.setWar(name.getAbsolutePath());
         wac.setContextPath(contextPath);
         handlers.addHandler(wac);
-    }
-
-    /**
-     * <p>registerService</p>
-     *
-     * @param port a {@link java.lang.Integer} object.
-     * @param contextPath a {@link java.lang.String} object.
-     */
-    protected void registerService(Integer port, String contextPath) {
-        String contextName = contextPath.replace("/", "");
-
-        try {
-            ServiceRegistrationStrategy srs = ServiceRegistrationFactory.getStrategy();
-            String host = InetAddress.getLocalHost().getHostName().replace(".local", "").replace(".", "-");
-            Map<String, String> properties = new ConcurrentHashMap<String, String>();
-            properties.put("path", contextPath);
-            
-            srs.initialize("HTTP", contextName + "-" + host, port, properties);
-            services.put(contextName, srs);
-        } catch (Throwable e) {
-            log().warn("unable to get a DNS-SD object for context '" + contextPath + "'", e);
-        }
     }
 
     /**
@@ -239,31 +218,11 @@ public class JettyServer extends AbstractServiceDaemon {
         } catch (Throwable e) {
             log().error("Error starting Jetty Server", e);
         }
-        for (String key: services.keySet()) {
-        	ServiceRegistrationStrategy srs = services.get(key);
-        	if (srs != null) {
-            	try {
-            		srs.register();
-            	} catch (Throwable e) {
-            		log().warn("unable to register a DNS-SD object for context '" + key + "'", e);
-            	}
-        	}
-        }
     }
 
     /** {@inheritDoc} */
     @Override
     protected void onStop() {
-        for (String key: services.keySet()) {
-        	ServiceRegistrationStrategy srs = services.get(key);
-        	if (srs != null) {
-            	try {
-            		srs.unregister();
-            	} catch (Throwable e) {
-            		log().warn("unable to unregister a DNS-SD object for context '" + key + "'", e);
-            	}
-        	}
-        }
         try {
             m_server.stop();
         } catch (Throwable e) {

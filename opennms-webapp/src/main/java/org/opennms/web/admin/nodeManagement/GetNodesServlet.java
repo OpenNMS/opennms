@@ -135,7 +135,7 @@ public class GetNodesServlet extends HttpServlet {
                     }
                 }
             }
-            userSession.setAttribute("lineItems.manage.jsp", new Integer(lineCount));
+            userSession.setAttribute("lineItems.manage.jsp", Integer.valueOf(lineCount));
         } finally {
             d.cleanUp();
         }

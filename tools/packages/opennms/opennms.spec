@@ -145,6 +145,20 @@ The OpenNMS distributed monitor.  For details, see:
 %{extrainfo2}
 
 
+%package jmx-config-generator
+Summary:	Generate JMX Configuration
+Group:		Applications/System
+Requires(pre):	%{jdk}
+Requires:	%{jdk}
+
+%description jmx-config-generator
+Generates configuration files for monitoring/collecting from
+the Java Management Extensions.
+
+%{extrainfo}
+%{extrainfo2}
+
+
 %package webapp-jetty
 Summary:	Embedded web interface for OpenNMS
 Group:		Applications/System
@@ -189,6 +203,8 @@ Requires(pre):	opennms-plugin-provisioning-snmp-asset
 Requires:	opennms-plugin-provisioning-snmp-asset
 Requires(pre):	opennms-plugin-ticketer-centric
 Requires:	opennms-plugin-ticketer-centric
+Requires(pre):	opennms-plugin-protocol-cifs
+Requires:	opennms-plugin-protocol-cifs
 Requires(pre):	opennms-plugin-protocol-dhcp
 Requires:	opennms-plugin-protocol-dhcp
 Requires(pre):	opennms-plugin-protocol-nsclient
@@ -273,6 +289,19 @@ Requires:	opennms-core = %{version}-%{release}
 %description plugin-provisioning-snmp-asset
 The SNMP asset provisioning adapter responds to provisioning events by updating asset
 fields with data fetched from SNMP GET requests.
+
+%{extrainfo}
+%{extrainfo2}
+
+
+%package plugin-protocol-cifs
+Summary:	CIFS Poller Plugin for OpenNMS
+Group:		Applications/System
+Requires(pre):	opennms-core = %{version}-%{release}
+Requires:	opennms-core = %{version}-%{release}
+
+%description plugin-protocol-cifs
+The CIFS protocol plugin provides a poller monitor for CIFS network shares.
 
 %{extrainfo}
 %{extrainfo2}
@@ -401,18 +430,18 @@ if [ "%{skip_compile}" = 1 ]; then
 	TOPDIR=`pwd`
 	for dir in . opennms-tools; do
 		pushd $dir
-			"$TOPDIR"/compile.pl -N $EXTRA_OPTIONS -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" -Dopennms.home="%{instprefix}" '-P!jspc' install
+			"$TOPDIR"/compile.pl -N $EXTRA_OPTIONS -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" -Dopennms.home="%{instprefix}" install
 		popd
 	done
 else
 	echo "=== RUNNING COMPILE ==="
 	./compile.pl $EXTRA_OPTIONS -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
-	    -Dopennms.home="%{instprefix}" '-P!jspc' install
+	    -Dopennms.home="%{instprefix}" install
 fi
 
 echo "=== BUILDING ASSEMBLIES ==="
 ./assemble.pl $EXTRA_OPTIONS -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
-	-Dopennms.home="%{instprefix}" -Dbuild.profile=full '-P!jspc' install
+	-Dopennms.home="%{instprefix}" -Dbuild.profile=full install
 
 pushd opennms-tools
 	../compile.pl $EXTRA_OPTIONS -N -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
@@ -520,6 +549,7 @@ find $RPM_BUILD_ROOT%{sharedir}/etc-pristine ! -type d | \
 	sort >> %{_tmppath}/files.main
 find $RPM_BUILD_ROOT%{instprefix}/bin ! -type d | \
 	sed -e "s|^$RPM_BUILD_ROOT|%attr(755,root,root) |" | \
+	grep -v '/jmx-config-generator' | \
 	grep -v '/remote-poller.sh' | \
 	grep -v '/remote-poller.jar' | \
 	sort >> %{_tmppath}/files.main
@@ -542,6 +572,7 @@ find $RPM_BUILD_ROOT%{instprefix}/lib ! -type d | \
 	sed -e "s|^$RPM_BUILD_ROOT|%attr(755,root,root) |" | \
 	grep -v 'ncs-' | \
 	grep -v 'provisioning-adapter' | \
+	grep -v 'org.opennms.protocols.cifs' | \
 	grep -v 'org.opennms.protocols.dhcp' | \
 	grep -v 'jdhcp' | \
 	grep -v 'org.opennms.protocols.nsclient' | \
@@ -552,6 +583,7 @@ find $RPM_BUILD_ROOT%{instprefix}/lib ! -type d | \
 	grep -v 'org.opennms.protocols.xmp' | \
 	grep -v 'Xmp' | \
 	grep -v 'org.opennms.features.juniper-tca-collector' | \
+	grep -v 'opennms_jmx_config_generator' | \
 	sort >> %{_tmppath}/files.main
 find $RPM_BUILD_ROOT%{instprefix}/etc -type d | \
 	sed -e "s,^$RPM_BUILD_ROOT,%dir ," | \
@@ -609,6 +641,10 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{bindir}/remote-poller.sh
 %{instprefix}/bin/remote-poller.jar
 
+%files jmx-config-generator
+%attr(755,root,root) %{bindir}/jmx-config-generator
+%{instprefix}/lib/opennms_jmx_config_generator.jar
+
 %files ncs
 %defattr(644 root root 755)
 %{instprefix}/lib/ncs-*.jar
@@ -658,6 +694,10 @@ rm -rf $RPM_BUILD_ROOT
 %{instprefix}/lib/opennms-snmp-asset-provisioning-adapter*.jar
 %config(noreplace) %{instprefix}/etc/snmp-asset-adapter-configuration.xml
 %{sharedir}/etc-pristine/snmp-asset-adapter-configuration.xml
+
+%files plugin-protocol-cifs
+%defattr(664 root root 775)
+%{instprefix}/lib/org.opennms.protocols.cifs*.jar
 
 %files plugin-protocol-dhcp
 %defattr(664 root root 775)

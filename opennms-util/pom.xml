@@ -3,14 +3,15 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.11.4-SNAPSHOT</version>
+    <version>1.13.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-util</artifactId>
   <name>OpenNMS Utilities</name>
-  <packaging>bundle</packaging>
+  <packaging>jar</packaging>
   <build>
     <plugins>
+<!--
       <plugin>
         <groupId>org.apache.felix</groupId>
         <artifactId>maven-bundle-plugin</artifactId>
@@ -23,6 +24,7 @@
           </instructions>
         </configuration>
       </plugin>
+-->
     </plugins>
   </build>
   <dependencies>

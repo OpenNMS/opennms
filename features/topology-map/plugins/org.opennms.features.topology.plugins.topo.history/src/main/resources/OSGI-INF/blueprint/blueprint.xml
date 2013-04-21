@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
+
+    <!--
+    <bean id="historyManager" class="org.opennms.features.topology.plugins.topo.MemoryHistoryManager"/>
+    -->
+
+    <bean id="historyManager" class="org.opennms.features.topology.plugins.topo.BundleContextHistoryManager">
+      <argument ref="blueprintBundleContext"/>
+    </bean>
+
+    <service interface="org.opennms.features.topology.api.HistoryManager" ref="historyManager"/>
+
+    <reference-list interface="org.opennms.features.topology.api.HistoryOperation" availability="optional">
+        <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="historyManager"/>
+    </reference-list>
+
+    <!-- All CheckedOperation classes are HistoryOperation instances -->
+    <reference-list interface="org.opennms.features.topology.api.CheckedOperation" availability="optional">
+        <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="historyManager"/>
+    </reference-list>
+
+</blueprint>

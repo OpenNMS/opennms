@@ -120,8 +120,8 @@
 	            <td align="left" ><%=iface.get_routenexthop()%></td>
 	            <td align="left" ><%=iface.get_ifindex()%></td>
 	            <td align="left" ><%=iface.get_routemetric1()%></td>
-	            <td align="left" ><%= ElementUtil.getIpRouteProtocolString(iface.get_routeproto()) %></td>
-	            <td align="left" ><%= ElementUtil.getIpRouteTypeString(iface.get_routetype()) %></td>
+	            <td align="left" ><%=iface.get_routeproto()%></td>
+	            <td align="left" ><%=iface.get_routetype()%></td>
 	        </tr>
 	    <% } %>
     <% } %>

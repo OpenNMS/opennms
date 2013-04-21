@@ -1,0 +1,70 @@
+<!-- 
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2006-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+ -->
+<div>
+	<h1>Introduction</h1>
+	This wizard helps to create multiple configuration snippets which you
+	can add to your OpenNMS configuration files to create a monitor with a
+	data collection of any external Java application which has connecting
+	via JMX<sup><a href="#fn1">1</a></sup> enabled (e.g. a Java Application
+	Server).<br /> <br /> The wizard has multiple steps. These are:
+
+	<h2>1. Introduction</h2>
+	This Introduction view. <br />
+
+	<h2>2. Service Configuration</h2>
+	The external java application provides multiple information via so
+	called Managed Beans (MBeans)<sup><a href="#fn2">2</a></sup>. To
+	retrieve all MBeans provided by the java application we want to monitor
+	we have to set up multiple connection settings, e.g. the host and port.
+	After we have done that, all MBeans are collected and shown to the user
+	(see step 3) to make some changes.
+
+	<h2>3. MBeans Configuration</h2>
+	After setting up the Service Configuration all Managed Beans from the
+	external java application were retrieved. So we have got a whole bunch
+	of MBeans collected, but not all of them are relevant for our monitor.
+	So we can add or remove MBeans from the monitor scope. We can also make
+	some changes to make the MBean names (and attributes, and so on) more
+	human readable.
+
+	<h2>4. OpenNMS Configuration</h2>
+	After we have configured the MBeans we want to monitor multiple
+	configuration snippets have been generated according to the settings
+	during this wizard. The configuration files now have to be put into
+	your running OpenNMS. This is described in more detail in this step.
+
+	<hr />
+	<sup id="fn1">1. <a
+		href="http://en.wikipedia.org/wiki/Java_Management_Extensions"
+		target="_blank">Wikipedia: Java Management Extensions (JMX)</a>
+	</sup> <br /> <sup id="fn2">2. <a
+		href="http://en.wikipedia.org/wiki/Java_Management_Extensions#Managed_Bean"
+		target="_blank">Wikipedia: Managed Bean (MBean)</a></sup>
+</div>

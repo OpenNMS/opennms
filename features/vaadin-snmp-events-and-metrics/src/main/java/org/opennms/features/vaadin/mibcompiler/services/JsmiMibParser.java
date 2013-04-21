@@ -32,6 +32,7 @@ import java.io.Serializable;
 import java.math.BigInteger;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,6 +54,7 @@ import org.jsmiparser.smi.SmiTrapType;
 import org.jsmiparser.smi.SmiVariable;
 
 import org.opennms.core.utils.LogUtils;
+import org.opennms.features.namecutter.NameCutter;
 import org.opennms.features.vaadin.mibcompiler.api.MibParser;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.config.datacollection.Group;
@@ -62,6 +64,7 @@ import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.config.datacollection.StorageStrategy;
 import org.opennms.netmgt.dao.support.IndexStorageStrategy;
 import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.model.PrefabGraph;
 import org.opennms.netmgt.xml.eventconf.Decode;
 import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.netmgt.xml.eventconf.Events;
@@ -131,6 +134,12 @@ public class JsmiMibParser implements MibParser, Serializable {
         List<URL> queue = new ArrayList<URL>();
         parser.getFileParserPhase().setInputUrls(queue);
 
+        // Create a cache of filenames to do case-insensitive lookups
+        final Map<String,File> mibDirectoryFiles = new HashMap<String,File>();
+        for (final File file : mibDirectory.listFiles()) {
+            mibDirectoryFiles.put(file.getName().toLowerCase(), file);
+        }
+
         // Parse MIB
         LogUtils.debugf(this, "Parsing %s", mibFile.getAbsolutePath());
         SmiMib mib = null;
@@ -151,7 +160,7 @@ public class JsmiMibParser implements MibParser, Serializable {
                 if (dependencies.isEmpty()) // No dependencies, everything is fine.
                     break;
                 missingDependencies.addAll(dependencies);
-                if (!addDependencyToQueue(queue))
+                if (!addDependencyToQueue(queue, mibDirectoryFiles))
                     break;
             }
         }
@@ -216,24 +225,28 @@ public class JsmiMibParser implements MibParser, Serializable {
         LogUtils.infof(this, "Generating data collection configuration for %s", module.getId());
         DatacollectionGroup dcGroup = new DatacollectionGroup();
         dcGroup.setName(module.getId());
+        NameCutter cutter = new NameCutter();
         try {
             for (SmiVariable v : module.getVariables()) {
-                String groupName = null, resourceType = null;
-                if (v.getNode().getParent().getSingleValue() instanceof SmiRow) {
-                    groupName = v.getNode().getParent().getParent().getSingleValue().getId();
-                    resourceType = v.getNode().getParent().getSingleValue().getId();
-                } else {
-                    groupName = v.getNode().getParent().getSingleValue().getId();
-                }
+                String groupName = getGroupName(v);
+                String resourceType = getResourceType(v);
                 Group group = getGroup(dcGroup, groupName, resourceType);
-                String typeName = getType(v.getType().getPrimitiveType());
+                String typeName = getMetricType(v.getType().getPrimitiveType());
                 if (typeName != null) {
+                    String alias = cutter.trimByCamelCase(v.getId(), 19); // RRDtool/JRobin DS size restriction.
                     MibObj mibObj = new MibObj();
                     mibObj.setOid('.' + v.getOidStr());
                     mibObj.setInstance(resourceType == null ? "0" : resourceType);
-                    mibObj.setAlias(v.getId());
+                    mibObj.setAlias(alias);
                     mibObj.setType(typeName);
                     group.addMibObj(mibObj);
+                    if (typeName.equals("string") && resourceType != null) {
+                        for (ResourceType rs : dcGroup.getResourceTypeCollection()) {
+                            if (rs.getName().equals(resourceType) && rs.getResourceLabel().equals("${index}")) {
+                                rs.setResourceLabel("${" + v.getId() + "} (${index})");
+                            }
+                        }
+                    }
                 }
             }
         } catch (Throwable e) {
@@ -245,6 +258,82 @@ public class JsmiMibParser implements MibParser, Serializable {
             return null;
         }
         return dcGroup;
+    }
+
+
+    /* (non-Javadoc)
+     * @see org.opennms.features.vaadin.mibcompiler.api.MibParser#getPrefabGraphs()
+     */
+    @Override
+    public List<PrefabGraph> getPrefabGraphs() {
+        if (module == null) {
+            return null;
+        }
+        List<PrefabGraph> graphs = new ArrayList<PrefabGraph>();
+        LogUtils.infof(this, "Generating graph templates for %s", module.getId());
+        NameCutter cutter = new NameCutter();
+        try {
+            for (SmiVariable v : module.getVariables()) {
+                String groupName = getGroupName(v);
+                String resourceType = getResourceType(v);
+                if (resourceType == null)
+                    resourceType = "nodeSnmp";
+                String typeName = getMetricType(v.getType().getPrimitiveType());
+                if (v.getId().contains("Index")) { // Treat SNMP Indexes as strings.
+                    typeName = "string";
+                }
+                int order = 1;
+                if (typeName != null && !typeName.toLowerCase().contains("string")) {
+                    String name = groupName + '.' + v.getId();
+                    String alias = cutter.trimByCamelCase(v.getId(), 19); // RRDtool/JRobin DS size restriction.
+                    String descr = v.getDescription().replaceAll("[\n\r]", "").replaceAll("\\s+", " ");
+                    StringBuffer sb = new StringBuffer();
+                    sb.append("--title=\"").append(v.getId()).append("\" \\\n");
+                    sb.append(" DEF:var={rrd1}:").append(alias).append(":AVERAGE \\\n");
+                    sb.append(" LINE1:var#0000ff:\"").append(v.getId()).append("\" \\\n");
+                    sb.append(" GPRINT:var:AVERAGE:\"Avg\\\\: %8.2lf %s\" \\\n");
+                    sb.append(" GPRINT:var:MIN:\"Min\\\\: %8.2lf %s\" \\\n");
+                    sb.append(" GPRINT:var:MAX:\"Max\\\\: %8.2lf %s\\n\"");
+                    sb.append("\n\n");
+                    PrefabGraph graph = new PrefabGraph(name, descr, new String[] { alias }, sb.toString(), new String[0], new String[0], order++, new String[] { resourceType }, descr, null, null, new String[0]);
+                    graphs.add(graph);
+                }
+            }
+        } catch (Throwable e) {
+            String errors = e.getMessage();
+            if (errors == null || errors.trim().equals(""))
+                errors = "An unknown error accured when generating graph templates from the MIB " + module.getId();
+            LogUtils.errorf(this, e, "Graph templates parsing error: %s", errors);
+            errorHandler.addError(errors);
+            return null;
+        }
+        return graphs;
+    }
+
+    /**
+     * Gets the group name.
+     *
+     * @param var the SMI Variable
+     * @return the group name
+     */
+    private String getGroupName(SmiVariable var) {
+        if (var.getNode().getParent().getSingleValue() instanceof SmiRow) {
+            return var.getNode().getParent().getParent().getSingleValue().getId();
+        }
+        return var.getNode().getParent().getSingleValue().getId();
+    }
+
+    /**
+     * Gets the resource type.
+     *
+     * @param var the SMI Variable
+     * @return the resource type
+     */
+    private String getResourceType(SmiVariable var) {
+        if (var.getNode().getParent().getSingleValue() instanceof SmiRow) {
+            return var.getNode().getParent().getSingleValue().getId();
+        }
+        return null;
     }
 
     /**
@@ -269,25 +358,28 @@ public class JsmiMibParser implements MibParser, Serializable {
      * Adds the dependency to the queue.
      *
      * @param queue the queue
+     * @param mibDirectoryFiles
      * @return true, if successful
      */
-    private boolean addDependencyToQueue(List<URL> queue) {
+    private boolean addDependencyToQueue(final List<URL> queue, final Map<String, File> mibDirectoryFiles) {
         final List<String> dependencies = new ArrayList<String>(missingDependencies);
         boolean ok = true;
         for (String dependency : dependencies) {
             boolean found = false;
             for (String suffix : MIB_SUFFIXES) {
-                File f = new File(mibDirectory, dependency + suffix);
-                LogUtils.debugf(this, "Checking dependency file %s", f.getAbsolutePath());
-                if (f.exists()) {
-                    LogUtils.infof(this, "Adding dependency file %s", f.getAbsolutePath());
-                    addFileToQueue(queue, f);
-                    missingDependencies.remove(dependency);
-                    found = true;
-                    break;
-                } else {
-                    LogUtils.debugf(this, "Dependency file %s doesn't exist", f.getAbsolutePath());
+                final String fileName = (dependency+suffix).toLowerCase();
+                if (mibDirectoryFiles.containsKey(fileName)) {
+                    File f = mibDirectoryFiles.get(fileName);
+                    LogUtils.debugf(this, "Checking dependency file %s", f.getAbsolutePath());
+                    if (f.exists()) {
+                        LogUtils.infof(this, "Adding dependency file %s", f.getAbsolutePath());
+                        addFileToQueue(queue, f);
+                        missingDependencies.remove(dependency);
+                        found = true;
+                        break;
+                    }
                 }
+                LogUtils.debugf(this, "Dependency file %s doesn't exist", fileName);
             }
             if (!found) {
                 LogUtils.warnf(this, "Couldn't find dependency %s on %s", dependency, mibDirectory);
@@ -319,18 +411,21 @@ public class JsmiMibParser implements MibParser, Serializable {
      */
 
     /**
-     * Gets the type.
-     *
+     * Gets the metric type.
+     * <p>This should be consistent with NumericAttributeType and StringAttributeType.</p>
+     * <p>For this reason the valid types are: counter, gauge, timeticks, integer, octetstring, string.</p>
+     * <p>Any derivative is also valid, for example: Counter32, Integer64, etc...</p>
+     * 
      * @param type the type
      * @return the type
      */
-    private String getType(SmiPrimitiveType type) {
+    private String getMetricType(SmiPrimitiveType type) {
         if (type.equals(SmiPrimitiveType.ENUM)) // ENUM are just informational elements.
-            return "string";
-        if (type.equals(SmiPrimitiveType.TIME_TICKS)) // TimeTicks will be treated as strings.
             return "string";
         if (type.equals(SmiPrimitiveType.OBJECT_IDENTIFIER)) // ObjectIdentifier will be treated as strings.
             return "string";
+        if (type.equals(SmiPrimitiveType.UNSIGNED_32)) // Unsigned32 will be treated as integer.
+            return "integer";
         return type.toString().replaceAll("_", "").toLowerCase();
     }
 
@@ -366,7 +461,6 @@ public class JsmiMibParser implements MibParser, Serializable {
     /*
      * Event processing methods
      * 
-     * FIXME: This works for notifications (SmiNotificationType) not with SmiTrapType (which is different)
      */
 
     /**

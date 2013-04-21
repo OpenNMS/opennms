@@ -36,6 +36,7 @@ import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
+import org.opennms.web.api.OnmsHeaderProvider;
 import org.ops4j.pax.vaadin.AbstractApplicationFactory;
 import org.ops4j.pax.vaadin.ScriptTag;
 import org.osgi.service.blueprint.container.BlueprintContainer;
@@ -48,6 +49,7 @@ public class TopologyWidgetTestApplicationFactory extends AbstractApplicationFac
     
 	private final BlueprintContainer m_blueprintContainer;
 	private final String m_beanName;
+	private OnmsHeaderProvider m_headerProvider;
 	
 	public TopologyWidgetTestApplicationFactory(BlueprintContainer container, String beanName) {
 		m_blueprintContainer = container;
@@ -57,11 +59,20 @@ public class TopologyWidgetTestApplicationFactory extends AbstractApplicationFac
     @Override
 	public Application createApplication(HttpServletRequest request) throws ServletException {
         TopologyWidgetTestApplication application = (TopologyWidgetTestApplication) m_blueprintContainer.getComponentInstance(m_beanName);
+        application.setHeaderHtml(getHeader(request));
+        application.setUser(request.getRemoteUser());
         LoggerFactory.getLogger(getClass()).debug(MessageFormatter.format("created {} for servlet path {}", application, request.getServletPath()).getMessage()/* , new Exception("Show me the stack trace") */);
         return application;
 	}
 
-	@Override
+
+    private String getHeader(HttpServletRequest request) {
+        if(m_headerProvider == null) return "";
+        
+        return m_headerProvider.getHeaderHtml(request);
+    }
+
+    @Override
 	public Class<? extends Application> getApplicationClass() throws ClassNotFoundException {
 		return TopologyWidgetTestApplication.class;
 	}
@@ -79,5 +90,9 @@ public class TopologyWidgetTestApplicationFactory extends AbstractApplicationFac
         tags.add(new ScriptTag("http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js", "text/javascript", null));
         tags.add(new ScriptTag(null, "text/javascript", "CFInstall.check({ mode: \"overlay\" });"));
         return tags;
+    }
+    
+    public void setHeaderProvider(OnmsHeaderProvider headerProvider) {
+        m_headerProvider = headerProvider;
     }
 }
