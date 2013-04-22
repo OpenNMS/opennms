@@ -33,9 +33,9 @@ import java.util.ArrayList;
 import javax.servlet.ServletContext;
 
 import org.opennms.core.utils.WebSecurityUtils;
+import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.web.alarm.AcknowledgeType;
-import org.opennms.web.alarm.Alarm;
 import org.opennms.web.alarm.DaoWebAlarmRepository;
 import org.opennms.web.alarm.SortStyle;
 import org.opennms.web.alarm.WebAlarmRepository;
@@ -90,18 +90,18 @@ public class AlarmFeed extends AbstractFeed {
 
         AlarmCriteria queryCriteria = new AlarmCriteria(filters.toArray(new Filter[] {}), SortStyle.FIRSTEVENTTIME, AcknowledgeType.BOTH, this.getMaxEntries(), AlarmCriteria.NO_OFFSET);
 
-        Alarm[] alarms = m_webAlarmRepository.getMatchingAlarms(queryCriteria);
+        OnmsAlarm[] alarms = m_webAlarmRepository.getMatchingAlarms(queryCriteria);
 
         SyndEntry entry;
         
-        for (Alarm alarm : alarms) {
+        for (OnmsAlarm alarm : alarms) {
             entry = new SyndEntryImpl();
             entry.setPublishedDate(alarm.getFirstEventTime());
-            if (alarm.getAcknowledgeTime() != null) {
-                entry.setTitle(sanitizeTitle(alarm.getLogMessage()) + " (acknowledged by " + alarm.getAcknowledgeUser() + ")");
-                entry.setUpdatedDate(alarm.getAcknowledgeTime());
+            if (alarm.getAckTime() != null) {
+                entry.setTitle(sanitizeTitle(alarm.getLogMsg()) + " (acknowledged by " + alarm.getAckUser() + ")");
+                entry.setUpdatedDate(alarm.getAckTime());
             } else {
-                entry.setTitle(sanitizeTitle(alarm.getLogMessage()));
+                entry.setTitle(sanitizeTitle(alarm.getLogMsg()));
                 entry.setUpdatedDate(alarm.getFirstEventTime());
             }
             entry.setLink(getUrlBase() + "alarm/detail.htm?id=" + alarm.getId());

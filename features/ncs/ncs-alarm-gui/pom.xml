@@ -12,7 +12,6 @@
   <packaging>war</packaging>
   <name>OpenNMS NCS Alarm GUI</name>
   <url>http://maven.apache.org</url>
-  <!--
   <build>
     <plugins>
       <plugin>
@@ -27,14 +26,41 @@
             <configuration>
               <webXmlFragment>${basedir}/target/web.xml.jspc-insert</webXmlFragment>
               <generatedClasses>${basedir}/target/jsp-classes</generatedClasses>
+              <useProvidedScope>true</useProvidedScope>
+              <tldJarNamePatterns>.*\.jar$</tldJarNamePatterns>
             </configuration>
           </execution>
         </executions>
+        <!-- add some jars to the plugin classpath so they can be searched for .tld files -->
+        <dependencies>
+          <dependency>
+            <groupId>org.opennms.dependencies</groupId>
+            <artifactId>spring-web-dependencies</artifactId>
+            <type>pom</type>
+            <version>${project.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.opennms.dependencies</groupId>
+            <artifactId>spring-security-dependencies</artifactId>
+            <type>pom</type>
+            <version>${project.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.extremecomponents</groupId>
+            <artifactId>extremecomponents</artifactId>
+            <version>1.0.1</version>
+            <exclusions>
+              <exclusion>
+                <groupId>taglibs</groupId>
+                <artifactId>standard</artifactId>
+              </exclusion>
+            </exclusions>
+          </dependency>
+        </dependencies>
       </plugin>
     </plugins>
   </build>
-  -->
-  
+
   <dependencies>
     <dependency>
       <groupId>org.opennms.features.ncs</groupId>
@@ -49,6 +75,11 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-webapp</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.springframework-security</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>

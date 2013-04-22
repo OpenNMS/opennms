@@ -32,18 +32,12 @@ import java.util.Date;
 import java.util.List;
 
 import org.opennms.netmgt.model.OnmsAcknowledgment;
+import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
 import org.opennms.web.alarm.filter.AlarmCriteria;
 
-/*
- * WebAlarmRepository @author brozow
- */
 /**
- * <p>WebAlarmRepository interface.</p>
- *
- * @author ranger
- * @version $Id: $
- * @since 1.8.1
+ * WebAlarmRepository @author brozow
  */
 public interface WebAlarmRepository {
 
@@ -69,7 +63,7 @@ public interface WebAlarmRepository {
      * @param alarmId the alarm id
      * @return the alarm object
      */
-    public abstract Alarm getAlarm(int alarmId);
+    public abstract OnmsAlarm getAlarm(int alarmId);
 
     /**
      * Gets alarms matching a specific criteria.
@@ -77,7 +71,7 @@ public interface WebAlarmRepository {
      * @param criteria the criteria
      * @return a array with matching alarms
      */
-    public abstract Alarm[] getMatchingAlarms(AlarmCriteria criteria);
+    public abstract OnmsAlarm[] getMatchingAlarms(AlarmCriteria criteria);
 
     /**
      * Acknowledge alarms matching a specific criteria.
