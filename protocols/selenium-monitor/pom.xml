@@ -11,7 +11,7 @@
   <name>OpenNMS Selenium Monitor</name>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <seleniumVersion>2.7.0</seleniumVersion>
+    <seleniumVersion>2.32.0</seleniumVersion>
   </properties>
   <packaging>bundle</packaging>
   <build>
@@ -96,6 +96,12 @@
         <groupId>org.seleniumhq.selenium</groupId>
         <artifactId>selenium-api</artifactId>
         <version>${seleniumVersion}</version>
+    </dependency>
+
+    <dependency>
+        <groupId>com.github.detro.ghostdriver</groupId>
+        <artifactId>phantomjsdriver</artifactId>
+        <version>1.0.3</version>
     </dependency>
 
     <dependency>
