@@ -32,6 +32,7 @@ import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
 import org.opennms.netmgt.snmp.AbstractSnmpValue;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpValue;
@@ -330,7 +331,9 @@ class Snmp4JValue extends AbstractSnmpValue {
     	   if (obj.getClass() != getClass()) return false;
 
     	   final Snmp4JValue that = (Snmp4JValue)obj;
-    	   return this.m_value == null ? that.m_value == null : this.m_value.equals(that.m_value);
+    	   return new EqualsBuilder()
+    	   	.append(this.m_value, that.m_value)
+    	   	.isEquals();
     }
     
 }

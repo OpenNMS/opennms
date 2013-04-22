@@ -35,6 +35,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.xml.bind.InetAddressXmlAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,7 +90,7 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
             String value = pair[1];
 
             if ("address".equalsIgnoreCase(key)) {
-                agentConfig.setAddress(InetAddrUtils.addr(value));
+                agentConfig.setAddress(InetAddressUtils.addr(value));
             } else if ("port".equalsIgnoreCase(key)) {
                 agentConfig.setPort(Integer.parseInt(value));
             } else if ("timeout".equalsIgnoreCase(key)) {
@@ -128,7 +130,7 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
 
     public String toProtocolConfigString() {
         StringBuffer buff = new StringBuffer("snmp:");
-        buff.append("address=" + InetAddrUtils.str(m_address));
+        buff.append("address=" + InetAddressUtils.str(m_address));
         buff.append(",port=" + getPort());
         buff.append(",timeout=" + getTimeout());
         buff.append(",retries=" + getRetries());
@@ -152,8 +154,8 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
 
     public String toString() {
         StringBuffer buff = new StringBuffer("AgentConfig[");
-        buff.append("Address: " + InetAddrUtils.str(m_address));
-        buff.append(", ProxyForAddress: " + InetAddrUtils.str(m_proxyFor));
+        buff.append("Address: " + InetAddressUtils.str(m_address));
+        buff.append(", ProxyForAddress: " + InetAddressUtils.str(m_proxyFor));
         buff.append(", Port: " + getPort());
         buff.append(", Community: " + getReadCommunity());
         buff.append(", Timeout: " + getTimeout());
@@ -175,7 +177,7 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
     }
 
 
-    @XmlJavaTypeAdapter(InetAddrXmlAdapter.class)
+    @XmlJavaTypeAdapter(InetAddressXmlAdapter.class)
     public InetAddress getAddress() {
         return m_address;
     }
@@ -184,7 +186,7 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
         m_address = address;
     }
 
-    @XmlJavaTypeAdapter(InetAddrXmlAdapter.class)
+    @XmlJavaTypeAdapter(InetAddressXmlAdapter.class)
     public InetAddress getProxyFor() {
         return m_proxyFor;
     }

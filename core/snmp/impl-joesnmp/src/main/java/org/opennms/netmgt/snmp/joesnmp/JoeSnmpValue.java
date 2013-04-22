@@ -31,6 +31,7 @@ package org.opennms.netmgt.snmp.joesnmp;
 import java.math.BigInteger;
 import java.net.InetAddress;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
 import org.opennms.netmgt.snmp.AbstractSnmpValue;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpValue;
@@ -305,8 +306,9 @@ class JoeSnmpValue extends AbstractSnmpValue {
            if (obj.getClass() != getClass()) return false;
 
            final JoeSnmpValue that = (JoeSnmpValue)obj;
-           return m_value == null ? that.m_value == null : m_value.equals(that.m_value);
-
+           return new EqualsBuilder()
+               .append(m_value, that.m_value)
+               .isEquals();
     }
     
 }

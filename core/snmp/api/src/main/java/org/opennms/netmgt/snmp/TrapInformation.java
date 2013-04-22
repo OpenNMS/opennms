@@ -30,12 +30,9 @@ package org.opennms.netmgt.snmp;
 
 import java.net.InetAddress;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.opennms.core.utils.ThreadCategory;
 
 public abstract class TrapInformation implements TrapNotification {
-	
-	private static final Logger s_log = LoggerFactory.getLogger(TrapInformation.class);
 
     /**
      * The internet address of the sending agent
@@ -74,6 +71,10 @@ public abstract class TrapInformation implements TrapNotification {
         // by default we do nothing;
     }
     
+    protected ThreadCategory log() {
+        return ThreadCategory.getInstance(getClass());
+    }
+
     protected InetAddress getAgentAddress() {
         return getAgent();
     }
@@ -102,7 +103,9 @@ public abstract class TrapInformation implements TrapNotification {
         m_trapProcessor.setAgentAddress(getAgentAddress());
         m_trapProcessor.setTrapAddress(getTrapAddress());
     
-        s_log.debug("{} trap - trapInterface: ()", getVersion(), getTrapAddress());
+        if (log().isDebugEnabled()) {
+            log().debug(getVersion()+" trap - trapInterface: " + getTrapAddress());
+        }
         
         // time-stamp
         m_trapProcessor.setTimeStamp(getTimeStamp());

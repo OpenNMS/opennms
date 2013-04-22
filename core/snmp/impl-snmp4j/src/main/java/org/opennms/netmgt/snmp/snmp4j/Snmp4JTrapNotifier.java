@@ -30,6 +30,7 @@ package org.opennms.netmgt.snmp.snmp4j;
 
 import java.net.InetAddress;
 
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.TrapIdentity;
@@ -37,8 +38,6 @@ import org.opennms.netmgt.snmp.TrapInformation;
 import org.opennms.netmgt.snmp.TrapNotificationListener;
 import org.opennms.netmgt.snmp.TrapProcessor;
 import org.opennms.netmgt.snmp.TrapProcessorFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.snmp4j.CommandResponder;
 import org.snmp4j.CommandResponderEvent;
 import org.snmp4j.MessageException;
@@ -55,8 +54,6 @@ import org.snmp4j.smi.Variable;
 import org.snmp4j.smi.VariableBinding;
 
 public class Snmp4JTrapNotifier implements CommandResponder {
-	
-	public static final Logger s_log = LoggerFactory.getLogger(Snmp4JTrapNotifier.class);
 
     private TrapProcessorFactory m_trapProcessorFactory;
     private TrapNotificationListener m_listener;
@@ -176,14 +173,16 @@ public class Snmp4JTrapNotifier implements CommandResponder {
         
         protected long getTimeStamp() {
 
-        	s_log.debug("V2 {}"+m_pduTypeString+" first varbind value: {}", m_pduTypeString, getVarBindAt(0).getVariable());
+        	if (log().isDebugEnabled()) {
+                log().debug("V2 "+m_pduTypeString+" first varbind value: " + getVarBindAt(0).getVariable().toString());
+            }
 
             switch (getVarBindAt(SNMP_SYSUPTIME_OID_INDEX).getVariable().getSyntax()) {
             case SMIConstants.SYNTAX_TIMETICKS:
-                s_log.debug("V2 {} first varbind value is of type TIMETICKS (correct)", m_pduTypeString);
+                log().debug("V2 "+m_pduTypeString+" first varbind value is of type TIMETICKS (correct)");
                 return ((TimeTicks) getVarBindAt(SNMP_SYSUPTIME_OID_INDEX).getVariable()).getValue();
             case SMIConstants.SYNTAX_INTEGER32:
-                s_log.debug("V2 {} first varbind value is of type INTEGER, casting to TIMETICKS", m_pduTypeString);
+                log().debug("V2 "+m_pduTypeString+" first varbind value is of type INTEGER, casting to TIMETICKS");
                 return ((Integer32) getVarBindAt(SNMP_SYSUPTIME_OID_INDEX).getVariable()).getValue();
             default:
                 throw new IllegalArgumentException("V2 "+m_pduTypeString+" does not have the required first varbind as TIMETICKS - cannot process "+m_pduTypeString);
@@ -215,7 +214,9 @@ public class Snmp4JTrapNotifier implements CommandResponder {
                 throw new IllegalArgumentException("Received not SNMPv2 Trap|Inform from host " + getTrapAddress() + " PDU Type = " + PDU.getTypeString(getPdu().getType()));
             }
             
-            s_log.debug("V2 {} numVars or pdu length: {}", m_pduTypeString, getPduLength());
+            if (log().isDebugEnabled()) {
+                log().debug("V2 "+m_pduTypeString+" numVars or pdu length: " + getPduLength());
+            }
             
             if (getPduLength() < 2) {
                 throw new IllegalArgumentException("V2 "+m_pduTypeString+" from " + getTrapAddress() + " IGNORED due to not having the required varbinds.  Have " + getPduLength() + ", needed at least 2");
@@ -229,12 +230,7 @@ public class Snmp4JTrapNotifier implements CommandResponder {
              * missing, which is seen with some Extreme equipment.
              */
             if (varBindName0.equals(EXTREME_SNMP_SYSUPTIME_OID)) {
-                s_log.info("V2 {} from {} has been corrected due to the sysUptime.0 varbind not having been sent with a trailing 0.\n\tVarbinds received are : {} and {}",
-                		m_pduTypeString,
-                		getTrapAddress(),
-                		varBindName0,
-                		varBindName1
-                		);
+                log().info("V2 "+m_pduTypeString+" from " + getTrapAddress() + " has been corrected due to the sysUptime.0 varbind not having been sent with a trailing 0.\n\tVarbinds received are : " + varBindName0 + " and " + varBindName1);
                 varBindName0 = SNMP_SYSUPTIME_OID;
             }
             
@@ -249,9 +245,9 @@ public class Snmp4JTrapNotifier implements CommandResponder {
 
         protected void processVarBindAt(int i) {
             if (i == 0) {
-                s_log.debug("Skipping processing of varbind {}: it is sysuptime and the first varbind, and is not processed as a parm per RFC2089", i);
+                log().debug("Skipping processing of varbind " + i + ": it is sysuptime and the first varbind, and is not processed as a parm per RFC2089");
             } else if (i == 1) {
-                s_log.debug("Skipping processing of varbind {}: it is the trap OID and the second varbind, and is not processed as a parm per RFC2089", i);				
+                log().debug("Skipping processing of varbind " + i + ": it is the trap OID and the second varbind, and is not processed as a parm per RFC2089");				
             } else {
                 SnmpObjId name = SnmpObjId.get(getVarBindAt(i).getOid().getValue());
                 SnmpValue value = new Snmp4JValue(getVarBindAt(i).getVariable());
@@ -284,9 +280,11 @@ public class Snmp4JTrapNotifier implements CommandResponder {
         														e.getMaxSizeResponsePDU(),
         														ref,
         														statusInformation);
-        			s_log.debug("Sent RESPONSE PDU to peer {} acknowledging receipt of INFORM (reqId={})", addr, command.getRequestID());
+        			if (log().isDebugEnabled()) {
+        				log().debug("Sent RESPONSE PDU to peer " + addr + " acknowledging receipt of INFORM (reqId=" + command.getRequestID() + ")");
+        			}
         		} catch (MessageException ex) {
-        			s_log.error("Error while sending RESPONSE PDU to peer " + addr + ": " + ex.getMessage() + "acknowledging receipt of INFORM (reqId=" + command.getRequestID() + ")");
+        			log().error("Error while sending RESPONSE PDU to peer " + addr + ": " + ex.getMessage() + "acknowledging receipt of INFORM (reqId=" + command.getRequestID() + ")");
         		}
         	}
         }
@@ -296,5 +294,9 @@ public class Snmp4JTrapNotifier implements CommandResponder {
         } else {
             m_listener.trapReceived(new Snmp4JV2TrapInformation(addr.getInetAddress(), new String(e.getSecurityName()), e.getPDU(), m_trapProcessorFactory.createTrapProcessor()));
         }
+    }
+    
+    private ThreadCategory log() {
+    	return ThreadCategory.getInstance(getClass());
     }
 }

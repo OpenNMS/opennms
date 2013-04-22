@@ -31,8 +31,7 @@ package org.opennms.netmgt.snmp.snmp4j;
 import java.io.IOException;
 import java.net.InetAddress;
 
-import org.slf4j.LoggerFactory;
-import org.slf4j.Logger;
+import org.opennms.core.utils.ThreadCategory;
 import org.snmp4j.asn1.BER;
 import org.snmp4j.asn1.BERInputStream;
 import org.snmp4j.smi.IpAddress;
@@ -58,8 +57,6 @@ import org.snmp4j.smi.IpAddress;
  *
  */
 public class IpAddressNetSnmp64bitBugAware extends IpAddress {
-	
-	private static final Logger s_log = LoggerFactory.getLogger(IpAddressNetSnmp64bitBugAware.class);
 	/**
 	 * 
 	 */
@@ -91,7 +88,9 @@ public class IpAddressNetSnmp64bitBugAware extends IpAddress {
 	            	tempValue[i] = value[i];
 	            }
 	            value = tempValue;
-	             s_log.debug("Working around misencoded IpAddress (8 bytes, truncating to 4); likely dealing with a buggy Net-SNMP agent");
+	            if (log().isDebugEnabled()) {
+	            	log().debug("Working around misencoded IpAddress (8 bytes, truncating to 4); likely dealing with a buggy Net-SNMP agent");
+	            }
 			} else {
 				throw new IOException("IpAddress encoding error, wrong length: " +
 						value.length);
@@ -101,4 +100,7 @@ public class IpAddressNetSnmp64bitBugAware extends IpAddress {
 		this.setInetAddress(InetAddress.getByAddress(value));
 	}
 	
+    private ThreadCategory log() {
+        return ThreadCategory.getInstance(getClass());
+    }
 }

@@ -34,8 +34,6 @@ import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.SnmpWalker;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.snmp4j.PDU;
 import org.snmp4j.Snmp;
 import org.snmp4j.Target;
@@ -46,10 +44,8 @@ import org.snmp4j.smi.OID;
 import org.snmp4j.smi.VariableBinding;
 
 public class Snmp4JWalker extends SnmpWalker {
-	
-	private static final Logger s_log = LoggerFactory.getLogger(Snmp4JWalker.class);
-	
-	public static abstract class Snmp4JPduBuilder extends WalkerPduBuilder {
+
+    public static abstract class Snmp4JPduBuilder extends WalkerPduBuilder {
         public Snmp4JPduBuilder(int maxVarsPerPdu) {
             super(maxVarsPerPdu);
         }
@@ -126,8 +122,8 @@ public class Snmp4JWalker extends SnmpWalker {
 
         private void processResponse(PDU response) {
             try {
-                if (s_log.isDebugEnabled()) {
-                    s_log.debug("Received a tracker PDU of type "+PDU.getTypeString(response.getType())+" from "+getAddress()+" of size "+response.size()+", errorStatus = "+response.getErrorStatus()+", errorStatusText = "+response.getErrorStatusText()+", errorIndex = "+response.getErrorIndex());
+                if (log().isDebugEnabled()) {
+                    log().debug("Received a tracker PDU of type "+PDU.getTypeString(response.getType())+" from "+getAddress()+" of size "+response.size()+", errorStatus = "+response.getErrorStatus()+", errorStatusText = "+response.getErrorStatusText()+", errorIndex = "+response.getErrorIndex());
                 }
                 if (response.getType() == PDU.REPORT) {
                     handleAuthError("A REPORT PDU was returned from the agent.  This is most likely an authentication problem.  Please check the config");
@@ -153,8 +149,8 @@ public class Snmp4JWalker extends SnmpWalker {
 
             // Check to see if we got an interrupted exception
             if (responseEvent.getError() instanceof InterruptedException) {
-                if (s_log.isDebugEnabled()) {
-                    s_log.debug("Interruption event.  We have probably tried to close the session due to an error: " + responseEvent.getError(), responseEvent.getError());
+                if (log().isDebugEnabled()) {
+                    log().debug("Interruption event.  We have probably tried to close the session due to an error: " + responseEvent.getError(), responseEvent.getError());
                 }
             // Check to see if the response is null, indicating a timeout
             } else if (responseEvent.getResponse() == null) {
@@ -188,8 +184,8 @@ public class Snmp4JWalker extends SnmpWalker {
     
     public void start() {
         
-        if (s_log.isDebugEnabled()) {
-            s_log.info("Walking "+getName()+" for "+getAddress()+" using version "+m_agentConfig.getVersionString()+" with config: "+m_agentConfig);
+        if (log().isDebugEnabled()) {
+            log().info("Walking "+getName()+" for "+getAddress()+" using version "+m_agentConfig.getVersionString()+" with config: "+m_agentConfig);
         }
             
         super.start();
@@ -208,8 +204,8 @@ public class Snmp4JWalker extends SnmpWalker {
             m_session.listen();
         }
         
-        if (s_log.isDebugEnabled()) {
-            s_log.debug("Sending tracker pdu of size "+snmp4JPduBuilder.getPdu().size());
+        if (log().isDebugEnabled()) {
+            log().debug("Sending tracker pdu of size "+snmp4JPduBuilder.getPdu().size());
         }
         m_session.send(snmp4JPduBuilder.getPdu(), m_tgt, null, m_listener);
     }

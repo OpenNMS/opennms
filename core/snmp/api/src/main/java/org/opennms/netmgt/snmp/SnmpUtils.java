@@ -37,13 +37,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.opennms.core.utils.LogUtils;
+import org.opennms.core.utils.ThreadCategory;
 
 public abstract class SnmpUtils {
 
-	private static Logger s_log = LoggerFactory.getLogger(SnmpUtils.class);
-	
     private static Properties sm_config;
 
     private static final class TooBigReportingAggregator extends AggregateTracker {
@@ -55,7 +53,7 @@ public abstract class SnmpUtils {
         }
 
         protected void reportTooBigErr(String msg) {
-            s_log.info("Received tooBig response from {}. {}", address, msg);
+            ThreadCategory.getInstance(SnmpWalker.class).info("Received tooBig response from "+address+". "+msg);
         }
     }
 
@@ -230,19 +228,19 @@ public abstract class SnmpUtils {
 	public static Long getProtoCounter64Value(SnmpValue value) {
 	    byte[] valBytes = value.getBytes();
 	    if (valBytes.length != 8) {
-	    	s_log.trace("Value should be 8 bytes long for a proto-Counter64 but this one is {} bytes.", valBytes);
+	        LogUtils.tracef(SnmpUtils.class, "Value should be 8 bytes long for a proto-Counter64 but this one is %d bytes.", valBytes);
 	        return null;
 	    }
 	    if (value.isDisplayable()) {
-	        s_log.info("Value '{}' is entirely displayable. Still treating it as a proto-Counter64. This may not be what you want.", new String(valBytes));
+	        LogUtils.infof(SnmpUtils.class, "Value '%s' is entirely displayable. Still treating it as a proto-Counter64. This may not be what you want.", new String(valBytes));
 	    }
 	    if (valBytes == new byte[]{ (byte)0x80, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0 }) {
-	        s_log.trace("Value has high-order bit set and all others zero, which indicates not supported in FCMGMT-MIB convention");
+	        LogUtils.tracef(SnmpUtils.class, "Value has high-order bit set and all others zero, which indicates not supported in FCMGMT-MIB convention");
 	        return null;
 	    }
 
 	    Long retVal = Long.decode(String.format("0x%02x%02x%02x%02x%02x%02x%02x%02x", valBytes[0], valBytes[1], valBytes[2], valBytes[3], valBytes[4], valBytes[5], valBytes[6], valBytes[7]));
-	    s_log.trace("Converted octet-string 0x%02x%02x%02x%02x%02x%02x%02x%02x as a proto-Counter64 of value %d", valBytes[0], valBytes[1], valBytes[2], valBytes[3], valBytes[4], valBytes[5], valBytes[6], valBytes[7], retVal);
+	    LogUtils.tracef(SnmpUtils.class, "Converted octet-string 0x%02x%02x%02x%02x%02x%02x%02x%02x as a proto-Counter64 of value %d", valBytes[0], valBytes[1], valBytes[2], valBytes[3], valBytes[4], valBytes[5], valBytes[6], valBytes[7], retVal);
 	    return retVal;
 	}
 }
