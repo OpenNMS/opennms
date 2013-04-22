@@ -146,13 +146,7 @@ public class Trapd extends AbstractServiceDaemon implements TrapProcessorFactory
     /** {@inheritDoc} */
     @Override
     public void trapReceived(TrapNotification trapNotification) {
-        try {
-            WaterfallExecutor.waterfall(Collections.singletonList(m_backlogQ), m_processorFactory.getInstance(trapNotification));
-        } catch (InterruptedException e) {
-            LogUtils.warnf(this, e, "addTrap: Error adding trap to queue");
-        } catch (ExecutionException e) {
-            LogUtils.warnf(this, e, "addTrap: Error adding trap to queue");
-        }
+        m_backlogQ.submit(m_processorFactory.getInstance(trapNotification));
     }
 
     /**
