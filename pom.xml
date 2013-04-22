@@ -334,6 +334,19 @@
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jarsigner-plugin</artifactId>
+        <version>1.2</version>
+        <configuration>
+          <keystore>${webstart.keystore}</keystore>
+          <keypass>${webstart.keypass}</keypass>
+          <storepass>${webstart.storepass}</storepass>
+          <alias>${webstart.keyalias}</alias>
+          <dnameCn>${webstart.dnameCn}</dnameCn>
+          <dnameCn>${webstart.dnameCn}</dnameCn>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-project-info-reports-plugin</artifactId>
         <version>2.4</version>
       </plugin>

@@ -89,7 +89,7 @@
             <configuration>
               <artifacts>
                 <artifact>
-                  <file>${project.build.directory}/${project.build.FinalName}-signed-${project.packaging}-with-dependencies.${project.packaging}</file>
+                  <file>${project.build.directory}/${project.build.FinalName}.one-jar.${project.packaging}</file>
                   <type>jar</type>
                   <classifier>signed-jar-with-dependencies</classifier>
                 </artifact>
@@ -107,7 +107,7 @@
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
+        <artifactId>maven-jarsigner-plugin</artifactId>
         <executions>
           <execution>
             <phase>package</phase>
@@ -117,8 +117,8 @@
           </execution>
         </executions>
         <configuration>
-          <jarPath>${project.build.directory}/${project.build.FinalName}.one-jar.${project.packaging}</jarPath>
-          <signedjar>${project.build.directory}/${project.build.FinalName}-signed-${project.packaging}-with-dependencies.${project.packaging}</signedjar>
+          <archive>${project.build.directory}/${project.build.FinalName}.one-jar.${project.packaging}</archive>
+          <verbose>true</verbose>
         </configuration>
       </plugin>
     </plugins>
