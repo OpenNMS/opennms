@@ -129,18 +129,14 @@ public class Starter {
 				throw new CmdLineException(parser, "set jmx or graph.");
 			}
 
-			dictionary = loadInternalDictionary();
-                if (dictionaryFile != null) {
-                    dictionary = loadExternalDictionary(dictionaryFile);
-                }
+                        dictionary = loadInternalDictionary();
+                        if (dictionaryFile != null) {
+                            dictionary = loadExternalDictionary(dictionaryFile);
+                        }
 
 			if (jmx) {
 				JMXConnector jmxConnector = null;
 				if (hostName != null && port != null && outFile != null) {
-					NameTools.loadInternalDictionary();
-					if (dictionaryFile != null) {
-						NameTools.loadExtermalDictionary(dictionaryFile);
-					}
 					JmxDatacollectionConfiggenerator jmxConfigGenerator = new JmxDatacollectionConfiggenerator();
 					JMXServiceURL jmxServiceURL = jmxConfigGenerator.getJmxServiceURL(jmxmp, hostName, port);
 					jmxConnector = jmxConfigGenerator.getJmxConnector(username, password, jmxServiceURL);
@@ -148,10 +144,6 @@ public class Starter {
 					JmxDatacollectionConfig generateJmxConfigModel = jmxConfigGenerator.generateJmxConfigModel(mBeanServerConnection, serviceName, !skipDefaultVM, runWritableMBeans, dictionary);
 					jmxConfigGenerator.writeJmxConfigFile(generateJmxConfigModel, outFile);
 				} else if (url != null && outFile != null) {
-					NameTools.loadInternalDictionary();
-					if (dictionaryFile != null) {
-						NameTools.loadExtermalDictionary(dictionaryFile);
-					}
 					JmxDatacollectionConfiggenerator jmxConfigGenerator = new JmxDatacollectionConfiggenerator();
 					JMXServiceURL jmxServiceURL = new JMXServiceURL(url);
 					jmxConnector = jmxConfigGenerator.getJmxConnector(username, password, jmxServiceURL);
