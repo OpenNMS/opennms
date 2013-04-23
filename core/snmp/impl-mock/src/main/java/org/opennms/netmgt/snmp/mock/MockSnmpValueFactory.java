@@ -35,8 +35,8 @@ import java.nio.charset.Charset;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
+import org.opennms.netmgt.snmp.InetAddrUtils;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
@@ -157,7 +157,7 @@ public class MockSnmpValueFactory implements SnmpValueFactory {
 		} else if (mibVal.startsWith("Counter64:")) {
 	    	return getCounter64(BigInteger.valueOf(Long.valueOf(mibVal.substring("Counter64:".length()).trim())));
 		} else if (mibVal.startsWith("IpAddress:")) {
-	    	return getIpAddress(InetAddressUtils.addr(mibVal.substring("IpAddress:".length()).trim()));
+	    	return getIpAddress(InetAddrUtils.addr(mibVal.substring("IpAddress:".length()).trim()));
 		} else if (mibVal.startsWith("Hex-STRING:")) {
 			final String trimmed = mibVal.substring("Hex-STRING:".length()).trim();
 			final ByteBuffer bb = ByteBuffer.allocate(trimmed.length());
