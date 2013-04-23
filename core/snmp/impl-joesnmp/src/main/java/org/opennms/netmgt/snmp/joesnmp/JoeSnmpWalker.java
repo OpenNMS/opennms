@@ -49,7 +49,7 @@ import org.slf4j.LoggerFactory;
 
 public class JoeSnmpWalker extends SnmpWalker {
 	
-	private static final Logger s_log = LoggerFactory.getLogger(JoeSnmpWalker.class);
+	private static final transient Logger LOG = LoggerFactory.getLogger(JoeSnmpWalker.class);
 	
 	static public abstract class JoeSnmpPduBuilder extends WalkerPduBuilder {
         public JoeSnmpPduBuilder(int maxVarsPerPdu) {
@@ -129,7 +129,7 @@ public class JoeSnmpWalker extends SnmpWalker {
             
             try {
                 SnmpPduRequest response = (SnmpPduRequest)pdu;
-                s_log.debug("Received a tracker pdu from "+getAddress()+" of size "+pdu.getLength()+" errorStatus = "+response.getErrorStatus()+", errorIndex = "+response.getErrorIndex());
+                LOG.debug("Received a tracker pdu from "+getAddress()+" of size "+pdu.getLength()+" errorStatus = "+response.getErrorStatus()+", errorIndex = "+response.getErrorIndex());
                 if (!processErrors(response.getErrorStatus(), response.getErrorIndex())) {
                     for(int i = 0; i < response.getLength(); i++) {
                         SnmpVarBind vb = response.getVarBindAt(i);
@@ -180,7 +180,7 @@ public class JoeSnmpWalker extends SnmpWalker {
     }
 
     public void start() {
-        s_log.info("Walking "+getName()+" for "+getAddress()+" using version "+SnmpSMI.getVersionString(getVersion())+" with config: "+m_agentConfig);
+        LOG.info("Walking "+getName()+" for "+getAddress()+" using version "+SnmpSMI.getVersionString(getVersion())+" with config: "+m_agentConfig);
         super.start();
     }
 
@@ -193,7 +193,7 @@ public class JoeSnmpWalker extends SnmpWalker {
     protected void sendNextPdu(WalkerPduBuilder pduBuilder) throws SocketException {
         JoeSnmpPduBuilder joePduBuilder = (JoeSnmpPduBuilder)pduBuilder;
         if (m_session == null) m_session = new SnmpSession(m_peer);
-        s_log.debug("Sending tracker pdu of size "+joePduBuilder.getPdu().getLength());
+        LOG.debug("Sending tracker pdu of size "+joePduBuilder.getPdu().getLength());
         m_session.send(joePduBuilder.getPdu(), m_handler);
     }
     

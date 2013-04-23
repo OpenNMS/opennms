@@ -47,7 +47,7 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
 
 	private static final long serialVersionUID = 1456963719970029200L;
 
-	private static Logger s_logger = LoggerFactory.getLogger(SnmpAgentConfig.class);
+	private static final transient Logger LOG = LoggerFactory.getLogger(SnmpAgentConfig.class);
 
     private InetAddress m_address;
     private InetAddress m_proxyFor;
@@ -118,7 +118,7 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
             } else if ("read-community".equalsIgnoreCase(key)) {
                 agentConfig.setReadCommunity(value);
             } else {
-                s_logger.warn("Unexpected attribute in protocol configuration string for SnmpAgentConfig: '{}'", attribute);
+                LOG.warn("Unexpected attribute in protocol configuration string for SnmpAgentConfig: '{}'", attribute);
             }
         }
 

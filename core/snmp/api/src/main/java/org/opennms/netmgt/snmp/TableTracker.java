@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
 
 public class TableTracker extends CollectionTracker implements RowCallback, RowResultFactory {
 	
-	private static final Logger s_log = LoggerFactory.getLogger(TableTracker.class);
+	private static final transient Logger LOG = LoggerFactory.getLogger(TableTracker.class);
 
     private final SnmpTableResult m_tableResult;
 
@@ -101,7 +101,7 @@ public class TableTracker extends CollectionTracker implements RowCallback, RowR
 
     public void storeResult(SnmpResult res) {
         //System.err.println(String.format("storeResult: %s", res));
-    	s_log.debug("storeResult: {}", res);
+    	LOG.debug("storeResult: {}", res);
         m_tableResult.storeResult(res);
     }
     

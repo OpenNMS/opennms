@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
 
 public class SingleInstanceTracker extends CollectionTracker {
 	
-	private static Logger s_log = LoggerFactory.getLogger(SingleInstanceTracker.class);
+	private static final transient Logger LOG = LoggerFactory.getLogger(SingleInstanceTracker.class);
 
     private SnmpObjId m_base;
     private SnmpInstId m_inst;
@@ -65,7 +65,7 @@ public class SingleInstanceTracker extends CollectionTracker {
         }
         
         SnmpObjId requestOid = m_oid.decrement();
-        s_log.debug("Requesting oid following: {}", requestOid);
+        LOG.debug("Requesting oid following: {}", requestOid);
         pduBuilder.addOid(requestOid);
         pduBuilder.setNonRepeaters(1);
         pduBuilder.setMaxRepetitions(1);
@@ -73,7 +73,7 @@ public class SingleInstanceTracker extends CollectionTracker {
         ResponseProcessor rp = new ResponseProcessor() {
 
             public void processResponse(SnmpObjId responseObjId, SnmpValue val) {
-                s_log.debug("Processing varBind: {} = {}", responseObjId, val);
+                LOG.debug("Processing varBind: {} = {}", responseObjId, val);
                 
                 if (val.isEndOfMib()) {
                     receivedEndOfMib();

@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
 
 public abstract class SnmpWalker {
 	
-	private static final Logger s_log = LoggerFactory.getLogger(SnmpWalker.class);
+	private static final transient Logger LOG = LoggerFactory.getLogger(SnmpWalker.class);
     
     protected static abstract class WalkerPduBuilder extends PduBuilder {
         protected WalkerPduBuilder(int maxVarsPerPdu) {
@@ -159,7 +159,7 @@ public abstract class SnmpWalker {
         try {
             close();
         } catch (IOException e) {
-            s_log.error(getName()+": Unexpected Error occured closing SNMP session for: "+m_address, e);
+            LOG.error(getName()+": Unexpected Error occured closing SNMP session for: "+m_address, e);
         }
     }
 

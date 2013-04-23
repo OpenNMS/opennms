@@ -59,7 +59,7 @@ import org.snmp4j.smi.IpAddress;
  */
 public class IpAddressNetSnmp64bitBugAware extends IpAddress {
 	
-	private static final Logger s_log = LoggerFactory.getLogger(IpAddressNetSnmp64bitBugAware.class);
+	private static final transient Logger LOG = LoggerFactory.getLogger(IpAddressNetSnmp64bitBugAware.class);
 	/**
 	 * 
 	 */
@@ -91,7 +91,7 @@ public class IpAddressNetSnmp64bitBugAware extends IpAddress {
 	            	tempValue[i] = value[i];
 	            }
 	            value = tempValue;
-	             s_log.debug("Working around misencoded IpAddress (8 bytes, truncating to 4); likely dealing with a buggy Net-SNMP agent");
+	             LOG.debug("Working around misencoded IpAddress (8 bytes, truncating to 4); likely dealing with a buggy Net-SNMP agent");
 			} else {
 				throw new IOException("IpAddress encoding error, wrong length: " +
 						value.length);
