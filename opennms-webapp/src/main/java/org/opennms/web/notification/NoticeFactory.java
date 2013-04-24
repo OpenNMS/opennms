@@ -686,7 +686,6 @@ public class NoticeFactory {
      * @return an array of {@link org.opennms.web.notification.Notification} objects.
      * @throws java.sql.SQLException if any.
      */
-    // FIXME: Don't use the single variable "element" for different objects. - dj@opennms.org
     protected static Notification[] rs2Notices(ResultSet rs, ServletContext servletContext) throws SQLException {
         Notification[] notices = null;
         Vector<Notification> vector = new Vector<Notification>();
