@@ -21,5 +21,10 @@ Well, what does that mean?
 
 	OpenNMS is 100% Free and Open Source software, with no license fees, software subscriptions or special "enterprise" versions.
 
-[OpenNMS]: http://www.opennms.org]
+Contributing to OpenNMS
+=======================
 
+Before making a pull request, please submit an [OCA][] for copyright assignment.  Note that this does **not** mean that you are giving up your copyright of your changes to OpenNMS, it instead allows for _dual_ copyright over contributed code.
+
+[OpenNMS]: http://www.opennms.org/
+[OCA]:     http://www.opennms.org/wiki/OCA
