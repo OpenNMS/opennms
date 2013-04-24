@@ -686,7 +686,6 @@ public class NoticeFactory {
      * @return an array of {@link org.opennms.web.notification.Notification} objects.
      * @throws java.sql.SQLException if any.
      */
-    // FIXME: Don't use the single variable "element" for different objects. - dj@opennms.org
     protected static Notification[] rs2Notices(ResultSet rs, ServletContext servletContext) throws SQLException {
         Notification[] notices = null;
         Vector<Notification> vector = new Vector<Notification>();
@@ -694,42 +693,38 @@ public class NoticeFactory {
         while (rs.next()) {
             Notification notice = new Notification();
 
-            Object element = Integer.valueOf(rs.getInt("notifyid"));
-            notice.m_notifyID = ((Integer) element).intValue();
+            Integer id = Integer.valueOf(rs.getInt("notifyid"));
+            notice.m_notifyID = id.intValue();
 
-            element = rs.getTimestamp("pagetime");
-            if (element != null) {
-                notice.m_timeSent = ((Timestamp) element).getTime();
-            }
+            Timestamp timestamp = rs.getTimestamp("pagetime");
+            notice.m_timeSent = (timestamp != null) ? timestamp.getTime() : null;
 
-            element = rs.getTimestamp("respondtime");
-            if (element != null) {
-                notice.m_timeReply = ((Timestamp) element).getTime();
-            }
+            timestamp = rs.getTimestamp("respondtime");
+            notice.m_timeReply = (timestamp != null) ? timestamp.getTime() : null;
 
-            element = rs.getString("textmsg");
-            notice.m_txtMsg = (String) element;
+            String str = rs.getString("textmsg");
+            notice.m_txtMsg = str;
 
-            element = rs.getString("numericmsg");
-            notice.m_numMsg = (String) element;
+            str = rs.getString("numericmsg");
+            notice.m_numMsg = str;
 
-            element = rs.getString("answeredby");
-            notice.m_responder = (String) element;
+            str = rs.getString("answeredby");
+            notice.m_responder = str;
 
-            element = Integer.valueOf(rs.getInt("nodeid"));
-            notice.m_nodeID = ((Integer) element).intValue();
+            id = Integer.valueOf(rs.getInt("nodeid"));
+            notice.m_nodeID = id.intValue();
 
-            element = rs.getString("interfaceid");
-            notice.m_interfaceID = (String) element;
+            str = rs.getString("interfaceid");
+            notice.m_interfaceID = str;
 
-            element = Integer.valueOf(rs.getInt("eventid"));
-            notice.m_eventId = ((Integer) element).intValue();
+            id = Integer.valueOf(rs.getInt("eventid"));
+            notice.m_eventId = id.intValue();
 
-            element = Integer.valueOf(rs.getInt("serviceid"));
-            if (element != null) {
-                notice.m_serviceId = ((Integer) element).intValue();
-                element = NetworkElementFactory.getInstance(servletContext).getServiceNameFromId(notice.m_serviceId);
-                notice.m_serviceName = (String) element;
+            id = Integer.valueOf(rs.getInt("serviceid"));
+            if (id != null) {
+                notice.m_serviceId = id.intValue();
+                str = NetworkElementFactory.getInstance(servletContext).getServiceNameFromId(notice.m_serviceId);
+                notice.m_serviceName = str;
             }
 
             vector.addElement(notice);
