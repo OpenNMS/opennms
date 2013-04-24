@@ -45,6 +45,7 @@ public abstract class SnmpUtils {
 	private static final transient Logger LOG = LoggerFactory.getLogger(SnmpUtils.class);
 	
     private static Properties sm_config;
+    private static StrategyResolver s_strategyResolver;
 
     private static final class TooBigReportingAggregator extends AggregateTracker {
         private final InetAddress address;
@@ -147,15 +148,32 @@ public abstract class SnmpUtils {
     }
     
     public static SnmpStrategy getStrategy() {
-    	final String strategyClass = getStrategyClassName();
-        try {
-            return (SnmpStrategy)Class.forName(strategyClass).newInstance();
-        } catch (Exception e) {
-            throw new RuntimeException("Unable to instantiate class "+strategyClass, e);
-        }
+    	return getStrategyResolver().getStrategy();
     }
     
-    private static String getStrategyClassName() {
+    public static StrategyResolver getStrategyResolver() {
+    	return s_strategyResolver != null ? s_strategyResolver : new DefaultStrategyResolver();
+    }
+    
+    public static void setStrategyResolver(StrategyResolver strategyResolver) {
+    	s_strategyResolver = strategyResolver;
+    }
+    
+    private static class DefaultStrategyResolver implements StrategyResolver {
+
+		@Override
+		public SnmpStrategy getStrategy() {
+	    	String strategyClass = getStrategyClassName();
+	        try {
+	            return (SnmpStrategy)Class.forName(strategyClass).newInstance();
+	        } catch (Exception e) {
+	            throw new RuntimeException("Unable to instantiate class "+strategyClass, e);
+	        }
+		}
+    	
+    }
+    
+    public static String getStrategyClassName() {
         // Use SNMP4J as the default SNMP strategy
         return getConfig().getProperty("org.opennms.snmp.strategyClass", "org.opennms.netmgt.snmp.snmp4j.Snmp4JStrategy");
 //        return getConfig().getProperty("org.opennms.snmp.strategyClass", "org.opennms.netmgt.snmp.joesnmp.JoeSnmpStrategy");

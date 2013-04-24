@@ -1,0 +1,13 @@
+<blueprint
+	xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd"
+>
+
+  <bean id="strategyResolver" class="org.opennms.netmgt.snmp.internal.ServiceBasedStrategyResolver" factory-method="register"/>
+    
+  <reference-list interface="org.opennms.netmgt.snmp.SnmpStrategy" availability="optional">
+    <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="strategyResolver" />
+  </reference-list>
+ 
+</blueprint>
