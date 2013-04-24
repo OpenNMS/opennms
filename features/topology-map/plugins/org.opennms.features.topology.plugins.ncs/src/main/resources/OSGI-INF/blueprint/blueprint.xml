@@ -13,6 +13,7 @@
 	
 	<bean id="viewContribution" class="org.opennms.features.topology.plugins.ncs.NCSViewContribution">
 		<property name="ncsComponentRepository" ref="ncsComponentRepository" />
+		<property name="ncsEdgeProvider" ref="ncsEdgeProvider" />
 	</bean>
 
 	<service interface="org.opennms.features.topology.api.IViewContribution" ref="viewContribution">
