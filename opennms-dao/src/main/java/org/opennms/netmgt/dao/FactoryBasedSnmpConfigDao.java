@@ -45,6 +45,7 @@ import org.springframework.beans.factory.InitializingBean;
  * @author brozow
  * @version $Id: $
  */
+// TODO MVR what should we do here?
 public class FactoryBasedSnmpConfigDao implements SnmpConfigDao, InitializingBean {
     
     private static final MarshallingExceptionTranslator TRANSLATOR = new MarshallingExceptionTranslator();
