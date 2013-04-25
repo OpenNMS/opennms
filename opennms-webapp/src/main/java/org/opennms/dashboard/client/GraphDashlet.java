@@ -28,7 +28,6 @@
 
 package org.opennms.dashboard.client;
 
-import java.math.BigInteger;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.ListBox;
@@ -48,12 +47,12 @@ public class GraphDashlet extends Dashlet {
     /**
      * The offset from the current time (rounded by TIME_ROUNDING_INTERVAL) for the start time on graphs
      */
-    private static final BigInteger TIME_START_OFFSET = BigInteger.valueOf(-7 * 24 * 60 * 60);
+    private static final int TIME_START_OFFSET = - (7 * 24 * 60 * 60);
 
     /**
      * The interval on which we round the start and end times for graph timespans
      */ 
-    private static final BigInteger TIME_ROUNDING_INTERVAL = BigInteger.valueOf(5 * 60);
+    private static final int TIME_ROUNDING_INTERVAL = (5 * 60);
 
     private SurveillanceServiceAsync m_surveillanceService;
     
@@ -287,11 +286,12 @@ public class GraphDashlet extends Dashlet {
                  * prefetched URL and the URL that we use when we want to show the
                  * image might not be the same.
                  * 
+                 * FIXME This has a Y2038 issue where the signed integer will overflow.
                  */
-                BigInteger now = BigInteger.valueOf(System.currentTimeMillis() / 1000); 
+                int now = (int) (System.currentTimeMillis() / 1000);
 
-                BigInteger end = now.divide(TIME_ROUNDING_INTERVAL).multiply(TIME_ROUNDING_INTERVAL); 
-                BigInteger start = end.add(TIME_START_OFFSET);
+                int end = (now / TIME_ROUNDING_INTERVAL) * TIME_ROUNDING_INTERVAL; 
+                int start = end + TIME_START_OFFSET;
 
                 return new String[] { start + "000", end + "000" };
             }
