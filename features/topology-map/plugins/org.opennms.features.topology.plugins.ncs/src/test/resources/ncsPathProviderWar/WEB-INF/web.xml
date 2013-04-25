@@ -17,11 +17,11 @@
 
   <servlet-mapping>
     <servlet-name>appNameServlet</servlet-name>
-    <url-pattern>/app-name</url-pattern>
+    <url-pattern>/api/space/nsas/service-management/services/884779</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>servicePathServlet</servlet-name>
-    <url-pattern>/eline-ptp/service-path</url-pattern>
+    <url-pattern>/api/space/nsas/eline-ptp/service-management/services/884779/servicepath</url-pattern>
   </servlet-mapping>
 
 </web-app>

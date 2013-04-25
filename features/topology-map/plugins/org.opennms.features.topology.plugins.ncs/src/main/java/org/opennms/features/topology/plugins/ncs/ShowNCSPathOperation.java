@@ -99,12 +99,14 @@ public class ShowNCSPathOperation implements Operation {
 
     @Override
     public boolean display(List<VertexRef> targets, OperationContext operationContext) {
-        return targets.size() == 1 && targets.get(0).getNamespace().equals("node");
+        //return targets.size() == 1 && targets.get(0).getNamespace().equals("node");
+        return true;
     }
 
     @Override
     public boolean enabled(List<VertexRef> targets, OperationContext operationContext) {
-        return targets.size() == 1 && targets.get(0).getNamespace().equals("node");
+        //return targets.size() == 1 && targets.get(0).getNamespace().equals("node");
+        return true;
     }
 
     @Override

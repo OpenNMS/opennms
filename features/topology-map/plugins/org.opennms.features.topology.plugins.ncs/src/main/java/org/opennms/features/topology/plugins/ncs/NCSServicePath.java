@@ -1,10 +1,13 @@
 package org.opennms.features.topology.plugins.ncs;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.ListIterator;
 
 import org.opennms.features.topology.api.topo.EdgeRef;
-import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.plugins.ncs.NCSEdgeProvider.NCSEdge;
 import org.opennms.features.topology.plugins.ncs.NCSEdgeProvider.NCSVertex;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
@@ -17,8 +20,7 @@ public class NCSServicePath {
     private NCSComponentRepository m_dao;
     private NodeDao m_nodeDao;
     private String m_serviceType;
-    private LinkedList<VertexRef> m_vertices = new LinkedList<VertexRef>();
-    private Collection<EdgeRef> m_edges;
+    private LinkedList<NCSVertex> m_vertices = new LinkedList<NCSVertex>();
     
     public NCSServicePath(Node servicePath, NCSComponentRepository dao, NodeDao nodeDao, String serviceType) {
         m_dao = dao;
@@ -37,23 +39,43 @@ public class NCSServicePath {
         NodeList lspNode = item.getChildNodes();
         for(int i = 0; i < lspNode.getLength(); i++) {
             Node node = lspNode.item(i);
-            String nodeForeignId = node.getLastChild().getLastChild().getTextContent();
-            m_vertices.add( getVertexRefForForeignId(nodeForeignId, m_serviceType) );
+            if(node.getNodeName().equals("LSPNode")) {
+                String nodeForeignId = node.getLastChild().getLastChild().getTextContent();
+                m_vertices.add( getVertexRefForForeignId(nodeForeignId, m_serviceType) );
+            }
         }
     }
 
-    private VertexRef getVertexRefForForeignId(String nodeForeignId, String serviceType) {
+    private NCSVertex getVertexRefForForeignId(String nodeForeignId, String serviceType) {
         OnmsNode node = m_nodeDao.findByForeignId(serviceType, nodeForeignId);
         NCSVertex vertex = new NCSVertex(String.valueOf(node.getId()), node.getLabel());
         return vertex;
     }
 
-    public Collection<VertexRef> getVertices() {
+    public Collection<NCSVertex> getVertices() {
         return m_vertices;
     }
     
     public Collection<EdgeRef> getEdges(){
-        return null;
+        List<EdgeRef> edges = new ArrayList<EdgeRef>();
+        
+        if(m_vertices.size() >= 2) {
+            
+            ListIterator<NCSVertex> iterator = m_vertices.listIterator();
+            while(iterator.hasNext()) {
+                
+                NCSVertex sourceRef = iterator.next();
+                if(iterator.hasNext()) {
+                    NCSVertex targetRef = m_vertices.get(iterator.nextIndex());
+                    edges.add(new NCSEdge("something", sourceRef, targetRef));
+                }
+                
+            }
+            
+        }
+        
+        
+        return edges;
     }
 
 }

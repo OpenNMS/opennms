@@ -7,7 +7,6 @@ import java.util.Map;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.camel.CamelContext;
-import org.apache.camel.Endpoint;
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.apache.camel.ProducerTemplate;
@@ -27,28 +26,33 @@ public class NCSPathProviderService {
     private NCSComponentRepository m_dao;
     private CamelContext m_camelContext;
     private ProducerTemplate m_template;
+    private String m_baseUrl;
     
-    public NCSPathProviderService(NCSComponentRepository componentRepository, NodeDao nodeDao) {
+    public NCSPathProviderService(NCSComponentRepository componentRepository, NodeDao nodeDao, String baseUrl) {
         m_dao = componentRepository;
         m_nodeDao = nodeDao;
+        m_baseUrl = baseUrl;
         
         try {
             SimpleRegistry simpleRegistry = new SimpleRegistry();
             simpleRegistry.put("pathservice", this);
-            m_camelContext = new DefaultCamelContext();
+            m_camelContext = new DefaultCamelContext(simpleRegistry);
 
             m_camelContext.addRoutes(new RouteBuilder() {
 
                 @Override
                 public void configure() throws Exception {
-                    from("direct:start").setHeader(Exchange.HTTP_URI, simple("http://localhost:10346/ncs-provider/app-name?appName=${header.provisionid}")).to("http://dummyhost").bean("pathservice?method=getServiceName")
-                    .setHeader(Exchange.HTTP_URI, simple("http://localhost:10346/ncs-provider/${header.serviceType}/service-path?deviceA=${header.deviceA}&deviceZ=${header.deviceZ}")).to("http://dummyhost").bean("pathservice?method=createPath");
+                    from("direct:start").setHeader(Exchange.HTTP_URI, simple(m_baseUrl + "/api/space/nsas/service-management/services/${header.foreignId}?appName=${header.foreignSource}")).to("http://dummyhost")
+                    .beanRef("pathservice", "getServiceName")
+                    .setHeader(Exchange.HTTP_URI, simple(m_baseUrl + "/api/space/nsas/${headers.serviceType}/service-management/services/${header.foreignId}/servicepath?deviceA=${header.deviceA}&deviceZ=${header.deviceZ}")).to("http://dummyhost")
+                    .beanRef("pathservice", "createPath");
                 }
 
             });
-            Map<String, Endpoint> endpointMap = m_camelContext.getEndpointMap();
             m_camelContext.start();
             
+            m_template = m_camelContext.createProducerTemplate();
+            m_template.start();
             
         } catch (Exception e) {
             // TODO Auto-generated catch block
@@ -59,14 +63,14 @@ public class NCSPathProviderService {
     }
     
     
-    public NCSServicePath getPath(String foreignSource, String deviceAForeignId, String deviceZForeignId) throws Exception {
+    public NCSServicePath getPath(String foreignId, String foreignSource, String deviceAForeignId, String deviceZForeignId) throws Exception {
         Map<String, Object> headers = new HashMap<String,Object>();
-        headers.put("provisionid", foreignSource);
+        headers.put("foreignId", foreignId);
+        headers.put("foreignSource", foreignSource);
         headers.put("deviceA", deviceAForeignId);
         headers.put("deviceZ", deviceZForeignId);
         
-        m_template = m_camelContext.createProducerTemplate();
-        m_template.start();
+        
         return m_template.requestBodyAndHeaders("direct:start", null, headers, NCSServicePath.class);
     }
     
@@ -76,6 +80,7 @@ public class NCSPathProviderService {
         header.put("serviceType", data);
         header.put("deviceA", in.getHeader("deviceA"));
         header.put("deviceZ", in.getHeader("deviceZ"));
+        header.put("foreignId", in.getHeader("foreignId"));
         exchange.getOut().setHeaders(header);
     }
     
@@ -87,22 +92,5 @@ public class NCSPathProviderService {
         return new NCSServicePath(servicePath, m_dao, m_nodeDao, serviceType);
     }
 
-    public NodeDao getNodeDao() {
-        return m_nodeDao;
-    }
-
-    public void setNodeDao(NodeDao nodeDao) {
-        m_nodeDao = nodeDao;
-    }
-
-    public NCSComponentRepository getDao() {
-        return m_dao;
-    }
-
-    public void setDao(NCSComponentRepository dao) {
-        m_dao = dao;
-    }
-    
-    
 
 }
