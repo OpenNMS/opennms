@@ -15,6 +15,7 @@
 
     <aop:aspectj-autoproxy proxy-target-class="true"/>
     <context:annotation-config />
+    <context:component-scan base-package="org.opennms.netmgt.capsd"/>
     
     <bean name="xmlRpcNotifier" class="org.opennms.netmgt.capsd.XmlRpcEventHandlerNotifier" >
         <property name="xmlRpcEnabled">
