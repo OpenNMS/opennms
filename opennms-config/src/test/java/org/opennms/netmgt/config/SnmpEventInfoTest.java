@@ -1283,10 +1283,9 @@ public class SnmpEventInfoTest {
     /**
      * Tests that the new definition set by the SnmpEventInfo matches the defaults.
      * Therefore a new defintion should NOT BE added.
-     * @throws IOException 
      */
     @Test
-    public void testEmptySnmpConfigAddDefinitionWhichMatchesDefaults() throws IOException {
+    public void testEmptySnmpConfigAddDefinitionWhichMatchesDefaults() throws Exception {
     	final String snmpConfigXml = 
 		"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
 		"<snmp-config port=\"161\" retry=\"3\" timeout=\"800\" read-community=\"public\" version=\"v2c\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\"/>\n";
@@ -1295,7 +1294,7 @@ public class SnmpEventInfoTest {
 		"<snmp-config port=\"161\" retry=\"3\" timeout=\"800\" read-community=\"public\" version=\"v2c\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\"/>\n";
     	
     	  SnmpPeerFactory.setInstance(new SnmpPeerFactory(snmpConfigXml));
-          assertEquals(snmpConfigXml, SnmpPeerFactory.marshallConfig());
+          assertXmlEquals(snmpConfigXml, SnmpPeerFactory.marshallConfig());
 
           SnmpEventInfo info = new SnmpEventInfo();
           info.setVersion("v2c");
@@ -1305,17 +1304,16 @@ public class SnmpEventInfoTest {
           SnmpPeerFactory.getInstance().define(info);
           
           String actualConfig = SnmpPeerFactory.marshallConfig();
-          assertEquals(expectedConfig, actualConfig);
+          assertXmlEquals(expectedConfig, actualConfig);
     }
     
     
     /**
      * In earlier Versions of OpenNMS max-repetitions and max-vars-per-pdu weren't considered in the optimization.
      * So this test checks if it is now considered.
-     * @throws IOException
      */
     @Test
-    public void testMaxRepetitionsAndMaxVarsPerPdu() throws IOException {
+    public void testMaxRepetitionsAndMaxVarsPerPdu() throws Exception {
     	final String snmpConfigXml = 
 		"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
 		"<snmp-config port=\"161\" retry=\"3\" timeout=\"800\" read-community=\"public\" version=\"v1\" max-repetitions=\"17\" max-vars-per-pdu=\"13\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\"/>\n";
@@ -1330,7 +1328,7 @@ public class SnmpEventInfoTest {
     	
 
         SnmpPeerFactory.setInstance(new SnmpPeerFactory(snmpConfigXml));
-        assertEquals(snmpConfigXml, SnmpPeerFactory.marshallConfig());
+        assertXmlEquals(snmpConfigXml, SnmpPeerFactory.marshallConfig());
 
         SnmpEventInfo info = new SnmpEventInfo();
         info.setVersion("v2c");
@@ -1341,6 +1339,6 @@ public class SnmpEventInfoTest {
         SnmpPeerFactory.getInstance().define(info);
         
         String actualConfig = SnmpPeerFactory.marshallConfig();
-        assertEquals(expectedConfig, actualConfig);
+        assertXmlEquals(expectedConfig, actualConfig);
     }
 }
