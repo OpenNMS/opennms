@@ -108,10 +108,9 @@ public class DeleteGetNodesServlet extends HttpServlet {
                     newNode.setNodeID(nodeSet.getInt(1));
                     newNode.setNodeLabel(nodeSet.getString(2));
                     allNodes.add(newNode);
-
+                    lineCount++;
                 }
             }
-            // FIXME: linecount never modified???
             userSession.setAttribute("lineItems.delete.jsp", Integer.valueOf(lineCount));
 
             nodeSet.close();
