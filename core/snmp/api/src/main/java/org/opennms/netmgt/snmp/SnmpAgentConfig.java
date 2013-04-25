@@ -164,8 +164,8 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
 
     public String toString() {
         StringBuffer buff = new StringBuffer("SnmpAgentConfig[");
-        buff.append("Address: " + InetAddressUtils.str(m_address));
-        buff.append(", ProxyForAddress: " + InetAddressUtils.str(m_proxyFor));
+        buff.append("Address: " + InetAddrUtils.str(m_address));
+        buff.append(", ProxyForAddress: " + InetAddrUtils.str(m_proxyFor));
         buff.append(", Port: " + getPort());
         buff.append(", Timeout: " + getTimeout());
         buff.append(", Retries: " + getRetries());
