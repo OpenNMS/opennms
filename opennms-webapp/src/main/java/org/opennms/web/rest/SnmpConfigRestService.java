@@ -117,7 +117,7 @@ public class SnmpConfigRestService extends OnmsRestService {
             final InetAddress addr = InetAddressUtils.addr(ipAddr);
             if (addr == null) {
                 throw new WebApplicationException(Response.serverError().build());
-            }
+            }            
     		SnmpAgentConfig config = m_snmpPeerFactory.getAgentConfig(addr);
             return new SnmpInfo(config);
         } finally {
