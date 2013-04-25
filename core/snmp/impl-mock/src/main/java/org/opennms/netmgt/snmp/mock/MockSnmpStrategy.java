@@ -56,7 +56,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 
 public class MockSnmpStrategy implements SnmpStrategy {
-	private static final Logger s_log = LoggerFactory.getLogger(MockSnmpStrategy.class);
+	private static final transient Logger LOG = LoggerFactory.getLogger(MockSnmpStrategy.class);
 	
     public static final SnmpAgentAddress ALL_AGENTS = new SnmpAgentAddress(InetAddrUtils.addr("0.0.0.0"), 161);
     private static final SnmpValue[] EMPTY_SNMP_VALUE_ARRAY = new SnmpValue[0];
@@ -82,7 +82,7 @@ public class MockSnmpStrategy implements SnmpStrategy {
 
     @Override
     public SnmpWalker createWalker(final SnmpAgentConfig agentConfig, final String name, final CollectionTracker tracker) {
-        s_log.debug("createWalker({}/{}, {}, {})", InetAddrUtils.str(agentConfig.getAddress()), agentConfig.getPort(), name, tracker.getClass().getName());
+        LOG.debug("createWalker({}/{}, {}, {})", InetAddrUtils.str(agentConfig.getAddress()), agentConfig.getPort(), name, tracker.getClass().getName());
         final SnmpAgentAddress aa = new SnmpAgentAddress(agentConfig.getAddress(), agentConfig.getPort());
         final PropertyOidContainer oidContainer = getOidContainer(aa);
         return new MockSnmpWalker(aa, agentConfig.getVersion(), oidContainer, name, tracker, agentConfig.getMaxVarsPerPdu());
@@ -152,17 +152,17 @@ public class MockSnmpStrategy implements SnmpStrategy {
 
     @Override
     public void registerForTraps(final TrapNotificationListener listener, final TrapProcessorFactory processorFactory, final InetAddress address, final int snmpTrapPort) throws IOException {
-        s_log.warn("Can't register for traps.  No network in the MockSnmpStrategy!");
+        LOG.warn("Can't register for traps.  No network in the MockSnmpStrategy!");
     }
 
     @Override
     public void registerForTraps(final TrapNotificationListener listener, final TrapProcessorFactory processorFactory, final int snmpTrapPort) throws IOException {
-        s_log.warn("Can't register for traps.  No network in the MockSnmpStrategy!");
+        LOG.warn("Can't register for traps.  No network in the MockSnmpStrategy!");
     }
 
     @Override
     public void registerForTraps(TrapNotificationListener listener, TrapProcessorFactory processorFactory, InetAddress address, int snmpTrapPort, List<SnmpV3User> snmpv3Users) throws IOException {
-        s_log.warn("Can't register for traps.  No network in the MockSnmpStrategy!");
+        LOG.warn("Can't register for traps.  No network in the MockSnmpStrategy!");
     }
 
     @Override

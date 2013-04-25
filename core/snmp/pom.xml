@@ -17,5 +17,6 @@
     <module>impl-snmp4j</module>
     <module>impl-mock</module>
     <module>integration-tests</module>
+    <module>commands</module>
   </modules>
 </project>

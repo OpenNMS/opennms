@@ -43,7 +43,6 @@
         import="
           org.opennms.web.alarm.*,
           org.opennms.web.alarm.AcknowledgeType,
-          org.opennms.web.alarm.Alarm,
           org.opennms.web.alarm.DaoWebAlarmRepository,
           org.opennms.web.alarm.SortStyle,
           org.opennms.web.alarm.WebAlarmRepository,
@@ -53,6 +52,7 @@
           org.opennms.web.filter.Filter,
           org.opennms.web.servlet.MissingParameterException,
           org.opennms.core.utils.WebSecurityUtils,
+          org.opennms.netmgt.model.OnmsAlarm,
           org.opennms.netmgt.model.OnmsSeverity
         "
 %>
@@ -62,7 +62,7 @@
     int maxSeverity = 3;
     int ackCount    = 0;
     int unackCount  = 0;
-    Alarm[] alarms = new Alarm[0];
+    OnmsAlarm[] alarms = new OnmsAlarm[0];
 
     String nodeIdStr = request.getParameter("nodeId");
 
@@ -78,7 +78,7 @@
     boolean nodeDown = false;
     int intfDown = 0;
     int servDown = 0;
-    for (Alarm alarm : alarms) {
+    for (OnmsAlarm alarm : alarms) {
         if (alarm.getSeverity().getId() <= 3) {
             continue;
         }

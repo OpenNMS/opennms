@@ -179,14 +179,6 @@ public class DaoWebAlarmRepository implements WebAlarmRepository, InitializingBe
         return criteria;
     }
 
-    private Alarm mapOnmsAlarmToAlarm(OnmsAlarm onmsAlarm) {
-        if (onmsAlarm == null) {
-            return null;
-        }
-        Alarm alarm = new Alarm(onmsAlarm);
-        return alarm;
-    }
-
     /**
      * {@inheritDoc}
      */
@@ -276,23 +268,16 @@ public class DaoWebAlarmRepository implements WebAlarmRepository, InitializingBe
      * {@inheritDoc}
      */
     @Transactional
-    public Alarm getAlarm(int alarmId) {
-        return mapOnmsAlarmToAlarm(m_alarmDao.get(alarmId));
+    public OnmsAlarm getAlarm(int alarmId) {
+        return m_alarmDao.get(alarmId);
     }
 
     /**
      * {@inheritDoc}
      */
     @Transactional
-    public Alarm[] getMatchingAlarms(AlarmCriteria criteria) {
-        List<Alarm> alarms = new ArrayList<Alarm>();
-        List<OnmsAlarm> onmsAlarms = m_alarmDao.findMatching(getOnmsCriteria(criteria));
-
-        for (OnmsAlarm onmsAlarm : onmsAlarms) {
-            alarms.add(mapOnmsAlarmToAlarm(onmsAlarm));
-        }
-
-        return alarms.toArray(new Alarm[0]);
+    public OnmsAlarm[] getMatchingAlarms(AlarmCriteria criteria) {
+        return m_alarmDao.findMatching(getOnmsCriteria(criteria)).toArray(new OnmsAlarm[0]);
     }
 
     /**

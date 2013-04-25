@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
 
 public class TrapIdentity {
 	
-	private static final Logger s_log = LoggerFactory.getLogger(TrapIdentity.class);
+	private static final transient Logger LOG = LoggerFactory.getLogger(TrapIdentity.class);
 	
     private int m_generic;
     private int m_specific;
@@ -83,7 +83,7 @@ public class TrapIdentity {
     public TrapIdentity(SnmpObjId snmpTrapOid, SnmpObjId lastVarBindOid, SnmpValue lastVarBindValue) {
         String snmpTrapOidValue = snmpTrapOid.toString();
         
-        s_log.debug("snmpTrapOID: {}", snmpTrapOidValue);
+        LOG.debug("snmpTrapOID: {}", snmpTrapOidValue);
 
         // get the last subid
         int lastIndex = snmpTrapOidValue.lastIndexOf(TrapIdentity.DOT_CHAR);

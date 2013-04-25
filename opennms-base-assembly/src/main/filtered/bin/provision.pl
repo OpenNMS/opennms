@@ -506,6 +506,11 @@ sub cmd_asset {
 
 Get the SNMP configuration for the given IP address.
 
+=item B<snmp netsnmp E<lt>ip-addressE<gt>>
+
+Get the SNMP configuration for the given IP address, formatted for use in
+shell backticks with the utilities from the Net-SNMP package.
+
 =item B<snmp set E<lt>ip-addressE<gt> E<lt>communityE<gt> [options...]>
 
 Set the SNMP community (and, optionally, version) for the given IP address.
@@ -550,6 +555,15 @@ sub cmd_snmp {
 		for my $child ($root->children) {
 			print "* ", $child->tag, ": ", $child->text, "\n";
 		}
+	} elsif ($command eq 'netsnmp') {
+		my $response = get($ip, '/snmpConfig');
+		$XML->parse($response->content);
+		my $root = $XML->root;
+		my $versionSwitch = "-" . $root->first_child('version')->text;
+		my $communitySwitch = "-c " . $root->first_child('community')->text;
+		my $timeoutSwitch = "-t " . int($root->first_child('timeout')->text / 1000 + 0.5);
+		my $retrySwitch = "-r " . $root->first_child('retries')->text;
+		print "${versionSwitch} ${communitySwitch} ${timeoutSwitch} ${retrySwitch}"
 	} elsif (is_set($command)) {
 		my $community = shift @args;
 		if (not defined $community or $community eq "") {

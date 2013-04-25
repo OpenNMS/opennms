@@ -6,12 +6,12 @@ import java.net.UnknownHostException;
 public class InetAddrUtils {
 
 	public static String str(InetAddress address) {
-		return address.getHostAddress();
+		return address == null ? null : address.getHostAddress();
 	}
 
 	public static InetAddress addr(String value) {
 		try {
-			return InetAddress.getByName(value);
+			return value == null ? null : InetAddress.getByName(value);
 		} catch (UnknownHostException e) {
 			throw new RuntimeException("Unable to turn " + value + " into an inet address");
 		}

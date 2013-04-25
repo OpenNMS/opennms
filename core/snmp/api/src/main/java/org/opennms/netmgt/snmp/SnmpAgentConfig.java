@@ -47,7 +47,7 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
 
 	private static final long serialVersionUID = 1456963719970029200L;
 
-	private static Logger s_logger = LoggerFactory.getLogger(SnmpAgentConfig.class);
+	private static final transient Logger LOG = LoggerFactory.getLogger(SnmpAgentConfig.class);
 
     private InetAddress m_address;
     private InetAddress m_proxyFor;
@@ -117,12 +117,20 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
                 agentConfig.setPrivProtocol(value);
             } else if ("read-community".equalsIgnoreCase(key)) {
                 agentConfig.setReadCommunity(value);
+            } else if ("engine-id".equalsIgnoreCase(key)) {
+            	agentConfig.setEngineId(value);
+            } else if ("context-engine-id".equalsIgnoreCase(key)) {
+            	agentConfig.setContextEngineId(value);
+            } else if ("context-name".equalsIgnoreCase(key)) {
+            	agentConfig.setContextName(value);
+            } else if ("enterprise-id".equalsIgnoreCase(key)) {
+            	agentConfig.setEnterpriseId(value);
+            } else if ("write-community".equalsIgnoreCase(key)) {
+            	agentConfig.setWriteCommunity(value);
             } else {
-                s_logger.warn("Unexpected attribute in protocol configuration string for SnmpAgentConfig: '{}'", attribute);
+                LOG.warn("Unexpected attribute in protocol configuration string for SnmpAgentConfig: '{}'", attribute);
             }
         }
-
-
         return agentConfig;
     }
 
@@ -136,39 +144,49 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
         buff.append(",max-repetitions=" + getMaxRepetitions());
         buff.append(",max-request-size=" + getMaxRequestSize());
         buff.append(",version=" + versionToString(getVersion()));
-        if (getVersion() == VERSION3) {
+        if (isVersion3()) {
             buff.append(",security-level=" + getSecurityLevel());
             buff.append(",security-name=" + getSecurityName());
             buff.append(",auth-passphrase=" + getAuthPassPhrase());
             buff.append(",auth-protocol=" + getAuthProtocol());
-            buff.append(",priv-passprhase=" + getPrivPassPhrase());
+            buff.append(",priv-passphrase=" + getPrivPassPhrase());
             buff.append(",priv-protocol=" + getPrivProtocol());
+            buff.append(",engine-id=" + getEngineId());
+            buff.append(",context-engine-id=" + getContextEngineId());
+            buff.append(",context-name=" + getContextName());
+            buff.append(",enterprise-id=" + getEnterpriseId());
         } else {
             buff.append(",read-community=" + getReadCommunity());
+            buff.append(",write-community=" + getWriteCommunity());
         }
         return buff.toString();
-
     }
 
     public String toString() {
-        StringBuffer buff = new StringBuffer("AgentConfig[");
+        StringBuffer buff = new StringBuffer("SnmpAgentConfig[");
         buff.append("Address: " + InetAddrUtils.str(m_address));
         buff.append(", ProxyForAddress: " + InetAddrUtils.str(m_proxyFor));
         buff.append(", Port: " + getPort());
-        buff.append(", Community: " + getReadCommunity());
         buff.append(", Timeout: " + getTimeout());
         buff.append(", Retries: " + getRetries());
         buff.append(", MaxVarsPerPdu: " + getMaxVarsPerPdu());
         buff.append(", MaxRepetitions: " + getMaxRepetitions());
-        buff.append(", Max request size: " + getMaxRequestSize());
+        buff.append(", MaxRequestSize: " + getMaxRequestSize());
         buff.append(", Version: " + versionToString(getVersion()));
-        if (getVersion() == VERSION3) {
-            buff.append(", Security level: " + getSecurityLevel());
-            buff.append(", Security name: " + getSecurityName());
-            buff.append(", auth-passphrase: " + getAuthPassPhrase());
-            buff.append(", auth-protocol: " + getAuthProtocol());
-            buff.append(", priv-passprhase: " + getPrivPassPhrase());
-            buff.append(", priv-protocol: " + getPrivProtocol());
+        if (isVersion3()) {
+            buff.append(", SecurityLevel: " + getSecurityLevel());
+            buff.append(", SecurityName: " + getSecurityName());
+            buff.append(", AuthPassPhrase: " + getAuthPassPhrase());
+            buff.append(", AuthProtocol: " + getAuthProtocol());
+            buff.append(", PrivPassprhase: " + getPrivPassPhrase());
+            buff.append(", PrivProtocol: " + getPrivProtocol());
+            buff.append(", EngineId: " + getEngineId());
+            buff.append(", ContextEngineId: " + getContextEngineId());
+            buff.append(", ContextName: " + getContextName());
+            buff.append(", EnterpriseId:" + getEnterpriseId());
+        } else {
+        	buff.append(", ReadCommunity: " + getReadCommunity());
+        	buff.append(", WriteCommunity: " + getWriteCommunity());
         }
         buff.append("]");
         return buff.toString();

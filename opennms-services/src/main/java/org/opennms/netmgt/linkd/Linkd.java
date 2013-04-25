@@ -103,7 +103,7 @@ public class Linkd extends AbstractServiceDaemon {
     private Map<String, Map<String, List<AtInterface>>> m_macToAtinterface = new HashMap<String, Map<String, List<AtInterface>>>();
 
     /**
-     * HashMap that contains SnmpCollections by package.
+     * List that contains SnmpCollection package names.
      */
     private List<String> m_activepackages;
 

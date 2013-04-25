@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
 
 public class ColumnTracker extends CollectionTracker {
 	
-	private static Logger s_log = LoggerFactory.getLogger(ColumnTracker.class);
+	private static final transient Logger LOG = LoggerFactory.getLogger(ColumnTracker.class);
     
     private SnmpObjId m_base;
     private SnmpObjId m_last;
@@ -75,7 +75,7 @@ public class ColumnTracker extends CollectionTracker {
             throw new IllegalArgumentException("maxVarsPerPdu < 1");
         }
 
-        s_log.debug("Requesting oid following: {}", m_last);
+        LOG.debug("Requesting oid following: {}", m_last);
         pduBuilder.addOid(m_last);
         pduBuilder.setNonRepeaters(0);
         pduBuilder.setMaxRepetitions(getMaxRepetitions());
@@ -87,7 +87,7 @@ public class ColumnTracker extends CollectionTracker {
                     receivedEndOfMib();
                     return;
                 }
-                s_log.debug("Processing varBind: {} = {}", responseObjId, val);
+                LOG.debug("Processing varBind: {} = {}", responseObjId, val);
 
 
                 m_last = responseObjId;

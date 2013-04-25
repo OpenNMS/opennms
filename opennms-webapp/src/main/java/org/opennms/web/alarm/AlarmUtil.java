@@ -34,6 +34,7 @@ import java.util.NoSuchElementException;
 import javax.servlet.ServletContext;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.web.alarm.filter.AcknowledgedByFilter;
@@ -110,7 +111,7 @@ public abstract class AlarmUtil extends Object {
         } else if (type.equals(NodeNameLikeFilter.TYPE)) {
             filter = new NodeNameLikeFilter(value);
         } else if (type.equals(InterfaceFilter.TYPE)) {
-            filter = new InterfaceFilter(value);
+            filter = new InterfaceFilter(InetAddressUtils.addr(value));
         } else if (type.equals(ServiceFilter.TYPE)) {
             filter = new ServiceFilter(WebSecurityUtils.safeParseInt(value));
         } else if (type.equals(PartialUEIFilter.TYPE)) {
@@ -124,7 +125,7 @@ public abstract class AlarmUtil extends Object {
         } else if (type.equals(NegativeNodeFilter.TYPE)) {
             filter = new NegativeNodeFilter(WebSecurityUtils.safeParseInt(value), servletContext);
         } else if (type.equals(NegativeInterfaceFilter.TYPE)) {
-            filter = new NegativeInterfaceFilter(value);
+            filter = new NegativeInterfaceFilter(InetAddressUtils.addr(value));
         } else if (type.equals(NegativeServiceFilter.TYPE)) {
             filter = new NegativeServiceFilter(WebSecurityUtils.safeParseInt(value));
         } else if (type.equals(NegativePartialUEIFilter.TYPE)) {

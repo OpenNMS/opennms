@@ -28,6 +28,9 @@
 
 package org.opennms.web.alarm.filter;
 
+import java.net.InetAddress;
+
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.web.filter.NotEqualOrNullFilter;
 import org.opennms.web.filter.SQLType;
 
@@ -47,8 +50,8 @@ public class NegativeInterfaceFilter extends NotEqualOrNullFilter<String> {
      *
      * @param ipAddress a {@link java.lang.String} object.
      */
-    public NegativeInterfaceFilter(String ipAddress) {
-        super(TYPE, SQLType.STRING, "IPADDR", "ipAddr", ipAddress);
+    public NegativeInterfaceFilter(InetAddress ipAddress) {
+        super(TYPE, SQLType.STRING, "IPADDR", "ipAddr", InetAddressUtils.str(ipAddress));
     }
 
     /**

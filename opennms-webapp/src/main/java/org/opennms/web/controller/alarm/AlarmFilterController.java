@@ -35,8 +35,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.core.utils.WebSecurityUtils;
+import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.web.alarm.AcknowledgeType;
-import org.opennms.web.alarm.Alarm;
 import org.opennms.web.alarm.AlarmQueryParms;
 import org.opennms.web.alarm.AlarmUtil;
 import org.opennms.web.alarm.SortStyle;
@@ -161,7 +161,7 @@ public class AlarmFilterController extends AbstractController implements Initial
         AlarmCriteria queryCriteria = new AlarmCriteria(filters, sortStyle, ackType, limit, limit * multiple);
         AlarmCriteria countCriteria = new AlarmCriteria(ackType, filters);
 
-        Alarm[] alarms = m_webAlarmRepository.getMatchingAlarms(queryCriteria);
+        OnmsAlarm[] alarms = m_webAlarmRepository.getMatchingAlarms(queryCriteria);
         
         // get the total alarm count
         int alarmCount = m_webAlarmRepository.countMatchingAlarms(countCriteria);
