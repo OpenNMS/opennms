@@ -46,12 +46,12 @@
 
 <!-- alarm/summary-box.htm -->
 <c:url var="headingLink" value="alarm/list.htm"/>
-<h3 class="o-box"><a href="${headingLink}">Nodes w/Pending Problems</a></h3>
+<h3 class="o-box"><a href="${headingLink}">Nodes with Pending Problems</a></h3>
 <div class="boxWrapper">
   <c:choose>
     <c:when test="${empty summaries}">
       <p class="noBottomMargin">
-        There are no current problems
+        There are no current problems.
       </p>
     </c:when>
     <c:otherwise>
@@ -67,7 +67,7 @@
       <c:if test="${moreCount > 0}">
         <p class="noBottomMargin" align="right">
           <c:url var="moreLink" value="alarm/list.htm"/>
-          <a href="${moreLink}">all pending problems...</a>
+          <a href="${moreLink}">All pending problems...</a>
         </p>
       </c:if>
     </c:otherwise>

@@ -28,17 +28,18 @@
 
 package org.opennms.web.rss;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 
 import javax.servlet.ServletContext;
 
 import org.opennms.core.utils.WebSecurityUtils;
+import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.web.alarm.AcknowledgeType;
-import org.opennms.web.alarm.Alarm;
-import org.opennms.web.alarm.AlarmFactory;
+import org.opennms.web.alarm.DaoWebAlarmRepository;
 import org.opennms.web.alarm.SortStyle;
+import org.opennms.web.alarm.WebAlarmRepository;
+import org.opennms.web.alarm.filter.AlarmCriteria;
 import org.opennms.web.alarm.filter.NodeFilter;
 import org.opennms.web.alarm.filter.SeverityFilter;
 import org.opennms.web.filter.Filter;
@@ -53,12 +54,10 @@ import com.sun.syndication.feed.synd.SyndFeedImpl;
  *
  * @author <a href="mailto:ranger@opennms.org">Ben Reed</a>
  * @author <a href="mailto:tarus@opennms.org">Tarus Balog</a>
- * @author <a href="mailto:ranger@opennms.org">Ben Reed</a>
- * @author <a href="mailto:tarus@opennms.org">Tarus Balog</a>
- * @version $Id: $
- * @since 1.8.1
  */
 public class AlarmFeed extends AbstractFeed {
+
+    private final WebAlarmRepository m_webAlarmRepository = new DaoWebAlarmRepository();
 
     /**
      * <p>getFeed</p>
@@ -74,46 +73,42 @@ public class AlarmFeed extends AbstractFeed {
 
         ArrayList<SyndEntry> entries = new ArrayList<SyndEntry>();
 
-        try {
-            Alarm[] alarms;
-
-            ArrayList<Filter> filters = new ArrayList<Filter>();
-            if (this.getRequest().getParameter("node") != null) {
-                Integer nodeId = WebSecurityUtils.safeParseInt(this.getRequest().getParameter("node"));
-                filters.add(new NodeFilter(nodeId, servletContext));
-            }
-            if (this.getRequest().getParameter("severity") != null) {
-                String sev = this.getRequest().getParameter("severity");
-                for (OnmsSeverity severity : OnmsSeverity.values()) {
-                    if (severity.getLabel().toLowerCase().equals(sev)) {
-                        filters.add(new SeverityFilter(severity));
-                    }
-                }
-
-            }
-            
-            alarms = AlarmFactory.getAlarms(SortStyle.FIRSTEVENTTIME, AcknowledgeType.BOTH, filters.toArray(new Filter[] {}), this.getMaxEntries(), -1);
-
-            SyndEntry entry;
-            
-            for (Alarm alarm : alarms) {
-                entry = new SyndEntryImpl();
-                entry.setPublishedDate(alarm.getFirstEventTime());
-                if (alarm.getAcknowledgeTime() != null) {
-                    entry.setTitle(sanitizeTitle(alarm.getLogMessage()) + " (acknowledged by " + alarm.getAcknowledgeUser() + ")");
-                    entry.setUpdatedDate(alarm.getAcknowledgeTime());
-                } else {
-                    entry.setTitle(sanitizeTitle(alarm.getLogMessage()));
-                    entry.setUpdatedDate(alarm.getFirstEventTime());
-                }
-                entry.setLink(getUrlBase() + "alarm/detail.htm?id=" + alarm.getId());
-                
-                entries.add(entry);
-            }
-        } catch (SQLException e) {
-            log().warn("unable to get event(s)", e);
+        ArrayList<Filter> filters = new ArrayList<Filter>();
+        if (this.getRequest().getParameter("node") != null) {
+            Integer nodeId = WebSecurityUtils.safeParseInt(this.getRequest().getParameter("node"));
+            filters.add(new NodeFilter(nodeId, servletContext));
         }
+        if (this.getRequest().getParameter("severity") != null) {
+            String sev = this.getRequest().getParameter("severity");
+            for (OnmsSeverity severity : OnmsSeverity.values()) {
+                if (severity.getLabel().toLowerCase().equals(sev)) {
+                    filters.add(new SeverityFilter(severity));
+                }
+            }
+
+        }
+
+        AlarmCriteria queryCriteria = new AlarmCriteria(filters.toArray(new Filter[] {}), SortStyle.FIRSTEVENTTIME, AcknowledgeType.BOTH, this.getMaxEntries(), AlarmCriteria.NO_OFFSET);
+
+        OnmsAlarm[] alarms = m_webAlarmRepository.getMatchingAlarms(queryCriteria);
+
+        SyndEntry entry;
         
+        for (OnmsAlarm alarm : alarms) {
+            entry = new SyndEntryImpl();
+            entry.setPublishedDate(alarm.getFirstEventTime());
+            if (alarm.getAckTime() != null) {
+                entry.setTitle(sanitizeTitle(alarm.getLogMsg()) + " (acknowledged by " + alarm.getAckUser() + ")");
+                entry.setUpdatedDate(alarm.getAckTime());
+            } else {
+                entry.setTitle(sanitizeTitle(alarm.getLogMsg()));
+                entry.setUpdatedDate(alarm.getFirstEventTime());
+            }
+            entry.setLink(getUrlBase() + "alarm/detail.htm?id=" + alarm.getId());
+            
+            entries.add(entry);
+        }
+
         feed.setEntries(entries);
         return feed;
     }

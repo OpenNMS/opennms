@@ -45,7 +45,7 @@ class AlarmView extends PageableTableView {
     private RegExp m_regex = RegExp.compile("<(.|\n)*?>", "g");
     
     AlarmView(Dashlet dashlet) {
-		super(dashlet, 5, new String[] { "Node", "Description", "Count", "First Time", "Last Time" });
+		super(dashlet, 5, new String[] { "Node", "Log Msg", "Count", "First Time", "Last Time" });
 	}
     
     /**

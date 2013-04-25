@@ -9,7 +9,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core.snmp</groupId>
   <artifactId>org.opennms.core.snmp.implementations.mock</artifactId>
-  <name>OpenNMS Mock SNMP Implementation</name>
+  <name>OpenNMS SNMP Mock Implementation</name>
   <packaging>bundle</packaging>
   <build>
     <plugins>
@@ -38,6 +38,14 @@
       <groupId>org.opennms.tests</groupId>
       <artifactId>org.opennms.tests.mock-snmp-agent</artifactId>
       <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.lib</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-util</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>

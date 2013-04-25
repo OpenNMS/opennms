@@ -37,9 +37,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.snmp.CollectionTracker;
+import org.opennms.netmgt.snmp.InetAddrUtils;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpStrategy;
@@ -63,8 +62,13 @@ import org.opennms.protocols.snmp.SnmpSMI;
 import org.opennms.protocols.snmp.SnmpSession;
 import org.opennms.protocols.snmp.SnmpSyntax;
 import org.opennms.protocols.snmp.SnmpTrapSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class JoeSnmpStrategy implements SnmpStrategy {
+	
+	public static final transient Logger LOG = LoggerFactory.getLogger(JoeSnmpStrategy.class);
+	
     private static Map<TrapNotificationListener, RegistrationInfo> s_registrations = new HashMap<TrapNotificationListener, RegistrationInfo>();
     private static SnmpTrapSession s_trapSession;
     
@@ -105,7 +109,7 @@ public class JoeSnmpStrategy implements SnmpStrategy {
             values = convertSnmpSyntaxs(results);
             
         } catch (SocketException e) {
-            log().error("Could not create JoeSNMP session using AgentConfig: "+agentConfig);
+            LOG.error("Could not create JoeSNMP session using AgentConfig: "+agentConfig);
         } finally {
             if (session != null) {
                 session.close();
@@ -138,7 +142,7 @@ public class JoeSnmpStrategy implements SnmpStrategy {
             SnmpSyntax[] results = session.get(jOids);
             values = convertSnmpSyntaxs(results);
         } catch (SocketException e) {
-            log().error("Could not create JoeSNMP session using AgentConfig: "+agentConfig);
+            LOG.error("Could not create JoeSNMP session using AgentConfig: "+agentConfig);
         } finally {
             if (session != null) {
                 session.close();
@@ -172,7 +176,7 @@ public class JoeSnmpStrategy implements SnmpStrategy {
             SnmpSyntax[] results = session.getNext(jOids);
             values = convertSnmpSyntaxs(results);
         } catch (SocketException e) {
-            log().error("Could not create JoeSNMP session using AgentConfig: "+agentConfig);
+            LOG.error("Could not create JoeSNMP session using AgentConfig: "+agentConfig);
         } finally {
             if (session != null) {
                 session.close();
@@ -234,10 +238,6 @@ public class JoeSnmpStrategy implements SnmpStrategy {
         params.setVersion(agentConfig.getVersion());
         params.setReadCommunity(agentConfig.getReadCommunity());
         params.setWriteCommunity(agentConfig.getWriteCommunity());
-    }
-
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(this.getClass());
     }
 
     public SnmpValue[] getBulk(SnmpAgentConfig agentConfig, SnmpObjId[] oids) {
@@ -375,7 +375,7 @@ public class JoeSnmpStrategy implements SnmpStrategy {
     }
 
     public static void sendTest(final String destAddr, final int destPort, final String community, final SnmpPduRequest pdu) throws UnknownHostException {
-    	final InetAddress agentAddress = InetAddressUtils.getInetAddress(destAddr);
+    	final InetAddress agentAddress = InetAddrUtils.addr(destAddr);
         for (final RegistrationInfo info : s_registrations.values()) {
             if (destPort == info.getPort()) {
                 info.getHandler().snmpReceivedTrap(info.getSession(), agentAddress, destPort, new SnmpOctetString(community.getBytes()), pdu);
@@ -384,7 +384,7 @@ public class JoeSnmpStrategy implements SnmpStrategy {
     }
 
     public static void sendTest(String destAddr, int destPort, String community, SnmpPduTrap pdu) throws UnknownHostException {
-    	final InetAddress agentAddress = InetAddressUtils.getInetAddress(destAddr);
+    	final InetAddress agentAddress = InetAddrUtils.addr(destAddr);
         for (final RegistrationInfo info : s_registrations.values()) {
             if (destPort == info.getPort()) {
                 info.getHandler().snmpReceivedTrap(info.getSession(), agentAddress, destPort, new SnmpOctetString(community.getBytes()), pdu);

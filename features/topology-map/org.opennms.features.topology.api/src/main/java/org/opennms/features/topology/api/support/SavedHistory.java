@@ -9,6 +9,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.zip.CRC32;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
 import org.opennms.features.topology.api.BoundingBox;
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
@@ -22,39 +29,77 @@ import org.slf4j.LoggerFactory;
 /**
  * Immutable class that stores a snapshot of the topology layout at a given time.
  */
+@XmlRootElement(name="saved-history")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class SavedHistory {
-    private final int m_szl;
-    private final BoundingBox m_boundBox;
-    private final Map<VertexRef, Point> m_locations = new HashMap<VertexRef, Point>();
-    private final Set<VertexRef> m_selectedVertices;
+
+    @XmlAttribute(name="semantic-zoom-level")
+    public int m_szl;
+
+    @XmlElement(name="bounding-box")
+    @XmlJavaTypeAdapter(BoundingBoxAdapter.class)
+    public BoundingBox m_boundBox;
+
+    @XmlElement(name="locations")
+    @XmlJavaTypeAdapter(VertexRefPointMapAdapter.class)
+    public Map<VertexRef, Point> m_locations = new HashMap<VertexRef, Point>();
+
+    @XmlElement(name="selection")
+    @XmlJavaTypeAdapter(VertexRefSetAdapter.class)
+    private Set<VertexRef> m_selectedVertices;
 
     /**
      * A map of key-value settings for the HistoryOperation components that are registered.
      */
-    private final Map<String,String> m_settings = new HashMap<String,String>();
-    
-    public SavedHistory(GraphContainer graphContainer, Collection<HistoryOperation> operations) {
-        m_szl = graphContainer.getSemanticZoomLevel();
-        m_boundBox = graphContainer.getMapViewManager().getCurrentBoundingBox();
-        saveLocations(graphContainer.getGraph());
+    @XmlElement(name="settings")
+    @XmlJavaTypeAdapter(StringMapAdapter.class)
+    public final Map<String,String> m_settings = new HashMap<String,String>();
 
+    protected SavedHistory() {
+        // Here for JAXB support
+    }
+
+    private static Set<VertexRef> getUnmodifiableSet(Collection<VertexRef> vertices) {
         HashSet<VertexRef> selectedVertices = new HashSet<VertexRef>();
-        selectedVertices.addAll(graphContainer.getSelectionManager().getSelectedVertexRefs());
-        m_selectedVertices = Collections.unmodifiableSet(selectedVertices);
-
-        for (HistoryOperation operation : operations) {
-            m_settings.putAll(operation.createHistory(graphContainer));
-        }
-        LoggerFactory.getLogger(this.getClass()).debug("Created " + toString());
+        selectedVertices.addAll(vertices);
+        return Collections.unmodifiableSet(selectedVertices);
     }
     
-
-    private void saveLocations(Graph graph) {
-        Collection<? extends Vertex> vertices = graph.getDisplayVertices();
-        m_locations.clear();
-        for(Vertex vert : vertices) {
-            m_locations.put(vert, graph.getLayout().getLocation(vert));
+    private static Map<String,String> getOperationSettings(GraphContainer graphContainer, Collection<HistoryOperation> operations) {
+        Map<String,String> retval = new HashMap<String,String>();
+        for (HistoryOperation operation : operations) {
+            retval.putAll(operation.createHistory(graphContainer));
         }
+        return retval;
+    }
+    
+    public SavedHistory(GraphContainer graphContainer, Collection<HistoryOperation> operations) {
+        this(
+            graphContainer.getSemanticZoomLevel(), 
+            graphContainer.getMapViewManager().getCurrentBoundingBox(),
+            saveLocations(graphContainer.getGraph()),
+            getUnmodifiableSet(graphContainer.getSelectionManager().getSelectedVertexRefs()),
+            getOperationSettings(graphContainer, operations)
+        );
+        saveLocations(graphContainer.getGraph());
+    }
+
+    SavedHistory(int szl, BoundingBox box, Map<VertexRef,Point> locations, Set<VertexRef> selectedVertices, Map<String,String> operationSettings) {
+        m_szl = szl;
+        m_boundBox = box;
+        m_locations = locations;
+        m_selectedVertices = selectedVertices;
+        m_settings.putAll(operationSettings);
+        LoggerFactory.getLogger(this.getClass()).debug("Created " + toString());
+    }
+
+    private static Map<VertexRef,Point> saveLocations(Graph graph) {
+        Collection<? extends Vertex> vertices = graph.getDisplayVertices();
+        Map<VertexRef,Point> locations = new HashMap<VertexRef,Point>();
+        for(Vertex vert : vertices) {
+            locations.put(vert, graph.getLayout().getLocation(vert));
+        }
+        return locations;
     }
 
 

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,23 +26,40 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.alarm;
+package org.opennms.features.topology.api.support;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
 
-class ReductionKeyMemo extends Memo {
-    private String reductionKey;
+import org.opennms.features.topology.api.BoundingBox;
 
-    public String getReductionKey() {
-        return reductionKey;
-    }
+/**
+ */
+public class BoundingBoxAdapter extends XmlAdapter<BoundingBoxAdapter.JaxbBoundingBox, BoundingBox> {
 
-    public void setReductionKey(String reductionKey) {
-        this.reductionKey = reductionKey;
-    }
+	public static final class JaxbBoundingBox {
+		@XmlAttribute
+		public int x;
+		@XmlAttribute
+		public int y;
+		@XmlAttribute
+		public int height;
+		@XmlAttribute
+		public int width;
+	}
 
-    @Override
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this);
-    }
+	@Override
+	public BoundingBoxAdapter.JaxbBoundingBox marshal(BoundingBox v) throws Exception {
+		JaxbBoundingBox retval = new JaxbBoundingBox();
+		retval.x = v.getX();
+		retval.y = v.getY();
+		retval.height = v.getHeight();
+		retval.width = v.getWidth();
+		return retval;
+	}
+
+	@Override
+	public BoundingBox unmarshal(BoundingBoxAdapter.JaxbBoundingBox v) throws Exception {
+		return new BoundingBox(v.x, v.y, v.width, v.height);
+	}
 }

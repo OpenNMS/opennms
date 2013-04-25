@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,69 +26,30 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.alarm;
+package org.opennms.netmgt.snmp;
 
-import java.io.Serializable;
-import java.util.Date;
-import org.apache.commons.lang.builder.ToStringBuilder;
+import java.net.InetAddress;
+
+import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 /**
- * <p>Web-model class for a memo </p>
+ * InetAddresssXmlAdapter
+ *
+ * @author brozow
+ * @version $Id: $
  */
-public class Memo implements Serializable {
-    
-    private Integer id;
+public class InetAddrXmlAdapter extends XmlAdapter<String, InetAddress> {
 
-    private String body;
-
-    private String author;
-
-    private Date updated;
-
-    private Date created;
-
-    public String getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(String author) {
-        this.author = author;
-    }
-
-    public String getBody() {
-        return body;
-    }
-
-    public void setBody(String body) {
-        this.body = body;
-    }
-
-    public Date getCreated() {
-        return created;
-    }
-
-    public void setCreated(Date created) {
-        this.created = created;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public Date getUpdated() {
-        return updated;
-    }
-
-    public void setUpdated(Date updated) {
-        this.updated = updated;
-    }
-
+    /** {@inheritDoc} */
     @Override
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this);
+    public String marshal(InetAddress inetAddr) throws Exception {
+    	return InetAddrUtils.str(inetAddr);
     }
+
+    /** {@inheritDoc} */
+    @Override
+    public InetAddress unmarshal(String ipAddr) throws Exception {
+    	return InetAddrUtils.addr(ipAddr);
+    }
+
 }

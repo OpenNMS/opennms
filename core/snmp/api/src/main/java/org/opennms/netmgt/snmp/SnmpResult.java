@@ -28,11 +28,6 @@
 
 package org.opennms.netmgt.snmp;
 
-import org.apache.commons.lang.builder.CompareToBuilder;
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.apache.commons.lang.builder.ToStringBuilder;
-
 public class SnmpResult implements Comparable<SnmpResult> {
     private final SnmpObjId m_base;
     private final SnmpInstId m_instance;
@@ -69,33 +64,12 @@ public class SnmpResult implements Comparable<SnmpResult> {
             .toString();
     }
 
-    public int compareTo(SnmpResult other) {
-        return new CompareToBuilder()
-            .append(getBase(), other.getBase())
-            .append(getInstance(), other.getInstance())
-            .append(getValue(), other.getValue())
-            .toComparison();
-    }
+	@Override
+	public int compareTo(SnmpResult other) {
+		return getAbsoluteInstance().compareTo(other.getAbsoluteInstance());
+	}
     
-    @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof SnmpResult) {
-            SnmpResult other = (SnmpResult) obj;
-            return new EqualsBuilder()
-                .append(getBase(), other.getBase())
-                .append(getInstance(), other.getInstance())
-                .append(getValue(), other.getValue())
-                .isEquals();
-        }
-        return false;
-    }
     
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder()
-            .append(getBase())
-            .append(getInstance())
-            .append(getValue())
-            .toHashCode();
-    }
+    
+
 }

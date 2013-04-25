@@ -222,16 +222,15 @@ abstract public class XmlTest<T> {
 		return xml;
 	}
 
-	protected void assertXmlEquals(final String xmlA, final String xmlB) throws Exception {
-//        final DetailedDiff diff = getDiff(xmlA, xmlB);
+	public static void assertXmlEquals(final String xmlA, final String xmlB) throws Exception {
         final List<Difference> differences = getDifferences(xmlA, xmlB);
         if (differences.size() > 0) {
-        	LogUtils.debugf(this, "Sample XML: %s", m_sampleXml);
+        	LogUtils.debugf(XmlTest.class, "XML:\n\n%s\n\n...does not match XML:\n\n%s", xmlA, xmlB);
         }
         assertEquals("number of XMLUnit differences between the example xml and the generated xml should be 0", 0, differences.size());
 	}
 
-	protected List<Difference> getDifferences(final String xmlA, final String xmlB) throws SAXException, IOException {
+	protected static List<Difference> getDifferences(final String xmlA, final String xmlB) throws SAXException, IOException {
 		final DetailedDiff myDiff = new DetailedDiff(XMLUnit.compareXML(xmlA, xmlB));
 		final List<Difference> retDifferences = new ArrayList<Difference>();
         @SuppressWarnings("unchecked")
@@ -239,9 +238,9 @@ abstract public class XmlTest<T> {
         if (allDifferences.size() > 0) {
             for (final Difference d : allDifferences) {
             	if (d.getDescription().equals("namespace URI")) {
-            		LogUtils.infof(this, "Ignoring namspace difference: %s", d);
+            		LogUtils.infof(XmlTest.class, "Ignoring namspace difference: %s", d);
             	} else {
-                	LogUtils.warnf(this, "Found difference: %s", d);
+                	LogUtils.warnf(XmlTest.class, "Found difference: %s", d);
                 	retDifferences.add(d);
             	}
             }

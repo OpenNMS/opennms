@@ -45,7 +45,7 @@ public class SelectionAwareTable extends Table implements SelectionListener, Sel
 	private static final long serialVersionUID = 2761774077365441249L;
 
 	private final OnmsDaoContainer<?,? extends Serializable> m_container;
-	private final Set<SelectionNotifier> m_selectionNotifiers = new CopyOnWriteArraySet();
+	private final Set<SelectionNotifier> m_selectionNotifiers = new CopyOnWriteArraySet<SelectionNotifier>();
 
 	/**
 	 *  Leave OnmsDaoContainer without generics; the Aries blueprint code cannot match up

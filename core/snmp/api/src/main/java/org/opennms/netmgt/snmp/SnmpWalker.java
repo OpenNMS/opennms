@@ -33,10 +33,12 @@ import java.net.InetAddress;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import org.opennms.core.utils.ThreadCategory;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class SnmpWalker {
+	
+	private static final transient Logger LOG = LoggerFactory.getLogger(SnmpWalker.class);
     
     protected static abstract class WalkerPduBuilder extends PduBuilder {
         protected WalkerPduBuilder(int maxVarsPerPdu) {
@@ -157,7 +159,7 @@ public abstract class SnmpWalker {
         try {
             close();
         } catch (IOException e) {
-            log().error(getName()+": Unexpected Error occured closing SNMP session for: "+m_address, e);
+            LOG.error(getName()+": Unexpected Error occured closing SNMP session for: "+m_address, e);
         }
     }
 
@@ -174,10 +176,6 @@ public abstract class SnmpWalker {
         if (m_signal != null) {
             m_signal.countDown();
         }
-    }
-
-    protected static ThreadCategory log() {
-        return ThreadCategory.getInstance(SnmpWalker.class);
     }
 
     public void waitFor() throws InterruptedException {

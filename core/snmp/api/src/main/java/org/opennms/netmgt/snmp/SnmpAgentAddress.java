@@ -30,25 +30,17 @@ package org.opennms.netmgt.snmp;
 
 import java.net.InetAddress;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.opennms.core.utils.InetAddressUtils;
-import org.springframework.util.Assert;
-
 public final class SnmpAgentAddress {
     private final InetAddress m_address;
     private final Integer m_port;
-    private int m_hashCode = 0;
 
     public SnmpAgentAddress(final InetAddress agentAddress, final Integer agentPort) {
-        Assert.notNull(agentPort);
+    	if (agentAddress == null) throw new NullPointerException("agentAddress cannot be null");
+    	if (agentPort == null) throw new NullPointerException("agentPort cannot be null");
+        
         m_address = agentAddress;
         m_port = agentPort;
         
-        m_hashCode = new HashCodeBuilder(7, 15)
-            .append(m_address)
-            .append(m_port)
-            .toHashCode();
     }
 
     public InetAddress getAddress() {
@@ -62,17 +54,17 @@ public final class SnmpAgentAddress {
     public boolean equals(final Object obj) {
         if (!(obj instanceof SnmpAgentAddress)) return false;
         final SnmpAgentAddress that = (SnmpAgentAddress)obj;
-        return new EqualsBuilder()
-            .append(this.getAddress(), that.getAddress())
-            .append(this.getPort(), that.getPort())
-            .isEquals();
+        return m_address.equals(that.m_address) && m_port.equals(that.m_port);
     }
     
     public int hashCode() {
-        return m_hashCode;
+    	int hashCode = 1;
+    	hashCode = hashCode*37 + m_address.hashCode();
+    	hashCode = hashCode*37 + m_port.hashCode();
+    	return hashCode;
     }
     
     public String toString() {
-    	return InetAddressUtils.str(m_address) + ":" + m_port;
+    	return InetAddrUtils.str(m_address) + ":" + m_port;
     }
 }

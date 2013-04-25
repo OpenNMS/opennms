@@ -42,6 +42,9 @@ import org.opennms.web.filter.Filter;
  */
 public class AlarmCriteria {
     
+    public static final int NO_LIMIT = -1;
+    public static final int NO_OFFSET = -1;
+    
     public static interface AlarmCriteriaVisitor<E extends Exception> {
         public void visitAckType(AcknowledgeType ackType) throws E; 
         public void visitFilter(Filter filter) throws E;
@@ -59,8 +62,8 @@ public class AlarmCriteria {
     Filter[] m_filters = null;
     SortStyle m_sortStyle = SortStyle.LASTEVENTTIME;
     AcknowledgeType m_ackType = AcknowledgeType.UNACKNOWLEDGED;
-    int m_limit = -1;
-    int m_offset = -1;
+    int m_limit = NO_LIMIT;
+    int m_offset = NO_OFFSET;
     
     /**
      * <p>Constructor for AlarmCriteria.</p>
@@ -68,7 +71,7 @@ public class AlarmCriteria {
      * @param filters a org$opennms$web$filter$Filter object.
      */
     public AlarmCriteria(Filter... filters) {
-        this(filters, null, null, -1, -1);
+        this(filters, null, null, NO_LIMIT, NO_OFFSET);
     }
     
     /**
@@ -78,7 +81,7 @@ public class AlarmCriteria {
      * @param filters an array of org$opennms$web$filter$Filter objects.
      */
     public AlarmCriteria(AcknowledgeType ackType, Filter[] filters) {
-        this(filters, null, ackType, -1, -1);
+        this(filters, null, ackType, NO_LIMIT, NO_OFFSET);
     }
     
     /**

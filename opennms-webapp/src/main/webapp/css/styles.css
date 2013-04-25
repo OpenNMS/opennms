@@ -94,6 +94,7 @@
 	    background-image: url(../images/headerbg.png);
 	    background-repeat: repeat-x;
 	    color: #FFF;
+	    text-shadow: rgba(0,0,0,0.5) 1px 1px 1px;
 	}
 	#header a {
 	    color:#FFF;
@@ -355,6 +356,7 @@
 	    margin-top: 0px;
 	    font-size: 70%;
 	    padding: 6px;
+	    text-shadow: rgba(0,0,0,0.5) 1px 1px 1px;
 	}
 	
 	div.o-box-spacer{
@@ -379,6 +381,7 @@
 	    margin-top: 0px;
 	    font-size: 70%;
 	    padding: 6px;
+	    text-shadow: rgba(0,0,0,0.5) 1px 1px 1px;
 	}
 	
 	h3.o-box-header a{
@@ -452,6 +455,7 @@
 		 margin-top: 7px;
 		 font-size: 70%;
 		 padding: 6px;
+		text-shadow: rgba(0,0,0,0.5) 1px 1px 1px;
 	}
 	
 	p h3, td h3 {

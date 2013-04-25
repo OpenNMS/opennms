@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -25,6 +25,13 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+
+/************************************************************************
+ * Change history
+ *
+ * 2013-04-18 Updated package names to match new XMP JAR (jeffg@opennms.org)
+ *
+ ************************************************************************/
 
 /*
 * OCA CONTRIBUTION ACKNOWLEDGEMENT - NOT PART OF LEGAL BOILERPLATE
@@ -61,11 +68,11 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.krupczak.Xmp.SocketOpts;
-import org.krupczak.Xmp.Xmp;
-import org.krupczak.Xmp.XmpMessage;
-import org.krupczak.Xmp.XmpSession;
-import org.krupczak.Xmp.XmpVar;
+import org.krupczak.xmp.SocketOpts;
+import org.krupczak.xmp.Xmp;
+import org.krupczak.xmp.XmpMessage;
+import org.krupczak.xmp.XmpSession;
+import org.krupczak.xmp.XmpVar;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.collectd.CollectionAgent;

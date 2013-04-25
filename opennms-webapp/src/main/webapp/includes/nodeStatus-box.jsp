@@ -40,14 +40,29 @@
 <%@page language="java"
         contentType="text/html"
         session="true"
-        import="org.opennms.web.alarm.*,org.opennms.web.servlet.MissingParameterException,org.opennms.core.utils.WebSecurityUtils,org.opennms.netmgt.model.OnmsSeverity" %>
+        import="
+          org.opennms.web.alarm.*,
+          org.opennms.web.alarm.AcknowledgeType,
+          org.opennms.web.alarm.DaoWebAlarmRepository,
+          org.opennms.web.alarm.SortStyle,
+          org.opennms.web.alarm.WebAlarmRepository,
+          org.opennms.web.alarm.filter.AlarmCriteria,
+          org.opennms.web.alarm.filter.NodeFilter,
+          org.opennms.web.alarm.filter.SeverityFilter,
+          org.opennms.web.filter.Filter,
+          org.opennms.web.servlet.MissingParameterException,
+          org.opennms.core.utils.WebSecurityUtils,
+          org.opennms.netmgt.model.OnmsAlarm,
+          org.opennms.netmgt.model.OnmsSeverity
+        "
+%>
 
 <%
     int nodeId = -1;
     int maxSeverity = 3;
     int ackCount    = 0;
     int unackCount  = 0;
-    Alarm[] alarms = new Alarm[0];
+    OnmsAlarm[] alarms = new OnmsAlarm[0];
 
     String nodeIdStr = request.getParameter("nodeId");
 
@@ -55,13 +70,15 @@
         throw new MissingParameterException("node");
     } else {
         nodeId = WebSecurityUtils.safeParseInt(nodeIdStr);
-        alarms = AlarmFactory.getAlarmsForNode(nodeId, SortStyle.ID, AcknowledgeType.BOTH, getServletContext());
+        NodeFilter filter = new NodeFilter(nodeId, getServletContext());
+        AlarmCriteria criteria = new AlarmCriteria(new Filter[] { filter }, SortStyle.ID, AcknowledgeType.BOTH, AlarmCriteria.NO_LIMIT, AlarmCriteria.NO_OFFSET);
+        alarms = new DaoWebAlarmRepository().getMatchingAlarms(criteria);
     }
 
     boolean nodeDown = false;
     int intfDown = 0;
     int servDown = 0;
-    for (Alarm alarm : alarms) {
+    for (OnmsAlarm alarm : alarms) {
         if (alarm.getSeverity().getId() <= 3) {
             continue;
         }

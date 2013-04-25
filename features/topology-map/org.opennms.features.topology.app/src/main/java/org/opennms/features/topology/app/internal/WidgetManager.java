@@ -28,7 +28,9 @@
 
 package org.opennms.features.topology.app.internal;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -70,7 +72,16 @@ public class WidgetManager {
      * @return List<IViewContribution>
      */
     public List<IViewContribution> getWidgets(){
-        return Collections.unmodifiableList(m_viewContributors);
+        List<IViewContribution> widgets = new ArrayList<IViewContribution>();
+        widgets.addAll(m_viewContributors);
+        // Sort the widgets by their title
+        Collections.sort(widgets, new Comparator<IViewContribution>() {
+            @Override
+            public int compare(IViewContribution o1, IViewContribution o2) {
+                return o1.getTitle().compareTo(o2.getTitle());
+            }
+        });
+        return Collections.unmodifiableList(widgets);
     }
     
     public synchronized void onBind(IViewContribution viewContribution) {

@@ -49,6 +49,7 @@ import org.opennms.features.topology.app.internal.TopoContextMenu.TopoContextMen
 import org.opennms.features.topology.app.internal.TopologyComponent.VertexUpdateListener;
 import org.opennms.features.topology.app.internal.jung.FRLayoutAlgorithm;
 import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
+import org.slf4j.LoggerFactory;
 
 import com.github.wolfie.refresher.Refresher;
 import com.vaadin.Application;
@@ -132,6 +133,11 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 	public void init() {
 	    setTheme("topo_default");
 	    
+		// See if the history manager has an existing fragment stored for
+		// this user. Do this before laying out the UI because the history
+	    // may change during layout.
+		String fragment = m_historyManager.getHistoryForUser((String)this.getUser());
+
 	    m_rootLayout = new AbsoluteLayout();
 	    m_rootLayout.setSizeFull();
 	    
@@ -142,7 +148,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
         m_uriFragUtil = new UriFragmentUtility();
         m_window.addComponent(m_uriFragUtil);
         m_uriFragUtil.addListener(this);
-	    
+
 		m_layout = new AbsoluteLayout();
 		m_layout.setSizeFull();
 		m_rootLayout.addComponent(m_layout);
@@ -288,6 +294,12 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 		if(m_treeWidgetManager.widgetCount() != 0) {
 		    updateAccordionView(m_treeWidgetManager);
 		}
+
+		// If there was existing history, then restore that history snapshot.
+		if (fragment != null) {
+			LoggerFactory.getLogger(this.getClass()).info("Restoring history for user {}: {}", (String)this.getUser(), fragment);
+			m_uriFragUtil.setFragment(fragment);
+		}
 	}
 
     /**
@@ -326,7 +338,36 @@ public class TopologyWidgetTestApplication extends Application implements Comman
                 // Split the screen 70% top, 30% bottom
                 bottomLayoutBar.setSplitPosition(70, Sizeable.UNITS_PERCENTAGE);
                 bottomLayoutBar.setSizeFull();
-                bottomLayoutBar.setSecondComponent(getTabSheet(widgetManager, this));
+
+                // Use an absolute layout for the bottom panel
+                AbsoluteLayout bottomLayout = new AbsoluteLayout();
+                bottomLayout.setSizeFull();
+                
+                // Add the tabsheet to the layout
+                bottomLayout.addComponent(getTabSheet(widgetManager, this));
+
+                // For any extra controls, add a horizontal layout that will float
+                // on top of the right side of the tab panel
+                HorizontalLayout extraControls = new HorizontalLayout();
+                extraControls.setHeight(32, Sizeable.UNITS_PIXELS);
+                extraControls.setSpacing(true);
+
+                /*
+                // Add the extra controls to the layout
+                Label label = new Label("Hello");
+                extraControls.addComponent(label);
+                extraControls.setComponentAlignment(label, Alignment.MIDDLE_RIGHT);
+
+                Button newButton = new Button("World");
+                extraControls.addComponent(newButton);
+                extraControls.setComponentAlignment(newButton, Alignment.MIDDLE_RIGHT);
+                */
+
+                // Place the extra controls on the absolute layout
+                bottomLayout.addComponent(extraControls, "top:0px;right:5px;");
+
+                bottomLayoutBar.setSecondComponent(bottomLayout);
+
                 m_layout.addComponent(bottomLayoutBar, getBelowMenuPosition());
             }
             m_layout.requestRepaint();
@@ -567,14 +608,14 @@ public class TopologyWidgetTestApplication extends Application implements Comman
     public void fragmentChanged(FragmentChangedEvent source) {
         m_settingFragment++;
         String fragment = source.getUriFragmentUtility().getFragment();
-        m_historyManager.applyHistory(fragment, m_graphContainer);
+        m_historyManager.applyHistory((String)getUser(), fragment, m_graphContainer);
         m_settingFragment--;
     }
 
 
     private void saveHistory() {
         if (m_settingFragment == 0) {
-            String fragment = m_historyManager.create(m_graphContainer);
+            String fragment = m_historyManager.create((String)getUser(), m_graphContainer);
             m_uriFragUtil.setFragment(fragment, false);
         }
     }
