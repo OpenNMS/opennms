@@ -336,7 +336,36 @@ public class TopologyWidgetTestApplication extends Application implements Comman
                 // Split the screen 70% top, 30% bottom
                 bottomLayoutBar.setSplitPosition(70, Sizeable.UNITS_PERCENTAGE);
                 bottomLayoutBar.setSizeFull();
-                bottomLayoutBar.setSecondComponent(getTabSheet(widgetManager, this));
+
+                // Use an absolute layout for the bottom panel
+                AbsoluteLayout bottomLayout = new AbsoluteLayout();
+                bottomLayout.setSizeFull();
+                
+                // Add the tabsheet to the layout
+                bottomLayout.addComponent(getTabSheet(widgetManager, this));
+
+                // For any extra controls, add a horizontal layout that will float
+                // on top of the right side of the tab panel
+                HorizontalLayout extraControls = new HorizontalLayout();
+                extraControls.setHeight(32, Sizeable.UNITS_PIXELS);
+                extraControls.setSpacing(true);
+
+                /*
+                // Add the extra controls to the layout
+                Label label = new Label("Hello");
+                extraControls.addComponent(label);
+                extraControls.setComponentAlignment(label, Alignment.MIDDLE_RIGHT);
+
+                Button newButton = new Button("World");
+                extraControls.addComponent(newButton);
+                extraControls.setComponentAlignment(newButton, Alignment.MIDDLE_RIGHT);
+                */
+
+                // Place the extra controls on the absolute layout
+                bottomLayout.addComponent(extraControls, "top:0px;right:5px;");
+
+                bottomLayoutBar.setSecondComponent(bottomLayout);
+
                 m_layout.addComponent(bottomLayoutBar, getBelowMenuPosition());
             }
             m_layout.requestRepaint();
