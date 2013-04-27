@@ -80,6 +80,7 @@ public final class CitrixPlugin extends AbstractTcpPlugin {
      * </P>
      */
     private static final int EOF = -1;
+    
     /**
      * <p>Constructor for CitrixPlugin.</p>
      */
