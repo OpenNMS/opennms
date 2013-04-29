@@ -28,7 +28,6 @@
 
 package org.opennms.web.alarm;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -48,7 +47,6 @@ import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsMemo;
 import org.opennms.netmgt.model.OnmsReductionKeyMemo;
 import org.opennms.netmgt.model.OnmsSeverity;
-import org.opennms.netmgt.model.acknowledgments.AckService;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
 import org.opennms.web.alarm.filter.AlarmCriteria;
 import org.opennms.web.alarm.filter.AlarmIdListFilter;
@@ -73,9 +71,6 @@ public class DaoWebAlarmRepository implements WebAlarmRepository, InitializingBe
     @Autowired
     MemoDao m_memoDao;
     
-    @Autowired
-    AckService m_ackService;
-
     @Autowired
     AcknowledgmentDao m_ackDao;
 
@@ -205,7 +200,7 @@ public class DaoWebAlarmRepository implements WebAlarmRepository, InitializingBe
             OnmsAcknowledgment ack = new OnmsAcknowledgment(alarm, user);
             ack.setAckTime(timestamp);
             ack.setAckAction(AckAction.ACKNOWLEDGE);
-            m_ackService.processAck(ack);
+            m_ackDao.processAck(ack);
         }
     }
 
@@ -222,7 +217,7 @@ public class DaoWebAlarmRepository implements WebAlarmRepository, InitializingBe
             OnmsAcknowledgment ack = new OnmsAcknowledgment(alarm, user);
             ack.setAckTime(timestamp);
             ack.setAckAction(AckAction.CLEAR);
-            m_ackService.processAck(ack);
+            m_ackDao.processAck(ack);
             m_alarmDao.update(alarm);
         }
     }
@@ -260,7 +255,7 @@ public class DaoWebAlarmRepository implements WebAlarmRepository, InitializingBe
             OnmsAcknowledgment ack = new OnmsAcknowledgment(alarm, user);
             ack.setAckTime(timestamp);
             ack.setAckAction(AckAction.ESCALATE);
-            m_ackService.processAck(ack);
+            m_ackDao.processAck(ack);
         }
     }
 
@@ -298,7 +293,7 @@ public class DaoWebAlarmRepository implements WebAlarmRepository, InitializingBe
         for (OnmsAlarm alarm : alarms) {
             OnmsAcknowledgment ack = new OnmsAcknowledgment(alarm, user);
             ack.setAckAction(AckAction.UNACKNOWLEDGE);
-            m_ackService.processAck(ack);
+            m_ackDao.processAck(ack);
         }
 
     }
