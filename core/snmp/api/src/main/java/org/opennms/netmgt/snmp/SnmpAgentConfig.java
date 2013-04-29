@@ -127,7 +127,7 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
             } else if ("write-community".equalsIgnoreCase(key)) {
             	agentConfig.setWriteCommunity(value);
             } else {
-                s_logger.warn("Unexpected attribute in protocol configuration string for SnmpAgentConfig: '{}'", attribute);
+                LOG.warn("Unexpected attribute in protocol configuration string for SnmpAgentConfig: '{}'", attribute);
             }
         }
         return agentConfig;
