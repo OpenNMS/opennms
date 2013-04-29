@@ -78,13 +78,13 @@ import org.hibernate.criterion.Restrictions;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.ackd.Parameter;
 import org.opennms.netmgt.dao.AckdConfigurationDao;
+import org.opennms.netmgt.dao.AcknowledgmentDao;
 import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.model.AckAction;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsSeverity;
-import org.opennms.netmgt.model.acknowledgments.AckService;
 
 /**
  * <p>HypericAckProcessor class.</p>
@@ -102,9 +102,9 @@ public class HypericAckProcessor implements AckProcessor {
     public static final int ALERTS_PER_HTTP_TRANSACTION = 200;
     // public static final String PARAMETER_HYPERIC_HOSTS = "hyperic-hosts";
 
-    private AckdConfigurationDao m_ackdDao;
+    private AckdConfigurationDao m_ackdConfigDao;
+    private AcknowledgmentDao m_ackDao;
     private AlarmDao m_alarmDao;
-    private AckService m_ackService;
 
     /**
      * <p>This class is used as the data bean for parsing XML responses from the Hyperic HQ
@@ -246,7 +246,7 @@ public class HypericAckProcessor implements AckProcessor {
      */
     public void reloadConfigs() {
         log().debug("reloadConfigs: reloading configuration...");
-        m_ackdDao.reloadConfiguration();
+        m_ackdConfigDao.reloadConfiguration();
         log().debug("reloadConfigs: configuration reloaded");
     }
 
@@ -287,7 +287,7 @@ public class HypericAckProcessor implements AckProcessor {
             throw new IllegalArgumentException("Cannot search for blank Hyperic platform IDs inside the ackd configuration");
         }
 
-        List<Parameter> params = m_ackdDao.getParametersForReader(READER_NAME_HYPERIC);
+        List<Parameter> params = m_ackdConfigDao.getParametersForReader(READER_NAME_HYPERIC);
         if (params == null) {
             throw new IllegalStateException("There is no configuration for the '" + READER_NAME_HYPERIC + "' reader inside the ackd configuration");
         }
@@ -384,7 +384,7 @@ public class HypericAckProcessor implements AckProcessor {
                     log().warn("run: " + acks.size() + " acknowledgements processed successfully before exception");
                 } finally {
                     if (acks.size() > 0) {
-                        m_ackService.processAcks(acks);
+                        m_ackDao.processAcks(acks);
                     }
                 }
             }
@@ -629,16 +629,14 @@ public class HypericAckProcessor implements AckProcessor {
      * @param configDao a {@link org.opennms.netmgt.dao.AckdConfigurationDao} object.
      */
     public synchronized void setAckdConfigDao(final AckdConfigurationDao configDao) {
-        m_ackdDao = configDao;
+        m_ackdConfigDao = configDao;
     }
 
     /**
-     * <p>setAckService</p>
-     *
-     * @param ackService a {@link org.opennms.netmgt.model.acknowledgments.AckService} object.
+     * @param ackDao a {@link org.opennms.netmgt.dao.AcknowledgmentDao} object.
      */
-    public synchronized void setAckService(final AckService ackService) {
-        m_ackService = ackService;
+    public synchronized void setAcknowledgmentDao(final AcknowledgmentDao ackDao) {
+        m_ackDao = ackDao;
     }
 
     /**

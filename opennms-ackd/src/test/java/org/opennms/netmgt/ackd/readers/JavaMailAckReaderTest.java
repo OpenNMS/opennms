@@ -211,10 +211,8 @@ public class JavaMailAckReaderTest implements InitializingBean {
         Future<?> f = executor.schedule(m_processor, 5, TimeUnit.SECONDS);
         
         m_processor.setJmConfigDao(m_jmDao);
-        
-        m_processor.setJmConfigDao(new JmCnfDao());
-//        m_processor.setAckService(m_ackService);
         m_processor.setAckdConfigDao(createAckdConfigDao());
+        //m_processor.setAcknowledgmentDao(ackDao);
         //Thread.sleep(20000);
         while (!f.isDone()) {
             Thread.sleep(10);
