@@ -130,7 +130,7 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
 
     public String toProtocolConfigString() {
         StringBuffer buff = new StringBuffer("snmp:");
-        buff.append("address=" + address == null? null : InetAddressUtils.str(m_address));
+        buff.append("address=" + m_address == null? null : InetAddressUtils.str(m_address));
         buff.append(",port=" + getPort());
         buff.append(",timeout=" + getTimeout());
         buff.append(",retries=" + getRetries());
