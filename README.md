@@ -26,5 +26,7 @@ Contributing to OpenNMS
 
 Before making a pull request, please submit an [OCA][] for copyright assignment.  Note that this does **not** mean that you are giving up your copyright of your changes to OpenNMS, it instead allows for _dual_ copyright over contributed code.
 
+Also, it is recommended that you make your changes in master and make a pull request there, not in one of the release (eg. 1.12 or 1.10) branches.  Fixes can be cherry-picked back to a stable branch, but we try to keep churn out of the stable releases if possible.
+
 [OpenNMS]: http://www.opennms.org/
 [OCA]:     http://www.opennms.org/wiki/OCA
