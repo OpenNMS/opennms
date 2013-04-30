@@ -59,7 +59,6 @@ import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNotification;
 import org.opennms.netmgt.model.OnmsUserNotification;
-import org.opennms.netmgt.model.acknowledgments.AckService;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,9 +85,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class DefaultAckServiceTest implements InitializingBean {
 
-    @Autowired
-    AckService m_ackService;
-    
     @Autowired AcknowledgmentDao m_ackDao;
 
     @Autowired NotificationDao m_notifDao;
@@ -150,7 +146,7 @@ public class DefaultAckServiceTest implements InitializingBean {
         m_alarmDao.delete(alarm);
         m_alarmDao.flush();
 
-        m_ackService.processAck(ack);
+        m_ackDao.processAck(ack);
     }
  
     @Test 
@@ -169,7 +165,7 @@ public class DefaultAckServiceTest implements InitializingBean {
         OnmsAcknowledgment ack = new OnmsAcknowledgment();
         ack.setRefId(notif.getNotifyId());
         ack.setAckType(AckType.NOTIFICATION);
-        m_ackService.processAck(ack);
+        m_ackDao.processAck(ack);
         
         List<Acknowledgeable> ackables = m_ackDao.findAcknowledgables(ack);
         Assert.assertEquals(1, ackables.size());

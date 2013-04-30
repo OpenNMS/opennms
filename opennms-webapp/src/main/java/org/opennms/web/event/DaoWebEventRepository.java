@@ -52,6 +52,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * <p>DaoWebEventRepository class.</p>
+ * 
+ * @deprecated Move all of these methods into the {@link EventDao}. This class just
+ * delegates straight to it anyway.
  *
  * @author ranger
  * @version $Id: $

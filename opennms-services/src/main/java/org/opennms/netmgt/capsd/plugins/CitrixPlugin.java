@@ -75,6 +75,13 @@ public final class CitrixPlugin extends AbstractTcpPlugin {
     private static final String PROTOCOL_NAME = "Citrix";
 
     /**
+     * <P>
+     * End of input stream value
+     * </P>
+     */
+    private static final int EOF = -1;
+    
+    /**
      * <p>Constructor for CitrixPlugin.</p>
      */
     public CitrixPlugin() {
@@ -85,14 +92,16 @@ public final class CitrixPlugin extends AbstractTcpPlugin {
     protected boolean checkProtocol(Socket socket, ConnectionConfig config) throws IOException {
         boolean isAServer = false;
         // Allocate a line reader
-        //
         BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         StringBuffer buffer = new StringBuffer();
 
-        // FIXME: This doesn't seem right. This loops until an exception occurs.
-        // Should at least check for EOF
         while (!isAServer) {
-            buffer.append((char) reader.read());
+            int val = reader.read();
+            // checking if end of input stream has been reached
+            if(val == EOF ) {
+                break;
+            }
+            buffer.append((char) val);
             if (buffer.toString().indexOf("ICA") > -1) {
                 isAServer = true;
             }
