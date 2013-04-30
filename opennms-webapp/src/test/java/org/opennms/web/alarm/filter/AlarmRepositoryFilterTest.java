@@ -44,13 +44,13 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.dao.DatabasePopulator;
+import org.opennms.netmgt.dao.AlarmRepository;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.web.alarm.AlarmUtil;
-import org.opennms.web.alarm.WebAlarmRepository;
 import org.opennms.web.filter.Filter;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,13 +69,13 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class WebAlarmRepositoryFilterTest implements InitializingBean {
+public class AlarmRepositoryFilterTest implements InitializingBean {
     
     @Autowired
     DatabasePopulator m_dbPopulator;
     
     @Autowired
-    WebAlarmRepository m_daoAlarmRepo;
+    AlarmRepository m_daoAlarmRepo;
     
     @Autowired
     ApplicationContext m_appContext;

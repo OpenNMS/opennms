@@ -36,12 +36,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.core.utils.WebSecurityUtils;
+import org.opennms.netmgt.dao.AlarmRepository;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.web.alarm.AcknowledgeType;
 import org.opennms.web.alarm.AlarmQueryParms;
 import org.opennms.web.alarm.AlarmUtil;
 import org.opennms.web.alarm.SortStyle;
-import org.opennms.web.alarm.WebAlarmRepository;
 import org.opennms.web.alarm.filter.AlarmCriteria;
 import org.opennms.web.filter.Filter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,7 +63,7 @@ public class NCSAlarmController {
     private SortStyle m_defaultSortStyle = SortStyle.ID;
     
     @Autowired
-    WebAlarmRepository m_webAlarmRepository;
+    AlarmRepository m_webAlarmRepository;
     
     @Autowired
     ServletContext m_servletContext;

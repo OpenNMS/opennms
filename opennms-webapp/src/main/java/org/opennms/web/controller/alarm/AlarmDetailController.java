@@ -34,9 +34,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.opennms.netmgt.dao.AlarmRepository;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.web.alarm.WebAlarmRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
@@ -54,7 +54,7 @@ public class AlarmDetailController extends MultiActionController {
     /**
      * OpenNMS alarm repository
      */
-    private WebAlarmRepository m_webAlarmRepository;
+    private AlarmRepository m_webAlarmRepository;
 
     /**
      * Alarm to display
@@ -69,10 +69,10 @@ public class AlarmDetailController extends MultiActionController {
     /**
      * <p>setWebAlarmRepository</p>
      *
-     * @param webAlarmRepository a {@link org.opennms.web.alarm.WebAlarmRepository}
+     * @param webAlarmRepository a {@link org.opennms.netmgt.dao.AlarmRepository}
      * object.
      */
-    public void setWebAlarmRepository(WebAlarmRepository webAlarmRepository) {
+    public void setAlarmRepository(AlarmRepository webAlarmRepository) {
         m_webAlarmRepository = webAlarmRepository;
     }
 

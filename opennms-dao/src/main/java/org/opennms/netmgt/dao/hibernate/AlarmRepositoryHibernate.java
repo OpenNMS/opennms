@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.alarm;
+package org.opennms.netmgt.dao.hibernate;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -40,6 +40,7 @@ import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.dao.AcknowledgmentDao;
 import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.dao.MemoDao;
+import org.opennms.netmgt.dao.AlarmRepository;
 import org.opennms.netmgt.model.AckAction;
 import org.opennms.netmgt.model.AckType;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
@@ -60,7 +61,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @version $Id: $
  * @since 1.8.1
  */
-public class DaoWebAlarmRepository implements WebAlarmRepository, InitializingBean {
+public class AlarmRepositoryHibernate implements AlarmRepository, InitializingBean {
 
     @Autowired
     AlarmDao m_alarmDao;

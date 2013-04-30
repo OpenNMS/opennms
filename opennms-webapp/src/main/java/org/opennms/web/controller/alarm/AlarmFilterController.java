@@ -35,12 +35,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.core.utils.WebSecurityUtils;
+import org.opennms.netmgt.dao.AlarmRepository;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.web.alarm.AcknowledgeType;
 import org.opennms.web.alarm.AlarmQueryParms;
 import org.opennms.web.alarm.AlarmUtil;
 import org.opennms.web.alarm.SortStyle;
-import org.opennms.web.alarm.WebAlarmRepository;
 import org.opennms.web.alarm.filter.AlarmCriteria;
 import org.opennms.web.filter.Filter;
 import org.springframework.beans.factory.InitializingBean;
@@ -69,7 +69,7 @@ public class AlarmFilterController extends AbstractController implements Initial
 
     private SortStyle m_defaultSortStyle = SortStyle.ID;
 
-    private WebAlarmRepository m_webAlarmRepository;
+    private AlarmRepository m_webAlarmRepository;
     
     /**
      * {@inheritDoc}
@@ -215,9 +215,9 @@ public class AlarmFilterController extends AbstractController implements Initial
     /**
      * <p>setWebAlarmRepository</p>
      *
-     * @param webAlarmRepository a {@link org.opennms.web.alarm.WebAlarmRepository} object.
+     * @param webAlarmRepository a {@link org.opennms.netmgt.dao.AlarmRepository} object.
      */
-    public void setWebAlarmRepository(WebAlarmRepository webAlarmRepository) {
+    public void setAlarmRepository(AlarmRepository webAlarmRepository) {
         m_webAlarmRepository = webAlarmRepository;
     }
     

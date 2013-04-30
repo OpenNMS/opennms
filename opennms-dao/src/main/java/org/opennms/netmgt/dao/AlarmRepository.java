@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.alarm;
+package org.opennms.netmgt.dao;
 
 import java.util.Date;
 import java.util.List;
@@ -39,7 +39,7 @@ import org.opennms.netmgt.model.alarm.AlarmSummary;
 /**
  * WebAlarmRepository @author brozow
  */
-public interface WebAlarmRepository {
+public interface AlarmRepository {
 
     /**
      * Count alarms matching a criteria.
