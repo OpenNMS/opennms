@@ -28,10 +28,12 @@
 
 package org.opennms.web.alarm;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.hibernate.criterion.Restrictions;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.utils.BeanUtils;
@@ -47,8 +49,6 @@ import org.opennms.netmgt.model.OnmsMemo;
 import org.opennms.netmgt.model.OnmsReductionKeyMemo;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
-import org.opennms.web.alarm.filter.AlarmCriteria;
-import org.opennms.web.alarm.filter.AlarmIdListFilter;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -86,7 +86,9 @@ public class DaoWebAlarmRepository implements WebAlarmRepository, InitializingBe
 
     @Transactional
     public void acknowledgeAlarms(String user, Date timestamp, int[] alarmIds) {
-        acknowledgeMatchingAlarms(user, timestamp, AlarmUtil.getOnmsCriteria(new AlarmCriteria(new AlarmIdListFilter(alarmIds))));
+        OnmsCriteria criteria = new OnmsCriteria(OnmsAlarm.class);
+        criteria.add(Restrictions.in("id", Arrays.asList(ArrayUtils.toObject(alarmIds))));
+        acknowledgeMatchingAlarms(user, timestamp, criteria);
     }
 
     /**
@@ -111,7 +113,9 @@ public class DaoWebAlarmRepository implements WebAlarmRepository, InitializingBe
      */
     @Transactional
     public void clearAlarms(int[] alarmIds, String user, Date timestamp) {
-        List<OnmsAlarm> alarms = m_alarmDao.findMatching(AlarmUtil.getOnmsCriteria(new AlarmCriteria(new AlarmIdListFilter(alarmIds))));
+        OnmsCriteria criteria = new OnmsCriteria(OnmsAlarm.class);
+        criteria.add(Restrictions.in("id", Arrays.asList(ArrayUtils.toObject(alarmIds))));
+        List<OnmsAlarm> alarms = m_alarmDao.findMatching(criteria);
 
         Iterator<OnmsAlarm> alarmsIt = alarms.iterator();
         while (alarmsIt.hasNext()) {
@@ -149,7 +153,9 @@ public class DaoWebAlarmRepository implements WebAlarmRepository, InitializingBe
      */
     @Transactional
     public void escalateAlarms(int[] alarmIds, String user, Date timestamp) {
-        List<OnmsAlarm> alarms = m_alarmDao.findMatching(AlarmUtil.getOnmsCriteria(new AlarmCriteria(new AlarmIdListFilter(alarmIds))));
+        OnmsCriteria criteria = new OnmsCriteria(OnmsAlarm.class);
+        criteria.add(Restrictions.in("id", Arrays.asList(ArrayUtils.toObject(alarmIds))));
+        List<OnmsAlarm> alarms = m_alarmDao.findMatching(criteria);
 
         Iterator<OnmsAlarm> alarmsIt = alarms.iterator();
         while (alarmsIt.hasNext()) {
@@ -205,7 +211,9 @@ public class DaoWebAlarmRepository implements WebAlarmRepository, InitializingBe
      */
     @Transactional
     public void acknowledgeAlarms(int[] alarmIds, String user, Date timestamp) {
-        acknowledgeMatchingAlarms(user, timestamp, AlarmUtil.getOnmsCriteria(new AlarmCriteria(new AlarmIdListFilter(alarmIds))));
+        OnmsCriteria criteria = new OnmsCriteria(OnmsAlarm.class);
+        criteria.add(Restrictions.in("id", Arrays.asList(ArrayUtils.toObject(alarmIds))));
+        acknowledgeMatchingAlarms(user, timestamp, criteria);
     }
 
     /**
@@ -213,7 +221,9 @@ public class DaoWebAlarmRepository implements WebAlarmRepository, InitializingBe
      */
     @Transactional
     public void unacknowledgeAlarms(int[] alarmIds, String user) {
-        unacknowledgeMatchingAlarms(AlarmUtil.getOnmsCriteria(new AlarmCriteria(new AlarmIdListFilter(alarmIds))), user);
+        OnmsCriteria criteria = new OnmsCriteria(OnmsAlarm.class);
+        criteria.add(Restrictions.in("id", Arrays.asList(ArrayUtils.toObject(alarmIds))));
+        unacknowledgeMatchingAlarms(criteria, user);
     }
 
     /**
