@@ -72,7 +72,7 @@
         nodeId = WebSecurityUtils.safeParseInt(nodeIdStr);
         NodeFilter filter = new NodeFilter(nodeId, getServletContext());
         AlarmCriteria criteria = new AlarmCriteria(new Filter[] { filter }, SortStyle.ID, AcknowledgeType.BOTH, AlarmCriteria.NO_LIMIT, AlarmCriteria.NO_OFFSET);
-        alarms = new DaoWebAlarmRepository().getMatchingAlarms(criteria);
+        alarms = new DaoWebAlarmRepository().getMatchingAlarms(AlarmUtil.getOnmsCriteria(criteria));
     }
 
     boolean nodeDown = false;

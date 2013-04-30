@@ -349,7 +349,10 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
                 
             	final Criteria hibernateCriteria = m_criteriaConverter.convertForCount(criteria, session);
             	hibernateCriteria.setProjection(Projections.rowCount());
-                return (Integer)hibernateCriteria.uniqueResult();
+                Integer retval = (Integer)hibernateCriteria.uniqueResult();
+                hibernateCriteria.setProjection(null);
+                hibernateCriteria.setResultTransformer(Criteria.ROOT_ENTITY);
+                return retval;
             }
         };
         Integer retval = getHibernateTemplate().execute(callback);
@@ -374,10 +377,13 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
     
     /** {@inheritDoc} */
     public int countMatching(final OnmsCriteria onmsCrit) throws DataAccessException {
-    	final HibernateCallback<Integer> callback = new HibernateCallback<Integer>() {
+        final HibernateCallback<Integer> callback = new HibernateCallback<Integer>() {
             public Integer doInHibernate(final Session session) throws HibernateException, SQLException {
-            	final Criteria attachedCrit = onmsCrit.getDetachedCriteria().getExecutableCriteria(session).setProjection(Projections.rowCount());
-                return (Integer)attachedCrit.uniqueResult();
+                final Criteria attachedCrit = onmsCrit.getDetachedCriteria().getExecutableCriteria(session).setProjection(Projections.rowCount());
+                Integer retval = (Integer)attachedCrit.uniqueResult();
+                attachedCrit.setProjection(null);
+                attachedCrit.setResultTransformer(Criteria.ROOT_ENTITY);
+                return retval;
             }
         };
         Integer retval = getHibernateTemplate().execute(callback);

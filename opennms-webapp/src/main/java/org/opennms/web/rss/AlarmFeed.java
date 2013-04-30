@@ -34,8 +34,10 @@ import javax.servlet.ServletContext;
 
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.web.alarm.AcknowledgeType;
+import org.opennms.web.alarm.AlarmUtil;
 import org.opennms.web.alarm.DaoWebAlarmRepository;
 import org.opennms.web.alarm.SortStyle;
 import org.opennms.web.alarm.WebAlarmRepository;
@@ -88,7 +90,7 @@ public class AlarmFeed extends AbstractFeed {
 
         }
 
-        AlarmCriteria queryCriteria = new AlarmCriteria(filters.toArray(new Filter[] {}), SortStyle.FIRSTEVENTTIME, AcknowledgeType.BOTH, this.getMaxEntries(), AlarmCriteria.NO_OFFSET);
+        OnmsCriteria queryCriteria = AlarmUtil.getOnmsCriteria(new AlarmCriteria(filters.toArray(new Filter[] {}), SortStyle.FIRSTEVENTTIME, AcknowledgeType.BOTH, this.getMaxEntries(), AlarmCriteria.NO_OFFSET));
 
         OnmsAlarm[] alarms = m_webAlarmRepository.getMatchingAlarms(queryCriteria);
 

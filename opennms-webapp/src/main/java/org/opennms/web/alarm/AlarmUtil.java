@@ -34,12 +34,17 @@ import java.util.NoSuchElementException;
 import javax.servlet.ServletContext;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.WebSecurityUtils;
+import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.web.alarm.filter.AcknowledgedByFilter;
 import org.opennms.web.alarm.filter.AfterFirstEventTimeFilter;
 import org.opennms.web.alarm.filter.AfterLastEventTimeFilter;
+import org.opennms.web.alarm.filter.AlarmCriteria;
 import org.opennms.web.alarm.filter.BeforeFirstEventTimeFilter;
 import org.opennms.web.alarm.filter.BeforeLastEventTimeFilter;
 import org.opennms.web.alarm.filter.EventParmLikeFilter;
@@ -61,6 +66,7 @@ import org.opennms.web.alarm.filter.NodeNameLikeFilter;
 import org.opennms.web.alarm.filter.PartialUEIFilter;
 import org.opennms.web.alarm.filter.ServiceFilter;
 import org.opennms.web.alarm.filter.SeverityFilter;
+import org.opennms.web.alarm.filter.AlarmCriteria.AlarmCriteriaVisitor;
 import org.opennms.web.filter.Filter;
 
 /**
@@ -79,6 +85,101 @@ public abstract class AlarmUtil extends Object {
 
     /** Constant <code>ANY_RELATIVE_TIMES_OPTION="Any"</code> */
     public static final String ANY_RELATIVE_TIMES_OPTION = "Any";
+
+    public static OnmsCriteria getOnmsCriteria(final AlarmCriteria alarmCriteria) {
+        final OnmsCriteria criteria = new OnmsCriteria(OnmsAlarm.class);
+        criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
+        criteria.createAlias("serviceType", "serviceType", OnmsCriteria.LEFT_JOIN);
+
+        alarmCriteria.visit(new AlarmCriteriaVisitor<RuntimeException>() {
+
+            public void visitAckType(AcknowledgeType ackType) throws RuntimeException {
+                if (ackType == AcknowledgeType.ACKNOWLEDGED) {
+                    criteria.add(Restrictions.isNotNull("alarmAckUser"));
+                } else if (ackType == AcknowledgeType.UNACKNOWLEDGED) {
+                    criteria.add(Restrictions.isNull("alarmAckUser"));
+                }
+            }
+
+            public void visitFilter(Filter filter) throws RuntimeException {
+                criteria.add(filter.getCriterion());
+            }
+
+            public void visitLimit(int limit, int offset) throws RuntimeException {
+                criteria.setMaxResults(limit);
+                criteria.setFirstResult(offset);
+            }
+
+            public void visitSortStyle(SortStyle sortStyle) throws RuntimeException {
+                switch (sortStyle) {
+                    case COUNT:
+                        criteria.addOrder(Order.desc("counter"));
+                        break;
+                    case FIRSTEVENTTIME:
+                        criteria.addOrder(Order.desc("firstEventTime"));
+                        break;
+                    case ID:
+                        criteria.addOrder(Order.desc("id"));
+                        break;
+                    case INTERFACE:
+                        criteria.addOrder(Order.desc("ipAddr"));
+                        break;
+                    case LASTEVENTTIME:
+                        criteria.addOrder(Order.desc("lastEventTime"));
+                        break;
+                    case NODE:
+                        criteria.addOrder(Order.desc("node.label"));
+                        break;
+                    case POLLER:
+                        criteria.addOrder(Order.desc("distPoller"));
+                        break;
+                    case SERVICE:
+                        criteria.addOrder(Order.desc("serviceType.name"));
+                        break;
+                    case SEVERITY:
+                        criteria.addOrder(Order.desc("severity"));
+                        break;
+                    case ACKUSER:
+                        criteria.addOrder(Order.asc("alarmAckUser"));
+                        break;
+                    case REVERSE_COUNT:
+                        criteria.addOrder(Order.asc("counter"));
+                        break;
+                    case REVERSE_FIRSTEVENTTIME:
+                        criteria.addOrder(Order.asc("firstEventTime"));
+                        break;
+                    case REVERSE_ID:
+                        criteria.addOrder(Order.asc("id"));
+                        break;
+                    case REVERSE_INTERFACE:
+                        criteria.addOrder(Order.asc("ipAddr"));
+                        break;
+                    case REVERSE_LASTEVENTTIME:
+                        criteria.addOrder(Order.asc("lastEventTime"));
+                        break;
+                    case REVERSE_NODE:
+                        criteria.addOrder(Order.asc("node.label"));
+                        break;
+                    case REVERSE_POLLER:
+                        criteria.addOrder(Order.asc("distPoller"));
+                        break;
+                    case REVERSE_SERVICE:
+                        criteria.addOrder(Order.asc("serviceType.name"));
+                        break;
+                    case REVERSE_SEVERITY:
+                        criteria.addOrder(Order.asc("severity"));
+                        break;
+                    case REVERSE_ACKUSER:
+                        criteria.addOrder(Order.desc("alarmAckUser"));
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
+
+        return criteria;
+    }
 
     /**
      * <p>getFilter</p>

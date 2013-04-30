@@ -35,6 +35,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.web.alarm.AcknowledgeType;
 import org.opennms.web.alarm.AlarmUtil;
 import org.opennms.web.alarm.WebAlarmRepository;
@@ -120,7 +121,7 @@ public class AcknowledgeAlarmByFilterController extends AbstractController imple
 
         Filter[] filters = filterArray.toArray(new Filter[filterArray.size()]);
         
-        AlarmCriteria criteria = new AlarmCriteria(filters);
+        OnmsCriteria criteria = AlarmUtil.getOnmsCriteria(new AlarmCriteria(filters));
 
         if (action.equals(AcknowledgeType.ACKNOWLEDGED.getShortName())) {
             m_webAlarmRepository.acknowledgeMatchingAlarms(request.getRemoteUser(), new Date(), criteria);

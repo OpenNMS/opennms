@@ -32,7 +32,6 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.utils.BeanUtils;
@@ -50,8 +49,6 @@ import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
 import org.opennms.web.alarm.filter.AlarmCriteria;
 import org.opennms.web.alarm.filter.AlarmIdListFilter;
-import org.opennms.web.alarm.filter.AlarmCriteria.AlarmCriteriaVisitor;
-import org.opennms.web.filter.Filter;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -79,120 +76,25 @@ public class DaoWebAlarmRepository implements WebAlarmRepository, InitializingBe
         BeanUtils.assertAutowiring(this);
     }
 
-    private OnmsCriteria getOnmsCriteria(final AlarmCriteria alarmCriteria) {
-        final OnmsCriteria criteria = new OnmsCriteria(OnmsAlarm.class);
-        criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
-        criteria.createAlias("serviceType", "serviceType", OnmsCriteria.LEFT_JOIN);
-
-        alarmCriteria.visit(new AlarmCriteriaVisitor<RuntimeException>() {
-
-            public void visitAckType(AcknowledgeType ackType) throws RuntimeException {
-                if (ackType == AcknowledgeType.ACKNOWLEDGED) {
-                    criteria.add(Restrictions.isNotNull("alarmAckUser"));
-                } else if (ackType == AcknowledgeType.UNACKNOWLEDGED) {
-                    criteria.add(Restrictions.isNull("alarmAckUser"));
-                }
-            }
-
-            public void visitFilter(Filter filter) throws RuntimeException {
-                criteria.add(filter.getCriterion());
-            }
-
-            public void visitLimit(int limit, int offset) throws RuntimeException {
-                criteria.setMaxResults(limit);
-                criteria.setFirstResult(offset);
-            }
-
-            public void visitSortStyle(SortStyle sortStyle) throws RuntimeException {
-                switch (sortStyle) {
-                    case COUNT:
-                        criteria.addOrder(Order.desc("counter"));
-                        break;
-                    case FIRSTEVENTTIME:
-                        criteria.addOrder(Order.desc("firstEventTime"));
-                        break;
-                    case ID:
-                        criteria.addOrder(Order.desc("id"));
-                        break;
-                    case INTERFACE:
-                        criteria.addOrder(Order.desc("ipAddr"));
-                        break;
-                    case LASTEVENTTIME:
-                        criteria.addOrder(Order.desc("lastEventTime"));
-                        break;
-                    case NODE:
-                        criteria.addOrder(Order.desc("node.label"));
-                        break;
-                    case POLLER:
-                        criteria.addOrder(Order.desc("distPoller"));
-                        break;
-                    case SERVICE:
-                        criteria.addOrder(Order.desc("serviceType.name"));
-                        break;
-                    case SEVERITY:
-                        criteria.addOrder(Order.desc("severity"));
-                        break;
-                    case ACKUSER:
-                        criteria.addOrder(Order.asc("alarmAckUser"));
-                        break;
-                    case REVERSE_COUNT:
-                        criteria.addOrder(Order.asc("counter"));
-                        break;
-                    case REVERSE_FIRSTEVENTTIME:
-                        criteria.addOrder(Order.asc("firstEventTime"));
-                        break;
-                    case REVERSE_ID:
-                        criteria.addOrder(Order.asc("id"));
-                        break;
-                    case REVERSE_INTERFACE:
-                        criteria.addOrder(Order.asc("ipAddr"));
-                        break;
-                    case REVERSE_LASTEVENTTIME:
-                        criteria.addOrder(Order.asc("lastEventTime"));
-                        break;
-                    case REVERSE_NODE:
-                        criteria.addOrder(Order.asc("node.label"));
-                        break;
-                    case REVERSE_POLLER:
-                        criteria.addOrder(Order.asc("distPoller"));
-                        break;
-                    case REVERSE_SERVICE:
-                        criteria.addOrder(Order.asc("serviceType.name"));
-                        break;
-                    case REVERSE_SEVERITY:
-                        criteria.addOrder(Order.asc("severity"));
-                        break;
-                    case REVERSE_ACKUSER:
-                        criteria.addOrder(Order.desc("alarmAckUser"));
-                        break;
-                    default:
-                        break;
-                }
-            }
-        });
-
-        return criteria;
-    }
-
     /**
      * {@inheritDoc}
      */
     @Transactional
     public void acknowledgeAll(String user, Date timestamp) {
-        acknowledgeMatchingAlarms(user, timestamp, new AlarmCriteria());
+        acknowledgeMatchingAlarms(user, timestamp, new OnmsCriteria(OnmsAlarm.class));
     }
 
     @Transactional
     public void acknowledgeAlarms(String user, Date timestamp, int[] alarmIds) {
-        acknowledgeMatchingAlarms(user, timestamp, new AlarmCriteria(new AlarmIdListFilter(alarmIds)));
+        acknowledgeMatchingAlarms(user, timestamp, AlarmUtil.getOnmsCriteria(new AlarmCriteria(new AlarmIdListFilter(alarmIds))));
     }
 
     /**
      * {@inheritDoc}
      */
     @Transactional
-    public void acknowledgeMatchingAlarms(String user, Date timestamp, AlarmCriteria criteria) {
-        List<OnmsAlarm> alarms = m_alarmDao.findMatching(getOnmsCriteria(criteria));
+    public void acknowledgeMatchingAlarms(String user, Date timestamp, OnmsCriteria criteria) {
+        List<OnmsAlarm> alarms = m_alarmDao.findMatching(criteria);
 
         Iterator<OnmsAlarm> alarmsIt = alarms.iterator();
         while (alarmsIt.hasNext()) {
@@ -209,7 +111,7 @@ public class DaoWebAlarmRepository implements WebAlarmRepository, InitializingBe
      */
     @Transactional
     public void clearAlarms(int[] alarmIds, String user, Date timestamp) {
-        List<OnmsAlarm> alarms = m_alarmDao.findMatching(getOnmsCriteria(new AlarmCriteria(new AlarmIdListFilter(alarmIds))));
+        List<OnmsAlarm> alarms = m_alarmDao.findMatching(AlarmUtil.getOnmsCriteria(new AlarmCriteria(new AlarmIdListFilter(alarmIds))));
 
         Iterator<OnmsAlarm> alarmsIt = alarms.iterator();
         while (alarmsIt.hasNext()) {
@@ -226,18 +128,18 @@ public class DaoWebAlarmRepository implements WebAlarmRepository, InitializingBe
      * {@inheritDoc}
      */
     @Transactional
-    public int countMatchingAlarms(AlarmCriteria criteria) {
-        return queryForInt(getOnmsCriteria(criteria));
+    public int countMatchingAlarms(OnmsCriteria criteria) {
+        return m_alarmDao.countMatching(criteria);
     }
 
     /**
      * {@inheritDoc}
      */
     @Transactional
-    public int[] countMatchingAlarmsBySeverity(final AlarmCriteria criteria) {
+    public int[] countMatchingAlarmsBySeverity(final OnmsCriteria criteria) {
         final int[] alarmCounts = new int[8];
         for (final OnmsSeverity value : OnmsSeverity.values()) {
-            alarmCounts[value.getId()] = m_alarmDao.countMatching(getOnmsCriteria(criteria).add(Restrictions.eq("severity", value)));
+            alarmCounts[value.getId()] = m_alarmDao.countMatching(criteria.doClone().add(Restrictions.eq("severity", value)));
         }
         return alarmCounts;
     }
@@ -247,7 +149,7 @@ public class DaoWebAlarmRepository implements WebAlarmRepository, InitializingBe
      */
     @Transactional
     public void escalateAlarms(int[] alarmIds, String user, Date timestamp) {
-        List<OnmsAlarm> alarms = m_alarmDao.findMatching(getOnmsCriteria(new AlarmCriteria(new AlarmIdListFilter(alarmIds))));
+        List<OnmsAlarm> alarms = m_alarmDao.findMatching(AlarmUtil.getOnmsCriteria(new AlarmCriteria(new AlarmIdListFilter(alarmIds))));
 
         Iterator<OnmsAlarm> alarmsIt = alarms.iterator();
         while (alarmsIt.hasNext()) {
@@ -271,8 +173,8 @@ public class DaoWebAlarmRepository implements WebAlarmRepository, InitializingBe
      * {@inheritDoc}
      */
     @Transactional
-    public OnmsAlarm[] getMatchingAlarms(AlarmCriteria criteria) {
-        return m_alarmDao.findMatching(getOnmsCriteria(criteria)).toArray(new OnmsAlarm[0]);
+    public OnmsAlarm[] getMatchingAlarms(OnmsCriteria criteria) {
+        return m_alarmDao.findMatching(criteria).toArray(new OnmsAlarm[0]);
     }
 
     /**
@@ -280,15 +182,15 @@ public class DaoWebAlarmRepository implements WebAlarmRepository, InitializingBe
      */
     @Transactional
     public void unacknowledgeAll(String user) {
-        unacknowledgeMatchingAlarms(new AlarmCriteria(), user);
+        unacknowledgeMatchingAlarms(new OnmsCriteria(OnmsAlarm.class), user);
     }
 
     /**
      * {@inheritDoc}
      */
     @Transactional
-    public void unacknowledgeMatchingAlarms(AlarmCriteria criteria, String user) {
-        List<OnmsAlarm> alarms = m_alarmDao.findMatching(getOnmsCriteria(criteria));
+    public void unacknowledgeMatchingAlarms(OnmsCriteria criteria, String user) {
+        List<OnmsAlarm> alarms = m_alarmDao.findMatching(criteria);
 
         for (OnmsAlarm alarm : alarms) {
             OnmsAcknowledgment ack = new OnmsAcknowledgment(alarm, user);
@@ -298,16 +200,12 @@ public class DaoWebAlarmRepository implements WebAlarmRepository, InitializingBe
 
     }
 
-    private int queryForInt(OnmsCriteria onmsCriteria) {
-        return m_alarmDao.countMatching(onmsCriteria);
-    }
-
     /**
      * {@inheritDoc}
      */
     @Transactional
     public void acknowledgeAlarms(int[] alarmIds, String user, Date timestamp) {
-        acknowledgeMatchingAlarms(user, timestamp, new AlarmCriteria(new AlarmIdListFilter(alarmIds)));
+        acknowledgeMatchingAlarms(user, timestamp, AlarmUtil.getOnmsCriteria(new AlarmCriteria(new AlarmIdListFilter(alarmIds))));
     }
 
     /**
@@ -315,7 +213,7 @@ public class DaoWebAlarmRepository implements WebAlarmRepository, InitializingBe
      */
     @Transactional
     public void unacknowledgeAlarms(int[] alarmIds, String user) {
-        unacknowledgeMatchingAlarms(new AlarmCriteria(new AlarmIdListFilter(alarmIds)), user);
+        unacknowledgeMatchingAlarms(AlarmUtil.getOnmsCriteria(new AlarmCriteria(new AlarmIdListFilter(alarmIds))), user);
     }
 
     /**
