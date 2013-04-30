@@ -1217,14 +1217,12 @@ public class EventFactory {
             event.parms = rs.getString("eventParms");
 
             // node id can be null
-            Object element = rs.getObject("nodeID");
-            event.nodeID = (element == null) ? Integer.valueOf(0) : (Integer) element;
+            event.nodeID = (Integer) rs.getObject("nodeID");
 
             event.ipAddr = rs.getString("ipAddr");
 
             // service id can be null 
-            element = rs.getObject("serviceID");
-            event.serviceID = (element == null ) ? Integer.valueOf(0) : (Integer) element;
+            event.serviceID = (Integer) rs.getObject("serviceID");
 
             event.nodeLabel = rs.getString("nodeLabel");
             event.serviceName = rs.getString("serviceName");
@@ -1247,8 +1245,7 @@ public class EventFactory {
             event.troubleTicket = rs.getString("eventTticket");
 
             // trouble ticket state can be null
-            element = rs.getObject("eventTticketState");
-            event.troubleTicketState = (element == null ) ? Integer.valueOf(0) : (Integer) element;
+            event.troubleTicketState = (Integer) rs.getObject("eventTticketState");
 
             event.forward = rs.getString("eventForward");
             event.mouseOverText = rs.getString("eventMouseOverText");
@@ -1260,8 +1257,7 @@ public class EventFactory {
             event.acknowledgeTime = (timestamp != null) ? new Date(timestamp.getTime()) : null; 
 
             // alarm id can be null
-            element = rs.getObject("alarmid");
-            event.alarmId = (element == null ) ? Integer.valueOf(0) : (Integer) element;
+            event.alarmId = (Integer) rs.getObject("alarmid");
 
             vector.addElement(event);
         }
