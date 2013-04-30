@@ -480,7 +480,7 @@ public class Event {
     /**
      * <p>getNodeId</p>
      *
-     * @return a int.
+     * @return a {@link java.lang.Integer} object.
      */
     public Integer getNodeId() {
         return (nodeID);
@@ -498,7 +498,7 @@ public class Event {
     /**
      * <p>getServiceId</p>
      *
-     * @return a int.
+     * @return a {@link java.lang.Integer} object.
      */
     public Integer getServiceId() {
         return (serviceID);
