@@ -264,17 +264,17 @@
     </bean>
 
     <bean name="/alarm/acknowledge" class="org.opennms.web.controller.alarm.AcknowledgeAlarmController">
-        <property name="webAlarmRepository" ref="webAlarmRepository"/>
+        <property name="alarmRepository" ref="alarmRepository"/>
         <property name="redirectView" value="/alarm/list.htm"/>
     </bean>
 
     <bean name="/alarm/acknowledgeByFilter" class="org.opennms.web.controller.alarm.AcknowledgeAlarmByFilterController">
-        <property name="webAlarmRepository" ref="webAlarmRepository"/>
+        <property name="alarmRepository" ref="alarmRepository"/>
         <property name="redirectView" value="/alarm/list.htm"/>
     </bean>
 
     <bean name="/alarm/changeSeverity" class="org.opennms.web.controller.alarm.AlarmSeverityChangeController">
-        <property name="webAlarmRepository" ref="webAlarmRepository"/>
+        <property name="alarmRepository" ref="alarmRepository"/>
         <property name="redirectView" value="/alarm/list.htm"/>
     </bean>
 
@@ -284,7 +284,7 @@
         <property name="defaultLongLimit" value="10"/>
         <property name="defaultAcknowledgeType" value="UNACKNOWLEDGED"/>
         <property name="defaultSortStyle" value="ID"/>
-        <property name="webAlarmRepository" ref="webAlarmRepository"/>
+        <property name="alarmRepository" ref="alarmRepository"/>
     </bean>
 
     <bean name="/event/acknowledge" class="org.opennms.web.controller.event.AcknowledgeEventController">
@@ -299,28 +299,28 @@
 
     <alias name="/alarm/detail.htm" alias="/alarm/detail.jsp"/>
     <bean name="/alarm/detail.htm" class="org.opennms.web.controller.alarm.AlarmDetailController">
-        <property name="webAlarmRepository" ref="webAlarmRepository"/>
+        <property name="alarmRepository" ref="alarmRepository"/>
     </bean>
 
     <bean name="/alarm/saveSticky.htm" class="org.opennms.web.controller.alarm.AlarmDetailController">
-        <property name="webAlarmRepository" ref="webAlarmRepository"/>
+        <property name="alarmRepository" ref="alarmRepository"/>
     </bean>
     
     <bean name="/alarm/clearSticky.htm" class="org.opennms.web.controller.alarm.AlarmDetailController">
-        <property name="webAlarmRepository" ref="webAlarmRepository"/>
+        <property name="alarmRepository" ref="alarmRepository"/>
     </bean>
 
     <bean name="/alarm/saveJournal.htm" class="org.opennms.web.controller.alarm.AlarmDetailController">
-        <property name="webAlarmRepository" ref="webAlarmRepository"/>
+        <property name="alarmRepository" ref="alarmRepository"/>
     </bean>
     
     <bean name="/alarm/clearJournal.htm" class="org.opennms.web.controller.alarm.AlarmDetailController">
-        <property name="webAlarmRepository" ref="webAlarmRepository"/>
+        <property name="alarmRepository" ref="alarmRepository"/>
     </bean>
     
     <bean name="/alarm/summary-box.htm" class="org.opennms.web.controller.alarm.AlarmBoxController">
         <property name="successView" value="alarm/summary-box"/>
-        <property name="webAlarmRepository" ref="webAlarmRepository"/>
+        <property name="alarmRepository" ref="alarmRepository"/>
     </bean>
  
     <alias name="/event/detail.htm" alias="/event/detail.jsp"/>

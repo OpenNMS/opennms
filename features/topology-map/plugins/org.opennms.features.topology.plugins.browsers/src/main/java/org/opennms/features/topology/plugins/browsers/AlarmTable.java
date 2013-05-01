@@ -31,9 +31,7 @@ package org.opennms.features.topology.plugins.browsers;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.opennms.features.topology.api.HasExtraComponents;
-import org.slf4j.LoggerFactory;
 
 import com.vaadin.data.Item;
 import com.vaadin.ui.Button;
@@ -41,6 +39,11 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 
 public class AlarmTable extends SelectionAwareTable implements HasExtraComponents {
+
+	private static final String ACTION_CLEAR = "Clear";
+	private static final String ACTION_ESCALATE = "Escalate";
+	private static final String ACTION_UNACKNOWLEDGE = "Unacknowledge";
+	private static final String ACTION_ACKNOWLEDGE = "Acknowledge";
 
 	private static final long serialVersionUID = -1384405693333129773L;
 
@@ -61,7 +64,15 @@ public class AlarmTable extends SelectionAwareTable implements HasExtraComponent
 				public void buttonClick(final ClickEvent event) {
 					Set<Integer> selected = m_generator.getSelectedIds();
 					String action = (String)m_ackCombo.getValue();
-					LoggerFactory.getLogger(getClass()).warn("WOULD HAVE DONE OPERATION {} to [{}]", action, StringUtils.join(selected.toArray(new Integer[0]), ","));
+					if (ACTION_ACKNOWLEDGE.equals(action)) {
+						
+					} else if (ACTION_UNACKNOWLEDGE.equals(action)) {
+						
+					} else if (ACTION_ESCALATE.equals(action)) {
+						
+					} else if (ACTION_CLEAR.equals(action)) {
+						
+					}
 				}
 			});
 		}
@@ -87,9 +98,10 @@ public class AlarmTable extends SelectionAwareTable implements HasExtraComponent
 		super(caption, container);
 		m_ackCombo = new ComboBox();
 		m_ackCombo.setNullSelectionAllowed(false);
-		Item heloItem = m_ackCombo.addItem("Hello");
-		m_ackCombo.addItem("World");
-		m_ackCombo.addItem("Awesome");
+		Item heloItem = m_ackCombo.addItem(ACTION_ACKNOWLEDGE);
+		m_ackCombo.addItem(ACTION_UNACKNOWLEDGE);
+		m_ackCombo.addItem(ACTION_ESCALATE);
+		m_ackCombo.addItem(ACTION_CLEAR);
 		m_ackCombo.setValue(heloItem);
 		
 		m_submitButton = new CheckboxButton("Submit");
@@ -119,12 +131,9 @@ public class AlarmTable extends SelectionAwareTable implements HasExtraComponent
 
 	@Override
 	public Component[] getExtraComponents() {
-		/*
 		return new Component[] {
 				m_ackCombo,
 				m_submitButton
 		};
-		*/
-		return new Component[0];
 	}
 }

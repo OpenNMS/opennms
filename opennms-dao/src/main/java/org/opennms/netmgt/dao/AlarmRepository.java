@@ -26,20 +26,20 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.alarm;
+package org.opennms.netmgt.dao;
 
 import java.util.Date;
 import java.util.List;
 
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
-import org.opennms.web.alarm.filter.AlarmCriteria;
 
 /**
  * WebAlarmRepository @author brozow
  */
-public interface WebAlarmRepository {
+public interface AlarmRepository {
 
     /**
      * Count alarms matching a criteria.
@@ -47,7 +47,7 @@ public interface WebAlarmRepository {
      * @param criteria the criteria
      * @return the amount of alarms
      */
-    public abstract int countMatchingAlarms(AlarmCriteria criteria);
+    public abstract int countMatchingAlarms(OnmsCriteria criteria);
 
     /**
      * Count alarms by severity matching a specific criteria.
@@ -55,7 +55,7 @@ public interface WebAlarmRepository {
      * @param criteria the criteria
      * @return an array with the amount of alarms per severity.
      */
-    public abstract int[] countMatchingAlarmsBySeverity(AlarmCriteria criteria);
+    public abstract int[] countMatchingAlarmsBySeverity(OnmsCriteria criteria);
 
     /**
      * Gets and alarm.
@@ -71,7 +71,7 @@ public interface WebAlarmRepository {
      * @param criteria the criteria
      * @return a array with matching alarms
      */
-    public abstract OnmsAlarm[] getMatchingAlarms(AlarmCriteria criteria);
+    public abstract OnmsAlarm[] getMatchingAlarms(OnmsCriteria criteria);
 
     /**
      * Acknowledge alarms matching a specific criteria.
@@ -81,7 +81,7 @@ public interface WebAlarmRepository {
      * @param criteria the criteria
      */
     public abstract void acknowledgeMatchingAlarms(String user,
-            Date timestamp, AlarmCriteria criteria);
+            Date timestamp, OnmsCriteria criteria);
 
     /**
      * Acknowledge Alarms.
@@ -106,7 +106,7 @@ public interface WebAlarmRepository {
      * @param criteria the criteria
      * @param user the user
      */
-    public abstract void unacknowledgeMatchingAlarms(AlarmCriteria criteria, String user);
+    public abstract void unacknowledgeMatchingAlarms(OnmsCriteria criteria, String user);
 
     /**
      * Unacknowledge Alarms

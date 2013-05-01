@@ -11,7 +11,7 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
 ">
   <tx:annotation-driven/>
   <context:annotation-config/>
-  <bean name="webAlarmRepository" class="org.opennms.web.alarm.DaoWebAlarmRepository"/>
+  <bean name="alarmRepository" class="org.opennms.netmgt.dao.hibernate.AlarmRepositoryHibernate"/>
   <bean name="webEventRepository" class="org.opennms.web.event.DaoWebEventRepository"/>
   <bean name="webNotificationRepository" class="org.opennms.web.notification.DaoWebNotificationRepository"/>
   <bean name="webOutageRepository" class="org.opennms.web.outage.DaoWebOutageRepository"/>

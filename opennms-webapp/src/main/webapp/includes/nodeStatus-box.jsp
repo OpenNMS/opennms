@@ -43,9 +43,9 @@
         import="
           org.opennms.web.alarm.*,
           org.opennms.web.alarm.AcknowledgeType,
-          org.opennms.web.alarm.DaoWebAlarmRepository,
           org.opennms.web.alarm.SortStyle,
-          org.opennms.web.alarm.WebAlarmRepository,
+          org.opennms.netmgt.dao.AlarmRepository,
+          org.opennms.netmgt.dao.hibernate.AlarmRepositoryHibernate,
           org.opennms.web.alarm.filter.AlarmCriteria,
           org.opennms.web.alarm.filter.NodeFilter,
           org.opennms.web.alarm.filter.SeverityFilter,
@@ -72,7 +72,7 @@
         nodeId = WebSecurityUtils.safeParseInt(nodeIdStr);
         NodeFilter filter = new NodeFilter(nodeId, getServletContext());
         AlarmCriteria criteria = new AlarmCriteria(new Filter[] { filter }, SortStyle.ID, AcknowledgeType.BOTH, AlarmCriteria.NO_LIMIT, AlarmCriteria.NO_OFFSET);
-        alarms = new DaoWebAlarmRepository().getMatchingAlarms(criteria);
+        alarms = new AlarmRepositoryHibernate().getMatchingAlarms(AlarmUtil.getOnmsCriteria(criteria));
     }
 
     boolean nodeDown = false;
