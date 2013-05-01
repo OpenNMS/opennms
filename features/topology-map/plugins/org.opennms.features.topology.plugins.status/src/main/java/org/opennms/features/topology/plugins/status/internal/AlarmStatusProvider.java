@@ -2,7 +2,9 @@ package org.opennms.features.topology.plugins.status.internal;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.features.topology.api.topo.Status;
@@ -29,6 +31,13 @@ public class AlarmStatusProvider implements StatusProvider {
         @Override
         public String computeStatus() {
             return m_label.toLowerCase();
+        }
+
+        @Override
+        public Map<String, String> getStatusProperties() {
+            Map<String, String> statusMap = new HashMap<String, String>();
+            statusMap.put("status", m_label.toLowerCase());
+            return statusMap;
         }
         
     }
