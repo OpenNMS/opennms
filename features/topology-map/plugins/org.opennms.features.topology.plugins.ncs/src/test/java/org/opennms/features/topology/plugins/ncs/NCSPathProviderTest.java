@@ -20,21 +20,21 @@ public class NCSPathProviderTest{
     
     @Before
     public void setUp() throws Exception {
-        m_ncsPathService = new NCSPathProviderService(new MockNCSComponentRepository(), new MockNodeDao(), "http://localhost:10346/ncs-provider");
+        m_ncsPathService = new NCSPathProviderService(null);
     }
     
     @Test
     @JUnitHttpServer(port=10346, webapps=@Webapp(context="/ncs-provider", path="src/test/resources/ncsPathProviderWar"))
     public void testSendMatchingMessage() throws Exception {
         
-        NCSServicePath path = m_ncsPathService.getPath("884779", "space_ServiceProvisioning", "131103", "688141");
+        NCSServicePath path = m_ncsPathService.getPath("884779", "space_ServiceProvisioning", "131103", "688141", null);
         assertNotNull(path);
         assertNotNull(path.getVertices());
         assertEquals(2, path.getVertices().size());
         assertNotNull(path.getEdges());
         assertEquals(1, path.getEdges().size());
         
-        NCSServicePath path2 = m_ncsPathService.getPath("884779", "space_ServiceProvisioning", "688141", "131103");
+        NCSServicePath path2 = m_ncsPathService.getPath("884779", "space_ServiceProvisioning", "688141", "131103", null);
         assertNotNull(path2);
         assertNotNull(path2.getVertices());
         assertEquals(3, path2.getVertices().size());

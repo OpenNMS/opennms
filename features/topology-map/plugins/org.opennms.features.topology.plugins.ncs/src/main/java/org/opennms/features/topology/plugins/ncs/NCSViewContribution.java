@@ -2,6 +2,7 @@ package org.opennms.features.topology.plugins.ncs;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
@@ -12,6 +13,7 @@ import org.opennms.features.topology.api.support.FilterableHierarchicalContainer
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.plugins.ncs.NCSPathEdgeProvider.NCSServicePathCriteria;
 import org.opennms.netmgt.model.ncs.NCSComponentRepository;
 
 import com.vaadin.data.Property.ValueChangeEvent;
@@ -58,6 +60,7 @@ public class NCSViewContribution implements IViewContribution {
 				Criteria criteria = NCSEdgeProvider.createCriteria(selectedIds);
 				
 				widgetContext.getGraphContainer().setCriteria(criteria);
+				widgetContext.getGraphContainer().setCriteria(new NCSServicePathCriteria(Collections.EMPTY_LIST));
 				
 				selectVerticesForEdge(criteria, widgetContext.getSelectionManager());
 			}
