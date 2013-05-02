@@ -552,8 +552,12 @@ public class OutageFactory extends Object {
         Outage[] outages = null;
         List<Outage> list = new ArrayList<Outage>();
 
+        // FIXME: Don't reuse the "element" variable for multiple objects.
         while (rs.next()) {
             Outage outage = new Outage();
+
+            Object element = null;
+            int intElement = -1;
 
             // cannot be null
             outage.outageId = rs.getInt("outageid");
@@ -562,8 +566,8 @@ public class OutageFactory extends Object {
             outage.serviceId = rs.getInt("serviceid");
 
             // cannot be null
-            Timestamp timestamp = rs.getTimestamp("iflostservice");
-            outage.lostServiceTime = new java.util.Date(timestamp.getTime());
+            element = rs.getTimestamp("iflostservice");
+            outage.lostServiceTime = new java.util.Date(((Timestamp) element).getTime());
 
             // can be null
             outage.hostname = rs.getString("iphostname"); // from ipinterface
@@ -577,20 +581,28 @@ public class OutageFactory extends Object {
                                                                 // table
 
             // can be null
-            timestamp = rs.getTimestamp("ifregainedservice");
-            outage.regainedServiceTime = (timestamp != null) ? new java.util.Date(timestamp.getTime()) : null;
+            element = rs.getTimestamp("ifregainedservice");
+            if (element != null) {
+                outage.regainedServiceTime = new java.util.Date(((Timestamp) element).getTime());
+            }
 
             // can be null
-            int intElement = rs.getInt("svcLostEventID");
-            outage.lostServiceEventId = rs.wasNull() ? null : Integer.valueOf(intElement);
+            intElement = rs.getInt("svcLostEventID");
+            if (!rs.wasNull()) {
+                outage.lostServiceEventId = Integer.valueOf(intElement);
+            }
 
             // can be null
             intElement = rs.getInt("svcRegainedEventID");
-            outage.regainedServiceEventId = rs.wasNull() ? null :Integer.valueOf(intElement);
+            if (!rs.wasNull()) {
+                outage.regainedServiceEventId = Integer.valueOf(intElement);
+            }
 
             // can be null
             intElement = rs.getInt("notifyid");
-            outage.lostServiceNotificationId = rs.wasNull() ? null : Integer.valueOf(intElement);
+            if (!rs.wasNull()) {
+                outage.lostServiceNotificationId = Integer.valueOf(intElement);
+            }
 
             // can be null
             outage.lostServiceNotificationAcknowledgedBy = rs.getString("answeredby");
