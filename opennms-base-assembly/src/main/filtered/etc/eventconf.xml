@@ -1911,21 +1911,21 @@
      <uei>uei.opennms.org/internal/linkd/nodeLinkDiscoveryStarted</uei>
      <event-label>OpenNMS-defined Linkd Event: nodeLinkDiscoveryStarted</event-label>
      <descr>&lt;p&gt;The Linkd process has started its attempt to discover links for this node.&lt;/p&gt;</descr>
-     <logmsg dest="logndisplay">&lt;p&gt;Linkd link discovery started.&lt;/p&gt;</logmsg>
+     <logmsg dest="logndisplay">&lt;p&gt;Linkd %parm[runnable]% started.&lt;/p&gt;</logmsg>
      <severity>Normal</severity>
   </event>
   <event>
      <uei>uei.opennms.org/internal/linkd/nodeLinkDiscoveryCompleted</uei>
      <event-label>OpenNMS-defined Linkd Event: nodeLinkDiscoveryCompleted</event-label>
      <descr>&lt;p&gt;The Linkd process has finished its attempt to discover links for this node.&lt;/p&gt;</descr>
-     <logmsg dest="logndisplay">&lt;p&gt;Linkd link discovery completed.&lt;/p&gt;</logmsg>
+     <logmsg dest="logndisplay">&lt;p&gt;Linkd %parm[runnable]% completed.&lt;/p&gt;</logmsg>
      <severity>Normal</severity>
   </event>
   <event>
      <uei>uei.opennms.org/internal/linkd/nodeLinkDiscoverySuspended</uei>
      <event-label>OpenNMS-defined Linkd Event: nodeLinkDiscoverySuspended</event-label>
      <descr>&lt;p&gt;The Linkd process suspended its attempt to discover links for this node.&lt;/p&gt;</descr>
-     <logmsg dest="logndisplay">&lt;p&gt;Linkd link discovery suspended.&lt;/p&gt;</logmsg>
+     <logmsg dest="logndisplay">&lt;p&gt;Linkd %parm[runnable]% suspended.&lt;/p&gt;</logmsg>
      <severity>Warning</severity>
   </event>
 

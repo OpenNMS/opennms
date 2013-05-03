@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.dao;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.opennms.netmgt.model.Acknowledgeable;
@@ -57,4 +58,17 @@ public interface AcknowledgmentDao extends OnmsDao<OnmsAcknowledgment, Integer> 
     void updateAckable(Acknowledgeable ackable);
     
 
+    /**
+     * <p>processAck</p>
+     *
+     * @param ack a {@link org.opennms.netmgt.model.OnmsAcknowledgment} object.
+     */
+    void processAck(OnmsAcknowledgment ack);
+
+    /**
+     * <p>processAcks</p>
+     *
+     * @param acks a {@link java.util.Collection} object.
+     */
+    void processAcks(Collection<OnmsAcknowledgment> acks);
 }

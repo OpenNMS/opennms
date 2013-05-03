@@ -41,8 +41,8 @@ import org.opennms.netmgt.ackd.AckReader.AckReaderState;
 import org.opennms.netmgt.ackd.readers.ReaderSchedule;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
 import org.opennms.netmgt.dao.AckdConfigurationDao;
+import org.opennms.netmgt.dao.AcknowledgmentDao;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
-import org.opennms.netmgt.model.acknowledgments.AckService;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.model.events.annotations.EventHandler;
@@ -56,9 +56,6 @@ import org.springframework.beans.factory.DisposableBean;
  *
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
- * @version $Id: $
  */
 @EventListener(name=Ackd.NAME)
 public class Ackd implements SpringServiceDaemon, DisposableBean {
@@ -67,6 +64,8 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
 	public static final String NAME = "Ackd";
 	private volatile AckdConfigurationDao m_configDao;
 
+	private volatile AcknowledgmentDao m_ackDao;
+
 	private volatile EventForwarder m_eventForwarder;
 	
     private volatile ScheduledThreadPoolExecutor m_executor;
@@ -74,7 +73,6 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
 
 	//FIXME change this to be like provisiond's adapters
 	private List<AckReader> m_ackReaders;
-    private AckService m_ackService;
     private Object m_lock = new Object();
 	
     /**
@@ -298,7 +296,7 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
         
         try {
             ack = new OnmsAcknowledgment(event);
-            m_ackService.processAck(ack);
+            m_ackDao.processAck(ack);
         } catch (ParseException e) {
             log().error("handleAckEvent: unable to process acknowledgment event: "+event+"\t"+e);
         }
@@ -415,22 +413,18 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
         m_ackReaders = ackReaders;
     }
 
-    /**
-     * <p>getAckService</p>
-     *
-     * @return a {@link org.opennms.netmgt.model.acknowledgments.AckService} object.
+     /**
+     * @return a {@link org.opennms.netmgt.dao.AcknowledgmentDao} object.
      */
-    public AckService getAckService() {
-        return m_ackService;
+    public AcknowledgmentDao getAcknowledgmentDao() {
+        return m_ackDao;
     }
 
     /**
-     * <p>setAckService</p>
-     *
-     * @param ackService a {@link org.opennms.netmgt.model.acknowledgments.AckService} object.
+     * @param ackDao a {@link org.opennms.netmgt.dao.AcknowledgmentDao} object.
      */
-    public void setAckService(AckService ackService) {
-        m_ackService = ackService;
+    public void setAcknowledgmentDao(AcknowledgmentDao ackDao) {
+        m_ackDao = ackDao;
     }
 
     /**

@@ -33,12 +33,14 @@ import java.util.ArrayList;
 import javax.servlet.ServletContext;
 
 import org.opennms.core.utils.WebSecurityUtils;
+import org.opennms.netmgt.dao.AlarmRepository;
+import org.opennms.netmgt.dao.hibernate.AlarmRepositoryHibernate;
 import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.web.alarm.AcknowledgeType;
-import org.opennms.web.alarm.DaoWebAlarmRepository;
+import org.opennms.web.alarm.AlarmUtil;
 import org.opennms.web.alarm.SortStyle;
-import org.opennms.web.alarm.WebAlarmRepository;
 import org.opennms.web.alarm.filter.AlarmCriteria;
 import org.opennms.web.alarm.filter.NodeFilter;
 import org.opennms.web.alarm.filter.SeverityFilter;
@@ -57,7 +59,7 @@ import com.sun.syndication.feed.synd.SyndFeedImpl;
  */
 public class AlarmFeed extends AbstractFeed {
 
-    private final WebAlarmRepository m_webAlarmRepository = new DaoWebAlarmRepository();
+    private final AlarmRepository m_webAlarmRepository = new AlarmRepositoryHibernate();
 
     /**
      * <p>getFeed</p>
@@ -88,7 +90,7 @@ public class AlarmFeed extends AbstractFeed {
 
         }
 
-        AlarmCriteria queryCriteria = new AlarmCriteria(filters.toArray(new Filter[] {}), SortStyle.FIRSTEVENTTIME, AcknowledgeType.BOTH, this.getMaxEntries(), AlarmCriteria.NO_OFFSET);
+        OnmsCriteria queryCriteria = AlarmUtil.getOnmsCriteria(new AlarmCriteria(filters.toArray(new Filter[] {}), SortStyle.FIRSTEVENTTIME, AcknowledgeType.BOTH, this.getMaxEntries(), AlarmCriteria.NO_OFFSET));
 
         OnmsAlarm[] alarms = m_webAlarmRepository.getMatchingAlarms(queryCriteria);
 

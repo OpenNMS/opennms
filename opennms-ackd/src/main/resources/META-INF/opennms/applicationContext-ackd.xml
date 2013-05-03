@@ -30,12 +30,12 @@
     <property name="ackdConfigDao" ref="ackdConfigurationDao" />
     <!-- From META-INF/opennms/applicationContext-dao.xml -->
     <property name="alarmDao" ref="alarmDao" />
-    <property name="ackService" ref="ackService" />
+    <property name="acknowledgmentDao" ref="acknowledgmentDao" />
   </bean>
 
   <bean id="mailAckProcessor" class="org.opennms.netmgt.ackd.readers.MailAckProcessor" >
     <property name="ackdConfigDao" ref="ackdConfigurationDao" />
-    <property name="ackService" ref="ackService" />
+    <property name="acknowledgmentDao" ref="acknowledgmentDao" />
     <property name="jmConfigDao" ref="javamailConfigDao" />
   </bean>
 
@@ -44,7 +44,7 @@
     <property name="executor" ref="readerScheduler" />
     <property name="configDao" ref="ackdConfigurationDao" />
     <property name="eventForwarder" ref="eventForwarder"/>
-    <property name="ackService" ref="ackService" />
+    <property name="acknowledgmentDao" ref="acknowledgmentDao" />
     <property name="ackReaders" >
       <list>
         <ref local="javaMailReader" />
