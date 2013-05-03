@@ -137,5 +137,9 @@ public class MonitoredServiceDaoHibernate extends AbstractDaoHibernate<OnmsMonit
     public Set<OnmsMonitoredService> findByApplication(OnmsApplication application) {
         return application.getMonitoredServices();
     }
-
+    
+    public int getCount(long nodeId, String ipAddr) {
+        String query = "select COUNT(*) from OnmsMonitoredService as svc where svc.ipInterface.node.id = ? and svc.ipInterface.ipAddress != ? and svc.status != 'D'";
+        return queryInt(query, nodeId, ipAddr);
+    }
 }
