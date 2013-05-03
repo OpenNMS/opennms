@@ -22,10 +22,12 @@ public class AlarmStatusProvider implements StatusProvider {
 
         private int m_statusId;
         private String m_label;
+        private int m_alarmCount = 0;
 
-        public AlarmStatus(int id, String label) {
+        public AlarmStatus(int id, String label, int count) {
             m_statusId = id;
             m_label = label;
+            m_alarmCount = count;
         }
 
         @Override
@@ -37,6 +39,7 @@ public class AlarmStatusProvider implements StatusProvider {
         public Map<String, String> getStatusProperties() {
             Map<String, String> statusMap = new HashMap<String, String>();
             statusMap.put("status", m_label.toLowerCase());
+            statusMap.put("statusCount", "" + m_alarmCount);
             return statusMap;
         }
         
@@ -76,7 +79,6 @@ public class AlarmStatusProvider implements StatusProvider {
                     builder.eq("node.id", nodeId);
                     builder.ge("severity", OnmsSeverity.WARNING);
                     builder.orderBy("severity").desc();
-                    builder.limit(1);
                     
                     return getStatusForCriteria(builder);
                 }catch(NumberFormatException e) {
@@ -95,11 +97,23 @@ public class AlarmStatusProvider implements StatusProvider {
         if(alarms != null && alarms.size() == 1) {
             final OnmsAlarm alarm = alarms.get(0);
             final OnmsSeverity severity = alarm.getSeverity();
-            Status vertexStatus = new AlarmStatus(severity.getId(), severity.getLabel());
+            Status vertexStatus = new AlarmStatus(severity.getId(), severity.getLabel(), getUnAckAlarmCount(alarms));
             return vertexStatus;
         } else {
             return createIndeterminateStatus();
         }
+    }
+
+    private int getUnAckAlarmCount(List<OnmsAlarm> alarms) {
+        int count = 0;
+        
+        for(OnmsAlarm alarm : alarms) {
+            if(!alarm.isAcknowledged()) {
+                count++;
+            }
+        }
+        
+        return count;
     }
 
     private Status getStatusForGroup(VertexRef groupRef) {
@@ -116,8 +130,8 @@ public class AlarmStatusProvider implements StatusProvider {
         builder.alias("node", "node");
         builder.in("node.id", nodeIds);
         builder.ge("severity", OnmsSeverity.WARNING);
+        builder.orderBy("node.id").asc();
         builder.orderBy("severity").desc();
-        builder.limit(1);
         
         return getStatusForCriteria(builder);
     }
@@ -131,7 +145,7 @@ public class AlarmStatusProvider implements StatusProvider {
     }
 
     private Status createIndeterminateStatus() {
-        return new AlarmStatus(OnmsSeverity.INDETERMINATE.getId(), OnmsSeverity.INDETERMINATE.getLabel());
+        return new AlarmStatus(OnmsSeverity.INDETERMINATE.getId(), OnmsSeverity.INDETERMINATE.getLabel(), 0);
     }
 
     @Override
