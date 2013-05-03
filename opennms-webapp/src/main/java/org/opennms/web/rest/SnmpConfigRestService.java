@@ -55,37 +55,47 @@ import org.springframework.transaction.annotation.Transactional;
 import com.sun.jersey.spi.resource.PerRequest;
 
 /**
- *<p>REST service to the OpenNMS SNMP configuration <code>snmp-config.xml</code></p>
- *<p>This current implementation only supports setting and getting of the configuration elements:
- *<ul>
- *<li>community string</li>
- *<li>SNMP version</li>
- *<li>Port</li>
- *<li>Retries</li>
- *<li>Timeouts</li>
- *</ul>
- *</p>
- *<p>The implementation only supports a PUT request because it is an implied "Update" of the configuration
- *since it requires an IP address and all IPs have a default configuration.  This request is is passed to
- *the factory for optimization of the configuration store:<code>snmp-config.xml</code>.</p>
- *<p>Example 1: Change SNMP community string.  <i>Note: Community string is the only required element</i></p>
- *<pre>
- *curl -v -X PUT -H "Content-Type: application/xml" \
- *     -H "Accept: application/xml" \
- *     -d "&lt;snmp-info&gt;
- *         &lt;community&gt;yRuSonoZ&lt;/community&gt;
- *         &lt;port&gt;161&lt;/port&gt;
- *         &lt;retries&gt;1&lt;/retries&gt;
- *         &lt;timeout&gt;2000&lt;/timeout&gt;
- *         &lt;version&gt;v2c&lt;/version&gt;
- *         &lt;/snmp-info&gt;" \
- *     -u admin:admin http://localhost:8980/opennms/rest/snmpConfig/10.1.1.1
- *</pre>
- *<p>Example 2: Query SNMP community string.</p>
- *<pre>
- *curl -v -X GET -u admin:admin http://localhost:8980/opennms/rest/snmpConfig/10.1.1.1
- *</pre>
- *
+ * <p>
+ * REST service to the OpenNMS SNMP configuration <code>snmp-config.xml</code>
+ * </p>
+ * <p>
+ * This current implementation setting and getting all parameters which are in
+ * snmp-config.xml<br/>
+ * <br/>
+ * <b>Be aware</b> that setting the SNMP configuration for a rage of IPs is
+ * currently not supported by this REST service!
+ * </p>
+ * 
+ * <p>
+ * The implementation only supports a PUT request because it is an implied
+ * "Update" of the configuration since it requires an IP address and all IPs
+ * have a default configuration. This request is is passed to the factory for
+ * optimization of the configuration store:<code>snmp-config.xml</code>.
+ * </p>
+ * <p>
+ * Example 1: Change SNMP configuration. 
+ * </p>
+ * 
+ * <pre>
+ * curl -v -X PUT -H "Content-Type: application/xml" \
+ *      -H "Accept: application/xml" \
+ *      -d "&lt;snmp-info&gt;
+ *          &lt;community&gt;yRuSonoZ&lt;/community&gt;
+ *          &lt;port&gt;161&lt;/port&gt;
+ *          &lt;retries&gt;1&lt;/retries&gt;
+ *          &lt;timeout&gt;2000&lt;/timeout&gt;
+ *          &lt;version&gt;v2c&lt;/version&gt;
+ *          &lt;/snmp-info&gt;" \
+ *      -u admin:admin http://localhost:8980/opennms/rest/snmpConfig/10.1.1.1
+ * </pre>
+ * <p>
+ * Example 2: Query SNMP community string.
+ * </p>
+ * 
+ * <pre>
+ * curl -v -X GET -u admin:admin http://localhost:8980/opennms/rest/snmpConfig/10.1.1.1
+ * </pre>
+ * 
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @version $Id: $
  * @since 1.8.1
@@ -140,8 +150,7 @@ public class SnmpConfigRestService extends OnmsRestService {
         try {
             final SnmpEventInfo eventInfo = snmpInfo.createEventInfo(ipAddress);
             m_snmpPeerFactory.define(eventInfo);
-            //TODO: this shouldn't be a static call
-            SnmpPeerFactory.saveCurrent();
+            SnmpPeerFactory.saveCurrent(); //TODO: this shouldn't be a static call
             return Response.seeOther(getRedirectUri(m_uriInfo)).build();
         } catch (final Throwable e) {
             return Response.serverError().build();

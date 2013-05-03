@@ -37,7 +37,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name="snmpConfiguration")
 public class SnmpConfiguration {
-    
+	
     public static final int DEFAULT_TIMEOUT = 3000;
     public static final int DEFAULT_PORT = 161;
     public static final int VERSION1 = 1;

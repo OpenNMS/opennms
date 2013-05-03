@@ -885,6 +885,11 @@ public class EventConstants {
     public final static String PARM_SNMP_MAX_VARS_PER_PDU = "maxVarsPerPdu";
     
     /**
+     * The parameter name for the "SNMP proxy host string" when sent as an event parameter.
+     */
+    public final static String PARM_SNMP_PROXY_HOST= "proxyHost";
+    
+    /**
      * The first IP address in a range of IP addresses when sent as an event
      * parm.
      */

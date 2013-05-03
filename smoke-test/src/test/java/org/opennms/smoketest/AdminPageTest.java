@@ -100,8 +100,10 @@ public class AdminPageTest extends OpenNMSSeleniumTestCase {
         waitForText("Exclude Ranges");
         clickAndWait("link=Admin");
         clickAndWait("link=Configure SNMP Community Names by IP");
-        waitForText("Please enter an IP or a range of IPs and the read community string below");
-        waitForText("Updating SNMP Community Names");
+        waitForText("SNMP Config Lookup");
+        waitForText("Updating SNMP Comfiguration");
+        waitForText("Content of snmp-config.xml");
+        waitForText("Descriptions");
         waitForText("optimize this list");
         clickAndWait("link=Admin");
         clickAndWait("link=Configure SNMP Data Collection per Interface");
