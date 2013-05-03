@@ -7,7 +7,7 @@ xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
     
    <cm:property-placeholder id="ncsPlugin" persistent-id="org.opennms.features.topology.plugin.ncs" update-strategy="reload">
         <cm:default-properties>
-            <cm:property name="pathProviderBaseUrl" value="http://localhost:8080/testing-webapp/"/>
+            <cm:property name="junoSpaceBaseUrl" value="http://localhost:8080/testing-webapp/" />
         </cm:default-properties>
     </cm:property-placeholder>
     
@@ -18,12 +18,12 @@ xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
         <route>
             <from uri="direct:start" />
             <setHeader headerName="CamelHttpUri">
-                <simple>[[pathProviderBaseUrl]]api/space/nsas/service-management/services/${header.foreignId}?appName=${header.foreignSource}</simple>
+                <simple>[[junoSpaceBaseUrl]]api/space/nsas/service-management/services/${header.foreignId}?appName=${header.foreignSource}</simple>
             </setHeader>
             <to uri="http://dummyhost"/>
             <bean ref="ncsPathRouteUtil" method="getServiceName" />
             <setHeader headerName="CamelHttpUri">
-                <simple>[[pathProviderBaseUrl]]api/space/nsas/${headers.serviceType}/service-management/services/${header.foreignId}/servicepath?deviceA=${header.deviceA}&amp;deviceZ=${header.deviceZ}</simple>
+                <simple>[[junoSpaceBaseUrl]]api/space/nsas/${headers.serviceType}/service-management/services/${header.foreignId}/servicepath?deviceA=${header.deviceA}&amp;deviceZ=${header.deviceZ}</simple>
             </setHeader>
             <to uri="http://dummyhost"/>
             <bean ref="ncsPathRouteUtil" method="createPath" />
