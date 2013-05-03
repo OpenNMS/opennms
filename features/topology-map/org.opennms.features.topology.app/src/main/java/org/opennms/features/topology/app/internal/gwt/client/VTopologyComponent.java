@@ -725,6 +725,10 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 				if(child.hasAttribute("status")) {
 				    vertex.setStatus(child.getStringAttribute("status"));
 				}
+				
+				if(child.hasAttribute("statusCount")) {
+				    vertex.setStatusCount(child.getStringAttribute("statusCount"));
+				}
 
 				graph.addVertex(vertex);
 

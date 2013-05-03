@@ -61,6 +61,8 @@ import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.HorizontalLayout;
@@ -68,22 +70,21 @@ import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.MenuBar;
+import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.Slider;
 import com.vaadin.ui.TabSheet;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.UriFragmentUtility;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.VerticalSplitPanel;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
 import com.vaadin.ui.TabSheet.Tab;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.UriFragmentUtility;
 import com.vaadin.ui.UriFragmentUtility.FragmentChangedEvent;
 import com.vaadin.ui.UriFragmentUtility.FragmentChangedListener;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.VerticalSplitPanel;
+import com.vaadin.ui.Window;
+
 
 public class TopologyWidgetTestApplication extends Application implements CommandUpdateListener, MenuItemUpdateListener, ContextMenuHandler, WidgetUpdateListener, WidgetContext, FragmentChangedListener, GraphContainer.ChangeListener, MapViewManagerListener, VertexUpdateListener, SelectionListener {
 
@@ -111,6 +112,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
     private final HistoryManager m_historyManager;
     private String m_headerHtml;
     private boolean m_showHeader = true;
+    private SelectionManager m_selectionManager;
 
 	public TopologyWidgetTestApplication(CommandManager commandManager, HistoryManager historyManager, GraphProvider topologyProvider, ProviderManager providerManager, IconRepositoryManager iconRepoManager, SelectionManager selectionManager) {
 	    
@@ -118,6 +120,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 		m_commandManager.addMenuItemUpdateListener(this);
 		m_historyManager = historyManager;
 		m_iconRepositoryManager = iconRepoManager;
+		m_selectionManager = selectionManager;
 
 		// Create a per-session GraphContainer instance
 		m_graphContainer = new VEProviderGraphContainer(topologyProvider, providerManager);
@@ -685,5 +688,11 @@ public class TopologyWidgetTestApplication extends Application implements Comman
     @Override
     public void selectionChanged(SelectionContext selectionManager) {
         saveHistory();
+    }
+
+
+    @Override
+    public SelectionManager getSelectionManager() {
+        return m_selectionManager;
     }
 }
