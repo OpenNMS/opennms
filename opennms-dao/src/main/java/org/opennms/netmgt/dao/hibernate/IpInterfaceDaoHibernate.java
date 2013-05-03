@@ -184,11 +184,25 @@ public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterfac
             Assert.notNull(nodeId, "nodeId cannot be null");
             // SELECT iplastcapsdpoll FROM ipinterface WHERE nodeid=? AND (ismanaged = 'M' OR ismanaged = 'N')
 
-    return findUnique("select ipInterface.lastCapsdPoll from OnmsIpInterface as ipInterface where ipInterface.node.id = ? and (ipInterface.isManaged = 'M' or ipInterface.isManaged = 'N')", nodeId).getIpLastCapsdPoll();
+            return findUnique("select ipInterface.lastCapsdPoll from OnmsIpInterface as ipInterface where ipInterface.node.id = ? and (ipInterface.isManaged = 'M' or ipInterface.isManaged = 'N')", nodeId).getIpLastCapsdPoll();
     }
-
+    
+    @Override
     public int updateLastPollTime(Date ipLastCapsdPoll, String ipAddr, Integer nodeId ) {
             String query = "update OnmsIpInterface as ipInterface set ipInterface.lastCapsDoll = ? where ipInterface.node.id = ? and ipInterface.ipAddress = ?";
             return queryInt(query,ipLastCapsdPoll, nodeId, ipAddr);
+    }
+    
+    @Override
+    public int getCount(long nodeId, String ipAddr) {
+        //  SELECT count(*) FROM ipinterface WHERE nodeID=? and ipAddr != ? and isManaged != 'D'
+        String query = "select COUNT(*) from OnmsIpInterface as ipInterface where ipInterface.node.id = ? and ipInterface.ipAddress = ? and ipInterface.isManaged != 'D'";
+        return queryInt(query, nodeId, ipAddr);
+    }
+    
+    public List<OnmsIpInterface> findInterfaceByNodeIdToDelete(long nodeId) {
+        //SELECT ipinterface.ipaddr FROM ipinterface WHERE ipinterface.nodeid = ? and ipinterface.ismanaged != 'D'
+        String query = "from OnmsIpInterface as ipInterface where ipInterface.node.id = ? and ipInterface.isManaged != 'D'";
+        return find(query, nodeId);
     }
 }
