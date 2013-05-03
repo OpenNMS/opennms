@@ -127,7 +127,7 @@ public class ShowNCSPathOperation implements Operation {
                     
                 } catch (Exception e) {
                     LoggerFactory.getLogger(this.getClass()).warn("Exception Occurred while retreiving path {}", e);
-                    mainWindow.showNotification("An error occurred while retrieving the path: \n" + e.getMessage(), Notification.TYPE_ERROR_MESSAGE);
+                    mainWindow.showNotification("An error occurred while calculating the path please check the karaf.log file for the exception: \n" + e.getMessage(), Notification.TYPE_ERROR_MESSAGE);
                 }
             }
             
