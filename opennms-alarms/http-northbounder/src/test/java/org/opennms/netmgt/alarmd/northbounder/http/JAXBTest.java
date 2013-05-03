@@ -28,15 +28,13 @@
 
 package org.opennms.netmgt.alarmd.northbounder.http;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.opennms.core.test.xml.XmlTest.assertXmlEquals;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.UnsupportedEncodingException;
 
 import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -47,7 +45,6 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.junit.Test;
-import org.xml.sax.SAXException;
 
 /**
  * Tests Marshaling of North bound Alarm
@@ -90,7 +87,7 @@ public class JAXBTest {
 
 
 	@Test
-	public void testMarshall() throws JAXBException, UnsupportedEncodingException, SAXException {
+	public void testMarshall() throws Exception {
 		
 		final String expectedXML = "" +
 				"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
@@ -117,7 +114,7 @@ public class JAXBTest {
 		byte[] utf8 = out.toByteArray();
 
 		String result = new String(utf8, "UTF-8");
-		assertEquals(expectedXML, result);
+		assertXmlEquals(expectedXML, result);
 		
 		System.err.println(result);
 		
@@ -143,7 +140,7 @@ public class JAXBTest {
 		
 		String roundTrip = new String(reout.toByteArray(), "UTF-8");
 		
-		assertEquals(expectedXML, roundTrip);
+		assertXmlEquals(expectedXML, roundTrip);
 	}
 
 }

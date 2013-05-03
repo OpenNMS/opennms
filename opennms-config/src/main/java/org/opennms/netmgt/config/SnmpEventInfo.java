@@ -33,6 +33,8 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.opennms.core.utils.InetAddressUtils;
@@ -40,6 +42,7 @@ import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.snmp.Definition;
 import org.opennms.netmgt.config.snmp.Range;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Value;
@@ -73,6 +76,7 @@ public class SnmpEventInfo {
     private String m_contextEngineId = null;
     private String m_contextName = null;
     private String m_enterpriseId = null;
+    private String m_proxyHost = null;
     
     private static int computeIntValue(String parmContent) throws IllegalArgumentException {
         int val = 0;
@@ -96,22 +100,20 @@ public class SnmpEventInfo {
      *
      * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
      */
-    @SuppressWarnings("deprecation")
+	@SuppressWarnings("deprecation")
 	public SnmpEventInfo(Event event) {
-        String parmName = null;
-        Value parmValue = null;
-        String parmContent = null;
-
-        if (!event.getUei().equals(EventConstants.CONFIGURE_SNMP_EVENT_UEI)) {
-            throw new IllegalArgumentException("Event is not an a \"configure SNMP\" event: "+event.toString());
-        }
-        
-        for (Parm parm : event.getParmCollection()) {
+    	 String parmName = null;
+         Value parmValue = null;
+         String parmContent = null;
+         
+         if (!event.getUei().equals(EventConstants.CONFIGURE_SNMP_EVENT_UEI)) {
+             throw new IllegalArgumentException("Event is not an a \"configure SNMP\" event: "+event.toString());
+         }
+         	
+         for (Parm parm : event.getParmCollection()) {
             parmName = parm.getParmName();
             parmValue = parm.getValue();
-            
             if (parmValue == null) continue;
-            
             parmContent = parmValue.getContent();
             
             try {
@@ -157,6 +159,8 @@ public class SnmpEventInfo {
                 	setPrivPassPhrase(parmContent);
                 } else if (parmName.equals(EventConstants.PARM_SNMP_PRIVACY_PROTOCOL)) {
                 	setPrivProtocol(parmContent);
+                } else if (parmName.equals(EventConstants.PARM_SNMP_PROXY_HOST)) {
+                	setProxyHost(parmContent);
                 }
             } catch (UnknownHostException e) {
                 LogUtils.errorf(this, "SnmpEventInfo constructor", e);
@@ -166,9 +170,9 @@ public class SnmpEventInfo {
                 throw e;
             }
         }
-    }
-    
-    /**
+	}
+
+	/**
      * Returns the read community string if there is any, otherwise null is returned.
      *
      * @return the read community string if there is any, otherwise null is returned.
@@ -281,7 +285,7 @@ public class SnmpEventInfo {
     	m_maxVarsPerPdu = maxVarsPerPdu;
     }
     
-    public int getMaxRepititions() {
+    public int getMaxRepetitions() {
     	return m_maxRepetitions;
     }
     
@@ -289,7 +293,7 @@ public class SnmpEventInfo {
     	m_maxRepetitions = maxRepetitions;
     }
     
-    public String getAuthPassprase() {
+    public String getAuthPassphrase() {
     	return m_authPassPhrase;
     }
     
@@ -297,7 +301,7 @@ public class SnmpEventInfo {
     	m_authPassPhrase = authPassPhrase;
     }
     
-    public String getAuthProtcol() {
+    public String getAuthProtocol() {
     	return m_authProtocol;
     }
     
@@ -442,6 +446,14 @@ public class SnmpEventInfo {
     	m_maxRequestSize = maxRequestSize;
     }
     
+    public String getProxyHost() {
+    	return m_proxyHost;
+    }
+    
+    public void setProxyHost(String proxyHost) {
+    	m_proxyHost = proxyHost;
+    }
+    
     /**
      * <p>getRange</p>
      *
@@ -471,6 +483,43 @@ public class SnmpEventInfo {
     }
     
     /**
+     * Creates an event from <code>this</code>.
+     * @param source The source to set in the Event. Must not be null.
+     * @return The event which represents <code>this</code>.
+     */
+    public Event createEvent(final String source) {
+		EventBuilder bldr = new EventBuilder(EventConstants.CONFIGURE_SNMP_EVENT_UEI, source);
+	    bldr.setInterface(InetAddressUtils.addr(getFirstIPAddress()));
+	    bldr.setService("SNMP");
+
+	    bldr.addParam(EventConstants.PARM_FIRST_IP_ADDRESS, getFirstIPAddress());
+	    bldr.addParam(EventConstants.PARM_LAST_IP_ADDRESS, getLastIPAddress());
+	    
+	    if (!StringUtils.isEmpty(getAuthPassphrase())) bldr.addParam(EventConstants.PARM_SNMP_AUTH_PASSPHRASE, getAuthPassphrase());
+	    if (!StringUtils.isEmpty(getAuthProtocol())) bldr.addParam(EventConstants.PARM_SNMP_AUTH_PROTOCOL, getAuthProtocol());
+	    if (!StringUtils.isEmpty(getContextEngineId())) bldr.addParam(EventConstants.PARM_SNMP_CONTEXT_ENGINE_ID, getContextEngineId());
+	    if (!StringUtils.isEmpty(getContextName())) bldr.addParam(EventConstants.PARM_SNMP_CONTEXT_NAME, getContextName());
+	    if (!StringUtils.isEmpty(getEngineId())) bldr.addParam(EventConstants.PARM_SNMP_ENGINE_ID, getEngineId());
+	    if (!StringUtils.isEmpty(getEnterpriseId())) bldr.addParam(EventConstants.PARM_SNMP_ENTERPRISE_ID, getEnterpriseId());
+	    if (getMaxRepetitions() != 0) bldr.addParam(EventConstants.PARM_SNMP_MAX_REPETITIONS, Integer.toString(getMaxRepetitions()));
+	    if (getMaxRequestSize() != 0) bldr.addParam(EventConstants.PARM_SNMP_MAX_REQUEST_SIZE, Integer.toString(getMaxRequestSize()));
+	    if (getMaxVarsPerPdu() != 0) bldr.addParam(EventConstants.PARM_SNMP_MAX_VARS_PER_PDU, Integer.toString(getMaxVarsPerPdu()));
+	    if (getPort() != 0) bldr.addParam(EventConstants.PARM_PORT, Integer.toString(getPort()));
+	    if (!StringUtils.isEmpty(getPrivPassPhrase())) bldr.addParam(EventConstants.PARM_SNMP_PRIVACY_PASSPHRASE, getPrivPassPhrase());
+	    if (!StringUtils.isEmpty(getPrivProtocol())) bldr.addParam(EventConstants.PARM_SNMP_PRIVACY_PROTOCOL, getPrivProtocol());
+	    if (!StringUtils.isEmpty(getProxyHost())) bldr.addParam(EventConstants.PARM_SNMP_PROXY_HOST, getProxyHost());
+	    if (!StringUtils.isEmpty(getReadCommunityString())) bldr.addParam(EventConstants.PARM_SNMP_READ_COMMUNITY_STRING, getReadCommunityString());
+	    if (!StringUtils.isEmpty(getSecurityName())) bldr.addParam(EventConstants.PARM_SNMP_SECURITY_NAME,getSecurityName());
+	    if (getRetryCount() != 0) bldr.addParam(EventConstants.PARM_RETRY_COUNT, Integer.toString(getRetryCount()));
+	    if (getSecurityLevel() > 0) bldr.addParam(EventConstants.PARM_SNMP_SECURITY_LEVEL, Integer.toString(getSecurityLevel()));
+	    if (getTimeout() != 0) bldr.addParam(EventConstants.PARM_TIMEOUT, Integer.toString(getTimeout()));
+	    if (!StringUtils.isEmpty(getVersion())) bldr.addParam(EventConstants.PARM_VERSION, getVersion());
+	    if (!StringUtils.isEmpty(getWriteCommunityString())) bldr.addParam(EventConstants.PARM_SNMP_WRITE_COMMUNITY_STRING, getWriteCommunityString());
+	    
+	    return bldr.getEvent();
+    }
+    
+    /**
      * Creates an SNMP config definition representing the data in this class.
      * The defintion will either have one specific IP element or one Range element.
      *
@@ -482,14 +531,15 @@ public class SnmpEventInfo {
         if (getRetryCount() != 0) definition.setRetry(Integer.valueOf(getRetryCount()));
         if (getTimeout() != 0) definition.setTimeout(Integer.valueOf(getTimeout()));
         if (getPort() != 0) definition.setPort(Integer.valueOf(getPort()));
-        if (getMaxRepititions() != 0) definition.setMaxRepetitions(Integer.valueOf(getMaxRepititions()));
+        if (getMaxRepetitions() != 0) definition.setMaxRepetitions(Integer.valueOf(getMaxRepetitions()));
     	if (getMaxVarsPerPdu() != 0) definition.setMaxVarsPerPdu(Integer.valueOf(getMaxVarsPerPdu()));
     	if (getMaxRequestSize() != 0) definition.setMaxRequestSize(Integer.valueOf(getMaxRequestSize()));
+    	if (StringUtils.isNotEmpty(getProxyHost())) definition.setProxyHost(getProxyHost());
     	
         // version dependend parameters
         if (getVersion() != null && getVersion().equals("v3")) {
-        	if (StringUtils.isNotEmpty(getAuthPassprase())) definition.setAuthPassphrase(getAuthPassprase());
-        	if (StringUtils.isNotEmpty(getAuthProtcol())) definition.setAuthProtocol(getAuthProtcol());
+        	if (StringUtils.isNotEmpty(getAuthPassphrase())) definition.setAuthPassphrase(getAuthPassphrase());
+        	if (StringUtils.isNotEmpty(getAuthProtocol())) definition.setAuthProtocol(getAuthProtocol());
         	if (StringUtils.isNotEmpty(getContextEngineId())) definition.setContextEngineId(getContextEngineId());
         	if (StringUtils.isNotEmpty(getContextName())) definition.setContextName(getContextName());
         	if (StringUtils.isNotEmpty(getEngineId())) definition.setEngineId(getEngineId());
@@ -520,6 +570,16 @@ public class SnmpEventInfo {
         }
         LogUtils.debugf(this, "createDef: created new Definition from: " + this);
         return definition;
+    }
+    
+    @Override
+    public boolean equals(Object obj) {
+    	return EqualsBuilder.reflectionEquals(this,  obj);
+    }
+
+    @Override
+    public int hashCode() {
+    	return HashCodeBuilder.reflectionHashCode(this);
     }
     
     @Override

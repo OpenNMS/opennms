@@ -36,6 +36,7 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SnmpEventInfo;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 
@@ -69,6 +70,7 @@ public class SnmpInfo {
 	private String m_enterpriseId;
 	private Integer m_maxRequestSize;
 	private String m_writeCommunity;
+	private String m_proxyHost;
 	
 	/**
 	 * <p>
@@ -97,7 +99,12 @@ public class SnmpInfo {
 		if (config.getMaxRepetitions() >= 1) m_maxRepetitions = config.getMaxRepetitions();
 		if (config.getMaxVarsPerPdu() >= 1) m_maxVarsPerPdu = config.getMaxVarsPerPdu();
 		if (config.getMaxRequestSize() >= 1) m_maxRequestSize = Integer.valueOf(config.getMaxRequestSize());
-
+		
+		// handle a possible proxy host setting
+		if (config.getProxyFor() != null) { // switch proxy and address
+			m_proxyHost = InetAddressUtils.str(config.getAddress());
+		} 
+		
 		// only set these properties if snmp version is v3
 		if (config.isVersion3()) {
 			m_securityName = config.getSecurityName();
@@ -372,6 +379,14 @@ public class SnmpInfo {
 		m_maxRequestSize = maxRequestSize;
 	}
 	
+	public String getProxyHost() {
+		return m_proxyHost;
+	}
+	
+	public void setProxyHost(String proxyHost) {
+		m_proxyHost = proxyHost;
+	}
+	
 	@Override
 	public boolean equals(Object obj) {
 		return EqualsBuilder.reflectionEquals(this, obj);
@@ -387,15 +402,17 @@ public class SnmpInfo {
 		return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
 	}
 	
+
 	/**
 	 * Creates a {@link SnmpEventInfo} object from <code>this</code>.
 	 * 
-	 * @param ipAddr
-	 *            a {@link java.lang.String} object which represents the first Ip Adress of the {@link SnmpEventInfo}.
-	 * @return a {@link org.opennms.netmgt.config.SnmpEventInfo} object.
+	 * @param firstIpAddress
+	 *            a {@link java.lang.String} object which represents the first IP Address of the {@link SnmpEventInfo}. Must not be null.
+	 * @param lastIpAddress represents the last IP Address of the {@link SnmpEventInfo}. May be null.
+	 * @return a {@link org.opennms.netmgt.config.SnmpEventInfo} object. 
 	 * @throws java.net.UnknownHostException if any.
 	 */
-	public SnmpEventInfo createEventInfo(String ipAddr) throws UnknownHostException {
+	public SnmpEventInfo createEventInfo(String firstIpAddress, String lastIpAddress) throws UnknownHostException {
 		SnmpEventInfo eventInfo = new SnmpEventInfo();
 		eventInfo.setVersion(m_version);
 		eventInfo.setAuthPassPhrase(m_authPassPhrase);
@@ -406,10 +423,12 @@ public class SnmpInfo {
 		eventInfo.setContextName(m_contextName);
 		eventInfo.setEngineId(m_engineId);
 		eventInfo.setEnterpriseId(m_enterpriseId);
-		eventInfo.setFirstIPAddress(ipAddr);
+		eventInfo.setFirstIPAddress(firstIpAddress);
+		eventInfo.setLastIPAddress(lastIpAddress);
 		eventInfo.setPrivPassPhrase(m_privPassPhrase);
 		eventInfo.setPrivProtocol(m_privProtocol);
 		eventInfo.setSecurityName(m_securityName);
+		eventInfo.setProxyHost(m_proxyHost);
 		if (m_port != null) eventInfo.setPort(m_port.intValue());
 		if (m_retries != null) eventInfo.setRetryCount(m_retries.intValue());
 		if (m_timeout != null) eventInfo.setTimeout(m_timeout.intValue());
@@ -419,5 +438,18 @@ public class SnmpInfo {
 		if (m_securityLevel != null) eventInfo.setSecurityLevel(m_securityLevel.intValue());
 		if (m_maxRequestSize != null) eventInfo.setMaxRequestSize(m_maxRequestSize.intValue());
 		return eventInfo;
+	}
+	
+	/**
+	 * Invokes {@link #createEventInfo(String, String)} with parameters: ipAddr
+	 * as firstIpAddress and null as lastIpAddress.
+	 * 
+	 * @param ipAddr
+	 * @return
+	 * @throws UnknownHostException
+	 * @see #createEventInfo(String, String)
+	 */
+	public SnmpEventInfo createEventInfo(String ipAddr) throws UnknownHostException {
+		return createEventInfo(ipAddr, null);
 	}
 }
