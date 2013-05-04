@@ -158,6 +158,7 @@ public class SnmpConfigRestServiceTest extends AbstractSpringJerseyRestTestCase 
 		config.setPort(3000);
 		config.setPrivPassPhrase("privPassPhrase");
 		config.setPrivProtocol("privProtocol");
+		config.setProxyHost("127.0.0.1");
 		config.setRetries(4000);
 		config.setSecurityLevel(5000);
 		config.setSecurityName("securityName");
@@ -187,6 +188,7 @@ public class SnmpConfigRestServiceTest extends AbstractSpringJerseyRestTestCase 
 		expectedConfig.setEnterpriseId(null);
 		expectedConfig.setPrivPassPhrase(null);
 		expectedConfig.setPrivProtocol(null);
+		expectedConfig.setProxyHost("127.0.0.1");
 		expectedConfig.setSecurityLevel(null);
 		expectedConfig.setSecurityName(null);
 		
@@ -219,6 +221,7 @@ public class SnmpConfigRestServiceTest extends AbstractSpringJerseyRestTestCase 
 		changedConfig.setMaxRepetitions(1000);
 		changedConfig.setMaxVarsPerPdu(2000);
 		changedConfig.setPort(3000);
+		changedConfig.setProxyHost("127.0.0.1");
 		changedConfig.setPrivPassPhrase("privPassPhrase");
 		changedConfig.setPrivProtocol("privProtocol");
 		changedConfig.setRetries(4000);
@@ -242,6 +245,7 @@ public class SnmpConfigRestServiceTest extends AbstractSpringJerseyRestTestCase 
 		expectedConfig.setMaxRepetitions(1000);
 		expectedConfig.setMaxVarsPerPdu(2000);
 		expectedConfig.setPort(3000);
+		expectedConfig.setProxyHost("127.0.0.1");
 		expectedConfig.setPrivPassPhrase("privPassPhrase");
 		expectedConfig.setPrivProtocol("privProtocol");
 		expectedConfig.setRetries(4000);
@@ -261,7 +265,7 @@ public class SnmpConfigRestServiceTest extends AbstractSpringJerseyRestTestCase 
 
 		dumpConfig();
 	}
-
+	
 	private void dumpConfig() throws Exception {
 		IOUtils.copy(new FileInputStream(m_snmpConfigFile), System.out);
 	}

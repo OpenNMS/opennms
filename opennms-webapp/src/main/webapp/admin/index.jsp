@@ -82,7 +82,7 @@
 
     function snmpConfigPost()
     {
-        document.snmpConfig.action = "admin/snmpConfig.jsp";
+        document.snmpConfig.action = "admin/snmpConfig?action=default";
         document.snmpConfig.submit();
     }
 

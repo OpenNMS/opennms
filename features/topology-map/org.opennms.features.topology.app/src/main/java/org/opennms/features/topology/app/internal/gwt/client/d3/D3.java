@@ -130,6 +130,18 @@ public class D3 extends JavaScriptObject {
         return this.attr("transform", transform(start)).transition().duration(i.duration * 2).attrTween(string, function(){ function(t){ return transform(i(t))} });
     }-*/;
     
+    public final native void html(Func<?, ?> func) /*-{
+        var f = function(d, i){
+            return func.@org.opennms.features.topology.app.internal.gwt.client.d3.Func::call(Ljava/lang/Object;I)(d,i);
+        }
+        return this.html(f);
+        
+    }-*/;
+    
+    public final native void html(String html) /*-{
+        this.html(html);
+    }-*/;
+    
     public final native void zoomTransition(D3 selection, int width, int height, JsArrayInteger p0, JsArrayInteger p1) /*-{
 		transition(p0, p1);
 		
@@ -263,6 +275,10 @@ public class D3 extends JavaScriptObject {
 
     public final native D3 text(JavaScriptObject textFunc) /*-{
         return this.text(textFunc);
+    }-*/;
+    
+    public final native D3 text(String t) /*-{
+        return this.text(t);
     }-*/;
 
 	public final native D3 text(Func<String, ?> func) /*-{

@@ -88,6 +88,16 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao</artifactId>
       <scope>provided</scope>
+      <exclusions>
+        <exclusion> 
+	        <groupId>org.slf4j</groupId>
+	        <artifactId>slf4j-log4j12</artifactId>
+        </exclusion>
+        <exclusion> 
+	        <groupId>log4j</groupId>
+	        <artifactId>log4j</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.ncs</groupId>
@@ -147,6 +157,20 @@
       <version>${karafVersion}</version>
       <type>tar.gz</type>
       <scope>test</scope>
+      <exclusions>
+        <exclusion>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+        </exclusion>
+        <exclusion>
+            <groupId>org.apache.karaf</groupId>
+            <artifactId>org.apache.karaf.client</artifactId>
+        </exclusion>
+        <exclusion>
+            <groupId>org.ops4j.pax.logging</groupId>
+            <artifactId>pax-logging-api</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>
@@ -231,6 +255,47 @@
       <artifactId>logback-classic</artifactId>
       <version>1.0.4</version>
       <scope>test</scope>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.opennms.core.test-api</groupId>
+      <artifactId>org.opennms.core.test-api.http</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+        <groupId>com.sun.jersey</groupId>
+        <artifactId>jersey-client</artifactId>
+        <version>1.17.1</version>
+    </dependency>
+    <dependency>
+        <groupId>org.opennms.core.test-api</groupId>
+        <artifactId>org.opennms.core.test-api.services</artifactId>
+        <scope>test</scope>
+    </dependency>
+    <dependency>
+        <groupId>org.apache.camel</groupId>
+        <artifactId>camel-core</artifactId>
+        <version>2.10.4</version>
+    </dependency>
+    <dependency>
+        <groupId>org.apache.camel</groupId>
+        <artifactId>camel-http</artifactId>
+        <version>2.10.4</version>
+    </dependency>
+    <dependency>
+        <groupId>org.apache.camel</groupId>
+        <artifactId>camel-blueprint</artifactId>
+        <version>2.10.4</version>
+    </dependency>
+    <dependency>
+        <groupId>org.apache.camel</groupId>
+        <artifactId>camel-test</artifactId>
+        <version>2.10.4</version>
+        <scope>test</scope>
     </dependency>
   </dependencies>
 

@@ -37,14 +37,18 @@ import static org.junit.Assert.fail;
 import static org.opennms.core.test.xml.XmlTest.assertXmlEquals;
 
 import java.io.IOException;
-
-
+import java.net.UnknownHostException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.Test;
+import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.snmp.Definition;
 import org.opennms.netmgt.model.discovery.IPAddress;
 import org.opennms.netmgt.model.discovery.IPAddressRange;
 import org.opennms.netmgt.model.discovery.IPAddressRangeSet;
+import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Parm;
 
 /**
  * JUnit tests for the configureSNMP event handling and optimization of
@@ -285,6 +289,7 @@ public class SnmpEventInfoTest {
     	snmpEventInfo.setPort(3000);
     	snmpEventInfo.setPrivPassPhrase("privPassPhrase");
     	snmpEventInfo.setPrivProtocol("privProtocol");
+    	snmpEventInfo.setProxyHost("127.0.0.1");
     	snmpEventInfo.setRetryCount(4000);
     	snmpEventInfo.setSecurityLevel(5000);
     	snmpEventInfo.setTimeout(6000);
@@ -293,9 +298,10 @@ public class SnmpEventInfoTest {
     	// check v1/commons properties
     	Definition def = snmpEventInfo.createDef();
     	assertEquals(snmpEventInfo.getReadCommunityString(), def.getReadCommunity());
-    	assertEquals(snmpEventInfo.getMaxRepititions(), def.getMaxRepetitions().intValue());
+    	assertEquals(snmpEventInfo.getMaxRepetitions(), def.getMaxRepetitions().intValue());
     	assertEquals(snmpEventInfo.getMaxVarsPerPdu(), def.getMaxVarsPerPdu().intValue());
     	assertEquals(snmpEventInfo.getPort(), def.getPort().intValue());
+    	assertEquals(snmpEventInfo.getProxyHost(), def.getProxyHost());
     	assertEquals(snmpEventInfo.getRetryCount(), def.getRetry().intValue());
     	assertEquals(snmpEventInfo.getTimeout(), def.getTimeout().intValue());
     	assertEquals(snmpEventInfo.getVersion(), def.getVersion());
@@ -328,6 +334,7 @@ public class SnmpEventInfoTest {
     	snmpEventInfo.setMaxVarsPerPdu(2000);
     	snmpEventInfo.setMaxRequestSize(7000);
     	snmpEventInfo.setPort(3000);
+    	snmpEventInfo.setProxyHost("127.0.0.1");
     	snmpEventInfo.setPrivPassPhrase("privPassPhrase");
     	snmpEventInfo.setPrivProtocol("privProtocol");
     	snmpEventInfo.setRetryCount(4000);
@@ -337,18 +344,19 @@ public class SnmpEventInfoTest {
     	
     	// check v3/commons propertiess
     	Definition def = snmpEventInfo.createDef();
-    	assertEquals(snmpEventInfo.getAuthPassprase(), def.getAuthPassphrase());
-    	assertEquals(snmpEventInfo.getAuthProtcol(), def.getAuthProtocol());
+    	assertEquals(snmpEventInfo.getAuthPassphrase(), def.getAuthPassphrase());
+    	assertEquals(snmpEventInfo.getAuthProtocol(), def.getAuthProtocol());
     	assertEquals(snmpEventInfo.getContextEngineId(), def.getContextEngineId());
     	assertEquals(snmpEventInfo.getContextName(), def.getContextName());
     	assertEquals(snmpEventInfo.getEngineId(), def.getEngineId());
     	assertEquals(snmpEventInfo.getEnterpriseId(), def.getEnterpriseId());
     	assertEquals(snmpEventInfo.getPrivPassPhrase(), def.getPrivacyPassphrase());
     	assertEquals(snmpEventInfo.getPrivProtocol(), def.getPrivacyProtocol());
-    	assertEquals(snmpEventInfo.getMaxRepititions(), def.getMaxRepetitions().intValue());
+    	assertEquals(snmpEventInfo.getMaxRepetitions(), def.getMaxRepetitions().intValue());
     	assertEquals(snmpEventInfo.getMaxVarsPerPdu(), def.getMaxVarsPerPdu().intValue());
     	assertEquals(snmpEventInfo.getMaxRequestSize(), def.getMaxRequestSize().intValue());
     	assertEquals(snmpEventInfo.getPort(), def.getPort().intValue());
+    	assertEquals(snmpEventInfo.getProxyHost(), def.getProxyHost());
     	assertEquals(snmpEventInfo.getRetryCount(), def.getRetry().intValue());
     	assertEquals(snmpEventInfo.getTimeout(), def.getTimeout().intValue());
     	assertEquals(snmpEventInfo.getVersion(), def.getVersion());
@@ -1283,6 +1291,7 @@ public class SnmpEventInfoTest {
     /**
      * Tests that the new definition set by the SnmpEventInfo matches the defaults.
      * Therefore a new defintion should NOT BE added.
+     * @throws Exception 
      */
     @Test
     public void testEmptySnmpConfigAddDefinitionWhichMatchesDefaults() throws Exception {
@@ -1341,4 +1350,111 @@ public class SnmpEventInfoTest {
         String actualConfig = SnmpPeerFactory.marshallConfig();
         assertXmlEquals(expectedConfig, actualConfig);
     }
+    
+    /**
+     * Tests if the proxy host is considered in the optimization code.
+     */
+    @Test
+    public void testProxyHost() throws Exception {
+    	final String snmpConfigXml = 
+		"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
+		"<snmp-config port=\"161\" retry=\"3\" timeout=\"800\" read-community=\"public\" version=\"v1\" max-repetitions=\"17\" max-vars-per-pdu=\"13\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\"/>\n";
+    	
+    	final String expectedConfig = 
+		"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
+		"<snmp-config port=\"161\" retry=\"3\" timeout=\"800\" read-community=\"public\" version=\"v1\" max-repetitions=\"17\" max-vars-per-pdu=\"13\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n"+
+		"    <definition proxy-host=\"127.0.0.1\">\n" + 
+		"        <specific>192.168.0.8</specific>\n" + 
+		"    </definition>\n" + 
+		"</snmp-config>\n";
+    	
+
+        SnmpPeerFactory.setInstance(new SnmpPeerFactory(snmpConfigXml));
+        assertXmlEquals(snmpConfigXml, SnmpPeerFactory.marshallConfig());
+
+        SnmpEventInfo info = new SnmpEventInfo();
+        info.setProxyHost("127.0.0.1");
+        info.setFirstIPAddress("192.168.0.8");
+        
+        SnmpPeerFactory.getInstance().define(info);
+        
+        String actualConfig = SnmpPeerFactory.marshallConfig();
+        assertXmlEquals(expectedConfig, actualConfig);
+    }
+    
+	/**
+	 * Tests that a SnmpEventInfo creates an event with all parameters. It also
+	 * tests that from a given event a SnmpEventInfo object can be created.
+	 * @throws UnknownHostException 
+	 */
+    @Test
+	public void testCreateFromEvent() throws UnknownHostException {
+		// create an input event. Each attribute must have a different value!
+		SnmpEventInfo initial = new SnmpEventInfo();
+		initial.setAuthPassPhrase("authPassPhrase");
+		initial.setAuthProtocol("authProtocol");
+		initial.setContextEngineId("contextEngineId");
+		initial.setContextName("contextName");
+		initial.setEngineId("engineId");
+		initial.setEnterpriseId("enterpriseId");
+		initial.setFirstIPAddress("1.1.1.1");
+		initial.setLastIPAddress("1.1.1.9");
+		initial.setMaxRepetitions(1000);
+		initial.setMaxRequestSize(2000);
+		initial.setMaxVarsPerPdu(3000);
+		initial.setPort(4000);
+		initial.setPrivPassPhrase("privPassPhrase");
+		initial.setPrivProtocol("privProtocol");
+		initial.setProxyHost("proxyHost");
+		initial.setReadCommunityString("readCommunityString");
+		initial.setRetryCount(5000);
+		initial.setSecurityLevel(6000);
+		initial.setSecurityName("securityName");
+		initial.setTimeout(7000);
+		initial.setVersion("version");
+		initial.setWriteCommunityString("writeCommunityString");
+
+		// create an event from object and test mapping
+		Event event = initial.createEvent("anySource");
+		assertEquals(EventConstants.CONFIGURE_SNMP_EVENT_UEI, event.getUei());
+		assertEquals(initial.getFirstIPAddress(), event.getInterface());
+		assertTrue("Service is not set", event.getService() != null);
+		
+		// expected values
+		Map<String, String> expectedParmMap = new HashMap<String, String>();
+		expectedParmMap.put(EventConstants.PARM_FIRST_IP_ADDRESS, initial.getFirstIPAddress());
+		expectedParmMap.put(EventConstants.PARM_LAST_IP_ADDRESS, initial.getLastIPAddress());
+	    expectedParmMap.put(EventConstants.PARM_SNMP_AUTH_PASSPHRASE, initial.getAuthPassphrase());
+	    expectedParmMap.put(EventConstants.PARM_SNMP_AUTH_PROTOCOL, initial.getAuthProtocol());
+	    expectedParmMap.put(EventConstants.PARM_SNMP_CONTEXT_ENGINE_ID, initial.getContextEngineId());
+	    expectedParmMap.put(EventConstants.PARM_SNMP_CONTEXT_NAME, initial.getContextName());
+	    expectedParmMap.put(EventConstants.PARM_SNMP_ENGINE_ID, initial.getEngineId());
+	    expectedParmMap.put(EventConstants.PARM_SNMP_ENTERPRISE_ID, initial.getEnterpriseId());
+	    expectedParmMap.put(EventConstants.PARM_SNMP_MAX_REPETITIONS, Integer.toString(initial.getMaxRepetitions()));
+	    expectedParmMap.put(EventConstants.PARM_SNMP_MAX_REQUEST_SIZE, Integer.toString(initial.getMaxRequestSize()));
+	    expectedParmMap.put(EventConstants.PARM_SNMP_MAX_VARS_PER_PDU, Integer.toString(initial.getMaxVarsPerPdu()));
+	    expectedParmMap.put(EventConstants.PARM_PORT, Integer.toString(initial.getPort()));
+	    expectedParmMap.put(EventConstants.PARM_SNMP_PRIVACY_PASSPHRASE, initial.getPrivPassPhrase());
+	    expectedParmMap.put(EventConstants.PARM_SNMP_PRIVACY_PROTOCOL, initial.getPrivProtocol());
+	    expectedParmMap.put(EventConstants.PARM_SNMP_PROXY_HOST, initial.getProxyHost());
+	    expectedParmMap.put(EventConstants.PARM_SNMP_READ_COMMUNITY_STRING, initial.getReadCommunityString());
+	    expectedParmMap.put(EventConstants.PARM_SNMP_SECURITY_NAME, initial.getSecurityName());
+	    expectedParmMap.put(EventConstants.PARM_RETRY_COUNT, Integer.toString(initial.getRetryCount()));
+	    expectedParmMap.put(EventConstants.PARM_SNMP_SECURITY_LEVEL, Integer.toString(initial.getSecurityLevel()));
+	    expectedParmMap.put(EventConstants.PARM_TIMEOUT, Integer.toString(initial.getTimeout()));
+	    expectedParmMap.put(EventConstants.PARM_VERSION, initial.getVersion());
+	    expectedParmMap.put(EventConstants.PARM_SNMP_WRITE_COMMUNITY_STRING, initial.getWriteCommunityString());
+	    
+		// ... check each event param, it must be equal to initial
+		for (Parm eachParm : event.getParmCollection()) {
+			Object expectedValue = expectedParmMap.get(eachParm.getParmName());
+			if (expectedValue == null) fail("expectedValue must not be null. Mapping is not implemented correctly");
+			assertEquals(expectedValue, eachParm.getValue().getContent());
+		}
+
+		// now map the event back to an SnmpEventInfo-object ...
+		// ... and check that second is equally to initial
+		SnmpEventInfo second = new SnmpEventInfo(event);
+		assertEquals(initial, second);
+	}
 }
