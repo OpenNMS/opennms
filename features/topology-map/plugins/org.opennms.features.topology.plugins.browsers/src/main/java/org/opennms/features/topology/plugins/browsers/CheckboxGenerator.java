@@ -33,7 +33,6 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import com.vaadin.data.Property;
-import com.vaadin.data.util.MethodProperty;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Button.ClickEvent;
@@ -46,6 +45,7 @@ public class CheckboxGenerator implements ColumnGenerator {
 
 	private final String m_valueProperty;
 
+	protected Set<CheckBox> m_checkboxes;
 	protected Set<Integer> m_selectedCheckboxes = new TreeSet<Integer>();
 
 	public CheckboxGenerator(String valueProperty) {
@@ -73,11 +73,20 @@ public class CheckboxGenerator implements ColumnGenerator {
 					}
 				}
 			});
+			m_checkboxes.add(button);
 			return button;
 		}
 	}
 
 	public Set<Integer> getSelectedIds() {
 		return Collections.unmodifiableSet(m_selectedCheckboxes);
+	}
+
+	public void clearSelectedIds() {
+		// Uncheck all of the checkboxes
+		for (CheckBox button : m_checkboxes) {
+			button.setValue(false);
+		}
+		m_selectedCheckboxes.clear();
 	}
 }

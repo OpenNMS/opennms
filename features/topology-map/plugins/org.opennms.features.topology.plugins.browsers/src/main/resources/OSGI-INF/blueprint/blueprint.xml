@@ -5,6 +5,7 @@ xsi:schemaLocation="
 ">
 
   <reference id="alarmDao" interface="org.opennms.netmgt.dao.AlarmDao" availability="mandatory" />
+  <reference id="alarmRepository" interface="org.opennms.netmgt.dao.AlarmRepository" availability="mandatory" />
   <reference id="nodeDao" interface="org.opennms.netmgt.dao.NodeDao" availability="mandatory" />
 
   <!-- Wrap the DAO in a Vaadin container -->
@@ -14,7 +15,8 @@ xsi:schemaLocation="
   
   <bean id="alarmTable" class="org.opennms.features.topology.plugins.browsers.AlarmTable" scope="prototype">
     <argument value="Alarms"/>
-    <argument ref="alarmDaoContainer" />
+    <argument ref="alarmDaoContainer"/>
+    <argument ref="alarmRepository"/>
     <property name="columnReorderingAllowed" value="true"/>
     <property name="columnCollapsingAllowed" value="true"/>
     <property name="cellStyleGenerator">

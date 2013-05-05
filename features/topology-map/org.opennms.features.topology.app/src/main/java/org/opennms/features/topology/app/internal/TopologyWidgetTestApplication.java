@@ -127,6 +127,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 		m_graphContainer.setSelectionManager(selectionManager);
 		m_graphContainer.addChangeListener(this);
 		m_graphContainer.getMapViewManager().addListener(this);
+		m_graphContainer.setUserName((String)this.getUser());
 
 		// Ensure that selection changes trigger a history save operation
 		selectionManager.addSelectionListener(this);

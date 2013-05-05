@@ -28,11 +28,15 @@
 
 package org.opennms.features.topology.plugins.browsers;
 
+import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.opennms.features.topology.api.HasExtraComponents;
+import org.opennms.netmgt.dao.AlarmRepository;
 
+import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
@@ -47,7 +51,7 @@ public class AlarmTable extends SelectionAwareTable implements HasExtraComponent
 
 	private static final long serialVersionUID = -1384405693333129773L;
 
-	private static class CheckboxButton extends Button {
+	private class CheckboxButton extends Button {
 
 		private static final long serialVersionUID = -3595363303361200441L;
 
@@ -63,16 +67,42 @@ public class AlarmTable extends SelectionAwareTable implements HasExtraComponent
 				@Override
 				public void buttonClick(final ClickEvent event) {
 					Set<Integer> selected = m_generator.getSelectedIds();
+					m_generator.clearSelectedIds();
 					String action = (String)m_ackCombo.getValue();
 					if (ACTION_ACKNOWLEDGE.equals(action)) {
-						
+						m_alarmRepo.acknowledgeAlarms(
+							ArrayUtils.toPrimitive(selected.toArray(new Integer[0])), 
+							"admin",
+							new Date()
+						);
+						//AlarmTable.this.fireItemSetChange();
 					} else if (ACTION_UNACKNOWLEDGE.equals(action)) {
-						
+						m_alarmRepo.unacknowledgeAlarms(
+							ArrayUtils.toPrimitive(selected.toArray(new Integer[0])), 
+							"admin"
+						);
+						//AlarmTable.this.fireItemSetChange();
 					} else if (ACTION_ESCALATE.equals(action)) {
-						
+						m_alarmRepo.escalateAlarms(
+							ArrayUtils.toPrimitive(selected.toArray(new Integer[0])), 
+							"admin",
+							new Date()
+						);
+						//AlarmTable.this.fireItemSetChange();
 					} else if (ACTION_CLEAR.equals(action)) {
-						
+						m_alarmRepo.clearAlarms(
+							ArrayUtils.toPrimitive(selected.toArray(new Integer[0])), 
+							"admin",
+							new Date()
+						);
 					}
+					AlarmTable.this.containerItemSetChange(new ItemSetChangeEvent() {
+						private static final long serialVersionUID = 7086486972418241175L;
+						@Override
+						public Container getContainer() {
+							return AlarmTable.this.getContainerDataSource();
+						}
+					});
 				}
 			});
 		}
@@ -88,14 +118,17 @@ public class AlarmTable extends SelectionAwareTable implements HasExtraComponent
 
 	private final CheckboxButton m_submitButton;
 	private final ComboBox m_ackCombo;
+	private final AlarmRepository m_alarmRepo;
 
 	/**
 	 *  Leave OnmsDaoContainer without generics; the Aries blueprint code cannot match up
 	 *  the arguments if you put the generic types in.
 	 */
 	@SuppressWarnings("unchecked")
-	public AlarmTable(final String caption, final OnmsDaoContainer container) {
+	public AlarmTable(final String caption, final OnmsDaoContainer container, final AlarmRepository alarmRepo) {
 		super(caption, container);
+		m_alarmRepo = alarmRepo;
+
 		m_ackCombo = new ComboBox();
 		m_ackCombo.setNullSelectionAllowed(false);
 		Item heloItem = m_ackCombo.addItem(ACTION_ACKNOWLEDGE);
