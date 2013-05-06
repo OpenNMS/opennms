@@ -94,7 +94,7 @@ public class AlarmStatusProvider implements StatusProvider {
 
     private Status getStatusForCriteria(CriteriaBuilder builder) {
         final List<OnmsAlarm> alarms = m_alarmDao.findMatching(builder.toCriteria());
-        if(alarms != null && alarms.size() == 1) {
+        if(alarms != null && alarms.size() >= 1) {
             final OnmsAlarm alarm = alarms.get(0);
             final OnmsSeverity severity = alarm.getSeverity();
             Status vertexStatus = new AlarmStatus(severity.getId(), severity.getLabel(), getUnAckAlarmCount(alarms));
