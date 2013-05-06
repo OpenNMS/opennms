@@ -30,7 +30,6 @@ package org.opennms.netmgt.linkd.snmp;
 
 import java.net.InetAddress;
 
-import org.opennms.netmgt.capsd.snmp.SnmpTable;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 
@@ -46,7 +45,7 @@ import org.opennms.netmgt.snmp.SnmpObjId;
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213 </A>
  * @version $Id: $
  */
-public class ExtremeNetworkVlanTable extends SnmpTable<ExtremeNetworkVlanTableEntry> {
+public class ExtremeNetworkVlanTable extends VlanTableBasic implements VlanTable {
 
 	/**
 	 * <p>Constructor for ExtremeNetworkVlanTable.</p>

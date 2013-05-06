@@ -700,6 +700,12 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
         this.m_alarmAckUser = alarmackuser;
     }
 
+    @Transient
+    @XmlTransient
+    public boolean isAcknowledged() {
+        return getAlarmAckUser() != null;
+    }
+
     /**
      * <p>getAlarmAckTime</p>
      *

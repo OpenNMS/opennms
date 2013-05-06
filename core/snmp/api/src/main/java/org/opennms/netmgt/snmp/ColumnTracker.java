@@ -28,10 +28,12 @@
 
 package org.opennms.netmgt.snmp;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ColumnTracker extends CollectionTracker {
+	
+	private static final transient Logger LOG = LoggerFactory.getLogger(ColumnTracker.class);
     
     private SnmpObjId m_base;
     private SnmpObjId m_last;
@@ -73,7 +75,7 @@ public class ColumnTracker extends CollectionTracker {
             throw new IllegalArgumentException("maxVarsPerPdu < 1");
         }
 
-        log().debug("Requesting oid following: "+m_last);
+        LOG.debug("Requesting oid following: {}", m_last);
         pduBuilder.addOid(m_last);
         pduBuilder.setNonRepeaters(0);
         pduBuilder.setMaxRepetitions(getMaxRepetitions());
@@ -85,7 +87,7 @@ public class ColumnTracker extends CollectionTracker {
                     receivedEndOfMib();
                     return;
                 }
-                log().debug("Processing varBind: "+responseObjId+" = "+val);
+                LOG.debug("Processing varBind: {} = {}", responseObjId, val);
 
 
                 m_last = responseObjId;
@@ -149,8 +151,4 @@ public class ColumnTracker extends CollectionTracker {
         }
     }
     
-    protected ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
-
 }

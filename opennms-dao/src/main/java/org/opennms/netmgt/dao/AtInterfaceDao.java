@@ -29,30 +29,27 @@
 package org.opennms.netmgt.dao;
 
 import java.net.InetAddress;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.Collection;
+import java.util.Date;
 
+import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.netmgt.model.OnmsAtInterface;
 
 public interface AtInterfaceDao extends OnmsDao<OnmsAtInterface, Integer> {
 
-	void markDeletedIfNodeDeleted();
+    void markDeletedIfNodeDeleted();
 
-    void deactivateForSourceNodeIdIfOlderThan(int sourceNodeid, Timestamp scanTime);
+    void deactivateForSourceNodeIdIfOlderThan(int sourceNodeid, Date scanTime);
 
-    void deleteForNodeSourceIdIfOlderThan(int sourceNodeid, Timestamp scanTime);
+    void deleteForNodeSourceIdIfOlderThan(int sourceNodeid, Date scanTime);
 
     Collection<OnmsAtInterface> findByMacAddress(final String macAddress);
 
-    void setStatusForNode(Integer nodeid, Character action);
+    void setStatusForNode(Integer nodeid, StatusType action);
 
-    void setStatusForNodeAndIp(Integer nodeid, String ipAddr, Character action);
+    void setStatusForNodeAndIp(Integer nodeid, String ipAddr, StatusType action);
 
-    void setStatusForNodeAndIfIndex(Integer nodeid, Integer ifIndex, Character action);
-
-    void saveAtInterface(Connection dbConn, OnmsAtInterface at) throws SQLException;
+    void setStatusForNodeAndIfIndex(Integer nodeid, Integer ifIndex, StatusType action);
 
     OnmsAtInterface findByNodeAndAddress(final Integer nodeId, final InetAddress ipAddress, final String macAddress);
 
@@ -72,5 +69,5 @@ public interface AtInterfaceDao extends OnmsDao<OnmsAtInterface, Integer> {
      * @return an {@link OnmsAtInterface}
      * @throws SQLException
      */
-    OnmsAtInterface getAtInterfaceForAddress(final Connection dbConn, final InetAddress address);
+    Collection<OnmsAtInterface> getAtInterfaceForAddress(final InetAddress address);
 }

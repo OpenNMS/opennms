@@ -28,15 +28,14 @@
 
 package org.opennms.netmgt.model.ncs;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.opennms.core.test.xml.XmlTest.assertXmlEquals;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.URL;
 
 import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.Source;
@@ -45,17 +44,14 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
 import org.junit.Test;
-import org.opennms.netmgt.model.ncs.NCSBuilder;
-import org.opennms.netmgt.model.ncs.NCSComponent;
 import org.opennms.netmgt.model.ncs.NCSComponent.DependencyRequirements;
-import org.xml.sax.SAXException;
 
 public class JAXBTest {
 	
 
 
 	@Test
-	public void testMarshall() throws JAXBException, UnsupportedEncodingException, SAXException {
+	public void testMarshall() throws Exception {
 		
 		final String expectedXML = "" +
 				"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
@@ -294,7 +290,7 @@ public class JAXBTest {
 		byte[] utf8 = out.toByteArray();
 
 		String result = new String(utf8, "UTF-8");
-		assertEquals(expectedXML, result);
+		assertXmlEquals(expectedXML, result);
 		
 		System.err.println(result);
 		
@@ -320,7 +316,7 @@ public class JAXBTest {
 		
 		String roundTrip = new String(reout.toByteArray(), "UTF-8");
 		
-		assertEquals(expectedXML, roundTrip);
+		assertXmlEquals(expectedXML, roundTrip);
 	}
 
 }

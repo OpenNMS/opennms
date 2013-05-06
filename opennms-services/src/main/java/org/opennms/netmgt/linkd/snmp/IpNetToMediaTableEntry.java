@@ -33,8 +33,6 @@ import static org.opennms.core.utils.InetAddressUtils.normalizeMacAddress;
 import java.net.InetAddress;
 
 import org.opennms.core.utils.LogUtils;
-import org.opennms.netmgt.capsd.snmp.NamedSnmpVar;
-import org.opennms.netmgt.capsd.snmp.SnmpStore;
 
 /**
  *<P>The IpNetToMediaTableEntry class is designed to hold all the MIB-II

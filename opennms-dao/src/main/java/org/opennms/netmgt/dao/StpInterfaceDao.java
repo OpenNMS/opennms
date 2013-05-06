@@ -28,8 +28,9 @@
 
 package org.opennms.netmgt.dao;
 
-import java.sql.Timestamp;
+import java.util.Date;
 
+import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.netmgt.model.OnmsStpInterface;
 
 
@@ -37,13 +38,13 @@ public interface StpInterfaceDao extends OnmsDao<OnmsStpInterface, Integer> {
 
 	void markDeletedIfNodeDeleted();
 
-    void deactivateForNodeIdIfOlderThan(int nodeid, Timestamp scanTime);
+    void deactivateForNodeIdIfOlderThan(int nodeid, Date scanTime);
 
-    void deleteForNodeIdIfOlderThan(int nodeid, Timestamp scanTime);
+    void deleteForNodeIdIfOlderThan(int nodeid, Date scanTime);
 
-    void setStatusForNode(Integer nodeid, Character action);
+    void setStatusForNode(Integer nodeid, StatusType action);
 
-    void setStatusForNodeAndIfIndex(Integer nodeid, Integer ifIndex, Character action);
+    void setStatusForNodeAndIfIndex(Integer nodeid, Integer ifIndex, StatusType action);
 
     OnmsStpInterface findByNodeAndVlan(Integer nodeId, Integer bridgePort, Integer vlan);
 

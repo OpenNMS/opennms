@@ -11,17 +11,17 @@ public class MemoryHistoryManager extends AbstractHistoryManager {
     private Map<String, SavedHistory> m_historyMap = new HashMap<String, SavedHistory>(); 
     
     @Override
-    protected void saveHistory(SavedHistory hist) {
+    protected void saveHistory(String userId, SavedHistory hist) {
         m_historyMap.put(hist.getFragment(), hist);
     }
 
     @Override
-    protected SavedHistory getHistory(String fragmentId) {
-        SavedHistory hist = null;
-        if(m_historyMap.containsKey(fragmentId)) {
-            hist = m_historyMap.get(fragmentId);
-        }
-        return hist;
+    protected SavedHistory getHistory(String userId, String fragmentId) {
+        return m_historyMap.get(fragmentId);
     }
 
+    @Override
+    public String getHistoryForUser(String userId) {
+        return null;
+    }
 }

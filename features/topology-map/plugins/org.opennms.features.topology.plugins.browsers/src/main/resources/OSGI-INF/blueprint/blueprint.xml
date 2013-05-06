@@ -5,6 +5,7 @@ xsi:schemaLocation="
 ">
 
   <reference id="alarmDao" interface="org.opennms.netmgt.dao.AlarmDao" availability="mandatory" />
+  <reference id="alarmRepository" interface="org.opennms.netmgt.dao.AlarmRepository" availability="mandatory" />
   <reference id="nodeDao" interface="org.opennms.netmgt.dao.NodeDao" availability="mandatory" />
 
   <!-- Wrap the DAO in a Vaadin container -->
@@ -12,9 +13,10 @@ xsi:schemaLocation="
     <argument ref="alarmDao" />
   </bean>
   
-  <bean id="alarmTable" class="org.opennms.features.topology.plugins.browsers.SelectionAwareTable" scope="prototype">
+  <bean id="alarmTable" class="org.opennms.features.topology.plugins.browsers.AlarmTable" scope="prototype">
     <argument value="Alarms"/>
-    <argument ref="alarmDaoContainer" />
+    <argument ref="alarmDaoContainer"/>
+    <argument ref="alarmRepository"/>
     <property name="columnReorderingAllowed" value="true"/>
     <property name="columnCollapsingAllowed" value="true"/>
     <property name="cellStyleGenerator">
@@ -22,6 +24,11 @@ xsi:schemaLocation="
     </property>
     <property name="columnGenerators">
       <map>
+        <entry key="acknowledged">
+          <bean class="org.opennms.features.topology.plugins.browsers.CheckboxGenerator">
+            <argument value="id"/>
+          </bean>
+        </entry>
         <entry key="severity">
           <bean class="org.opennms.features.topology.plugins.browsers.SeverityGenerator"/>
         </entry>
@@ -42,6 +49,7 @@ xsi:schemaLocation="
     </property>
     <property name="visibleColumns">
       <array>
+        <value>acknowledged</value>
         <value>id</value>
         <value>severity</value>
         <value>nodeLabel</value>
@@ -53,6 +61,7 @@ xsi:schemaLocation="
     </property>
     <property name="columnHeaders">
       <array>
+        <value></value>
         <value>ID</value>
         <value>Severity</value>
         <value>Node</value>

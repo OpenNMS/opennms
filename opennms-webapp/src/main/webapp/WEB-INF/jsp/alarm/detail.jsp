@@ -33,6 +33,8 @@
         contentType="text/html"
         session="true"
         import="java.util.*,
+	org.opennms.core.resource.Vault,
+	org.opennms.core.utils.InetAddressUtils,
 	java.text.SimpleDateFormat,
 	org.opennms.web.filter.Filter,
         org.opennms.core.utils.WebSecurityUtils,
@@ -45,6 +47,7 @@
 	org.opennms.netmgt.EventConstants,
 	org.opennms.web.event.AcknowledgeType,
         org.opennms.netmgt.model.OnmsAcknowledgment,
+        org.opennms.netmgt.model.OnmsAlarm,
         org.opennms.netmgt.model.OnmsSeverity,
 	org.opennms.web.servlet.XssRequestWrapper,
         org.opennms.web.springframework.security.Authentication"
@@ -55,12 +58,12 @@
 <%@taglib tagdir="/WEB-INF/tags/form" prefix="form" %>
 
 <%!
-    public String alarmTicketLink(Alarm alarm) {
+    public String alarmTicketLink(OnmsAlarm alarm) {
         String template = System.getProperty("opennms.alarmTroubleTicketLinkTemplate");
         if (template == null) {
-            return alarm.getTroubleTicket();
+            return alarm.getTTicketId();
         } else {
-            return template.replaceAll("\\$\\{id\\}", alarm.getTroubleTicket());
+            return template.replaceAll("\\$\\{id\\}", alarm.getTTicketId());
         }
     }
 
@@ -73,7 +76,7 @@
     
     String alarmIdString = req.getParameter( "id" );
     
-    Alarm alarm = (Alarm) req.getAttribute("alarm");
+    OnmsAlarm alarm = (OnmsAlarm) request.getAttribute("alarm");
 
     EventQueryParms parms = (EventQueryParms)req.getAttribute( "parms" );
     pageContext.setAttribute("parms", parms);
@@ -99,7 +102,7 @@
     boolean showEscalate = false;
     boolean showClear = false;
 
-    if (alarm.getAcknowledgeTime() == null) {
+    if (alarm.getAckTime() == null) {
         ackButtonName = "Acknowledge";
         action = AcknowledgeType.ACKNOWLEDGED.getShortName();
     } else {
@@ -149,18 +152,18 @@
     </tr>
     <tr class="<%=alarm.getSeverity().getLabel()%>">
         <th>Last&nbsp;Event</th>
-        <td><span title="Event <%= alarm.getLastEventID()%>"><a href="event/detail.jsp?id=<%= alarm.getLastEventID()%>"><fmt:formatDate value="<%=alarm.getLastEventTime()%>" type="BOTH" /></a></span></td>
+        <td><span title="Event <%= alarm.getLastEvent().getId()%>"><a href="event/detail.jsp?id=<%= alarm.getLastEvent().getId()%>"><fmt:formatDate value="<%=alarm.getLastEventTime()%>" type="BOTH" /></a></span></td>
         <th>Interface</th>
         <td>
-            <% if (alarm.getIpAddress() != null) {%>
+            <% if (alarm.getIpAddr() != null) {%>
             <% if (alarm.getNodeId() > 0) {%>
             <c:url var="interfaceLink" value="element/interface.jsp">
                 <c:param name="node" value="<%=String.valueOf(alarm.getNodeId())%>"/>
-                <c:param name="intf" value="<%=alarm.getIpAddress()%>"/>
+                <c:param name="intf" value="<%=InetAddressUtils.str(alarm.getIpAddr())%>"/>
             </c:url>
-            <a href="${interfaceLink}"><%=alarm.getIpAddress()%></a>
+            <a href="${interfaceLink}"><%=InetAddressUtils.str(alarm.getIpAddr())%></a>
             <% } else {%>
-            <%=alarm.getIpAddress()%>
+            <%=InetAddressUtils.str(alarm.getIpAddr())%>
             <% }%>
             <% } else {%>
             &nbsp;
@@ -172,16 +175,16 @@
         <td><fmt:formatDate value="<%=alarm.getFirstEventTime()%>" type="BOTH" /></td>
         <th>Service</th>
         <td>
-            <% if (alarm.getServiceName() != null) {%>
-            <% if (alarm.getIpAddress() != null && alarm.getNodeId() > 0) {%>
+            <% if (alarm.getServiceType() != null) {%>
+            <% if (alarm.getIpAddr() != null && alarm.getNodeId() > 0) {%>
             <c:url var="serviceLink" value="element/service.jsp">
                 <c:param name="node" value="<%=String.valueOf(alarm.getNodeId())%>"/>
-                <c:param name="intf" value="<%=alarm.getIpAddress()%>"/>
-                <c:param name="service" value="<%=String.valueOf(alarm.getServiceId())%>"/>
+                <c:param name="intf" value="<%=InetAddressUtils.str(alarm.getIpAddr())%>"/>
+                <c:param name="service" value="<%=String.valueOf(alarm.getServiceType().getId())%>"/>
             </c:url>
-            <a href="${serviceLink}"><c:out value="<%=alarm.getServiceName()%>"/></a>
+            <a href="${serviceLink}"><c:out value="<%=alarm.getServiceType().getName()%>"/></a>
             <% } else {%>
-            <c:out value="<%=alarm.getServiceName()%>"/>
+            <c:out value="<%=alarm.getServiceType().getName()%>"/>
             <% }%>
             <% } else {%>
             &nbsp;
@@ -190,7 +193,7 @@
     </tr> 
     <tr class="<%=alarm.getSeverity().getLabel()%>">
         <th>Count</th>
-        <td><%=alarm.getCount()%></td>
+        <td><%=alarm.getCounter()%></td>
         <th>UEI</th>
         <td>
             <% if (alarm.getUei() != null) {%>
@@ -202,17 +205,17 @@
     </tr>
     <tr class="<%=alarm.getSeverity().getLabel()%>">
         <th>Ticket&nbsp;ID</th>
-        <td><% if (alarm.getTroubleTicket() == null) {%>
+        <td><% if (alarm.getTTicketId() == null) {%>
             &nbsp;
             <% } else {%>
             <%= alarmTicketLink(alarm)%> 
             <% }%>
         </td>
         <th>Ticket&nbsp;State</th>
-        <td><% if (alarm.getTroubleTicketState() == null) {%>
+        <td><% if (alarm.getTTicketState() == null) {%>
             &nbsp;
             <% } else {%>
-            <%= alarm.getTroubleTicketState()%> 
+            <%= alarm.getTTicketState()%> 
             <% }%>
         </td>
     </tr>
@@ -234,7 +237,7 @@
         <th>Log&nbsp;Message</th>
     </tr>
     <tr class="<%=alarm.getSeverity().getLabel()%>">
-        <td><%=alarm.getLogMessage()%></td>
+        <td><%=alarm.getLogMsg()%></td>
     </tr>
 </table>
 
@@ -584,10 +587,10 @@
 
     <tr class="<%=alarm.getSeverity().getLabel()%>">
         <td>
-            <%if (alarm.getOperatorInstruction() == null) {%>
+            <%if (alarm.getOperInstruct() == null) {%>
             No instructions available
             <% } else {%>
-            <%=alarm.getOperatorInstruction()%>
+            <%=alarm.getOperInstruct()%>
             <% }%>
         </td>
     </tr>

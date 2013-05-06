@@ -1,0 +1,177 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
+package org.opennms.features.topology.plugins.browsers;
+
+import java.util.Date;
+import java.util.Map;
+import java.util.Set;
+
+import org.apache.commons.lang.ArrayUtils;
+import org.opennms.features.topology.api.HasExtraComponents;
+import org.opennms.netmgt.dao.AlarmRepository;
+
+import com.vaadin.data.Container;
+import com.vaadin.data.Item;
+import com.vaadin.ui.AbstractSelect;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.NativeSelect;
+
+public class AlarmTable extends SelectionAwareTable implements HasExtraComponents {
+
+	private static final String ACTION_CLEAR = "Clear";
+	private static final String ACTION_ESCALATE = "Escalate";
+	private static final String ACTION_UNACKNOWLEDGE = "Unacknowledge";
+	private static final String ACTION_ACKNOWLEDGE = "Acknowledge";
+
+	private static final long serialVersionUID = -1384405693333129773L;
+
+	private class CheckboxButton extends Button {
+
+		private static final long serialVersionUID = -3595363303361200441L;
+
+		private CheckboxGenerator m_generator;
+		private AbstractSelect m_ackCombo;
+
+		public CheckboxButton(String string) {
+			super(string);
+			addListener(new ClickListener() {
+
+				private static final long serialVersionUID = 4351558084135658129L;
+
+				// TODO Use the actual username
+				@Override
+				public void buttonClick(final ClickEvent event) {
+					Set<Integer> selected = m_generator.getSelectedIds();
+					if (selected.size() > 0) {
+						String action = (String)m_ackCombo.getValue();
+						if (ACTION_ACKNOWLEDGE.equals(action)) {
+							m_alarmRepo.acknowledgeAlarms(
+									ArrayUtils.toPrimitive(selected.toArray(new Integer[0])), 
+									"admin",
+									new Date()
+							);
+						} else if (ACTION_UNACKNOWLEDGE.equals(action)) {
+							m_alarmRepo.unacknowledgeAlarms(
+									ArrayUtils.toPrimitive(selected.toArray(new Integer[0])), 
+									"admin"
+							);
+						} else if (ACTION_ESCALATE.equals(action)) {
+							m_alarmRepo.escalateAlarms(
+									ArrayUtils.toPrimitive(selected.toArray(new Integer[0])), 
+									"admin",
+									new Date()
+							);
+						} else if (ACTION_CLEAR.equals(action)) {
+							m_alarmRepo.clearAlarms(
+									ArrayUtils.toPrimitive(selected.toArray(new Integer[0])), 
+									"admin",
+									new Date()
+							);
+						}
+
+						// Clear the checkboxes
+						m_generator.clearSelectedIds();
+
+						AlarmTable.this.containerItemSetChange(new ItemSetChangeEvent() {
+							private static final long serialVersionUID = 7086486972418241175L;
+							@Override
+							public Container getContainer() {
+								return AlarmTable.this.getContainerDataSource();
+							}
+						});
+					}
+				}
+			});
+		}
+
+		public void setCombo(final AbstractSelect combo) {
+			m_ackCombo = combo;
+		}
+
+		public void setCheckboxGenerator(final CheckboxGenerator generator) {
+			m_generator = generator;
+		}
+	}
+
+	private final CheckboxButton m_submitButton;
+	private final NativeSelect m_ackCombo;
+	private final AlarmRepository m_alarmRepo;
+
+	/**
+	 *  Leave OnmsDaoContainer without generics; the Aries blueprint code cannot match up
+	 *  the arguments if you put the generic types in.
+	 */
+	@SuppressWarnings("unchecked")
+	public AlarmTable(final String caption, final OnmsDaoContainer container, final AlarmRepository alarmRepo) {
+		super(caption, container);
+		m_alarmRepo = alarmRepo;
+
+		m_ackCombo = new NativeSelect();
+		m_ackCombo.setNullSelectionAllowed(false);
+		m_ackCombo.addItem(ACTION_ACKNOWLEDGE);
+		m_ackCombo.addItem(ACTION_UNACKNOWLEDGE);
+		m_ackCombo.addItem(ACTION_ESCALATE);
+		m_ackCombo.addItem(ACTION_CLEAR);
+		// Make "Acknowledge" the default value
+		m_ackCombo.setValue(ACTION_ACKNOWLEDGE);
+
+		m_submitButton = new CheckboxButton("Submit");
+		m_submitButton.setCombo(m_ackCombo);
+
+	}
+
+	@Override
+	public void setColumnGenerators(final Map generators) {
+		for (final Object key : generators.keySet()) {
+			super.addGeneratedColumn(key, (ColumnGenerator)generators.get(key));
+			// If any of the column generators are {@link CheckboxGenerator} instances,
+			// then connect it to the ack buttons.
+			try {
+				m_submitButton.setCheckboxGenerator((CheckboxGenerator)generators.get(key));
+			} catch (final ClassCastException e) {}
+		}
+	}
+
+	@Override
+	public void setCellStyleGenerator(final CellStyleGenerator generator) {
+		try {
+			((TableAware)generator).setTable(this);
+		} catch (final ClassCastException e) {}
+		super.setCellStyleGenerator(generator);
+	}
+
+	@Override
+	public Component[] getExtraComponents() {
+		return new Component[] {
+				m_ackCombo,
+				m_submitButton
+		};
+	}
+}

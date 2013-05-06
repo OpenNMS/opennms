@@ -28,15 +28,19 @@
 
 package org.opennms.netmgt.linkd.snmp;
 
-import org.opennms.netmgt.capsd.snmp.NamedSnmpVar;
-import org.opennms.netmgt.capsd.snmp.SnmpStore;
+import static org.opennms.core.utils.InetAddressUtils.str;
+
+import java.net.InetAddress;
+
+import org.opennms.netmgt.model.OnmsIpRouteInterface;
+import org.opennms.netmgt.model.OnmsIpRouteInterface.RouteType;
 
 public abstract class IpRouteCollectorEntry extends SnmpStore {
 
     protected IpRouteCollectorEntry(NamedSnmpVar[] list) {
         super(list);
-        // TODO Auto-generated constructor stub
     }
+
     public final static     String  IP_ROUTE_DEST           = "ipRouteDest";
     public final static     String  IP_ROUTE_IFINDEX        = "ipRouteIfIndex";
     public final static     String  IP_ROUTE_METRIC1        = "ipRouteMetric1";
@@ -50,4 +54,73 @@ public abstract class IpRouteCollectorEntry extends SnmpStore {
     public final static     String  IP_ROUTE_MASK           = "ipRouteMask";
     public final static     String  IP_ROUTE_METRIC5        = "ipRouteMetric5";
     public final static     String  IP_ROUTE_INFO           = "ipRouteInfo";
+    
+    public InetAddress getIpRouteDest() {
+        return getIPAddress(IP_ROUTE_DEST); 
+    }
+
+    public Integer getIpRouteIfIndex() {
+        return getInt32(IP_ROUTE_IFINDEX);
+    }
+
+    public Integer getIpRouteMetric1() {
+        return getInt32(IP_ROUTE_METRIC1);
+    }
+
+    public Integer getIpRouteMetric2() {
+        return getInt32(IP_ROUTE_METRIC2);
+
+    }
+
+    public Integer getIpRouteMetric3() {
+        return getInt32(IP_ROUTE_METRIC3);
+    }
+
+    public Integer getIpRouteMetric4() {
+        return getInt32(IP_ROUTE_METRIC4);
+    }
+
+    public InetAddress getIpRouteNextHop() {
+        return getIPAddress(IP_ROUTE_NXTHOP);
+    }
+
+    public Integer getIpRouteType() {
+        return getInt32(IP_ROUTE_TYPE);
+    }
+
+    public Integer getIpRouteProto() {
+        return getInt32(IP_ROUTE_PROTO);
+    }
+
+    public Integer getIpRouteAge() {
+        return getInt32(IP_ROUTE_AGE);
+    }
+
+    public InetAddress getIpRouteMask() {
+        return getIPAddress(IP_ROUTE_MASK);
+    }
+
+    public Integer getIpRouteMetric5() {
+        return getInt32(IP_ROUTE_METRIC5);
+    }
+
+    public String getIpRouteInfo() {
+        return getObjectID(IP_ROUTE_INFO);
+    }
+    
+    public OnmsIpRouteInterface getOnmsIpRouteInterface(OnmsIpRouteInterface ipRouteInterface) {
+    	ipRouteInterface.setRouteDest(str(getIpRouteDest()));
+        ipRouteInterface.setRouteIfIndex(getIpRouteIfIndex());
+        ipRouteInterface.setRouteMask(str(getIpRouteMask()));
+        ipRouteInterface.setRouteMetric1(getIpRouteMetric1());
+        ipRouteInterface.setRouteMetric2(getIpRouteMetric2());
+        ipRouteInterface.setRouteMetric3(getIpRouteMetric3());
+        ipRouteInterface.setRouteMetric4(getIpRouteMetric4());
+        ipRouteInterface.setRouteMetric5(getIpRouteMetric5());
+        ipRouteInterface.setRouteNextHop(str(getIpRouteNextHop()));
+        ipRouteInterface.setRouteProto(getIpRouteProto());
+        ipRouteInterface.setRouteType(RouteType.get(getIpRouteType()));
+        
+    	return ipRouteInterface;
+    }
 }

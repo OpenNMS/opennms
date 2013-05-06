@@ -51,11 +51,11 @@ import org.opennms.javamail.JavaReadMailer;
 import org.opennms.netmgt.config.ackd.Parameter;
 import org.opennms.netmgt.config.javamail.ReadmailConfig;
 import org.opennms.netmgt.dao.AckdConfigurationDao;
+import org.opennms.netmgt.dao.AcknowledgmentDao;
 import org.opennms.netmgt.dao.JavaMailConfigurationDao;
 import org.opennms.netmgt.model.AckAction;
 import org.opennms.netmgt.model.AckType;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
-import org.opennms.netmgt.model.acknowledgments.AckService;
 
 /**
  * This class uses the JavaMail API to connect to a mail store and retrieve messages, using
@@ -71,7 +71,7 @@ class MailAckProcessor implements AckProcessor {
     
     private AckdConfigurationDao m_ackdDao;
     
-    private AckService m_ackService;
+    private AcknowledgmentDao m_ackDao;
     
     private volatile JavaMailConfigurationDao m_jmConfigDao;
     
@@ -102,7 +102,7 @@ class MailAckProcessor implements AckProcessor {
             
             if (acks != null) {
                 log().debug("findAndProcessAcks: Found "+acks.size()+" acks.  Processing...");
-                m_ackService.processAcks(acks);
+                m_ackDao.processAcks(acks);
                 log().debug("findAndProcessAcks: acks processed.");
             }
         } catch (JavaMailerException e) {
@@ -403,12 +403,10 @@ class MailAckProcessor implements AckProcessor {
     }
     
     /**
-     * <p>setAckService</p>
-     *
-     * @param ackService a {@link org.opennms.netmgt.model.acknowledgments.AckService} object.
+     * @param ackDao a {@link org.opennms.netmgt.dao.AcknowledgmentDao} object.
      */
-    public synchronized void setAckService(final AckService ackService) {
-        m_ackService = ackService;
+    public synchronized void setAcknowledgmentDao(final AcknowledgmentDao ackDao) {
+        m_ackDao = ackDao;
     }
     
     /**

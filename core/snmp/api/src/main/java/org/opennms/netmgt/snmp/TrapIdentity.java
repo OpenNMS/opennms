@@ -31,9 +31,13 @@ package org.opennms.netmgt.snmp;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TrapIdentity {
+	
+	private static final transient Logger LOG = LoggerFactory.getLogger(TrapIdentity.class);
+	
     private int m_generic;
     private int m_specific;
     private String m_enterpriseId;
@@ -79,9 +83,7 @@ public class TrapIdentity {
     public TrapIdentity(SnmpObjId snmpTrapOid, SnmpObjId lastVarBindOid, SnmpValue lastVarBindValue) {
         String snmpTrapOidValue = snmpTrapOid.toString();
         
-        if (log().isDebugEnabled()) {
-            log().debug("snmpTrapOID: " + snmpTrapOidValue);
-        }
+        LOG.debug("snmpTrapOID: {}", snmpTrapOidValue);
 
         // get the last subid
         int lastIndex = snmpTrapOidValue.lastIndexOf(TrapIdentity.DOT_CHAR);
@@ -141,10 +143,6 @@ public class TrapIdentity {
         m_specific = specific;
     }
 
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
-    
     public int getGeneric() {
         return m_generic;
     }

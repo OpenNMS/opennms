@@ -30,6 +30,7 @@ package org.opennms.netmgt.linkd;
 
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+
 public class LldpRemInterface {
 	
     private final Integer m_lldpRemChassidSubtype;

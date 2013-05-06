@@ -20,17 +20,16 @@
 
 package org.opennms.netmgt.snmp.snmp4j;
 
-import java.io.*;
+import java.io.IOException;
 import java.math.BigInteger;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.snmp4j.asn1.BER;
 import org.snmp4j.asn1.BERInputStream;
-import org.snmp4j.smi.AbstractVariable;
 import org.snmp4j.smi.AssignableFromInteger;
 import org.snmp4j.smi.AssignableFromString;
 import org.snmp4j.smi.Integer32;
-import org.snmp4j.smi.SMIConstants;
 
 /**
  * This is special version of the original library that avoid exceptions
@@ -41,6 +40,8 @@ import org.snmp4j.smi.SMIConstants;
  */
 public class Integer32IgnoreTooManyBytes extends Integer32
     implements AssignableFromInteger, AssignableFromString {
+	
+  private static final transient Logger LOG = LoggerFactory.getLogger(Integer32IgnoreTooManyBytes.class);
 
   private static final long serialVersionUID = 5046132399890132416L;
 
@@ -73,9 +74,7 @@ public class Integer32IgnoreTooManyBytes extends Integer32
 	}
 	length = BER.decodeLength(inputStream);
 	if (length > 4) {
-		if (log().isDebugEnabled()) {
-        	log().debug("Working around invalid Integer32 likely dealing with a permissive Net-SNMP agent");
-        }
+		LOG.debug("Working around invalid Integer32 likely dealing with a permissive Net-SNMP agent");
 	}
 	
 	int b = inputStream.read() & 0xFF;
@@ -101,8 +100,5 @@ public class Integer32IgnoreTooManyBytes extends Integer32
     return new Integer32IgnoreTooManyBytes(getValue());
   }
 
-  private ThreadCategory log() {
-      return ThreadCategory.getInstance(getClass());
-  }
 }
 

@@ -28,9 +28,6 @@
 
 package org.opennms.netmgt.linkd.snmp;
 
-import org.opennms.netmgt.capsd.snmp.NamedSnmpVar;
-import org.opennms.netmgt.capsd.snmp.SnmpStore;
-
 /**
  *<P>The Dot1dBaseTableEntry class is designed to hold all the MIB-II
  * information for one entry in the .iso.org.dod.internet.mgmt.mib-2.dot1dBridge.dot1dBase.dot1dBasePortTable

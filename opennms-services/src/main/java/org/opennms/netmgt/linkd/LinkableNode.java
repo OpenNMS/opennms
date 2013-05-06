@@ -40,7 +40,6 @@ import java.util.Set;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.netmgt.model.OnmsStpInterface;
-import org.opennms.netmgt.model.OnmsVlan;
 import org.springframework.util.Assert;
 
 /**
@@ -57,7 +56,9 @@ public class LinkableNode {
 	
     private final String m_sysoid;
     
-    private String m_lldpSysname;
+    private String m_cdpDeviceId;
+    
+	private String m_lldpSysname;
     
     private String m_lldpChassisId;
     
@@ -65,13 +66,18 @@ public class LinkableNode {
     
     private InetAddress m_ospfRouterId;
     
+    public String getCdpDeviceId() {
+		return m_cdpDeviceId;
+	}
+    public void setCdpDeviceId(String cdpDeviceId) {
+		m_cdpDeviceId = cdpDeviceId;
+	}
     public InetAddress getOspfRouterId() {
         return m_ospfRouterId;
     }
     public void setOspfRouterId(InetAddress ospfRouterId) {
         m_ospfRouterId = ospfRouterId;
     }
-    
     public void setLldpSysname(String lldpSysname) {
         m_lldpSysname = lldpSysname;
     }
@@ -110,13 +116,12 @@ public class LinkableNode {
 	 * link between switches
 	 */
 	private List<Integer> m_backBoneBridgePorts = new java.util.ArrayList<Integer>();
-	private List<OnmsVlan> m_vlans = new java.util.ArrayList<OnmsVlan>();
 	private List<String> m_bridgeIdentifiers = new java.util.ArrayList<String>();
-	private Map<String,List<OnmsStpInterface>> m_bridgeStpInterfaces = new HashMap<String,List<OnmsStpInterface>>();
-	private Map<String,String> m_vlanBridgeIdentifiers = new HashMap<String,String>();
+	private Map<Integer,List<OnmsStpInterface>> m_bridgeStpInterfaces = new HashMap<Integer,List<OnmsStpInterface>>();
+	private Map<Integer,String> m_vlanBridgeIdentifiers = new HashMap<Integer,String>();
 	private Map<Integer,Set<String>> m_portMacs = new HashMap<Integer,Set<String>>();
-	private Map<String,String> m_macsVlan = new HashMap<String,String>();
-	private Map<String,String> m_vlanStpRoot = new HashMap<String,String>();
+	private Map<String,Integer> m_macsVlan = new HashMap<String,Integer>();
+	private Map<Integer,String> m_vlanStpRoot = new HashMap<Integer,String>();
 	private Map<Integer,Integer> m_bridgePortIfindex = new HashMap<Integer,Integer>();
 
 	/**
@@ -294,7 +299,7 @@ public class LinkableNode {
 		m_isBridgeNode = true;
 	}
 
-	public void addBridgeIdentifier(final String bridge, final String vlan) {
+	public void addBridgeIdentifier(final String bridge, final Integer vlan) {
 		m_vlanBridgeIdentifiers.put(vlan, bridge);
 		addBridgeIdentifier(bridge);
 	}
@@ -309,11 +314,11 @@ public class LinkableNode {
 		m_isBridgeNode = true;
 	}
 
-	public String getBridgeIdentifier(final String vlan) {
+	public String getBridgeIdentifier(final Integer vlan) {
 		return m_vlanBridgeIdentifiers.get(vlan);
 	}
 
-	public void addMacAddress(final int bridgeport, final String macAddress, final String vlan) {
+	public void addMacAddress(final int bridgeport, final String macAddress, final Integer vlan) {
 		Set<String> macs = new HashSet<String>();
 		if (m_portMacs.containsKey(bridgeport)) {
 			macs = m_portMacs.get(bridgeport);
@@ -337,7 +342,7 @@ public class LinkableNode {
 		return !m_portMacs.isEmpty();
 	}
 	
-	public String getVlan(final String macAddress) {
+	public Integer getVlan(final String macAddress) {
 		return m_macsVlan.get(macAddress);
 	}
 
@@ -395,15 +400,15 @@ public class LinkableNode {
 		m_portMacs = portMacs;
 	}
 
-	public void setVlanStpRoot(final String vlan, final String stproot) {
+	public void setVlanStpRoot(final Integer vlan, final String stproot) {
 		if (stproot != null) m_vlanStpRoot.put(vlan, stproot);
 	}
 
-	public boolean hasStpRoot(final String vlan) {
+	public boolean hasStpRoot(final Integer vlan) {
 		return m_vlanStpRoot.containsKey(vlan);
 	}
 
-	public String getStpRoot(final String vlan) {
+	public String getStpRoot(final Integer vlan) {
 		if (m_vlanStpRoot.containsKey(vlan)) {
 			return m_vlanStpRoot.get(vlan);
 		}
@@ -415,7 +420,7 @@ public class LinkableNode {
 	 *
 	 * @return Returns the stpInterfaces.
 	 */
-	public Map<String,List<OnmsStpInterface>> getStpInterfaces() {
+	public Map<Integer,List<OnmsStpInterface>> getStpInterfaces() {
 		return m_bridgeStpInterfaces;
 	}
 	/**
@@ -423,7 +428,7 @@ public class LinkableNode {
 	 *
 	 * @param stpInterfaces The stpInterfaces to set.
 	 */
-	public void setStpInterfaces(Map<String,List<OnmsStpInterface>> stpInterfaces) {
+	public void setStpInterfaces(Map<Integer,List<OnmsStpInterface>> stpInterfaces) {
 		m_bridgeStpInterfaces = stpInterfaces;
 	}
 	
@@ -433,7 +438,8 @@ public class LinkableNode {
 	 * @param stpIface a {@link org.opennms.netmgt.model.OnmsStpInterface} object.
 	 */
 	public void addStpInterface(final OnmsStpInterface stpIface) {
-		final String vlanindex = stpIface.getVlan() == null? "0" : stpIface.getVlan().toString();
+		final Integer vlanindex = 
+				stpIface.getVlan() == null ? 0 : stpIface.getVlan();
 		List<OnmsStpInterface> stpifs = new ArrayList<OnmsStpInterface>();
 		if (m_bridgeStpInterfaces.containsKey(vlanindex)) {
 			stpifs = m_bridgeStpInterfaces.get(vlanindex);
@@ -451,21 +457,4 @@ public class LinkableNode {
 		return m_sysoid;
 	}
 
-	/**
-	 * <p>Getter for the field <code>vlans</code>.</p>
-	 *
-	 * @return a {@link java.util.List} object.
-	 */
-	public List<OnmsVlan> getVlans() {
-		return m_vlans;
-	}
-
-	/**
-	 * <p>Setter for the field <code>vlans</code>.</p>
-	 *
-	 * @param vlans a {@link java.util.List} object.
-	 */
-	public void setVlans(final List<OnmsVlan> vlans) {
-		m_vlans = vlans;
-	}
 }

@@ -37,12 +37,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.opennms.core.utils.LogUtils;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class SnmpUtils {
 
+	private static final transient Logger LOG = LoggerFactory.getLogger(SnmpUtils.class);
+	
     private static Properties sm_config;
+    private static StrategyResolver s_strategyResolver;
 
     private static final class TooBigReportingAggregator extends AggregateTracker {
         private final InetAddress address;
@@ -53,7 +56,7 @@ public abstract class SnmpUtils {
         }
 
         protected void reportTooBigErr(String msg) {
-            ThreadCategory.getInstance(SnmpWalker.class).info("Received tooBig response from "+address+". "+msg);
+            LOG.info("Received tooBig response from {}. {}", address, msg);
         }
     }
 
@@ -145,15 +148,32 @@ public abstract class SnmpUtils {
     }
     
     public static SnmpStrategy getStrategy() {
-    	final String strategyClass = getStrategyClassName();
-        try {
-            return (SnmpStrategy)Class.forName(strategyClass).newInstance();
-        } catch (Exception e) {
-            throw new RuntimeException("Unable to instantiate class "+strategyClass, e);
-        }
+    	return getStrategyResolver().getStrategy();
     }
     
-    private static String getStrategyClassName() {
+    public static StrategyResolver getStrategyResolver() {
+    	return s_strategyResolver != null ? s_strategyResolver : new DefaultStrategyResolver();
+    }
+    
+    public static void setStrategyResolver(StrategyResolver strategyResolver) {
+    	s_strategyResolver = strategyResolver;
+    }
+    
+    private static class DefaultStrategyResolver implements StrategyResolver {
+
+		@Override
+		public SnmpStrategy getStrategy() {
+	    	String strategyClass = getStrategyClassName();
+	        try {
+	            return (SnmpStrategy)Class.forName(strategyClass).newInstance();
+	        } catch (Exception e) {
+	            throw new RuntimeException("Unable to instantiate class "+strategyClass, e);
+	        }
+		}
+    	
+    }
+    
+    public static String getStrategyClassName() {
         // Use SNMP4J as the default SNMP strategy
         return getConfig().getProperty("org.opennms.snmp.strategyClass", "org.opennms.netmgt.snmp.snmp4j.Snmp4JStrategy");
 //        return getConfig().getProperty("org.opennms.snmp.strategyClass", "org.opennms.netmgt.snmp.joesnmp.JoeSnmpStrategy");
@@ -228,19 +248,19 @@ public abstract class SnmpUtils {
 	public static Long getProtoCounter64Value(SnmpValue value) {
 	    byte[] valBytes = value.getBytes();
 	    if (valBytes.length != 8) {
-	        LogUtils.tracef(SnmpUtils.class, "Value should be 8 bytes long for a proto-Counter64 but this one is %d bytes.", valBytes);
+	    	LOG.trace("Value should be 8 bytes long for a proto-Counter64 but this one is {} bytes.", valBytes);
 	        return null;
 	    }
 	    if (value.isDisplayable()) {
-	        LogUtils.infof(SnmpUtils.class, "Value '%s' is entirely displayable. Still treating it as a proto-Counter64. This may not be what you want.", new String(valBytes));
+	        LOG.info("Value '{}' is entirely displayable. Still treating it as a proto-Counter64. This may not be what you want.", new String(valBytes));
 	    }
 	    if (valBytes == new byte[]{ (byte)0x80, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0 }) {
-	        LogUtils.tracef(SnmpUtils.class, "Value has high-order bit set and all others zero, which indicates not supported in FCMGMT-MIB convention");
+	        LOG.trace("Value has high-order bit set and all others zero, which indicates not supported in FCMGMT-MIB convention");
 	        return null;
 	    }
 
 	    Long retVal = Long.decode(String.format("0x%02x%02x%02x%02x%02x%02x%02x%02x", valBytes[0], valBytes[1], valBytes[2], valBytes[3], valBytes[4], valBytes[5], valBytes[6], valBytes[7]));
-	    LogUtils.tracef(SnmpUtils.class, "Converted octet-string 0x%02x%02x%02x%02x%02x%02x%02x%02x as a proto-Counter64 of value %d", valBytes[0], valBytes[1], valBytes[2], valBytes[3], valBytes[4], valBytes[5], valBytes[6], valBytes[7], retVal);
+	    LOG.trace("Converted octet-string 0x%02x%02x%02x%02x%02x%02x%02x%02x as a proto-Counter64 of value %d", valBytes[0], valBytes[1], valBytes[2], valBytes[3], valBytes[4], valBytes[5], valBytes[6], valBytes[7], retVal);
 	    return retVal;
 	}
 }

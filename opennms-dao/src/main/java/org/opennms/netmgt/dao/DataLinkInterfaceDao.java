@@ -28,10 +28,11 @@
 
 package org.opennms.netmgt.dao;
 
-import java.sql.Timestamp;
 import java.util.Collection;
+import java.util.Date;
 
 import org.opennms.netmgt.model.DataLinkInterface;
+import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 
 /**
  * <p>DataLinkInterfaceDao interface.</p>
@@ -71,16 +72,16 @@ public interface DataLinkInterfaceDao extends OnmsDao<DataLinkInterface, Integer
 
     DataLinkInterface findByNodeIdAndIfIndex(Integer nodeId, Integer ifindex);
 
-    void deactivateIfOlderThan(Timestamp now, String source);
+    void deactivateIfOlderThan(Date now, String source);
 
-    void deleteIfOlderThan(Timestamp now, String source);
+    void deleteIfOlderThan(Date now, String source);
 
-    void setStatusForNode(Integer nodeid, Character action);
+    void setStatusForNode(Integer nodeid, StatusType action);
 
-    void setStatusForNodeAndIfIndex(Integer nodeid, Integer ifIndex, Character action);
+    void setStatusForNodeAndIfIndex(Integer nodeid, Integer ifIndex, StatusType action);
     
-    void setStatusForNode(Integer nodeid, String source, Character action);
+    void setStatusForNode(Integer nodeid, String source, StatusType action);
 
-    void setStatusForNodeAndIfIndex(Integer nodeid, Integer ifIndex, String source, Character action);
+    void setStatusForNodeAndIfIndex(Integer nodeid, Integer ifIndex, String source, StatusType action);
 
 }

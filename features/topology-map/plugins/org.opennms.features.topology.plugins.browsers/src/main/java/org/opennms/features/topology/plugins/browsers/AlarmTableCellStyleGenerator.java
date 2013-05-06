@@ -31,6 +31,7 @@ package org.opennms.features.topology.plugins.browsers;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.springframework.beans.factory.InitializingBean;
 
+import com.vaadin.data.Property;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.CellStyleGenerator;
 
@@ -48,21 +49,34 @@ public class AlarmTableCellStyleGenerator implements CellStyleGenerator, TableAw
 	@Override
 	public String getStyle(Object itemId, Object propertyId) {
 		if (propertyId == null) {
+			StringBuffer retval = new StringBuffer();
 			Integer severity = (Integer)m_table.getContainerProperty(itemId, "severityId").getValue();
+			Property prop = m_table.getContainerProperty(itemId, "acknowledged");
+			Boolean acknowledged = false;
+			if (prop != null) {
+				acknowledged = (Boolean)prop.getValue();
+			}
+
 			if (OnmsSeverity.CLEARED.getId() == severity) {
 			} else if (OnmsSeverity.CRITICAL.getId() == severity) {
-				return "alarm-table-critical";
+				retval.append("alarm-critical");
 			} else if (OnmsSeverity.INDETERMINATE.getId() == severity) {
-				return "alarm-table-indeterminate";
+				retval.append("alarm-indeterminate");
 			} else if (OnmsSeverity.MAJOR.getId() == severity) {
-				return "alarm-table-major";
+				retval.append("alarm-major");
 			} else if (OnmsSeverity.MINOR.getId() == severity) {
-				return "alarm-table-minor";
+				retval.append("alarm-minor");
 			} else if (OnmsSeverity.NORMAL.getId() == severity) {
-				return "alarm-table-normal";
+				retval.append("alarm-normal");
 			} else if (OnmsSeverity.WARNING.getId() == severity) {
-				return "alarm-table-warning";
+				retval.append("alarm-warning");
 			}
+
+			if (!acknowledged) {
+				retval.append("-noack");
+			}
+
+			return retval.toString();
 		} else if ("severity".equals(propertyId)) {
 			return "bright";
 		}

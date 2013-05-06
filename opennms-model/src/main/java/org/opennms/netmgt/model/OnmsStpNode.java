@@ -28,9 +28,13 @@
 
 package org.opennms.netmgt.model;
 
+import java.io.Serializable;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.persistence.Column;
+import javax.persistence.Embeddable;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -51,6 +55,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 
 /**
  * <p>AtInterface class.</p>
@@ -62,17 +67,219 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 @Entity
 @Table(name="stpNode", uniqueConstraints = {@UniqueConstraint(columnNames={"nodeId", "baseVlan"})})
 public class OnmsStpNode {
+	
+    @Embeddable
+    public static class BridgeBaseType implements Comparable<BridgeBaseType>, Serializable {
+            	
+		private static final long serialVersionUID = 4211573691385106051L;
+		public static final int BASE_TYPE_UNKNOWN = 1;
+		public static final int BASE_TYPE_TRANSPARENT_ONLY = 2;
+		public static final int BASE_TYPE_SOURCEROUTE_ONLY = 3;
+		public static final int BASE_TYPE_SRT = 4;
+    	
+        private static final Integer[] s_order = {1,2,3,4};
+
+        private Integer m_basebridgetype;
+
+        private static final Map<Integer, String> baseBridgeTypeMap = new HashMap<Integer, String>();
+        
+        static {
+            baseBridgeTypeMap.put(1, "unknown" );
+            baseBridgeTypeMap.put(2, "transparent-only" );
+            baseBridgeTypeMap.put(3, "sourceroute-only" );
+            baseBridgeTypeMap.put(4, "srt" );
+        }
+
+        @SuppressWarnings("unused")
+        private BridgeBaseType() {
+        }
+
+        public BridgeBaseType(Integer bridgeBaseType) {
+            m_basebridgetype = bridgeBaseType;
+        }
+
+        @Column(name="baseType")
+        public Integer getIntCode() {
+            return m_basebridgetype;
+        }
+
+        public void setIntCode(Integer baseBridgeType) {
+            m_basebridgetype = baseBridgeType;
+        }
+
+        public int compareTo(BridgeBaseType o) {
+            return getIndex(m_basebridgetype) - getIndex(o.m_basebridgetype);
+        }
+
+        private static int getIndex(Integer code) {
+            for (int i = 0; i < s_order.length; i++) {
+                if (s_order[i] == code) {
+                    return i;
+                }
+            }
+            throw new IllegalArgumentException("illegal baseBridgeType code '"+code+"'");
+        }
+
+        public boolean equals(Object o) {
+            if (o instanceof BridgeBaseType) {
+                return m_basebridgetype.intValue() == ((BridgeBaseType)o).m_basebridgetype.intValue();
+            }
+            return false;
+        }
+
+        public int hashCode() {
+            return toString().hashCode();
+        }
+
+        public String toString() {
+            return String.valueOf(m_basebridgetype);
+        }
+
+        public static BridgeBaseType get(Integer code) {
+            if (code == null)
+                return BridgeBaseType.UNKNOWN;
+            switch (code) {
+            case BASE_TYPE_UNKNOWN: return UNKNOWN;
+            case BASE_TYPE_TRANSPARENT_ONLY: return TRANSPARENT_ONLY;
+            case BASE_TYPE_SOURCEROUTE_ONLY: return SOURCEROUTE_ONLY;
+            case BASE_TYPE_SRT: return SRT;
+            default:
+                throw new IllegalArgumentException("Cannot create BridgeBaseType from code "+code);
+            }
+        }
+
+        /**
+         * <p>getBridgeBaseTypeString</p>
+         *
+         * @return a {@link java.lang.String} object.
+         */
+        /**
+         */
+        public static String getBridgeBaseTypeString(Integer code) {
+            if (baseBridgeTypeMap.containsKey(code))
+                    return baseBridgeTypeMap.get( code);
+            return null;
+        }
+        
+        public static BridgeBaseType UNKNOWN = new BridgeBaseType(BASE_TYPE_UNKNOWN);
+        public static BridgeBaseType TRANSPARENT_ONLY = new BridgeBaseType(BASE_TYPE_TRANSPARENT_ONLY);
+        public static BridgeBaseType SOURCEROUTE_ONLY = new BridgeBaseType(BASE_TYPE_SOURCEROUTE_ONLY);
+        public static BridgeBaseType SRT = new BridgeBaseType(BASE_TYPE_SRT);
+
+
+    }
+
+    @Embeddable
+    public static class StpProtocolSpecification implements Comparable<StpProtocolSpecification>, Serializable {
+            	
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = -1815947324977781143L;
+		public static final int STP_PROTOCOL_SPECIFICATION_UNKNOWN = 1;
+		public static final int STP_PROTOCOL_SPECIFICATION_DECLB100 = 2;
+		public static final int STP_PROTOCOL_SPECIFICATION_IEEE8021D = 3;
+    	
+        private static final Integer[] s_order = {1,2,3};
+
+        private Integer m_stpprotocolspecification;
+
+        private static final Map<Integer, String> stpProtocolSpecificationMap = new HashMap<Integer, String>();
+        
+        static {
+            stpProtocolSpecificationMap.put(1, "unknown" );
+            stpProtocolSpecificationMap.put(2, "decLb100" );
+            stpProtocolSpecificationMap.put(3, "ieee8021d" );
+        }
+
+        @SuppressWarnings("unused")
+        private StpProtocolSpecification() {
+        }
+
+        public StpProtocolSpecification(Integer stpprotocolspecification) {
+            m_stpprotocolspecification = stpprotocolspecification;
+        }
+
+        @Column(name="stpProtocolSpecification")
+        public Integer getIntCode() {
+            return m_stpprotocolspecification;
+        }
+
+        public void setIntCode(Integer stpProtocolSpecification) {
+            m_stpprotocolspecification = stpProtocolSpecification;
+        }
+
+        public int compareTo(StpProtocolSpecification o) {
+            return getIndex(m_stpprotocolspecification) - getIndex(o.m_stpprotocolspecification);
+        }
+
+        private static int getIndex(Integer code) {
+            for (int i = 0; i < s_order.length; i++) {
+                if (s_order[i] == code) {
+                    return i;
+                }
+            }
+            throw new IllegalArgumentException("illegal StpProtocolSpecification code '"+code+"'");
+        }
+
+        public boolean equals(Object o) {
+            if (o instanceof StpProtocolSpecification) {
+                return m_stpprotocolspecification.intValue() == ((StpProtocolSpecification)o).m_stpprotocolspecification.intValue();
+            }
+            return false;
+        }
+
+        public int hashCode() {
+            return toString().hashCode();
+        }
+
+        public String toString() {
+            return String.valueOf(m_stpprotocolspecification);
+        }
+
+        public static StpProtocolSpecification get(Integer code) {
+            if (code == null)
+                return StpProtocolSpecification.UNKNOWN;
+            switch (code) {
+            case STP_PROTOCOL_SPECIFICATION_UNKNOWN: return UNKNOWN;
+            case STP_PROTOCOL_SPECIFICATION_DECLB100: return DECLB100;
+            case STP_PROTOCOL_SPECIFICATION_IEEE8021D: return IEEE8021D;
+            default:
+                throw new IllegalArgumentException("Cannot create StpProtocolSpecification from code "+code);
+            }
+        }
+
+        /**
+         * <p>getStpProtocolSpecificationString</p>
+         *
+         * @return a {@link java.lang.String} object.
+         */
+        /**
+         */
+        public static String getStpProtocolSpecificationString(Integer code) {
+            if (stpProtocolSpecificationMap.containsKey(code))
+                    return stpProtocolSpecificationMap.get( code);
+            return null;
+        }
+        
+        public static StpProtocolSpecification UNKNOWN = new StpProtocolSpecification(STP_PROTOCOL_SPECIFICATION_UNKNOWN);
+        public static StpProtocolSpecification DECLB100 = new StpProtocolSpecification(STP_PROTOCOL_SPECIFICATION_DECLB100);
+        public static StpProtocolSpecification IEEE8021D = new StpProtocolSpecification(STP_PROTOCOL_SPECIFICATION_IEEE8021D);
+
+
+    }
+
     private Integer m_id;
 	private OnmsNode m_node;
 	private String m_baseBridgeAddress;
 	private Integer m_baseNumPorts;
-	private Integer m_baseType;
-	private Integer m_stpProtocolSpecification;
+	private BridgeBaseType m_baseType;
+	private StpProtocolSpecification m_stpProtocolSpecification;
 	private Integer m_stpPriority;
 	private String m_stpDesignatedRoot;
 	private Integer m_stpRootCost;
 	private Integer m_stpRootPort;
-	private Character m_status;
+	private StatusType m_status = StatusType.UNKNOWN;
 	private Date m_lastPollTime;
 	private Integer m_baseVlan;
 	private String m_baseVlanName;
@@ -138,21 +345,21 @@ public class OnmsStpNode {
 
     @XmlElement
     @Column
-	public Integer getBaseType() {
+	public BridgeBaseType getBaseType() {
 		return m_baseType;
 	}
 
-	public void setBaseType(final Integer baseType) {
+	public void setBaseType(final BridgeBaseType baseType) {
 		m_baseType = baseType;
 	}
 
     @XmlElement
     @Column
-	public Integer getStpProtocolSpecification() {
+	public StpProtocolSpecification getStpProtocolSpecification() {
 		return m_stpProtocolSpecification;
 	}
 
-	public void setStpProtocolSpecification(final Integer stpProtocolSpecification) {
+	public void setStpProtocolSpecification(final StpProtocolSpecification stpProtocolSpecification) {
 		m_stpProtocolSpecification = stpProtocolSpecification;
 	}
 
@@ -198,12 +405,12 @@ public class OnmsStpNode {
 
     @XmlAttribute
     @Column(nullable=false)
-	public Character getStatus() {
+	public StatusType getStatus() {
 		return m_status;
 	}
 
-	public void setStatus(final Character statusActive) {
-		m_status = statusActive;
+	public void setStatus(final StatusType status) {
+		m_status = status;
 	}
 
     @Temporal(TemporalType.TIMESTAMP)

@@ -44,6 +44,7 @@ import org.opennms.features.topology.api.SelectionContext;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
+import org.slf4j.LoggerFactory;
 
 import com.vaadin.data.util.BeanItem;
 
@@ -108,7 +109,11 @@ public class NodeDaoContainer extends OnmsDaoContainer<OnmsNode,Integer> {
 		Set<Restriction> restrictions = new HashSet<Restriction>();
 		for (VertexRef ref : selectionContext.getSelectedVertexRefs()) {
 			if ("nodes".equals(ref.getNamespace())) {
-				restrictions.add(new EqRestriction("id", Integer.valueOf(ref.getId())));
+				try {
+					restrictions.add(new EqRestriction("id", Integer.valueOf(ref.getId())));
+				} catch (NumberFormatException e) {
+					LoggerFactory.getLogger(this.getClass()).warn("Cannot filter nodes with ID: {}", ref.getId());
+				}
 			}
 		}
 

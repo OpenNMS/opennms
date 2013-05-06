@@ -33,13 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.apache.commons.lang.builder.CompareToBuilder;
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.springframework.util.Assert;
-
-public class SnmpRowResult implements Comparable<SnmpRowResult> {
+public class SnmpRowResult {
     private final Map<SnmpObjId, SnmpResult> m_results = new TreeMap<SnmpObjId,SnmpResult>();
     private SnmpInstId m_instance;
     private int m_columnCount;
@@ -77,43 +71,10 @@ public class SnmpRowResult implements Comparable<SnmpRowResult> {
     }
     
     public void addResult(SnmpObjId column, SnmpResult result) {
-        Assert.isTrue(m_instance.equals(result.getInstance()), "unexpected result "+result+" passed to row with instance "+m_instance);
+        assertTrue(m_instance.equals(result.getInstance()), "unexpected result %s passed to row with instance %s", result, m_instance);
         m_results.put(column, result);
     }
     
-
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this)
-            .append("columnCount", m_columnCount)
-            .append("results", m_results)
-            .toString();
-    }
-
-    public int compareTo(SnmpRowResult other) {
-        return new CompareToBuilder()
-            .append(getResults(), other.getResults())
-            .toComparison();
-    }
-    
-    @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof SnmpRowResult) {
-            SnmpRowResult other = (SnmpRowResult) obj;
-            return new EqualsBuilder()
-                .append(getResults(), other.getResults())
-                .isEquals();
-        }
-        return false;
-    }
-    
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder()
-            .append(getResults())
-            .toHashCode();
-    }
-
     public SnmpInstId getInstance() {
         return m_instance;
     }
@@ -131,4 +92,20 @@ public class SnmpRowResult implements Comparable<SnmpRowResult> {
         
         return null;
     }
+
+    private void assertTrue(boolean b, String fmt, Object... args) {
+    	if (!b) {
+    		throw new IllegalArgumentException(String.format(fmt, args));
+    	}
+    }
+    
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this)
+            .append("columnCount", m_columnCount)
+            .append("results", m_results)
+            .toString();
+    }
+
 }

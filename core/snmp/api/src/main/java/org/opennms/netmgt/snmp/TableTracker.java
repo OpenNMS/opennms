@@ -34,10 +34,12 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.lang.builder.CompareToBuilder;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TableTracker extends CollectionTracker implements RowCallback, RowResultFactory {
+	
+	private static final transient Logger LOG = LoggerFactory.getLogger(TableTracker.class);
 
     private final SnmpTableResult m_tableResult;
 
@@ -99,7 +101,7 @@ public class TableTracker extends CollectionTracker implements RowCallback, RowR
 
     public void storeResult(SnmpResult res) {
         //System.err.println(String.format("storeResult: %s", res));
-    	ThreadCategory.getInstance(SnmpResult.class).debug(String.format("storeResult: %s", res));
+    	LOG.debug("storeResult: {}", res);
         m_tableResult.storeResult(res);
     }
     
@@ -122,9 +124,12 @@ public class TableTracker extends CollectionTracker implements RowCallback, RowR
 
         Collections.sort(sortedTrackerList, new Comparator<ColumnTracker>() {
             public int compare(ColumnTracker o1, ColumnTracker o2) {
-                return new CompareToBuilder()
-                    .append(o1.getLastInstance(), o2.getLastInstance())
-                    .toComparison();
+            	SnmpInstId lhs = o1.getLastInstance();
+				SnmpInstId rhs = o2.getLastInstance();
+				if (lhs == rhs) return 0;
+				if (lhs == null) return -1;
+				if (rhs == null) return 1;
+				return lhs.compareTo(rhs);
             }
         });
         

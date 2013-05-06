@@ -35,10 +35,12 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.api.HasExtraComponents;
 import org.opennms.features.topology.api.HistoryManager;
 import org.opennms.features.topology.api.IViewContribution;
 import org.opennms.features.topology.api.MapViewManager;
 import org.opennms.features.topology.api.MapViewManagerListener;
+import org.opennms.features.topology.api.SelectionContext;
 import org.opennms.features.topology.api.SelectionListener;
 import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.SelectionNotifier;
@@ -48,6 +50,7 @@ import org.opennms.features.topology.app.internal.TopoContextMenu.TopoContextMen
 import org.opennms.features.topology.app.internal.TopologyComponent.VertexUpdateListener;
 import org.opennms.features.topology.app.internal.jung.FRLayoutAlgorithm;
 import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
+import org.slf4j.LoggerFactory;
 
 import com.github.wolfie.refresher.Refresher;
 import com.vaadin.Application;
@@ -58,6 +61,8 @@ import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.HorizontalLayout;
@@ -65,21 +70,23 @@ import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.MenuBar;
+import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.Slider;
 import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
+import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
+import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UriFragmentUtility;
+import com.vaadin.ui.UriFragmentUtility.FragmentChangedEvent;
+import com.vaadin.ui.UriFragmentUtility.FragmentChangedListener;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.VerticalSplitPanel;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.MenuBar.MenuItem;
-import com.vaadin.ui.UriFragmentUtility.FragmentChangedEvent;
-import com.vaadin.ui.UriFragmentUtility.FragmentChangedListener;
 
-public class TopologyWidgetTestApplication extends Application implements CommandUpdateListener, MenuItemUpdateListener, ContextMenuHandler, WidgetUpdateListener, WidgetContext, FragmentChangedListener, GraphContainer.ChangeListener, MapViewManagerListener, VertexUpdateListener {
+
+public class TopologyWidgetTestApplication extends Application implements CommandUpdateListener, MenuItemUpdateListener, ContextMenuHandler, WidgetUpdateListener, WidgetContext, FragmentChangedListener, GraphContainer.ChangeListener, MapViewManagerListener, VertexUpdateListener, SelectionListener {
 
 	private static final long serialVersionUID = 6837501987137310938L;
 	private static int HEADER_HEIGHT = 100;
@@ -103,9 +110,9 @@ public class TopologyWidgetTestApplication extends Application implements Comman
     private final Label m_zoomLevelLabel = new Label("0"); 
     private UriFragmentUtility m_uriFragUtil;
     private final HistoryManager m_historyManager;
-    private final SelectionManager m_selectionManager;
     private String m_headerHtml;
     private boolean m_showHeader = true;
+    private SelectionManager m_selectionManager;
 
 	public TopologyWidgetTestApplication(CommandManager commandManager, HistoryManager historyManager, GraphProvider topologyProvider, ProviderManager providerManager, IconRepositoryManager iconRepoManager, SelectionManager selectionManager) {
 	    
@@ -117,8 +124,13 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 
 		// Create a per-session GraphContainer instance
 		m_graphContainer = new VEProviderGraphContainer(topologyProvider, providerManager);
+		m_graphContainer.setSelectionManager(selectionManager);
 		m_graphContainer.addChangeListener(this);
 		m_graphContainer.getMapViewManager().addListener(this);
+		m_graphContainer.setUserName((String)this.getUser());
+
+		// Ensure that selection changes trigger a history save operation
+		selectionManager.addSelectionListener(this);
 	}
 
 
@@ -127,6 +139,11 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 	public void init() {
 	    setTheme("topo_default");
 	    
+		// See if the history manager has an existing fragment stored for
+		// this user. Do this before laying out the UI because the history
+	    // may change during layout.
+		String fragment = m_historyManager.getHistoryForUser((String)this.getUser());
+
 	    m_rootLayout = new AbsoluteLayout();
 	    m_rootLayout.setSizeFull();
 	    
@@ -137,7 +154,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
         m_uriFragUtil = new UriFragmentUtility();
         m_window.addComponent(m_uriFragUtil);
         m_uriFragUtil.addListener(this);
-	    
+
 		m_layout = new AbsoluteLayout();
 		m_layout.setSizeFull();
 		m_rootLayout.addComponent(m_layout);
@@ -169,7 +186,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 
 		final Property scale = m_graphContainer.getScaleProperty();
 
-		m_topologyComponent = new TopologyComponent(m_graphContainer, m_iconRepositoryManager, m_selectionManager, this);
+		m_topologyComponent = new TopologyComponent(m_graphContainer, m_iconRepositoryManager, this);
 		m_topologyComponent.setSizeFull();
 		m_topologyComponent.addMenuItemStateListener(this);
 		m_topologyComponent.addVertexUpdateListener(this);
@@ -283,6 +300,12 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 		if(m_treeWidgetManager.widgetCount() != 0) {
 		    updateAccordionView(m_treeWidgetManager);
 		}
+
+		// If there was existing history, then restore that history snapshot.
+		if (fragment != null) {
+			LoggerFactory.getLogger(this.getClass()).info("Restoring history for user {}: {}", (String)this.getUser(), fragment);
+			m_uriFragUtil.setFragment(fragment);
+		}
 	}
 
     /**
@@ -321,7 +344,10 @@ public class TopologyWidgetTestApplication extends Application implements Comman
                 // Split the screen 70% top, 30% bottom
                 bottomLayoutBar.setSplitPosition(70, Sizeable.UNITS_PERCENTAGE);
                 bottomLayoutBar.setSizeFull();
-                bottomLayoutBar.setSecondComponent(getTabSheet(widgetManager, this));
+
+                // Add the tabsheet to the layout
+                bottomLayoutBar.addComponent(getTabSheet(widgetManager, this));
+
                 m_layout.addComponent(bottomLayoutBar, getBelowMenuPosition());
             }
             m_layout.requestRepaint();
@@ -341,28 +367,76 @@ public class TopologyWidgetTestApplication extends Application implements Comman
      * 
      * @return TabSheet
      */
-    private TabSheet getTabSheet(WidgetManager manager, WidgetContext widgetContext) {
-        TabSheet tabSheet = new TabSheet();
+    private Component getTabSheet(WidgetManager manager, WidgetContext widgetContext) {
+        // Use an absolute layout for the bottom panel
+        AbsoluteLayout bottomLayout = new AbsoluteLayout();
+        bottomLayout.setSizeFull();
+        
+        final TabSheet tabSheet = new TabSheet();
         tabSheet.setSizeFull();
 
         for(IViewContribution viewContrib : manager.getWidgets()) {
             // Create a new view instance
-            Component view = viewContrib.getView(widgetContext);
+            final Component view = viewContrib.getView(widgetContext);
             try {
-                m_selectionManager.addSelectionListener((SelectionListener)view);
+                m_graphContainer.getSelectionManager().addSelectionListener((SelectionListener)view);
             } catch (ClassCastException e) {}
             try {
-                ((SelectionNotifier)view).addSelectionListener(m_selectionManager);
+                ((SelectionNotifier)view).addSelectionListener(m_graphContainer.getSelectionManager());
             } catch (ClassCastException e) {}
-            if(viewContrib.getIcon() != null) {
-                tabSheet.addTab(view, viewContrib.getTitle(), viewContrib.getIcon());
-            } else {
-                tabSheet.addTab(view, viewContrib.getTitle());
-            }
+
+            // Icon can be null
+            final Tab tab = tabSheet.addTab(view, viewContrib.getTitle(), viewContrib.getIcon());
+
+            // If the component supports the HasExtraComponents interface, then add the extra 
+            // components to the tab bar
+            try {
+                Component[] extras = ((HasExtraComponents)view).getExtraComponents();
+                if (extras != null && extras.length > 0) {
+                    // For any extra controls, add a horizontal layout that will float
+                    // on top of the right side of the tab panel
+                    final HorizontalLayout extraControls = new HorizontalLayout();
+                    extraControls.setHeight(32, Sizeable.UNITS_PIXELS);
+                    extraControls.setSpacing(true);
+
+                    // Add the extra controls to the layout
+                    for (Component component : extras) {
+                        extraControls.addComponent(component);
+                        extraControls.setComponentAlignment(component, Alignment.MIDDLE_RIGHT);
+                    }
+
+                    // Add a TabSheet.SelectedTabChangeListener to show or hide the extra controls
+                    tabSheet.addListener(new SelectedTabChangeListener() {
+                        private static final long serialVersionUID = 6370347645872323830L;
+
+                        @Override
+                        public void selectedTabChange(SelectedTabChangeEvent event) {
+                            final TabSheet source = (TabSheet) event.getSource();
+                            if (source == tabSheet) {
+                                // Bizarrely enough, getSelectedTab() returns the contained
+                                // Component, not the Tab itself.
+                                //
+                                // If the first tab was selected...
+                                if (source.getSelectedTab() == view) {
+                                    extraControls.setVisible(true);
+                                } else {
+                                    extraControls.setVisible(false);
+                                }
+                            }
+                        }
+                    });
+
+                    // Place the extra controls on the absolute layout
+                    bottomLayout.addComponent(extraControls, "top:0px;right:5px;z-index:100");
+                }
+            } catch (ClassCastException e) {}
             view.setSizeFull();
         }
 
-        return tabSheet;
+        // Add the tabsheet to the layout
+        bottomLayout.addComponent(tabSheet);
+
+        return bottomLayout;
     }
     
 
@@ -424,7 +498,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
     private VertexSelectionTree createTree() {
 	    //final FilterableHierarchicalContainer container = new FilterableHierarchicalContainer(m_graphContainer.getVertexContainer());
 	    
-		VertexSelectionTree tree = new VertexSelectionTree("Nodes", m_graphContainer, m_selectionManager);
+		VertexSelectionTree tree = new VertexSelectionTree("Nodes", m_graphContainer);
 		tree.setMultiSelect(true);
 		tree.setImmediate(true);
 		tree.setItemCaptionPropertyId(LABEL_PROPERTY);
@@ -434,7 +508,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 			tree.expandItemsRecursively(item);
 		}
 		
-		m_selectionManager.addSelectionListener(tree);
+		m_graphContainer.getSelectionManager().addSelectionListener(tree);
 
 		return tree;
 	}
@@ -461,7 +535,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 			if(menuItem.hasChildren()) {
 				updateMenuItems(menuItem.getChildren());
 			}else {
-				m_commandManager.updateMenuItem(menuItem, m_graphContainer, getMainWindow(), m_selectionManager);
+				m_commandManager.updateMenuItem(menuItem, m_graphContainer, getMainWindow());
 			}
 		}
 	}
@@ -476,7 +550,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 			getMainWindow().removeComponent(m_contextMenu);
 		}
 
-		m_menuBar = commandManager.getMenuBar(m_graphContainer, getMainWindow(), m_selectionManager);
+		m_menuBar = commandManager.getMenuBar(m_graphContainer, getMainWindow());
 		m_menuBar.setWidth("100%");
 		m_rootLayout.addComponent(m_menuBar, "top: " + HEADER_HEIGHT +"px; left: 0px; right:0px;");
 
@@ -562,14 +636,14 @@ public class TopologyWidgetTestApplication extends Application implements Comman
     public void fragmentChanged(FragmentChangedEvent source) {
         m_settingFragment++;
         String fragment = source.getUriFragmentUtility().getFragment();
-        m_historyManager.applyHistory(fragment, m_graphContainer);
+        m_historyManager.applyHistory((String)getUser(), fragment, m_graphContainer);
         m_settingFragment--;
     }
 
 
     private void saveHistory() {
         if (m_settingFragment == 0) {
-            String fragment = m_historyManager.create(m_graphContainer);
+            String fragment = m_historyManager.create((String)getUser(), m_graphContainer);
             m_uriFragUtil.setFragment(fragment, false);
         }
     }
@@ -615,4 +689,14 @@ public class TopologyWidgetTestApplication extends Application implements Comman
         m_showHeader = "true".equals(boolVal);
     }
 
+    @Override
+    public void selectionChanged(SelectionContext selectionManager) {
+        saveHistory();
+    }
+
+
+    @Override
+    public SelectionManager getSelectionManager() {
+        return m_selectionManager;
+    }
 }

@@ -15,6 +15,7 @@ import org.opennms.features.topology.api.GraphVisitor;
 import org.opennms.features.topology.api.Layout;
 import org.opennms.features.topology.api.LayoutAlgorithm;
 import org.opennms.features.topology.api.MapViewManager;
+import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
@@ -194,9 +195,11 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     private int m_semanticZoomLevel = 0;
     private Property m_scaleProperty = new ScaleProperty(0.0);
     private LayoutAlgorithm m_layoutAlgorithm;
+    private SelectionManager m_selectionManager;
     private StatusProvider m_statusProvider;
     private MergingGraphProvider m_mergedGraphProvider;
     private MapViewManager m_viewManager = new DefaultMapViewManager();
+    private String m_userName;
 
     private final Layout m_layout;
     private VEGraph m_graph;
@@ -206,8 +209,8 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     	m_layout = new DefaultLayout(this);
     	rebuildGraph();
     }
-    
-	private Set<ChangeListener> m_listeners = new CopyOnWriteArraySet<ChangeListener>();
+
+    private Set<ChangeListener> m_listeners = new CopyOnWriteArraySet<ChangeListener>();
 
     @Override
     public int getSemanticZoomLevel() {
@@ -281,7 +284,16 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
         rebuildGraph();
     }
 
-    
+    @Override
+    public SelectionManager getSelectionManager() {
+        return m_selectionManager;
+    }
+
+    @Override
+    public void setSelectionManager(SelectionManager selectionManager) {
+        m_selectionManager = selectionManager;
+    }
+
     public void addVertexProvider(VertexProvider vertexProvider) {
         m_mergedGraphProvider.addVertexProvider(vertexProvider);
         rebuildGraph();
@@ -449,4 +461,14 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     public StatusProvider getStatusProvider() {
         return m_statusProvider;
     }
+
+	@Override
+	public String getUserName() {
+		return m_userName;
+	}
+
+	@Override
+	public void setUserName(String userName) {
+		m_userName = userName;
+	}
 }

@@ -85,7 +85,7 @@ public class WebAppListener implements ServletContextListener {
             
             m_bridge.start(m_framework);
 
-        } catch (final Exception e) {
+        } catch (final Throwable e) {
             main = null;
             e.printStackTrace();
         }
@@ -101,7 +101,7 @@ public class WebAppListener implements ServletContextListener {
             if (main != null) {
                 main.destroy();
             }
-        } catch (final Exception e) {
+        } catch (final Throwable e) {
             e.printStackTrace();
         }
     }

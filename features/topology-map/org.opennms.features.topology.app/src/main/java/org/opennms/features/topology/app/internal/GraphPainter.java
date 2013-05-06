@@ -1,5 +1,7 @@
 package org.opennms.features.topology.app.internal;
 
+import java.util.Map;
+
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Layout;
@@ -17,16 +19,14 @@ public class GraphPainter extends BaseGraphVisitor {
 
 	private final GraphContainer m_graphContainer;
 	private final IconRepositoryManager m_iconRepoManager;
-	private final SelectionManager m_selectionManager;
 	private final PaintTarget m_target;
 	private final Layout m_layout;
 	private final StatusProvider m_statusProvider;
 
-	GraphPainter(GraphContainer graphContainer, Layout layout, IconRepositoryManager iconRepoManager, SelectionManager selectionManager, PaintTarget target, StatusProvider statusProvider) {
+	GraphPainter(GraphContainer graphContainer, Layout layout, IconRepositoryManager iconRepoManager, PaintTarget target, StatusProvider statusProvider) {
 		m_graphContainer = graphContainer;
 		m_layout = layout;
 		m_iconRepoManager = iconRepoManager;
-		m_selectionManager = selectionManager;
 		m_target = target;
 		m_statusProvider = statusProvider;
 	}
@@ -50,9 +50,10 @@ public class GraphPainter extends BaseGraphVisitor {
 		m_target.addAttribute("initialY", initialLocation.getY());
 		m_target.addAttribute("x", location.getX());
 		m_target.addAttribute("y", location.getY());
-		m_target.addAttribute("selected", isSelected(m_selectionManager, vertex));
+		m_target.addAttribute("selected", isSelected(m_graphContainer.getSelectionManager(), vertex));
 		if(m_graphContainer.getStatusProvider() != null) {
-		    m_target.addAttribute("status", getStatus(vertex) );
+		    addStatusProviderProperties(m_graphContainer.getStatusProvider(), vertex, m_target);
+//		    m_target.addAttribute("status", getStatus(vertex) );
 		}
 
 		m_target.addAttribute("iconUrl", m_iconRepoManager.findIconUrlByKey(vertex.getIconKey()));
@@ -60,6 +61,13 @@ public class GraphPainter extends BaseGraphVisitor {
 		m_target.addAttribute("tooltipText", getTooltipText(vertex));
 		m_target.endTag("vertex");
 	}
+
+    private void addStatusProviderProperties(StatusProvider statusProvider, Vertex vertex, PaintTarget target) throws PaintException {
+        Map<String, String> statusProps = statusProvider.getStatusForVertex(vertex).getStatusProperties();
+        for(String key : statusProps.keySet()) {
+            target.addAttribute(key, statusProps.get(key));
+        }
+    }
 
     private String getStatus(Vertex vertex) {
         return m_statusProvider != null ? m_statusProvider.getStatusForVertex(vertex).computeStatus() : "";
@@ -79,7 +87,7 @@ public class GraphPainter extends BaseGraphVisitor {
 		m_target.addAttribute("key", edge.getKey());
 		m_target.addAttribute("source", getSourceKey(edge));
 		m_target.addAttribute("target", getTargetKey(edge));
-		m_target.addAttribute("selected", isSelected(m_selectionManager, edge));
+		m_target.addAttribute("selected", isSelected(m_graphContainer.getSelectionManager(), edge));
 		m_target.addAttribute("cssClass", getStyleName(edge));
 		m_target.addAttribute("tooltipText", getTooltipText(edge));
 		m_target.endTag("edge");
@@ -117,7 +125,7 @@ public class GraphPainter extends BaseGraphVisitor {
 		// If the style is null, use a blank string
 		styleName = (styleName == null ? "" : styleName);
 
-		return isSelected(m_selectionManager, edge) ? styleName + " selected" : styleName;
+		return isSelected(m_graphContainer.getSelectionManager(), edge) ? styleName + " selected" : styleName;
 	}
 
 	private static boolean isSelected(SelectionManager selectionManager, Vertex vertex) {

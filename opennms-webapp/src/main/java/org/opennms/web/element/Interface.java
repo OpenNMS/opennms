@@ -28,7 +28,15 @@
 
 package org.opennms.web.element;
 
+import static org.opennms.core.utils.InetAddressUtils.str;
+
+import java.sql.Date;
 import java.util.List;
+
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsSnmpInterface;
+import org.opennms.web.api.Util;
 
 /**
  * <p>Interface class.</p>
@@ -84,6 +92,75 @@ public class Interface {
     	
     List<String> ipaddresses=null;
 
+    Interface () {
+        
+    }
+
+    Interface (OnmsSnmpInterface snmpIface) {
+        m_id = snmpIface.getId();
+        createSnmpInterface(snmpIface);
+    }
+
+    public void createSnmpInterface(OnmsSnmpInterface snmpIface) {
+        if(snmpIface.getNode() != null) {
+            m_nodeId = snmpIface.getNode().getId();
+        }
+        
+        m_snmpIfIndex = snmpIface.getIfIndex();
+        m_snmpIpAdEntNetMask = str(snmpIface.getNetMask());
+        m_snmpPhysAddr = snmpIface.getPhysAddr();
+        m_snmpIfDescr = snmpIface.getIfDescr();
+        m_snmpIfName = snmpIface.getIfName();
+        
+        if(snmpIface.getIfType() != null) {
+            m_snmpIfType = snmpIface.getIfType();
+        }
+        if(snmpIface.getIfOperStatus() != null) {
+            m_snmpIfOperStatus = snmpIface.getIfOperStatus();
+        }
+        if(snmpIface.getIfSpeed() != null) {
+            m_snmpIfSpeed = snmpIface.getIfSpeed();
+        }
+        if(snmpIface.getIfAdminStatus() != null) {
+            m_snmpIfAdminStatus = snmpIface.getIfAdminStatus();
+        }
+            m_snmpIfAlias = snmpIface.getIfAlias();
+        
+        Object element = snmpIface.getPoll();
+        if (element != null) {
+            m_isSnmpPoll = ((String) element).charAt(0);
+        }
+
+        if (snmpIface.getLastCapsdPoll() != null) {
+            m_snmpLastCapsdPoll = Util.formatDateToUIString(snmpIface.getLastCapsdPoll());
+        }
+
+        if (snmpIface.getLastSnmpPoll() != null) {
+            m_snmpLastSnmpPoll = Util.formatDateToUIString(snmpIface.getLastSnmpPoll());
+        }
+    }
+    
+    Interface (OnmsIpInterface ipIface) {        
+        m_id = ipIface.getId();
+        createIpInterface(ipIface);
+    }
+
+    public void createIpInterface(OnmsIpInterface ipIface) {
+        if(ipIface.getNode() != null) {
+            m_nodeId = ipIface.getNode().getId();
+        }
+        
+        if(ipIface.getSnmpInterface() != null) {
+            m_ifIndex = ipIface.getIfIndex();
+        }
+        m_ipHostName = ipIface.getIpHostName();
+        m_ipAddr = InetAddressUtils.str(ipIface.getIpAddress());
+        m_isSnmpPrimary = ipIface.getIsSnmpPrimary().getCode();
+        m_isManaged = ipIface.getIsManaged().charAt(0);
+        if(ipIface.getIpLastCapsdPoll() != null) {
+            m_ipLastCapsdPoll = Util.formatDateToUIString(ipIface.getIpLastCapsdPoll());
+        }
+    }
 	public List<String> getIpaddresses() {
 		return ipaddresses;
 	}

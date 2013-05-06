@@ -35,10 +35,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.ArrayUtils;
-import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.snmp.CollectionTracker;
+import org.opennms.netmgt.snmp.InetAddrUtils;
 import org.opennms.netmgt.snmp.SnmpAgentAddress;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
@@ -53,10 +51,14 @@ import org.opennms.netmgt.snmp.SnmpValueFactory;
 import org.opennms.netmgt.snmp.SnmpWalker;
 import org.opennms.netmgt.snmp.TrapNotificationListener;
 import org.opennms.netmgt.snmp.TrapProcessorFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 
 public class MockSnmpStrategy implements SnmpStrategy {
-    public static final SnmpAgentAddress ALL_AGENTS = new SnmpAgentAddress(InetAddressUtils.addr("0.0.0.0"), 161);
+	private static final transient Logger LOG = LoggerFactory.getLogger(MockSnmpStrategy.class);
+	
+    public static final SnmpAgentAddress ALL_AGENTS = new SnmpAgentAddress(InetAddrUtils.addr("0.0.0.0"), 161);
     private static final SnmpValue[] EMPTY_SNMP_VALUE_ARRAY = new SnmpValue[0];
 
     // TOG's enterprise ID
@@ -80,7 +82,7 @@ public class MockSnmpStrategy implements SnmpStrategy {
 
     @Override
     public SnmpWalker createWalker(final SnmpAgentConfig agentConfig, final String name, final CollectionTracker tracker) {
-        LogUtils.debugf(this, "createWalker(%s/%d, %s, %s)", InetAddressUtils.str(agentConfig.getAddress()), agentConfig.getPort(), name, tracker.getClass().getName());
+        LOG.debug("createWalker({}/{}, {}, {})", InetAddrUtils.str(agentConfig.getAddress()), agentConfig.getPort(), name, tracker.getClass().getName());
         final SnmpAgentAddress aa = new SnmpAgentAddress(agentConfig.getAddress(), agentConfig.getPort());
         final PropertyOidContainer oidContainer = getOidContainer(aa);
         return new MockSnmpWalker(aa, agentConfig.getVersion(), oidContainer, name, tracker, agentConfig.getMaxVarsPerPdu());
@@ -150,17 +152,17 @@ public class MockSnmpStrategy implements SnmpStrategy {
 
     @Override
     public void registerForTraps(final TrapNotificationListener listener, final TrapProcessorFactory processorFactory, final InetAddress address, final int snmpTrapPort) throws IOException {
-        LogUtils.warnf(this, "Can't register for traps.  No network in the MockSnmpStrategy!");
+        LOG.warn("Can't register for traps.  No network in the MockSnmpStrategy!");
     }
 
     @Override
     public void registerForTraps(final TrapNotificationListener listener, final TrapProcessorFactory processorFactory, final int snmpTrapPort) throws IOException {
-        LogUtils.warnf(this, "Can't register for traps.  No network in the MockSnmpStrategy!");
+        LOG.warn("Can't register for traps.  No network in the MockSnmpStrategy!");
     }
 
     @Override
     public void registerForTraps(TrapNotificationListener listener, TrapProcessorFactory processorFactory, InetAddress address, int snmpTrapPort, List<SnmpV3User> snmpv3Users) throws IOException {
-        LogUtils.warnf(this, "Can't register for traps.  No network in the MockSnmpStrategy!");
+        LOG.warn("Can't register for traps.  No network in the MockSnmpStrategy!");
     }
 
     @Override
@@ -216,7 +218,7 @@ public class MockSnmpStrategy implements SnmpStrategy {
         engineID[3] = (byte) (s_enterpriseId & 0xFF);
         byte[] ip = new byte[0];
 
-        ip = InetAddressUtils.getLocalHostAddress().getAddress();
+        ip = InetAddrUtils.getLocalHostAddress().getAddress();
 
         if (ip.length == 4) {
             // IPv4
@@ -228,7 +230,12 @@ public class MockSnmpStrategy implements SnmpStrategy {
             // Text
             engineID[4] = 4;
         }
-        return ArrayUtils.addAll(engineID, ip);
+        
+        byte[] bytes = new byte[engineID.length+ip.length];
+        System.arraycopy(engineID, 0, bytes, 0, engineID.length);
+        System.arraycopy(ip, 0, bytes, engineID.length, ip.length);
+        
+        return bytes;
     }
 
     public static void setDataForAddress(final SnmpAgentAddress agentAddress, final Resource resource) throws IOException {
