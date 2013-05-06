@@ -29,6 +29,7 @@
 package org.opennms.features.topology.plugins.browsers;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -45,7 +46,7 @@ public class CheckboxGenerator implements ColumnGenerator {
 
 	private final String m_valueProperty;
 
-	protected Set<CheckBox> m_checkboxes;
+	protected final Set<CheckBox> m_checkboxes = new HashSet<CheckBox>();
 	protected Set<Integer> m_selectedCheckboxes = new TreeSet<Integer>();
 
 	public CheckboxGenerator(String valueProperty) {
