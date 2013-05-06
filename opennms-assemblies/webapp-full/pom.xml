@@ -22,7 +22,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
-        <version>2.1-beta-1</version>
         <configuration>
           <archiveClasses>true</archiveClasses>
           <webappDirectory>${project.build.directory}/warmerge-temp</webappDirectory>
