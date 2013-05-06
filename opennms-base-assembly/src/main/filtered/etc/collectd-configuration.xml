@@ -8,19 +8,19 @@
 	    <include-range begin="1.1.1.1" end="254.254.254.254"/>
 		<include-range begin="::1" end="ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff" />
 		
-		<service name="SNMP" interval="300000" user-defined="false" status="on">
+		<service name="SNMP" interval="900000" user-defined="false" status="on">
 			<parameter key="collection" value="default"/>
 			<parameter key="thresholding-enabled" value="true"/>
 		</service>
 
-		<service name="WMI" interval="300000" user-defined="false" status="off">
+		<service name="WMI" interval="900000" user-defined="false" status="off">
 			<parameter key="collection" value="default"/>
 			<parameter key="thresholding-enabled" value="true"/>
 		</service>
 
 
 
-		<service name="OpenNMS-JVM" interval="300000" user-defined="false" status="on">
+		<service name="OpenNMS-JVM" interval="900000" user-defined="false" status="on">
 			<parameter key="port" value="18980"/>
 			<parameter key="retry" value="2"/>
 			<parameter key="timeout" value="3000"/>
@@ -38,7 +38,7 @@
 		<include-range begin="1.1.1.1" end="254.254.254.254"/>
 		<include-range begin="::1" end="ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff" />
 
-        	<service name="TCA" interval="10000" user-defined="false" status="on">
+        	<service name="TCA" interval="900000" user-defined="false" status="on">
             		<parameter key="collection" value="default"/>
             		<parameter key="thresholding-enabled" value="true"/>
         	</service>

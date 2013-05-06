@@ -15,9 +15,10 @@
         <descr>
 		LFM link down
         </descr>
-        <logmsg dest='logndisplay'>LFM Down: lfmLinkName: %parm[#1]%</logmsg>
+        <logmsg dest='logndisplay'>LFM Down: lfmLinkName: %parm[#1]% reason: %parm[#2]%</logmsg>
         <severity>Critical</severity>
                 <alarm-data alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" />
   </event>
 </events>
+
 
