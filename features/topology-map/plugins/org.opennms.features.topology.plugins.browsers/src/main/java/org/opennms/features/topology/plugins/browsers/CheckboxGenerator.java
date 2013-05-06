@@ -90,4 +90,13 @@ public class CheckboxGenerator implements ColumnGenerator {
 		}
 		m_selectedCheckboxes.clear();
 	}
+
+	public void selectAll() {
+		m_selectedCheckboxes.clear();
+		// Check all of the checkboxes
+		for (CheckBox button : m_checkboxes) {
+			button.setValue(true);
+			m_selectedCheckboxes.add((Integer)button.getData());
+		}
+	}
 }
