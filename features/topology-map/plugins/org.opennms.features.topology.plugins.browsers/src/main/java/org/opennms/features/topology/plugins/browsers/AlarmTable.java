@@ -28,21 +28,28 @@
 
 package org.opennms.features.topology.plugins.browsers;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.opennms.features.topology.api.DefaultSelectionContext;
 import org.opennms.features.topology.api.HasExtraComponents;
+import org.opennms.features.topology.api.SelectionContext;
+import org.opennms.features.topology.api.topo.AbstractVertexRef;
 import org.opennms.netmgt.dao.AlarmRepository;
 
 import com.vaadin.data.Container;
-import com.vaadin.data.Item;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.NativeSelect;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.themes.BaseTheme;
 
+@SuppressWarnings("serial")
 public class AlarmTable extends SelectionAwareTable implements HasExtraComponents {
 
 	private static final String ACTION_CLEAR = "Clear";
@@ -120,8 +127,50 @@ public class AlarmTable extends SelectionAwareTable implements HasExtraComponent
 		}
 	}
 
+	private class SelectAllButton extends Button {
+
+		private CheckboxGenerator m_generator;
+
+		public SelectAllButton(String string) {
+			super(string);
+			setStyleName(BaseTheme.BUTTON_LINK);
+			addListener(new ClickListener() {
+				@Override
+				public void buttonClick(ClickEvent event) {
+					m_generator.selectAll();
+				}
+			});
+		}
+
+		public void setCheckboxGenerator(final CheckboxGenerator generator) {
+			m_generator = generator;
+		}
+	}
+
+	private class ResetSelectionButton extends Button {
+
+		private CheckboxGenerator m_generator;
+
+		public ResetSelectionButton(String string) {
+			super(string);
+			setStyleName(BaseTheme.BUTTON_LINK);
+			addListener(new ClickListener() {
+				@Override
+				public void buttonClick(ClickEvent event) {
+					m_generator.clearSelectedIds();
+				}
+			});
+		}
+
+		public void setCheckboxGenerator(final CheckboxGenerator generator) {
+			m_generator = generator;
+		}
+	}
+
 	private final CheckboxButton m_submitButton;
 	private final NativeSelect m_ackCombo;
+	private final SelectAllButton m_selectAllButton = new SelectAllButton("Select All");
+	private final ResetSelectionButton m_resetButton = new ResetSelectionButton("Clear");
 	private final AlarmRepository m_alarmRepo;
 
 	/**
@@ -152,9 +201,12 @@ public class AlarmTable extends SelectionAwareTable implements HasExtraComponent
 		for (final Object key : generators.keySet()) {
 			super.addGeneratedColumn(key, (ColumnGenerator)generators.get(key));
 			// If any of the column generators are {@link CheckboxGenerator} instances,
-			// then connect it to the ack buttons.
+			// then connect it to the buttons.
 			try {
-				m_submitButton.setCheckboxGenerator((CheckboxGenerator)generators.get(key));
+				CheckboxGenerator generator = (CheckboxGenerator)generators.get(key);
+				m_submitButton.setCheckboxGenerator(generator);
+				m_selectAllButton.setCheckboxGenerator(generator);
+				m_resetButton.setCheckboxGenerator(generator);
 			} catch (final ClassCastException e) {}
 		}
 	}
@@ -170,6 +222,8 @@ public class AlarmTable extends SelectionAwareTable implements HasExtraComponent
 	@Override
 	public Component[] getExtraComponents() {
 		return new Component[] {
+				m_selectAllButton,
+				m_resetButton,
 				m_ackCombo,
 				m_submitButton
 		};

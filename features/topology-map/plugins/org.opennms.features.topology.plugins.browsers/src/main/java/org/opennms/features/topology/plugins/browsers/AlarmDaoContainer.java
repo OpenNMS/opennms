@@ -107,6 +107,9 @@ public class AlarmDaoContainer extends OnmsDaoContainer<OnmsAlarm,Integer> {
 		// nodeLabel is a transient value so we can't sort on it (yet)
 		propertyIds.remove("nodeLabel");
 
+		// This column is a checkbox so we can't sort on it either
+		propertyIds.remove("acknowledged");
+
 		return Collections.unmodifiableCollection(propertyIds);
 	}
 
