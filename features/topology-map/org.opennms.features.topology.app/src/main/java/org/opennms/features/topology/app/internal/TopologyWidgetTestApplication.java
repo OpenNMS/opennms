@@ -377,7 +377,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 
         for(IViewContribution viewContrib : manager.getWidgets()) {
             // Create a new view instance
-            Component view = viewContrib.getView(widgetContext);
+            final Component view = viewContrib.getView(widgetContext);
             try {
                 m_graphContainer.getSelectionManager().addSelectionListener((SelectionListener)view);
             } catch (ClassCastException e) {}
@@ -413,8 +413,11 @@ public class TopologyWidgetTestApplication extends Application implements Comman
                         public void selectedTabChange(SelectedTabChangeEvent event) {
                             final TabSheet source = (TabSheet) event.getSource();
                             if (source == tabSheet) {
-                                // If the first tab was selected.
-                                if (source.getSelectedTab() == tab) {
+                                // Bizarrely enough, getSelectedTab() returns the contained
+                                // Component, not the Tab itself.
+                                //
+                                // If the first tab was selected...
+                                if (source.getSelectedTab() == view) {
                                     extraControls.setVisible(true);
                                 } else {
                                     extraControls.setVisible(false);
