@@ -105,9 +105,30 @@
        <parameter-assignment matching-group="1" parameter-name="lfmLinkName" /> 
      </ueiMatch>
      <ueiMatch>
-       <match type="regex" expression="\((.*)\): 802.3ah link-fault status changed to fault" default-parameter-mapping="false" /> 
+       <match type="regex" expression="\((.*)\): 802.3ah link-fault status changed to fault with reason (.*)" default-parameter-mapping="false" /> 
        <uei>uei.opennms.org/vendor/Juniper/syslog/lfmd_3ah_linkdown</uei> 
        <parameter-assignment matching-group="1" parameter-name="lfmLinkName" /> 
+       <parameter-assignment matching-group="2" parameter-name="reason" />
+     </ueiMatch>
+     <ueiMatch>
+       <match type="regex" expression="Threshold crossing alarms generated on Service:(.*) ParameterName:(.*) ThresholdValue:(.*) CurrentValue:(.*) UserMessage:(.*) TCAProfile:(.*)" default-parameter-mapping="false" />
+       <uei>uei.opennms.org/vendor/Juniper/syslog/threshold_crossing_defect</uei>
+       <parameter-assignment matching-group="1" parameter-name="Service" />
+       <parameter-assignment matching-group="2" parameter-name="Parameter" />
+       <parameter-assignment matching-group="3" parameter-name="ThresholdValue" />
+       <parameter-assignment matching-group="4" parameter-name="CurrentValue" />
+       <parameter-assignment matching-group="5" parameter-name="Message" />
+       <parameter-assignment matching-group="6" parameter-name="TCAProfile" />
+     </ueiMatch>
+     <ueiMatch>
+       <match type="regex" expression="Threshold crossing alarms cleared on Service:(.*) ParameterName:(.*) ThresholdValue:(.*) CurrentValue:(.*) UserMessage:(.*) TCAProfile:(.*)" default-parameter-mapping="false" />
+       <uei>uei.opennms.org/vendor/Juniper/syslog/threshold_crossing_defect_cleared</uei>
+       <parameter-assignment matching-group="1" parameter-name="Service" />
+       <parameter-assignment matching-group="2" parameter-name="Parameter" />
+       <parameter-assignment matching-group="3" parameter-name="ThresholdValue" />
+       <parameter-assignment matching-group="4" parameter-name="CurrentValue" />
+       <parameter-assignment matching-group="5" parameter-name="Message" />
+       <parameter-assignment matching-group="6" parameter-name="TCAProfile" />
      </ueiMatch>
     </ueiList>
       
@@ -117,3 +138,4 @@
     <import-file>syslog/Sudo.syslog.xml</import-file>
 
 </syslogd-configuration>
+

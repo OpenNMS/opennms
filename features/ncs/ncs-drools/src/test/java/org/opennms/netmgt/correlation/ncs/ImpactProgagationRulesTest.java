@@ -256,7 +256,7 @@ public class ImpactProgagationRulesTest extends CorrelationRulesTestCase {
 		// expect all facts to be resolved
 		anticipateFacts();
 		
-        Event upEvent = createVpnPwUpEvent(17, m_pe2NodeId, "10.1.1.1", "5", "ge-3/1/4.50");
+        Event upEvent = createVpnPwUpEvent(18, m_pe2NodeId, "10.1.1.1", "5", "ge-3/1/4.50");
         ComponentUpEvent cue = new ComponentUpEvent(c, upEvent);
         
         insertFactAndFireRules(cue);

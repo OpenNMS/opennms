@@ -10,7 +10,7 @@
         </descr>
         <logmsg dest='logndisplay'>CFMD CCM Cross-Connect defect: Level: %parm[#1]%, MD: %parm[#2]%, MA: %parm[#3]%, Interface: %parm[#4]%</logmsg>
         <severity>Critical</severity>
-		<alarm-data alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" />
+	<alarm-data alarm-type="1" reduction-key="uei.opennms.org/vendor/Juniper/syslog/cfmd_ccm_defect:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" />
   </event>
   <event>
         <uei>uei.opennms.org/vendor/Juniper/syslog/cfmd_ccm_defect_error</uei>
@@ -22,7 +22,7 @@
         </descr>
         <logmsg dest='logndisplay'>CFMD CCM Error defect: Level: %parm[#1]%, MD: %parm[#2]%, MA: %parm[#3]%, Interface: %parm[#4]%</logmsg>
         <severity>Critical</severity>
-		<alarm-data alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" />
+	<alarm-data alarm-type="1" reduction-key="uei.opennms.org/vendor/Juniper/syslog/cfmd_ccm_defect:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" />
   </event>
   <event>
         <uei>uei.opennms.org/vendor/Juniper/syslog/cfmd_ccm_defect_mac_status</uei>
@@ -34,7 +34,7 @@
         </descr>
         <logmsg dest='logndisplay'>CFMD CCM Mac Status defect: Level: %parm[#1]%, MD: %parm[#2]%, MA: %parm[#3]%, Interface: %parm[#4]%</logmsg>
         <severity>Critical</severity>
-		<alarm-data alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" />
+	<alarm-data alarm-type="1" reduction-key="uei.opennms.org/vendor/Juniper/syslog/cfmd_ccm_defect:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" />
   </event>
   <event>
         <uei>uei.opennms.org/vendor/Juniper/syslog/cfmd_ccm_defect_rdi</uei>
@@ -46,7 +46,7 @@
         </descr>
         <logmsg dest='logndisplay'>CFMD CCM RDI defect: Level: %parm[#1]%, MD: %parm[#2]%, MA: %parm[#3]%, Interface: %parm[#4]%</logmsg>
         <severity>Critical</severity>
-		<alarm-data alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" />
+	<alarm-data alarm-type="1" reduction-key="uei.opennms.org/vendor/Juniper/syslog/cfmd_ccm_defect:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" />
   </event>
   <event>
         <uei>uei.opennms.org/vendor/Juniper/syslog/cfmd_ccm_defect_rmep</uei>
@@ -58,7 +58,7 @@
         </descr>
         <logmsg dest='logndisplay'>CFMD CCM RMEP defect: Level: %parm[#1]%, MD: %parm[#2]%, MA: %parm[#3]%, Interface: %parm[#4]%</logmsg>
         <severity>Critical</severity>
-		<alarm-data alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" />
+	<alarm-data alarm-type="1" reduction-key="uei.opennms.org/vendor/Juniper/syslog/cfmd_ccm_defect:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" />
   </event>
   <event>
         <uei>uei.opennms.org/vendor/Juniper/syslog/cfmd_ccm_defect_none</uei>
@@ -67,7 +67,7 @@
             No defect was detected
         </descr>
         <logmsg dest='logndisplay'>CFMD CCM defect none: Level: %parm[#1]%, MD: %parm[#2]%, MA: %parm[#3]%, Interface: %parm[#4]%</logmsg>
-        <severity>Cleared</severity>
-		<alarm-data alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" clear-key="uei.opennms.org/vendor/Juniper/syslog/cfmd_ccm_defect.*:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" />
+        <severity>Normal</severity>
+	<alarm-data alarm-type="2" reduction-key="%uei%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" clear-key="uei.opennms.org/vendor/Juniper/syslog/cfmd_ccm_defect:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" />
   </event>
 </events>
