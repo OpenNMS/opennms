@@ -55,7 +55,6 @@
 
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-<%@taglib tagdir="/WEB-INF/tags/form" prefix="form" %>
 
 <%!
     public String alarmTicketLink(OnmsAlarm alarm) {
@@ -545,11 +544,11 @@
                 <textarea style="width:99%" name="stickyMemoBody" ><%=alarm.getStickyMemo().getBody() != null ? alarm.getStickyMemo().getBody() : ""%></textarea>
                 <br/>
                 <input type="hidden" name="alarmId" value="<%=alarm.getId()%>"/>
-                <form:input type="submit" value="Save" />    
+                <input type="submit" value="Save" />    
             </form>
             <form method="post" action="alarm/clearSticky.htm">
                  <input type="hidden" name="alarmId" value="<%=alarm.getId()%>"/>
-                 <form:input type="submit" value="Clear" />
+                 <input type="submit" value="Clear" />
             </form>
         </td>
 
@@ -558,11 +557,11 @@
                 <textarea style="width:99%" name="journalMemoBody" ><%=alarm.getReductionKeyMemo().getBody() != null ? alarm.getReductionKeyMemo().getBody() : ""%></textarea>
                 <br/>
                 <input type="hidden" name="alarmId" value="<%=alarm.getId()%>"/>
-                <form:input type="submit" value="Save" />    
+                <input type="submit" value="Save" />    
             </form>
             <form method="post" action="alarm/clearJournal.htm">
                 <input type="hidden" name="alarmId" value="<%=alarm.getId()%>"/>
-                <form:input type="submit" value="Clear" />    
+                <input type="submit" value="Clear" />    
             </form>
         </td>
     </tr>
@@ -657,19 +656,19 @@
 <form method="post" action="alarm/ticket/create.htm">
     <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
     <input type="hidden" name="redirect" value="<%="/alarm/detail.htm" + "?" + request.getQueryString()%>" />
-    <form:input type="submit" value="Create Ticket" disabled="${(!empty alarm.troubleTicketState) && (alarm.troubleTicketState != 'CREATE_FAILED')}" />
+    <input type="submit" value="Create Ticket" disabled="${(!empty alarm.troubleTicketState) && (alarm.troubleTicketState != 'CREATE_FAILED')}" />
 </form>
 
 <form method="post" action="alarm/ticket/update.htm">
     <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
     <input type="hidden" name="redirect" value="<%="/alarm/detail.htm" + "?" + request.getQueryString()%>" />
-    <form:input type="submit" value="Update Ticket" disabled="${(empty alarm.troubleTicket)}"/>
+    <input type="submit" value="Update Ticket" disabled="${(empty alarm.troubleTicket)}"/>
 </form>
 
 <form method="post" action="alarm/ticket/close.htm">
     <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
     <input type="hidden" name="redirect" value="<%="/alarm/detail.htm" + "?" + request.getQueryString()%>" />
-    <form:input type="submit" value="Close Ticket" disabled="${(empty alarm.troubleTicketState) || ((alarm.troubleTicketState != 'OPEN') && (alarm.troubleTicketState != 'CLOSE_FAILED')) }" />
+    <input type="submit" value="Close Ticket" disabled="${(empty alarm.troubleTicketState) || ((alarm.troubleTicketState != 'OPEN') && (alarm.troubleTicketState != 'CLOSE_FAILED')) }" />
 </form>
 
 <% } // alarmTroubleTicketEnabled %>
@@ -707,7 +706,7 @@
       
     }
     
-    public String makeLink( EventQueryParms parms , Alarm alarm) {
+    public String makeLink( EventQueryParms parms , OnmsAlarm alarm) {
       return( this.makeLink( alarm.getId(), parms.filters) );
     }
     
