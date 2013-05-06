@@ -206,7 +206,7 @@ public class GWTVertex extends JavaScriptObject {
 
             @Override
             public String call(GWTVertex vertex, int index) {
-                return !vertex.getStatusCount().equals("") ? "1" : "0";
+                return !vertex.getStatusCount().equals("") && !vertex.getStatusCount().equals("0") ? "1" : "0";
             }
         };
     }
