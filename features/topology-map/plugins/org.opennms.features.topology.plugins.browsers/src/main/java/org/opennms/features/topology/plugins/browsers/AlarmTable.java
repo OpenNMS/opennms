@@ -38,9 +38,10 @@ import org.opennms.netmgt.dao.AlarmRepository;
 
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
+import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.NativeSelect;
 
 public class AlarmTable extends SelectionAwareTable implements HasExtraComponents {
 
@@ -56,7 +57,7 @@ public class AlarmTable extends SelectionAwareTable implements HasExtraComponent
 		private static final long serialVersionUID = -3595363303361200441L;
 
 		private CheckboxGenerator m_generator;
-		private ComboBox m_ackCombo;
+		private AbstractSelect m_ackCombo;
 
 		public CheckboxButton(String string) {
 			super(string);
@@ -110,7 +111,7 @@ public class AlarmTable extends SelectionAwareTable implements HasExtraComponent
 			});
 		}
 
-		public void setCombo(final ComboBox combo) {
+		public void setCombo(final AbstractSelect combo) {
 			m_ackCombo = combo;
 		}
 
@@ -120,7 +121,7 @@ public class AlarmTable extends SelectionAwareTable implements HasExtraComponent
 	}
 
 	private final CheckboxButton m_submitButton;
-	private final ComboBox m_ackCombo;
+	private final NativeSelect m_ackCombo;
 	private final AlarmRepository m_alarmRepo;
 
 	/**
@@ -132,13 +133,14 @@ public class AlarmTable extends SelectionAwareTable implements HasExtraComponent
 		super(caption, container);
 		m_alarmRepo = alarmRepo;
 
-		m_ackCombo = new ComboBox();
+		m_ackCombo = new NativeSelect();
 		m_ackCombo.setNullSelectionAllowed(false);
-		Item heloItem = m_ackCombo.addItem(ACTION_ACKNOWLEDGE);
+		m_ackCombo.addItem(ACTION_ACKNOWLEDGE);
 		m_ackCombo.addItem(ACTION_UNACKNOWLEDGE);
 		m_ackCombo.addItem(ACTION_ESCALATE);
 		m_ackCombo.addItem(ACTION_CLEAR);
-		m_ackCombo.setValue(heloItem);
+		// Make "Acknowledge" the default value
+		m_ackCombo.setValue(ACTION_ACKNOWLEDGE);
 
 		m_submitButton = new CheckboxButton("Submit");
 		m_submitButton.setCombo(m_ackCombo);
