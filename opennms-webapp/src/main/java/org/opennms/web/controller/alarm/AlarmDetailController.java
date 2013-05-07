@@ -33,11 +33,13 @@ import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.core.utils.WebSecurityUtils;
+import org.opennms.netmgt.dao.AlarmRepository;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
-import org.opennms.web.alarm.Alarm;
-import org.opennms.web.alarm.WebAlarmRepository;
+import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.web.event.AcknowledgeType;
 import org.opennms.web.event.Event;
 import org.opennms.web.event.EventQueryParms;
@@ -51,8 +53,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 import org.springframework.web.servlet.view.RedirectView;
 
@@ -87,7 +87,7 @@ public class AlarmDetailController extends MultiActionController {
 	/**
 	 * OpenNMS alarm repository
 	 */
-	private WebAlarmRepository m_webAlarmRepository;
+	private AlarmRepository m_alarmRepository;
 
 	/**
 	 * OpenNMS event repository
@@ -97,7 +97,7 @@ public class AlarmDetailController extends MultiActionController {
 	/**
 	 * Alarm to display
 	 */
-	private Alarm m_alarm;
+	private OnmsAlarm m_alarm;
 
 	/**
 	 * Logging
@@ -119,14 +119,14 @@ public class AlarmDetailController extends MultiActionController {
 
 	/**
 	 * <p>
-	 * setWebAlarmRepository
+	 * setAlarmRepository
 	 * </p>
 	 * 
-	 * @param webAlarmRepository
-	 *            a {@link org.opennms.web.alarm.WebAlarmRepository} object.
+	 * @param alarmRepository
+	 *            a {@link org.opennms.netmgt.dao.AlarmRepository} object.
 	 */
-	public void setWebAlarmRepository(WebAlarmRepository webAlarmRepository) {
-		m_webAlarmRepository = webAlarmRepository;
+	public void setAlarmRepository(AlarmRepository alarmRepository) {
+		m_alarmRepository = alarmRepository;
 	}
 
 	/**
@@ -245,7 +245,7 @@ public class AlarmDetailController extends MultiActionController {
 		Assert.notNull(m_defaultShortLimit,"property defaultShortLimit must be set to a value greater than 0");
 		Assert.isTrue(m_defaultShortLimit > 0,"property defaultShortLimit must be set to a value greater than 0");
 		Assert.notNull(m_successView, "property successView must be set");
-		Assert.notNull(m_webAlarmRepository, "webAlarmRepository must be set");
+		Assert.notNull(m_alarmRepository, "alarmRepository must be set");
 		Assert.notNull(m_webEventRepository, "webEventRepository must be set");
 	}
 
@@ -259,33 +259,6 @@ public class AlarmDetailController extends MultiActionController {
 	}
 
 	/**
-	 * <p>
-	 * getFiltersForEvent
-	 * </p>
-	 * 
-	 * @return list of {@link org.opennms.web.filter.Filter} object.
-	 */
-    public List<Filter> getFiltersForEvent(Alarm alarm, String nodeid, String exactuei, String ipaddress){
-    	
-    	String filtersString[] = new String[2];
-    	if(alarm.getNodeId()!= 0){
-    		filtersString = new String[] { nodeid.concat(String.valueOf(alarm.getNodeId())), exactuei.concat(alarm.getUei()) };
-    	}else{
-    		filtersString = new String[] { ipaddress.concat(alarm.getIpAddress()), exactuei.concat(alarm.getUei()) };
-    	}
-    	
-    	List<Filter> filterList = new ArrayList<Filter>();;
-    	for (String filterString : filtersString) {
-    		try{
-    			filterList.add(EventUtil.getFilter(filterString, getServletContext()));
-    		} catch(Exception e){
-    			logger.error("Could not retrieve filter name for filterString='{}'", filterString);
-    		}
-        }
-    	return filterList;
-    }
-    
-	/**
 	 * {@inheritDoc} Display alarm detail page
 	 */
 	public ModelAndView detail(HttpServletRequest httpServletRequest,HttpServletResponse httpServletResponse) throws Exception {
@@ -296,14 +269,14 @@ public class AlarmDetailController extends MultiActionController {
 		if (alarmIdString != null) {
 			int alarmId = Integer.parseInt(alarmIdString);
 			try {
-				acknowledgments = m_webAlarmRepository.getAcknowledgments(alarmId);
+				acknowledgments = m_alarmRepository.getAcknowledgments(alarmId);
 				// Get alarm by ID
-				m_alarm = m_webAlarmRepository.getAlarm(alarmId);
+				m_alarm = m_alarmRepository.getAlarm(alarmId);
 				logger.debug("Alarm retrieved: '{}'", m_alarm.toString());
 			} catch (NumberFormatException e) {
 				logger.error("Could not parse alarm ID '{}' to integer.",alarmIdString);
 			} catch (Exception e) {
-				logger.error("Could not retrieve alarm from webAlarmRepository for ID='{}'",alarmIdString);
+				logger.error("Could not retrieve alarm from alarmRepository for ID='{}'",alarmIdString);
 			}
 		}
 
@@ -354,11 +327,6 @@ public class AlarmDetailController extends MultiActionController {
 			}
 		}
 
-		// handle the default event key filters parameter
-        String nodeidKey = httpServletRequest.getParameter("nodeid");
-        String exactueiKey = httpServletRequest.getParameter("exactuei");
-        String ipaddressKey = httpServletRequest.getParameter("ipaddress");
-        
 		// handle the filter parameters
 		List<Filter> filterList = new ArrayList<Filter>();
 		String[] filterStrings = httpServletRequest.getParameterValues("filter");
@@ -368,10 +336,6 @@ public class AlarmDetailController extends MultiActionController {
 				if (filter != null) {
 					filterList.add(filter);
 				}
-			}
-		} else {
-			if (m_alarm != null) {
-				filterList = getFiltersForEvent(m_alarm,nodeidKey,exactueiKey,ipaddressKey);
 			}
 		}
 
@@ -404,7 +368,7 @@ public class AlarmDetailController extends MultiActionController {
 			// Get the acknowledgments for an alarm
 			for (Event event : events) {
 				try {
-					alarmsAcknowledgments.put(event.getAlarmId(),m_webAlarmRepository.getAcknowledgments(event.getAlarmId()));
+					alarmsAcknowledgments.put(event.getAlarmId(),m_alarmRepository.getAcknowledgments(event.getAlarmId()));
 					logger.debug("Acknowledgments retrieved: '{}'",alarmsAcknowledgments.toString());
 				} catch (Exception e) {
 					logger.error("Could not retrieve alarm acknowledgments for this alarm id '{}'.",event.getAlarmId());
@@ -439,7 +403,7 @@ public class AlarmDetailController extends MultiActionController {
         try {
             alarmIdString = httpServletRequest.getParameter("alarmId");
             alarmId = Integer.parseInt(alarmIdString);
-            m_webAlarmRepository.removeStickyMemo(alarmId);
+            m_alarmRepository.removeStickyMemo(alarmId);
 
             return new ModelAndView(new RedirectView("detail.htm", true), "id", alarmId);
         } catch (NumberFormatException e) {
@@ -457,7 +421,7 @@ public class AlarmDetailController extends MultiActionController {
             alarmIdString = httpServletRequest.getParameter("alarmId");
             alarmId = Integer.parseInt(alarmIdString);
             String stickyMemoBody = httpServletRequest.getParameter("stickyMemoBody");
-            m_webAlarmRepository.updateStickyMemo(alarmId, stickyMemoBody, httpServletRequest.getRemoteUser());
+            m_alarmRepository.updateStickyMemo(alarmId, stickyMemoBody, httpServletRequest.getRemoteUser());
 
             return new ModelAndView(new RedirectView("detail.htm", true), "id", alarmId);
         } catch (NumberFormatException e) {
@@ -474,7 +438,7 @@ public class AlarmDetailController extends MultiActionController {
         try {
             alarmIdString = httpServletRequest.getParameter("alarmId");
             alarmId = Integer.parseInt(alarmIdString);
-            m_webAlarmRepository.removeReductionKeyMemo(alarmId);
+            m_alarmRepository.removeReductionKeyMemo(alarmId);
 
             return new ModelAndView(new RedirectView("detail.htm", true), "id", alarmId);
         } catch (NumberFormatException e) {
@@ -492,7 +456,7 @@ public class AlarmDetailController extends MultiActionController {
             alarmIdString = httpServletRequest.getParameter("alarmId");
             alarmId = Integer.parseInt(alarmIdString);
             String journalMemoBody = httpServletRequest.getParameter("journalMemoBody");
-            m_webAlarmRepository.updateReductionKeyMemo(alarmId, journalMemoBody, httpServletRequest.getRemoteUser());
+            m_alarmRepository.updateReductionKeyMemo(alarmId, journalMemoBody, httpServletRequest.getRemoteUser());
 
             return new ModelAndView(new RedirectView("detail.htm", true), "id", alarmId);
         } catch (NumberFormatException e) {
