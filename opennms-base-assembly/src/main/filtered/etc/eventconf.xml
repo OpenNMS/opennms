@@ -2113,6 +2113,7 @@
 <event-file>events/JuniperEvents/syslog/cfmd_ccm_defects.xml</event-file>
 <event-file>events/JuniperEvents/syslog/rpd_mpls_bfd.xml</event-file>
 <event-file>events/JuniperEvents/syslog/lfm_syslog.xml</event-file>
+<event-file>events/JuniperEvents/syslog/tca_syslog.xml</event-file>
 <!-- Space Platform events -->
 <event-file>events/JuniperEvents/space-platform/mib-jnx-space-platform.xml</event-file>
 <!-- End of Juniper Event Files -->

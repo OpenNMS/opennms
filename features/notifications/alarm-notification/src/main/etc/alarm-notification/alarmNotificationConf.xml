@@ -1,3 +1,46 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <alarm-northbounder-config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="alarmNotificationConf.xsd">
+	<notification name="CBUNotification" enable="true">
+		<script>
+			<scriptname>CBU_App_Script.sh</scriptname>
+			<errorhandling enable="false"> 
+				<retry_interval_inseconds>3</retry_interval_inseconds>
+				<number_of_retries>2</number_of_retries>
+			</errorhandling>
+		</script>
+		<ueis>
+	        <uei name="uei.opennms.org/generic/traps/SNMP_Link_Down">
+	       	<filter devicefamily="JSeries" severity="Minor,Normal"/>
+	       	<filter devicefamily="DevicesWithNoSysoid" severity="Minor,Normal"/>
+	        </uei>	
+	     </ueis>   
+	</notification>
+	<notification name="NANotification" enable="true">
+		<script>
+			<scriptname>NA_App_Script.sh</scriptname>
+			<errorhandling enable="false"> 
+				<retry_interval_inseconds>3</retry_interval_inseconds>
+				<number_of_retries>2</number_of_retries>
+			</errorhandling>
+		</script>
+		<ueis>
+	        <uei name="uei.opennms.org/vendor/Juniper/traps/juniSystemHighMemUtil">
+	        </uei>	
+	     </ueis>   
+	</notification>
+        <notification name="TCANotification" enable="true">
+                <script>
+                        <scriptname>REST_NA_Script.sh</scriptname>
+                        <errorhandling enable="false">
+                                <retry_interval_inseconds>3</retry_interval_inseconds>
+                                <number_of_retries>2</number_of_retries>
+                        </errorhandling>
+                </script>
+                <ueis>
+                <uei name="uei.opennms.org/vendor/Juniper/syslog/threshold_crossing_defect">
+                </uei>
+                <uei name="uei.opennms.org/vendor/Juniper/syslog/threshold_crossing_defect_cleared">
+                </uei>
+             </ueis>
+        </notification>
 </alarm-northbounder-config>
