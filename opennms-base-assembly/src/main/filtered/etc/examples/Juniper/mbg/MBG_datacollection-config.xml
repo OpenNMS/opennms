@@ -25,10 +25,8 @@
       <rra>RRA:MAX:0.5:288:366</rra>
       <rra>RRA:MIN:0.5:288:366</rra>
     </rrd>
-
-	<include-collection systemDef="Juniper MBG MX240 Routers"/>
-	<include-collection systemDef="Juniper MBG MX480 Routers"/>
-	<include-collection systemDef="Juniper MBG MX960 Routers"/>
+    
+     <include-collection dataCollectionGroup="Juniper-MBG-PGW"/>	
   </snmp-collection>
 
   <snmp-collection name="SGW" maxVarsPerPdu = "40" snmpStorageFlag="primary">
@@ -40,9 +38,7 @@
       <rra>RRA:MIN:0.5:288:366</rra>
     </rrd>
 
-	<include-collection systemDef="Juniper MBG MX240 Routers"/>
-	<include-collection systemDef="Juniper MBG MX480 Routers"/>
-	<include-collection systemDef="Juniper MBG MX960 Routers"/>
+	<include-collection dataCollectionGroup="Juniper-MBG-SGW"/>
   </snmp-collection>
 
   <snmp-collection name="MBG-KPIs" maxVarsPerPdu = "40" snmpStorageFlag="primary">

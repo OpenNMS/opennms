@@ -841,6 +841,8 @@
 			<includeGroup>jnxMbgSgwCgCgfStatsTable</includeGroup>
 			<includeGroup>jnxMbgSgwGtpCPerPeerStatsTable</includeGroup>
 			<includeGroup>jnxMbgSgwGtpCGlbStatsTable</includeGroup>
+                     <includeGroup>jnxMbgSgwGtpIfStatsTable</includeGroup>
+                     <includeGroup>jnxMbgSgwCgGlobalStatsTable</includeGroup>
         </collect>
       </systemDef>
       <systemDef name="Juniper MBG-SGW MX960 Routers">
@@ -854,6 +856,9 @@
 			<includeGroup>jnxMbgSgwCgCgfStatsTable</includeGroup>
 			<includeGroup>jnxMbgSgwGtpCPerPeerStatsTable</includeGroup>
 			<includeGroup>jnxMbgSgwGtpCGlbStatsTable</includeGroup>
+                     <includeGroup>jnxMbgSgwGtpIfStatsTable</includeGroup>
+                     <includeGroup>jnxMbgSgwCgGlobalStatsTable</includeGroup>
+
         </collect>
       </systemDef>
       <systemDef name="Juniper MBG-SGW MX240 Routers">
@@ -867,6 +872,9 @@
 			<includeGroup>jnxMbgSgwCgCgfStatsTable</includeGroup>
 			<includeGroup>jnxMbgSgwGtpCPerPeerStatsTable</includeGroup>
 			<includeGroup>jnxMbgSgwGtpCGlbStatsTable</includeGroup>
+                     <includeGroup>jnxMbgSgwGtpIfStatsTable</includeGroup>
+                     <includeGroup>jnxMbgSgwCgGlobalStatsTable</includeGroup>
+
         </collect>
       </systemDef>
 
