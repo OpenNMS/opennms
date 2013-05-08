@@ -19,6 +19,11 @@ xsi:schemaLocation="
     <argument ref="alarmRepository"/>
     <property name="columnReorderingAllowed" value="true"/>
     <property name="columnCollapsingAllowed" value="true"/>
+
+    <!-- Sort by default by ID, descending -->
+    <property name="sortContainerPropertyId" value="id"/>
+    <property name="sortAscending" value="false"/>
+
     <property name="cellStyleGenerator">
       <bean class="org.opennms.features.topology.plugins.browsers.AlarmTableCellStyleGenerator"/>
     </property>
@@ -101,6 +106,10 @@ xsi:schemaLocation="
     <argument ref="nodeDaoContainer" />
     <property name="columnReorderingAllowed" value="true"/>
     <property name="columnCollapsingAllowed" value="true"/>
+
+    <!-- Sort by default by label -->
+    <property name="sortContainerPropertyId" value="label"/>
+
     <property name="columnGenerators">
       <map>
         <entry key="id">
