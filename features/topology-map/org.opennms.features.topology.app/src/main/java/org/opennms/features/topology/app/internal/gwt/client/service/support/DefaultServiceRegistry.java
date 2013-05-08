@@ -252,7 +252,7 @@ public class DefaultServiceRegistry implements ServiceRegistry {
     @SuppressWarnings("unchecked")
     private <T> Set<RegistrationListener<T>> getListeners(Class<T> serviceInterface) {
         Set<RegistrationListener<?>> listeners = m_listenerMap.getCopy(serviceInterface);
-        return (Set<RegistrationListener<T>>) (listeners == null ? Collections.emptySet() : listeners);
+        return (Set<RegistrationListener<T>>) (listeners == null ? Collections.<RegistrationListener<T>>emptySet() : listeners);
     }
 
     @Override

@@ -5,5 +5,4 @@ import com.vaadin.ui.Window;
 public interface WidgetContext {
     public Window getMainWindow();
     public GraphContainer getGraphContainer();
-    public SelectionManager getSelectionManager();
 }
