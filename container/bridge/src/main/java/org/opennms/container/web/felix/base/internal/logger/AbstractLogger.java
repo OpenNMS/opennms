@@ -24,16 +24,20 @@ import org.osgi.framework.ServiceReference;
 public abstract class AbstractLogger
     implements LogService
 {
+    @Override
     public final void log(int level, String message)
     {
         log(null, level, message, null);
     }
 
+    @Override
     public final void log(int level, String message, Throwable cause)
     {
         log(null, level, message, cause);
     }
 
+    @Override
+    @SuppressWarnings("unchecked") // Due to the OSGi API
     public final void log(ServiceReference ref, int level, String message)
     {
         log(ref, level, message, null);

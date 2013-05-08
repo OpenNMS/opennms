@@ -60,7 +60,7 @@ public class NCSViewContribution implements IViewContribution {
 				Criteria criteria = NCSEdgeProvider.createCriteria(selectedIds);
 				
 				widgetContext.getGraphContainer().setCriteria(criteria);
-				widgetContext.getGraphContainer().setCriteria(new NCSServicePathCriteria(Collections.EMPTY_LIST));
+				widgetContext.getGraphContainer().setCriteria(new NCSServicePathCriteria(Collections.<Edge>emptyList()));
 				
 				selectVerticesForEdge(criteria, widgetContext.getGraphContainer().getSelectionManager());
 			}

@@ -36,6 +36,8 @@ public final class ConsoleLogger
         this.out = out;
     }
 
+    @Override
+    @SuppressWarnings("unchecked") // Because of OSGi API
     public void log(ServiceReference ref, int level, String message, Throwable cause)
     {
         StringBuffer str = new StringBuffer();
