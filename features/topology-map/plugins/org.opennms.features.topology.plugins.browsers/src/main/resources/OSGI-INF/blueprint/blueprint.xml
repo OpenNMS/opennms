@@ -37,6 +37,11 @@ xsi:schemaLocation="
             <argument value="nodeId"/>
           </bean>
         </entry>
+        <entry key="id">
+        	<bean class="org.opennms.features.topology.plugins.browsers.AlarmIdColumnLinkGenerator">
+        		<argument value="id"/>
+        	</bean>
+        </entry>
         <!--
         <entry key="serviceType">
           <bean class="org.opennms.features.topology.plugins.browsers.OnmsServiceTypeGenerator"/>
