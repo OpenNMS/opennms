@@ -107,7 +107,7 @@ public class Main {
     }
     @Option (shortName ="ms", longName = "msDurations", help = "Outputs all durations in milliseconds")
     public void setDurationsMs() {
-        c.setDurationsMs(true);
+        Collector.setDurationsMs(true);
     }
     public Collector getCollector(){
         return c;

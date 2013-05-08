@@ -28,16 +28,22 @@
 
 package org.opennms.features.topology.plugins.browsers;
 
+import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.opennms.features.topology.api.HasExtraComponents;
+import org.opennms.netmgt.dao.AlarmRepository;
 
-import com.vaadin.data.Item;
+import com.vaadin.data.Container;
+import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.NativeSelect;
+import com.vaadin.ui.themes.BaseTheme;
 
+@SuppressWarnings("serial")
 public class AlarmTable extends SelectionAwareTable implements HasExtraComponents {
 
 	private static final String ACTION_CLEAR = "Clear";
@@ -47,12 +53,12 @@ public class AlarmTable extends SelectionAwareTable implements HasExtraComponent
 
 	private static final long serialVersionUID = -1384405693333129773L;
 
-	private static class CheckboxButton extends Button {
+	private class CheckboxButton extends Button {
 
 		private static final long serialVersionUID = -3595363303361200441L;
 
 		private CheckboxGenerator m_generator;
-		private ComboBox m_ackCombo;
+		private AbstractSelect m_ackCombo;
 
 		public CheckboxButton(String string) {
 			super(string);
@@ -60,24 +66,53 @@ public class AlarmTable extends SelectionAwareTable implements HasExtraComponent
 
 				private static final long serialVersionUID = 4351558084135658129L;
 
+				// TODO Use the actual username
 				@Override
 				public void buttonClick(final ClickEvent event) {
 					Set<Integer> selected = m_generator.getSelectedIds();
-					String action = (String)m_ackCombo.getValue();
-					if (ACTION_ACKNOWLEDGE.equals(action)) {
-						
-					} else if (ACTION_UNACKNOWLEDGE.equals(action)) {
-						
-					} else if (ACTION_ESCALATE.equals(action)) {
-						
-					} else if (ACTION_CLEAR.equals(action)) {
-						
+					if (selected.size() > 0) {
+						String action = (String)m_ackCombo.getValue();
+						if (ACTION_ACKNOWLEDGE.equals(action)) {
+							m_alarmRepo.acknowledgeAlarms(
+									ArrayUtils.toPrimitive(selected.toArray(new Integer[0])), 
+									"admin",
+									new Date()
+							);
+						} else if (ACTION_UNACKNOWLEDGE.equals(action)) {
+							m_alarmRepo.unacknowledgeAlarms(
+									ArrayUtils.toPrimitive(selected.toArray(new Integer[0])), 
+									"admin"
+							);
+						} else if (ACTION_ESCALATE.equals(action)) {
+							m_alarmRepo.escalateAlarms(
+									ArrayUtils.toPrimitive(selected.toArray(new Integer[0])), 
+									"admin",
+									new Date()
+							);
+						} else if (ACTION_CLEAR.equals(action)) {
+							m_alarmRepo.clearAlarms(
+									ArrayUtils.toPrimitive(selected.toArray(new Integer[0])), 
+									"admin",
+									new Date()
+							);
+						}
+
+						// Clear the checkboxes
+						m_generator.clearSelectedIds();
+
+						AlarmTable.this.containerItemSetChange(new ItemSetChangeEvent() {
+							private static final long serialVersionUID = 7086486972418241175L;
+							@Override
+							public Container getContainer() {
+								return AlarmTable.this.getContainerDataSource();
+							}
+						});
 					}
 				}
 			});
 		}
 
-		public void setCombo(final ComboBox combo) {
+		public void setCombo(final AbstractSelect combo) {
 			m_ackCombo = combo;
 		}
 
@@ -86,37 +121,87 @@ public class AlarmTable extends SelectionAwareTable implements HasExtraComponent
 		}
 	}
 
+	private class SelectAllButton extends Button {
+
+		private CheckboxGenerator m_generator;
+
+		public SelectAllButton(String string) {
+			super(string);
+			setStyleName(BaseTheme.BUTTON_LINK);
+			addListener(new ClickListener() {
+				@Override
+				public void buttonClick(ClickEvent event) {
+					m_generator.selectAll();
+				}
+			});
+		}
+
+		public void setCheckboxGenerator(final CheckboxGenerator generator) {
+			m_generator = generator;
+		}
+	}
+
+	private class ResetSelectionButton extends Button {
+
+		private CheckboxGenerator m_generator;
+
+		public ResetSelectionButton(String string) {
+			super(string);
+			setStyleName(BaseTheme.BUTTON_LINK);
+			addListener(new ClickListener() {
+				@Override
+				public void buttonClick(ClickEvent event) {
+					m_generator.clearSelectedIds();
+				}
+			});
+		}
+
+		public void setCheckboxGenerator(final CheckboxGenerator generator) {
+			m_generator = generator;
+		}
+	}
+
 	private final CheckboxButton m_submitButton;
-	private final ComboBox m_ackCombo;
+	private final NativeSelect m_ackCombo;
+	private final SelectAllButton m_selectAllButton = new SelectAllButton("Select All");
+	private final ResetSelectionButton m_resetButton = new ResetSelectionButton("Clear");
+	private final AlarmRepository m_alarmRepo;
 
 	/**
 	 *  Leave OnmsDaoContainer without generics; the Aries blueprint code cannot match up
 	 *  the arguments if you put the generic types in.
 	 */
 	@SuppressWarnings("unchecked")
-	public AlarmTable(final String caption, final OnmsDaoContainer container) {
+	public AlarmTable(final String caption, final OnmsDaoContainer container, final AlarmRepository alarmRepo) {
 		super(caption, container);
-		m_ackCombo = new ComboBox();
+		m_alarmRepo = alarmRepo;
+
+		m_ackCombo = new NativeSelect();
 		m_ackCombo.setNullSelectionAllowed(false);
-		Item heloItem = m_ackCombo.addItem(ACTION_ACKNOWLEDGE);
+		m_ackCombo.addItem(ACTION_ACKNOWLEDGE);
 		m_ackCombo.addItem(ACTION_UNACKNOWLEDGE);
 		m_ackCombo.addItem(ACTION_ESCALATE);
 		m_ackCombo.addItem(ACTION_CLEAR);
-		m_ackCombo.setValue(heloItem);
-		
+		// Make "Acknowledge" the default value
+		m_ackCombo.setValue(ACTION_ACKNOWLEDGE);
+
 		m_submitButton = new CheckboxButton("Submit");
 		m_submitButton.setCombo(m_ackCombo);
 
 	}
 
 	@Override
+	@SuppressWarnings("unchecked") // Because Aries Blueprint cannot handle generics
 	public void setColumnGenerators(final Map generators) {
 		for (final Object key : generators.keySet()) {
 			super.addGeneratedColumn(key, (ColumnGenerator)generators.get(key));
 			// If any of the column generators are {@link CheckboxGenerator} instances,
-			// then connect it to the ack buttons.
+			// then connect it to the buttons.
 			try {
-				m_submitButton.setCheckboxGenerator((CheckboxGenerator)generators.get(key));
+				CheckboxGenerator generator = (CheckboxGenerator)generators.get(key);
+				m_submitButton.setCheckboxGenerator(generator);
+				m_selectAllButton.setCheckboxGenerator(generator);
+				m_resetButton.setCheckboxGenerator(generator);
 			} catch (final ClassCastException e) {}
 		}
 	}
@@ -132,6 +217,8 @@ public class AlarmTable extends SelectionAwareTable implements HasExtraComponent
 	@Override
 	public Component[] getExtraComponents() {
 		return new Component[] {
+				m_selectAllButton,
+				m_resetButton,
 				m_ackCombo,
 				m_submitButton
 		};

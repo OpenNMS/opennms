@@ -199,6 +199,7 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     private StatusProvider m_statusProvider;
     private MergingGraphProvider m_mergedGraphProvider;
     private MapViewManager m_viewManager = new DefaultMapViewManager();
+    private String m_userName;
 
     private final Layout m_layout;
     private VEGraph m_graph;
@@ -460,4 +461,14 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     public StatusProvider getStatusProvider() {
         return m_statusProvider;
     }
+
+	@Override
+	public String getUserName() {
+		return m_userName;
+	}
+
+	@Override
+	public void setUserName(String userName) {
+		m_userName = userName;
+	}
 }

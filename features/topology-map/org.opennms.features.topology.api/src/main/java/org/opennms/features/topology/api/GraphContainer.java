@@ -70,4 +70,8 @@ public interface GraphContainer extends DisplayState {
     StatusProvider getStatusProvider();
 
     void setStatusProvider(StatusProvider statusProvider);
+
+    String getUserName();
+
+    void setUserName(String userName);
 }

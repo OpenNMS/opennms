@@ -5,6 +5,7 @@ xsi:schemaLocation="
 ">
 
   <reference id="alarmDao" interface="org.opennms.netmgt.dao.AlarmDao" availability="mandatory" />
+  <reference id="alarmRepository" interface="org.opennms.netmgt.dao.AlarmRepository" availability="mandatory" />
   <reference id="nodeDao" interface="org.opennms.netmgt.dao.NodeDao" availability="mandatory" />
 
   <!-- Wrap the DAO in a Vaadin container -->
@@ -14,9 +15,15 @@ xsi:schemaLocation="
   
   <bean id="alarmTable" class="org.opennms.features.topology.plugins.browsers.AlarmTable" scope="prototype">
     <argument value="Alarms"/>
-    <argument ref="alarmDaoContainer" />
+    <argument ref="alarmDaoContainer"/>
+    <argument ref="alarmRepository"/>
     <property name="columnReorderingAllowed" value="true"/>
     <property name="columnCollapsingAllowed" value="true"/>
+
+    <!-- Sort by default by ID, descending -->
+    <property name="sortContainerPropertyId" value="id"/>
+    <property name="sortAscending" value="false"/>
+
     <property name="cellStyleGenerator">
       <bean class="org.opennms.features.topology.plugins.browsers.AlarmTableCellStyleGenerator"/>
     </property>
@@ -34,6 +41,11 @@ xsi:schemaLocation="
           <bean class="org.opennms.features.topology.plugins.browsers.NodeSelectionLinkGenerator">
             <argument value="nodeId"/>
           </bean>
+        </entry>
+        <entry key="id">
+        	<bean class="org.opennms.features.topology.plugins.browsers.AlarmIdColumnLinkGenerator">
+        		<argument value="id"/>
+        	</bean>
         </entry>
         <!--
         <entry key="serviceType">
@@ -94,6 +106,10 @@ xsi:schemaLocation="
     <argument ref="nodeDaoContainer" />
     <property name="columnReorderingAllowed" value="true"/>
     <property name="columnCollapsingAllowed" value="true"/>
+
+    <!-- Sort by default by label -->
+    <property name="sortContainerPropertyId" value="label"/>
+
     <property name="columnGenerators">
       <map>
         <entry key="id">

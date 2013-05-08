@@ -35,14 +35,15 @@ import java.net.URL;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.features.topology.api.support.InfoWindow;
 
 import com.vaadin.Application;
 import com.vaadin.ui.Window;
 
 public class NodeInfoWindowTest {
 
-	NodeInfoWindow window;
-	NodeInfoWindow window2;
+	InfoWindow window;
+	InfoWindow window2;
 	Window mainWindow;
 	Application app;
 	@Before

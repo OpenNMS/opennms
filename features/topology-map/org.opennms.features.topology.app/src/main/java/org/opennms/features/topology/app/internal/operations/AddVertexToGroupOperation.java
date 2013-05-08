@@ -85,7 +85,7 @@ public class AddVertexToGroupOperation implements Constants, Operation {
 
 		final Window window = operationContext.getMainWindow();
 
-		final Window groupNamePrompt = new Window("Add Item To Group");
+		final Window groupNamePrompt = new Window("Add This Item To a Group");
 		groupNamePrompt.setModal(true);
 		groupNamePrompt.setResizable(false);
 		groupNamePrompt.setHeight("180px");

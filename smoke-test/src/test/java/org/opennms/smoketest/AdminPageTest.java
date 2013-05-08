@@ -110,7 +110,6 @@ public class AdminPageTest extends OpenNMSSeleniumTestCase {
         waitForPageToLoad();
         assertTrue(selenium.isTextPresent("SNMP Config Lookup"));
         assertTrue(selenium.isTextPresent("Updating SNMP Configuration"));
-        assertTrue(selenium.isTextPresent("Content of snmp-config.xml"));
         assertTrue(selenium.isTextPresent("Descriptions"));
         assertTrue(selenium.isTextPresent("optimize this list"));
         selenium.click("link=Admin");

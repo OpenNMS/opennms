@@ -47,6 +47,7 @@ public class AbstractListenerManager<T> extends ServiceTracker<T, T> {
             {
                 if (allContextListeners == null)
                 {
+                    @SuppressWarnings("unchecked") // Because of OSGi API
                     T[] services = (T[])getServices();
                     if (services != null && services.length > 0)
                     {

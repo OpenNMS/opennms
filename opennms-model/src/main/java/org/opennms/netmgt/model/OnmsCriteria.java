@@ -362,11 +362,11 @@ public class OnmsCriteria implements Serializable {
             return new OnmsCriteria.OnmsDetachedCriteria(entityName, alias);
         }
         
-        public static OnmsCriteria.OnmsDetachedCriteria forClass(Class clazz) {
+        public static OnmsCriteria.OnmsDetachedCriteria forClass(Class<?> clazz) {
             return new OnmsCriteria.OnmsDetachedCriteria(clazz.getName());
         }
         
-        public static OnmsCriteria.OnmsDetachedCriteria forClass(Class clazz, String alias) {
+        public static OnmsCriteria.OnmsDetachedCriteria forClass(Class<?> clazz, String alias) {
             return new OnmsCriteria.OnmsDetachedCriteria(clazz.getName() , alias);
         }
         
