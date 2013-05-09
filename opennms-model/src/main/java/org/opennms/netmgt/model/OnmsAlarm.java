@@ -55,6 +55,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.hibernate.ObjectNotFoundException;
 import org.hibernate.annotations.CollectionOfElements;
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.MapKey;
@@ -766,7 +767,13 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
      */
     public void setLastEvent(OnmsEvent event) {
         this.m_lastEvent = event;
-        if (event!=null) this.m_lastEventTime = event.getEventTime(); // alarm can be saved with no associated event
+        if (event!=null) {
+            try {
+                this.m_lastEventTime = event.getEventTime(); // alarm can be saved with no associated event
+            } catch (final ObjectNotFoundException e) {
+                // ignore errors getting this event from the DB
+            }
+        }
     }
 
     /**

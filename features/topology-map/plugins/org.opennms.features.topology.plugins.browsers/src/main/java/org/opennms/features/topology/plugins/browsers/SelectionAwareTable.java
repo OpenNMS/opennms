@@ -36,6 +36,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import org.opennms.features.topology.api.SelectionContext;
 import org.opennms.features.topology.api.SelectionListener;
 import org.opennms.features.topology.api.SelectionNotifier;
+import org.slf4j.LoggerFactory;
 
 import com.vaadin.data.Container;
 import com.vaadin.ui.Table;
@@ -108,6 +109,7 @@ public class SelectionAwareTable extends Table implements SelectionListener, Sel
 	 * that the {@link SelectionListener} instances are registered with all of the
 	 * {@link ColumnGenerator} classes that also implement {@link SelectionNotifier}.
 	 */
+	@SuppressWarnings("unchecked") // Because Aries Blueprint cannot handle generics
 	public void setColumnGenerators(Map generators) {
 		for (Object key : generators.keySet()) {
 			super.addGeneratedColumn(key, (ColumnGenerator)generators.get(key));

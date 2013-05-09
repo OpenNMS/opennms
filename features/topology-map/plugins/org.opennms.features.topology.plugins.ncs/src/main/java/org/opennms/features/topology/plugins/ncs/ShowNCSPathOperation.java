@@ -119,7 +119,7 @@ public class ShowNCSPathOperation implements Operation {
                 try {
                     NCSServicePath path = getNcsPathProvider().getPath(foreignId, foreignSource, deviceANodeForeignId, deviceZNodeForeignId, nodeForeignSource);
                     
-                    operationContext.getGraphContainer().setCriteria(NCSEdgeProvider.createCriteria(Collections.EMPTY_LIST));
+                    operationContext.getGraphContainer().setCriteria(NCSEdgeProvider.createCriteria(Collections.<Long>emptyList()));
                     operationContext.getGraphContainer().setCriteria(new NCSServicePathCriteria(path.getEdges()));
                     
                     //Select only the vertices in the path

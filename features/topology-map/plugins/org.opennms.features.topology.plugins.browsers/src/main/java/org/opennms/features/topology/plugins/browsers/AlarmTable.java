@@ -28,16 +28,12 @@
 
 package org.opennms.features.topology.plugins.browsers;
 
-import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.ArrayUtils;
-import org.opennms.features.topology.api.DefaultSelectionContext;
 import org.opennms.features.topology.api.HasExtraComponents;
-import org.opennms.features.topology.api.SelectionContext;
-import org.opennms.features.topology.api.topo.AbstractVertexRef;
 import org.opennms.netmgt.dao.AlarmRepository;
 
 import com.vaadin.data.Container;
@@ -45,8 +41,6 @@ import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.NativeSelect;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.themes.BaseTheme;
 
 @SuppressWarnings("serial")
@@ -197,9 +191,10 @@ public class AlarmTable extends SelectionAwareTable implements HasExtraComponent
 	}
 
 	@Override
+	@SuppressWarnings("unchecked") // Because Aries Blueprint cannot handle generics
 	public void setColumnGenerators(final Map generators) {
+		super.setColumnGenerators(generators);
 		for (final Object key : generators.keySet()) {
-			super.addGeneratedColumn(key, (ColumnGenerator)generators.get(key));
 			// If any of the column generators are {@link CheckboxGenerator} instances,
 			// then connect it to the buttons.
 			try {
