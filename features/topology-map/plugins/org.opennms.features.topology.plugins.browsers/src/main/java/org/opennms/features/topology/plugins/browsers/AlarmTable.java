@@ -29,6 +29,7 @@
 package org.opennms.features.topology.plugins.browsers;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -37,6 +38,7 @@ import org.opennms.features.topology.api.HasExtraComponents;
 import org.opennms.netmgt.dao.AlarmRepository;
 
 import com.vaadin.data.Container;
+import com.vaadin.data.Container.ItemSetChangeEvent;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -166,6 +168,7 @@ public class AlarmTable extends SelectionAwareTable implements HasExtraComponent
 	private final SelectAllButton m_selectAllButton = new SelectAllButton("Select All");
 	private final ResetSelectionButton m_resetButton = new ResetSelectionButton("Clear");
 	private final AlarmRepository m_alarmRepo;
+	private Set<ItemSetChangeListener> m_itemSetChangeListeners = new HashSet<ItemSetChangeListener>();
 
 	/**
 	 *  Leave OnmsDaoContainer without generics; the Aries blueprint code cannot match up
@@ -174,6 +177,7 @@ public class AlarmTable extends SelectionAwareTable implements HasExtraComponent
 	@SuppressWarnings("unchecked")
 	public AlarmTable(final String caption, final OnmsDaoContainer container, final AlarmRepository alarmRepo) {
 		super(caption, container);
+
 		m_alarmRepo = alarmRepo;
 
 		m_ackCombo = new NativeSelect();
@@ -191,6 +195,14 @@ public class AlarmTable extends SelectionAwareTable implements HasExtraComponent
 	}
 
 	@Override
+	public void containerItemSetChange(Container.ItemSetChangeEvent event) {
+		for (ItemSetChangeListener listener : m_itemSetChangeListeners ) {
+			listener.containerItemSetChange(event);
+		}
+		super.containerItemSetChange(event);
+	}
+
+	@Override
 	@SuppressWarnings("unchecked") // Because Aries Blueprint cannot handle generics
 	public void setColumnGenerators(final Map generators) {
 		super.setColumnGenerators(generators);
@@ -202,16 +214,10 @@ public class AlarmTable extends SelectionAwareTable implements HasExtraComponent
 				m_submitButton.setCheckboxGenerator(generator);
 				m_selectAllButton.setCheckboxGenerator(generator);
 				m_resetButton.setCheckboxGenerator(generator);
+
+				m_itemSetChangeListeners.add(generator);
 			} catch (final ClassCastException e) {}
 		}
-	}
-
-	@Override
-	public void setCellStyleGenerator(final CellStyleGenerator generator) {
-		try {
-			((TableAware)generator).setTable(this);
-		} catch (final ClassCastException e) {}
-		super.setCellStyleGenerator(generator);
 	}
 
 	@Override
