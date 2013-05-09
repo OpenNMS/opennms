@@ -8,7 +8,7 @@
           
   <http access-denied-page="/accessDenied.jsp" realm="OpenNMS Realm" entry-point-ref="mappedEntryPoint">
     <intercept-url pattern="/" access="ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD"  />
-    <intercept-url pattern="/favicon.ice" access="ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD" />
+    <intercept-url pattern="/favicon.ico" access="ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD" />
     <intercept-url pattern="/logoff.jsp" access="ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD"  />
     <intercept-url pattern="/login.jsp*" access="ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD"  />
     <intercept-url pattern="/accessDenied.jsp*" access="ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD"  />
