@@ -346,6 +346,34 @@ public class SnmpValueTest {
         }
     }
 
+    @Test
+    public void testNms5281Unicode() throws Exception {
+        for (final SnmpValueFactory factory : m_factories) {
+            final String text = "Laden Sie alle verfügbaren Upgrades und Hotfixes für die Version von Backup Exec herunter, die Sie installieren möchten.";
+            final byte[] rawBytes = text.getBytes();
+            final String className = factory.getClass().getName();
+
+            final SnmpValue value = factory.getOctetString(rawBytes);
+
+            assertTrue(className + ": isDisplayable should return true", value.isDisplayable());
+            assertEquals(className + ": getOctetString to String should return " + text, text, value.toString());
+            assertEquals(className + ": getOctetString to DisplayString should return " + text, text, value.toDisplayString());
+        }
+    }
+
+    @Test
+    public void testNms5281NullBehavior() throws Exception {
+        for (final SnmpValueFactory factory : m_factories) {
+            final String text = "Laden Sie alle verfügbaren \0 von Backup Exec herunter, die Sie installieren möchten.";
+            final byte[] rawBytes = text.getBytes();
+            final String className = factory.getClass().getName();
+
+            final SnmpValue value = factory.getOctetString(rawBytes);
+
+            assertFalse(className + ": isDisplayable should return false", value.isDisplayable());
+        }
+    }
+
     private void doNumericCheck(final String className, final String methodName, final SnmpValue result, final String expectedResultString, final Long expectedResultNumber) {
         assertTrue(className + ": " + methodName + " isDisplayable should be true", result.isDisplayable());
         assertEquals(className + ": " + methodName + " to int should return " + expectedResultString, expectedResultNumber.intValue(), result.toInt());
