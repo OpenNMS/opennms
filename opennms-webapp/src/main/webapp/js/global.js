@@ -53,3 +53,17 @@
 		$("#backgroundPopup").fadeIn(0001); 
 		$("body").css("overflow-y","hidden");
 	}
+	// Call event export action
+	function callEventExportAction() {
+		var radios = document.getElementsByName("format");
+		for (var i = 0; i < radios.length; i++) {       
+			if (radios[i].checked) {
+			    document.acknowledge_form.format.value = radios[i].value;
+			    break;
+			}
+		}
+	hideTransBackground();
+	document.acknowledge_form.submit();
+	//getProgressBar();
+	//timerId = setInterval(function(){exportStatus()},1000);
+	}

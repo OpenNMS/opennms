@@ -306,6 +306,19 @@
         <property name="redirectView" value="/event/list.htm"/>
     </bean>
 
+<!-- Bean for EventPurgeController-->
+    <bean name="/event/purgeEvents" class="org.opennms.web.controller.event.EventPurgeController">
+	<property name="redirectView" value="/event/list.htm"/>
+	<property name="webEventRepository" ref="webEventRepository"/>
+        <property name="alarmRepository" ref="alarmRepository"/>
+    </bean>
+
+<!-- Bean for EventExportController-->
+    <bean name="/event/exportEvents" class="org.opennms.web.controller.event.EventExportController">
+	<property name="webEventRepository" ref="webEventRepository"/>
+	<property name="reportWrapperService" ref="reportWrapperService"/>
+    </bean>
+    
     <bean name="/event/acknowledgeByFilter" class="org.opennms.web.controller.event.AcknowledgeEventByFilterController">
         <property name="webEventRepository" ref="webEventRepository"/>
         <property name="redirectView" value="/event/list.htm"/>
@@ -617,6 +630,9 @@
     <bean name="/report/database/index.htm"
           class="org.springframework.web.servlet.mvc.UrlFilenameViewController"/>
 
+            <bean name="/report/historical/index.htm"
+          class="org.springframework.web.servlet.mvc.UrlFilenameViewController"/>        
+
     <!-- Replaced by ReportListController
    <bean name="/report/database/batchList.htm"
            class="org.opennms.web.controller.BatchReportListController">
@@ -636,6 +652,22 @@
         <property name="databaseReportListService" ref="databaseReportListService"/>
         <property name="pageSize" value="10"/>
     </bean>
+
+	<bean name="/report/historical/alarmReportList.htm"
+           class="org.opennms.web.controller.AlarmReportListController">
+     </bean>
+ 
+       <bean name="/report/historical/alarmReportDownload.htm"
+           class="org.opennms.web.controller.AlarmReportDownloadController">
+     </bean>
+     
+     	<bean name="/report/historical/eventReportList.htm"
+           class="org.opennms.web.controller.EventReportListController">
+     </bean>
+ 
+       <bean name="/report/historical/eventReportDownload.htm"
+           class="org.opennms.web.controller.EventReportDownloadController">
+     </bean>
 
     <bean name="/report/database/batchReport.htm"
           class="org.opennms.web.report.database.BatchReportFlowHander"/>

@@ -348,4 +348,14 @@ public class AvailabilityReportService implements ReportService {
     public void setParameterConversionService(ParameterConversionService parameterConversionService) {
         m_parameterConversionService = parameterConversionService;
     }
+
+	@Override
+	public void runAndRender(List<Integer> eventIds, String reportId,
+			ReportFormat reportFormat, OutputStream outputStream)
+			throws ReportException {
+		throw new UnsupportedOperationException("Not supported yet. AvailabilityReportService is deprecated.");
+		
+	}
+
+
 }

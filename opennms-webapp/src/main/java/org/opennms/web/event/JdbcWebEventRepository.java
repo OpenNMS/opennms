@@ -285,4 +285,9 @@ public class JdbcWebEventRepository implements WebEventRepository, InitializingB
         return m_simpleJdbcTemplate.getJdbcOperations();
     }
 
+	@Override
+	public void purgeEvents(List<Integer> eventIds) {
+		throw new UnsupportedOperationException("Not supported yet. JdbcWebAlarmRepositony is deprecated.");		
+	}
+
 }

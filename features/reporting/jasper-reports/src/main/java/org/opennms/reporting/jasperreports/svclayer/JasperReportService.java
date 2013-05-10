@@ -694,6 +694,117 @@ public class JasperReportService implements ReportService {
     /**
      * {@inheritDoc}
      */
+	@Override
+	public void runAndRender(List<Integer> eventIds, String reportId,
+			ReportFormat format, OutputStream outputStream)
+			throws ReportException {
+
+    	
+    	// Get the event report details
+        ArrayList<EventReportStructure> eventReportList = new ArrayList<EventReportStructure>();
+        eventReportList = getEventReportList(eventIds);
+		
+        JasperReport jasperReport = null;
+        JasperPrint jasperPrint = null;
+        HashMap<String, Object> reportParms = new HashMap<String, Object>();
+        try {
+        	JasperDesign jasperDesign = JRXmlLoader.load(m_globalReportRepository.getTemplateStream(reportId));
+            jasperReport = JasperCompileManager.compileReport(jasperDesign);
+        } catch (JRException e) {
+            log.error("unable to compile jasper report", e);
+            throw new ReportException("unable to compile jasperReport", e);
+        }
+		
+        if ("null".equalsIgnoreCase(m_globalReportRepository.getEngine(reportId))) {
+            try {
+         		JRBeanCollectionDataSource beanColDataSource = new JRBeanCollectionDataSource(eventReportList);
+         		jasperPrint = JasperFillManager.fillReport(jasperReport,reportParms,beanColDataSource);
+         		
+         		if(ReportFormat.PDF == format || ReportFormat.CSV == format ){
+         			exportReport(format, jasperPrint, outputStream);
+         		} else if(ReportFormat.HTML == format) {
+         			exportReportToHtml(jasperPrint,outputStream);
+         		} else if(ReportFormat.XLS == format){
+         			exportReportToXls(jasperPrint,outputStream);
+         		} else {
+                	log.error("Unknown file format : " + format);
+                }
+            } catch (JRException e) {
+                log.error("jasper report exception ", e);
+                throw new ReportException("unable to run or render jasperReport",e);
+            }
+        }
+        
+        // Create the event report folder if it's not exist already
+        String baseDir = System.getProperty("opennms.report.dir")+"/event";
+        File eventReportfolder = new File(baseDir);  
+		if (!eventReportfolder.exists()){  
+			if(eventReportfolder.mkdir()){
+				System.out.println("The event report folder is successfully created in "+baseDir+" location");
+			} else {
+				System.out.println("unable to creat the event report folder in "+baseDir+" location");
+			}
+		}else{  
+			System.out.println("The event report folder is already exist in server location");
+		}
+		
+		// Store the event report into the local server
+ 		String outputFileName = new String(baseDir + "/" + jasperReport.getName()+ new SimpleDateFormat("_MMddyyyy_HHmmss").format(new Date())+"."+String.valueOf(format).toLowerCase());
+ 		OutputStream outputReportStream = null;
+		try{
+			outputReportStream = new FileOutputStream (outputFileName);
+			if(ReportFormat.PDF == format || ReportFormat.CSV == format ){
+     			exportReport(format, jasperPrint, outputReportStream);
+     		} else if(ReportFormat.HTML == format) {
+     			exportReportToHtml(jasperPrint,outputReportStream);
+     		} else if(ReportFormat.XLS == format){
+     			exportReportToXls(jasperPrint,outputReportStream);
+     		} else {
+     			log.error("Unknown file format : " + format);
+     		}
+		} catch(JRException e){
+			log.error("jasper report exception ", e);
+		} catch (FileNotFoundException e) {
+			log.error("unable to find the server location ", e);
+		}
+	}
+	
+	public ArrayList<EventReportStructure> getEventReportList(List<Integer> eventIds){
+    	
+		// Date format for an alarm events
+	    SimpleDateFormat formater = new SimpleDateFormat("MM/dd/yy hh:mm:ss aaa",Locale.ENGLISH);
+	    
+	    ArrayList<EventReportStructure> eventReportList = new ArrayList<EventReportStructure>();
+		for(Integer eventId : eventIds){
+			
+			// Get the events by it's id's
+			OnmsEvent onmsEvent = m_eventDao.get(eventId);
+			eventReportList.add(getEventReportStructure(onmsEvent));
+		}
+		return eventReportList;
+    }
+
+	 public EventReportStructure getEventReportStructure(OnmsEvent onmsEvent){
+	    	
+	    	// Date format for an events
+		 SimpleDateFormat formater = new SimpleDateFormat("MM/dd/yy hh:mm:ss aaa",Locale.ENGLISH);
+		    
+		 EventReportStructure eventJasperReportStructure = new EventReportStructure();
+		 eventJasperReportStructure.setNodeLabel(onmsEvent.getNodeLabel());
+		 eventJasperReportStructure.setEventId(onmsEvent.getId());
+		 OnmsAlarm onmsAlarm = onmsEvent.getAlarm();
+		 if(onmsAlarm != null)
+			 eventJasperReportStructure.setAlarmId(onmsAlarm.getId());
+		 eventJasperReportStructure.setEventUEI(onmsEvent.getEventUei());
+		 eventJasperReportStructure.setCreateTime(String.valueOf(formater.format(onmsEvent.getEventCreateTime())));
+		 eventJasperReportStructure.setEventLogMsg(onmsEvent.getEventLogMsg());
+		 return eventJasperReportStructure;
+	 }
+	 
+	public void setEventDao(EventDao m_eventDao) {
+		this.m_eventDao = m_eventDao;
+	}
+
     public void runAndRender(List<Integer> alarmIds,HashMap<Integer, List<Integer>> eventIdsForAlarms ,
     		String reportId, ReportFormat format, OutputStream outputStream) throws ReportException {
     	

@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="event_report" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="30" rightMargin="30" topMargin="30" bottomMargin="30" whenResourceMissingType="Empty">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.pageFooter" value="pageFooter"/>
+	<property name="net.sf.jasperreports.export.html.exclude.origin.band.pageFooter" value="pageFooter"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.band.pageFooter" value="pageFooter"/>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<field name="nodeLabel" class="java.lang.String">
+		<fieldDescription><![CDATA[nodeLabel]]></fieldDescription>
+	</field>
+	<field name="eventId" class="java.lang.Integer">
+		<fieldDescription><![CDATA[eventId]]></fieldDescription>
+	</field>
+	<field name="alarmId" class="java.lang.Integer">
+		<fieldDescription><![CDATA[alarmId]]></fieldDescription>
+	</field>	
+	<field name="eventUEI" class="java.lang.String">
+		<fieldDescription><![CDATA[eventUEI]]></fieldDescription>
+	</field>
+	<field name="createTime" class="java.lang.String">
+		<fieldDescription><![CDATA[createTime]]></fieldDescription>
+	</field>
+	<field name="eventLogMsg" class="java.lang.String">
+		<fieldDescription><![CDATA[eventLogMsg]]></fieldDescription>
+	</field>
+	<title>
+		<band height="72">
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="56" width="64" height="14" forecolor="#FFFFFF" backcolor="#999999"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[  Node Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement  mode="Opaque" x="64" y="56" width="45" height="14" forecolor="#FFFFFF" backcolor="#999999"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Event Id]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="109" y="56" width="45" height="14" forecolor="#FFFFFF" backcolor="#999999"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Alarm Id]]></text>
+			</staticText>
+			<staticText>
+				<reportElement  mode="Opaque" x="154" y="56" width="156" height="14" forecolor="#FFFFFF" backcolor="#999999"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Event UEI]]></text>
+			</staticText>
+			<staticText>
+				<reportElement  mode="Opaque" x="310" y="56" width="79" height="14" forecolor="#FFFFFF" backcolor="#999999"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ Creation Time]]></text>
+			</staticText>
+			<staticText>
+				<reportElement  mode="Opaque" x="389" y="56" width="146" height="14" forecolor="#FFFFFF" backcolor="#999999"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Log Message]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="12" width="535" height="20" forecolor="#3399FF"/>
+				<textElement verticalAlignment="Bottom">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Event Report]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" pattern="MM/dd/yyyy hh:mm:ss a">
+				<reportElement x="0" y="32" width="535" height="12" forecolor="#3399FF"/>
+				<textElement>
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression class="java.util.Date"><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="54" width="535" height="1"/>
+				<graphicElement>
+					<pen lineWidth="0.7"/>
+				</graphicElement>
+			</line>
+		</band>
+	</title>
+	<detail>
+		<band height="15">
+			<rectangle>
+				<reportElement stretchType="RelativeToBandHeight" x="0" y="0" width="536" height="15"/>
+				<graphicElement>
+					<pen lineWidth="0.7"/>
+				</graphicElement>
+			</rectangle>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="0" y="0" width="64" height="15"/>
+				<textElement textAlignment="Left" verticalAlignment="Top">
+					<font size="9" isBold="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA["  "+(($F{nodeLabel} != null) ?  $F{nodeLabel} : "-")]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="64" y="0" width="45" height="15"/>
+				<textElement textAlignment="Left" verticalAlignment="Top">
+					<font size="9" isBold="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[($F{eventId} != null) ? String.valueOf($F{eventId}) : "-"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="109" y="0" width="45" height="15"/>
+				<textElement textAlignment="Left" verticalAlignment="Top">
+				<font size="9" isBold="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[($F{alarmId} != null && $F{alarmId} != 0) ? String.valueOf($F{alarmId}) : "-"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="154" y="0" width="156" height="15"/>
+				<textElement textAlignment="Left" verticalAlignment="Top">
+					<font size="9" isBold="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[($F{eventUEI} != null) ? $F{eventUEI} : "-"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="310" y="0" width="79" height="15"/>
+				<textElement textAlignment="Left" verticalAlignment="Top">
+					<font size="9" isBold="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[" "+(($F{createTime} != null) ? $F{createTime} : "-")]]></textFieldExpression>
+			</textField>
+				<textField isStretchWithOverflow="true">
+				<reportElement x="389" y="0" width="146" height="15"/>
+				<textElement textAlignment="Left" verticalAlignment="Top">
+					<font size="9" isBold="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[" "+(($F{eventLogMsg} != null) ? $F{eventLogMsg} : "-")]]></textFieldExpression>
+			</textField>
+			
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="17">
+			<textField>
+				<reportElement x="413" y="2" width="80" height="14"/>
+				<textElement textAlignment="Right">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="493" y="2" width="40" height="14"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="1" y="1" width="535" height="1"/>
+				<graphicElement>
+					<pen lineWidth="0.7"/>
+				</graphicElement>
+			</line>
+		</band>
+	</pageFooter>
+</jasperReport>

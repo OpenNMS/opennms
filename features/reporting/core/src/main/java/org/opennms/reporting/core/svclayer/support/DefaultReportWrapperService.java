@@ -73,7 +73,6 @@ public class DefaultReportWrapperService implements ReportWrapperService {
     private ReportStoreService m_reportStoreService;
 
     private static final String LOG4J_CATEGORY = "OpenNMS.Report";
-    
 
     /**
      * <p>Constructor for DefaultReportWrapperService.</p>
@@ -310,4 +309,15 @@ public class DefaultReportWrapperService implements ReportWrapperService {
 			log.error("failed to run or render report: " + reportId, reportException);
 		}
     }
+    @Override
+	public void getEventReport(List<Integer> eventIds, String reportId,
+			ReportFormat reportFormat, OutputStream outputStream) {
+
+    	try {
+    		getReportService(reportId).runAndRender(eventIds,reportId,reportFormat,outputStream);
+		} catch (ReportException reportException) {
+			log.error("failed to run or render report: " + reportId, reportException);
+		}
+    
+	}
 }

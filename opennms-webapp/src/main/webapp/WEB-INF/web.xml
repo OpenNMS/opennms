@@ -1065,6 +1065,14 @@
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>dispatcher</servlet-name>
+    <url-pattern>/event/purgeEvents</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>dispatcher</servlet-name>
+    <url-pattern>/event/exportEvents</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>dispatcher</servlet-name>
     <url-pattern>/event/acknowledge</url-pattern>
   </servlet-mapping>
   <servlet-mapping>

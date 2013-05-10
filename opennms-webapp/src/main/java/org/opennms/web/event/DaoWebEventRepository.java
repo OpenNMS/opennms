@@ -306,4 +306,30 @@ public class DaoWebEventRepository implements WebEventRepository, InitializingBe
     }
 
 
+	@Override
+	public void purgeEvents(List<Integer> eventIds) {
+		
+		List<String> deleteSuccessStatus = new ArrayList<String>();
+		List<String> deleteFailStatus = new ArrayList<String>();
+	
+		log().debug("Event Id's received : "+eventIds);
+		for(Integer eventId : eventIds){
+			//Delete an event by Id
+			if(m_eventDao.deleteEventById(eventId)>0){
+				
+				//Delete the events by Id
+			
+					if(m_eventDao.deleteEventById(eventId)>0){
+						deleteSuccessStatus.add(String.valueOf(eventId));
+					}else{
+						log().warn("An Event id "+eventId+" does not exist in DB");
+					}
+			
+					log().debug("The Event Id's "+deleteSuccessStatus+" are successfully deleted from the DB for event id "+eventId);
+				
+			}else{
+				log().warn("Event id "+eventId+" does not exist in db");
+			}
+		}
+	}
 }

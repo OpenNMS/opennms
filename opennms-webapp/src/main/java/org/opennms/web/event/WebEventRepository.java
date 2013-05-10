@@ -29,6 +29,7 @@
 package org.opennms.web.event;
 
 import java.util.Date;
+import java.util.List;
 
 import org.opennms.web.event.filter.EventCriteria;
 
@@ -101,4 +102,6 @@ public interface WebEventRepository {
      * <p>unacknowledgeAll</p>
      */
     public abstract void unacknowledgeAll();
+    
+    public abstract void purgeEvents(List<Integer> eventIds);
 }
