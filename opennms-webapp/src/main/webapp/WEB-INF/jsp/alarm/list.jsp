@@ -479,7 +479,7 @@
           </c:if>
           </td>
           <td class="divider"><%=alarms[i].getLogMsg()%></td>
-       
+        </tr> 
       <% } /*end for*/%>
 
       </table>
