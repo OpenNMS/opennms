@@ -31,22 +31,23 @@ package org.opennms.netmgt.capsd;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.opennms.core.db.DataSourceFactory;
-import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.InetAddressComparator;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.dao.hibernate.IpInterfaceDaoHibernate;
+import org.opennms.netmgt.model.OnmsIpInterface;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
 
 /**
  * This class represents a singular instance that is used to check address to
@@ -57,6 +58,7 @@ import org.opennms.netmgt.EventConstants;
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  * 
  */
+@Component
 final class KnownIPMgr {
     /**
      * The SQL statement used to extract the list of currently known IP
@@ -74,6 +76,7 @@ final class KnownIPMgr {
      */
     private static Map<InetAddress, Object> m_known = new TreeMap<InetAddress, Object>(new InetAddressComparator());
 
+    private static IpInterfaceDaoHibernate m_ipInterfaceDao;
     /**
      * This class is used to encapsulate the elements of importants from the IP
      * interface table in the OpenNMS database. The main elements are the
@@ -192,18 +195,7 @@ final class KnownIPMgr {
          *             Thrown if an error occurs updating the database entry.
          */
         void update(Connection db) throws SQLException {
-            final DBUtils d = new DBUtils(getClass());
-            try {
-                PreparedStatement stmt = db.prepareStatement(KnownIPMgr.IP_UPDATE_TIME_SQL);
-                d.watch(stmt);
-                stmt.setTimestamp(1, m_lastCheck);
-                stmt.setString(2, InetAddressUtils.str(m_interface));
-                stmt.setInt(3, m_nodeid);
-
-                stmt.executeUpdate();
-            } finally {
-                d.cleanUp();
-            }
+            m_ipInterfaceDao.updateLastPollTime(m_lastCheck, InetAddressUtils.str(m_interface), m_nodeid);
         }
     }
 
@@ -218,7 +210,10 @@ final class KnownIPMgr {
     private KnownIPMgr() {
         throw new UnsupportedOperationException("Construction is not supported");
     }
-
+    @Autowired
+    private KnownIPMgr(IpInterfaceDaoHibernate m_ipInterfaceDao) {
+        this.m_ipInterfaceDao = m_ipInterfaceDao;
+    }
     /**
      * Clears and synchronizes the internal known IP address cache with the
      * current information contained in the database. To synchronize the cache
@@ -235,54 +230,28 @@ final class KnownIPMgr {
      */
     static synchronized void dataSourceSync() throws SQLException {
         ThreadCategory log = ThreadCategory.getInstance(KnownIPMgr.class);
+        List<OnmsIpInterface> ipInterfaceList = m_ipInterfaceDao.findAll();
 
-        // Get the database connection
-        //
-        Connection c = null;
-        try {
-            // open the connection
+        m_known.clear();
+        for(OnmsIpInterface ipInterface : ipInterfaceList) {
+            // extract the IP address.
             //
-            c = DataSourceFactory.getInstance().getConnection();
-
-            // Run with it
-            //
-            // c.setReadOnly(true);
-
-            Statement s = c.createStatement();
-            ResultSet rs = s.executeQuery(IP_LOAD_SQL);
-
-            if (rs != null) {
-                m_known.clear();
-                while (rs.next()) {
-                    // extract the IP address.
-                    //
-                    String ipstr = rs.getString(1);
-                    InetAddress addr = null;
-                    addr = InetAddressUtils.addr(ipstr);
-                    if (addr == null) {
-                        log.warn("KnownIPMgr: failed to convert address " + ipstr);
-                        continue;
-                    }
-
-                    // get the node identifier
-                    //
-                    int nid = rs.getInt(2);
-
-                    // get the last check time
-                    //
-                    Timestamp lastCheck = rs.getTimestamp(3);
-                    m_known.put(addr, new IPInterface(addr, nid, lastCheck));
-                }
-                rs.close();
+            String ipstr = ipInterface.getIpAddress().getHostAddress();
+            InetAddress addr = null;
+            addr = InetAddressUtils.addr(ipstr);
+            if (addr == null) {
+                log.warn("KnownIPMgr: failed to convert address " + ipstr);
+                continue;
             }
 
-            s.close();
-        } finally {
-            try {
-                if (c != null)
-                    c.close();
-            } catch (SQLException sqlE) {
-            }
+            // get the node identifier
+            //
+            int nid = ipInterface.getNode().getId();
+
+            // get the last check time
+            //
+            Timestamp lastCheck = new Timestamp(ipInterface.getIpLastCapsdPoll().getTime());
+            m_known.put(addr, new IPInterface(addr, nid, lastCheck));
         }
     }
 
@@ -356,6 +325,11 @@ final class KnownIPMgr {
     static synchronized InetAddress[] knownSet() {
         InetAddress[] set = new InetAddress[m_known.size()];
         return m_known.keySet().toArray(set);
+    }
+
+    @Autowired
+    public void setIpInterfaceDao(IpInterfaceDaoHibernate m_ipInterfaceDao) {
+        this.m_ipInterfaceDao = m_ipInterfaceDao;
     }
 
 } // end KnownIPMgr

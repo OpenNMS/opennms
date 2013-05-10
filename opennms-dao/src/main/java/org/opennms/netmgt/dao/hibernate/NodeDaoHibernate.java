@@ -380,4 +380,17 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
     	nextNodeId = findObjects(Integer.class, "select n.id from OnmsNode as n where n.id < ? and n.type != 'D' order by n.id desc limit 1", nodeId).get(0);
     	return nextNodeId;
     }
+    
+    public List<OnmsNode> getNodeStatus(String label) {
+        //SELECT nodeid, dpname FROM node WHERE nodelabel = ? AND nodeType !='D'
+        String query = "from OnmsNode as n where n.label = ? and n.type != 'D'";
+        return find(query, label);
+    }
+    
+    public int updateNodeStatus(long nodeId) {
+        //UPDATE node SET nodeType = 'D' WHERE nodeid = ? and nodeType != 'D'
+        String query = "update OnmsNode as n set n.type = 'D' where n.label = ? and n.type != 'D'";
+        return queryInt(query, nodeId);
+    }
+    
 }

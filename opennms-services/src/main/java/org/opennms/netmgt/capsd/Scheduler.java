@@ -47,6 +47,10 @@ import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.CapsdConfigFactory;
+import org.opennms.netmgt.dao.hibernate.IpInterfaceDaoHibernate;
+import org.opennms.netmgt.dao.hibernate.NodeDaoHibernate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 /**
  * This class implements a simple scheduler to ensure that Capsd rescans occurs
@@ -114,6 +118,9 @@ final class Scheduler implements Runnable, PausableFiber {
 
     private RescanProcessorFactory m_rescanProcessorFactory;
 
+    private NodeDaoHibernate m_nodeDaoHibernate;
+
+    private IpInterfaceDaoHibernate m_ipInterfaceDaoHibernate;
     /**
      * This class encapsulates the information about a node necessary to
      * schedule the node for rescans.
@@ -200,7 +207,7 @@ final class Scheduler implements Runnable, PausableFiber {
         m_worker = null;
 
         m_knownNodes = Collections.synchronizedList(new LinkedList<NodeInfo>());
-        
+
         // Get rescan interval from configuration factory
         //
         m_interval = CapsdConfigFactory.getInstance().getRescanFrequency();
@@ -232,6 +239,12 @@ final class Scheduler implements Runnable, PausableFiber {
             log().debug("Scheduler: done loading known nodes, node count: " + m_knownNodes.size());
     }
 
+    @Autowired
+    public Scheduler(NodeDaoHibernate m_nodeDaoHibernate, IpInterfaceDaoHibernate m_ipInterfaceDaoHibernate) {
+        this.m_nodeDaoHibernate = m_nodeDaoHibernate;
+        this.m_ipInterfaceDaoHibernate = m_ipInterfaceDaoHibernate;
+    }
+
     private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
@@ -244,48 +257,25 @@ final class Scheduler implements Runnable, PausableFiber {
      *             if there is a problem accessing the database.
      */
     private void loadKnownNodes() throws SQLException {
-        Connection db = null;
-
-        PreparedStatement nodeStmt = null;
-        PreparedStatement ifStmt = null;
-        ResultSet rs = null;
-        ResultSet rset = null;
-        
         final DBUtils d = new DBUtils(getClass());
         try {
-            db = DataSourceFactory.getInstance().getConnection();
-            d.watch(db);
-            // Prepare SQL statements in advance
-            //
-            nodeStmt = db.prepareStatement(SQL_RETRIEVE_NODES);
-            d.watch(nodeStmt);
-            ifStmt = db.prepareStatement(SQL_GET_LAST_POLL_TIME);
-            d.watch(ifStmt);
 
+            List<Integer> nodeIdList = (List<Integer>) m_nodeDaoHibernate.getNodeIds();
             // Retrieve non-deleted nodes from the node table in the database
             //
-            rs = nodeStmt.executeQuery();
-            d.watch(rs);
-
-            while (rs.next()) {
+            for (Integer nodeId : nodeIdList ) {
                 // Retrieve an interface from the ipInterface table in
                 // the database for its last polled/scanned time
 
-                int nodeId = rs.getInt(1);
-                ifStmt.setInt(1, nodeId); // set nodeid
                 if (log().isDebugEnabled())
                     log().debug("loadKnownNodes: retrieved nodeid " + nodeId + ", now getting last poll time.");
 
-                rset = ifStmt.executeQuery();
-                d.watch(rs);
-                if (rset.next()) {
-                    Timestamp lastPolled = rset.getTimestamp(1);
-                    if (lastPolled != null && rset.wasNull() == false) {
-                        if (log().isDebugEnabled())
-                            log().debug("loadKnownNodes: adding node " + nodeId + " with last poll time " + lastPolled);
-                        NodeInfo nodeInfo = new NodeInfo(nodeId, lastPolled, m_interval);
-                        m_knownNodes.add(nodeInfo);
-                    }
+                Date lastPolled = m_ipInterfaceDaoHibernate.findLastPollTimeByNodeId(nodeId);
+                if (lastPolled != null ) {
+                    if (log().isDebugEnabled())
+                        log().debug("loadKnownNodes: adding node " + nodeId + " with last poll time " + lastPolled);
+                    NodeInfo nodeInfo = new NodeInfo(nodeId, lastPolled, m_interval);
+                    m_knownNodes.add(nodeInfo);
                 } else {
                     if (log().isDebugEnabled())
                         log().debug("Node w/ nodeid " + nodeId + " has no managed interfaces from which to retrieve a last poll time...it will not be scheduled.");
@@ -294,7 +284,6 @@ final class Scheduler implements Runnable, PausableFiber {
         } finally {
             d.cleanUp();
         }
-
     }
 
     /**
@@ -310,23 +299,13 @@ final class Scheduler implements Runnable, PausableFiber {
     void scheduleNode(int nodeId) throws SQLException {
         // Retrieve last poll time for the node from the ipInterface
         // table.
-        Connection db = null;
         final DBUtils d = new DBUtils(getClass());
         try {
-            db = DataSourceFactory.getInstance().getConnection();
-            d.watch(db);
-            PreparedStatement ifStmt = db.prepareStatement(SQL_GET_LAST_POLL_TIME);
-            d.watch(ifStmt);
-            ifStmt.setInt(1, nodeId);
-            ResultSet rset = ifStmt.executeQuery();
-            d.watch(rset);
-            if (rset.next()) {
-                Timestamp lastPolled = rset.getTimestamp(1);
-                if (lastPolled != null && rset.wasNull() == false) {
-                    if (log().isDebugEnabled())
-                        log().debug("scheduleNode: adding node " + nodeId + " with last poll time " + lastPolled);
-                    m_knownNodes.add(new NodeInfo(nodeId, lastPolled, m_interval));
-                }
+            Date lastPolled = m_ipInterfaceDaoHibernate.findLastPollTimeByNodeId(nodeId);
+            if (lastPolled != null) {
+                if (log().isDebugEnabled())
+                    log().debug("scheduleNode: adding node " + nodeId + " with last poll time " + lastPolled);
+                m_knownNodes.add(new NodeInfo(nodeId, lastPolled, m_interval));
             } else
                 log().warn("scheduleNode: Failed to retrieve last polled time from database for nodeid " + nodeId);
         } finally {
@@ -617,5 +596,15 @@ final class Scheduler implements Runnable, PausableFiber {
         }
 
     } // end run
+    
+    @Autowired
+    public void setNodeDao(NodeDaoHibernate m_nodeDaoHibernate) {
+        this.m_nodeDaoHibernate = m_nodeDaoHibernate;
+    }
 
+    @Autowired
+    public void setIpInterfaceDao(
+            IpInterfaceDaoHibernate m_ipInterfaceDaoHibernate) {
+        this.m_ipInterfaceDaoHibernate = m_ipInterfaceDaoHibernate;
+    }
 }

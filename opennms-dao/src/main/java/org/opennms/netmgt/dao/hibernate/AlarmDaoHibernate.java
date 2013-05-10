@@ -66,5 +66,10 @@ public class AlarmDaoHibernate extends AbstractDaoHibernate<OnmsAlarm, Integer> 
             "ORDER BY min(alarm.lastEventTime) DESC, node.label ASC"
         );
     }
+    
+    public int deleteAlarm(long nodeId) {
+        String query = "Delete OnmsAlarm as alarm where alarm.node.id = ?";
+        return queryInt(query, nodeId);
+    }
 
 }
