@@ -16,9 +16,15 @@
 
 package org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui;
 
-import java.util.List;
-import java.util.ListIterator;
-
+import com.google.gwt.core.client.JsArrayString;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.RepeatingCommand;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.dom.client.DivElement;
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.ui.Widget;
 import org.discotools.gwt.leaflet.client.Options;
 import org.discotools.gwt.leaflet.client.controls.zoom.Zoom;
 import org.discotools.gwt.leaflet.client.crs.epsg.EPSG3857;
@@ -37,18 +43,13 @@ import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.controls.alar
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.controls.alarm.AlarmControlOptions;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.controls.search.SearchControl;
 
-import com.google.gwt.core.client.JsArrayString;
-import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.core.client.Scheduler.RepeatingCommand;
-import com.google.gwt.core.client.Scheduler.ScheduledCommand;
-import com.google.gwt.dom.client.DivElement;
-import com.google.gwt.dom.client.Document;
-import com.google.gwt.dom.client.Style.Unit;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.ui.Widget;
-import com.vaadin.client.VConsole;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-public class GWTMapWidget extends Widget implements MarkerProvider, SearchConsumer {
+@SuppressWarnings("NonJREEmulationClassesInClientCode")
+public class NodeMapWidget extends Widget implements MarkerProvider, SearchConsumer {
     private final DivElement m_div;
 
     private Map m_map;
@@ -69,8 +70,13 @@ public class GWTMapWidget extends Widget implements MarkerProvider, SearchConsum
 
     private MarkerFilter m_filter;
 
-    public GWTMapWidget() {
+    private Logger logger = Logger.getLogger(getClass().getName());
+
+    public NodeMapWidget() {
         super();
+        setStyleName("v-openlayers");
+        logger.log(Level.INFO, "div ID = " + getElement().getId());
+        
         m_div = Document.get().createDivElement();
         m_div.setId("gwt-map");
         m_div.getStyle().setWidth(100, Unit.PCT);
@@ -86,10 +92,10 @@ public class GWTMapWidget extends Widget implements MarkerProvider, SearchConsum
                     return true;
 
                 final String searchString = m_searchString.toLowerCase();
-                // VConsole.log("searching: search string = " + searchString);
+                // logger.log(Level.INFO, "searching: search string = " + searchString);
 
                 // /// handle foo: style search strings for text properties
-                // VConsole.log("checking property:search");
+                // logger.log(Level.INFO, "checking property:search");
                 for (final String propertyName : marker.getTextPropertyNames()) {
                     final String lowerPropertyName = propertyName.toLowerCase();
                     if (searchString.startsWith(lowerPropertyName + ":")) {
@@ -153,7 +159,7 @@ public class GWTMapWidget extends Widget implements MarkerProvider, SearchConsum
 
         };
         m_markers = new MarkerContainer(m_filter);
-        VConsole.log("GWTMapWidget initialized");
+        logger.log(Level.INFO, "NodeMapWidget initialized");
     }
 
     @Override
@@ -174,7 +180,7 @@ public class GWTMapWidget extends Widget implements MarkerProvider, SearchConsum
     }
 
     private void initializeMap(final String divId) {
-        VConsole.log("initializing map");
+        logger.log(Level.INFO, "initializing map");
 
         createMap(divId);
         // createGoogleLayer();
@@ -188,7 +194,7 @@ public class GWTMapWidget extends Widget implements MarkerProvider, SearchConsum
 
         m_searchControl.focus();
 
-        VConsole.log("finished initializing map");
+        logger.log(Level.INFO, "finished initializing map");
     }
 
     @SuppressWarnings("unused")
@@ -197,7 +203,7 @@ public class GWTMapWidget extends Widget implements MarkerProvider, SearchConsum
         final Options googleOptions = new Options();
         googleOptions.setProperty("crs", projection);
 
-        VConsole.log("adding Google layer");
+        logger.log(Level.INFO, "adding Google layer");
         m_layer = new GoogleLayer("SATELLITE", googleOptions);
         m_map.addLayer(m_layer, true);
     }
@@ -212,7 +218,7 @@ public class GWTMapWidget extends Widget implements MarkerProvider, SearchConsum
     }
 
     private void addTileLayer() {
-        VConsole.log("adding tile layer");
+        logger.log(Level.INFO, "adding tile layer");
         final String attribution = "Map data &copy; <a tabindex=\"-1\" href=\"http://openstreetmap.org\">OpenStreetMap</a> contributors, <a tabindex=\"-1\" href=\"http://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Tiles &copy; <a tabindex=\"-1\" href=\"http://www.mapquest.com/\" target=\"_blank\">MapQuest</a> <img src=\"http://developer.mapquest.com/content/osm/mq_logo.png\" />";
         final String url = "http://otile{s}.mqcdn.com/tiles/1.0.0/{type}/{z}/{x}/{y}.png";
         final Options tileOptions = new Options();
@@ -224,7 +230,7 @@ public class GWTMapWidget extends Widget implements MarkerProvider, SearchConsum
     }
 
     private void addMarkerLayer() {
-        VConsole.log("adding marker cluster layer");
+        logger.log(Level.INFO, "adding marker cluster layer");
         final Options markerClusterOptions = new Options();
         markerClusterOptions.setProperty("zoomToBoundsOnClick", false);
         markerClusterOptions.setProperty("iconCreateFunction", new IconCreateCallback());
@@ -237,13 +243,13 @@ public class GWTMapWidget extends Widget implements MarkerProvider, SearchConsum
     }
 
     private void addSearchControl() {
-        VConsole.log("adding search control");
+        logger.log(Level.INFO, "adding search control");
         m_searchControl = new SearchControl(this, m_markers);
         m_map.addControl(m_searchControl);
     }
 
     private void addAlarmControl() {
-        VConsole.log("adding alarm control");
+        logger.log(Level.INFO, "adding alarm control");
         final AlarmControlOptions options = new AlarmControlOptions();
         options.setPosition("topleft");
         final AlarmControl alarmControl = new AlarmControl(this, options);
@@ -251,7 +257,7 @@ public class GWTMapWidget extends Widget implements MarkerProvider, SearchConsum
     }
 
     private void addZoomControl() {
-        VConsole.log("adding zoom control");
+        logger.log(Level.INFO, "adding zoom control");
         m_map.addControl(new Zoom(new Options()));
     }
 
@@ -265,17 +271,17 @@ public class GWTMapWidget extends Widget implements MarkerProvider, SearchConsum
 
     public void refresh() {
         if (m_markers == null) {
-            VConsole.log("markers not initialized yet, skipping update");
+            logger.log(Level.INFO, "markers not initialized yet, skipping update");
             return;
         }
         if (m_markerClusterGroup == null) {
-            VConsole.log("marker cluster not initialized yet, skipping update");
+            logger.log(Level.INFO, "marker cluster not initialized yet, skipping update");
             return;
         }
 
         m_markers.refresh();
 
-        VConsole.log("processing " + m_markers.size() + " markers for the node layer");
+        logger.log(Level.INFO, "processing " + m_markers.size() + " markers for the node layer");
         // make the search control refresh with the new markers
         Scheduler.get().scheduleDeferred(new ScheduledCommand() {
             @Override public void execute() {
@@ -297,7 +303,7 @@ public class GWTMapWidget extends Widget implements MarkerProvider, SearchConsum
                     return true;
                 }
 
-                VConsole.log("finished adding visible markers");
+                logger.log(Level.INFO, "finished adding visible markers");
 
                 return false;
             }
@@ -317,7 +323,7 @@ public class GWTMapWidget extends Widget implements MarkerProvider, SearchConsum
                     return true;
                 }
 
-                VConsole.log("finished removing filtered markers");
+                logger.log(Level.INFO, "finished removing filtered markers");
 
                 return false;
             }
@@ -335,23 +341,23 @@ public class GWTMapWidget extends Widget implements MarkerProvider, SearchConsum
                     for (final NodeMarker marker : m_markers.getDisabledMarkers()) {
                         bounds.extend(marker.getLatLng());
                     }
-                    VConsole.log("first update, zooming to " + bounds.toBBoxString());
+                    logger.log(Level.INFO, "first update, zooming to " + bounds.toBBoxString());
                     m_map.fitBounds(bounds);
                     m_firstUpdate = false;
                 }
 
-                VConsole.log("finished updating marker cluster layer");
+                logger.log(Level.INFO, "finished updating marker cluster layer");
             }
         });
     }
 
     public void updateMarkerClusterLayer() {
         if (m_markerClusterGroup == null) {
-            VConsole.log("marker cluster not initialized yet, skipping update");
+            logger.log(Level.INFO, "marker cluster not initialized yet, skipping update");
             return;
         }
 
-        VConsole.log("clearing existing markers");
+        logger.log(Level.INFO, "clearing existing markers");
         m_markerClusterGroup.clearLayers();
 
         refresh();
@@ -363,6 +369,13 @@ public class GWTMapWidget extends Widget implements MarkerProvider, SearchConsum
 
     public void setMarkers(final List<NodeMarker> markers) {
         m_markers.setMarkers(markers);
+
+        Scheduler.get().scheduleDeferred(new Command() {
+            @Override
+            public void execute() {
+                updateMarkerClusterLayer();
+            }
+        });
     }
 
     @Override

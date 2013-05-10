@@ -34,11 +34,7 @@
 			</resource>
 		</resources>
 		<plugins>
-			<!-- Compiles your custom GWT components with the GWT compiler -->
-			<!-- A hosted mode browser for client-side widget debugging can be run 
-				with the goal gwt:run after uncommenting the correct line below. A remote 
-				debugger can then be connected to port 8998. Note that e.g. a Jetty server 
-				should be running with the server side parts - use the goal jetty:run . -->
+
 			<plugin>
 				<!--
 				 | the following instructions build a simple set of public/private classes into an OSGi bundle
@@ -101,69 +97,23 @@
 			</plugin>
 		</plugins>
 
-		<pluginManagement>
-			<plugins>
-				<!--This plugin's configuration is used to store Eclipse m2e settings 
-					only. It has no influence on the Maven build itself. -->
-				<plugin>
-					<groupId>org.eclipse.m2e</groupId>
-					<artifactId>lifecycle-mapping</artifactId>
-					<version>1.0.0</version>
-					<configuration>
-						<lifecycleMappingMetadata>
-							<pluginExecutions>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>org.codehaus.mojo</groupId>
-										<artifactId>
-											gwt-maven-plugin
-										</artifactId>
-										<versionRange>
-											[2.2.0,)
-										</versionRange>
-										<goals>
-											<goal>resources</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore></ignore>
-									</action>
-								</pluginExecution>
-							</pluginExecutions>
-						</lifecycleMappingMetadata>
-					</configuration>
-				</plugin>
-				<plugin>
-					<groupId>org.mortbay.jetty</groupId>
-					<artifactId>jetty-maven-plugin</artifactId>
-					<version>8.1.5.v20120716</version>
-					<configuration>
-						<contextPath>/opennms</contextPath>
-						<scanIntervalSeconds>10</scanIntervalSeconds>
-						<systemProperties>
-							<systemProperty>
-								<name>java.awt.headless</name>
-								<value>true</value>
-							</systemProperty>
-						</systemProperties>
-						<connectors>
-							<connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
-								<port>8088</port>
-								<maxIdleTime>60000</maxIdleTime>
-							</connector>
-						</connectors>
-						<requestLog implementation="org.eclipse.jetty.server.NCSARequestLog">
-							<filename>target/yyyy_mm_dd.request.log</filename>
-							<retainDays>90</retainDays>
-							<append>true</append>
-							<extended>false</extended>
-							<logTimeZone>GMT</logTimeZone>
-						</requestLog>
-					</configuration>
-				</plugin>
-			</plugins>
-		</pluginManagement>
 	</build>
+
+	<repositories>
+		<repository>
+			<id>vaadin-snapshots</id>
+			<url>http://oss.sonatype.org/content/repositories/vaadin-snapshots/</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>vaadin-addons</id>
+			<url>http://maven.vaadin.com/vaadin-addons</url>
+		</repository>
+	</repositories>
 
 	<pluginRepositories>
 		<pluginRepository>
@@ -213,7 +163,6 @@
 			<type>pom</type>
 			<scope>provided</scope>
 		</dependency>
-
 		<!-- Node Maps Dependencies -->
 
 		<dependency>

@@ -848,7 +848,7 @@
     <vaadinVersion>6.8.2</vaadinVersion>
     <vaadinVersion>7.0.0.rc2</vaadinVersion>
     -->
-    <vaadinVersion>7.0.2</vaadinVersion>
+    <vaadinVersion>7.0.5</vaadinVersion>
     <vaadin.plugin.version>${vaadinVersion}</vaadin.plugin.version>
     <paxVaadinVersion>0.2.0-SNAPSHOT</paxVaadinVersion>
 
