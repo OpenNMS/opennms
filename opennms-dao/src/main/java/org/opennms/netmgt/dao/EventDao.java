@@ -43,4 +43,13 @@ public interface EventDao extends OnmsDao<OnmsEvent, Integer> {
      * @return a int.
      */
     int deletePreviousEventsForAlarm(final Integer id, final OnmsEvent e);
+    
+    /**
+     * <p>deleteEventById</p>
+     *
+     * @param eventId a {@link java.lang.Integer} object.
+     * @return an int type.
+     */
+    int deleteEventById(Integer eventId);
+    
 }

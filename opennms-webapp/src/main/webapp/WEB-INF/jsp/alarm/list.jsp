@@ -42,7 +42,8 @@
 
 <%@page import="org.opennms.web.controller.alarm.AcknowledgeAlarmController" %>
 <%@page import="org.opennms.web.controller.alarm.AlarmSeverityChangeController" %>
-
+<%@page import="org.opennms.web.controller.alarm.AlarmReportController" %>
+<%@page import="org.opennms.web.controller.alarm.AlarmPurgeController" %>
 <%@page import="org.opennms.netmgt.model.OnmsAlarm"%>
 
 <%@page import="org.opennms.web.filter.Filter" %>
@@ -105,6 +106,9 @@
     pageContext.setAttribute("addBeforeFilter", "[&gt;]");
     pageContext.setAttribute("addAfterFilter", "[&lt;]");
     
+    //Get the purge action status
+    String actionStatus = (String) req.getSession().getAttribute("actionStatus");
+    
     final String baseHref = org.opennms.web.api.Util.calculateUrlBase(request);
 %>
 
@@ -118,96 +122,179 @@
   <jsp:param name="breadcrumb" value="List" />
 </jsp:include>
 
-
-  <script type="text/javascript">
-    function checkAllCheckboxes() {
-       if( document.alarm_action_form.alarm.length ) {  
-         for( i = 0; i < document.alarm_action_form.alarm.length; i++ ) {
-           document.alarm_action_form.alarm[i].checked = true
-         }
-       }
-       else {
-         document.alarm_action_form.alarm.checked = true
-       }
-         
-    }
+<script type="text/javascript" src="<c:url value="/js/jquery/jquery.js"/>"></script>
+<script type="text/javascript">
+	function checkAllCheckboxes() {
+	       if( document.alarm_action_form.alarm.length ) {  
+			 for( i = 0; i < document.alarm_action_form.alarm.length; i++ ) {
+				document.alarm_action_form.alarm[i].checked = true
+			 }
+	       }
+	       else {
+			document.alarm_action_form.alarm.checked = true
+	       }
+	}
+	
+	function submitForm(anAction)
+	{
+		var isChecked = false
+		var numChecked = 0;
+		var isAlarmAvailabilty = false;
+		var isPurgeExport = true;
+			
+		// Decide to which servlet we will submit
+		if (anAction == "clear" || anAction == "escalate") {
+			document.alarm_action_form.action = "alarm/changeSeverity";
+		} else if (anAction == "acknowledge" || anAction == "unacknowledge") {
+			document.alarm_action_form.action = "alarm/acknowledge";
+		} else if(anAction == "purge" || anAction == "purgeall"){
+			document.alarm_action_form.action = "alarm/alarmPurge";
+		} else if(anAction == "export" || anAction == "exportall") {
+			document.alarm_action_form.action = "alarm/alarmExport";
+		}
+		
+		// Decide what our action should be
+		if (anAction == "escalate") {
+			document.alarm_action_form.actionCode.value = "<%=AlarmSeverityChangeController.ESCALATE_ACTION%>";
+		} else if (anAction == "clear") {
+			document.alarm_action_form.actionCode.value = "<%=AlarmSeverityChangeController.CLEAR_ACTION%>";
+		} else if (anAction == "acknowledge") {
+			document.alarm_action_form.actionCode.value = "<%= AcknowledgeType.ACKNOWLEDGED.getShortName() %>";
+		} else if (anAction == "unacknowledge") {
+			document.alarm_action_form.actionCode.value = "<%= AcknowledgeType.UNACKNOWLEDGED.getShortName() %>";
+		} else if (anAction == "purge") {
+			document.alarm_action_form.actionCode.value = "<%=AlarmPurgeController.PURGE_ACTION%>";
+		} else if (anAction == "purgeall") {
+			document.alarm_action_form.actionCode.value = "<%=AlarmPurgeController.PURGEALL_ACTION%>";
+		}else if (anAction == "export") {
+			document.alarm_action_form.actionCode.value = "<%=AlarmReportController.EXPORT_ACTION%>";
+		} else if (anAction == "exportall") {
+			document.alarm_action_form.actionCode.value = "<%=AlarmReportController.EXPORTALL_ACTION%>";
+		}
+		  
+		//Check the alarm availability
+		for( i = 0; i < document.alarm_action_form.elements.length; i++ ) {
+			if(document.alarm_action_form.elements[i].name == "alarm"){
+				isAlarmAvailabilty = true;
+			}
+		}
+		
+		//Get the alarm count
+		var alarmCount = <%=alarmCount%> ;
+		if( (anAction == "purge" || anAction == "export" ) && isAlarmAvailabilty){
+			alarmCount = 0;
+			if (document.alarm_action_form.alarm.length)
+			{	
+				for( i = 0; i < document.alarm_action_form.alarm.length; i++ ) 
+				{
+					if (document.alarm_action_form.alarm[i].checked)
+					{
+						alarmCount+=1;
+					}
+				}
+			}else{
+				if (document.alarm_action_form.alarm.checked)
+				{
+					alarmCount+=1;
+				}
+			}
+		}
+		
+		//Get the confirmation status for purge action
+		var regularNoun = (parseInt(alarmCount) == 1)?'alarm':'alarms';
+		var confirmText = (anAction=="purge" || anAction=="export" )? 'Are you sure you want to '+anAction+' selected '+regularNoun+' ? ('+alarmCount+' total '+regularNoun+')' : 'Are you sure you want to '+anAction+' '+regularNoun+' ? ('+alarmCount+' total '+regularNoun+')';
+		if((anAction == "purge" || anAction == "purgeall") && parseInt(alarmCount)>0) {
+			if(confirm(confirmText)){
+				isPurgeExport = true;
+			}else{
+				isPurgeExport = false;
+			}
+		}
+		
+		//Get the confirmation status for export action
+		if((anAction == "export" || anAction == "exportall") && parseInt(alarmCount)>0) {
+			isPurgeExport = false;
+			showPopup(confirmText);
+		}
+		
+		if(isPurgeExport)
+		if(isAlarmAvailabilty){
+			if(anAction != "purgeall"){
+				if (document.alarm_action_form.alarm.length)
+				{
+					for( i = 0; i < document.alarm_action_form.alarm.length; i++ ) 
+					{
+						//make sure something is checked before proceeding
+						if (document.alarm_action_form.alarm[i].checked)
+						{
+							isChecked=true;
+							numChecked+=1;
+						}
+					}
+				    
+				    if (isChecked && document.alarm_action_form.multiple)
+				    {
+					if (numChecked == parseInt(document.alarm_action_form.alarm.length)) 
+					{ 
+						var newPageNum = parseInt(document.alarm_action_form.multiple.value) - 1;
+						var findVal = "multiple=" + document.alarm_action_form.multiple.value;
+						var replaceWith = "multiple=" + newPageNum;
+						var tmpRedirect = document.alarm_action_form.redirectParms.value;
+						document.alarm_action_form.redirectParms.value = tmpRedirect.replace(findVal, replaceWith);
+						document.alarm_action_form.submit();
+					} else {
+						document.alarm_action_form.submit();
+					}
+					if(anAction == "purge")
+					getProgressBar();
+					}
+				    else if (isChecked)
+				    {
+					document.alarm_action_form.submit();
+					if(anAction == "purge")
+					getProgressBar();
+				    }
+				    else
+				    {
+					alert("Please check the alarms that you would like to " + anAction + ".");
+				    }
+				}else{
+				    if (document.alarm_action_form.alarm.checked)
+				    {
+					document.alarm_action_form.submit();
+					if(anAction == "purge")
+					getProgressBar();
+				    }
+				    else
+				    {
+					alert("Please check the alarms that you would like to " + anAction + ".");
+				    }
+				}
+			}else{
+				document.alarm_action_form.submit();
+				getProgressBar();
+			}
+		}else{
+			alert("There is currently no alarms for this category to " + anAction + ".");
+		}
+	}
     
-    function submitForm(anAction)
-    {
-        var isChecked = false
-        var numChecked = 0;
-        
-        // Decide to which servlet we will submit
-        if (anAction == "clear" || anAction == "escalate") {
-        	document.alarm_action_form.action = "alarm/changeSeverity";
-        } else if (anAction == "acknowledge" || anAction == "unacknowledge") {
-        	document.alarm_action_form.action = "alarm/acknowledge";
-        }
-        
-        // Decide what our action should be
-        if (anAction == "escalate") {
-        	document.alarm_action_form.actionCode.value = "<%=AlarmSeverityChangeController.ESCALATE_ACTION%>";
-        } else if (anAction == "clear") {
-        	document.alarm_action_form.actionCode.value = "<%=AlarmSeverityChangeController.CLEAR_ACTION%>";
-        } else if (anAction == "acknowledge") {
-        	document.alarm_action_form.actionCode.value = "<%= AcknowledgeType.ACKNOWLEDGED.getShortName() %>";
-        } else if (anAction == "unacknowledge") {
-        	document.alarm_action_form.actionCode.value = "<%= AcknowledgeType.UNACKNOWLEDGED.getShortName() %>";
-        }
- 
-        if (document.alarm_action_form.alarm.length)
-        {
-            for( i = 0; i < document.alarm_action_form.alarm.length; i++ ) 
-            {
-              //make sure something is checked before proceeding
-              if (document.alarm_action_form.alarm[i].checked)
-              {
-                isChecked=true;
-                numChecked+=1;
-              }
-            }
-            
-            if (isChecked && document.alarm_action_form.multiple)
-            {
-              if (numChecked == parseInt(document.alarm_action_form.alarm.length)) 
-              { 
-                var newPageNum = parseInt(document.alarm_action_form.multiple.value) - 1;
-                var findVal = "multiple=" + document.alarm_action_form.multiple.value;
-                var replaceWith = "multiple=" + newPageNum;
-                var tmpRedirect = document.alarm_action_form.redirectParms.value;
-                document.alarm_action_form.redirectParms.value = tmpRedirect.replace(findVal, replaceWith);
-                document.alarm_action_form.submit();
-              } 
-              else 
-              {
-                document.alarm_action_form.submit();
-              }
-            }
-            else if (isChecked)
-            {
-              document.alarm_action_form.submit();
-            }
-            else
-            {
-                alert("Please check the alarms that you would like to " + anAction + ".");
-            }
-        }
-        else
-        {
-            if (document.alarm_action_form.alarm.checked)
-            {
-                document.alarm_action_form.submit();
-            }
-            else
-            {
-                alert("Please check the alarms that you would like to " + anAction + ".");
-            }
-        }
-    }
-
-  </script>
-
-
+	// Progress bar for purge and export action
+	progressBar(100, $('#progressBar'));
+	
+	// Get the export action status
+	var timerId = 0;
+	function exportStatus(){
+		var actionStatus = " ";
+		actionStatus = "<%=AlarmReportController.ACTION_STATUS%>";
+		if(actionStatus == "Y"){
+			clearInterval(timerId);
+			hideProgressBar();
+			actionStatus = " ";
+		}
+	}
+	</script>
+  
       <!-- menu -->
       <div id="linkbar">
       <ul>
@@ -274,68 +361,94 @@
               </p>           
             <% } %>
 
+	<!-- Popup message box for alarm export action -->
+	<div id="exportConfirmation" style="display:none">
+		<center>
+			<div id="alertText">&nbsp;</div><br>
+			Select your file format : 
+			<input type="radio" name="format" value="PDF" checked="checked">PDF
+			<!-- <input type="radio" name="format" value="XLS">XLS -->
+			<input type="radio" name="format" value="HTML">HTML
+			<input type="radio" name="format" value="CSV">CSV<br><br>
+			<input type="button" onclick="javascript:callExportAction();" value="Ok" />
+			<input type="button" onclick="javascript:hideTransBackground();" value="Cancel"/>
+		</center>
+	</div>
+	
       <% if( req.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
           <form action="<%= Util.calculateUrlBase(request, "alarm/acknowledge") %>" method="post" name="alarm_action_form">
           <input type="hidden" name="redirectParms" value="<c:out value="<%=req.getQueryString()%>"/>" />
           <input type="hidden" name="actionCode" value="<%=action%>" />
+	  
+	  <!-- Hidden datas for alarm purge and export action-->
+	  <input type="hidden" name="nodeid" value="node=" />
+	  <input type="hidden" name="exactuei" value="exactUei=" />
+	  <input type="hidden" name="ipaddress" value="interface=" />
+	  <input type="hidden" name="format" value="pdf" />
+	  <input type="hidden" name="reportId" value="local_alarm-report" />
+	  <div id="progressBar" class="jquery-ui-like"><div><center>Action in progress, Please wait...</center></div></div>
+	  <div id="backgroundPopup"></div><body/>
+	  
           <%=Util.makeHiddenTags(req)%>
       <% } %>
 			<jsp:include page="/includes/key.jsp" flush="false" />
       <table>
-				<thead>
-					<tr>
-                                             <% if( req.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
-						<% if ( parms.ackType == AcknowledgeType.UNACKNOWLEDGED ) { %>
-						<th width="3%"><nobr>Ack</nobr></th>
-						<% } else if ( parms.ackType == AcknowledgeType.ACKNOWLEDGED ) { %>
-						<th width="3%"><nobr>UnAck</nobr></th>
-						<% } else if ( parms.ackType == AcknowledgeType.BOTH ) { %>
-						<th width="3%"><nobr>Ack?</nobr></th>
-						<% } %>
-                    <% } else { %>
-                        <th width="1%">&nbsp;</th>
-                    <% } %>
+		<thead>
+			<tr>
+			     <% if( req.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
+					<% if ( parms.ackType == AcknowledgeType.UNACKNOWLEDGED ) { %>
+					<th width="3%"><nobr>Ack</nobr></th>
+					<% } else if ( parms.ackType == AcknowledgeType.ACKNOWLEDGED ) { %>
+					<th width="3%"><nobr>UnAck</nobr></th>
+					<% } else if ( parms.ackType == AcknowledgeType.BOTH ) { %>
+					<th width="3%"><nobr>Ack?</nobr></th>
+					<% } %>
+				<% } else { %>
+					<th width="1%">&nbsp;</th>
+				<% } %>
+
+				<th width="8%">
+					<%=this.makeSortLink( parms, SortStyle.ID,        SortStyle.REVERSE_ID,        "id",        "ID" )%>
+					<br />
+					<%=this.makeSortLink( parms, SortStyle.SEVERITY,  SortStyle.REVERSE_SEVERITY,  "severity",  "Severity"  )%>
+				</th>
+	  
+				<th width="19%">
+				      <%=this.makeSortLink( parms, SortStyle.NODE,      SortStyle.REVERSE_NODE,      "node",      "Node"      )%>
+				      <c:if test="${param.display == 'long'}">
+				      <br />
+				      <%=this.makeSortLink( parms, SortStyle.INTERFACE, SortStyle.REVERSE_INTERFACE, "interface", "Interface" )%>
+				      <br />
+				      <%=this.makeSortLink( parms, SortStyle.SERVICE,   SortStyle.REVERSE_SERVICE,   "service",   "Service"   )%>
+				      </c:if>
+				</th>
+	     
+				<th width="3%">
+					<%=this.makeSortLink( parms, SortStyle.COUNT,  SortStyle.REVERSE_COUNT,  "count",  "Count"  )%>
+				</th>
+	
+				<th width="20%">
+				      <%=this.makeSortLink( parms, SortStyle.LASTEVENTTIME,  SortStyle.REVERSE_LASTEVENTTIME,  "lasteventtime",  "Last Event Time"  )%>
+				      <c:if test="${param.display == 'long'}">
+				      <br />
+				      <%=this.makeSortLink( parms, SortStyle.FIRSTEVENTTIME,  SortStyle.REVERSE_FIRSTEVENTTIME,  "firsteventtime",  "First Event Time"  )%>
+				      <br />
+				      <% if ( parms.ackType == AcknowledgeType.ACKNOWLEDGED ) { %>
+				      <%=this.makeSortLink( parms, SortStyle.ACKUSER,  SortStyle.REVERSE_ACKUSER,  "ackuser",  "Acknowledged By"  )%>
+				      <% } %>
+				      </c:if>
+				</th>
+				<th width="48%">Log Msg</th>
+			</tr>
+		</thead>
 
 
+		<% for( int i=0; i < alarms.length; i++ ) { 
+			pageContext.setAttribute("alarm", alarms[i]);
+		%> 
 
-			<th width="8%">
-              <%=this.makeSortLink( parms, SortStyle.ID,        SortStyle.REVERSE_ID,        "id",        "ID" )%>
-              <br />
-              <%=this.makeSortLink( parms, SortStyle.SEVERITY,  SortStyle.REVERSE_SEVERITY,  "severity",  "Severity"  )%>
-            </th>
-			<th width="19%">
-              <%=this.makeSortLink( parms, SortStyle.NODE,      SortStyle.REVERSE_NODE,      "node",      "Node"      )%>
-              <c:if test="${param.display == 'long'}">
-              <br />
-              <%=this.makeSortLink( parms, SortStyle.INTERFACE, SortStyle.REVERSE_INTERFACE, "interface", "Interface" )%>
-              <br />
-              <%=this.makeSortLink( parms, SortStyle.SERVICE,   SortStyle.REVERSE_SERVICE,   "service",   "Service"   )%>
-              </c:if>
-            </th>
-			<th width="3%">
-              <%=this.makeSortLink( parms, SortStyle.COUNT,  SortStyle.REVERSE_COUNT,  "count",  "Count"  )%>
-            </th>
-			<th width="20%">
-              <%=this.makeSortLink( parms, SortStyle.LASTEVENTTIME,  SortStyle.REVERSE_LASTEVENTTIME,  "lasteventtime",  "Last Event Time"  )%>
-              <c:if test="${param.display == 'long'}">
-              <br />
-              <%=this.makeSortLink( parms, SortStyle.FIRSTEVENTTIME,  SortStyle.REVERSE_FIRSTEVENTTIME,  "firsteventtime",  "First Event Time"  )%>
-              <br />
-              <% if ( parms.ackType == AcknowledgeType.ACKNOWLEDGED ) { %>
-              <%=this.makeSortLink( parms, SortStyle.ACKUSER,  SortStyle.REVERSE_ACKUSER,  "ackuser",  "Acknowledged By"  )%>
-              <% } %>
-              </c:if>
-            </th>
-			<th width="48%">Log Msg</th>
-		</tr>
-	</thead>
-
-      <% for( int i=0; i < alarms.length; i++ ) { 
-      	pageContext.setAttribute("alarm", alarms[i]);
-      %> 
-
-        <tr class="<%=alarms[i].getSeverity().getLabel()%>">
-          <% if( parms.ackType == AcknowledgeType.BOTH ) { %>
+		<tr class="<%=alarms[i].getSeverity().getLabel()%>">
+			<% if( parms.ackType == AcknowledgeType.BOTH ) { %>
               <td class="divider" valign="middle" rowspan="1">
                 <nobr>
                   <input type="checkbox" name="alarm" disabled="true" <%=alarms[i].isAcknowledged() ? "checked='true'" : ""%> /> 
@@ -352,15 +465,11 @@
 
           
           <td class="divider bright" valign="middle" rowspan="1">
-            
-          <!-- Get the events details for this Alarm Id -->
-          <%if(alarms[i].getNodeId() != 0){%>
-               <a style="vertical-align:middle" href="alarm/detail.htm?id=<%=alarms[i].getId()%>&amp;filter=node%3D<%=alarms[i].getNodeId()%>&amp;filter=exactUei%3D<%=alarms[i].getUei()%>"><%=alarms[i].getId()%></a>
-           <%}else{%>
-               <a style="vertical-align:middle" href="alarm/detail.htm?id=<%=alarms[i].getId()%>&amp;filter=exactUei%3D<%=alarms[i].getUei()%>&amp;filter=interface%3D<%=alarms[i].getIpAddr()%>"><%=alarms[i].getId()%></a>
-           <%}//isNodeIdValid%>
-
-            <c:if test="<%= alarms[i].getStickyMemo() != null && alarms[i].getStickyMemo().getId() != null%>">
+	  
+	   <!-- Get the events details for this Alarm Id -->
+          <a style="vertical-align:middle" href="<%=this.makeLink(alarms[i])%>"><%=alarms[i].getId()%></a>
+	   
+	<c:if test="<%= alarms[i].getStickyMemo() != null && alarms[i].getStickyMemo().getId() != null%>">
                 <img style="vertical-align:middle" src="images/AlarmMemos/StickyMemo.png" width="20" height="20" 
 		     title="<%=alarms[i].getStickyMemo().getBody() %>"/>
             </c:if>
@@ -485,9 +594,9 @@
           </c:if>
           </td>
           <td class="divider"><%=alarms[i].getLogMsg()%></td>
-       
+       </tr>
       <% } /*end for*/%>
-
+	
       </table>
 			<hr />
 			 <p><%=alarms.length%> alarms &nbsp;
@@ -502,6 +611,14 @@
         <% } %>
           <option value="clear">Clear Alarms</option>
           <option value="escalate">Escalate Alarms</option>
+	  <optgroup label="Export Alarms">
+	        <option value="exportall">Export All</option>
+          	<option value="export">Export Selected</option>
+	   </optgroup>
+	  <optgroup label="Purge Alarms">
+	        <option value="purgeall">Purge All</option>
+          	<option value="purge">Purge Selected</option>
+	   </optgroup>
           </select>
           <input type="button" value="Go" onClick="submitForm(document.alarm_action_form.alarmAction.value)" />
       <% } %>
@@ -666,5 +783,32 @@
 
         return( labels );
     }
-
+    
+     public String makeLink(OnmsAlarm alarm) {
+		StringBuffer buffer = new StringBuffer( "alarm/detail.htm" );
+		buffer.append( "?id="+alarm.getId());
+		if(alarm.getNodeId() != null){
+			buffer.append( "&amp;filter=node%3D").append(alarm.getNodeId());
+		}
+		if (alarm.getIpAddr() != null){
+			buffer.append( "&amp;filter=interface%3D").append(InetAddressUtils.str(alarm.getIpAddr()));
+		} 
+		if(alarm.getUei() != null) {
+			buffer.append( "&amp;filter=exactUei%3D").append(alarm.getUei());
+		}
+		return(buffer.toString());
+    }
 %>
+<script type="text/javascript">
+   //Query status for the purge action
+    var actionStatus = "<%=actionStatus%>";
+    var seperateStatus = actionStatus.split(",");
+    var regularNoun = (parseInt(seperateStatus[0]) == 1)?'alarm is':'alarms are';
+    var queryStatus = seperateStatus[1];
+    if(queryStatus == "<%=AlarmPurgeController.SUCCESS_ACTION%>"){
+	alert("The "+regularNoun+" successfully deleted from the DB");
+    }else if(queryStatus == "<%=AlarmPurgeController.FAILURE_ACTION%>"){
+	alert("The "+regularNoun+" not able to delete from the DB");
+    }
+</script>
+<% request.getSession().setAttribute("actionStatus", "null"); %>

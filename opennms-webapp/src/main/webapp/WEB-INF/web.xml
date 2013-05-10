@@ -1057,6 +1057,14 @@
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>dispatcher</servlet-name>
+    <url-pattern>/alarm/alarmPurge</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>dispatcher</servlet-name>
+    <url-pattern>/alarm/alarmExport</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>dispatcher</servlet-name>
     <url-pattern>/event/acknowledge</url-pattern>
   </servlet-mapping>
   <servlet-mapping>

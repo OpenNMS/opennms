@@ -71,4 +71,12 @@ public interface AcknowledgmentDao extends OnmsDao<OnmsAcknowledgment, Integer> 
      * @param acks a {@link java.util.Collection} object.
      */
     void processAcks(Collection<OnmsAcknowledgment> acks);
+	
+	/**
+     * <p>deleteAcknowledgmentByRefId</p>
+     *
+     * @param ackRefId an int type.
+     * @return an int type
+     */
+    int deleteAcknowledgmentByRefId(int ackRefId);
 }

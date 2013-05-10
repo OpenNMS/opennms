@@ -53,6 +53,9 @@
         <form action="alarm/detail.htm" method="get">
           <p align="right">Alarm ID:          
             <input type="TEXT" NAME="id" />
+            <input type="hidden" name="nodeid" value="node=" />
+            <input type="hidden" name="exactuei" value="exactUei=" />
+            <input type="hidden" name="ipaddress" value="interface=" />
             <input type="submit" value="Get details"/></p>                
         </form>
         <ul class="plain">

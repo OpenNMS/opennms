@@ -43,6 +43,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 
+import org.opennms.api.reporting.ReportException;
 import org.opennms.api.reporting.ReportFormat;
 import org.opennms.api.reporting.ReportService;
 import org.opennms.api.reporting.parameter.ReportParameters;
@@ -306,6 +307,12 @@ public class AvailabilityReportService implements ReportService {
         return m_parameterConversionService.convert(m_configDao.getParameters(ReportId));
     }
     
+    /** {@inheritDoc} */
+    public void	runAndRender(List<Integer> alarmIds,HashMap<Integer, List<Integer>> eventIdsForAlarms ,
+        		String reportId, ReportFormat reportFormat, OutputStream outputStream){
+    	throw new UnsupportedOperationException("Not supported yet. AvailabilityReportService is deprecated.");
+    }
+    
     /**
      * <p>setCalendarCalculator</p>
      *
@@ -341,7 +348,4 @@ public class AvailabilityReportService implements ReportService {
     public void setParameterConversionService(ParameterConversionService parameterConversionService) {
         m_parameterConversionService = parameterConversionService;
     }
-
-
-
 }

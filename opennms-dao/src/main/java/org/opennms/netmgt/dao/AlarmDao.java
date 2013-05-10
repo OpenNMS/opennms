@@ -54,5 +54,13 @@ public interface AlarmDao extends OnmsDao<OnmsAlarm, Integer> {
      * @return A list of alarm summaries.
      */
     List<AlarmSummary> getNodeAlarmSummaries();
+	
+	 /**
+     * <p>deleteAlarmById</p>
+     *
+     * @param alarmId a {@link java.lang.Integer} object.
+     * @return an int type
+     */
+    int deleteAlarmById(Integer alarmId);
     
 }

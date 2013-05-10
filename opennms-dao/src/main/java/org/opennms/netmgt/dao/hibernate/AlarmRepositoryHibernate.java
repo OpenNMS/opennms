@@ -28,8 +28,10 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -37,8 +39,10 @@ import org.apache.commons.lang.ArrayUtils;
 import org.hibernate.criterion.Restrictions;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.utils.BeanUtils;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.AcknowledgmentDao;
 import org.opennms.netmgt.dao.AlarmDao;
+import org.opennms.netmgt.dao.EventDao;
 import org.opennms.netmgt.dao.MemoDao;
 import org.opennms.netmgt.dao.AlarmRepository;
 import org.opennms.netmgt.model.AckAction;
@@ -65,6 +69,9 @@ public class AlarmRepositoryHibernate implements AlarmRepository, InitializingBe
 
     @Autowired
     AlarmDao m_alarmDao;
+    
+    @Autowired
+    EventDao m_eventDao;
 
     @Autowired
     MemoDao m_memoDao;
@@ -308,5 +315,50 @@ public class AlarmRepositoryHibernate implements AlarmRepository, InitializingBe
     public List<AlarmSummary> getCurrentNodeAlarmSummaries() {
         return m_alarmDao.getNodeAlarmSummaries();
     }
-
+    
+    @Override
+    @Transactional
+	public void purgeAlarms(List<Integer> alarmIds,HashMap<Integer, List<Integer>> eventIdsForAlarms ,HashMap<Integer, List<Integer>> ackRefIdsForAlarms) {
+		
+		List<String> deleteSuccessStatus = new ArrayList<String>();
+		List<String> deleteFailStatus = new ArrayList<String>();
+	
+		log().debug("Alarm Id's received : "+alarmIds);
+		for(Integer alarmId : alarmIds){
+			//Delete an alarm by Id
+			if(m_alarmDao.deleteAlarmById(alarmId)>0){
+				
+				//Delete the events by Id
+				for(Integer eventId : eventIdsForAlarms.get(alarmId)){
+					if(m_eventDao.deleteEventById(eventId)>0){
+						deleteSuccessStatus.add(String.valueOf(eventId));
+					}else{
+						log().warn("An Event id "+eventId+" does not exist in DB");
+					}
+				}
+				log().debug("The Event Id's "+deleteSuccessStatus+" are successfully deleted from the DB for alarm id "+alarmId);
+				
+				//Delete the acknowledgments by refId
+				deleteSuccessStatus.clear();
+				for(Integer refId : ackRefIdsForAlarms.get(alarmId)){
+					if(m_ackDao.deleteAcknowledgmentByRefId((int)refId)>0){
+						deleteSuccessStatus.add(String.valueOf(refId));
+					}else{
+						deleteFailStatus.add(String.valueOf(refId));
+					}
+				}
+				if(deleteSuccessStatus.size()>0)
+				log().debug("The Acknowledgment Id's "+deleteSuccessStatus+" are successfully deleted from the DB for alarm id "+alarmId);
+				if(deleteFailStatus.size()>0)
+				log().debug("The Acknowledgment Id's "+deleteFailStatus+" does not exist in the DB for alarm id "+alarmId);
+				
+			}else{
+				log().warn("An Alarm id "+alarmId+" does not exist in db");
+			}
+		}
+	}
+    
+    private static ThreadCategory log() {
+		return ThreadCategory.getInstance(AlarmRepositoryHibernate.class);
+	}
 }

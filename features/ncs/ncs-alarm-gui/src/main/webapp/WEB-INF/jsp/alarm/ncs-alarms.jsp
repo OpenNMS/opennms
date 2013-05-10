@@ -360,8 +360,10 @@
 
           
           <td class="divider bright" valign="middle" rowspan="1">
-            
-            <a href="<%= Util.calculateUrlBase(request, "alarm/detail.htm?id=" + alarms[i].getId()) %>"><%=alarms[i].getId()%></a>
+	        
+	   <!-- Get the events details for this Alarm Id -->
+          <a style="vertical-align:middle" href="<%=this.makeLink(alarms[i])%>"><%=alarms[i].getId()%></a>
+	    
           <c:if test="${param.display == 'long'}">
             <% if(alarms[i].getUei() != null) { %>
               <% Filter exactUEIFilter = new ExactUEIFilter(alarms[i].getUei()); %>
@@ -425,7 +427,7 @@
           <%} %>
           </td>
           <td class="divider">
-        <% if(alarms[i].getNodeId() != 0 && alarms[i].getNodeLabel()!= null ) { %>
+        <% if(alarms[i].getNodeId() != null && alarms[i].getNodeLabel()!= null ) { %>
               <% Filter nodeFilter = new NodeFilter(alarms[i].getNodeId(), getServletContext()); %>             
               <% String[] labels = this.getNodeLabels( alarms[i].getNodeLabel() ); %>
               <a href="element/node.jsp?node=<%=alarms[i].getNodeId()%>" title="<%=labels[1]%>"><%=labels[0]%></a>
@@ -443,7 +445,7 @@
         <br />
             <% if(alarms[i].getIpAddr() != null ) { %>
               <% Filter intfFilter = new InterfaceFilter(alarms[i].getIpAddr()); %>
-              <% if( alarms[i].getNodeId() != 0 ) { %>
+              <% if( alarms[i].getNodeId() != null ) { %>
                 <c:url var="interfaceLink" value="element/interface.jsp">
                   <c:param name="node" value="<%=String.valueOf(alarms[i].getNodeId())%>"/>
                   <c:param name="intf" value="<%=InetAddressUtils.str(alarms[i].getIpAddr())%>"/>
@@ -464,7 +466,7 @@
           <br />
             <% if(alarms[i].getServiceType() != null && !"".equals(alarms[i].getServiceType().getName())) { %>
               <% Filter serviceFilter = new ServiceFilter(alarms[i].getServiceType().getId()); %>
-              <% if( alarms[i].getNodeId() != 0 && alarms[i].getIpAddr() != null ) { %>
+              <% if( alarms[i].getNodeId() != null && alarms[i].getIpAddr() != null ) { %>
                 <c:url var="serviceLink" value="element/service.jsp">
                   <c:param name="node" value="<%=String.valueOf(alarms[i].getNodeId())%>"/>
                   <c:param name="intf" value="<%=InetAddressUtils.str(alarms[i].getIpAddr())%>"/>
@@ -704,5 +706,19 @@
 
         return( labels );
     }
-
+	
+    public String makeLink(OnmsAlarm alarm) {
+		StringBuffer buffer = new StringBuffer( "alarm/detail.htm" );
+		buffer.append( "?id="+alarm.getId());
+		if(alarm.getNodeId() != null){
+			buffer.append( "&amp;filter=node%3D").append(alarm.getNodeId());
+		}
+		if (alarm.getIpAddr() != null){
+			buffer.append( "&amp;filter=interface%3D").append(InetAddressUtils.str(alarm.getIpAddr()));
+		} 
+		if(alarm.getUei() != null) {
+			buffer.append( "&amp;filter=exactUei%3D").append(alarm.getUei());
+		}
+		return(buffer.toString());
+    }
 %>

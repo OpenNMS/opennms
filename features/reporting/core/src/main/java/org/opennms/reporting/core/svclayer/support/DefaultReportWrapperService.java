@@ -33,7 +33,9 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -49,6 +51,7 @@ import org.opennms.javamail.JavaMailer;
 import org.opennms.javamail.JavaMailerException;
 import org.opennms.netmgt.config.UserFactory;
 import org.opennms.netmgt.config.UserManager;
+import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.model.ReportCatalogEntry;
 import org.opennms.reporting.core.DeliveryOptions;
 import org.opennms.reporting.core.svclayer.ReportServiceLocator;
@@ -70,6 +73,7 @@ public class DefaultReportWrapperService implements ReportWrapperService {
     private ReportStoreService m_reportStoreService;
 
     private static final String LOG4J_CATEGORY = "OpenNMS.Report";
+    
 
     /**
      * <p>Constructor for DefaultReportWrapperService.</p>
@@ -297,4 +301,13 @@ public class DefaultReportWrapperService implements ReportWrapperService {
 
     }
 
+    /** {@inheritDoc} */
+    public void	getAlarmReport(List<Integer> alarmIds,HashMap<Integer, List<Integer>> eventIdsForAlarms ,
+        		String reportId, ReportFormat reportFormat, OutputStream outputStream){
+    	try {
+    		getReportService(reportId).runAndRender(alarmIds,eventIdsForAlarms,reportId,reportFormat,outputStream);
+		} catch (ReportException reportException) {
+			log.error("failed to run or render report: " + reportId, reportException);
+		}
+    }
 }

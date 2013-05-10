@@ -218,4 +218,16 @@ public class AcknowledgmentDaoHibernate extends AbstractDaoHibernate<OnmsAcknowl
         }
         LogUtils.infof(this,"processAck: Found and processed acknowledgables for the acknowledgement: "+ack);
     }
+	
+	 /** {@inheritDoc} */
+	public int deleteAcknowledgmentByRefId(int ackRefId) {
+		try {
+        	String hql = "delete from OnmsAcknowledgment where refid = ?";
+    	    Object[] values = {ackRefId};
+    	    return bulkDelete(hql, values);
+        } catch (final Exception e) {
+            LogUtils.warnf(this, e, "Unable to delete an acknowledgment with Id %d", ackRefId);
+        }
+		return 0;
+	}
 }

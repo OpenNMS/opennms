@@ -56,6 +56,23 @@
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 
+<jsp:include page="/includes/header.jsp" flush="false" >
+    <jsp:param name="title" value="Alarm Detail" />
+    <jsp:param name="headTitle" value="Detail" />
+    <jsp:param name="headTitle" value="Alarms" />
+    <jsp:param name="breadcrumb" value="<a href='alarm/index.jsp'>Alarms</a>" />
+    <jsp:param name="breadcrumb" value="Detail" />
+</jsp:include>
+
+<script type="text/javascript" src="<c:url value="/js/jquery/jquery.js"/>"></script>
+<script type="text/javascript">
+	function submitForm() {
+		// Decide to which servlet we will submit
+		document.alarm_action_form.action = "alarm/alarmExport";
+		document.alarm_action_form.actionCode.value = "<%=AlarmReportController.EXPORT_ACTION%>";
+		showPopup('Are you sure you want to export an alarm?');
+	}
+</script>
 <%!
     public String alarmTicketLink(OnmsAlarm alarm) {
         String template = System.getProperty("opennms.alarmTroubleTicketLinkTemplate");
@@ -96,10 +113,10 @@
     <%}else{
 	    pageContext.setAttribute("alarm", alarm);
 
-    String action = null;
-    String ackButtonName = null;
-    boolean showEscalate = false;
-    boolean showClear = false;
+	    String action = null;
+	    String ackButtonName = null;
+	    boolean showEscalate = false;
+	    boolean showClear = false;
 
     if (alarm.getAckTime() == null) {
         ackButtonName = "Acknowledge";
@@ -109,29 +126,19 @@
         action = AcknowledgeType.UNACKNOWLEDGED.getShortName();
     }
 
-    String escalateAction = AlarmSeverityChangeController.ESCALATE_ACTION;
-    String clearAction = AlarmSeverityChangeController.CLEAR_ACTION;
-    if (alarm.getSeverity() == OnmsSeverity.CLEARED || (alarm.getSeverity().isGreaterThan(OnmsSeverity.NORMAL) && alarm.getSeverity().isLessThan(OnmsSeverity.CRITICAL))) {
-        showEscalate = true;
-    }
-    if (alarm.getSeverity().isGreaterThanOrEqual(OnmsSeverity.NORMAL) && alarm.getSeverity().isLessThanOrEqual(OnmsSeverity.CRITICAL)) {
-        showClear = true;
-    }
-    
+	    String escalateAction = AlarmSeverityChangeController.ESCALATE_ACTION;
+	    String clearAction = AlarmSeverityChangeController.CLEAR_ACTION;
+	    if (alarm.getSeverity() == OnmsSeverity.CLEARED || (alarm.getSeverity().isGreaterThan(OnmsSeverity.NORMAL) && alarm.getSeverity().isLessThan(OnmsSeverity.CRITICAL))) {
+		showEscalate = true;
+	    }
+	    if (alarm.getSeverity().isGreaterThanOrEqual(OnmsSeverity.NORMAL) && alarm.getSeverity().isLessThanOrEqual(OnmsSeverity.CRITICAL)) {
+		showClear = true;
+	    }
+	    
 	    List<OnmsAcknowledgment> acks = (List<OnmsAcknowledgment>) req.getAttribute("acknowledgments");
-%>
-
-<%@page import="org.opennms.core.resource.Vault"%>
-<jsp:include page="/includes/header.jsp" flush="false" >
-    <jsp:param name="title" value="Alarm Detail" />
-    <jsp:param name="headTitle" value="Detail" />
-    <jsp:param name="headTitle" value="Alarms" />
-    <jsp:param name="breadcrumb" value="<a href='alarm/index.jsp'>Alarms</a>" />
-    <jsp:param name="breadcrumb" value="Detail" />
-</jsp:include>
-
-<h3>Alarm <%=alarm.getId()%></h3>
-
+    %>
+	<h3> Alarm <%=alarm .getId()%></h3>
+	
 	<!-- Table for Alarm Details -->
 <table>
     <tr class="<%=alarm.getSeverity().getLabel()%>">
@@ -139,7 +146,7 @@
         <td class="divider" width="28%"><%=alarm.getSeverity().getLabel()%></td>
         <th width="100em">Node</th>
         <td class="divider" width="28%">
-            <% if (alarm.getNodeId() > 0) {%>
+            <% if (alarm.getNodeId() != null) {%>
             <c:url var="nodeLink" value="element/node.jsp">
                 <c:param name="node" value="<%=String.valueOf(alarm.getNodeId())%>"/>
             </c:url>
@@ -155,7 +162,7 @@
         <th>Interface</th>
         <td>
             <% if (alarm.getIpAddr() != null) {%>
-            <% if (alarm.getNodeId() > 0) {%>
+            <% if (alarm.getNodeId() != null) {%>
             <c:url var="interfaceLink" value="element/interface.jsp">
                 <c:param name="node" value="<%=String.valueOf(alarm.getNodeId())%>"/>
                 <c:param name="intf" value="<%=InetAddressUtils.str(alarm.getIpAddr())%>"/>
@@ -175,7 +182,7 @@
         <th>Service</th>
         <td>
             <% if (alarm.getServiceType() != null) {%>
-            <% if (alarm.getIpAddr() != null && alarm.getNodeId() > 0) {%>
+            <% if (alarm.getIpAddr() != null && alarm.getNodeId() != null) {%>
             <c:url var="serviceLink" value="element/service.jsp">
                 <c:param name="node" value="<%=String.valueOf(alarm.getNodeId())%>"/>
                 <c:param name="intf" value="<%=InetAddressUtils.str(alarm.getIpAddr())%>"/>
@@ -273,7 +280,7 @@
 		<tr>
 			<th colspan="7">Alarm History</th>
 		</tr>
-		<%if(events!=null){%>
+		<%if(events.length>0){%>
 		<tr>
 			<th class="divider" width="50em">Event ID</th>
 			<th class="divider" width="50em">Alarm ID</th>
@@ -646,6 +653,37 @@
             </td>
         </tr>
         <% } // showEscalate || showClear %>      
+		<tr class="<%=alarm.getSeverity().getLabel()%>">
+		    <td>
+			<form method="post" name="alarm_action_form">
+				<!-- Popup message box for alarm export action -->
+				<div class="exportConfirmation" id="exportConfirmation" style="font-size:120%;display:none" >
+					<center>
+						<div id="alertText">&nbsp;</div><br>
+						Select your file format : 
+						<input type="radio" name="format" value="PDF" checked="checked">PDF
+						<!-- <input type="radio" name="format" value="XLS">XLS -->
+						<input type="radio" name="format" value="HTML">HTML
+						<input type="radio" name="format" value="CSV">CSV<br><br>
+						<input type="button" onclick="javascript:callExportAction();" value="Ok" />
+						<input type="button" onclick="javascript:hideTransBackground();" value="Cancel"/>
+					</center>
+				</div>
+				
+				<!-- Hidden datas for alarm purge and export action-->
+				<input type="hidden" name="nodeid" value="node=" />
+				<input type="hidden" name="exactuei" value="exactUei=" />
+				<input type="hidden" name="ipaddress" value="interface=" />
+				<input type="hidden" name="reportId" value="local_alarm-report" />
+				<div id="progressBar" class="jquery-ui-like"><div><center>Action in progress, Please wait...</center></div></div>
+				<div id="backgroundPopup"></div><body/>
+				<input type="hidden" name="actionCode"/>
+				<input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
+				<input type="button" value="Export" onClick="submitForm()"/>
+			</form>
+		    </td>
+		    <td>Export this alarm</td>
+		</tr>
     </tbody>
 </table>
 

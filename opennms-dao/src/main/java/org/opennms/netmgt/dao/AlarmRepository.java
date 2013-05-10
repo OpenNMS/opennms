@@ -29,6 +29,7 @@
 package org.opennms.netmgt.dao;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import org.opennms.netmgt.model.OnmsAcknowledgment;
@@ -186,5 +187,15 @@ public interface AlarmRepository {
      * @return the current node alarm summaries
      */
     public abstract List<AlarmSummary> getCurrentNodeAlarmSummaries();
+    
+    /**
+    * <p>purgeAlarms</p>
+    *
+    * @param alarmsId 				a list of {@link java.lang.Integer} object.
+    * @param eventsIdForAlarm		a HashMap of {@link java.lang.Integer} and a list of {@link java.lang.Integer} object.
+    * @param ackRefIdsForAlarms	a HashMap of {@link java.lang.Integer} and a list of {@link java.lang.Integer} object.
+    * 
+    */
+   public abstract void purgeAlarms(List<Integer> alarmIds,HashMap<Integer, List<Integer>> eventIdsForAlarms ,HashMap<Integer, List<Integer>> ackRefIdsForAlarms);
 
 }

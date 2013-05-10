@@ -29,6 +29,7 @@
 package org.opennms.reporting.core.svclayer;
 
 import java.io.OutputStream;
+import java.util.HashMap;
 import java.util.List;
 
 import org.opennms.api.reporting.ReportFormat;
@@ -122,5 +123,17 @@ public interface ReportWrapperService {
      * @param ReportId a {@link java.lang.String} object.
      */
     public abstract ReportParameters getParameters(String ReportId);
+    
+    /**
+     * This method retrieves the alarm details taken by the report
+     *
+     * @param alarmIds a list of {@link java.lang.Integer} object.
+     * @param eventIdsForAlarms a HashMap of {@link java.lang.Integer} and a list of {@link java.lang.Integer} object.
+     * @param reportId a {@link java.lang.String} object.
+     * @param reportFormat format to render the report
+     * @param outputStream stream to render the resulting report
+     */
+    public abstract void getAlarmReport(List<Integer> alarmIds,HashMap<Integer, List<Integer>> eventIdsForAlarms ,
+    		String reportId, ReportFormat reportFormat, OutputStream outputStream);
     
 }

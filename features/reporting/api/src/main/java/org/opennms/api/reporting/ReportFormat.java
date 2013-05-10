@@ -34,4 +34,4 @@ package org.opennms.api.reporting;
  * @author ranger
  * @version $Id: $
  */
-public enum ReportFormat { HTML, SVG, PDF, CSV }
+public enum ReportFormat { HTML, SVG, PDF, CSV, XLS }

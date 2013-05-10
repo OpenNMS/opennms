@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
+import org.opennms.core.utils.LogUtils;
 import java.util.List;
 
 import org.opennms.netmgt.dao.AlarmDao;
@@ -66,5 +67,15 @@ public class AlarmDaoHibernate extends AbstractDaoHibernate<OnmsAlarm, Integer> 
             "ORDER BY min(alarm.lastEventTime) DESC, node.label ASC"
         );
     }
-
+    /** {@inheritDoc} */
+	public int deleteAlarmById(Integer alarmId) {
+		try{
+			String hql = "delete from OnmsAlarm where alarmid = ?";
+			Object[] values = {alarmId};
+			return bulkDelete(hql, values);
+		} catch (final Exception e) {
+			LogUtils.warnf(this, e, "Unable to delete an alarm with Id %d", alarmId);
+		}
+		return 0;
+	}
 }

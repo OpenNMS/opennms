@@ -277,6 +277,20 @@
         <property name="alarmRepository" ref="alarmRepository"/>
         <property name="redirectView" value="/alarm/list.htm"/>
     </bean>
+        
+     <!-- Bean for AlarmPurgeController-->
+    <bean name="/alarm/alarmPurge" class="org.opennms.web.controller.alarm.AlarmPurgeController">
+	<property name="alarmRepository" ref="alarmRepository"/>
+	<property name="webEventRepository" ref="webEventRepository"/>
+	<property name="redirectView" value="/alarm/list.htm"/>
+    </bean>
+    
+     <!-- Bean for AlarmReportController-->
+    <bean name="/alarm/alarmExport" class="org.opennms.web.controller.alarm.AlarmReportController">
+	<property name="alarmRepository" ref="alarmRepository"/>
+	<property name="webEventRepository" ref="webEventRepository"/>
+	<property name="reportWrapperService" ref="reportWrapperService"/>
+    </bean>
 
     <bean name="/alarm/list.htm" class="org.opennms.web.controller.alarm.AlarmFilterController">
         <property name="successView" value="alarm/list"/>

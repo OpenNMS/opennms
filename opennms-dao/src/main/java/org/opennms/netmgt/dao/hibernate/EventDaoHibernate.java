@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.dao.EventDao;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.springframework.dao.DataAccessException;
@@ -48,5 +49,16 @@ public class EventDaoHibernate extends AbstractDaoHibernate<OnmsEvent, Integer>
         Object[] values = {id, e.getId()};
         return bulkDelete(hql, values);
     }
-
+    
+    /** {@inheritDoc} */
+    public int deleteEventById(Integer eventId) throws DataAccessException {
+        try {
+        	String hql = "delete from OnmsEvent where eventId = ?";
+            Object[] values = {eventId};
+            return bulkDelete(hql, values);
+        } catch (final Exception e) {
+            LogUtils.warnf(this, e, "Unable to delete an event with Id %d", eventId);
+        }
+        return 0;
+    }
 }

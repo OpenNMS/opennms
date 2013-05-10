@@ -1055,4 +1055,65 @@ tr.Cleared td.divider a, td nobr a {
         color: black !important;
 }
 
+/* --------------------------------------------------
+    :: ProgressBar.
+    -------------------------------------------------- */
+	
+.jquery-ui-like {
+	display							: 	none;
+	-moz-border-radius		: 	3px;
+    -webkit-border-radius	: 	3px;
+    -khtml-border-radius	: 	3px;
+    border-radius				: 	3px;
+	position						: 	fixed;
+	border							: 	1px solid #000;
+	left 								: 	37%;
+	top 								: 	43%;
+	width							: 	26%;
+	z-index						: 	2
+}
+
+.jquery-ui-like div {
+	background-image		: 	url(../images/progressbar.gif);
+	color 							: 	#000;
+	font-size						: 	13px
+}
+
+
+/* --------------------------------------------------
+    :: Transparent background.
+    -------------------------------------------------- */
+	
+#backgroundPopup { 
+	z-index						: 	1;
+	position						:	fixed;
+	display							:	none;
+	height							:	100%;
+	width							:	100%;
+	background					:	#000000;	
+	top								:	0px;  
+	left								:	0px
+}
+
+/* --------------------------------------------------
+    :: Popup for export action
+    -------------------------------------------------- */
+	
+#exportConfirmation {
+	border							: 	5px solid gray;
+	padding						: 	10px;
+	background					: 	#D8D8D8 ;
+	left 								: 	33%;
+	top 								: 	35%;
+	width							: 	34%;
+	height							: 	20%;
+	color 							: 	#000;
+	z-index						: 	2;
+	font-size						: 	90%;
+	-moz-border-radius		: 	3px;
+	-webkit-border-radius	: 	3px;
+	-khtml-border-radius	: 	3px;
+	position						: 	fixed;
+	border-radius				: 	3px
+}
 
