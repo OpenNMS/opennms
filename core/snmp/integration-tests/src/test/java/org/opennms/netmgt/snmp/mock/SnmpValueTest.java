@@ -314,6 +314,39 @@ public class SnmpValueTest {
     }
 
     @Test
+    public void testNullTerminatedASCIIString() {
+        for (final SnmpValueFactory factory : m_factories) {
+            final String hex = "49206c696b65206368656573652100";
+            final String expectedText = "I like cheese!.";
+            final byte[] rawBytes = { (byte)0x49, (byte)0x20, (byte)0x6c, (byte)0x69, (byte)0x6b, (byte)0x65, (byte)0x20, (byte)0x63, (byte)0x68, (byte)0x65, (byte)0x65, (byte)0x73, (byte)0x65, (byte)0x21, (byte)0x00 };
+            final String className = factory.getClass().getName();
+
+            final SnmpValue value = factory.getOctetString(rawBytes);
+
+            assertArrayEquals(className + ": getOctetString bytes should match", rawBytes, value.getBytes());
+            assertTrue(className + ": getOctetString displayable should be true", value.isDisplayable());
+            assertEquals(className + ": getOctetString to String should return " + expectedText, expectedText, value.toString());
+            assertEquals(className + ": getOctetString to DisplayString should return " + expectedText, expectedText, value.toDisplayString());
+            assertEquals(className + ": getOctetString to HexString should return " + hex, hex, value.toHexString());
+            try {
+                value.toInt();
+                fail(className + ": getOctetString to int should throw an IllegalArgumentException");
+            } catch (final IllegalArgumentException e) { /* expected */
+            }
+            try {
+                value.toLong();
+                fail(className + ": getOctetString to long should throw an IllegalArgumentException");
+            } catch (final IllegalArgumentException e) { /* expected */
+            }
+            try {
+                value.toBigInteger();
+                fail(className + ": getOctetString to BigInteger should throw an IllegalArgumentException");
+            } catch (final IllegalArgumentException e) { /* expected */
+            }
+        }
+
+    }
+    @Test
     public void testNormalString() {
         for (final SnmpValueFactory factory : m_factories) {
             final String text = "I like cheese!";
