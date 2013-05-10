@@ -57,7 +57,7 @@
     }
     
     p, td, th, li {
-	    font-size: 70%;
+	    font-size: 11px;
 	    line-height: 1.25em;
 	}
     
@@ -673,6 +673,10 @@
 
 #notificationOn{
 	color: #73d216;
+}
+
+.standard{
+	font-size: 11px;
 }
 	
 /* --------------------------------------------------
