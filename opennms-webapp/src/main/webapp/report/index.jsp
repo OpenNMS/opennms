@@ -66,6 +66,8 @@
         <li><a href="inventory/rancidReport.htm">Inventory</a></li>
 <% }%>
         <li><a href="statisticsReports/index.htm">Statistics Reports</a></li>
+        <!--  Added for historical reports -->
+         <li><a href="report/historical/index.htm">Historical Reports</a></li>
       </ul>
     </div>
   <!-- more reports will follow -->
@@ -97,6 +99,9 @@
           match on resource names.
       </p>
 
+	  <p> <b> Historical Reports </b> provide option to save and view the all the 
+	  reports of Alarms and Events available in the server.
+      </p>
       <p><b>Database Reports</b> provide graphical or numeric
           view of your service level metrics for the current
           month-to-date, previous month, and last twelve months by categories.
