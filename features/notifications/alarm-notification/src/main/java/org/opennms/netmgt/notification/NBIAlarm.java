@@ -141,6 +141,9 @@ public class NBIAlarm {
 
 	@XmlTransient
 	protected Integer m_retryInterval;
+	
+	@XmlTransient
+	protected String m_timeoutInSeconds;
 
 	/**
 	 * Gets the value of the uiclear property.
@@ -775,6 +778,16 @@ public class NBIAlarm {
 	 */
 	public void setRetryInterval(Integer retryInterval) {
 		this.m_retryInterval = retryInterval;
+	}
+
+	
+	
+	public String getTimeoutInSeconds() {
+		return m_timeoutInSeconds;
+	}
+
+	public void setTimeoutInSeconds(String timeoutInSeconds) {
+		this.m_timeoutInSeconds = timeoutInSeconds;
 	}
 
 	@Override

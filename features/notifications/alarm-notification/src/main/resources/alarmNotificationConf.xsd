@@ -23,6 +23,7 @@
         <xs:element name="scriptname" type="xs:string"/>
         <xs:element ref="errorhandling"/>
       </xs:sequence>
+      <xs:attribute name="timeout_in_seconds" use="optional" type="xs:string" default="60"/>
     </xs:complexType>
   </xs:element>
   <xs:element name="errorhandling">
@@ -47,6 +48,7 @@
         <xs:element minOccurs="0" maxOccurs="unbounded" ref="filter"/>
       </xs:sequence>
       <xs:attribute name="name" use="required"/>
+      <xs:attribute name="notification_threshold" use="optional" default="5"/>
     </xs:complexType>
   </xs:element>
   <xs:element name="filter">

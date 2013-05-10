@@ -476,4 +476,9 @@ public class SyslogNorthbounder extends AbstractNorthbounder implements Initiali
 		m_nodeDao = nodeDao;
 	}
 
+	@Override
+	public void reloadConfig() {
+		LogUtils.debugf(this, "Reload configuration - not yet implemented.");
+	}
+
 }

@@ -20,7 +20,7 @@
      	 		a.nodeid AS _nodeid, 
      	 		a.ipaddr AS _ipaddr, 
      	 		a.reductionKey AS _reductionKey, 
-     	 		a.clearKey AS _clearKey FROM alarms a where a.alarmid in(SELECT refid from acks where now()-acktime &lt; interval'60000 milliseconds')
+     	 		a.clearKey AS _clearKey FROM alarms a where a.alarmid in(SELECT refid from acks where now()-acktime &lt; interval'60000 milliseconds' and ackaction = 4)
       </statement>
     </trigger>
   </triggers>

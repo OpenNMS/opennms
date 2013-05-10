@@ -121,6 +121,12 @@ public class AlarmdTest implements TemporaryDatabaseAware<MockDatabase>, Initial
 		public String getName() {
 			return "MockNorthbounder";
 		}
+
+		@Override
+		public void reloadConfig() {
+			// TODO Auto-generated method stub
+			
+		}
     }
 
     private MockNetwork m_mockNetwork = new MockNetwork();

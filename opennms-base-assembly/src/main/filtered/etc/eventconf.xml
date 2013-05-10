@@ -1928,6 +1928,22 @@
      <logmsg dest="logndisplay">&lt;p&gt;Linkd %parm[runnable]% suspended.&lt;/p&gt;</logmsg>
      <severity>Warning</severity>
   </event>
+<!--  Clear Event to be added for alarm notfication  -->
+  <event>
+	<uei>uei.opennms.org/vacuumd/juniper/alarmCleared</uei>
+	<event-label>Internal trap event : Alarm_Clear</event-label>
+	<descr>
+		&lt;p&gt;The alarm cleared event is generated when the error event generated is
+		cleared from UI.;
+	</descr>
+		<!-- DO NOT MODIFY THIS -->
+	<logmsg dest='logndisplay'>AlarmId %parm[alarmid]% is cleared from UI</logmsg>
+		<severity>Cleared</severity>
+		<!-- Removed this alarm in preference to the translated version -->
+		<alarm-data reduction-key="%parm[reductionKey]%-%parm[alarmid]%" alarm-type="2" />
+  </event>
+
+
 
 
   <event-file>events/Translator.default.events.xml</event-file>

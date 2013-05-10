@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <alarm-northbounder-config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="alarmNotificationConf.xsd">
 	<notification name="CBUNotification" enable="true">
-		<script>
+		<script timeout_in_seconds="15">
 			<scriptname>CBU_App_Script.sh</scriptname>
 			<errorhandling enable="false"> 
 				<retry_interval_inseconds>3</retry_interval_inseconds>
@@ -9,7 +9,7 @@
 			</errorhandling>
 		</script>
 		<ueis>
-	        <uei name="uei.opennms.org/generic/traps/SNMP_Link_Down">
+	        <uei name="uei.opennms.org/generic/traps/SNMP_Link_Down" notification_threshold="5">
 	       	<filter devicefamily="JSeries" severity="Minor,Normal"/>
 	       	<filter devicefamily="DevicesWithNoSysoid" severity="Minor,Normal"/>
 	        </uei>	

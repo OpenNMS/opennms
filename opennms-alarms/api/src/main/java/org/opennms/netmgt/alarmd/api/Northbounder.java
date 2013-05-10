@@ -46,6 +46,8 @@ public interface Northbounder {
     
     public void stop() throws NorthbounderException;
     
+    public void reloadConfig();
+    
     public String getName();
     
 }

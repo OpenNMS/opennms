@@ -314,4 +314,10 @@ public class NCSNorthbounder extends AbstractNorthbounder {
         m_config = config;
     }
 
+
+	@Override
+	public void reloadConfig() {
+		LogUtils.debugf(this, "Reload configuration - not yet implemented.");
+	}
+
 }

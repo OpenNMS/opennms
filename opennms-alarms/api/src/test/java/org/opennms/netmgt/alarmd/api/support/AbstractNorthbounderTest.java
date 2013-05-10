@@ -96,6 +96,12 @@ public class AbstractNorthbounderTest {
         public void setAccepting(boolean accepting) {
             m_accepting = accepting;
         }
+
+		@Override
+		public void reloadConfig() {
+			// TODO Auto-generated method stub
+			
+		}
         
     }
 

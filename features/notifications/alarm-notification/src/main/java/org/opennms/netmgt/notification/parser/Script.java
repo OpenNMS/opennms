@@ -18,6 +18,7 @@ package org.opennms.netmgt.notification.parser;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
@@ -33,6 +34,9 @@ public class Script {
 	@XmlElement(name = "errorhandling", required = true)
 	protected Errorhandling m_errorhandling;
 
+    @XmlAttribute(name = "timeout_in_seconds")
+    protected String m_timeoutseconds;
+    
 	/**
 	 * Gets the value of the scriptname property.
 	 * 
@@ -84,10 +88,38 @@ public class Script {
 		return false;
 	}
 
+	 /**
+     * Gets the value of the timeoutSeconds property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getTimeoutInSeconds() {
+        if (m_timeoutseconds == null) {
+            return "60";
+        } else {
+            return m_timeoutseconds;
+        }
+    }
+
+    /**
+     * Sets the value of the timeoutSeconds property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setTimeoutInSeconds(String value) {
+        this.m_timeoutseconds = value;
+    }
+    
 	@Override
 	public String toString() {
-		String script = "Script Name " + this.getScriptname()
-				+ "Error Handling Details" + this.getErrorhandling().toString();
+		String script = "Script Name " + this.getScriptname() + " , Timeout in Seconds " + this.m_timeoutseconds
+				+ " ,Error Handling Details" + this.getErrorhandling().toString();
 		return script;
 	}
 }

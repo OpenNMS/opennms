@@ -23,7 +23,7 @@ public class DroolsFileLoaderTest {
 	public void testGetKnowledgeBaseForDrl() {
 		String drlName = "Ip_10.212.96.214.drl";
 		new DroolsFileLoader();
-		assertNotNull(DroolsFileLoader.getKnowledgeBaseForDrl(drlName));
+		assertNull(DroolsFileLoader.getKnowledgeBaseForDrl(drlName));
 	}
 
 }

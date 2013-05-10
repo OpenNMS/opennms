@@ -232,4 +232,10 @@ public class HttpNorthbounder extends AbstractNorthbounder {
         m_config = config;
     }
 
+   @Override
+        public void reloadConfig() {
+        //Not implemented yet.        
+        }
+	
+
 }

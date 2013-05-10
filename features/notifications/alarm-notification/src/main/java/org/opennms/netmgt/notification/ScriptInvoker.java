@@ -21,6 +21,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.LogUtils;
@@ -39,6 +41,8 @@ public class ScriptInvoker {
 	private Integer m_retryInterval;
 
 	private boolean m_isAlreadyInvoked = false;
+	
+	private String m_timeoutInSeconds;
 
 	int count = 0;
 
@@ -52,7 +56,7 @@ public class ScriptInvoker {
 	 * @param numberOfRetries
 	 * @param retryInterval
 	 */
-	public ScriptInvoker(String alarmXml, String scriptName,
+	public ScriptInvoker(String alarmXml, String scriptName,String timeoutInSeconds,
 			boolean errorHandling, Integer numberOfRetries,
 			Integer retryInterval) {
 		this.m_alarmXml = alarmXml;
@@ -60,6 +64,7 @@ public class ScriptInvoker {
 		this.m_errorHandling = errorHandling;
 		this.m_numberOfRetries = numberOfRetries;
 		this.m_retryInterval = retryInterval;
+		this.m_timeoutInSeconds = timeoutInSeconds;
 	}
 
 	/**
@@ -71,7 +76,7 @@ public class ScriptInvoker {
 
 		LogUtils.debugf(this, "Script " + this.m_scriptName + " to be invoked.");
 		if (!m_isAlreadyInvoked && this.m_numberOfRetries != null)
-			count = this.m_numberOfRetries+1;
+			count = this.m_numberOfRetries;
 		String runScript = ConfigFileConstants.getHome()
 				+ "/etc/alarm-notification/scripts/" + m_scriptName;
 		File file = new File(runScript);
@@ -92,30 +97,48 @@ public class ScriptInvoker {
 		ProcessBuilder processBuilder = new ProcessBuilder(cmd, runScript,
 				this.m_alarmXml);
 		processBuilder.redirectErrorStream(true);
-		Process shellProcess;
+		final Process shellProcess;
 		try {
+			int timeoutInSeconds = 60 * 1000;
+			try{
+				timeoutInSeconds = Integer.parseInt(m_timeoutInSeconds) * 1000;
+			}catch (Exception e) {
+				LogUtils.debugf(this,"Exception in the configured timeout for script " + this.m_scriptName);
+				timeoutInSeconds = 60*1000;
+			}
 			shellProcess = processBuilder.start();
-			String output = loadStream(shellProcess.getInputStream());
+			Timer timer = new Timer();
+			timer.schedule(new TimerTask() {
+
+				@Override
+				public void run() {
+					shellProcess.destroy();
+					LogUtils.debugf(this, "Timeout exceeded for the script "
+							+ m_scriptName + ". Error handling will not be done.");
+				}
+			}, timeoutInSeconds);
+			//String output = loadStream(shellProcess.getInputStream());
 			int shellExitStatus = shellProcess.waitFor();
-			LogUtils.debugf(this, "Script output is " + output);
+			timer.cancel();
 			LogUtils.debugf(this, "Error status " + shellExitStatus);
-			if (shellExitStatus != 0 && m_errorHandling == false) {
+			if (shellExitStatus != 0 && m_errorHandling == false && shellExitStatus != 143) {
 				LogUtils.debugf(this, "Error while invoking "
 						+ this.m_scriptName + " with '" + this.m_alarmXml
 						+ "' as argument.But errorhandling is set to false.");
-			}
-			if (shellExitStatus != 0 && m_errorHandling == true && count != 0) {
-				count = count - 1;
-				
+			} else if (shellExitStatus != 0 && m_errorHandling == true
+					&& count != 0) {
 				LogUtils.debugf(this,
 						"Error Handling Enabled.Current retry count is "
 								+ count + ".The script will be invoked after "
-								+ this.m_retryInterval.longValue() * 1000 + " "
-								+ "seconds.");
-				
+								+ this.m_retryInterval + " " + " seconds.");
 				Thread.sleep(this.m_retryInterval.longValue() * 1000);
 				m_isAlreadyInvoked = true;
+				count = count - 1;
 				invokeScript();
+			} else if (shellExitStatus != 0 && m_errorHandling == true
+					&& count == 0) {
+				LogUtils.debugf(this,
+						"No of retry count exceeded. Script will not be invoked again.");
 			}
 			// errorOutput.close();
 			// consoleOutput.close();

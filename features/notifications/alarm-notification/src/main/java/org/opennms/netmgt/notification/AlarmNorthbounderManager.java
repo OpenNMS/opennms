@@ -46,6 +46,9 @@ public class AlarmNorthbounderManager implements InitializingBean,
 
 	@Autowired
 	private IpInterfaceDao m_IpInterfaceDao;
+	
+	@Autowired
+	private AlarmNotificationConfigDao m_alarmNotificationConfigDao;
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
@@ -55,6 +58,7 @@ public class AlarmNorthbounderManager implements InitializingBean,
 		northbounder.setNodeDao(m_nodeDao);
 		northbounder.setSnmpInterfaceDao(m_snmpInterfaceDao);
 		northbounder.setIpInterfaceDao(m_IpInterfaceDao);
+		northbounder.setAlarmNotificationConfigDao(m_alarmNotificationConfigDao);
 		m_serviceRegistry.register(northbounder, Northbounder.class);
 
 	}

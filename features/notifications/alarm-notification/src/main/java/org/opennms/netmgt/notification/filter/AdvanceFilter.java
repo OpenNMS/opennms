@@ -49,6 +49,7 @@ public class AdvanceFilter {
 				nbiAlarm.setNumberOfRetries(errorhandling.getNumberOfRetries());
 				nbiAlarm.setRetryInterval(errorhandling
 						.getRetryIntervalInseconds());
+				nbiAlarm.setTimeoutInSeconds(script.getTimeoutInSeconds());
 			}
 			session = knowledgeBase.newStatefulKnowledgeSession();
 			FactHandle factHandle = session.insert(nbiAlarm);

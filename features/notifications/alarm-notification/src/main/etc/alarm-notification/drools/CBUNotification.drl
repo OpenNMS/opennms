@@ -17,8 +17,8 @@ function void forwardAlarm(NBIAlarm nbiAlarm){
 
 	 String alarmXML = nbiAlarm.getAlarmXML();
 	 String scriptName = nbiAlarm.getScriptName() ;
-     	 boolean isErrorHandlingEnabled = nbiAlarm.isErrorHandlingEnabled() ;
-         Integer numberOfRetries= nbiAlarm.getNumberOfRetries() ;
+	 boolean isErrorHandlingEnabled = nbiAlarm.isErrorHandlingEnabled() ;
+	 Integer numberOfRetries= nbiAlarm.getNumberOfRetries() ;
          Integer retryInterval= nbiAlarm.getRetryInterval() ;    
          String timeOut = nbiAlarm.getTimeoutInSeconds();
    	 ScriptInvoker scriptInvoker = new ScriptInvoker(alarmXML, scriptName,timeOut, isErrorHandlingEnabled,numberOfRetries,retryInterval);

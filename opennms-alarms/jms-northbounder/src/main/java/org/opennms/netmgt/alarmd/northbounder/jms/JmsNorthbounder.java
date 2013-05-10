@@ -115,4 +115,9 @@ public class JmsNorthbounder extends AbstractNorthbounder implements Initializin
         m_template = new JmsTemplate(m_connectionFactory);
     }
     
+   @Override
+    public void reloadConfig() {
+ 	//Not implemented               
+    }
+
 }

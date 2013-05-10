@@ -143,6 +143,14 @@
     <automation name="cleanUpAccessPointsTable" interval="600000" active="true" 
                 action-name="cleanUpAccessPointsTable" />
     -->
+  <!-- Automation details for Alarm Notification of events that are cleared from UI. -->
+  <automation name="clearAlarmFromUi" interval="60000" active="true"
+  		trigger-name="selectClearedAlarmFromUi"
+ 		action-name="doNothingAction"
+        	action-event="createClearEvent"/>
+
+ 
+
   </automations>
   
   <triggers>
@@ -299,6 +307,19 @@
         </statement>
     </trigger>
     -->
+    <!-- Trigger details for Alarm Notification of events that are cleared from UI. -->
+    <trigger name="selectClearedAlarmFromUi" operator="&gt;=" row-count="1" >
+      <statement>
+     	 SELECT a.alarmid AS _alarmid, 
+     	 		a.eventuei AS _eventuei, 
+     	 		a.nodeid AS _nodeid, 
+     	 		a.ipaddr AS _ipaddr, 
+     	 		a.reductionKey AS _reductionKey, 
+     	 		a.clearKey AS _clearKey FROM alarms a where a.alarmid in(SELECT refid from acks where now()-acktime &lt; interval'60000 milliseconds' and ackaction = 4)
+      </statement>
+    </trigger>
+
+    
   </triggers>
     
   <actions>
@@ -533,6 +554,14 @@
       <assignment type="parameter" name="timeframe" value="${timeframe}" />
     </action-event>
     -->
+   <!-- Action details for Alarm Notification of events that are cleared from UI. -->
+    <action-event name="createClearEvent" for-each-result="true" >
+      <assignment type="field" name="uei" value="uei.opennms.org/vacuumd/juniper/alarmCleared" />
+      <assignment type="field" name="interface" value="${_ipaddr}" />
+      <assignment type="field" name="nodeid" value="${_nodeid}" />
+      <assignment type="parameter" name="alarmid" value="${_alarmid}" />
+      <assignment type="parameter" name="reductionKey" value="${_reductionKey}" />
+    </action-event>
   </action-events>
   
 </VacuumdConfiguration>

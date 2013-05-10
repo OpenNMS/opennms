@@ -35,7 +35,10 @@ public class DroolsFileLoader implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private static HashMap<String, KnowledgeBase> s_knowledgeBaseHash;
-
+	public DroolsFileLoader(String reloadDrl) {
+		
+	}
+	
 	public DroolsFileLoader() {
 		s_knowledgeBaseHash = new HashMap<String, KnowledgeBase>();
 		File drlFolder = new File(ConfigFileConstants.getHome()
@@ -76,6 +79,49 @@ public class DroolsFileLoader implements Serializable {
 		}
 	}
 
+	public boolean reloadDroolFiles(){
+		boolean status = true;
+		s_knowledgeBaseHash = new HashMap<String, KnowledgeBase>();
+		File drlFolder = new File(ConfigFileConstants.getHome()
+				+ "/etc/alarm-notification/drools/");
+		File[] listOfFiles = drlFolder.listFiles();
+		if (listOfFiles == null) {
+			LogUtils.debugf(this,
+					"No drl file in directory <OPENNMS_HOME>/etc/alarm-notification/drools/");
+			return status;
+		}
+		for (int i = 0; i < listOfFiles.length; i++) {
+			String drlName = listOfFiles[i].getName();
+			KnowledgeBase knowledgeBase = null;
+			try {
+				KnowledgeBuilder builder = KnowledgeBuilderFactory
+						.newKnowledgeBuilder();
+				File drlFile = new File(drlFolder + "/" + drlName);
+				builder.add(ResourceFactory.newFileResource(drlFile),
+						ResourceType.DRL);
+				if (builder.hasErrors()) {
+					LogUtils.debugf(this, "Drl file " + drlName
+							+ " has the following errors : "
+							+ builder.getErrors().toString());
+				} else {
+					LogUtils.debugf(this, "Drl file " + drlName
+							+ " is loaded successfully");
+				}
+				knowledgeBase = KnowledgeBaseFactory.newKnowledgeBase();
+				knowledgeBase.addKnowledgePackages(builder
+						.getKnowledgePackages());
+			} catch (Exception e) {
+				status = false;
+				e.printStackTrace();
+				LogUtils.debugf(this,
+						"Exception while creating builder for file " + drlName
+								+ "Exception is " + e.getMessage());
+			}
+			s_knowledgeBaseHash.put(drlName, knowledgeBase);
+		}
+		
+		return status;
+	}
 	public void setBuilderHash(HashMap<String, KnowledgeBase> knowledgeBaseHash) {
 		DroolsFileLoader.s_knowledgeBaseHash = knowledgeBaseHash;
 	}

@@ -34,6 +34,9 @@ public class Uei {
 	@XmlAttribute(name = "name", required = true)
 	protected String m_name;
 
+	@XmlAttribute(name = "notification_threshold",required=false)
+    protected String m_notificationThreshold;
+	
 	/**
 	 * Gets the value of the filter property. Objects of the following type(s)
 	 * are allowed in the list {@link Filter }
@@ -75,9 +78,37 @@ public class Uei {
 		return false;
 	}
 
+	 /**
+     * Gets the value of the notificationThreshold property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getNotificationThreshold() {
+        if (m_notificationThreshold == null) {
+            return "5";
+        } else {
+            return m_notificationThreshold;
+        }
+    }
+
+    /**
+     * Sets the value of the notificationThreshold property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setNotificationThreshold(String value) {
+        this.m_notificationThreshold = value;
+    }
+    
 	@Override
 	public String toString() {
-		String uei = "UEI Name " + this.getName() + " Applied Filter"
+		String uei = "UEI Name " + this.getName() + " ,Notification Threshold " + this.getNotificationThreshold() + " ,Applied Filter"
 				+ this.getFilter().toString();
 		return uei;
 	}
