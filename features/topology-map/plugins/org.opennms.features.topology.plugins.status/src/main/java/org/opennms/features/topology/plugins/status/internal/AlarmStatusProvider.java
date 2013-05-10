@@ -118,15 +118,16 @@ public class AlarmStatusProvider implements StatusProvider {
 
     private Status getStatusForGroup(VertexRef groupRef) {
         List<Vertex> vertices = getVertexProvider().getChildren(groupRef);
-        if(vertices.size() >= 1) {
-            Collection<Integer> nodeIds = new ArrayList<Integer>();
-            
-            for(Vertex vertex : vertices) {
-                if(!vertex.isGroup()) {
-                   nodeIds.add(vertex.getNodeID());
-                }
+        
+        Collection<Integer> nodeIds = new ArrayList<Integer>();
+        
+        for(Vertex vertex : vertices) {
+            if(!vertex.isGroup()) {
+               nodeIds.add(vertex.getNodeID());
             }
-            
+        }
+        
+        if(nodeIds.size() >= 1) {
             CriteriaBuilder builder = new CriteriaBuilder(OnmsAlarm.class);
             builder.alias("node", "node");
             builder.in("node.id", nodeIds);

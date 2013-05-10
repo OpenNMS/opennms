@@ -36,7 +36,6 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import org.opennms.features.topology.api.SelectionContext;
 import org.opennms.features.topology.api.SelectionListener;
 import org.opennms.features.topology.api.SelectionNotifier;
-import org.slf4j.LoggerFactory;
 
 import com.vaadin.data.Container;
 import com.vaadin.ui.Table;

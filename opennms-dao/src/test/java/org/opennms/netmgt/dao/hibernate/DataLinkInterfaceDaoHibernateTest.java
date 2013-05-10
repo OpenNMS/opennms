@@ -92,6 +92,7 @@ public class DataLinkInterfaceDaoHibernateTest implements InitializingBean {
 	}
 
     @Test
+    @JUnitTemporaryDatabase
     public void testFindById() throws Exception {
         // Note: This ID is based upon the creation order in DatabasePopulator - if you change
         // the DatabasePopulator by adding additional new objects that use the onmsNxtId sequence

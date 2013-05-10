@@ -29,7 +29,7 @@ xsi:schemaLocation="
     </property>
     <property name="columnGenerators">
       <map>
-        <entry key="acknowledged">
+        <entry key="selection">
           <bean class="org.opennms.features.topology.plugins.browsers.CheckboxGenerator">
             <argument value="id"/>
           </bean>
@@ -59,7 +59,7 @@ xsi:schemaLocation="
     </property>
     <property name="visibleColumns">
       <array>
-        <value>acknowledged</value>
+        <value>selection</value>
         <value>id</value>
         <value>severity</value>
         <value>nodeLabel</value>
