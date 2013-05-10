@@ -7,7 +7,7 @@
         </descr>
 	<severity>Critical</severity>
         <logmsg dest='logndisplay'>TCA defect: Service:%parm[#1]%, ParameterName:%parm[#2]%, ThresholdValue:%parm[#3]%, CurrentValue:%parm[#4]%, UserMessage:%parm[#5]%, TCAProfile:%parm[#6]%</logmsg>
-                <alarm-data alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" />
+                <alarm-data alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" />
   </event>
   <event>
         <uei>uei.opennms.org/vendor/Juniper/syslog/threshold_crossing_defect_cleared</uei>
@@ -16,8 +16,8 @@
            This notification is generated when service level threshold configuration is satisfied
         </descr>
 	<severity>Cleared</severity>
-        <logmsg dest='logndisplay'>TCA defect cleared: Service:%parm[#1]%, ParameterName:%parm[#2]%, ThresholdValue:%parm[#3]%, CurrentValue:%parm[#4]%, UserMessage:%parm[#5]%, TCAProfile:%parm[#6]%</logmsg>
-        <alarm-data alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" clear-key="uei.opennms.org/vendor/Juniper/syslog/threshold_crossing_defect:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" />
+        <logmsg dest='logndisplay'>TCA defect cleared: Service:%parm[#1]%, ParameterName:%parm[#2]%, ClearValue:%parm[#3]%, TCAProfile:%parm[#4]%</logmsg>
+        <alarm-data alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" clear-key="uei.opennms.org/vendor/Juniper/syslog/threshold_crossing_defect:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" />
   </event>
 </events>
 
