@@ -50,7 +50,7 @@ import org.slf4j.LoggerFactory;
  */
 public class V2TrapInformation extends TrapInformation {
 	
-	private static final Logger s_log = LoggerFactory.getLogger(V2TrapInformation.class);
+	private static final transient Logger LOG = LoggerFactory.getLogger(V2TrapInformation.class);
 	
 	/**
 	 * The received PDU
@@ -104,16 +104,16 @@ public class V2TrapInformation extends TrapInformation {
     @Override
     protected long getTimeStamp() {
 
-        if (s_log.isDebugEnabled()) {
-            s_log.debug("V2 trap first varbind value: " + m_pdu.getVarBindAt(0).getValue().toString());
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("V2 trap first varbind value: " + m_pdu.getVarBindAt(0).getValue().toString());
         }
 
         switch (m_pdu.getVarBindAt(V2TrapInformation.SNMP_SYSUPTIME_OID_INDEX).getValue().typeId()) {
         case SnmpSMI.SMI_TIMETICKS:
-            s_log.debug("V2 trap first varbind value is of type TIMETICKS (correct)");
+            LOG.debug("V2 trap first varbind value is of type TIMETICKS (correct)");
             return ((SnmpTimeTicks) m_pdu.getVarBindAt(V2TrapInformation.SNMP_SYSUPTIME_OID_INDEX).getValue()).getValue();
         case SnmpSMI.SMI_INTEGER:
-            s_log.debug("V2 trap first varbind value is of type INTEGER, casting to TIMETICKS");
+            LOG.debug("V2 trap first varbind value is of type INTEGER, casting to TIMETICKS");
             return ((SnmpInt32) m_pdu.getVarBindAt(V2TrapInformation.SNMP_SYSUPTIME_OID_INDEX).getValue()).getValue();
         default:
             throw new IllegalArgumentException("V2 trap does not have the required first varbind as TIMETICKS - cannot process trap");
@@ -152,8 +152,8 @@ public class V2TrapInformation extends TrapInformation {
             // if not V2 trap, do nothing
             throw new IllegalArgumentException("Received not SNMPv2 Trap from host " + getTrapAddress() + "PDU Type = " + m_pdu.getCommand());
         }
-        if (s_log.isDebugEnabled()) {
-            s_log.debug("V2 trap numVars or pdu length: " + getPduLength());
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("V2 trap numVars or pdu length: " + getPduLength());
         }
         if (getPduLength() < 2) // check number of varbinds
         {
@@ -168,7 +168,7 @@ public class V2TrapInformation extends TrapInformation {
         String varBindName0 = m_pdu.getVarBindAt(0).getName().toString();
         String varBindName1 = m_pdu.getVarBindAt(1).getName().toString();
         if (varBindName0.equals(V2TrapInformation.EXTREME_SNMP_SYSUPTIME_OID)) {
-            s_log.info("V2 trap from " + getTrapAddress() + " has been corrected due to the sysUptime.0 varbind not having been sent with a trailing 0.\n\tVarbinds received are : " + varBindName0 + " and " + varBindName1);
+            LOG.info("V2 trap from " + getTrapAddress() + " has been corrected due to the sysUptime.0 varbind not having been sent with a trailing 0.\n\tVarbinds received are : " + varBindName0 + " and " + varBindName1);
             varBindName0 = V2TrapInformation.SNMP_SYSUPTIME_OID;
         }
         if ((!(varBindName0.equals(V2TrapInformation.SNMP_SYSUPTIME_OID))) || (!(varBindName1.equals(V2TrapInformation.SNMP_TRAP_OID)))) {
@@ -180,9 +180,9 @@ public class V2TrapInformation extends TrapInformation {
     protected void processVarBindAt(int i) {
     	if (i<2) {
             if (i == 0) {
-            	s_log.debug("Skipping processing of varbind it is the sysuptime and the first varbind, it is not processed as a parm per RFC2089");
+            	LOG.debug("Skipping processing of varbind it is the sysuptime and the first varbind, it is not processed as a parm per RFC2089");
             } else {
-            	s_log.debug("Skipping processing of varbind it is the trap OID and the second varbind, it is not processed as a parm per RFC2089");				
+            	LOG.debug("Skipping processing of varbind it is the trap OID and the second varbind, it is not processed as a parm per RFC2089");				
 			}
     	} else {
     		SnmpObjId name = SnmpObjId.get(getVarBindAt(i).getName().getIdentifiers());

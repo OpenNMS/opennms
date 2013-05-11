@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,35 +26,10 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.model.acknowledgments;
+package org.opennms.features.topology.api;
 
-import java.util.Collection;
+import com.vaadin.ui.Component;
 
-import org.opennms.netmgt.model.OnmsAcknowledgment;
-import org.springframework.transaction.annotation.Transactional;
-
-/**
- * Transactional boundary for processing acknowledgments
- *
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @author <a href="makilto:jeffg@opennms.org">Jeff Gehlbach</a>
- */
-public interface AckService {
-
-    /**
-     * <p>processAck</p>
-     *
-     * @param ack a {@link org.opennms.netmgt.model.OnmsAcknowledgment} object.
-     */
-    @Transactional(readOnly=false)
-    void processAck(OnmsAcknowledgment ack);
-    
-    /**
-     * <p>processAcks</p>
-     *
-     * @param acks a {@link java.util.Collection} object.
-     */
-    @Transactional(readOnly=false)
-    void processAcks(Collection<OnmsAcknowledgment> acks);
-
+public interface HasExtraComponents {
+	Component[] getExtraComponents();
 }

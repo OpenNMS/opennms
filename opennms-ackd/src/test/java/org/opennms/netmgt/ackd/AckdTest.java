@@ -61,7 +61,6 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNotification;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.OnmsUserNotification;
-import org.opennms.netmgt.model.acknowledgments.AckService;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
@@ -93,9 +92,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class AckdTest implements InitializingBean {
 
-    @Autowired
-    private AckService m_ackService;
-    
     @Autowired
     private AlarmDao m_alarmDao;
     
@@ -215,7 +211,7 @@ public class AckdTest implements InitializingBean {
         m_ackDao.save(ack);
         m_ackDao.flush();
         
-        m_ackService.processAck(ack);
+        m_ackDao.processAck(ack);
         
         alarm = m_alarmDao.get(ack.getRefId());
         Assert.assertNotNull(alarm.getAlarmAckUser());
@@ -250,7 +246,7 @@ public class AckdTest implements InitializingBean {
         m_ackDao.flush();
         
         Thread.sleep(1);
-        m_ackService.processAck(ack);
+        m_ackDao.processAck(ack);
         
         OnmsNotification notif = m_notificationDao.get(ack.getRefId());
         Assert.assertNotNull(notif.getAnsweredBy());

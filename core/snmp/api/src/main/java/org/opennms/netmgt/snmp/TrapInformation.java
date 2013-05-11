@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
 
 public abstract class TrapInformation implements TrapNotification {
 	
-	private static final Logger s_log = LoggerFactory.getLogger(TrapInformation.class);
+	private static final transient Logger LOG = LoggerFactory.getLogger(TrapInformation.class);
 
     /**
      * The internet address of the sending agent
@@ -102,7 +102,7 @@ public abstract class TrapInformation implements TrapNotification {
         m_trapProcessor.setAgentAddress(getAgentAddress());
         m_trapProcessor.setTrapAddress(getTrapAddress());
     
-        s_log.debug("{} trap - trapInterface: ()", getVersion(), getTrapAddress());
+        LOG.debug("{} trap - trapInterface: ()", getVersion(), getTrapAddress());
         
         // time-stamp
         m_trapProcessor.setTimeStamp(getTimeStamp());

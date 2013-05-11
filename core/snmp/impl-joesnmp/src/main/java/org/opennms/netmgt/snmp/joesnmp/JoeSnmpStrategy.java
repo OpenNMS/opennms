@@ -67,7 +67,7 @@ import org.slf4j.LoggerFactory;
 
 public class JoeSnmpStrategy implements SnmpStrategy {
 	
-	public static Logger s_log = LoggerFactory.getLogger(JoeSnmpStrategy.class);
+	public static final transient Logger LOG = LoggerFactory.getLogger(JoeSnmpStrategy.class);
 	
     private static Map<TrapNotificationListener, RegistrationInfo> s_registrations = new HashMap<TrapNotificationListener, RegistrationInfo>();
     private static SnmpTrapSession s_trapSession;
@@ -109,7 +109,7 @@ public class JoeSnmpStrategy implements SnmpStrategy {
             values = convertSnmpSyntaxs(results);
             
         } catch (SocketException e) {
-            s_log.error("Could not create JoeSNMP session using AgentConfig: "+agentConfig);
+            LOG.error("Could not create JoeSNMP session using AgentConfig: "+agentConfig);
         } finally {
             if (session != null) {
                 session.close();
@@ -142,7 +142,7 @@ public class JoeSnmpStrategy implements SnmpStrategy {
             SnmpSyntax[] results = session.get(jOids);
             values = convertSnmpSyntaxs(results);
         } catch (SocketException e) {
-            s_log.error("Could not create JoeSNMP session using AgentConfig: "+agentConfig);
+            LOG.error("Could not create JoeSNMP session using AgentConfig: "+agentConfig);
         } finally {
             if (session != null) {
                 session.close();
@@ -176,7 +176,7 @@ public class JoeSnmpStrategy implements SnmpStrategy {
             SnmpSyntax[] results = session.getNext(jOids);
             values = convertSnmpSyntaxs(results);
         } catch (SocketException e) {
-            s_log.error("Could not create JoeSNMP session using AgentConfig: "+agentConfig);
+            LOG.error("Could not create JoeSNMP session using AgentConfig: "+agentConfig);
         } finally {
             if (session != null) {
                 session.close();

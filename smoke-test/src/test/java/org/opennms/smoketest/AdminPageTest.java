@@ -108,8 +108,9 @@ public class AdminPageTest extends OpenNMSSeleniumTestCase {
         waitForPageToLoad();
         selenium.click("link=Configure SNMP Community Names by IP");
         waitForPageToLoad();
-        assertTrue(selenium.isTextPresent("Please enter an IP or a range of IPs and the read community string below"));
-        assertTrue(selenium.isTextPresent("Updating SNMP Community Names"));
+        assertTrue(selenium.isTextPresent("SNMP Config Lookup"));
+        assertTrue(selenium.isTextPresent("Updating SNMP Configuration"));
+        assertTrue(selenium.isTextPresent("Descriptions"));
         assertTrue(selenium.isTextPresent("optimize this list"));
         selenium.click("link=Admin");
         waitForPageToLoad();

@@ -339,6 +339,7 @@ public final class SnmpCollection implements ReadyRunnable {
                     "Linkd");
             builder.setNodeid(m_nodeid);
             builder.setInterface(m_address);
+            builder.addParam("runnable", "snmpCollection");
             m_linkd.getEventForwarder().sendNow(builder.getEvent());
             LogUtils.debugf(this, "run: address: %s Suspended!",
                             str(m_address));
@@ -376,6 +377,7 @@ public final class SnmpCollection implements ReadyRunnable {
                                                 "Linkd");
         builder.setNodeid(m_nodeid);
         builder.setInterface(m_address);
+        builder.addParam("runnable", "snmpCollection");
         m_linkd.getEventForwarder().sendNow(builder.getEvent());
 
         final String hostAddress = str(m_address);
@@ -542,6 +544,7 @@ public final class SnmpCollection implements ReadyRunnable {
                                    "Linkd");
         builder.setNodeid(m_nodeid);
         builder.setInterface(m_address);
+        builder.addParam("runnable", "snmpCollection");
         m_linkd.getEventForwarder().sendNow(builder.getEvent());
 
     }

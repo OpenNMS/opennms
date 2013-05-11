@@ -1,5 +1,7 @@
 package org.opennms.features.topology.app.internal;
 
+import java.util.Map;
+
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Layout;
@@ -50,7 +52,8 @@ public class GraphPainter extends BaseGraphVisitor {
 		m_target.addAttribute("y", location.getY());
 		m_target.addAttribute("selected", isSelected(m_graphContainer.getSelectionManager(), vertex));
 		if(m_graphContainer.getStatusProvider() != null) {
-		    m_target.addAttribute("status", getStatus(vertex) );
+		    addStatusProviderProperties(m_graphContainer.getStatusProvider(), vertex, m_target);
+//		    m_target.addAttribute("status", getStatus(vertex) );
 		}
 
 		m_target.addAttribute("iconUrl", m_iconRepoManager.findIconUrlByKey(vertex.getIconKey()));
@@ -58,6 +61,13 @@ public class GraphPainter extends BaseGraphVisitor {
 		m_target.addAttribute("tooltipText", getTooltipText(vertex));
 		m_target.endTag("vertex");
 	}
+
+    private void addStatusProviderProperties(StatusProvider statusProvider, Vertex vertex, PaintTarget target) throws PaintException {
+        Map<String, String> statusProps = statusProvider.getStatusForVertex(vertex).getStatusProperties();
+        for(String key : statusProps.keySet()) {
+            target.addAttribute(key, statusProps.get(key));
+        }
+    }
 
     private String getStatus(Vertex vertex) {
         return m_statusProvider != null ? m_statusProvider.getStatusForVertex(vertex).computeStatus() : "";

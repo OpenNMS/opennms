@@ -41,7 +41,7 @@ import org.snmp4j.smi.Integer32;
 public class Integer32IgnoreTooManyBytes extends Integer32
     implements AssignableFromInteger, AssignableFromString {
 	
-  private static final Logger s_log = LoggerFactory.getLogger(Integer32IgnoreTooManyBytes.class);
+  private static final transient Logger LOG = LoggerFactory.getLogger(Integer32IgnoreTooManyBytes.class);
 
   private static final long serialVersionUID = 5046132399890132416L;
 
@@ -74,7 +74,7 @@ public class Integer32IgnoreTooManyBytes extends Integer32
 	}
 	length = BER.decodeLength(inputStream);
 	if (length > 4) {
-		s_log.debug("Working around invalid Integer32 likely dealing with a permissive Net-SNMP agent");
+		LOG.debug("Working around invalid Integer32 likely dealing with a permissive Net-SNMP agent");
 	}
 	
 	int b = inputStream.read() & 0xFF;

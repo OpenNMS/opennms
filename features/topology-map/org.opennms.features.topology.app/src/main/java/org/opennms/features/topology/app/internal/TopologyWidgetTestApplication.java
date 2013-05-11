@@ -35,6 +35,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.api.HasExtraComponents;
 import org.opennms.features.topology.api.HistoryManager;
 import org.opennms.features.topology.api.IViewContribution;
 import org.opennms.features.topology.api.MapViewManager;
@@ -78,8 +79,11 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.MenuBar.MenuItem;
+import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
+import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
 import com.vaadin.ui.UriFragmentUtility.FragmentChangedEvent;
 import com.vaadin.ui.UriFragmentUtility.FragmentChangedListener;
+
 
 public class TopologyWidgetTestApplication extends Application implements CommandUpdateListener, MenuItemUpdateListener, ContextMenuHandler, WidgetUpdateListener, WidgetContext, FragmentChangedListener, GraphContainer.ChangeListener, MapViewManagerListener, VertexUpdateListener, SelectionListener {
 
@@ -109,8 +113,11 @@ public class TopologyWidgetTestApplication extends Application implements Comman
     private boolean m_showHeader = true;
 
 	public TopologyWidgetTestApplication(CommandManager commandManager, HistoryManager historyManager, GraphProvider topologyProvider, ProviderManager providerManager, IconRepositoryManager iconRepoManager, SelectionManager selectionManager) {
-	    
-	    m_commandManager = commandManager;
+
+		// Ensure that selection changes trigger a history save operation
+		selectionManager.addSelectionListener(this);
+
+		m_commandManager = commandManager;
 		m_commandManager.addMenuItemUpdateListener(this);
 		m_historyManager = historyManager;
 		m_iconRepositoryManager = iconRepoManager;
@@ -120,9 +127,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 		m_graphContainer.setSelectionManager(selectionManager);
 		m_graphContainer.addChangeListener(this);
 		m_graphContainer.getMapViewManager().addListener(this);
-
-		// Ensure that selection changes trigger a history save operation
-		selectionManager.addSelectionListener(this);
+		m_graphContainer.setUserName((String)this.getUser());
 	}
 
 
@@ -336,7 +341,10 @@ public class TopologyWidgetTestApplication extends Application implements Comman
                 // Split the screen 70% top, 30% bottom
                 bottomLayoutBar.setSplitPosition(70, Sizeable.UNITS_PERCENTAGE);
                 bottomLayoutBar.setSizeFull();
-                bottomLayoutBar.setSecondComponent(getTabSheet(widgetManager, this));
+
+                // Add the tabsheet to the layout
+                bottomLayoutBar.addComponent(getTabSheet(widgetManager, this));
+
                 m_layout.addComponent(bottomLayoutBar, getBelowMenuPosition());
             }
             m_layout.requestRepaint();
@@ -356,28 +364,76 @@ public class TopologyWidgetTestApplication extends Application implements Comman
      * 
      * @return TabSheet
      */
-    private TabSheet getTabSheet(WidgetManager manager, WidgetContext widgetContext) {
-        TabSheet tabSheet = new TabSheet();
+    private Component getTabSheet(WidgetManager manager, WidgetContext widgetContext) {
+        // Use an absolute layout for the bottom panel
+        AbsoluteLayout bottomLayout = new AbsoluteLayout();
+        bottomLayout.setSizeFull();
+        
+        final TabSheet tabSheet = new TabSheet();
         tabSheet.setSizeFull();
 
         for(IViewContribution viewContrib : manager.getWidgets()) {
             // Create a new view instance
-            Component view = viewContrib.getView(widgetContext);
+            final Component view = viewContrib.getView(widgetContext);
             try {
                 m_graphContainer.getSelectionManager().addSelectionListener((SelectionListener)view);
             } catch (ClassCastException e) {}
             try {
                 ((SelectionNotifier)view).addSelectionListener(m_graphContainer.getSelectionManager());
             } catch (ClassCastException e) {}
-            if(viewContrib.getIcon() != null) {
-                tabSheet.addTab(view, viewContrib.getTitle(), viewContrib.getIcon());
-            } else {
-                tabSheet.addTab(view, viewContrib.getTitle());
-            }
+
+            // Icon can be null
+            tabSheet.addTab(view, viewContrib.getTitle(), viewContrib.getIcon());
+
+            // If the component supports the HasExtraComponents interface, then add the extra 
+            // components to the tab bar
+            try {
+                Component[] extras = ((HasExtraComponents)view).getExtraComponents();
+                if (extras != null && extras.length > 0) {
+                    // For any extra controls, add a horizontal layout that will float
+                    // on top of the right side of the tab panel
+                    final HorizontalLayout extraControls = new HorizontalLayout();
+                    extraControls.setHeight(32, Sizeable.UNITS_PIXELS);
+                    extraControls.setSpacing(true);
+
+                    // Add the extra controls to the layout
+                    for (Component component : extras) {
+                        extraControls.addComponent(component);
+                        extraControls.setComponentAlignment(component, Alignment.MIDDLE_RIGHT);
+                    }
+
+                    // Add a TabSheet.SelectedTabChangeListener to show or hide the extra controls
+                    tabSheet.addListener(new SelectedTabChangeListener() {
+                        private static final long serialVersionUID = 6370347645872323830L;
+
+                        @Override
+                        public void selectedTabChange(SelectedTabChangeEvent event) {
+                            final TabSheet source = (TabSheet) event.getSource();
+                            if (source == tabSheet) {
+                                // Bizarrely enough, getSelectedTab() returns the contained
+                                // Component, not the Tab itself.
+                                //
+                                // If the first tab was selected...
+                                if (source.getSelectedTab() == view) {
+                                    extraControls.setVisible(true);
+                                } else {
+                                    extraControls.setVisible(false);
+                                }
+                            }
+                        }
+                    });
+
+                    // Place the extra controls on the absolute layout
+                    bottomLayout.addComponent(extraControls, "top:0px;right:5px;z-index:100");
+                }
+            } catch (ClassCastException e) {}
             view.setSizeFull();
         }
 
-        return tabSheet;
+        // Add the tabsheet to the layout
+        bottomLayout.addComponent(tabSheet);
+
+        return bottomLayout;
     }
     
 

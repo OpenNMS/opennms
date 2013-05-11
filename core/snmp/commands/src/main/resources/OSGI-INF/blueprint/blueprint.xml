@@ -1,0 +1,9 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
+
+    <command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.0.0">
+        <command  name="snmp/walk">
+            <action class="org.opennms.netmgt.snmp.commands.WalkCommand"/>
+        </command>
+    </command-bundle>
+
+</blueprint>

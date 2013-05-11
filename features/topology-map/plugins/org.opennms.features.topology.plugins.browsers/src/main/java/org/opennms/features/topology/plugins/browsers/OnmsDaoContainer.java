@@ -105,7 +105,11 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Sele
 	@Override
 	public Property getContainerProperty(Object itemId, Object propertyId) {
 		Item item = getItem(itemId);
-		return item.getItemProperty(propertyId);
+		if (item == null) {
+			return null;
+		} else {
+			return item.getItemProperty(propertyId);
+		}
 	}
 
 	@Override
@@ -117,7 +121,11 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Sele
 			return null;
 		}
 		T bean = m_dao.get((K)itemId);
-		return new BeanItem<T>(bean);
+		if (bean == null) {
+			return null;
+		} else {
+			return new BeanItem<T>(bean);
+		}
 	}
 
 	@Override

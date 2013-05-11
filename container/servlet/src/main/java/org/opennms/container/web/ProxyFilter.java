@@ -45,7 +45,7 @@ public final class ProxyFilter implements Filter {
             this.m_dispatcherTracker = new DispatcherTracker(getBundleContext(filterConfig.getServletContext()), null, filterConfig);
         } catch (final ServletException e) {
             throw e;
-        } catch (final Exception e) {
+        } catch (final Throwable e) {
             throw new ServletException("Unable to create dispatcher m_dispatcherTracker.", e);
         }
         this.m_dispatcherTracker.open();

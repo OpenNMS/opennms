@@ -1,0 +1,27 @@
+<web-app id="opennms-remoting" version="2.4"
+                 xmlns="http://java.sun.com/xml/ns/j2ee"
+                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+
+  <display-name>opennms-services</display-name>
+  
+  <servlet>
+    <servlet-name>appNameServlet</servlet-name>
+    <servlet-class>org.opennms.features.topology.plugins.ncs.AppNameTestServlet</servlet-class>
+  </servlet>
+  
+  <servlet>
+    <servlet-name>servicePathServlet</servlet-name>
+    <servlet-class>org.opennms.features.topology.plugins.ncs.ServicePathTestServlet</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>appNameServlet</servlet-name>
+    <url-pattern>/api/space/nsas/service-management/services/884779</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>servicePathServlet</servlet-name>
+    <url-pattern>/api/space/nsas/eline-ptp/service-management/services/884779/servicepath</url-pattern>
+  </servlet-mapping>
+
+</web-app>

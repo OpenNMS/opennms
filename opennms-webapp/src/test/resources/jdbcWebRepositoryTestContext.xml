@@ -21,7 +21,7 @@
     <property name="onmsMapElementDao" ref="onmsMapElementDao"/>
     <property name="dataLinkInterfaceDao" ref="dataLinkInterfaceDao"/>
   </bean>
-  <bean name="daoWebAlarmRepository" class="org.opennms.web.alarm.DaoWebAlarmRepository"/>
+  <bean name="alarmRepository" class="org.opennms.netmgt.dao.hibernate.AlarmRepositoryHibernate"/>
   <bean name="jdbcWebEventRepository" class="org.opennms.web.event.JdbcWebEventRepository">
     <qualifier value="jdbc"/>
   </bean>

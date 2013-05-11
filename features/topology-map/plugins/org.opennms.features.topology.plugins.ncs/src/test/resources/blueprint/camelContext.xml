@@ -1,0 +1,38 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="
+             http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
+
+    <bean id="nodeDao" class="org.opennms.features.topology.plugins.ncs.MockNodeDao"/>
+    <bean id="ncsRepository" class="org.opennms.features.topology.plugins.ncs.MockNCSComponentRepository"/>
+
+    <bean id="ncsPathProvider" class="org.opennms.features.topology.plugins.ncs.NCSPathProviderService">
+        <argument ref="ncsRepository"/>
+        <argument ref="nodeDao"/>
+    </bean>
+    
+  <camelContext xmlns="http://camel.apache.org/schema/blueprint">
+    <route>
+      <from uri="direct:start"/>
+      <setHeader headerName="CamelHttpUri">
+        <simple>http://localhost:10346/ncs-provider/app-name?appName=${header.provisionid}</simple>
+      </setHeader>
+      <to uri="http://dummyhost"/>
+      <bean ref="ncsPathProvider" method="getServiceName" />
+      <setHeader headerName="CamelHttpUri">
+        <simple>http://localhost:10346/ncs-provider/${header.serviceType}/service-path?deviceA=${header.deviceA}&deviceZ=${header.deviceZ}"</simple>
+      </setHeader>
+      <to uri="http://dummyhost"/>
+      <bean ref="ncsPathProvider" method="createPath" />
+    </route>
+    
+    <route>
+      <from uri="direct:start"/>
+      <transform>
+        <simple>Hello ${body}</simple>
+      </transform>
+      <to uri="mock:a"/>
+    </route>
+  </camelContext>
+
+</blueprint>
