@@ -82,6 +82,7 @@ public class LoopDetectorTest implements ApplicationContextAware {
         return (LoopDetector) bean;
     }
 
+    @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         m_applicationContext = applicationContext;
         

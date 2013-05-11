@@ -54,11 +54,13 @@ public class DhcpClient implements Client<DhcpRequest, DhcpResponse> {
     /**
      * <p>close</p>
      */
+    @Override
     public void close() {
         
     }
 
     /** {@inheritDoc} */
+    @Override
     public void connect(InetAddress address, int port, int timeout) throws IOException, Exception {
         m_address = address;
         m_timeout = timeout;
@@ -72,6 +74,7 @@ public class DhcpClient implements Client<DhcpRequest, DhcpResponse> {
      * @throws java.io.IOException if any.
      * @throws java.lang.Exception if any.
      */
+    @Override
     public DhcpResponse receiveBanner() throws IOException, Exception {
         m_responseTime = Dhcpd.isServer(m_address, m_timeout, getRetries());
         ThreadCategory.getInstance(DhcpClient.class).debug("got a response from the server: " + m_responseTime);
@@ -87,6 +90,7 @@ public class DhcpClient implements Client<DhcpRequest, DhcpResponse> {
      * @throws java.io.IOException if any.
      * @throws java.lang.Exception if any.
      */
+    @Override
     public DhcpResponse sendRequest(DhcpRequest request) throws IOException, Exception {
         return null;
     }

@@ -44,11 +44,13 @@ public class GroupColumnInterceptor implements ColumnInterceptor {
     private static final String LAST_VALUE = "lastValue";
 
     /** {@inheritDoc} */
+    @Override
     public void addColumnAttributes(TableModel tableModel, Column column) {
         //do nothing
     }
 
     /** {@inheritDoc} */
+    @Override
     public void modifyColumnAttributes(TableModel tableModel, Column column) {
         Object value = column.getValue();
         Object lastValue = column.getAttribute(LAST_VALUE);

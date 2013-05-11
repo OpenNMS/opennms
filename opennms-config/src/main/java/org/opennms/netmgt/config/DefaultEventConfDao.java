@@ -84,6 +84,7 @@ public class DefaultEventConfDao extends AbstractJaxbConfigDao<Events, EventConf
 
         private static final long serialVersionUID = 7976730920523203921L;
 
+        @Override
         public int compare(final Event e1, final Event e2) {
             return e1.getEventLabel().compareToIgnoreCase(e2.getEventLabel());
         }
@@ -110,6 +111,7 @@ public class DefaultEventConfDao extends AbstractJaxbConfigDao<Events, EventConf
      *
      * @throws org.springframework.dao.DataAccessException if any.
      */
+    @Override
     public void reload() throws DataAccessException {
         getContainer().reload();
     }
@@ -177,6 +179,7 @@ public class DefaultEventConfDao extends AbstractJaxbConfigDao<Events, EventConf
      * @see org.opennms.netmgt.config.EventConfDao#getEvents(java.lang.String)
      */
     /** {@inheritDoc} */
+    @Override
     public List<Event> getEvents(final String uei) {
     	final List<Event> events = new ArrayList<Event>();
 
@@ -203,6 +206,7 @@ public class DefaultEventConfDao extends AbstractJaxbConfigDao<Events, EventConf
      *
      * @return a {@link java.util.List} object.
      */
+    @Override
     public List<String> getEventUEIs() {
         final List<String> eventUEIs = new ArrayList<String>();
         for (final Events fileEvents : getEventConfiguration().getEventFiles().values()) {
@@ -221,6 +225,7 @@ public class DefaultEventConfDao extends AbstractJaxbConfigDao<Events, EventConf
      *
      * @return a {@link java.util.Map} object.
      */
+    @Override
     public Map<String, String> getEventLabels() {
         final Map<String, String> eventLabels = new TreeMap<String, String>();
         for (final Events fileEvents : getEventConfiguration().getEventFiles().values()) {
@@ -236,6 +241,7 @@ public class DefaultEventConfDao extends AbstractJaxbConfigDao<Events, EventConf
      * @see org.opennms.netmgt.config.EventConfDao#getEventLabel(java.lang.String)
      */
     /** {@inheritDoc} */
+    @Override
     public String getEventLabel(final String uei) {
         for (final Events fileEvents : getEventConfiguration().getEventFiles().values()) {
             for (final Event event : fileEvents.getEventCollection()) {
@@ -253,6 +259,7 @@ public class DefaultEventConfDao extends AbstractJaxbConfigDao<Events, EventConf
     /**
      * <p>saveCurrent</p>
      */
+    @Override
     public synchronized void saveCurrent() {
         for (final Entry<Resource, Events> entry : getEventConfiguration().getEventFiles().entrySet()) {
             final Resource resource = entry.getKey();
@@ -321,6 +328,7 @@ public class DefaultEventConfDao extends AbstractJaxbConfigDao<Events, EventConf
      *
      * @return a {@link java.util.List} object.
      */
+    @Override
     public List<Event> getEventsByLabel() {
         final List<Event> list = new ArrayList<Event>();
         for (final Events fileEvents : getEventConfiguration().getEventFiles().values()) {
@@ -334,6 +342,7 @@ public class DefaultEventConfDao extends AbstractJaxbConfigDao<Events, EventConf
      * @see org.opennms.netmgt.config.EventConfDao#addEvent(org.opennms.netmgt.xml.eventconf.Event)
      */
     /** {@inheritDoc} */
+    @Override
     public void addEvent(final Event event) {
         getRootEvents().addEvent(event);
     }
@@ -342,6 +351,7 @@ public class DefaultEventConfDao extends AbstractJaxbConfigDao<Events, EventConf
      * @see org.opennms.netmgt.config.EventConfDao#addEventToProgrammaticStore(org.opennms.netmgt.xml.eventconf.Event)
      */
     /** {@inheritDoc} */
+    @Override
     public void addEventToProgrammaticStore(final Event event) {
         // Check for, and possibly add the programmatic store to the in-memory structure
         if (!getEventConfiguration().getEventFiles().containsKey(getProgrammaticStoreConfigResource())) {
@@ -359,6 +369,7 @@ public class DefaultEventConfDao extends AbstractJaxbConfigDao<Events, EventConf
         getProgrammaticStoreEvents().addEvent(event);
     }
 
+    @Override
     public Events getRootEvents() {
         return getEventConfiguration().getEventFiles().get(getConfigResource());
     }
@@ -371,6 +382,7 @@ public class DefaultEventConfDao extends AbstractJaxbConfigDao<Events, EventConf
      * @see org.opennms.netmgt.config.EventConfDao#removeEventFromProgrammaticStore(org.opennms.netmgt.xml.eventconf.Event)
      */   
     /** {@inheritDoc} */
+    @Override
     public boolean removeEventFromProgrammaticStore(final Event event) {
         if (!getEventConfiguration().getEventFiles().containsKey(getProgrammaticStoreConfigResource())) {
             return false; // Oops, doesn't exist
@@ -389,6 +401,7 @@ public class DefaultEventConfDao extends AbstractJaxbConfigDao<Events, EventConf
      * @see org.opennms.netmgt.config.EventConfDao#isSecureTag(java.lang.String)
      */
     /** {@inheritDoc} */
+    @Override
     public boolean isSecureTag(final String tag) {
         return getEventConfiguration().getSecureTags().contains(tag);
     }
@@ -397,6 +410,7 @@ public class DefaultEventConfDao extends AbstractJaxbConfigDao<Events, EventConf
      * @see org.opennms.netmgt.config.EventConfDao#findByUei(java.lang.String)
      */
     /** {@inheritDoc} */
+    @Override
     public Event findByUei(final String uei) {
         return getEventConfiguration().getEventConfData().getEventByUEI(uei);
     }
@@ -405,6 +419,7 @@ public class DefaultEventConfDao extends AbstractJaxbConfigDao<Events, EventConf
      * @see org.opennms.netmgt.config.EventConfDao#findByEvent(org.opennms.netmgt.xml.event.Event)
      */
     /** {@inheritDoc} */
+    @Override
     public Event findByEvent(final org.opennms.netmgt.xml.event.Event matchingEvent) {
         return getEventConfiguration().getEventConfData().getEvent(matchingEvent);
     }

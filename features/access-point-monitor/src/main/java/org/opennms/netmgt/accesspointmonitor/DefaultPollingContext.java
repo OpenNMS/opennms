@@ -65,74 +65,92 @@ public class DefaultPollingContext implements PollingContext {
         m_log = ThreadCategory.getInstance(getClass());
     }
 
+    @Override
     public void setPackage(Package pkg) {
         m_package = pkg;
     }
 
+    @Override
     public Package getPackage() {
         return m_package;
     }
 
+    @Override
     public void setIpInterfaceDao(IpInterfaceDao ipInterfaceDao) {
         m_ipInterfaceDao = ipInterfaceDao;
     }
 
+    @Override
     public IpInterfaceDao getIpInterfaceDao() {
         return m_ipInterfaceDao;
     }
 
+    @Override
     public NodeDao getNodeDao() {
         return m_nodeDao;
     }
 
+    @Override
     public void setNodeDao(NodeDao nodeDao) {
         m_nodeDao = nodeDao;
     }
 
+    @Override
     public void setAccessPointDao(AccessPointDao accessPointDao) {
         m_accessPointDao = accessPointDao;
     }
 
+    @Override
     public AccessPointDao getAccessPointDao() {
         return m_accessPointDao;
     }
 
+    @Override
     public void setEventManager(EventIpcManager eventMgr) {
         m_eventMgr = eventMgr;
     }
 
+    @Override
     public EventIpcManager getEventManager() {
         return m_eventMgr;
     }
 
+    @Override
     public void setScheduler(Scheduler scheduler) {
         m_scheduler = scheduler;
     }
 
+    @Override
     public Scheduler getScheduler() {
         return m_scheduler;
     }
 
+    @Override
     public void setInterval(long interval) {
         m_interval = interval;
     }
 
+    @Override
     public long getInterval() {
         return m_interval;
     }
 
+    @Override
     public void setPropertyMap(Map<String, String> parameters) {
         m_parameters = parameters;
     }
 
+    @Override
     public Map<String, String> getPropertyMap() {
         return m_parameters;
     }
 
+    @Override
     public void setPollerConfig(AccessPointMonitorConfig accesspointmonitorConfig) {
         m_pollerConfig = accesspointmonitorConfig;
     }
 
+    @Override
     public AccessPointMonitorConfig getPollerConfig() {
         return m_pollerConfig;
     }
@@ -141,11 +159,13 @@ public class DefaultPollingContext implements PollingContext {
         return this;
     }
 
+    @Override
     public void init() {
         // Fire up a thread pool
         m_pool = Executors.newFixedThreadPool(getPackage().getEffectiveService().getThreads());
     }
 
+    @Override
     public void release() {
         // Shutdown the thread pool
         m_pool.shutdown();
@@ -153,6 +173,7 @@ public class DefaultPollingContext implements PollingContext {
         m_pool = null;
     }
 
+    @Override
     public void run() {
         // Determine the list of interfaces to poll at runtime
         OnmsIpInterfaceList ifaces = getInterfaceList();
@@ -319,6 +340,7 @@ public class DefaultPollingContext implements PollingContext {
         return p;
     }
 
+    @Override
     public boolean isReady() {
         return m_pool != null;
     }

@@ -119,6 +119,7 @@ public class LocationPanel extends Composite implements LocationPanelSelectEvent
 	}
 
     /** {@inheritDoc} */
+        @Override
     public void onLocationSelected(final LocationPanelSelectEvent event) {
         m_eventBus.fireEvent(event);
       
@@ -170,6 +171,7 @@ public class LocationPanel extends Composite implements LocationPanelSelectEvent
     public void updateApplicationList(final ArrayList<ApplicationInfo> appList) {
         Collections.sort(appList, new Comparator<ApplicationInfo>() {
 
+            @Override
             public int compare(ApplicationInfo o1, ApplicationInfo o2) {
                 return -1 * o1.compareTo(o2);
             }
@@ -186,6 +188,7 @@ public class LocationPanel extends Composite implements LocationPanelSelectEvent
      */
     public void updateLocationList(final ArrayList<LocationInfo> visibleLocations) {
         Collections.sort(visibleLocations, new Comparator<LocationInfo>() {
+            @Override
             public int compare(LocationInfo o1, LocationInfo o2) {
                 return -1 * o1.compareTo(o2);
             }
@@ -255,6 +258,7 @@ public class LocationPanel extends Composite implements LocationPanelSelectEvent
     /**
      * <p>onTagPanelResize</p>
      */
+        @Override
     public void onTagPanelResize() {
         resizeDockPanel();
     }
@@ -262,6 +266,7 @@ public class LocationPanel extends Composite implements LocationPanelSelectEvent
     /**
      * <p>onResize</p>
      */
+        @Override
     public void onResize() {
         if(applicationList.isVisible()) {
             applicationList.refreshApplicationListResize();
@@ -270,6 +275,7 @@ public class LocationPanel extends Composite implements LocationPanelSelectEvent
         }
     }
 
+        @Override
     public void onResize(ResizeEvent event) {
         resizeDockPanel();
     }

@@ -153,6 +153,7 @@ public final class ThreshdConfigFactory extends ThreshdConfigManager {
           * @throws org.exolab.castor.xml.MarshalException if any.
           * @throws org.exolab.castor.xml.ValidationException if any.
           */
+    @Override
          public void reloadXML() throws IOException, MarshalException, ValidationException {
              /* FIXME: THIS IS WAY WRONG! Should only reload the xml not recreate the instance
               otherwise references to the old instance will still linger */
@@ -160,6 +161,7 @@ public final class ThreshdConfigFactory extends ThreshdConfigManager {
         }
 
         /** {@inheritDoc} */
+    @Override
         protected void saveXML(String xmlString) throws IOException {
             File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.THRESHD_CONFIG_FILE_NAME);
             Writer fileWriter = new OutputStreamWriter(new FileOutputStream(cfgFile), "UTF-8");

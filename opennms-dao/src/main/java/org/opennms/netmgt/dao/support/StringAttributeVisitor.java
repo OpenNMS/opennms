@@ -52,16 +52,24 @@ public class StringAttributeVisitor implements CollectionSetVisitor {
         return attributeValue;
     }
 
+    @Override
     public void visitAttribute(CollectionAttribute attribute) {
         if (attribute.getType().toLowerCase().startsWith("string") && attributeName.equals(attribute.getName()))
             attributeValue = attribute.getStringValue();
     }
 
+    @Override
     public void visitCollectionSet(CollectionSet set) {}
+    @Override
     public void visitResource(CollectionResource resource) {}
+    @Override
     public void visitGroup(AttributeGroup group) {}
+    @Override
     public void completeAttribute(CollectionAttribute attribute) {}
+    @Override
     public void completeGroup(AttributeGroup group) {}
+    @Override
     public void completeResource(CollectionResource resource) {}
+    @Override
     public void completeCollectionSet(CollectionSet set) {}
 }

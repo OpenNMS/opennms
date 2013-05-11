@@ -156,6 +156,7 @@ public class WebClient implements Client<WebRequest, WebResponse> {
          * @see http://hc.apache.org/httpcomponents-client-4.0.1/tutorial/html/authentication.html
          */
         HttpRequestInterceptor preemptiveAuth = new HttpRequestInterceptor() {
+            @Override
             public void process(final HttpRequest request, final HttpContext context) throws IOException {
                 AuthState authState = (AuthState)context.getAttribute(ClientContext.TARGET_AUTH_STATE);
                 CredentialsProvider credsProvider = (CredentialsProvider)context.getAttribute(ClientContext.CREDS_PROVIDER);

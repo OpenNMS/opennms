@@ -85,6 +85,7 @@ public class UssdCommands implements CommandProvider
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getHelp() { 
         StringBuffer buffer = new StringBuffer(); 
         buffer.append("---USSD Commands---");

@@ -308,6 +308,7 @@ public class CustomViewController extends AbstractController implements Initiali
         if (needToSchedule) {
             m_executor.execute(new Runnable() {
 
+                @Override
                 public void run() {
                         getResourceService().promoteGraphAttributesForResource(resource);
                         m_resourcesPendingPromotion.remove(resource.getId());

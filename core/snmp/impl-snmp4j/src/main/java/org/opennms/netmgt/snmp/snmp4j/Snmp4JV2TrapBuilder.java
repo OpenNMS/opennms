@@ -55,6 +55,7 @@ public class Snmp4JV2TrapBuilder implements SnmpTrapBuilder {
         return m_pdu;
     }
 
+    @Override
     public void send(String destAddr, int destPort, String community) throws Exception {
         SnmpAgentConfig snmpAgentConfig = m_strategy.buildAgentConfig(destAddr, destPort, community, m_pdu);
         Snmp4JAgentConfig agentConfig = new Snmp4JAgentConfig(snmpAgentConfig);
@@ -92,12 +93,14 @@ public class Snmp4JV2TrapBuilder implements SnmpTrapBuilder {
         return m_strategy.send(agentConfig, m_pdu, true);
 	}
 
+    @Override
     public void addVarBind(SnmpObjId name, SnmpValue value) {
         OID oid = new OID(name.getIds());
         Variable val = ((Snmp4JValue) value).getVariable();
         m_pdu.add(new VariableBinding(oid, val));
     }
 
+    @Override
     public void sendTest(String destAddr, int destPort, String community) throws Exception {
         m_strategy.sendTest(destAddr, destPort, community, m_pdu);
     }

@@ -205,6 +205,7 @@ public class DataCollectionConfigParser {
         
         // Get external configuration files
         File[] listOfFiles = folder.listFiles(new FilenameFilter() {
+            @Override
             public boolean accept(File file, String name) {
                 return name.endsWith(".xml");
             }
@@ -215,6 +216,7 @@ public class DataCollectionConfigParser {
         int i = 0;
         for (final File file : listOfFiles) {
             Thread thread = new Thread("DataCollectionConfigParser-Thread-" + i++) {
+                @Override
                 public void run() {
                     try {
                         log().debug("parseExternalResources: parsing " + file);

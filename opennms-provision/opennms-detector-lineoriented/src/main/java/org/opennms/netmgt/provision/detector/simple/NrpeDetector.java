@@ -86,6 +86,7 @@ public class NrpeDetector extends BasicDetector<NrpeRequest, NrpePacket> {
     private static ResponseValidator<NrpePacket> resultCodeEquals(final int desiredResultCode){
         return new ResponseValidator<NrpePacket>() {
 
+            @Override
             public boolean validate(final NrpePacket response) {
                 if(response.getResultCode() == desiredResultCode) {
                     return true;

@@ -116,6 +116,7 @@ public class GWTBounds {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean equals(Object o) {
         if (o instanceof GWTBounds) {
             GWTBounds b = (GWTBounds)o;
@@ -129,6 +130,7 @@ public class GWTBounds {
      *
      * @return a int.
      */
+    @Override
     public int hashCode() {
     	return new HashCodeBuilder()
     		.append(m_southWestCorner)
@@ -141,6 +143,7 @@ public class GWTBounds {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         StringBuilder bldr = new StringBuilder();
         bldr.append("((");

@@ -38,6 +38,7 @@ public class RTInaccessibleQueue extends RTQueue {
         setId(id);
     }
 
+        @Override
     public boolean isAccessible() {
         return false;
     }

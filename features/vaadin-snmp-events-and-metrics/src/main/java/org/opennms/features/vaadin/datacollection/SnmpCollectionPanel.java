@@ -112,6 +112,7 @@ public class SnmpCollectionPanel extends VerticalLayout {
         };
 
         final Button add = new Button("Add SNMP Collection", new Button.ClickListener() {
+            @Override
             public void buttonClick(Button.ClickEvent event) {
                 SnmpCollection collection = new SnmpCollection();
                 collection.setName("New Collection");
@@ -131,6 +132,7 @@ public class SnmpCollectionPanel extends VerticalLayout {
         });
 
         final Button refresh = new Button("Refresh SNMP Collections", new Button.ClickListener() {
+            @Override
             public void buttonClick(Button.ClickEvent event) {
                 MessageBox mb = new MessageBox(getApplication().getMainWindow(),
                                                "Are you sure?",
@@ -140,6 +142,7 @@ public class SnmpCollectionPanel extends VerticalLayout {
                                                new MessageBox.ButtonConfig(MessageBox.ButtonType.NO, "No"));
                 mb.addStyleName(Runo.WINDOW_DIALOG);
                 mb.show(new EventListener() {
+                    @Override
                     public void buttonClicked(ButtonType buttonType) {
                         if (buttonType == MessageBox.ButtonType.YES) {
                             table.refreshSnmpCollections();

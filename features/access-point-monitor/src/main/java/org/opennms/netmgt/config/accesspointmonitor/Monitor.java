@@ -55,6 +55,7 @@ public class Monitor implements Serializable, Comparable<Monitor> {
         m_className = className;
     }
 
+    @Override
     public int compareTo(Monitor obj) {
         return new CompareToBuilder()
             .append(getService(), obj.getService())

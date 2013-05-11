@@ -101,6 +101,7 @@ public class OssDaoOpenNMSImpl implements OssDao {
 	 * @see org.openoss.opennms.spring.dao.OssDao#setDataSource(javax.sql.DataSource)
 	 */
 	/** {@inheritDoc} */
+        @Override
 	public void setDataSource(DataSource dataSource) {
 		_dataSource = dataSource;
 	}
@@ -116,6 +117,7 @@ public class OssDaoOpenNMSImpl implements OssDao {
 	 * @see org.openoss.opennms.spring.dao.OssDao#setAssetRecordDao(org.opennms.netmgt.dao.AssetRecordDao)
 	 */
 	/** {@inheritDoc} */
+        @Override
 	public void setAssetRecordDao(AssetRecordDao ar){
 		_assetRecordDao = ar;
 	}
@@ -130,6 +132,7 @@ public class OssDaoOpenNMSImpl implements OssDao {
 	 * @see org.openoss.opennms.spring.dao.OssDao#setNodeDao(org.opennms.netmgt.dao.NodeDao)
 	 */
 	/** {@inheritDoc} */
+        @Override
 	public  void setNodeDao( NodeDao nodedao){
 		_nodeDao = nodedao;
 	}
@@ -144,6 +147,7 @@ public class OssDaoOpenNMSImpl implements OssDao {
 	 * @see org.openoss.opennms.spring.dao.OssDao#setAlarmDao(org.opennms.netmgt.dao.AlarmDao)
 	 */
 	/** {@inheritDoc} */
+        @Override
 	public  void setAlarmDao( AlarmDao alarmDao){
 		_alarmDao = alarmDao;
 	}
@@ -158,6 +162,7 @@ public class OssDaoOpenNMSImpl implements OssDao {
 	 * @see org.openoss.opennms.spring.dao.OssDao#setTransTemplate(org.springframework.transaction.support.TransactionTemplate)
 	 */
 	/** {@inheritDoc} */
+        @Override
 	public void setTransTemplate(TransactionTemplate _transTemplate) {
 		transTemplate = _transTemplate;
 	}
@@ -176,6 +181,7 @@ public class OssDaoOpenNMSImpl implements OssDao {
 	 * @see org.openoss.opennms.spring.dao.OssDao#setQoSD(org.openoss.opennms.spring.qosd.QoSD)
 	 */
 	/** {@inheritDoc} */
+        @Override
 	public void setQoSD(QoSD _qoSD){
 		qoSD=_qoSD;
 	}
@@ -192,6 +198,7 @@ public class OssDaoOpenNMSImpl implements OssDao {
 	/**
 	 * <p>init</p>
 	 */
+        @Override
 	synchronized public void init(){
 		if (initialised) return;
 
@@ -217,6 +224,7 @@ public class OssDaoOpenNMSImpl implements OssDao {
 
 
 	/** {@inheritDoc} */
+        @Override
 	public synchronized OnmsAlarm addCurrentAlarmForUniqueKey(final OnmsAlarm alarm){
 		ThreadCategory log = getLog();	
 
@@ -242,6 +250,7 @@ public class OssDaoOpenNMSImpl implements OssDao {
 
 				//_alarmDao.save(alarm); // - replaced by;
 				transTemplate.execute(new TransactionCallback<Object>() {
+                                        @Override
 					public Object doInTransaction(TransactionStatus status) {
 						_alarmDao.save(alarm);
 						return null;
@@ -278,6 +287,7 @@ public class OssDaoOpenNMSImpl implements OssDao {
 	 * @see org.openoss.opennms.spring.dao.OssDao#updateCurrentAlarmForUniqueKey(org.opennms.netmgt.model.OnmsAlarm)
 	 */
 	/** {@inheritDoc} */
+        @Override
 	public synchronized OnmsAlarm updateCurrentAlarmForUniqueKey(final OnmsAlarm alarm){
 		ThreadCategory log = getLog();	
 
@@ -300,6 +310,7 @@ public class OssDaoOpenNMSImpl implements OssDao {
 				if (log.isDebugEnabled()) log.debug("\tOssDaoOpenNMSImpl().updateCurrentAlarmForUniqueKey: alarm to update in database"+ alarmToStringBrief(alarm));
 
 				transTemplate.execute(new TransactionCallback<Object>() {
+                                        @Override
 					public Object doInTransaction(TransactionStatus status) {
 						_alarmDao.update(alarm);
 						return null;
@@ -336,6 +347,7 @@ public class OssDaoOpenNMSImpl implements OssDao {
 	 * @see org.openoss.opennms.spring.dao.OssDao#getCurrentAlarmForUniqueKey(java.lang.String, java.lang.String)
 	 */
 	/** {@inheritDoc} */
+        @Override
 	public synchronized OnmsAlarm getCurrentAlarmForUniqueKey(String applicationDN , String ossPrimaryKey){
 		ThreadCategory log = getLog();	
 
@@ -364,6 +376,7 @@ public class OssDaoOpenNMSImpl implements OssDao {
 	 */
 	private void localUpdateAlarmCache(){
 		transTemplate.execute(new TransactionCallback<Object>() {
+                        @Override
 			public Object doInTransaction(TransactionStatus status) {
 				localUpdateAlarmCacheTransaction();
 				return null;
@@ -419,6 +432,7 @@ public class OssDaoOpenNMSImpl implements OssDao {
 	 *
 	 * @throws java.lang.IllegalStateException if any.
 	 */
+        @Override
 	synchronized public void updateAlarmCache() throws IllegalStateException{
 		localUpdateAlarmCache();
 	}
@@ -431,6 +445,7 @@ public class OssDaoOpenNMSImpl implements OssDao {
 	 *
 	 * @throws java.lang.IllegalStateException if any.
 	 */
+        @Override
 	synchronized public void updateAlarmCacheAndSendAlarms() throws IllegalStateException{
 		localUpdateAlarmCache();
 		sendAlarms();
@@ -444,6 +459,7 @@ public class OssDaoOpenNMSImpl implements OssDao {
 	 *
 	 * @return an array of {@link org.opennms.netmgt.model.OnmsAlarm} objects.
 	 */
+        @Override
 	public OnmsAlarm[] getAlarmCache(){
 		OnmsAlarm[] returnAlarmCache= new OnmsAlarm[alarmCacheByID.size()];
 		int i=0;
@@ -573,6 +589,7 @@ public class OssDaoOpenNMSImpl implements OssDao {
 	 * @see org.openoss.opennms.spring.dao.OssDao#findNodeByLabel(java.lang.String)
 	 */
 	/** {@inheritDoc} */
+        @Override
 	public OnmsNode findNodeByLabel(String label) {
 		ThreadCategory log = getLog();	
 
@@ -591,6 +608,7 @@ public class OssDaoOpenNMSImpl implements OssDao {
 	 * @see org.openoss.opennms.spring.dao.OssDao#findNodeByInstanceAndType(java.lang.String, java.lang.String)
 	 */
 	/** {@inheritDoc} */
+        @Override
 	public OnmsNode findNodeByInstanceAndType(String managedObjectInstance, String managedObjectType) throws IllegalArgumentException{
 		ThreadCategory log = getLog();	
 		if (managedObjectInstance==null) throw new IllegalArgumentException("OssDaoOpenNMSImpl().findNodeByInstanceType: Illegal value: managedObjectInstance null");
@@ -613,6 +631,7 @@ public class OssDaoOpenNMSImpl implements OssDao {
 	 * @see org.openoss.opennms.spring.dao.OssDao#findNodeByID(java.lang.Integer)
 	 */
 	/** {@inheritDoc} */
+        @Override
 	public OnmsNode findNodeByID(Integer nodeid){
 		if (nodeid==null) throw new IllegalArgumentException("OssDaoOpenNMSImpl().findNodeByLabel: Illegal value: nodeid null or empty ");
 		OnmsNode node=null;
@@ -631,6 +650,7 @@ public class OssDaoOpenNMSImpl implements OssDao {
 	/**
 	 * <p>updateNodeCaches</p>
 	 */
+        @Override
 	public synchronized void updateNodeCaches(){
 		localUpdateNodeCaches();
 	}
@@ -699,6 +719,7 @@ public class OssDaoOpenNMSImpl implements OssDao {
 						// save asset data back with new node information 
 						// (Note - data may not have changed)
 						transTemplate.execute(new TransactionCallback<Object>() {
+                                                        @Override
 							public Object doInTransaction(TransactionStatus status) {
 								_assetRecordDao.update(assetRecord);
 								return null;

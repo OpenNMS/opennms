@@ -49,18 +49,21 @@ public class AddEventVisitor extends AbstractEntityVisitor {
 	}
 
 	/** {@inheritDoc} */
+    @Override
 	public void visitNode(OnmsNode node) {
         LogUtils.infof(this, "Sending nodeAdded Event for %s\n", node);
 	    m_eventForwarder.sendNow(createNodeAddedEvent(node));
 	}
 
     /** {@inheritDoc} */
+    @Override
     public void visitIpInterface(OnmsIpInterface iface) {
         LogUtils.infof(this, "Sending nodeGainedInterface Event for %s\n", iface);
         m_eventForwarder.sendNow(createNodeGainedInterfaceEvent(iface));
     }
 
     /** {@inheritDoc} */
+    @Override
     public void visitMonitoredService(OnmsMonitoredService monSvc) {
         LogUtils.infof(this, "Sending nodeGainedService Event for %s\n", monSvc);
         m_eventForwarder.sendNow(createNodeGainedServiceEvent(monSvc));

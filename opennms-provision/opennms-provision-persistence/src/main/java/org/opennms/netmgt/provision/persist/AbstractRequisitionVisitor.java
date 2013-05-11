@@ -40,58 +40,72 @@ import org.opennms.netmgt.provision.persist.requisition.Requisition;
 public class AbstractRequisitionVisitor implements RequisitionVisitor {
 
     /** {@inheritDoc} */
+    @Override
     public void completeAsset(OnmsAssetRequisition assetReq) {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void completeInterface(OnmsIpInterfaceRequisition ifaceReq) {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void completeModelImport(Requisition req) {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void completeMonitoredService(OnmsMonitoredServiceRequisition monSvcReq) {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void completeNode(OnmsNodeRequisition nodeReq) {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void completeNodeCategory(OnmsNodeCategoryRequisition catReq) {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void completeServiceCategory(OnmsServiceCategoryRequisition catReq) {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void visitAsset(OnmsAssetRequisition assetReq) {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void visitInterface(OnmsIpInterfaceRequisition ifaceReq) {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void visitModelImport(Requisition req) {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void visitMonitoredService(OnmsMonitoredServiceRequisition monSvcReq) {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void visitNode(OnmsNodeRequisition nodeReq) {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void visitNodeCategory(OnmsNodeCategoryRequisition catReq) {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void visitServiceCategory(OnmsServiceCategoryRequisition catReq) {
     }
 }

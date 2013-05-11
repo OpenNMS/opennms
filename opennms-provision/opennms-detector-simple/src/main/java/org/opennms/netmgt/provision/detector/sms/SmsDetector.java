@@ -77,6 +77,7 @@ public class SmsDetector extends BasicDetector<LineOrientedRequest, SmsResponse>
         
         return new ResponseValidator<SmsResponse>(){
 
+            @Override
             public boolean validate(SmsResponse response) {
                 return response.isSms(ipAddr);
             }

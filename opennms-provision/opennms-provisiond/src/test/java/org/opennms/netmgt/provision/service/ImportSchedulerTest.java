@@ -121,15 +121,18 @@ public class ImportSchedulerTest implements InitializingBean {
         m_importScheduler.getScheduler().addTriggerListener(new TriggerListener() {
             
             
+            @Override
             public String getName() {
                 return "TestTriggerListener";
             }
 
+            @Override
             public void triggerComplete(Trigger trigger, JobExecutionContext context, int triggerInstructionCode) {
                 LogUtils.infof(this, "triggerComplete called on trigger listener");
                 callTracker.setCalled(true);
             }
 
+            @Override
             public void triggerFired(Trigger trigger, JobExecutionContext context) {
                 LogUtils.infof(this, "triggerFired called on trigger listener");
                 Job jobInstance = context.getJobInstance();
@@ -142,11 +145,13 @@ public class ImportSchedulerTest implements InitializingBean {
                 callTracker.setCalled(true);
             }
 
+            @Override
             public void triggerMisfired(Trigger trigger) {
                 LogUtils.infof(this, "triggerMisFired called on trigger listener");
                 callTracker.setCalled(true);
             }
 
+            @Override
             public boolean vetoJobExecution(Trigger trigger, JobExecutionContext context) {
                 LogUtils.infof(this, "vetoJobExecution called on trigger listener");
                 callTracker.setCalled(true);

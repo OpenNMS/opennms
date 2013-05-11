@@ -49,18 +49,22 @@ public class TopEventReportPlugin extends AbstractSystemReportPlugin implements 
         BeanUtils.assertAutowiring(this);
     }
 
+    @Override
     public String getName() {
         return "TopEvent";
     }
 
+    @Override
     public String getDescription() {
         return "Top 20 most reported events";
     }
 
+    @Override
     public int getPriority() {
         return 4;
     }
 
+    @Override
     public TreeMap<String, Resource> getEntries() {
         final TreeMap<String,Resource> map = new TreeMap<String,Resource>();
 

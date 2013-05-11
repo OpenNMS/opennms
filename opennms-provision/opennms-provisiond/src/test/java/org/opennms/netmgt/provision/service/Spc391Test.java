@@ -136,10 +136,12 @@ public class Spc391Test {
         final CountDownLatch eventReceived = new CountDownLatch(numberToMatch);
         m_eventSubscriber.addEventListener(new EventListener() {
 
+            @Override
             public void onEvent(final Event e) {
                 eventReceived.countDown();
             }
 
+            @Override
             public String getName() {
                 return "Test Initial Setup";
             }

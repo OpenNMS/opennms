@@ -45,6 +45,7 @@ public class InterfaceIpAddressComparator implements Comparator<Interface> {
      * @param i2 a {@link org.opennms.web.element.Interface} object.
      * @return a int.
      */
+    @Override
     public int compare(Interface i1, Interface i2) {
         return i1.getIpAddress().compareTo(i2.getIpAddress());
     }

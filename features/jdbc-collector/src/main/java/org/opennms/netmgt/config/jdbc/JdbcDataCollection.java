@@ -107,6 +107,7 @@ public class JdbcDataCollection implements Serializable, Comparable<JdbcDataColl
         }
     }
     
+    @Override
     public int compareTo(JdbcDataCollection obj) {
         return new CompareToBuilder()
             .append(getName(), obj.getName())

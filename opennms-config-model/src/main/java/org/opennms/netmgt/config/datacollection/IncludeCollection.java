@@ -241,6 +241,7 @@ public class IncludeCollection implements Serializable {
      * 
      * @return a hash code value for the object.
      */
+    @Override
     public int hashCode() {
         int result = 17;
 

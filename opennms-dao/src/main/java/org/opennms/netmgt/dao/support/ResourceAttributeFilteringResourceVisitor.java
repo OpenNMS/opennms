@@ -45,6 +45,7 @@ public class ResourceAttributeFilteringResourceVisitor implements ResourceVisito
     private String m_resourceAttributeValueMatch;
 
     /** {@inheritDoc} */
+    @Override
     public void visit(OnmsResource resource) {
         if (m_resourceAttributeValueMatch.equals(resource.getExternalValueAttributes().get(m_resourceAttributeKey))
                 || m_resourceAttributeValueMatch.equals(resource.getStringPropertyAttributes().get(m_resourceAttributeKey))) {

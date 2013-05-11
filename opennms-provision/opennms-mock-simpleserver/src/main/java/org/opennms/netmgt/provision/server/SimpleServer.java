@@ -57,14 +57,17 @@ public class SimpleServer extends SimpleConversationEndPoint {
             m_errorRequest = requestHandler;
         }
         
+        @Override
         public boolean matchResponseByString(final String response) {
             return false;
         }
 
+        @Override
         public boolean processResponse(final BufferedReader in) throws IOException {
             return false;
         }
 
+        @Override
         public boolean sendRequest(final OutputStream out) throws IOException {
             m_errorRequest.doRequest(out);
             return false;
@@ -146,6 +149,7 @@ public class SimpleServer extends SimpleConversationEndPoint {
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void init() throws Exception {
         super.init();
         setServerSocket(new ServerSocket());
@@ -212,6 +216,7 @@ public class SimpleServer extends SimpleConversationEndPoint {
     protected Runnable getRunnable() throws Exception {
         return new Runnable(){
             
+            @Override
             public void run(){
                 OutputStream out = null;
                 InputStreamReader isr = null;
@@ -333,6 +338,7 @@ public class SimpleServer extends SimpleConversationEndPoint {
     protected RequestHandler errorString(final String error) {
         return new RequestHandler() {
 
+            @Override
             public void doRequest(final OutputStream out) throws IOException {
                 out.write(String.format("%s\r\n", error).getBytes());
                 
@@ -350,6 +356,7 @@ public class SimpleServer extends SimpleConversationEndPoint {
     protected RequestHandler shutdownServer(final String response) {
         return new RequestHandler() {
             
+            @Override
             public void doRequest(final OutputStream out) throws IOException {
                 out.write(String.format("%s\r\n", response).getBytes());
                 stopServer();

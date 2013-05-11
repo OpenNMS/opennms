@@ -312,6 +312,7 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getName() {
         return ADAPTER_NAME;
     }
@@ -324,6 +325,7 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
 
     class MapSyncExecutor implements Runnable {
 
+        @Override
         public void run() {
             syncMaps();
             while (true) {
@@ -391,6 +393,7 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
         m_mapsAdapterConfig.rebuildPackageIpListMap();
         
         m_template.execute(new TransactionCallback<Object>() {
+            @Override
             public Object doInTransaction(TransactionStatus arg0) {
                 try {
                     // first of all delete the element with nodeid ind deletes
@@ -638,6 +641,7 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
 
         try {
             m_template.execute(new TransactionCallback<Object>() {
+                @Override
                 public Object doInTransaction(TransactionStatus arg0) {
 
                     log().info("syncMaps: acquiring lock...");

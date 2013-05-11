@@ -41,10 +41,12 @@ import javax.net.ssl.X509TrustManager;
  */
 public class RelaxedX509TrustManager implements X509TrustManager {
     /** {@inheritDoc} */
+    @Override
     public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) throws CertificateException {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) throws CertificateException {
     }
 
@@ -53,6 +55,7 @@ public class RelaxedX509TrustManager implements X509TrustManager {
      *
      * @return an array of {@link java.security.cert.X509Certificate} objects.
      */
+    @Override
     public java.security.cert.X509Certificate[] getAcceptedIssuers() {
         return null;
     }

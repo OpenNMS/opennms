@@ -35,6 +35,7 @@ public abstract class BaseRestriction implements Restriction {
         m_type = type;
     }
 
+    @Override
     public RestrictionType getType() {
         return m_type;
     }

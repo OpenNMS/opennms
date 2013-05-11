@@ -56,6 +56,7 @@ public class SurveillanceDashlet extends Dashlet {
         
         private SurveillanceServiceAsync m_surveillanceService;
         
+        @Override
         protected void onLoad() {
             load();
         }
@@ -65,11 +66,13 @@ public class SurveillanceDashlet extends Dashlet {
             m_surveillanceService.getSurveillanceData(this);
         }
         
+        @Override
         public void onFailure(Throwable caught) {
             loadError(caught);
             error(caught);
         }
 
+        @Override
         public void onSuccess(SurveillanceData data) {
             setData(data);
             
@@ -77,6 +80,7 @@ public class SurveillanceDashlet extends Dashlet {
             if (!data.isComplete()) {
                 final AsyncCallback<SurveillanceData> cb = this;
                 Timer timer = new Timer() {
+                    @Override
                     public void run() {
                         m_surveillanceService.getSurveillanceData(cb);
                     }
@@ -102,6 +106,7 @@ public class SurveillanceDashlet extends Dashlet {
             super(dashlet);
             m_grid.addTableListener(new TableListener() {
 
+                @Override
                 public void onCellClicked(SourcesTableEvents table, int row, int col) {
                     cellClicked(row, col);
                     if (row == 0 && col == 0) {

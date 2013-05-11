@@ -58,6 +58,7 @@ public class VmwareDatacollectionConfigDaoJaxb extends AbstractJaxbConfigDao<Vmw
      *
      * @return the current config object
      */
+    @Override
     public VmwareDatacollectionConfig getConfig() {
         return getContainer().getObject();
     }
@@ -69,6 +70,7 @@ public class VmwareDatacollectionConfigDaoJaxb extends AbstractJaxbConfigDao<Vmw
      * @param jaxbConfig a config object.
      * @return a custom object
      */
+    @Override
     public VmwareDatacollectionConfig translateConfig(VmwareDatacollectionConfig jaxbConfig) {
         return jaxbConfig;
     }
@@ -79,6 +81,7 @@ public class VmwareDatacollectionConfigDaoJaxb extends AbstractJaxbConfigDao<Vmw
      * @param collectionName the collection's name
      * @return the collection object
      */
+    @Override
     public VmwareCollection getVmwareCollection(String collectionName) {
         VmwareCollection[] collections = getConfig().getVmwareCollection();
         VmwareCollection collection = null;
@@ -101,6 +104,7 @@ public class VmwareDatacollectionConfigDaoJaxb extends AbstractJaxbConfigDao<Vmw
      * @param collectionName the collection's name
      * @return the repository
      */
+    @Override
     public RrdRepository getRrdRepository(String collectionName) {
         RrdRepository repo = new RrdRepository();
         repo.setRrdBaseDir(new File(getRrdPath()));
@@ -146,6 +150,7 @@ public class VmwareDatacollectionConfigDaoJaxb extends AbstractJaxbConfigDao<Vmw
      *
      * @return the Rrd's path
      */
+    @Override
     public String getRrdPath() {
         String rrdPath = getConfig().getRrdRepository();
         if (rrdPath == null) {

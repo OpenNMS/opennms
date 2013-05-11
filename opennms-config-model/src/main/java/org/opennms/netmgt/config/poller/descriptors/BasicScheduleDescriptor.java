@@ -208,6 +208,7 @@ import org.opennms.netmgt.config.poller.BasicSchedule;
                     throw new IllegalStateException(ex.toString());
                 }
             }
+            @Override
             public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
                 try {
                     BasicSchedule target = (BasicSchedule) object;
@@ -330,6 +331,7 @@ import org.opennms.netmgt.config.poller.BasicSchedule;
      * of a global
      * element or element with anonymous type definition.
      */
+    @Override
     public boolean isElementDefinition(
     ) {
         return _elementDefinition;

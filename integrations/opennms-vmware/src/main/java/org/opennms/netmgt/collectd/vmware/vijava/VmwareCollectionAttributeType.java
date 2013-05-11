@@ -43,6 +43,7 @@ public class VmwareCollectionAttributeType implements CollectionAttributeType {
         m_attribute = attribute;
     }
 
+    @Override
     public AttributeGroupType getGroupType() {
         return m_groupType;
     }
@@ -50,6 +51,7 @@ public class VmwareCollectionAttributeType implements CollectionAttributeType {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void storeAttribute(final CollectionAttribute attribute, final Persister persister) {
         if ("string".equalsIgnoreCase(m_attribute.getType())) {
             persister.persistStringAttribute(attribute);
@@ -58,10 +60,12 @@ public class VmwareCollectionAttributeType implements CollectionAttributeType {
         }
     }
 
+    @Override
     public String getName() {
         return m_attribute.getAlias();
     }
 
+    @Override
     public String getType() {
         return m_attribute.getType();
     }

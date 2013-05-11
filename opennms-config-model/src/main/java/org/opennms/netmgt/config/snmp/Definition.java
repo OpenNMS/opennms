@@ -383,6 +383,7 @@ public class Definition extends Configuration implements Serializable {
      * 
      * @return a hash code value for the object.
      */
+        @Override
     public int hashCode(
     ) {
         int result = 17;
@@ -405,6 +406,7 @@ public class Definition extends Configuration implements Serializable {
      * 
      * @return true if this object is valid according to the schema
      */
+        @Override
     public boolean isValid() {
         try {
             validate();
@@ -453,6 +455,7 @@ public class Definition extends Configuration implements Serializable {
      * @throws ValidationException if this
      * object is an invalid instance according to the schema
      */
+        @Override
     public void marshal(final Writer out) throws MarshalException, ValidationException {
         Marshaller.marshal(this, out);
     }
@@ -468,6 +471,7 @@ public class Definition extends Configuration implements Serializable {
      * @throws MarshalException if object is
      * null or if any SAXException is thrown during marshaling
      */
+        @Override
     public void marshal(final ContentHandler handler) throws IOException, MarshalException, ValidationException {
         Marshaller.marshal(this, handler);
     }
@@ -730,6 +734,7 @@ public class Definition extends Configuration implements Serializable {
      * @throws ValidationException if this
      * object is an invalid instance according to the schema
      */
+        @Override
     public void validate() throws ValidationException {
         new Validator().validate(this);
     }

@@ -54,6 +54,7 @@ public class ImporterService extends AbstractSpringContextJmxServiceDaemon<org.o
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getStats() {
         return getDaemon().getStats();
     }

@@ -44,10 +44,12 @@ public class SimpleSpringContextJmxServiceDaemon extends
      *
      * @return the loggingPrefix
      */
+    @Override
     public String getLoggingPrefix() {
         return m_loggingPrefix;
     }
     /** {@inheritDoc} */
+    @Override
     public void setLoggingPrefix(String loggingPrefix) {
         m_loggingPrefix = loggingPrefix;
     }
@@ -56,10 +58,12 @@ public class SimpleSpringContextJmxServiceDaemon extends
      *
      * @return the springContext
      */
+    @Override
     public String getSpringContext() {
         return m_springContext;
     }
     /** {@inheritDoc} */
+    @Override
     public void setSpringContext(String springContext) {
         m_springContext = springContext;
     }

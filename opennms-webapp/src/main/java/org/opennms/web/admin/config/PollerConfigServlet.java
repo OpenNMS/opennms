@@ -105,6 +105,7 @@ public class PollerConfigServlet extends HttpServlet {
      *
      * @throws javax.servlet.ServletException if any.
      */
+    @Override
     public void init() throws ServletException {
         ServletConfig config = this.getServletConfig();
         try {
@@ -204,6 +205,7 @@ public class PollerConfigServlet extends HttpServlet {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         reloadFiles();
 

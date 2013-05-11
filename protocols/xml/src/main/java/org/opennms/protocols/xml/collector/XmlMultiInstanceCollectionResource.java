@@ -113,6 +113,7 @@ public class XmlMultiInstanceCollectionResource extends XmlCollectionResource {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.collectd.AbstractCollectionResource#getLabel()
      */
+    @Override
     public String getLabel() {
         if (m_resourceLabel == null) {
             m_resourceLabel = m_resourceType.getStorageStrategy().getResourceNameFromIndex(this);

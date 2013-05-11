@@ -40,12 +40,14 @@ public class SiteStatusViewsFactoryTest extends TestCase {
 	
 	private SiteStatusViewsFactory m_factory;
 
+        @Override
 	protected void setUp() throws Exception {
 		super.setUp();
 
 		m_factory = new SiteStatusViewsFactory(getClass().getResourceAsStream("/org/opennms/netmgt/config/site-status-views.testdata.xml"));
 	}
 
+        @Override
 	protected void tearDown() throws Exception {
 		super.tearDown();
 	}

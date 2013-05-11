@@ -45,6 +45,7 @@ public class SnmpConfigDaoTest extends TestCase {
     private SnmpConfigDao m_snmpConfigDao;
     private File m_configFile;
     
+    @Override
     public void setUp() throws Exception {
         
         File dir = new File("target/test-work-dir");

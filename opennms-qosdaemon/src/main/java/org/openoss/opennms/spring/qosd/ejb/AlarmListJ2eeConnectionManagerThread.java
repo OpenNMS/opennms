@@ -66,6 +66,7 @@ public class AlarmListJ2eeConnectionManagerThread extends Thread implements Alar
 	 * @see org.openoss.opennms.spring.qosd.ejb.ConnectionManager#reset_list(java.lang.String)
 	 */ 
 	/** {@inheritDoc} */
+        @Override
 	public void reset_list(String _rebuilt_message)
 	{
 		this.rebuilt_message = _rebuilt_message;
@@ -77,6 +78,7 @@ public class AlarmListJ2eeConnectionManagerThread extends Thread implements Alar
 	 * @see org.openoss.opennms.spring.qosd.ejb.ConnectionManager#send(java.util.Hashtable)
 	 */
 	/** {@inheritDoc} */
+        @Override
 	public void send(Hashtable<AlarmKey, AlarmValue> alarmList)
 	{
 		this.alarmList = alarmList;
@@ -92,6 +94,7 @@ public class AlarmListJ2eeConnectionManagerThread extends Thread implements Alar
 	 *
 	 * @throws java.lang.IllegalStateException if any.
 	 */
+        @Override
 	public void run() throws IllegalStateException
 	{
 		//log.info("Thread started");
@@ -231,6 +234,7 @@ public class AlarmListJ2eeConnectionManagerThread extends Thread implements Alar
 	 * @see org.openoss.opennms.spring.qosd.ejb.ConnectionManager#init(org.openoss.opennms.spring.qosd.PropertiesLoader, java.util.Properties)
 	 */
 	/** {@inheritDoc} */
+        @Override
 	public void init(PropertiesLoader props, Properties env)
 	{
 		this.props = props;
@@ -250,6 +254,7 @@ public class AlarmListJ2eeConnectionManagerThread extends Thread implements Alar
 	/**
 	 * <p>kill</p>
 	 */
+        @Override
 	public void kill()
 	{
 		status = STOP;
@@ -264,6 +269,7 @@ public class AlarmListJ2eeConnectionManagerThread extends Thread implements Alar
 	 *
 	 * @return a int.
 	 */
+        @Override
 	public int getStatus()
 	{
 		return status;
@@ -352,6 +358,7 @@ public class AlarmListJ2eeConnectionManagerThread extends Thread implements Alar
 	 *
 	 * @return a javax$oss$fm$monitor$AlarmValue object.
 	 */
+        @Override
 	public  javax.oss.fm.monitor.AlarmValue makeAlarmValue(){
 		return new OOSSAlarmValue();
 	}
@@ -363,6 +370,7 @@ public class AlarmListJ2eeConnectionManagerThread extends Thread implements Alar
 	 *
 	 * @return a javax$oss$fm$monitor$AlarmValue object.
 	 */
+        @Override
 	public javax.oss.fm.monitor.AlarmValue makeAlarmValueFromSpec() {
 		javax.oss.fm.monitor.AlarmValue alarmValueSpecification = (javax.oss.fm.monitor.AlarmValue)m_context.getBean("alarmValueSpecification");
 			return alarmValueSpecification;
@@ -380,6 +388,7 @@ public class AlarmListJ2eeConnectionManagerThread extends Thread implements Alar
 	 *
 	 * Used by jmx mbean QoSD to pass in Spring Application context
 	 */
+        @Override
 	public  void setApplicationContext(ClassPathXmlApplicationContext m_context){
 		this.m_context = m_context;
 	}

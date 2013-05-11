@@ -204,6 +204,7 @@ public class NotesDetectorTest implements InitializingBean {
     private SimpleServer createServer(final String httpResponse) throws Exception {
         SimpleServer server = new SimpleServer() {
             
+            @Override
             public void onInit() {
                 //addResponseHandler(contains("GET"), shutdownServer(httpResponse));
                 addResponseHandler(contains("HEAD"), shutdownServer(httpResponse));

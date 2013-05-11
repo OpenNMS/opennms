@@ -339,6 +339,7 @@ public class SnmpPduTrap extends Object implements SnmpSyntax, Cloneable {
      * 
      * @return The pdu command
      */
+    @Override
     public byte typeId() {
         return (byte) (TRAP & 0xff);
     }
@@ -360,6 +361,7 @@ public class SnmpPduTrap extends Object implements SnmpSyntax, Cloneable {
      * @exception AsnEncodingException
      *                Thrown if the encoder finds an error in the buffer.
      */
+    @Override
     public int encodeASN(byte[] buf, int offset, AsnEncoder encoder) throws AsnEncodingException {
         int begin = offset;
 
@@ -448,6 +450,7 @@ public class SnmpPduTrap extends Object implements SnmpSyntax, Cloneable {
      *                Thrown by the encoder if an error occurs trying to decode
      *                the data buffer.
      */
+    @Override
     public int decodeASN(byte[] buf, int offset, AsnEncoder encoder) throws AsnDecodingException {
         Object[] rVals = encoder.parseHeader(buf, offset);
 
@@ -532,10 +535,12 @@ public class SnmpPduTrap extends Object implements SnmpSyntax, Cloneable {
         return offset;
     }
 
+    @Override
     public SnmpSyntax duplicate() {
         return new SnmpPduTrap(this);
     }
 
+    @Override
     public Object clone() {
         return new SnmpPduTrap(this);
     }

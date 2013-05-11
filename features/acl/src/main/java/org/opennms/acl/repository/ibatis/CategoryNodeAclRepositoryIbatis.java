@@ -75,16 +75,19 @@ public class CategoryNodeAclRepositoryIbatis extends SqlMapClientTemplate implem
      *
      * @return a {@link java.util.List} object.
      */
+    @Override
     public List<?> getItems() {
         return queryForList("selectCategoryNodes");
     }
 
     /** {@inheritDoc} */
+    @Override
     public List<?> getAuthorityItems(List<Integer> items) {
         return items.size() > 0 ? queryForList("selectAuthorityCategories", items) : new ArrayList<NodeONMSDTO>(0);
     }
 
     /** {@inheritDoc} */
+    @Override
     public List<?> getFreeItems(List<Integer> items) {
         return items.size() > 0 ? queryForList("selectFreeCategoryNodes", items) : queryForList("selectCategoryNodes");
     }

@@ -123,6 +123,7 @@ public class OnmsStpInterface {
             m_stpPortStatus = stpPortStatus;
         }
 
+                @Override
         public int compareTo(StpPortStatus o) {
             return getIndex(m_stpPortStatus) - getIndex(o.m_stpPortStatus);
         }
@@ -136,6 +137,7 @@ public class OnmsStpInterface {
             throw new IllegalArgumentException("illegal stpPortStatus code '"+code+"'");
         }
 
+                @Override
         public boolean equals(Object o) {
             if (o instanceof StpPortStatus) {
                 return m_stpPortStatus.intValue() == ((StpPortStatus)o).m_stpPortStatus.intValue();
@@ -143,10 +145,12 @@ public class OnmsStpInterface {
             return false;
         }
 
+                @Override
         public int hashCode() {
             return toString().hashCode();
         }
 
+                @Override
         public String toString() {
             return String.valueOf(m_stpPortStatus);
         }

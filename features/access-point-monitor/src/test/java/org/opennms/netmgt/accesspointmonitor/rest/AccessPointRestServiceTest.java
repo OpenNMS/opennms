@@ -37,6 +37,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class AccessPointRestServiceTest extends AbstractSpringJerseyRestTestCase {
     private AccessPointDatabasePopulator m_databasePopulator;
 
+    @Override
     protected void afterServletStart() {
         MockLogAppender.setupLogging(true, "DEBUG");
         final WebApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(getServletContext());

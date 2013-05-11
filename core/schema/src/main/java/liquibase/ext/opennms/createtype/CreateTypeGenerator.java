@@ -39,6 +39,7 @@ import liquibase.sqlgenerator.core.AbstractSqlGenerator;
 
 public class CreateTypeGenerator extends AbstractSqlGenerator<CreateTypeStatement> {
 
+        @Override
 	public ValidationErrors validate(final CreateTypeStatement statement, final Database database, final SqlGeneratorChain sqlGeneratorChain) {
 		ValidationErrors errors = new ValidationErrors();
 		errors.checkRequiredField("name", statement);
@@ -47,6 +48,7 @@ public class CreateTypeGenerator extends AbstractSqlGenerator<CreateTypeStatemen
 	}
 
 	// example: CREATE TYPE daily_series AS (ds timestamp without time zone, de timestamp without time zone, dow integer);
+        @Override
     public Sql[] generateSql(final CreateTypeStatement statement, final Database database, final SqlGeneratorChain sqlGeneratorChain) {
     	final StringBuffer sb = new StringBuffer();
 

@@ -55,6 +55,7 @@ public class NewPasswordEntryServlet extends HttpServlet {
     private static final long serialVersionUID = 8979500859478109256L;
 
     /** {@inheritDoc} */
+    @Override
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		HttpSession userSession = request.getSession(false);
 		

@@ -74,6 +74,7 @@ public abstract class ConditionalFilter implements Filter {
     }
     
     /** {@inheritDoc} */
+    @Override
     public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
         int parametersBound = 0;
         for (Filter mFilter : m_filters) {
@@ -87,6 +88,7 @@ public abstract class ConditionalFilter implements Filter {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getDescription() {
         if (m_filters.length == 1) {
             return m_filters[0].getDescription();
@@ -108,6 +110,7 @@ public abstract class ConditionalFilter implements Filter {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getParamSql() {
         if (m_filters.length == 1) {
             return m_filters[0].getParamSql();
@@ -130,6 +133,7 @@ public abstract class ConditionalFilter implements Filter {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getSql() {
         if (m_filters.length == 1) {
             return m_filters[0].getSql();
@@ -152,6 +156,7 @@ public abstract class ConditionalFilter implements Filter {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getTextDescription() {
         if (m_filters.length == 1) {
             return m_filters[0].getTextDescription();
@@ -184,6 +189,7 @@ public abstract class ConditionalFilter implements Filter {
      *
      * @return a {@link org.hibernate.criterion.Criterion} object.
      */
+    @Override
     abstract public Criterion getCriterion();
 
     
@@ -192,6 +198,7 @@ public abstract class ConditionalFilter implements Filter {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return new ToStringBuilder(this)
             .append("description", getDescription())

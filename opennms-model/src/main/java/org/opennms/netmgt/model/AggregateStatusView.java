@@ -159,6 +159,7 @@ public class AggregateStatusView {
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
+    @Override
 	public String toString() {
 		StringBuffer result = new StringBuffer(50);
 		result.append("AggregateStatusView { id: ");

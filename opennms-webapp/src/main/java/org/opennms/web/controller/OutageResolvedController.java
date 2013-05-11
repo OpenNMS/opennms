@@ -62,6 +62,7 @@ public class OutageResolvedController extends UrlFilenameViewController {
 
         
         /** {@inheritDoc} */
+        @Override
         protected ModelAndView handleRequestInternal(HttpServletRequest request,
                 HttpServletResponse reply) {
             

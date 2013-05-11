@@ -31,6 +31,7 @@ package org.opennms.core.test.db;
 import java.util.Date;
 
 public class TemporaryDatabaseTestCaseTest extends TemporaryDatabaseTestCase {
+    @Override
     public void testNothing() {
         // Nothing, just make sure that setUp() and tearDown() work
     }

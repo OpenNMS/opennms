@@ -67,6 +67,7 @@ public class BeforeLastEventTimeFilter extends LessThanFilter<Date> {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getTextDescription() {
         return ("time of last event before \"" + getValue() + "\"");
     }
@@ -76,6 +77,7 @@ public class BeforeLastEventTimeFilter extends LessThanFilter<Date> {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return ("<BeforeLastEventTimeFilter: " + this.getDescription() + ">");
     }
@@ -90,6 +92,7 @@ public class BeforeLastEventTimeFilter extends LessThanFilter<Date> {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean equals(Object obj) {
         return (this.toString().equals(obj.toString()));
     }

@@ -111,10 +111,12 @@ abstract public class LinkdConfigManager implements LinkdConfig {
     public LinkdConfigManager() {
     }
 
+    @Override
     public Lock getReadLock() {
         return m_readLock;
     }
     
+    @Override
     public Lock getWriteLock() {
         return m_writeLock;
     }
@@ -122,6 +124,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
     /**
      * Whether autodiscovery is enabled in linkd-config (default: false)
      */
+    @Override
     public boolean isAutoDiscoveryEnabled() {
         getReadLock().lock();
         try {
@@ -135,6 +138,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
     /**
      * Whether vlan discovery is enabled in linkd-config (default: true)
      */
+    @Override
     public boolean isVlanDiscoveryEnabled() {
         getReadLock().lock();
         try {
@@ -161,6 +165,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
      * @return True if the interface is included in the package, false
      *         otherwise.
      */
+    @Override
     public boolean isInterfaceInPackage(final InetAddress iface, final org.opennms.netmgt.config.linkd.Package pkg) {
         boolean filterPassed = false;
     
@@ -183,6 +188,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
         }
     }
     
+    @Override
     public boolean isInterfaceInPackageRange(final InetAddress iface, final org.opennms.netmgt.config.linkd.Package pkg) {
         if (pkg == null) return false;
 
@@ -245,6 +251,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
      *
      * @return a {@link java.util.Enumeration} object.
      */
+    @Override
     public Enumeration<Package> enumeratePackage() {
         getReadLock().lock();
         try {
@@ -259,6 +266,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
      *
      * @return a {@link org.opennms.netmgt.config.linkd.LinkdConfiguration} object.
      */
+    @Override
     public LinkdConfiguration getConfiguration() {
         getReadLock().lock();
         try {
@@ -269,6 +277,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
     }
 
 	/** {@inheritDoc} */
+    @Override
 	public org.opennms.netmgt.config.linkd.Package getPackage(final String name) {
 	    getReadLock().lock();
 	    try {
@@ -285,6 +294,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
     }
     
     /** {@inheritDoc} */
+    @Override
     public List<InetAddress> getIpList(final Package pkg) {
         getReadLock().lock();
         
@@ -304,6 +314,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getIpRouteClassName(final String sysoid) {
         getReadLock().lock();
         try {
@@ -319,6 +330,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getVlanClassName(final String sysoid) {
         getReadLock().lock();
         try {
@@ -341,6 +353,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
      * <strong>Note: </strong>Evaluation of the interface against a package
      * filter will only work if the IP is already in the database.
      */
+    @Override
     public org.opennms.netmgt.config.linkd.Package getFirstPackageMatch(final InetAddress ipaddr) {
         getReadLock().lock();
         try {
@@ -363,6 +376,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
      * <strong>Note: </strong>Evaluation of the interface against a package
      * filter will only work if the IP is already in the database.
      */
+    @Override
     public List<String> getAllPackageMatches(final InetAddress ipaddr) {
         final List<String> matchingPkgs = new ArrayList<String>();
         
@@ -381,6 +395,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean hasClassName(final String sysoid) {
         getReadLock().lock();
         try {
@@ -396,6 +411,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getDefaultIpRouteClassName() {
         return DEFAULT_IP_ROUTE_CLASS_NAME;
     }
@@ -405,6 +421,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
      *
      * @return a boolean.
      */
+    @Override
     public boolean useIpRouteDiscovery() {
         if (m_config.hasUseIpRouteDiscovery()) return m_config.getUseIpRouteDiscovery();
         return true;
@@ -415,6 +432,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
      *
      * @return a boolean.
      */
+    @Override
     public boolean saveRouteTable() {
         if (m_config.hasSaveRouteTable()) return m_config.getSaveRouteTable();
         return true;
@@ -425,6 +443,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
      *
      * @return a boolean.
      */
+    @Override
     public boolean useCdpDiscovery() {
         if (m_config.hasUseCdpDiscovery()) return m_config.getUseCdpDiscovery();
         return true;
@@ -435,6 +454,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
      *
      * @return a boolean.
      */
+    @Override
     public boolean useBridgeDiscovery() {
         if (m_config.hasUseBridgeDiscovery()) return m_config.getUseBridgeDiscovery();
         return true;
@@ -445,6 +465,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
      *
      * @return a boolean.
      */
+    @Override
     public boolean useLldpDiscovery() {
         if (m_config.hasUseLldpDiscovery()) return m_config.getUseLldpDiscovery();
         return true;
@@ -455,6 +476,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
      *
      * @return a boolean.
      */
+    @Override
     public boolean useOspfDiscovery() {
         if (m_config.hasUseOspfDiscovery()) return m_config.getUseOspfDiscovery();
         return true;
@@ -465,6 +487,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
      *
      * @return a boolean.
      */
+    @Override
     public boolean saveStpNodeTable() {
         if (m_config.hasSaveStpNodeTable()) return m_config.getSaveStpNodeTable();
         return true;
@@ -475,6 +498,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
      *
      * @return a boolean.
      */
+    @Override
     public boolean enableDiscoveryDownload() {
         if (m_config.hasEnableDiscoveryDownload()) return m_config.getEnableDiscoveryDownload();
         return false;
@@ -485,21 +509,25 @@ abstract public class LinkdConfigManager implements LinkdConfig {
      *
      * @return a boolean.
      */
+    @Override
     public boolean saveStpInterfaceTable() {
         if (m_config.hasSaveStpInterfaceTable()) return m_config.getSaveStpInterfaceTable();
         return true;
     }
 
+    @Override
     public long getInitialSleepTime() {
         if (m_config.hasInitial_sleep_time()) return m_config.getInitial_sleep_time();
         return 1800000;
     }
 
+    @Override
     public long getSnmpPollInterval() {
         if (m_config.hasSnmp_poll_interval()) return m_config.getSnmp_poll_interval();
         return 900000;
     }
 
+    @Override
     public long getDiscoveryLinkInterval() {
         if (m_config.hasSnmp_poll_interval()) return m_config.getDiscovery_link_interval();
         return 3600000;
@@ -510,12 +538,14 @@ abstract public class LinkdConfigManager implements LinkdConfig {
      *
      * @return a int.
      */
+    @Override
     public int getThreads() {
         if (m_config.hasThreads()) return m_config.getThreads();
         return 5;
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean hasIpRouteClassName(final String sysoid) {
         for (final String oidMask : m_oidMask2IpRouteclassName.keySet()) {
             if (sysoid.startsWith(oidMask)) {
@@ -529,6 +559,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
      * <p>update</p>
      *
      */
+    @Override
     public abstract void update(); 
 
     /**
@@ -733,6 +764,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
      */
     protected abstract void saveXml(final String xml) throws IOException;
     
+    @Override
 	public boolean forceIpRouteDiscoveryOnEthernet() {
 		if (m_config.hasForceIpRouteDiscoveryOnEthernet()) return m_config.getForceIpRouteDiscoveryOnEthernet();
 		return false;

@@ -59,6 +59,7 @@ public class CountedObject<T> implements Comparable<CountedObject<T>> {
         return m_count;
     }
 
+    @Override
     public int compareTo(final CountedObject<T> o) {
         return new CompareToBuilder()
             .append(this.getCount(), (o == null? null:o.getCount()))
@@ -66,6 +67,7 @@ public class CountedObject<T> implements Comparable<CountedObject<T>> {
             .toComparison();
     }
     
+    @Override
     public String toString() {
         return new ToStringBuilder(this)
             .append(this.getObject())

@@ -65,6 +65,7 @@ public class RTCPostServlet extends HttpServlet {
      *
      * @throws javax.servlet.ServletException if any.
      */
+    @Override
     public void init() throws ServletException {
         try {
             this.model = CategoryModel.getInstance();
@@ -78,6 +79,7 @@ public class RTCPostServlet extends HttpServlet {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // the path info will be the category name we need
         String pathInfo = request.getPathInfo();

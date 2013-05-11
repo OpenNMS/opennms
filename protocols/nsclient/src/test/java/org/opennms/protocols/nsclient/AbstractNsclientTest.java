@@ -63,6 +63,7 @@ public abstract class AbstractNsclientTest {
 
     public void startServer(final String command, final String response) throws Exception {
         m_server  = new SimpleServer() {
+            @Override
             public void onInit() {
                 addResponseHandler(startsWith(command), new RequestHandler() {
                     @Override

@@ -43,12 +43,14 @@ public abstract class IPLike {
     }
 
     private static class HexRangeMatcher implements RangeMatcher {
+        @Override
         public boolean match(final String value, final String range) {
             return matchRangeHex(value, range);
         }
     }
 
     private static class DecimalRangeMatcher implements RangeMatcher {
+        @Override
         public boolean match(final String value, final String range) {
             return matchRange(value, range);
         }

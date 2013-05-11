@@ -75,6 +75,7 @@ public class NodeLabelChangeServlet extends HttpServlet {
      *
      * @throws javax.servlet.ServletException if any.
      */
+    @Override
     public void init() throws ServletException {
         try {
             this.proxy = Util.createEventProxy();
@@ -84,6 +85,7 @@ public class NodeLabelChangeServlet extends HttpServlet {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String nodeIdString = request.getParameter("node");
         String labelType = request.getParameter("labeltype");
@@ -120,6 +122,7 @@ public class NodeLabelChangeServlet extends HttpServlet {
 
             final String newNodeLabel = newLabel.getLabel();
             String foreignSource = transactionTemplate.execute(new TransactionCallback<String>() {
+                @Override
                 public String doInTransaction(TransactionStatus status) {
                     OnmsNode node = nodeDao.get(nodeId);
                     if (node.getForeignSource() != null && node.getForeignId() != null) {

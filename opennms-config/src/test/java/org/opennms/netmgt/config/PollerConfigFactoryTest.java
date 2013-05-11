@@ -84,6 +84,7 @@ public class PollerConfigFactoryTest extends TestCase {
             "   <monitor service=\"ICMP\" class-name=\"org.opennms.netmgt.mock.MockMonitor\"/>\n"+
             "</poller-configuration>\n";
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         MockLogAppender.setupLogging();
@@ -130,6 +131,7 @@ public class PollerConfigFactoryTest extends TestCase {
         
     }
 
+    @Override
     protected void tearDown() throws Exception {
         super.tearDown();
 		MockLogAppender.assertNoWarningsOrGreater();

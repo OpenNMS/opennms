@@ -220,6 +220,7 @@ public class HypericAckProcessor implements AckProcessor {
             this.fixTime = fixTime;
         }
 
+        @Override
         public String toString() {
             StringBuffer retval = new StringBuffer();
             retval.append("{ ");
@@ -244,6 +245,7 @@ public class HypericAckProcessor implements AckProcessor {
     /**
      * <p>reloadConfigs</p>
      */
+    @Override
     public void reloadConfigs() {
         log().debug("reloadConfigs: reloading configuration...");
         m_ackdConfigDao.reloadConfiguration();
@@ -302,6 +304,7 @@ public class HypericAckProcessor implements AckProcessor {
     /**
      * <p>run</p>
      */
+    @Override
     public void run() {
         List<OnmsAcknowledgment> acks = new ArrayList<OnmsAcknowledgment>();
 
@@ -524,6 +527,7 @@ public class HypericAckProcessor implements AckProcessor {
                  */
                 HttpRequestInterceptor preemptiveAuth = new HttpRequestInterceptor() {
 
+                    @Override
                     public void process(final HttpRequest request, final HttpContext context) throws IOException {
 
                         AuthState authState = (AuthState)context.getAttribute(ClientContext.TARGET_AUTH_STATE);
@@ -578,6 +582,7 @@ public class HypericAckProcessor implements AckProcessor {
         XMLInputFactory xmlif = XMLInputFactory.newInstance();
         XMLEventReader xmler = xmlif.createXMLEventReader(reader);
         EventFilter filter = new EventFilter() {
+            @Override
             public boolean accept(XMLEvent event) {
                 return event.isStartElement();
             }

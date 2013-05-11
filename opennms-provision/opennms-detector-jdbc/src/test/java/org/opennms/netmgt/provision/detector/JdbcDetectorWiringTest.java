@@ -70,6 +70,7 @@ public class JdbcDetectorWiringTest implements ApplicationContextAware {
         testWiredDetector(JdbcDetector.class);
     }
     
+    @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         m_applicationContext = applicationContext;
         

@@ -48,6 +48,7 @@ public class DefaultReportServiceLocator implements ApplicationContextAware, Rep
     /**
      * {@inheritDoc}
      */
+    @Override
     public ReportService getReportService(String reportServiceName) throws ReportServiceLocatorException {
 
         ReportService reportService = (ReportService) m_applicationContext.getBean(reportServiceName);
@@ -62,6 +63,7 @@ public class DefaultReportServiceLocator implements ApplicationContextAware, Rep
     /**
      * {@inheritDoc}
      */
+    @Override
     public ReportService getReportServiceForId(String reportId)
             throws ReportServiceLocatorException {
 
@@ -71,6 +73,7 @@ public class DefaultReportServiceLocator implements ApplicationContextAware, Rep
     /**
      * {@inheritDoc}
      */
+    @Override
     public void setApplicationContext(ApplicationContext applicationContext) {
         m_applicationContext = applicationContext;
     }

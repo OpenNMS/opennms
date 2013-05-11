@@ -106,6 +106,7 @@ public class PingThreadTest {
 
     private Thread pingThead(final V4Pinger listener, final int id, final int count) {
         return new Thread() {
+            @Override
             public void run() {
                 try {
                     Thread.sleep(id/10);

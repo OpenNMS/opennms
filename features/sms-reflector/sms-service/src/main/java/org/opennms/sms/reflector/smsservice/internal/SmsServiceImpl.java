@@ -91,6 +91,7 @@ public class SmsServiceImpl implements SmsService {
     	public InboundNotificationAdapter(OnmsInboundMessageNotification onmsInbound) {
     		m_inboundNotification = onmsInbound;
     	}
+            @Override
 		public void process(String gatewayId, MessageTypes msgType, InboundMessage msg) {
 			m_inboundNotification.process(SmsServiceImpl.this.findGateway(gatewayId), msgType, msg);
 		}
@@ -265,31 +266,37 @@ public class SmsServiceImpl implements SmsService {
 	}
 	
 	/** {@inheritDoc} */
+        @Override
 	public void addGateway(AGateway gateway) throws GatewayException {
 		m_service.addGateway(gateway);
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public boolean addToGroup(String groupName, String number) {
 		return m_service.addToGroup(groupName, number);
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public boolean createGroup(String groupName) {
 		return m_service.createGroup(groupName);
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public boolean deleteMessage(InboundMessage msg) throws TimeoutException, GatewayException, IOException, InterruptedException {
 		return m_service.deleteMessage(msg);
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public ArrayList<String> expandGroup(String groupName) {
 		return m_service.expandGroup(groupName);
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public AGateway findGateway(String gatewayId) {
 		return m_service.findGateway(gatewayId);
 	}
@@ -299,6 +306,7 @@ public class SmsServiceImpl implements SmsService {
 	 *
 	 * @return a {@link org.smslib.ICallNotification} object.
 	 */
+        @Override
 	public ICallNotification getCallNotification() {
 		return m_service.getCallNotification();
 	}
@@ -308,6 +316,7 @@ public class SmsServiceImpl implements SmsService {
 	 *
 	 * @return a {@link org.smslib.IGatewayStatusNotification} object.
 	 */
+        @Override
 	public IGatewayStatusNotification getGatewayStatusNotification() {
 		return m_service.getGatewayStatusNotification();
 	}
@@ -317,6 +326,7 @@ public class SmsServiceImpl implements SmsService {
 	 *
 	 * @return a {@link java.util.Collection} object.
 	 */
+        @Override
 	public Collection<AGateway> getGateways() {
 		return m_service.getGateways();
 	}
@@ -326,11 +336,13 @@ public class SmsServiceImpl implements SmsService {
 	 *
 	 * @return an array of {@link org.smslib.AGateway} objects.
 	 */
+        @Override
 	public AGateway[] getGatewaysNET() {
 		return m_service.getGatewaysNET();
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public int getInboundMessageCount(String gatewayId) {
 		return m_service.getInboundMessageCount(gatewayId);
 	}
@@ -341,6 +353,7 @@ public class SmsServiceImpl implements SmsService {
 	 * @param gateway a {@link org.smslib.AGateway} object.
 	 * @return a int.
 	 */
+        @Override
 	public int getInboundMessageCount(AGateway gateway) {
 		return m_service.getInboundMessageCount(gateway);
 	}
@@ -350,6 +363,7 @@ public class SmsServiceImpl implements SmsService {
 	 *
 	 * @return a int.
 	 */
+        @Override
 	public int getInboundMessageCount() {
 		return m_service.getInboundMessageCount();
 	}
@@ -359,6 +373,7 @@ public class SmsServiceImpl implements SmsService {
 	 *
 	 * @return a {@link org.opennms.sms.reflector.smsservice.OnmsInboundMessageNotification} object.
 	 */
+        @Override
 	public OnmsInboundMessageNotification getInboundNotification() {
 		return ((InboundNotificationAdapter)m_service.getInboundNotification()).getOnmsInboundMessageNotification();
 	}
@@ -368,6 +383,7 @@ public class SmsServiceImpl implements SmsService {
 	 *
 	 * @return a {@link org.smslib.crypto.KeyManager} object.
 	 */
+        @Override
 	public KeyManager getKeyManager() {
 		return m_service.getKeyManager();
 	}
@@ -377,11 +393,13 @@ public class SmsServiceImpl implements SmsService {
 	 *
 	 * @return a {@link org.smslib.balancing.LoadBalancer} object.
 	 */
+        @Override
 	public LoadBalancer getLoadBalancer() {
 		return m_service.getLoadBalancer();
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public int getOutboundMessageCount(String gatewayId) {
 		return m_service.getOutboundMessageCount(gatewayId);
 	}
@@ -392,6 +410,7 @@ public class SmsServiceImpl implements SmsService {
 	 * @param gateway a {@link org.smslib.AGateway} object.
 	 * @return a int.
 	 */
+        @Override
 	public int getOutboundMessageCount(AGateway gateway) {
 		return m_service.getOutboundMessageCount(gateway);
 	}
@@ -401,6 +420,7 @@ public class SmsServiceImpl implements SmsService {
 	 *
 	 * @return a int.
 	 */
+        @Override
 	public int getOutboundMessageCount() {
 		return m_service.getOutboundMessageCount();
 	}
@@ -410,6 +430,7 @@ public class SmsServiceImpl implements SmsService {
 	 *
 	 * @return a {@link org.smslib.IOutboundMessageNotification} object.
 	 */
+        @Override
 	public IOutboundMessageNotification getOutboundNotification() {
 		return m_service.getOutboundNotification();
 	}
@@ -419,6 +440,7 @@ public class SmsServiceImpl implements SmsService {
 	 *
 	 * @return a {@link org.smslib.queues.QueueManager} object.
 	 */
+        @Override
 	public QueueManager getQueueManager() {
 		return m_service.getQueueManager();
 	}
@@ -428,6 +450,7 @@ public class SmsServiceImpl implements SmsService {
 	 *
 	 * @return a {@link org.smslib.IQueueSendingNotification} object.
 	 */
+        @Override
 	public IQueueSendingNotification getQueueSendingNotification() {
 		return m_service.getQueueSendingNotification();
 	}
@@ -437,6 +460,7 @@ public class SmsServiceImpl implements SmsService {
 	 *
 	 * @return a {@link org.smslib.routing.Router} object.
 	 */
+        @Override
 	public Router getRouter() {
 		return m_service.getRouter();
 	}
@@ -446,6 +470,7 @@ public class SmsServiceImpl implements SmsService {
 	 *
 	 * @return a {@link org.smslib.Service.ServiceStatus} object.
 	 */
+        @Override
 	public ServiceStatus getServiceStatus() {
 		return m_service.getServiceStatus();
 	}
@@ -455,6 +480,7 @@ public class SmsServiceImpl implements SmsService {
 	 *
 	 * @return a {@link org.smslib.Settings} object.
 	 */
+        @Override
 	public Settings getSettings() {
 		return m_service.getSettings();
 	}
@@ -464,21 +490,25 @@ public class SmsServiceImpl implements SmsService {
 	 *
 	 * @return a long.
 	 */
+        @Override
 	public long getStartMillis() {
 		return m_service.getStartMillis();
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public boolean queueMessage(OutboundMessage msg) {
 		return m_service.queueMessage(msg);
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public boolean queueMessage(OutboundMessage msg, String gatewayId) {
 		return m_service.queueMessage(msg, gatewayId);
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public int queueMessages(Collection<OutboundMessage> msgList) {
 		return m_service.queueMessages(msgList);
 	}
@@ -489,36 +519,43 @@ public class SmsServiceImpl implements SmsService {
 	 * @param msgArray an array of {@link org.smslib.OutboundMessage} objects.
 	 * @return a int.
 	 */
+        @Override
 	public int queueMessages(OutboundMessage[] msgArray) {
 		return m_service.queueMessages(msgArray);
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public int queueMessages(Collection<OutboundMessage> msgList, String gatewayId) {
 		return m_service.queueMessages(msgList, gatewayId);
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public int queueMessages(OutboundMessage[] msgArray, String gatewayId) {
 		return m_service.queueMessages(msgArray, gatewayId);
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public InboundMessage readMessage(String gatewayId, String memLoc, int memIndex) throws TimeoutException, GatewayException, IOException, InterruptedException {
 		return m_service.readMessage(gatewayId, memLoc, memIndex);
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public int readMessages(Collection<InboundMessage> msgList, MessageClasses msgClass) throws TimeoutException, GatewayException, IOException, InterruptedException {
 		return m_service.readMessages(msgList, msgClass);
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public InboundMessage[] readMessages(MessageClasses msgClass) throws TimeoutException, GatewayException, IOException, InterruptedException {
 		return m_service.readMessages(msgClass);
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public int readMessages(Collection<InboundMessage> msgList, MessageClasses msgClass, String gatewayId) throws TimeoutException, GatewayException, IOException, InterruptedException {
 		return m_service.readMessages(msgList, msgClass, gatewayId);
 	}
@@ -534,6 +571,7 @@ public class SmsServiceImpl implements SmsService {
 	 * @throws java.io.IOException if any.
 	 * @throws java.lang.InterruptedException if any.
 	 */
+        @Override
 	public InboundMessage[] readMessages(MessageClasses msgClass, String gatewayId) throws TimeoutException, GatewayException, IOException, InterruptedException {
 		return m_service.readMessages(msgClass, gatewayId);
 	}
@@ -550,6 +588,7 @@ public class SmsServiceImpl implements SmsService {
 	 * @throws java.io.IOException if any.
 	 * @throws java.lang.InterruptedException if any.
 	 */
+        @Override
 	public int readMessages(Collection<InboundMessage> msgList, MessageClasses msgClass, AGateway gateway) throws TimeoutException, GatewayException, IOException, InterruptedException {
 		return m_service.readMessages(msgList, msgClass, gateway);
 	}
@@ -565,46 +604,55 @@ public class SmsServiceImpl implements SmsService {
 	 * @throws java.io.IOException if any.
 	 * @throws java.lang.InterruptedException if any.
 	 */
+        @Override
 	public InboundMessage[] readMessages(MessageClasses msgClass, AGateway gateway) throws TimeoutException, GatewayException, IOException, InterruptedException {
 		return m_service.readMessages(msgClass, gateway);
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public int readPhonebook(Phonebook phonebook, String gatewayId) throws TimeoutException, GatewayException, IOException,InterruptedException {
 		return m_service.readPhonebook(phonebook, gatewayId);
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public boolean removeFromGroup(String groupName, String number) {
 		return m_service.removeFromGroup(groupName, number);
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public boolean removeGateway(AGateway gateway) throws GatewayException {
 		return m_service.removeGateway(gateway);
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public boolean removeGroup(String groupName) {
 		return m_service.removeGroup(groupName);
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public boolean removeMessage(OutboundMessage msg) {
 		return m_service.removeMessage(msg);
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public boolean sendMessage(OutboundMessage msg) throws TimeoutException, GatewayException, IOException, InterruptedException {
 		return m_service.sendMessage(msg);
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public boolean sendMessage(OutboundMessage msg, String gatewayId) throws TimeoutException, GatewayException, IOException, InterruptedException {
 		return m_service.sendMessage(msg, gatewayId);
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public int sendMessages(Collection<OutboundMessage> msgList) throws TimeoutException, GatewayException, IOException, InterruptedException {
 		return m_service.sendMessages(msgList);
 	}
@@ -619,52 +667,62 @@ public class SmsServiceImpl implements SmsService {
 	 * @throws java.io.IOException if any.
 	 * @throws java.lang.InterruptedException if any.
 	 */
+        @Override
 	public int sendMessages(OutboundMessage[] msgArray) throws TimeoutException, GatewayException, IOException, InterruptedException {
 		return m_service.sendMessages(msgArray);
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public int sendMessages(Collection<OutboundMessage> msgList, String gatewayId) throws TimeoutException, GatewayException, IOException, InterruptedException {
 		return m_service.sendMessages(msgList, gatewayId);
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public int sendMessages(OutboundMessage[] msgArray, String gatewayId) throws TimeoutException, GatewayException, IOException, InterruptedException {
 		return m_service.sendMessages(msgArray, gatewayId);
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public void setCallNotification(ICallNotification callNotification) {
 		m_service.setCallNotification(callNotification);
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public void setGatewayStatusNotification(IGatewayStatusNotification gatewayStatusNotification) {
 		m_service.setGatewayStatusNotification(gatewayStatusNotification);
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public void setInboundNotification(OnmsInboundMessageNotification inboundNotification) {
 		InboundNotificationAdapter adapter = new InboundNotificationAdapter(inboundNotification);
 		m_service.setInboundNotification(adapter);
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public void setLoadBalancer(LoadBalancer loadBalancer) {
 		m_service.setLoadBalancer(loadBalancer);
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public void setOutboundNotification(IOutboundMessageNotification outboundNotification) {
 		m_service.setOutboundNotification(outboundNotification);
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public void setQueueSendingNotification(IQueueSendingNotification queueSendingNotification) {
 		m_service.setQueueSendingNotification(queueSendingNotification);
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public void setRouter(Router router) {
 		m_service.setRouter(router);
 	}
@@ -678,6 +736,7 @@ public class SmsServiceImpl implements SmsService {
 	 * @throws java.io.IOException if any.
 	 * @throws java.lang.InterruptedException if any.
 	 */
+        @Override
 	public void startService() throws SMSLibException, TimeoutException, GatewayException, IOException, InterruptedException {
 		m_service.startService();
 	}
@@ -690,6 +749,7 @@ public class SmsServiceImpl implements SmsService {
 	 * @throws java.io.IOException if any.
 	 * @throws java.lang.InterruptedException if any.
 	 */
+        @Override
 	public void stopService() throws TimeoutException, GatewayException, IOException, InterruptedException {
 		m_service.stopService();
 	}
@@ -753,16 +813,19 @@ public class SmsServiceImpl implements SmsService {
      *
      * @return a {@link org.smslib.IUSSDNotification} object.
      */
+        @Override
     public IUSSDNotification getUSSDNotification() {
         return m_service.getUSSDNotification();
     }
 
     /** {@inheritDoc} */
+        @Override
     public boolean sendUSSDRequest(USSDRequest req, String gatewayId) throws GatewayException, TimeoutException, IOException, InterruptedException {
         return m_service.sendUSSDRequest(req, gatewayId);
     }
 
     /** {@inheritDoc} */
+        @Override
     public void setUSSDNotification(IUSSDNotification notif) {
         m_service.setUSSDNotification(notif);
     }

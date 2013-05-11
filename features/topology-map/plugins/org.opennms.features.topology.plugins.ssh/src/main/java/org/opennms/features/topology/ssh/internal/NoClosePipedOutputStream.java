@@ -144,6 +144,7 @@ public class NoClosePipedOutputStream extends OutputStream{
      *          {@link #connect(java.io.PipedInputStream) unconnected},
      *          closed, or if an I/O error occurs.
      */
+    @Override
     public void write(int b)  throws IOException {
         if (sink == null) {
             throw new IOException("Pipe not connected");
@@ -164,6 +165,7 @@ public class NoClosePipedOutputStream extends OutputStream{
      *          {@link #connect(java.io.PipedInputStream) unconnected},
      *          closed, or if an I/O error occurs.
      */
+    @Override
     public void write(byte b[], int off, int len) throws IOException {
         if (sink == null) {
             throw new IOException("Pipe not connected");

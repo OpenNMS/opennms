@@ -68,6 +68,7 @@ public class OtrsTicketerPlugin implements Plugin {
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public Ticket get(String ticketId) throws PluginException {
 
 		TicketWithArticles ticketWithArticles = null;
@@ -146,6 +147,7 @@ public class OtrsTicketerPlugin implements Plugin {
 
 
 	/** {@inheritDoc} */
+        @Override
 	public void saveOrUpdate(Ticket newTicket) throws PluginException {
 		
 		TicketIDAndNumber idAndNumber = null;

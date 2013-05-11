@@ -82,6 +82,7 @@ public class NsclientMonitor extends AbstractServiceMonitor {
      * we are talking to a valid service and we set the service status to
      * SERVICE_AVAILABLE and return.
      */
+    @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         // Holds the response reason.
         String reason = null;

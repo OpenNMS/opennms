@@ -192,6 +192,7 @@ public class Outage extends Object {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         StringBuffer retVal = new StringBuffer();
         retVal.append(" Lost service ").append(new java.util.Date(m_svcLostTime));

@@ -71,15 +71,18 @@ final class NodeInfoScan implements RunInBatch {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void run(BatchTask phase) {
         
         phase.getBuilder().addSequence(
                 new RunInBatch() {
+                    @Override
                     public void run(BatchTask batch) {
                         collectNodeInfo();
                     }
                 },
                 new RunInBatch() {
+                    @Override
                     public void run(BatchTask phase) {
                         doPersistNodeInfo();
                     }

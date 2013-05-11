@@ -133,6 +133,7 @@ public class GatewayGroupLoader implements InitializingBean {
 
             GatewayGroup gatewayGroup = new GatewayGroup() {
 
+                @Override
                 public AGateway[] getGateways() {
                     return gateways;
                 }

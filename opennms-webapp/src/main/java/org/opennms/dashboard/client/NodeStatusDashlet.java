@@ -69,11 +69,13 @@ public class NodeStatusDashlet extends Dashlet {
             m_suveillanceService = svc;
         }
 
+        @Override
         public void onFailure(Throwable caught) {
             loadError(caught);
             error(caught);
         }
 
+        @Override
         public void onSuccess(NodeRtc[] result) {
             onDataLoaded(result);
         }
@@ -92,6 +94,7 @@ public class NodeStatusDashlet extends Dashlet {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setSurveillanceSet(SurveillanceSet set) {
         m_loader.load(set);
     }

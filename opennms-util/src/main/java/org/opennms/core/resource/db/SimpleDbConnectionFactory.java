@@ -71,6 +71,7 @@ public class SimpleDbConnectionFactory extends Object implements DbConnectionFac
      * database credentials. When a connection is requested, a new connection
      * will be made using the credentials.
      */
+    @Override
     public void init(String dbUrl, String dbDriver, String username, String password) throws ClassNotFoundException, SQLException {
         if (dbUrl == null || dbDriver == null || username == null || password == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
@@ -87,6 +88,7 @@ public class SimpleDbConnectionFactory extends Object implements DbConnectionFac
      * Clear all database URL and credential information so no more connections
      * can be requested.
      */
+    @Override
     public void destroy() {
         this.url = null;
         this.username = null;
@@ -103,6 +105,7 @@ public class SimpleDbConnectionFactory extends Object implements DbConnectionFac
      * @return a {@link java.sql.Connection} object.
      * @throws java.sql.SQLException if any.
      */
+    @Override
     public Connection getConnection() throws SQLException {
         if (this.url == null) {
             throw new IllegalArgumentException("This database factory has not been initialized or has been destroyed.");
@@ -126,6 +129,7 @@ public class SimpleDbConnectionFactory extends Object implements DbConnectionFac
      *
      * Close the given connection.
      */
+    @Override
     public void releaseConnection(Connection connection) throws SQLException {
         if (connection == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");

@@ -309,6 +309,7 @@ public class PollStatus implements Serializable {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean equals(final Object o) {
         if (o instanceof PollStatus) {
             return m_statusCode == ((PollStatus)o).m_statusCode;
@@ -321,6 +322,7 @@ public class PollStatus implements Serializable {
      *
      * @return a int.
      */
+    @Override
     public int hashCode() {
         return m_statusCode;
     }
@@ -390,6 +392,7 @@ public class PollStatus implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return getStatusName();
     }

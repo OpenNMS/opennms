@@ -64,6 +64,7 @@ public class DefaultRtcService implements RtcService, InitializingBean {
      *
      * @return a {@link org.opennms.web.svclayer.support.RtcNodeModel} object.
      */
+    @Override
     public RtcNodeModel getNodeList() {
         OnmsCriteria serviceCriteria = createServiceCriteria();
         OnmsCriteria outageCriteria = createOutageCriteria();
@@ -72,6 +73,7 @@ public class DefaultRtcService implements RtcService, InitializingBean {
     }
     
     /** {@inheritDoc} */
+    @Override
     public RtcNodeModel getNodeListForCriteria(OnmsCriteria serviceCriteria, OnmsCriteria outageCriteria) {
         serviceCriteria.addOrder(Order.asc("node.label"));
         serviceCriteria.addOrder(Order.asc("node.id"));
@@ -138,6 +140,7 @@ public class DefaultRtcService implements RtcService, InitializingBean {
      *
      * @return a {@link org.opennms.netmgt.model.OnmsCriteria} object.
      */
+    @Override
     public OnmsCriteria createOutageCriteria() {
         OnmsCriteria outageCriteria = new OnmsCriteria(OnmsOutage.class, "outage");
 
@@ -156,6 +159,7 @@ public class DefaultRtcService implements RtcService, InitializingBean {
      *
      * @return a {@link org.opennms.netmgt.model.OnmsCriteria} object.
      */
+    @Override
     public OnmsCriteria createServiceCriteria() {
         OnmsCriteria serviceCriteria = new OnmsCriteria(OnmsMonitoredService.class, "monitoredService");
 

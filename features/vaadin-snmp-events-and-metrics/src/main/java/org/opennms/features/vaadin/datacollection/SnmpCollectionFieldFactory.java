@@ -59,6 +59,7 @@ public final class SnmpCollectionFieldFactory implements FormFieldFactory {
     /* (non-Javadoc)
      * @see com.vaadin.ui.FormFieldFactory#createField(com.vaadin.data.Item, java.lang.Object, com.vaadin.ui.Component)
      */
+    @Override
     public Field createField(Item item, Object propertyId, Component uiContext) {
         if ("name".equals(propertyId)) {
             final TextField f = new TextField("SNMP Collection Name");

@@ -22,6 +22,7 @@ public class GoogleLayer extends ILayer {
             return GoogleLayerImpl.create(type, options == null? JSObject.createJSObject() : options.getJSObject());
         }
 
+        @Override
         public GoogleLayer setOptions(final Options options) {
                 return (GoogleLayer)super.setOptions(options);
         }

@@ -226,6 +226,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 	 * Used by receiver to initialise this class
 	 * Must be called before any other methods to ensure that ossDao is initialised
 	 */
+        @Override
 	synchronized public void init(){
 		if (initialised) return;
 		try {
@@ -255,6 +256,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 
 
 	/** {@inheritDoc} */
+        @Override
 	public void onNotifyNewAlarmEvent(NotifyNewAlarmEvent nnae, OssBeanAlarmEventReceiver callingAer) {
 		//	Get a reference to the QoSD logger instance assigned by OpenNMS
 		ThreadCategory log = getLog();	
@@ -455,6 +457,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public void onNotifyClearedAlarmEvent(NotifyClearedAlarmEvent nclae, OssBeanAlarmEventReceiver callingAer) {
 		//	Get a reference to the QoSD logger instance assigned by OpenNMS
 		ThreadCategory log = getLog();	
@@ -552,6 +555,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 
 
 	/** {@inheritDoc} */
+        @Override
 	public void onNotifyAckStateChangedEvent(NotifyAckStateChangedEvent nasce, OssBeanAlarmEventReceiver callingAer) {
 		//	Get a reference to the QoSD logger instance assigned by OpenNMS
 		ThreadCategory log = getLog();	
@@ -625,6 +629,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public void onNotifyAlarmCommentsEvent(NotifyAlarmCommentsEvent nace, OssBeanAlarmEventReceiver callingAer) {
 		//	Get a reference to the QoSD logger instance assigned by OpenNMS
 		ThreadCategory log = getLog();	
@@ -639,6 +644,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public void onNotifyAlarmListRebuiltEvent(NotifyAlarmListRebuiltEvent nalre, OssBeanAlarmEventReceiver callingAer) {
 		//	Get a reference to the QoSD logger instance assigned by OpenNMS
 		ThreadCategory log = getLog();	
@@ -653,6 +659,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public void onNotifyChangedAlarmEvent(NotifyChangedAlarmEvent nchae, OssBeanAlarmEventReceiver callingAer) {
 		//	Get a reference to the QoSD logger instance assigned by OpenNMS
 		ThreadCategory log = getLog();	
@@ -667,6 +674,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public void onUnknownIRPEvt(IRPEvent irpevt, OssBeanAlarmEventReceiver callingAer) {
 		//	Get a reference to the QoSD logger instance assigned by OpenNMS
 		ThreadCategory log = getLog();	
@@ -681,6 +689,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public void onunknownObjectMessage(Object objectMessage, OssBeanAlarmEventReceiver callingAer) {
 		//	Get a reference to the QoSD logger instance assigned by OpenNMS
 		ThreadCategory log = getLog();	

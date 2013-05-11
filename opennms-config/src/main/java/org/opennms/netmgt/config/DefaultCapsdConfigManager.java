@@ -81,6 +81,7 @@ public class DefaultCapsdConfigManager extends CapsdConfigManager {
      * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
+    @Override
     protected synchronized void update() throws IOException, FileNotFoundException, MarshalException, ValidationException {
         File configFile = ConfigFileConstants.getFile(ConfigFileConstants.CAPSD_CONFIG_FILE_NAME);
         
@@ -109,6 +110,7 @@ public class DefaultCapsdConfigManager extends CapsdConfigManager {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected synchronized void saveXml(String xml) throws IOException {
         if (xml != null) {
             File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.CAPSD_CONFIG_FILE_NAME);

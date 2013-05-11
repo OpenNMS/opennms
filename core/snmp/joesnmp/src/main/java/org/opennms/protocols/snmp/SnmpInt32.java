@@ -157,6 +157,7 @@ public class SnmpInt32 extends Object implements SnmpSyntax, Cloneable, Serializ
      * @return The ASN.1 value for the SnmpInt32
      * 
      */
+    @Override
     public byte typeId() {
         return ASNTYPE;
     }
@@ -175,6 +176,7 @@ public class SnmpInt32 extends Object implements SnmpSyntax, Cloneable, Serializ
      * @return The byte immediantly after the last encoded byte.
      * 
      */
+    @Override
     public int encodeASN(byte[] buf, int offset, AsnEncoder encoder) throws AsnEncodingException {
         return encoder.buildInteger32(buf, offset, typeId(), m_value);
     }
@@ -194,6 +196,7 @@ public class SnmpInt32 extends Object implements SnmpSyntax, Cloneable, Serializ
      * @return The byte immediantly after the last decoded byte of information.
      * 
      */
+    @Override
     public int decodeASN(byte[] buf, int offset, AsnEncoder encoder) throws AsnDecodingException {
         Object[] rVals = encoder.parseInteger32(buf, offset);
 
@@ -211,6 +214,7 @@ public class SnmpInt32 extends Object implements SnmpSyntax, Cloneable, Serializ
      * @return A newly allocated duplicate object.
      * 
      */
+    @Override
     public SnmpSyntax duplicate() {
         return new SnmpInt32(this);
     }
@@ -221,6 +225,7 @@ public class SnmpInt32 extends Object implements SnmpSyntax, Cloneable, Serializ
      * @return A newly allocated duplicate object.
      * 
      */
+    @Override
     public Object clone() {
         return new SnmpInt32(this);
     }
@@ -229,10 +234,12 @@ public class SnmpInt32 extends Object implements SnmpSyntax, Cloneable, Serializ
      * Returns the string representation of the object.
      * 
      */
+    @Override
     public String toString() {
         return Integer.toString(getValue());
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof SnmpInt32 ) {
             SnmpInt32 int32 = (SnmpInt32)obj;
@@ -242,6 +249,7 @@ public class SnmpInt32 extends Object implements SnmpSyntax, Cloneable, Serializ
         return false;
     }
 
+    @Override
     public int hashCode() {
         return 0;
     }

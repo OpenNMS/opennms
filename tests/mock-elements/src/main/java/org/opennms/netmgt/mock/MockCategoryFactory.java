@@ -100,10 +100,12 @@ public class MockCategoryFactory implements CatFactory {
         m_config = CastorUtils.unmarshal(Catinfo.class, new ByteArrayInputStream(config.getBytes()));
     }
 
+    @Override
     public Lock getReadLock() {
         return m_readLock;
     }
     
+    @Override
     public Lock getWriteLock() {
         return m_writeLock;
     }
@@ -113,10 +115,12 @@ public class MockCategoryFactory implements CatFactory {
      * 
      * @return the categories configuration
      */
+    @Override
     public synchronized Catinfo getConfig() {
         return m_config;
     }
 	
+    @Override
 	   public synchronized Category getCategory(final String name) {
 	       for (final Categorygroup cg : m_config.getCategorygroupCollection()) {
 	           for (final Category cat : cg.getCategories().getCategoryCollection()) {
@@ -129,6 +133,7 @@ public class MockCategoryFactory implements CatFactory {
 	        return null;
 	    }
 	   
+    @Override
 	   public synchronized String getEffectiveRule(final String catlabel) {
 	       for (final Categorygroup cg : m_config.getCategorygroupCollection()) {
 	           for (final Category cat : cg.getCategories().getCategoryCollection()) {
@@ -141,11 +146,13 @@ public class MockCategoryFactory implements CatFactory {
 	        return null;
 	    }
 
+    @Override
 	public double getNormal(String catlabel) {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
+    @Override
 	public double getWarning(String catlabel) {
 		// TODO Auto-generated method stub
 		return 0;

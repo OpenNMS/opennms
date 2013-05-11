@@ -56,6 +56,7 @@ public class ModifyGroupServlet extends HttpServlet {
     private static final long serialVersionUID = 7787268735574297494L;
 
     /** {@inheritDoc} */
+    @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession userSession = request.getSession(true);
 

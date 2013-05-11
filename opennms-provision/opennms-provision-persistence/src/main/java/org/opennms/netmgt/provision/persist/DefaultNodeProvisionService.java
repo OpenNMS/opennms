@@ -79,6 +79,7 @@ public class DefaultNodeProvisionService implements NodeProvisionService, Initia
     }
 
     /** {@inheritDoc} */
+    @Override
     public ModelAndView getModelAndView(HttpServletRequest request) {
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.addObject("foreignSources", m_foreignSourceRepository.getForeignSources());
@@ -91,6 +92,7 @@ public class DefaultNodeProvisionService implements NodeProvisionService, Initia
     
     /** {@inheritDoc} */
     @Transactional
+    @Override
     public boolean provisionNode(final String user, String foreignSource, String foreignId, String nodeLabel, String ipAddress,
             String[] categories, String snmpCommunity, String snmpVersion,
             String deviceUsername, String devicePassword, String enablePassword,
@@ -189,6 +191,7 @@ public class DefaultNodeProvisionService implements NodeProvisionService, Initia
      */
     public void setEventProxy(final EventProxy proxy) throws Exception {
         EventForwarder proxyForwarder = new EventForwarder() {
+            @Override
             public void sendNow(Event event) {
                 try {
                     proxy.send(event);
@@ -197,6 +200,7 @@ public class DefaultNodeProvisionService implements NodeProvisionService, Initia
                 }
             }
 
+            @Override
             public void sendNow(Log eventLog) {
                 try {
                     proxy.send(eventLog);

@@ -46,6 +46,7 @@ public abstract class LegacyFilter implements Filter {
      *
      * @return a {@link org.hibernate.criterion.Criterion} object.
      */
+    @Override
     public Criterion getCriterion() {
         throw new UnsupportedOperationException(
                                                 "LegacyFilter.getCriterion is not yet implemented");

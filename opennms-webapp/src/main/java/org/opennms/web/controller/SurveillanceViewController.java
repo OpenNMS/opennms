@@ -127,6 +127,7 @@ public class SurveillanceViewController extends AbstractController implements In
 
         Thread bgRunner = new Thread("SurveillanceView Builder") {
 
+            @Override
             public void run() {
                 try {
                     m_service.createSurveillanceTable(viewName, monitor);

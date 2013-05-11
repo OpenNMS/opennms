@@ -63,10 +63,12 @@ public class Correlator extends AbstractServiceDaemon implements CorrelationEngi
 			m_eventIpcManager.addEventListener(this, m_engine.getInterestingEvents());
 		}
 
+                @Override
 		public String getName() {
 			return m_name;
 		}
 
+                @Override
 		public void onEvent(final Event e) {
 			m_engine.correlate(e);
 		}
@@ -117,6 +119,7 @@ public class Correlator extends AbstractServiceDaemon implements CorrelationEngi
      * @see org.opennms.netmgt.correlation.CorrelationEngineRegistrar#addCorrelationEngine(org.opennms.netmgt.correlation.CorrelationEngine)
      */
     /** {@inheritDoc} */
+        @Override
     public void addCorrelationEngine(final CorrelationEngine engine) {
         m_engines.add(engine);
         if (m_initialized) {
@@ -134,6 +137,7 @@ public class Correlator extends AbstractServiceDaemon implements CorrelationEngi
 	}
 
 	/** {@inheritDoc} */
+        @Override
     public CorrelationEngine findEngineByName(final String name) {
     	for (final CorrelationEngine engine : m_engines) {
             if (name.equals(engine.getName())) {
@@ -148,6 +152,7 @@ public class Correlator extends AbstractServiceDaemon implements CorrelationEngi
      *
      * @return a {@link java.util.List} object.
      */
+        @Override
     public List<CorrelationEngine> getEngines() {
         return m_engines;
     }

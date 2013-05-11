@@ -115,6 +115,7 @@ public class Interval implements Comparable<Interval> {
      * @param that a {@link org.opennms.features.poller.remote.gwt.client.utils.Interval} object.
      * @return a int.
      */
+    @Override
     public int compareTo(final Interval that) {
         if (that == null) return -1;
         return new CompareToBuilder()

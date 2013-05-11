@@ -45,6 +45,7 @@ public final class ExampleActivator
     /**
      * Called whenever the OSGi framework starts our bundle
      */
+    @Override
     public void start( BundleContext bc )
         throws Exception
     {
@@ -62,6 +63,7 @@ public final class ExampleActivator
     /**
      * Called whenever the OSGi framework stops our bundle
      */
+    @Override
     public void stop( BundleContext bc )
         throws Exception
     {

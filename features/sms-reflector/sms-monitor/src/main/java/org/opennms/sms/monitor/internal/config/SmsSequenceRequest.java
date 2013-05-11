@@ -123,6 +123,7 @@ public class SmsSequenceRequest extends MobileSequenceRequest {
      *
      * @return a {@link java.lang.String} object.
      */
+        @Override
     public String toString() {
         return new ToStringBuilder(this)
             .append("gatewayId", getGatewayId())

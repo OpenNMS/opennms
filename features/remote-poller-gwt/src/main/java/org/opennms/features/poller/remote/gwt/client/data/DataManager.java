@@ -55,6 +55,7 @@ public class DataManager implements MapRemoteEventHandler {
         return m_applications;
     }
 
+    @Override
     public void updateApplication(final ApplicationInfo applicationInfo) {
         if (applicationInfo.getLocations().size() == 0) {
             applicationInfo.setPriority(Long.MAX_VALUE);
@@ -70,6 +71,7 @@ public class DataManager implements MapRemoteEventHandler {
         getApplicationsMap().put(applicationInfo.getName(), applicationInfo);
     }
 
+    @Override
     public void updateLocation(final LocationInfo locationInfo) {
         getLocationsMap().put(locationInfo.getName(), locationInfo);
     }
@@ -128,6 +130,7 @@ public class DataManager implements MapRemoteEventHandler {
         return applicationList;
     }
 
+    @Override
     public void removeApplication(final String applicationName) {
         getApplicationsMap().remove(applicationName);
     }
@@ -144,6 +147,7 @@ public class DataManager implements MapRemoteEventHandler {
         return locations;
     }
 
+    @Override
     public void updateLocations(Collection<LocationInfo> locations) {
         for(LocationInfo location : locations) {
             // Update the location information in the model
@@ -151,6 +155,7 @@ public class DataManager implements MapRemoteEventHandler {
         }
     }
 
+    @Override
     public void updateComplete() {
         // TODO Auto-generated method stub
         

@@ -61,6 +61,7 @@ public class SinglePingResponseCallback implements PingResponseCallback {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void handleResponse(PingRequest request, Message packet) {
         info("got response for request " + request + ", message = " + packet);
         responseTime = request.getRoundTripTime();
@@ -72,12 +73,14 @@ public class SinglePingResponseCallback implements PingResponseCallback {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void handleTimeout(PingRequest request, Message packet) {
         info("timed out pinging request " + request + ", message = " + packet);
         bs.countDown();
     }
 
     /** {@inheritDoc} */
+    @Override
     public void handleError(PingRequest request, Message pr, Throwable t) {
         info("an error occurred pinging " + request, t);
         error = t;

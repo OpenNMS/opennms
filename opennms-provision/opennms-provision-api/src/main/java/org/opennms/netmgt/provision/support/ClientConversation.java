@@ -62,6 +62,7 @@ public class ClientConversation<Request, Response> {
      */
     public void addExchange(final Request request, ResponseValidator<Response> validator) {
         RequestBuilder<Request> builder = new RequestBuilder<Request>() {
+            @Override
             public Request getRequest() {
                 return request;
             }

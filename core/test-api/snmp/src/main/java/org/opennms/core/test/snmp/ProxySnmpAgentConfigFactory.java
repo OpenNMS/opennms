@@ -49,6 +49,7 @@ public class ProxySnmpAgentConfigFactory extends SnmpPeerFactory {
         super(config);
     }
 
+    @Override
     public SnmpAgentConfig getAgentConfig(final InetAddress address) {
     	final SnmpAgentConfigProxyMapper mapper = SnmpAgentConfigProxyMapper.getInstance();
     	final SnmpAgentAddress agentAddress = mapper.getAddress(address);

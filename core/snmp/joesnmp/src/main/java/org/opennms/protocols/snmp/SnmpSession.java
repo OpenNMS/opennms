@@ -156,6 +156,7 @@ public class SnmpSession extends Object {
      * handle callbacks from the SnmpPortal
      */
     private class SessionHandler implements SnmpPacketHandler {
+        @Override
         public void processSnmpMessage(InetAddress agent, int port, SnmpInt32 version, SnmpOctetString community, int pduType, SnmpPduPacket pdu) throws SnmpPduEncodingException {
             //
             // now find the request and
@@ -219,14 +220,17 @@ public class SnmpSession extends Object {
             }
         }
 
+        @Override
         public void processSnmpTrap(InetAddress agent, int port, SnmpOctetString community, SnmpPduTrap pdu) throws SnmpPduEncodingException {
             throw new SnmpPduEncodingException("Invalid PDU Type for session");
         }
 
+        @Override
         public void processBadDatagram(DatagramPacket p) {
             // do nothing - discard?
         }
 
+        @Override
         public void processException(Exception e) {
             // do nothing - discard?
         }
@@ -246,6 +250,7 @@ public class SnmpSession extends Object {
          * @see SnmpRequest
          * 
          */
+        @Override
         public void run() {
             synchronized (m_requests) {
                 if (m_requests.size() > 0) {

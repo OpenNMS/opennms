@@ -43,10 +43,12 @@ public class RrdtoolQueryExecutorFactory implements JRQueryExecuterFactory {
         return new RrdtoolQueryExecutor(dataset, parameters);
     }
 
+    @Override
     public Object[] getBuiltinParameters() {
         return null;
     }
 
+    @Override
     public boolean supportsQueryParameterType(String parameterType) {
         return true;
     }

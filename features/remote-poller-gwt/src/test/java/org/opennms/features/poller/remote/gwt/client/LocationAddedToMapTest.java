@@ -73,61 +73,73 @@ public class LocationAddedToMapTest {
             m_eventBus = eventBus;
         }
 
+        @Override
         public void updateTimestamp() {
             // TODO Auto-generated method stub
 
         }
 
+        @Override
         public Set<Status> getSelectedStatuses() {
             Set<Status> hashSet = new HashSet<Status>();
             Collections.addAll(hashSet, Status.DOWN, Status.MARGINAL, Status.STOPPED, Status.DISCONNECTED, Status.UP);
             return hashSet;
         }
 
+        @Override
         public void initialize() {
             m_application.onLocationViewSelected();
         }
 
+        @Override
         public void updateSelectedApplications(Set<ApplicationInfo> applications) {
             // TODO Auto-generated method stub
 
         }
 
+        @Override
         public void updateLocationList(
                 ArrayList<LocationInfo> locationsForLocationPanel) {
             // TODO Auto-generated method stub
 
         }
 
+        @Override
         public void setSelectedTag(String selectedTag, List<String> allTags) {
             // TODO Auto-generated method stub
 
         }
 
+        @Override
         public void updateApplicationList(
                 ArrayList<ApplicationInfo> applications) {
             // TODO Auto-generated method stub
 
         }
 
+        @Override
         public void updateApplicationNames(TreeSet<String> allApplicationNames) {
             // TODO Auto-generated method stub
 
         }
 
+        @Override
         public void fitMapToLocations(GWTBounds locationBounds) {
             bounds = locationBounds;
         }
 
+        @Override
         public GWTBounds getMapBounds() {
             return bounds;
         }
 
+        @Override
         public void showLocationDetails(String locationName, String htmlTitle, String htmlContent) {
             // TODO Auto-generated method stub
 
         }
 
+        @Override
         public void placeMarker(GWTMarkerState markerState) {
             m_marker++;
             //try { Thread.sleep(1); } catch (Throwable e) {}
@@ -141,6 +153,7 @@ public class LocationAddedToMapTest {
             m_marker = 0;
         }
 
+        @Override
         public void setStatusMessage(String statusMessage) {
             m_statusMessage = statusMessage;
         }
@@ -153,6 +166,7 @@ public class LocationAddedToMapTest {
     private class TestCommandExecutor implements CommandExecutor {
         
         private List<Object> m_commands = new LinkedList<Object>();
+        @Override
         public void schedule(Scheduler.RepeatingCommand command) {
             m_commands.add(command);
         }
@@ -187,6 +201,7 @@ public class LocationAddedToMapTest {
             return false;
         }
 
+        @Override
         public void schedule(Command command) {
             m_commands.add(command);
         }

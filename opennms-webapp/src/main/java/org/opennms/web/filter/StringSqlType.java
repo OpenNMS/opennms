@@ -48,6 +48,7 @@ public class StringSqlType implements SQLType<String> {
      * @param value a {@link java.lang.String} object.
      * @throws java.sql.SQLException if any.
      */
+    @Override
     public void bindParam(PreparedStatement ps, int parameterIndex, String value) throws SQLException {
         ps.setString(parameterIndex, value);
     }
@@ -58,6 +59,7 @@ public class StringSqlType implements SQLType<String> {
      * @param value a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getValueAsString(String value) {
         return value;
     }
@@ -68,6 +70,7 @@ public class StringSqlType implements SQLType<String> {
      * @param value a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String formatValue(String value) {
         return "'" + value + "'";
     }
@@ -79,6 +82,7 @@ public class StringSqlType implements SQLType<String> {
      * @param value2 a {@link java.lang.String} object.
      * @return an array of {@link java.lang.String} objects.
      */
+    @Override
     public String[] createArray(String value1, String value2) {
         return new String[] { value1, value2 };
     }

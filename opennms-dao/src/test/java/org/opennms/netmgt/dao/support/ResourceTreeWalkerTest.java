@@ -53,6 +53,7 @@ public class ResourceTreeWalkerTest extends TestCase {
     private ResourceDao m_resourceDao = m_mocks.createMock(ResourceDao.class);
     private ResourceVisitor m_visitor = m_mocks.createMock(ResourceVisitor.class);
     
+    @Override
     public void setUp() throws Exception {
         super.setUp();
     }

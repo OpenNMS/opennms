@@ -46,14 +46,17 @@ public class JoeSnmpV2TrapBuilder implements SnmpTrapBuilder {
         m_pdu.setRequestId(SnmpPduPacket.nextSequence());
     }
     
+    @Override
     public void send(String destAddr, int destPort, String community) throws Exception {
         JoeSnmpStrategy.send(destAddr, destPort, community, m_pdu);
     }
 
+    @Override
     public void sendTest(String destAddr, int destPort, String community) throws Exception {
         JoeSnmpStrategy.sendTest(destAddr, destPort, community, m_pdu);
     }
     
+    @Override
     public void addVarBind(SnmpObjId name, SnmpValue value) {
         SnmpSyntax val = ((JoeSnmpValue) value).getSnmpSyntax();
         m_pdu.addVarBind(new SnmpVarBind(new SnmpObjectId(name.getIds()), val));

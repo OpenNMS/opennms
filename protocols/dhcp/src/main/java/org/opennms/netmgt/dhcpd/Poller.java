@@ -197,6 +197,7 @@ final class Poller {
      *
      * @throws java.lang.Throwable if any.
      */
+    @Override
     protected void finalize() throws Throwable {
         close();
     }

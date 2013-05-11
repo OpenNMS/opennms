@@ -251,6 +251,7 @@ import org.opennms.netmgt.config.collectd.jmx.CompMember;
                     throw new IllegalStateException(ex.toString());
                 }
             }
+            @Override
             public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
                 try {
                     CompAttrib target = (CompAttrib) object;
@@ -372,6 +373,7 @@ import org.opennms.netmgt.config.collectd.jmx.CompMember;
      * of a global
      * element or element with anonymous type definition.
      */
+    @Override
     public boolean isElementDefinition(
     ) {
         return _elementDefinition;

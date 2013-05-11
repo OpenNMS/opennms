@@ -54,6 +54,7 @@ class NotificationView extends PageableTableView {
     }
     
 	/** {@inheritDoc} */
+    @Override
 	protected void setRow(FlexTable table, int row, int elementIndex) {
 		Notification notif = m_notifications[elementIndex];
 		if (notif.getIsDashboardRole()) {
@@ -74,6 +75,7 @@ class NotificationView extends PageableTableView {
      *
      * @return a int.
      */
+    @Override
     public int getElementCount() {
         return (m_notifications == null ? 0 : m_notifications.length);
     }

@@ -113,6 +113,7 @@ public class JsmiMibParser implements MibParser, Serializable {
     /* (non-Javadoc)
      * @see org.opennms.features.vaadin.mibcompiler.MibParser#setMibDirectory(java.io.File)
      */
+    @Override
     public void setMibDirectory(File mibDirectory) {
         this.mibDirectory = mibDirectory;
     }
@@ -120,6 +121,7 @@ public class JsmiMibParser implements MibParser, Serializable {
     /* (non-Javadoc)
      * @see org.opennms.features.vaadin.mibcompiler.MibParser#parseMib(java.io.File)
      */
+    @Override
     public boolean parseMib(File mibFile) {
         // Validate MIB Directory
         if (mibDirectory == null) {
@@ -176,6 +178,7 @@ public class JsmiMibParser implements MibParser, Serializable {
     /* (non-Javadoc)
      * @see org.opennms.features.vaadin.mibcompiler.MibParser#getFormattedErrors()
      */
+    @Override
     public String getFormattedErrors() {
         return errorHandler.getMessages();
     }
@@ -183,6 +186,7 @@ public class JsmiMibParser implements MibParser, Serializable {
     /* (non-Javadoc)
      * @see org.opennms.features.vaadin.mibcompiler.MibParser#getMissingDependencies()
      */
+    @Override
     public List<String> getMissingDependencies() {
         return missingDependencies;
     }
@@ -198,6 +202,7 @@ public class JsmiMibParser implements MibParser, Serializable {
     /* (non-Javadoc)
      * @see org.opennms.features.vaadin.mibcompiler.services.MibParser#getEvents(java.lang.String)
      */
+    @Override
     public Events getEvents(String ueibase) {
         if (module == null) {
             return null;
@@ -218,6 +223,7 @@ public class JsmiMibParser implements MibParser, Serializable {
     /* (non-Javadoc)
      * @see org.opennms.features.vaadin.mibcompiler.api.MibParser#getDataCollection()
      */
+    @Override
     public DatacollectionGroup getDataCollection() {
         if (module == null) {
             return null;

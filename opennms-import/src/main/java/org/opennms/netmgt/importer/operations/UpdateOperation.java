@@ -341,6 +341,7 @@ public class UpdateOperation extends AbstractSaveOrUpdateOperation {
 	 *
 	 * @return a {@link java.util.List} object.
 	 */
+    @Override
 	public List<Event> doPersist() {
 		OnmsNode imported = getNode();
 		OnmsNode db = getNodeDao().getHierarchy(imported.getId());
@@ -415,6 +416,7 @@ public class UpdateOperation extends AbstractSaveOrUpdateOperation {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
        return "UPDATE: Node: "+getNode().getId()+": "+getNode().getLabel();
     }

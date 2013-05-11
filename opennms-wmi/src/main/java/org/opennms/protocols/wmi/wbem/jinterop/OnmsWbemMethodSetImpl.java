@@ -63,6 +63,7 @@ public class OnmsWbemMethodSetImpl implements OnmsWbemMethodSet {
      * @return a {@link java.lang.Integer} object.
      * @throws org.opennms.protocols.wmi.WmiException if any.
      */
+    @Override
     public Integer getCount() throws WmiException {
         try {
             return wbemMethodSetDispatch.get("Count").getObjectAsInt();
@@ -72,6 +73,7 @@ public class OnmsWbemMethodSetImpl implements OnmsWbemMethodSet {
     }
 
         /** {@inheritDoc} */
+    @Override
         public OnmsWbemMethod get(final Integer idx) throws WmiException {
         try {
             final IJIComObject enumComObject = wbemMethodSetDispatch.get("_NewEnum").getObjectAsComObject();

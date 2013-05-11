@@ -44,10 +44,12 @@ abstract class RrdToolCmd {
 
     public class EmptyJRDataSource implements JRDataSource {
 
+                @Override
 		public Object getFieldValue(JRField arg0) throws JRException {
 			return null;
 		}
 
+                @Override
 		public boolean next() throws JRException {
 			return false;
 		}

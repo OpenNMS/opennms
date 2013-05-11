@@ -82,6 +82,7 @@ public class PollerServiceTest extends TestCase {
 		m_eventProxy.send(isA(Event.class));
 		expectLastCall().andAnswer(new IAnswer<Object>() {
 
+                        @Override
 			public Object answer() throws Throwable {
 				Event event = (Event)getCurrentArguments()[0];
 				assertEquals("Incorrect uei for demandPollService event", EventConstants.DEMAND_POLL_SERVICE_EVENT_UEI, event.getUei());

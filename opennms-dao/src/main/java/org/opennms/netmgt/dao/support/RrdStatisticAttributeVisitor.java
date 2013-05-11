@@ -50,6 +50,7 @@ public class RrdStatisticAttributeVisitor implements AttributeVisitor, Initializ
     private AttributeStatisticVisitor m_statisticVisitor;
     
     /** {@inheritDoc} */
+    @Override
     public void visit(OnmsAttribute attribute) {
         if (!RrdGraphAttribute.class.isAssignableFrom(attribute.getClass())) {
             // Nothing to do if we can't cast to an RrdGraphAttribute

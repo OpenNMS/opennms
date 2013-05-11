@@ -74,6 +74,7 @@ public class TcpRrdStrategyTest {
     @BeforeClass
     public static void startListenerThread() throws Exception {
         m_listenerThread = new Thread() {
+            @Override
             public void run() {
                 this.setName("fail");
                 try {

@@ -70,6 +70,7 @@ public class MailerServlet extends HttpServlet {
      *
      * @throws javax.servlet.ServletException if any.
      */
+    @Override
     public void init() throws ServletException {
         ServletConfig config = this.getServletConfig();
 
@@ -86,6 +87,7 @@ public class MailerServlet extends HttpServlet {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String sendto = request.getParameter("sendto");
         String subject = request.getParameter("subject");

@@ -44,6 +44,7 @@ public class NodeSuggestionCombobox implements EntryPoint {
   /**
    * This is the entry point method.
    */
+    @Override
     public void onModuleLoad() {
         
         if(Window.Navigator.getUserAgent().contains("MSIE")) {

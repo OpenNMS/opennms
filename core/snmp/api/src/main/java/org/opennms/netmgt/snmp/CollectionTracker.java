@@ -106,6 +106,7 @@ public abstract class CollectionTracker implements Collectable {
         }
     }
     
+    @Override
     public CollectionTracker getCollectionTracker() {
         return this;
     }

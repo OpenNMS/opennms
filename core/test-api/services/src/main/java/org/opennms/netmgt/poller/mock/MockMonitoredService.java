@@ -51,18 +51,22 @@ public class MockMonitoredService implements MonitoredService {
         m_ipAddr = InetAddressUtils.str(m_inetAddr);
     }
 
+    @Override
     public String getSvcName() {
         return m_svcName;
     }
 
+    @Override
     public String getIpAddr() {
         return m_ipAddr;
     }
 
+    @Override
     public int getNodeId() {
         return m_nodeId;
     }
 
+    @Override
     public String getNodeLabel() {
         return m_nodeLabel;
     }
@@ -71,14 +75,17 @@ public class MockMonitoredService implements MonitoredService {
         m_nodeLabel = nodeLabel;
     }
 
+    @Override
     public NetworkInterface<InetAddress> getNetInterface() {
         return new InetNetworkInterface(m_inetAddr);
     }
 
+    @Override
     public InetAddress getAddress() {
         return m_inetAddr;
     }
 
+    @Override
     public String getSvcUrl() {
         return null;
     }

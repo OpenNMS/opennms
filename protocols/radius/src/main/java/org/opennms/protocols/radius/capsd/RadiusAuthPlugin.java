@@ -192,6 +192,7 @@ public final class RadiusAuthPlugin extends AbstractPlugin {
      *
      * @return The protocol name for this plugin.
      */
+    @Override
     public String getProtocolName() {
         return PROTOCOL_NAME;
     }
@@ -202,6 +203,7 @@ public final class RadiusAuthPlugin extends AbstractPlugin {
      * Returns true if the protocol defined by this plugin is supported. If the
      * protocol is not supported then a false value is returned to the caller.
      */
+    @Override
     public boolean isProtocolSupported(InetAddress address) {
         return isRadius(address, DEFAULT_AUTH_PORT, DEFAULT_ACCT_PORT, DEFAULT_AUTH_TYPE,
 			DEFAULT_USER, DEFAULT_PASSWORD, DEFAULT_SECRET, DEFAULT_NAS_ID,
@@ -226,6 +228,7 @@ public final class RadiusAuthPlugin extends AbstractPlugin {
      * necessary
      * </p>
      */
+    @Override
     public boolean isProtocolSupported(InetAddress address, Map<String, Object> qualifiers) {
         int authport = DEFAULT_AUTH_PORT;
         int acctport = DEFAULT_ACCT_PORT;

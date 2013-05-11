@@ -47,46 +47,57 @@ import org.opennms.protocols.snmp.SnmpTimeTicks;
 
 public class JoeSnmpValueFactory implements SnmpValueFactory {
 
+    @Override
     public SnmpValue getOctetString(byte[] bytes) {
         return new JoeSnmpValue(new SnmpOctetString(bytes));
     }
 
+    @Override
     public SnmpValue getCounter32(long val) {
         return new JoeSnmpValue(new SnmpCounter32(val));
     }
 
+    @Override
     public SnmpValue getCounter64(BigInteger val) {
         return new JoeSnmpValue(new SnmpCounter64(val));
     }
 
+    @Override
     public SnmpValue getGauge32(long val) {;
         return new JoeSnmpValue(new SnmpGauge32(val));
     }
 
+    @Override
     public SnmpValue getInt32(int val) {
         return new JoeSnmpValue(new SnmpInt32(val));
     }
 
+    @Override
     public SnmpValue getIpAddress(InetAddress val) {
         return new JoeSnmpValue(new SnmpIPAddress(val));
     }
 
+    @Override
     public SnmpValue getObjectId(SnmpObjId objId) {
         return new JoeSnmpValue(new SnmpObjectId(objId.getIds()));
     }
 
+    @Override
     public SnmpValue getTimeTicks(long val) {
         return new JoeSnmpValue(new SnmpTimeTicks(val));
     }
 
+    @Override
     public SnmpValue getNull() {
         return new JoeSnmpValue(new SnmpNull());
     }
 
+    @Override
     public SnmpValue getValue(int type, byte[] bytes) {
         return new JoeSnmpValue(type, bytes);
     }
 
+    @Override
     public SnmpValue getOpaque(byte[] bs) {
         return new JoeSnmpValue(new SnmpOpaque(bs));
     }

@@ -205,6 +205,7 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getName() {
         return m_name;
     }

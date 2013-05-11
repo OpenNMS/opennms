@@ -166,6 +166,7 @@ public class AttributeGroup {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return m_groupType + " for " + m_resource.getInstance() + "@" + m_resource.getParent();
     }

@@ -225,6 +225,7 @@ public class BaseImporter implements ImportOperationFactory {
     }
 
     /** {@inheritDoc} */
+    @Override
     public InsertOperation createInsertOperation(String foreignSource, String foreignId, String nodeLabel, String building, String city) {
         InsertOperation insertOperation = new InsertOperation(foreignSource, foreignId, nodeLabel, building, city);
         insertOperation.setNodeDao(m_nodeDao);
@@ -238,6 +239,7 @@ public class BaseImporter implements ImportOperationFactory {
     }
 
     /** {@inheritDoc} */
+    @Override
     public UpdateOperation createUpdateOperation(Integer nodeId, String foreignSource, String foreignId, String nodeLabel, String building, String city) {
         UpdateOperation updateOperation = new UpdateOperation(nodeId, foreignSource, foreignId, nodeLabel, building, city);
         updateOperation.setNodeDao(m_nodeDao);
@@ -250,6 +252,7 @@ public class BaseImporter implements ImportOperationFactory {
     }
 
     /** {@inheritDoc} */
+    @Override
     public DeleteOperation createDeleteOperation(Integer nodeId, String foreignSource, String foreignId) {
         return new DeleteOperation(nodeId, foreignSource, foreignId, m_nodeDao);
     }
@@ -334,6 +337,7 @@ public class BaseImporter implements ImportOperationFactory {
     private void auditNodes(final ImportOperationsManager opsMgr, final SpecFile specFile) {
     	m_transTemplate.execute(new TransactionCallback<Object>() {
     
+            @Override
             public Object doInTransaction(TransactionStatus status) {
                 ImportAccountant accountant = new ImportAccountant(opsMgr);
                 specFile.visitImport(accountant);
@@ -350,8 +354,10 @@ public class BaseImporter implements ImportOperationFactory {
 			m_foreignSource = foreignSource;
 		}
 
+                @Override
         public void visitNode(final Node node) {
 			m_transTemplate.execute(new TransactionCallbackWithoutResult() {
+                                @Override
 				protected void doInTransactionWithoutResult(TransactionStatus status) {
 					
 					OnmsNode dbNode = findNodeByForeignId(m_foreignSource, node.getForeignId());
@@ -433,6 +439,7 @@ public class BaseImporter implements ImportOperationFactory {
 
 	private Map<String, Integer> getForeignIdToNodeMap(final String foreignSource) {
         return m_transTemplate.execute(new TransactionCallback<Map<String, Integer>>() {
+            @Override
             public Map<String,Integer> doInTransaction(TransactionStatus status) {
                 return Collections.unmodifiableMap(getNodeDao().getForeignIdToNodeIdMap(foreignSource));
             }
@@ -443,6 +450,7 @@ public class BaseImporter implements ImportOperationFactory {
     private OnmsDistPoller createDistPollerIfNecessary() {
         return m_transTemplate.execute(new TransactionCallback<OnmsDistPoller>() {
     
+            @Override
             public OnmsDistPoller doInTransaction(TransactionStatus status) {
                 OnmsDistPoller distPoller = m_distPollerDao.get("localhost");
                 if (distPoller == null) {

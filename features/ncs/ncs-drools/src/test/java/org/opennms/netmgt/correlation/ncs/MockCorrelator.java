@@ -38,16 +38,19 @@ public class MockCorrelator implements CorrelationEngineRegistrar {
     
     List<CorrelationEngine> m_engines = new LinkedList<CorrelationEngine>();
 
+    @Override
     public void addCorrelationEngine(CorrelationEngine engine) {
         m_engines.add(engine);
     }
     
+    @Override
     public void addCorrelationEngines(CorrelationEngine... engines) {
     	for(CorrelationEngine engine : engines) {
     		m_engines.add(engine);
     	}
     }
     
+    @Override
     public CorrelationEngine findEngineByName(String name) {
         for (CorrelationEngine engine : m_engines) {
             if (name.equals(engine.getName())) {
@@ -57,6 +60,7 @@ public class MockCorrelator implements CorrelationEngineRegistrar {
         return null;
     }
 
+    @Override
     public List<CorrelationEngine> getEngines() {
         return m_engines;
     }

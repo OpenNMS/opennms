@@ -47,6 +47,7 @@ public class StatusTypeUserType implements UserType {
      */
     public StatusTypeUserType() {}
 
+    @Override
     public Object assemble(final Serializable cached, final Object owner) throws HibernateException {
         return deepCopy(cached);
     }
@@ -55,6 +56,7 @@ public class StatusTypeUserType implements UserType {
      * Since {@link java.net.InetAddress} is immutable, we just return the original
      * value without copying it.
      */
+    @Override
     public Object deepCopy(final Object value) throws HibernateException {
         if (value == null) {
             return null;
@@ -65,10 +67,12 @@ public class StatusTypeUserType implements UserType {
         }
     }
 
+    @Override
     public Serializable disassemble(final Object value) throws HibernateException {
         return (Serializable)deepCopy(value);
     }
 
+    @Override
     public boolean equals(final Object x, final Object y) throws HibernateException {
         if (x == null || y == null) return false;
 
@@ -78,18 +82,22 @@ public class StatusTypeUserType implements UserType {
     	return ((StatusType)x).getCharCode() == ((StatusType)y).getCharCode();
     }
 
+    @Override
     public int hashCode(final Object x) throws HibernateException {
         return x.hashCode();
     }
 
+    @Override
     public boolean isMutable() {
         return false;
     }
 
+    @Override
     public Object nullSafeGet(final ResultSet rs, final String[] names, final Object owner) throws HibernateException, SQLException {
         return StatusType.get((String)Hibernate.CHARACTER.nullSafeGet(rs, names[0]));
     }
 
+    @Override
     public void nullSafeSet(final PreparedStatement st, final Object value, final int index) throws HibernateException, SQLException {
         if (value == null) {
             Hibernate.CHARACTER.nullSafeSet(st, null, index);
@@ -104,14 +112,17 @@ public class StatusTypeUserType implements UserType {
         }
     }
 
+    @Override
     public Object replace(final Object original, final Object target, final Object owner) throws HibernateException {
         return original;
     }
 
+    @Override
     public Class<StatusType> returnedClass() {
         return StatusType.class;
     }
 
+    @Override
     public int[] sqlTypes() {
         return SQL_TYPES;
     }

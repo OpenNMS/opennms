@@ -79,6 +79,7 @@ public class MibObjFieldFactory implements TableFieldFactory {
             field.setNullSelectionAllowed(false);
             field.setNewItemsAllowed(true);
             field.setNewItemHandler(new NewItemHandler() {
+                @Override
                 public void addNewItem(String newItemCaption) {
                     if (!field.containsId(newItemCaption)) {
                         field.addItem(newItemCaption);

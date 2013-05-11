@@ -39,10 +39,12 @@ import liquibase.statement.core.CreateIndexStatement;
 
 public class CreateIndexWithWhereGenerator extends CreateIndexGenerator {
 
+        @Override
 	public int getPriority() {
 		return super.getPriority() + 1;
 	}
 
+        @Override
     public Sql[] generateSql(final CreateIndexStatement statement, final Database database, final SqlGeneratorChain sqlGeneratorChain) {
     	final Sql[] superSql = super.generateSql(statement, database, sqlGeneratorChain);
 

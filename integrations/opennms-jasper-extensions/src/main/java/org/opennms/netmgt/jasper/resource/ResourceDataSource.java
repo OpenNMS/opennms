@@ -69,6 +69,7 @@ public class ResourceDataSource implements JRDataSource {
             File curDir = new File(curPath);
             FilenameFilter filter = new FilenameFilter() {
 
+                @Override
                 public boolean accept(File f, String name) {
                     return name.matches("strings.properties");
                 }
@@ -100,6 +101,7 @@ public class ResourceDataSource implements JRDataSource {
             File curDir = new File(curPath);
             FilenameFilter filter = new FilenameFilter() {
 
+                @Override
                 public boolean accept(File file, String name) {
                     return name.matches("ds.properties");
                 }
@@ -179,6 +181,7 @@ public class ResourceDataSource implements JRDataSource {
         System.err.println("paths: " + m_paths);
     }
 
+    @Override
     public Object getFieldValue(JRField field) throws JRException {
         return computeValueForField(field);
     }
@@ -203,6 +206,7 @@ public class ResourceDataSource implements JRDataSource {
         return m_filterFields.getValueForField(field.getName(), absolutePath);
     }
 
+    @Override
     public boolean next() throws JRException {
         m_currentRow++;
         return m_currentRow < m_paths.size();

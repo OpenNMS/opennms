@@ -59,6 +59,7 @@ public class OnmsWbemObjectImpl implements OnmsWbemObject {
     }
 
     /** {@inheritDoc} */
+    @Override
     public OnmsWbemObjectImpl wmiExecMethod(String methodName, List<?> params, List<?> namedValueSet) {
         return null; // TODO IMPLEMENT THIS METHOD
     }
@@ -68,6 +69,7 @@ public class OnmsWbemObjectImpl implements OnmsWbemObject {
      *
      * @return a {@link java.util.List} object.
      */
+    @Override
     public List<String> wmiInstances() {
         return null; // TODO IMPLEMENT THIS METHOD
     }
@@ -77,6 +79,7 @@ public class OnmsWbemObjectImpl implements OnmsWbemObject {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String wmiPut() {
         return ""; // TODO IMPLEMENT THIS METHOD
     }
@@ -87,6 +90,7 @@ public class OnmsWbemObjectImpl implements OnmsWbemObject {
      * @return a {@link org.opennms.protocols.wmi.wbem.OnmsWbemMethodSet} object.
      * @throws org.opennms.protocols.wmi.WmiException if any.
      */
+    @Override
     public OnmsWbemMethodSet getWmiMethods() throws WmiException {
         try {
             // Get the WbemMethodSet dispatcher.
@@ -105,6 +109,7 @@ public class OnmsWbemObjectImpl implements OnmsWbemObject {
      * @return a {@link org.opennms.protocols.wmi.wbem.OnmsWbemObjectPath} object.
      * @throws org.opennms.protocols.wmi.WmiException if any.
      */
+    @Override
     public OnmsWbemObjectPath getWmiPath() throws WmiException {
         try {
             // Get the WbemMethodSet dispatcher.
@@ -123,6 +128,7 @@ public class OnmsWbemObjectImpl implements OnmsWbemObject {
      * @return a {@link java.lang.String} object.
      * @throws org.opennms.protocols.wmi.WmiException if any.
      */
+    @Override
     public String getWmiObjectText() throws WmiException {
         try {
             return (wbemObjectDispatch.callMethodA("GetObjectText_", new Object[]{1}))[0].getObjectAsString2();
@@ -137,6 +143,7 @@ public class OnmsWbemObjectImpl implements OnmsWbemObject {
      * @return a {@link org.opennms.protocols.wmi.wbem.OnmsWbemPropertySet} object.
      * @throws org.opennms.protocols.wmi.WmiException if any.
      */
+    @Override
     public OnmsWbemPropertySet getWmiProperties() throws WmiException {
         try {
             // Get the WbemMethodSet dispatcher.

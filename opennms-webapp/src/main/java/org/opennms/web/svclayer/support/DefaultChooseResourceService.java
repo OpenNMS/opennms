@@ -54,6 +54,7 @@ public class DefaultChooseResourceService implements ChooseResourceService, Init
     public ResourceDao m_resourceDao;
 
     /** {@inheritDoc} */
+    @Override
     public ChooseResourceModel findChildResources(String resourceId, String endUrl) {
         if (resourceId == null) {
             throw new IllegalArgumentException("resourceId parameter may not be null");

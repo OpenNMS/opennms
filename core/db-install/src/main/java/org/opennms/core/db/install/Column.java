@@ -47,6 +47,7 @@ public class Column {
     private String m_defaultValue = null;
 
     /** {@inheritDoc} */
+    @Override
     public boolean equals(final Object obj) {
     	if (obj == null || !(obj instanceof Column)) return false;
     	final Column other = (Column) obj;
@@ -65,6 +66,7 @@ public class Column {
      *
      * @return a int.
      */
+    @Override
     public int hashCode() {
     	return new HashCodeBuilder(67, 13)
     		.append(getName())
@@ -80,6 +82,7 @@ public class Column {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         StringBuffer b = new StringBuffer();
 

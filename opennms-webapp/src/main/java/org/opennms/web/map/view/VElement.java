@@ -172,6 +172,7 @@ public class VElement extends DbElement {
     }
     
     /** {@inheritDoc} */
+        @Override
     public boolean equals(Object other){
     	return equalsIgnorePosition((VElement)other);
     }
@@ -215,6 +216,7 @@ public class VElement extends DbElement {
     }
 
     /** {@inheritDoc} */
+        @Override
     public void setMapId(int mapId) {
         super.setMapId(mapId);
         isChild = true;
@@ -237,6 +239,7 @@ public class VElement extends DbElement {
      *
      * @return a {@link java.lang.String} object.
      */
+        @Override
     public String toString(){
     	return getId()+getType();
     }
@@ -246,6 +249,7 @@ public class VElement extends DbElement {
      *
      * @return a {@link org.opennms.web.map.view.VElement} object.
      */
+        @Override
     public VElement clone() {
         return (VElement) super.clone();
     }

@@ -57,6 +57,7 @@ public class AsteriskOriginateNotificationStrategy implements NotificationStrate
      * @see org.opennms.netmgt.notifd.NotificationStrategy#send(java.util.List)
      */
     /** {@inheritDoc} */
+    @Override
     public int send(List<Argument> arguments) {
         if (log().isDebugEnabled()) {
             log().debug("In the " + getClass() + " class");

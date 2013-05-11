@@ -142,6 +142,7 @@ public class XmlCollector implements ServiceCollector {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.collectd.ServiceCollector#collect(org.opennms.netmgt.collectd.CollectionAgent, org.opennms.netmgt.model.events.EventProxy, java.util.Map)
      */
+    @Override
     public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, Object> parameters) throws CollectionException {
         if (parameters == null) {
             throw new CollectionException("Null parameters is now allowed in XML Collector!");
@@ -172,6 +173,7 @@ public class XmlCollector implements ServiceCollector {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.collectd.ServiceCollector#getRrdRepository(java.lang.String)
      */
+    @Override
     public RrdRepository getRrdRepository(String collectionName) {
         return m_xmlCollectionDao.getConfig().buildRrdRepository(collectionName);
     }

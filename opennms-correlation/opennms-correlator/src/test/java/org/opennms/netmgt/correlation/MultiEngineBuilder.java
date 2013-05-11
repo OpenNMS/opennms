@@ -45,11 +45,13 @@ public class MultiEngineBuilder implements InitializingBean {
     
     private static class MyEngine extends AbstractCorrelationEngine {
 
+        @Override
         public void correlate(Event e) {
             EventBuilder bldr = new EventBuilder("listLoaded", "TestEngine");
             sendEvent(bldr.getEvent());
         }
 
+        @Override
         public List<String> getInterestingEvents() {
             String[] ueis = {
               "isListLoaded"      
@@ -62,6 +64,7 @@ public class MultiEngineBuilder implements InitializingBean {
             
         }
 
+        @Override
         public String getName() {
            return "MyEngine";
         }

@@ -88,6 +88,7 @@ public class SimpleBackEndTest {
 		final AtomicInteger second = new AtomicInteger(-1);
 		
 		Thread t = new Thread() {
+                        @Override
 			public void run() {
 				first.set(m_authBackEnd.getCount());
 				second.set(m_authBackEnd.getCount());

@@ -36,6 +36,7 @@ public class MarkerContainer implements MarkerProvider {
         return Collections.unmodifiableList(markers);
     }
 
+    @Override
     public List<NodeMarker> getMarkers() {
         return Collections.unmodifiableList(m_filteredMarkers);
     }

@@ -42,6 +42,7 @@ public class StatusFilter implements LocationFilter {
         return m_selectedStatuses;
     }
 
+    @Override
     public boolean matches(final LocationInfo location) {
         return getSelectedStatuses().contains(location.getStatus());
     }

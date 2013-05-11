@@ -85,6 +85,7 @@ public class MemcachedDetectorTest implements InitializingBean {
     @Test(timeout=90000)
     public void testServerSuccess() throws Exception{
         m_server  = new SimpleServer() {
+            @Override
             public void onInit() {
                 addResponseHandler(contains("version"), new RequestHandler() {
                     @Override
@@ -112,6 +113,7 @@ public class MemcachedDetectorTest implements InitializingBean {
     @Test(timeout=90000)
     public void testServerFail() throws Exception{
         m_server  = new SimpleServer() {
+            @Override
             public void onInit() {
                 addResponseHandler(contains("version"), new RequestHandler() {
                     @Override

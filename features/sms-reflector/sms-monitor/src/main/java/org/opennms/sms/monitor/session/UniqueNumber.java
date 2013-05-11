@@ -67,6 +67,7 @@ public class UniqueNumber extends BaseSessionVariableGenerator {
 }
 	
 	/** {@inheritDoc} */
+        @Override
 	public void checkIn(String variable) {
 		m_used.remove(Integer.valueOf(variable));
 	}
@@ -76,6 +77,7 @@ public class UniqueNumber extends BaseSessionVariableGenerator {
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
+        @Override
 	public String checkOut() {
 		for (int i = min; i < max; i++) {
 			if (!m_used.contains(i)) {

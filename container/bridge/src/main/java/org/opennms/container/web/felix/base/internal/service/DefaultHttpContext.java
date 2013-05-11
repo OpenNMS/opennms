@@ -32,11 +32,13 @@ public final class DefaultHttpContext
         this.bundle = bundle;
     }
 
+    @Override
     public String getMimeType(String name)
     {
         return null;
     }
 
+    @Override
     public URL getResource(String name)
     {
         if (name.startsWith("/")) {
@@ -46,6 +48,7 @@ public final class DefaultHttpContext
         return this.bundle.getResource(name);
     }
 
+    @Override
     public boolean handleSecurity(HttpServletRequest req, HttpServletResponse res)
     {
         return true;

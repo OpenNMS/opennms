@@ -60,6 +60,7 @@ public class Pop3DetectorTest implements ApplicationContextAware {
 
         m_server = new SimpleServer() {
             
+            @Override
             public void onInit() {
                 setBanner("+OK");
                 addResponseHandler(startsWith("QUIT"), shutdownServer("+OK"));
@@ -132,6 +133,7 @@ public class Pop3DetectorTest implements ApplicationContextAware {
     /* (non-Javadoc)
      * @see org.springframework.context.ApplicationContextAware#setApplicationContext(org.springframework.context.ApplicationContext)
      */
+    @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         m_applicationContext = applicationContext;
     }

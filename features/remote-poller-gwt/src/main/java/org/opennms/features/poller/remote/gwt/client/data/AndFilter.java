@@ -37,6 +37,7 @@ public class AndFilter implements LocationFilter {
         m_filters = filters;
     }
 
+    @Override
     public boolean matches(LocationInfo location) {
         for(LocationFilter filter : m_filters) {
             if(!filter.matches(location)) {

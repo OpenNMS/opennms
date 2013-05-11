@@ -203,6 +203,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 		zoomInBtn.setStyleName("semantic-zoom-button");
 		zoomInBtn.addListener(new ClickListener() {
 
+            @Override
             public void buttonClick(ClickEvent event) {
 				int szl = (Integer) m_graphContainer.getSemanticZoomLevel();
 				szl++;
@@ -218,6 +219,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 		zoomOutBtn.setStyleName("semantic-zoom-button");
 		zoomOutBtn.addListener(new ClickListener() {
 
+                        @Override
 			public void buttonClick(ClickEvent event) {
 				int szl = (Integer) m_graphContainer.getSemanticZoomLevel();
 				if(szl > 0) {
@@ -556,6 +558,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 		updateMenuItems();
 	}
 	
+        @Override
 	public void show(Object target, int left, int top) {
 		updateContextMenuItems(target, m_contextMenu.getItems());
 		updateSubMenuDisplay(m_contextMenu.getItems());

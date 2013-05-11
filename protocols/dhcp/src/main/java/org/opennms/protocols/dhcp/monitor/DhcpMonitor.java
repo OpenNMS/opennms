@@ -76,6 +76,7 @@ final public class DhcpMonitor extends AbstractServiceMonitor {
      *
      * Poll the specified address for DHCP service availability.
      */
+    @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         NetworkInterface<InetAddress> iface = svc.getNetInterface();
 

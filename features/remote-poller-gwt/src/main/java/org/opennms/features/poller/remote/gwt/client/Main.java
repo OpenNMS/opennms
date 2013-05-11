@@ -43,10 +43,12 @@ public class Main implements EntryPoint {
     
     private class DeferredCommandExecutor implements CommandExecutor{
 
+        @Override
         public void schedule(Scheduler.RepeatingCommand command) {
             Scheduler.get().scheduleIncremental(command);
         }
 
+        @Override
         public void schedule(Command command) {
             DeferredCommand.addCommand(command);
         }
@@ -55,6 +57,7 @@ public class Main implements EntryPoint {
     
     private HandlerManager m_eventBus;
 
+    @Override
     public void onModuleLoad() {
         m_eventBus = new HandlerManager(null);
         Application application = new Application(getEventBus());

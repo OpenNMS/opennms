@@ -75,18 +75,22 @@ public abstract class AbstractSystemReportPlugin implements SystemReportPlugin {
     protected static final long MAX_PROCESS_WAIT = 10000; // milliseconds
     private MBeanServerConnection m_connection = null;
 
+    @Override
     public int getPriority() {
         return 99;
     }
 
+    @Override
     public TreeMap<String, Resource> getEntries() {
         throw new UnsupportedOperationException("You must override getEntries()!");
     }
 
+    @Override
     public String toString() {
         return String.format("%s[%d]", getName(), getPriority());
     }
 
+    @Override
     public int compareTo(final SystemReportPlugin o) {
         return new CompareToBuilder()
             .append(this.getPriority(), (o == null? Integer.MIN_VALUE:o.getPriority()))

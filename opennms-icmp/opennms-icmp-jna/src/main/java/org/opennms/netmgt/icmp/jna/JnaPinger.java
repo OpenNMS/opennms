@@ -69,14 +69,17 @@ public class JnaPinger implements Pinger {
 		m_pingTracker.start();
 	}
 	
+    @Override
 	public void initialize4() throws Exception {
 	    initialize();
 	}
 	
+    @Override
 	public void initialize6() throws Exception {
 	    initialize();
 	}
 
+    @Override
     public boolean isV4Available() {
         try {
             initialize();
@@ -87,6 +90,7 @@ public class JnaPinger implements Pinger {
         return m_messenger.isV4Available();
     }
 
+    @Override
     public boolean isV6Available() {
         try {
             initialize();
@@ -108,6 +112,7 @@ public class JnaPinger implements Pinger {
 	 * @param cb a {@link org.opennms.netmgt.ping.PingResponseCallback} object.
 	 * @throws java.lang.Exception if any.
 	 */
+    @Override
 	public void ping(final InetAddress host, final long timeout, final int retries, final int packetsize, final int sequenceId, final PingResponseCallback cb) throws Exception {
 		initialize();
 		m_pingTracker.sendRequest(new JnaPingRequest(host, m_pingerId, sequenceId, timeout, retries, packetsize, cb));
@@ -123,6 +128,7 @@ public class JnaPinger implements Pinger {
          * @param cb a {@link org.opennms.netmgt.ping.PingResponseCallback} object.
          * @throws java.lang.Exception if any.
          */
+    @Override
         public void ping(final InetAddress host, final long timeout, final int retries, final int sequenceId, final PingResponseCallback cb) throws Exception {
                 initialize();
                 m_pingTracker.sendRequest(new JnaPingRequest(host, m_pingerId, sequenceId, timeout, retries, DEFAULT_PACKET_SIZE, cb));
@@ -145,6 +151,7 @@ public class JnaPinger implements Pinger {
 	 * @throws IOException if any.
 	 * @throws java.lang.Exception if any.
 	 */
+    @Override
 	public Number ping(final InetAddress host, final long timeout, final int retries, final int packetsize) throws Exception {
 	    final SinglePingResponseCallback cb = new SinglePingResponseCallback(host);
 		ping(host, timeout, retries, packetsize, 1, cb);
@@ -169,6 +176,7 @@ public class JnaPinger implements Pinger {
          * @throws IOException if any.
          * @throws java.lang.Exception if any.
          */
+    @Override
         public Number ping(final InetAddress host, final long timeout, final int retries) throws Exception {
                 return ping(host, timeout, retries, DEFAULT_PACKET_SIZE);
         }
@@ -182,6 +190,7 @@ public class JnaPinger implements Pinger {
 	 * @throws InterruptedException if any.
 	 * @throws java.lang.Exception if any.
 	 */
+    @Override
 	public Number ping(final InetAddress host) throws Exception {
 		return ping(host, DEFAULT_TIMEOUT, DEFAULT_RETRIES);
 	}
@@ -196,6 +205,7 @@ public class JnaPinger implements Pinger {
 	 * @return a {@link java.util.List} object.
 	 * @throws java.lang.Exception if any.
 	 */
+    @Override
 	public List<Number> parallelPing(final InetAddress host, final int count, final long timeout, final long pingInterval) throws Exception {
 		initialize();
 		final ParallelPingResponseCallback cb = new ParallelPingResponseCallback(count);

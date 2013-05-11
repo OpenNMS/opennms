@@ -64,6 +64,7 @@ public class V6Pinger extends AbstractPinger<Inet6Address> {
         }
     }
     
+    @Override
     public void run() {
         try {
             NativeDatagramPacket datagram = new NativeDatagramPacket(65535);
@@ -98,6 +99,7 @@ public class V6Pinger extends AbstractPinger<Inet6Address> {
         return datagram.getContent();
     }
     
+    @Override
     public PingReplyMetric ping(Inet6Address addr, int id, int sequenceNumber, int count, long interval) throws InterruptedException {
         PingReplyMetric metric = new PingReplyMetric(count, interval);
         addPingReplyListener(metric);

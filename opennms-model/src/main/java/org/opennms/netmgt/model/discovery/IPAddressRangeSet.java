@@ -114,6 +114,7 @@ public class IPAddressRangeSet implements Iterable<IPAddressRange> {
         return buf.toString();
     }
 
+    @Override
     public Iterator<IPAddressRange> iterator() {
         return Collections.unmodifiableList(m_ranges).iterator();
     }

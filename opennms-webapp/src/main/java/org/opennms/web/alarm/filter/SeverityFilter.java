@@ -43,10 +43,12 @@ public class SeverityFilter extends EqualsFilter<OnmsSeverity> {
         super(TYPE, SQLType.SEVERITY, "ALARMS.SEVERITY", "severity", severity);
     }
 
+    @Override
     public String getTextDescription() {
         return (TYPE + " is " + getValue().getLabel());
     }
 
+    @Override
     public String toString() {
         return ("<AlarmFactory.SeverityFilter: " + this.getDescription() + ">");
     }
@@ -55,6 +57,7 @@ public class SeverityFilter extends EqualsFilter<OnmsSeverity> {
         return getValue().getId();
     }
 
+    @Override
     public boolean equals(final Object obj) {
         return (this.toString().equals(obj.toString()));
     }

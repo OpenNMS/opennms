@@ -48,6 +48,7 @@ public class JdbcCollectionSet implements CollectionSet {
         m_collectionResources = new ArrayList<JdbcCollectionResource>();
     }
     
+    @Override
     public int getStatus() {
         return m_status;
     }
@@ -64,6 +65,7 @@ public class JdbcCollectionSet implements CollectionSet {
         m_collectionResources = collectionResources;
     }
 
+    @Override
     public void visit(CollectionSetVisitor visitor) {
         visitor.visitCollectionSet(this);
 
@@ -73,10 +75,12 @@ public class JdbcCollectionSet implements CollectionSet {
         visitor.completeCollectionSet(this);
     }
 
+    @Override
     public boolean ignorePersist() {
         return false;
     }
     
+    @Override
 	public Date getCollectionTimestamp() {
 		return m_timestamp;
 	}

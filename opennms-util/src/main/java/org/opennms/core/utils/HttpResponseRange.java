@@ -58,6 +58,7 @@ public class HttpResponseRange {
         return (m_begin <= responseCode && responseCode <= m_end);
     }
 
+    @Override
     public String toString() {
         if (m_begin == m_end) {
             return Integer.toString(m_begin);

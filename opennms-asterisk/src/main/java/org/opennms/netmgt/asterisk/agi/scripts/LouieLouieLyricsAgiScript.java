@@ -45,6 +45,7 @@ import org.asteriskjava.fastagi.AgiRequest;
 public class LouieLouieLyricsAgiScript extends BaseOnmsAgiScript {
 
     /** {@inheritDoc} */
+    @Override
     public void service(AgiRequest req, AgiChannel chan) throws AgiException {
         log().debug("Reading lyrics of Louie, Louie to user");
         streamFile("lyrics-louie-louie");

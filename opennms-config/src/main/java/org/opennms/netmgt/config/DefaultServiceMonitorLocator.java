@@ -67,6 +67,7 @@ public class DefaultServiceMonitorLocator implements ServiceMonitorLocator, Seri
      *
      * @return a {@link org.opennms.netmgt.poller.ServiceMonitor} object.
      */
+    @Override
     public ServiceMonitor getServiceMonitor() {
         try {
             ServiceMonitor mon = m_serviceClass.newInstance();
@@ -86,6 +87,7 @@ public class DefaultServiceMonitorLocator implements ServiceMonitorLocator, Seri
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getServiceName() {
         return m_serviceName;
     }
@@ -95,6 +97,7 @@ public class DefaultServiceMonitorLocator implements ServiceMonitorLocator, Seri
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getServiceLocatorKey() {
         return m_serviceClass.getName();
     }

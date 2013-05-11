@@ -53,6 +53,7 @@ public abstract class PropertiesUtils {
 		PropertyBasedSymbolTable(Properties properties) {
 			m_properties = properties;
 		}
+                @Override
 		public String getSymbolValue(String symbol) {
 			return m_properties.getProperty(symbol);
 		}
@@ -63,6 +64,7 @@ public abstract class PropertiesUtils {
         MapBasedSymbolTable(Map<String,String> properties) {
             m_map = properties;
         }
+        @Override
         public String getSymbolValue(String symbol) {
             return m_map.get(symbol);
         }

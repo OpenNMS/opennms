@@ -48,6 +48,7 @@ public class DefaultParameterConversionService implements
         ParameterConversionService {
 
     /** {@inheritDoc} */
+    @Override
     public ReportParameters convert(Parameters configParameters) {
 
         ReportParameters reportParameters = new ReportParameters();

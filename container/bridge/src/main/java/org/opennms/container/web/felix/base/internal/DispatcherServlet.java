@@ -87,6 +87,7 @@ public final class DispatcherServlet
             this.requestAttributeListener = requestAttributeListener;
         }
 
+        @Override
         public void setAttribute(String name, Object value)
         {
             if (value == null)
@@ -111,6 +112,7 @@ public final class DispatcherServlet
             }
         }
 
+        @Override
         public void removeAttribute(String name)
         {
             Object oldValue = this.getAttribute(name);

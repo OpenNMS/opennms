@@ -73,6 +73,7 @@ public class WmiMultiInstanceCollectionResource extends WmiCollectionResource {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getResourceTypeName() {
         return m_name;
     }
@@ -82,6 +83,7 @@ public class WmiMultiInstanceCollectionResource extends WmiCollectionResource {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getInstance() {
         return m_inst;
     }

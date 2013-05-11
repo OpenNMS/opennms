@@ -37,28 +37,34 @@ public class TestDaemon extends AbstractServiceDaemon {
 		System.err.println("Creating: "+getName());
 	}
 
+        @Override
 	protected void onPause() {
 		System.err.println("Pausing: "+getName());
 	}
 
+        @Override
 	public String status() {
 		String status = super.getStatusText();
 		System.err.println("Status: "+getName()+" = "+status);
 		return status;
 	}
 
+        @Override
 	protected void onResume() {
 		System.err.println("Resuming: "+getName());
 	}
 
+        @Override
 	protected void onStart() {
 		System.err.println("Starting: "+getName());
 	}
 
+        @Override
 	protected void onStop() {
 		System.err.println("Stopping: "+getName());
 	}
 
+        @Override
     protected void onInit() {
     }
 

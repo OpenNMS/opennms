@@ -106,6 +106,7 @@ public class AbstractVertex extends AbstractVertexRef implements Vertex {
 		m_y = y;
 	}
 
+        @Override
 	public final VertexRef getParent() {
 		return m_parent;
 	}

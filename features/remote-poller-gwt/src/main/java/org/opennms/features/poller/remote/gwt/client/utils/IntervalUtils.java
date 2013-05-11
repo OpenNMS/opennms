@@ -133,6 +133,7 @@ public abstract class IntervalUtils {
      */
     public static Set<Interval> getIntervalSet() {
         return new TreeSet<Interval>(new Comparator<Interval>() {
+            @Override
             public int compare(Interval o1, Interval o2) {
                 return new CompareToBuilder()
                     .append(o1.getStartMillis(), o2.getStartMillis())

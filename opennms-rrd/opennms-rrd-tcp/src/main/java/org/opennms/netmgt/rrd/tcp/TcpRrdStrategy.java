@@ -98,6 +98,7 @@ public class TcpRrdStrategy implements RrdStrategy<TcpRrdStrategy.RrdDefinition,
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setConfigurationProperties(Properties configurationParameters) {
         // Do nothing
     }
@@ -136,11 +137,13 @@ public class TcpRrdStrategy implements RrdStrategy<TcpRrdStrategy.RrdDefinition,
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getDefaultFileExtension() {
         return "";
     }
 
     /** {@inheritDoc} */
+    @Override
     public RrdDefinition createDefinition(String creator, String directory, String rrdName, int step, List<RrdDataSource> dataSources, List<String> rraList) throws Exception {
         return new RrdDefinition(directory, rrdName);
     }
@@ -151,17 +154,20 @@ public class TcpRrdStrategy implements RrdStrategy<TcpRrdStrategy.RrdDefinition,
      * @param rrdDef a {@link org.opennms.netmgt.rrd.tcp.TcpRrdStrategy.RrdDefinition} object.
      * @throws java.lang.Exception if any.
      */
+    @Override
 	public void createFile(RrdDefinition rrdDef,
 			Map<String, String> attributeMappings) throws Exception {
         // Do nothing
     }
 
     /** {@inheritDoc} */
+    @Override
     public RrdOutputSocketWithFilename openFile(String fileName) throws Exception {
         return new RrdOutputSocketWithFilename(new RrdOutputSocket(m_host, m_port), fileName);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void updateFile(RrdOutputSocketWithFilename rrd, String owner, String data) throws Exception {
         rrd.getSocket().addData(rrd.getFilename(), owner, data);
     }
@@ -172,31 +178,37 @@ public class TcpRrdStrategy implements RrdStrategy<TcpRrdStrategy.RrdDefinition,
      * @param rrd a {@link org.opennms.netmgt.rrd.tcp.TcpRrdStrategy.RrdOutputSocketWithFilename} object.
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void closeFile(RrdOutputSocketWithFilename rrd) throws Exception {
         rrd.getSocket().writeData();
     }
 
     /** {@inheritDoc} */
+    @Override
     public Double fetchLastValue(String rrdFile, String ds, int interval) throws NumberFormatException {
         return Double.NaN;
     }
 
     /** {@inheritDoc} */
+    @Override
     public Double fetchLastValue(String rrdFile, String ds, String consolidationFunction, int interval) throws NumberFormatException {
         return Double.NaN;
     }
 
     /** {@inheritDoc} */
+    @Override
     public Double fetchLastValueInRange(String rrdFile, String ds, int interval, int range) throws NumberFormatException {
         return Double.NaN;
     }
 
     /** {@inheritDoc} */
+    @Override
     public InputStream createGraph(String command, File workDir) throws IOException {
         throw new UnsupportedOperationException(this.getClass().getName() + " does not support graphing.");
     }
 
     /** {@inheritDoc} */
+    @Override
     public RrdGraphDetails createGraphReturnDetails(String command, File workDir) throws IOException {
         throw new UnsupportedOperationException(this.getClass().getName() + " does not support graphing.");
     }
@@ -206,6 +218,7 @@ public class TcpRrdStrategy implements RrdStrategy<TcpRrdStrategy.RrdDefinition,
      *
      * @return a int.
      */
+    @Override
     public int getGraphLeftOffset() {
         throw new UnsupportedOperationException(this.getClass().getName() + " does not support graphing.");
     }
@@ -215,6 +228,7 @@ public class TcpRrdStrategy implements RrdStrategy<TcpRrdStrategy.RrdDefinition,
      *
      * @return a int.
      */
+    @Override
     public int getGraphRightOffset() {
         throw new UnsupportedOperationException(this.getClass().getName() + " does not support graphing.");
     }
@@ -224,6 +238,7 @@ public class TcpRrdStrategy implements RrdStrategy<TcpRrdStrategy.RrdDefinition,
      *
      * @return a int.
      */
+    @Override
     public int getGraphTopOffsetWithText() {
         throw new UnsupportedOperationException(this.getClass().getName() + " does not support graphing.");
     }
@@ -233,11 +248,13 @@ public class TcpRrdStrategy implements RrdStrategy<TcpRrdStrategy.RrdDefinition,
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getStats() {
         throw new UnsupportedOperationException(this.getClass().getName() + " does not support graphing.");
     }
 
     /** {@inheritDoc} */
+    @Override
     public void promoteEnqueuedFiles(Collection<String> rrdFiles) {
         // Do nothing; this implementation simply sends data to an external source and has not control
         // over when data is persisted to disk.

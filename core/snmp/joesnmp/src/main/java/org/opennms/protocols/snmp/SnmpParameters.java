@@ -255,6 +255,7 @@ public class SnmpParameters extends Object implements Cloneable {
      * @return A newly created duplicate
      * 
      */
+    @Override
     public Object clone() {
         return new SnmpParameters(this);
     }

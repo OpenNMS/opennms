@@ -49,6 +49,7 @@ public class EventIpcManagerProxy implements EventIpcManager {
     private EventIpcManager m_delegate = null;
 
     /** {@inheritDoc} */
+    @Override
     public void addEventListener(EventListener listener) {
         assertState();
         m_delegate.addEventListener(listener);
@@ -71,18 +72,21 @@ public class EventIpcManagerProxy implements EventIpcManager {
      * @param listener a {@link org.opennms.netmgt.model.events.EventListener} object.
      * @param uei a {@link java.lang.String} object.
      */
+    @Override
     public void addEventListener(EventListener listener, String uei) {
         assertState();
         m_delegate.addEventListener(listener, uei);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void addEventListener(EventListener listener, Collection<String> ueis) {
         assertState();
         m_delegate.addEventListener(listener, ueis);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void removeEventListener(EventListener listener) {
         assertState();
         m_delegate.removeEventListener(listener);
@@ -105,18 +109,21 @@ public class EventIpcManagerProxy implements EventIpcManager {
      * @param listener a {@link org.opennms.netmgt.model.events.EventListener} object.
      * @param uei a {@link java.lang.String} object.
      */
+    @Override
     public void removeEventListener(EventListener listener, String uei) {
         assertState();
         m_delegate.removeEventListener(listener, uei);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void removeEventListener(EventListener listener, Collection<String> ueis) {
         assertState();
         m_delegate.removeEventListener(listener, ueis);
     }
     
     /** {@inheritDoc} */
+    @Override
     public void send(Event event) throws EventProxyException {
         assertState();
         m_delegate.send(event);
@@ -128,12 +135,14 @@ public class EventIpcManagerProxy implements EventIpcManager {
      * @param eventLog a {@link org.opennms.netmgt.xml.event.Log} object.
      * @throws org.opennms.netmgt.model.events.EventProxyException if any.
      */
+    @Override
     public void send(Log eventLog) throws EventProxyException {
         assertState();
         m_delegate.send(eventLog);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void sendNow(Event event) {
         assertState();
         m_delegate.sendNow(event);
@@ -144,6 +153,7 @@ public class EventIpcManagerProxy implements EventIpcManager {
      *
      * @param eventLog a {@link org.opennms.netmgt.xml.event.Log} object.
      */
+    @Override
     public void sendNow(Log eventLog) {
         assertState();
         m_delegate.sendNow(eventLog);

@@ -45,6 +45,7 @@ import org.asteriskjava.fastagi.AgiRequest;
 public class ReadNoticeDetailsAgiScript extends BaseOnmsAgiScript {
 
     /** {@inheritDoc} */
+    @Override
     public void service(AgiRequest req, AgiChannel chan) throws AgiException {
         authenticateUser();
         sayNode();

@@ -72,6 +72,7 @@ public class FifoQueueImpl<T> implements FifoQueue<T> {
      * @throws org.opennms.core.queue.FifoQueueException if any.
      * @throws java.lang.InterruptedException if any.
      */
+    @Override
     public void add(T element) throws InterruptedException {
         m_delegate.put(element);
     }
@@ -87,6 +88,7 @@ public class FifoQueueImpl<T> implements FifoQueue<T> {
      * @throws java.lang.InterruptedException
      *                Thrown if the thread is interrupted.
      */
+    @Override
     public boolean add(T element, long timeout) throws InterruptedException {
         return m_delegate.offer(element, timeout, TimeUnit.MILLISECONDS);
     }
@@ -102,6 +104,7 @@ public class FifoQueueImpl<T> implements FifoQueue<T> {
      * @throws org.opennms.core.queue.FifoQueueException if any.
      * @throws java.lang.InterruptedException if any.
      */
+    @Override
     public T remove() throws InterruptedException {
         return m_delegate.take();
     }
@@ -117,6 +120,7 @@ public class FifoQueueImpl<T> implements FifoQueue<T> {
      * @exception java.lang.InterruptedException
      *                Thrown if the thread is interrupted.
      */
+    @Override
     public T remove(long timeout) throws InterruptedException {
         return m_delegate.poll(timeout, TimeUnit.MILLISECONDS);
     }
@@ -126,6 +130,7 @@ public class FifoQueueImpl<T> implements FifoQueue<T> {
      *
      * @return The number of elements in the queue.
      */
+    @Override
     public int size() {
         return m_delegate.size();
     }
@@ -135,6 +140,7 @@ public class FifoQueueImpl<T> implements FifoQueue<T> {
      *
      * @return True if the queue is empty.
      */
+    @Override
     public boolean isEmpty() {
         return m_delegate.isEmpty();
     }

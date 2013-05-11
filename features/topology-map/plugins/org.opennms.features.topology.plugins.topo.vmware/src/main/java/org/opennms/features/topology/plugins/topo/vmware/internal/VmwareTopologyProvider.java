@@ -354,6 +354,7 @@ public class VmwareTopologyProvider extends SimpleGraphProvider implements Graph
         connectVertices(vmwareManagementServer + "/" + vmwareManagedObjectId + "->" + vmwareManagementServer + "/" + vmwareHostSystemId, virtualMachineVertex, getVertex(getVertexNamespace(), vmwareManagementServer + "/" + vmwareHostSystemId));
     }
 
+    @Override
     public void refresh() {
         m_generated = true;
 

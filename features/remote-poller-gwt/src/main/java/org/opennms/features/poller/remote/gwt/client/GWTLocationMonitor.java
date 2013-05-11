@@ -138,11 +138,13 @@ public class GWTLocationMonitor implements Serializable, IsSerializable, Compara
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
+        @Override
 	public String toString() {
 		return "GWTLocationMonitor[name=" + m_name + ",status=" + m_status + ",lastCheckInTime=" + m_lastCheckInTime + "]";
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public boolean equals(Object o) {
 		if (o == null) return false;
 		if (!(o instanceof GWTLocationMonitor)) return false;
@@ -156,6 +158,7 @@ public class GWTLocationMonitor implements Serializable, IsSerializable, Compara
 	 *
 	 * @return a int.
 	 */
+        @Override
 	public int hashCode() {
 	    return this.getId();
 	}
@@ -166,6 +169,7 @@ public class GWTLocationMonitor implements Serializable, IsSerializable, Compara
 	 * @param that a {@link org.opennms.features.poller.remote.gwt.client.GWTLocationMonitor} object.
 	 * @return a int.
 	 */
+        @Override
 	public int compareTo(GWTLocationMonitor that) {
 		return new CompareToBuilder()
 			.append(this.getDefinitionName(), that.getDefinitionName())

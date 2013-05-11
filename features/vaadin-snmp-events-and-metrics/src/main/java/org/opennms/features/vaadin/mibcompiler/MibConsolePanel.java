@@ -115,6 +115,7 @@ public class MibConsolePanel extends Panel implements Logger {
     /* (non-Javadoc)
      * @see org.opennms.features.vaadin.mibcompiler.services.Logger#error(java.lang.String)
      */
+    @Override
     public void error(String message) {
         logMsg(ERROR, message);
     }
@@ -122,6 +123,7 @@ public class MibConsolePanel extends Panel implements Logger {
     /* (non-Javadoc)
      * @see org.opennms.features.vaadin.mibcompiler.services.Logger#warn(java.lang.String)
      */
+    @Override
     public void warn(String message) {
         logMsg(WARN, message);
     }
@@ -129,6 +131,7 @@ public class MibConsolePanel extends Panel implements Logger {
     /* (non-Javadoc)
      * @see org.opennms.features.vaadin.mibcompiler.services.Logger#info(java.lang.String)
      */
+    @Override
     public void info(String message) {
         logMsg(INFO, message);
     }
@@ -136,6 +139,7 @@ public class MibConsolePanel extends Panel implements Logger {
     /* (non-Javadoc)
      * @see org.opennms.features.vaadin.mibcompiler.services.Logger#debug(java.lang.String)
      */
+    @Override
     public void debug(String message) {
         logMsg(DEBUG, message);
     }

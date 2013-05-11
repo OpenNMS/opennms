@@ -53,18 +53,22 @@ public class FtpSystemReportFormatter extends AbstractSystemReportFormatter impl
         return "ftp";
     }
 
+    @Override
     public String getDescription() {
         return "FTP to the URL specified in the output option (eg. ftp://username:password@ftp.example.com/incoming/my-file.zip) (full output)";
     }
 
+    @Override
     public String getContentType() {
         return null;
     }
 
+    @Override
     public String getExtension() {
         return "zip";
     }
 
+    @Override
     public boolean canStdout() {
         return false;
     }

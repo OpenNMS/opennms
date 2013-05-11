@@ -205,6 +205,7 @@ public class ConfigurationReportRunner implements Runnable {
     /**
      * <p>run</p>
      */
+    @Override
     public void run() {
 
         log().debug("run: getting configuration report on Date ["+ theDate +"]. Requested by User: " + user + "on Date " 

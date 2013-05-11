@@ -56,6 +56,7 @@ public class XmpUtilException extends Exception {
      *
      * @return a {@link java.lang.String} object.
      */
+        @Override
     public String getMessage() {
         return m_message;
     }

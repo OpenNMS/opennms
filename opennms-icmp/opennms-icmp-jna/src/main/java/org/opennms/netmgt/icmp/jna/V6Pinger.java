@@ -73,6 +73,7 @@ public class V6Pinger extends AbstractPinger<Inet6Address> {
 
 
 
+    @Override
     public void run() {
         try {
             final int pingerId = getPingerId();
@@ -98,6 +99,7 @@ public class V6Pinger extends AbstractPinger<Inet6Address> {
         return datagram.getContent();
     }
     
+    @Override
     public void ping(final Inet6Address addr, final int identifier, final int sequenceNumber, final long threadId, final long count, final long interval, final int packetSize) throws InterruptedException {
         final NativeDatagramSocket socket = getPingSocket();
         for(int i = sequenceNumber; i < sequenceNumber + count; i++) {

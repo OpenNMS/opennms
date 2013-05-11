@@ -143,6 +143,7 @@ public class LazySet<E> extends JdbcSet<E> {
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
+        @Override
 	public String toString() {
 		load();
 		return super.toString();

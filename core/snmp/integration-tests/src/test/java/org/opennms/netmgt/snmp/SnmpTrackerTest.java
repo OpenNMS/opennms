@@ -153,6 +153,7 @@ public class SnmpTrackerTest implements InitializingBean {
         private final List<SnmpRowResult> m_responses = new ArrayList<SnmpRowResult>();
         private final ResultTable m_results = new ResultTable();
 
+        @Override
         public void rowCompleted(final SnmpRowResult row) {
             m_responses.add(row);
             m_results.addSnmpRowResult(row);

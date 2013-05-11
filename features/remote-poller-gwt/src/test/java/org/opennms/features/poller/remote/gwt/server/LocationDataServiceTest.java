@@ -458,6 +458,7 @@ public class LocationDataServiceTest implements TemporaryDatabaseAware<Temporary
         return ps;
     }
 
+    @Override
     public void setTemporaryDatabase(TemporaryDatabase database) {
         FilterDaoFactory.setInstance(null);
     }
