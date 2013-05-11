@@ -164,7 +164,6 @@
             <groupId>args4j</groupId>
             <artifactId>args4j</artifactId>
             <version>${args4j.version}</version>
-            <scope>provided</scope>
         </dependency>
 
         <!-- JMXMP -->

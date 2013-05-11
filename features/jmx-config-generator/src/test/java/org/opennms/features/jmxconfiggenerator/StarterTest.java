@@ -1,4 +1,4 @@
-package org.opennms.jmxconfiggenerator;
+package org.opennms.features.jmxconfiggenerator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,11 +51,7 @@ public class StarterTest {
 		// -jmx -url service:jmx:remoting-jmx://localhost:9999 -out
 		// JMX-DatacollectionDummy.xml
 
-		// java -classpath
-		// /usr/lib/jvm/default-java//lib/jconsole.jar:/usr/lib/jvm/default-java//lib/tools.jar:/opt/jboss/jboss-as-7.1.1.Final/bin/client/jboss-client.jar
-		// -jar JmxConfigGenerator.jar -jmx -url
-		// service:jmx:remoting-jmx://localhost:9999 -out
-		// JMX-DatacollectionDummy.xml
+		// java -classpath /usr/lib/jvm/default-java//lib/jconsole.jar:/usr/lib/jvm/default-java//lib/tools.jar:/opt/jboss/jboss-as-7.1.1.Final/bin/client/jboss-client.jar  -jar JmxConfigGenerator.jar -jmx -url service:jmx:remoting-jmx://localhost:9999 -out JMX-DatacollectionDummy.xml
 
 		List<String> args = new ArrayList<String>();
 		args.add("-jmx");
