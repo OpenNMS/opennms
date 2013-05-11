@@ -136,24 +136,21 @@ public class Starter {
 
             if (jmx) {
                 JMXConnector jmxConnector = null;
+                JmxDatacollectionConfiggenerator jmxConfigGenerator = new JmxDatacollectionConfiggenerator();
+                
+                JMXServiceURL jmxServiceURL = null;
                 if (hostName != null && port != null && outFile != null) {
-                    JmxDatacollectionConfiggenerator jmxConfigGenerator = new JmxDatacollectionConfiggenerator();
-                    JMXServiceURL jmxServiceURL = jmxConfigGenerator.getJmxServiceURL(jmxmp, hostName, port);
-                    jmxConnector = jmxConfigGenerator.getJmxConnector(username, password, jmxServiceURL);
-                    MBeanServerConnection mBeanServerConnection = jmxConfigGenerator.createMBeanServerConnection(jmxConnector);
-                    JmxDatacollectionConfig generateJmxConfigModel = jmxConfigGenerator.generateJmxConfigModel(mBeanServerConnection, serviceName, !skipDefaultVM, runWritableMBeans, dictionary);
-                    jmxConfigGenerator.writeJmxConfigFile(generateJmxConfigModel, outFile);
+                    jmxServiceURL = jmxConfigGenerator.getJmxServiceURL(jmxmp, hostName, port);
                 } else if (url != null && outFile != null) {
-                    JmxDatacollectionConfiggenerator jmxConfigGenerator = new JmxDatacollectionConfiggenerator();
-                    JMXServiceURL jmxServiceURL = new JMXServiceURL(url);
-                    jmxConnector = jmxConfigGenerator.getJmxConnector(username, password, jmxServiceURL);
-                    MBeanServerConnection mBeanServerConnection = jmxConfigGenerator.createMBeanServerConnection(jmxConnector);
-                    JmxDatacollectionConfig generateJmxConfigModel = jmxConfigGenerator.generateJmxConfigModel(mBeanServerConnection, serviceName, !skipDefaultVM, runWritableMBeans, dictionary);
-                    jmxConfigGenerator.writeJmxConfigFile(generateJmxConfigModel, outFile);
-
+                    jmxServiceURL = new JMXServiceURL(url);
                 } else {
                     throw new CmdLineException(parser, "no valid call found.");
                 }
+
+                jmxConnector = jmxConfigGenerator.getJmxConnector(username, password, jmxServiceURL);
+                MBeanServerConnection mBeanServerConnection = jmxConfigGenerator.createMBeanServerConnection(jmxConnector);
+                JmxDatacollectionConfig generateJmxConfigModel = jmxConfigGenerator.generateJmxConfigModel(mBeanServerConnection, serviceName, !skipDefaultVM, runWritableMBeans, dictionary);
+                jmxConfigGenerator.writeJmxConfigFile(generateJmxConfigModel, outFile);
 
                 if (jmxConnector != null) {
                     logger.debug("closing connection");
