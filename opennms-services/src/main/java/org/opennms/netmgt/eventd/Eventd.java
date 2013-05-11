@@ -100,6 +100,7 @@ public final class Eventd extends AbstractServiceDaemon {
     /**
      * <p>onInit</p>
      */
+    @Override
     protected void onInit() {
         Assert.state(m_eventdServiceManager != null, "property eventdServiceManager must be set");
         Assert.state(m_eventReceivers != null, "property eventReceivers must be set");
@@ -111,6 +112,7 @@ public final class Eventd extends AbstractServiceDaemon {
     /**
      * <p>onStart</p>
      */
+    @Override
     protected void onStart() {
         for (EventReceiver eventReceiver : m_eventReceivers) {
             eventReceiver.start();
@@ -124,6 +126,7 @@ public final class Eventd extends AbstractServiceDaemon {
     /**
      * <p>onStop</p>
      */
+    @Override
     protected void onStop() {
         log().debug("calling shutdown on tcp/udp listener threads");
 

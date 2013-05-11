@@ -413,6 +413,7 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
     @Override
     public void syncServices() {
         m_jdbcTemplate.execute(new ConnectionCallback<Object>() {
+            @Override
             public Object doInConnection(Connection con) throws SQLException, DataAccessException {
                 syncServices(con);
                 return null;
@@ -485,6 +486,7 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
     public List<String> syncServicesTable() {
         return m_jdbcTemplate.execute(new ConnectionCallback<List<String>>() {
 
+            @Override
             public List<String> doInConnection(Connection con) throws SQLException, DataAccessException {
                 return syncServicesTable(con);
             }
@@ -572,6 +574,7 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
     public void syncManagementState() {
         m_jdbcTemplate.execute(new ConnectionCallback<Object>() {
 
+            @Override
             public Object doInConnection(Connection con) throws SQLException, DataAccessException {
                 syncManagementState(con);
                 return null;
@@ -877,6 +880,7 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
     public void syncSnmpPrimaryState() {
         m_jdbcTemplate.execute(new ConnectionCallback<Object>() {
 
+            @Override
             public Object doInConnection(Connection con) throws SQLException, DataAccessException {
                 syncSnmpPrimaryState(con);
                 return null;
@@ -1249,6 +1253,7 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
     public boolean isInterfaceInDB(final InetAddress ifAddress) {
         return m_jdbcTemplate.execute(new ConnectionCallback<Boolean>() {
 
+            @Override
             public Boolean doInConnection(Connection con) throws SQLException, DataAccessException {
                     return isInterfaceInDB(con, ifAddress) ? Boolean.TRUE : Boolean.FALSE;
             }

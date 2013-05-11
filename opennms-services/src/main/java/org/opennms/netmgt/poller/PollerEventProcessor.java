@@ -510,6 +510,7 @@ final class PollerEventProcessor implements EventListener {
      * @param event
      *            The event
      */
+    @Override
     public void onEvent(Event event) {
         if (event == null)
             return;
@@ -684,6 +685,7 @@ final class PollerEventProcessor implements EventListener {
     /**
      * Return an id for this event listener
      */
+    @Override
     public String getName() {
         return "Poller:PollerEventProcessor";
     }

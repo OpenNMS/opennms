@@ -205,6 +205,7 @@ public class SnmpCollector implements ServiceCollector {
      *                Thrown if an unrecoverable error occurs that prevents the
      *                plug-in from functioning.
      */
+    @Override
     public void initialize(Map<String, String> parameters) {
     	initSnmpPeerFactory();
         //initDataCollectionConfig();
@@ -288,6 +289,7 @@ public class SnmpCollector implements ServiceCollector {
     /**
      * Responsible for freeing up any resources held by the collector.
      */
+    @Override
     public void release() {
         // Nothing to release...
     }
@@ -299,6 +301,7 @@ public class SnmpCollector implements ServiceCollector {
      * interface in preparation for data collection.
      * @throws CollectionInitializationException 
      */
+    @Override
     public void initialize(CollectionAgent agent, Map<String, Object> parameters) throws CollectionInitializationException {
         agent.validateAgent();
         
@@ -315,6 +318,7 @@ public class SnmpCollector implements ServiceCollector {
      * Responsible for releasing any resources associated with the specified
      * interface.
      */
+    @Override
     public void release(CollectionAgent agent) {
         agent.setAttribute("SNMP_COLLECTION", null);
     }
@@ -324,6 +328,7 @@ public class SnmpCollector implements ServiceCollector {
      *
      * Perform data collection.
      */
+    @Override
     public CollectionSet collect(CollectionAgent agent, EventProxy eventProxy, Map<String, Object> parameters) throws CollectionException {
         try {
             // XXX: Experimental code that reuses the OnmsSnmpCollection
@@ -413,6 +418,7 @@ public class SnmpCollector implements ServiceCollector {
 //    }
 
     /** {@inheritDoc} */
+    @Override
     public RrdRepository getRrdRepository(String collectionName) {
         return DataCollectionConfigFactory.getInstance().getRrdRepository(collectionName);
     }

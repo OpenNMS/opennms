@@ -55,6 +55,7 @@ public class QBridgeDot1dTpFdbTable extends SnmpTable<QBridgeDot1dTpFdbTableEntr
     }
     
     /** {@inheritDoc} */
+        @Override
     protected QBridgeDot1dTpFdbTableEntry createTableEntry(SnmpObjId base, SnmpInstId inst, Object val) {
         return new QBridgeDot1dTpFdbTableEntry();
     }

@@ -117,6 +117,7 @@ public class DefaultCollectionAgent extends InetNetworkInterface implements Coll
      *
      * @return a {@link java.lang.Boolean} object.
      */
+    @Override
     public Boolean isStoreByForeignSource() {
         return Boolean.getBoolean("org.opennms.rrd.storeByForeignSource");
     }
@@ -129,6 +130,7 @@ public class DefaultCollectionAgent extends InetNetworkInterface implements Coll
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getHostAddress() {
         return InetAddressUtils.str(getInetAddress());
     }
@@ -137,6 +139,7 @@ public class DefaultCollectionAgent extends InetNetworkInterface implements Coll
      * @see org.opennms.netmgt.collectd.CollectionAgent#setSavedIfCount(int)
      */
     /** {@inheritDoc} */
+    @Override
     public void setSavedIfCount(final int ifCount) {
         m_ifCount = ifCount;
     }
@@ -149,6 +152,7 @@ public class DefaultCollectionAgent extends InetNetworkInterface implements Coll
      *
      * @return a int.
      */
+    @Override
     public int getSavedIfCount() {
         return m_ifCount;
     }
@@ -161,6 +165,7 @@ public class DefaultCollectionAgent extends InetNetworkInterface implements Coll
      *
      * @return a int.
      */
+    @Override
     public int getNodeId() {
         if (m_nodeId == -1) {
             m_nodeId = m_agentService.getNodeId();
@@ -176,6 +181,7 @@ public class DefaultCollectionAgent extends InetNetworkInterface implements Coll
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getForeignSource() {
         if (m_foreignSource == null) {
             m_foreignSource = m_agentService.getForeignSource();
@@ -191,6 +197,7 @@ public class DefaultCollectionAgent extends InetNetworkInterface implements Coll
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getForeignId() {
         if (m_foreignId == null) {
             m_foreignId = m_agentService.getForeignId();
@@ -206,6 +213,7 @@ public class DefaultCollectionAgent extends InetNetworkInterface implements Coll
      *
      * @return a {@link java.io.File} object.
      */
+    @Override
     public File getStorageDir() {
        File dir = new File(String.valueOf(getNodeId()));
        if(isStoreByForeignSource() && !(getForeignSource() == null) && !(getForeignId() == null)) {
@@ -237,6 +245,7 @@ public class DefaultCollectionAgent extends InetNetworkInterface implements Coll
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getSysObjectId() {
         if (m_sysObjId == null) {
             m_sysObjId = m_agentService.getSysObjectId();
@@ -307,6 +316,7 @@ public class DefaultCollectionAgent extends InetNetworkInterface implements Coll
      * <p>validateAgent</p>
      * @throws CollectionInitializationException 
      */
+    @Override
     public void validateAgent() throws CollectionInitializationException {
         logCollectionParms();
         validateIsSnmpPrimary();
@@ -323,6 +333,7 @@ public class DefaultCollectionAgent extends InetNetworkInterface implements Coll
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return "Agent[nodeid = "+getNodeId()+" ipaddr= "+getHostAddress()+']';
     }
@@ -335,6 +346,7 @@ public class DefaultCollectionAgent extends InetNetworkInterface implements Coll
      *
      * @return a {@link org.opennms.netmgt.snmp.SnmpAgentConfig} object.
      */
+    @Override
     public SnmpAgentConfig getAgentConfig() {
         return SnmpPeerFactory.getInstance().getAgentConfig(getInetAddress());
     }
@@ -351,6 +363,7 @@ public class DefaultCollectionAgent extends InetNetworkInterface implements Coll
      * @see org.opennms.netmgt.collectd.CollectionAgent#getSnmpInterfaceInfo(org.opennms.netmgt.collectd.IfResourceType)
      */
     /** {@inheritDoc} */
+    @Override
     public Set<IfInfo> getSnmpInterfaceInfo(final IfResourceType type) {
         final Set<SnmpIfData> snmpIfData = getSnmpInterfaceData();
         final Set<IfInfo> ifInfos = new LinkedHashSet<IfInfo>(snmpIfData.size());
@@ -363,6 +376,7 @@ public class DefaultCollectionAgent extends InetNetworkInterface implements Coll
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getSnmpInterfaceLabel(final int ifIndex) {
         for (final SnmpIfData ifData : getSnmpInterfaceData()) {
             if (ifData.getIfIndex() == ifIndex)
@@ -376,11 +390,13 @@ public class DefaultCollectionAgent extends InetNetworkInterface implements Coll
      *
      * @return a long.
      */
+    @Override
     public long getSavedSysUpTime() {
         return m_sysUpTime;
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setSavedSysUpTime(final long sysUpTime) {
         m_sysUpTime = sysUpTime;
     }

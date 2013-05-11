@@ -62,6 +62,7 @@ public class Threshd extends AbstractServiceDaemon implements ThreshdMBean {
     /**
      * <p>onInit</p>
      */
+    @Override
     protected void onInit() {
         // Load threshd configuration file
         //
@@ -108,6 +109,7 @@ public class Threshd extends AbstractServiceDaemon implements ThreshdMBean {
     /**
      * <p>onStart</p>
      */
+    @Override
     protected void onStart() {
         getInstance().start();
     }
@@ -115,6 +117,7 @@ public class Threshd extends AbstractServiceDaemon implements ThreshdMBean {
     /**
      * <p>onStop</p>
      */
+    @Override
     protected void onStop() {
         getInstance().stop();
     }
@@ -124,6 +127,7 @@ public class Threshd extends AbstractServiceDaemon implements ThreshdMBean {
      *
      * @return a int.
      */
+    @Override
     public int getStatus() {
         return getInstance().getStatus();
     }

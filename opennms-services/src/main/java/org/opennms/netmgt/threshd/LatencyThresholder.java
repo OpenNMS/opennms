@@ -137,6 +137,7 @@ final class LatencyThresholder implements ServiceThresholder {
     /**
      * <p>reinitialize</p>
      */
+    @Override
     public void reinitialize() {
         //Nothing to do 
     }
@@ -144,6 +145,7 @@ final class LatencyThresholder implements ServiceThresholder {
     /**
      * Responsible for freeing up any resources held by the thresholder.
      */
+    @Override
     public void release() {
         // Nothing to release...
     }
@@ -154,6 +156,7 @@ final class LatencyThresholder implements ServiceThresholder {
      * Responsible for performing all necessary initialization for the specified
      * interface in preparation for thresholding.
      */
+    @Override
     public void initialize(ThresholdNetworkInterface iface, Map<?,?> parameters) {
         // Get interface address from NetworkInterface
         //
@@ -319,6 +322,7 @@ final class LatencyThresholder implements ServiceThresholder {
      * Responsible for releasing any resources associated with the specified
      * interface.
      */
+    @Override
     public void release(ThresholdNetworkInterface iface) {
         // Nothing to release...
     }
@@ -328,6 +332,7 @@ final class LatencyThresholder implements ServiceThresholder {
      *
      * Perform threshold checking.
      */
+    @Override
     public int check(ThresholdNetworkInterface iface, EventProxy eproxy, Map<?,?> parameters) {
 		LatencyInterface latIface = new LatencyInterface(iface, m_svcName);
 		LatencyParameters latParms = new LatencyParameters(parameters, m_svcName);

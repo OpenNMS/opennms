@@ -237,6 +237,7 @@ public class Poller extends AbstractServiceDaemon {
     /**
      * <p>onInit</p>
      */
+    @Override
     protected void onInit() {
         
         // serviceUnresponsive behavior enabled/disabled?
@@ -362,6 +363,7 @@ public class Poller extends AbstractServiceDaemon {
     /**
      * <p>onStart</p>
      */
+    @Override
     protected void onStart() {
 		// get the category logger
         // start the scheduler
@@ -381,6 +383,7 @@ public class Poller extends AbstractServiceDaemon {
     /**
      * <p>onStop</p>
      */
+    @Override
     protected void onStop() {
         if(getScheduler()!=null) {
             getScheduler().stop();
@@ -400,6 +403,7 @@ public class Poller extends AbstractServiceDaemon {
 	/**
 	 * <p>onPause</p>
 	 */
+    @Override
 	protected void onPause() {
 		getScheduler().pause();
 	}
@@ -407,6 +411,7 @@ public class Poller extends AbstractServiceDaemon {
     /**
      * <p>onResume</p>
      */
+    @Override
     protected void onResume() {
 		getScheduler().resume();
 	}
@@ -475,6 +480,7 @@ public class Poller extends AbstractServiceDaemon {
 
             final PollableNode svcNode = node;
             final Runnable r = new Runnable() {
+                @Override
                 public void run() {
 					final int matchCount = scheduleMatchingServices("ifServices.nodeId = "+nodeId+" AND ifServices.ipAddr = '"+normalizedAddress+"' AND service.serviceName = '"+svcName+"'");
                     if (matchCount > 0) {
@@ -513,6 +519,7 @@ public class Poller extends AbstractServiceDaemon {
         final AtomicInteger count = new AtomicInteger(0);
         
         Querier querier = new Querier(m_dataSource, sql) {
+            @Override
             public void processRow(ResultSet rs) throws SQLException {
                 if (scheduleService(rs.getInt("nodeId"), rs.getString("nodeLabel"), rs.getString("ipAddr"), rs.getString("serviceName"), 
                                 "A".equals(rs.getString("status")), (Number)rs.getObject("svcLostEventId"), rs.getTimestamp("ifLostService"), 
@@ -685,6 +692,7 @@ public class Poller extends AbstractServiceDaemon {
      */
     public void refreshServicePackages() {
         PollableVisitor visitor = new PollableVisitorAdaptor() {
+            @Override
             public void visitService(PollableService service) {
                 service.refreshConfig();
             }
@@ -697,6 +705,7 @@ public class Poller extends AbstractServiceDaemon {
      */
     public void refreshServiceThresholds() {
         PollableVisitor visitor = new PollableVisitorAdaptor() {
+            @Override
             public void visitService(PollableService service) {
                 service.refreshThresholds();
             }

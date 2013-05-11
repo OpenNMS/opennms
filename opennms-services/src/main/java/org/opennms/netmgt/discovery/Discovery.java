@@ -160,6 +160,7 @@ public class Discovery extends AbstractServiceDaemon {
      *
      * @throws java.lang.IllegalStateException if any.
      */
+    @Override
     protected void onInit() throws IllegalStateException {
 
         Assert.state(m_eventForwarder != null, "must set the eventForwarder property");
@@ -274,6 +275,7 @@ public class Discovery extends AbstractServiceDaemon {
     /**
      * <p>onStart</p>
      */
+    @Override
     protected void onStart() {
     	syncAlreadyDiscovered();
         startTimer();
@@ -282,6 +284,7 @@ public class Discovery extends AbstractServiceDaemon {
     /**
      * <p>onStop</p>
      */
+    @Override
     protected void onStop() {
         stopTimer();
     }
@@ -289,6 +292,7 @@ public class Discovery extends AbstractServiceDaemon {
     /**
      * <p>onPause</p>
      */
+    @Override
     protected void onPause() {
         stopTimer();
     }
@@ -296,6 +300,7 @@ public class Discovery extends AbstractServiceDaemon {
     /**
      * <p>onResume</p>
      */
+    @Override
     protected void onResume() {
         startTimer();
     }

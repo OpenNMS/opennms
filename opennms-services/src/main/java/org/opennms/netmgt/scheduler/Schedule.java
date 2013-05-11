@@ -65,10 +65,12 @@ public class Schedule {
             return m_expirationCode < m_currentExpirationCode;
         }
         
+        @Override
         public boolean isReady() {
             return isExpired() || m_schedulable.isReady();
         }
 
+        @Override
         public void run() {
             if (isExpired()) {
                 ThreadCategory.getInstance(getClass()).debug("Schedule "+this+" expired.  No need to run.");
@@ -98,6 +100,7 @@ public class Schedule {
 
         }
         
+        @Override
         public String toString() { return "ScheduleEntry[expCode="+m_expirationCode+"] for "+m_schedulable; }
     }
 

@@ -342,6 +342,7 @@ public class SyslogdEventdLoadTest implements InitializingBean {
         private AtomicInteger m_eventCount = new AtomicInteger(0);
         private int m_expectedCount = 0;
 
+        @Override
         public String getName() {
             return "eventCounter";
         }
@@ -375,6 +376,7 @@ public class SyslogdEventdLoadTest implements InitializingBean {
             m_expectedCount++;
         }
 
+        @Override
         public void onEvent(final Event e) {
             final int current = m_eventCount.incrementAndGet();
             if (current % 100 == 0) {

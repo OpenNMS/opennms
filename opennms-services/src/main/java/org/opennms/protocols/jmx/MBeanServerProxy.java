@@ -71,6 +71,7 @@ public class MBeanServerProxy implements InvocationHandler {
      * @return a {@link java.lang.Object} object.
      * @throws java.lang.Throwable if any.
      */
+    @Override
     public Object invoke(Object proxy, Method m, Object[] args) throws Throwable {
 
         Class<?> serverClass = this.remoteServer.getClass();

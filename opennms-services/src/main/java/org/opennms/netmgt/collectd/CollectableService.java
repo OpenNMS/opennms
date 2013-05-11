@@ -223,6 +223,7 @@ final class CollectableService implements ReadyRunnable {
      *
      * @return a boolean.
      */
+    @Override
     public boolean isReady() {
         boolean ready = false;
 
@@ -281,6 +282,7 @@ final class CollectableService implements ReadyRunnable {
      * it's own thread context to execute the query. The last step in the method
      * before it exits is to reschedule the interface.
      */
+    @Override
     public void run() {
         // Process any outstanding updates.
         if (processUpdates() == ABORT_COLLECTION) {

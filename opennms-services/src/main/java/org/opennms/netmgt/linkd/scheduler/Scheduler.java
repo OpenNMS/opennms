@@ -186,56 +186,69 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 	 * interval is used as the key for determining which queue to add the
 	 * runnable.
 	 */
+        @Override
 	public synchronized void schedule(long interval,
 			final ReadyRunnable runnable) {
 
 		final long timeToRun = getCurrentTime() + interval;
 		ReadyRunnable timeKeeper = new ReadyRunnable() {
+                        @Override
 			public boolean isReady() {
 				return getCurrentTime() >= timeToRun && runnable.isReady();
 			}
 			
+                        @Override
 			public String getInfo() {
 				return runnable.getInfo();
 			}
 
+                        @Override
 			public void run() {
 				runnable.run();
 			}
 
+                        @Override
 			public void schedule() {
 				runnable.schedule();
 			}
 			
+                        @Override
 			public void suspend() {
 				runnable.suspend();
 			}
 
+                        @Override
 			public void wakeUp() {
 				runnable.wakeUp();
 			}
 
+                        @Override
 			public boolean isSuspended() {
 				return runnable.isSuspended();
 			}
 			
+                        @Override
 			public boolean equals(ReadyRunnable r) {
 				return runnable.equals(r);
 			}
 			
+                        @Override
 			public void unschedule() {
 				runnable.unschedule();
 			}
 
+                        @Override
 			public String toString() {
 				return runnable.toString() + " (ready in "
 						+ Math.max(0, timeToRun - getCurrentTime()) + "ms)";
 			}
 			
+                        @Override
 			public String getPackageName() {
 				return runnable.getPackageName();
 			}
 			
+                        @Override
 			public void setPackageName(String pkg) {
 				runnable.setPackageName(pkg);
 			}
@@ -401,6 +414,7 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 	 *
 	 * @return a long.
 	 */
+        @Override
 	public long getCurrentTime() {
 		return System.currentTimeMillis();
 	}
@@ -411,6 +425,7 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 	 * @throws java.lang.IllegalStateException
 	 *             Thrown if the fiber is already running.
 	 */
+        @Override
 	public synchronized void start() {
 		if (m_worker != null)
 			throw new IllegalStateException(
@@ -430,6 +445,7 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 	 * @throws java.lang.IllegalStateException
 	 *             Throws if the fiber has never been started.
 	 */
+        @Override
 	public synchronized void stop() {
 		if (m_worker == null)
 			throw new IllegalStateException("The fiber has never been started");
@@ -449,6 +465,7 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 	 *             Throws if the operation could not be completed due to the
 	 *             fiber's state.
 	 */
+        @Override
 	public synchronized void pause() {
 		if (m_worker == null)
 			throw new IllegalStateException("The fiber has never been started");
@@ -472,6 +489,7 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 	 *             Throws if the operation could not be completed due to the
 	 *             fiber's state.
 	 */
+        @Override
 	public synchronized void resume() {
 		if (m_worker == null)
 			throw new IllegalStateException("The fiber has never been started");
@@ -492,6 +510,7 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 	 *
 	 * @return The current status.
 	 */
+        @Override
 	public synchronized int getStatus() {
 		if (m_worker != null && m_worker.isAlive() == false)
 			m_status = STOPPED;
@@ -503,6 +522,7 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
+        @Override
 	public String getName() {
 		return m_runner.toString();
 	}
@@ -512,6 +532,7 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 	 * the runnable queues for ready objects and then enqueuing them into the
 	 * thread pool for execution.
 	 */
+        @Override
 	public void run() {
 
 		synchronized (this) {

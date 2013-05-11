@@ -40,6 +40,7 @@ public class LldpLocTable extends SnmpTable<LldpLocTableEntry>{
     }
     
     /** {@inheritDoc} */
+    @Override
     protected LldpLocTableEntry createTableEntry(SnmpObjId base, SnmpInstId inst, Object val) {
         return new LldpLocTableEntry();
     }

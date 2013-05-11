@@ -44,6 +44,7 @@ import org.opennms.api.integration.ticketing.*;
 public class NullTicketerPlugin implements Plugin {
 
     /** {@inheritDoc} */
+    @Override
     public Ticket get(String ticketId) {
         Ticket ticket = new Ticket();
         ticket.setId("Ticketing not configured");
@@ -55,6 +56,7 @@ public class NullTicketerPlugin implements Plugin {
      *
      * No-op implementation
      */
+    @Override
     public void saveOrUpdate(Ticket ticket) {
     }
 

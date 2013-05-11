@@ -70,6 +70,7 @@ public final class JDBCStoredProcedurePlugin extends JDBCPlugin {
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public boolean checkStatus(Connection con, Map<String, Object> qualifiers) {
 		boolean status = false;
 		CallableStatement cs = null;

@@ -108,10 +108,12 @@ public class PollerBackEndTest extends TestCase {
             m_expected = value;
         }
 
+        @Override
         public void appendTo(StringBuffer buffer) {
             buffer.append(m_expected);
         }
 
+        @Override
         public boolean matches(Object argument) {
             Event actual = (Event)argument;
             if (m_expected == null) {
@@ -142,6 +144,7 @@ public class PollerBackEndTest extends TestCase {
             m_status = status;
         }
 
+        @Override
         public Object answer() throws Throwable {
             OnmsLocationSpecificStatus status = (OnmsLocationSpecificStatus)getCurrentArguments()[0];
             assertEquals(m_status.getLocationMonitor(), status.getLocationMonitor());
@@ -290,6 +293,7 @@ public class PollerBackEndTest extends TestCase {
         m_locMonDao.update(m_locationMonitor);
         expectLastCall().andAnswer(new IAnswer<Object>() {
 
+            @Override
             public Object answer() throws Throwable {
                 OnmsLocationMonitor mon = (OnmsLocationMonitor)getCurrentArguments()[0];
                 assertEquals(MonitorStatus.STARTED, mon.getStatus());
@@ -315,6 +319,7 @@ public class PollerBackEndTest extends TestCase {
         m_locMonDao.update(m_locationMonitor);
         expectLastCall().andAnswer(new IAnswer<Object>() {
 
+            @Override
             public Object answer() throws Throwable {
                 OnmsLocationMonitor mon = (OnmsLocationMonitor)getCurrentArguments()[0];
                 assertEquals("unexpected new monitor state", expectedStatus, mon.getStatus());
@@ -325,6 +330,7 @@ public class PollerBackEndTest extends TestCase {
         });
     }
 
+    @Override
     protected void setUp() throws Exception {
 
 
@@ -546,6 +552,7 @@ public class PollerBackEndTest extends TestCase {
         m_locMonDao.save(isA(OnmsLocationMonitor.class));
         expectLastCall().andAnswer(new IAnswer<Object>() {
 
+            @Override
             public Object answer() throws Throwable {
                 OnmsLocationMonitor mon = (OnmsLocationMonitor)getCurrentArguments()[0];
                 mon.setId(1);
@@ -762,6 +769,7 @@ public class PollerBackEndTest extends TestCase {
         m_locMonDao.update(m_locationMonitor);
         expectLastCall().andAnswer(new IAnswer<Object>() {
 
+            @Override
             public Object answer() throws Throwable {
                 OnmsLocationMonitor mon = (OnmsLocationMonitor)getCurrentArguments()[0];
                 assertEquals(MonitorStatus.DISCONNECTED, mon.getStatus());

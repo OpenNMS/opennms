@@ -441,6 +441,7 @@ abstract public class PollableElement {
      */
     public void delete() {
         Runnable r = new Runnable() {
+            @Override
             public void run() {
                 m_deleted = true;
                 if (m_parent != null) {
@@ -476,6 +477,7 @@ abstract public class PollableElement {
      */
     public PollEvent extrapolateCause() {
         return withTreeLock(new Callable<PollEvent>() {
+            @Override
             public PollEvent call() throws Exception {
                 return doExtrapolateCause();
             }
@@ -498,6 +500,7 @@ abstract public class PollableElement {
     public void inheritParentalCause() {
         withTreeLock(new Runnable() {
 
+            @Override
             public void run() {
                 doInheritParentalCause();
             }

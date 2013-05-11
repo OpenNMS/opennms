@@ -150,6 +150,7 @@ public class Linkd extends AbstractServiceDaemon {
      * onInit
      * </p>
      */
+    @Override
     protected void onInit() {
         BeanUtils.assertAutowiring(this);
 
@@ -391,6 +392,7 @@ public class Linkd extends AbstractServiceDaemon {
      * onStart
      * </p>
      */
+    @Override
     protected synchronized void onStart() {
 
         // start the scheduler
@@ -408,6 +410,7 @@ public class Linkd extends AbstractServiceDaemon {
      * onStop
      * </p>
      */
+    @Override
     protected synchronized void onStop() {
 
         // Stop the scheduler
@@ -422,6 +425,7 @@ public class Linkd extends AbstractServiceDaemon {
      * onPause
      * </p>
      */
+    @Override
     protected synchronized void onPause() {
         m_scheduler.pause();
     }
@@ -431,6 +435,7 @@ public class Linkd extends AbstractServiceDaemon {
      * onResume
      * </p>
      */
+    @Override
     protected synchronized void onResume() {
         m_scheduler.resume();
     }

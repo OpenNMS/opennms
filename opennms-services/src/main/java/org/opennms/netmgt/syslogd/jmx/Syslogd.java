@@ -38,6 +38,7 @@ public class Syslogd implements SyslogdMBean {
     /**
      * <p>init</p>
      */
+    @Override
     public void init() {
         org.opennms.netmgt.syslogd.Syslogd.getInstance().init();
     }
@@ -45,6 +46,7 @@ public class Syslogd implements SyslogdMBean {
     /**
      * <p>start</p>
      */
+    @Override
     public void start() {
         org.opennms.netmgt.syslogd.Syslogd.getInstance().start();
     }
@@ -52,6 +54,7 @@ public class Syslogd implements SyslogdMBean {
     /**
      * <p>stop</p>
      */
+    @Override
     public void stop() {
         org.opennms.netmgt.syslogd.Syslogd.getInstance();
     }
@@ -61,6 +64,7 @@ public class Syslogd implements SyslogdMBean {
      *
      * @return a int.
      */
+    @Override
     public int getStatus() {
         return org.opennms.netmgt.syslogd.Syslogd.getInstance().getStatus();
     }
@@ -70,6 +74,7 @@ public class Syslogd implements SyslogdMBean {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String status() {
         return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
     }
@@ -79,6 +84,7 @@ public class Syslogd implements SyslogdMBean {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getStatusText() {
         return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
     }

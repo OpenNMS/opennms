@@ -115,6 +115,7 @@ final public class TrivialTimeMonitor extends AbstractServiceMonitor {
      * the specified number of seconds of the local system's clock time, then
      * the service is considered available.
      */
+    @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         NetworkInterface<InetAddress> iface = svc.getNetInterface();
 

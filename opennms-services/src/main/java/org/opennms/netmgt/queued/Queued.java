@@ -104,6 +104,7 @@ public class Queued extends AbstractServiceDaemon implements EventListener {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void onEvent(Event e) {
         String fileList = EventUtils.getParm(e, EventConstants.PARM_FILES_TO_PROMOTE);
         Set<String> files = commaDelimitedListToSet(fileList);

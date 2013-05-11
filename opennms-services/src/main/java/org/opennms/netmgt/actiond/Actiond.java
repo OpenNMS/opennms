@@ -76,6 +76,7 @@ public final class Actiond extends AbstractServiceDaemon {
 	/**
 	 * <p>onInit</p>
 	 */
+    @Override
 	protected void onInit() {
 		// A queue for execution
         //
@@ -96,6 +97,7 @@ public final class Actiond extends AbstractServiceDaemon {
     /**
      * <p>onStart</p>
      */
+    @Override
     protected void onStart() {
 		if (m_executor == null) {
 		    init();
@@ -107,6 +109,7 @@ public final class Actiond extends AbstractServiceDaemon {
     /**
      * <p>onStop</p>
      */
+    @Override
     protected void onStop() {
 		try {
             if (m_executor != null) {
@@ -127,6 +130,7 @@ public final class Actiond extends AbstractServiceDaemon {
     /**
      * <p>onPause</p>
      */
+    @Override
     protected void onPause() {
 		m_executor.pause();
 	}
@@ -134,6 +138,7 @@ public final class Actiond extends AbstractServiceDaemon {
     /**
      * <p>onResume</p>
      */
+    @Override
     protected void onResume() {
 		m_executor.resume();
 	}

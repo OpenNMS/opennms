@@ -101,6 +101,7 @@ public class SyslogTimeStamp extends Format {
     }
 
     /** {@inheritDoc} */
+    @Override
     public StringBuffer format(Object date, StringBuffer appendTo,
                                FieldPosition fieldPos) throws IllegalArgumentException {
         // UNDONE - handle fieldPos!
@@ -121,6 +122,7 @@ public class SyslogTimeStamp extends Format {
     }
 
     /** {@inheritDoc} */
+    @Override
     public Object parseObject(String source, ParsePosition pos) {
         Date stamp = null;
 

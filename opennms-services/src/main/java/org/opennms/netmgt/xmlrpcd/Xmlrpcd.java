@@ -95,6 +95,7 @@ public class Xmlrpcd extends AbstractServiceDaemon {
     /**
      * <p>onInit</p>
      */
+    @Override
     protected void onInit() {
 
 
@@ -216,6 +217,7 @@ public class Xmlrpcd extends AbstractServiceDaemon {
     /**
      * <p>onStart</p>
      */
+    @Override
     protected void onStart() {
         LogUtils.debugf(this, "start: Initializing the xmlrpcd config factory");
         
@@ -229,6 +231,7 @@ public class Xmlrpcd extends AbstractServiceDaemon {
     /**
      * <p>onPause</p>
      */
+    @Override
     protected void onPause() {
         LogUtils.debugf(this, "pause: Calling pause on processor");
 
@@ -242,6 +245,7 @@ public class Xmlrpcd extends AbstractServiceDaemon {
     /**
      * <p>onResume</p>
      */
+    @Override
     protected void onResume() {
         LogUtils.debugf(this, "resume: Calling resume on processor");
 
@@ -255,6 +259,7 @@ public class Xmlrpcd extends AbstractServiceDaemon {
     /**
      * <p>onStop</p>
      */
+    @Override
     protected void onStop() {
         // shutdown and wait on the background processing thread to exit.
     	// LogUtils.debugf(this, "exit: closing communication paths.");

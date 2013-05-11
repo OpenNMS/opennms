@@ -121,6 +121,7 @@ public class FtpResponse {
      *
      * @return FTP response as would be sent over FTP
      */
+    @Override
     public String toString() {
         StringBuffer sb = new StringBuffer();
         int i;

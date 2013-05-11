@@ -295,6 +295,7 @@ class EventQueueProcessor implements Runnable, PausableFiber {
      * @throws java.lang.IllegalStateException
      *             Thrown if the fiber has already been started.
      */
+    @Override
     public synchronized void start() {
         if (m_worker != null) {
             throw new IllegalStateException("The fiber is running or has already run");
@@ -311,6 +312,7 @@ class EventQueueProcessor implements Runnable, PausableFiber {
     /**
      * Pauses the current fiber.
      */
+    @Override
     public synchronized void pause() {
         if (m_worker == null || m_worker.isAlive() == false) {
             throw new IllegalStateException("The fiber is not running");
@@ -323,6 +325,7 @@ class EventQueueProcessor implements Runnable, PausableFiber {
     /**
      * Resumes the currently paused fiber.
      */
+    @Override
     public synchronized void resume() {
         if (m_worker == null || m_worker.isAlive() == false) {
             throw new IllegalStateException("The fiber is not running");
@@ -341,6 +344,7 @@ class EventQueueProcessor implements Runnable, PausableFiber {
      * @throws java.lang.IllegalStateException
      *             Thrown if the fiber has never been started.
      */
+    @Override
     public synchronized void stop() {
         if (m_worker == null) {
             throw new IllegalStateException("The fiber has never run");
@@ -356,6 +360,7 @@ class EventQueueProcessor implements Runnable, PausableFiber {
      *
      * @return The name of the Fiber.
      */
+    @Override
     public String getName() {
         return "EventQueueProcessor";
     }
@@ -365,6 +370,7 @@ class EventQueueProcessor implements Runnable, PausableFiber {
      *
      * @return The status of the Fiber.
      */
+    @Override
     public synchronized int getStatus() {
         if (m_worker != null && !m_worker.isAlive()) {
             m_status = STOPPED;
@@ -378,6 +384,7 @@ class EventQueueProcessor implements Runnable, PausableFiber {
      * process the event to send a notification to the external XMLRPC server
      * via XMLRPC protocol.
      */
+    @Override
     public void run() {
         synchronized (this) {
             m_status = RUNNING;

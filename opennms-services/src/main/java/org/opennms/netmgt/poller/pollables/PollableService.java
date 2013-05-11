@@ -53,6 +53,7 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
     private final class PollRunner implements Runnable {
     	
     	private volatile PollStatus m_pollStatus;
+            @Override
 		public void run() {
 		    doPoll();
 		    getNode().processStatusChange(new Date());
@@ -114,6 +115,7 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
      *
      * @return a {@link org.opennms.netmgt.poller.pollables.PollContext} object.
      */
+    @Override
     public PollContext getContext() {
         return getInterface().getContext();
     }
@@ -122,6 +124,7 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getSvcName() {
         return m_svcName;
     }
@@ -131,6 +134,7 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getIpAddr() {
         return getInterface().getIpAddr();
     }
@@ -140,6 +144,7 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
      *
      * @return a int.
      */
+    @Override
     public int getNodeId() {
         return getInterface().getNodeId();
     }
@@ -149,12 +154,14 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getNodeLabel() {
         return getInterface().getNodeLabel();
     }
 
 
     /** {@inheritDoc} */
+    @Override
     protected void visitThis(PollableVisitor v) {
         super.visitThis(v);
         v.visitService(this);
@@ -174,6 +181,7 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
      *
      * @return a {@link org.opennms.netmgt.model.PollStatus} object.
      */
+    @Override
     public PollStatus poll() {
         PollStatus newStatus = m_pollConfig.poll();
         if (!newStatus.isUnknown()) { 
@@ -188,6 +196,7 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
      * @throws UnknownHostException if any.
      * @return a {@link org.opennms.netmgt.poller.NetworkInterface} object.
      */
+    @Override
     public NetworkInterface<InetAddress> getNetInterface() {
         return m_netInterface;
     }
@@ -197,6 +206,7 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
      *
      * @return a {@link java.net.InetAddress} object.
      */
+    @Override
     public InetAddress getAddress() {
         return getInterface().getAddress();
     }
@@ -219,12 +229,14 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
 
     
     /** {@inheritDoc} */
+    @Override
     public Event createDownEvent(Date date) {
         return getContext().createEvent(EventConstants.NODE_LOST_SERVICE_EVENT_UEI, getNodeId(), getAddress(), getSvcName(), date, getStatus().getReason());
     }
     
     
     /** {@inheritDoc} */
+    @Override
     public Event createUpEvent(Date date) {
         return getContext().createEvent(EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI, getNodeId(), getAddress(), getSvcName(), date, getStatus().getReason());
     }
@@ -250,11 +262,13 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
     }
 
     /** {@inheritDoc} */
+    @Override
     public void createOutage(PollEvent cause) {
         super.createOutage(cause);
         getContext().openOutage(this, cause);
     }
     /** {@inheritDoc} */
+    @Override
     protected void resolveOutage(PollEvent resolution) {
         super.resolveOutage(resolution);
         getContext().resolveOutage(this, resolution);
@@ -265,9 +279,11 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() { return getInterface()+":"+getSvcName(); }
 
     /** {@inheritDoc} */
+    @Override
     public void processStatusChange(Date date) {
         
         if (getContext().isServiceUnresponsiveEnabled()) {
@@ -286,6 +302,7 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
     }
     
     /** {@inheritDoc} */
+    @Override
     public void updateStatus(PollStatus newStatus) {
         
         if (!getContext().isServiceUnresponsiveEnabled()) {
@@ -342,6 +359,7 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
      *
      * @return a boolean.
      */
+    @Override
     public boolean isReady() {
 		/* FIXME: There is a bug in the Scheduler that only checks the first service in a queue.
 		 * If a thread hangs the below line will cause all services with the same interval to get
@@ -360,6 +378,7 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
     /**
      * <p>run</p>
      */
+    @Override
     public void run() {
         doRun(500);
     }
@@ -404,8 +423,10 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
     /**
      * <p>delete</p>
      */
+    @Override
     public void delete() {
         Runnable r = new Runnable() {
+            @Override
             public void run() {
                 PollableService.super.delete();
                 m_schedule.unschedule();
@@ -445,6 +466,7 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
         m_pollConfig.refreshThresholds();
     }
 
+    @Override
     public String getSvcUrl() {
         return null;
     }

@@ -74,6 +74,7 @@ public class LldpRemInterface {
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
+    @Override
 	public String toString() {
 	    return new ToStringBuilder(this)
 	    .append("lldpRemChassidSubtype", m_lldpRemChassidSubtype)

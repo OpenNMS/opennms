@@ -46,10 +46,12 @@ public class SyslogNGParser extends SyslogParser {
         return new SyslogNGParser(text);
     }
 
+    @Override
     protected Pattern getPattern() {
         return m_syslogNGPattern;
     }
 
+    @Override
     public SyslogMessage parse() throws SyslogParserException {
         if (!this.find()) {
             if (traceEnabled()) {

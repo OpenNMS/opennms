@@ -194,6 +194,7 @@ public class Transaction {
     /**
      * <p>finalize</p>
      */
+        @Override
     public void finalize() {
         m_dbUtils.cleanUp();
     }

@@ -42,6 +42,7 @@ public class SnmpV3TrapAlarmForwarder extends SnmpTrapForwarderHelper implements
 		super(ip,port,securityLevel,securityname,authPassPhrase,authProtocol,privPassPhrase,privprotocol,snmpTrapHelper);
 	}
 
+        @Override
 	public void flushEvent(Event event) {
 		event =	super.filter(event);
 		if (event != null) {
@@ -55,6 +56,7 @@ public class SnmpV3TrapAlarmForwarder extends SnmpTrapForwarderHelper implements
 		}
 	}
 
+        @Override
 	public void flushSyncEvent(Event event) {
 		event =	super.filter(event);
 		if (event != null) {
@@ -68,10 +70,12 @@ public class SnmpV3TrapAlarmForwarder extends SnmpTrapForwarderHelper implements
 		}
 	}
 
+        @Override
 	public void sendStartSync() {
 		super.sendV3StartSyncTrap();
 	}
 
+        @Override
 	public void sendEndSync() {
 		super.sendV3EndSyncTrap();
 	}

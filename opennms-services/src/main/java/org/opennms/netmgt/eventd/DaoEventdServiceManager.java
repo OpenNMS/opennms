@@ -64,6 +64,7 @@ public class DaoEventdServiceManager implements InitializingBean, EventdServiceM
      * @see org.opennms.netmgt.eventd.EventdServiceManager#getServiceId(java.lang.String)
      */
     /** {@inheritDoc} */
+    @Override
     public synchronized int getServiceId(String serviceName) throws DataAccessException {
         Assert.notNull(serviceName, "The serviceName argument must not be null");
 
@@ -92,6 +93,7 @@ public class DaoEventdServiceManager implements InitializingBean, EventdServiceM
     /**
      * <p>dataSourceSync</p>
      */
+    @Override
     public synchronized void dataSourceSync() {
         m_serviceMap.clear();
         

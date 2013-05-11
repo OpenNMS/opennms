@@ -45,6 +45,7 @@ public class MockPollerConfigTest extends TestCase {
     
     MockPollerConfig m_pollerConfig;
     
+    @Override
     public void setUp() {
         MockNetwork network = new MockNetwork();
         network.setCriticalService("ICMP");

@@ -155,6 +155,7 @@ public class XmlRpcWebServerFactoryBean implements FactoryBean<WebServer>,
 	 * @throws java.lang.Exception
 	 *             if any.
 	 */
+        @Override
 	public WebServer getObject() throws Exception {
 		return m_webServer;
 	}
@@ -166,6 +167,7 @@ public class XmlRpcWebServerFactoryBean implements FactoryBean<WebServer>,
 	 * 
 	 * @return a {@link java.lang.Class} object.
 	 */
+        @Override
 	public Class<? extends WebServer> getObjectType() {
 		return WebServer.class;
 	}
@@ -177,6 +179,7 @@ public class XmlRpcWebServerFactoryBean implements FactoryBean<WebServer>,
 	 * 
 	 * @return a boolean.
 	 */
+        @Override
 	public boolean isSingleton() {
 		return true;
 	}
@@ -213,6 +216,7 @@ public class XmlRpcWebServerFactoryBean implements FactoryBean<WebServer>,
 	 * @throws java.lang.Exception
 	 *             if any.
 	 */
+        @Override
 	public void destroy() throws Exception {
 		m_webServer.shutdown();
 	}

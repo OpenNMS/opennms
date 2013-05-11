@@ -2661,6 +2661,7 @@ public final class RescanProcessor implements Runnable {
     /**
      * This is where all the work of the class is done.
      */
+    @Override
     public void run() {
         // perform rescan of the node
         DbNodeEntry dbNodeEntry = getNode();

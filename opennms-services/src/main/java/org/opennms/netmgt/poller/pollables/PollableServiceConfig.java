@@ -101,6 +101,7 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
      *
      * @return a {@link org.opennms.netmgt.model.PollStatus} object.
      */
+    @Override
     public PollStatus poll() {
         String packageName = null;
         synchronized(this) {
@@ -131,6 +132,7 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
      * Uses the existing package name to try and re-obtain the package from the poller config factory.
      * Should be called when the poller config has been reloaded.
      */
+    @Override
     public synchronized void refresh() {
         Package newPkg = m_pollerConfig.getPackage(m_pkg.getName());
         if (newPkg == null) {
@@ -145,6 +147,7 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
     /**
      * Should be called when thresholds configuration has been reloaded
      */
+    @Override
     public synchronized void refreshThresholds() {
         ((LatencyStoringServiceMonitorAdaptor)getServiceMonitor()).refreshThresholds();
     }
@@ -180,6 +183,7 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
      *
      * @return a long.
      */
+    @Override
     public long getCurrentTime() {
         return m_timer.getCurrentTime();
     }
@@ -189,6 +193,7 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
      *
      * @return a long.
      */
+    @Override
     public synchronized long getInterval() {
         
         if (m_service.isDeleted())
@@ -237,6 +242,7 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
      *
      * @return a boolean.
      */
+    @Override
     public synchronized boolean scheduledSuspension() {
         long nodeId=m_service.getNodeId();
         for (String outageName : m_pkg.getOutageCalendarCollection()) {

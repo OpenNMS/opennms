@@ -38,6 +38,7 @@ import org.opennms.core.utils.Argument;
 import org.opennms.netmgt.model.notifd.NotificationStrategy;
 public class SnmpTrapNotificationStrategyTest extends TestCase {
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         MockLogAppender.setupLogging(true);

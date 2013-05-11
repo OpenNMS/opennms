@@ -39,16 +39,19 @@ public class DefaultTimeAdjustment implements TimeAdjustment {
     
     private long m_offset = 0;
 
+    @Override
     public void setMasterTime(long timeInMillis) {
         if (timeInMillis > 0) {
             m_offset = System.currentTimeMillis() - timeInMillis;
         }
     }
 
+    @Override
     public long adjustTimeToMasterTime(long localTime) {
         return localTime - m_offset;
     }
 
+    @Override
     public Date adjustDateToMasterDate(Date localDate) {
         return new Date(adjustTimeToMasterTime(localDate.getTime()));
     }

@@ -72,6 +72,7 @@ public class SnmpTrapHelperException extends Exception {
      *
      * @return The message associated with this exception.
      */
+    @Override
     public String getMessage() {
         Throwable cause = getCause();
 
@@ -89,6 +90,7 @@ public class SnmpTrapHelperException extends Exception {
      * print stream. If this exception has an associated cause exception, the
      * stack trace associated with the cause exception is printed.
      */
+    @Override
     public void printStackTrace(java.io.PrintStream ps) {
         Throwable cause = getCause();
 
@@ -107,6 +109,7 @@ public class SnmpTrapHelperException extends Exception {
      * this exception has an associated cause exception, the stack trace
      * associated with the cause exception is printed.
      */
+    @Override
     public void printStackTrace() {
         printStackTrace(System.err);
     }
@@ -119,6 +122,7 @@ public class SnmpTrapHelperException extends Exception {
      * @param pw
      *            The print writer to which the stack trace should be printed.
      */
+    @Override
     public void printStackTrace(java.io.PrintWriter pw) {
         Throwable cause = getCause();
 
