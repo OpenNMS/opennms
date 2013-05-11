@@ -34,7 +34,6 @@ import java.io.InputStream;
 import java.io.InterruptedIOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.lang.reflect.UndeclaredThrowableException;
 import java.net.ConnectException;
 import java.net.InetSocketAddress;
 import java.net.Socket;

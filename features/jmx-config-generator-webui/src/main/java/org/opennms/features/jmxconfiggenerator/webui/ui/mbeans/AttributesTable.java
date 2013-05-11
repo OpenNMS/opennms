@@ -29,15 +29,9 @@
 package org.opennms.features.jmxconfiggenerator.webui.ui.mbeans;
 
 import com.vaadin.data.Container;
-import com.vaadin.data.Item;
 import com.vaadin.data.Validator;
 import com.vaadin.data.Validator.InvalidValueException;
-import com.vaadin.data.validator.AbstractStringValidator;
 import com.vaadin.data.validator.StringLengthValidator;
-import com.vaadin.terminal.ErrorMessage;
-import com.vaadin.terminal.PaintTarget;
-import com.vaadin.terminal.Paintable.RepaintRequestListener;
-import com.vaadin.terminal.UserError;
 import com.vaadin.ui.*;
 
 import java.util.ArrayList;

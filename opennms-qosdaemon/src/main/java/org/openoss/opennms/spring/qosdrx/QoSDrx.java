@@ -28,7 +28,6 @@
 
 package org.openoss.opennms.spring.qosdrx;
 
-import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.dao.AlarmDao;

@@ -28,8 +28,6 @@
 
 package org.opennms.features.jmxconfiggenerator.webui.data;
 
-import org.apache.commons.collections.Transformer;
-
 /**
  * StringRenderer which renders any object of type <code>T</code> to a String
  * representation. Usually a {@linkplain StringRenderer} is used when a specific

@@ -40,7 +40,6 @@ import javax.net.ssl.*;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.security.KeyStore;
-import java.security.Security;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.HashMap;

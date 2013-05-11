@@ -44,18 +44,14 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.snmp.SnmpInstId;
-import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.SnmpUtils;
-import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.test.FileAnticipator;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import java.io.File;
 import java.io.IOException;
-import java.math.BigInteger;
-import java.net.InetAddress;
 import java.util.Collections;
 import java.util.HashMap;
 
