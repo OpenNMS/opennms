@@ -37,7 +37,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.ListIterator;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
@@ -67,10 +66,6 @@ import org.opennms.netmgt.config.poller.Service;
  *
  * @author <A HREF="mailto:jacinta@opennms.org">Jacinta Remedios </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:jacinta@opennms.org">Jacinta Remedios </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @version $Id: $
- * @since 1.8.1
  */
 public class PollerConfigServlet extends HttpServlet {
     /**
@@ -175,9 +170,7 @@ public class PollerConfigServlet extends HttpServlet {
     public void initCapsdProtocols() {
         pluginColl = capsdConfig.getProtocolPluginCollection();
         if (pluginColl != null) {
-            Iterator<ProtocolPlugin> pluginiter = pluginColl.iterator();
-            while (pluginiter.hasNext()) {
-                ProtocolPlugin plugin = pluginiter.next();
+            for (ProtocolPlugin plugin : pluginColl) {
                 capsdColl.add(plugin);
                 capsdProtocols.put(plugin.getProtocol(), plugin);
             }
@@ -194,10 +187,7 @@ public class PollerConfigServlet extends HttpServlet {
             if (pkgiter.hasNext()) {
                 pkg = pkgiter.next();
                 Collection<Service> svcColl = pkg.getServiceCollection();
-                Iterator<Service> svcIter = svcColl.iterator();
-                Service svcProp = null;
-                while (svcIter.hasNext()) {
-                    svcProp = svcIter.next();
+                for (Service svcProp : svcColl) {
                     pollerServices.put(svcProp.getName(), svcProp);
                 }
             }
@@ -284,11 +274,8 @@ public class PollerConfigServlet extends HttpServlet {
     public void adjustNonChecked(java.util.List<String> checkedList) {
         if (pkg != null) {
             Collection<Service> svcColl = pkg.getServiceCollection();
-            Service svc = null;
             if (svcColl != null) {
-                Iterator<Service> svcIter = svcColl.iterator();
-                while (svcIter.hasNext()) {
-                    svc = svcIter.next();
+                for (Service svc : svcColl) {
                     if (svc != null) {
                         if (!checkedList.contains(svc.getName())) {
                             if (svc.getStatus().equals("on")) {
@@ -308,31 +295,22 @@ public class PollerConfigServlet extends HttpServlet {
      * @throws java.io.IOException if any.
      */
     public void deleteThese(java.util.List<String> deleteServices) throws IOException {
-        ListIterator<String> lstIter = deleteServices.listIterator();
-        while (lstIter.hasNext()) {
-            String svcname = lstIter.next();
-
+        for (String svcname : deleteServices) {
             if (pkg != null) {
                 boolean flag = false;
                 Collection<Service> svcColl = pkg.getServiceCollection();
                 if (svcColl != null) {
-                    Iterator<Service> svcIter = svcColl.iterator();
-                    Service svc = null;
-                    while (svcIter.hasNext()) {
-                        svc = svcIter.next();
+                    for (Service svc : svcColl) {
                         if (svc != null) {
                             if (svc.getName().equals(svcname)) {
-                                flag = true;
+                                pkg.removeService(svc);
+                                removeMonitor(svc.getName());
+                                deleteCapsdInfo(svc.getName());
+                                props.remove("service." + svc.getName() + ".protocol");
+                                props.store(new FileOutputStream(ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONF_FILE_NAME)), null);
                                 break;
                             }
                         }
-                    }
-                    if (flag) {
-                        pkg.removeService(svc);
-                        removeMonitor(svc.getName());
-                        deleteCapsdInfo(svc.getName());
-                        props.remove("service." + svc.getName() + ".protocol");
-                        props.store(new FileOutputStream(ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONF_FILE_NAME)), null);
                     }
                 }
             }
@@ -349,9 +327,7 @@ public class PollerConfigServlet extends HttpServlet {
         Collection<Monitor> monitorColl = pollerConfig.getMonitorCollection();
         Monitor newMonitor = new Monitor();
         if (monitorColl != null) {
-            Iterator<Monitor> monitoriter = monitorColl.iterator();
-            while (monitoriter.hasNext()) {
-                Monitor mon = monitoriter.next();
+            for (Monitor mon : monitorColl) {
                 if (mon != null) {
                     if (mon.getService().equals(service)) {
                         newMonitor.setService(service);
@@ -375,9 +351,7 @@ public class PollerConfigServlet extends HttpServlet {
         if (pkg != null) {
             Collection<Service> svcColl = pkg.getServiceCollection();
             if (svcColl != null) {
-                Iterator<Service> svcIter = svcColl.iterator();
-                while (svcIter.hasNext()) {
-                    Service svc = svcIter.next();
+                for (Service svc : svcColl) {
                     if (svc != null) {
                         if (svc.getName().equals(protocol)) {
                             svc.setStatus(bPolled);
