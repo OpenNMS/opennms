@@ -72,7 +72,7 @@
     </dependency>
     <dependency>
       <groupId>org.krupczak</groupId>
-      <artifactId>Xmp</artifactId>
+      <artifactId>xmp</artifactId>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
