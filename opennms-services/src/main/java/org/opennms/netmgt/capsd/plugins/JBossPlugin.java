@@ -54,6 +54,7 @@ public class JBossPlugin extends JMXPlugin {
      * @see org.opennms.netmgt.capsd.JMXPlugin#getMBeanServer()
      */
     /** {@inheritDoc} */
+    @Override
     public ConnectionWrapper getMBeanServerConnection(Map<String, Object> map, InetAddress address) {
         return  JBossConnectionFactory.getMBeanServerConnection(map, address);
     }
@@ -62,6 +63,7 @@ public class JBossPlugin extends JMXPlugin {
      * @see org.opennms.netmgt.capsd.Plugin#getProtocolName()
      */
     /** {@inheritDoc} */
+    @Override
     public String getProtocolName(Map<String, Object> map) {
         return "jboss";
     }
@@ -69,6 +71,7 @@ public class JBossPlugin extends JMXPlugin {
      * @see org.opennms.netmgt.capsd.Plugin#isProtocolSupported(java.net.InetAddress)
      */
     /** {@inheritDoc} */
+    @Override
     public boolean isProtocolSupported(InetAddress address) {
         
         HashMap<String, Object> map = new HashMap<String, Object>();

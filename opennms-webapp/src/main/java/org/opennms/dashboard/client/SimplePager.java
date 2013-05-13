@@ -84,6 +84,7 @@ public class SimplePager extends Composite {
             
             m_label.addClickHandler(new ClickHandler() {
 
+                @Override
                 public void onClick(ClickEvent sender) {
                     m_pageable.adjustPage(m_direction);
                 }

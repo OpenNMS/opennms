@@ -87,6 +87,7 @@ final public class GpMonitor extends AbstractServiceMonitor {
      * The timeout is handled by ExecRunner and is also passed as a parameter to
      * the script or program being called.
      */
+    @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         NetworkInterface<InetAddress> iface = svc.getNetInterface();
 

@@ -38,6 +38,7 @@ import org.opennms.systemreport.SystemReportPlugin;
 import org.springframework.core.io.Resource;
 
 public class FullTextSystemReportFormatter extends AbstractSystemReportFormatter implements SystemReportFormatter {
+    @Override
     public String getName() {
         return "full";
     }
@@ -47,14 +48,17 @@ public class FullTextSystemReportFormatter extends AbstractSystemReportFormatter
         return "Human-readable text (full output)";
     }
 
+    @Override
     public String getContentType() {
         return "text/plain";
     }
 
+    @Override
     public String getExtension() {
         return "txt";
     }
 
+    @Override
     public boolean canStdout() {
         return true;
     }

@@ -90,6 +90,7 @@ public final class JDBCQueryMonitor extends JDBCMonitor {
     }
     
     /** {@inheritDoc} */
+    @Override
     public PollStatus checkDatabaseStatus(Connection con, Map<String, Object> parameters) {
         PollStatus ps = PollStatus.unavailable();
         Statement st = null; 

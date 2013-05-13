@@ -354,6 +354,7 @@ public class DutySchedule {
      *
      * @return a string representation of this DutySchedule
      */
+    @Override
     public String toString() {
         StringBuffer buffer = new StringBuffer();
 
@@ -385,6 +386,7 @@ public class DutySchedule {
      *
      * @return a {@link org.opennms.web.admin.users.parsers.DutySchedule} object.
      */
+    @Override
     public DutySchedule clone() {
         return new DutySchedule(toString());
     }

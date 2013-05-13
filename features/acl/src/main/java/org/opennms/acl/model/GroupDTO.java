@@ -58,6 +58,7 @@ public class GroupDTO implements GroupView {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getName() {
         return name;
     }
@@ -76,6 +77,7 @@ public class GroupDTO implements GroupView {
      *
      * @return a {@link java.lang.Integer} object.
      */
+    @Override
     public Integer getId() {
         return id;
     }
@@ -140,6 +142,7 @@ public class GroupDTO implements GroupView {
      *
      * @return a {@link java.lang.Boolean} object.
      */
+    @Override
     public Boolean getEmptyUsers() {
         return emptyUsers;
     }
@@ -158,6 +161,7 @@ public class GroupDTO implements GroupView {
      *
      * @return a {@link java.util.List} object.
      */
+    @Override
     public List<GroupView> getGroups() {
         return groups;
     }

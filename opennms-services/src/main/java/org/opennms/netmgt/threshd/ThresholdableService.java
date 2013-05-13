@@ -201,6 +201,7 @@ final class ThresholdableService extends InetNetworkInterface implements Thresho
      *
      * @return a int.
      */
+        @Override
     public int getNodeId() {
         return m_nodeId;
     }
@@ -260,6 +261,7 @@ final class ThresholdableService extends InetNetworkInterface implements Thresho
      *
      * @return a boolean.
      */
+        @Override
     public boolean isReady() {
         boolean ready = false;
 
@@ -319,6 +321,7 @@ final class ThresholdableService extends InetNetworkInterface implements Thresho
      * it's own thread context to execute the query. The last step in the method
      * before it exits is to reschedule the interface.
      */
+        @Override
     public void run() {
         // Process any oustanding updates.
         if (processUpdates() == ABORT_THRESHOLD_CHECK)

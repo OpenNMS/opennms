@@ -103,6 +103,7 @@ public class NotificationInfo implements Cloneable {
      *
      * @return a {@link java.lang.Object} object.
      */
+    @Override
     public Object clone() {
         try {
             super.clone();
@@ -332,6 +333,7 @@ public class NotificationInfo implements Cloneable {
      *
      * @return String representation of the notification information
      */
+    @Override
     public String toString() {
         StringBuffer buffer = new StringBuffer();
 

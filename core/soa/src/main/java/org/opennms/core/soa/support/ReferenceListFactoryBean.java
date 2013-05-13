@@ -83,6 +83,7 @@ public class ReferenceListFactoryBean<T> implements FactoryBean<List<T>>, Initia
      * @return a {@link java.lang.Object} object.
      * @throws java.lang.Exception if any.
      */
+    @Override
     public List<T> getObject() throws Exception {
         return m_providerRegistrations;
     }
@@ -92,6 +93,7 @@ public class ReferenceListFactoryBean<T> implements FactoryBean<List<T>>, Initia
      *
      * @return a {@link java.lang.Class} object.
      */
+    @Override
     public Class<?> getObjectType() {
         return List.class;
     }
@@ -101,6 +103,7 @@ public class ReferenceListFactoryBean<T> implements FactoryBean<List<T>>, Initia
      *
      * @return a boolean.
      */
+    @Override
     public boolean isSingleton() {
         return true;
     }
@@ -119,6 +122,7 @@ public class ReferenceListFactoryBean<T> implements FactoryBean<List<T>>, Initia
     }
 
     /** {@inheritDoc} */
+    @Override
     public void providerRegistered(Registration registration, T provider) {
         
         if (m_filter != null && !m_filter.match(registration.getProperties())) {
@@ -134,6 +138,7 @@ public class ReferenceListFactoryBean<T> implements FactoryBean<List<T>>, Initia
     }
 
     /** {@inheritDoc} */
+    @Override
     public void providerUnregistered(Registration registration, T provider) {
         boolean found = m_providerRegistrations.remove(provider);
 

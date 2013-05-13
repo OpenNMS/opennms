@@ -161,6 +161,7 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
         return buff.toString();
     }
 
+        @Override
     public String toString() {
         StringBuffer buff = new StringBuffer("SnmpAgentConfig[");
         buff.append("Address: " + (m_address == null? null : InetAddrUtils.str(m_address)));

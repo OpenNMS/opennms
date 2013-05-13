@@ -66,6 +66,7 @@ public class WmiCollectionAttribute extends AbstractCollectionAttribute implemen
          *
          * @return a {@link org.opennms.netmgt.config.collector.CollectionAttributeType} object.
          */
+    @Override
         public CollectionAttributeType getAttributeType() {
             return m_attribType;
         }
@@ -75,6 +76,7 @@ public class WmiCollectionAttribute extends AbstractCollectionAttribute implemen
          *
          * @return a {@link java.lang.String} object.
          */
+    @Override
         public String getName() {
             return m_alias;
         }
@@ -84,6 +86,7 @@ public class WmiCollectionAttribute extends AbstractCollectionAttribute implemen
          *
          * @return a {@link java.lang.String} object.
          */
+    @Override
         public String getNumericValue() {
             return m_value;
         }
@@ -93,6 +96,7 @@ public class WmiCollectionAttribute extends AbstractCollectionAttribute implemen
          *
          * @return a {@link org.opennms.netmgt.config.collector.CollectionResource} object.
          */
+    @Override
         public CollectionResource getResource() {
             return m_resource;
         }
@@ -102,11 +106,13 @@ public class WmiCollectionAttribute extends AbstractCollectionAttribute implemen
          *
          * @return a {@link java.lang.String} object.
          */
+    @Override
         public String getStringValue() {
             return m_value; //Should this be null instead?
         }
 
         /** {@inheritDoc} */
+    @Override
         public boolean shouldPersist(final ServiceParameters params) {
             return true;
         }
@@ -116,6 +122,7 @@ public class WmiCollectionAttribute extends AbstractCollectionAttribute implemen
          *
          * @return a {@link java.lang.String} object.
          */
+    @Override
         public String getType() {
             return m_attribType.getType();
         }
@@ -125,6 +132,7 @@ public class WmiCollectionAttribute extends AbstractCollectionAttribute implemen
          *
          * @return a {@link java.lang.String} object.
          */
+    @Override
         public String toString() {
             return "WmiCollectionAttribute " + m_alias+"=" + m_value;
         }

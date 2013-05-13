@@ -94,6 +94,7 @@ public class JdbcCollector implements ServiceCollector {
         }
     }
 
+    @Override
     public void initialize(Map<String, String> parameters) {
         log().debug("initialize: Initializing JdbcCollector.");
         // Retrieve the DAO for our configuration file.
@@ -168,10 +169,12 @@ public class JdbcCollector implements ServiceCollector {
         }
     }
 
+    @Override
     public void release() {
         m_scheduledNodes.clear();
     }
 
+    @Override
     public void initialize(CollectionAgent agent, Map<String, Object> parameters) {        
         log().debug("initialize: Initializing JDBC collection for agent: " + agent);
         
@@ -196,6 +199,7 @@ public class JdbcCollector implements ServiceCollector {
         }
     }
 
+    @Override
     public void release(CollectionAgent agent) {
         Integer scheduledNodeKey = new Integer(agent.getNodeId());
         JdbcAgentState nodeState = m_scheduledNodes.get(scheduledNodeKey);
@@ -204,6 +208,7 @@ public class JdbcCollector implements ServiceCollector {
         }
     }
 
+    @Override
     public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, Object> parameters) throws CollectionException {
         JdbcAgentState agentState = null;
         if(parameters == null) {
@@ -364,6 +369,7 @@ public class JdbcCollector implements ServiceCollector {
         return status;
     }
 
+    @Override
     public RrdRepository getRrdRepository(String collectionName) {
         return m_jdbcCollectionDao.getConfig().buildRrdRepository(collectionName);
     }

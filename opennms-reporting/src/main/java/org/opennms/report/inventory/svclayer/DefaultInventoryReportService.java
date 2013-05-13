@@ -60,6 +60,7 @@ public class DefaultInventoryReportService implements InventoryReportService {
         
     
     /** {@inheritDoc} */
+    @Override
     public boolean runReport(InventoryReportCriteria criteria){
         
         m_reportRunner.setUser(criteria.getUser());

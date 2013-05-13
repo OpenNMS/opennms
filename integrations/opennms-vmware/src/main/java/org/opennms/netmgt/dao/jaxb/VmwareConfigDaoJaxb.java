@@ -56,6 +56,7 @@ public class VmwareConfigDaoJaxb extends AbstractJaxbConfigDao<VmwareConfig, Vmw
      *
      * @return the current config object
      */
+    @Override
     public VmwareConfig getConfig() {
         return getContainer().getObject();
     }
@@ -67,6 +68,7 @@ public class VmwareConfigDaoJaxb extends AbstractJaxbConfigDao<VmwareConfig, Vmw
      * @param jaxbConfig a config object.
      * @return a custom object
      */
+    @Override
     public VmwareConfig translateConfig(VmwareConfig jaxbConfig) {
         return jaxbConfig;
     }
@@ -76,6 +78,7 @@ public class VmwareConfigDaoJaxb extends AbstractJaxbConfigDao<VmwareConfig, Vmw
      *
      * @return the map of server entries
      */
+    @Override
     public Map<String, VmwareServer> getServerMap() {
         HashMap<String, VmwareServer> vmwareServerMap = new HashMap<String, VmwareServer>();
 

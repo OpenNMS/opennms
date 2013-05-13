@@ -107,6 +107,7 @@ final class DataSender implements Fiber {
         /**
          * Call the 'sendData()' to send the data out for all the categories
          */
+        @Override
         public void run() {
             sendData();
         }
@@ -160,6 +161,7 @@ final class DataSender implements Fiber {
     /**
      * Start the data sender thread pool
      */
+    @Override
     public synchronized void start() {
         m_status = STARTING;
 
@@ -174,6 +176,7 @@ final class DataSender implements Fiber {
      * <P>
      * Shutdown the data sender thread pool
      */
+    @Override
     public synchronized void stop() {
         m_status = STOP_PENDING;
 
@@ -194,6 +197,7 @@ final class DataSender implements Fiber {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getName() {
         return "OpenNMS.RTC.DataSender";
     }
@@ -203,6 +207,7 @@ final class DataSender implements Fiber {
      *
      * @return a int.
      */
+    @Override
     public int getStatus() {
         return m_status;
     }

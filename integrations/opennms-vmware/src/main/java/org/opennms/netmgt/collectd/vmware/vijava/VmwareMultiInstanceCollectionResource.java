@@ -61,14 +61,17 @@ public class VmwareMultiInstanceCollectionResource extends VmwareCollectionResou
         return instDir;
     }
 
+    @Override
     public String getResourceTypeName() {
         return m_name;
     }
 
+    @Override
     public String getInstance() {
         return m_inst;
     }
 
+    @Override
     public String toString() {
         return "Node[" + m_agent.getNodeId() + "]/type[" + m_name + "]/instance[" + m_inst + "]";
     }

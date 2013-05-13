@@ -53,6 +53,7 @@ public class CustomFieldValue implements Serializable {
         return m_value;
     }
 
+    @Override
     public String toString() {
         return m_value;
     }

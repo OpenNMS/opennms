@@ -169,6 +169,7 @@ public final class SnmpTrapSession extends Object {
          * @exception SnmpPduEncodingException
          *                Thrown if the pdu fails to decode.
          */
+        @Override
         public void processSnmpMessage(InetAddress agent, int port, SnmpInt32 version, SnmpOctetString community, int pduType, SnmpPduPacket pdu) throws SnmpPduEncodingException {
             if (version.getValue() != SnmpSMI.SNMPV2 && pduType != SnmpPduPacket.V2TRAP)
                 return;
@@ -197,6 +198,7 @@ public final class SnmpTrapSession extends Object {
          * @exception SnmpPduEncodingException
          *                Thrown if the pdu fails to decode.
          */
+        @Override
         public void processSnmpTrap(InetAddress agent, int port, SnmpOctetString community, SnmpPduTrap pdu) throws SnmpPduEncodingException {
             try {
                 m_handler.snmpReceivedTrap(m_forWhom, agent, port, community, pdu);
@@ -214,6 +216,7 @@ public final class SnmpTrapSession extends Object {
          *            The datagram packet in question.
          * 
          */
+        @Override
         public void processBadDatagram(DatagramPacket p) {
             // do nothing - discard?
         }
@@ -226,6 +229,7 @@ public final class SnmpTrapSession extends Object {
          * @param e
          *            The exception.
          */
+        @Override
         public void processException(Exception e) {
             try {
                 m_handler.snmpTrapSessionError(m_forWhom, ERROR_EXCEPTION, e);

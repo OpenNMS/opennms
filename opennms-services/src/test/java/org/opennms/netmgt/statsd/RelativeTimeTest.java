@@ -87,12 +87,14 @@ public class RelativeTimeTest {
         RelativeTime yesterday = RelativeTime.YESTERDAY;
         yesterday.setTimeKeeper(new TimeKeeper() {
 
+            @Override
             public Date getCurrentDate() {
                 Calendar cal = new GregorianCalendar(m_timeZone, Locale.ENGLISH);
                 cal.set(m_startYear, m_startMonth, m_startDay, 10, 0, 0);
                 return cal.getTime();
             }
 
+            @Override
             public long getCurrentTime() {
                 return getCurrentDate().getTime();
             }
@@ -135,12 +137,14 @@ public class RelativeTimeTest {
         RelativeTime yesterday = RelativeTime.YESTERDAY;
         yesterday.setTimeKeeper(new TimeKeeper() {
 
+            @Override
             public Date getCurrentDate() {
                 Calendar cal = new GregorianCalendar(m_timeZone, Locale.ENGLISH);
                 cal.set(m_endYear, m_endMonth, m_endDay, 10, 0, 0);
                 return cal.getTime();
             }
 
+            @Override
             public long getCurrentTime() {
                 return getCurrentDate().getTime();
             }

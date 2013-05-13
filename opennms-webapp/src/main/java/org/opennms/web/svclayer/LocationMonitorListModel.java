@@ -151,6 +151,7 @@ public class LocationMonitorListModel {
             
             List<Entry<String, String>> details = new ArrayList<Entry<String, String>>(monitor.getDetails().entrySet());
             Collections.sort(details, new Comparator<Entry<String, String>>() {
+                @Override
                 public int compare(Entry<String, String> one, Entry<String, String> two) {
                     return one.getKey().compareToIgnoreCase(two.getKey());
                 }

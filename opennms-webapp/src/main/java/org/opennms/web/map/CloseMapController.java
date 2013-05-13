@@ -82,6 +82,7 @@ public class CloseMapController implements Controller {
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response)
 			throws IOException {
 		

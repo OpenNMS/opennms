@@ -68,6 +68,7 @@ public class OrEndPointValidationExpression extends EndPointValidationExpression
     }
 
     /** {@inheritDoc} */
+    @Override
     public void validate(EndPoint endPoint) throws EndPointStatusException {
         EndPointStatusException reason = null;
         for(EndPointValidationExpression validator : m_validators) {
@@ -89,6 +90,7 @@ public class OrEndPointValidationExpression extends EndPointValidationExpression
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         StringBuffer sb = new StringBuffer();
         sb.append("or(");

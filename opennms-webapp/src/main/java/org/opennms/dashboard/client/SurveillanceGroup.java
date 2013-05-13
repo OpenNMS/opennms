@@ -125,11 +125,13 @@ public class SurveillanceGroup extends SurveillanceSet implements IsSerializable
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return m_label;
     }
 
     /** {@inheritDoc} */
+    @Override
     public void visit(Visitor v) {
         v.visitGroup(this);
     }

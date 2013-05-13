@@ -66,9 +66,11 @@ public class DefaultReverseDnsProvisioningAdapterService implements
         Assert.notNull(m_ipInterfaceDao, "ReverseDnsProvisioner requires an IpInterfaceDao which is not null.");
     }
     
+    @Override
     public List<ReverseDnsRecord> get(final Integer nodeid) {
         final List<ReverseDnsRecord> records = new ArrayList<ReverseDnsRecord>();
         m_template.execute(new TransactionCallback<Object>() {
+            @Override
             public Object doInTransaction(TransactionStatus arg0) {
                 for (OnmsIpInterface ipInterface : m_nodeDao.get(nodeid).getIpInterfaces()) {
                     records.add(new ReverseDnsRecord(ipInterface));
@@ -79,6 +81,7 @@ public class DefaultReverseDnsProvisioningAdapterService implements
         return records;
     }
 
+    @Override
     public void update(Integer nodeid, ReverseDnsRecord rdr) {
         OnmsIpInterface ipInterface = m_ipInterfaceDao.findByNodeIdAndIpAddress(nodeid, rdr.getIp().getHostAddress());
         if (ipInterface != null) {

@@ -119,6 +119,7 @@ public class NotificationTask extends Thread {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         StringBuffer buffer = new StringBuffer("Send ");
 
@@ -218,6 +219,7 @@ public class NotificationTask extends Thread {
     /**
      * <p>run</p>
      */
+    @Override
     public void run() {
         boolean outstanding = false;
         try {
@@ -393,6 +395,7 @@ public class NotificationTask extends Thread {
     /**
      * <p>start</p>
      */
+    @Override
     public synchronized void start() {
         m_started = true;
         super.start();

@@ -91,6 +91,7 @@ public class BroadcastEventProcessor implements EventListener {
      *
      * @throws java.lang.Throwable if any.
      */
+    @Override
     protected void finalize() throws Throwable {
         close();
     }
@@ -100,6 +101,7 @@ public class BroadcastEventProcessor implements EventListener {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getName() {
         return "Eventd:BroadcastEventProcessor";
     }
@@ -111,6 +113,7 @@ public class BroadcastEventProcessor implements EventListener {
      * available for processing.  Each message is examined for its Universal
      * Event Identifier and the appropriate action is taking based on each UEI.
      */
+    @Override
     public void onEvent(Event event) {
         
         log().debug("onEvent: received event, UEI = " + event.getUei());

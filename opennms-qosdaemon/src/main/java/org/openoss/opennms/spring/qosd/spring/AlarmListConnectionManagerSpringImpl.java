@@ -80,6 +80,7 @@ public class AlarmListConnectionManagerSpringImpl implements AlarmListConnection
 	 *
 	 * Used by jmx mbean QoSD to pass in Spring Application context
 	 */
+        @Override
 	public  void setApplicationContext(ClassPathXmlApplicationContext m_context){
 		this.m_context = m_context;
 	}
@@ -103,6 +104,7 @@ public class AlarmListConnectionManagerSpringImpl implements AlarmListConnection
 	 *
 	 * @return a int.
 	 */
+        @Override
 	public int getStatus() {
 		
 		return status;
@@ -112,6 +114,7 @@ public class AlarmListConnectionManagerSpringImpl implements AlarmListConnection
 	 * @see org.openoss.opennms.spring.qosd.AlarmListConnectionManager#init(org.openoss.opennms.spring.qosd.PropertiesLoader, java.util.Properties)
 	 */
 	/** {@inheritDoc} */
+        @Override
 	public void init(PropertiesLoader props, Properties env) {
 		log = QoSDimpl2.getLog();	//Get a reference to the QoSD logger
 
@@ -136,6 +139,7 @@ public class AlarmListConnectionManagerSpringImpl implements AlarmListConnection
 	/**
 	 * <p>kill</p>
 	 */
+        @Override
 	public void kill() {
 		try {
 			//alarmMonitorDao.ejbRemove(); TODO - NEED TO CLOSE BEAN PROPERLY
@@ -150,6 +154,7 @@ public class AlarmListConnectionManagerSpringImpl implements AlarmListConnection
 	 * @see org.openoss.opennms.spring.qosd.AlarmListConnectionManager#reset_list(java.lang.String)
 	 */
 	/** {@inheritDoc} */
+        @Override
 	public void reset_list(String _rebuilt_message) {
 		this.alarmMonitorDao.rebuildAlarmList(_rebuilt_message );
 	}
@@ -162,6 +167,7 @@ public class AlarmListConnectionManagerSpringImpl implements AlarmListConnection
 	 *
 	 * @throws java.lang.IllegalStateException if any.
 	 */
+        @Override
 	public void run() throws IllegalStateException {
 		if(!init)
 			throw new IllegalStateException("AlarmListSpringConnectionManagerThread - You must call init() before calling run()");
@@ -172,6 +178,7 @@ public class AlarmListConnectionManagerSpringImpl implements AlarmListConnection
 	 * @see org.openoss.opennms.spring.qosd.AlarmListConnectionManager#send(java.util.Hashtable)
 	 */
 	/** {@inheritDoc} */
+        @Override
 	public void send(Hashtable<AlarmKey,AlarmValue> alarmList) {
 		this.alarmMonitorDao.updateAlarmList(alarmList);
 	}
@@ -182,6 +189,7 @@ public class AlarmListConnectionManagerSpringImpl implements AlarmListConnection
 	/**
 	 * <p>start</p>
 	 */
+        @Override
 	public void start() {
 		this.run();
 
@@ -193,6 +201,7 @@ public class AlarmListConnectionManagerSpringImpl implements AlarmListConnection
 	 *
 	 * @return a javax$oss$fm$monitor$AlarmValue object.
 	 */
+        @Override
 	public  javax.oss.fm.monitor.AlarmValue makeAlarmValue(){
 		return new OOSSAlarmValue();
 	}
@@ -204,6 +213,7 @@ public class AlarmListConnectionManagerSpringImpl implements AlarmListConnection
 	 *
 	 * @return a javax$oss$fm$monitor$AlarmValue object.
 	 */
+        @Override
 	public javax.oss.fm.monitor.AlarmValue makeAlarmValueFromSpec() {
 		javax.oss.fm.monitor.AlarmValue alarmValueSpecification = (javax.oss.fm.monitor.AlarmValue)m_context.getBean("alarmValueSpecification");
 			return alarmValueSpecification;

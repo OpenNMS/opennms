@@ -257,6 +257,7 @@ public class Service extends StandardNamedObject {
      *
      * Equals method.
      */
+    @Override
     public boolean equals(Object obj) {
         if (obj != null) {
             if (obj instanceof String)

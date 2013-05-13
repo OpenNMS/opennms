@@ -66,6 +66,7 @@ public enum AcknowledgeType {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return "AcknowledgeType." + getName();
     }

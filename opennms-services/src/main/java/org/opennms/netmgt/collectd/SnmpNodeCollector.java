@@ -105,16 +105,19 @@ public class SnmpNodeCollector extends AggregateTracker {
     }
     
     /** {@inheritDoc} */
+    @Override
     protected void reportGenErr(String msg) {
         log().warn("genErr collecting data for node "+m_primaryIf+": "+msg);
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void reportNoSuchNameErr(String msg) {
         log().info("noSuchName collecting data for node "+m_primaryIf+": "+msg);
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void storeResult(SnmpResult res) {
         m_collectorEntry.storeResult(res);
     }

@@ -35,7 +35,6 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.SocketUtils;
 import org.opennms.core.utils.SocketWrapper;
@@ -65,6 +64,7 @@ public class NrpeClient implements Client<NrpeRequest, NrpePacket>, SocketWrappe
     /**
      * <p>close</p>
      */
+    @Override
     public void close() {
         Socket socket = m_socket;
         m_socket = null;
@@ -80,6 +80,7 @@ public class NrpeClient implements Client<NrpeRequest, NrpePacket>, SocketWrappe
     }
 
     /** {@inheritDoc} */
+    @Override
     public void connect(final InetAddress address, final int port, final int timeout) throws IOException, Exception {
         m_socket = getWrappedSocket(address, port, timeout);
         setOutput(m_socket.getOutputStream());
@@ -116,6 +117,7 @@ public class NrpeClient implements Client<NrpeRequest, NrpePacket>, SocketWrappe
      * @return a {@link java.net.Socket} object.
      * @throws java.lang.Exception if any.
      */
+    @Override
     public Socket wrapSocket(final Socket socket) throws IOException {
         if (!isUseSsl()) {
             return socket;
@@ -133,6 +135,7 @@ public class NrpeClient implements Client<NrpeRequest, NrpePacket>, SocketWrappe
      * @throws java.io.IOException if any.
      * @throws java.lang.Exception if any.
      */
+    @Override
     public NrpePacket receiveBanner() throws IOException, Exception {
         return receiveResponse();
     }
@@ -145,6 +148,7 @@ public class NrpeClient implements Client<NrpeRequest, NrpePacket>, SocketWrappe
      * @throws java.io.IOException if any.
      * @throws java.lang.Exception if any.
      */
+    @Override
     public NrpePacket sendRequest(final NrpeRequest request) throws IOException, Exception {
         request.send(getOutput());
         return receiveResponse();

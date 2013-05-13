@@ -68,6 +68,7 @@ public class LocationUpdatedRemoteEvent implements MapRemoteEvent {
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public void dispatch(final MapRemoteEventHandler locationManager) {
 		locationManager.updateLocation(m_locationInfo);
 	}
@@ -77,6 +78,7 @@ public class LocationUpdatedRemoteEvent implements MapRemoteEvent {
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
+        @Override
 	public String toString() {
 		return "LocationUpdatedRemoteEvent[locationInfo=" + m_locationInfo + "]";
 	}

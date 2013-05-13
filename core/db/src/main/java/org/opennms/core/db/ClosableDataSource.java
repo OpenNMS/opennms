@@ -53,6 +53,7 @@ public interface ClosableDataSource extends DataSource {
     /**
      * How long, in seconds, to attempt to make a connection to the database.
      */
+    @Override
     void setLoginTimeout(final int loginTimeout) throws SQLException;
 
     /**

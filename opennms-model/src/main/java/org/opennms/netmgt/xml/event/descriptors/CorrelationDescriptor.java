@@ -206,6 +206,7 @@ import org.opennms.netmgt.xml.event.Correlation;
                     throw new IllegalStateException(ex.toString());
                 }
             }
+            @Override
             public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
                 try {
                     Correlation target = (Correlation) object;
@@ -459,6 +460,7 @@ import org.opennms.netmgt.xml.event.Correlation;
      * of a global
      * element or element with anonymous type definition.
      */
+    @Override
     public boolean isElementDefinition(
     ) {
         return _elementDefinition;

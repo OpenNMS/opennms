@@ -234,6 +234,7 @@ public class OnmsLocationMonitor implements Comparable<OnmsLocationMonitor> {
      * @param o a {@link org.opennms.netmgt.model.OnmsLocationMonitor} object.
      * @return a int.
      */
+    @Override
     public int compareTo(OnmsLocationMonitor o) {
         int diff = getDefinitionName().compareTo(o.getDefinitionName());
         if (diff != 0) {

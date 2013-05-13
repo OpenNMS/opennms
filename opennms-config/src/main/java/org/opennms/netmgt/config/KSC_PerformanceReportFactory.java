@@ -214,6 +214,7 @@ public class KSC_PerformanceReportFactory {
      */
     public void sortByTitle() {
         Arrays.sort(m_config.getReport(), new Comparator<Report>() {
+            @Override
             public int compare(Report o1, Report o2) {
                 return o1.getTitle().compareTo(o2.getTitle());
             }
@@ -253,6 +254,7 @@ public class KSC_PerformanceReportFactory {
 
         List<Report> reportList = m_config.getReportCollection();
         Collections.sort(reportList, new Comparator<Report>() {
+            @Override
             public int compare(Report o1, Report o2) {
                 return o1.getTitle().compareTo(o2.getTitle());
             }

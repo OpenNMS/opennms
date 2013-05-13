@@ -43,6 +43,7 @@ class NodeStatusView extends PageableTableView {
 	}
     
     /** {@inheritDoc} */
+    @Override
     protected void setRow(FlexTable table, int row, int elementIndex) {
         NodeRtc rtc = m_rtcs[elementIndex];
         
@@ -66,11 +67,13 @@ class NodeStatusView extends PageableTableView {
      *
      * @return a int.
      */
+    @Override
     public int getElementCount() {
         return (m_rtcs == null ? 0 : m_rtcs.length);
     }
 
 	/** {@inheritDoc} */
+    @Override
 	protected void formatCells(FlexTable table, int row) {
         // Don't call the super implementation... it will erase our NodeRtc-specific styling on columns 1 and 2
 

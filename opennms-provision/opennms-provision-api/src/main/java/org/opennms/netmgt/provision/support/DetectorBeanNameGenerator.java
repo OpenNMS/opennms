@@ -41,6 +41,7 @@ import org.springframework.beans.factory.support.BeanNameGenerator;
 public class DetectorBeanNameGenerator implements BeanNameGenerator {
 
     /** {@inheritDoc} */
+    @Override
     public String generateBeanName(BeanDefinition definition, BeanDefinitionRegistry registry) {
         return definition.getBeanClassName();
     }

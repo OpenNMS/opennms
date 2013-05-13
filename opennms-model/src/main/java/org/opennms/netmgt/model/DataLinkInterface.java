@@ -229,6 +229,7 @@ public class DataLinkInterface  implements Serializable, Comparable<DataLinkInte
      * @param o a {@link org.opennms.netmgt.model.DataLinkInterface} object.
      * @return a int.
      */
+    @Override
     public int compareTo(final DataLinkInterface o) {
         return new CompareToBuilder()
             .append(getId(), o.getId())

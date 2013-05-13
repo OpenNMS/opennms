@@ -43,6 +43,7 @@ public class MatchTable implements PropertiesUtils.SymbolTable {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getSymbolValue(String symbol) {
         try {
             int groupNum = Integer.parseInt(symbol);

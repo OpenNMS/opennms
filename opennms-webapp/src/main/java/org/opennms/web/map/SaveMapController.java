@@ -84,6 +84,7 @@ public class SaveMapController implements Controller {
 	private static List<VElement> elems = null;
 
 	/** {@inheritDoc} */
+        @Override
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response)
 			throws IOException {
 

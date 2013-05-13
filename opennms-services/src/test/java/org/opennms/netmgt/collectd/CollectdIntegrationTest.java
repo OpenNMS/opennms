@@ -102,6 +102,7 @@ public class CollectdIntegrationTest extends TestCase {
 
     private FilterDao m_filterDao;
 
+    @Override
     protected void setUp() throws Exception {
 
         m_eventIpcManager = new MockEventIpcManager();
@@ -201,6 +202,7 @@ public class CollectdIntegrationTest extends TestCase {
         m_serviceCollector = collector;
     }
 
+    @Override
     protected void tearDown() throws Exception {
         m_tests.remove(m_key);
     }
@@ -250,6 +252,7 @@ public class CollectdIntegrationTest extends TestCase {
         
         EasyMock.expect(m_collectorConfigDao.getPackages()).andAnswer(new IAnswer<Collection<CollectdPackage>>() {
 
+            @Override
             public Collection<CollectdPackage> answer() throws Throwable {
                 CollectdPackage cPkg = new CollectdPackage(pkg, "localhost", false);
                 return Collections.singleton(cPkg);
@@ -267,24 +270,29 @@ public class CollectdIntegrationTest extends TestCase {
             System.err.println("Created a MockServiceCollector");
         }
 
+        @Override
         public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, Object> parameters) {
             m_collectCount++;
             CollectionSet collectionSetResult=new CollectionSet() {
             	private Date m_timestamp = new Date();
 
+                    @Override
                 public int getStatus() {
                     return ServiceCollector.COLLECTION_SUCCEEDED;
                 }
 
+                    @Override
                 public void visit(CollectionSetVisitor visitor) {
                     visitor.visitCollectionSet(this);   
                     visitor.completeCollectionSet(this);
                 }
 
+                    @Override
 				public boolean ignorePersist() {
 					return false;
 				}
 				
+                    @Override
 				public Date getCollectionTimestamp() {
 					return m_timestamp;
 				}
@@ -296,6 +304,7 @@ public class CollectdIntegrationTest extends TestCase {
             return m_collectCount;
         }
 
+        @Override
         public void initialize(Map<String, String> parameters) {
             // This fails because collectd does NOT actually passed in configured monitor parameters
             // since no collectors actually use them (except this one)
@@ -304,20 +313,24 @@ public class CollectdIntegrationTest extends TestCase {
 //            CollectdIntegrationTest.setServiceCollectorInTest(testKey, this);
         }
 
+        @Override
         public void initialize(CollectionAgent agent, Map<String, Object> parameters) {
             String testKey = (String)parameters.get(TEST_KEY_PARM_NAME);
             assertNotNull(testKey);
             CollectdIntegrationTest.setServiceCollectorInTest(testKey, this);
         }
 
+        @Override
         public void release() {
             throw new UnsupportedOperationException("MockServiceCollector.release() is not yet implemented");
         }
 
+        @Override
         public void release(CollectionAgent agent) {
             throw new UnsupportedOperationException("MockServiceCollector.release() is not yet implemented");
         }
         
+        @Override
         public RrdRepository getRrdRepository(String collectionName) {
             RrdRepository repo = new RrdRepository();
             ArrayList<String> rras=new ArrayList<String>();

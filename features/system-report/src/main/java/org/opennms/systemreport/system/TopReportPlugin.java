@@ -37,18 +37,22 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 
 public class TopReportPlugin extends AbstractSystemReportPlugin {
+    @Override
     public String getName() {
         return "Top";
     }
 
+    @Override
     public String getDescription() {
         return "Output of the 'top' command (full output only)";
     }
 
+    @Override
     public int getPriority() {
         return 11;
     }
 
+    @Override
     public TreeMap<String, Resource> getEntries() {
         final TreeMap<String,Resource> map = new TreeMap<String,Resource>();
 

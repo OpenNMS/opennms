@@ -103,6 +103,7 @@ public final class SnmpThresholder implements ServiceThresholder {
      *                Thrown if an unrecoverable error occurs that prevents the
      *                plug-in from functioning.
      */
+    @Override
     public void initialize(Map<?,?> parameters) {
 
         m_serviceName = (String)parameters.get("svcName");
@@ -122,6 +123,7 @@ public final class SnmpThresholder implements ServiceThresholder {
     /**
      * <p>reinitialize</p>
      */
+    @Override
     public void reinitialize() {
         setupThresholdsDao();
     }
@@ -144,6 +146,7 @@ public final class SnmpThresholder implements ServiceThresholder {
     /**
      * Responsible for freeing up any resources held by the thresholder.
      */
+    @Override
     public void release() {
         // Nothing to release...
     }
@@ -154,6 +157,7 @@ public final class SnmpThresholder implements ServiceThresholder {
      * Responsible for performing all necessary initialization for the specified
      * interface in preparation for thresholding.
      */
+    @Override
     public void initialize(ThresholdNetworkInterface netIface, Map<?,?> parms) {
         SnmpThresholdNetworkInterface snmpThresholdNetworkInterface = new SnmpThresholdNetworkInterface(m_thresholdsDao, netIface, parms);
         m_snmpThresholdNetworkInterfaces.put(netIface, snmpThresholdNetworkInterface);
@@ -202,6 +206,7 @@ public final class SnmpThresholder implements ServiceThresholder {
      * Responsible for releasing any resources associated with the specified
      * interface.
      */
+    @Override
     public void release(ThresholdNetworkInterface iface) {
         m_snmpThresholdNetworkInterfaces.remove(iface);
     }
@@ -211,6 +216,7 @@ public final class SnmpThresholder implements ServiceThresholder {
      *
      * Perform threshold checking.
      */
+    @Override
     public int check(ThresholdNetworkInterface netIface, EventProxy eproxy, Map<?,?> parms) {
         SnmpThresholdNetworkInterface snmpThresholdNetworkInterface = m_snmpThresholdNetworkInterfaces.get(netIface);
         if (snmpThresholdNetworkInterface == null) {

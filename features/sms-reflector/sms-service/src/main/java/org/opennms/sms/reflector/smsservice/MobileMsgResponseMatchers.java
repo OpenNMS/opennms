@@ -48,6 +48,7 @@ public class MobileMsgResponseMatchers {
 	public static MobileMsgResponseMatcher smsFrom(final String originator) {
 		return new MobileMsgResponseMatcher() {
 			
+                        @Override
 			public boolean matches(MobileMsgRequest request, MobileMsgResponse response) {
 				tracef("smsFrom.matches(%s, %s, %s)", originator, request, response);
 				if (response instanceof SmsResponse) {
@@ -57,6 +58,7 @@ public class MobileMsgResponseMatchers {
 				return false;
 			}
 			
+                        @Override
 			public String toString() {
 				return "smsFromRecipient()";
 			}
@@ -71,6 +73,7 @@ public class MobileMsgResponseMatchers {
 	public static MobileMsgResponseMatcher smsFromRecipient() {
 		return new MobileMsgResponseMatcher() {
 			
+                        @Override
 			public boolean matches(MobileMsgRequest request, MobileMsgResponse response) {
 				tracef("smsFromRecipient.matches(%s, %s)", request, response);
 				if (request instanceof SmsRequest && response instanceof SmsResponse) {
@@ -88,6 +91,7 @@ public class MobileMsgResponseMatchers {
 				return false;
 			}
 			
+                        @Override
 			public String toString() {
 				return "smsFromRecipient()";
 			}
@@ -103,6 +107,7 @@ public class MobileMsgResponseMatchers {
 	public static MobileMsgResponseMatcher and(final MobileMsgResponseMatcher... matchers) {
 		return new MobileMsgResponseMatcher() {
 			
+                        @Override
 			public boolean matches(MobileMsgRequest request, MobileMsgResponse response) {
 				tracef("and.matches(%s)", (Object)matchers);
 				for (MobileMsgResponseMatcher matcher : matchers) {
@@ -114,6 +119,7 @@ public class MobileMsgResponseMatchers {
 				return true;
 			}
 			
+                        @Override
 			public String toString() {
 				StringBuffer sb = new StringBuffer();
 				sb.append("and(");
@@ -141,6 +147,7 @@ public class MobileMsgResponseMatchers {
 	public static MobileMsgResponseMatcher or(final MobileMsgResponseMatcher... matchers) {
 		return new MobileMsgResponseMatcher() {
 			
+                        @Override
 			public boolean matches(MobileMsgRequest request, MobileMsgResponse response) {
 				tracef("or.matches(%s)", (Object)matchers);
 				for (MobileMsgResponseMatcher matcher : matchers) {
@@ -152,6 +159,7 @@ public class MobileMsgResponseMatchers {
 				return false;
 			}
 
+                        @Override
 			public String toString() {
 				StringBuffer sb = new StringBuffer();
 				sb.append("or(");
@@ -178,12 +186,14 @@ public class MobileMsgResponseMatchers {
 	public static MobileMsgResponseMatcher textMatches(final String regex) {
 		return new MobileMsgResponseMatcher() {
 			
+                        @Override
 			public boolean matches(MobileMsgRequest request, MobileMsgResponse response) {
 				tracef("textMatches(%s, %s, %s)", regex, request, response);
 				String text = response.getText() == null ? "" : response.getText();
 				return text.matches(regex);
 			}
 			
+                        @Override
 			public String toString() {
 				return "textMatches(\"" + regex + "\")";
 			}
@@ -198,6 +208,7 @@ public class MobileMsgResponseMatchers {
 	public static MobileMsgResponseMatcher isSms() {
 		return new MobileMsgResponseMatcher() {
 			
+                        @Override
 			public boolean matches(MobileMsgRequest request, MobileMsgResponse response) {
 				tracef("sms(%s, %s)", request, response);
 				if (response instanceof SmsResponse) {
@@ -206,6 +217,7 @@ public class MobileMsgResponseMatchers {
 				return false;
 			}
 			
+                        @Override
 			public String toString() {
 				return "isSms()";
 			}
@@ -220,6 +232,7 @@ public class MobileMsgResponseMatchers {
 	public static MobileMsgResponseMatcher isUssd() {
 		return new MobileMsgResponseMatcher() {
 			
+                        @Override
 			public boolean matches(MobileMsgRequest request, MobileMsgResponse response) {
 				tracef("ussd(%s, %s)", request, response);
 				if (response instanceof UssdResponse) {
@@ -228,6 +241,7 @@ public class MobileMsgResponseMatchers {
 				return false;
 			}
 			
+                        @Override
 			public String toString() {
 				return "isUssd()";
 			}
@@ -243,6 +257,7 @@ public class MobileMsgResponseMatchers {
 	public static MobileMsgResponseMatcher ussdStatusIs(final USSDSessionStatus status) {
 		return new MobileMsgResponseMatcher() {
 			
+                        @Override
 			public boolean matches(MobileMsgRequest request, MobileMsgResponse response) {
 				tracef("ussdStatusIs(%s, %s)", status, request, response);
 				if (response instanceof UssdResponse) {
@@ -254,6 +269,7 @@ public class MobileMsgResponseMatchers {
 				return false;
 			}
 			
+                        @Override
 			public String toString() {
 				return "ussdStatusIs(" + status + ")";
 			}

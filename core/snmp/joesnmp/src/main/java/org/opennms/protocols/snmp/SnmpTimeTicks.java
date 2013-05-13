@@ -136,6 +136,7 @@ public class SnmpTimeTicks extends SnmpUInt32 {
      * 
      * @return The ASN.1 value for this object.
      */
+    @Override
     public byte typeId() {
         return ASNTYPE;
     }
@@ -146,6 +147,7 @@ public class SnmpTimeTicks extends SnmpUInt32 {
      * @return The newly created duplicate object.
      * 
      */
+    @Override
     public SnmpSyntax duplicate() {
         return new SnmpTimeTicks(this);
     }
@@ -156,6 +158,7 @@ public class SnmpTimeTicks extends SnmpUInt32 {
      * @return The newly created duplicate object.
      * 
      */
+    @Override
     public Object clone() {
         return new SnmpTimeTicks(this);
     }
@@ -164,6 +167,7 @@ public class SnmpTimeTicks extends SnmpUInt32 {
      * Returns the string representation of the object.
      * 
      */
+    @Override
     public String toString() {
         StringBuffer buf = new StringBuffer();
         long time = getValue();

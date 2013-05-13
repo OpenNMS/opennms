@@ -65,6 +65,7 @@ public class TimeoutSecureXmlRpcTransportFactory extends DefaultXmlRpcTransportF
      * @throws org.apache.xmlrpc.XmlRpcClientException if any.
      */
     @SuppressWarnings("deprecation")
+    @Override
 	public XmlRpcTransport createTransport() throws XmlRpcClientException {
         if ("https".equals(url.getProtocol())) {
             if (timeout > 0) 

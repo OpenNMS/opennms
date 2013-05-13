@@ -77,6 +77,7 @@ public class LoopDetector extends BasicDetector<LineOrientedRequest, LoopRespons
         
         return new ResponseValidator<LoopResponse>(){
 
+            @Override
             public boolean validate(LoopResponse response) {
                 return response.validateIPMatch(ipAddr);
             }

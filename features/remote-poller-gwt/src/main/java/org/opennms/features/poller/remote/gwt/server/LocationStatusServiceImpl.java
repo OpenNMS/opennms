@@ -90,6 +90,7 @@ public class LocationStatusServiceImpl extends RemoteEventServiceServlet impleme
     /**
      * <p>start</p>
      */
+        @Override
     public void start() {
         LogUtils.debugf(this, "starting location status service");
         initialize();
@@ -97,21 +98,25 @@ public class LocationStatusServiceImpl extends RemoteEventServiceServlet impleme
     }
 
     /** {@inheritDoc} */
+        @Override
     public LocationInfo getLocationInfo(final String locationName) {
         return m_locationDataManager.getLocationInfo(locationName);
     }
 
     /** {@inheritDoc} */
+        @Override
     public LocationDetails getLocationDetails(final String locationName) {
         return m_locationDataManager.getLocationDetails(locationName);
     }
 
     /** {@inheritDoc} */
+        @Override
     public ApplicationInfo getApplicationInfo(final String applicationName) {
         return m_locationDataManager.getApplicationInfo(applicationName);
     }
 
     /** {@inheritDoc} */
+        @Override
     public ApplicationDetails getApplicationDetails(final String applicationName) {
         return m_locationDataManager.getApplicationDetails(applicationName);
     }

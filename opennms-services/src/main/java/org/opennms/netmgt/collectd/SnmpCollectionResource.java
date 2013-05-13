@@ -84,6 +84,7 @@ public abstract class SnmpCollectionResource implements CollectionResource {
     }
 
     /** {@inheritDoc} */
+    @Override
     public abstract boolean shouldPersist(ServiceParameters params);
 
     /**
@@ -91,11 +92,13 @@ public abstract class SnmpCollectionResource implements CollectionResource {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getOwnerName() {
         return getCollectionAgent().getHostAddress();
     }
 
     /** {@inheritDoc} */
+    @Override
     public abstract File getResourceDir(RrdRepository repository);
     
     /**
@@ -103,6 +106,7 @@ public abstract class SnmpCollectionResource implements CollectionResource {
      *
      * @return a int.
      */
+    @Override
     public abstract int getType();
     
     /**
@@ -119,6 +123,7 @@ public abstract class SnmpCollectionResource implements CollectionResource {
      *
      * @return a boolean.
      */
+    @Override
     public boolean rescanNeeded() {
     	return false;
     }
@@ -152,6 +157,7 @@ public abstract class SnmpCollectionResource implements CollectionResource {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void visit(final CollectionSetVisitor visitor) {
         visitor.visitResource(this);
         
@@ -171,6 +177,7 @@ public abstract class SnmpCollectionResource implements CollectionResource {
         return m_groups.values();
     }
 
+    @Override
     public TimeKeeper getTimeKeeper() {
         return null;
     }

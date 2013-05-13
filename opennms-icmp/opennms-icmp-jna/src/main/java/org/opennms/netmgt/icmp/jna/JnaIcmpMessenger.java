@@ -87,16 +87,19 @@ public class JnaIcmpMessenger implements Messenger<JnaPingRequest, JnaPingReply>
         return false;
     }
 
+        @Override
 	public void sendRequest(final JnaPingRequest request) {
 		request.send(m_v4, m_v6);
 	}
 
+        @Override
 	public void start(final Queue<JnaPingReply> replyQueue) {
         pendingReplies = replyQueue;
         m_v4.start();
         m_v6.start();
 	}
 
+        @Override
 	public void onPingReply(final InetAddress address, final EchoPacket packet) {
 		pendingReplies.offer(new JnaPingReply(address, packet));
 	}

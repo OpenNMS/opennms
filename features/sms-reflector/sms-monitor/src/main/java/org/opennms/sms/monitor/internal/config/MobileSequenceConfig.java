@@ -155,6 +155,7 @@ public class MobileSequenceConfig implements Serializable, Comparable<MobileSequ
 	 * @param o a {@link org.opennms.sms.monitor.internal.config.MobileSequenceConfig} object.
 	 * @return a int.
 	 */
+    @Override
 	public int compareTo(MobileSequenceConfig o) {
 		return new CompareToBuilder()
 			.append(this.getTransactions(), o.getTransactions())
@@ -166,6 +167,7 @@ public class MobileSequenceConfig implements Serializable, Comparable<MobileSequ
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
+    @Override
 	public String toString() {
 		return new ToStringBuilder(this)
 			.append("transactions", getTransactions())

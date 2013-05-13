@@ -50,6 +50,7 @@ public class DatabaseReportPersister implements ReportPersister, InitializingBea
     private ResourceReferenceDao m_resourceReferenceDao;
 
     /** {@inheritDoc} */
+    @Override
     public void persist(ReportInstance report) {
         StatisticsReport dbReport = new StatisticsReport();
         dbReport.setName(report.getName());

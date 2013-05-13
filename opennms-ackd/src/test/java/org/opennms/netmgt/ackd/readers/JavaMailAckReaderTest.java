@@ -225,6 +225,7 @@ public class JavaMailAckReaderTest implements InitializingBean {
         
         class AckdConfigDao extends DefaultAckdConfigurationDao {
 
+            @Override
             public AckdConfiguration getConfig() {
                 AckdConfiguration config = new AckdConfiguration();
                 config.setAckExpression("~(?i)^AcK$");
@@ -251,6 +252,7 @@ public class JavaMailAckReaderTest implements InitializingBean {
         End2endMailConfig m_e2eConfig = createE2Ec();
         
 
+        @Override
         public ReadmailConfig getDefaultReadmailConfig() {
             return m_readConfig;
         }
@@ -270,43 +272,52 @@ public class JavaMailAckReaderTest implements InitializingBean {
             return new SendmailConfig();
         }
 
+        @Override
         public SendmailConfig getDefaultSendmailConfig() {
             return m_sendConfig;
         }
 
+        @Override
         public End2endMailConfig getEnd2EndConfig(String name) {
             return m_e2eConfig;
         }
 
+        @Override
         public List<End2endMailConfig> getEnd2EndConfigs() {
             List<End2endMailConfig> list = new ArrayList<End2endMailConfig>();
             list.add(m_e2eConfig);
             return list;
         }
 
+        @Override
         public ReadmailConfig getReadMailConfig(String name) {
             return m_readConfig;
         }
 
+        @Override
         public List<ReadmailConfig> getReadmailConfigs() {
             List<ReadmailConfig> list = new ArrayList<ReadmailConfig>();
             list.add(m_readConfig);
             return list;
         }
 
+        @Override
         public SendmailConfig getSendMailConfig(String name) {
             return m_sendConfig;
         }
 
+        @Override
         public List<SendmailConfig> getSendmailConfigs() {
             List<SendmailConfig> list = new ArrayList<SendmailConfig>();
             list.add(m_sendConfig);
             return list;
         }
 
+        @Override
         public void verifyMarshaledConfiguration() throws IllegalStateException {
         }
 
+        @Override
         public void reloadConfiguration()
                 throws DataAccessResourceFailureException {
             

@@ -111,6 +111,7 @@ public class NotificationWizardServlet extends HttpServlet {
     private static final String SQL_SET_CRITICAL_PATH = "INSERT INTO pathoutage (nodeid, criticalpathip, criticalpathservicename) VALUES (?, ?, ?)";
 
     /** {@inheritDoc} */
+    @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String sourcePage = request.getParameter("sourcePage");
         HttpSession user = request.getSession(true);

@@ -148,6 +148,7 @@ public class SecurityAuthenticationEventOnmsEventBuilderTest extends TestCase {
             m_expected = expected;
         }
 
+        @Override
         public boolean matches(Object actual) {
             if (!(actual instanceof Event)) {
                 return false;
@@ -157,6 +158,7 @@ public class SecurityAuthenticationEventOnmsEventBuilderTest extends TestCase {
             return MockEventUtil.eventsMatchDeep(m_expected, actualEvent);
         }
 
+        @Override
         public void appendTo(StringBuffer buffer) {
             buffer.append("eqEvent(");
             buffer.append(new EventWrapper(m_expected));
@@ -190,10 +192,12 @@ public class SecurityAuthenticationEventOnmsEventBuilderTest extends TestCase {
             return m_details;
         }
 
+                @Override
         public Object getCredentials() {
             return m_credentials;
         }
 
+                @Override
         public Object getPrincipal() {
             return m_principal;
         }

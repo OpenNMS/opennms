@@ -50,11 +50,13 @@ public class DistributedStatusDetailsValidator implements Validator, Initializin
     private ApplicationDao m_applicationDao;
 
     /** {@inheritDoc} */
+    @Override
     public boolean supports(Class<?> clazz) {
         return clazz.equals(DistributedStatusDetailsCommand.class);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void validate(Object obj, Errors errors) {
         DistributedStatusDetailsCommand cmd = (DistributedStatusDetailsCommand) obj;
         

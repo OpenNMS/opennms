@@ -143,11 +143,13 @@ public class ListBoxCallback implements AsyncCallback<String[][]> {
     }
     
     /** {@inheritDoc} */
+    @Override
     public void onFailure(Throwable caught) {
         m_dashletLoader.loadError(caught);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void onSuccess(String[][] result) {
         onDataLoaded(result);
     }

@@ -28,6 +28,7 @@ public abstract class AbstractLayoutAlgorithm implements LayoutAlgorithm, Layout
 
 	protected Transformer<VertexRef, Point2D> initializer(final Layout graphLayout) {
 		return new Transformer<VertexRef, Point2D>() {
+                        @Override
 			public Point2D transform(VertexRef v) {
 				org.opennms.features.topology.api.Point location = graphLayout.getLocation(v);
 				return new Point(location.getX(), location.getY());
@@ -37,6 +38,7 @@ public abstract class AbstractLayoutAlgorithm implements LayoutAlgorithm, Layout
 
 	protected Transformer<VertexRef, Point2D> initializer(final Layout graphLayout, final int xOffset, final int yOffset) {
 		return new Transformer<VertexRef, Point2D>() {
+                        @Override
 			public Point2D transform(VertexRef v) {
 				org.opennms.features.topology.api.Point location = graphLayout.getLocation(v);
 				return new Point(location.getX()-xOffset, location.getY()-yOffset);

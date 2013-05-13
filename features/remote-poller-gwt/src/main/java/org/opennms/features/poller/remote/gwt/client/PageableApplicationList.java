@@ -64,11 +64,17 @@ public class PageableApplicationList extends PageableList implements Application
     private Map<String, ApplicationDetails> m_selectedAppDetails = new HashMap<String, ApplicationDetails>();
 
     interface ApplicationDetailStyle extends LocationDetailStyle {
+        @Override
         String detailContainerStyle();
+        @Override
         String iconStyle();
+        @Override
         String nameStyle();
+        @Override
         String areaStyle();
+        @Override
         String statusStyle();
+        @Override
         String alternateRowStyle();
     }
 
@@ -219,6 +225,7 @@ public class PageableApplicationList extends PageableList implements Application
         m_eventBus.addHandler(ApplicationDetailsRetrievedEvent.TYPE, this);
 
         addHandler(new ResizeHandler() {
+            @Override
             public void onResize(final ResizeEvent event) {
                 refreshApplicationListResize();
             }
@@ -226,6 +233,7 @@ public class PageableApplicationList extends PageableList implements Application
     }
 
     /** {@inheritDoc} */
+    @Override
     public void onApplicationDetailsRetrieved(final ApplicationDetailsRetrievedEvent event) {
         if(checkIfApplicationIsSelected(event.getApplicationDetails().getApplicationName())) {
             m_selectedAppDetails.put(event.getApplicationDetails().getApplicationName(), event.getApplicationDetails());

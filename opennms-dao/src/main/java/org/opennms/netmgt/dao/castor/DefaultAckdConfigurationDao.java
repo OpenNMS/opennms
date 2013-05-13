@@ -61,6 +61,7 @@ public class DefaultAckdConfigurationDao extends AbstractCastorConfigDao<AckdCon
      *
      * @return a {@link org.opennms.netmgt.config.ackd.AckdConfiguration} object.
      */
+    @Override
     public AckdConfiguration getConfig() {
         return getContainer().getObject();
     }
@@ -72,24 +73,28 @@ public class DefaultAckdConfigurationDao extends AbstractCastorConfigDao<AckdCon
     }
 
     /** {@inheritDoc} */
+    @Override
     public Boolean acknowledgmentMatch(List<String> messageText) {
         String expression = getConfig().getAckExpression();
         return matcher(messageText, expression);
     }
 
     /** {@inheritDoc} */
+    @Override
     public Boolean clearMatch(List<String> messageText) {
         String expression = getConfig().getClearExpression();
         return matcher(messageText, expression);
     }
 
     /** {@inheritDoc} */
+    @Override
     public Boolean escalationMatch(List<String> messageText) {
         String expression = getConfig().getEscalateExpression();
         return matcher(messageText, expression);
     }
 
     /** {@inheritDoc} */
+    @Override
     public Boolean unAcknowledgmentMatch(List<String> messageText) {
         String expression = getConfig().getUnackExpression();
         return matcher(messageText, expression);
@@ -119,6 +124,7 @@ public class DefaultAckdConfigurationDao extends AbstractCastorConfigDao<AckdCon
     }
 
     /** {@inheritDoc} */
+    @Override
     public Reader getReader(String readerName) {
         Reader readerByName = null;
         List<Reader> readers = getConfig().getReaders().getReaderCollection();
@@ -131,6 +137,7 @@ public class DefaultAckdConfigurationDao extends AbstractCastorConfigDao<AckdCon
     }
     
     /** {@inheritDoc} */
+    @Override
     public ReaderSchedule getReaderSchedule(String readerName) {
         ReaderSchedule schedule = null;
         Reader reader = getReader(readerName);
@@ -141,6 +148,7 @@ public class DefaultAckdConfigurationDao extends AbstractCastorConfigDao<AckdCon
     }
     
     /** {@inheritDoc} */
+    @Override
     public boolean isReaderEnabled(String readerName) {
         boolean enabled = false;
         Reader reader = getReader(readerName);
@@ -156,6 +164,7 @@ public class DefaultAckdConfigurationDao extends AbstractCastorConfigDao<AckdCon
      *
      * @throws org.springframework.dao.DataAccessResourceFailureException if any.
      */
+    @Override
     public void reloadConfiguration() throws DataAccessResourceFailureException {
         getContainer().reload();
     }
@@ -165,6 +174,7 @@ public class DefaultAckdConfigurationDao extends AbstractCastorConfigDao<AckdCon
      *
      * @return a int.
      */
+    @Override
     public int getEnabledReaderCount() {
         int cnt = 0;
         Iterator<Reader> it = getConfig().getReaders().getReaderCollection().iterator();
@@ -179,6 +189,7 @@ public class DefaultAckdConfigurationDao extends AbstractCastorConfigDao<AckdCon
     }
 
     /** {@inheritDoc} */
+    @Override
     public List<Parameter> getParametersForReader(String name) {
         return getReader(name).getParameterCollection();
     }

@@ -89,11 +89,13 @@ public class IfResourceType extends ResourceType {
     }
 
     /** {@inheritDoc} */
+    @Override
     public SnmpCollectionResource findResource(SnmpInstId inst) {
         return getIfMap().get(inst.toInt());
     }
 
     /** {@inheritDoc} */
+    @Override
     public SnmpCollectionResource findAliasedResource(SnmpInstId inst, String ifAlias) {
         // This is here for completeness but it should not get called from here.
         // findResource should be called instead
@@ -106,6 +108,7 @@ public class IfResourceType extends ResourceType {
      *
      * @return a {@link java.util.Collection} object.
      */
+    @Override
     public Collection<IfInfo> getResources() {
         return Collections.unmodifiableCollection(m_ifMap.values());
     }

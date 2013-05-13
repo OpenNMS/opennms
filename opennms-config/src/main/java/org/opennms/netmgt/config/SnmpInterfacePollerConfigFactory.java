@@ -166,6 +166,7 @@ public final class SnmpInterfacePollerConfigFactory extends SnmpInterfacePollerC
     }
 
     /** {@inheritDoc} */
+    @Override
     protected synchronized void saveXml(String xml) throws IOException {
         if (xml != null) {
             long timestamp = System.currentTimeMillis();
@@ -211,6 +212,7 @@ public final class SnmpInterfacePollerConfigFactory extends SnmpInterfacePollerC
      * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
+    @Override
     public synchronized void update() throws IOException, MarshalException, ValidationException {
 
         File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.SNMP_INTERFACE_POLLER_CONFIG_FILE_NAME);

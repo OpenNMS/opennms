@@ -48,6 +48,7 @@ public class PollOutagesConfigManagerTest extends TestCase {
         junit.textui.TestRunner.run(PollOutagesConfigManagerTest.class);
     }
 
+    @Override
     protected void setUp() throws Exception {
         MockLogAppender.setupLogging();
         
@@ -84,6 +85,7 @@ public class PollOutagesConfigManagerTest extends TestCase {
                 "</outages>\n";
         
         m_manager = new PollOutagesConfigManager() {
+            @Override
             public void update() throws IOException, MarshalException, ValidationException {}
         };
 
@@ -91,6 +93,7 @@ public class PollOutagesConfigManagerTest extends TestCase {
         m_manager.afterPropertiesSet();
     }
 
+    @Override
     protected void tearDown() throws Exception {
         MockLogAppender.assertNoWarningsOrGreater();
     }

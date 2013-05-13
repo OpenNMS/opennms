@@ -130,6 +130,7 @@ public class Tl1AutonomousMessage extends Tl1Message {
             m_timestamp = timestamp;
         }
         
+        @Override
         public String toString() {
             return m_rawMessage;
         }
@@ -187,6 +188,7 @@ public class Tl1AutonomousMessage extends Tl1Message {
         public void setVerb(String verb) {
             m_verb = verb;
         }
+        @Override
         public String toString() {
             return m_rawMessage;
         }
@@ -232,6 +234,7 @@ public class Tl1AutonomousMessage extends Tl1Message {
            return m_additionalParams;
        }
         
+        @Override
         public String toString() {
             return m_block;
         }

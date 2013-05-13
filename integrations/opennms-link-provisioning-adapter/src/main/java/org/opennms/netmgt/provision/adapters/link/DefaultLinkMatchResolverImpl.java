@@ -50,6 +50,7 @@ public class DefaultLinkMatchResolverImpl implements LinkMatchResolver, Initiali
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getAssociatedEndPoint(String endPoint) {
         if (m_configDao != null) {
             for (LinkPattern p : m_configDao.getPatterns()) {

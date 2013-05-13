@@ -38,6 +38,7 @@ import org.opennms.netmgt.rrd.RrdUtils;
  */
 public class SnmpThresholderIntegrationTest extends ThresholderTestCase {
     @SuppressWarnings("deprecation")
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         
@@ -72,6 +73,7 @@ public class SnmpThresholderIntegrationTest extends ThresholderTestCase {
     }
 
 
+    @Override
     protected void tearDown() throws Exception {
         RrdUtils.setStrategy(null);
         MockLogAppender.assertNoWarningsOrGreater();

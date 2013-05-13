@@ -37,31 +37,37 @@ public class MockServiceDaemon implements MockServiceDaemonMBean {
 	public MockServiceDaemon(String name) {
 		this.name = name;
 	}
+        @Override
 	public String getStatusText() {
 		// TODO Auto-generated method stub
 		return statusStr;
 	}
 
+        @Override
 	public void pause() {
 		// TODO Auto-generated method stub
 
 	}
 
+        @Override
 	public void resume() {
 		// TODO Auto-generated method stub
 
 	}
 
+        @Override
 	public String getName() {
 		// TODO Auto-generated method stub
 		return name;
 	}
 
+        @Override
 	public int getStatus() {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
+        @Override
 	public void start() {
 		// TODO Auto-generated method stub
 		startCalled = true;
@@ -72,6 +78,7 @@ public class MockServiceDaemon implements MockServiceDaemonMBean {
 		return startCalled;
 	}
 	
+        @Override
 	public void stop() {
 		// TODO Auto-generated method stub
 

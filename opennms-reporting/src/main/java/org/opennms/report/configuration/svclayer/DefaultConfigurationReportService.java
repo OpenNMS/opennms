@@ -60,6 +60,7 @@ public class DefaultConfigurationReportService implements ConfigurationReportSer
     }
         
     /** {@inheritDoc} */
+    @Override
     public boolean runReport(ConfigurationReportCriteria criteria){
     
           m_reportRunner.setUser(criteria.getUser());

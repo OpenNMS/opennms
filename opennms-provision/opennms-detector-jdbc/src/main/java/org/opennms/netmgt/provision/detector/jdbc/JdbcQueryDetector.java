@@ -63,6 +63,7 @@ public class JdbcQueryDetector extends AbstractJdbcDetector {
 
     private static ResponseValidator<JDBCResponse> isValidQuery() {
         return new ResponseValidator<JDBCResponse>(){
+            @Override
             public boolean validate(JDBCResponse response) {
                 return response.isValidQuery();
             }
@@ -71,6 +72,7 @@ public class JdbcQueryDetector extends AbstractJdbcDetector {
 
     private static RequestBuilder<JDBCRequest> sqlQuery(final String sqlQuery) {
         return new RequestBuilder<JDBCRequest>(){
+            @Override
             public JDBCRequest getRequest() {
                 JDBCRequest request = new JDBCRequest();
                 request.setSqyQuery(sqlQuery);

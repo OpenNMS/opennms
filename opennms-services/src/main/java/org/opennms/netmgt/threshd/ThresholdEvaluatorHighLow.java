@@ -52,11 +52,13 @@ public class ThresholdEvaluatorHighLow implements ThresholdEvaluator {
     }
     
     /** {@inheritDoc} */
+    @Override
     public boolean supportsType(String type) {
         return "low".equals(type) || "high".equals(type);
     }
     
     /** {@inheritDoc} */
+    @Override
     public ThresholdEvaluatorState getThresholdEvaluatorState(BaseThresholdDefConfigWrapper threshold) {
         return new ThresholdEvaluatorStateHighLow(threshold);
     }
@@ -110,6 +112,7 @@ public class ThresholdEvaluatorHighLow implements ThresholdEvaluator {
             m_exceededCount = exceededCount;
         }
 
+        @Override
         public BaseThresholdDefConfigWrapper getThresholdConfig() {
             return m_thresholdConfig;
         }
@@ -129,6 +132,7 @@ public class ThresholdEvaluatorHighLow implements ThresholdEvaluator {
             return getThresholdConfig().getType();
         }
         
+        @Override
         public Status evaluate(double dsValue) {
             if (isThresholdExceeded(dsValue)) {
                 if (isArmed()) {
@@ -188,6 +192,7 @@ public class ThresholdEvaluatorHighLow implements ThresholdEvaluator {
             return getExceededCount() >= getThresholdConfig().getTrigger();
         }
         
+        @Override
         public Event getEventForState(Status status, Date date, double dsValue, CollectionResourceWrapper resource) {
             /*
              * If resource is null, we will use m_lastCollectionResourceUsed; else we will use provided resource.
@@ -248,14 +253,17 @@ public class ThresholdEvaluatorHighLow implements ThresholdEvaluator {
             return createBasicEvent(uei, date, dsValue, resource, params);
         }
         
+        @Override
         public ThresholdEvaluatorState getCleanClone() {
             return new ThresholdEvaluatorStateHighLow(m_thresholdConfig);
         }
 
+        @Override
         public boolean isTriggered() {
             return !isArmed();
         }
         
+        @Override
         public void clearState() {
             setArmed(true);
             setExceededCount(0);

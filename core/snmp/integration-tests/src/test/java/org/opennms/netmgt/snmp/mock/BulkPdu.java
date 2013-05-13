@@ -45,14 +45,17 @@ public class BulkPdu extends RequestPdu {
         m_maxRepititions = maxRepititions;
     }
 
+    @Override
     public int getNonRepeaters() {
         return m_nonRepeaters;
     }
 
+    @Override
     public int getMaxRepititions() {
         return m_maxRepititions;
     }
 
+    @Override
     public ResponsePdu send(TestAgent agent) {
         if (agent.isVersion1())
             throw new IllegalStateException("can't send a getBulk pack to a V1 Agent");
@@ -60,6 +63,7 @@ public class BulkPdu extends RequestPdu {
         return super.send(agent);
     }
 
+    @Override
     protected ResponsePdu handleTooBig(TestAgent agent, ResponsePdu resp) {
         resp.getVarBinds().subList(agent.getMaxResponseSize(), resp.size()).clear();
         return resp;

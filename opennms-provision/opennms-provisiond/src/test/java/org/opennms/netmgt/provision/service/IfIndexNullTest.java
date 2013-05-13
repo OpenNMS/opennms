@@ -141,10 +141,12 @@ public class IfIndexNullTest implements InitializingBean {
         final CountDownLatch eventRecieved = new CountDownLatch(1);
         m_eventSubscriber.addEventListener(new EventListener() {
 
+            @Override
             public void onEvent(Event e) {
                 eventRecieved.countDown();
             }
 
+            @Override
             public String getName() {
                 return "Test Initial Setup";
             }

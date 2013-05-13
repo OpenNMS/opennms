@@ -117,6 +117,7 @@ public class DNSAddressRequestTest extends TestCase {
     private DNSAddressRequest m_request;
 
     @Before
+    @Override
     public void setUp() throws UnknownHostException {
         final String question = InetAddress.getLocalHost().getCanonicalHostName();
         m_request = new DNSAddressRequest(question);

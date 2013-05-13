@@ -231,6 +231,7 @@ public class HttpsDetectorTest implements ApplicationContextAware{
     private SSLServer createServer(final String httpResponse) throws Exception {
         SSLServer server = new SSLServer() {
             
+            @Override
             public void onInit() {
                 addResponseHandler(contains("GET"), shutdownServer(httpResponse));
             }
@@ -253,6 +254,7 @@ public class HttpsDetectorTest implements ApplicationContextAware{
     /* (non-Javadoc)
      * @see org.springframework.context.ApplicationContextAware#setApplicationContext(org.springframework.context.ApplicationContext)
      */
+        @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         m_applicationContext = applicationContext;
         

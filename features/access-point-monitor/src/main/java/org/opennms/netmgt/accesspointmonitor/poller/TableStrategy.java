@@ -37,6 +37,7 @@ public class TableStrategy implements AccessPointPoller {
 
     }
 
+    @Override
     public OnmsAccessPointCollection call() throws IOException {
         OnmsAccessPointCollection apsUp = new OnmsAccessPointCollection();
         InetAddress ipaddr = m_iface.getIpAddress();

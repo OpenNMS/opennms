@@ -297,6 +297,7 @@ public class Outage extends BasicSchedule implements Serializable {
      * 
      * @return a hash code value for the object.
      */
+    @Override
     public int hashCode() {
         int result = 17;
 
@@ -316,6 +317,7 @@ public class Outage extends BasicSchedule implements Serializable {
      * @return true if this object is valid according to the schema
      */
     @Deprecated
+    @Override
     public boolean isValid() {
         try {
             validate();
@@ -355,6 +357,7 @@ public class Outage extends BasicSchedule implements Serializable {
      * object is an invalid instance according to the schema
      */
     @Deprecated
+    @Override
     public void marshal(final Writer out) throws MarshalException, ValidationException {
         Marshaller.marshal(this, out);
     }
@@ -371,6 +374,7 @@ public class Outage extends BasicSchedule implements Serializable {
      * null or if any SAXException is thrown during marshaling
      */
     @Deprecated
+    @Override
     public void marshal(final ContentHandler handler) throws IOException, MarshalException, ValidationException {
         Marshaller.marshal(this, handler);
     }
@@ -560,6 +564,7 @@ public class Outage extends BasicSchedule implements Serializable {
      * object is an invalid instance according to the schema
      */
     @Deprecated
+    @Override
     public void validate() throws ValidationException {
         new Validator().validate(this);
     }

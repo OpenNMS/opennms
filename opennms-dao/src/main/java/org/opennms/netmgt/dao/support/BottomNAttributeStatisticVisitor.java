@@ -58,6 +58,7 @@ public class BottomNAttributeStatisticVisitor implements AttributeStatisticVisit
     }
 
     /** {@inheritDoc} */
+    @Override
     public void visit(OnmsAttribute attribute, double statistic) {
         Assert.notNull(attribute, "attribute argument must not be null");
         
@@ -79,11 +80,13 @@ public class BottomNAttributeStatisticVisitor implements AttributeStatisticVisit
      *
      * @return a {@link java.lang.Integer} object.
      */
+    @Override
     public Integer getCount() {
         return m_count;
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setCount(Integer count) {
         m_count = count;
     }
@@ -93,6 +96,7 @@ public class BottomNAttributeStatisticVisitor implements AttributeStatisticVisit
      *
      * @return top attribute statistics (up to getCount() number)
      */
+    @Override
     public SortedSet<AttributeStatistic> getResults() {
         SortedSet<AttributeStatistic> top = new TreeSet<AttributeStatistic>(new AttributeStatisticComparator());
         
@@ -129,6 +133,7 @@ public class BottomNAttributeStatisticVisitor implements AttributeStatisticVisit
         /**
          * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
          */
+        @Override
         public int compare(AttributeStatistic o1, AttributeStatistic o2) {
             int diff;
             
@@ -150,6 +155,7 @@ public class BottomNAttributeStatisticVisitor implements AttributeStatisticVisit
         /**
          * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
          */
+        @Override
         public int compare(Double o1, Double o2) {
             return o1.compareTo(o2);
         }

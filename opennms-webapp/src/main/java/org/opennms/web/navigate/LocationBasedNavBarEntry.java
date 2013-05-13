@@ -68,6 +68,7 @@ public class LocationBasedNavBarEntry implements NavBarEntry {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getUrl() {
         return m_url;
     }
@@ -89,6 +90,7 @@ public class LocationBasedNavBarEntry implements NavBarEntry {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getName() {
         return m_name;
     }
@@ -106,6 +108,7 @@ public class LocationBasedNavBarEntry implements NavBarEntry {
      * @see org.opennms.web.navigate.NavBarEntry#evaluate(javax.servlet.http.HttpServletRequest)
      */
     /** {@inheritDoc} */
+    @Override
     public DisplayStatus evaluate(HttpServletRequest request) {
         return isLinkMatches(request) ? DisplayStatus.DISPLAY_NO_LINK : DisplayStatus.DISPLAY_LINK;
     }

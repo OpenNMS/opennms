@@ -55,6 +55,7 @@ public class DeleteUserServlet extends HttpServlet {
     private static final long serialVersionUID = -7274547687183446773L;
 
     /** {@inheritDoc} */
+    @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String userID = request.getParameter("userID");
 

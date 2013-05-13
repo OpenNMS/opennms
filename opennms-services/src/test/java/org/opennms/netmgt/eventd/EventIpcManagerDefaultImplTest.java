@@ -64,6 +64,7 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
         m_manager.afterPropertiesSet();
 
         Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler() {
+            @Override
             public void uncaughtException(Thread thread, Throwable throwable) {
                 m_caughtThrowable = throwable;
                 m_caughtThrowableThread = thread;
@@ -456,10 +457,12 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
     public class MockEventListener implements EventListener {
         private List<Event> m_events = new ArrayList<Event>();
         
+        @Override
         public String getName() {
             return "party on, Wayne";
         }
 
+        @Override
         public void onEvent(Event e) {
             m_events.add(e);
         }

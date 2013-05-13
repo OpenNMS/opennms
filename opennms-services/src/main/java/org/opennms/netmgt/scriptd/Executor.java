@@ -178,6 +178,7 @@ final class Executor implements Runnable, PausableFiber {
      * <code>STOP_PENDING</code> then the method will return as quickly as
      * possible.
      */
+    @Override
     public void run() {
         ThreadCategory log = ThreadCategory.getInstance(Executor.class);
 
@@ -375,6 +376,7 @@ final class Executor implements Runnable, PausableFiber {
      * @throws java.lang.IllegalStateException
      *             Thrown if the fiber is stopped or has never run.
      */
+    @Override
     public synchronized void start() {
         ThreadCategory log = ThreadCategory.getInstance(Executor.class);
 
@@ -437,6 +439,7 @@ final class Executor implements Runnable, PausableFiber {
      * @throws java.lang.IllegalStateException
      *             Thrown if the fiber was never started.
      */
+    @Override
     public synchronized void stop() {
         Category log = (Category) m_mgr.lookupBean("log");
 
@@ -477,6 +480,7 @@ final class Executor implements Runnable, PausableFiber {
      * @throws java.lang.IllegalStateException
      *             Thrown if the fiber is stopped or has never run.
      */
+    @Override
     public synchronized void pause() {
         if (m_worker == null || !m_worker.isAlive()) {
             throw new IllegalStateException("The fiber is not running");
@@ -496,6 +500,7 @@ final class Executor implements Runnable, PausableFiber {
      * @throws java.lang.IllegalStateException
      *             Thrown if the fiber is stopped or has never run.
      */
+    @Override
     public synchronized void resume() {
         if (m_worker == null || !m_worker.isAlive()) {
             throw new IllegalStateException("The fiber is not running");
@@ -512,6 +517,7 @@ final class Executor implements Runnable, PausableFiber {
      *
      * @return The name of the fiber.
      */
+    @Override
     public String getName() {
         return m_name;
     }
@@ -523,6 +529,7 @@ final class Executor implements Runnable, PausableFiber {
      * @see org.opennms.core.fiber.PausableFiber
      * @see org.opennms.core.fiber.Fiber
      */
+    @Override
     public synchronized int getStatus() {
         if (m_worker != null && !m_worker.isAlive()) {
             m_status = STOPPED;

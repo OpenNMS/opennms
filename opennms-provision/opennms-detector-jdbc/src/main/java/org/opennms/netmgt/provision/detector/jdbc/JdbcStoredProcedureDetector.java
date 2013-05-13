@@ -70,6 +70,7 @@ public class JdbcStoredProcedureDetector extends AbstractJdbcDetector {
     private static ResponseValidator<JDBCResponse> isValidProcedureCall() {
         return new ResponseValidator<JDBCResponse>(){
 
+            @Override
             public boolean validate(JDBCResponse response) {
                 return response.isValidProcedureCall();
             }
@@ -80,6 +81,7 @@ public class JdbcStoredProcedureDetector extends AbstractJdbcDetector {
     private static RequestBuilder<JDBCRequest> storedProcedure(final String storedProcedure) {
         return new RequestBuilder<JDBCRequest>(){
 
+            @Override
             public JDBCRequest getRequest() {
                 JDBCRequest request = new JDBCRequest();
                 request.setStoredProcedure(storedProcedure);

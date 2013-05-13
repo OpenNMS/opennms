@@ -108,6 +108,7 @@ public class PollerConfigServlet extends HttpServlet {
      *
      * @throws javax.servlet.ServletException if any.
      */
+    @Override
     public void init() throws ServletException {
         getInitParameters();
 
@@ -227,6 +228,7 @@ public class PollerConfigServlet extends HttpServlet {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         reloadFiles();
 

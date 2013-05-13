@@ -91,6 +91,7 @@ public final class IfTable extends SnmpTable<IfTableEntry> {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected IfTableEntry createTableEntry(SnmpObjId base, SnmpInstId inst, Object val) {
         return new IfTableEntry();
     }

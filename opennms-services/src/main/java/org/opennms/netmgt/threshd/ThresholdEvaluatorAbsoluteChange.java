@@ -48,11 +48,13 @@ public class ThresholdEvaluatorAbsoluteChange implements ThresholdEvaluator {
     private static final String TYPE = "absoluteChange";
 
     /** {@inheritDoc} */
+    @Override
     public ThresholdEvaluatorState getThresholdEvaluatorState(BaseThresholdDefConfigWrapper threshold) {
         return new ThresholdEvaluatorStateAbsoluteChange(threshold);
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean supportsType(String type) {
         return TYPE.equals(type);
     }
@@ -89,10 +91,12 @@ public class ThresholdEvaluatorAbsoluteChange implements ThresholdEvaluator {
             setChange(thresholdConfig.getValue());
         }
 
+        @Override
         public BaseThresholdDefConfigWrapper getThresholdConfig() {
             return m_thresholdConfig;
         }
 
+        @Override
         public Status evaluate(double dsValue) {
             if(!Double.isNaN(getLastSample())) {
                 double threshold = getLastSample()+getChange();
@@ -127,6 +131,7 @@ public class ThresholdEvaluatorAbsoluteChange implements ThresholdEvaluator {
             m_lastSample = lastSample;
         }
 
+        @Override
         public Event getEventForState(Status status, Date date, double dsValue, CollectionResourceWrapper resource) {
             if (status == Status.TRIGGERED) {
                 String uei=getThresholdConfig().getTriggeredUEI();
@@ -163,16 +168,19 @@ public class ThresholdEvaluatorAbsoluteChange implements ThresholdEvaluator {
             m_change = change;
         }
 
+        @Override
         public ThresholdEvaluatorState getCleanClone() {
             return new ThresholdEvaluatorStateAbsoluteChange(m_thresholdConfig);
         }
 
         // FIXME This must be implemented correctly
+        @Override
         public boolean isTriggered() {
             return false;
         }
 
         // FIXME This must be implemented correctly
+        @Override
         public void clearState() {
         }
     }

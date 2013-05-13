@@ -41,6 +41,7 @@ public class ApplicationDaoHibernate extends AbstractDaoHibernate<OnmsApplicatio
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public OnmsApplication findByName(final String name) {
 		return findUnique("from OnmsApplication as app where app.name = ?", name);
 	}

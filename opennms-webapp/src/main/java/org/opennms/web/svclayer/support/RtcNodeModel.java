@@ -101,6 +101,7 @@ public class RtcNodeModel {
             return m_serviceCount;
         }
         
+        @Override
         public String toString() {
             return m_node.getLabel() + ": " + m_downServiceCount + " of " + m_serviceCount + ": " + getAvailabilityAsString();
         }

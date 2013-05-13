@@ -205,6 +205,7 @@ final class TcpRecordHandler implements Runnable {
 
         // looks for '</([a-zA-Z0-9]+:)?log>'
         m_tokenizer = new StateManager[] { new StateManager(0, this) {
+            @Override
             int next(final char ch) throws IOException {
                 onTransition(ch);
                 if (ch == '<') {
@@ -213,6 +214,7 @@ final class TcpRecordHandler implements Runnable {
                 return m_level;
             }
         }, new StateManager(1, this) {
+            @Override
             int next(final char ch) throws IOException {
                 onTransition(ch);
                 if (ch == '/') {
@@ -221,6 +223,7 @@ final class TcpRecordHandler implements Runnable {
                 return 0;
             }
         }, new StateManager(2, this) {
+            @Override
             int next(final char ch) throws IOException {
                 onTransition(ch);
                 if (ch == 'l') {
@@ -231,6 +234,7 @@ final class TcpRecordHandler implements Runnable {
                 return 0;
             }
         }, new StateManager(3, this) {
+            @Override
             int next(final char ch) throws IOException {
                 onTransition(ch);
                 if (ch == ':') {
@@ -241,6 +245,7 @@ final class TcpRecordHandler implements Runnable {
                 return 0;
             }
         }, new StateManager(4, this) {
+            @Override
             int next(final char ch) throws IOException {
                 onTransition(ch);
                 if (ch == 'l') {
@@ -249,6 +254,7 @@ final class TcpRecordHandler implements Runnable {
                 return 0;
             }
         }, new StateManager(5, this) {
+            @Override
             int next(final char ch) throws IOException {
                 onTransition(ch);
                 if (ch == 'o') {
@@ -257,6 +263,7 @@ final class TcpRecordHandler implements Runnable {
                 return 0;
             }
         }, new StateManager(6, this) {
+            @Override
             int next(final char ch) throws IOException {
                 onTransition(ch);
                 if (ch == 'g') {
@@ -265,6 +272,7 @@ final class TcpRecordHandler implements Runnable {
                 return 0;
             }
         }, new StateManager(7, this) {
+            @Override
             int next(final char ch) throws IOException {
                 onTransition(ch);
                 if (ch == '>') {
@@ -278,6 +286,7 @@ final class TcpRecordHandler implements Runnable {
         // The state tree starts here!
         new StateManager(8, this) { // gobbles up white space after
             // record
+            @Override
             int next(final char ch) throws IOException {
                 if (ch == '<') {
                     onTransition(ch);
@@ -286,6 +295,7 @@ final class TcpRecordHandler implements Runnable {
                 return m_level;
             }
 
+            @Override
             void onTransition(final char ch) throws IOException {
                 m_handler.newStream();
                 super.onTransition(ch);
@@ -321,6 +331,7 @@ final class TcpRecordHandler implements Runnable {
     /**
      * The execution context.
      */
+    @Override
     public void run() {
         // get the thread context right off
         m_context = Thread.currentThread();

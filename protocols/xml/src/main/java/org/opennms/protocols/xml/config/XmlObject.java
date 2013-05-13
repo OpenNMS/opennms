@@ -140,6 +140,7 @@ public class XmlObject implements Serializable, Comparable<XmlObject> {
     /* (non-Javadoc)
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
+    @Override
     public int compareTo(XmlObject obj) {
         return new CompareToBuilder()
         .append(getName(), obj.getName())

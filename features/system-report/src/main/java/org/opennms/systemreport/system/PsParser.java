@@ -52,6 +52,7 @@ public final class PsParser extends Thread {
         m_matchField = matchField;
     }
     
+    @Override
     public void run() {
         final InputStreamReader isr = new InputStreamReader(m_input);
         final BufferedReader reader = new BufferedReader(isr);

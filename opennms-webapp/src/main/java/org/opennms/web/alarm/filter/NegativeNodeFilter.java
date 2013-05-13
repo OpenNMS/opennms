@@ -70,6 +70,7 @@ public class NegativeNodeFilter extends NotEqualOrNullFilter<Integer> {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getTextDescription() {
         String nodeName = getNodeName(); 
         
@@ -89,6 +90,7 @@ public class NegativeNodeFilter extends NotEqualOrNullFilter<Integer> {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return ("<AlarmFactory.NegativeNodeFilter: " + this.getDescription() + ">");
     }
@@ -103,6 +105,7 @@ public class NegativeNodeFilter extends NotEqualOrNullFilter<Integer> {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean equals(Object obj) {
         return (this.toString().equals(obj.toString()));
     }

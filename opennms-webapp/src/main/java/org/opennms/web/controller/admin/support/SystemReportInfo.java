@@ -64,6 +64,7 @@ public class SystemReportInfo implements Serializable {
         return m_plugins;
     }
     
+    @Override
     public String toString() {
         return new ToStringBuilder(this)
             .append("formatters", m_formatters)

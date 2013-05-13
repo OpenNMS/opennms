@@ -63,21 +63,25 @@ import org.springframework.stereotype.Service;
 public class GroupServiceImpl implements GroupService, InitializingBean {
 
     /** {@inheritDoc} */
+    @Override
     public List<GroupDTO> getUserGroupsWithAutorities(String username) {
         return repository.getUserGroupsWithAutorities(username);
     }
 
     /** {@inheritDoc} */
+    @Override
     public Boolean deleteUserGroups(String username) {
         return repository.deleteUserGroups(username);
     }
 
     /** {@inheritDoc} */
+    @Override
     public List<GroupDTO> getFreeGroups(String username) {
         return repository.getFreeGroups(username);
     }
 
     /** {@inheritDoc} */
+    @Override
     public GroupDTO getGroup(Integer id) {
         return repository.getGroup(id);
     }
@@ -87,31 +91,37 @@ public class GroupServiceImpl implements GroupService, InitializingBean {
      *
      * @return a {@link java.util.List} object.
      */
+    @Override
     public List<GroupDTO> getGroups() {
         return repository.getGroups();
     }
 
     /** {@inheritDoc} */
+    @Override
     public List<GroupDTO> getGroups(Pager pager) {
         return repository.getGroups(pager);
     }
 
     /** {@inheritDoc} */
+    @Override
     public List<GroupDTO> getUserGroups(String username) {
         return repository.getUserGroups(username);
     }
 
     /** {@inheritDoc} */
+    @Override
     public Boolean removeGroup(Integer id) {
         return repository.removeGroup(id);
     }
 
     /** {@inheritDoc} */
+    @Override
     public Boolean save(GroupDTO group) {
         return repository.save(group);
     }
 
     /** {@inheritDoc} */
+    @Override
     public Boolean saveGroups(String username, List<Integer> groups) {
         return repository.saveGroups(username, groups);
     }
@@ -121,11 +131,13 @@ public class GroupServiceImpl implements GroupService, InitializingBean {
      *
      * @return a {@link java.lang.Integer} object.
      */
+    @Override
     public Integer getTotalItemsNumber() {
         return repository.getGroupsNumber();
     }
 
     /** {@inheritDoc} */
+    @Override
     public Boolean hasUsers(Integer id) {
         return repository.hasUsers(id);
     }

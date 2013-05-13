@@ -69,6 +69,7 @@ public class AliasedGroup extends AttributeGroup {
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public boolean equals(Object obj) {
 		return m_group.equals(obj);
 	}
@@ -78,6 +79,7 @@ public class AliasedGroup extends AttributeGroup {
 	 *
 	 * @return a {@link java.util.Collection} object.
 	 */
+        @Override
 	public Collection<CollectionAttribute> getAttributes() {
 		return m_group.getAttributes();
 	}
@@ -87,6 +89,7 @@ public class AliasedGroup extends AttributeGroup {
 	 *
 	 * @return a {@link org.opennms.netmgt.config.collector.AttributeGroupType} object.
 	 */
+        @Override
 	public AttributeGroupType getGroupType() {
 		return m_group.getGroupType();
 	}
@@ -96,6 +99,7 @@ public class AliasedGroup extends AttributeGroup {
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
+        @Override
 	public String getName() {
 		return m_group.getName();
 	}
@@ -105,11 +109,13 @@ public class AliasedGroup extends AttributeGroup {
 	 *
 	 * @return a int.
 	 */
+        @Override
 	public int hashCode() {
 		return m_group.hashCode();
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public boolean shouldPersist(ServiceParameters params) {
 		return m_group.shouldPersist(params);
 	}
@@ -119,6 +125,7 @@ public class AliasedGroup extends AttributeGroup {
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
+        @Override
 	public String toString() {
 		return m_group.toString();
 	}
@@ -128,6 +135,7 @@ public class AliasedGroup extends AttributeGroup {
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public void visit(CollectionSetVisitor visitor) {
 		visitor.visitGroup(this);
 		

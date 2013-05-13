@@ -84,11 +84,13 @@ public class HTMLReportRenderer implements ReportRenderer {
      *
      * @throws org.opennms.reporting.availability.render.ReportRenderException if any.
      */
+    @Override
     public void render() throws ReportRenderException {
         render(m_inputFileName, m_outputFileName, m_xsltResource);
     }
 
     /** {@inheritDoc} */
+    @Override
     public byte[] render(String inputFileName, Resource xsltResource) throws ReportRenderException {
 
         if (log.isDebugEnabled())
@@ -101,6 +103,7 @@ public class HTMLReportRenderer implements ReportRenderer {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void render(String inputFileName, OutputStream outputStream, Resource xsltResource) throws ReportRenderException {
         if (log.isDebugEnabled())
             log.debug("Rendering " + inputFileName + " with XSL File " + xsltResource.getDescription() + " to OutputStream");
@@ -135,6 +138,7 @@ public class HTMLReportRenderer implements ReportRenderer {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void render(InputStream inputStream, OutputStream outputStream, Resource xsltResource) throws ReportRenderException {
         if (log.isDebugEnabled())
             log.debug("Rendering InputStream with XSL File " + xsltResource.getDescription() + " to OutputStream");
@@ -161,6 +165,7 @@ public class HTMLReportRenderer implements ReportRenderer {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void render(String inputFileName, String outputFileName, Resource xsltResource) throws ReportRenderException {
         if (log.isDebugEnabled())
             log.debug("Rendering " + inputFileName + " with XSL File " + xsltResource.getDescription() + " to " + outputFileName + " with base directory of " + m_baseDir);
@@ -230,11 +235,13 @@ public class HTMLReportRenderer implements ReportRenderer {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setXsltResource(Resource xsltResource) {
         this.m_xsltResource = xsltResource;
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setOutputFileName(String outputFileName) {
         this.m_outputFileName = outputFileName;
     }
@@ -244,16 +251,19 @@ public class HTMLReportRenderer implements ReportRenderer {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getOutputFileName() {
         return m_outputFileName;
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setInputFileName(String inputFileName) {
         this.m_inputFileName = inputFileName;
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setBaseDir(String baseDir) {
         this.m_baseDir = baseDir;
     }
@@ -263,6 +273,7 @@ public class HTMLReportRenderer implements ReportRenderer {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getBaseDir() {
         return m_baseDir;
     }

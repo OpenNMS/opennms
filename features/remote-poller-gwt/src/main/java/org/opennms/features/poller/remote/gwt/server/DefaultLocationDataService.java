@@ -216,6 +216,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
         public InitializationThread() {
         }
 
+        @Override
         public void run() {
             updateGeolocations();
         }
@@ -223,6 +224,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
 
     /** {@inheritDoc} */
     @Transactional
+    @Override
     public LocationInfo getLocationInfo(final String locationName) {
         waitForGeocoding("getLocationInfo");
 
@@ -241,6 +243,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
      * @return a {@link org.opennms.features.poller.remote.gwt.client.location.LocationInfo} object.
      */
     @Transactional
+    @Override
     public LocationInfo getLocationInfo(final OnmsMonitoringLocationDefinition def) {
         waitForGeocoding("getLocationInfo");
         
@@ -283,6 +286,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
 
     /** {@inheritDoc} */
     @Transactional
+    @Override
     public StatusDetails getStatusDetailsForLocation(final OnmsMonitoringLocationDefinition def) {
         waitForGeocoding("getStatusDetails");
         
@@ -306,6 +310,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
 
     /** {@inheritDoc} */
     @Transactional
+    @Override
     public LocationInfo getLocationInfoForMonitor(Integer monitorId) {
         waitForGeocoding("getLocationInfoForMonitor");
 
@@ -328,6 +333,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
 
     /** {@inheritDoc} */
     @Transactional
+    @Override
     public ApplicationInfo getApplicationInfo(final String applicationName) {
         waitForGeocoding("getApplicationInfo");
 
@@ -345,6 +351,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
      * @return a {@link org.opennms.features.poller.remote.gwt.client.ApplicationInfo} object.
      */
     @Transactional
+    @Override
     public ApplicationInfo getApplicationInfo(final OnmsApplication app) {
         waitForGeocoding("getApplicationInfo");
         
@@ -360,6 +367,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
 
     /** {@inheritDoc} */
     @Transactional
+    @Override
     public StatusDetails getStatusDetailsForApplication(final OnmsApplication app) {
         waitForGeocoding("getStatusDetailsForApplication");
         
@@ -426,6 +434,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
 
     /** {@inheritDoc} */
     @Transactional 
+    @Override
     public ApplicationInfo getApplicationInfo(final OnmsApplication app, final StatusDetails status) {
         waitForGeocoding("getApplicationInfo");
 
@@ -453,6 +462,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
 
     /** {@inheritDoc} */
     @Transactional
+    @Override
     public LocationDetails getLocationDetails(final String locationName) {
         waitForGeocoding("getLocationDetails");
 
@@ -471,6 +481,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
      * @return a {@link org.opennms.features.poller.remote.gwt.client.location.LocationDetails} object.
      */
     @Transactional
+    @Override
     public LocationDetails getLocationDetails(final OnmsMonitoringLocationDefinition def) {
         waitForGeocoding("getLocationDetails");
 
@@ -518,6 +529,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
 
     /** {@inheritDoc} */
     @Transactional
+    @Override
     public ApplicationDetails getApplicationDetails(final String applicationName) {
         waitForGeocoding("getApplicationDetails");
 
@@ -532,6 +544,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
      * @return a {@link org.opennms.features.poller.remote.gwt.client.ApplicationDetails} object.
      */
     @Transactional
+    @Override
     public ApplicationDetails getApplicationDetails(final OnmsApplication app) {
         waitForGeocoding("getApplicationDetails");
 
@@ -560,6 +573,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
 
     /** {@inheritDoc} */
     @Transactional
+    @Override
     public Collection<LocationInfo> getUpdatedLocationsBetween(final Date startDate, final Date endDate) {
         waitForGeocoding("getApplicationDetails");
 
@@ -595,6 +609,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
 
     /** {@inheritDoc} */
     @Transactional
+    @Override
     public GWTLatLng getLatLng(final OnmsMonitoringLocationDefinition def, boolean x) {
         GWTLatLng latLng = null;
         final String coordinateMatchString = "^\\s*[\\-\\d\\.]+\\s*,\\s*[\\-\\d\\.]+\\s*$";
@@ -629,6 +644,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
 
     /** {@inheritDoc} */
     @Transactional
+    @Override
     public void handleAllMonitoringLocationDefinitions(final Collection<LocationDefHandler> handlers) {
         waitForGeocoding("handleAllMonitoringLocationDefinitions");
 
@@ -653,6 +669,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
 
     /** {@inheritDoc} */
     @Transactional
+    @Override
     public void handleAllApplications(final Collection<ApplicationHandler> handlers) {
         waitForGeocoding("handleAllApplications");
 
@@ -672,6 +689,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
 
     /** {@inheritDoc} */
     @Transactional
+    @Override
     public Collection<ApplicationInfo> getApplicationsForLocation(final LocationInfo locationInfo) {
         waitForGeocoding("getApplicationsForLocation");
 
@@ -797,6 +815,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
     private static class AllMonitorStatusTracker implements StatusTracker {
         private final Map<String, MonitorStatusTracker> m_trackers = new HashMap<String, MonitorStatusTracker>();
         
+        @Override
         public void onStatus(final OnmsLocationSpecificStatus status) {
             String defName = status.getLocationMonitor().getDefinitionName();
             
@@ -834,6 +853,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
             m_locationName = locationName;
         }
 
+        @Override
         public void onStatus(final OnmsLocationSpecificStatus status) {
             if (status.getLocationMonitor().getDefinitionName().equals(m_locationName)) {
                 LogUtils.tracef(this, "(added) status code for %s/%s is %d", status.getLocationMonitor().getDefinitionName(), status.getMonitoredService().getServiceName(), status.getStatusCode());
@@ -864,6 +884,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
             m_name = name;
         }
 
+        @Override
         public void onStatus(final OnmsLocationSpecificStatus status) {
             if (status.getLocationMonitor().getDefinitionName().equals(m_name)) {
                 LogUtils.tracef(this, "(added) status code for %s/%s is %d", status.getLocationMonitor().getDefinitionName(), status.getMonitoredService().getServiceName(), status.getStatusCode());
@@ -912,6 +933,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
      * @return a {@link java.util.List} object.
      */
     @Transactional
+    @Override
     public List<LocationInfo> getInfoForAllLocations() {
         waitForGeocoding("getInfoForAllLocations");
         
@@ -930,6 +952,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
         return locations;
     }
 
+    @Override
     public Map<String, StatusDetails> getStatusDetailsForAllLocations() {
         final Collection<OnmsMonitoringLocationDefinition> definitions = getLocationMonitorDao().findAllMonitoringLocationDefinitions();
         
@@ -960,6 +983,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
      * @return a {@link java.util.List} object.
      */
     @Transactional
+    @Override
     public List<ApplicationInfo> getInfoForAllApplications() {
         waitForGeocoding("handleAllApplications");
 

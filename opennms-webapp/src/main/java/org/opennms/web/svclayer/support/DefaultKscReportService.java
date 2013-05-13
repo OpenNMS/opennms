@@ -61,6 +61,7 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
     private static final LinkedHashMap<String, String> s_timeSpansWithNone = new LinkedHashMap<String, String>();
 
     /** {@inheritDoc} */
+    @Override
     public Report buildDomainReport(String domain) {
         String resourceId = OnmsResource.createResourceId("domain", domain);
         OnmsResource res = getResourceService().getResourceById(resourceId);
@@ -68,6 +69,7 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
     }
 
     /** {@inheritDoc} */
+    @Override
     public Report buildNodeReport(int node_id) {
         String resourceId = OnmsResource.createResourceId("node", Integer.toString(node_id));
         OnmsResource node = getResourceService().getResourceById(resourceId);
@@ -75,6 +77,7 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
     }
     
     /** {@inheritDoc} */
+    @Override
     public Report buildNodeSourceReport(String nodeSource) {
         String resourceId = OnmsResource.createResourceId("nodeSource", nodeSource);
         OnmsResource res = getResourceService().getResourceById(resourceId);
@@ -146,11 +149,13 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
     }
 
     /** {@inheritDoc} */
+    @Override
     public OnmsResource getResourceFromGraph(Graph graph) {
         return getResourceService().getResourceById(getResourceIdForGraph(graph));
     }
     
     /** {@inheritDoc} */
+    @Override
     public List<OnmsResource> getResourcesFromGraphs(List<Graph> graphs) {
         Assert.notNull(graphs, "graph argument cannot be null");
         List<OnmsResource> resources = new LinkedList<OnmsResource>();
@@ -209,6 +214,7 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
     }
 
     /** {@inheritDoc} */
+    @Override
     public Map<String, String> getTimeSpans(boolean includeNone) {
         if (includeNone) {
             return s_timeSpansWithNone;
@@ -222,6 +228,7 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
      *
      * @return a {@link java.util.Map} object.
      */
+    @Override
     public Map<Integer, String> getReportList() {
         return m_kscReportFactory.getReportList();  
     }

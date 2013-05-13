@@ -73,6 +73,7 @@ public class DefaultSiteStatusViewConfigDao implements SiteStatusViewConfigDao {
     }
 
     /** {@inheritDoc} */
+    @Override
     public View getView(String viewName) {
         try {
             return SiteStatusViewsFactory.getInstance().getView(viewName);
@@ -90,6 +91,7 @@ public class DefaultSiteStatusViewConfigDao implements SiteStatusViewConfigDao {
      *
      * @return a {@link org.opennms.netmgt.config.siteStatusViews.Views} object.
      */
+    @Override
     public Views getViews() {
         return SiteStatusViewsFactory.getConfig().getViews();
     }
@@ -109,6 +111,7 @@ public class DefaultSiteStatusViewConfigDao implements SiteStatusViewConfigDao {
      *
      * @return a {@link org.opennms.netmgt.config.siteStatusViews.View} object.
      */
+    @Override
     public View getDefaultView() {
         final String defaultView = SiteStatusViewsFactory.getConfig().getDefaultView();
         return getView(defaultView);

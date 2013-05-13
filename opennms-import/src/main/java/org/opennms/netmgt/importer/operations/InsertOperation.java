@@ -61,6 +61,7 @@ public class InsertOperation extends AbstractSaveOrUpdateOperation {
 	 *
 	 * @return a {@link java.util.List} object.
 	 */
+    @Override
 	public List<Event> doPersist() {
         OnmsDistPoller distPoller = getDistPollerDao().get("localhost");
         getNode().setDistPoller(distPoller);
@@ -80,6 +81,7 @@ public class InsertOperation extends AbstractSaveOrUpdateOperation {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
 	return "INSERT: Node: "+getNode().getLabel();
     }

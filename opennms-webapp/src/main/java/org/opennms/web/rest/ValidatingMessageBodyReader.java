@@ -60,10 +60,12 @@ public class ValidatingMessageBodyReader<T> implements MessageBodyReader<T> {
 	 * @return true if the class is a JAXB-marshallable class that has 
 	 * an {@link javax.xml.bind.annotation.XmlRootElement} annotation.
 	 */
+        @Override
 	public boolean isReadable(final Class<?> clazz, final Type type, final Annotation[] annotations, final MediaType mediaType) {
 		return (clazz.getAnnotation(XmlRootElement.class) != null);
 	}
 
+        @Override
 	public T readFrom(final Class<T> clazz, final Type type, final Annotation[] annotations, final MediaType mediaType, final MultivaluedMap<String, String> parameters, final InputStream stream) throws IOException, WebApplicationException {
 		LogUtils.debugf(this, "readFrom: %s/%s/%s", clazz.getSimpleName(), type, mediaType);
 

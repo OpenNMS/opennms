@@ -81,6 +81,7 @@ final class BroadcastEventProcessor implements EventListener {
      * available for processing. Each event's autoactions and trouble tickets
      * are queued to be run
      */
+    @Override
     public void onEvent(Event event) {
         ThreadCategory log = ThreadCategory.getInstance(BroadcastEventProcessor.class);
 
@@ -132,6 +133,7 @@ final class BroadcastEventProcessor implements EventListener {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getName() {
         return "Actiond:BroadcastEventProcessor";
     }

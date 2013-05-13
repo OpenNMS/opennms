@@ -1508,6 +1508,7 @@ public class Terminal {
 		return sb.toString();
 	}
 
+        @Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		for (int y = 0; y < height; y++) {

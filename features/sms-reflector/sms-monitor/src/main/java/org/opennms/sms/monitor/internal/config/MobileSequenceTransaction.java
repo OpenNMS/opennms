@@ -261,6 +261,7 @@ public class MobileSequenceTransaction implements Comparable<MobileSequenceTrans
      * @param o a {@link org.opennms.sms.monitor.internal.config.MobileSequenceTransaction} object.
      * @return a int.
      */
+    @Override
     public int compareTo(MobileSequenceTransaction o) {
         return new CompareToBuilder()
             .append(this.getRequest(), o.getRequest())
@@ -273,6 +274,7 @@ public class MobileSequenceTransaction implements Comparable<MobileSequenceTrans
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return new ToStringBuilder(this)
             .append("label", getLabel())

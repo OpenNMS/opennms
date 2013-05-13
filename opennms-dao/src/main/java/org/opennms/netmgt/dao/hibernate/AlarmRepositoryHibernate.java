@@ -81,6 +81,7 @@ public class AlarmRepositoryHibernate implements AlarmRepository, InitializingBe
      * {@inheritDoc}
      */
     @Transactional
+    @Override
     public void acknowledgeAll(String user, Date timestamp) {
         acknowledgeMatchingAlarms(user, timestamp, new OnmsCriteria(OnmsAlarm.class));
     }
@@ -96,6 +97,7 @@ public class AlarmRepositoryHibernate implements AlarmRepository, InitializingBe
      * {@inheritDoc}
      */
     @Transactional
+    @Override
     public void acknowledgeMatchingAlarms(String user, Date timestamp, OnmsCriteria criteria) {
         List<OnmsAlarm> alarms = m_alarmDao.findMatching(criteria);
 
@@ -113,6 +115,7 @@ public class AlarmRepositoryHibernate implements AlarmRepository, InitializingBe
      * {@inheritDoc}
      */
     @Transactional
+    @Override
     public void clearAlarms(int[] alarmIds, String user, Date timestamp) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsAlarm.class);
         criteria.add(Restrictions.in("id", Arrays.asList(ArrayUtils.toObject(alarmIds))));
@@ -133,6 +136,7 @@ public class AlarmRepositoryHibernate implements AlarmRepository, InitializingBe
      * {@inheritDoc}
      */
     @Transactional
+    @Override
     public int countMatchingAlarms(OnmsCriteria criteria) {
         return m_alarmDao.countMatching(criteria);
     }
@@ -141,6 +145,7 @@ public class AlarmRepositoryHibernate implements AlarmRepository, InitializingBe
      * {@inheritDoc}
      */
     @Transactional
+    @Override
     public int[] countMatchingAlarmsBySeverity(final OnmsCriteria criteria) {
         final int[] alarmCounts = new int[8];
         for (final OnmsSeverity value : OnmsSeverity.values()) {
@@ -153,6 +158,7 @@ public class AlarmRepositoryHibernate implements AlarmRepository, InitializingBe
      * {@inheritDoc}
      */
     @Transactional
+    @Override
     public void escalateAlarms(int[] alarmIds, String user, Date timestamp) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsAlarm.class);
         criteria.add(Restrictions.in("id", Arrays.asList(ArrayUtils.toObject(alarmIds))));
@@ -172,6 +178,7 @@ public class AlarmRepositoryHibernate implements AlarmRepository, InitializingBe
      * {@inheritDoc}
      */
     @Transactional
+    @Override
     public OnmsAlarm getAlarm(int alarmId) {
         return m_alarmDao.get(alarmId);
     }
@@ -180,6 +187,7 @@ public class AlarmRepositoryHibernate implements AlarmRepository, InitializingBe
      * {@inheritDoc}
      */
     @Transactional
+    @Override
     public OnmsAlarm[] getMatchingAlarms(OnmsCriteria criteria) {
         return m_alarmDao.findMatching(criteria).toArray(new OnmsAlarm[0]);
     }
@@ -188,6 +196,7 @@ public class AlarmRepositoryHibernate implements AlarmRepository, InitializingBe
      * {@inheritDoc}
      */
     @Transactional
+    @Override
     public void unacknowledgeAll(String user) {
         unacknowledgeMatchingAlarms(new OnmsCriteria(OnmsAlarm.class), user);
     }
@@ -196,6 +205,7 @@ public class AlarmRepositoryHibernate implements AlarmRepository, InitializingBe
      * {@inheritDoc}
      */
     @Transactional
+    @Override
     public void unacknowledgeMatchingAlarms(OnmsCriteria criteria, String user) {
         List<OnmsAlarm> alarms = m_alarmDao.findMatching(criteria);
 
@@ -211,6 +221,7 @@ public class AlarmRepositoryHibernate implements AlarmRepository, InitializingBe
      * {@inheritDoc}
      */
     @Transactional
+    @Override
     public void acknowledgeAlarms(int[] alarmIds, String user, Date timestamp) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsAlarm.class);
         criteria.add(Restrictions.in("id", Arrays.asList(ArrayUtils.toObject(alarmIds))));
@@ -221,6 +232,7 @@ public class AlarmRepositoryHibernate implements AlarmRepository, InitializingBe
      * {@inheritDoc}
      */
     @Transactional
+    @Override
     public void unacknowledgeAlarms(int[] alarmIds, String user) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsAlarm.class);
         criteria.add(Restrictions.in("id", Arrays.asList(ArrayUtils.toObject(alarmIds))));

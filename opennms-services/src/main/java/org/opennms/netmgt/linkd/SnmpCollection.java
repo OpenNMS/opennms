@@ -332,6 +332,7 @@ public final class SnmpCollection implements ReadyRunnable {
      * thread context synchronization must be added.
      * </p>
      */
+    @Override
     public void run() {
         if (suspendCollection) {
             EventBuilder builder = new EventBuilder(
@@ -675,6 +676,7 @@ public final class SnmpCollection implements ReadyRunnable {
      * schedule
      * </p>
      */
+    @Override
     public void schedule() {
         if (m_scheduler == null)
             throw new IllegalStateException(
@@ -699,6 +701,7 @@ public final class SnmpCollection implements ReadyRunnable {
      * 
      * @return a boolean.
      */
+    @Override
     public boolean isReady() {
         return true;
     }
@@ -710,6 +713,7 @@ public final class SnmpCollection implements ReadyRunnable {
      * 
      * @return Returns the suspendCollection.
      */
+    @Override
     public boolean isSuspended() {
         return suspendCollection;
     }
@@ -719,6 +723,7 @@ public final class SnmpCollection implements ReadyRunnable {
      * suspend
      * </p>
      */
+    @Override
     public void suspend() {
         this.suspendCollection = true;
     }
@@ -728,6 +733,7 @@ public final class SnmpCollection implements ReadyRunnable {
      * wakeUp
      * </p>
      */
+    @Override
     public void wakeUp() {
     	setAgentConfig(m_linkd.getSnmpAgentConfig(m_address));
         this.suspendCollection = false;
@@ -738,6 +744,7 @@ public final class SnmpCollection implements ReadyRunnable {
      * unschedule
      * </p>
      */
+    @Override
     public void unschedule() {
         if (m_scheduler == null)
             throw new IllegalStateException(
@@ -840,6 +847,7 @@ public final class SnmpCollection implements ReadyRunnable {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean equals(ReadyRunnable run) {
         if (run instanceof SnmpCollection
                 && this.getPackageName().equals(run.getPackageName())) {
@@ -857,6 +865,7 @@ public final class SnmpCollection implements ReadyRunnable {
      * 
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getInfo() {
         return "ReadyRunnable SnmpCollection" + " ip=" + str(getTarget())
                 + " port=" + getPort() + " community=" + getReadCommunity()
@@ -976,11 +985,13 @@ public final class SnmpCollection implements ReadyRunnable {
      * 
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getPackageName() {
         return packageName;
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setPackageName(String packageName) {
         this.packageName = packageName;
     }

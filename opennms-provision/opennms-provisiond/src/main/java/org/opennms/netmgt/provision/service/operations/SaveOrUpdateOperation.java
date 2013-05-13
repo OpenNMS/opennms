@@ -135,6 +135,7 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
     /**
      * <p>scan</p>
      */
+    @Override
     public void scan() {
     	updateSnmpData();
 	}

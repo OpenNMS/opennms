@@ -63,6 +63,7 @@ public class MockPollContext implements PollContext, EventListener {
     private List<PendingPollEvent> m_pendingPollEvents = new LinkedList<PendingPollEvent>();
     
 
+    @Override
     public String getCriticalServiceName() {
         return m_critSvcName;
     }
@@ -71,12 +72,14 @@ public class MockPollContext implements PollContext, EventListener {
         m_critSvcName = svcName;
     }
     
+    @Override
     public boolean isNodeProcessingEnabled() {
         return m_nodeProcessingEnabled;
     }
     public void setNodeProcessingEnabled(boolean nodeProcessingEnabled) {
         m_nodeProcessingEnabled = nodeProcessingEnabled;
     }
+    @Override
     public boolean isPollingAllIfCritServiceUndefined() {
         return m_pollingAllIfCritServiceUndefined;
     }
@@ -101,6 +104,7 @@ public class MockPollContext implements PollContext, EventListener {
     public void setMockNetwork(MockNetwork network) {
         m_mockNetwork = network;
     }
+    @Override
     public PollEvent sendEvent(Event event) {
         PendingPollEvent pollEvent = new PendingPollEvent(event);
         synchronized (this) {
@@ -112,14 +116,17 @@ public class MockPollContext implements PollContext, EventListener {
     
     
 
+    @Override
     public Event createEvent(String uei, int nodeId, InetAddress address, String svcName, Date date, String reason) {
         EventBuilder e = MockEventUtil.createEventBuilder("Test", uei, nodeId, (address == null ? null : InetAddressUtils.str(address)), svcName, reason);
         e.setCreationTime(date);
         e.setTime(date);
         return e.getEvent();
     }
+    @Override
     public void openOutage(final PollableService pSvc, final PollEvent svcLostEvent) {
         Runnable r = new Runnable() {
+            @Override
             public void run() {
                 writeOutage(pSvc, svcLostEvent);
             }
@@ -137,8 +144,10 @@ public class MockPollContext implements PollContext, EventListener {
         m_db.createOutage(mSvc, svcLostEvent.getEventId(), eventTime);
 
     }
+    @Override
     public void resolveOutage(final PollableService pSvc, final PollEvent svcRegainEvent) {
         Runnable r = new Runnable() {
+            @Override
             public void run() {
                 closeOutage(pSvc, svcRegainEvent);
             }
@@ -156,10 +165,12 @@ public class MockPollContext implements PollContext, EventListener {
         m_db.resolveOutage(mSvc, svcRegainEvent.getEventId(), eventTime);
     }
     
+    @Override
     public void reparentOutages(String ipAddr, int oldNodeId, int newNodeId) {
         m_db.update("update outages set nodeId = ? where nodeId = ? and ipaddr = ?", newNodeId, oldNodeId, ipAddr);
     }
     
+    @Override
     public boolean isServiceUnresponsiveEnabled() {
         return m_serviceUnresponsiveEnabled;
     }
@@ -167,10 +178,12 @@ public class MockPollContext implements PollContext, EventListener {
         m_serviceUnresponsiveEnabled = serviceUnresponsiveEnabled;
     }
 
+    @Override
     public String getName() {
         return "MockPollContext";
     }
 
+    @Override
     public synchronized void onEvent(Event e) {
         synchronized (m_pendingPollEvents) {
             for (PendingPollEvent pollEvent : m_pendingPollEvents) {

@@ -83,10 +83,12 @@ public class DefaultSurveillanceServiceIntegrationTest implements InitializingBe
         String viewName = "default";
         SimpleWebTable table = m_surveillanceService.createSurveillanceTable(viewName, new ProgressMonitor() {
 
+            @Override
             public void beginNextPhase(String string) {
                 System.err.println("PHASE: " + string);
             }
 
+            @Override
             public void setPhaseCount(int i) {
 
             }

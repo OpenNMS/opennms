@@ -46,18 +46,21 @@ public class JMXSecurePlugin extends JMXPlugin
 {
 
 	/** {@inheritDoc} */
+        @Override
 	public ConnectionWrapper getMBeanServerConnection(Map<String,Object> parameterMap, InetAddress address)
 	{
 		return JMXSecureConnectionFactory.getMBeanServerConnection(parameterMap, address);
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public String getProtocolName(Map<String,Object> map)
 	{
 		return ParameterMap.getKeyedString(map, "friendly-name", "ssl-jmxmp");
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public boolean isProtocolSupported(InetAddress address)
 	{
 		HashMap<String, Object> map = new HashMap<String, Object>();

@@ -63,12 +63,14 @@ public class DefaultWebGroupRepository implements WebGroupRepository, Initializi
 
     /** {@inheritDoc} */
     @Transactional
+    @Override
     public boolean groupExists(String groupName) {
         return m_groupDao.hasGroup(groupName);
     }
 
     /** {@inheritDoc} */
     @Transactional
+    @Override
     public WebGroup getGroup(String groupName) {
         
         Group group = m_groupDao.getGroup(groupName);
@@ -80,6 +82,7 @@ public class DefaultWebGroupRepository implements WebGroupRepository, Initializi
 
     /** {@inheritDoc} */
     @Transactional
+    @Override
     public void saveGroup(WebGroup webGroup) {
 
         Group group = m_groupDao.getGroup(webGroup.getName());
@@ -105,6 +108,7 @@ public class DefaultWebGroupRepository implements WebGroupRepository, Initializi
     
     /** {@inheritDoc} */
     @Transactional
+    @Override
     public void deleteGroup(String groupName) {
         
         m_groupDao.deleteGroup(groupName);
@@ -115,6 +119,7 @@ public class DefaultWebGroupRepository implements WebGroupRepository, Initializi
     
     /** {@inheritDoc} */
     @Transactional
+    @Override
     public void renameGroup(String oldName, String newName) {
         
         m_groupDao.renameGroup(oldName, newName);

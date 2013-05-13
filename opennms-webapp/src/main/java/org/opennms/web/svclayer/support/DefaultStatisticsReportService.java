@@ -59,11 +59,13 @@ public class DefaultStatisticsReportService implements StatisticsReportService, 
      *
      * @return a {@link java.util.List} object.
      */
+    @Override
     public List<StatisticsReport> getStatisticsReports() {
         return m_statisticsReportDao.findAll();
     }
 
     /** {@inheritDoc} */
+    @Override
     public StatisticsReportModel getReport(StatisticsReportCommand command, BindException errors) {
         StatisticsReportModel model = new StatisticsReportModel();
         model.setErrors(errors);

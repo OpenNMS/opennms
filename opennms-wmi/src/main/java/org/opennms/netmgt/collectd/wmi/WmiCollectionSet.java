@@ -64,6 +64,7 @@ public class WmiCollectionSet implements CollectionSet {
      *
      * @return a int.
      */
+    @Override
     public int getStatus() {
         return m_status;
     }
@@ -78,6 +79,7 @@ public class WmiCollectionSet implements CollectionSet {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void visit(final CollectionSetVisitor visitor) {
         visitor.visitCollectionSet(this);
 
@@ -102,10 +104,12 @@ public class WmiCollectionSet implements CollectionSet {
      *
      * @return a boolean.
      */
+    @Override
     public boolean ignorePersist() {
         return false;
     }
     
+    @Override
 	public Date getCollectionTimestamp() {
 		return m_timestamp;
 	}

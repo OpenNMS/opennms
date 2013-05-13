@@ -149,6 +149,7 @@ final public class VLink {
 	 *
 	 * Asserts if the links are linking the same elements without considering their statuses
 	 */
+        @Override
 	public boolean equals(Object otherLink) {
 		if (!(otherLink instanceof VLink)) return false;
 		VLink link = (VLink) otherLink;
@@ -206,6 +207,7 @@ final public class VLink {
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
+        @Override
 	public String toString() {
 			return ""+getFirst()+"-"+getSecond()+"-"+linkTypeId+"-"+linkStatusString+" nodeids:"+this.nodeids.toString();
 	}

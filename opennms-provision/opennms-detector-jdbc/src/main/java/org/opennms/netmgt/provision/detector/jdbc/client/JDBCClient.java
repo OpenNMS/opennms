@@ -61,6 +61,7 @@ public class JDBCClient implements Client<JDBCRequest, JDBCResponse> {
     /**
      * <p>close</p>
      */
+    @Override
     public void close() {
         if(m_connection != null) {
             try {
@@ -72,6 +73,7 @@ public class JDBCClient implements Client<JDBCRequest, JDBCResponse> {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void connect(InetAddress address, int port, int timeout) throws IOException, Exception {
         log().info("connecting to JDBC on " + address);
         if (log().isDebugEnabled()) {
@@ -105,6 +107,7 @@ public class JDBCClient implements Client<JDBCRequest, JDBCResponse> {
      * @throws java.io.IOException if any.
      * @throws java.lang.Exception if any.
      */
+    @Override
     public JDBCResponse receiveBanner() throws IOException, Exception {
         JDBCResponse response = new JDBCResponse();
         response.receive(m_connection);
@@ -119,6 +122,7 @@ public class JDBCClient implements Client<JDBCRequest, JDBCResponse> {
      * @throws java.io.IOException if any.
      * @throws java.lang.Exception if any.
      */
+    @Override
     public JDBCResponse sendRequest(JDBCRequest request) throws IOException, Exception {
         return request.send(m_connection);
     }

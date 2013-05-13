@@ -188,6 +188,7 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
         assertEquals(20, list.getTotalCount());
         int i = 0;
         Set<OnmsNode> sortedNodes = new TreeSet<OnmsNode>(new Comparator<OnmsNode>() {
+            @Override
             public int compare(OnmsNode o1, OnmsNode o2) {
                 if (o1 == null && o2 == null) {
                     return 0;

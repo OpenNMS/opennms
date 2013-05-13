@@ -100,6 +100,7 @@ public class JniIcmpMessenger implements Messenger<JniPingRequest, JniPingRespon
     public void start(final Queue<JniPingResponse> responseQueue) {
         Thread socketReader = new Thread("JNI-ICMP-"+m_pingerId+"-Socket-Reader") {
 
+            @Override
             public void run() {
                 try {
                     processPackets(responseQueue);

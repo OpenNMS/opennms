@@ -46,6 +46,7 @@ public class WrappedLeafVertex extends WrappedVertex {
 		super(vertex);
 	}
 
+        @Override
 	public void afterUnmarshal(Unmarshaller u, Object parent) {
 		super.afterUnmarshal(u, parent);
 	}

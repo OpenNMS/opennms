@@ -115,6 +115,7 @@ public class GWTLatLng implements IsSerializable, Serializable {
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
+        @Override
 	public String toString() {
 		return "GWTLatLng[lat=" + m_latitude + ",lon=" + m_longitude +"]";
 	}

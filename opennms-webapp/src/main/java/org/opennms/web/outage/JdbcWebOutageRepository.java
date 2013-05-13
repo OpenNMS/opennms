@@ -71,16 +71,19 @@ public class JdbcWebOutageRepository implements WebOutageRepository, Initializin
     }
 
     /** {@inheritDoc} */
+    @Override
     public int countCurrentOutages() {
         return getCurrentOutages(0).length;
     }
 
     /** {@inheritDoc} */
+    @Override
     public OutageSummary[] getCurrentOutages(final int rows) {
         return getMatchingOutageSummaries(new OutageCriteria(new Filter[]{}, SortStyle.IFLOSTSERVICE, OutageType.CURRENT, rows, 0));
     }
 
     /** {@inheritDoc} */
+    @Override
     public int countMatchingOutages(OutageCriteria criteria) {
         String sql = getSql("SELECT COUNT(OUTAGEID) as OUTAGECOUNT "
                                 + "FROM OUTAGES "
@@ -95,6 +98,7 @@ public class JdbcWebOutageRepository implements WebOutageRepository, Initializin
     }
 
     /** {@inheritDoc} */
+    @Override
     public Outage[] getMatchingOutages(OutageCriteria criteria) {
         String sql = getSql("SELECT OUTAGES.*, NODE.NODELABEL, IPINTERFACE.IPHOSTNAME, SERVICE.SERVICENAME, "
                             + "NOTIFICATIONS.NOTIFYID, NOTIFICATIONS.ANSWEREDBY FROM OUTAGES "
@@ -111,6 +115,7 @@ public class JdbcWebOutageRepository implements WebOutageRepository, Initializin
     }
 
     /** {@inheritDoc} */
+    @Override
     public int countMatchingOutageSummaries(OutageCriteria criteria) {
         String sql = getSql("SELECT COUNT(DISTINCT NODE.NODEID) AS OUTAGECOUNT "
                             + "FROM OUTAGES "
@@ -125,6 +130,7 @@ public class JdbcWebOutageRepository implements WebOutageRepository, Initializin
     }
 
     /** {@inheritDoc} */
+    @Override
     public OutageSummary[] getMatchingOutageSummaries(OutageCriteria criteria) {
         String sql = getSql("SELECT DISTINCT "
                             + "NODE.NODEID, NODE.NODELABEL, max(OUTAGES.IFLOSTSERVICE) AS IFLOSTSERVICE, max(OUTAGES.IFREGAINEDSERVICE) AS IFREGAINEDSERVICE, NOW() AS CURRENTTIME "
@@ -140,6 +146,7 @@ public class JdbcWebOutageRepository implements WebOutageRepository, Initializin
     }
 
     /** {@inheritDoc} */
+    @Override
     public Outage getOutage(int outageId) {
         OutageCriteria criteria = new OutageCriteria(new OutageIdFilter(outageId));
         Outage[] outages = getMatchingOutages(criteria);
@@ -178,17 +185,20 @@ public class JdbcWebOutageRepository implements WebOutageRepository, Initializin
                 }
             }
 
+            @Override
             public void visitOutageType(OutageType outageType) {
                 and(buf);
                 buf.append(outageType.getClause());
             }
 
 
+            @Override
             public void visitFilter(Filter filter) {
                 and(buf);
                 buf.append(filter.getParamSql());
             }
 
+            @Override
             public void visitGroupBy() {
                 if (groupByClause != null && groupByClause.trim().length() != 0) {
                     buf.append(" GROUP BY ");
@@ -196,11 +206,13 @@ public class JdbcWebOutageRepository implements WebOutageRepository, Initializin
                 }
             }
 
+            @Override
             public void visitSortStyle(SortStyle sortStyle) {
                 buf.append(" ");
                 buf.append(sortStyle.getOrderByClause());
             }
 
+            @Override
             public void visitLimit(int limit, int offset) {
                 buf.append(" LIMIT ").append(limit).append(" OFFSET ").append(offset);
             }
@@ -231,6 +243,7 @@ public class JdbcWebOutageRepository implements WebOutageRepository, Initializin
     private PreparedStatementSetter paramSetter(final OutageCriteria criteria, final Object... args) {
         return new PreparedStatementSetter() {
             int paramIndex = 1;
+            @Override
             public void setValues(final PreparedStatement ps) throws SQLException {
                 for(Object arg : args) {
                     ps.setObject(paramIndex, arg);
@@ -247,12 +260,14 @@ public class JdbcWebOutageRepository implements WebOutageRepository, Initializin
     }
 
     private static class OutageSummaryMapper implements ParameterizedRowMapper<OutageSummary> {
+        @Override
         public OutageSummary mapRow(ResultSet rs, int rowNum) throws SQLException {
             return new OutageSummary(rs.getInt("nodeID"), rs.getString("nodeLabel"), getTimestamp("ifLostService", rs), getTimestamp("ifRegainedService", rs), getTimestamp("currentTime", rs));
         }
     }
 
     private static class OutageMapper implements ParameterizedRowMapper<Outage> {
+        @Override
         public Outage mapRow(ResultSet rs, int rowNum) throws SQLException {
             Outage outage = new Outage();
             outage.outageId = ((Integer) rs.getObject("outageID"));

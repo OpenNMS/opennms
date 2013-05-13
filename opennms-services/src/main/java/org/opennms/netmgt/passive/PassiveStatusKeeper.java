@@ -104,6 +104,7 @@ public class PassiveStatusKeeper extends AbstractServiceDaemon implements EventL
     /**
      * <p>onInit</p>
      */
+    @Override
     protected void onInit() {
         if (m_initialized) return;
         
@@ -120,6 +121,7 @@ public class PassiveStatusKeeper extends AbstractServiceDaemon implements EventL
         
         Querier querier = new Querier(m_dataSource, sql) {
         
+            @Override
             public void processRow(ResultSet rs) throws SQLException {
                
                 PassiveStatusKey key = new PassiveStatusKey(rs.getString("nodeLabel"), rs.getString("ipAddr"), rs.getString("serviceName"));
@@ -147,6 +149,7 @@ public class PassiveStatusKeeper extends AbstractServiceDaemon implements EventL
     /**
      * <p>onStop</p>
      */
+    @Override
     protected void onStop() {
         m_initialized = false;
         m_eventMgr = null;
@@ -202,6 +205,7 @@ public class PassiveStatusKeeper extends AbstractServiceDaemon implements EventL
     }
 
     /** {@inheritDoc} */
+    @Override
     public void onEvent(Event e) {
         
         if (isPassiveStatusEvent(e)) {

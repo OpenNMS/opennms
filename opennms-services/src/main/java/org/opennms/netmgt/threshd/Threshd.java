@@ -112,6 +112,7 @@ public final class Threshd extends AbstractServiceDaemon {
     /**
      * <p>onInit</p>
      */
+    @Override
     protected void onInit() {
 
         log().debug("start: Initializing thresholding daemon");
@@ -163,10 +164,12 @@ public final class Threshd extends AbstractServiceDaemon {
     private void scheduleBackgroundInitTask() {
         ReadyRunnable interfaceScheduler = new ReadyRunnable() {
 
+            @Override
             public boolean isReady() {
                 return true;
             }
 
+            @Override
             public void run() {
                 //
                 try {
@@ -238,6 +241,7 @@ public final class Threshd extends AbstractServiceDaemon {
     /**
      * <p>onStart</p>
      */
+    @Override
     protected void onStart() {
 
         log().debug("start: Initializing thresholding daemon");
@@ -260,6 +264,7 @@ public final class Threshd extends AbstractServiceDaemon {
     /**
      * <p>onStop</p>
      */
+    @Override
     protected void onStop() {
 		m_scheduler.stop();
         m_receiver.close();
@@ -270,6 +275,7 @@ public final class Threshd extends AbstractServiceDaemon {
     /**
      * <p>onPause</p>
      */
+    @Override
     protected void onPause() {
 		m_scheduler.pause();
 	}
@@ -277,6 +283,7 @@ public final class Threshd extends AbstractServiceDaemon {
     /**
      * <p>onResume</p>
      */
+    @Override
     protected void onResume() {
 		m_scheduler.resume();
 	}

@@ -169,6 +169,7 @@ public class OwnedInterval extends TimeInterval {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         StringBuffer sb = new StringBuffer();
         if (m_owners.isEmpty()) {

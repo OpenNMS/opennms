@@ -116,6 +116,7 @@ public class OnmsIpRouteInterface {
             m_routeType = routeType;
         }
 
+        @Override
         public int compareTo(RouteType o) {
             return getIndex(m_routeType) - getIndex(o.m_routeType);
         }
@@ -129,6 +130,7 @@ public class OnmsIpRouteInterface {
             throw new IllegalArgumentException("illegal routeType code '"+code+"'");
         }
 
+        @Override
         public boolean equals(Object o) {
             if (o instanceof RouteType) {
                 return m_routeType.intValue() == ((RouteType)o).m_routeType.intValue();
@@ -136,10 +138,12 @@ public class OnmsIpRouteInterface {
             return false;
         }
 
+        @Override
         public int hashCode() {
             return toString().hashCode();
         }
 
+        @Override
         public String toString() {
             return String.valueOf(m_routeType);
         }
@@ -338,6 +342,7 @@ public class OnmsIpRouteInterface {
 		m_lastPollTime = lastPollTime;
 	}
 
+    @Override
 	public String toString() {
 		    return new ToStringBuilder(this)
 		        .append("id", m_id)

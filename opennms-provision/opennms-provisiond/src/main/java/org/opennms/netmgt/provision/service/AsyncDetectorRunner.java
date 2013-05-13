@@ -54,6 +54,7 @@ class AsyncDetectorRunner implements Async<Boolean> {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void submit(Callback<Boolean> cb) {
         try {
             infof(this, "Attemping to detect service %s on address %s", m_detector.getServiceName(), getHostAddress());
@@ -76,6 +77,7 @@ class AsyncDetectorRunner implements Async<Boolean> {
 
     private DetectFutureListener<DetectFuture> listener(final Callback<Boolean> cb) {
         return new DetectFutureListener<DetectFuture>() {
+            @Override
             public void operationComplete(DetectFuture future) {
                 try {
                     if (future.getException() != null) {

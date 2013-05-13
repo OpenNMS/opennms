@@ -43,6 +43,7 @@ public interface Scheduler extends ScheduleTimer {
 	 * interval is used as the key for determining which queue to add the
 	 * runnable.
 	 */
+        @Override
 	public abstract void schedule(long interval, final ReadyRunnable runnable);
 
 	/**
@@ -50,6 +51,7 @@ public interface Scheduler extends ScheduleTimer {
 	 *
 	 * @return a long.
 	 */
+        @Override
 	public abstract long getCurrentTime();
 
 	/**

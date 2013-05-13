@@ -111,6 +111,7 @@ public class SupportRtConfigDao extends ReadOnlyRtConfigDao {
         setProperty("support.queueId", Long.valueOf(queueId));
     }
 
+    @Override
     public String getBaseURL() {
         final String baseUrl = getPrefix() + ".baseURL";
         final String defaultBaseUrl = "https://mynms.opennms.com";

@@ -130,8 +130,10 @@ abstract public class PollableContainer extends PollableElement {
     /**
      * <p>delete</p>
      */
+    @Override
     public void delete() {
         Runnable r = new Runnable() {
+            @Override
             public void run() {
                 Collection<PollableElement> members = getMembers();
                 for (Iterator<PollableElement> it = members.iterator(); it.hasNext();) {
@@ -146,12 +148,14 @@ abstract public class PollableContainer extends PollableElement {
     }
     
     /** {@inheritDoc} */
+    @Override
     public void visit(PollableVisitor v) {
         visitThis(v);
         visitMembers(v);
     }
     
     /** {@inheritDoc} */
+    @Override
     protected void visitThis(PollableVisitor v) {
         super.visitThis(v);
         v.visitContainer(this);
@@ -185,6 +189,7 @@ abstract public class PollableContainer extends PollableElement {
     abstract protected class Accumulator<T> extends SimpleIter<T> {
         public Accumulator(T initial) { super(initial); }
         public Accumulator() { super(null); }
+        @Override
         public void forEachElement(PollableElement element) {
             setResult(processNextMember(element, getResult()));
         }
@@ -234,6 +239,7 @@ abstract public class PollableContainer extends PollableElement {
      */
     protected void forEachMember(boolean withTreeLock, final Iter iter) {
         Runnable r = new Runnable() {
+            @Override
             public void run() {
                 for (Iterator<PollableElement> it = getMembers().iterator(); it.hasNext(); ) {
                     PollableElement element = it.next();
@@ -252,10 +258,13 @@ abstract public class PollableContainer extends PollableElement {
     /**
      * <p>recalculateStatus</p>
      */
+    @Override
     public void recalculateStatus() {
         Runnable r = new Runnable() {
+            @Override
             public void run() {
                 SimpleIter<PollStatus> iter = new SimpleIter<PollStatus>(PollStatus.down()) {
+                    @Override
                     public void forEachElement(PollableElement elem) {
                         elem.recalculateStatus();
                         if (elem.getStatus().isUp())
@@ -272,11 +281,14 @@ abstract public class PollableContainer extends PollableElement {
     /**
      * <p>resetStatusChanged</p>
      */
+    @Override
     public void resetStatusChanged() {
         Runnable r = new Runnable() {
+            @Override
             public void run() {
                 PollableContainer.super.resetStatusChanged();
                 Iter iter = new Iter() {
+                    @Override
                     public void forEachElement(PollableElement elem) {
                         elem.resetStatusChanged();
                     }
@@ -297,9 +309,11 @@ abstract public class PollableContainer extends PollableElement {
 
 
     /** {@inheritDoc} */
+    @Override
     protected PollStatus poll(final PollableElement elem) {
         final PollStatus retVal[] = new PollStatus[1];
         Runnable r = new Runnable() {
+            @Override
             public void run() {
                 PollableElement member = findMemberWithDescendent(elem);
                 PollStatus memberStatus = member.poll(elem);
@@ -321,6 +335,7 @@ abstract public class PollableContainer extends PollableElement {
      */
     public PollStatus pollRemainingMembers(final PollableElement member) {
         SimpleIter<PollStatus> iter = new SimpleIter<PollStatus>(member.getStatus()) {
+            @Override
             public void forEachElement(PollableElement elem) {
                 if (elem != member) {
                     if (elem.poll().isUp())
@@ -339,6 +354,7 @@ abstract public class PollableContainer extends PollableElement {
      */
     public PollStatus getMemberStatus() {
         SimpleIter<PollStatus> iter = new SimpleIter<PollStatus>(PollStatus.down()) {
+            @Override
             public void forEachElement(PollableElement elem) {
                 if (elem.getStatus().isUp())
                     setResult(PollStatus.up());
@@ -354,6 +370,7 @@ abstract public class PollableContainer extends PollableElement {
      *
      * @return a {@link org.opennms.netmgt.model.PollStatus} object.
      */
+    @Override
     public PollStatus poll() {
         PollableElement leaf = selectPollElement();
         if (leaf == null) return PollStatus.up();
@@ -365,6 +382,7 @@ abstract public class PollableContainer extends PollableElement {
      *
      * @return a {@link org.opennms.netmgt.poller.pollables.PollableElement} object.
      */
+    @Override
     public PollableElement selectPollElement() {
         if (getMemberCount() == 0) 
             return null;
@@ -375,8 +393,10 @@ abstract public class PollableContainer extends PollableElement {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void processStatusChange(final Date date) {
         Runnable r = new Runnable() {
+            @Override
             public void run() {
                 if (isStatusChanged()) {
                     PollableContainer.super.processStatusChange(date);
@@ -396,6 +416,7 @@ abstract public class PollableContainer extends PollableElement {
      */
     public void processMemberStatusChanges(final Date date) {
         Iter iter = new Iter() {
+            @Override
             public void forEachElement(PollableElement elem) {
                 elem.processStatusChange(date);
             }
@@ -407,6 +428,7 @@ abstract public class PollableContainer extends PollableElement {
     
     
     /** {@inheritDoc} */
+    @Override
     protected void processResolution(PollEvent resolvedCause, PollEvent resolution) {
         super.processResolution(resolvedCause, resolution);
         processLingeringMemberCauses(resolvedCause, resolution);
@@ -414,6 +436,7 @@ abstract public class PollableContainer extends PollableElement {
 
     private void processLingeringMemberCauses(final PollEvent resolvedCause, final PollEvent resolution) {
         Iter iter = new Iter() {
+            @Override
             public void forEachElement(PollableElement elem) {
                 elem.processLingeringCauses(resolvedCause, resolution);
             }
@@ -424,9 +447,11 @@ abstract public class PollableContainer extends PollableElement {
     
     
     /** {@inheritDoc} */
+    @Override
     protected void processCause(final PollEvent cause) {
         super.processCause(cause);
         Iter iter = new Iter() {
+            @Override
             public void forEachElement(PollableElement elem) {
                 elem.processCause(cause);
             }
@@ -437,9 +462,11 @@ abstract public class PollableContainer extends PollableElement {
     
     
     /** {@inheritDoc} */
+    @Override
     protected void resolveAllOutages(final PollEvent resolvedCause, final PollEvent resolution) {
         super.resolveAllOutages(resolvedCause, resolution);
         Iter iter = new Iter() {
+            @Override
             public void forEachElement(PollableElement elem) {
                 if (!hasOpenOutage())
                     elem.resolveAllOutages(resolvedCause, resolution);

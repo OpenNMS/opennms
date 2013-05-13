@@ -130,6 +130,7 @@ public class JavaSendMailer extends JavaMailer2 {
         Authenticator auth;
         if (m_config.isUseAuthentication()) {
             auth = new Authenticator() {
+                @Override
                 protected PasswordAuthentication getPasswordAuthentication() {
                     return new PasswordAuthentication(m_config.getUserAuth().getUserName(), m_config.getUserAuth().getPassword());
                 }

@@ -95,6 +95,7 @@ public class ChartConfigFactory extends ChartConfigManager {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void saveXml(String xml) throws IOException {
         if (xml != null) {
             Writer fileWriter = new OutputStreamWriter(new FileOutputStream(m_chartConfigFile), "UTF-8");
@@ -111,6 +112,7 @@ public class ChartConfigFactory extends ChartConfigManager {
      * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
+    @Override
     public void update() throws IOException, MarshalException, ValidationException {
         if (m_lastModified != m_chartConfigFile.lastModified()) {
             NotifdConfigFactory.getInstance().reload();

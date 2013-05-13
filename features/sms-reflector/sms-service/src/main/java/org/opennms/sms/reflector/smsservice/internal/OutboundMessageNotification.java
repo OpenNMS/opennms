@@ -68,6 +68,7 @@ public class OutboundMessageNotification implements IOutboundMessageNotification
 	}
 	
 	/** {@inheritDoc} */
+    @Override
 	public void process(String gatewayId, OutboundMessage msg) {
 	    
 	    log.debug( "Forwarding message to registered listeners: " + getListeners() + " : " + msg );
@@ -98,6 +99,7 @@ public class OutboundMessageNotification implements IOutboundMessageNotification
 	}
 
 	/** {@inheritDoc} */
+    @Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		m_applicationContext = applicationContext;
 	}

@@ -62,6 +62,7 @@ public class AutoIntegerIdMapStoreReplacement implements ColumnChangeReplacement
     }
     
     /** {@inheritDoc} */
+    @Override
     public Integer getColumnReplacement(ResultSet rs, Map<String, ColumnChange> columnChanges) throws SQLException {
         MultiColumnKey key = getKeyForColumns(rs, columnChanges, m_indexColumns);
         Integer newInteger = m_value++;
@@ -74,6 +75,7 @@ public class AutoIntegerIdMapStoreReplacement implements ColumnChangeReplacement
      *
      * @return a boolean.
      */
+    @Override
     public boolean addColumnIfColumnIsNew() {
         return true;
     }
@@ -168,6 +170,7 @@ public class AutoIntegerIdMapStoreReplacement implements ColumnChangeReplacement
     /**
      * <p>close</p>
      */
+    @Override
     public void close() {
     }
 }

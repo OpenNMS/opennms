@@ -278,6 +278,7 @@ public class ApplicationDetails implements Serializable, IsSerializable {
      *
      * @return a {@link java.lang.String} object.
      */
+        @Override
     public String toString() {
         return "ApplicationDetails[name=" + m_name + ",range=" + getStartTime() + "-" + getEndTime() + ",statuses=" + getLocationSpecificStatuses() + "]";
     }
@@ -305,6 +306,7 @@ public class ApplicationDetails implements Serializable, IsSerializable {
         sb.append("<dl class=\"statusContents\">\n");
 
         Set<GWTMonitoredService> services = new TreeSet<GWTMonitoredService>(new Comparator<GWTMonitoredService>() {
+            @Override
             public int compare(final GWTMonitoredService a, final GWTMonitoredService b) {
                 if (a == null) {
                     if (b == null) return 0;

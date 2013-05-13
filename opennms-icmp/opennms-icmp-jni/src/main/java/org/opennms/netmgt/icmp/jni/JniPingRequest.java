@@ -133,6 +133,7 @@ public class JniPingRequest implements Request<JniPingRequestId, JniPingRequest,
      * @param reply a {@link org.opennms.netmgt.icmp.spi.JniPingResponse.PingReply} object.
      * @return a boolean.
      */
+    @Override
     public boolean processResponse(JniPingResponse reply) {
         try {
             m_log.debug(System.currentTimeMillis()+": Ping Response Received "+this);
@@ -147,6 +148,7 @@ public class JniPingRequest implements Request<JniPingRequestId, JniPingRequest,
      *
      * @return a {@link org.opennms.netmgt.icmp.jni.JniPingRequest} object.
      */
+    @Override
     public JniPingRequest processTimeout() {
         try {
             JniPingRequest returnval = null;
@@ -194,6 +196,7 @@ public class JniPingRequest implements Request<JniPingRequestId, JniPingRequest,
     }
 
     /** {@inheritDoc} */
+    @Override
     public long getDelay(TimeUnit unit) {
         return unit.convert(m_expiration - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
     }
@@ -204,6 +207,7 @@ public class JniPingRequest implements Request<JniPingRequestId, JniPingRequest,
      * @param request a {@link java.util.concurrent.Delayed} object.
      * @return a int.
      */
+    @Override
     public int compareTo(Delayed request) {
         long myDelay = getDelay(TimeUnit.MILLISECONDS);
         long otherDelay = request.getDelay(TimeUnit.MILLISECONDS);
@@ -217,10 +221,12 @@ public class JniPingRequest implements Request<JniPingRequestId, JniPingRequest,
      *
      * @return a {@link org.opennms.netmgt.icmp.spi.JniPingRequestId.PingRequestId} object.
      */
+    @Override
     public JniPingRequestId getId() {
         return m_id;
     }
 
+    @Override
     public void processError(Throwable t) {
         try {
             m_callback.handleError(m_id.getAddress(), this, t);
@@ -238,6 +244,7 @@ public class JniPingRequest implements Request<JniPingRequestId, JniPingRequest,
      *
      * @return a boolean.
      */
+    @Override
     public boolean isProcessed() {
         return m_processed.get();
     }

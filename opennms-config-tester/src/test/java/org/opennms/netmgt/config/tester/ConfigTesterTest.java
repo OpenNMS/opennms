@@ -602,6 +602,7 @@ public class ConfigTesterTest {
         assertTrue("daemon configuration directory is a directory at " + configDir.getAbsolutePath(), configDir.isDirectory());
 
         String[] configFiles = configDir.list(new FilenameFilter() {
+            @Override
             public boolean accept(File file, String name) {
                 return name.endsWith(".xml");
             } });

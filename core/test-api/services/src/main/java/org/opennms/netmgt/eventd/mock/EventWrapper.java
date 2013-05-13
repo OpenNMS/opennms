@@ -52,6 +52,7 @@ public class EventWrapper {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean equals(Object o) {
         EventWrapper w = (EventWrapper) o;
         return MockEventUtil.eventsMatch(m_event, w.m_event);
@@ -71,6 +72,7 @@ public class EventWrapper {
      *
      * @return a int.
      */
+    @Override
     public int hashCode() {
         return m_event.getUei().hashCode();
     }
@@ -80,6 +82,7 @@ public class EventWrapper {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
     	return EventUtils.toString(m_event);
     }

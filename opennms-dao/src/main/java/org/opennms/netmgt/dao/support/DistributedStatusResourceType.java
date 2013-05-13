@@ -72,6 +72,7 @@ public class DistributedStatusResourceType implements OnmsResourceType {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getLabel() {
         return "Distributed Status";
     }
@@ -81,17 +82,20 @@ public class DistributedStatusResourceType implements OnmsResourceType {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getName() {
         return "distributedStatus";
     }
 
     /** {@inheritDoc} */
+    @Override
     public List<OnmsResource> getResourcesForDomain(String domain) {
         List<OnmsResource> empty = Collections.emptyList();
         return empty;
     }
 
     /** {@inheritDoc} */
+    @Override
     public List<OnmsResource> getResourcesForNode(int nodeId) {
         LinkedList<OnmsResource> resources =
             new LinkedList<OnmsResource>();
@@ -169,12 +173,14 @@ public class DistributedStatusResourceType implements OnmsResourceType {
     }
     
     /** {@inheritDoc} */
+    @Override
     public boolean isResourceTypeOnNodeSource(String nodeSource, int nodeId) {
         // is this right?
         return false;
     }
     
     /** {@inheritDoc} */
+    @Override
     public List<OnmsResource> getResourcesForNodeSource(String nodeSource, int nodeId) {
         // is this right?
         List<OnmsResource> empty = Collections.emptyList();
@@ -182,11 +188,13 @@ public class DistributedStatusResourceType implements OnmsResourceType {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isResourceTypeOnDomain(String domain) {
         return false;
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isResourceTypeOnNode(int nodeId) {
         return getResourcesForNode(nodeId).size() > 0;
     }
@@ -291,6 +299,7 @@ public class DistributedStatusResourceType implements OnmsResourceType {
             m_intf = intf;
         }
 
+        @Override
         public Set<OnmsAttribute> load() {
             if (log().isDebugEnabled()) {
                 log().debug("lazy-loading attributes for distributed status resource " + (m_definitionName + "-" + m_locationMonitorId + "/" + m_intf));
@@ -301,6 +310,7 @@ public class DistributedStatusResourceType implements OnmsResourceType {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getLinkForResource(OnmsResource resource) {
         return null;
     }

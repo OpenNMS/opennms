@@ -63,6 +63,7 @@ public abstract class AbstractNorthbounder implements Northbounder, Runnable, St
     	m_queue = new AlarmQueue<NorthboundAlarm>(this);
     }
 
+    @Override
     public String getName() {
         return m_name;
     }
@@ -122,11 +123,13 @@ public abstract class AbstractNorthbounder implements Northbounder, Runnable, St
     protected void onStop() {
     }
 
+    @Override
     public final void stop() throws NorthbounderException {
         this.onStop();
         m_stopped = true;
     }
     
+    @Override
     public void run() {
         
         try {

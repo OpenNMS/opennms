@@ -105,6 +105,7 @@ public class JoeSnmpAgentConfig {
         return m_config.getWriteCommunity();
     }
 
+    @Override
     public int hashCode() {
         return m_config.hashCode();
     }
@@ -173,6 +174,7 @@ public class JoeSnmpAgentConfig {
         m_config.setWriteCommunity(community);
     }
 
+    @Override
     public String toString() {
         return m_config.toString();
     }

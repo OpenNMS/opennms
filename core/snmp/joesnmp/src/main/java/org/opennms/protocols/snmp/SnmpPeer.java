@@ -287,6 +287,7 @@ public class SnmpPeer extends Object implements Cloneable {
      * @return A duplicate peer object.
      * 
      */
+    @Override
     public Object clone() {
         return new SnmpPeer(this);
     }

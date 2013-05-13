@@ -369,6 +369,7 @@ public class OnmsLinkState implements Serializable, Comparable<OnmsLinkState> {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return new ToStringBuilder(this)
             .append("id", getId())
@@ -378,6 +379,7 @@ public class OnmsLinkState implements Serializable, Comparable<OnmsLinkState> {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean equals(Object o) {
         if (o instanceof OnmsLinkState) {
             OnmsLinkState lso = (OnmsLinkState) o;
@@ -397,6 +399,7 @@ public class OnmsLinkState implements Serializable, Comparable<OnmsLinkState> {
      * @param o a {@link org.opennms.netmgt.model.OnmsLinkState} object.
      * @return a int.
      */
+    @Override
     public int compareTo(OnmsLinkState o) {
         return new CompareToBuilder()
             .append(getId(), o.getId())
@@ -410,6 +413,7 @@ public class OnmsLinkState implements Serializable, Comparable<OnmsLinkState> {
      *
      * @return a int.
      */
+    @Override
     public int hashCode() {
         return new HashCodeBuilder()
             .append(getId())

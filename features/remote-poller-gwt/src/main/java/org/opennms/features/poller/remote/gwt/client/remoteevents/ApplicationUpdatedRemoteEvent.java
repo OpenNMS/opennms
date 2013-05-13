@@ -58,6 +58,7 @@ public class ApplicationUpdatedRemoteEvent implements MapRemoteEvent {
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public void dispatch(final MapRemoteEventHandler presenter) {
 		presenter.updateApplication(m_applicationInfo);
 	}
@@ -67,6 +68,7 @@ public class ApplicationUpdatedRemoteEvent implements MapRemoteEvent {
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
+        @Override
 	public String toString() {
 	    return "ApplicationUpdatedRemoteEvent[applicationInfo=" + m_applicationInfo + "]";
 	}

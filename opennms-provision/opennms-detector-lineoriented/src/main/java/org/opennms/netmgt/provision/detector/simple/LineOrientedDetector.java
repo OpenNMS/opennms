@@ -74,6 +74,7 @@ public abstract class LineOrientedDetector extends BasicDetector<LineOrientedReq
      */
     public static ResponseValidator<LineOrientedResponse> startsWith(final String pattern) {
         return new ResponseValidator<LineOrientedResponse>() {
+            @Override
             public boolean validate(final LineOrientedResponse response) {
                 return response.startsWith(pattern);
             }
@@ -89,6 +90,7 @@ public abstract class LineOrientedDetector extends BasicDetector<LineOrientedReq
      */
     public static ResponseValidator<LineOrientedResponse> equals(final String pattern) {
         return new ResponseValidator<LineOrientedResponse>() {
+            @Override
             public boolean validate(final LineOrientedResponse response) {
                 return response.equals(pattern);
             }
@@ -105,6 +107,7 @@ public abstract class LineOrientedDetector extends BasicDetector<LineOrientedReq
     public static ResponseValidator<LineOrientedResponse> matches(final String regex){
         return new ResponseValidator<LineOrientedResponse>() {
 
+            @Override
             public boolean validate(final LineOrientedResponse response) {
                 return response.matches(regex);
             }
@@ -121,6 +124,7 @@ public abstract class LineOrientedDetector extends BasicDetector<LineOrientedReq
     public static ResponseValidator<LineOrientedResponse> find(final String regex){
         return new ResponseValidator<LineOrientedResponse>() {
 
+            @Override
             public boolean validate(final LineOrientedResponse response) {
                 return response.find(regex);
             }

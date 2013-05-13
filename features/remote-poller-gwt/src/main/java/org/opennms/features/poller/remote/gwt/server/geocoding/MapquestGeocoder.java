@@ -94,6 +94,7 @@ public class MapquestGeocoder implements Geocoder {
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public GWTLatLng geocode(final String geolocation) throws GeocoderException {
 		final HttpUriRequest method = new HttpGet(getUrl(geolocation));
 		method.addHeader("User-Agent", "OpenNMS-MapQuestGeocoder/1.0");

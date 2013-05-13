@@ -45,6 +45,7 @@ public class PollJob extends QuartzJobBean {
 	
 
 	/** {@inheritDoc} */
+        @Override
 	protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
         m_pollerFrontEnd.pollService(m_polledService.getServiceId());
 

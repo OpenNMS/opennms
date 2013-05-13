@@ -51,6 +51,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
 
     /** {@inheritDoc} 
      * @return */
+    @Override
     public OnmsAlarm persist(Event event) {
         if (!checkEventSanityAndDoWeProcess(event)) {
             return null;

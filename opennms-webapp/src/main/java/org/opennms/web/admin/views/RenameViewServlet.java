@@ -50,6 +50,7 @@ public class RenameViewServlet extends HttpServlet {
     private static final long serialVersionUID = -2211626861486132823L;
 
     /** {@inheritDoc} */
+    @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String viewName = request.getParameter("viewName");
         String newName = request.getParameter("newName");

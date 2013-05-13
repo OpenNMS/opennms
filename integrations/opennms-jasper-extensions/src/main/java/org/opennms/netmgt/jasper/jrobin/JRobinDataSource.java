@@ -50,6 +50,7 @@ public class JRobinDataSource implements JRDataSource {
         m_xports = xports;
     }
 
+    @Override
     public Object getFieldValue(JRField field) throws JRException {
         Object computeFieldValue = computeFieldValue(field);
         return computeFieldValue;
@@ -80,6 +81,7 @@ public class JRobinDataSource implements JRDataSource {
     }
 
     
+    @Override
     public boolean next() throws JRException {
         m_currentRow++;
         return m_currentRow < m_timestamps.length;

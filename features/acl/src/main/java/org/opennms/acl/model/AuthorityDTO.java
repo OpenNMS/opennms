@@ -58,6 +58,7 @@ public class AuthorityDTO implements AuthorityView {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getName() {
         return name;
     }
@@ -67,6 +68,7 @@ public class AuthorityDTO implements AuthorityView {
      *
      * @return a {@link java.lang.Integer} object.
      */
+    @Override
     public Integer getId() {
         return id;
     }
@@ -112,6 +114,7 @@ public class AuthorityDTO implements AuthorityView {
      *
      * @return a {@link java.util.List} object.
      */
+    @Override
     public List<?> getItems() {
         return items;
     }
@@ -130,6 +133,7 @@ public class AuthorityDTO implements AuthorityView {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getDescription() {
         return description;
     }

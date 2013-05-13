@@ -35,14 +35,17 @@ public class VmwareCimSingleInstanceCollectionResource extends VmwareCimCollecti
         super(agent);
     }
 
+    @Override
     public String getResourceTypeName() {
         return "node";
     }
 
+    @Override
     public String getInstance() {
         return null;
     }
 
+    @Override
     public String toString() {
         return "Node[" + m_agent.getNodeId() + "]/type[node]";
     }

@@ -180,6 +180,7 @@ public class SnmpOctetString extends Object implements SnmpSyntax, Cloneable, Se
      * @return The ASN.1 identifier.
      * 
      */
+    @Override
     public byte typeId() {
         return ASNTYPE;
     }
@@ -201,6 +202,7 @@ public class SnmpOctetString extends Object implements SnmpSyntax, Cloneable, Se
      * @exception AsnEncodingException
      *                Thrown if the encoder finds an error in the buffer.
      */
+    @Override
     public int encodeASN(byte[] buf, int offset, AsnEncoder encoder) throws AsnEncodingException {
         if (m_data == null)
             throw new AsnEncodingException("No data in octet string");
@@ -228,6 +230,7 @@ public class SnmpOctetString extends Object implements SnmpSyntax, Cloneable, Se
      *                Thrown by the encoder if an error occurs trying to decode
      *                the data buffer.
      */
+    @Override
     public int decodeASN(byte[] buf, int offset, AsnEncoder encoder) throws AsnDecodingException {
         Object[] rVals = encoder.parseString(buf, offset);
 
@@ -245,6 +248,7 @@ public class SnmpOctetString extends Object implements SnmpSyntax, Cloneable, Se
      * @return A newly constructed copy of self
      * 
      */
+    @Override
     public SnmpSyntax duplicate() {
         return new SnmpOctetString(this);
     }
@@ -255,6 +259,7 @@ public class SnmpOctetString extends Object implements SnmpSyntax, Cloneable, Se
      * @return A newly constructed copy of self
      * 
      */
+    @Override
     public Object clone() {
         return new SnmpOctetString(this);
     }
@@ -264,6 +269,7 @@ public class SnmpOctetString extends Object implements SnmpSyntax, Cloneable, Se
      * non-printable characters then the contents are printed in hexidecimal.
      * 
      */
+    @Override
     public String toString() {
         //
         // check for non-printable characters. If they
@@ -373,6 +379,7 @@ public class SnmpOctetString extends Object implements SnmpSyntax, Cloneable, Se
         return physAddr;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof SnmpOctetString) {
             SnmpOctetString str = (SnmpOctetString)obj;
@@ -389,6 +396,7 @@ public class SnmpOctetString extends Object implements SnmpSyntax, Cloneable, Se
         return false;
     }
 
+    @Override
     public int hashCode() {
         return 0;
     }

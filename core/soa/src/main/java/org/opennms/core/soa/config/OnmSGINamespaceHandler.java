@@ -41,6 +41,7 @@ public class OnmSGINamespaceHandler extends NamespaceHandlerSupport {
     /**
      * <p>init</p>
      */
+    @Override
     public void init() {
         registerBeanDefinitionParser("default-registry", new DefaultRegistryDefinitionParser());
         registerBeanDefinitionParser("service", new ServiceBeanDefinitionParser());

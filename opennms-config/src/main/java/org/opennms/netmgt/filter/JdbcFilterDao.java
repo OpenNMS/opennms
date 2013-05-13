@@ -372,6 +372,7 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
     }
 
 	/** {@inheritDoc} */
+    @Override
     public void validateRule(final String rule) throws FilterParseException {
         // Since parseRule does not do complete syntax checking,
         // we need to call a function that will actually execute the generated SQL

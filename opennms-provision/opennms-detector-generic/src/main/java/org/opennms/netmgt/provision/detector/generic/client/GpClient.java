@@ -59,11 +59,13 @@ public class GpClient implements Client<GpRequest, GpResponse> {
     /**
      * <p>close</p>
      */
+    @Override
     public void close() {
         
     }
 
     /** {@inheritDoc} */
+    @Override
     public void connect(final InetAddress address, final int port, final int timeout) throws IOException, Exception {
         setExitStatus(100);
         
@@ -102,6 +104,7 @@ public class GpClient implements Client<GpRequest, GpResponse> {
      * @throws java.io.IOException if any.
      * @throws java.lang.Exception if any.
      */
+    @Override
     public GpResponse receiveBanner() throws IOException, Exception {
         
         return receiveResponse();
@@ -123,6 +126,7 @@ public class GpClient implements Client<GpRequest, GpResponse> {
      * @throws java.io.IOException if any.
      * @throws java.lang.Exception if any.
      */
+    @Override
     public GpResponse sendRequest(final GpRequest request) throws IOException, Exception {
         // TODO Auto-generated method stub
         return null;

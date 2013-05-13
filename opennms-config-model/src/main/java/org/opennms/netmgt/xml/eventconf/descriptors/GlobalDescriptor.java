@@ -232,6 +232,7 @@ public class GlobalDescriptor extends org.exolab.castor.xml.util.XMLClassDescrip
      * of a global
      * element or element with anonymous type definition.
      */
+    @Override
     public boolean isElementDefinition(
     ) {
         return _elementDefinition;

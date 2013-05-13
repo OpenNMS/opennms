@@ -68,6 +68,7 @@ public class AndEndPointValidationExpression extends EndPointValidationExpressio
     }
 
     /** {@inheritDoc} */
+    @Override
     public void validate(EndPoint endPoint) throws EndPointStatusException {
         for(EndPointValidationExpression validator : m_validators) {
             validator.validate(endPoint);
@@ -79,6 +80,7 @@ public class AndEndPointValidationExpression extends EndPointValidationExpressio
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         StringBuffer sb = new StringBuffer();
         sb.append("and(");

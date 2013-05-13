@@ -51,6 +51,7 @@ public class OnmsGatewayGroupRegistrar implements GatewayGroupRegistrar, Disposa
 	private ServiceRegistry m_serviceRegistry;
 	
 	/** {@inheritDoc} */
+        @Override
 	public void registerGatewayGroup(GatewayGroup gatewayGroup) {
 		m_registrations.add( m_serviceRegistry.register(gatewayGroup, GatewayGroup.class));
 	}
@@ -60,6 +61,7 @@ public class OnmsGatewayGroupRegistrar implements GatewayGroupRegistrar, Disposa
 	 *
 	 * @throws java.lang.Exception if any.
 	 */
+        @Override
 	public void destroy() throws Exception {
 		for(Registration registration : m_registrations) {
             registration.unregister();

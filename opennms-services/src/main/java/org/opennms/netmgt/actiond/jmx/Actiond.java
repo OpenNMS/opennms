@@ -42,6 +42,7 @@ public class Actiond implements ActiondMBean {
     /**
      * <p>init</p>
      */
+    @Override
     public void init() {
     	
     	try {
@@ -59,6 +60,7 @@ public class Actiond implements ActiondMBean {
     /**
      * <p>start</p>
      */
+    @Override
     public void start() {
         org.opennms.netmgt.actiond.Actiond actiond = org.opennms.netmgt.actiond.Actiond.getInstance();
         actiond.start();
@@ -67,6 +69,7 @@ public class Actiond implements ActiondMBean {
     /**
      * <p>stop</p>
      */
+    @Override
     public void stop() {
         org.opennms.netmgt.actiond.Actiond actiond = org.opennms.netmgt.actiond.Actiond.getInstance();
         actiond.stop();
@@ -77,6 +80,7 @@ public class Actiond implements ActiondMBean {
      *
      * @return a int.
      */
+    @Override
     public int getStatus() {
         org.opennms.netmgt.actiond.Actiond actiond = org.opennms.netmgt.actiond.Actiond.getInstance();
         return actiond.getStatus();
@@ -87,6 +91,7 @@ public class Actiond implements ActiondMBean {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String status() {
         return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
     }
@@ -96,6 +101,7 @@ public class Actiond implements ActiondMBean {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getStatusText() {
         return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
     }

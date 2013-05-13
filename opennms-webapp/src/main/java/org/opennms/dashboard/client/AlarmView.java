@@ -60,6 +60,7 @@ class AlarmView extends PageableTableView {
     }
     
     /** {@inheritDoc} */
+    @Override
     protected void setRow(FlexTable table, int row, int elementIndex) {
     	Alarm alarm = m_alarms[elementIndex];
     	if (alarm.getIsDashboardRole()) {
@@ -87,11 +88,13 @@ class AlarmView extends PageableTableView {
      *
      * @return a int.
      */
+    @Override
     public int getElementCount() {
         return (m_alarms == null ? 0 : m_alarms.length);
     }
 
 	/** {@inheritDoc} */
+    @Override
 	protected void formatCells(FlexTable table, int row) {
 		super.formatCells(table, row);
 	    table.getCellFormatter().addStyleName(row, 1, "bright");

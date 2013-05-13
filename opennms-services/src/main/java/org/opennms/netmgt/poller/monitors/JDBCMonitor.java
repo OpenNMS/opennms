@@ -95,6 +95,7 @@ public class JDBCMonitor extends AbstractServiceMonitor {
 	 *
 	 * This method is called after the framework loads the plugin.
 	 */
+        @Override
 	public void initialize(Map<String, Object> parameters) {
 		super.initialize(parameters);
 		log().debug("Calling init");
@@ -107,6 +108,7 @@ public class JDBCMonitor extends AbstractServiceMonitor {
 	 * @throws java.lang.RuntimeException
 	 *             Thrown if an error occurs during deallocation.
 	 */
+        @Override
 	public void release() {
 		log().debug("Shuting down plugin");
 	}
@@ -122,6 +124,7 @@ public class JDBCMonitor extends AbstractServiceMonitor {
 	 *             Thrown if the passed interface is invalid for this monitor.
 	 * @param svc a {@link org.opennms.netmgt.poller.MonitoredService} object.
 	 */
+        @Override
 	public void initialize(MonitoredService svc) {
 		super.initialize(svc);
 		log().debug("initialize");
@@ -134,6 +137,7 @@ public class JDBCMonitor extends AbstractServiceMonitor {
 	 * This method is the called whenever an interface is being removed from the
 	 * scheduler. For now this method is just an 'adaptor', does nothing
 	 */
+        @Override
 	public void release(MonitoredService svc) {
 		log().debug("Shuting down plugin");
 	}
@@ -159,6 +163,7 @@ public class JDBCMonitor extends AbstractServiceMonitor {
 	 *      href="http://manuals.sybase.com/onlinebooks/group-jc/jcg0550e/prjdbc/@Generic__BookTextView/9332;pt=1016#X">Error
 	 *      codes for JConnect </a>
 	 */
+        @Override
 	public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
 		NetworkInterface<InetAddress> iface = svc.getNetInterface();
 

@@ -131,6 +131,7 @@ public final class IPAddrRange implements Iterable<InetAddress> {
          * Returns true if the enumeration object has more elements remaining.
          * </P>
          */
+        @Override
         public boolean hasMoreElements() {
             return (m_next.compareTo(m_end) <= 0);
         }
@@ -144,6 +145,7 @@ public final class IPAddrRange implements Iterable<InetAddress> {
          * @exception java.util.NoSuchElementException
          *                Thrown if the collection is exhausted.
          */
+        @Override
         public InetAddress nextElement() {
             if (!hasMoreElements())
                 throw new NoSuchElementException("End of Range");
@@ -158,6 +160,7 @@ public final class IPAddrRange implements Iterable<InetAddress> {
          * Returns true if there are more elements in the iteration.
          * </P>
          */
+        @Override
         public boolean hasNext() {
             return hasMoreElements();
         }
@@ -171,6 +174,7 @@ public final class IPAddrRange implements Iterable<InetAddress> {
          * @exception java.util.NoSuchElementException
          *                Thrown if the collection is exhausted.
          */
+        @Override
         public InetAddress next() {
             return nextElement();
         }
@@ -186,6 +190,7 @@ public final class IPAddrRange implements Iterable<InetAddress> {
          *                Always thrown by the remove method.
          * 
          */
+        @Override
         public void remove() {
             throw new UnsupportedOperationException("The remove operation is not supported by the iterator");
         }
@@ -299,6 +304,7 @@ public final class IPAddrRange implements Iterable<InetAddress> {
      * @see java.net.InetAddress
      * @return a {@link java.util.Iterator} object.
      */
+    @Override
     public Iterator<InetAddress> iterator() {
         return new IPAddressRangeGenerator(m_begin, m_end);
     }

@@ -87,6 +87,7 @@ public class SmtpDetectorTest implements ApplicationContextAware {
     public void testDetectorFailWrongCodeExpectedMultilineRequest() throws Exception {
         SimpleServer tempServer = new SimpleServer() {
             
+            @Override
             public void onInit() {
                 String[] multiLine = {"600 First line"};
                 
@@ -107,6 +108,7 @@ public class SmtpDetectorTest implements ApplicationContextAware {
     public void testDetectorFailIncompleteMultilineResponseFromServer() throws Exception {
         SimpleServer tempServer = new SimpleServer() {
             
+            @Override
             public void onInit() {
                 String[] multiLine = {"250-First line", "400-Bogus second line"};
                 
@@ -127,6 +129,7 @@ public class SmtpDetectorTest implements ApplicationContextAware {
     public void testDetectorFailBogusSecondLine() throws Exception {
         SimpleServer tempServer = new SimpleServer() {
             
+            @Override
             public void onInit() {
                 String[] multiLine = {"250-First line", "400-Bogus second line", "250 Requested mail action completed"};
                 
@@ -178,6 +181,7 @@ public class SmtpDetectorTest implements ApplicationContextAware {
     private SimpleServer getServer() {
         return new SimpleServer() {
              
+            @Override
             public void onInit() {
                 String[] multiLine = {"250-First line", "250-Second line", "250 Requested mail action completed"};
                 
@@ -191,6 +195,7 @@ public class SmtpDetectorTest implements ApplicationContextAware {
     /* (non-Javadoc)
      * @see org.springframework.context.ApplicationContextAware#setApplicationContext(org.springframework.context.ApplicationContext)
      */
+    @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         m_applicationContext = applicationContext;
     }

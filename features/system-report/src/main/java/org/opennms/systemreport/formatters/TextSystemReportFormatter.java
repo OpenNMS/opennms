@@ -47,14 +47,17 @@ public class TextSystemReportFormatter extends AbstractSystemReportFormatter imp
         return "Simple human-readable indented text";
     }
     
+    @Override
     public String getContentType() {
         return "text/plain";
     }
 
+    @Override
     public String getExtension() {
         return "txt";
     }
 
+    @Override
     public boolean canStdout() {
         return true;
     }

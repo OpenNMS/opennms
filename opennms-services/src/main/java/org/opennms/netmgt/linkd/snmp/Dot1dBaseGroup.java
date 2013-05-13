@@ -132,16 +132,19 @@ public final class Dot1dBaseGroup extends AggregateTracker
 	}
 
     /** {@inheritDoc} */
+        @Override
     protected void storeResult(SnmpResult res) {
         m_store.storeResult(res);
     }
 
     /** {@inheritDoc} */
+        @Override
     protected void reportGenErr(final String msg) {
         LogUtils.warnf(this, "Error retrieving systemGroup from %s: %s", m_address, msg);
     }
 
     /** {@inheritDoc} */
+        @Override
     protected void reportNoSuchNameErr(final String msg) {
         LogUtils.infof(this, "Error retrieving systemGroup from %s: %s", m_address, msg);
     }

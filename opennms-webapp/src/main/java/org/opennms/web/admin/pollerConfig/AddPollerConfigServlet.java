@@ -108,6 +108,7 @@ public class AddPollerConfigServlet extends HttpServlet {
      *
      * @throws javax.servlet.ServletException if any.
      */
+    @Override
     public void init() throws ServletException {
         ServletConfig config = this.getServletConfig();
         try {
@@ -229,6 +230,7 @@ public class AddPollerConfigServlet extends HttpServlet {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String user_id = request.getRemoteUser();
 

@@ -77,61 +77,75 @@ public class ReadOnlyRtConfigDao implements RtConfigDao {
 	    return "rt";
 	}
 
+    @Override
 	public String getUsername() {
 		return getProperties().getString(getPrefix() + ".username");
 	}
 
+    @Override
 	public String getPassword() {
 		return getProperties().getString(getPrefix() + ".password");
 	}
 	
+    @Override
 	public String getQueue() {
 		return getProperties().getString(getPrefix() + ".queue", "General");
 	}
 	
 	@SuppressWarnings("unchecked")
+    @Override
 	public List<String> getValidClosedStatus() {
 		return getProperties().getList(getPrefix() + ".validclosedstatus");
 	}
 	
 	@SuppressWarnings("unchecked")
+    @Override
 	public List<Integer> getValidOpenStatus() {
 		return getProperties().getList(getPrefix() + ".validopenstatus");
 	}
 	
 	@SuppressWarnings("unchecked")
+    @Override
 	public List<String> getValidCancelledStatus() {
 		return getProperties().getList(getPrefix() + ".validcancelledstatus");
 	}
 	
+    @Override
 	public String getOpenStatus() {
 		return getProperties().getString(getPrefix() + ".openstatus", "open");
 	}
 	
+    @Override
 	public String getClosedStatus() { 
 		return getProperties().getString(getPrefix() + ".closedstatus", "closed");
 	}
 	
+    @Override
 	public String getCancelledStatus() {
 		return getProperties().getString(getPrefix() + ".cancelledstatus", "cancelled");
 	}
 
+    @Override
 	public String getRequestor() {
         return getProperties().getString(getPrefix() + ".requestor");
     }
 	
+    @Override
 	public String getBaseURL() {
 	    return getProperties().getString(getPrefix() + ".baseURL");
 	}
 	
+    @Override
 	public int getTimeout() {
 	    return getProperties().getInt(getPrefix() + ".timeout", 3000);
 	}
 	
+    @Override
 	public int getRetry() {
 	    return getProperties().getInt(getPrefix() + ".retry", 0);
 	}
 	
+    @Override
 	public void save() throws IOException {
 	    LogUtils.warnf(this, "ReadOnlyRtConfigDao cannot save.");
 	}

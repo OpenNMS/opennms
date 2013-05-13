@@ -71,11 +71,13 @@ public class AbstractFeed implements Feed {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getUrlBase() {
         return m_urlBase;
     }
     
     /** {@inheritDoc} */
+    @Override
     public void setUrlBase(String urlBase) {
         m_urlBase = urlBase;
     }
@@ -85,11 +87,13 @@ public class AbstractFeed implements Feed {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getFeedType() {
         return m_feedType;
     }
     
     /** {@inheritDoc} */
+    @Override
     public void setFeedType(String feedType) {
         m_feedType = feedType;
     }
@@ -99,11 +103,13 @@ public class AbstractFeed implements Feed {
      *
      * @return a int.
      */
+    @Override
     public int getMaxEntries() {
         return m_maxEntries;
     }
     
     /** {@inheritDoc} */
+    @Override
     public void setMaxEntries(int maxEntries) {
         m_maxEntries = maxEntries;
     }
@@ -113,11 +119,13 @@ public class AbstractFeed implements Feed {
      *
      * @return a {@link javax.servlet.ServletRequest} object.
      */
+    @Override
     public ServletRequest getRequest() {
         return m_servletRequest;
     }
     
     /** {@inheritDoc} */
+    @Override
     public void setRequest(ServletRequest request) {
         m_servletRequest = request;
     }
@@ -136,6 +144,7 @@ public class AbstractFeed implements Feed {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String render() {
         SyndFeed feed = this.getFeed();
         feed.setFeedType(this.getFeedType());

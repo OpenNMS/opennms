@@ -88,6 +88,7 @@ public class FilterParseException extends RuntimeException {
      * Prints the stack trace of the exception, and the encapsulated exception
      * if any.
      */
+    @Override
     public void printStackTrace() {
         if (m_delegate != null)
             m_delegate.printStackTrace();
@@ -100,6 +101,7 @@ public class FilterParseException extends RuntimeException {
      * Prints the stack trace of the exception, and the encapsulated exception
      * if any.
      */
+    @Override
     public void printStackTrace(PrintStream ps) {
         if (m_delegate != null)
             m_delegate.printStackTrace(ps);
@@ -113,6 +115,7 @@ public class FilterParseException extends RuntimeException {
      * @param pw
      *            The location to write the exception.
      */
+    @Override
     public void printStackTrace(PrintWriter pw) {
         if (m_delegate != null)
             m_delegate.printStackTrace(pw);

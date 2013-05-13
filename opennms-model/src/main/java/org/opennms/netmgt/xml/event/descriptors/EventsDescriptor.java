@@ -119,6 +119,7 @@ import org.opennms.netmgt.xml.event.Events;
                     throw new IllegalStateException(ex.toString());
                 }
             }
+            @Override
             public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
                 try {
                     Events target = (Events) object;
@@ -241,6 +242,7 @@ import org.opennms.netmgt.xml.event.Events;
      * of a global
      * element or element with anonymous type definition.
      */
+    @Override
     public boolean isElementDefinition(
     ) {
         return _elementDefinition;

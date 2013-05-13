@@ -97,6 +97,7 @@ public class VersionSettingTestSuite extends TestSuite {
             getSetVersionMethod(theClass);
         } catch (final NoSuchMethodException e) {
             addTest(new TestCase("warning") {
+                @Override
                 protected void runTest() {
                     fail("Unable to locate setVersion method in class "+theClass.getName() + ": " + e);
                 }
@@ -110,6 +111,7 @@ public class VersionSettingTestSuite extends TestSuite {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void runTest(Test test, TestResult result) {
         setVersion(test);
         super.runTest(test, result);

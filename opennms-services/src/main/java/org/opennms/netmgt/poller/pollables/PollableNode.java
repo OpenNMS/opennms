@@ -159,6 +159,7 @@ public class PollableNode extends PollableContainer {
     public PollableInterface createInterface(final InetAddress addr) {
         final PollableInterface[] retVal = new PollableInterface[1];
         Runnable r = new Runnable() {
+            @Override
             public void run() {
                 PollableInterface iface =  new PollableInterface(PollableNode.this, addr);
                 addMember(iface);
@@ -193,11 +194,13 @@ public class PollableNode extends PollableContainer {
      *
      * @return a {@link org.opennms.netmgt.poller.pollables.PollContext} object.
      */
+    @Override
     public PollContext getContext() {
         return getNetwork().getContext();
     }
     
     /** {@inheritDoc} */
+    @Override
     protected Object createMemberKey(PollableElement member) {
         PollableInterface iface = (PollableInterface)member;
         return iface.getAddress();
@@ -214,6 +217,7 @@ public class PollableNode extends PollableContainer {
         final PollableService retVal[] = new PollableService[1];
         
         Runnable r = new Runnable() {
+            @Override
             public void run() {
                 PollableInterface iface = getInterface(addr);
                 if (iface == null)
@@ -239,17 +243,20 @@ public class PollableNode extends PollableContainer {
 
 
     /** {@inheritDoc} */
+    @Override
     protected void visitThis(PollableVisitor v) {
         super.visitThis(v);
         v.visitNode(this);
     }
     
     /** {@inheritDoc} */
+    @Override
     public Event createDownEvent(Date date) {
         return getContext().createEvent(EventConstants.NODE_DOWN_EVENT_UEI, getNodeId(), null, null, date, getStatus().getReason());
     }
     
     /** {@inheritDoc} */
+    @Override
     public Event createUpEvent(Date date) {
         return getContext().createEvent(EventConstants.NODE_UP_EVENT_UEI, getNodeId(), null, null, date, getStatus().getReason());
     }
@@ -259,6 +266,7 @@ public class PollableNode extends PollableContainer {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() { return String.valueOf(getNodeId()); }
 
     /**
@@ -266,6 +274,7 @@ public class PollableNode extends PollableContainer {
      *
      * @return a {@link org.opennms.netmgt.poller.pollables.PollableElement} object.
      */
+    @Override
     public PollableElement getLockRoot() {
         return this;
     }
@@ -275,11 +284,13 @@ public class PollableNode extends PollableContainer {
      *
      * @return a boolean.
      */
+    @Override
     public boolean isTreeLockAvailable() {
         return m_lock.isLockAvailable();
     }
     
     /** {@inheritDoc} */
+    @Override
     public void obtainTreeLock(long timeout) {
         if (timeout == 0)
             m_lock.obtain();
@@ -290,14 +301,17 @@ public class PollableNode extends PollableContainer {
     /**
      * <p>releaseTreeLock</p>
      */
+    @Override
     public void releaseTreeLock() {
         m_lock.release();
     }
     
     /** {@inheritDoc} */
+    @Override
     public PollStatus doPoll(final PollableElement elem) {
         final PollStatus retVal[] = new PollStatus[1];
         Runnable r = new Runnable() {
+            @Override
             public void run() {
                 resetStatusChanged();
                 retVal[0] =  poll(elem);

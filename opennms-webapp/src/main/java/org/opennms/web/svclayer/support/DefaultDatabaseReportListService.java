@@ -58,6 +58,7 @@ public class DefaultDatabaseReportListService implements
      * @return a {@link java.util.List} object.
      */
     @Deprecated
+    @Override
     public List<DatabaseReportDescription> getAll() {
 
         List<DatabaseReportDescription> allReports = new ArrayList<DatabaseReportDescription>();
@@ -138,6 +139,7 @@ public class DefaultDatabaseReportListService implements
      * @return a {@link java.util.List} object.
      */
     @Deprecated
+    @Override
     public List<DatabaseReportDescription> getAllOnline() {
 
         List<DatabaseReportDescription> onlineReports = new ArrayList<DatabaseReportDescription>();

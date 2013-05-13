@@ -65,6 +65,7 @@ final class Receiver implements Runnable, Fiber {
     /**
      * <p>start</p>
      */
+    @Override
     public synchronized void start() {
         if (m_worker != null)
             throw new IllegalStateException("The fiber has already been started");
@@ -78,6 +79,7 @@ final class Receiver implements Runnable, Fiber {
     /**
      * <p>stop</p>
      */
+    @Override
     public synchronized void stop() {
         m_status = STOP_PENDING;
         m_receiver.close();
@@ -89,6 +91,7 @@ final class Receiver implements Runnable, Fiber {
      *
      * @return a int.
      */
+    @Override
     public synchronized int getStatus() {
         return m_status;
     }
@@ -98,6 +101,7 @@ final class Receiver implements Runnable, Fiber {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getName() {
         return m_name;
     }
@@ -105,6 +109,7 @@ final class Receiver implements Runnable, Fiber {
     /**
      * <p>run</p>
      */
+    @Override
     public void run() {
         ThreadCategory log = ThreadCategory.getInstance(getClass());
 

@@ -163,6 +163,7 @@ import org.opennms.netmgt.config.nsclient.NsclientDatacollectionConfig;
                     throw new IllegalStateException(ex.toString());
                 }
             }
+            @Override
             public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
                 try {
                     NsclientDatacollectionConfig target = (NsclientDatacollectionConfig) object;
@@ -285,6 +286,7 @@ import org.opennms.netmgt.config.nsclient.NsclientDatacollectionConfig;
      * of a global
      * element or element with anonymous type definition.
      */
+    @Override
     public boolean isElementDefinition(
     ) {
         return _elementDefinition;

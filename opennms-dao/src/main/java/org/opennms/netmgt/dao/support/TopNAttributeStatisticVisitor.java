@@ -49,6 +49,7 @@ public class TopNAttributeStatisticVisitor extends BottomNAttributeStatisticVisi
         /**
          * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
          */
+        @Override
         public int compare(Double o1, Double o2) {
             return o2.compareTo(o1);
         }

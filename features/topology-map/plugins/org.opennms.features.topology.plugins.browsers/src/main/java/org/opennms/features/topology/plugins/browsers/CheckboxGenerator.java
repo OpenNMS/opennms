@@ -30,17 +30,20 @@ package org.opennms.features.topology.plugins.browsers;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
 
 import com.vaadin.data.Property;
+import com.vaadin.data.Container.ItemSetChangeEvent;
+import com.vaadin.data.Container.ItemSetChangeListener;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Table.ColumnGenerator;
 
-public class CheckboxGenerator implements ColumnGenerator {
+public class CheckboxGenerator implements ColumnGenerator, ItemSetChangeListener {
 
 	private static final long serialVersionUID = -1072007643387089006L;
 
@@ -61,6 +64,7 @@ public class CheckboxGenerator implements ColumnGenerator {
 		} else {
 			CheckBox button = new CheckBox();
 			button.setData(property.getValue());
+			button.setValue(m_selectedCheckboxes.contains(property.getValue()));
 			button.addListener(new ClickListener() {
 
 				private static final long serialVersionUID = 2991986878904005830L;
@@ -97,6 +101,20 @@ public class CheckboxGenerator implements ColumnGenerator {
 		for (CheckBox button : m_checkboxes) {
 			button.setValue(true);
 			m_selectedCheckboxes.add((Integer)button.getData());
+		}
+	}
+
+	@Override
+	public void containerItemSetChange(ItemSetChangeEvent event) {
+		// Delete all of the checkboxes, they will be regenerated during Table.containerItemSetChange()
+		m_checkboxes.clear();
+
+		// Remove any selected item IDs that are no longer present in the container
+		Iterator<Integer> itr = m_selectedCheckboxes.iterator();
+		while(itr.hasNext()) {
+			if (!event.getContainer().getItemIds().contains(itr.next())) {
+				itr.remove();
+			}
 		}
 	}
 }

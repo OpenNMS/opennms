@@ -214,6 +214,7 @@ public class SnmpVarBind extends Object implements SnmpSyntax, Cloneable, Serial
      * @return The ASN.1 type identifier.
      * 
      */
+    @Override
     public byte typeId() {
         return ASNTYPE;
     }
@@ -239,6 +240,7 @@ public class SnmpVarBind extends Object implements SnmpSyntax, Cloneable, Serial
      *         byte by this routine.
      * 
      */
+    @Override
     public int encodeASN(byte[] buf, int offset, AsnEncoder encoder) throws AsnEncodingException {
         int begin = offset;
 
@@ -279,6 +281,7 @@ public class SnmpVarBind extends Object implements SnmpSyntax, Cloneable, Serial
      *                data. This exception will be thrown byte encoder object.
      * 
      */
+    @Override
     public int decodeASN(byte[] buf, int offset, AsnEncoder encoder) throws AsnDecodingException {
         Object[] rVals = encoder.parseHeader(buf, offset);
 
@@ -320,6 +323,7 @@ public class SnmpVarBind extends Object implements SnmpSyntax, Cloneable, Serial
      * 
      * @return A newly created variable
      */
+    @Override
     public SnmpVarBind duplicate() {
         return new SnmpVarBind(this);
     }
@@ -329,6 +333,7 @@ public class SnmpVarBind extends Object implements SnmpSyntax, Cloneable, Serial
      * 
      * @return A newly created variable
      */
+    @Override
     public Object clone() {
         return new SnmpVarBind(this);
     }
@@ -336,6 +341,7 @@ public class SnmpVarBind extends Object implements SnmpSyntax, Cloneable, Serial
     /**
      * Converts the object to a string representation
      */
+    @Override
     public String toString() {
         return m_name.toString() + " = " + m_value.toString();
     }

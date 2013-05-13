@@ -151,6 +151,7 @@ final public class SshMonitor extends AbstractServiceMonitor {
      * Poll the specified address for service availability.
      * @see #poll(InetAddress, Map)
      */
+    @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         NetworkInterface<InetAddress> iface = svc.getNetInterface();
         if (iface.getType() != NetworkInterface.TYPE_INET)

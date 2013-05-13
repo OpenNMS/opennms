@@ -77,10 +77,12 @@ abstract public class RWSConfigManager implements RWSConfig {
         reloadXML(stream);
     }
 
+    @Override
     public Lock getReadLock() {
         return m_readLock;
     }
     
+    @Override
     public Lock getWriteLock() {
         return m_writeLock;
     }
@@ -90,6 +92,7 @@ abstract public class RWSConfigManager implements RWSConfig {
      *
      * @return a {@link org.opennms.rancid.ConnectionProperties} object.
      */
+    @Override
     public ConnectionProperties getBase() {
         getReadLock().lock();
         try {
@@ -112,6 +115,7 @@ abstract public class RWSConfigManager implements RWSConfig {
      *
      * @return a {@link org.opennms.rancid.ConnectionProperties} object.
      */
+    @Override
     public ConnectionProperties getNextStandBy() {
         if (! hasStandbyUrl()) return null; 
 
@@ -138,6 +142,7 @@ abstract public class RWSConfigManager implements RWSConfig {
      *
      * @return an array of {@link org.opennms.rancid.ConnectionProperties} objects.
      */
+    @Override
     public ConnectionProperties[] getStandBy() {
         return null;
     }
@@ -148,6 +153,7 @@ abstract public class RWSConfigManager implements RWSConfig {
      *
      * @return a {@link org.opennms.netmgt.config.rws.BaseUrl} object.
      */
+    @Override
     public BaseUrl getBaseUrl() {
         getReadLock().lock();
         try {
@@ -162,6 +168,7 @@ abstract public class RWSConfigManager implements RWSConfig {
      *
      * @return an array of {@link org.opennms.netmgt.config.rws.StandbyUrl} objects.
      */
+    @Override
     public StandbyUrl[] getStanbyUrls() {
         getReadLock().lock();
         try {
@@ -176,6 +183,7 @@ abstract public class RWSConfigManager implements RWSConfig {
      *
      * @return a {@link org.opennms.netmgt.config.rws.StandbyUrl} object.
      */
+    @Override
     public StandbyUrl getNextStandbyUrl() {
         getReadLock().lock();
         try {
@@ -197,6 +205,7 @@ abstract public class RWSConfigManager implements RWSConfig {
      *
      * @return a boolean.
      */
+    @Override
     public boolean hasStandbyUrl() {
         getReadLock().lock();
         try {

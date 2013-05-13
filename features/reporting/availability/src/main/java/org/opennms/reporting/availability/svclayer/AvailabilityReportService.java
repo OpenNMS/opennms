@@ -89,6 +89,7 @@ public class AvailabilityReportService implements ReportService {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean validate(HashMap<String, Object> reportParms,
             String reportID) {
 
@@ -118,6 +119,7 @@ public class AvailabilityReportService implements ReportService {
 
 
     /** {@inheritDoc} */
+    @Override
     public void render(String id, String location, ReportFormat format,
             OutputStream outputStream) {
         
@@ -182,6 +184,7 @@ public class AvailabilityReportService implements ReportService {
     }
 
     /** {@inheritDoc} */
+    @Override
     public List<ReportFormat> getFormats(String id) {
 
         List<ReportFormat> formats = new ArrayList<ReportFormat>();
@@ -199,6 +202,7 @@ public class AvailabilityReportService implements ReportService {
     // this new version needs the report wrapper to persist the entry
     
     /** {@inheritDoc} */
+    @Override
     public String run(HashMap<String, Object> reportParms,
             String reportId) {
         
@@ -246,6 +250,7 @@ public class AvailabilityReportService implements ReportService {
     }
     
     /** {@inheritDoc} */
+    @Override
     public void runAndRender(HashMap<String, Object> reportParms,
             String reportId, ReportFormat format, OutputStream outputStream) {
         
@@ -302,6 +307,7 @@ public class AvailabilityReportService implements ReportService {
 
     
     /** {@inheritDoc} */
+    @Override
     public ReportParameters getParameters(String ReportId) {
         return m_parameterConversionService.convert(m_configDao.getParameters(ReportId));
     }

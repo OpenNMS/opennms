@@ -116,6 +116,7 @@ class JoeSnmpValue extends AbstractSnmpValue {
         }    
     }
     
+    @Override
     public byte[] getBytes() {
         switch (m_value.typeId()) {
         case SnmpSMI.SMI_COUNTER64:
@@ -141,10 +142,12 @@ class JoeSnmpValue extends AbstractSnmpValue {
         }
     }        
 
+    @Override
     public boolean isEndOfMib() {
         return m_value instanceof SnmpEndOfMibView;
     }
     
+    @Override
     public boolean isError() {
         switch (getType()) {
         case SnmpValue.SNMP_NO_SUCH_INSTANCE:
@@ -156,6 +159,7 @@ class JoeSnmpValue extends AbstractSnmpValue {
         
     }
 
+    @Override
     public boolean isNumeric() {
         switch (m_value.typeId()) {
         case SnmpSMI.SMI_INTEGER:
@@ -169,6 +173,7 @@ class JoeSnmpValue extends AbstractSnmpValue {
         }
     }
     
+    @Override
     public int toInt() {
         switch (m_value.typeId()) {
         case SnmpSMI.SMI_COUNTER64:
@@ -184,6 +189,7 @@ class JoeSnmpValue extends AbstractSnmpValue {
         }
     }
     
+    @Override
     public long toLong() {
         switch (m_value.typeId()) {
         case SnmpSMI.SMI_COUNTER64:
@@ -208,10 +214,12 @@ class JoeSnmpValue extends AbstractSnmpValue {
 
 
     
+    @Override
     public int getType() {
         return m_value.typeId();
     }
 
+    @Override
     public String toDisplayString() {
         
         switch (m_value.typeId()) {
@@ -224,6 +232,7 @@ class JoeSnmpValue extends AbstractSnmpValue {
         }
     }
 
+    @Override
     public InetAddress toInetAddress() {
         switch (m_value.typeId()) {
             case SnmpSMI.SMI_IPADDRESS:
@@ -233,6 +242,7 @@ class JoeSnmpValue extends AbstractSnmpValue {
         }
     }
 
+    @Override
     public String toHexString() {
         switch (m_value.typeId()) {
         case SnmpSMI.SMI_STRING:
@@ -242,10 +252,12 @@ class JoeSnmpValue extends AbstractSnmpValue {
         }
     }
     
+    @Override
     public String toString() {
         return toDisplayString();
     }
 
+    @Override
     public BigInteger toBigInteger() {
         switch (m_value.typeId()) {
         case SnmpSMI.SMI_COUNTER64:
@@ -261,6 +273,7 @@ class JoeSnmpValue extends AbstractSnmpValue {
         }
     }
 
+    @Override
     public SnmpObjId toSnmpObjId() {
         switch (m_value.typeId()) {
         case SnmpSMI.SMI_OBJECTID:
@@ -270,6 +283,7 @@ class JoeSnmpValue extends AbstractSnmpValue {
         }
     }
 
+    @Override
     public boolean isDisplayable() {
         if (isNumeric())
             return true;
@@ -284,6 +298,7 @@ class JoeSnmpValue extends AbstractSnmpValue {
         return false;
     }
 
+    @Override
     public boolean isNull() {
         return getType() == SnmpValue.SNMP_NULL;
     }

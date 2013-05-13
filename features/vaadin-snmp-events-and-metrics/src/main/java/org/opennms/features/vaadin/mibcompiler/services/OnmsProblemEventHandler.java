@@ -86,6 +86,7 @@ public class OnmsProblemEventHandler implements ProblemEventHandler {
     /* (non-Javadoc)
      * @see org.jsmiparser.util.problem.ProblemEventHandler#handle(org.jsmiparser.util.problem.ProblemEvent)
      */
+    @Override
     public void handle(ProblemEvent event) {
         m_severityCounters[event.getSeverity().ordinal()]++;
         m_totalCounter++;
@@ -95,6 +96,7 @@ public class OnmsProblemEventHandler implements ProblemEventHandler {
     /* (non-Javadoc)
      * @see org.jsmiparser.util.problem.ProblemEventHandler#isOk()
      */
+    @Override
     public boolean isOk() {
         for (int i = 0; i < m_severityCounters.length; i++) {
             if (i >= ProblemSeverity.ERROR.ordinal()) {
@@ -110,6 +112,7 @@ public class OnmsProblemEventHandler implements ProblemEventHandler {
     /* (non-Javadoc)
      * @see org.jsmiparser.util.problem.ProblemEventHandler#isNotOk()
      */
+    @Override
     public boolean isNotOk() {
         return !isOk();
     }
@@ -117,6 +120,7 @@ public class OnmsProblemEventHandler implements ProblemEventHandler {
     /* (non-Javadoc)
      * @see org.jsmiparser.util.problem.ProblemEventHandler#getSeverityCount(org.jsmiparser.util.problem.annotations.ProblemSeverity)
      */
+    @Override
     public int getSeverityCount(ProblemSeverity severity) {
         return m_severityCounters[severity.ordinal()];
     }
@@ -124,6 +128,7 @@ public class OnmsProblemEventHandler implements ProblemEventHandler {
     /* (non-Javadoc)
      * @see org.jsmiparser.util.problem.ProblemEventHandler#getTotalCount()
      */
+    @Override
     public int getTotalCount() {
         return m_totalCounter;
     }

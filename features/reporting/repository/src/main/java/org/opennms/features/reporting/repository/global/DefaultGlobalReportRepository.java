@@ -40,7 +40,6 @@ import org.springframework.util.Assert;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 
 /**
  * <p>DefaultGlobalReportRepository class.</p>

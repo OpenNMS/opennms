@@ -125,6 +125,7 @@ public class Capsd extends AbstractServiceDaemon {
     /**
      * <p>onStop</p>
      */
+    @Override
     protected void onStop() {
         // System.err.println("Capsd onStop() dumping stack");
         // Thread.dumpStack();
@@ -144,6 +145,7 @@ public class Capsd extends AbstractServiceDaemon {
 	/**
 	 * <p>onInit</p>
 	 */
+    @Override
 	protected void onInit() {
         BeanUtils.assertAutowiring(this);
 
@@ -186,6 +188,7 @@ public class Capsd extends AbstractServiceDaemon {
     /**
      * <p>onStart</p>
      */
+    @Override
     protected void onStart() {
         // System.err.println("Capsd onStart() dumping stack");
         // Thread.dumpStack();
@@ -206,6 +209,7 @@ public class Capsd extends AbstractServiceDaemon {
     /**
      * <p>onPause</p>
      */
+    @Override
     protected void onPause() {
         // XXX Pause all threads?
     }
@@ -213,6 +217,7 @@ public class Capsd extends AbstractServiceDaemon {
     /**
      * <p>onResume</p>
      */
+    @Override
     protected void onResume() {
         // XXX Resume all threads?
 	}

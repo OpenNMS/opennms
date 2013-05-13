@@ -125,6 +125,7 @@ public class StreamGobbler extends Thread {
      * @return Nothing ever really returned since we throw a
      *         CloneNotSupportedException
      */
+    @Override
     public final Object clone() throws CloneNotSupportedException {
         throw new CloneNotSupportedException();
     }
@@ -155,6 +156,7 @@ public class StreamGobbler extends Thread {
      * Gobbles up all the stuff coming from the InputStream and sends it to the
      * OutputStream specified during object construction.
      */
+    @Override
     public void run() {
 
         InputStreamReader isr = null;

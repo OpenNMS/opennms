@@ -33,62 +33,49 @@ import java.util.Map;
 import java.util.Set;
 
 public class VmwarePerformanceValues {
-    private Map<String, Object> values = new HashMap<String, Object>();
+    private Map<String, Map<String, Long>> multiValues = new HashMap<String, Map<String, Long>>();
+    private Map<String, Long> singleValues = new HashMap<String, Long>();
 
     public VmwarePerformanceValues() {
     }
 
     public void addValue(String name, String instance, long value) {
-        Object object = values.get(name);
-
-        if (object == null && instance != null && !"".equals(instance)) {
-            object = new HashMap<String, Long>();
+        if (!multiValues.containsKey(name)) {
+            multiValues.put(name, new HashMap<String, Long>());
         }
 
-        if (object instanceof HashMap<?,?>) {
-            ((HashMap<String, Long>) object).put(instance, Long.valueOf(value));
-        } else {
-            object = new Long(value);
-        }
+        Map<String, Long> map = multiValues.get(name);
 
-        values.put(name, object);
+        map.put(instance, Long.valueOf(value));
     }
 
     public void addValue(String name, long value) {
-        values.put(name, Long.valueOf(value));
+        singleValues.put(name, Long.valueOf(value));
     }
 
     public boolean hasInstances(String name) {
-        Object object = values.get(name);
+        return (multiValues.containsKey(name));
+    }
 
-        return (object instanceof HashMap<?,?>);
+    public boolean hasSingleValue(String name) {
+        return (singleValues.containsKey(name));
     }
 
     public Set<String> getInstances(String name) {
-        Object object = values.get(name);
-
-        if (object instanceof HashMap<?,?>) {
-            return ((HashMap<String,?>) object).keySet();
+        if (multiValues.containsKey(name)) {
+            return multiValues.get(name).keySet();
         } else {
             return null;
         }
     }
 
     public Long getValue(String name) {
-        Object object = values.get(name);
-
-        if (object instanceof Long) {
-            return (Long) object;
-        } else {
-            return null;
-        }
+        return singleValues.get(name);
     }
 
     public Long getValue(String name, String instance) {
-        Object object = values.get(name);
-
-        if (object instanceof HashMap<?,?>) {
-            return ((HashMap<String,Long>) object).get(instance);
+        if (multiValues.containsKey(name)) {
+            return multiValues.get(name).get(instance);
         } else {
             return null;
         }

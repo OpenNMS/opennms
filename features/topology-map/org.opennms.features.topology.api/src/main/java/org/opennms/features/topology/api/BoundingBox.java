@@ -99,6 +99,7 @@ public class BoundingBox{
         return getHeight() == 0 ? 0 : (double)getWidth()/(double)getHeight();
     }
     
+    @Override
     public String toString() {
         return "x: " + getX() + " y: " + getY() + " width: " + getWidth() + " height: " + getHeight();
     }

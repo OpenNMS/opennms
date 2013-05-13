@@ -140,6 +140,7 @@ public class ConnectionFactoryNewConnectorImpl extends ConnectionFactory {
     private static IoFutureListener<ConnectFuture> connectorDisposer(final SocketConnector connector) {
         return new IoFutureListener<ConnectFuture>() {
 
+            @Override
             public void operationComplete(ConnectFuture future) {
                 try {
                     // Add a listener to the CloseFuture that will dispose of the connector once the
@@ -163,6 +164,7 @@ public class ConnectionFactoryNewConnectorImpl extends ConnectionFactory {
     private IoFutureListener<ConnectFuture> portSwitcher(final SocketConnector connector, final SocketAddress remoteAddress, final IoSessionInitializer<? extends ConnectFuture> init, final IoHandler handler) {
         return new IoFutureListener<ConnectFuture>() {
 
+            @Override
             public void operationComplete(ConnectFuture future) {
                 try {
                     Throwable e = future.getException();

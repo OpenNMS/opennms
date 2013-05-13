@@ -157,6 +157,7 @@ final class TcpStreamHandler implements Runnable {
      * document is processed and an event receipt is returned to the client the
      * thread will exit.
      */
+    @Override
     public void run() {
         // get the context and stop if necessary
         m_context = Thread.currentThread();
@@ -286,6 +287,7 @@ final class TcpStreamHandler implements Runnable {
 
             // sort the events by time
             Arrays.sort(events, new Comparator<Event>() {
+                @Override
                 public int compare(final Event e1, final Event e2) {
                     final boolean e1t = (e1.getTime() != null);
                     final boolean e2t = (e2.getTime() != null);

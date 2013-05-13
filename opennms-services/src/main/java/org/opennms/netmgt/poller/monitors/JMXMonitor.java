@@ -72,6 +72,7 @@ public abstract class JMXMonitor extends AbstractServiceMonitor {
      * @see org.opennms.netmgt.poller.monitors.ServiceMonitor#poll(org.opennms.netmgt.poller.monitors.NetworkInterface, java.util.Map, org.opennms.netmgt.config.poller.Package)
      */
     /** {@inheritDoc} */
+    @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> map) {
 
         NetworkInterface<InetAddress> iface = svc.getNetInterface();

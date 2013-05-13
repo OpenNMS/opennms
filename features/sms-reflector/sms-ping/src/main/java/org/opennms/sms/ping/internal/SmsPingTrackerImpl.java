@@ -59,6 +59,7 @@ public class SmsPingTrackerImpl extends RequestTracker<PingRequest, PingReply> i
     }
 
     /** {@inheritDoc} */
+    @Override
     public void sendRequest(String phoneNumber, long timeout, int retries, PingResponseCallback cb) throws Exception {
         sendRequest(new PingRequest(new PingRequestId(phoneNumber), timeout, retries, cb));
     }

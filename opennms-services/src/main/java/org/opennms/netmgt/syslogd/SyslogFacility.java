@@ -82,6 +82,7 @@ public enum SyslogFacility {
         return ((m_facility & MASK) | severity.getSeverityNumber());
     }
 
+    @Override
     public String toString() {
         return m_name;
     }

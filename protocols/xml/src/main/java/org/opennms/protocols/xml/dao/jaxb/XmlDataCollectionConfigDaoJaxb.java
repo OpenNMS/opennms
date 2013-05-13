@@ -57,6 +57,7 @@ public class XmlDataCollectionConfigDaoJaxb extends AbstractJaxbConfigDao<XmlDat
     /* (non-Javadoc)
      * @see org.opennms.protocols.xml.dao.XmlDataCollectionConfigDao#getDataCollectionByName(java.lang.String)
      */
+    @Override
     public XmlDataCollection getDataCollectionByName(String name) {
         XmlDataCollectionConfig config = getContainer().getObject();
         for (XmlDataCollection dataCol : config.getXmlDataCollections()) {
@@ -70,6 +71,7 @@ public class XmlDataCollectionConfigDaoJaxb extends AbstractJaxbConfigDao<XmlDat
     /* (non-Javadoc)
      * @see org.opennms.protocols.xml.dao.XmlDataCollectionConfigDao#getDataCollectionByIndex(int)
      */
+    @Override
     public XmlDataCollection getDataCollectionByIndex(int idx) {
         XmlDataCollectionConfig config = getContainer().getObject();
         return config.getXmlDataCollections().get(idx);
@@ -78,6 +80,7 @@ public class XmlDataCollectionConfigDaoJaxb extends AbstractJaxbConfigDao<XmlDat
     /* (non-Javadoc)
      * @see org.opennms.protocols.xml.dao.XmlDataCollectionConfigDao#getConfig()
      */
+    @Override
     public XmlDataCollectionConfig getConfig() {
         return getContainer().getObject();
     }

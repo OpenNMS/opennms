@@ -64,6 +64,7 @@ public class NodeRescanServlet extends HttpServlet {
      *
      * @throws javax.servlet.ServletException if any.
      */
+    @Override
     public void init() throws ServletException {
         try {
             this.proxy = Util.createEventProxy();
@@ -73,6 +74,7 @@ public class NodeRescanServlet extends HttpServlet {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // required parameters
         String nodeIdString = request.getParameter("node");

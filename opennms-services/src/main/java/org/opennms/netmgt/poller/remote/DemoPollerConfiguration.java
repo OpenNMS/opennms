@@ -82,6 +82,7 @@ public class DemoPollerConfiguration implements PollerConfiguration {
      *
      * @return a {@link java.util.Date} object.
      */
+    @Override
     public Date getConfigurationTimestamp() {
         return m_timestamp;
     }
@@ -91,6 +92,7 @@ public class DemoPollerConfiguration implements PollerConfiguration {
      *
      * @return an array of {@link org.opennms.netmgt.poller.remote.PolledService} objects.
      */
+    @Override
     public PolledService[] getPolledServices() {
         return m_polledServices;
     }
@@ -128,6 +130,7 @@ public class DemoPollerConfiguration implements PollerConfiguration {
     /**
      * @return the serverTime
      */
+    @Override
     public long getServerTime() {
         return m_serverTime;
     }

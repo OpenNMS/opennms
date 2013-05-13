@@ -72,6 +72,7 @@ public class ScheduledOutagesDaoImpl implements ScheduledOutagesDao {
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public OnmsOutageCalendar get(String outageName) {
 		return new OnmsOutageCalendar();
 	}

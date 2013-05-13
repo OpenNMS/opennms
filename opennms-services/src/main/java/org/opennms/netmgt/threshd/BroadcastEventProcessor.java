@@ -146,6 +146,7 @@ final class BroadcastEventProcessor implements EventListener {
      *
      * @throws java.lang.Throwable if any.
      */
+    @Override
     protected void finalize() throws Throwable {
         close(); // ensure it's closed
     }
@@ -155,6 +156,7 @@ final class BroadcastEventProcessor implements EventListener {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getName() {
         return "Threshd:BroadcastEventProcessor";
     }
@@ -167,6 +169,7 @@ final class BroadcastEventProcessor implements EventListener {
      * processed by this callback. Each message is examined for its Universal
      * Event Identifier and the appropriate action is taking based on each UEI.
      */
+    @Override
     public void onEvent(Event event) {
         ThreadCategory log = ThreadCategory.getInstance(getClass());
 

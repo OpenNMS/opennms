@@ -97,6 +97,7 @@ public class User implements Cloneable {
      *
      * @return a {@link java.lang.Object} object.
      */
+    @Override
     public Object clone() {
         try {
             super.clone();
@@ -314,6 +315,7 @@ public class User implements Cloneable {
      *
      * @return a string representation
      */
+    @Override
     public String toString() {
         StringBuffer buffer = new StringBuffer();
 

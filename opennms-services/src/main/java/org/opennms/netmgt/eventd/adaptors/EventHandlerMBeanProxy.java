@@ -112,6 +112,7 @@ public class EventHandlerMBeanProxy implements EventHandler {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean processEvent(final Event event) {
         boolean result = false;
         try {
@@ -124,6 +125,7 @@ public class EventHandlerMBeanProxy implements EventHandler {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void receiptSent(final EventReceipt receipt) {
         try {
             m_mbserver.invoke(m_listener, "receiptSent", new Object[] { receipt }, new String[] { "org.opennms.netmgt.xml.event.EventReceipt" });

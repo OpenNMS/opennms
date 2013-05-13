@@ -73,10 +73,12 @@ public class JdbcTrapdIpMgr implements TrapdIpMgr, InitializingBean {
     /**
      * <p>dataSourceSync</p>
      */
+    @Override
     public synchronized void dataSourceSync() {
         m_knownips.clear();
 
         new JdbcTemplate(m_dataSource).query(IP_LOAD_SQL, new RowCallbackHandler() {
+            @Override
             public void processRow(ResultSet rs) throws SQLException {
                 m_knownips.put(rs.getString(1), rs.getLong(2));
             }
@@ -87,6 +89,7 @@ public class JdbcTrapdIpMgr implements TrapdIpMgr, InitializingBean {
      * @see org.opennms.netmgt.trapd.TrapdIpMgr#getNodeId(java.lang.String)
      */
     /** {@inheritDoc} */
+    @Override
     public synchronized long getNodeId(String addr) {
         if (addr == null) {
             return -1;
@@ -98,6 +101,7 @@ public class JdbcTrapdIpMgr implements TrapdIpMgr, InitializingBean {
      * @see org.opennms.netmgt.trapd.TrapdIpMgr#setNodeId(java.lang.String, long)
      */
     /** {@inheritDoc} */
+    @Override
     public synchronized long setNodeId(String addr, long nodeid) {
         if (addr == null || nodeid == -1) {
             return -1;
@@ -110,6 +114,7 @@ public class JdbcTrapdIpMgr implements TrapdIpMgr, InitializingBean {
      * @see org.opennms.netmgt.trapd.TrapdIpMgr#removeNodeId(java.lang.String)
      */
     /** {@inheritDoc} */
+    @Override
     public synchronized long removeNodeId(String addr) {
         if (addr == null) {
             return -1;
@@ -123,6 +128,7 @@ public class JdbcTrapdIpMgr implements TrapdIpMgr, InitializingBean {
     /**
      * <p>clearKnownIpsMap</p>
      */
+    @Override
     public synchronized void clearKnownIpsMap() {
         m_knownips.clear();
     }

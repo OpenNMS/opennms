@@ -63,6 +63,7 @@ public class SecurityAuthenticationEventOnmsEventBuilder implements ApplicationL
     private EventProxy m_eventProxy;
     
     /** {@inheritDoc} */
+    @Override
     public void onApplicationEvent(ApplicationEvent event) {
         log().debug("Received ApplicationEvent " + event.getClass().toString());
         if (event instanceof AuthenticationSuccessEvent) {

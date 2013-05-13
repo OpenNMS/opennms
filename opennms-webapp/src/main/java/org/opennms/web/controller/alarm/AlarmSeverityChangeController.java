@@ -102,6 +102,7 @@ public class AlarmSeverityChangeController extends AbstractController implements
      * Adjust the severity of the alarms specified in the POST and then redirect the client
      * to an appropriate URL for display.
      */
+    @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         // required parameter
         String[] alarmIdStrings = request.getParameterValues("alarm");

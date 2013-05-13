@@ -48,6 +48,7 @@ public class OnmsNamespaceHandler extends NamespaceHandlerSupport {
     /**
      * <p>init</p>
      */
+    @Override
     public void init() {
         registerBeanDefinitionParser("service", new OnmsServiceBeanDefinitionParser());
         registerBeanDefinitionDecorator("annotated-subscription", new AnnotatedSubscriptionBeanDefinitionDecorator());
@@ -66,6 +67,7 @@ public class OnmsNamespaceHandler extends NamespaceHandlerSupport {
 
     public class AnnotatedSubscriptionBeanDefinitionDecorator implements BeanDefinitionDecorator {
 
+        @Override
         public BeanDefinitionHolder decorate(Node node, BeanDefinitionHolder definition, ParserContext parserContext) {
             throw new UnsupportedOperationException("AnnotatedSubscriptionBeanDefinitionDecorator.decorate is not yet implemented");
         }

@@ -122,6 +122,7 @@ public class ExecRunner {
      * @return Nothing ever really returned since we throw a
      *         CloneNotSupportedException
      */
+    @Override
     public final Object clone() throws CloneNotSupportedException {
 
         throw new java.lang.CloneNotSupportedException();

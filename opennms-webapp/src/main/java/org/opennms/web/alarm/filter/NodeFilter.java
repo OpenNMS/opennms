@@ -61,6 +61,7 @@ public class NodeFilter extends EqualsFilter<Integer> {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getTextDescription() {
         String nodeName = NetworkElementFactory.getInstance(m_servletContext).getNodeLabel(getValue());
         
@@ -76,6 +77,7 @@ public class NodeFilter extends EqualsFilter<Integer> {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return ("<AlarmFactory.NodeFilter: " + this.getDescription() + ">");
     }
@@ -90,6 +92,7 @@ public class NodeFilter extends EqualsFilter<Integer> {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean equals(Object obj) {
         return (this.toString().equals(obj.toString()));
     }

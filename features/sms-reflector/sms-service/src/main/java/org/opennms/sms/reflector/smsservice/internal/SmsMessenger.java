@@ -90,6 +90,7 @@ public class SmsMessenger implements Messenger<MobileMsgRequest, MobileMsgRespon
      * @param request a {@link org.opennms.sms.reflector.smsservice.MobileMsgRequest} object.
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void sendRequest(MobileMsgRequest request) throws Exception {
     	request.setSendTimestamp(System.currentTimeMillis());
     	
@@ -115,12 +116,14 @@ public class SmsMessenger implements Messenger<MobileMsgRequest, MobileMsgRespon
     }
 
     /** {@inheritDoc} */
+    @Override
     public void start(Queue<MobileMsgResponse> replyQueue) {
         debugf("SmsMessenger.start");
         m_replyQueue = replyQueue;
     }
 
     /** {@inheritDoc} */
+    @Override
     public void process(AGateway gateway, MessageTypes msgType, InboundMessage msg) {
         long receiveTime = System.currentTimeMillis();
         
@@ -132,6 +135,7 @@ public class SmsMessenger implements Messenger<MobileMsgRequest, MobileMsgRespon
     }
 
     /** {@inheritDoc} */
+    @Override
     public void process(String gatewayId, USSDResponse ussdResponse) {
         long receiveTime = System.currentTimeMillis();
         

@@ -77,6 +77,7 @@ public class PurdyChartServlet extends HttpServlet {
 */    
 
     /** {@inheritDoc} */
+    @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
         String chartName = request.getParameter("chart-name");

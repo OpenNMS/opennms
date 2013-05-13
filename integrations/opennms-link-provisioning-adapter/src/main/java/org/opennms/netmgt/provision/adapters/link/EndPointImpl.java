@@ -66,6 +66,7 @@ public class EndPointImpl implements EndPoint {
     }
 
     /** {@inheritDoc} */
+    @Override
     public SnmpValue get(String oid) {
         SnmpObjId objId = SnmpObjId.get(oid);
         return SnmpUtils.get(m_agentConfig, objId);
@@ -76,6 +77,7 @@ public class EndPointImpl implements EndPoint {
      *
      * @return a {@link java.net.InetAddress} object.
      */
+    @Override
     public InetAddress getAddress() {
         return m_address;
     }
@@ -94,6 +96,7 @@ public class EndPointImpl implements EndPoint {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getSysOid() {
         return m_sysOid;
     }
@@ -112,6 +115,7 @@ public class EndPointImpl implements EndPoint {
      *
      * @return a boolean.
      */
+    @Override
     public boolean ping() {
         try {
             Number result = PingerFactory.getInstance().ping(getAddress());

@@ -48,6 +48,7 @@ public class ResourceReferenceDaoHibernate extends AbstractDaoHibernate<Resource
 	}
 
     /** {@inheritDoc} */
+        @Override
     public ResourceReference getByResourceId(String resourceId) {
         return findUnique("from ResourceReference where resourceId = ?", resourceId);
     }

@@ -48,11 +48,13 @@ public class SmsClient implements Client<LineOrientedRequest, SmsResponse> {
     /**
      * <p>close</p>
      */
+    @Override
     public void close() {
         
     }
 
     /** {@inheritDoc} */
+    @Override
     public void connect(InetAddress address, int port, int timeout) throws IOException, Exception {
     }
 
@@ -63,6 +65,7 @@ public class SmsClient implements Client<LineOrientedRequest, SmsResponse> {
      * @throws java.io.IOException if any.
      * @throws java.lang.Exception if any.
      */
+    @Override
     public SmsResponse receiveBanner() throws IOException, Exception {
         return receiveResponse();
     }
@@ -75,6 +78,7 @@ public class SmsClient implements Client<LineOrientedRequest, SmsResponse> {
      * @throws java.io.IOException if any.
      * @throws java.lang.Exception if any.
      */
+    @Override
     public SmsResponse sendRequest(LineOrientedRequest request) throws IOException, Exception {
         return null;
     }

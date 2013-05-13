@@ -134,6 +134,7 @@ public class XmpCollectionSet implements CollectionSet {
      *
      * @return a int.
      */
+    @Override
     public int getStatus() { return status; }
     /**
      * <p>Setter for the field <code>status</code>.</p>
@@ -160,6 +161,7 @@ public class XmpCollectionSet implements CollectionSet {
      *
      * @return a boolean.
      */
+    @Override
     public boolean ignorePersist() { return ignorePersistVar; }
 
     /**
@@ -179,6 +181,7 @@ public class XmpCollectionSet implements CollectionSet {
     //public XmpCollectionResource getResource() { return collectionResource; }
 
     /** {@inheritDoc} */
+    @Override
     public void visit(CollectionSetVisitor visitor) 
     {
         log().debug("XmpCollectionSet: visit starting for set "+agent);
@@ -196,6 +199,7 @@ public class XmpCollectionSet implements CollectionSet {
         visitor.completeCollectionSet(this);
     }
 
+    @Override
 	public Date getCollectionTimestamp() {
 		return m_timestamp;
 	}

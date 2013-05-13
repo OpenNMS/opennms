@@ -60,18 +60,22 @@ public class OSReportPlugin extends AbstractSystemReportPlugin {
         }
     }
 
+    @Override
     public String getName() {
         return "OS";
     }
 
+    @Override
     public String getDescription() {
         return "Kernel, OS, and Distribution";
     }
 
+    @Override
     public int getPriority() {
         return 2;
     }
 
+    @Override
     public TreeMap<String, Resource> getEntries() {
         final TreeMap<String, Resource> map = new TreeMap<String, Resource>();
         map.put("Name", getResourceFromProperty("os.name"));

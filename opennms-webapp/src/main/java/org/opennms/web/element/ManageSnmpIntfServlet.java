@@ -83,6 +83,7 @@ public final class ManageSnmpIntfServlet extends HttpServlet {
      *
      * @throws javax.servlet.ServletException if any.
      */
+    @Override
     public void init() throws ServletException {
         try {
             this.snmpServiceId = NetworkElementFactory.getInstance(getServletContext()).getServiceIdFromName("SNMP");
@@ -94,12 +95,14 @@ public final class ManageSnmpIntfServlet extends HttpServlet {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void doGet(HttpServletRequest request,
             HttpServletResponse response) throws ServletException {
         doPost(request, response);
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void doPost(HttpServletRequest request,
             HttpServletResponse response) throws ServletException {
 

@@ -356,6 +356,7 @@ public class OnmsOutage implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return new ToStringCreator(this)
             .append("outageId", m_id)

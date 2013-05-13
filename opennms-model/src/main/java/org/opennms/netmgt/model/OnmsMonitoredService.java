@@ -380,6 +380,7 @@ Comparable<OnmsMonitoredService> {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return new ToStringCreator(this)
         .append("id", m_id)
@@ -410,6 +411,7 @@ Comparable<OnmsMonitoredService> {
 
 
     /** {@inheritDoc} */
+    @Override
     public void visit(EntityVisitor visitor) {
         visitor.visitMonitoredService(this);
         visitor.visitMonitoredServiceComplete(this);
@@ -513,6 +515,7 @@ Comparable<OnmsMonitoredService> {
      * @param o a {@link org.opennms.netmgt.model.OnmsMonitoredService} object.
      * @return a int.
      */
+    @Override
     public int compareTo(OnmsMonitoredService o) {
         int diff;
 

@@ -118,6 +118,7 @@ public class Graph implements Comparable<Graph> {
      * @param other a {@link org.opennms.web.graph.Graph} object.
      * @return a int.
      */
+    @Override
     public int compareTo(Graph other) {
         if (other == null) {
             return -1;

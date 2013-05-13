@@ -97,6 +97,7 @@ public class IPPollRange implements Iterable<IPPollAddress> {
          * more elements.
          * </P>
          */
+        @Override
         public boolean hasMoreElements() {
             return m_range.hasMoreElements();
         }
@@ -109,6 +110,7 @@ public class IPPollRange implements Iterable<IPPollAddress> {
          * @exception java.util.NoSuchElementException
          *                Thrown if there are no more elements in the iteration.
          */
+        @Override
         public IPPollAddress nextElement() {
             return new IPPollAddress((InetAddress) m_range.nextElement(), m_timeout, m_retries);
         }
@@ -119,6 +121,7 @@ public class IPPollRange implements Iterable<IPPollAddress> {
          * is returned. Else a false value is returned.
          * </P>
          */
+        @Override
         public boolean hasNext() {
             return hasMoreElements();
         }
@@ -132,6 +135,7 @@ public class IPPollRange implements Iterable<IPPollAddress> {
          * @exception java.util.NoSuchElementException
          *                Thrown if there are no more elements in the iteration.
          */
+        @Override
         public IPPollAddress next() {
             return nextElement();
         }
@@ -144,6 +148,7 @@ public class IPPollRange implements Iterable<IPPollAddress> {
          * @exception java.lang.UnsupportedOperationException
          *                Always thrown by this method.
          */
+        @Override
         public void remove() {
             throw new UnsupportedOperationException("remove operation not supported");
         }
@@ -282,6 +287,7 @@ public class IPPollRange implements Iterable<IPPollAddress> {
      *
      * @return a {@link java.util.Iterator} object.
      */
+    @Override
     public Iterator<IPPollAddress> iterator() {
         return new IPPollRangeGenerator(m_range.elements());
     }

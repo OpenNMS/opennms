@@ -43,6 +43,7 @@ public interface ReportCatalogDao extends OnmsDao<ReportCatalogEntry, Integer>{
      *
      * @param id a {@link java.lang.Integer} object.
      */
+    @Override
     void delete(Integer id);
 
 }

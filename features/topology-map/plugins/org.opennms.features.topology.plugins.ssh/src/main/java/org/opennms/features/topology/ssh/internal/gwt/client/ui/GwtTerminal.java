@@ -66,6 +66,7 @@ public class GwtTerminal extends Composite implements HasAllKeyHandlers {
 	 * The addKeyUpHandler method allows other classes to assign KeyUpHandlers 
 	 * to the FocusPanel within this widget
 	 */
+        @Override
 	public HandlerRegistration addKeyUpHandler(KeyUpHandler handler) {
 		return fPanel.addKeyUpHandler(handler);
 	}
@@ -74,6 +75,7 @@ public class GwtTerminal extends Composite implements HasAllKeyHandlers {
 	 * The addKeyDownHandler method allows other classes to assign KeyDownHandlers 
 	 * to the FocusPanel within this widget
 	 */
+        @Override
 	public HandlerRegistration addKeyDownHandler(KeyDownHandler handler) {
 		return fPanel.addKeyDownHandler(handler);
 	}
@@ -82,6 +84,7 @@ public class GwtTerminal extends Composite implements HasAllKeyHandlers {
 	 * The addKeyPressHandler method allows other classes to assign KeyPressHandlers 
 	 * to the FocusPanel within this widget
 	 */
+        @Override
 	public HandlerRegistration addKeyPressHandler(KeyPressHandler handler) {
 		return fPanel.addKeyPressHandler(handler);
 	}

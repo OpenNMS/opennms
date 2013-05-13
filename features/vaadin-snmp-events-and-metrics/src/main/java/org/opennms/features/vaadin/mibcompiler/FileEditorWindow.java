@@ -112,6 +112,7 @@ public class FileEditorWindow extends Window implements Button.ClickListener {
     /* (non-Javadoc)
      * @see com.vaadin.ui.Button.ClickListener#buttonClick(com.vaadin.ui.Button.ClickEvent)
      */
+    @Override
     public void buttonClick(ClickEvent event) {
         if (event.getButton().equals(save)) {
             if (editor.isReadOnly()) {

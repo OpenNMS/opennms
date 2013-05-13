@@ -136,6 +136,7 @@ public class SnmpPoller extends AbstractServiceDaemon {
     /**
      * <p>onStart</p>
      */
+    @Override
     protected void onStart() {
         // get the category logger
         // start the scheduler
@@ -154,6 +155,7 @@ public class SnmpPoller extends AbstractServiceDaemon {
     /**
      * <p>onStop</p>
      */
+    @Override
     protected void onStop() {
         
         if(getScheduler()!=null) {
@@ -167,6 +169,7 @@ public class SnmpPoller extends AbstractServiceDaemon {
     /**
      * <p>onPause</p>
      */
+    @Override
     protected void onPause() {
         getScheduler().pause();
     }
@@ -174,6 +177,7 @@ public class SnmpPoller extends AbstractServiceDaemon {
     /**
      * <p>onResume</p>
      */
+    @Override
     protected void onResume() {
         getScheduler().resume();
     }

@@ -89,11 +89,13 @@ public class DetectFutureMinaImpl extends DefaultIoFuture implements DetectFutur
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setServiceDetected(final boolean serviceDetected) {
         setValue(serviceDetected);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setException(final Throwable throwable) {
 //        System.err.println("setting exception to " + throwable);
         setValue(throwable);
@@ -118,6 +120,7 @@ public class DetectFutureMinaImpl extends DefaultIoFuture implements DetectFutur
         super.awaitUninterruptibly();
     }
 
+    @Override
     public DetectFuture addListener(final DetectFutureListener<DetectFuture> listener) {
         super.addListener(new IoFutureListener<DetectFutureMinaImpl>() {
 

@@ -39,7 +39,6 @@ import org.opennms.netmgt.config.kscReports.Graph;
 import org.opennms.netmgt.config.kscReports.Report;
 import org.opennms.web.servlet.MissingParameterException;
 import org.opennms.web.svclayer.KscReportService;
-import org.opennms.web.svclayer.support.DefaultKscReportService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;

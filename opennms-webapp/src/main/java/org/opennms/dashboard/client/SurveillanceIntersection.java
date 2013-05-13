@@ -106,11 +106,13 @@ public class SurveillanceIntersection extends SurveillanceSet implements IsSeria
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return m_columnGroup.getLabel() + " " + m_rowGroup.getLabel();
     }
 
     /** {@inheritDoc} */
+    @Override
     public void visit(Visitor v) {
         v.visitIntersection(m_rowGroup, m_columnGroup);
     }

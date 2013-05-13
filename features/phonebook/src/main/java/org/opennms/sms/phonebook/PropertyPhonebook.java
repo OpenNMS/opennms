@@ -126,6 +126,7 @@ public class PropertyPhonebook implements Phonebook {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getTargetForAddress(String address) throws PhonebookException {
         Properties p = getProperties();
         String property = p.getProperty(address);

@@ -61,6 +61,7 @@ public class MapStoreIdGetterReplacement implements ColumnChangeReplacement {
     }
 
     /** {@inheritDoc} */
+    @Override
     public Object getColumnReplacement(ResultSet rs, Map<String, ColumnChange> columnChanges) throws SQLException {
         return m_storeFoo.getIntegerForColumns(rs, columnChanges, m_indexColumns, m_noMatchOkay);
     }
@@ -70,6 +71,7 @@ public class MapStoreIdGetterReplacement implements ColumnChangeReplacement {
      *
      * @return a boolean.
      */
+    @Override
     public boolean addColumnIfColumnIsNew() {
         return true;
     }
@@ -77,6 +79,7 @@ public class MapStoreIdGetterReplacement implements ColumnChangeReplacement {
     /**
      * <p>close</p>
      */
+    @Override
     public void close() {
     }
 }

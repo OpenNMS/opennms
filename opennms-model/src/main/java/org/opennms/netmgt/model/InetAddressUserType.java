@@ -49,6 +49,7 @@ public class InetAddressUserType implements UserType {
      */
     public InetAddressUserType() {}
 
+    @Override
     public Object assemble(final Serializable cached, final Object owner) throws HibernateException {
         return deepCopy(cached);
     }
@@ -57,6 +58,7 @@ public class InetAddressUserType implements UserType {
      * Since {@link java.net.InetAddress} is immutable, we just return the original
      * value without copying it.
      */
+    @Override
     public Object deepCopy(final Object value) throws HibernateException {
         if (value == null) {
             return null;
@@ -68,10 +70,12 @@ public class InetAddressUserType implements UserType {
         }
     }
 
+    @Override
     public Serializable disassemble(final Object value) throws HibernateException {
         return (Serializable)deepCopy(value);
     }
 
+    @Override
     public boolean equals(final Object x, final Object y) throws HibernateException {
         if (x == y) return true;
         if (x == null || y == null) return false;
@@ -80,18 +84,22 @@ public class InetAddressUserType implements UserType {
         return new InetAddressComparator().compare((InetAddress)x, (InetAddress)y) == 0;
     }
 
+    @Override
     public int hashCode(final Object x) throws HibernateException {
         return x.hashCode();
     }
 
+    @Override
     public boolean isMutable() {
         return false;
     }
 
+    @Override
     public Object nullSafeGet(final ResultSet rs, final String[] names, final Object owner) throws HibernateException, SQLException {
         return InetAddressUtils.getInetAddress((String)Hibernate.STRING.nullSafeGet(rs, names[0]));
     }
 
+    @Override
     public void nullSafeSet(final PreparedStatement st, final Object value, final int index) throws HibernateException, SQLException {
         if (value == null) {
             Hibernate.STRING.nullSafeSet(st, null, index);
@@ -113,14 +121,17 @@ public class InetAddressUserType implements UserType {
         }
     }
 
+    @Override
     public Object replace(final Object original, final Object target, final Object owner) throws HibernateException {
         return original;
     }
 
+    @Override
     public Class<InetAddress> returnedClass() {
         return InetAddress.class;
     }
 
+    @Override
     public int[] sqlTypes() {
         return SQL_TYPES;
     }

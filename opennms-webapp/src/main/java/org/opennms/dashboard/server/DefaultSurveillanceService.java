@@ -83,6 +83,7 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
      *
      * @return a {@link org.opennms.dashboard.client.SurveillanceData} object.
      */
+    @Override
     public SurveillanceData getSurveillanceData() {
         SurveillanceData data = new SurveillanceData();
 
@@ -189,6 +190,7 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
 */
 
     /** {@inheritDoc} */
+    @Override
     public Alarm[] getAlarmsForSet(SurveillanceSet set) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsAlarm.class, "alarm");
         OnmsCriteria nodeCriteria = criteria.createCriteria("node");
@@ -212,6 +214,7 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
     }
 
     /** {@inheritDoc} */
+    @Override
     public String[] getNodeNames(SurveillanceSet set) {
 
         List<OnmsNode> nodes = m_nodeDao.findAll();
@@ -226,6 +229,7 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
     }
 
     /** {@inheritDoc} */
+    @Override
     public String[][] getResources(SurveillanceSet set) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsNode.class, "node");
         addCriteriaForSurveillanceSet(criteria, set);
@@ -338,6 +342,7 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
     }
 
     /** {@inheritDoc} */
+    @Override
     public String[][] getChildResources(String id) {
         OnmsResource parentResource = m_resourceDao.getResourceById(id);
         if (parentResource == null) {
@@ -355,6 +360,7 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
     }
 
     /** {@inheritDoc} */
+    @Override
     public String[][] getPrefabGraphs(String id) {
         OnmsResource resource = m_resourceDao.getResourceById(id);
         if (resource == null) {
@@ -372,6 +378,7 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
     }
     
     /** {@inheritDoc} */
+    @Override
     public Notification[] getNotificationsForSet(SurveillanceSet set) {
         List<Notification> notifications = new ArrayList<Notification>();
         
@@ -429,6 +436,7 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
     }
     
     /** {@inheritDoc} */
+    @Override
     public NodeRtc[] getRtcForSet(SurveillanceSet set) {
         OnmsCriteria serviceCriteria = m_rtcService.createServiceCriteria();
         OnmsCriteria outageCriteria = m_rtcService.createOutageCriteria();

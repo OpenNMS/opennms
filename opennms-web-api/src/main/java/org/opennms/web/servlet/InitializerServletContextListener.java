@@ -58,6 +58,7 @@ public class InitializerServletContextListener implements ServletContextListener
     private Timer rtcCheckTimer = null;
 
     /** {@inheritDoc} */
+    @Override
     public void contextInitialized(ServletContextEvent event) {
         try {
             /*
@@ -86,6 +87,7 @@ public class InitializerServletContextListener implements ServletContextListener
     }
 
     /** {@inheritDoc} */
+    @Override
     public void contextDestroyed(ServletContextEvent event) {
         try {
             /*
@@ -113,6 +115,7 @@ public class InitializerServletContextListener implements ServletContextListener
             m_categorylist = new CategoryList();
         }
 
+        @Override
         public void run() {
             try {
                 if (!m_categorylist.isDisconnected()) {

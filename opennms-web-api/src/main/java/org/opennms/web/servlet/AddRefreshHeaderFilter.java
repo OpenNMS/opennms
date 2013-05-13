@@ -67,12 +67,14 @@ public class AddRefreshHeaderFilter extends Object implements Filter {
      * <code>setHeader</code> nothing happens.
      * </p>
      */
+    @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         ((HttpServletResponse) response).setHeader("Refresh", this.seconds);
         chain.doFilter(request, response);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void init(FilterConfig config) {
         this.filterConfig = config;
 
@@ -89,6 +91,7 @@ public class AddRefreshHeaderFilter extends Object implements Filter {
     /**
      * <p>destroy</p>
      */
+    @Override
     public void destroy() {
     }
 

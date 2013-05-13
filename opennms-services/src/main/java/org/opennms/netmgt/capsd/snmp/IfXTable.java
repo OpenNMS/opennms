@@ -73,6 +73,7 @@ public final class IfXTable extends SnmpTable<IfXTableEntry> {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected IfXTableEntry createTableEntry(SnmpObjId base, SnmpInstId inst, Object val) {
         return new IfXTableEntry(inst.toInt());
     }

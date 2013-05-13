@@ -68,6 +68,7 @@ public class CiscoVlanTable extends VlanTableBasic {
     }
     
     /** {@inheritDoc} */
+        @Override
     protected CiscoVlanTableEntry createTableEntry(SnmpObjId base, SnmpInstId inst, Object val) {
         return new CiscoVlanTableEntry();
     }

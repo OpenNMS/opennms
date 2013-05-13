@@ -75,6 +75,7 @@ public class DefaultCategoryConfigDao implements CategoryConfigDao {
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public Category getCategoryByLabel(String label) {
 		return CategoryFactory.getInstance().getCategory(label);
 	}
@@ -84,6 +85,7 @@ public class DefaultCategoryConfigDao implements CategoryConfigDao {
 	 *
 	 * @return a {@link java.util.Collection} object.
 	 */
+        @Override
 	public Collection<Category> findAll() {
 		
 		List<Category> catList = new ArrayList<Category>();

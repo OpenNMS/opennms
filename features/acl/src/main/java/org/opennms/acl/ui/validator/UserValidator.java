@@ -62,11 +62,13 @@ public class UserValidator implements Validator {
 
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
+    @Override
     public boolean supports(Class clazz) {
         return UserDTO.class.isAssignableFrom(clazz);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void validate(Object command, Errors err) {
         UserDTO user = (UserDTO) command;
         ValidationUtils.rejectIfEmptyOrWhitespace(err, "username", "username.required.value", "username is required.");
