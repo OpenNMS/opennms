@@ -31,6 +31,7 @@ package org.opennms.netmgt.dao;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -39,7 +40,10 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.criteria.Alias;
 import org.opennms.core.criteria.Criteria;
+import org.opennms.core.criteria.Order;
+import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.restrictions.EqRestriction;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
@@ -48,8 +52,8 @@ import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
-import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
+import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.test.ThrowableAnticipator;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -293,4 +297,16 @@ public class AlarmDaoTest implements InitializingBean {
             Assert.assertEquals("N/A", sum.getFuzzyTimeDown());
         }
 
+        @Test
+        @Transactional
+        public void testSortOnNodeLabel() {
+            Criteria criteria = new Criteria(OnmsAlarm.class);
+            criteria.setAliases(Arrays.asList(new Alias[] {
+                    new Alias("node", "node", JoinType.LEFT_JOIN)
+            }));
+            criteria.setOrders(Arrays.asList(new Order[] {
+                    Order.asc("node.label")
+            }));
+            m_alarmDao.findMatching(criteria);
+        }
 }
