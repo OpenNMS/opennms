@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.ServiceTypeDao;
 import org.opennms.netmgt.model.OnmsServiceType;
 
@@ -64,4 +65,8 @@ public class ServiceTypeDaoHibernate extends AbstractCachingDaoHibernate<OnmsSer
         return queryInt(query, nodeId, ipAddr, service);
     }
     
+    private ThreadCategory log() {
+        return ThreadCategory.getInstance(getClass());
+    }
+
 }

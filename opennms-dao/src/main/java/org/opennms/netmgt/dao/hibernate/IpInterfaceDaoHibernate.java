@@ -34,6 +34,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
@@ -203,6 +204,13 @@ public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterfac
     public int getCountOfOtherInterfacesOnNode(long nodeId, String ipAddr) {
         //  SELECT count(*) FROM ipinterface WHERE nodeID=? and ipAddr != ? and isManaged != 'D'
         String query = "select COUNT(*) from OnmsIpInterface as ipInterface where ipInterface.node.id = ? and ipInterface.ipAddress = ? and ipInterface.isManaged != 'D'";
-        return queryInt(query, nodeId, ipAddr);
+        int count = queryInt(query, nodeId, ipAddr);
+        if (log().isDebugEnabled())
+            log().debug("countServicesForInterface: count services for interface " + nodeId + "/" + ipAddr + ": found " + count);
+        return count;
+    }
+    
+    private ThreadCategory log() {
+        return ThreadCategory.getInstance(getClass());
     }
 }

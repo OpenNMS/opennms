@@ -2012,7 +2012,16 @@ public class BroadcastEventProcessor implements InitializingBean {
      *             if a database error occurs
      */
     private List<Event> markNodeDeleted(Connection dbConn, String source, long nodeId, long txNo) throws SQLException {
-        int count = m_nodeDao.updateNodeStatus(nodeId);
+        String label = m_nodeDao.getLabelForId((int)nodeId);
+        List<OnmsNode> nodeList = m_nodeDao.findByLabel(label);
+        int count = 0;
+        for(OnmsNode node : nodeList) {
+            if(node.getType() != "D") {
+                node.setType("D");
+                m_nodeDao.update(node);
+                count++;
+            }
+        }
 
         log().debug("markServicesDeleted: marked service deleted: " + nodeId);
 
