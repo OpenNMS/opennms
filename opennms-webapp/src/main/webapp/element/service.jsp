@@ -33,6 +33,12 @@
 	contentType="text/html"
 	session="true"
 	import="
+		java.util.Map,
+		java.util.TreeMap,
+		java.util.Enumeration,
+		org.opennms.netmgt.config.PollerConfigFactory,
+		org.opennms.netmgt.config.PollerConfig,
+		org.opennms.netmgt.config.poller.Package,
 		org.opennms.web.springframework.security.Authentication,
 		org.opennms.web.element.ElementUtil,
 		org.opennms.web.element.NetworkElementFactory,
@@ -49,6 +55,35 @@
 	int nodeId = service.getNodeId();
 	String ipAddr = service.getIpAddress();
  	int serviceId = service.getServiceId();
+ 	String serviceName = service.getServiceName();
+
+    PollerConfigFactory.init();
+    PollerConfig pollerCfgFactory = PollerConfigFactory.getInstance();
+    pollerCfgFactory.rebuildPackageIpListMap();
+    
+    Enumeration<Package> en = pollerCfgFactory.enumeratePackage();
+    Package lastPkg = null;
+    while (en.hasMoreElements()) {
+        Package pkg = en.nextElement();
+        if (!pkg.getRemote() &&
+            pollerCfgFactory.isServiceInPackageAndEnabled(serviceName, pkg) &&
+            pollerCfgFactory.isInterfaceInPackage(ipAddr, pkg)) {
+            lastPkg = pkg;
+        }
+    }
+
+    Map<String,String> parameters = new TreeMap<String,String>();
+    if (lastPkg != null) {
+        for (org.opennms.netmgt.config.poller.Service s : lastPkg.getServiceCollection()) {
+            if (s.getName().equalsIgnoreCase(serviceName)) {
+                for (org.opennms.netmgt.config.poller.Parameter p : s.getParameterCollection()) {
+                    if (p.getValue() != null) {
+                        parameters.put(p.getKey(), p.getValue());
+                    }
+                }
+            }
+        }
+    }
 %>
 <c:url var="eventUrl" value="event/list.htm">
   <c:param name="filter" value="<%="node=" + nodeId%>"/>
@@ -63,7 +98,7 @@
   <c:param name="intf" value="<%=ipAddr%>"/>
 </c:url>
 
-<% String headTitle = service.getServiceName() + " Service on " + ipAddr; %>
+<% String headTitle = serviceName + " Service on " + ipAddr; %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Service" />
@@ -88,7 +123,7 @@ function doDelete() {
 
 <% } %>
 
-      <h2><%=service.getServiceName()%> service on <%=ipAddr%></h2>
+      <h2><%=serviceName%> service on <%=ipAddr%></h2>
 
          <% if (request.isUserInRole(Authentication.ROLE_ADMIN)) { %>
          <form method="post" name="delete" action="admin/deleteService">
@@ -112,7 +147,7 @@ function doDelete() {
       <div class="TwoColLeft">
             <!-- general info box -->
             <h3>General</h3>
-            <table>
+            <table class="o-box">
               <tr>
                 <c:url var="nodeLink" value="element/node.jsp">
                   <c:param name="node" value="<%=String.valueOf(nodeId)%>"/>
@@ -132,7 +167,26 @@ function doDelete() {
                 <th>Polling Status</th>
                 <td><%=ElementUtil.getServiceStatusString(service)%></td>
               </tr>
+              <% if (lastPkg != null) { %>
+              <tr>
+                <th>Polling Package</th>
+                <td><%=lastPkg.getName()%></td>
+              </tr>
+              <% } %>
             </table>
+
+            <!-- service parameters box -->
+            <% if (lastPkg != null) { %>
+            <h3>Service Parameters</h3>
+            <table class="o-box">
+              <% for (Map.Entry<String,String> entry : parameters.entrySet()) { %>
+              <tr>
+                <th><%=entry.getKey()%></th>
+                <td><%=entry.getValue()%></td>
+              </tr>
+              <% } %>
+            </table>
+            <% } %>
           
             <!-- Availability box -->
             <jsp:include page="/includes/serviceAvailability-box.jsp" flush="false" />
