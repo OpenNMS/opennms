@@ -29,6 +29,7 @@
 package org.opennms.netmgt.dao.hibernate;
 
 import java.net.InetAddress;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -72,7 +73,7 @@ public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterfac
     
     /** {@inheritDoc} */
     @Override
-    public List<OnmsIpInterface> findByNodeId(Integer nodeId) {
+    public List<OnmsIpInterface> findByNodeId(Long nodeId) {
         Assert.notNull(nodeId, "nodeId cannot be null");
         return find("from OnmsIpInterface ipInterface where ipInterface.node.id = ?", nodeId);
     }
@@ -184,5 +185,24 @@ public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterfac
             }
             return retval;
         }
+    }
+
+    @Override
+    public Date findLastPollTimeByNodeId(final Integer nodeId) {
+        Assert.notNull(nodeId, "nodeId cannot be null");
+        // SELECT iplastcapsdpoll FROM ipinterface WHERE nodeid=? AND (ismanaged = 'M' OR ismanaged = 'N')
+
+        return findUnique("select ipInterface.lastCapsdPoll from OnmsIpInterface as ipInterface where ipInterface.node.id = ? and (ipInterface.isManaged = 'M' or ipInterface.isManaged = 'N')", nodeId).getIpLastCapsdPoll();
+    }
+    
+    public int updateLastPollTime(Date ipLastCapsdPoll, String ipAddr, Integer nodeId ) {
+        String query = "update OnmsIpInterface as ipInterface set ipInterface.lastCapsDoll = ? where ipInterface.node.id = ? and ipInterface.ipAddress = ?";
+        return queryInt(query,ipLastCapsdPoll, nodeId, ipAddr);
+    }
+    
+    public int getCountOfOtherInterfacesOnNode(long nodeId, String ipAddr) {
+        //  SELECT count(*) FROM ipinterface WHERE nodeID=? and ipAddr != ? and isManaged != 'D'
+        String query = "select COUNT(*) from OnmsIpInterface as ipInterface where ipInterface.node.id = ? and ipInterface.ipAddress = ? and ipInterface.isManaged != 'D'";
+        return queryInt(query, nodeId, ipAddr);
     }
 }

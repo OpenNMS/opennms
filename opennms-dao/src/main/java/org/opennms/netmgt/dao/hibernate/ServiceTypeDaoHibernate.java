@@ -50,10 +50,18 @@ public class ServiceTypeDaoHibernate extends AbstractCachingDaoHibernate<OnmsSer
 
 
     /** {@inheritDoc} */
-    @Override
     public OnmsServiceType findByName(final String name) {
         return findByCacheKey("from OnmsServiceType as svcType where svcType.name = ?", name);
     }
     
+    public int getCountOfServicesOnInterface(long nodeId, String ipAddr, String service) {
+        //SELECT count(*) FROM ifservices, service " + 
+        //      "WHERE ifservices.serviceId = service.serviceId AND ifservices.status != 'D' " + 
+        //        "AND ifservices.nodeID=? AND ifservices.ipAddr=? AND service.servicename != ?
+        String query = "select COUNT(*) from OnmsServiceType svcType, OnmsMonitoredService as svc" +
+        		"where svcType.id = svc.serviceType and svc.status != 'D'" +
+        		"and svc.ipInterface.node.id = ? and svc.ipInterface.ipAddres = ? and svcType.name = ?";
+        return queryInt(query, nodeId, ipAddr, service);
+    }
     
 }
