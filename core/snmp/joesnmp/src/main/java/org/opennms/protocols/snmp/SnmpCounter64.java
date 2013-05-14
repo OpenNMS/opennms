@@ -131,7 +131,7 @@ public class SnmpCounter64 extends Object implements SnmpSyntax, Cloneable, Seri
      *             Throws if the passed value is a null reference.
      */
     public SnmpCounter64(String value) {
-        if (m_value == null)
+        if (value == null)
             throw new NullPointerException("The constructor argument must not be null");
 
         m_value = new BigInteger(value);
