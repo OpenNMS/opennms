@@ -80,6 +80,7 @@ public class InstanceStrategy implements AccessPointPoller {
         return agentConfig;
     }
 
+    @Override
     public OnmsAccessPointCollection call() throws IOException {
         OnmsAccessPointCollection apsUp = new OnmsAccessPointCollection();
         InetAddress ipaddr = m_iface.getIpAddress();

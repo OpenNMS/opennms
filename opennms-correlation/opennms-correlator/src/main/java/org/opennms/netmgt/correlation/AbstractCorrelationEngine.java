@@ -52,6 +52,7 @@ public abstract class AbstractCorrelationEngine implements CorrelationEngine {
     private final Map<Integer, TimerTask> m_pendingTasks = new ConcurrentHashMap<Integer, TimerTask>();
 
     /** {@inheritDoc} */
+        @Override
     abstract public void correlate(Event e);
 
     /**
@@ -59,6 +60,7 @@ public abstract class AbstractCorrelationEngine implements CorrelationEngine {
      *
      * @return a {@link java.util.List} object.
      */
+        @Override
     abstract public List<String> getInterestingEvents();
     
     /**

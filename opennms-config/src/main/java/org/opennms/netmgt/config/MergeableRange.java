@@ -92,6 +92,7 @@ final class MergeableRange implements Comparable<Range> {
      *
      * @return a int.
      */
+    @Override
     public int hashCode() {
         return 0;
     }

@@ -83,6 +83,7 @@ public class SimpleDetectorWiringTest implements ApplicationContextAware {
         testWiredDetector(SnmpDetector.class);
     }
     
+    @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         m_applicationContext = applicationContext;
     }

@@ -111,6 +111,7 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getName() {
         return m_name;
     }
@@ -146,6 +147,7 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
      * @see org.opennms.netmgt.eventd.EventListener#onEvent(org.opennms.netmgt.xml.event.Event)
      */
     /** {@inheritDoc} */
+    @Override
     public void onEvent(Event event) {
         if (event.getUei() == null) {
             return;
@@ -327,6 +329,7 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
     }
 
     private static class ClassComparator<T> implements Comparator<Class<? extends T>> {
+        @Override
         public int compare(Class<? extends T> lhsType, Class<? extends T> rhsType) {
             return ClassUtils.isAssignable(lhsType, rhsType) ? 1 : -1;
         }
@@ -337,6 +340,7 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
         
         Comparator<Method> comparator = new Comparator<Method>() {
 
+            @Override
             public int compare(Method left, Method right) {
                 Class<? extends Throwable> lhsType = left.getParameterTypes()[1].asSubclass(Throwable.class);
                 Class<? extends Throwable> rhsType = right.getParameterTypes()[1].asSubclass(Throwable.class);
@@ -405,6 +409,7 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
     /**
      * <p>stop</p>
      */
+    @Override
     public void stop() {
         m_subscriptionService.removeEventListener(this);
     }
@@ -414,6 +419,7 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void destroy() throws Exception {
         stop();
     }

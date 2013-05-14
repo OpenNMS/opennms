@@ -88,7 +88,9 @@ public class DiscoveryConfigFactoryTest {
     @Test
     public void testMultipleExcludes() throws Exception {
         final DiscoveryConfigFactory factory = new DiscoveryConfigFactory() {
+            @Override
             public void saveConfiguration(final DiscoveryConfiguration configuration) throws MarshalException, ValidationException, IOException {}
+            @Override
             public synchronized DiscoveryConfiguration getConfiguration() {
                 final DiscoveryConfiguration conf = new DiscoveryConfiguration();
 
@@ -143,7 +145,9 @@ public class DiscoveryConfigFactoryTest {
     @Test
     public void testSingleIPExclude() throws Exception {
         final DiscoveryConfigFactory factory = new DiscoveryConfigFactory() {
+            @Override
             public void saveConfiguration(final DiscoveryConfiguration configuration) throws MarshalException, ValidationException, IOException {}
+            @Override
             public synchronized DiscoveryConfiguration getConfiguration() {
                 final DiscoveryConfiguration conf = new DiscoveryConfiguration();
 

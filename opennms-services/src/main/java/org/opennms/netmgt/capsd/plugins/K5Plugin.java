@@ -61,6 +61,7 @@ public class K5Plugin extends AbstractPlugin {
      *
      * @return The protocol name for this plugin.
      */
+    @Override
     public String getProtocolName() {
         return PROTOCOL_NAME;
     }
@@ -72,6 +73,7 @@ public class K5Plugin extends AbstractPlugin {
      * protocol is not supported then a false value is returned to the caller.
      * Default to returning false unless K5 is set as active.
      */
+    @Override
     public boolean isProtocolSupported(InetAddress address) {
         return false;
     }
@@ -85,6 +87,7 @@ public class K5Plugin extends AbstractPlugin {
      * additional information by key-name. These key-value pairs can be added to
      * service events if needed.
      */
+    @Override
     public boolean isProtocolSupported(InetAddress address, Map<String, Object> qualifiers) {
         if (qualifiers != null) {
             String active = ParameterMap.getKeyedString(qualifiers, "active", DEFAULT_ACTIVE);

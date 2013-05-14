@@ -98,26 +98,32 @@ public class MockNetworkTest extends TestCase {
             return serviceCount;
         }
 
+        @Override
         public void visitContainer(MockContainer<?,?> c) {
             containerCount++;
         }
 
+        @Override
         public void visitElement(MockElement e) {
             elementCount++;
         }
 
+        @Override
         public void visitInterface(MockInterface i) {
             interfaceCount++;
         }
 
+        @Override
         public void visitNetwork(MockNetwork n) {
             networkCount++;
         }
 
+        @Override
         public void visitNode(MockNode n) {
             nodeCount++;
         }
 
+        @Override
         public void visitService(MockService s) {
             serviceCount++;
         }
@@ -165,6 +171,7 @@ public class MockNetworkTest extends TestCase {
 
     private void anticipateServiceEvents(final EventAnticipator anticipator, MockElement element, final String uei) {
         MockVisitor eventSetter = new MockVisitorAdapter() {
+            @Override
             public void visitService(MockService svc) {
                 Event event = MockEventUtil.createServiceEvent("Test", uei, svc, null);
                 anticipator.anticipateEvent(event);
@@ -173,6 +180,7 @@ public class MockNetworkTest extends TestCase {
         element.visit(eventSetter);
     }
 
+    @Override
     protected void setUp() throws Exception {
         m_network = new MockNetwork();
         m_network.setCriticalService("ICMP");
@@ -208,6 +216,7 @@ public class MockNetworkTest extends TestCase {
 
     }
 
+    @Override
     protected void tearDown() throws Exception {
     }
 
@@ -275,6 +284,7 @@ public class MockNetworkTest extends TestCase {
         class MockListener implements EventListener {
             private Event receivedEvent;
 
+            @Override
             public String getName() {
                 return "MockListener";
             }
@@ -283,6 +293,7 @@ public class MockNetworkTest extends TestCase {
                 return receivedEvent;
             }
 
+            @Override
             public void onEvent(Event event) {
                 System.err.println("onEvent: " + event.getUei());
                 receivedEvent = event;
@@ -342,6 +353,7 @@ public class MockNetworkTest extends TestCase {
         element.bringDown();
 
         MockVisitor lostSvcSender = new MockVisitorAdapter() {
+            @Override
             public void visitService(MockService svc) {
                 Event event = MockEventUtil.createEvent("Test", EventConstants.NODE_LOST_SERVICE_EVENT_UEI, svc.getNodeId(), svc.getIpAddr(), svc.getSvcName(), String.valueOf(PollStatus.SERVICE_UNAVAILABLE));
                 m_eventMgr.sendNow(event);
@@ -356,6 +368,7 @@ public class MockNetworkTest extends TestCase {
         element.bringUp();
 
         MockVisitor gainedSvcSender = new MockVisitorAdapter() {
+            @Override
             public void visitService(MockService svc) {
                 Event event = MockEventUtil.createEvent("Test", EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI, svc.getNodeId(), svc.getIpAddr(), svc.getSvcName(), null);
                 m_eventMgr.sendNow(event);
@@ -620,6 +633,7 @@ public class MockNetworkTest extends TestCase {
                     throw m_t;
             }
 
+            @Override
             public void run() {
                 try {
                     try {
@@ -707,6 +721,7 @@ public class MockNetworkTest extends TestCase {
                     throw m_t;
             }
 
+            @Override
             public void run() {
                 try {
                     smtpService.visit(m_downChecker);

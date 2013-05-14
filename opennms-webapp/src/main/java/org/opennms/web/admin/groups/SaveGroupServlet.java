@@ -55,6 +55,7 @@ public class SaveGroupServlet extends HttpServlet {
     private static final long serialVersionUID = 3317351868889379965L;
 
     /** {@inheritDoc} */
+    @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession user = request.getSession(false);
 

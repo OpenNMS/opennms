@@ -93,6 +93,7 @@ public class Category implements Cloneable {
      *
      * @return a {@link org.opennms.web.admin.views.parsers.Category} object.
      */
+    @Override
     public Category clone() {
         try {
             super.clone();

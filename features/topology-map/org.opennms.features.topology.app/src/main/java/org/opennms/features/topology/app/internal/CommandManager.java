@@ -78,6 +78,7 @@ public class CommandManager {
 			return m_graphContainer;
 		}
 		
+                @Override
 		public DisplayLocation getDisplayLocation() {
 			return m_displayLocation;
 		}
@@ -208,6 +209,7 @@ public class CommandManager {
 
 		return new MenuBar.Command() {
 
+                        @Override
 			public void menuSelected(MenuItem selectedItem) {
 				List<VertexRef> targets = new ArrayList<VertexRef>(graphContainer.getSelectionManager().getSelectedVertexRefs());
 

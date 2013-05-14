@@ -256,6 +256,7 @@ public class DefaultApplicationView implements ApplicationView, ResizeHandler {
     /* (non-Javadoc)
      * @see org.opennms.features.poller.remote.gwt.client.ApplicationView#updateTimestamp()
      */
+    @Override
     public void updateTimestamp() {
         getUpdateTimestamp().setText("Last update: " + UPDATE_TIMESTAMP_FORMAT.format(new Date()));
     }
@@ -269,6 +270,7 @@ public class DefaultApplicationView implements ApplicationView, ResizeHandler {
     /* (non-Javadoc)
      * @see org.opennms.features.poller.remote.gwt.client.ApplicationView#getSelectedStatuses()
      */
+    @Override
     public Set<Status> getSelectedStatuses() {
         
         Set<Status> statuses = new HashSet<Status>();
@@ -293,6 +295,7 @@ public class DefaultApplicationView implements ApplicationView, ResizeHandler {
     /* (non-Javadoc)
      * @see org.opennms.features.poller.remote.gwt.client.ApplicationView#initialize()
      */
+    @Override
     public void initialize() {
         getSplitPanel().add(getMapPanel().getWidget());
         getSplitPanel().setWidgetMinSize(getLocationPanel(), 255);
@@ -308,6 +311,7 @@ public class DefaultApplicationView implements ApplicationView, ResizeHandler {
     /* (non-Javadoc)
      * @see org.opennms.features.poller.remote.gwt.client.ApplicationView#updateSelectedApplications(java.util.Set)
      */
+    @Override
     public void updateSelectedApplications(Set<ApplicationInfo> applications) {
         getLocationPanel().updateSelectedApplications(applications);
     }
@@ -315,6 +319,7 @@ public class DefaultApplicationView implements ApplicationView, ResizeHandler {
     /* (non-Javadoc)
      * @see org.opennms.features.poller.remote.gwt.client.ApplicationView#updateLocationList(java.util.ArrayList)
      */
+    @Override
     public void updateLocationList( ArrayList<LocationInfo> locationsForLocationPanel) {
         getLocationPanel().updateLocationList(locationsForLocationPanel);
     }
@@ -322,6 +327,7 @@ public class DefaultApplicationView implements ApplicationView, ResizeHandler {
     /* (non-Javadoc)
      * @see org.opennms.features.poller.remote.gwt.client.ApplicationView#setSelectedTag(java.lang.String, java.util.List)
      */
+    @Override
     public void setSelectedTag(String selectedTag, List<String> allTags) {
         getLocationPanel().clearTagPanel();
         getLocationPanel().addAllTags(allTags);
@@ -331,6 +337,7 @@ public class DefaultApplicationView implements ApplicationView, ResizeHandler {
     /* (non-Javadoc)
      * @see org.opennms.features.poller.remote.gwt.client.ApplicationView#updateApplicationList(java.util.ArrayList)
      */
+    @Override
     public void updateApplicationList(ArrayList<ApplicationInfo> applications) {
         getLocationPanel().updateApplicationList(applications);
     }
@@ -338,6 +345,7 @@ public class DefaultApplicationView implements ApplicationView, ResizeHandler {
     /* (non-Javadoc)
      * @see org.opennms.features.poller.remote.gwt.client.ApplicationView#updateApplicationNames(java.util.TreeSet)
      */
+    @Override
     public void updateApplicationNames(TreeSet<String> allApplicationNames) {
         getLocationPanel().updateApplicationNames(allApplicationNames);
     }
@@ -349,6 +357,7 @@ public class DefaultApplicationView implements ApplicationView, ResizeHandler {
     /* (non-Javadoc)
      * @see org.opennms.features.poller.remote.gwt.client.ApplicationView#fitMapToLocations(org.opennms.features.poller.remote.gwt.client.GWTBounds)
      */
+    @Override
     public void fitMapToLocations(GWTBounds locationBounds) {
         if (getMapPanel() instanceof SmartMapFit) {
             ((SmartMapFit)getMapPanel()).fitToBounds();
@@ -362,6 +371,7 @@ public class DefaultApplicationView implements ApplicationView, ResizeHandler {
     /* (non-Javadoc)
      * @see org.opennms.features.poller.remote.gwt.client.ApplicationView#getMapBounds()
      */
+    @Override
     public GWTBounds getMapBounds() {
         return getMapPanel().getBounds();
     }
@@ -369,6 +379,7 @@ public class DefaultApplicationView implements ApplicationView, ResizeHandler {
     /* (non-Javadoc)
      * @see org.opennms.features.poller.remote.gwt.client.ApplicationView#showLocationDetails(java.lang.String, java.lang.String, java.lang.String)
      */
+    @Override
     public void showLocationDetails(final String locationName, String htmlTitle, String htmlContent) {
         getMapPanel().showLocationDetails(locationName, htmlTitle, htmlContent);
     }
@@ -376,14 +387,17 @@ public class DefaultApplicationView implements ApplicationView, ResizeHandler {
     /* (non-Javadoc)
      * @see org.opennms.features.poller.remote.gwt.client.ApplicationView#placeMarker(org.opennms.features.poller.remote.gwt.client.GWTMarkerState)
      */
+    @Override
     public void placeMarker(final GWTMarkerState markerState) {
         getMapPanel().placeMarker(markerState);
     }
 
+    @Override
     public void setStatusMessage(String statusMessage) {
         //getUpdateTimestamp().setText(statusMessage);
     }
 
+    @Override
     public void onResize(ResizeEvent event) {
         getMainPanel().setHeight(getAppHeight().toString());
     }

@@ -133,6 +133,7 @@ public class Jni6PingRequest implements Request<Jni6PingRequestId, Jni6PingReque
      * @param reply a {@link org.opennms.netmgt.icmp.Jni6PingResponse.JniPingResponse.PingReply} object.
      * @return a boolean.
      */
+    @Override
     public boolean processResponse(final Jni6PingResponse reply) {
         try {
             m_log.debug(System.currentTimeMillis()+": Ping Response Received "+this);
@@ -147,6 +148,7 @@ public class Jni6PingRequest implements Request<Jni6PingRequestId, Jni6PingReque
      *
      * @return a {@link org.opennms.netmgt.icmp.jni6.Jni6PingRequest} object.
      */
+    @Override
     public Jni6PingRequest processTimeout() {
         try {
             Jni6PingRequest returnval = null;
@@ -194,6 +196,7 @@ public class Jni6PingRequest implements Request<Jni6PingRequestId, Jni6PingReque
     }
 
     /** {@inheritDoc} */
+    @Override
     public long getDelay(final TimeUnit unit) {
         return unit.convert(m_expiration - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
     }
@@ -204,6 +207,7 @@ public class Jni6PingRequest implements Request<Jni6PingRequestId, Jni6PingReque
      * @param request a {@link java.util.concurrent.Delayed} object.
      * @return a int.
      */
+    @Override
     public int compareTo(final Delayed request) {
         final long myDelay = getDelay(TimeUnit.MILLISECONDS);
         final long otherDelay = request.getDelay(TimeUnit.MILLISECONDS);
@@ -217,10 +221,12 @@ public class Jni6PingRequest implements Request<Jni6PingRequestId, Jni6PingReque
      *
      * @return a {@link org.opennms.netmgt.icmp.Jni6PingRequestId.JniPingRequestId.PingRequestId} object.
      */
+    @Override
     public Jni6PingRequestId getId() {
         return m_id;
     }
 
+    @Override
     public void processError(final Throwable t) {
         try {
             m_callback.handleError(m_id.getAddress(), this, t);
@@ -238,6 +244,7 @@ public class Jni6PingRequest implements Request<Jni6PingRequestId, Jni6PingReque
      *
      * @return a boolean.
      */
+    @Override
     public boolean isProcessed() {
         return m_processed.get();
     }

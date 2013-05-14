@@ -58,6 +58,7 @@ public class Bootstrap {
      * Matches any file that is a directory.
      */
     private static FileFilter m_dirFilter = new FileFilter() {
+        @Override
         public boolean accept(File pathname) {
             return pathname.isDirectory();
         }
@@ -67,6 +68,7 @@ public class Bootstrap {
      * Matches any file that has a name ending in ".jar".
      */
     private static FilenameFilter m_jarFilter = new FilenameFilter() {
+        @Override
         public boolean accept(File dir, String name) {
             return name.endsWith(".jar");
         }
@@ -341,6 +343,7 @@ public class Bootstrap {
             final Method method = c.getMethod(classToExecMethod, classes);
 
             Runnable execer = new Runnable() {
+                @Override
                 public void run() {
                     try {
                         method.invoke(null, methodArgs);

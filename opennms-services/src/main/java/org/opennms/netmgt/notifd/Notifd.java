@@ -112,6 +112,7 @@ public final class Notifd extends AbstractServiceDaemon {
     /**
      * <p>onInit</p>
      */
+    @Override
     protected void onInit() {
         
         m_eventReader = new BroadcastEventProcessor();
@@ -277,6 +278,7 @@ public final class Notifd extends AbstractServiceDaemon {
     /**
      * <p>onStart</p>
      */
+    @Override
     protected void onStart() {
         for (NotifdQueueHandler curHandler : m_queueHandlers.values()) {
             curHandler.start();
@@ -286,6 +288,7 @@ public final class Notifd extends AbstractServiceDaemon {
     /**
      * <p>onStop</p>
      */
+    @Override
     protected void onStop() {
         try {
             for (NotifdQueueHandler curHandler : m_queueHandlers.values()) {
@@ -304,6 +307,7 @@ public final class Notifd extends AbstractServiceDaemon {
     /**
      * <p>onPause</p>
      */
+    @Override
     protected void onPause() {
         for (NotifdQueueHandler curHandler : m_queueHandlers.values()) {
             curHandler.pause();
@@ -313,6 +317,7 @@ public final class Notifd extends AbstractServiceDaemon {
     /**
      * <p>onResume</p>
      */
+    @Override
     protected void onResume() {
         for (NotifdQueueHandler curHandler : m_queueHandlers.values()) {
             curHandler.resume();

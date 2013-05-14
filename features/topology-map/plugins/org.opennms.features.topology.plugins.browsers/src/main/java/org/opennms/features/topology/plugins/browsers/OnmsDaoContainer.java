@@ -31,9 +31,11 @@ package org.opennms.features.topology.plugins.browsers;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.opennms.core.criteria.Criteria;
@@ -68,6 +70,8 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Sele
 	 * TODO: Fix concurrent access to this field
 	 */
 	private Collection<SelectionListener> m_selectionListeners = new HashSet<SelectionListener>();
+
+	protected final Map<String,String> m_beanToHibernatePropertyMapping = new HashMap<String,String>();
 
 	public OnmsDaoContainer(OnmsDao<T,K> dao) {
 		m_dao = dao;
@@ -297,10 +301,13 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Sele
 
 		List<Order> orders = new ArrayList<Order>();
 		for(int i = 0; i < propertyId.length; i++) {
+			final String beanProperty = (String)propertyId[i];
+			String hibernateProperty = m_beanToHibernatePropertyMapping.get(beanProperty);
+			if (hibernateProperty == null) hibernateProperty = beanProperty;
 			if (ascending[i]) {
-				orders.add(Order.asc((String)propertyId[i]));
+				orders.add(Order.asc(hibernateProperty));
 			} else {
-				orders.add(Order.desc((String)propertyId[i]));
+				orders.add(Order.desc(hibernateProperty));
 			}
 		}
 		m_criteria.setOrders(orders);

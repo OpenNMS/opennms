@@ -240,6 +240,7 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
             super(uri);
         }
 
+        @Override
         public void setQueryParameters(List<NameValuePair> parms) {
             try {
                 UrlEncodedFormEntity entity = new UrlEncodedFormEntity(parms, "UTF-8");
@@ -256,6 +257,7 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
             super(uri);
         }
 
+        @Override
         public void setQueryParameters(List<NameValuePair> parms) {
             URI uri = this.getURI();
             URI uriWithQueryString = null;
@@ -672,6 +674,7 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
     }
 
     /** {@inheritDoc} */
+    @Override
     public PollStatus poll(final MonitoredService svc, final Map<String, Object> parameterMap) {
         DefaultHttpClient client = null;
         PollStatus serviceStatus = PollStatus.unavailable("Poll not completed yet");

@@ -105,6 +105,7 @@ public class JdbcFilterDaoTest implements InitializingBean, TemporaryDatabaseAwa
 
     private TemporaryDatabase m_database;
 
+    @Override
     public void setTemporaryDatabase(TemporaryDatabase database) {
         m_database = database;
     }
@@ -245,6 +246,7 @@ public class JdbcFilterDaoTest implements InitializingBean, TemporaryDatabaseAwa
     @JUnitTemporaryDatabase // This test manages its own transactions so use a fresh database
     public void testGetActiveIPListWithDeletedNode() throws Exception {
         m_transTemplate.execute(new TransactionCallback<Object>() {
+            @Override
             public Object doInTransaction(TransactionStatus status) {
                 final List<OnmsIpInterface> ifaces = m_interfaceDao.findByIpAddress("192.168.1.1");
                 
@@ -265,6 +267,7 @@ public class JdbcFilterDaoTest implements InitializingBean, TemporaryDatabaseAwa
          */
 
         m_transTemplate.execute(new TransactionCallback<Object>() {
+            @Override
             public Object doInTransaction(TransactionStatus status) {
                 List<InetAddress> list = m_dao.getActiveIPAddressList("ipaddr == '192.168.1.1'");
                 assertNotNull("returned list should not be null", list);
@@ -297,6 +300,7 @@ public class JdbcFilterDaoTest implements InitializingBean, TemporaryDatabaseAwa
     public void testWalkNodes() throws Exception {
         final List<OnmsNode> nodes = new ArrayList<OnmsNode>();
         EntityVisitor visitor = new AbstractEntityVisitor() {
+            @Override
             public void visitNode(OnmsNode node) {
                 nodes.add(node);
             }

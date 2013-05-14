@@ -83,6 +83,7 @@ public class UserRestServiceTest extends AbstractSpringJerseyRestTestCase {
         for (int i = 0; i < userCount; i++) {
             final String userName = "test" + i;
             createFutures.add(pool.submit(Executors.callable(new Runnable() {
+                @Override
                 public void run() {
                     try {
                         createUser(userName);

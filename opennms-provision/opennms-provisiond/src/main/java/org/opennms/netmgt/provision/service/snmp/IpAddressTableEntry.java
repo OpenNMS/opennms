@@ -154,6 +154,7 @@ public final class IpAddressTableEntry extends SnmpTableEntry {
     /**
      * This is a hack, we get the IP address from the instance information when storing one of the columns.  :P
      */
+    @Override
     public void storeResult(final SnmpResult result) {
     	final int[] instanceIds = result.getInstance().getIds();
     	final int addressType = instanceIds[1];

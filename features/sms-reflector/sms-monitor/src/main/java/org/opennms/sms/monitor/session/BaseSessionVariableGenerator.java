@@ -56,6 +56,7 @@ public class BaseSessionVariableGenerator implements SessionVariableGenerator {
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public void checkIn(String variable) {
 		throw new UnsupportedOperationException("You must implement checkIn() in your class!");
 	}
@@ -65,6 +66,7 @@ public class BaseSessionVariableGenerator implements SessionVariableGenerator {
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
+        @Override
 	public String checkOut() {
 		throw new UnsupportedOperationException("You must implement checkOut() in your class!");
 	}
@@ -79,6 +81,7 @@ public class BaseSessionVariableGenerator implements SessionVariableGenerator {
 	}
 	
 	/** {@inheritDoc} */
+        @Override
 	public void setParameters(Map<String, String> parameters) {
 		m_parameters = parameters;
 	}

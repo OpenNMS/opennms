@@ -174,6 +174,7 @@ public class XmlDataCollection implements Serializable, Comparable<XmlDataCollec
     /* (non-Javadoc)
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
+    @Override
     public int compareTo(XmlDataCollection obj) {
         return new CompareToBuilder()
         .append(getName(), obj.getName())

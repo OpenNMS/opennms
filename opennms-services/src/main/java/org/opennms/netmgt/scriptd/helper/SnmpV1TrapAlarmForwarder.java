@@ -40,6 +40,7 @@ public class SnmpV1TrapAlarmForwarder extends SnmpTrapForwarderHelper implements
 		super(source_ip, ip, port, community, snmpTrapHelper);
 	}
 
+        @Override
 	public void flushEvent(Event event) {
 		event =	super.filter(event);
 		if (event != null) {
@@ -51,6 +52,7 @@ public class SnmpV1TrapAlarmForwarder extends SnmpTrapForwarderHelper implements
 		}		
 	}
 
+        @Override
 	public void flushSyncEvent(Event event) {
 		event =	super.filter(event);
 		if (event != null) {
@@ -62,10 +64,12 @@ public class SnmpV1TrapAlarmForwarder extends SnmpTrapForwarderHelper implements
 		}
 	}
 
+        @Override
 	public void sendStartSync() {
 		super.sendV1StartSyncTrap();
 	}
 
+        @Override
 	public void sendEndSync() {
 		super.sendV1EndSyncTrap();		
 	}

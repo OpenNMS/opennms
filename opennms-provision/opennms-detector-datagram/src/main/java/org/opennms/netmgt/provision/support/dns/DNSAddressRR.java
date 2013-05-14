@@ -198,6 +198,7 @@ public final class DNSAddressRR {
      *
      * @return The string describing the object.
      */
+    @Override
     public String toString() {
         return getRRName() + "\tInternet Address = " + addressToByteString();
     }

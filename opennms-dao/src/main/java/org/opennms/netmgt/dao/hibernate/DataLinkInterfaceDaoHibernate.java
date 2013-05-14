@@ -51,9 +51,11 @@ public class DataLinkInterfaceDaoHibernate extends AbstractDaoHibernate<DataLink
 
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
+    @Override
     public Collection<DataLinkInterface> findAll(final Integer offset, final Integer limit) {
         return getHibernateTemplate().execute(new HibernateCallback<Collection<DataLinkInterface>>() {
 
+            @Override
             public Collection<DataLinkInterface> doInHibernate(Session session) throws HibernateException {
                 return session.createCriteria(DataLinkInterface.class)
                 .setFirstResult(offset)
@@ -64,21 +66,25 @@ public class DataLinkInterfaceDaoHibernate extends AbstractDaoHibernate<DataLink
     }
 
     /** {@inheritDoc} */
+    @Override
     public DataLinkInterface findById(final Integer id) {
         return findUnique("from DataLinkInterface as dli where dli.id = ?", id);
     }
 
     /** {@inheritDoc} */
+    @Override
     public Collection<DataLinkInterface> findByNodeId(final Integer nodeId) {
         return find("from DataLinkInterface as dli where dli.node.id = ?", nodeId);
     }
 
     /** {@inheritDoc} */
+    @Override
     public Collection<DataLinkInterface> findByNodeParentId(final Integer nodeParentId) {
         return find("from DataLinkInterface as dli where dli.nodeParentId = ?", nodeParentId);
     }
 
     /** {@inheritDoc} */
+    @Override
     public DataLinkInterface findByNodeIdAndIfIndex(final Integer nodeId, final Integer ifIndex) {
         final OnmsCriteria criteria = new OnmsCriteria(DataLinkInterface.class);
         criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);

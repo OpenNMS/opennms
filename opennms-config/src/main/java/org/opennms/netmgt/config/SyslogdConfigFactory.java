@@ -170,6 +170,7 @@ public final class SyslogdConfigFactory implements SyslogdConfig {
      *
      * @return the port on which SNMP traps should be received
      */
+    @Override
     public synchronized int getSyslogPort() {
         return m_config.getConfiguration().getSyslogPort();
     }
@@ -180,6 +181,7 @@ public final class SyslogdConfigFactory implements SyslogdConfig {
      * @return a {@link java.lang.String} object.
      * @since 1.8.1
      */
+    @Override
     public synchronized String getListenAddress() {
         return m_config.getConfiguration().getListenAddress();
     }
@@ -190,6 +192,7 @@ public final class SyslogdConfigFactory implements SyslogdConfig {
      *
      * @return whether to generate newSuspect events on traps.
      */
+    @Override
     public synchronized boolean getNewSuspectOnMessage() {
         return m_config.getConfiguration().getNewSuspectOnMessage();
     }
@@ -199,6 +202,7 @@ public final class SyslogdConfigFactory implements SyslogdConfig {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public synchronized String getForwardingRegexp() {
         return m_config.getConfiguration().getForwardingRegexp();
     }
@@ -208,6 +212,7 @@ public final class SyslogdConfigFactory implements SyslogdConfig {
      *
      * @return a int.
      */
+    @Override
     public synchronized int getMatchingGroupHost() {
         return m_config.getConfiguration().getMatchingGroupHost();
 
@@ -218,6 +223,7 @@ public final class SyslogdConfigFactory implements SyslogdConfig {
      *
      * @return a int.
      */
+    @Override
     public synchronized int getMatchingGroupMessage() {
         return m_config.getConfiguration().getMatchingGroupMessage();
 
@@ -228,6 +234,7 @@ public final class SyslogdConfigFactory implements SyslogdConfig {
      *
      * @return the parser class to use when parsing syslog messages, as a string.
      */
+    @Override
     public synchronized String getParser() {
         return m_config.getConfiguration().getParser();
     }
@@ -237,6 +244,7 @@ public final class SyslogdConfigFactory implements SyslogdConfig {
      *
      * @return a {@link org.opennms.netmgt.config.syslogd.UeiList} object.
      */
+    @Override
     public synchronized UeiList getUeiList() {
         return m_config.getUeiList();
     }
@@ -246,6 +254,7 @@ public final class SyslogdConfigFactory implements SyslogdConfig {
      *
      * @return a {@link org.opennms.netmgt.config.syslogd.HideMessage} object.
      */
+    @Override
     public synchronized HideMessage getHideMessages() {
         return m_config.getHideMessage();
     }
@@ -255,6 +264,7 @@ public final class SyslogdConfigFactory implements SyslogdConfig {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public synchronized String getDiscardUei() {
         return m_config.getConfiguration().getDiscardUei();
     }

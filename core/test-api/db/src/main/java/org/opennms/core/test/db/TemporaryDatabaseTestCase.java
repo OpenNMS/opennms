@@ -446,6 +446,7 @@ public class TemporaryDatabaseTestCase extends TestCase {
             m_tearDownError = tearDownError;
         }
         
+        @Override
         public String toString() {
             return super.toString()
                 + "\nAlso received error on tearDown: "

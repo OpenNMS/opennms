@@ -91,6 +91,7 @@ public abstract class MultilineOrientedDetector extends BasicDetector<LineOrient
     public static ResponseValidator<MultilineOrientedResponse> equals(final String pattern) {
         return new ResponseValidator<MultilineOrientedResponse>() {
             
+            @Override
             public boolean validate(final MultilineOrientedResponse response) {
                 return response.equals(pattern);
             }
@@ -107,6 +108,7 @@ public abstract class MultilineOrientedDetector extends BasicDetector<LineOrient
     public static ResponseValidator<MultilineOrientedResponse> startsWith(final String pattern){
         return new ResponseValidator<MultilineOrientedResponse>(){
 
+            @Override
             public boolean validate(final MultilineOrientedResponse response) {
                 return response.startsWith(pattern);
             }

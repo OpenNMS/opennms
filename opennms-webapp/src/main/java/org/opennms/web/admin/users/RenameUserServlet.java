@@ -55,6 +55,7 @@ public class RenameUserServlet extends HttpServlet {
     private static final long serialVersionUID = -560190996358287556L;
 
     /** {@inheritDoc} */
+    @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String userID = request.getParameter("userID");
         String newID = request.getParameter("newID");

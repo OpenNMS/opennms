@@ -106,14 +106,17 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
             this(pollerConfiguration.getConfigurationTimestamp(), pollerConfiguration.getPolledServices());
         }
 
+        @Override
         public Date getConfigurationTimestamp() {
             return m_timestamp;
         }
 
+        @Override
         public PolledService[] getPolledServices() {
             return m_polledServices;
         }
 
+        @Override
         public long getServerTime() {
             return m_serverTime;
         }

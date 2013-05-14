@@ -283,6 +283,7 @@ public class EventReceipt implements Serializable {
         this._uuidList = uuidList;
     }
 
+        @Override
     public String toString() {
     	return new ToStringBuilder(this)
     		.append("uuid", _uuidList)

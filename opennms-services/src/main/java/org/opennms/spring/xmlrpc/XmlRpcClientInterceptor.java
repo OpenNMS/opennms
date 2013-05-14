@@ -74,6 +74,7 @@ public class XmlRpcClientInterceptor extends UrlBasedRemoteAccessor implements M
     }
     
     /** {@inheritDoc} */
+    @Override
     public Object invoke(MethodInvocation methodInvocation) throws Throwable {
         String methodName = methodInvocation.getMethod().getName();
         Object[] args = methodInvocation.getArguments();

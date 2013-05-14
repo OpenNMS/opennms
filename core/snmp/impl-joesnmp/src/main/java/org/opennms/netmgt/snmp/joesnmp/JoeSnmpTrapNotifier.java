@@ -66,6 +66,7 @@ public class JoeSnmpTrapNotifier implements SnmpTrapHandler {
      *            The protocol data unit containing the data
      * 
      */
+    @Override
     public void snmpReceivedTrap(SnmpTrapSession session, InetAddress agent,
             int port, SnmpOctetString community, SnmpPduPacket pdu) {
         m_listener.trapReceived(new V2TrapInformation(agent, new String(community.getString()), pdu, m_trapProcessorFactory.createTrapProcessor()));
@@ -89,6 +90,7 @@ public class JoeSnmpTrapNotifier implements SnmpTrapHandler {
      *            The protocol data unit containing the data
      * 
      */
+    @Override
     public void snmpReceivedTrap(SnmpTrapSession session, InetAddress agent,
             int port, SnmpOctetString community, SnmpPduTrap pdu) {
         m_listener.trapReceived(new V1TrapInformation(agent, new String(community.getString()), pdu, m_trapProcessorFactory.createTrapProcessor()));
@@ -100,6 +102,7 @@ public class JoeSnmpTrapNotifier implements SnmpTrapHandler {
      * errors are logged and ignored by the trapd class.
      * </P>
      */
+    @Override
     public void snmpTrapSessionError(SnmpTrapSession session, int error, Object ref) {
         String msg = (ref != null ? ref.toString() : null);
         m_listener.trapError(error, msg);

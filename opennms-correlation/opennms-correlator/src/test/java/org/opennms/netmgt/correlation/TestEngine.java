@@ -38,6 +38,7 @@ public class TestEngine extends AbstractCorrelationEngine {
     
     Integer m_timerId = null;
 
+    @Override
 	public void correlate(Event e) {
 		if ("testDown".equals(e.getUei())) {
             EventBuilder bldr = new EventBuilder("testDownReceived", "TestEngine");
@@ -59,6 +60,7 @@ public class TestEngine extends AbstractCorrelationEngine {
 		
 	}
     
+    @Override
 	public List<String> getInterestingEvents() {
 		List<String> ueis = new ArrayList<String>();
 		ueis.add("testDown");
@@ -74,6 +76,7 @@ public class TestEngine extends AbstractCorrelationEngine {
         sendEvent(bldr.getEvent());
     }
 
+    @Override
     public String getName() {
         return "TestEngine";
     }

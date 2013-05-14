@@ -123,6 +123,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
          */
         private static final long serialVersionUID = 3000643751074224389L;
 
+        @Override
         public int compare(OnmsMonitoredService o1, OnmsMonitoredService o2) {
             int diff;
             diff = o1.getIpInterface().getNode().getLabel().compareToIgnoreCase(o2.getIpInterface().getNode().getLabel());
@@ -152,6 +153,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
          */
         private static final long serialVersionUID = -1365958323886041945L;
 
+        @Override
         public int compare(ServiceGraph o1, ServiceGraph o2) {
             if ((o1.getErrors().length == 0 && o2.getErrors().length == 0)
                     || (o1.getErrors().length > 0 && o2.getErrors().length > 0)) {
@@ -170,6 +172,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
          */
         private static final long serialVersionUID = -5854706886193427256L;
 
+        @Override
         public int compare(OnmsLocationSpecificStatus o1, OnmsLocationSpecificStatus o2) {
             if ((o1.getPollResult().isUnknown() && o2.getPollResult().isUnknown())
                     || (!o1.getPollResult().isUnknown() && !o2.getPollResult().isUnknown())) {
@@ -189,11 +192,13 @@ public class DefaultDistributedStatusService implements DistributedStatusService
      *
      * @return a int.
      */
+    @Override
     public int getApplicationCount() {
         return m_applicationDao.countAll();
     }
 
     /** {@inheritDoc} */
+    @Override
     public SimpleWebTable createStatusTable(DistributedStatusDetailsCommand command, Errors errors) {
         SimpleWebTable table = new SimpleWebTable(); 
         table.setErrors(errors);
@@ -351,6 +356,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
     }
 
     /** {@inheritDoc} */
+    @Override
     public SimpleWebTable createFacilityStatusTable(Date start, Date end) {
         Assert.notNull(start, "argument start cannot be null");
         Assert.notNull(end, "argument end cannot be null");
@@ -625,6 +631,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         List<OnmsLocationSpecificStatus> sortedStatuses =
             new LinkedList<OnmsLocationSpecificStatus>(statuses);
         Collections.sort(sortedStatuses, new Comparator<OnmsLocationSpecificStatus>(){
+            @Override
             public int compare(OnmsLocationSpecificStatus o1, OnmsLocationSpecificStatus o2) {
                 return o1.getPollResult().getTimestamp().compareTo(o2.getPollResult().getTimestamp());
             }
@@ -701,6 +708,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
     }
 
     /** {@inheritDoc} */
+    @Override
     public DistributedStatusHistoryModel createHistoryModel(
             String locationName, String monitorId, String applicationName,
             String timeSpan, String previousLocationName) {

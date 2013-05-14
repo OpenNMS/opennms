@@ -99,6 +99,7 @@ public class RancidReportExecController extends SimpleFormController {
     }
     
     /** {@inheritDoc} */
+    @Override
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response,
             Object command, BindException errors) throws ServletException, IOException, Exception {
 
@@ -155,6 +156,7 @@ public class RancidReportExecController extends SimpleFormController {
 //        return super.onSubmit(request, response, command, errors);
     }
     /** {@inheritDoc} */
+    @Override
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws ServletException {
         log().debug("RancidReportExecController initBinder");
     }

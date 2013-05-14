@@ -47,6 +47,7 @@ import java.util.Collection;
 public class DateProcessRowsCallback extends ProcessRowsCallback
 {
     /** {@inheritDoc} */
+    @Override
     public Collection filterRows(TableModel model, Collection rows)
         throws Exception
     {

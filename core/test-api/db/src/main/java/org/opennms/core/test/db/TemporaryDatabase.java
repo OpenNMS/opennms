@@ -202,6 +202,7 @@ public class TemporaryDatabase implements DataSource {
         assertTrue("iplike directory exists at ../opennms-iplike: " + ipLikeDir.getAbsolutePath(), ipLikeDir.exists());
 
         File[] ipLikePlatformDirs = ipLikeDir.listFiles(new FileFilter() {
+            @Override
             public boolean accept(File file) {
                 if (file.getName().matches("opennms-iplike-.*") && file.isDirectory()) {
                     return true;
@@ -223,6 +224,7 @@ public class TemporaryDatabase implements DataSource {
             }
 
             File[] ipLikeFiles = ipLikeTargetDir.listFiles(new FileFilter() {
+                @Override
                 public boolean accept(File file) {
                     if (file.isFile() && file.getName().matches("opennms-iplike-.*\\.(so|dylib)")) {
                         return true;
@@ -408,6 +410,7 @@ public class TemporaryDatabase implements DataSource {
         }
         System.err.println("Thread dump of " + threads.size() + " threads (" + daemons + " daemons):");
         Map<Thread, StackTraceElement[]> sortedThreads = new TreeMap<Thread, StackTraceElement[]>(new Comparator<Thread>() {
+            @Override
             public int compare(final Thread t1, final Thread t2) {
                 return Long.valueOf(t1.getId()).compareTo(Long.valueOf(t2.getId()));
             }
@@ -565,6 +568,7 @@ public class TemporaryDatabase implements DataSource {
         return m_url;
     }
     
+    @Override
     public String toString() {
         return new ToStringBuilder(this)
             .append("driver", m_driver)

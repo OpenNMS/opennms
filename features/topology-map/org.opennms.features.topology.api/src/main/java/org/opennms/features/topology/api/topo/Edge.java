@@ -43,6 +43,7 @@ public interface Edge extends EdgeRef {
 
 	Connector getTarget();
 
+        @Override
 	String getLabel();
 
 	String getTooltipText();

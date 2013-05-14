@@ -56,6 +56,7 @@ public final class SnmpResponseHandler implements SnmpHandler {
      * @param pkt
      *            The SNMP packet that was received.
      */
+    @Override
     public void snmpReceivedPdu(SnmpSession sess, int command, SnmpPduPacket pkt) {
         if (pkt.getCommand() == SnmpPduPacket.RESPONSE) {
             if (((SnmpPduRequest) pkt).getErrorStatus() == SnmpPduPacket.ErrNoError) {
@@ -78,6 +79,7 @@ public final class SnmpResponseHandler implements SnmpHandler {
      * @param obj
      *            The syntax object.
      */
+    @Override
     public void snmpInternalError(SnmpSession sess, int err, SnmpSyntax obj) {
         synchronized (this) {
             notifyAll();
@@ -93,6 +95,7 @@ public final class SnmpResponseHandler implements SnmpHandler {
      * @param pkt
      *            The SNMP packet that was received.
      */
+    @Override
     public void snmpTimeoutError(SnmpSession sess, SnmpSyntax pkt) {
         synchronized (this) {
             notifyAll();

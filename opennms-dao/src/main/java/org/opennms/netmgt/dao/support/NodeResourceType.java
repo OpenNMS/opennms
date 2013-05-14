@@ -62,6 +62,7 @@ public class NodeResourceType implements OnmsResourceType {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getLabel() {
         return "Node";
     }
@@ -71,41 +72,49 @@ public class NodeResourceType implements OnmsResourceType {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getName() {
         return "node";
     }
 
     /** {@inheritDoc} */
+    @Override
     public List<OnmsResource> getResourcesForDomain(String domain) {
         return null;
     }
 
     /** {@inheritDoc} */
+    @Override
     public List<OnmsResource> getResourcesForNode(int nodeId) {
         return null;
     }
     
     /** {@inheritDoc} */
+    @Override
        public List<OnmsResource> getResourcesForNodeSource(String nodeSource, int nodeId) {
            return null;
        }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isResourceTypeOnDomain(String domain) {
         return false;
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isResourceTypeOnNode(int nodeId) {
         return false;
     }
     
     /** {@inheritDoc} */
+    @Override
        public boolean isResourceTypeOnNodeSource(String nodeSource, int nodeId) {
            return false;
        }
 
     /** {@inheritDoc} */
+    @Override
     public String getLinkForResource(OnmsResource resource) {
         return "element/node.jsp?node=" + resource.getName();
     }
@@ -138,6 +147,7 @@ public class NodeResourceType implements OnmsResourceType {
             m_parent = parent;
         }
 
+        @Override
         public List<OnmsResource> load() {
             List<OnmsResource> children = new LinkedList<OnmsResource>();
 

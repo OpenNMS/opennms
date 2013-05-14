@@ -91,6 +91,7 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
      *
      * The method that inserts the event into the database
      */
+    @Override
     public void process(final Header eventHeader, final Event event) throws SQLException, DataAccessException {
         if (!checkEventSanityAndDoWeProcess(event, "JdbcEventWriter")) {
             return;

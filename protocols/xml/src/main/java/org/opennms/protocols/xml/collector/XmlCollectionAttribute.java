@@ -68,6 +68,7 @@ public class XmlCollectionAttribute extends AbstractCollectionAttribute implemen
     /* (non-Javadoc)
      * @see org.opennms.netmgt.collectd.AbstractCollectionAttribute#getAttributeType()
      */
+    @Override
     public CollectionAttributeType getAttributeType() {
         return m_attribType;
     }
@@ -75,6 +76,7 @@ public class XmlCollectionAttribute extends AbstractCollectionAttribute implemen
     /* (non-Javadoc)
      * @see org.opennms.netmgt.collectd.AbstractCollectionAttribute#getName()
      */
+    @Override
     public String getName() {
         return m_attribType.getName();
     }
@@ -82,6 +84,7 @@ public class XmlCollectionAttribute extends AbstractCollectionAttribute implemen
     /* (non-Javadoc)
      * @see org.opennms.netmgt.collectd.AbstractCollectionAttribute#getNumericValue()
      */
+    @Override
     public String getNumericValue() {
         try {
             Double d = Double.parseDouble(m_value); // This covers negative and scientific notation numbers.
@@ -101,6 +104,7 @@ public class XmlCollectionAttribute extends AbstractCollectionAttribute implemen
     /* (non-Javadoc)
      * @see org.opennms.netmgt.collectd.AbstractCollectionAttribute#getResource()
      */
+    @Override
     public CollectionResource getResource() {
         return m_resource;
     }
@@ -108,6 +112,7 @@ public class XmlCollectionAttribute extends AbstractCollectionAttribute implemen
     /* (non-Javadoc)
      * @see org.opennms.netmgt.collectd.AbstractCollectionAttribute#getStringValue()
      */
+    @Override
     public String getStringValue() {
         return m_value;
     }
@@ -115,6 +120,7 @@ public class XmlCollectionAttribute extends AbstractCollectionAttribute implemen
     /* (non-Javadoc)
      * @see org.opennms.netmgt.collectd.AbstractCollectionAttribute#shouldPersist(org.opennms.netmgt.config.collector.ServiceParameters)
      */
+    @Override
     public boolean shouldPersist(ServiceParameters params) {
         return true;
     }
@@ -122,6 +128,7 @@ public class XmlCollectionAttribute extends AbstractCollectionAttribute implemen
     /* (non-Javadoc)
      * @see org.opennms.netmgt.config.collector.CollectionAttribute#getType()
      */
+    @Override
     public String getType() {
         return m_attribType.getType();
     }
@@ -129,6 +136,7 @@ public class XmlCollectionAttribute extends AbstractCollectionAttribute implemen
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
+    @Override
     public String toString() {
         return "XmlCollectionAttribute " + getName() + "=" + getStringValue();
     }
@@ -138,6 +146,7 @@ public class XmlCollectionAttribute extends AbstractCollectionAttribute implemen
      *
      * @return the thread category
      */
+    @Override
     protected ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }

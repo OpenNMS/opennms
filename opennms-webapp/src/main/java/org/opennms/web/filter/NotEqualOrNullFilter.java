@@ -60,6 +60,7 @@ public abstract class NotEqualOrNullFilter<T> extends OneArgFilter<T> {
      *
      * @return a {@link org.hibernate.criterion.Criterion} object.
      */
+    @Override
     public Criterion getCriterion() {
         return Restrictions.or(Restrictions.ne(getPropertyName(), getValue()), Restrictions.isNull(getPropertyName()));
     }

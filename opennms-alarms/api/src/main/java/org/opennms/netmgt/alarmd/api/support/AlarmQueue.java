@@ -90,6 +90,7 @@ class AlarmQueue<T extends Preservable> {
     
     private final State FORWARDING = new State() {
 
+        @Override
         public List<T> getAlarmsToForward() throws InterruptedException {
             List<T> alarms = new ArrayList<T>(m_maxBatchSize);
             
@@ -120,10 +121,12 @@ class AlarmQueue<T extends Preservable> {
             
         }
         
+        @Override
         public void forwardSuccessful(List<T> alarms) {
             // no need to do anything here
         }
 
+        @Override
         public void forwardFailed(List<T> alarms) {
             
             addPreservedToPreservedQueue(alarms);
@@ -133,12 +136,14 @@ class AlarmQueue<T extends Preservable> {
             }
         }
         
+        @Override
         public String toString() { return "FORWARDING"; }
 
     };
     
     private final State FAILING = new State() {
 
+        @Override
         public List<T> getAlarmsToForward() {
             discardNonPreservedAlarms();
 
@@ -149,10 +154,12 @@ class AlarmQueue<T extends Preservable> {
             return m_nextBatch;
         }
 
+        @Override
         public void forwardFailed(List<T> alarms) {
             // do nothing we are already failing
         }
 
+        @Override
         public void forwardSuccessful(List<T> alarms) {
             m_nextBatch.clear();
             if (m_preservedQueue.isEmpty()) {
@@ -162,21 +169,25 @@ class AlarmQueue<T extends Preservable> {
             }
         }
 
+        @Override
         public String toString() { return "FAILING"; }
         
     };
     
     private final State RECOVERING = new State() {
 
+        @Override
         public List<T> getAlarmsToForward() {
             loadNextBatch();
             return m_nextBatch;
         }
         
+        @Override
         public void forwardFailed(List<T> alarms) {
             setState(FAILING);
         }
 
+        @Override
         public void forwardSuccessful(List<T> alarms) {
             m_nextBatch.clear();
             if (m_preservedQueue.isEmpty()) {
@@ -184,6 +195,7 @@ class AlarmQueue<T extends Preservable> {
             }
         }
 
+        @Override
         public String toString() {
             return "RECOVERING"; 
         }

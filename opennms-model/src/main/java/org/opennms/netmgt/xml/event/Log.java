@@ -130,6 +130,7 @@ public class Log implements Serializable {
         this._header = header;
     }
 
+        @Override
     public String toString() {
     	return new ToStringBuilder(this)
     		.append("header", _header)

@@ -77,6 +77,7 @@ public class DefaultViewDisplayDao implements ViewDisplayDao {
 	 *
 	 * @return a {@link org.opennms.netmgt.config.viewsdisplay.View} object.
 	 */
+        @Override
 	public View getView() {
 		try {
 			return ViewsDisplayFactory.getInstance().getView("WebConsoleView");

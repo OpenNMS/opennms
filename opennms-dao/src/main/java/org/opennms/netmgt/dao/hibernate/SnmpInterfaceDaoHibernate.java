@@ -46,6 +46,7 @@ public class SnmpInterfaceDaoHibernate extends
 
 
     /** {@inheritDoc} */
+        @Override
     public OnmsSnmpInterface findByNodeIdAndIfIndex(Integer nodeId, Integer ifIndex) {
         Assert.notNull(nodeId, "nodeId may not be null");
         Assert.notNull(ifIndex, "ifIndex may not be null");
@@ -58,6 +59,7 @@ public class SnmpInterfaceDaoHibernate extends
 
 
     /** {@inheritDoc} */
+        @Override
     public OnmsSnmpInterface findByForeignKeyAndIfIndex(String foreignSource, String foreignId, Integer ifIndex) {
         Assert.notNull(foreignSource, "foreignSource may not be null");
         Assert.notNull(foreignId, "foreignId may not be null");

@@ -149,6 +149,7 @@ final public class RadiusAuthMonitor extends AbstractServiceMonitor {
      * @see org.opennms.netmgt.poller.ServiceMonitor#SERVICE_UNAVAILABLE
      * @see org.opennms.netmgt.poller.ServiceMonitor#SERVICE_UNRESPONSIVE
      */
+    @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
     	final NetworkInterface<InetAddress> iface = svc.getNetInterface();
 

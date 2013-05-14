@@ -519,6 +519,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
      *
      * @return a {@link java.util.List} object.
      */
+    @Override
     public List<OnmsResource> findNodeSourceResources() {
         List<OnmsResource> resources = new LinkedList<OnmsResource>();
 

@@ -85,6 +85,7 @@ public class DefaultReportWrapperService implements ReportWrapperService {
     }
 
     /** {@inheritDoc} */
+    @Override
     public DeliveryOptions getDeliveryOptions(String reportId, String userId) {
         DeliveryOptions options = new DeliveryOptions();
 
@@ -120,11 +121,13 @@ public class DefaultReportWrapperService implements ReportWrapperService {
     }
 
     /** {@inheritDoc} */
+    @Override
     public List<ReportFormat> getFormats(String reportId) {
         return getReportService(reportId).getFormats(reportId);
     }
 
     /** {@inheritDoc} */
+    @Override
     public ReportParameters getParameters(String reportId) {
         try {
             return getReportService(reportId).getParameters(reportId);
@@ -136,6 +139,7 @@ public class DefaultReportWrapperService implements ReportWrapperService {
     }
     
     /** {@inheritDoc} */
+    @Override
     public Boolean hasParameters(String reportId) {
        
         Map<String, Object> reportParms = getParameters(reportId).getReportParms();
@@ -147,6 +151,7 @@ public class DefaultReportWrapperService implements ReportWrapperService {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void render(String reportId, String location, ReportFormat format,
             OutputStream outputStream) {
         try {
@@ -159,6 +164,7 @@ public class DefaultReportWrapperService implements ReportWrapperService {
     }
     
     /** {@inheritDoc} */
+    @Override
     public void run(ReportParameters parameters,
             ReportMode mode,
             DeliveryOptions deliveryOptions,
@@ -241,6 +247,7 @@ public class DefaultReportWrapperService implements ReportWrapperService {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean validate(ReportParameters parameters, String reportId) {
         return getReportService(reportId).validate(
                                                    parameters.getReportParms(),
@@ -272,6 +279,7 @@ public class DefaultReportWrapperService implements ReportWrapperService {
 
     /** {@inheritDoc} */
    
+    @Override
     public void runAndRender(ReportParameters parameters, ReportMode mode,
             OutputStream outputStream) {
 

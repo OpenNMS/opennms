@@ -124,6 +124,7 @@ public final class DominoIIOPPlugin extends AbstractTcpPlugin {
      *      org.opennms.netmgt.capsd.ConnectonConfig)
      */
     /** {@inheritDoc} */
+    @Override
     protected boolean checkProtocol(Socket socket, ConnectionConfig config) {
         return true;
     }
@@ -135,6 +136,7 @@ public final class DominoIIOPPlugin extends AbstractTcpPlugin {
      *      java.util.Map)
      */
     /** {@inheritDoc} */
+    @Override
     protected ConnectionConfig createConnectionConfig(InetAddress address, int port) {
         return new DominoConnectionConfig(address, port);
     }
@@ -146,6 +148,7 @@ public final class DominoIIOPPlugin extends AbstractTcpPlugin {
      *      java.util.Map)
      */
     /** {@inheritDoc} */
+    @Override
     protected void populateConnectionConfig(ConnectionConfig connConfig, Map<String, Object> qualifiers) {
         super.populateConnectionConfig(connConfig, qualifiers);
 
@@ -155,6 +158,7 @@ public final class DominoIIOPPlugin extends AbstractTcpPlugin {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected boolean preconnectCheck(ConnectionConfig tcpConfig) {
         // get a log to send errors
         //

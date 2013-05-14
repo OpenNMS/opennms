@@ -97,6 +97,7 @@ public class PropertySettingTestSuite extends TestSuite {
     }
     
     /** {@inheritDoc} */
+    @Override
     public void runTest(Test test, TestResult result) {
         setProperty();
         super.runTest(test, result);

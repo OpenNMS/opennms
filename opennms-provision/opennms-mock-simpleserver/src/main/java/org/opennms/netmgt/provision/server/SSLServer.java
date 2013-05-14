@@ -110,9 +110,11 @@ public class SSLServer extends SimpleServer{
      * @return a {@link java.lang.Runnable} object.
      * @throws java.lang.Exception if any.
      */
+    @Override
     protected Runnable getRunnable() throws Exception {
         return new Runnable(){
             
+            @Override
             public void run(){
                 try{
                     OutputStream out = null;

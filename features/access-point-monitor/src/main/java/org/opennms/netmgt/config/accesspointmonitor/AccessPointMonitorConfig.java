@@ -137,6 +137,7 @@ public class AccessPointMonitorConfig implements Serializable, Comparable<Access
         m_monitors.add(monitor);
     }
 
+    @Override
     public int compareTo(AccessPointMonitorConfig obj) {
         return new CompareToBuilder()
             .append(getThreads(), obj.getThreads())

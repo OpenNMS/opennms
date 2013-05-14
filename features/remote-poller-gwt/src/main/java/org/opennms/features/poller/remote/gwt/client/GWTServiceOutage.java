@@ -145,6 +145,7 @@ public class GWTServiceOutage implements Serializable, IsSerializable, Comparabl
     }
 
     /** {@inheritDoc} */
+        @Override
     public boolean equals(Object o) {
         if (!(o instanceof GWTServiceOutage))
             return false;
@@ -168,6 +169,7 @@ public class GWTServiceOutage implements Serializable, IsSerializable, Comparabl
      *
      * @return a int.
      */
+        @Override
     public int hashCode() {
         return new HashCodeBuilder().append(this.getMonitor()).append(this.getService()).append(this.getFrom()).append(this.getTo()).toHashcode();
     }
@@ -177,6 +179,7 @@ public class GWTServiceOutage implements Serializable, IsSerializable, Comparabl
      *
      * @return a {@link java.lang.String} object.
      */
+        @Override
     public String toString() {
         return "GWTServiceOutage[monitor=" + m_monitor + ",service=" + m_service + ",from=" + m_from + ",to=" + m_to + "]";
     }
@@ -187,6 +190,7 @@ public class GWTServiceOutage implements Serializable, IsSerializable, Comparabl
      * @param that a {@link org.opennms.features.poller.remote.gwt.client.GWTServiceOutage} object.
      * @return a int.
      */
+        @Override
     public int compareTo(final GWTServiceOutage that) {
         if (that == null) return -1;
         return new CompareToBuilder()

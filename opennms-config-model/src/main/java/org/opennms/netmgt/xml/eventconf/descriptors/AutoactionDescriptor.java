@@ -271,6 +271,7 @@ public class AutoactionDescriptor extends org.exolab.castor.xml.util.XMLClassDes
      * of a global
      * element or element with anonymous type definition.
      */
+    @Override
     public boolean isElementDefinition(
     ) {
         return _elementDefinition;

@@ -39,6 +39,7 @@ public class InstanceTrackerTest extends TestCase {
         private boolean m_expectsStorageCall;
         private boolean m_storageCalled;
 
+        @Override
         protected void storeResult(SnmpResult res) {
             m_storageCalled = true;
             assertTrue(m_expectsStorageCall);
@@ -87,15 +88,18 @@ public class InstanceTrackerTest extends TestCase {
         class OidCheckedPduBuilder extends PduBuilder {
             int count = 0;
 
+            @Override
             public void addOid(SnmpObjId snmpObjId) {
                 assertEquals(expectedOids[count].decrement(), snmpObjId);
                 count++;
             }
 
+            @Override
             public void setNonRepeaters(int numNonRepeaters) {
                 assertEquals(nonRepeaters, numNonRepeaters);
             }
 
+            @Override
             public void setMaxRepetitions(int maxRepititions) {
                 assertTrue("MaxRepititions must be positive", maxRepititions > 0);
             }

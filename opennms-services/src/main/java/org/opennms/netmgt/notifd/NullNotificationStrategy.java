@@ -50,6 +50,7 @@ public class NullNotificationStrategy implements NotificationStrategy {
     }
 
     /** {@inheritDoc} */
+    @Override
     public int send(List<Argument> arguments) {
         log().debug("In the NullNotification class.");
         return 0;

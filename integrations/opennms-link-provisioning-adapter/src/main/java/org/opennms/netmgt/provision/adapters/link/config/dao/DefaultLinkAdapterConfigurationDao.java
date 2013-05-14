@@ -87,6 +87,7 @@ public class DefaultLinkAdapterConfigurationDao extends AbstractCastorConfigDao<
      *
      * @return a {@link java.util.Set} object.
      */
+    @Override
     public Set<LinkPattern> getPatterns() {
         Assert.notNull(getContainer(), "LinkAdapterConfigDao has no container!");
         Assert.notNull(getContainer().getObject(), "LinkAdapterConfigDao has no configuration loaded!");
@@ -94,6 +95,7 @@ public class DefaultLinkAdapterConfigurationDao extends AbstractCastorConfigDao<
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setPatterns(Set<LinkPattern> patterns) {
         Assert.notNull(getContainer(), "LinkAdapterConfigDao has no container!");
         Assert.notNull(getContainer().getObject(), "LinkAdapterConfigDao has no configuration loaded!");
@@ -103,6 +105,7 @@ public class DefaultLinkAdapterConfigurationDao extends AbstractCastorConfigDao<
     /**
      * <p>saveCurrent</p>
      */
+    @Override
     public synchronized void saveCurrent() {
         File file;
         try {

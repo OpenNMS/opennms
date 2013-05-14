@@ -72,6 +72,7 @@ public class SnmpManageNodesServlet extends HttpServlet {
      *
      * @throws javax.servlet.ServletException if any.
      */
+    @Override
     public void init() throws ServletException {
         try {
             DataSourceFactory.init();
@@ -87,6 +88,7 @@ public class SnmpManageNodesServlet extends HttpServlet {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession userSession = request.getSession(false);
         List<SnmpManagedInterface> allInterfaces = getManagedInterfacesFromSession(userSession);

@@ -161,14 +161,17 @@ public class XmlRpcTest {
             this.age = age;
         }
         
+        @Override
         public String getName() {
             return this.name;
         }
         
+        @Override
         public int getAge() {
             return this.age;
         }
         
+        @Override
         public void setAge(int age) {
             this.age = age;
         }

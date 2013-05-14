@@ -40,6 +40,7 @@ import org.opennms.netmgt.dao.castor.collector.DataCollectionConfigFileTest;
 public class InvocationAnticipator implements InvocationHandler {
     public class NullInvocationHandler implements InvocationHandler {
 
+        @Override
         public Object invoke(Object proxy, Method method, Object[] args)
                 throws Throwable {
             return null;
@@ -56,6 +57,7 @@ public class InvocationAnticipator implements InvocationHandler {
         m_clazz = clazz;
     }
 
+    @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         int currentCount = 0;
         if (m_counts.get(method.getName()) != null) {

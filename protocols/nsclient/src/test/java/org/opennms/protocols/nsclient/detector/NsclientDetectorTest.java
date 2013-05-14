@@ -81,6 +81,7 @@ public class NsclientDetectorTest implements InitializingBean {
         MockLogAppender.setupLogging();
         // Initialize Mock NSClient Server
         m_server  = new SimpleServer() {
+            @Override
             public void onInit() {
                 addResponseHandler(startsWith("None&1"), new RequestHandler() {
                     @Override

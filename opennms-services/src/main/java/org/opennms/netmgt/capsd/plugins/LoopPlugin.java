@@ -53,6 +53,7 @@ public class LoopPlugin implements Plugin {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getProtocolName() {
         return m_protocolName;
     }
@@ -61,6 +62,7 @@ public class LoopPlugin implements Plugin {
      * @see org.opennms.netmgt.capsd.Plugin#isProtocolSupported(java.net.InetAddress)
      */
     /** {@inheritDoc} */
+    @Override
     public boolean isProtocolSupported(InetAddress address) {
         return isProtocolSupported(address, null);
     }
@@ -69,6 +71,7 @@ public class LoopPlugin implements Plugin {
      * @see org.opennms.netmgt.capsd.Plugin#isProtocolSupported(java.net.InetAddress, java.util.Map)
      */
     /** {@inheritDoc} */
+    @Override
     public boolean isProtocolSupported(InetAddress address, Map<String, Object> qualifiers) {
         
         if (qualifiers == null) {

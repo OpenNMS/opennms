@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.eventd.processor;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 
 import org.opennms.core.test.db.PopulatedTemporaryDatabaseTestCase;

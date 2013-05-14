@@ -64,6 +64,7 @@ public class UssdNotificationDispatcher implements IUSSDNotification {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void process(String gatewayId, USSDResponse msg) {
 
         log.debug( "Forwarding message to registered listeners: " + getListeners() + " : " + msg );

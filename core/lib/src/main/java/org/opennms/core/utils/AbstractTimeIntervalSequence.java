@@ -52,16 +52,19 @@ public abstract class AbstractTimeIntervalSequence<T extends TimeInterval> {
             m_current = seq;
         }
 
+        @Override
         public boolean hasNext() {
             return m_current != null && m_current.m_interval != null;
         }
 
+        @Override
         public T next() {
             T interval = m_current.m_interval;
             m_current = m_current.m_tail;
             return interval;
         }
 
+        @Override
         public void remove() {
             throw new UnsupportedOperationException("not implemented yet");
         }
@@ -383,6 +386,7 @@ public abstract class AbstractTimeIntervalSequence<T extends TimeInterval> {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         StringBuffer buf = new StringBuffer("[");
         boolean first = true;

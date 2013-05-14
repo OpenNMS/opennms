@@ -89,6 +89,7 @@ public class MSExchangeDetector extends BasicDetector<LineOrientedRequest, MSExc
     protected static ResponseValidator<MSExchangeResponse> find(final String regex){
         return new ResponseValidator<MSExchangeResponse>() {
 
+            @Override
             public boolean validate(final MSExchangeResponse response) {
                 return response.contains(regex);
             }

@@ -72,6 +72,7 @@ public class ServiceMonitorFactoryBean implements FactoryBean<ServiceMonitor>, I
 	 * @return a {@link org.opennms.netmgt.poller.ServiceMonitor} object.
 	 * @throws java.lang.Exception if any.
 	 */
+        @Override
 	public ServiceMonitor getObject() throws Exception {
 		return m_serviceMonitor;
 	}
@@ -81,6 +82,7 @@ public class ServiceMonitorFactoryBean implements FactoryBean<ServiceMonitor>, I
 	 *
 	 * @return a {@link java.lang.Class} object.
 	 */
+        @Override
 	public Class<? extends ServiceMonitor> getObjectType() {
 		return m_monitorClass;
 	}
@@ -90,6 +92,7 @@ public class ServiceMonitorFactoryBean implements FactoryBean<ServiceMonitor>, I
 	 *
 	 * @return a boolean.
 	 */
+        @Override
 	public boolean isSingleton() {
 		return true;
 	}

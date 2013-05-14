@@ -100,6 +100,7 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
     }
 
     /** {@inheritDoc} */
+    @Override
     public PrefabGraphType findPrefabGraphTypeByName(String name) {
         return findPrefabGraphTypeDaoByName(name);
     }
@@ -119,6 +120,7 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
     }
 
     /** {@inheritDoc} */
+    @Override
     public AdhocGraphType findAdhocGraphTypeByName(String name) {
         return m_adhocTypes.get(name).getObject();
     }
@@ -700,6 +702,7 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
             m_type = type;
         }
 
+        @Override
         public PrefabGraph reload(PrefabGraph graph, Resource resource) {
             try {
                 String graphName = graph.getName();
@@ -736,6 +739,7 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
      * 
      * @return a {@link java.util.List} object.
      */
+    @Override
     public List<PrefabGraph> getAllPrefabGraphs() {
         List<PrefabGraph> graphs = new ArrayList<PrefabGraph>();
         for (FileReloadContainer<PrefabGraphTypeDao> container : m_types.values()) {
@@ -766,6 +770,7 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
     }
 
     /** {@inheritDoc} */
+    @Override
     public PrefabGraph[] getPrefabGraphsForResource(OnmsResource resource) {
         if (resource == null) {
             log().warn("returning empty graph list for resource because it is null");
@@ -897,6 +902,7 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
 
     private class AdhocGraphTypeCallback implements
             FileReloadCallback<AdhocGraphType> {
+        @Override
         public AdhocGraphType reload(AdhocGraphType object, Resource resource) {
             InputStream in = null;
             try {

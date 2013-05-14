@@ -69,6 +69,7 @@ public class DatagramWiringTest implements ApplicationContextAware {
         testWiredDetector(DnsDetector.class);
     }
     
+    @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         m_applicationContext = applicationContext;
     }

@@ -223,6 +223,7 @@ public class InventoryReportRunner implements Runnable {
     /**
      * <p>run</p>
      */
+    @Override
     public void run() {
 
         log().debug("run: getting inventory report on Date ["+ theDate +"] for key [" + theField + "]" + ". Requested by User: " + user + "on Date " 

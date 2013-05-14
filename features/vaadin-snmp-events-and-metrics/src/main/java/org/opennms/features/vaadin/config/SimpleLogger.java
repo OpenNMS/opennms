@@ -40,6 +40,7 @@ public class SimpleLogger implements Logger {
     /* (non-Javadoc)
      * @see org.opennms.features.vaadin.mibcompiler.services.Logger#error(java.lang.String)
      */
+    @Override
     public void error(String message) {
         LogUtils.errorf(this, message);
     }
@@ -47,6 +48,7 @@ public class SimpleLogger implements Logger {
     /* (non-Javadoc)
      * @see org.opennms.features.vaadin.mibcompiler.services.Logger#warn(java.lang.String)
      */
+    @Override
     public void warn(String message) {
         LogUtils.warnf(this, message);
     }
@@ -54,6 +56,7 @@ public class SimpleLogger implements Logger {
     /* (non-Javadoc)
      * @see org.opennms.features.vaadin.mibcompiler.services.Logger#info(java.lang.String)
      */
+    @Override
     public void info(String message) {
         LogUtils.infof(this, message);
     }
@@ -61,6 +64,7 @@ public class SimpleLogger implements Logger {
     /* (non-Javadoc)
      * @see org.opennms.features.vaadin.mibcompiler.services.Logger#debug(java.lang.String)
      */
+    @Override
     public void debug(String message) {
         LogUtils.debugf(this, message);
     }

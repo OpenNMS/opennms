@@ -65,6 +65,7 @@ public final class JschSshPlugin extends AbstractPlugin {
      *
      * @return The protocol name for this plugin.
      */
+    @Override
     public String getProtocolName() {
         return PROTOCOL_NAME;
     }
@@ -75,6 +76,7 @@ public final class JschSshPlugin extends AbstractPlugin {
      * Returns true if the protocol defined by this plugin is supported. If the
      * protocol is not supported then a false value is returned to the caller.
      */
+    @Override
     public boolean isProtocolSupported(InetAddress address) {
         throw new UnsupportedOperationException("Undirected SSH checking not supported");
     }
@@ -91,6 +93,7 @@ public final class JschSshPlugin extends AbstractPlugin {
      * to Provided that the interface's response is valid we mark the poll status
      * as available and return.
      */
+    @Override
     public boolean isProtocolSupported(InetAddress address, Map<String, Object> parameters) {
         SshMonitor m = new SshMonitor();
 

@@ -63,10 +63,12 @@ public class PollerFrontEndTest extends TestCase {
             m_expected = value;
         }
 
+        @Override
         public void appendTo(StringBuffer buffer) {
             buffer.append(m_expected);
         }
 
+        @Override
         public boolean matches(Object argument) {
             ServicePollStateChangedEvent actual = (ServicePollStateChangedEvent) argument;
             if (m_expected == null) {
@@ -87,6 +89,7 @@ public class PollerFrontEndTest extends TestCase {
             m_expected = value;
         }
 
+        @Override
         public void appendTo(StringBuffer buffer) {
             buffer.append(m_expected);
             buffer.append(" property=");
@@ -98,6 +101,7 @@ public class PollerFrontEndTest extends TestCase {
 
         }
 
+        @Override
         public boolean matches(Object argument) {
             PropertyChangeEvent actual = (PropertyChangeEvent) argument;
             if (m_expected == actual) return true;

@@ -28,5 +28,8 @@ Before making a pull request, please submit an [OCA][] for copyright assignment.
 
 Also, it is recommended that you make your changes in master and make a pull request there, not in one of the release (eg. 1.12 or 1.10) branches.  Fixes can be cherry-picked back to a stable branch, but we try to keep churn out of the stable releases if possible.
 
+If you are using Eclipse, please read the [Eclipse][] page for details on setting up your workspace for code conventions and the plugins we use.
+
 [OpenNMS]: http://www.opennms.org/
 [OCA]:     http://www.opennms.org/wiki/OCA
+[Eclipse]: http://www.opennms.org/wiki/Eclipse

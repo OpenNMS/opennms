@@ -42,30 +42,37 @@ public class OnmsWbemObjectBiosStub implements OnmsWbemObject {
         props = propset;
     }
 
+    @Override
     public OnmsWbemObject wmiExecMethod(String methodName, List<?> params, List<?> namedValueSet) {
         return null;
     }
 
+    @Override
     public List<String> wmiInstances() {
         return null;
     }
 
+    @Override
     public String wmiPut() {
         return null;
     }
 
+    @Override
     public OnmsWbemMethodSet getWmiMethods() throws WmiException {
         return null;
     }
 
+    @Override
     public OnmsWbemObjectPath getWmiPath() throws WmiException {
         return null;
     }
 
+    @Override
     public String getWmiObjectText() throws WmiException {
         return null;
     }
 
+    @Override
     public OnmsWbemPropertySet getWmiProperties() throws WmiException {
         return props;
     }

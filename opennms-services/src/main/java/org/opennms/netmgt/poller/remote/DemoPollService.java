@@ -71,6 +71,7 @@ class DemoPollService implements PollService {
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public PollStatus poll(PolledService polledService) {
         PollStatus status = m_currentStatus;
         
@@ -83,18 +84,21 @@ class DemoPollService implements PollService {
     }
 
     /** {@inheritDoc} */
+        @Override
     public void initialize(PolledService polledService) {
         // TODO Auto-generated method stub
         
     }
 
     /** {@inheritDoc} */
+        @Override
     public void release(PolledService polledService) {
         // TODO Auto-generated method stub
         
     }
 
     /** {@inheritDoc} */
+        @Override
     public void setServiceMonitorLocators(Collection<ServiceMonitorLocator> locators) {
         // TODO Auto-generated method stub
         

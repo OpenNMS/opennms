@@ -169,6 +169,7 @@ abstract public class MockElement {
      */
     protected void setServicePollStatus(final PollStatus newStatus) {
         MockVisitor statusSetter = new MockVisitorAdapter() {
+            @Override
             public void visitService(MockService svc) {
                 svc.setPollStatus(newStatus);
             }

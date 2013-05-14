@@ -71,6 +71,7 @@ public class NCSComponentServiceImpl implements NCSComponentService {
 
     EventProxy m_eventProxy;
 
+        @Override
 	public void setEventProxy(final EventProxy proxy) throws Exception {
 		m_eventProxy = proxy;
 	}

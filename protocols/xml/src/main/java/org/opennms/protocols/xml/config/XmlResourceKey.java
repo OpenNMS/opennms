@@ -102,6 +102,7 @@ public class XmlResourceKey implements Serializable, Comparable<XmlResourceKey> 
     /* (non-Javadoc)
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
+    @Override
     public int compareTo(XmlResourceKey obj) {
         return new CompareToBuilder()
         .append(getKeyXpathList(), obj.getKeyXpathList())

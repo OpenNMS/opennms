@@ -104,6 +104,7 @@ public class AlarmBoxController extends AbstractController implements Initializi
     /**
      * <p>afterPropertiesSet</p>
      */
+    @Override
     public void afterPropertiesSet() {
         Assert.notNull(m_successView, "property successView must be set");
         Assert.notNull(m_webAlarmRepository, "webAlarmRepository must be set");

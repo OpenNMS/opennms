@@ -65,6 +65,7 @@ final public class JDBCStoredProcedureMonitor extends JDBCMonitor
    }
 
    /** {@inheritDoc} */
+   @Override
    public PollStatus checkDatabaseStatus(Connection con, Map<String, Object> parameters)
    {
 	   

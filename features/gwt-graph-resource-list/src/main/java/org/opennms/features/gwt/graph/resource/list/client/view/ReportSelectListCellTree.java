@@ -198,6 +198,7 @@ public class ReportSelectListCellTree extends CellTree {
          * Get the {@link NodeInfo} that provides the children of the specified
          * value.
          */
+        @Override
         public <T> NodeInfo<?> getNodeInfo(T value) {
           if(value == null) {
               ListDataProvider<ResourceType> dataProvider = new ListDataProvider<ResourceType>(m_resourceTypes);
@@ -218,6 +219,7 @@ public class ReportSelectListCellTree extends CellTree {
          * Check if the specified value represents a leaf node. Leaf nodes cannot be
          * opened.
          */
+        @Override
         public boolean isLeaf(Object value) {
             if(value instanceof ResourceListItem) {
                 return true;

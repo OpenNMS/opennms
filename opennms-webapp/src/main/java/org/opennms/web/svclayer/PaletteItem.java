@@ -102,6 +102,7 @@ public class PaletteItem {
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
+        @Override
 	public String toString() {
 		if (isSpacer()) {
 			return "SPACER";

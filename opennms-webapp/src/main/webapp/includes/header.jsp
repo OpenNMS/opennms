@@ -56,7 +56,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
-
 <%!
     public void init() throws ServletException {
         try {
@@ -129,6 +128,7 @@ final String baseHref = Util.calculateUrlBase( request );
         <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/print.css" media="print" />
     </c:when>
   </c:choose>
+  <link rel="shortcut icon" href="favicon.ico" />
   <c:forEach var="link" items="${paramValues.link}">
     <c:out value="${link}" escapeXml="false" />
   </c:forEach>

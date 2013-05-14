@@ -93,6 +93,7 @@ public class SpringSecurityUserDaoImplTest extends TestCase implements Initializ
     }
 
     @Before
+    @Override
     public void setUp() {
         MockLogAppender.setupLogging(true, "DEBUG");
     }

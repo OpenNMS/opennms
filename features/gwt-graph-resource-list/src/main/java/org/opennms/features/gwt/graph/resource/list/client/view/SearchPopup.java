@@ -70,6 +70,7 @@ public class SearchPopup extends PopupPanel implements SearchPopupDisplay {
         m_okBtn.setSize("100%", "100%");
         m_okBtn.addClickHandler(new ClickHandler() {
             
+            @Override
             public void onClick(ClickEvent event) {
                 m_eventBus.fireEvent(new SearchClickEvent(m_tf.getText()));
                 hide();
@@ -80,6 +81,7 @@ public class SearchPopup extends PopupPanel implements SearchPopupDisplay {
         m_cancelBtn.setSize("100%", "100%");
         m_cancelBtn.addClickHandler(new ClickHandler() {
             
+            @Override
             public void onClick(ClickEvent event) {
                 hide();
             }

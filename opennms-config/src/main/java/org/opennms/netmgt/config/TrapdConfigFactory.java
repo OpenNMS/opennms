@@ -167,6 +167,7 @@ public final class TrapdConfigFactory implements TrapdConfig {
         m_loaded = true;
     }
 
+    @Override
     public synchronized String getSnmpTrapAddress() {
     	return m_config.getSnmpTrapAddress();
     }
@@ -176,6 +177,7 @@ public final class TrapdConfigFactory implements TrapdConfig {
      *
      * @return the port on which SNMP traps should be received
      */
+    @Override
     public synchronized int getSnmpTrapPort() {
         return m_config.getSnmpTrapPort();
     }
@@ -186,10 +188,12 @@ public final class TrapdConfigFactory implements TrapdConfig {
      *
      * @return whether to generate newSuspect events on traps.
      */
+    @Override
     public synchronized boolean getNewSuspectOnTrap() {
         return m_config.getNewSuspectOnTrap();
     }
 
+    @Override
     public synchronized List<SnmpV3User> getSnmpV3Users() {
         List<SnmpV3User> snmpUsers = new ArrayList<SnmpV3User>();
         for (Snmpv3User user : m_config.getSnmpv3UserCollection()) {

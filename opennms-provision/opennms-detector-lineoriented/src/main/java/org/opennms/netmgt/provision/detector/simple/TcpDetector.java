@@ -110,6 +110,7 @@ public class TcpDetector extends AsyncLineOrientedDetectorMinaImpl {
     public static ResponseValidator<LineOrientedResponse> matches(final String regex){
         return new ResponseValidator<LineOrientedResponse>() {
 
+            @Override
             public boolean validate(final LineOrientedResponse response) {
                 // Make sure that the response matches the regex and that it is not an instance of the
                 // special token that represents that no banner was received.

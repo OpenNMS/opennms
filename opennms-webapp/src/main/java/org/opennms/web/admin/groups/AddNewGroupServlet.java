@@ -55,6 +55,7 @@ public class AddNewGroupServlet extends HttpServlet {
     private static final long serialVersionUID = -8192400415788066048L;
 
     /** {@inheritDoc} */
+    @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     	try {
     		GroupFactory.init();

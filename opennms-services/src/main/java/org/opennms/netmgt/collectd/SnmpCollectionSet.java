@@ -89,6 +89,7 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
     	StringBuffer buffer = new StringBuffer();
 
@@ -282,6 +283,7 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
      *
      * @return a {@link org.opennms.netmgt.snmp.CollectionTracker} object.
      */
+    @Override
     public CollectionTracker getCollectionTracker() {
         return new AggregateTracker(SnmpAttributeType.getCollectionTrackers(getAttributeTypes()));
     }
@@ -300,6 +302,7 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void visit(CollectionSetVisitor visitor) {
         visitor.visitCollectionSet(this);
 
@@ -489,6 +492,7 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
         final RescanNeeded rescanNeeded = new RescanNeeded();
         visit(new ResourceVisitor() {
 
+            @Override
             public void visitResource(CollectionResource resource) {
                 log().debug("rescanNeeded: Visiting resource " + resource);
                 if (resource.rescanNeeded()) {
@@ -573,6 +577,7 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
      *
      * @return a int.
      */
+    @Override
     public int getStatus() {
         return m_status;
     }
@@ -582,6 +587,7 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
      *
      * @return a boolean.
      */
+    @Override
     public boolean ignorePersist() {
         return m_ignorePersist;
     }

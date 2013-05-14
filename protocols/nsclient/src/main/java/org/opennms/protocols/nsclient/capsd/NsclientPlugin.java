@@ -74,6 +74,7 @@ public class NsclientPlugin extends AbstractPlugin {
      *
      * @return The protocol name for this plugin.
      */
+    @Override
     public String getProtocolName() {
         return PROTOCOL_NAME;
     }
@@ -89,6 +90,7 @@ public class NsclientPlugin extends AbstractPlugin {
      * map of parameters to determine how to issue a check to the target
      * server.
      */
+    @Override
     public boolean isProtocolSupported(InetAddress address) {
         throw new UnsupportedOperationException(
                                                 "Undirected TCP checking not "
@@ -123,6 +125,7 @@ public class NsclientPlugin extends AbstractPlugin {
      * <code>NsclientPacket.RES_STATE_OK</code> or
      * <code>NsclientPacket.RES_STATE_WARNING</code>.
      */
+    @Override
     public boolean isProtocolSupported(InetAddress address, Map<String, Object> qualifiers) {
         int retries = DEFAULT_RETRY;
         int timeout = DEFAULT_TIMEOUT;

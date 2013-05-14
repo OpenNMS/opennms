@@ -188,6 +188,7 @@ public class GWTMarkerState implements IsSerializable, Serializable {
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
+        @Override
 	public String toString() {
 		return "GWTMarkerState[name=" + m_name
 			+ ",latLng=" + m_latLng
@@ -207,6 +208,7 @@ public class GWTMarkerState implements IsSerializable, Serializable {
         return bounds.contains(getLatLng());
     }
     
+        @Override
     public boolean equals(final Object o) {
         if (o != null && o instanceof GWTMarkerState) {
             final GWTMarkerState that = (GWTMarkerState)o;

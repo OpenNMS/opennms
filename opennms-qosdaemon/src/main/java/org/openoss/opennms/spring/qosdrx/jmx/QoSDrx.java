@@ -64,12 +64,14 @@ public class QoSDrx extends AbstractServiceDaemon implements QoSDrxMBean {
 	/**
 	 * <p>onInit</p>
 	 */
+        @Override
 	protected void onInit() {}
 
 
 	/**
 	 * <p>onStart</p>
 	 */
+        @Override
 	protected void onStart() {
 //		TODO REMOVE EXAMPLE IMPORTER CODE
 //		ThreadCategory.setPrefix(ImporterService.NAME);
@@ -120,6 +122,7 @@ public class QoSDrx extends AbstractServiceDaemon implements QoSDrxMBean {
 	/**
 	 * <p>onStop</p>
 	 */
+        @Override
 	protected void onStop() {
 		getQoSDrx().stop();
 
@@ -132,6 +135,7 @@ public class QoSDrx extends AbstractServiceDaemon implements QoSDrxMBean {
 	 *
 	 * @return string representation of the statistics for the running receivers
 	 */
+        @Override
 	public String getRuntimeStatistics(){
 		return getQoSDrx().getRuntimeStatistics();
 	}
@@ -143,6 +147,7 @@ public class QoSDrx extends AbstractServiceDaemon implements QoSDrxMBean {
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
+        @Override
 	public String getStats() {
 		return getQoSDrx().getStats();
 	}

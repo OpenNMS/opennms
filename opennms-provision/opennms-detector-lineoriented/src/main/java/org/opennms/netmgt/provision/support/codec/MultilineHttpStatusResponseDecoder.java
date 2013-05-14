@@ -116,6 +116,7 @@ public class MultilineHttpStatusResponseDecoder extends MultiLineDecoder {
     }
     
     /** {@inheritDoc} */
+    @Override
     protected boolean checkIndicator(final IoBuffer in) throws CharacterCodingException {
         final String line = in.getString(getCharset().newDecoder());
         return !line.equals("\r\n"); //line.substring(3, 4).equals(getMultilineIndicator());

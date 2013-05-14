@@ -157,6 +157,7 @@ public class Cause {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
     	return new ToStringBuilder(this)
             .append("type", m_type)

@@ -80,6 +80,7 @@ public class DaoWebEventRepository implements WebEventRepository, InitializingBe
         
         eventCriteria.visit(new EventCriteriaVisitor<RuntimeException>(){
 
+            @Override
             public void visitAckType(AcknowledgeType ackType) throws RuntimeException {
                 if(ackType == AcknowledgeType.ACKNOWLEDGED){
                     criteria.add(Restrictions.isNotNull("eventAckUser"));
@@ -88,16 +89,19 @@ public class DaoWebEventRepository implements WebEventRepository, InitializingBe
                 }
             }
 
+            @Override
             public void visitFilter(Filter filter) throws RuntimeException {
                 criteria.add(filter.getCriterion());
             }
 
+            @Override
             public void visitLimit(int limit, int offset) throws RuntimeException {
                 criteria.setMaxResults(limit);
                 criteria.setFirstResult(offset);
                 
             }
 
+            @Override
             public void visitSortStyle(SortStyle sortStyle) throws RuntimeException {
                 switch(sortStyle){
                 case ID:
@@ -215,12 +219,14 @@ public class DaoWebEventRepository implements WebEventRepository, InitializingBe
      * @param timestamp a java$util$Date object.
      */
     @Transactional
+    @Override
     public void acknowledgeAll(String user, Date timestamp) {
         acknowledgeMatchingEvents(user, timestamp, new EventCriteria());
     }
     
     /** {@inheritDoc} */
     @Transactional
+    @Override
     public void acknowledgeMatchingEvents(String user, Date timestamp, EventCriteria criteria) {
         List<OnmsEvent> events = m_eventDao.findMatching(getOnmsCriteria(criteria));
         
@@ -235,12 +241,14 @@ public class DaoWebEventRepository implements WebEventRepository, InitializingBe
     
     /** {@inheritDoc} */
     @Transactional
+    @Override
     public int countMatchingEvents(EventCriteria criteria) {
         return m_eventDao.countMatching(getOnmsCriteria(criteria));
     }
     
     /** {@inheritDoc} */
     @Transactional
+    @Override
     public int[] countMatchingEventsBySeverity(EventCriteria criteria) {
         //OnmsCriteria crit = getOnmsCriteria(criteria).setProjection(Projections.groupProperty("severityId"));
         
@@ -257,12 +265,14 @@ public class DaoWebEventRepository implements WebEventRepository, InitializingBe
     
     /** {@inheritDoc} */
     @Transactional
+    @Override
     public Event getEvent(int eventId) {
         return mapOnmsEventToEvent(m_eventDao.get(eventId));
     }
     
     /** {@inheritDoc} */
     @Transactional
+    @Override
     public Event[] getMatchingEvents(EventCriteria criteria) {
         List<Event> events = new ArrayList<Event>();
         log().debug("getMatchingEvents: try to get events for Criteria: " + criteria.toString());
@@ -285,12 +295,14 @@ public class DaoWebEventRepository implements WebEventRepository, InitializingBe
      * <p>unacknowledgeAll</p>
      */
     @Transactional
+    @Override
     public void unacknowledgeAll() {
         unacknowledgeMatchingEvents(new EventCriteria());
     }
     
     /** {@inheritDoc} */
     @Transactional
+    @Override
     public void unacknowledgeMatchingEvents(EventCriteria criteria) {
         List<OnmsEvent> events = m_eventDao.findMatching(getOnmsCriteria(criteria));
         

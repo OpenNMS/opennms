@@ -52,10 +52,12 @@ public class Rfc5424SyslogParser extends SyslogParser {
         return new Rfc5424SyslogParser(text);
     }
 
+    @Override
     protected Pattern getPattern() {
         return m_rfc5424Pattern;
     }
 
+    @Override
     public SyslogMessage parse() throws SyslogParserException {
         if (!this.find()) {
             if (traceEnabled()) {

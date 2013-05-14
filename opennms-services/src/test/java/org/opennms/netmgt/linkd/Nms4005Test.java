@@ -206,6 +206,7 @@ public class Nms4005Test extends Nms4005NetworkBuilder implements InitializingBe
         List<Thread> waitForMe = new ArrayList<Thread>();
         for (int i = 0; i < NUMBER_OF_THREADS; i++) {
             Thread thread = new Thread("NMS-4005-Test-Thread-" + i) {
+                @Override
                 public void run() {
                     assertTrue(m_linkd.runSingleSnmpCollection(cisco1.getId()));
                 }
@@ -219,6 +220,7 @@ public class Nms4005Test extends Nms4005NetworkBuilder implements InitializingBe
         waitForMe.clear();
         for (int i = 0; i < NUMBER_OF_THREADS; i++) {
             Thread thread = new Thread("NMS-4005-Test-Thread-" + i) {
+                @Override
                 public void run() {
                     assertTrue(m_linkd.runSingleSnmpCollection(cisco2.getId()));
                 }
@@ -232,6 +234,7 @@ public class Nms4005Test extends Nms4005NetworkBuilder implements InitializingBe
         waitForMe.clear();
         for (int i = 0; i < NUMBER_OF_THREADS; i++) {
             Thread thread = new Thread("NMS-4005-Test-Thread-" + i) {
+                @Override
                 public void run() {
                     assertTrue(m_linkd.runSingleSnmpCollection(cisco3.getId()));
                 }
@@ -245,6 +248,7 @@ public class Nms4005Test extends Nms4005NetworkBuilder implements InitializingBe
         waitForMe.clear();
         for (int i = 0; i < NUMBER_OF_THREADS; i++) {
             Thread thread = new Thread("NMS-4005-Test-Thread-" + i) {
+                @Override
                 public void run() {
                     assertTrue(m_linkd.runSingleSnmpCollection(cisco4.getId()));
                 }

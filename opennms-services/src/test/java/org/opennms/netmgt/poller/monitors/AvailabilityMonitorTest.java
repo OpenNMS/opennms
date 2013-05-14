@@ -56,6 +56,7 @@ public class AvailabilityMonitorTest {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("timeout", "3000");
         MonitoredService svc = new MonitoredService() {
+            @Override
             public InetAddress getAddress() {
                 final InetAddress addr = InetAddressUtils.addr("127.0.0.1");
                 if (addr == null) {
@@ -63,21 +64,27 @@ public class AvailabilityMonitorTest {
                 }
                 return addr;
             }
+            @Override
             public String getIpAddr() {
                 return InetAddressUtils.str(getAddress());
             }
+            @Override
             public NetworkInterface<InetAddress> getNetInterface() {
                 return new InetNetworkInterface(getAddress());
             }
+            @Override
             public int getNodeId() {
                 return 0;
             }
+            @Override
             public String getNodeLabel() {
                 return "localhost";
             }
+            @Override
             public String getSvcName() {
                 return "ICMP";
             }
+            @Override
             public String getSvcUrl() {
                 return null;
             }

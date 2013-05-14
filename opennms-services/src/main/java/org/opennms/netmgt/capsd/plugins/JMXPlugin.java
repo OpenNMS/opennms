@@ -86,6 +86,7 @@ public abstract class JMXPlugin extends AbstractPlugin {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getProtocolName() {
         return protocolName.toUpperCase();
     }
@@ -95,6 +96,7 @@ public abstract class JMXPlugin extends AbstractPlugin {
      */
 
     /** {@inheritDoc} */
+    @Override
     public boolean isProtocolSupported(InetAddress address, Map<String, Object> map) {
         
         if (protocolName == null) {

@@ -59,6 +59,7 @@ public class LineOrientedEncoder extends ProtocolEncoderAdapter {
     }
     
     /** {@inheritDoc} */
+    @Override
     public void encode(final IoSession session, final Object message, final ProtocolEncoderOutput out) throws Exception {
         final LineOrientedRequest request = (LineOrientedRequest) message;
 

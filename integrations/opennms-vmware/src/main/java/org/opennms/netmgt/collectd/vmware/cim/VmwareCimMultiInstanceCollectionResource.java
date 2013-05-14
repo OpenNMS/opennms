@@ -57,18 +57,21 @@ public class VmwareCimMultiInstanceCollectionResource extends VmwareCimCollectio
         final File nodeDir = new File(rrdBaseDir, String.valueOf(m_agent.getNodeId()));
         final File typeDir = new File(nodeDir, m_name);
         final File instDir = new File(typeDir, m_inst.replaceAll("/", "_").replaceAll("\\s+", "_").replaceAll(":", "_").replaceAll("\\\\", "_").replaceAll("[\\[\\]]", "_"));
-        logger.debug("getRessourceDir: '{}'", instDir);
+        logger.debug("getResourceDir: '{}'", instDir);
         return instDir;
     }
 
+    @Override
     public String getResourceTypeName() {
         return m_name;
     }
 
+    @Override
     public String getInstance() {
         return m_inst;
     }
 
+    @Override
     public String toString() {
         return "Node[" + m_agent.getNodeId() + "]/type[" + m_name + "]/instance[" + m_inst + "]";
     }

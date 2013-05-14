@@ -115,6 +115,7 @@ public class JdbcDataCollectionConfig implements Serializable, Comparable<JdbcDa
         return repo;
     }
     
+    @Override
     public int compareTo(JdbcDataCollectionConfig obj) {
         return new CompareToBuilder()
             .append(getRrdRepository(), obj.getRrdRepository())

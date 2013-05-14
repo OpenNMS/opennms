@@ -59,6 +59,7 @@ public class Interface extends StandardNamedObject {
             return new ServiceComparator(svc.getName());
         }
 
+        @Override
         public boolean equals(Object o) {
             boolean rc = false;
             if (o != null) {
@@ -367,6 +368,7 @@ public class Interface extends StandardNamedObject {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean equals(Object obj) {
         if (obj != null) {
             if (obj instanceof String)

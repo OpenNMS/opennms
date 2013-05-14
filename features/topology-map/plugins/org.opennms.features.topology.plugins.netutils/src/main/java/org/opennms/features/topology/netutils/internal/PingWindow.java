@@ -168,6 +168,7 @@ public class PingWindow extends Window{
 		/*Creates the Ping button and sets up the listener*/
 		pingButton = new Button("Ping"); 
 		pingButton.addListener(new Button.ClickListener() {
+                        @Override
 			public void buttonClick(ClickEvent event) {
 				changeBrowserURL(buildURL());
 			}

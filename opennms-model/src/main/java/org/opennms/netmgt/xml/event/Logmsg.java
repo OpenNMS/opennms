@@ -197,6 +197,7 @@ public class Logmsg implements Serializable {
         this._notify = notify;
     }
 
+    @Override
     public String toString() {
     	return new ToStringBuilder(this)
     		.append("content", _content)

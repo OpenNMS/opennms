@@ -166,6 +166,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
 
     protected void dispatch(final MockHttpServletRequest request, final MockHttpServletResponse response) throws Exception {
         final FilterChain filterChain = new FilterChain() {
+            @Override
             public void doFilter(final ServletRequest filterRequest, final ServletResponse filterResponse) throws IOException, ServletException {
                 getDispatcher().service(filterRequest, filterResponse);
             }

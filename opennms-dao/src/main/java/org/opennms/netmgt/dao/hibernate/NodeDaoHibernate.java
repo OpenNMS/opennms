@@ -66,6 +66,7 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
     }
 
     /** {@inheritDoc} */
+    @Override
     public OnmsNode get(String lookupCriteria) {
         if (lookupCriteria.contains(":")) {
             String[] criteria = lookupCriteria.split(":");
@@ -78,6 +79,7 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
      * Test the ability to simply retrieve a String object (node label) without
      * having to return a bulky Node object.
      */
+    @Override
     public String getLabelForId(Integer id) {
     	String label = null;
     	label = findObjects(String.class, "select n.label from OnmsNode as n where n.id = ?", id).get(0);
@@ -85,11 +87,13 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
     }
 
     /** {@inheritDoc} */
+    @Override
     public List<OnmsNode> findNodes(final OnmsDistPoller distPoller) {
         return find("from OnmsNode where distPoller = ?", distPoller);
     }
 
     /** {@inheritDoc} */
+    @Override
     public OnmsNode getHierarchy(Integer id) {
         OnmsNode node = findUnique(
                           "select distinct n from OnmsNode as n "
@@ -111,11 +115,13 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
     }
 
     /** {@inheritDoc} */
+    @Override
     public List<OnmsNode> findByLabel(String label) {
         return find("from OnmsNode as n where n.label = ?", label);
     }
 
     /** {@inheritDoc} */
+    @Override
     public List<OnmsNode> findAllByVarCharAssetColumn(
             String columnName, String columnValue) {
         return find("from OnmsNode as n where n.assetRecord." + columnName
@@ -123,6 +129,7 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
     }
 
     /** {@inheritDoc} */
+    @Override
     public List<OnmsNode> findAllByVarCharAssetColumnCategoryList(
             String columnName, String columnValue,
             Collection<OnmsCategory> categories) {
@@ -139,6 +146,7 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
     }
 
     /** {@inheritDoc} */
+    @Override
     public List<OnmsNode> findByCategory(OnmsCategory category) {
         return find("select distinct n from OnmsNode as n "
                     + "join n.categories c "
@@ -162,6 +170,7 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
         
 
     /** {@inheritDoc} */
+    @Override
     public List<OnmsNode> findAllByCategoryList(
             Collection<OnmsCategory> categories) {
         return find("select distinct n from OnmsNode as n "
@@ -177,11 +186,13 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
     }
 
     /** {@inheritDoc} */
+    @Override
     public List<OnmsNode> findAllByCategoryLists( final Collection<OnmsCategory> rowCategories, final Collection<OnmsCategory> columnCategories) {
     	
         return getHibernateTemplate().execute(new HibernateCallback<List<OnmsNode>>() {
 
             @SuppressWarnings("unchecked")
+            @Override
             public List<OnmsNode> doInHibernate(Session session) throws HibernateException, SQLException {
                 
                 return (List<OnmsNode>)session.createQuery("select distinct n from OnmsNode as n "
@@ -225,14 +236,17 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
             m_nodeCount = nodeCount == null ? 0 : nodeCount.intValue();
         }
 
+        @Override
         public Integer getDownEntityCount() {
             return m_nodeCount - m_upNodeCount;
         }
 
+        @Override
         public Integer getTotalEntityCount() {
             return m_nodeCount;
         }
 
+        @Override
         public String getStatus() {
             switch (m_serviceOutages) {
             case 0:  return "Normal";
@@ -242,9 +256,11 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
         }
         
     }
+    @Override
     public SurveillanceStatus findSurveillanceStatusByCategoryLists(final Collection<OnmsCategory> rowCategories, final Collection<OnmsCategory> columnCategories) {
         return getHibernateTemplate().execute(new HibernateCallback<SurveillanceStatus>() {
 
+            @Override
             public SurveillanceStatus doInHibernate(Session session) throws HibernateException, SQLException {
                 return (SimpleSurveillanceStatus)session.createSQLQuery("select" +
                 		" count(distinct case when outages.outageid is not null and monSvc.status = 'A' then monSvc.id else null end) as svcCount," +
@@ -265,6 +281,7 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
                 		.setResultTransformer(new ResultTransformer() {
                             private static final long serialVersionUID = 5152094813503430377L;
 
+                            @Override
                             public Object transformTuple(Object[] tuple, String[] aliases) {
                                 logger.debug("tuple length = " + tuple.length);
                                 for (int i = 0; i < tuple.length; i++) {
@@ -275,6 +292,7 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
 
                             // Implements Hibernate API
                             @SuppressWarnings("unchecked")
+                            @Override
 							public List transformList(List collection) {
                                 return collection;
                             }
@@ -290,6 +308,7 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
 
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
+    @Override
     public Map<String, Integer> getForeignIdToNodeIdMap(String foreignSource) {
         List<Object[]> pairs = getHibernateTemplate().find("select n.id, n.foreignId from OnmsNode n where n.foreignSource = ?", foreignSource);
         Map<String, Integer> foreignIdMap = new HashMap<String, Integer>();
@@ -300,16 +319,19 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
     }
 
     /** {@inheritDoc} */
+    @Override
     public List<OnmsNode> findByForeignSource(String foreignSource) {
         return find("from OnmsNode n where n.foreignSource = ?", foreignSource);
     }
 
     /** {@inheritDoc} */
+    @Override
     public OnmsNode findByForeignId(String foreignSource, String foreignId) {
         return findUnique("from OnmsNode n where n.foreignSource = ? and n.foreignId = ?", foreignSource, foreignId);
     }
     
     /** {@inheritDoc} */
+    @Override
     public List<OnmsNode> findByForeignSourceAndIpAddress(String foreignSource, String ipAddress) {
         if (foreignSource == null) {
             return find("select distinct n from OnmsNode n join n.ipInterfaces as ipInterface where n.foreignSource is NULL and ipInterface.ipAddress = ?", ipAddress);
@@ -319,6 +341,7 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
     }
 
     /** {@inheritDoc} */
+    @Override
     public int getNodeCountForForeignSource(String foreignSource) {
         return queryInt("select count(*) from OnmsNode as n where n.foreignSource = ?", foreignSource);
     }
@@ -328,6 +351,7 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
      *
      * @return a {@link java.util.List} object.
      */
+    @Override
     public List<OnmsNode> findAll() {
         return find("from OnmsNode order by label");
     }
@@ -337,23 +361,27 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
      *
      * @return a {@link java.util.List} object.
      */
+    @Override
     public List<OnmsNode> findAllProvisionedNodes() {
         return find("from OnmsNode n where n.foreignSource is not null");
     }
     
     /** {@inheritDoc} */
+    @Override
     public List<OnmsIpInterface> findObsoleteIpInterfaces(Integer nodeId, Date scanStamp) {
     	// we exclude the primary interface from the obsolete list since the only way for them to be obsolete is when we have snmp
         return findObjects(OnmsIpInterface.class, "from OnmsIpInterface ipInterface where ipInterface.node.id = ? and ipInterface.isSnmpPrimary != 'P' and (ipInterface.ipLastCapsdPoll is null or ipInterface.ipLastCapsdPoll < ?)", nodeId, scanStamp);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void deleteObsoleteInterfaces(Integer nodeId, Date scanStamp) {
         getHibernateTemplate().bulkUpdate("delete from OnmsIpInterface ipInterface where ipInterface.node.id = ? and ipInterface.isSnmpPrimary != 'P' and (ipInterface.ipLastCapsdPoll is null or ipInterface.ipLastCapsdPoll < ?)", new Object[] { nodeId, scanStamp });
         getHibernateTemplate().bulkUpdate("delete from OnmsSnmpInterface snmpInterface where snmpInterface.node.id = ? and (snmpInterface.lastCapsdPoll is null or snmpInterface.lastCapsdPoll < ?)", new Object[] { nodeId, scanStamp });
     }
 
     /** {@inheritDoc} */
+    @Override
     public void updateNodeScanStamp(Integer nodeId, Date scanStamp) {
         OnmsNode n = get(nodeId);
         n.setLastCapsdPoll(scanStamp);
@@ -365,16 +393,19 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
      *
      * @return a {@link java.util.Collection} object.
      */
+    @Override
     public Collection<Integer> getNodeIds() {
         return findObjects(Integer.class, "select distinct n.id from OnmsNode as n where n.type != 'D'");
     }
 
+    @Override
     public Integer getNextNodeId (Integer nodeId) {
     	Integer nextNodeId = null;
     	nextNodeId = findObjects(Integer.class, "select n.id from OnmsNode as n where n.id > ? and n.type != 'D' order by n.id asc limit 1", nodeId).get(0);
     	return nextNodeId;
     }
     
+    @Override
     public Integer getPreviousNodeId (Integer nodeId) {
     	Integer nextNodeId = null;
     	nextNodeId = findObjects(Integer.class, "select n.id from OnmsNode as n where n.id < ? and n.type != 'D' order by n.id desc limit 1", nodeId).get(0);

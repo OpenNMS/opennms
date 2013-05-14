@@ -111,10 +111,12 @@ public class BaseLogMessage implements LogMessage {
         m_serviceId = serviceId;
     }
 
+    @Override
     public Date getDate() {
         return m_timestamp;
     }
 
+    @Override
     public String getThread() {
         return m_threadName;
     }
@@ -123,6 +125,7 @@ public class BaseLogMessage implements LogMessage {
         return m_msgType;
     }
 
+    @Override
     public String getServiceID() {
         return m_serviceId;
     }
@@ -131,39 +134,47 @@ public class BaseLogMessage implements LogMessage {
         return m_msgType.equals(msgType);
     }
 
+    @Override
 	public boolean isBeginMessage() {
 		return is(MsgType.BEGIN_COLLECTION) || is(MsgType.BEGIN_PERSIST);
 	}
 
 
+    @Override
 	public boolean isCollectorBeginMessage() {
 		return is(MsgType.BEGIN_COLLECTION);
 	}
 
 
+    @Override
 	public boolean isCollectorEndMessage() {
 		return is(MsgType.END_COLLECTION);
 	}
 
 
+    @Override
 	public boolean isEndMessage() {
 		return is(MsgType.END_COLLECTION) || is (MsgType.END_PERSIST);
 	}
 
 
+    @Override
 	public boolean isErrorMessage() {
 		return is(MsgType.ERROR);
 	}
 
 
+    @Override
 	public boolean isPersistMessage() {
 		return is(MsgType.BEGIN_PERSIST)  || is (MsgType.END_PERSIST);
 	}
 	
+    @Override
 	public boolean isPersistBeginMessage(){
 	    return is(MsgType.BEGIN_PERSIST);
 	}
 	
+    @Override
 	public boolean isPersistEndMessage() {
 	    return is(MsgType.END_PERSIST);
 	}

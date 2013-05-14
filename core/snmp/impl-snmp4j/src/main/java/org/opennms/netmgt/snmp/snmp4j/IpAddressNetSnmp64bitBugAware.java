@@ -77,6 +77,7 @@ public class IpAddressNetSnmp64bitBugAware extends IpAddress {
 		super(address);
 	}
 	
+        @Override
 	public void decodeBER(BERInputStream inputStream) throws java.io.IOException {
 		BER.MutableByte type = new BER.MutableByte();
 		byte[] value = BER.decodeString(inputStream, type);

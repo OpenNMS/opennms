@@ -131,6 +131,7 @@ public class IPPollAddress {
         return bRet;
     }
     
+    @Override
     public String toString() {
     	return new ToStringBuilder(this)
     		.append("address", m_address)

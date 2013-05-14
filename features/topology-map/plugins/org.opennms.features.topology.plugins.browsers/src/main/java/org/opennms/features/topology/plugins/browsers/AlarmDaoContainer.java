@@ -28,6 +28,7 @@
 
 package org.opennms.features.topology.plugins.browsers;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -35,8 +36,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import org.opennms.core.criteria.Alias;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.Order;
+import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.restrictions.AnyRestriction;
 import org.opennms.core.criteria.restrictions.EqRestriction;
 import org.opennms.core.criteria.restrictions.Restriction;
@@ -56,6 +59,7 @@ public class AlarmDaoContainer extends OnmsDaoContainer<OnmsAlarm,Integer> {
 
 	public AlarmDaoContainer(AlarmDao dao) {
 		super(dao);
+		m_beanToHibernatePropertyMapping.put("nodeLabel", "node.label");
 	}
 
 	@Override
@@ -104,11 +108,8 @@ public class AlarmDaoContainer extends OnmsDaoContainer<OnmsAlarm,Integer> {
 		Collection<Object> propertyIds = new HashSet<Object>();
 		propertyIds.addAll(m_properties.keySet());
 
-		// nodeLabel is a transient value so we can't sort on it (yet)
-		propertyIds.remove("nodeLabel");
-
 		// This column is a checkbox so we can't sort on it either
-		propertyIds.remove("acknowledged");
+		propertyIds.remove("selection");
 
 		return Collections.unmodifiableCollection(propertyIds);
 	}
@@ -128,6 +129,9 @@ public class AlarmDaoContainer extends OnmsDaoContainer<OnmsAlarm,Integer> {
 		}
 
 		m_criteria = new Criteria(getItemClass());
+		m_criteria.setAliases(Arrays.asList(new Alias[] {
+			new Alias("node", "node", JoinType.LEFT_JOIN)
+		}));
 		if (restrictions.size() > 0) {
 			AnyRestriction any = new AnyRestriction(restrictions.toArray(new Restriction[0]));
 			m_criteria.addRestriction(any);

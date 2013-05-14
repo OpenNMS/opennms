@@ -255,10 +255,12 @@ public class EventAnticipator implements EventListener {
         return b.toString();
     }
 
+    @Override
     public String getName() {
         return "eventAnticipator";
     }
 
+    @Override
     public void onEvent(Event e) {
         eventReceived(e);
     }

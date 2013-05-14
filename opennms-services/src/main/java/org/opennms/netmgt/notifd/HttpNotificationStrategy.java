@@ -68,6 +68,7 @@ public class HttpNotificationStrategy implements NotificationStrategy {
      * @see org.opennms.netmgt.notifd.NotificationStrategy#send(java.util.List)
      */
     /** {@inheritDoc} */
+    @Override
     public int send(List<Argument> arguments) {
         
         m_arguments = arguments;

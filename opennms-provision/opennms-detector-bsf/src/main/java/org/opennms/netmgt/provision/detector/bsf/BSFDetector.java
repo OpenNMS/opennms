@@ -82,6 +82,7 @@ public class BSFDetector extends BasicDetector<BSFRequest, BSFResponse> {
     private static ResponseValidator<BSFResponse> responseMatches(final String banner) {
         return new ResponseValidator<BSFResponse>(){
 
+            @Override
             public boolean validate(final BSFResponse response) {
                 return response.validate(banner);
             }

@@ -60,6 +60,7 @@ public class TicketerPluginFactory implements FactoryBean<Plugin> {
      * @return a {@link org.opennms.api.integration.ticketing.Plugin} object.
      * @throws java.lang.Exception if any.
      */
+    @Override
     public Plugin getObject() throws Exception {
         if (m_pluginClass == null) {
             throw new IllegalStateException("pluginClass must be set");
@@ -79,6 +80,7 @@ public class TicketerPluginFactory implements FactoryBean<Plugin> {
      *
      * @return a {@link java.lang.Class} object.
      */
+    @Override
     public Class<? extends Plugin> getObjectType() {
         return (m_pluginClass == null ? Plugin.class : m_pluginClass);
     }
@@ -88,6 +90,7 @@ public class TicketerPluginFactory implements FactoryBean<Plugin> {
      *
      * @return a boolean.
      */
+    @Override
     public boolean isSingleton() {
         return true;
     }

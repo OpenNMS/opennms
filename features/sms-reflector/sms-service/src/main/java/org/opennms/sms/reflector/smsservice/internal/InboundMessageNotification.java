@@ -81,6 +81,7 @@ public class InboundMessageNotification implements OnmsInboundMessageNotificatio
 	}
 
 	/** {@inheritDoc} */
+    @Override
 	public void process(AGateway gateway, MessageTypes msgType, InboundMessage msg) {
 	    
 	    deleteMessage(gateway, msg);

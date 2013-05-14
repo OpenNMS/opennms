@@ -58,6 +58,7 @@ public class DefaultServiceRegistry implements ServiceRegistry {
      */
     public class AnyFilter implements Filter {
 
+        @Override
         public boolean match(Map<String, String> properties) {
             return true;
         }
@@ -81,14 +82,17 @@ public class DefaultServiceRegistry implements ServiceRegistry {
         }
         
 
+        @Override
         public Map<String, String> getProperties() {
             return m_properties == null ? null : Collections.unmodifiableMap(m_properties);
         }
 
+        @Override
         public Class<?>[] getProvidedInterfaces() {
             return m_serviceInterfaces;
         }
 
+        @Override
         public <T> T getProvider(Class<T> serviceInterface) {
 
             if (serviceInterface == null) throw new NullPointerException("serviceInterface may not be null");
@@ -102,18 +106,22 @@ public class DefaultServiceRegistry implements ServiceRegistry {
             throw new IllegalArgumentException("Provider not registered with interface " + serviceInterface);
         }
         
+        @Override
         public Object getProvider() {
         	return m_provider;
         }
 
+        @Override
         public ServiceRegistry getRegistry() {
             return DefaultServiceRegistry.this;
         }
 
+        @Override
         public boolean isUnregistered() {
             return m_unregistered;
         }
         
+        @Override
         public void unregister() {
             m_unregistered = true;
             DefaultServiceRegistry.this.unregister(this);
@@ -127,11 +135,13 @@ public class DefaultServiceRegistry implements ServiceRegistry {
     private List<RegistrationHook> m_hooks = new CopyOnWriteArrayList<RegistrationHook>();
     
     /** {@inheritDoc} */
+    @Override
     public <T> T findProvider(Class<T> serviceInterface) {
         return findProvider(serviceInterface, null);
     }
     
     /** {@inheritDoc} */
+    @Override
     public <T> T findProvider(Class<T> serviceInterface, String filter) {
         Collection<T> providers = findProviders(serviceInterface, filter);
         for(T provider : providers) {
@@ -141,11 +151,13 @@ public class DefaultServiceRegistry implements ServiceRegistry {
     }
     
     /** {@inheritDoc} */
+    @Override
     public <T> Collection<T> findProviders(Class<T> serviceInterface) {
         return findProviders(serviceInterface, null);
     }
 
     /** {@inheritDoc} */
+    @Override
     public <T> Collection<T> findProviders(Class<T> serviceInterface, String filter) {
         
         Filter f = filter == null ? new AnyFilter() : new FilterParser().parse(filter);
@@ -167,6 +179,7 @@ public class DefaultServiceRegistry implements ServiceRegistry {
      * @param services a {@link java.lang.Class} object.
      * @return a {@link org.opennms.core.soa.Registration} object.
      */
+    @Override
     public Registration register(Object serviceProvider, Class<?>... services) {
         return register(serviceProvider, (Map<String, String>)null, services);
     }
@@ -179,6 +192,7 @@ public class DefaultServiceRegistry implements ServiceRegistry {
      * @param services a {@link java.lang.Class} object.
      * @return a {@link org.opennms.core.soa.Registration} object.
      */
+    @Override
     public Registration register(Object serviceProvider, Map<String, String> properties, Class<?>... services) {
         
         ServiceRegistration registration = new ServiceRegistration(serviceProvider, properties, services);
@@ -229,11 +243,13 @@ public class DefaultServiceRegistry implements ServiceRegistry {
     }
 
     /** {@inheritDoc} */
+    @Override
     public <T> void addListener(Class<T> service,  RegistrationListener<T> listener) {
         m_listenerMap.add(service, listener);
     }
 
     /** {@inheritDoc} */
+    @Override
     public <T> void addListener(Class<T> service,  RegistrationListener<T> listener, boolean notifyForExistingProviders) {
 
         if (notifyForExistingProviders) {
@@ -257,6 +273,7 @@ public class DefaultServiceRegistry implements ServiceRegistry {
     }
 
     /** {@inheritDoc} */
+    @Override
     public <T> void removeListener(Class<T> service, RegistrationListener<T> listener) {
         m_listenerMap.remove(service, listener);
     }

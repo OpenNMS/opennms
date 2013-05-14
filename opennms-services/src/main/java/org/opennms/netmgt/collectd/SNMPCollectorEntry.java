@@ -97,6 +97,7 @@ public final class SNMPCollectorEntry extends AbstractSnmpStore {
 
 
     /** {@inheritDoc} */
+    @Override
     public void storeResult(SnmpResult res) {
         String key = res.getAbsoluteInstance().toString();
         putValue(key, res.getValue());

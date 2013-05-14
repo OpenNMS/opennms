@@ -282,6 +282,7 @@ public class SnmpPortal extends Object {
          * 
          * @see SnmpPacketHandler
          */
+        @Override
         public void run() {
             final int bufSz = setup();
             if (bufSz == 0) {
@@ -291,6 +292,7 @@ public class SnmpPortal extends Object {
             final LinkedList<DatagramPacket> fastReceiverQ = new LinkedList<DatagramPacket>();
             final LinkedList<byte[]> usedBuffers = new LinkedList<byte[]>();
             Thread fastReceiver = new Thread(new Runnable() {
+                @Override
                 public void run() {
                     while (!m_isClosing && Thread.interrupted() == false) {
                         byte[] buf = null;

@@ -57,6 +57,7 @@ public class ApplicationRemovedRemoteEvent implements MapRemoteEvent {
     }
 
     /** {@inheritDoc} */
+        @Override
     public void dispatch(final MapRemoteEventHandler locationManager) {
         locationManager.removeApplication(m_applicationName);
     }
@@ -66,6 +67,7 @@ public class ApplicationRemovedRemoteEvent implements MapRemoteEvent {
      *
      * @return a {@link java.lang.String} object.
      */
+        @Override
     public String toString() {
         return "ApplicationRemovedRemoteEvent[applicationName=" + m_applicationName + "]";
     }

@@ -77,6 +77,7 @@ public abstract class AbstractPoll implements Poll {
      * @return a {@link org.opennms.netmgt.model.PollStatus} object.
      * @throws org.opennms.netmgt.protocols.InsufficientParametersException if any.
      */
+    @Override
     public PollStatus poll() throws InsufficientParametersException {
         Map<String,?> emptyMap = Collections.emptyMap();
         TimeoutTracker tracker = new TimeoutTracker(emptyMap, 1, getTimeout());

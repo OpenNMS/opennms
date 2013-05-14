@@ -60,12 +60,14 @@ public final class FormatterView implements View {
         LogUtils.debugf(this, "formatter = %s, view = %s", m_formatter, m_view);
     }
 
+    @Override
     public String getContentType() {
         if (m_view != null) return m_view.getContentType();
         if (m_formatter == null) return "application/octet-stream";
         return m_formatter.getContentType();
     }
 
+    @Override
     public void render(final Map<String, ?> model, final HttpServletRequest request, final HttpServletResponse response) throws Exception {
         if (m_view == null) {
             String fileName = getFileName(request);
@@ -128,6 +130,7 @@ public final class FormatterView implements View {
         return fileName;
     }
     
+    @Override
     public String toString() {
         return new ToStringBuilder(this)
             .append("formatter", m_formatter)

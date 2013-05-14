@@ -56,6 +56,7 @@ public class Dot1dBasePortTable extends SnmpTable<Dot1dBasePortTableEntry>
     }
     
     /** {@inheritDoc} */
+        @Override
     protected Dot1dBasePortTableEntry createTableEntry(SnmpObjId base, SnmpInstId inst, Object val) {
         return new Dot1dBasePortTableEntry();
     }

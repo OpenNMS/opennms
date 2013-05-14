@@ -163,6 +163,7 @@ import org.opennms.netmgt.config.datacollection.StorageStrategy;
                     throw new IllegalStateException(ex.toString());
                 }
             }
+            @Override
             public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
                 try {
                     StorageStrategy target = (StorageStrategy) object;
@@ -284,6 +285,7 @@ import org.opennms.netmgt.config.datacollection.StorageStrategy;
      * of a global
      * element or element with anonymous type definition.
      */
+    @Override
     public boolean isElementDefinition(
     ) {
         return _elementDefinition;

@@ -53,6 +53,7 @@ public class SimpleLogMessage implements LogMessage {
 	/* (non-Javadoc)
 	 * @see org.opennms.util.ilr.LogMessage#isEndMessage()
 	 */
+        @Override
 	public boolean isEndMessage() {
 		return getMessage().contains("end");
 	}
@@ -63,36 +64,43 @@ public class SimpleLogMessage implements LogMessage {
 	/* (non-Javadoc)
 	 * @see org.opennms.util.ilr.LogMessage#isPersistMessage()
 	 */
+        @Override
 	public boolean isPersistMessage() {
 		return getMessage().contains("persist");
 	}
+        @Override
 	public boolean isPersistBeginMessage() {
             return getMessage().contains("persistDataQueueing: begin");
         }
+        @Override
 	public boolean isPersistEndMessage() {
             return getMessage().contains("persistDataQueueing: end");
         }
 	/* (non-Javadoc)
 	 * @see org.opennms.util.ilr.LogMessage#isBeginMessage()
 	 */
+        @Override
 	public boolean isBeginMessage() {
 		return getMessage().contains("begin");
 	}
 	/* (non-Javadoc)
 	 * @see org.opennms.util.ilr.LogMessage#isErrorMessage()
 	 */
+        @Override
 	public boolean isErrorMessage() {
 		return getMessage().contains("error");
 	}
 	/* (non-Javadoc)
 	 * @see org.opennms.util.ilr.LogMessage#isCollectorBeginMessage()
 	 */
+        @Override
 	public boolean isCollectorBeginMessage() {
 		return getMessage().contains("collectData: begin:") || getMessage().contains("collector.initialize: begin");
 	}
 	/* (non-Javadoc)
 	 * @see org.opennms.util.ilr.LogMessage#isCollectorEndMessage()
 	 */
+        @Override
 	public boolean isCollectorEndMessage() {
 		return getMessage().contains("collectData: end:") || getMessage().contains("collector.initialize: end");
 	}
@@ -100,6 +108,7 @@ public class SimpleLogMessage implements LogMessage {
 	/* (non-Javadoc)
 	 * @see org.opennms.util.ilr.LogMessage#getDate()
 	 */
+        @Override
 	public Date getDate() {
 		String regex =  "\\d+-\\d+-\\d+\\s*\\d+:\\d+:\\d+,\\d+";
 		Pattern timestamp = Pattern.compile(regex);
@@ -118,6 +127,7 @@ public class SimpleLogMessage implements LogMessage {
 	/* (non-Javadoc)
 	 * @see org.opennms.util.ilr.LogMessage#getServiceID()
 	 */
+        @Override
 	public String getServiceID() {
 		String regex = "\\d+/\\d+\\.\\d+\\.\\d+\\.\\d+/[\\w-]+";
 		Pattern service = Pattern.compile(regex);
@@ -130,6 +140,7 @@ public class SimpleLogMessage implements LogMessage {
 	/* (non-Javadoc)
 	 * @see org.opennms.util.ilr.LogMessage#getThread()
 	 */
+        @Override
 	public String getThread() {
 		String regex = "\\[\\w+-\\d+\\s\\w+-\\w+\\d+\\]";
 		//example: [CollectdScheduler-50 Pool-fiber11]

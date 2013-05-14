@@ -59,11 +59,13 @@ public class CategoryDaoHibernate extends AbstractCachingDaoHibernate<OnmsCatego
     }
     
     /** {@inheritDoc} */
+    @Override
     public OnmsCategory findByName(String name) {
         return findByName(name, true);
     }
 
     /** {@inheritDoc} */
+    @Override
     public OnmsCategory findByName(String name, boolean useCached) {
         if (useCached) {
             return findByCacheKey("from OnmsCategory as category where category.name = ?", name);
@@ -83,6 +85,7 @@ public class CategoryDaoHibernate extends AbstractCachingDaoHibernate<OnmsCatego
      *
      * @return a {@link java.util.List} object.
      */
+    @Override
     public List<String> getAllCategoryNames() {
         return findObjects(String.class, "select category.name from OnmsCategory as category");
     }
@@ -93,6 +96,7 @@ public class CategoryDaoHibernate extends AbstractCachingDaoHibernate<OnmsCatego
      * @param categories an array of {@link java.lang.String} objects.
      * @return a {@link java.util.List} object.
      */
+    @Override
     public List<Criterion> getCriterionForCategorySetsUnion(String[]... categories) {
         Assert.notNull(categories, "categories argument must not be null");
         Assert.isTrue(categories.length >= 1, "categories must have at least one set of categories");
@@ -133,6 +137,7 @@ public class CategoryDaoHibernate extends AbstractCachingDaoHibernate<OnmsCatego
      * @see org.opennms.netmgt.dao.CategoryDao#getCategoriesWithAuthorizedGroup(java.lang.String)
      */
     /** {@inheritDoc} */
+    @Override
     public List<OnmsCategory> getCategoriesWithAuthorizedGroup(String groupName) {
         OnmsCriteria crit = new OnmsCriteria(OnmsCategory.class);
         crit.add(Restrictions.sqlRestriction("{alias}.categoryId in (select cg.categoryId from category_group cg where cg.groupId = ?)", groupName, Hibernate.STRING));

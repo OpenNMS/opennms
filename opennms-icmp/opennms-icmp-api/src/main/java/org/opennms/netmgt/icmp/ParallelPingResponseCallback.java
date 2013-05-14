@@ -61,6 +61,7 @@ public class ParallelPingResponseCallback implements PingResponseCallback {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void handleError(InetAddress address, EchoPacket request, Throwable t) {
         try {
             if (request != null) {
@@ -73,6 +74,7 @@ public class ParallelPingResponseCallback implements PingResponseCallback {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void handleResponse(InetAddress address, EchoPacket response) {
         try {
             if (response != null) {
@@ -84,6 +86,7 @@ public class ParallelPingResponseCallback implements PingResponseCallback {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void handleTimeout(InetAddress address, EchoPacket request) {
         try {
             if (request != null) {

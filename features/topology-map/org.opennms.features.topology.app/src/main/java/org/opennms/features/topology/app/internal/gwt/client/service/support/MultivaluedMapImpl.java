@@ -29,90 +29,105 @@ public class MultivaluedMapImpl<K, V> extends LinkedHashMap<K, Set<V>>  implemen
             m_lock = this;
         }
 
+        @Override
         public void add(Key key, Value value) {
             synchronized (m_lock) {
                 m_data.add(key, value);
             }
         }
 
+        @Override
         public boolean remove(Key key, Value value) {
             synchronized (m_lock) {
                 return m_data.remove(key, value);
             }
         }
         
+        @Override
         public Set<Value> getCopy(Key key) {
             synchronized (m_lock) {
                 return m_data.getCopy(key);
             }
         }
         
+        @Override
         public void clear() {
             synchronized (m_lock) {
                 m_data.clear();
             }
         }
 
+        @Override
         public boolean containsKey(Object key) {
             synchronized (m_lock) {
                 return m_data.containsKey(key);
             }
         }
 
+        @Override
         public boolean containsValue(Object value) {
             synchronized (m_lock) {
                 return m_data.containsValue(value);
             }
         }
 
+        @Override
         public Set<java.util.Map.Entry<Key, Set<Value>>> entrySet() {
             synchronized (m_lock) {
                 return m_data.entrySet();
             }
         }
 
+        @Override
         public Set<Value> get(Object key) {
             synchronized (m_lock) {
                 return m_data.get(key);
             }
         }
 
+        @Override
         public boolean isEmpty() {
             synchronized (m_lock) {
                 return m_data.isEmpty();
             }
         }
 
+        @Override
         public Set<Key> keySet() {
             synchronized (m_lock) {
                 return m_data.keySet();
             }
         }
 
+        @Override
         public Set<Value> put(Key key, Set<Value> value) {
             synchronized (m_lock) {
                 return m_data.put(key, value);
             }
         }
 
+        @Override
         public void putAll(Map<? extends Key, ? extends Set<Value>> t) {
             synchronized (m_lock) {
                 m_data.putAll(t);
             }
         }
 
+        @Override
         public Set<Value> remove(Object key) {
             synchronized (m_lock) {
                 return m_data.remove(key);
             }
         }
 
+        @Override
         public int size() {
             synchronized (m_lock) {
                 return m_data.size();
             }
         }
 
+        @Override
         public Collection<Set<Value>> values() {
             synchronized (m_lock) {
                 return m_data.values();
@@ -135,6 +150,7 @@ public class MultivaluedMapImpl<K, V> extends LinkedHashMap<K, Set<V>>  implemen
      * @param key a K object.
      * @param value a V object.
      */
+    @Override
     public void add(K key, V value) {
         if (!containsKey(key)) {
             LinkedHashSet<V> valueList = new LinkedHashSet<V>();
@@ -152,6 +168,7 @@ public class MultivaluedMapImpl<K, V> extends LinkedHashMap<K, Set<V>>  implemen
      * @param value a V object.
      * @return a boolean.
      */
+    @Override
     public boolean remove(K key, V value) {
         if (!containsKey(key)) return false;
         
@@ -172,6 +189,7 @@ public class MultivaluedMapImpl<K, V> extends LinkedHashMap<K, Set<V>>  implemen
      * @param key a K object.
      * @return a {@link java.util.Set} object.
      */
+    @Override
     public Set<V> getCopy(K key) {
         Set<V> values = get(key);
         return values == null ? null : new LinkedHashSet<V>(values);

@@ -139,6 +139,7 @@ public class RadiusAuthDetector extends BasicDetector<AttributeList, RadiusPacke
         
         return new ResponseValidator<RadiusPacket>() {
 
+            @Override
             public boolean validate(final RadiusPacket response) {
             	return (accept.isInstance(response) || challenge.isInstance(response) || reject.isInstance(response));
             }
@@ -151,6 +152,7 @@ public class RadiusAuthDetector extends BasicDetector<AttributeList, RadiusPacke
     	
         return new RequestBuilder<AttributeList>() {
 
+            @Override
             public AttributeList getRequest() {
     	    	final AttributeList attributes = new AttributeList();
     	    	attributes.add(new Attr_UserName(user));

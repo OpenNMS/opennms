@@ -17,10 +17,12 @@ public class DefaultMapViewManager implements MapViewManager{
     private Point m_center = new Point(0,0);
     private Set<MapViewManagerListener> m_listeners = new CopyOnWriteArraySet<MapViewManagerListener>();
     
+    @Override
     public void addListener(MapViewManagerListener listener) {
         m_listeners.add(listener);
     }
     
+    @Override
     public void removeListener(MapViewManagerListener listener) {
         m_listeners.remove(listener);
     }
@@ -30,12 +32,14 @@ public class DefaultMapViewManager implements MapViewManager{
             listener.boundingBoxChanged(this);
         }
     }
+    @Override
     public void setMapBounds(BoundingBox boundingBox) {
         m_mapBounds = boundingBox;
         m_center = m_mapBounds.getCenter();
         
         fireUpdate();
     }
+    @Override
     public void setViewPort(int width, int height) {
         int oldWidth = m_viewPortWidth;
         int oldHeight = m_viewPortHeight;
@@ -48,9 +52,11 @@ public class DefaultMapViewManager implements MapViewManager{
         }
     }
     
+    @Override
     public double getViewPortAspectRatio() {
         return m_viewPortWidth < 0 ? -1 : m_viewPortWidth / (double)m_viewPortHeight;
     }
+    @Override
     public void setCenter(Point point) {
         Point oldCenter = m_center;
         m_center = point;
@@ -59,6 +65,7 @@ public class DefaultMapViewManager implements MapViewManager{
         }
     }
     
+    @Override
     public void zoomToPoint(double scale, Point center) {
         double oldScale = m_scale;
         m_scale = scale;
@@ -73,6 +80,7 @@ public class DefaultMapViewManager implements MapViewManager{
         }
     }
     
+    @Override
     public BoundingBox getCurrentBoundingBox() {
         if(m_viewPortWidth < 0 || m_mapBounds == null) {
             //return m_mapBounds;
@@ -85,11 +93,13 @@ public class DefaultMapViewManager implements MapViewManager{
         return new BoundingBox(m_center, width, height); 
     }
     
+    @Override
     public double getScale() { 
         return m_scale;
         
     }
     
+    @Override
     public void setScale(double scale) {
         double oldScale = m_scale;
         m_scale = scale;
@@ -101,6 +111,7 @@ public class DefaultMapViewManager implements MapViewManager{
         
     }
     
+    @Override
     public void setBoundingBox(BoundingBox boundingBox) {
         BoundingBox oldBoundingBox = getCurrentBoundingBox();
         BoundingBox bbPrime = boundingBox.computeWithAspectRatio(getViewPortAspectRatio());
@@ -121,14 +132,17 @@ public class DefaultMapViewManager implements MapViewManager{
         
     }
 
+    @Override
     public int getViewPortHeight() {
         return m_viewPortHeight;
     }
 
+    @Override
     public int getViewPortWidth() {
         return m_viewPortWidth;
     }
     
+    @Override
     public String toString() {
         return "Map bounds [ " + m_mapBounds + "]  || view [ width: " + getViewPortWidth() + " :: height: " + getViewPortHeight() + " ] || currentBoundingBox: [ " + getCurrentBoundingBox() + " ]" +
         		"  scale: " + getScale() + " || centerPoint: [ " + m_center + " ]" ;

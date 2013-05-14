@@ -55,6 +55,7 @@ public class Dot1dTpFdbTable extends SnmpTable<Dot1dTpFdbTableEntry> {
     }
     
     /** {@inheritDoc} */
+        @Override
     protected Dot1dTpFdbTableEntry createTableEntry(SnmpObjId base, SnmpInstId inst, Object val) {
         return new Dot1dTpFdbTableEntry();
     }

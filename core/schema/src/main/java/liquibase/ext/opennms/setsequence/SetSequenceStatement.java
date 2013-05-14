@@ -48,6 +48,7 @@ public class SetSequenceStatement implements SqlStatement {
 		m_sequenceName = sequenceName;
 	}
 
+        @Override
 	public boolean skipOnUnsupported() {
 		return true;
 	}
@@ -90,6 +91,7 @@ public class SetSequenceStatement implements SqlStatement {
 		return this;
 	}
 	
+        @Override
 	public String toString() {
 		return new ToStringBuilder(this)
 			.append("sequenceName", m_sequenceName)

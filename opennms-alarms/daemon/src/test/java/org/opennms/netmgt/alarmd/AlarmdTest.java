@@ -209,6 +209,7 @@ public class AlarmdTest implements TemporaryDatabaseAware<MockDatabase>, Initial
 
         MockUtil.println("Going for the print of the counter column");
         m_jdbcTemplate.query("select reductionKey, sum(counter) from alarms group by reductionKey", new RowCallbackHandler() {
+            @Override
             public void processRow(ResultSet rs) throws SQLException {
                 MockUtil.println("count for reductionKey: " + rs.getString(1) + " is: " + rs.getObject(2));
             }
@@ -236,6 +237,7 @@ public class AlarmdTest implements TemporaryDatabaseAware<MockDatabase>, Initial
             MockUtil.println("Creating Runnable: "+i+" of "+numberOfAlarmsToReduce+" events to reduce.");
 
             class EventRunner implements Runnable {
+                @Override
                 public void run() {
                     try {
                         while (System.currentTimeMillis() < millis) {
@@ -271,6 +273,7 @@ public class AlarmdTest implements TemporaryDatabaseAware<MockDatabase>, Initial
         if (numberOfAlarmsToReduce != counterColumn) {
             final List<Integer> reducedEvents = new ArrayList<Integer>();
             m_jdbcTemplate.query("select eventid from events where alarmID is not null", new RowCallbackHandler() {
+                @Override
                 public void processRow(ResultSet rs) throws SQLException {
                     reducedEvents.add(rs.getInt(1));
                 }
@@ -279,6 +282,7 @@ public class AlarmdTest implements TemporaryDatabaseAware<MockDatabase>, Initial
 
             final List<Integer> nonReducedEvents = new ArrayList<Integer>();
             m_jdbcTemplate.query("select eventid from events where alarmID is null", new RowCallbackHandler() {
+                @Override
                 public void processRow(ResultSet rs) throws SQLException {
                     nonReducedEvents.add(rs.getInt(1));
                 }

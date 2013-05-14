@@ -404,6 +404,7 @@ import org.opennms.netmgt.config.collectd.jmx.CompMember;
      * of a global
      * element or element with anonymous type definition.
      */
+    @Override
     public boolean isElementDefinition(
     ) {
         return _elementDefinition;

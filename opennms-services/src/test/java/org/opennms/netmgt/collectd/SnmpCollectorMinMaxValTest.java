@@ -242,6 +242,7 @@ public class SnmpCollectorMinMaxValTest implements TestContextAware, Initializin
         return file + RrdUtils.getExtension();
     }
 
+    @Override
     public void setTestContext(final TestContext context) {
         m_context = context;
     }

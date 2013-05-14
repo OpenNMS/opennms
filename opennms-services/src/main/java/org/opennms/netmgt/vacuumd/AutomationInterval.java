@@ -57,6 +57,7 @@ public class AutomationInterval implements ScheduleInterval {
      *
      * @return a long.
      */
+    @Override
     public long getInterval() {
         return m_interval;
     }
@@ -78,6 +79,7 @@ public class AutomationInterval implements ScheduleInterval {
      *
      * @return a boolean.
      */
+    @Override
     public boolean scheduledSuspension() {
         // TODO Auto-generated method stub
         return false;

@@ -46,22 +46,27 @@ public class Snmp4JV1TrapBuilder extends Snmp4JV2TrapBuilder implements SnmpV1Tr
         return (PDUv1)getPDU();
     }
     
+    @Override
     public void setEnterprise(SnmpObjId enterpriseId) {
         getPDUv1().setEnterprise(new OID(enterpriseId.getIds()));
     }
 
+    @Override
     public void setAgentAddress(InetAddress agentAddress) {
         getPDUv1().setAgentAddress(new IpAddress(agentAddress));
     }
 
+    @Override
     public void setGeneric(int generic) {
         getPDUv1().setGenericTrap(generic);
     }
 
+    @Override
     public void setSpecific(int specific) {
         getPDUv1().setSpecificTrap(specific);
     }
 
+    @Override
     public void setTimeStamp(long timeStamp) {
         getPDUv1().setTimestamp(timeStamp);
     }

@@ -72,6 +72,7 @@ public class RolesTest extends IntervalTestCase {
     private WebUserManager m_userMgr;
 
     @Before
+    @Override
     public void setUp() throws Exception {
         super.setUp();
         

@@ -67,6 +67,7 @@ public class MX4JConnectionWrapper implements ConnectionWrapper{
    *
    * @return Returns the connection.
    */
+  @Override
   public MBeanServerConnection getMBeanServer() {
       return connection;
   }
@@ -74,6 +75,7 @@ public class MX4JConnectionWrapper implements ConnectionWrapper{
   /**
    * <p>close</p>
    */
+  @Override
   public void close() {
       if (connector != null) {
           try {

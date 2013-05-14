@@ -174,7 +174,33 @@ checkXmlFiles(){
 			return 6	# From LSB: 6 - program is not configured
 		fi
 	fi
-		 
+
+	TEMPFILE=`getTempFile`
+	find "$OPENNMS_HOME/etc/imports" -type f -name \*.xml | while read "FILE"; do
+		if grep "non-ip-snmp-primary" "$FILE" >/dev/null 2>&1 || grep "non-ip-interfaces" "$FILE" >/dev/null 2>&1; then
+			echo "$FILE" >&2
+		fi
+	done >"$TEMPFILE" 2>&1
+
+	FAILCOUNT=`cat "$TEMPFILE" | wc -l`
+	if [ $FAILCOUNT -gt 0 ]; then
+		cat <<END
+
+WARNING!  The following file(s) contain the
+'non-ip-snmp-primary' or 'non-ip-interfaces' attributes,
+which were deprecated in OpenNMS 1.10 and removed in
+OpenNMS 1.11.
+
+Please check your import files and remove the deprecated
+attributes, and restart.
+
+END
+		cat "$TEMPFILE"
+		echo ""
+
+		return 6 # From LSB: 6 - program is not configured
+	fi
+
 	return 0
 }
 

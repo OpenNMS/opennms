@@ -247,6 +247,7 @@ public class SimpleWebTable {
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
+        @Override
 	public String toString() {
 		StringBuffer buf = new StringBuffer();
 

@@ -40,11 +40,13 @@ import org.opennms.netmgt.xml.event.Log;
 public class MockEventProxy implements EventProxy {
     private List<Event> m_events = new ArrayList<Event>();
 
+    @Override
     public void send(final Event event) throws EventProxyException {
         LogUtils.debugf(this, "Received event: %s", event);
         m_events.add(event);
     }
 
+    @Override
     public void send(final Log eventLog) throws EventProxyException {
         if (eventLog.getEvents() != null) {
             final List<Event> events = eventLog.getEvents().getEventCollection();

@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<datacollection-group name="HWg">
+
+    <!-- PRINTER-MIB Resource Types -->
+    <resourceType name="sensIndex" label="HWg Sensor" resourceLabel="${sensName}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+
+      <group name="hwg-sensor" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.21796.4.1.3.1.2" instance="sensIndex" alias="sensName" type="string" />
+        <mibObj oid=".1.3.6.1.4.1.21796.4.1.3.1.3" instance="sensIndex" alias="sensState" type="INTEGER" />
+        <mibObj oid=".1.3.6.1.4.1.21796.4.1.3.1.4" instance="sensIndex" alias="sensString" type="octetstring" />
+        <mibObj oid=".1.3.6.1.4.1.21796.4.1.3.1.5" instance="sensIndex" alias="sensValue" type="INTEGER" />
+        <mibObj oid=".1.3.6.1.4.1.21796.4.1.3.1.6" instance="sensIndex" alias="sensSN" type="string" />
+        <mibObj oid=".1.3.6.1.4.1.21796.4.1.3.1.7" instance="sensIndex" alias="sensUnit" type="INTEGER" />
+        <mibObj oid=".1.3.6.1.4.1.21796.4.1.3.1.8" instance="sensIndex" alias="sensID" type="INTEGER" />
+      </group>
+
+      <systemDef name = "HWg-sensor">
+        <sysoidMask>.1.3.6.1.4.1.21796.</sysoidMask>
+        <collect>
+          <includeGroup>hwg-sensor</includeGroup>
+        </collect>
+      </systemDef>
+
+</datacollection-group>

@@ -190,6 +190,7 @@ public class MapsAdapterConfigFactory extends MapsAdapterConfigManager {
      * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
+    @Override
     public void update() throws IOException, MarshalException, ValidationException {
         getWriteLock().lock();
         try {

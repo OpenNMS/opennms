@@ -54,6 +54,7 @@ public class DefaultAdminApplicationService implements
     private MonitoredServiceDao m_monitoredServiceDao;
 
     /** {@inheritDoc} */
+    @Override
     public ApplicationAndMemberServices getApplication(String applicationIdString) {
         if (applicationIdString == null) {
             throw new IllegalArgumentException("applicationIdString must not be null");
@@ -76,6 +77,7 @@ public class DefaultAdminApplicationService implements
      *
      * @return a {@link java.util.List} object.
      */
+    @Override
     public List<OnmsMonitoredService> findAllMonitoredServices() {
         List<OnmsMonitoredService> list =
             new ArrayList<OnmsMonitoredService>(m_monitoredServiceDao.findAll());
@@ -85,6 +87,7 @@ public class DefaultAdminApplicationService implements
     }
     
     /** {@inheritDoc} */
+    @Override
     public EditModel findApplicationAndAllMonitoredServices(String applicationIdString) {
         ApplicationAndMemberServices app = getApplication(applicationIdString); 
         
@@ -138,6 +141,7 @@ public class DefaultAdminApplicationService implements
      * @param toAdd an array of {@link java.lang.String} objects.
      * @param toDelete an array of {@link java.lang.String} objects.
      */
+    @Override
     public void performEdit(String applicationIdString, String editAction,
             String[] toAdd, String[] toDelete) {
         if (applicationIdString == null) {
@@ -223,6 +227,7 @@ public class DefaultAdminApplicationService implements
     }
 
     /** {@inheritDoc} */
+    @Override
     public OnmsApplication addNewApplication(String name) {
         OnmsApplication application = new OnmsApplication();
         application.setName(name);
@@ -235,6 +240,7 @@ public class DefaultAdminApplicationService implements
      *
      * @return a {@link java.util.List} object.
      */
+    @Override
     public List<OnmsApplication> findAllApplications() {
         Collection<OnmsApplication> applications = m_applicationDao.findAll();
         List<OnmsApplication> sortedApplications =
@@ -245,12 +251,14 @@ public class DefaultAdminApplicationService implements
     }
 
     /** {@inheritDoc} */
+    @Override
     public void removeApplication(String applicationIdString) {
         OnmsApplication application = findApplication(applicationIdString);
         m_applicationDao.delete(application);
     }
 
     /** {@inheritDoc} */
+    @Override
     public List<OnmsApplication> findByMonitoredService(int id) {
         OnmsMonitoredService service = m_monitoredServiceDao.get(id);
         if (service == null) {
@@ -274,6 +282,7 @@ public class DefaultAdminApplicationService implements
      * @param toAdd an array of {@link java.lang.String} objects.
      * @param toDelete an array of {@link java.lang.String} objects.
      */
+    @Override
     public void performServiceEdit(String ifServiceIdString, String editAction,
             String[] toAdd, String[] toDelete) {
         if (ifServiceIdString == null) {
@@ -358,6 +367,7 @@ public class DefaultAdminApplicationService implements
 
 
     /** {@inheritDoc} */
+    @Override
     public ServiceEditModel findServiceApplications(String ifServiceIdString) {
         if (ifServiceIdString == null) {
             throw new IllegalArgumentException("ifServiceIdString must not be null");

@@ -265,16 +265,19 @@ public final class SystemGroup extends AggregateTracker {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void storeResult(SnmpResult res) {
         m_store.storeResult(res);
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void reportGenErr(String msg) {
         log().warn("Error retrieving systemGroup from "+m_address+". "+msg);
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void reportNoSuchNameErr(String msg) {
         log().info("Error retrieving systemGroup from "+m_address+". "+msg);
     }

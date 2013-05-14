@@ -63,7 +63,7 @@ public class InfoWindow extends Window {
     
     public InfoWindow(final URL embeddedURL, LabelCreator labelCreator) {
         if(null != embeddedURL && embeddedURL.toString().indexOf(":9443") > 0){
-          String url = embeddedURL.toString().substring(nodeURL.toString().indexOf(":9443")+5);
+          String url = embeddedURL.toString().substring(embeddedURL.toString().indexOf(":9443")+5);
           infoBrowser = new Embedded("", new ExternalResource(url));
         } else {
           infoBrowser = new Embedded("", new ExternalResource(embeddedURL));

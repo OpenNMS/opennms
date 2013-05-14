@@ -69,6 +69,7 @@ public class UssdResponse extends MobileMsgResponse {
      *
      * @return the text
      */
+    @Override
     public String getText() {
         return m_msg.getContent();
     }

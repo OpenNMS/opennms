@@ -93,6 +93,7 @@ public abstract class JavaMailer2 {
     public Authenticator createAuthenticator(final String user, final String password) {
         Authenticator auth;
         auth = new Authenticator() {
+            @Override
             protected PasswordAuthentication getPasswordAuthentication() {
                 return new PasswordAuthentication(user, password);
             }
@@ -217,14 +218,17 @@ public abstract class JavaMailer2 {
             m_category = threadCategory;
         }
 
+        @Override
         public void messageDelivered(TransportEvent event) {
             logEvent("message delivered", event);
         }
 
+        @Override
         public void messageNotDelivered(TransportEvent event) {
             logEvent("message not delivered", event);
         }
 
+        @Override
         public void messagePartiallyDelivered(TransportEvent event) {
             logEvent("message partially delivered", event);
         }

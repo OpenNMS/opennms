@@ -323,6 +323,7 @@ public class XmpCollector implements ServiceCollector {
      *
      * initialize our XmpCollector with global parameters *
      */
+    @Override
     public void initialize(Map<String, String> parameters)
     {
         // parameters come from collectd-configuration.xml 
@@ -396,6 +397,7 @@ public class XmpCollector implements ServiceCollector {
      * initialize the querying of a particular agent/interface with
      * parameters specific to this agent/interface *
      */
+    @Override
     public void initialize(CollectionAgent agent, Map<String, Object> parameters)
     {
         log().debug("initialize agent/params called for "+agent);
@@ -418,6 +420,7 @@ public class XmpCollector implements ServiceCollector {
      * Release/stop all querying of agents/interfaces and release
      *       state associated with them *
      */
+    @Override
     public void release() 
     {
         log().info("release()");
@@ -434,6 +437,7 @@ public class XmpCollector implements ServiceCollector {
      *
      * Release/stop querying a particular agent *
      */
+    @Override
     public void release(CollectionAgent agent)
     {
         log().info("release agent called for "+agent);
@@ -462,6 +466,7 @@ public class XmpCollector implements ServiceCollector {
      *       collection cycle.  Parameters are a map of String Key/String
      *       Value passed in.  Keys come from collectd config
      */
+    @Override
     public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, 
             Map<String, Object> parameters)
     {
@@ -631,6 +636,7 @@ public class XmpCollector implements ServiceCollector {
     }
 
     /** {@inheritDoc} */
+    @Override
     public RrdRepository getRrdRepository(String collectionName)
     {
         log().debug("XMP getRrdRepository called for "+collectionName);

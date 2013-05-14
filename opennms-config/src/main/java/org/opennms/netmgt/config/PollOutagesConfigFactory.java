@@ -227,6 +227,7 @@ public final class PollOutagesConfigFactory extends PollOutagesConfigManager {
      * @throws org.exolab.castor.xml.ValidationException
      *             if any.
      */
+    @Override
     public void update() throws IOException, MarshalException, ValidationException {
         getReadLock().lock();
         try {

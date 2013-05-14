@@ -63,18 +63,21 @@ public class ExpressionConfigWrapper extends BaseThresholdDefConfigWrapper {
 		private final Set<String> m_sniffedKeys = new HashSet<String>();
 		private final String[] ignoreTheseKeys = new String[] { "math" };
 
+                @Override
 		public Object get(String key) {
 			LogUtils.tracef(this, "Bindings.get(%s)", key);
 			m_sniffedKeys.add(((String)key).intern());
 			return super.get(key);
 		}
 
+                @Override
 		public boolean has(String key) {
 			LogUtils.tracef(this, "Bindings.containsKey(%s)", key);
 			m_sniffedKeys.add(((String)key).intern());
 			return super.containsKey(key);
 		}
 
+                @Override
 		public void set(String key, Object value) {
 			LogUtils.tracef(this, "Bindings.set(%s, %s)", key, value.toString());
 			m_sniffedKeys.add(((String)key).intern());

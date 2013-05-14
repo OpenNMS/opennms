@@ -55,6 +55,7 @@ public abstract class SnmpUtils {
             this.address = address;
         }
 
+        @Override
         protected void reportTooBigErr(String msg) {
             LOG.info("Received tooBig response from {}. {}", address, msg);
         }

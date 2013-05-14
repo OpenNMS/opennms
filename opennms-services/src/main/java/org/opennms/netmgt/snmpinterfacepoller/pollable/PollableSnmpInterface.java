@@ -271,6 +271,7 @@ public class PollableSnmpInterface implements ReadyRunnable {
      *
      * @return a boolean.
      */
+    @Override
     public boolean isReady() {
         return true;
     }
@@ -278,6 +279,7 @@ public class PollableSnmpInterface implements ReadyRunnable {
     /**
      * <p>run</p>
      */
+    @Override
     public void run() {        
         if (getParent().polling()) {
             log().info("run: polling SNMP interfaces on package/interface " + getParent().getPackageName()+ "/" + getName() + "on primary address: " + getParent().getIpaddress());

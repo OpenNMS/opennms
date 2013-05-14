@@ -151,6 +151,7 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements EventListener, Q
 	 *
 	 * provides an interface to OpenNMS which provides a unified api
 	 */
+        @Override
 	public void setOssDao(OssDao _ossDao) {
 		ossDao = _ossDao;
 	}
@@ -163,6 +164,7 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements EventListener, Q
 	 * Used by Spring Application context to pass in OnmsAlarmOssjMapper
 	 * The OnmsAlarmOssjMapper class maps OpenNMS alarms to OSS/J alarms and events
 	 */
+        @Override
 	public void setOnmsAlarmOssjMapper(
 			OnmsAlarmOssjMapper _onmsAlarmOssjMapper) {
 		onmsAlarmOssjMapper = _onmsAlarmOssjMapper;
@@ -180,6 +182,7 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements EventListener, Q
 	 *
 	 * Used by Spring Application context to pass in AssetRecordDao
 	 */
+        @Override
 	public void setAssetRecordDao(AssetRecordDao ar){
 		assetRecordDao = ar;
 	}
@@ -196,6 +199,7 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements EventListener, Q
 	 *
 	 * Used by Spring Application context to pass in NodeDaof
 	 */
+        @Override
 	public void setNodeDao( NodeDao nodedao){
 		nodeDao = nodedao;
 	}
@@ -211,6 +215,7 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements EventListener, Q
 	 *
 	 * Used by Spring Application context to pass in EventIpcManager
 	 */
+        @Override
 	public void setEventIpcManager( EventIpcManager evtIpcManager){
 		eventIpcManager = evtIpcManager;
 	}
@@ -227,6 +232,7 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements EventListener, Q
 	 *
 	 * Used by Spring Application context to pass in alarmDao
 	 */
+        @Override
 	public void setAlarmDao( AlarmDao almDao){
 		alarmDao = almDao;
 	}
@@ -243,6 +249,7 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements EventListener, Q
 	 *
 	 * Used by Spring Application context to pass in AlarmListConnectionManager
 	 */
+        @Override
 	public void setAlarmListConnectionManager( AlarmListConnectionManager alcm) {
 		alarmListConnectionManager =alcm;
 	}
@@ -257,6 +264,7 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements EventListener, Q
 	 *
 	 * Used by jmx mbean QoSD to pass in Spring Application context
 	 */
+        @Override
 	public void setApplicationContext(ClassPathXmlApplicationContext m_context){
 		this.m_context = m_context;
 	}
@@ -289,6 +297,7 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements EventListener, Q
 	 * Method to set up the fiber
 	 *  Note - not used in Spring activation
 	 */
+        @Override
 	protected void onInit(){
 		ThreadCategory log = getLog();	
 		log.info("Initialising QoSD");
@@ -297,6 +306,7 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements EventListener, Q
 	/**
 	 * The start() method loads the configuration for the QosD daemon and registers for events
 	 */
+        @Override
 	protected void onStart() {
 		String jnp_host;
 		ThreadCategory log = getLog();		//Get a reference to the QosD logger instance assigned by OpenNMS
@@ -467,6 +477,7 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements EventListener, Q
 	 * finish. Its purpose is to clean everything up, e.g. close any JNDI or
 	 * database connections, before the fiber's execution is ended.
 	 */
+        @Override
 	protected void onStop() {
 		ThreadCategory log = getLog();		//Get a reference to the QoSD logger
 
@@ -499,6 +510,7 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements EventListener, Q
 	 * Resume method of fiber, called by OpenNMS to start the fiber up from
 	 * a paused state.
 	 */
+        @Override
 	protected void onResume() {
 		ThreadCategory log = getLog();		//Get a reference to the QosD logger
 		//instance assigned by OpenNMS
@@ -512,6 +524,7 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements EventListener, Q
 	 * Pause method of fiber, called by OpenNMS to put the fiber in a
 	 * suspended state until it can be later resumed.
 	 */
+        @Override
 	protected void onPause() {
 		ThreadCategory log = getLog();		//Get a reference to the QosD logger
 		//instance assigned by OpenNMS
@@ -525,6 +538,7 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements EventListener, Q
 	 * When an event occurs, OpenNMS will call the onEvent()
 	 * method of this object.
 	 */
+        @Override
 	public void registerListener() 	{
 		ThreadCategory log =getLog();
 		List<String> ueiList = new ArrayList<String>();
@@ -541,6 +555,7 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements EventListener, Q
 	 * Stops OpenNMS calling the onEvent method of this object when
 	 * an event occurs.
 	 */
+        @Override
 	public void unregisterListener() {
 		ThreadCategory log = getLog();
 
@@ -555,6 +570,7 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements EventListener, Q
 	 * new event is detected. This can be run on any event but only needs to run on
 	 * uei.opennms.org/vacuumd/alarmListChanged
 	 */
+        @Override
 	public void onEvent(Event event) {
 
 		ThreadCategory log = getLog();
@@ -623,6 +639,7 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements EventListener, Q
 	 * using the alarm list connection manager (alcm) to  update the the AlarmMonitor bean.
 	 * This is called from ossDao every time there is an update to the database.
 	 */
+        @Override
 	public void sendAlarms() {
 		ThreadCategory log = getLog();	
 
@@ -732,6 +749,7 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements EventListener, Q
 	 *
 	 * @return stats
 	 */
+        @Override
 	public String getStats() { 
 		return (m_stats == null ? "No Stats Available" : m_stats.toString()); 
 	}

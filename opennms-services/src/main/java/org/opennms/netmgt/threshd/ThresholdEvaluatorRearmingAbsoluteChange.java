@@ -48,11 +48,13 @@ public class ThresholdEvaluatorRearmingAbsoluteChange implements ThresholdEvalua
     private static final String TYPE = "rearmingAbsoluteChange";
 
     /** {@inheritDoc} */
+    @Override
     public ThresholdEvaluatorState getThresholdEvaluatorState(BaseThresholdDefConfigWrapper threshold) {
         return new ThresholdEvaluatorStateRearmingAbsoluteChange(threshold);
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean supportsType(String type) {
         return TYPE.equals(type);
     }
@@ -89,10 +91,12 @@ public class ThresholdEvaluatorRearmingAbsoluteChange implements ThresholdEvalua
             m_thresholdConfig = thresholdConfig;        
         }
 
+        @Override
         public BaseThresholdDefConfigWrapper getThresholdConfig() {
             return m_thresholdConfig;
         }
 
+        @Override
         public Status evaluate(double dsValue) {
 //            log().debug(TYPE + " threshold evaluating, sample value="+dsValue);
         	try {
@@ -142,6 +146,7 @@ public class ThresholdEvaluatorRearmingAbsoluteChange implements ThresholdEvalua
             m_lastSample = lastSample;
         }
 
+        @Override
         public Event getEventForState(Status status, Date date, double dsValue, CollectionResourceWrapper resource) {
             if (status == Status.TRIGGERED) {
                 String uei=getThresholdConfig().getTriggeredUEI();
@@ -179,14 +184,17 @@ public class ThresholdEvaluatorRearmingAbsoluteChange implements ThresholdEvalua
             m_previousTriggeringSample = previousTriggeringSample;
         }
         
+        @Override
         public ThresholdEvaluatorState getCleanClone() {
             return new ThresholdEvaluatorStateRearmingAbsoluteChange(m_thresholdConfig);
         }
 
+        @Override
         public boolean isTriggered() {
             return wasTriggered(m_previousTriggeringSample); // TODO Is that right ?
         }
         
+        @Override
         public void clearState() {
             // Based on what evaluator does for rearmed state
             m_lastSample = Double.NaN;

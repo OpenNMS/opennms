@@ -40,50 +40,62 @@ import org.springframework.transaction.TransactionStatus;
 public class MockPlatformTransactionManager implements
         PlatformTransactionManager {
 
+    @Override
     public void commit(TransactionStatus status) throws TransactionException {
     }
 
+    @Override
     public TransactionStatus getTransaction(TransactionDefinition definition) {
         return new TransactionStatus() {
 
+            @Override
             public boolean hasSavepoint() {
                 throw new UnsupportedOperationException(".hasSavepoint not yet implemented.");
             }
 
+            @Override
             public boolean isCompleted() {
                 throw new UnsupportedOperationException(".isCompleted not yet implemented.");
             }
 
+            @Override
             public boolean isNewTransaction() {
                 throw new UnsupportedOperationException(".isNewTransaction not yet implemented.");
             }
 
+            @Override
             public boolean isRollbackOnly() {
                 throw new UnsupportedOperationException(".isRollbackOnly not yet implemented.");
             }
 
+            @Override
             public void setRollbackOnly() {
                 throw new UnsupportedOperationException(".setRollbackOnly not yet implemented.");
             }
 
+            @Override
             public Object createSavepoint() throws TransactionException {
                 throw new UnsupportedOperationException(".createSavepoint not yet implemented.");
             }
 
+            @Override
             public void releaseSavepoint(Object savepoint) throws TransactionException {
                 throw new UnsupportedOperationException(".releaseSavepoint not yet implemented.");
             }
 
+            @Override
             public void rollbackToSavepoint(Object savepoint) throws TransactionException {
                 throw new UnsupportedOperationException(".rollbackToSavepoint not yet implemented.");
             }
 
+            @Override
             public void flush() {
                 throw new UnsupportedOperationException(".flush not yet implemented.");
             }
         };
     }
 
+    @Override
     public void rollback(TransactionStatus status) throws TransactionException {
     }
 

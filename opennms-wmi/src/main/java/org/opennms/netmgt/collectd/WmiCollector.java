@@ -84,6 +84,7 @@ public class WmiCollector implements ServiceCollector {
     private HashMap<String, WmiCollectionAttributeType> m_attribTypeList = new HashMap<String, WmiCollectionAttributeType>();
 
     /** {@inheritDoc} */
+    @Override
     public CollectionSet collect(final CollectionAgent agent, final EventProxy eproxy, final Map<String, Object> parameters) {
 
         String collectionName = ParameterMap.getKeyedString(parameters, "collection", ParameterMap.getKeyedString(parameters, "wmi-collection", null));
@@ -236,6 +237,7 @@ public class WmiCollector implements ServiceCollector {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void initialize(final Map<String, String> parameters) {
         LogUtils.debugf(this, "initialize: Initializing WmiCollector.");
         m_scheduledNodes.clear();
@@ -308,6 +310,7 @@ public class WmiCollector implements ServiceCollector {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void initialize(final CollectionAgent agent, final Map<String, Object> parameters) {
         LogUtils.debugf(this, "initialize: Initializing WMI collection for agent: %s", agent);
         final Integer scheduledNodeKey = new Integer(agent.getNodeId());
@@ -333,11 +336,13 @@ public class WmiCollector implements ServiceCollector {
     /**
      * <p>release</p>
      */
+    @Override
     public void release() {
         m_scheduledNodes.clear();
     }
 
     /** {@inheritDoc} */
+    @Override
     public void release(final CollectionAgent agent) {
         final WmiAgentState nodeState = m_scheduledNodes.get((Integer) agent.getNodeId());
         if (nodeState != null) {
@@ -346,6 +351,7 @@ public class WmiCollector implements ServiceCollector {
     }
 
     /** {@inheritDoc} */
+    @Override
     public RrdRepository getRrdRepository(final String collectionName) {
         return WmiDataCollectionConfigFactory.getInstance().getRrdRepository(collectionName);
     }

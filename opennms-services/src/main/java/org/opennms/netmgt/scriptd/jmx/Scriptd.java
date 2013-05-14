@@ -38,6 +38,7 @@ public class Scriptd implements ScriptdMBean {
     /**
      * <p>init</p>
      */
+    @Override
     public void init() {
         org.opennms.netmgt.scriptd.Scriptd scriptd = org.opennms.netmgt.scriptd.Scriptd.getInstance();
         scriptd.init();
@@ -46,6 +47,7 @@ public class Scriptd implements ScriptdMBean {
     /**
      * <p>start</p>
      */
+    @Override
     public void start() {
         org.opennms.netmgt.scriptd.Scriptd scriptd = org.opennms.netmgt.scriptd.Scriptd.getInstance();
         scriptd.start();
@@ -54,6 +56,7 @@ public class Scriptd implements ScriptdMBean {
     /**
      * <p>stop</p>
      */
+    @Override
     public void stop() {
         org.opennms.netmgt.scriptd.Scriptd scriptd = org.opennms.netmgt.scriptd.Scriptd.getInstance();
         scriptd.stop();
@@ -64,6 +67,7 @@ public class Scriptd implements ScriptdMBean {
      *
      * @return a int.
      */
+    @Override
     public int getStatus() {
         org.opennms.netmgt.scriptd.Scriptd scriptd = org.opennms.netmgt.scriptd.Scriptd.getInstance();
         return scriptd.getStatus();
@@ -74,6 +78,7 @@ public class Scriptd implements ScriptdMBean {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String status() {
         return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
     }
@@ -83,6 +88,7 @@ public class Scriptd implements ScriptdMBean {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getStatusText() {
         return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
     }

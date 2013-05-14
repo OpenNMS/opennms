@@ -44,6 +44,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 public class StringXmlCalendarPropertyEditor extends PropertyEditorSupport implements PropertyEditor {
     
     /** {@inheritDoc} */
+    @Override
     public void setAsText(String text) throws IllegalArgumentException {
         try {
             setValue(DatatypeFactory.newInstance().newXMLGregorianCalendar(text));
@@ -57,6 +58,7 @@ public class StringXmlCalendarPropertyEditor extends PropertyEditorSupport imple
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getAsText() {
         return ((XMLGregorianCalendar)getValue()).toXMLFormat();
     } 

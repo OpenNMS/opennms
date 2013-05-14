@@ -60,6 +60,7 @@ public class SetCriticalPathServlet extends HttpServlet {
     private static final String SQL_DELETE_CRITICAL_PATH = "DELETE FROM pathoutage WHERE nodeid=?";
 
     /** {@inheritDoc} */
+    @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String nodeString = request.getParameter("node");
         String criticalIp = InetAddressUtils.normalize(request.getParameter("criticalIp"));

@@ -71,6 +71,7 @@ public class JdbcDataCollectionConfigTest {
             m_schemaFile = schemaFile;
         }
         
+        @Override
         public Result createOutput(String namespaceUri, String suggestedFileName) throws IOException {
             return new StreamResult(m_schemaFile);
         }

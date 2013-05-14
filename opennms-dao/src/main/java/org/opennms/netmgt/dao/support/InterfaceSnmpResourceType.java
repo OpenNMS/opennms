@@ -81,6 +81,7 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getName() {
         return "interfaceSnmp";
     }
@@ -90,11 +91,13 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getLabel() {
         return "SNMP Interface Data";
     }
     
     /** {@inheritDoc} */
+    @Override
     public boolean isResourceTypeOnNode(int nodeId) {
         return isResourceTypeOnParentResource(Integer.toString(nodeId));
     }
@@ -120,6 +123,7 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
     }
     
     /** {@inheritDoc} */
+    @Override
     public List<OnmsResource> getResourcesForNode(int nodeId) {
         OnmsNode node = m_nodeDao.get(nodeId);
         if (node == null) {
@@ -295,6 +299,7 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
             m_ifSpeedFriendly = ifSpeedFriendly;
         }
 
+        @Override
         public Set<OnmsAttribute> load() {
             Set<OnmsAttribute> attributes = ResourceTypeUtils.getAttributesAtRelativePath(m_resourceDao.getRrdDirectory(), getRelativePathForResource(m_parent, m_resource));
             if (m_ifSpeed != null) {
@@ -320,11 +325,13 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
      * This resource type is never available for domains.
      * Only the interface resource type is available for domains.
      */
+    @Override
     public boolean isResourceTypeOnDomain(String domain) {
         return getQueryableInterfacesForDomain(domain).size() > 0;
     }
     
     /** {@inheritDoc} */
+    @Override
     public List<OnmsResource> getResourcesForDomain(String domain) {
         ArrayList<OnmsResource> resources =
             new ArrayList<OnmsResource>();
@@ -374,17 +381,20 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getLinkForResource(OnmsResource resource) {
         return null;
     }
     
     /** {@inheritDoc} */
+    @Override
     public boolean isResourceTypeOnNodeSource(String nodeSource, int nodeId) {
         File parent = ResourceTypeUtils.getRelativeNodeSourceDirectory(nodeSource);
         return isResourceTypeOnParentResource(parent.toString());
     }
     
     /** {@inheritDoc} */
+    @Override
     public List<OnmsResource> getResourcesForNodeSource(String nodeSource, int nodeId) {
         String[] ident = nodeSource.split(":");
         OnmsNode node = m_nodeDao.findByForeignId(ident[0], ident[1]);

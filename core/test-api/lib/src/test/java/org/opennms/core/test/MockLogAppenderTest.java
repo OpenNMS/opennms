@@ -41,12 +41,14 @@ import org.opennms.core.utils.LogUtils;
  * @author brozow
  */
 public class MockLogAppenderTest extends TestCase {
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         MockLogAppender.setupLogging(false);
         MockLogAppender.resetLogLevel();
     }
 	
+    @Override
     protected void tearDown() throws Exception {
         super.tearDown();
     }

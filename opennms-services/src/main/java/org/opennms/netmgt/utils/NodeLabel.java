@@ -689,6 +689,7 @@ public class NodeLabel {
      *
      * @return String which represents the content of this NodeLabel
      */
+    @Override
     public String toString() {
         StringBuffer buffer = new StringBuffer();
 

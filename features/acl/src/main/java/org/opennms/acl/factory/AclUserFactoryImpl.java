@@ -62,12 +62,14 @@ import org.springframework.stereotype.Service;
 public class AclUserFactoryImpl implements AclUserFactory, InitializingBean {
 
     /** {@inheritDoc} */
+    @Override
     public GenericUser getAclUserByUsername(String username) {
         UserAuthoritiesDTO userAuthoritiesDTO = userService.getUserWithAuthorities(username);
         return new GenericUser(userAuthoritiesDTO, userService, groupService);
     }
 
     /** {@inheritDoc} */
+    @Override
     public GenericUser getAclUser(Integer sid) {
         UserAuthoritiesDTO userAuthoritiesDTO = userService.getUserWithAuthoritiesByID(sid);
         return new GenericUser(userAuthoritiesDTO, userService, groupService);

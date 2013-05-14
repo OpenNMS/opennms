@@ -204,6 +204,7 @@ import org.opennms.netmgt.config.datacollection.IncludeCollection;
                     throw new IllegalStateException(ex.toString());
                 }
             }
+            @Override
             public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
                 try {
                     IncludeCollection target = (IncludeCollection) object;
@@ -329,6 +330,7 @@ import org.opennms.netmgt.config.datacollection.IncludeCollection;
      * of a global
      * element or element with anonymous type definition.
      */
+    @Override
     public boolean isElementDefinition(
     ) {
         return _elementDefinition;

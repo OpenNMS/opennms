@@ -65,6 +65,7 @@ public class WebGroup {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return ""+getName();
     }
@@ -88,6 +89,7 @@ public class WebGroup {
     }
     
     /** {@inheritDoc} */
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof WebGroup) {
             WebGroup u = (WebGroup)obj;
@@ -101,6 +103,7 @@ public class WebGroup {
      *
      * @return a int.
      */
+    @Override
     public int hashCode() {
         return m_name.hashCode();
     }

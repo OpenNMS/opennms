@@ -43,6 +43,7 @@ import org.opennms.netmgt.snmp.SnmpConfiguration;
 public interface SnmpConfigDao extends SnmpAgentConfigFactory {
     
     /** {@inheritDoc} */
+    @Override
     SnmpAgentConfig getAgentConfig(InetAddress ipAddress);
     
     /**

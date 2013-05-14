@@ -76,6 +76,7 @@ public class DaoWebNotificationRepository implements WebNotificationRepository, 
         
         notificationCriteria.visit(new NotificationCriteriaVisitor<RuntimeException>(){
 
+            @Override
             public void visitAckType(AcknowledgeType ackType) throws RuntimeException {
                 if(ackType == AcknowledgeType.ACKNOWLEDGED) {
                     criteria.add(Restrictions.isNotNull("answeredBy"));
@@ -85,16 +86,19 @@ public class DaoWebNotificationRepository implements WebNotificationRepository, 
                 // AcknowledgeType.BOTH just adds no restriction
             }
 
+            @Override
             public void visitFilter(Filter filter) throws RuntimeException {
                 criteria.add(filter.getCriterion());
                 
             }
 
+            @Override
             public void visitLimit(int limit, int offset) throws RuntimeException {
                 criteria.setMaxResults(limit);
                 criteria.setFirstResult(offset);                
             }
 
+            @Override
             public void visitSortStyle(SortStyle sortStyle) throws RuntimeException {
                 switch(sortStyle){
                     case RESPONDER:
@@ -172,6 +176,7 @@ public class DaoWebNotificationRepository implements WebNotificationRepository, 
     
     /** {@inheritDoc} */
     @Transactional
+    @Override
     public void acknowledgeMatchingNotification(String user, Date timestamp, NotificationCriteria criteria) {
         List<OnmsNotification> notifs = m_notificationDao.findMatching(getOnmsCriteria(criteria));
         
@@ -186,12 +191,14 @@ public class DaoWebNotificationRepository implements WebNotificationRepository, 
     
     /** {@inheritDoc} */
     @Transactional
+    @Override
     public int countMatchingNotifications(NotificationCriteria criteria) {
         return queryForInt(getOnmsCriteria(criteria));
     }
 
     /** {@inheritDoc} */
     @Transactional
+    @Override
     public Notification[] getMatchingNotifications(NotificationCriteria criteria) {
         List<Notification> notifications = new ArrayList<Notification>();
         List<OnmsNotification> onmsNotifs = m_notificationDao.findMatching(getOnmsCriteria(criteria));
@@ -205,6 +212,7 @@ public class DaoWebNotificationRepository implements WebNotificationRepository, 
     
     /** {@inheritDoc} */
     @Transactional
+    @Override
     public Notification getNotification(int noticeId) {
         return mapOnmsNotificationToNotification(m_notificationDao.get(noticeId));
     }

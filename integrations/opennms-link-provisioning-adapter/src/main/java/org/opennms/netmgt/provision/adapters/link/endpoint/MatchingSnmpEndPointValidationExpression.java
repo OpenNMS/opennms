@@ -64,6 +64,7 @@ public class MatchingSnmpEndPointValidationExpression extends EndPointValidation
     }
 
     /** {@inheritDoc} */
+    @Override
     public void validate(EndPoint endPoint) throws EndPointStatusException {
         SnmpValue snmpValue = endPoint.get(m_oid);
         if(snmpValue == null) {
@@ -81,6 +82,7 @@ public class MatchingSnmpEndPointValidationExpression extends EndPointValidation
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return "match(" + m_value + ")";
     }

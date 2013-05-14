@@ -92,6 +92,7 @@ public class MissingParameterException extends RuntimeException {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getMessage() {
 	StringBuffer b = new StringBuffer();
 

@@ -217,6 +217,7 @@ public class SimpleGraphProvider extends AbstractTopologyProvider implements Gra
         }
     }
 
+        @Override
     public void refresh() {
         try {
             load(getTopologyLocation());

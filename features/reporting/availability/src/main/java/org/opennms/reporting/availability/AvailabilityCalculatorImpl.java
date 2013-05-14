@@ -162,6 +162,7 @@ public class AvailabilityCalculatorImpl implements AvailabilityCalculator {
      *
      * @throws org.opennms.reporting.availability.AvailabilityCalculationException if any.
      */
+    @Override
     public void calculate() throws AvailabilityCalculationException {
 
         log.debug("Calculation Started");
@@ -212,7 +213,8 @@ public class AvailabilityCalculatorImpl implements AvailabilityCalculator {
  * @return a {@link java.lang.String} object.
  * @throws org.opennms.reporting.availability.AvailabilityCalculationException if any.
  */
-public String writeXML() throws AvailabilityCalculationException {
+    @Override
+    public String writeXML() throws AvailabilityCalculationException {
         try {
             log.debug("Writing the XML");
             // Create a file name of type Category-monthFormat-startDate.xml
@@ -238,7 +240,8 @@ public String writeXML() throws AvailabilityCalculationException {
  * @see org.opennms.reporting.availability.AvailabilityCalculator#writeXML(java.lang.String)
  */
 /** {@inheritDoc} */
-public void writeXML(String outputFileName) throws AvailabilityCalculationException {
+    @Override
+    public void writeXML(String outputFileName) throws AvailabilityCalculationException {
        try {
            log.debug("Writing the XML");
            m_outputFileName = outputFileName;
@@ -260,6 +263,7 @@ public void writeXML(String outputFileName) throws AvailabilityCalculationExcept
      * @see org.opennms.reporting.availability.AvailabilityCalculator#writeLocateableXML(java.lang.String)
      */
     /** {@inheritDoc} */
+    @Override
     public String writeLocateableXML(String id) throws AvailabilityCalculationException {
         try {
             log.debug("Writing the XML");
@@ -295,6 +299,7 @@ public void writeXML(String outputFileName) throws AvailabilityCalculationExcept
      * @param outputStream a {@link java.io.OutputStream} object.
      * @throws org.opennms.reporting.availability.AvailabilityCalculationException if any.
      */
+    @Override
     public void writeXML(OutputStream outputStream) throws AvailabilityCalculationException {
         try {
             log.debug("Writing the XML");
@@ -310,6 +315,7 @@ public void writeXML(String outputFileName) throws AvailabilityCalculationExcept
      * @see org.opennms.reporting.availability.AvailabilityCalculator#marshal(java.io.File)
      */
     /** {@inheritDoc} */
+    @Override
     public void marshal(File outputFile)
             throws AvailabilityCalculationException {
         try {
@@ -361,6 +367,7 @@ public void writeXML(String outputFileName) throws AvailabilityCalculationExcept
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getLogoURL() {
         return m_logoURL;
     }
@@ -369,6 +376,7 @@ public void writeXML(String outputFileName) throws AvailabilityCalculationExcept
      * @see org.opennms.reporting.availability.AvailabilityCalculator#setLogoURL(java.lang.String)
      */
     /** {@inheritDoc} */
+    @Override
     public void setLogoURL(String logoURL) {
         this.m_logoURL = logoURL;
     }
@@ -381,6 +389,7 @@ public void writeXML(String outputFileName) throws AvailabilityCalculationExcept
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getOutputFileName() {
         return m_outputFileName;
     }
@@ -389,6 +398,7 @@ public void writeXML(String outputFileName) throws AvailabilityCalculationExcept
      * @see org.opennms.reporting.availability.AvailabilityCalculator#setOutputFileName(java.lang.String)
      */
     /** {@inheritDoc} */
+    @Override
     public void setOutputFileName(String outputFileName) {
         this.m_outputFileName = outputFileName;
     }
@@ -401,6 +411,7 @@ public void writeXML(String outputFileName) throws AvailabilityCalculationExcept
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getAuthor() {
         return m_author;
     }
@@ -409,6 +420,7 @@ public void writeXML(String outputFileName) throws AvailabilityCalculationExcept
      * @see org.opennms.reporting.availability.AvailabilityCalculator#setAuthor(java.lang.String)
      */
     /** {@inheritDoc} */
+    @Override
     public void setAuthor(String author) {
         this.m_author = author;
     }
@@ -421,6 +433,7 @@ public void writeXML(String outputFileName) throws AvailabilityCalculationExcept
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getCategoryName() {
         return m_categoryName;
     }
@@ -429,6 +442,7 @@ public void writeXML(String outputFileName) throws AvailabilityCalculationExcept
      * @see org.opennms.reporting.availability.AvailabilityCalculator#setCategoryName(java.lang.String)
      */
     /** {@inheritDoc} */
+    @Override
     public void setCategoryName(String categoryName) {
         this.m_categoryName = categoryName;
     }
@@ -441,6 +455,7 @@ public void writeXML(String outputFileName) throws AvailabilityCalculationExcept
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getMonthFormat() {
         return m_monthFormat;
     }
@@ -449,6 +464,7 @@ public void writeXML(String outputFileName) throws AvailabilityCalculationExcept
      * @see org.opennms.reporting.availability.AvailabilityCalculator#setMonthFormat(java.lang.String)
      */
     /** {@inheritDoc} */
+    @Override
     public void setMonthFormat(String monthFormat) {
         this.m_monthFormat = monthFormat;
     }
@@ -461,6 +477,7 @@ public void writeXML(String outputFileName) throws AvailabilityCalculationExcept
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getReportFormat() {
         return m_reportFormat;
     }
@@ -469,6 +486,7 @@ public void writeXML(String outputFileName) throws AvailabilityCalculationExcept
      * @see org.opennms.reporting.availability.AvailabilityCalculator#setReportFormat(java.lang.String)
      */
     /** {@inheritDoc} */
+    @Override
     public void setReportFormat(String reportFormat) {
         this.m_reportFormat = reportFormat;
     }
@@ -481,6 +499,7 @@ public void writeXML(String outputFileName) throws AvailabilityCalculationExcept
      *
      * @return a {@link org.opennms.reporting.availability.Report} object.
      */
+    @Override
     public Report getReport() {
         return m_report;
     }
@@ -489,6 +508,7 @@ public void writeXML(String outputFileName) throws AvailabilityCalculationExcept
      * @see org.opennms.reporting.availability.AvailabilityCalculator#setCalendar(java.util.Calendar)
      */
     /** {@inheritDoc} */
+    @Override
     public void setCalendar(Calendar calendar) {
         this.m_calendar = calendar;
     }
@@ -501,6 +521,7 @@ public void writeXML(String outputFileName) throws AvailabilityCalculationExcept
      *
      * @return a {@link java.util.Date} object.
      */
+    @Override
     public Date getPeriodEndDate() {
         return m_periodEndDate;
     }
@@ -509,6 +530,7 @@ public void writeXML(String outputFileName) throws AvailabilityCalculationExcept
      * @see org.opennms.reporting.availability.AvailabilityCalculator#setPeriodEndDate(java.util.Date)
      */
     /** {@inheritDoc} */
+    @Override
     public void setPeriodEndDate(Date periodEndDate) {
         this.m_periodEndDate = periodEndDate;
     }
@@ -517,6 +539,7 @@ public void writeXML(String outputFileName) throws AvailabilityCalculationExcept
      * @see org.opennms.reporting.availability.AvailabilityCalculator#setReportStoreService(org.opennms.reporting.core.svclayer.ReportStoreService)
      */
     /** {@inheritDoc} */
+    @Override
     public void setReportStoreService(ReportStoreService reportStoreService) {
         m_reportStoreService = reportStoreService;
     }
@@ -529,6 +552,7 @@ public void writeXML(String outputFileName) throws AvailabilityCalculationExcept
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getBaseDir() {
         return m_baseDir;
     }
@@ -537,6 +561,7 @@ public void writeXML(String outputFileName) throws AvailabilityCalculationExcept
      * @see org.opennms.reporting.availability.AvailabilityCalculator#setBaseDir(java.lang.String)
      */
     /** {@inheritDoc} */
+    @Override
     public void setBaseDir(String baseDir) {
         m_baseDir = baseDir;
     }
@@ -545,6 +570,7 @@ public void writeXML(String outputFileName) throws AvailabilityCalculationExcept
      * @see org.opennms.reporting.availability.AvailabilityCalculator#setAvailabilityData(org.opennms.reporting.availability.AvailabilityData)
      */
     /** {@inheritDoc} */
+    @Override
     public void setAvailabilityData(AvailabilityData availabilityData) {
         m_availabilityData = availabilityData;
     }

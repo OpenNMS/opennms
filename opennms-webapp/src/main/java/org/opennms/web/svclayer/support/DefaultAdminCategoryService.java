@@ -110,6 +110,7 @@ public class DefaultAdminCategoryService implements
     }
 
     /** {@inheritDoc} */
+    @Override
     public CategoryAndMemberNodes getCategory(String categoryIdString) {
         if (categoryIdString == null) {
             throw new IllegalArgumentException("categoryIdString must not be null");
@@ -155,6 +156,7 @@ public class DefaultAdminCategoryService implements
      *
      * @return a {@link java.util.List} object.
      */
+    @Override
     public List<OnmsNode> findAllNodes() {
     	final List<OnmsNode> list = new ArrayList<OnmsNode>();
     	for (final OnmsNode node : getNodeDao().findAll()) {
@@ -168,6 +170,7 @@ public class DefaultAdminCategoryService implements
     }
     
     /** {@inheritDoc} */
+    @Override
     public EditModel findCategoryAndAllNodes(String categoryIdString) {
         CategoryAndMemberNodes cat = getCategory(categoryIdString); 
         List<OnmsNode> monitoredNodes = findAllNodes();
@@ -182,6 +185,7 @@ public class DefaultAdminCategoryService implements
      * @param toAdd an array of {@link java.lang.String} objects.
      * @param toDelete an array of {@link java.lang.String} objects.
      */
+    @Override
     public void performEdit(String categoryIdString, String editAction,
             String[] toAdd, String[] toDelete) {
         if (categoryIdString == null) {
@@ -263,6 +267,7 @@ public class DefaultAdminCategoryService implements
     }
 
     /** {@inheritDoc} */
+    @Override
     public OnmsCategory addNewCategory(final String name) {
         OnmsCategory category = new OnmsCategory();
         category.setName(name);
@@ -271,6 +276,7 @@ public class DefaultAdminCategoryService implements
     }
 
     /** {@inheritDoc} */
+    @Override
     public OnmsCategory getCategoryWithName(final String name) {
         return m_categoryDao.findByName(name);
     }
@@ -280,11 +286,13 @@ public class DefaultAdminCategoryService implements
      *
      * @return a {@link java.util.List} object.
      */
+    @Override
     public List<OnmsCategory> findAllCategories() {
         Collection<OnmsCategory> categories = m_categoryDao.findAll();
         List<OnmsCategory> sortedCategories =
             new ArrayList<OnmsCategory>(categories);
         Collections.sort(sortedCategories, new Comparator<OnmsCategory>() {
+            @Override
             public int compare(OnmsCategory o1, OnmsCategory o2) {
                 return o1.getName().compareTo(o2.getName());
             }
@@ -294,6 +302,7 @@ public class DefaultAdminCategoryService implements
     }
 
     /** {@inheritDoc} */
+    @Override
     public void removeCategory(String categoryIdString) {
         OnmsCategory category = findCategory(categoryIdString);
         CategoryAndMemberNodes cat = getCategory(categoryIdString);
@@ -304,6 +313,7 @@ public class DefaultAdminCategoryService implements
     }
 
     /** {@inheritDoc} */
+    @Override
     public List<OnmsCategory> findByNode(int nodeId) {
         final OnmsNode node = getNodeDao().get(nodeId);
         if (node == null) {
@@ -316,6 +326,7 @@ public class DefaultAdminCategoryService implements
     }
     
     /** {@inheritDoc} */
+    @Override
     public NodeEditModel findNodeCategories(String nodeIdString) {
         if (nodeIdString == null) {
             throw new IllegalArgumentException("nodeIdString must not be null");
@@ -335,6 +346,7 @@ public class DefaultAdminCategoryService implements
      * @param toAdd an array of {@link java.lang.String} objects.
      * @param toDelete an array of {@link java.lang.String} objects.
      */
+    @Override
     public void performNodeEdit(String nodeIdString, String editAction,
             String[] toAdd, String[] toDelete) {
         if (nodeIdString == null) {

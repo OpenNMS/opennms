@@ -52,6 +52,7 @@ public abstract class AbstractForeignSourceRepository implements ForeignSourceRe
     }
 
     /** {@inheritDoc} */
+    @Override
     public Requisition importResourceRequisition(final Resource resource) throws ForeignSourceRepositoryException {
         Assert.notNull(resource);
  
@@ -68,6 +69,7 @@ public abstract class AbstractForeignSourceRepository implements ForeignSourceRe
      * @return a {@link org.opennms.netmgt.provision.persist.foreignsource.ForeignSource} object.
      * @throws org.opennms.netmgt.provision.persist.ForeignSourceRepositoryException if any.
      */
+    @Override
     public ForeignSource getDefaultForeignSource() throws ForeignSourceRepositoryException {
         Resource defaultForeignSource = new ClassPathResource("/default-foreign-source.xml");
         if (!defaultForeignSource.exists()) {
@@ -79,6 +81,7 @@ public abstract class AbstractForeignSourceRepository implements ForeignSourceRe
     }
 
     /** {@inheritDoc} */
+    @Override
     public void putDefaultForeignSource(ForeignSource foreignSource) throws ForeignSourceRepositoryException {
         if (foreignSource == null) {
             throw new ForeignSourceRepositoryException("foreign source was null");
@@ -107,6 +110,7 @@ public abstract class AbstractForeignSourceRepository implements ForeignSourceRe
      *
      * @throws org.opennms.netmgt.provision.persist.ForeignSourceRepositoryException if any.
      */
+    @Override
     public void resetDefaultForeignSource() throws ForeignSourceRepositoryException {
     	final File deleteFile = new File(ConfigFileConstants.getFilePathString() + "default-foreign-source.xml");
         if (!deleteFile.exists()) {
@@ -118,11 +122,13 @@ public abstract class AbstractForeignSourceRepository implements ForeignSourceRe
     }
 
     /** {@inheritDoc} */
+    @Override
     public OnmsNodeRequisition getNodeRequisition(String foreignSource, String foreignId) throws ForeignSourceRepositoryException {
         Requisition req = getRequisition(foreignSource);
         return (req == null ? null : req.getNodeRequistion(foreignId));
     }
     
+    @Override
     public void validate(final ForeignSource foreignSource) throws ForeignSourceRepositoryException {
     	/*
     	final String name = foreignSource.getName();
@@ -132,6 +138,7 @@ public abstract class AbstractForeignSourceRepository implements ForeignSourceRe
     	*/
     }
     
+    @Override
     public void validate(final Requisition requisition) throws ForeignSourceRepositoryException {
     	/*
     	final String foreignSource = requisition.getForeignSource();

@@ -49,12 +49,14 @@ public class OnmsSmsServiceRegistrar implements SmsServiceRegistrar, Initializin
 	private Map<SmsService, Registration> m_registrationMap = new HashMap<SmsService, Registration>();
 	
 	/** {@inheritDoc} */
+        @Override
 	public void registerSmsService(SmsService service) {
 		Registration registration = getServiceRegistry().register(service, SmsService.class);
 		m_registrationMap.put(service, registration);
 	}
 	
 	/** {@inheritDoc} */
+        @Override
 	public void unregisterSmsService(SmsService service) {
 	    Registration registration = m_registrationMap.remove(service);
 	    if (registration != null) {

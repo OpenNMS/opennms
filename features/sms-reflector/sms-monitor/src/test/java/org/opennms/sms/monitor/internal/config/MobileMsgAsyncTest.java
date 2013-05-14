@@ -78,11 +78,13 @@ public class MobileMsgAsyncTest {
             m_transaction = transaction;
         }
 
+        @Override
         public void handleError(MobileMsgRequest request, Throwable t) {
             m_failed.set(true);
             m_latch.countDown();
         }
 
+        @Override
         public boolean handleResponse(MobileMsgRequest request, MobileMsgResponse packet) {
             m_start.set(request.getSentTime());
             m_end.set(packet.getReceiveTime());
@@ -90,11 +92,13 @@ public class MobileMsgAsyncTest {
             return true;
         }
 
+        @Override
         public void handleTimeout(MobileMsgRequest request) {
             m_timedOut.set(true);
             m_latch.countDown();
         }
 
+        @Override
         public boolean matches(MobileMsgRequest request, MobileMsgResponse response) {
             return m_transaction.matchesResponse(m_session, request, response);
         }

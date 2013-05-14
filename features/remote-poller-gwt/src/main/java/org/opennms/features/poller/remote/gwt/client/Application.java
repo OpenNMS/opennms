@@ -78,6 +78,7 @@ public class Application implements LocationsUpdatedEventHandler {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void onLocationsUpdated(LocationsUpdatedEvent e) {
         m_view.updateTimestamp();
     }

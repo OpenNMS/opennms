@@ -93,6 +93,7 @@ public class QueuingTcpRrdStrategy implements RrdStrategy<TcpRrdStrategy.RrdDefi
             this.setName(this.getClass().getSimpleName());
         }
 
+        @Override
         public void run() {
             try {
                 while (true) {
@@ -127,6 +128,7 @@ public class QueuingTcpRrdStrategy implements RrdStrategy<TcpRrdStrategy.RrdDefi
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setConfigurationProperties(Properties configurationParameters) {
         m_delegate.setConfigurationProperties(configurationParameters);
     }
@@ -136,11 +138,13 @@ public class QueuingTcpRrdStrategy implements RrdStrategy<TcpRrdStrategy.RrdDefi
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getDefaultFileExtension() {
         return m_delegate.getDefaultFileExtension();
     }
 
     /** {@inheritDoc} */
+    @Override
     public TcpRrdStrategy.RrdDefinition createDefinition(String creator, String directory, String rrdName, int step, List<RrdDataSource> dataSources, List<String> rraList) throws Exception {
         return new TcpRrdStrategy.RrdDefinition(directory, rrdName);
     }
@@ -151,17 +155,20 @@ public class QueuingTcpRrdStrategy implements RrdStrategy<TcpRrdStrategy.RrdDefi
      * @param rrdDef a {@link org.opennms.netmgt.rrd.tcp.TcpRrdStrategy.RrdDefinition} object.
      * @throws java.lang.Exception if any.
      */
+    @Override
 	public void createFile(RrdDefinition rrdDef,
 			Map<String, String> attributeMappings) throws Exception {
 		// done nothing
     }
 
     /** {@inheritDoc} */
+    @Override
     public String openFile(String fileName) throws Exception {
         return fileName;
     }
 
     /** {@inheritDoc} */
+    @Override
     public void updateFile(String fileName, String owner, String data) throws Exception {
         if (m_queue.offer(new PerformanceDataReading(fileName, owner, data), 500, TimeUnit.MILLISECONDS)) {
             if (m_skippedReadings > 0) {
@@ -179,31 +186,37 @@ public class QueuingTcpRrdStrategy implements RrdStrategy<TcpRrdStrategy.RrdDefi
      * @param rrd a {@link java.lang.String} object.
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void closeFile(String rrd) throws Exception {
         // Do nothing
     }
 
     /** {@inheritDoc} */
+    @Override
     public Double fetchLastValue(String rrdFile, String ds, int interval) throws NumberFormatException {
         return m_delegate.fetchLastValue(rrdFile, ds, interval);
     }
 
     /** {@inheritDoc} */
+    @Override
     public Double fetchLastValue(String rrdFile, String ds, String consolidationFunction, int interval) throws NumberFormatException {
         return m_delegate.fetchLastValue(rrdFile, ds, consolidationFunction, interval);
     }
 
     /** {@inheritDoc} */
+    @Override
     public Double fetchLastValueInRange(String rrdFile, String ds, int interval, int range) throws NumberFormatException {
         return m_delegate.fetchLastValueInRange(rrdFile, ds, interval, range);
     }
 
     /** {@inheritDoc} */
+    @Override
     public InputStream createGraph(String command, File workDir) throws IOException {
         return m_delegate.createGraph(command, workDir);
     }
 
     /** {@inheritDoc} */
+    @Override
     public RrdGraphDetails createGraphReturnDetails(String command, File workDir) throws IOException {
         return m_delegate.createGraphReturnDetails(command, workDir);
     }
@@ -213,6 +226,7 @@ public class QueuingTcpRrdStrategy implements RrdStrategy<TcpRrdStrategy.RrdDefi
      *
      * @return a int.
      */
+    @Override
     public int getGraphLeftOffset() {
         return m_delegate.getGraphLeftOffset();
     }
@@ -222,6 +236,7 @@ public class QueuingTcpRrdStrategy implements RrdStrategy<TcpRrdStrategy.RrdDefi
      *
      * @return a int.
      */
+    @Override
     public int getGraphRightOffset() {
         return m_delegate.getGraphRightOffset();
     }
@@ -231,6 +246,7 @@ public class QueuingTcpRrdStrategy implements RrdStrategy<TcpRrdStrategy.RrdDefi
      *
      * @return a int.
      */
+    @Override
     public int getGraphTopOffsetWithText() {
         return m_delegate.getGraphTopOffsetWithText();
     }
@@ -240,11 +256,13 @@ public class QueuingTcpRrdStrategy implements RrdStrategy<TcpRrdStrategy.RrdDefi
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getStats() {
         return m_delegate.getStats();
     }
 
     /** {@inheritDoc} */
+    @Override
     public void promoteEnqueuedFiles(Collection<String> rrdFiles) {
         m_delegate.promoteEnqueuedFiles(rrdFiles);
     }

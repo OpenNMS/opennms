@@ -83,6 +83,7 @@ public class PersistSelectorStrategyField extends CustomField implements Button.
         combo.setImmediate(true);
         combo.setNewItemsAllowed(true);
         combo.setNewItemHandler(new NewItemHandler() {
+            @Override
             public void addNewItem(String newItemCaption) {
                 if (!combo.containsId(newItemCaption)) {
                     combo.addItem(newItemCaption);
@@ -172,6 +173,7 @@ public class PersistSelectorStrategyField extends CustomField implements Button.
     /* (non-Javadoc)
      * @see com.vaadin.ui.Button.ClickListener#buttonClick(com.vaadin.ui.Button.ClickEvent)
      */
+    @Override
     public void buttonClick(Button.ClickEvent event) {
         final Button btn = event.getButton();
         if (btn == add) {
@@ -207,6 +209,7 @@ public class PersistSelectorStrategyField extends CustomField implements Button.
                     new MessageBox.ButtonConfig(MessageBox.ButtonType.NO, "No"));
             mb.addStyleName(Runo.WINDOW_DIALOG);
             mb.show(new EventListener() {
+                @Override
                 public void buttonClicked(ButtonType buttonType) {
                     if (buttonType == MessageBox.ButtonType.YES) {
                         table.removeItem(itemId);

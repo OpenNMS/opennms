@@ -94,6 +94,7 @@ public class StatusDetails implements Serializable, IsSerializable, Comparable<S
      *
      * @return a {@link java.lang.String} object.
      */
+        @Override
     public String toString() {
         return "StatusDetails[status=" + m_status + ",reason=" + m_reason + "]";
     }
@@ -103,6 +104,7 @@ public class StatusDetails implements Serializable, IsSerializable, Comparable<S
      *
      * @return a int.
      */
+        @Override
     public int hashCode() {
         return new HashCodeBuilder()
             .append(this.getStatus())
@@ -111,6 +113,7 @@ public class StatusDetails implements Serializable, IsSerializable, Comparable<S
     }
 
     /** {@inheritDoc} */
+        @Override
     public boolean equals(final Object o) {
         if (!(o instanceof StatusDetails))
             return false;
@@ -124,6 +127,7 @@ public class StatusDetails implements Serializable, IsSerializable, Comparable<S
      * @param that a {@link org.opennms.features.poller.remote.gwt.client.StatusDetails} object.
      * @return a int.
      */
+        @Override
     public int compareTo(final StatusDetails that) {
         return new CompareToBuilder()
 //            .append(this.getStatus(), that.getStatus())

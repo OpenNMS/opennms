@@ -246,6 +246,7 @@ public class NrpePacket {
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
+        @Override
 	public String toString() {
 		return "Version: " + m_version + "\n" + "Type: " + m_type + "\n"
 				+ "Result Code: " + m_resultCode + "\n" + "Buffer: " + m_buffer;

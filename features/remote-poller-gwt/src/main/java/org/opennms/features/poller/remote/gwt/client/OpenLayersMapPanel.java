@@ -97,6 +97,7 @@ public class OpenLayersMapPanel extends Composite implements MapPanel {
             return m_markerState;
         }
 
+        @Override
         public void onBrowserEvent(final MarkerBrowserEvent markerBrowserEvent) {
             m_eventBus.fireEvent(new GWTMarkerClickedEvent(getMarkerState()));
         }
@@ -132,12 +133,14 @@ public class OpenLayersMapPanel extends Composite implements MapPanel {
         initializeMap();
 
         m_map.addMapMoveListener(new MapMoveListener() {
+            @Override
             public void onMapMove(final MapMoveEvent eventObject) {
                 m_eventBus.fireEvent(new MapPanelBoundsChangedEvent(getBounds()));
             }
             
         });
         m_map.addMapZoomListener(new MapZoomListener() {
+            @Override
             public void onMapZoom(final MapZoomEvent eventObject) {
                 m_eventBus.fireEvent(new MapPanelBoundsChangedEvent(getBounds()));
             }
@@ -192,6 +195,7 @@ public class OpenLayersMapPanel extends Composite implements MapPanel {
         m_map.zoomToMaxExtent();
 
         Window.addResizeHandler(new ResizeHandler() {
+            @Override
             public void onResize(ResizeEvent event) {
                 syncMapSizeWithParent();
             }
@@ -206,6 +210,7 @@ public class OpenLayersMapPanel extends Composite implements MapPanel {
     }-*/;
 
     /** {@inheritDoc} */
+    @Override
     public void showLocationDetails(String name, String htmlTitle, String htmlContent) {
     	final Marker marker = getMarker(name);
 
@@ -240,6 +245,7 @@ public class OpenLayersMapPanel extends Composite implements MapPanel {
      *
      * @return a {@link org.opennms.features.poller.remote.gwt.client.GWTBounds} object.
      */
+    @Override
     public GWTBounds getBounds() {
         try {
             return toGWTBounds(m_map.getExtent());
@@ -249,6 +255,7 @@ public class OpenLayersMapPanel extends Composite implements MapPanel {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setBounds(final GWTBounds b) {
         m_map.zoomToExtent(toBounds(b));
     }
@@ -286,6 +293,7 @@ public class OpenLayersMapPanel extends Composite implements MapPanel {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void placeMarker(final GWTMarkerState marker) {
         Marker m = getMarker(marker.getName());
 
@@ -318,6 +326,7 @@ public class OpenLayersMapPanel extends Composite implements MapPanel {
      *
      * @return a {@link com.google.gwt.user.client.ui.Widget} object.
      */
+    @Override
     public Widget getWidget() {
         return this;
     }

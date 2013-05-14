@@ -54,6 +54,7 @@ public class IrcCatNotificationStrategy implements NotificationStrategy {
     }
 
     /** {@inheritDoc} */
+    @Override
     public int send(List<Argument> arguments) {
         try {
             String message = buildMessage(arguments);

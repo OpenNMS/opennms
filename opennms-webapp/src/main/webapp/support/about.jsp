@@ -34,6 +34,7 @@
 	session="true"
 	import="org.opennms.web.springframework.security.Authentication,
 		org.opennms.core.resource.Vault,
+		org.opennms.core.utils.WebSecurityUtils,
 		org.opennms.core.utils.DBUtils,
 		java.sql.Connection
 	"
@@ -99,7 +100,7 @@
   </tr>
   <tr>
     <td class="standardheader">User Agent:</td>
-    <td class="standard"><%=request.getHeader( "User-Agent" )%></td>
+    <td class="standard"><%=WebSecurityUtils.sanitizeString(request.getHeader( "User-Agent" ), false)%></td>
   </tr>
   <tr>
     <td class="standardheader">Database Type:</td>

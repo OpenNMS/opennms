@@ -63,6 +63,7 @@ public class CdpCacheTable extends SnmpTable<CdpCacheTableEntry> {
         super(address, "cdpCacheTable", CdpCacheTableEntry.cdpCache_elemList);
 	}
     /** {@inheritDoc} */
+    @Override
     protected CdpCacheTableEntry createTableEntry(SnmpObjId base, SnmpInstId inst, Object val) {
         return new CdpCacheTableEntry();
     }

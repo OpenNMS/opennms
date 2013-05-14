@@ -69,6 +69,7 @@ public class ResponseTimeResourceType implements OnmsResourceType {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getLabel() {
         return "Response Time";
     }
@@ -78,17 +79,20 @@ public class ResponseTimeResourceType implements OnmsResourceType {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getName() {
         return "responseTime";
     }
 
     /** {@inheritDoc} */
+    @Override
     public List<OnmsResource> getResourcesForDomain(final String domain) {
         List<OnmsResource> empty = Collections.emptyList();
         return empty;
     }
     
     /** {@inheritDoc} */
+    @Override
     public List<OnmsResource> getResourcesForNode(final int nodeId) {
     	final LinkedList<OnmsResource> resources = new LinkedList<OnmsResource>();
         
@@ -138,11 +142,13 @@ public class ResponseTimeResourceType implements OnmsResourceType {
 
 
     /** {@inheritDoc} */
+    @Override
     public boolean isResourceTypeOnDomain(final String domain) {
         return false;
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isResourceTypeOnNode(final int nodeId) {
         return getResourcesForNode(nodeId).size() > 0;
     }
@@ -154,6 +160,7 @@ public class ResponseTimeResourceType implements OnmsResourceType {
             m_intf = intf;
         }
 
+        @Override
         public Set<OnmsAttribute> load() {
             LogUtils.debugf(this, "lazy-loading attributes for response time resource '%s'", m_intf);
             return ResourceTypeUtils.getAttributesAtRelativePath(m_resourceDao.getRrdDirectory(), getRelativeInterfacePath(m_intf));
@@ -161,16 +168,19 @@ public class ResponseTimeResourceType implements OnmsResourceType {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getLinkForResource(final OnmsResource resource) {
         return "element/interface.jsp?node=" + resource.getParent().getName() + "&intf=" + resource.getName();
     }
     
     /** {@inheritDoc} */
+    @Override
     public boolean isResourceTypeOnNodeSource(String nodeSource, int nodeId) {
         return getResourcesForNodeSource(nodeSource, nodeId).size() > 0;
     }
     
     /** {@inheritDoc} */
+    @Override
     public List<OnmsResource> getResourcesForNodeSource(String nodeSource, int nodeId) {
         return getResourcesForNode(nodeId);
     }

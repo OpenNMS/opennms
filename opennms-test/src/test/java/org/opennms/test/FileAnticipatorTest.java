@@ -42,10 +42,12 @@ import junit.framework.TestCase;
 public class FileAnticipatorTest extends TestCase {
     private FileAnticipator m_anticipator;
     
+    @Override
     public void setUp() throws Exception {
         m_anticipator = new FileAnticipator();
     }
     
+    @Override
     public void tearDown() {
         m_anticipator.tearDown();
     }

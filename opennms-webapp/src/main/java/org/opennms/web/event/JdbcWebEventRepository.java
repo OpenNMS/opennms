@@ -87,21 +87,25 @@ public class JdbcWebEventRepository implements WebEventRepository, InitializingB
                 }
             }
             
+            @Override
             public void visitAckType(AcknowledgeType ackType) {
                 and(buf);
                 buf.append(ackType.getAcknowledgeTypeClause());
             }
 
+            @Override
             public void visitFilter(Filter filter) {
                 and(buf);
                 buf.append(filter.getParamSql());
             }
 
+            @Override
             public void visitSortStyle(SortStyle sortStyle) {
                 buf.append(" ");
                 buf.append(sortStyle.getOrderByClause());
             }
             
+            @Override
             public void visitLimit(int limit, int offset) {
                 buf.append(" LIMIT ").append(limit).append(" OFFSET ").append(offset);
             }
@@ -114,6 +118,7 @@ public class JdbcWebEventRepository implements WebEventRepository, InitializingB
     private PreparedStatementSetter paramSetter(final EventCriteria criteria, final Object... args) {
         return new PreparedStatementSetter() {
             int paramIndex = 1;
+            @Override
             public void setValues(final PreparedStatement ps) throws SQLException {
                 for(Object arg : args) {
                     ps.setObject(paramIndex, arg);
@@ -132,6 +137,7 @@ public class JdbcWebEventRepository implements WebEventRepository, InitializingB
     
     public static class EventMapper implements ParameterizedRowMapper<Event>{
 
+        @Override
         public Event mapRow(ResultSet rs, int rowNum) throws SQLException {
             Event event = new Event();
             event.id = Integer.valueOf(rs.getInt("eventID"));
@@ -191,12 +197,14 @@ public class JdbcWebEventRepository implements WebEventRepository, InitializingB
     }
 
     /** {@inheritDoc} */
+    @Override
     public int countMatchingEvents(EventCriteria criteria) {
         String sql = getSql("SELECT COUNT(EVENTID) as EVENTCOUNT FROM EVENTS LEFT OUTER JOIN NODE USING (NODEID) LEFT OUTER JOIN SERVICE USING (SERVICEID) ", criteria);
         return queryForInt(sql, paramSetter(criteria));
     }
 
     /** {@inheritDoc} */
+    @Override
     public int[] countMatchingEventsBySeverity(EventCriteria criteria) {
         String selectClause = "SELECT EVENTSEVERITY, COUNT(*) AS EVENTCOUNT FROM EVENTS LEFT OUTER JOIN NODE USING (NODEID) LEFT OUTER JOIN SERVICE USING (SERVICEID) ";
         String sql = getSql(selectClause, criteria);
@@ -206,6 +214,7 @@ public class JdbcWebEventRepository implements WebEventRepository, InitializingB
         final int[] alarmCounts = new int[8];
         jdbc().query(sql, paramSetter(criteria), new RowCallbackHandler(){
 
+            @Override
             public void processRow(ResultSet rs) throws SQLException {
                 int severity = rs.getInt("EVENTSEVERITY");
                 int alarmCount = rs.getInt("EVENTCOUNT");
@@ -219,6 +228,7 @@ public class JdbcWebEventRepository implements WebEventRepository, InitializingB
     }
 
     /** {@inheritDoc} */
+    @Override
     public Event getEvent(int eventId) {
         Event[] events = getMatchingEvents(new EventCriteria(new EventIdFilter(eventId)));
         if(events.length < 1){
@@ -229,6 +239,7 @@ public class JdbcWebEventRepository implements WebEventRepository, InitializingB
     }
 
     /** {@inheritDoc} */
+    @Override
     public Event[] getMatchingEvents(EventCriteria criteria) {
         String sql = getSql("SELECT EVENTS.*, NODE.NODELABEL, SERVICE.SERVICENAME FROM EVENTS LEFT OUTER JOIN NODE USING (NODEID) LEFT OUTER JOIN SERVICE USING (SERVICEID) ", criteria);
         return getEvents(sql, paramSetter(criteria));
@@ -244,11 +255,13 @@ public class JdbcWebEventRepository implements WebEventRepository, InitializingB
     }
 
     /** {@inheritDoc} */
+    @Override
     public void acknowledgeAll(String user, Date timestamp) {
         m_simpleJdbcTemplate.update("UPDATE EVENTS SET EVENTACKUSER=?, EVENTACKTIME=? WHERE EVENTACKUSER IS NULL ", user, new Timestamp(timestamp.getTime()));
     }
 
     /** {@inheritDoc} */
+    @Override
     public void acknowledgeMatchingEvents(String user, Date timestamp, EventCriteria criteria) {
         String sql = getSql("UPDATE EVENTS SET EVENTACKUSER=?, EVENTACKTIME=? ", criteria);
         jdbc().update(sql, paramSetter(criteria, user, new Timestamp(timestamp.getTime())));
@@ -257,11 +270,13 @@ public class JdbcWebEventRepository implements WebEventRepository, InitializingB
     /**
      * <p>unacknowledgeAll</p>
      */
+    @Override
     public void unacknowledgeAll() {
         m_simpleJdbcTemplate.update("UPDATE EVENTS SET EVENTACKUSER=NULL, EVENTACKTIME=NULL WHERE EVENTACKUSER IS NOT NULL ");
     }
 
     /** {@inheritDoc} */
+    @Override
     public void unacknowledgeMatchingEvents(EventCriteria criteria) {
         String sql = getSql("UPDATE EVENTS SET EVENTACKUSER=NULL, EVENTACKTIME=null ", criteria);
         jdbc().update(sql, paramSetter(criteria));

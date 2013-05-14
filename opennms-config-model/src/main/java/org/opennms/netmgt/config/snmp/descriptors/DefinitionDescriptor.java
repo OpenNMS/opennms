@@ -120,6 +120,7 @@ import org.opennms.netmgt.config.snmp.Definition;
                     throw new IllegalStateException(ex.toString());
                 }
             }
+            @Override
             public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
                 try {
                     Definition target = (Definition) object;
@@ -169,6 +170,7 @@ import org.opennms.netmgt.config.snmp.Definition;
                     throw new IllegalStateException(ex.toString());
                 }
             }
+            @Override
             public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
                 try {
                     Definition target = (Definition) object;
@@ -221,6 +223,7 @@ import org.opennms.netmgt.config.snmp.Definition;
                     throw new IllegalStateException(ex.toString());
                 }
             }
+            @Override
             public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
                 try {
                     Definition target = (Definition) object;
@@ -350,6 +353,7 @@ import org.opennms.netmgt.config.snmp.Definition;
      * of a global
      * element or element with anonymous type definition.
      */
+    @Override
     public boolean isElementDefinition(
     ) {
         return _elementDefinition;

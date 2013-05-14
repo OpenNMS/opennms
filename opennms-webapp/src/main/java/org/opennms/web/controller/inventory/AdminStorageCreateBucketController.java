@@ -72,6 +72,7 @@ public class AdminStorageCreateBucketController extends SimpleFormController {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response,
             Object command, BindException errors) throws ServletException, IOException, Exception {
 
@@ -93,6 +94,7 @@ public class AdminStorageCreateBucketController extends SimpleFormController {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder)
         throws ServletException {
         log().debug("AdminStorageCreateBucketController initBinder");

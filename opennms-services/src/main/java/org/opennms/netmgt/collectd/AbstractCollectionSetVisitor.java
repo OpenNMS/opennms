@@ -43,34 +43,42 @@ import org.opennms.netmgt.config.collector.CollectionSetVisitor;
 public class AbstractCollectionSetVisitor implements CollectionSetVisitor {
 
     /** {@inheritDoc} */
+    @Override
     public void visitAttribute(CollectionAttribute attribute) {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void visitCollectionSet(CollectionSet set) {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void visitGroup(AttributeGroup group) {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void visitResource(CollectionResource resource) {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void completeAttribute(CollectionAttribute attribute) {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void completeCollectionSet(CollectionSet set) {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void completeGroup(AttributeGroup group) {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void completeResource(CollectionResource resource) {
     }
 

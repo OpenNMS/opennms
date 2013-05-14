@@ -52,6 +52,7 @@ public class RenameGroupServlet extends HttpServlet {
     private static final long serialVersionUID = -607871783547629551L;
 
     /** {@inheritDoc} */
+    @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
         	GroupFactory.init();

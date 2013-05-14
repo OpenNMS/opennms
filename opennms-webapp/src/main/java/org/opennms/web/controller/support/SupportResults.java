@@ -106,6 +106,7 @@ public class SupportResults implements Serializable {
         m_latestTickets = tickets;
     }
 
+    @Override
     public String toString() {
         return new ToStringBuilder(this)
             .append("success", m_success)

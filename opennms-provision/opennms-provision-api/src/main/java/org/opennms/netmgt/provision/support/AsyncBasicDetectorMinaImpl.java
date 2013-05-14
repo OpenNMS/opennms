@@ -145,6 +145,7 @@ public abstract class AsyncBasicDetectorMinaImpl<Request, Response> extends Asyn
             // Connectors each time
             IoSessionInitializer<ConnectFuture> init = new IoSessionInitializer<ConnectFuture>() {
 
+                @Override
                 public void initializeSession(IoSession session, ConnectFuture future) {
                     // Add filters to the session
                     if(isUseSSLFilter()) {

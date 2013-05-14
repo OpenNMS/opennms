@@ -47,6 +47,7 @@ public class DefaultRrdGraphDetails implements RrdGraphDetails {
      *
      * @return a int.
      */
+    @Override
     public int getHeight() {
         return m_height;
     }
@@ -65,6 +66,7 @@ public class DefaultRrdGraphDetails implements RrdGraphDetails {
      *
      * @return a {@link java.io.InputStream} object.
      */
+    @Override
     public InputStream getInputStream() {
         return m_inputStream;
     }
@@ -83,6 +85,7 @@ public class DefaultRrdGraphDetails implements RrdGraphDetails {
      *
      * @return an array of {@link java.lang.String} objects.
      */
+    @Override
     public String[] getPrintLines() {
         return m_printLines;
     }
@@ -101,6 +104,7 @@ public class DefaultRrdGraphDetails implements RrdGraphDetails {
      *
      * @return a int.
      */
+    @Override
     public int getWidth() {
         return m_width;
     }

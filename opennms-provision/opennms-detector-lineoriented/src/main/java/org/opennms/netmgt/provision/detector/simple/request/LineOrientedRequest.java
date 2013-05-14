@@ -79,6 +79,7 @@ public class LineOrientedRequest {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return String.format("Request: %s", m_command);
     }

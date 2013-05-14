@@ -50,11 +50,13 @@ public class LoopClient implements Client<LineOrientedRequest, LoopResponse> {
     /**
      * <p>close</p>
      */
+    @Override
     public void close() {
         
     }
 
     /** {@inheritDoc} */
+    @Override
     public void connect(InetAddress address, int port, int timeout) throws IOException, Exception {
         m_address = InetAddressUtils.str(address);
     }
@@ -66,6 +68,7 @@ public class LoopClient implements Client<LineOrientedRequest, LoopResponse> {
      * @throws java.io.IOException if any.
      * @throws java.lang.Exception if any.
      */
+    @Override
     public LoopResponse receiveBanner() throws IOException, Exception {
         return receiveResponse();
     }
@@ -78,6 +81,7 @@ public class LoopClient implements Client<LineOrientedRequest, LoopResponse> {
      * @throws java.io.IOException if any.
      * @throws java.lang.Exception if any.
      */
+    @Override
     public LoopResponse sendRequest(LineOrientedRequest request) throws IOException, Exception {
         return null;
     }

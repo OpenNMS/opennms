@@ -166,6 +166,7 @@ public final class DnsPlugin extends AbstractPlugin {
      *
      * @return The protocol name for this plugin.
      */
+    @Override
     public String getProtocolName() {
         return PROTOCOL_NAME;
     }
@@ -176,6 +177,7 @@ public final class DnsPlugin extends AbstractPlugin {
      * Returns true if the protocol defined by this plugin is supported. If the
      * protocol is not supported then a false value is returned to the caller.
      */
+    @Override
     public boolean isProtocolSupported(InetAddress address) {
         return isServer(address, DEFAULT_PORT, DEFAULT_RETRY, DEFAULT_TIMEOUT, DEFAULT_LOOKUP);
     }
@@ -198,6 +200,7 @@ public final class DnsPlugin extends AbstractPlugin {
      * necessary
      * </p>
      */
+    @Override
     public boolean isProtocolSupported(InetAddress address, Map<String, Object> qualifiers) {
         int port = DEFAULT_PORT;
         int timeout = DEFAULT_TIMEOUT;

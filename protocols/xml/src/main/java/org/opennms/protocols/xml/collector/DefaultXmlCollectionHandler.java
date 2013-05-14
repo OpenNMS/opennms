@@ -73,6 +73,7 @@ public class DefaultXmlCollectionHandler extends AbstractXmlCollectionHandler {
     /* (non-Javadoc)
      * @see org.opennms.protocols.xml.collector.AbstractXmlCollectionHandler#processXmlResource(org.opennms.protocols.xml.collector.XmlCollectionResource, org.opennms.netmgt.config.collector.AttributeGroupType)
      */
+    @Override
     protected void processXmlResource(XmlCollectionResource collectionResource, AttributeGroupType attribGroupType) {}
 
 }

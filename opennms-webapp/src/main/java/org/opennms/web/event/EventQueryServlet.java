@@ -91,6 +91,7 @@ public class EventQueryServlet extends HttpServlet {
      *
      * @throws javax.servlet.ServletException if any.
      */
+    @Override
     public void init() throws ServletException {
         ServletConfig config = this.getServletConfig();
 
@@ -106,6 +107,7 @@ public class EventQueryServlet extends HttpServlet {
      * filter-based parameters, and then passes the modified parameter set to
      * the event filter.
      */
+    @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         List<Filter> filterArray = new ArrayList<Filter>();
 

@@ -347,6 +347,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
             // do nothing here by default as the actual exit is managed by the external program
         }
 
+        @Override
         public String toString() {
             return getClass().getSimpleName();
         }
@@ -378,6 +379,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
     private Map<Integer, ServicePollState> m_pollState = new LinkedHashMap<Integer, ServicePollState>();
 
     /** {@inheritDoc} */
+    @Override
     public void addConfigurationChangedListener(ConfigurationChangedListener l) {
         m_configChangeListeners.addFirst(l);
     }
@@ -404,11 +406,13 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
     }
 
     /** {@inheritDoc} */
+    @Override
     public void addPropertyChangeListener(final PropertyChangeListener listener) {
         m_propertyChangeListeners.addFirst(listener);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void addServicePollStateChangedListener(final ServicePollStateChangedListener listener) {
         m_servicePollStateChangedListeners.addFirst(listener);
     }
@@ -436,6 +440,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void destroy() throws Exception {
         stop();
     }
@@ -559,6 +564,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
      *
      * @return a {@link java.util.Collection} object.
      */
+    @Override
     public Collection<OnmsMonitoringLocationDefinition> getMonitoringLocations() {
         assertInitialized();
         return m_backEnd.getMonitoringLocations();
@@ -569,6 +575,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getMonitorName() {
         return (isRegistered() ? m_backEnd.getMonitorName(getMonitorId()) : "");
     }
@@ -578,6 +585,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
      *
      * @return a {@link java.util.Collection} object.
      */
+    @Override
     public Collection<PolledService> getPolledServices() {
         return Arrays.asList(m_pollerConfiguration.getPolledServices());
     }
@@ -587,6 +595,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
      *
      * @return a {@link java.util.List} object.
      */
+    @Override
     public List<ServicePollState> getPollerPollState() {
         synchronized (m_pollState) {
             return new LinkedList<ServicePollState>(m_pollState.values());
@@ -594,6 +603,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
     }
 
     /** {@inheritDoc} */
+    @Override
     public ServicePollState getServicePollState(int polledServiceId) {
         synchronized (m_pollState) {
             return m_pollState.get(polledServiceId);
@@ -614,6 +624,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
      *
      * @return a boolean.
      */
+    @Override
     public boolean isRegistered() {
         return m_state.isRegistered();
     }
@@ -623,36 +634,43 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
      *
      * @return a boolean.
      */
+    @Override
     public boolean isStarted() {
         return m_state.isStarted();
     }
 
     /** {@inheritDoc} */
+    @Override
     public void pollService(final Integer polledServiceId) {
         m_state.pollService(polledServiceId);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void register(final String monitoringLocation) {
         m_state.register(monitoringLocation);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void removeConfigurationChangedListener(final ConfigurationChangedListener listener) {
         m_configChangeListeners.remove(listener);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void removePropertyChangeListener(final PropertyChangeListener listener) {
         m_propertyChangeListeners.remove(listener);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void removeServicePollStateChangedListener(final ServicePollStateChangedListener listener) {
         m_servicePollStateChangedListeners.remove(listener);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setInitialPollTime(final Integer polledServiceId, final Date initialPollTime) {
         final ServicePollState pollState = getServicePollState(polledServiceId);
         if (pollState == null) return;
@@ -707,6 +725,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
     /**
      * <p>stop</p>
      */
+    @Override
     public void stop() {
         m_state.stop();
     }
@@ -837,6 +856,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
      *
      * @return a boolean.
      */
+    @Override
     public boolean isExitNecessary() {
         return m_state.isExitNecessary();
     }

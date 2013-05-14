@@ -44,7 +44,6 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
@@ -243,6 +242,7 @@ import org.exolab.castor.xml.Unmarshaller;
      * 
      * @return a hash code value for the object.
      */
+    @Override
     public int hashCode(
     ) {
         int result = 17;

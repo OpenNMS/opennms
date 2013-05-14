@@ -55,6 +55,7 @@ public class AdminRancidCloginUpdateController extends SimpleFormController {
     InventoryService m_inventoryService;
     
     /** {@inheritDoc} */
+    @Override
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response,
             Object command, BindException errors) throws ServletException, IOException, Exception {
 
@@ -74,6 +75,7 @@ public class AdminRancidCloginUpdateController extends SimpleFormController {
         return super.onSubmit(request, response, command, errors);
     }
     /** {@inheritDoc} */
+    @Override
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws ServletException {
         log().debug("AdminRancidCloginIpdateController initBinder");
     }

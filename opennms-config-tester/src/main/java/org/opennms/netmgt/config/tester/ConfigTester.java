@@ -62,6 +62,7 @@ public class ConfigTester implements ApplicationContextAware {
 		return m_context;
 	}
 
+        @Override
 	public void setApplicationContext(ApplicationContext context) throws BeansException {
 		m_context = context;
 	}

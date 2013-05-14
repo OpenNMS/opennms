@@ -92,6 +92,7 @@ public class ScheduleEditorServlet extends HttpServlet {
         private Outages m_outages;
         private String m_fileName = null;
 
+        @Override
         public void loadSchedules() throws ServletException {
             if (m_fileName == null) {
                 throw new ServletException("Loading from outage factory not implemented yet!");
@@ -112,6 +113,7 @@ public class ScheduleEditorServlet extends HttpServlet {
             }
         }
 
+        @Override
         public void saveSchedules() throws ServletException {
             if (m_fileName == null) {
                 throw new ServletException("Saving to outage factory not implemented yet!");
@@ -132,6 +134,7 @@ public class ScheduleEditorServlet extends HttpServlet {
             }
         }
 
+        @Override
         public void deleteSchedule(int index) throws ServletException {
             List<Outage> outages = getOutages();
             outages.remove(index);
@@ -141,15 +144,18 @@ public class ScheduleEditorServlet extends HttpServlet {
             return m_outages.getOutageCollection();
         }
 
+        @Override
         public void addSchedule(BasicSchedule schedule) throws ServletException {
             Outage outage = (Outage)schedule;
             m_outages.addOutage(outage);
         }
 
+        @Override
         public void setSchedule(int index, BasicSchedule schedule) throws ServletException {
             m_outages.setOutage(index, (Outage)schedule);
         }
 
+        @Override
         public BasicSchedule createSchedule(String name, String type) {
             Outage outage = new Outage();
             outage.setName(name);
@@ -157,18 +163,22 @@ public class ScheduleEditorServlet extends HttpServlet {
             return outage;
         }
 
+        @Override
         public BasicSchedule getSchedule(int index) {
             return m_outages.getOutage(index);
         }
 
+        @Override
         public BasicSchedule[] getSchedule() {
             return m_outages.getOutage();
         }
 
+        @Override
         public String getFileName() {
             return m_fileName;
         }
 
+        @Override
         public void setFileName(String fileName) {
             m_fileName = fileName;
         }
@@ -180,6 +190,7 @@ public class ScheduleEditorServlet extends HttpServlet {
     }
     
     class NewScheduleOp implements ScheduleOp {
+        @Override
         public String doOp(HttpServletRequest request, HttpServletResponse response, ScheduleMapping map) throws ServletException {
             ScheduleManager schedMgr = getSchedMgr(request);
             
@@ -194,6 +205,7 @@ public class ScheduleEditorServlet extends HttpServlet {
     }
     
     class EditOp implements ScheduleOp {
+        @Override
         public String doOp(HttpServletRequest request, HttpServletResponse response, ScheduleMapping map) throws ServletException {
             ScheduleManager schedMgr = getSchedMgr(request);
             
@@ -207,6 +219,7 @@ public class ScheduleEditorServlet extends HttpServlet {
     }
     
     class DeleteOp implements ScheduleOp {
+        @Override
         public String doOp(HttpServletRequest request, HttpServletResponse response, ScheduleMapping map) throws ServletException {
             ScheduleManager schedMgr = getSchedMgr(request);
             
@@ -220,6 +233,7 @@ public class ScheduleEditorServlet extends HttpServlet {
     }
     
     class DisplayOp implements ScheduleOp {
+        @Override
         public String doOp(HttpServletRequest request, HttpServletResponse response, ScheduleMapping map) throws ServletException {
             // FIXME: schedMgr isn't used
             //ScheduleManager schedMgr = getSchedMgr(request);
@@ -236,6 +250,7 @@ public class ScheduleEditorServlet extends HttpServlet {
         public SingleMapping(String view) {
             m_view = view;
         }
+        @Override
         public String get(String result) {
             return m_view;
         }
@@ -300,12 +315,14 @@ public class ScheduleEditorServlet extends HttpServlet {
     }
     
     /** {@inheritDoc} */
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         process(request, response);
     }
     
     
     /** {@inheritDoc} */
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         process(request, response);
     }

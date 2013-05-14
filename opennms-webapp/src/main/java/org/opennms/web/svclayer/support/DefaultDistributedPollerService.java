@@ -63,6 +63,7 @@ public class DefaultDistributedPollerService implements
      *
      * @return a {@link org.opennms.web.svclayer.LocationMonitorListModel} object.
      */
+    @Override
     public LocationMonitorListModel getLocationMonitorList() {
         List<OnmsLocationMonitor> monitors = m_locationMonitorDao.findAll();
         
@@ -104,6 +105,7 @@ public class DefaultDistributedPollerService implements
      */
     public class OnmsLocationMonitorAreaNameComparator
                 implements Comparator<OnmsLocationMonitor> {
+        @Override
         public int compare(OnmsLocationMonitor o1, OnmsLocationMonitor o2) {
             OnmsMonitoringLocationDefinition def1 = null;
             OnmsMonitoringLocationDefinition def2 = null;
@@ -137,6 +139,7 @@ public class DefaultDistributedPollerService implements
     }
 
     /** {@inheritDoc} */
+    @Override
     public LocationMonitorListModel getLocationMonitorDetails(LocationMonitorIdCommand cmd, BindException errors) {
         LocationMonitorListModel model = new LocationMonitorListModel();
         model.setErrors(errors);
@@ -153,6 +156,7 @@ public class DefaultDistributedPollerService implements
     }
 
     /** {@inheritDoc} */
+    @Override
     public void pauseLocationMonitor(LocationMonitorIdCommand command, BindException errors) {
         if (command == null) {
             throw new IllegalStateException("command argument cannot be null");
@@ -180,6 +184,7 @@ public class DefaultDistributedPollerService implements
     }
 
     /** {@inheritDoc} */
+    @Override
     public void resumeLocationMonitor(LocationMonitorIdCommand command, BindException errors) {
         if (command == null) {
             throw new IllegalStateException("command argument cannot be null");
@@ -207,6 +212,7 @@ public class DefaultDistributedPollerService implements
     }
 
     /** {@inheritDoc} */
+    @Override
     public void deleteLocationMonitor(LocationMonitorIdCommand command, BindException errors) {
         if (command == null) {
             throw new IllegalStateException("command argument cannot be null");
@@ -223,10 +229,12 @@ public class DefaultDistributedPollerService implements
         m_locationMonitorDao.delete(monitor);
     }
 
+    @Override
     public void pauseAllLocationMonitors() {
         m_locationMonitorDao.pauseAll();
     }
 
+    @Override
     public void resumeAllLocationMonitors() {
         m_locationMonitorDao.resumeAll();
     }

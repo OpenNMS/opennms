@@ -210,6 +210,7 @@ public class CorrelationExample {
 			m_cause = cause;
 		}
 		
+            @Override
 		public String toString() {
 			return new ToStringBuilder(this)
 				.append("problem", m_problem)
@@ -268,6 +269,7 @@ public class CorrelationExample {
 	        return m_node;
 	    }
 
+            @Override
 	    public String toString() {
 	    	return new ToStringBuilder(this)
 	    		.append("uei", m_uei)
@@ -309,6 +311,7 @@ public class CorrelationExample {
 			m_verified = verified;
 		}
 		
+            @Override
 		public String toString() {
 			return new ToStringBuilder(this)
 				.append("node", m_node)

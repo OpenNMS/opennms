@@ -90,6 +90,7 @@ import org.opennms.netmgt.dao.EventDao;
     /**
      * <p>onInit</p>
      */
+    @Override
     protected void onInit() {
 
         try {
@@ -124,6 +125,7 @@ import org.opennms.netmgt.dao.EventDao;
     /**
      * <p>onStart</p>
      */
+    @Override
     protected void onStart() {
         m_udpEventReceiver.start();
 
@@ -143,6 +145,7 @@ import org.opennms.netmgt.dao.EventDao;
     /**
      * <p>onStop</p>
      */
+    @Override
     protected void onStop() {
         // shutdown and wait on the background processing thread to exit.
         log().debug("exit: closing communication paths.");

@@ -56,6 +56,7 @@ public class AddGroupDutySchedulesServlet extends HttpServlet {
     private static final long serialVersionUID = -4167184420524735471L;
 
     /** {@inheritDoc} */
+    @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession userSession = request.getSession(true);
 

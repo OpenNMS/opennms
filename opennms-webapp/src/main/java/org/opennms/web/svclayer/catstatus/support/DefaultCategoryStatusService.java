@@ -66,6 +66,7 @@ public class DefaultCategoryStatusService implements CategoryStatusService {
 	 *
 	 * @return a {@link java.util.Collection} object.
 	 */
+        @Override
 	public Collection<StatusSection> getCategoriesStatus() {
 		View view = m_viewDisplayDao.getView();
 

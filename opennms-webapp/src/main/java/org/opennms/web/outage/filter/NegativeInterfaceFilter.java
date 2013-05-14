@@ -56,6 +56,7 @@ public class NegativeInterfaceFilter extends NotEqualOrNullFilter<String> {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getTextDescription() {
         return ("interface is not " + getIpAddress());
     }
@@ -65,6 +66,7 @@ public class NegativeInterfaceFilter extends NotEqualOrNullFilter<String> {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return ("<NegativeInterfaceFilter: " + this.getDescription() + ">");
     }
@@ -79,6 +81,7 @@ public class NegativeInterfaceFilter extends NotEqualOrNullFilter<String> {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean equals(Object obj) {
         return (this.toString().equals(obj.toString()));
     }

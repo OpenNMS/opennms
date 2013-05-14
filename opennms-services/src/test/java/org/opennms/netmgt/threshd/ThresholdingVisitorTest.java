@@ -124,6 +124,7 @@ public class ThresholdingVisitorTest {
     EventAnticipator m_anticipator;
     List<Event> m_anticipatedEvents;
     private static final Comparator<Parm> PARM_COMPARATOR = new Comparator<Parm>() {
+        @Override
         public int compare(Parm o1, Parm o2) {
             if (o1 == null && o2 == null) return 0;
             if (o1 == null && o2 != null) return 1;
@@ -152,6 +153,7 @@ public class ThresholdingVisitorTest {
             return (s1.compareTo(s2));
         }
 
+        @Override
         public int compare(Event e1, Event e2) {
             if (e1 == null && e2 == null) return 0;
             if (e1 == null && e2 != null) return 1;

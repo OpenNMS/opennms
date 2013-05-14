@@ -38,34 +38,42 @@ public class MockResourceType implements OnmsResourceType {
     private String m_label = "even more foo";
     private String m_link = "http://www.google.com/search?q=opennms";
 
+    @Override
     public String getLabel() {
         return m_label;
     }
 
+    @Override
     public String getLinkForResource(OnmsResource resource) {
         return m_link;
     }
 
+    @Override
     public String getName() {
         return m_name;
     }
 
+    @Override
     public List<OnmsResource> getResourcesForDomain(String domain) {
         return null;
     }
 
+    @Override
     public List<OnmsResource> getResourcesForNode(int nodeId) {
         return null;
     }
     
+    @Override
     public List<OnmsResource> getResourcesForNodeSource(String nodeSource, int nodeId) {
         return null;
     }
 
+    @Override
     public boolean isResourceTypeOnDomain(String domain) {
         return false;
     }
 
+    @Override
     public boolean isResourceTypeOnNode(int nodeId) {
         return false;
     }
@@ -83,6 +91,7 @@ public class MockResourceType implements OnmsResourceType {
     }
 
     //@Override
+    @Override
     public boolean isResourceTypeOnNodeSource(String nodeSource, int nodeId) {
         return false;
     }

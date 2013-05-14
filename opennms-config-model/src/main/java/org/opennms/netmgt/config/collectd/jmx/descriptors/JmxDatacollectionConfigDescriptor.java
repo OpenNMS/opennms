@@ -164,6 +164,7 @@ import org.opennms.netmgt.config.collectd.jmx.JmxDatacollectionConfig;
                     throw new IllegalStateException(ex.toString());
                 }
             }
+            @Override
             public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
                 try {
                     JmxDatacollectionConfig target = (JmxDatacollectionConfig) object;
@@ -286,6 +287,7 @@ import org.opennms.netmgt.config.collectd.jmx.JmxDatacollectionConfig;
      * of a global
      * element or element with anonymous type definition.
      */
+    @Override
     public boolean isElementDefinition(
     ) {
         return _elementDefinition;

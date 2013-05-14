@@ -65,6 +65,7 @@ public class CreateTypeStatement extends AbstractSqlStatement {
 		return m_columnTypes.get(name);
 	}
 	
+        @Override
 	public String toString() {
 		return new ToStringBuilder(this)
 			.append("name", m_name)

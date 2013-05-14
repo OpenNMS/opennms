@@ -71,6 +71,7 @@ public class AccessPointMonitorConfigTest {
             m_schemaFile = schemaFile;
         }
 
+        @Override
         public Result createOutput(String namespaceUri, String suggestedFileName) throws IOException {
             return new StreamResult(m_schemaFile);
         }

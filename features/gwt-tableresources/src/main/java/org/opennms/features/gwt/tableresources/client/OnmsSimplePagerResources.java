@@ -33,5 +33,6 @@ import com.google.gwt.user.cellview.client.SimplePager.Style;
 
 public interface OnmsSimplePagerResources extends SimplePager.Resources {
     @Source({"OnmsSimplePager.css"})
+    @Override
     Style simplePagerStyle();
 }

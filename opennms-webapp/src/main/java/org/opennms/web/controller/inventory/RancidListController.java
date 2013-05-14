@@ -69,6 +69,7 @@ public class RancidListController implements Controller {
     }
 
     /** {@inheritDoc} */
+    @Override
     public ModelAndView handleRequest(HttpServletRequest request,
             HttpServletResponse arg1) throws Exception {
        

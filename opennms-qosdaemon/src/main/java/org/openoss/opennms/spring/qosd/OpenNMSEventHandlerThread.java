@@ -76,6 +76,7 @@ public class OpenNMSEventHandlerThread extends Thread {
 	 *
 	 * @throws java.lang.IllegalStateException if any.
 	 */
+        @Override
 	public void run() throws IllegalStateException 	{
 		ThreadCategory log = getLog();	
 		//instance=this;

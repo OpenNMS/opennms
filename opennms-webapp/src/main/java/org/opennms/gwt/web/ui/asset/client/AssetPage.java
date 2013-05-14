@@ -41,6 +41,7 @@ public class AssetPage implements EntryPoint {
 
 	private AssetServiceAsync m_assetServiceAsync;
 
+        @Override
 	public void onModuleLoad() {
 		AssetServiceAsync rpcService = getAssetService();
 		HandlerManager eventBus = new HandlerManager(null);

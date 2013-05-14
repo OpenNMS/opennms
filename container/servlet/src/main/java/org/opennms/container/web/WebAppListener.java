@@ -32,6 +32,7 @@ public class WebAppListener implements ServletContextListener {
     private BundleContext m_framework;
     private OnmsOSGiBridgeActivator m_bridge = new OnmsOSGiBridgeActivator();
     
+    @Override
     public void contextInitialized(ServletContextEvent sce) {
 
         try {
@@ -91,6 +92,7 @@ public class WebAppListener implements ServletContextListener {
         }
     }
 
+    @Override
     public void contextDestroyed(ServletContextEvent sce) {
         try {
             

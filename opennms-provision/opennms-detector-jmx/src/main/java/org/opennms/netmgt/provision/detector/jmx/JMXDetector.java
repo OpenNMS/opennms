@@ -81,6 +81,7 @@ public abstract class JMXDetector extends BasicDetector<ConnectionWrapper, Integ
     protected static final ResponseValidator<Integer> greatThan(final int count){
         return new ResponseValidator<Integer>() {
 
+            @Override
             public boolean validate(Integer response) {
                 
                 return (response >= count);

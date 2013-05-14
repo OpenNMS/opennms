@@ -155,6 +155,7 @@ public class OutageSummary implements Comparable<OutageSummary> {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         final StringBuffer buffer = new StringBuffer();
         buffer.append("<OutageSummary: ");
@@ -170,6 +171,7 @@ public class OutageSummary implements Comparable<OutageSummary> {
         return (buffer.toString());
     }
 
+    @Override
     public int compareTo(final OutageSummary that) {
         return new CompareToBuilder()
             .append(this.getTimeDown(), that.getTimeDown())

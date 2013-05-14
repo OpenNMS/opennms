@@ -159,6 +159,7 @@ public class GenericURLFactory implements URLStreamHandlerFactory {
      * @return a {@java.net.URLStreamHandler} object.
      */
     @SuppressWarnings("unchecked")
+    @Override
     public URLStreamHandler createURLStreamHandler(String protocol) {
         Class<? extends URLConnection> c = null;
         if (!urlConnections.containsKey(protocol)) {

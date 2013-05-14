@@ -56,6 +56,7 @@ public class AlarmTypeFilter extends EqualsFilter<Integer> {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getTextDescription() {
         return TYPE + " = " + getAlarmTypeLabel(getValue());
     }

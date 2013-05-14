@@ -68,6 +68,7 @@ public enum OutageType {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return "Outage." + getName();
     }

@@ -222,6 +222,7 @@ public class Main {
     
     private void registerShutDownHook() {
         Thread shutdownHook = new Thread() {
+            @Override
             public void run() {
                 m_shuttingDown = true;
                 m_context.close();
@@ -281,6 +282,7 @@ public class Main {
                 
             }
 
+            @Override
             public void propertyChange(PropertyChangeEvent e) {
                 if (!m_shuttingDown && shouldExit(e)) {
                     System.exit(10);

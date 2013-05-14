@@ -80,6 +80,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
          * @param r the runnable task requested to be executed
          * @param e the executor attempting to execute this task
          */
+        @Override
         public void rejectedExecution(Runnable r, ThreadPoolExecutor e) {
             if (!e.isShutdown()) {
                 e.getQueue().poll();
@@ -161,6 +162,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
 
         public void addEvent(final Event event) {
             m_delegateThread.execute(new Runnable() {
+                @Override
                 public void run() {
                     try {
                         if (log().isInfoEnabled()) {
@@ -196,6 +198,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
     }
 
     /** {@inheritDoc} */
+    @Override
     public void send(Event event) throws EventProxyException {
         sendNow(event);
     }
@@ -206,6 +209,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
      * @param eventLog a {@link org.opennms.netmgt.xml.event.Log} object.
      * @throws org.opennms.netmgt.model.events.EventProxyException if any.
      */
+    @Override
     public void send(Log eventLog) throws EventProxyException {
         sendNow(eventLog);
     }
@@ -215,6 +219,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
      *
      * Called by a service to send an event to other listeners.
      */
+    @Override
     public void sendNow(Event event) {
         Assert.notNull(event, "event argument cannot be null");
 
@@ -234,6 +239,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
      *
      * @param eventLog a {@link org.opennms.netmgt.xml.event.Log} object.
      */
+    @Override
     public void sendNow(Log eventLog) {
         Assert.notNull(eventLog, "eventLog argument cannot be null");
 
@@ -249,6 +255,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
      * @see org.opennms.netmgt.eventd.EventIpcBroadcaster#broadcastNow(org.opennms.netmgt.xml.event.Event)
      */
     /** {@inheritDoc} */
+    @Override
     public void broadcastNow(Event event) {
         if (log().isDebugEnabled()) {
             log().debug("Event ID " + event.getDbid() + " to be broadcasted: " + event.getUei());
@@ -313,6 +320,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
      * Register an event listener that is interested in all events.
      * Removes this listener from any UEI-specific matches.
      */
+    @Override
     public synchronized void addEventListener(EventListener listener) {
         Assert.notNull(listener, "listener argument cannot be null");
 
@@ -331,6 +339,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
      *
      * Register an event listener interested in the UEIs in the passed list.
      */
+    @Override
     public synchronized void addEventListener(EventListener listener, Collection<String> ueis) {
         Assert.notNull(listener, "listener argument cannot be null");
         Assert.notNull(ueis, "ueilist argument cannot be null");
@@ -360,6 +369,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
      * @param listener a {@link org.opennms.netmgt.model.events.EventListener} object.
      * @param uei a {@link java.lang.String} object.
      */
+    @Override
     public synchronized void addEventListener(EventListener listener, String uei) {
         Assert.notNull(listener, "listener argument cannot be null");
         Assert.notNull(uei, "uei argument cannot be null");
@@ -377,6 +387,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
      * stopped until the 'removeEventListener(EventListener listener)' method is
      * called.
      */
+    @Override
     public synchronized void removeEventListener(EventListener listener, Collection<String> ueis) {
         Assert.notNull(listener, "listener argument cannot be null");
         Assert.notNull(ueis, "ueilist argument cannot be null");
@@ -397,6 +408,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
      * @param listener a {@link org.opennms.netmgt.model.events.EventListener} object.
      * @param uei a {@link java.lang.String} object.
      */
+    @Override
     public synchronized void removeEventListener(EventListener listener, String uei) {
         Assert.notNull(listener, "listener argument cannot be null");
         Assert.notNull(uei, "uei argument cannot be null");
@@ -412,6 +424,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
      * <strong>Note: </strong>Only this method stops the listener thread for the
      * listener passed.
      */
+    @Override
     public synchronized void removeEventListener(EventListener listener) {
         Assert.notNull(listener, "listener argument cannot be null");
         

@@ -125,6 +125,7 @@ public class CitrixDetectorTest implements ApplicationContextAware {
     private SimpleServer getServer() {
         return new SimpleServer() {
             
+            @Override
             public void onInit() {
                 setBanner("ICAICAICAICA");
             }
@@ -141,6 +142,7 @@ public class CitrixDetectorTest implements ApplicationContextAware {
     /* (non-Javadoc)
      * @see org.springframework.context.ApplicationContextAware#setApplicationContext(org.springframework.context.ApplicationContext)
      */
+    @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         m_applicationContext = applicationContext;
     }

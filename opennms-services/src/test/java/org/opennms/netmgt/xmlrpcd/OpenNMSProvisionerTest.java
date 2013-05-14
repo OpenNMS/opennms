@@ -201,15 +201,18 @@ public class OpenNMSProvisionerTest {
         }
 
         @SuppressWarnings("deprecation")
+        @Override
         public void update() throws IOException, MarshalException, ValidationException {
             m_config = CastorUtils.unmarshal(PollerConfiguration.class, new StringReader(m_xml));
             setUpInternalData();
         }
 
+        @Override
         protected void saveXml(String xml) throws IOException {
             m_xml = xml;
         }
 
+        @Override
         public List<InetAddress> getIpList(Package pkg) {
             return new ArrayList<InetAddress>(0);
         }

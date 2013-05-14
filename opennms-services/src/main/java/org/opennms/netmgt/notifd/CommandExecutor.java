@@ -58,6 +58,7 @@ public class CommandExecutor implements ExecutorStrategy {
      * This method executes the command using a Process. The method will decide
      * if an input stream needs to be used.
      */
+    @Override
     public int execute(String commandLine, List<Argument> arguments) {
         int returnCode = 0;
         ThreadCategory log = ThreadCategory.getInstance(getClass());

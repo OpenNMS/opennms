@@ -104,6 +104,7 @@ public class IfLabel extends Object {
         
         Querier q = new Querier(Vault.getDataSource(), query, new RowProcessor() {
 
+            @Override
             public void processRow(ResultSet rs) throws SQLException {
                 // If the description portion of ifLabel matches an entry
                 // in the snmpinterface table...
@@ -163,6 +164,7 @@ public class IfLabel extends Object {
         final ArrayList<String> list = new ArrayList<String>();
         
         Querier q = new Querier(Vault.getDataSource(), query, new RowProcessor() {
+            @Override
             public void processRow(ResultSet rs) throws SQLException {
                 String name = rs.getString("snmpifname");
                 String descr = rs.getString("snmpifdescr");
@@ -215,6 +217,7 @@ public class IfLabel extends Object {
         		"   AND ipinterface.ipaddr = '"+inetAddr+"'";
         
         Querier q = new Querier(Vault.getDataSource(), query, new RowProcessor() {
+            @Override
             public void processRow(ResultSet rs) throws SQLException {
                 String name = rs.getString("snmpifname");
                 String descr = rs.getString("snmpifdescr");
@@ -279,6 +282,7 @@ public class IfLabel extends Object {
         
         Querier q = new Querier(Vault.getDataSource(), query, new RowProcessor() {
 
+            @Override
             public void processRow(ResultSet rs) throws SQLException {
                 String name = rs.getString("snmpifname");
                 String descr = rs.getString("snmpifdescr");
@@ -331,6 +335,7 @@ public class IfLabel extends Object {
         
         Querier q = new Querier(Vault.getDataSource(), query, new RowProcessor() {
 
+            @Override
             public void processRow(ResultSet rs) throws SQLException {
                 String name = rs.getString("snmpifname");
                 String descr = rs.getString("snmpifdescr");
