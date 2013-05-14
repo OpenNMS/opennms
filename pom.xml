@@ -2701,8 +2701,8 @@
       </dependency>
       <dependency>
         <groupId>org.krupczak</groupId>
-        <artifactId>Xmp</artifactId>
-        <version>1.21</version>
+        <artifactId>xmp</artifactId>
+        <version>1.30r1</version>
       </dependency>
       <dependency>
         <groupId>xmlunit</groupId>
