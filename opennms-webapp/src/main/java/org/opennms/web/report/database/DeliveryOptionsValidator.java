@@ -53,7 +53,7 @@ public class DeliveryOptionsValidator {
      */
     public void validateDeliveryOptions(DeliveryOptions deliveryOptions, ValidationContext context) {
         MessageContext messages = context.getMessageContext();
-        if (!((deliveryOptions.getSendMail() | deliveryOptions.getPersist()))) {
+        if (!((deliveryOptions.getSendMail() || deliveryOptions.getPersist()))) {
             messages.addMessage(new MessageBuilder().error().source("sendMail").
                                 defaultText("one of send mail or persist should be selected").build());
             messages.addMessage(new MessageBuilder().error().source("persist").
