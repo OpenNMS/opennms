@@ -55,6 +55,7 @@
 
 <%!
     private int m_telnetServiceId;
+    private int m_sshServiceId;
     private int m_httpServiceId;
     private int m_dellServiceId;
     private int m_snmpServiceId;
@@ -67,6 +68,12 @@
         } catch (Throwable e) {
             throw new ServletException("Could not determine the Telnet service ID", e);
         }        
+
+        try {
+            m_sshServiceId = NetworkElementFactory.getInstance(getServletContext()).getServiceIdFromName("SSH");
+        } catch (Throwable e) {
+            throw new ServletException("Could not determine the SSH service ID", e);
+        } 
 
         try {
             m_httpServiceId = NetworkElementFactory.getInstance(getServletContext()).getServiceIdFromName("HTTP");
@@ -139,10 +146,12 @@
     Map<String, Object> nodeModel = new TreeMap<String, Object>();
     nodeModel.put("id", Integer.toString(nodeId));
     nodeModel.put("label", node_db.getLabel());
+    nodeModel.put("foreignId", node_db.getForeignId());
     nodeModel.put("foreignSource", node_db.getForeignSource());
 
     List<Map<String, String>> links = new ArrayList<Map<String, String>>();
     links.addAll(createLinkForService(nodeId, m_telnetServiceId, "Telnet", "telnet://", "", getServletContext()));
+    links.addAll(createLinkForService(nodeId, m_sshServiceId, "SSH", "ssh://", "", getServletContext()));
     links.addAll(createLinkForService(nodeId, m_httpServiceId, "HTTP", "http://", "/", getServletContext()));
     links.addAll(createLinkForService(nodeId, m_dellServiceId, "OpenManage", "https://", ":1311", getServletContext()));
     nodeModel.put("links", links);
@@ -220,6 +229,7 @@
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Node" />
   <jsp:param name="headTitle" value="${model.label}" />
+  <jsp:param name="headTitle" value="ID ${model.id}" />
   <jsp:param name="headTitle" value="Node" />
   <jsp:param name="breadcrumb" value="<a href='element/index.jsp'>Search</a>" />
   <jsp:param name="breadcrumb" value="Node" />
@@ -227,9 +237,9 @@
 </jsp:include>
 
 <div class="onms">
-<h2>Node: ${model.label}</h2>
+<h2>Node: ${model.label} (ID: ${model.id})</h2>
 <c:if test="${model.foreignSource != null}">
-<h2><em>Created via provisioning requisition <strong>${model.foreignSource}</strong></em></h2>
+<h2><em>Created via provisioning requisition <strong>${model.foreignSource} (foreignId: ${model.foreignId})</strong></em></h2>
 </c:if>
 <c:if test="${model.foreignSource == null}">
 <h2><em>Not a member of any provisioning requisition</em></h2>
