@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.ncs.northbounder;
 
-import org.opennms.core.soa.Registration;
 import org.opennms.core.soa.ServiceRegistry;
 import org.opennms.netmgt.alarmd.api.Northbounder;
 import org.springframework.beans.factory.DisposableBean;
@@ -43,8 +42,6 @@ public class NCSNorthbounderManager implements InitializingBean, DisposableBean 
 	@Autowired
 	private NCSNorthbounderConfigDao m_configDao;
 	
-	private Registration m_registration = null;
-
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		NCSNorthbounderConfig config = m_configDao.getConfig();
@@ -54,11 +51,8 @@ public class NCSNorthbounderManager implements InitializingBean, DisposableBean 
 		m_serviceRegistry.register(northbounder, Northbounder.class);
 
 	}
-	
+
 	@Override
 	public void destroy() throws Exception {
-		m_registration.unregister();
 	}
-
-
 }

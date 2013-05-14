@@ -212,10 +212,10 @@ public class OpenLayersMapPanel extends Composite implements MapPanel {
     /** {@inheritDoc} */
     @Override
     public void showLocationDetails(String name, String htmlTitle, String htmlContent) {
-    	final Marker marker = getMarker(name);
+        final Marker marker = getMarker(name);
 
-    	m_map.setCenter(marker.getLonLat());
-    	if (marker != null) {
+        if (marker != null) {
+            m_map.setCenter(marker.getLonLat());
             final VerticalPanel panel = new VerticalPanel();
             panel.add(new Label(htmlTitle));
             panel.add(new HTML(htmlContent));
@@ -223,7 +223,7 @@ public class OpenLayersMapPanel extends Composite implements MapPanel {
             // p.setAutoSize(true);
             p.getJSObject().setProperty("autoSize", true);
             m_map.addPopupExclusive(p);
-    	}
+        }
     }
 
 
@@ -281,10 +281,11 @@ public class OpenLayersMapPanel extends Composite implements MapPanel {
         Bounds b = null;
         if (bounds == null) {
             b = new Bounds(-180, -90, 180, 90);
+        } else {
+            final GWTLatLng nec = bounds.getNorthEastCorner();
+            final GWTLatLng swc = bounds.getSouthWestCorner();
+            b = new Bounds(swc.getLongitude(), swc.getLatitude(), nec.getLongitude(), nec.getLatitude());
         }
-        final GWTLatLng nec = bounds.getNorthEastCorner();
-        final GWTLatLng swc = bounds.getSouthWestCorner();
-        b = new Bounds(swc.getLongitude(), swc.getLatitude(), nec.getLongitude(), nec.getLatitude());
         return b.transform(PROJECTION_LAT_LON, PROJECTION_SPHERICAL_MERCATOR);
     }
 

@@ -175,7 +175,7 @@ public class EventKey extends LinkedHashMap<String, Object> implements Serializa
         m_hashCode = 1;
 
         org.opennms.netmgt.xml.eventconf.Mask mask = event.getMask();
-        if ((mask == null) || (mask != null && mask.getMaskelementCount() == 0)) {
+        if ((mask == null) || mask.getMaskelementCount() == 0) {
             String uei = event.getUei();
             if (uei != null) {
                 put(TAG_UEI, new EventMaskValueList(uei));
@@ -221,7 +221,7 @@ public class EventKey extends LinkedHashMap<String, Object> implements Serializa
         m_hashCode = 1;
 
         org.opennms.netmgt.xml.event.Mask mask = event.getMask();
-        if ((mask == null) || (mask != null && mask.getMaskelementCount() == 0)) {
+        if ((mask == null) || mask.getMaskelementCount() == 0) {
             String uei = event.getUei();
             if (uei != null) {
                 put(TAG_UEI, uei);

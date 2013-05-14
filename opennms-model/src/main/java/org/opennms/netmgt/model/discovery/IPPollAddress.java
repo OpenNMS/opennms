@@ -117,18 +117,19 @@ public class IPPollAddress {
      * @return True if the objects are logically equal. False is returned otherwise.
      * @param pollAddr a {@link org.opennms.netmgt.model.discovery.IPPollAddress} object.
      */
-    public boolean equals(final IPPollAddress pollAddr) {
-        boolean bRet = false;
-
-        if (pollAddr != null) {
-            if (pollAddr == this) {
-                bRet = true;
-            } else if (pollAddr.getAddress().equals(m_address) && pollAddr.getRetries() == m_retries && pollAddr.getTimeout() == m_timeout) {
-                bRet = true;
+    @Override
+    public boolean equals(final Object object) {
+        if (object instanceof IPPollAddress) {
+            IPPollAddress pollAddr = (IPPollAddress)object;
+            if (pollAddr != null) {
+                if (pollAddr == this) {
+                    return true;
+                } else if (pollAddr.getAddress().equals(m_address) && pollAddr.getRetries() == m_retries && pollAddr.getTimeout() == m_timeout) {
+                    return true;
+                }
             }
         }
-
-        return bRet;
+        return false;
     }
     
     @Override

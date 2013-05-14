@@ -68,15 +68,7 @@ public interface ReadyRunnable extends Runnable {
      * <p>schedule</p>
      */
     public void schedule();
-        
-    /**
-     * <p>equals</p>
-     *
-     * @param runnable a {@link org.opennms.netmgt.linkd.scheduler.ReadyRunnable} object.
-     * @return a boolean.
-     */
-    public boolean equals(ReadyRunnable runnable);
-
+    
     /**
      * <p>getInfo</p>
      *
