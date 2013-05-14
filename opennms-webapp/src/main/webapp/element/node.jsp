@@ -53,6 +53,7 @@
 
 <%!
     private int m_telnetServiceId;
+    private int m_sshServiceId;
     private int m_httpServiceId;
     private int m_dellServiceId;
     private int m_snmpServiceId;
@@ -65,6 +66,12 @@
         } catch (Throwable e) {
             throw new ServletException("Could not determine the Telnet service ID", e);
         }        
+
+        try {
+            m_sshServiceId = NetworkElementFactory.getInstance(getServletContext()).getServiceIdFromName("SSH");
+        } catch (Throwable e) {
+            throw new ServletException("Could not determine the SSH service ID", e);
+        } 
 
         try {
             m_httpServiceId = NetworkElementFactory.getInstance(getServletContext()).getServiceIdFromName("HTTP");
@@ -142,6 +149,7 @@
 
     List<Map<String, String>> links = new ArrayList<Map<String, String>>();
     links.addAll(createLinkForService(nodeId, m_telnetServiceId, "Telnet", "telnet://", "", getServletContext()));
+    links.addAll(createLinkForService(nodeId, m_sshServiceId, "SSH", "ssh://", "", getServletContext()));
     links.addAll(createLinkForService(nodeId, m_httpServiceId, "HTTP", "http://", "/", getServletContext()));
     links.addAll(createLinkForService(nodeId, m_dellServiceId, "OpenManage", "https://", ":1311", getServletContext()));
     nodeModel.put("links", links);
