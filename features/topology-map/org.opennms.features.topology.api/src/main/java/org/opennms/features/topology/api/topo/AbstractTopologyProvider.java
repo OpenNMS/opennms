@@ -33,32 +33,132 @@ import java.util.List;
 
 import org.slf4j.LoggerFactory;
 
-public abstract class AbstractTopologyProvider extends DelegatingVertexEdgeProvider implements GraphProvider {
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
 
-	protected static final String SIMPLE_VERTEX_ID_PREFIX = "v";
+public abstract class AbstractTopologyProvider extends DelegatingVertexEdgeProvider implements GraphProvider {    
+    protected static final String SIMPLE_VERTEX_ID_PREFIX = "v";
 	protected static final String SIMPLE_GROUP_ID_PREFIX = "g";
 	protected static final String SIMPLE_EDGE_ID_PREFIX = "e";
+	
+    protected static abstract class IdGenerator {
+        private final AbstractTopologyProvider provider;
+        private final String idPrefix;
+        private int counter;
+        private boolean initialized;
 
-    private int m_counter = 0;
-    protected int m_groupCounter = 0;
-    private int m_edgeCounter = 0;
+        protected IdGenerator(String idPrefix, AbstractTopologyProvider provider) {
+            this.idPrefix = idPrefix;
+            this.provider = provider;
+        }
 
+        public String getNextId() {
+            try {
+                initializeIfNeeded();
+                while (!isValid(createId())) counter++;
+                return createId();
+            } finally {
+                counter++;
+            }
+        }
+
+        private String createId() {
+            return idPrefix + counter;
+        }
+
+        private int getInitValue() {
+            int max = 0;
+            for (Ref ref : getContent()) {
+                if (!ref.getId().startsWith(idPrefix)) continue;
+                max = Math.max(max, extractIntegerFromId(ref.getId()));
+            }
+            return max;
+        }
+
+        private boolean isValid(String generatedId) {
+            return !provider.containsVertexId(new AbstractVertexRef(provider.getVertexNamespace(), generatedId));
+        }
+
+        public void reset() {
+            counter = 0;
+            initialized = false;
+        }
+
+        private int extractIntegerFromId(String id) {
+            try {
+                return Integer.parseInt(id.replaceAll(idPrefix, "").trim());
+            } catch (NumberFormatException nfe) {
+                return 0;
+            } catch (IllegalArgumentException ilargex) {
+                return 0;
+            }
+        }
+
+        private void initializeIfNeeded() {
+            if (!initialized) {
+                counter = getInitValue();
+                initialized = true;
+            }
+        }
+        
+        public abstract List<Ref> getContent();
+    }
+
+	private IdGenerator groupIdGenerator = new IdGenerator(SIMPLE_GROUP_ID_PREFIX, this) {
+        @Override
+        public List<Ref> getContent() {
+            return new ArrayList<Ref>(getGroups());
+        }
+	};
+	
+	private IdGenerator edgeIdGenerator = new IdGenerator(SIMPLE_EDGE_ID_PREFIX, this) {
+        @Override
+        public List<Ref> getContent() {
+            return new ArrayList<Ref>(getEdges());
+        }
+	};
+	
+	private IdGenerator vertexIdGenerator = new IdGenerator(SIMPLE_VERTEX_ID_PREFIX, this) {
+	    @Override
+	    public List<Ref> getContent() {
+	        return new ArrayList<Ref>(getVerticesWithoutGroups());
+        }
+	};
+	
+	protected String getNextVertexId() {
+	    return vertexIdGenerator.getNextId();
+	}
+
+	protected String getNextGroupId() {
+	    return groupIdGenerator.getNextId();
+	}
+
+	protected String getNextEdgeId() {
+	    return edgeIdGenerator.getNextId();
+	}
+	
     protected AbstractTopologyProvider(String namespace) {
 		super(namespace);
 	}
-
-    protected String getNextVertexId() {
-        return SIMPLE_VERTEX_ID_PREFIX + m_counter++;
-    }
-
-    protected String getNextGroupId() {
-        return SIMPLE_GROUP_ID_PREFIX + m_groupCounter++;
-    }
-
-    protected String getNextEdgeId() {
-        return SIMPLE_EDGE_ID_PREFIX + m_edgeCounter++;
+    
+    public List<Vertex> getVerticesWithoutGroups() {
+        return new ArrayList<Vertex>(
+                Collections2.filter(getVertices(), new Predicate<Vertex>() {
+                    public boolean apply(Vertex input) {
+                        return input != null && !input.isGroup();
+                    };
+                }));
     }
     
+    public List<Vertex> getGroups() {
+        return new ArrayList<Vertex>(
+                Collections2.filter(getVertices(), new Predicate<Vertex>() {
+                    public boolean apply(Vertex input) {
+                        return input != null && input.isGroup();
+                    };
+                }));
+    }
+
     @Override
     public final void removeVertex(VertexRef... vertexId) {
         for (VertexRef vertex : vertexId) {
@@ -95,11 +195,11 @@ public abstract class AbstractTopologyProvider extends DelegatingVertexEdgeProvi
     }
 
     protected final AbstractVertex addGroup(String groupId, String iconKey, String label) {
-        if (containsVertexId(groupId)) {
+        AbstractVertex vertex = new SimpleGroup(getVertexNamespace(), groupId);
+        if (containsVertexId(vertex)) {
             throw new IllegalArgumentException("A vertex or group with id " + groupId + " already exists!");
         }
         LoggerFactory.getLogger(this.getClass()).debug("Adding a group: {}", groupId);
-        AbstractVertex vertex = new SimpleGroup(getVertexNamespace(), groupId);
         vertex.setLabel(label);
         vertex.setIconKey(iconKey);
         addVertices(vertex);
@@ -150,10 +250,13 @@ public abstract class AbstractTopologyProvider extends DelegatingVertexEdgeProvi
     public void resetContainer() {
         clearVertices();
         clearEdges();
-
-        m_counter = 0;
-        m_groupCounter = 0;
-        m_edgeCounter = 0;
+        clearCounters();
     }
 
+    protected void clearCounters() {
+        vertexIdGenerator.reset();
+        groupIdGenerator.reset();
+        edgeIdGenerator.reset();
+    }
 }
+

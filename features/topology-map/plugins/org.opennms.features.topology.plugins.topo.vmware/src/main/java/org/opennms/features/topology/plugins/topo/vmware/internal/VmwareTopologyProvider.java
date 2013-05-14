@@ -364,7 +364,7 @@ public class VmwareTopologyProvider extends SimpleGraphProvider implements Graph
         // get all host systems
         List<OnmsNode> hostSystems = m_nodeDao.findAllByVarCharAssetColumn("vmwareManagedEntityType", "HostSystem");
 
-        if (hostSystems.size() == 0) {
+        if (hostSystems.isEmpty()) {
             System.err.println("No host systems with defined VMware assets fields found!");
         } else {
             for (OnmsNode hostSystem : hostSystems) {
@@ -375,7 +375,7 @@ public class VmwareTopologyProvider extends SimpleGraphProvider implements Graph
         // get all virtual machines
         List<OnmsNode> virtualMachines = m_nodeDao.findAllByVarCharAssetColumn("vmwareManagedEntityType", "VirtualMachine");
 
-        if (virtualMachines.size() == 0) {
+        if (virtualMachines.isEmpty()) {
             System.err.println("No virtual machines with defined VMware assets fields found!");
         } else {
             for (OnmsNode virtualMachine : virtualMachines) {
