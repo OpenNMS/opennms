@@ -258,6 +258,7 @@ function doDelete() {
               </tr>
               <% if(ElementUtil.getInterfaceStatusString(intf_db).equals("Managed") && request.isUserInRole( Authentication.ROLE_ADMIN )) {
                   List inPkgs = pollerCfgFactory.getAllPackageMatches(ipAddr);
+                  Collections.sort(inPkgs);
                   Iterator pkgiter = inPkgs.iterator();
                   while (pkgiter.hasNext()) { %>
                       <tr>

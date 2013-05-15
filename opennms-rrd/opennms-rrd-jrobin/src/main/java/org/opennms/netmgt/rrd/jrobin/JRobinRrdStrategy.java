@@ -263,7 +263,7 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
         try {
             long now = System.currentTimeMillis();
             long collectTime = (now - (now % interval)) / 1000L;
-            rrd = new RrdDb(fileName);
+            rrd = new RrdDb(fileName, true);
             FetchData data = rrd.createFetchRequest(consolidationFunction, collectTime, collectTime).fetchData();
             if(log().isDebugEnabled()) {
             	//The "toString" method of FetchData is quite computationally expensive; 
@@ -294,7 +294,7 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
     public Double fetchLastValueInRange(final String fileName, final String ds, final int interval, final int range) throws NumberFormatException, org.opennms.netmgt.rrd.RrdException {
         RrdDb rrd = null;
         try {
-        	rrd = new RrdDb(fileName);
+        	rrd = new RrdDb(fileName, true);
          	long now = System.currentTimeMillis();
             long latestUpdateTime = (now - (now % interval)) / 1000L;
             long earliestUpdateTime = ((now - (now % interval)) - range) / 1000L;
