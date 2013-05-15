@@ -45,133 +45,108 @@ import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.data.util.PropertysetItem;
 import com.vaadin.data.validator.AbstractValidator;
 import com.vaadin.data.validator.StringLengthValidator;
+import com.vaadin.terminal.UserError;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Form;
-import com.vaadin.ui.Window;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Form;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.Window;
 
 
 public class CreateGroupOperation implements Constants, Operation {
 
-	@Override
+    @Override
 	public Undoer execute(final List<VertexRef> targets, final OperationContext operationContext) {
-		if (targets == null || targets.isEmpty()) {
-			return null;
-		}
-
+		if (targets == null || targets.isEmpty()) return null;
+		
 		final GraphContainer graphContainer = operationContext.getGraphContainer();
-
 		final Window window = operationContext.getMainWindow();
-
-		final Window groupNamePrompt = new Window("Create Group");
-		groupNamePrompt.setModal(true);
-		groupNamePrompt.setResizable(false);
-		groupNamePrompt.setHeight("220px");
-		groupNamePrompt.setWidth("300px");
+		final Window groupNamePrompt = new GroupWindow("Create Group", "300px", "200px");
 
 		// Define the fields for the form
 		final PropertysetItem item = new PropertysetItem();
-		item.addItemProperty("Group Label", new ObjectProperty<String>("", String.class));
+		item.addItemProperty("Group Label", new ObjectProperty<String>("", String.class) {
+            private static final long serialVersionUID = -7904501088179818863L;
+
+            @Override
+            public void setValue(Object newValue) throws ReadOnlyException, ConversionException {
+               if (newValue == null) super.setValue(newValue);
+               if (newValue instanceof String) super.setValue(((String)newValue).trim());
+            }
+            
+            @Override
+            public String getValue() {
+                String value = super.getValue();
+                if (value != null) return value.trim();
+                return value;
+            }
+        });		    
 
 		final Form promptForm = new Form() {
+            private static final long serialVersionUID = 8938663493202118574L;
 
-			private static final long serialVersionUID = 2067414790743946906L;
+            @Override
+		    public void commit() throws SourceException, InvalidValueException {
+		        super.commit();
+		        createGroup(graphContainer, (String)item.getItemProperty("Group Label").getValue(), targets);
+		    }
+		    
+		    private void createGroup(final GraphContainer graphContainer, final String groupLabel, final List<VertexRef> targets) {
+		        //Add the new group
+		        VertexRef groupId = graphContainer.getBaseTopology().addGroup(groupLabel, GROUP_ICON_KEY);
 
-			@Override
-			public void commit() {
-				// Trim the form value
-				String groupLabel = ((String)getField("Group Label").getValue());
-				if (groupLabel == null) {
-					throw new InvalidValueException("Group label cannot be null.");
-				}
-				getField("Group Label").setValue(groupLabel.trim());
-				super.commit();
-				groupLabel = (String)getField("Group Label").getValue();
+		         // Find a common parent group. If none can be found, then link the group to the
+		         // top of the topology
+		         Vertex parentGroup = null;
+		         for(VertexRef vertexRef : targets) {
+		             Vertex parent = graphContainer.getBaseTopology().getParent(vertexRef);
+		             if (parentGroup == null) {
+		                 parentGroup = parent;
+		             } else if (!parentGroup.equals(parent)) {
+		                 // If there are multiple parents present then attach the new group 
+		                 // to the top level of the hierarchy
+		                 parentGroup = null;
+		                 break;
+		             }
+		         }
 
-				// Add the new group
-				VertexRef groupId = operationContext.getGraphContainer().getBaseTopology().addGroup(groupLabel, GROUP_ICON_KEY);
+		         // Link all targets to the newly-created group
+		         for(VertexRef vertexRef : targets) {
+		             graphContainer.getBaseTopology().setParent(vertexRef, groupId);
+		         }
 
-				// Find a common parent group. If none can be found, then link the group to the
-				// top of the topology
-				Vertex parentGroup = null;
-				for(VertexRef vertexRef : targets) {
-					Vertex parent = operationContext.getGraphContainer().getBaseTopology().getParent(vertexRef);
-					if (parentGroup == null) {
-						parentGroup = parent;
-					} else if (!parentGroup.equals(parent)) {
-						// If there are multiple parents present then attach the new group 
-						// to the top level of the hierarchy
-						parentGroup = null;
-						break;
-					}
-				}
-
-				// Link all targets to the newly-created group
-				for(VertexRef vertexRef : targets) {
-					operationContext.getGraphContainer().getBaseTopology().setParent(vertexRef, groupId);
-				}
-
-				// Set the parent of the new group to the selected top-level parent
-				operationContext.getGraphContainer().getBaseTopology().setParent(groupId, parentGroup);
-
-				// Save the topology
-				operationContext.getGraphContainer().getBaseTopology().save();
-
-				graphContainer.redoLayout();
-			}
+		         // Set the parent of the new group to the selected top-level parent
+		         graphContainer.getBaseTopology().setParent(groupId, parentGroup);
+		         graphContainer.getBaseTopology().save();
+		         graphContainer.redoLayout();
+		    }
 		};
-		// Buffer changes to the datasource
-		promptForm.setWriteThrough(false);
-		// Bind the item to create all of the fields
-		promptForm.setItemDataSource(item);
+		promptForm.setWriteThrough(false); // Buffer changes to the datasource
+		promptForm.setItemDataSource(item); // Bind the item to create all of the fields
+		promptForm.setDescription("Please enter the name of the group.");
+		
 		// Add validators to the fields
-		promptForm.getField("Group Label").setRequired(true);
-		promptForm.getField("Group Label").setRequiredError("Group label cannot be blank.");
-		promptForm.getField("Group Label").addValidator(new StringLengthValidator("Label must be at least one character long.", 1, -1, false));
-		promptForm.getField("Group Label").addValidator(new AbstractValidator("A group with label \"{0}\" already exists.") {
+		addValidators(promptForm, graphContainer);
 
-			private static final long serialVersionUID = -6602249815731561328L;
-
-			@Override
-			public boolean isValid(Object value) {
-				try {
-					final Collection<? extends Vertex> vertexIds = graphContainer.getBaseTopology().getVertices();
-					final Collection<String> groupLabels = new ArrayList<String>();
-					for (Vertex vertexId : vertexIds) {
-						if (vertexId.isGroup()) {
-							groupLabels.add(vertexId.getLabel());
-						}
-					}
-
-					for (String label : groupLabels) {
-						LoggerFactory.getLogger(this.getClass()).debug("Comparing {} to {}", value, label);
-						if (label.equals(value)) {
-							return false;
-						}
-					}
-					return true;
-				} catch (Throwable e) {
-					LoggerFactory.getLogger(this.getClass()).error(e.getMessage(), e);
-					return false;
-				}
-			}
-		});
-
+		// Footer
 		Button ok = new Button("OK");
 		ok.addListener(new ClickListener() {
-
 			private static final long serialVersionUID = 7388841001913090428L;
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				promptForm.commit();
-				// Close the prompt window
-				window.removeWindow(groupNamePrompt);
+			    try {
+			       promptForm.validate();
+			       promptForm.commit();
+			       window.removeWindow(groupNamePrompt); // Close the prompt window
+			    } catch (InvalidValueException exception) {
+			        promptForm.setComponentError(new UserError(exception.getMessage(), UserError.CONTENT_TEXT, exception.getErrorLevel()));
+			    }
 			}
 		});
-		promptForm.getFooter().addComponent(ok);
-
+		
 		Button cancel = new Button("Cancel");
 		cancel.addListener(new ClickListener() {
 
@@ -179,20 +154,68 @@ public class CreateGroupOperation implements Constants, Operation {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				// Close the prompt window
-				window.removeWindow(groupNamePrompt);
+				window.removeWindow(groupNamePrompt); // Close the prompt window
 			}
 		});
+		
+		promptForm.setFooter(new HorizontalLayout());
+		promptForm.getFooter().addComponent(ok);
 		promptForm.getFooter().addComponent(cancel);
-
 		groupNamePrompt.addComponent(promptForm);
-
 		window.addWindow(groupNamePrompt);
-
 		return null;
 	}
+	
+	private void addValidators(final Form promptForm, final GraphContainer graphContainer) {
+	    ((TextField)promptForm.getField("Group Label")).setNullRepresentation("");
+	    ((TextField)promptForm.getField("Group Label")).setValidationVisible(false);
+	    promptForm.getField("Group Label").setRequired(true);
+        promptForm.getField("Group Label").setRequiredError("You must specify a group label.");
+        promptForm.getField("Group Label").addValidator(new StringLengthValidator("The group label must be at least one character long.", 1, -1, false));
+        
+        // null validator
+        promptForm.getField("Group Label").addValidator(new AbstractValidator("Group label cannot be blank.") {
+            private static final long serialVersionUID = 1L;
 
-	@Override
+            @Override
+            public boolean isValid(Object value) {
+                if (value == null) return false;
+                if ( !(value instanceof String)) return false;
+                return !((String)value).trim().isEmpty();
+            }
+        });
+        
+        // unique validator
+        promptForm.getField("Group Label").addValidator(new AbstractValidator("A group with label \"{0}\" already exists.") {
+            private static final long serialVersionUID = -2351672151921474546L;
+
+            @Override
+            public boolean isValid(Object value) {
+                try {
+                    final Collection<? extends Vertex> vertexIds = graphContainer.getBaseTopology().getVertices();
+                    final Collection<String> groupLabels = new ArrayList<String>();
+                    for (Vertex vertexId : vertexIds) {
+                        if (vertexId.isGroup()) {
+                            groupLabels.add(vertexId.getLabel());
+                        }
+                    }
+
+                    for (String label : groupLabels) {
+                        LoggerFactory.getLogger(this.getClass()).debug("Comparing {} to {}", value, label);
+                        if (label.equals(value)) {
+                            return false;
+                        }
+                    }
+                    return true;
+                } catch (Throwable e) {
+                    LoggerFactory.getLogger(this.getClass()).error(e.getMessage(), e);
+                    return false;
+                }
+            }
+        });
+    }
+
+    @Override
 	public boolean display(List<VertexRef> targets, OperationContext operationContext) {
 		return true;
 	}
