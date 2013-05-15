@@ -45,13 +45,11 @@ import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.features.topology.api.Constants;
-import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.AbstractVertexRef;
@@ -152,7 +150,7 @@ public class LinkdTopologyProviderTest {
 		Assert.assertEquals(true, m_topologyProvider.containsVertexId(parentId));
 	}
 
-	@Test
+    @Test
 	public void test() throws Exception {
 		new File("target/test-classes/test.xml").delete();
 		m_topologyProvider.setConfigurationFile("target/test-classes/test.xml");
@@ -172,8 +170,8 @@ public class LinkdTopologyProviderTest {
 		((AbstractVertex)vertexA).setIpAddress("10.0.0.4");
 
 		// Search by VertexRef
-		VertexRef vertexAref = new AbstractVertexRef(m_topologyProvider.getVertexNamespace(), "v0");
-		VertexRef vertexBref = new AbstractVertexRef(m_topologyProvider.getVertexNamespace(), "v1");
+		@SuppressWarnings("deprecation") VertexRef vertexAref = new AbstractVertexRef(m_topologyProvider.getVertexNamespace(), "v0");
+		@SuppressWarnings("deprecation") VertexRef vertexBref = new AbstractVertexRef(m_topologyProvider.getVertexNamespace(), "v1");
 		assertEquals(1, m_topologyProvider.getVertices(Collections.singletonList(vertexAref)).size());
 		assertEquals(0, m_topologyProvider.getVertices(Collections.singletonList(vertexBref)).size());
 
@@ -425,33 +423,6 @@ public class LinkdTopologyProviderTest {
         
 	}
     
-    /**
-     * TODO Refactor this test into the app bundle.
-     */
-    @Test
-    @Ignore("Since this operation is now interactive, we need to change this unit test")
-    public void testCreateGroupOperation() {
-        VertexRef vertexId = addVertexToTopr();
-        VertexRef vertexId2 = addVertexToTopr();
-        
-        GraphContainer graphContainer = EasyMock.createMock(GraphContainer.class);
-        
-        EasyMock.replay(graphContainer);
-        
-        /*
-        CreateGroupOperation groupOperation = new CreateGroupOperation(m_topologyProvider);
-        groupOperation.execute(Arrays.asList((Object)"1", (Object)"2"), getOperationContext(graphContainer));
-        
-        Item vertexItem1 = m_topologyProvider.getVertexContainer().getItem(vertexId);
-        SimpleGroup parent = (SimpleGroup) vertexItem1.getItemProperty("parent").getValue();
-        assertEquals(2, parent.getMembers().size());
-        
-        m_topologyProvider.addGroup("Test Group", Constants.GROUP_ICON_KEY);
-        
-        EasyMock.verify(graphContainer);
-        */
-    }
-    
     @Test
     public void testTopoProviderSetParent() {
         VertexRef vertexId1 = addVertexToTopr();
@@ -487,8 +458,8 @@ public class LinkdTopologyProviderTest {
     
     /**
      * Tests that the Linkdprovider does load the information stored in the xml file 
-     * correctly. So that all groups are loaded as expected and all groups have
-     * children as expected.
+     * correctly. So that all groups are loaded as expected and all groups have the expected
+     * children as well.
      * @throws MalformedURLException
      * @throws JAXBException
      */
@@ -528,7 +499,7 @@ public class LinkdTopologyProviderTest {
         
     }
     
-    // checks that the vertex and the node are identically
+    // checks that the vertex and the node are equal
     private void check(Vertex child, OnmsNode node, Vertex parent) {
         Assert.assertNotNull(child);
         Assert.assertNotNull(child.getTooltipText());

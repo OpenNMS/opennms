@@ -41,10 +41,30 @@ public abstract class AbstractTopologyProvider extends DelegatingVertexEdgeProvi
 	protected static final String SIMPLE_GROUP_ID_PREFIX = "g";
 	protected static final String SIMPLE_EDGE_ID_PREFIX = "e";
 	
+	/**
+	 * This class generates an unique id. 
+	 * The generated id has the format '<prefix><counter>' (e.g. v100). 
+	 * So the generator must be initialized with a prefix and the initial counter.
+	 * 
+	 * @author Markus von Rüden
+	 *
+	 */
     protected static abstract class IdGenerator {
+        /** 
+         * The topology provider. It is needed to initialize the counter.
+         */
         private final AbstractTopologyProvider provider;
+        /**
+         * The prefix of the generated id. Must not be null.
+         */
         private final String idPrefix;
+        /**
+         * The counter of the "next" (not current) id.
+         */
         private int counter;
+        /**
+         * Defines if this generator is initialized or not.
+         */
         private boolean initialized;
 
         protected IdGenerator(String idPrefix, AbstractTopologyProvider provider) {
@@ -52,6 +72,14 @@ public abstract class AbstractTopologyProvider extends DelegatingVertexEdgeProvi
             this.provider = provider;
         }
 
+        /**
+         * Returns the next id in format '<prefix><counter>' (e.g. v100). 
+         * 
+         * If an entry with the generated id (see {@link #createId()} 
+         * already exists in {@link #provider} a new one is created. 
+         * This process is done until a key is created which is not already in {@link #provider}
+         * @return The next id in format '<prefix><counter>' (e.g. v100). 
+         */
         public String getNextId() {
             try {
                 initializeIfNeeded();
@@ -62,10 +90,23 @@ public abstract class AbstractTopologyProvider extends DelegatingVertexEdgeProvi
             }
         }
 
+        /**
+         * Creates the id in format '<prefix><counter>' (e.g. v100)
+         * @return the id in format '<prefix><counter>' (e.g. v100)
+         */
         private String createId() {
             return idPrefix + counter;
         }
 
+        /**
+         * Returns the initial value of counter. 
+         * 
+         * Therefore the maximum number of each id from the {@link #getContent()} values are used.
+         * A id can start with any prefix (or none) so only ids which starts with the same id as {@link #idPrefix} are considered.
+         * If there is no matching content, 0 is returned.
+         *   
+         * @return The initial value of counter. 
+         */
         private int getInitValue() {
             int max = 0;
             for (Ref ref : getContent()) {
@@ -75,6 +116,12 @@ public abstract class AbstractTopologyProvider extends DelegatingVertexEdgeProvi
             return max;
         }
 
+        /**
+         * Returns true if the {@link #provider} does not contain a vertex id '<generatedId>', false otherwise. 
+         * @param generatedId The generated id
+         * @return true if the {@link #provider} does not contain a vertex id '<generatedId>', false otherwise.
+         */
+        @SuppressWarnings("deprecation")
         private boolean isValid(String generatedId) {
             return !provider.containsVertexId(new AbstractVertexRef(provider.getVertexNamespace(), generatedId));
         }
@@ -84,6 +131,13 @@ public abstract class AbstractTopologyProvider extends DelegatingVertexEdgeProvi
             initialized = false;
         }
 
+        /**
+         * Gets the integer value from the id. 
+         * If the id does not match to this generator or the id cannot be parsed as an integer 0 is returned.
+         * 
+         * @param id the generated id. Should start with {@link #idPrefix}.
+         * @return the integer value from the id. If the id does not match to this generator or the id cannot be parsed as an integer 0 is returned.
+         */
         private int extractIntegerFromId(String id) {
             try {
                 return Integer.parseInt(id.replaceAll(idPrefix, "").trim());
