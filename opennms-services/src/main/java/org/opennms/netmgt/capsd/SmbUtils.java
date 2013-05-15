@@ -302,7 +302,7 @@ public abstract class SmbUtils {
                 // 0x1C (DOMAIN_CONTROLLER or INTERNET_INFORMATION_SERVER_G)
                 // and the hostnamethis box is an NT server.
                 //
-                if (nbtAddr.getNameType() == DOMAIN_CONTROLLERS & !nbtAddr.getHostName().equals("INET~SERVICES")) {
+                if (nbtAddr.getNameType() == DOMAIN_CONTROLLERS && !nbtAddr.getHostName().equals("INET~SERVICES")) {
                     isNTServer = true;
                     break;
                 }

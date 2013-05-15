@@ -48,7 +48,6 @@ public class WebSchedEntry {
     int m_timeIndex;
     String m_user;
     String m_type;
-    String m_day;
     String m_begins;
     String m_ends;
 
@@ -79,7 +78,6 @@ public class WebSchedEntry {
         m_schedIndex = schedIndex;
         m_timeIndex = timeIndex;
         m_type = "specific";
-        m_day = null;
         m_user = user;
         m_begins = begins;
         m_ends = ends;
@@ -112,7 +110,6 @@ public class WebSchedEntry {
         Time time = sched.getTime(m_timeIndex);
         sched.setName(m_user);
         sched.setType(m_type);
-        time.setDay(m_day);
         time.setBegins(m_begins);
         time.setEnds(m_ends);
     }
@@ -122,7 +119,6 @@ public class WebSchedEntry {
         sched.setName(m_user);
         sched.setType(m_type);
         Time time = new Time();
-        if (m_day != null) time.setDay(m_day);
         time.setBegins(m_begins);
         time.setEnds(m_ends);
         sched.addTime(time);

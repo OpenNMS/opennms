@@ -31,7 +31,6 @@ package org.opennms.core.resource.db;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.Properties;
 
 /**
  * A trivial implementation of <code>DbConnectionFactory</code> that creates a
@@ -60,8 +59,6 @@ public class SimpleDbConnectionFactory extends Object implements DbConnectionFac
     protected String username = null;
 
     protected String password = null;
-
-    protected Properties properties = null;
 
     /**
      * {@inheritDoc}
@@ -93,7 +90,6 @@ public class SimpleDbConnectionFactory extends Object implements DbConnectionFac
         this.url = null;
         this.username = null;
         this.password = null;
-        this.properties = null;
     }
 
     /**
@@ -113,9 +109,7 @@ public class SimpleDbConnectionFactory extends Object implements DbConnectionFac
 
         Connection connection = null;
 
-        if (this.properties != null) {
-            connection = DriverManager.getConnection(this.url, this.properties);
-        } else if (this.username != null && this.password != null) {
+        if (this.username != null && this.password != null) {
             connection = DriverManager.getConnection(this.url, this.username, this.password);
         } else {
             connection = DriverManager.getConnection(this.url);
