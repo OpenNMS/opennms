@@ -161,7 +161,7 @@ install: build
 	mv debian/opennms-common/var/lib/opennms/etc-pristine/snmp-graph.properties.d/3gpp*        debian/opennms-plugin-protocol-xml/var/lib/opennms/etc-pristine/snmp-graph.properties.d/
 	
 	# XMP
-	mv debian/temp/lib/Xmp-*.jar                                                               debian/opennms-plugin-protocol-xmp/usr/share/java/opennms/
+	mv debian/temp/lib/xmp-*.jar                                                               debian/opennms-plugin-protocol-xmp/usr/share/java/opennms/
 	mv debian/temp/lib/org.opennms.protocols.xmp-*.jar                                         debian/opennms-plugin-protocol-xmp/usr/share/java/opennms/
 	mv debian/temp/etc/xmp*-config.xml                                                         debian/opennms-plugin-protocol-xmp/etc/opennms/
 	mv debian/temp/share/xsds/xmp*.xsd                                                         debian/opennms-plugin-protocol-xmp/var/lib/opennms/xsds/

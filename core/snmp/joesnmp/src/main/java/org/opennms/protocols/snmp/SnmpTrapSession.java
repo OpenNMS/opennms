@@ -108,18 +108,6 @@ public final class SnmpTrapSession extends Object {
     private SnmpTrapHandler m_handler;
 
     /**
-     * If this boolean value is set then the receiver thread is terminated due
-     * to an exception that was generated in either a handler or a socket error.
-     * This is considered a fatal exception.
-     */
-    private boolean m_threadException;
-
-    /**
-     * This is the saved fatal exception that can be rethrown by the application
-     */
-    private Throwable m_why;
-
-    /**
      * <P>
      * The internal trap handler class is designed to receive information from
      * the enclosed SnmpPortal class. The information is the processed and
@@ -265,8 +253,6 @@ public final class SnmpTrapSession extends Object {
      */
     public SnmpTrapSession(final SnmpTrapHandler handler) throws SocketException {
         m_encoder = (new SnmpParameters()).getEncoder();
-        m_threadException = false;
-        m_why = null;
         m_handler = handler;
         m_portal = new SnmpPortal(new TrapHandler(this), m_encoder, DEFAULT_PORT);
     }
@@ -282,16 +268,12 @@ public final class SnmpTrapSession extends Object {
         m_encoder = (new SnmpParameters()).getEncoder();
         m_handler = handler;
         m_portal = new SnmpPortal(new TrapHandler(this), m_encoder, port);
-        m_threadException = false;
-        m_why = null;
     }
 
     public SnmpTrapSession(final SnmpTrapHandler handler, final InetAddress address, final int snmpTrapPort) throws SocketException {
         m_encoder = (new SnmpParameters()).getEncoder();
         m_handler = handler;
         m_portal = new SnmpPortal(new TrapHandler(this), m_encoder, address, snmpTrapPort);
-        m_threadException = false;
-        m_why = null;
 	}
 
 	/**
@@ -357,18 +339,6 @@ public final class SnmpTrapSession extends Object {
             throw new IllegalStateException("Illegal operation, the session is already closed");
 
         m_portal.close();
-    }
-
-    /**
-     * If an exception occurs in the SNMP receiver thread then raise() will
-     * rethrow the exception.
-     * 
-     * @exception java.lang.Throwable
-     *                The base for thrown exceptions.
-     */
-    public void raise() throws Throwable {
-        if (m_threadException)
-            throw m_why;
     }
 
     /**

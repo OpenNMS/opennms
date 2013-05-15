@@ -50,7 +50,6 @@ import org.springframework.util.Assert;
  */
 public class DaoTestConfigBean implements InitializingBean {
     private String m_relativeHomeDirectory = null;
-    private final String m_absoluteHomeDirectory = null; 
     private String m_rrdBinary = "/bin/true";
     private String m_relativeRrdBaseDirectory = "target/test/opennms-home/share/rrd";
     private final String m_relativeImporterDirectory = "target/test/opennms-home/etc/imports";
@@ -67,8 +66,6 @@ public class DaoTestConfigBean implements InitializingBean {
      */
     @Override
     public void afterPropertiesSet() {
-        Assert.state(m_relativeHomeDirectory == null || m_absoluteHomeDirectory == null, "Only one of the properties relativeHomeDirectory and absoluteHomeDirectory can be set.");
-
         if (System.getProperty("org.opennms.netmgt.icmp.pingerClass") == null) {
             System.setProperty("org.opennms.netmgt.icmp.pingerClass", "org.opennms.netmgt.icmp.jna.JnaPinger");
         }
@@ -94,9 +91,7 @@ public class DaoTestConfigBean implements InitializingBean {
             System.setProperty((String)entry.getKey(), PropertiesUtils.substitute((String)entry.getValue(), substitutions));
         }
 
-        if (m_absoluteHomeDirectory != null) {
-            ConfigurationTestUtils.setAbsoluteHomeDirectory(m_absoluteHomeDirectory);
-        } else if (m_relativeHomeDirectory != null) {
+        if (m_relativeHomeDirectory != null) {
             ConfigurationTestUtils.setRelativeHomeDirectory(m_relativeHomeDirectory);
         } else {
             ConfigurationTestUtils.setAbsoluteHomeDirectory(ConfigurationTestUtils.getDaemonEtcDirectory().getParentFile().getAbsolutePath());

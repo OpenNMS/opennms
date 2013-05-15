@@ -34,6 +34,7 @@ import java.io.InputStream;
 import java.util.Iterator;
 import java.util.List;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.HasExtraComponents;
 import org.opennms.features.topology.api.HistoryManager;
@@ -158,19 +159,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 		
 		if(m_showHeader) {
 		    HEADER_HEIGHT = 100;
-    		Panel header = new Panel("header");
-    		header.setCaption(null);
-            header.setSizeUndefined();
-            header.addStyleName("onmsheader");
-            m_rootLayout.addComponent(header, "top: 0px; left: 0px; right:0px;");
-            
-            try {
-                CustomLayout customLayout = new CustomLayout(getHeaderLayout());
-                header.setContent(customLayout);
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+            m_rootLayout.addComponent(createHeader(), "top: 0px; left: 0px; right:0px;");
 		} else {
 		    HEADER_HEIGHT = 0;
 		}
@@ -181,20 +170,17 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 
 		m_graphContainer.setLayoutAlgorithm(new FRLayoutAlgorithm());
 
-		final Property scale = m_graphContainer.getScaleProperty();
-
 		m_topologyComponent = new TopologyComponent(m_graphContainer, m_iconRepositoryManager, this);
 		m_topologyComponent.setSizeFull();
 		m_topologyComponent.addMenuItemStateListener(this);
 		m_topologyComponent.addVertexUpdateListener(this);
 		
+		final Property scale = m_graphContainer.getScaleProperty();
 		final Slider slider = new Slider(0, 1);
-		
 		slider.setPropertyDataSource(scale);
 		slider.setResolution(1);
 		slider.setHeight("300px");
 		slider.setOrientation(Slider.ORIENTATION_VERTICAL);
-
 		slider.setImmediate(true);
 
 		final Button zoomInBtn = new Button();
@@ -306,6 +292,21 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 			m_uriFragUtil.setFragment(fragment);
 		}
 	}
+
+    private Panel createHeader() {
+        final Panel header = new Panel("header");
+        header.setCaption(null);
+        header.setSizeUndefined();
+        header.addStyleName("onmsheader");
+        try {
+            CustomLayout customLayout = new CustomLayout(getHeaderLayout());
+            header.setContent(customLayout);
+        } catch (IOException e) {
+            LogUtils.errorf(this, e, "Could not load header file");
+        }
+        return header;
+    }
+
 
     /**
 	 * Update the Accordion View with installed widgets
@@ -449,10 +450,8 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 	private Layout createWestLayout() {
         m_tree = createTree();
         
-        
         final TextField filterField = new TextField("Filter");
         filterField.setTextChangeTimeout(200);
-        
         
         final Button filterBtn = new Button("Filter");
         filterBtn.addListener(new ClickListener() {
@@ -474,7 +473,6 @@ public class TopologyWidgetTestApplication extends Application implements Comman
             }
         });
         
-        
         HorizontalLayout filterArea = new HorizontalLayout();
         filterArea.addComponent(filterField);
         filterArea.addComponent(filterBtn);
@@ -495,8 +493,6 @@ public class TopologyWidgetTestApplication extends Application implements Comman
     }
 
     private VertexSelectionTree createTree() {
-	    //final FilterableHierarchicalContainer container = new FilterableHierarchicalContainer(m_graphContainer.getVertexContainer());
-	    
 		VertexSelectionTree tree = new VertexSelectionTree("Nodes", m_graphContainer);
 		tree.setMultiSelect(true);
 		tree.setImmediate(true);

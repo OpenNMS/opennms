@@ -228,7 +228,7 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 			}
 			
                         @Override
-			public boolean equals(ReadyRunnable r) {
+			public boolean equals(Object r) {
 				return runnable.equals(r);
 			}
 			

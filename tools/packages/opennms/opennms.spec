@@ -581,7 +581,7 @@ find $RPM_BUILD_ROOT%{instprefix}/lib ! -type d | \
 	grep -v 'jradius' | \
 	grep -v 'org.opennms.protocols.xml' | \
 	grep -v 'org.opennms.protocols.xmp' | \
-	grep -v 'Xmp' | \
+	grep -v 'xmp' | \
 	grep -v 'org.opennms.features.juniper-tca-collector' | \
 	grep -v 'opennms_jmx_config_generator' | \
 	sort >> %{_tmppath}/files.main
@@ -736,7 +736,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(664 root root 775)
 %config(noreplace) %{instprefix}/etc/xmp*.xml
 %{instprefix}/lib/org.opennms.protocols.xmp-*.jar
-%{instprefix}/lib/Xmp-*.jar
+%{instprefix}/lib/xmp-*.jar
 %{sharedir}/etc-pristine/xmp*.xml
 %{sharedir}/xsds/xmp*.xsd
 

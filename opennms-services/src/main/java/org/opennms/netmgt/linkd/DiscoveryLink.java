@@ -1308,8 +1308,8 @@ public final class DiscoveryLink implements ReadyRunnable {
 
     /** {@inheritDoc} */
     @Override
-    public boolean equals(ReadyRunnable r) {
-        return (r instanceof DiscoveryLink && this.getPackageName().equals(r.getPackageName()));
+    public boolean equals(Object r) {
+        return (r instanceof DiscoveryLink && this.getPackageName().equals(((DiscoveryLink)r).getPackageName()));
     }
 
     /**
