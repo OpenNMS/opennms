@@ -260,7 +260,7 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
         
         if (snmpIf == null) {
             // if not then create one
-            snmpIf = new OnmsSnmpInterface(m_node, new Integer(ifIndex));
+            snmpIf = new OnmsSnmpInterface(m_node, ifIndex);
             snmpIf.setIfAlias(m_collector.getIfAlias(ifIndex));
             snmpIf.setIfName(m_collector.getIfName(ifIndex));
             snmpIf.setIfType(getIfType(ifIndex));

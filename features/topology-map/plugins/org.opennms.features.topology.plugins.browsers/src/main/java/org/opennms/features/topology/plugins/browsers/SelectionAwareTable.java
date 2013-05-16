@@ -111,7 +111,7 @@ public class SelectionAwareTable extends Table implements SelectionListener, Sel
 	 * that the {@link SelectionListener} instances are registered with all of the
 	 * {@link ColumnGenerator} classes that also implement {@link SelectionNotifier}.
 	 */
-	public void setColumnGenerators(@SuppressWarnings("rawtypes") Map generators) {
+	public void setColumnGenerators(@SuppressWarnings("unchecked") Map generators) {
 		for (Object key : generators.keySet()) {
 			super.addGeneratedColumn(key, (ColumnGenerator)generators.get(key));
 			// If any of the column generators are {@link SelectionNotifier} instances,
