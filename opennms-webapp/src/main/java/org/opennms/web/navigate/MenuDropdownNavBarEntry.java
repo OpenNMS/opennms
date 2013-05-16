@@ -34,17 +34,21 @@ import javax.servlet.http.HttpServletRequest;
 
 public class MenuDropdownNavBarEntry implements NavBarEntry {
     private String m_name = null;
+    private String m_url = null;
     private String m_contents = null;
     private List<NavBarEntry> m_entries = null;
  
     /**
      * <p>getUrl</p>
      *
-     * This should never get called, since we render all sub-links
-     * in getName();
+     * The URL the name should link to.
      */
     public String getUrl() {
-        return null;
+        return m_url;
+    }
+
+    public void setUrl(final String url) {
+        m_url = url;
     }
 
     /**
@@ -54,7 +58,25 @@ public class MenuDropdownNavBarEntry implements NavBarEntry {
      */
     public String getName() {
         if (m_name == null || m_contents == null) return "";
-        return "<div class=\"nav-dropdown\"><a href=\"#\" class=\"nav-dropdown\">" + m_name + " <span class=\"nav-item\">\u25BC</span></a><ul>" + m_contents + "</ul></div>";
+        final StringBuilder sb = new StringBuilder();
+        sb.append("<div class=\"nav-dropdown\">");
+        sb.append("<a href=\"");
+        if (m_url == null) {
+            sb.append("#");
+        } else {
+            sb.append(m_url);
+        }
+        sb.append("\" class=\"nav-dropdown\">");
+        sb.append(m_name);
+        sb.append(" ");
+        sb.append("<span class=\"nav-item\">\u25BC</span>");
+        sb.append("</a>");
+        sb.append("<ul>");
+        sb.append(m_contents);
+        sb.append("</ul>");
+        sb.append("</div>");
+
+        return sb.toString();
     }
     
     public void setName(final String name) {
