@@ -77,7 +77,7 @@ public class NCSServiceContainerTest {
         public void clear() {}
 
         @Override
-        public int countAll() {
+        public long countAll() {
             return 0;
         }
 
@@ -93,7 +93,7 @@ public class NCSServiceContainerTest {
         public List<NCSComponent> findMatching(OnmsCriteria criteria) { return null; }
 
         @Override
-        public int countMatching(OnmsCriteria onmsCrit) { return 0; }
+        public long countMatching(OnmsCriteria onmsCrit) { return 0; }
 
         @Override
         public NCSComponent get(Long id) {

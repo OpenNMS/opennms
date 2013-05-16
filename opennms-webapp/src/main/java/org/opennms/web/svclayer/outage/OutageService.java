@@ -107,14 +107,14 @@ public interface OutageService {
      * @param criteria a {@link org.opennms.netmgt.model.OnmsCriteria} object.
      * @return a {@link java.lang.Integer} object.
      */
-    Integer getOutageCount(OnmsCriteria criteria);
+    Long getOutageCount(OnmsCriteria criteria);
 
     /**
      * <p>getSuppressedOutageCount</p>
      *
      * @return a {@link java.lang.Integer} object.
      */
-    Integer getSuppressedOutageCount();
+    Long getSuppressedOutageCount();
 
     /**
      * <p>getCurrentOutagesForNode</p>
@@ -217,7 +217,7 @@ public interface OutageService {
      *
      * @return a {@link java.lang.Integer} object.
      */
-    Integer getOutageCount();
+    Long getOutageCount();
 
     /**
      * <p>outageCountFiltered</p>

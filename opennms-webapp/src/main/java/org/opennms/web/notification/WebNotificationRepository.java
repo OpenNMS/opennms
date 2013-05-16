@@ -47,7 +47,7 @@ public interface WebNotificationRepository {
      * @param criteria a {@link org.opennms.web.notification.filter.NotificationCriteria} object.
      * @return a int.
      */
-    public abstract int countMatchingNotifications(NotificationCriteria criteria);
+    public abstract long countMatchingNotifications(NotificationCriteria criteria);
     
     /**
      * <p>getNotification</p>

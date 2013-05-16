@@ -24,7 +24,7 @@ public class MockNCSComponentRepository implements NCSComponentRepository {
     }
 
     @Override
-    public int countAll() {
+    public long countAll() {
         // TODO Auto-generated method stub
         return 0;
     }
@@ -48,7 +48,7 @@ public class MockNCSComponentRepository implements NCSComponentRepository {
     }
 
     @Override
-    public int countMatching(OnmsCriteria onmsCrit) {
+    public long countMatching(OnmsCriteria onmsCrit) {
         // TODO Auto-generated method stub
         return 0;
     }

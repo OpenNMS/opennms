@@ -87,7 +87,7 @@ public class JdbcWebEventRepositoryTest implements InitializingBean {
     @Transactional
     public void testCountMatchingEvents(){ 
         EventCriteria criteria = new EventCriteria();
-        int event = m_eventRepo.countMatchingEvents(criteria);
+        long event = m_eventRepo.countMatchingEvents(criteria);
         
         assertEquals(1, event);
     }
@@ -96,7 +96,7 @@ public class JdbcWebEventRepositoryTest implements InitializingBean {
     @Transactional
     public void testCountMatchingEventsBySeverity(){
         EventCriteria criteria = new EventCriteria();
-        int[] matchingEvents = m_eventRepo.countMatchingEventsBySeverity(criteria);
+        long[] matchingEvents = m_eventRepo.countMatchingEventsBySeverity(criteria);
         
         assertEquals(8, matchingEvents.length);
         
@@ -121,7 +121,7 @@ public class JdbcWebEventRepositoryTest implements InitializingBean {
     public void testAcknowledgeUnacknowledgeMatchingAlarms(){
         m_eventRepo.acknowledgeMatchingEvents("TestUser", new Date(), new EventCriteria(new EventIdFilter(1)));
         
-        int matchingEventCount = m_eventRepo.countMatchingEvents(new EventCriteria(new AcknowledgedByFilter("TestUser")));
+        long matchingEventCount = m_eventRepo.countMatchingEvents(new EventCriteria(new AcknowledgedByFilter("TestUser")));
         assertEquals(1, matchingEventCount);
         
         m_eventRepo.unacknowledgeMatchingEvents(new EventCriteria(new AcknowledgedByFilter("TestUser")));
@@ -135,7 +135,7 @@ public class JdbcWebEventRepositoryTest implements InitializingBean {
     public void testAcknowledgeUnacknowledgeAllAlarms(){
         m_eventRepo.acknowledgeAll("TestUser", new Date());
         
-        int matchingEventCount = m_eventRepo.countMatchingEvents(new EventCriteria(new AcknowledgedByFilter("TestUser")));
+        long matchingEventCount = m_eventRepo.countMatchingEvents(new EventCriteria(new AcknowledgedByFilter("TestUser")));
         assertEquals(1, matchingEventCount);
         
         m_eventRepo.unacknowledgeAll();
@@ -148,7 +148,7 @@ public class JdbcWebEventRepositoryTest implements InitializingBean {
     @Transactional
     public void testCountMatchingBySeverity(){
         
-        int[] matchingEventCount = m_eventRepo.countMatchingEventsBySeverity(new EventCriteria(new SeverityFilter(3)));
+        long[] matchingEventCount = m_eventRepo.countMatchingEventsBySeverity(new EventCriteria(new SeverityFilter(3)));
         assertEquals(8, matchingEventCount.length);
     }
     

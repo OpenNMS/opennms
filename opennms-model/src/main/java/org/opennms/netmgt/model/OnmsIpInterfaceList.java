@@ -47,7 +47,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class OnmsIpInterfaceList extends LinkedList<OnmsIpInterface> {
 
     private static final long serialVersionUID = 1123252152117491694L;
-    private int m_totalCount;
+    private long m_totalCount;
 
     /**
      * <p>Constructor for OnmsIpInterfaceList.</p>
@@ -101,17 +101,17 @@ public class OnmsIpInterfaceList extends LinkedList<OnmsIpInterface> {
      * @return a int.
      */
     @XmlAttribute(name="totalCount")
-    public int getTotalCount() {
+    public long getTotalCount() {
         return m_totalCount;
     }
     
     /**
      * <p>setTotalCount</p>
      *
-     * @param count a int.
+     * @param l a int.
      */
-    public void setTotalCount(int count) {
-        m_totalCount = count;
+    public void setTotalCount(long l) {
+        m_totalCount = l;
     }
 
 }

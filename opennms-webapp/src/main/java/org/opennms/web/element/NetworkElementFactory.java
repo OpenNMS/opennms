@@ -930,7 +930,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         criteria.add(Restrictions.eq("nodeParentId", nodeId));
         criteria.add(Restrictions.ne("status", StatusType.DELETED));
         
-        int count = m_dataLinkInterfaceDao.countMatching(criteria);
+        long count = m_dataLinkInterfaceDao.countMatching(criteria);
         
         return (count > 0);
         
@@ -950,7 +950,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         criteria.add(Restrictions.eq("node.id", nodeID));
         criteria.add(Restrictions.ne("status", StatusType.DELETED));
         
-        int count = m_stpNodeDao.countMatching(criteria);
+        long count = m_stpNodeDao.countMatching(criteria);
         return (count > 0);
     }
 
@@ -967,7 +967,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
         criteria.add(Restrictions.eq("node.id", nodeID));
         criteria.add(Restrictions.ne("status", StatusType.DELETED));
-        int count = m_ipRouteInterfaceDao.countMatching(criteria);
+        long count = m_ipRouteInterfaceDao.countMatching(criteria);
         //        m_jdbcTemplate.queryForInt("SELECT COUNT(*) FROM IPROUTEINTERFACE WHERE NODEID = ? AND STATUS != 'D'", nodeID);
         return (count > 0);
     }

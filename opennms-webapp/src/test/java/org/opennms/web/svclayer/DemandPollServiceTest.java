@@ -96,7 +96,7 @@ public class DemandPollServiceTest extends TestCase {
 		}
 
                 @Override
-		public int countAll() {
+		public long countAll() {
 			return (m_demandPoll == null ? 0 : 1);
 		}
 
@@ -173,7 +173,7 @@ public class DemandPollServiceTest extends TestCase {
         }
 
                 @Override
-        public int countMatching(Criteria criteria) {
+        public long countMatching(Criteria criteria) {
             throw new UnsupportedOperationException("not yet implemented");
         }
 
@@ -183,7 +183,7 @@ public class DemandPollServiceTest extends TestCase {
         }
 
                 @Override
-        public int countMatching(OnmsCriteria criteria) {
+        public long countMatching(OnmsCriteria criteria) {
             throw new UnsupportedOperationException("not yet implemented");
         }
 		

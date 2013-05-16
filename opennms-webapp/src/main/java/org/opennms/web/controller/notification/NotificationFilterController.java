@@ -172,7 +172,7 @@ public class NotificationFilterController extends AbstractController implements 
         NotificationCriteria countCriteria = new NotificationCriteria(ackType, filters);
 
         Notification[] notices = m_webNotificationRepository.getMatchingNotifications(queryCriteria);
-        int noticeCount = m_webNotificationRepository.countMatchingNotifications(countCriteria);
+        long noticeCount = m_webNotificationRepository.countMatchingNotifications(countCriteria);
         Map<Integer,String[]> nodeLabels = new HashMap<Integer,String[]>();
         Set<Integer> eventIds = new TreeSet<Integer>();
         

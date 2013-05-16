@@ -139,7 +139,7 @@ public class AlarmStatsRestService extends AlarmRestServiceBase {
         
         LogUtils.debugf(this, "criteria = %s", criteria);
 
-        final int count = m_statisticsService.getTotalCount(criteria);
+        final long count = m_statisticsService.getTotalCount(criteria);
         stats.setTotalCount(count);
         stats.setAcknowledgedCount(m_statisticsService.getAcknowledgedCount(criteria));
 
@@ -236,8 +236,8 @@ public class AlarmStatsRestService extends AlarmRestServiceBase {
     @Entity
     @XmlRootElement(name = "alarmStatistics")
     public static class AlarmStatistics {
-        private int m_totalCount = 0;
-        private int m_acknowledgedCount = 0;
+        private long m_totalCount = 0;
+        private long m_acknowledgedCount = 0;
         private OnmsSeverity m_severity = null;
 
         private OnmsAlarm m_newestAcknowledged;
@@ -258,25 +258,25 @@ public class AlarmStatsRestService extends AlarmRestServiceBase {
                 .toString();
         }
         @XmlAttribute(name="totalCount")
-        public int getTotalCount() {
+        public long getTotalCount() {
             return m_totalCount;
         }
 
-        public void setTotalCount(final int count) {
+        public void setTotalCount(final long count) {
             m_totalCount = count;
         }
 
         @XmlAttribute(name="acknowledgedCount")
-        public int getAcknowledgedCount() {
+        public long getAcknowledgedCount() {
             return m_acknowledgedCount;
         }
         
-        public void setAcknowledgedCount(final int count) {
+        public void setAcknowledgedCount(final long count) {
             m_acknowledgedCount = count;
         }
 
         @XmlAttribute(name="unacknowledgedCount")
-        public int getUnacknowledgedCount() {
+        public long getUnacknowledgedCount() {
             return m_totalCount - m_acknowledgedCount;
         }
         

@@ -47,7 +47,7 @@ public interface WebEventRepository {
      * @param criteria a {@link org.opennms.web.event.filter.EventCriteria} object.
      * @return a int.
      */
-    public abstract int countMatchingEvents(EventCriteria criteria);
+    public abstract long countMatchingEvents(EventCriteria criteria);
     
     /**
      * <p>countMatchingEventsBySeverity</p>
@@ -55,7 +55,7 @@ public interface WebEventRepository {
      * @param criteria a {@link org.opennms.web.event.filter.EventCriteria} object.
      * @return an array of int.
      */
-    public abstract int[] countMatchingEventsBySeverity(EventCriteria criteria);
+    public abstract long[] countMatchingEventsBySeverity(EventCriteria criteria);
     
     /**
      * <p>getEvent</p>

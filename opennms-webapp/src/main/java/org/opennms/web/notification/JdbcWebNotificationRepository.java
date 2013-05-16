@@ -199,7 +199,7 @@ public class JdbcWebNotificationRepository implements WebNotificationRepository,
 
     /** {@inheritDoc} */
     @Override
-    public int countMatchingNotifications(NotificationCriteria criteria) {
+    public long countMatchingNotifications(NotificationCriteria criteria) {
         String sql = getSql("SELECT COUNT(*) AS NOTICECOUNT FROM NOTIFICATIONS", criteria);
         return queryForInt(sql, paramSetter(criteria));
 

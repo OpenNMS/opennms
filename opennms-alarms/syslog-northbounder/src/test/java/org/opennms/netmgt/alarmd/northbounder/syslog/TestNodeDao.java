@@ -72,7 +72,7 @@ public class TestNodeDao implements NodeDao {
 	}
 
 	@Override
-	public int countAll() {
+	public long countAll() {
 		return 1;
 	}
 
@@ -95,12 +95,12 @@ public class TestNodeDao implements NodeDao {
 	}
 
 	@Override
-	public int countMatching(Criteria onmsCrit) {
+	public long countMatching(Criteria onmsCrit) {
 		return 0;
 	}
 
 	@Override
-	public int countMatching(OnmsCriteria onmsCrit) {
+	public long countMatching(OnmsCriteria onmsCrit) {
 		return 0;
 	}
 

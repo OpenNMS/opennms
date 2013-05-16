@@ -175,7 +175,7 @@ public class OutageFilterController extends AbstractController implements Initia
         Outage[] outages = m_webOutageRepository.getMatchingOutages(queryCriteria);
         
         // get the total outage count
-        int outageCount = m_webOutageRepository.countMatchingOutages(countCriteria);
+        long outageCount = m_webOutageRepository.countMatchingOutages(countCriteria);
         
         ModelAndView modelAndView = new ModelAndView(getSuccessView());
         modelAndView.addObject("outages", outages);

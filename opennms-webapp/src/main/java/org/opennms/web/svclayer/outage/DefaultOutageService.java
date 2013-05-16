@@ -30,6 +30,7 @@ package org.opennms.web.svclayer.outage;
 
 import java.util.Collection;
 import java.util.Date;
+
 import org.hibernate.FetchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
@@ -94,7 +95,7 @@ public class DefaultOutageService implements OutageService {
     
     /** {@inheritDoc} */
     @Override
-    public Integer getOutageCount(OnmsCriteria criteria) {
+    public Long getOutageCount(OnmsCriteria criteria) {
         criteria.createAlias("monitoredService", "monitoredService");
         criteria.createAlias("monitoredService.ipInterface", "ipInterface");
         criteria.createAlias("monitoredService.serviceType", "serviceType");
@@ -212,7 +213,7 @@ public class DefaultOutageService implements OutageService {
      * @return a {@link java.lang.Integer} object.
      */
     @Override
-    public Integer getSuppressedOutageCount() {
+    public Long getSuppressedOutageCount() {
         throw new UnsupportedOperationException("not implemented since switch to hibernate");
     }
 
@@ -373,7 +374,7 @@ public class DefaultOutageService implements OutageService {
      * @return a {@link java.lang.Integer} object.
      */
     @Override
-    public Integer getOutageCount() {
+    public Long getOutageCount() {
         return m_dao.countAll();
     }
 

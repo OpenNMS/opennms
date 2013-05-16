@@ -81,7 +81,7 @@ public class JdbcWebOutageRepositoryTest implements InitializingBean {
     @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testCountMatchingOutages(){
         OutageCriteria criteria = new OutageCriteria(new OutageIdFilter(1));
-        int outages = m_outageRepo.countMatchingOutages(criteria);
+        long outages = m_outageRepo.countMatchingOutages(criteria);
         
         assertEquals(1, outages);
     }

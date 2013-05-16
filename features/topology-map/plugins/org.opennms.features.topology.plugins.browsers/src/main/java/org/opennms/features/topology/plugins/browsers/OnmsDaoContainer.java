@@ -168,7 +168,8 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Sele
 
 	@Override
 	public int size() {
-		return m_dao.countMatching(m_criteria);
+		// Have to cast this value to int to satisfy the Vaadin API
+		return ((Long)m_dao.countMatching(m_criteria)).intValue();
 	}
 
 	@Override

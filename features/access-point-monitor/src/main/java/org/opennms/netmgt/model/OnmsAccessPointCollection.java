@@ -48,7 +48,7 @@ public class OnmsAccessPointCollection extends LinkedList<OnmsAccessPoint> {
 
     private static final long serialVersionUID = 4989886422555152257L;
 
-    private int m_totalCount;
+    private long m_totalCount;
 
     /**
      * <p>
@@ -116,7 +116,7 @@ public class OnmsAccessPointCollection extends LinkedList<OnmsAccessPoint> {
      * @return a int.
      */
     @XmlAttribute(name = "totalCount")
-    public int getTotalCount() {
+    public long getTotalCount() {
         return m_totalCount;
     }
 
@@ -128,7 +128,7 @@ public class OnmsAccessPointCollection extends LinkedList<OnmsAccessPoint> {
      * @param count
      *            a int.
      */
-    public void setTotalCount(int count) {
+    public void setTotalCount(long count) {
         m_totalCount = count;
     }
 

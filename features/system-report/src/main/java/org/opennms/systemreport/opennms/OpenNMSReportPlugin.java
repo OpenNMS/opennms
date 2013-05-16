@@ -96,19 +96,19 @@ public class OpenNMSReportPlugin extends AbstractSystemReportPlugin implements I
         }
         
         if (m_nodeDao != null) {
-            map.put("Number of Nodes", getResource(Integer.toString(m_nodeDao.countAll())));
+            map.put("Number of Nodes", getResource(Long.toString(m_nodeDao.countAll())));
         }
         if (m_ipInterfaceDao != null) {
-            map.put("Number of IP Interfaces", getResource(Integer.toString(m_ipInterfaceDao.countAll())));
+            map.put("Number of IP Interfaces", getResource(Long.toString(m_ipInterfaceDao.countAll())));
         }
         if (m_snmpInterfaceDao != null) {
-            map.put("Number of SNMP Interfaces", getResource(Integer.toString(m_snmpInterfaceDao.countAll())));
+            map.put("Number of SNMP Interfaces", getResource(Long.toString(m_snmpInterfaceDao.countAll())));
         }
         if (m_eventDao != null) {
-            map.put("Number of Events", getResource(Integer.toString(m_eventDao.countAll())));
+            map.put("Number of Events", getResource(Long.toString(m_eventDao.countAll())));
         }
         if (m_alarmDao != null) {
-            map.put("Number of Alarms", getResource(Integer.toString(m_alarmDao.countAll())));
+            map.put("Number of Alarms", getResource(Long.toString(m_alarmDao.countAll())));
         }
         return map;
     }

@@ -218,7 +218,7 @@ public class DaoWebOutageRepository implements WebOutageRepository, Initializing
     /** {@inheritDoc} */
     @Transactional
     @Override
-    public int countMatchingOutages(OutageCriteria criteria) {
+    public long countMatchingOutages(OutageCriteria criteria) {
         return m_outageDao.countMatching(getOnmsCriteria(criteria));
     }
 

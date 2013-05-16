@@ -94,7 +94,7 @@ public class OutageSuppressedController extends AbstractController {
 		CurrentOutageParseResponse.findSelectedOutagesIDs(request,m_outageService);
 		
 		Map<String, Object> myModel = new HashMap<String, Object>();
-		Integer totalRows = m_outageService.getSuppressedOutageCount();
+		Long totalRows = m_outageService.getSuppressedOutageCount();
 	
 		myModel.put("request", limit.toString());
 

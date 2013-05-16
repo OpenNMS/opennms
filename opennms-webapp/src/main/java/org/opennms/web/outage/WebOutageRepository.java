@@ -46,7 +46,7 @@ public interface WebOutageRepository {
      * @param criteria a {@link org.opennms.web.outage.filter.OutageCriteria} object.
      * @return a int.
      */
-    public abstract int countMatchingOutages(OutageCriteria criteria);
+    public abstract long countMatchingOutages(OutageCriteria criteria);
 
     /**
      * <p>getOutage</p>

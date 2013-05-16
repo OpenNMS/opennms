@@ -81,5 +81,5 @@ public interface DistributedStatusService {
      *
      * @return a int.
      */
-    public int getApplicationCount();
+    public long getApplicationCount();
 }

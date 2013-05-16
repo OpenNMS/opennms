@@ -198,20 +198,20 @@ public class JdbcWebEventRepository implements WebEventRepository, InitializingB
 
     /** {@inheritDoc} */
     @Override
-    public int countMatchingEvents(EventCriteria criteria) {
+    public long countMatchingEvents(EventCriteria criteria) {
         String sql = getSql("SELECT COUNT(EVENTID) as EVENTCOUNT FROM EVENTS LEFT OUTER JOIN NODE USING (NODEID) LEFT OUTER JOIN SERVICE USING (SERVICEID) ", criteria);
         return queryForInt(sql, paramSetter(criteria));
     }
 
     /** {@inheritDoc} */
     @Override
-    public int[] countMatchingEventsBySeverity(EventCriteria criteria) {
+    public long[] countMatchingEventsBySeverity(EventCriteria criteria) {
         String selectClause = "SELECT EVENTSEVERITY, COUNT(*) AS EVENTCOUNT FROM EVENTS LEFT OUTER JOIN NODE USING (NODEID) LEFT OUTER JOIN SERVICE USING (SERVICEID) ";
         String sql = getSql(selectClause, criteria);
         //sql = sql + " AND EVENTDISPLAY='Y'";
         sql = sql + " GROUP BY EVENTSEVERITY";
         
-        final int[] alarmCounts = new int[8];
+        final long[] alarmCounts = new long[8];
         jdbc().query(sql, paramSetter(criteria), new RowCallbackHandler(){
 
             @Override

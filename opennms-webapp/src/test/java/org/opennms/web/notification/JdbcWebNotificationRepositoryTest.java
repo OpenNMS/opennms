@@ -92,7 +92,7 @@ public class JdbcWebNotificationRepositoryTest implements InitializingBean {
         List<Filter> filterList = new ArrayList<Filter>();
         Filter[] filters = filterList.toArray(new Filter[0]);
         AcknowledgeType ackType = AcknowledgeType.UNACKNOWLEDGED;
-        int notificationCount = m_notificationRepo.countMatchingNotifications(new NotificationCriteria(ackType, filters));
+        long notificationCount = m_notificationRepo.countMatchingNotifications(new NotificationCriteria(ackType, filters));
         assertEquals(1, notificationCount);
     }
     
@@ -122,7 +122,7 @@ public class JdbcWebNotificationRepositoryTest implements InitializingBean {
     public void testAcknowledgeNotification(){
         m_notificationRepo.acknowledgeMatchingNotification("TestUser", new Date(), new NotificationCriteria());
         
-        int notifCount = m_notificationRepo.countMatchingNotifications(new NotificationCriteria(new AcknowledgedByFilter("TestUser")));
+        long notifCount = m_notificationRepo.countMatchingNotifications(new NotificationCriteria(new AcknowledgedByFilter("TestUser")));
         assertEquals(1, notifCount);
     }
    

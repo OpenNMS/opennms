@@ -107,7 +107,7 @@ public class DaoWebOutageRepositoryTest implements InitializingBean {
     @Test
     @Transactional
     public void testCountMatchingOutages(){
-        int count = m_daoOutageRepo.countMatchingOutages(new OutageCriteria());
+        long count = m_daoOutageRepo.countMatchingOutages(new OutageCriteria());
         assertEquals(3, count);
         
         count = m_daoOutageRepo.countMatchingOutages(new OutageCriteria(new RegainedServiceDateBeforeFilter(new Date())));

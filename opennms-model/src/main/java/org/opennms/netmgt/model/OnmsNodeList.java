@@ -47,7 +47,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class OnmsNodeList extends LinkedList<OnmsNode> {
 
     private static final long serialVersionUID = 8031737923157780179L;
-    private int m_totalCount;
+    private long m_totalCount;
     
     /**
      * <p>Constructor for OnmsNodeList.</p>
@@ -105,17 +105,17 @@ public class OnmsNodeList extends LinkedList<OnmsNode> {
      * @return a int.
      */
     @XmlAttribute(name="totalCount")
-    public int getTotalCount() {
+    public long getTotalCount() {
         return m_totalCount;
     }
     
     /**
      * <p>setTotalCount</p>
      *
-     * @param count a int.
+     * @param l a int.
      */
-    public void setTotalCount(int count) {
-        m_totalCount = count;
+    public void setTotalCount(long l) {
+        m_totalCount = l;
     }
 
 }

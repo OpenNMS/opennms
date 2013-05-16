@@ -69,7 +69,7 @@ public interface OnmsDao<T, K extends Serializable> {
      *
      * @return a int.
      */
-    int countAll();
+    long countAll();
 
     /**
      * <p>delete</p>
@@ -114,7 +114,7 @@ public interface OnmsDao<T, K extends Serializable> {
      * @param onmsCrit a {@link org.opennms.core.criteria.Criteria} object.
      * @return a int.
      */
-    int countMatching(final Criteria onmsCrit);
+    long countMatching(final Criteria onmsCrit);
 
     /**
      * <p>countMatching</p>
@@ -122,7 +122,7 @@ public interface OnmsDao<T, K extends Serializable> {
      * @param onmsCrit a {@link org.opennms.netmgt.model.OnmsCriteria} object.
      * @return a int.
      */
-    int countMatching(final OnmsCriteria onmsCrit);
+    long countMatching(final OnmsCriteria onmsCrit);
     
     /**
      * <p>get</p>

@@ -84,7 +84,7 @@ public class JdbcWebOutageRepository implements WebOutageRepository, Initializin
 
     /** {@inheritDoc} */
     @Override
-    public int countMatchingOutages(OutageCriteria criteria) {
+    public long countMatchingOutages(OutageCriteria criteria) {
         String sql = getSql("SELECT COUNT(OUTAGEID) as OUTAGECOUNT "
                                 + "FROM OUTAGES "
                                 + "LEFT OUTER JOIN NODE USING (NODEID) "

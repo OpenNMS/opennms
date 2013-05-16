@@ -242,17 +242,17 @@ public class DaoWebEventRepository implements WebEventRepository, InitializingBe
     /** {@inheritDoc} */
     @Transactional
     @Override
-    public int countMatchingEvents(EventCriteria criteria) {
+    public long countMatchingEvents(EventCriteria criteria) {
         return m_eventDao.countMatching(getOnmsCriteria(criteria));
     }
     
     /** {@inheritDoc} */
     @Transactional
     @Override
-    public int[] countMatchingEventsBySeverity(EventCriteria criteria) {
+    public long[] countMatchingEventsBySeverity(EventCriteria criteria) {
         //OnmsCriteria crit = getOnmsCriteria(criteria).setProjection(Projections.groupProperty("severityId"));
         
-        int[] eventCounts = new int[8];
+        long[] eventCounts = new long[8];
         eventCounts[OnmsSeverity.CLEARED.getId()] = m_eventDao.countMatching(getOnmsCriteria(criteria).add(Restrictions.eq("eventSeverity", OnmsSeverity.CLEARED.getId())));
         eventCounts[OnmsSeverity.CRITICAL.getId()] = m_eventDao.countMatching(getOnmsCriteria(criteria).add(Restrictions.eq("eventSeverity", OnmsSeverity.CRITICAL.getId())));
         eventCounts[OnmsSeverity.INDETERMINATE.getId()] = m_eventDao.countMatching(getOnmsCriteria(criteria).add(Restrictions.eq("eventSeverity", OnmsSeverity.INDETERMINATE.getId())));

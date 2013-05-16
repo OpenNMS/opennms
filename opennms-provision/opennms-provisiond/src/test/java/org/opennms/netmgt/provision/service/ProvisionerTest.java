@@ -1093,7 +1093,7 @@ public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAw
     @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     public void testProvisionServiceGetScheduleForNodesCount() throws Exception {
         final List<NodeScanSchedule> schedulesForNode = m_provisionService.getScheduleForNodes();
-        final int nodeCount = getNodeDao().countAll();
+        final long nodeCount = getNodeDao().countAll();
         LogUtils.debugf(this, "NodeCount: %d", nodeCount);
 
         assertEquals(nodeCount, schedulesForNode.size());

@@ -47,7 +47,7 @@ public class DefaultAlarmStatisticsService extends AbstractBaseStatisticsService
 
     @Transactional
     @Override
-    public int getAcknowledgedCount(final Criteria criteria) {
+    public long getAcknowledgedCount(final Criteria criteria) {
     	criteria.addRestriction(org.opennms.core.criteria.restrictions.Restrictions.isNotNull("alarmAckUser"));
         return m_alarmDao.countMatching(criteria);
     }

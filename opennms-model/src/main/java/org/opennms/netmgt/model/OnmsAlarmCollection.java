@@ -46,7 +46,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class OnmsAlarmCollection extends LinkedList<OnmsAlarm> {
 
     private static final long serialVersionUID = 7054167470617453783L;
-    private int m_totalCount;
+    private long m_totalCount;
 
 	/**
 	 * <p>Constructor for OnmsAlarmCollection.</p>
@@ -100,16 +100,16 @@ public class OnmsAlarmCollection extends LinkedList<OnmsAlarm> {
      * @return a int.
      */
     @XmlAttribute(name="totalCount")
-    public int getTotalCount() {
+    public long getTotalCount() {
         return m_totalCount;
     }
 
     /**
      * <p>setTotalCount</p>
      *
-     * @param count a int.
+     * @param l a int.
      */
-    public void setTotalCount(int count) {
-        m_totalCount = count;
+    public void setTotalCount(long l) {
+        m_totalCount = l;
     }
 }

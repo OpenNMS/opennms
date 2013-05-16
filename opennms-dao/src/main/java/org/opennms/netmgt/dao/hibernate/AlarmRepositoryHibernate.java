@@ -137,7 +137,7 @@ public class AlarmRepositoryHibernate implements AlarmRepository, InitializingBe
      */
     @Transactional
     @Override
-    public int countMatchingAlarms(OnmsCriteria criteria) {
+    public long countMatchingAlarms(OnmsCriteria criteria) {
         return m_alarmDao.countMatching(criteria);
     }
 
@@ -146,8 +146,8 @@ public class AlarmRepositoryHibernate implements AlarmRepository, InitializingBe
      */
     @Transactional
     @Override
-    public int[] countMatchingAlarmsBySeverity(final OnmsCriteria criteria) {
-        final int[] alarmCounts = new int[8];
+    public long[] countMatchingAlarmsBySeverity(final OnmsCriteria criteria) {
+        final long[] alarmCounts = new long[8];
         for (final OnmsSeverity value : OnmsSeverity.values()) {
             alarmCounts[value.getId()] = m_alarmDao.countMatching(criteria.doClone().add(Restrictions.eq("severity", value)));
         }

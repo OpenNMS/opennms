@@ -34,6 +34,6 @@ import org.springframework.transaction.annotation.Transactional;
 public interface StatisticsService<T> {
 	
 	@Transactional(readOnly=true)
-    int getTotalCount(final Criteria criteria);
+    long getTotalCount(final Criteria criteria);
 
 }

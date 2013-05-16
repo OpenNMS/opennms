@@ -149,7 +149,7 @@ public class NCSAlarmController {
         OnmsAlarm[] alarms = m_webAlarmRepository.getMatchingAlarms(AlarmUtil.getOnmsCriteria(queryCriteria));
         
         // get the total alarm count
-        int alarmCount = m_webAlarmRepository.countMatchingAlarms(AlarmUtil.getOnmsCriteria(countCriteria));
+        long alarmCount = m_webAlarmRepository.countMatchingAlarms(AlarmUtil.getOnmsCriteria(countCriteria));
         
         ModelAndView modelAndView = new ModelAndView(getSuccessView());
         modelAndView.addObject("alarms", alarms);

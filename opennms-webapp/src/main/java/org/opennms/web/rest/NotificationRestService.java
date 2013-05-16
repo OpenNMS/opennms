@@ -107,7 +107,7 @@ public class NotificationRestService extends OnmsRestService {
     public String getCount() {
         readLock();
         try {
-            return Integer.toString(m_notifDao.countAll());
+            return Long.toString(m_notifDao.countAll());
         } finally {
             readUnlock();
         }

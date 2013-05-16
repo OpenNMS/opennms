@@ -118,7 +118,7 @@ public class DefaultOutageServiceIntegrationTest implements InitializingBean {
     @Transactional
     @Ignore
     public void testNoOfSuppressedOutages(){
-        Integer outages = m_outageService.getSuppressedOutageCount();
+        Long outages = m_outageService.getSuppressedOutageCount();
         assertTrue("We should find suppressed messages ", outages == 0);
     }
 

@@ -122,7 +122,7 @@ public class DaoWebEventRepositoryTest implements InitializingBean {
     @Transactional
     public void testCountMatchingEvents(){ 
         EventCriteria criteria = new EventCriteria();
-        int event = m_daoEventRepo.countMatchingEvents(criteria);
+        long event = m_daoEventRepo.countMatchingEvents(criteria);
         
         assertEquals(2, event);
     }
@@ -131,7 +131,7 @@ public class DaoWebEventRepositoryTest implements InitializingBean {
     @Transactional
     public void testCountMatchingEventsBySeverity(){
         EventCriteria criteria = new EventCriteria();
-        int[] matchingEvents = m_daoEventRepo.countMatchingEventsBySeverity(criteria);
+        long[] matchingEvents = m_daoEventRepo.countMatchingEventsBySeverity(criteria);
         
         assertNotNull(matchingEvents);
         assertEquals(8, matchingEvents.length);
@@ -162,7 +162,7 @@ public class DaoWebEventRepositoryTest implements InitializingBean {
     public void testAcknowledgeUnacknowledgeMatchingAlarms(){
         m_daoEventRepo.acknowledgeMatchingEvents("TestUser", new Date(), new EventCriteria(new EventIdFilter(1)));
         
-        int matchingEventCount = m_daoEventRepo.countMatchingEvents(new EventCriteria(new AcknowledgedByFilter("TestUser")));
+        long matchingEventCount = m_daoEventRepo.countMatchingEvents(new EventCriteria(new AcknowledgedByFilter("TestUser")));
         assertEquals(1, matchingEventCount);
         
         m_daoEventRepo.unacknowledgeMatchingEvents(new EventCriteria(new AcknowledgedByFilter("TestUser")));
@@ -176,7 +176,7 @@ public class DaoWebEventRepositoryTest implements InitializingBean {
     public void testAcknowledgeUnacknowledgeAllAlarms(){
         m_daoEventRepo.acknowledgeAll("TestUser", new Date());
         
-        int matchingEventCount = m_daoEventRepo.countMatchingEvents(new EventCriteria(new AcknowledgedByFilter("TestUser")));
+        long matchingEventCount = m_daoEventRepo.countMatchingEvents(new EventCriteria(new AcknowledgedByFilter("TestUser")));
         assertEquals(2, matchingEventCount);
         
         m_daoEventRepo.unacknowledgeAll();
@@ -189,7 +189,7 @@ public class DaoWebEventRepositoryTest implements InitializingBean {
     @Transactional
     public void testCountMatchingBySeverity(){
         
-        int[] matchingEventCount = m_daoEventRepo.countMatchingEventsBySeverity(new EventCriteria(new SeverityFilter(3)));
+        long[] matchingEventCount = m_daoEventRepo.countMatchingEventsBySeverity(new EventCriteria(new SeverityFilter(3)));
         assertNotNull(matchingEventCount);
         assertEquals(8, matchingEventCount.length);
     }

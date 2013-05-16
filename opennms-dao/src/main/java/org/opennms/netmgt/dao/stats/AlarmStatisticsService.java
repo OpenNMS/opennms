@@ -35,7 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 public interface AlarmStatisticsService extends StatisticsService<OnmsAlarm> {
 
 	@Transactional(readOnly=true)
-    public int getAcknowledgedCount(final Criteria criteria);
+    public long getAcknowledgedCount(final Criteria criteria);
 
     @Transactional(readOnly=true)
     public OnmsAlarm getAcknowledged(final Criteria criteria);
