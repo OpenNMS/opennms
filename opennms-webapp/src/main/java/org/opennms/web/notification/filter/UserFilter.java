@@ -28,9 +28,9 @@
 
 package org.opennms.web.notification.filter;
 
-import org.hibernate.Hibernate;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.type.StringType;
 import org.opennms.web.filter.OneArgFilter;
 import org.opennms.web.filter.SQLType;
 
@@ -69,7 +69,7 @@ public class UserFilter extends OneArgFilter<String> {
     public Criterion getCriterion() {
         
             
-        return Restrictions.sqlRestriction(" {alias}.notifyId in (SELECT DISTINCT usersnotified.notifyid FROM usersnotified WHERE usersnotified.userid=?)", getValue(), Hibernate.STRING);
+        return Restrictions.sqlRestriction(" {alias}.notifyId in (SELECT DISTINCT usersnotified.notifyid FROM usersnotified WHERE usersnotified.userid=?)", getValue(), StringType.INSTANCE);
     }
 
 

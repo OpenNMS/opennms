@@ -41,7 +41,8 @@ import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projection;
-import org.hibernate.impl.CriteriaImpl;
+import org.hibernate.internal.CriteriaImpl;
+import org.hibernate.sql.JoinType;
 import org.hibernate.transform.ResultTransformer;
 
 /**
@@ -54,10 +55,9 @@ public class OnmsCriteria implements Serializable {
 
     private static final long serialVersionUID = 232519716244370358L;
 
-    /** Constant <code>INNER_JOIN=Criteria.INNER_JOIN</code> */
-    public static final int INNER_JOIN = Criteria.INNER_JOIN;
-    /** Constant <code>LEFT_JOIN=Criteria.LEFT_JOIN</code> */
-    public static final int LEFT_JOIN = Criteria.LEFT_JOIN;
+    public static final int INNER_JOIN = JoinType.INNER_JOIN.getJoinTypeValue();
+
+    public static final int LEFT_JOIN = JoinType.LEFT_OUTER_JOIN.getJoinTypeValue();
     
     private OnmsCriteria.OnmsDetachedCriteria m_criteria;
     private String m_entityName;
