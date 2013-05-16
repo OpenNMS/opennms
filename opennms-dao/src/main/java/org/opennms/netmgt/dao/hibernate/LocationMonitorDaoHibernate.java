@@ -326,25 +326,17 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
     /** {@inheritDoc} */
     @Override
     public OnmsLocationSpecificStatus getMostRecentStatusChange(final OnmsLocationMonitor locationMonitor, final OnmsMonitoredService monSvc) {
-    	final HibernateCallback<OnmsLocationSpecificStatus> callback = new HibernateCallback<OnmsLocationSpecificStatus>() {
-
-            @Override
-            public OnmsLocationSpecificStatus doInHibernate(final Session session) throws HibernateException, SQLException {
-                return (OnmsLocationSpecificStatus)session.createQuery("from OnmsLocationSpecificStatus status where status.locationMonitor = :locationMonitor and status.monitoredService = :monitoredService order by status.pollResult.timestamp desc")
-                    .setEntity("locationMonitor", locationMonitor)
-                    .setEntity("monitoredService", monSvc)
-                    .setMaxResults(1)
-                    .uniqueResult();
-            }
-
-        };
-        return getHibernateTemplate().execute(callback);
+        return (OnmsLocationSpecificStatus)sessionFactory.getCurrentSession().createQuery("from OnmsLocationSpecificStatus status where status.locationMonitor = :locationMonitor and status.monitoredService = :monitoredService order by status.pollResult.timestamp desc")
+            .setEntity("locationMonitor", locationMonitor)
+            .setEntity("monitoredService", monSvc)
+            .setMaxResults(1)
+            .uniqueResult();
     }
 
     /** {@inheritDoc} */
     @Override
     public void saveStatusChange(final OnmsLocationSpecificStatus statusChange) {
-        getHibernateTemplate().save(statusChange);
+        sessionFactory.getCurrentSession().save(statusChange);
     }
 
     /**
@@ -486,42 +478,31 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
         
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public Collection<OnmsLocationSpecificStatus> getStatusChangesBetweenForApplications(final Date startDate, final Date endDate, final Collection<String> applicationNames) {
-        return getHibernateTemplate().execute(new HibernateCallback<List<OnmsLocationSpecificStatus>>() {
-
-            @SuppressWarnings("unchecked")
-            @Override
-            public List<OnmsLocationSpecificStatus> doInHibernate(Session session) throws HibernateException, SQLException {
-                
-                return (List<OnmsLocationSpecificStatus>)session.createQuery(
-                        "select distinct status from OnmsLocationSpecificStatus as status " +
-                        "left join fetch status.monitoredService as m " +
-                        "left join fetch m.serviceType " +
-                        "left join fetch m.applications as a " +
-                        "left join fetch status.locationMonitor as lm " +
-                        "where " +
-                        "a.name in (:applicationNames) " +
-                        "and " +
-                        "( status.pollResult.timestamp between :startDate and :endDate" +
-                        "  or" +
-                        "  status.id in " +
-                        "   (" +
-                        "       select max(s.id) from OnmsLocationSpecificStatus as s " +
-                        "       where s.pollResult.timestamp < :startDate " +
-                        "       group by s.locationMonitor, s.monitoredService " +
-                        "   )" +
-                        ") order by status.pollResult.timestamp")
-                .setParameterList("applicationNames", applicationNames)
-                .setParameter("startDate", startDate)
-                .setParameter("endDate", endDate)
-                .list();
-                
-
-            }
-
-        });
-        
+        return sessionFactory.getCurrentSession().createQuery(
+                "select distinct status from OnmsLocationSpecificStatus as status " +
+                "left join fetch status.monitoredService as m " +
+                "left join fetch m.serviceType " +
+                "left join fetch m.applications as a " +
+                "left join fetch status.locationMonitor as lm " +
+                "where " +
+                "a.name in (:applicationNames) " +
+                "and " +
+                "( status.pollResult.timestamp between :startDate and :endDate" +
+                "  or" +
+                "  status.id in " +
+                "   (" +
+                "       select max(s.id) from OnmsLocationSpecificStatus as s " +
+                "       where s.pollResult.timestamp < :startDate " +
+                "       group by s.locationMonitor, s.monitoredService " +
+                "   )" +
+                ") order by status.pollResult.timestamp")
+        .setParameterList("applicationNames", applicationNames)
+        .setParameter("startDate", startDate)
+        .setParameter("endDate", endDate)
+        .list();
     }
 
 
@@ -553,33 +534,33 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
     @Override
     public Collection<LocationMonitorIpInterface> findStatusChangesForNodeForUniqueMonitorAndInterface(final int nodeId) {
 
-		@SuppressWarnings("unchecked")
-        final List<Object[]> l = getHibernateTemplate().find(
-                        "select distinct status.locationMonitor, status.monitoredService.ipInterface from OnmsLocationSpecificStatus as status " +
-                        "where status.monitoredService.ipInterface.node.id = ?",
-                        nodeId
-                        );
-        
-    	final HashSet<LocationMonitorIpInterface> ret = new HashSet<LocationMonitorIpInterface>();
+        @SuppressWarnings("unchecked")
+        final List<Object[]> l = sessionFactory.getCurrentSession().createQuery(
+            "select distinct status.locationMonitor, status.monitoredService.ipInterface from OnmsLocationSpecificStatus as status " +
+            "where status.monitoredService.ipInterface.node.id = ?")
+            .setParameter(0, nodeId)
+            .list();
+
+        final HashSet<LocationMonitorIpInterface> ret = new HashSet<LocationMonitorIpInterface>();
         for (Object[] tuple : l) {
             OnmsLocationMonitor mon = (OnmsLocationMonitor) tuple[0];
             OnmsIpInterface ip = (OnmsIpInterface) tuple[1];
             ret.add(new LocationMonitorIpInterface(mon, ip));
         }
-        
+
         return ret;
     }
 
     /** {@inheritDoc} */
     @Override
     public void pauseAll() {
-        getHibernateTemplate().bulkUpdate("update OnmsLocationMonitor as mon set mon.status = ? where mon.status != ?", MonitorStatus.PAUSED, MonitorStatus.STOPPED); 
+        bulkUpdate("update OnmsLocationMonitor as mon set mon.status = ? where mon.status != ?", MonitorStatus.PAUSED, MonitorStatus.STOPPED); 
     }
 
     /** {@inheritDoc} */
     @Override
     public void resumeAll() {
-        getHibernateTemplate().bulkUpdate("update OnmsLocationMonitor as mon set mon.status = ? where mon.status = ?", MonitorStatus.STARTED, MonitorStatus.PAUSED); 
+        bulkUpdate("update OnmsLocationMonitor as mon set mon.status = ? where mon.status = ?", MonitorStatus.STARTED, MonitorStatus.PAUSED); 
     }
 
 }

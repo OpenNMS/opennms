@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -37,9 +36,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.hibernate.HibernateException;
-import org.hibernate.Session;
 import org.hibernate.transform.ResultTransformer;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsDistPoller;
@@ -47,7 +45,6 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.SurveillanceStatus;
-import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.util.StringUtils;
 
 /**
@@ -188,36 +185,23 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
     /** {@inheritDoc} */
     @Override
     public List<OnmsNode> findAllByCategoryLists( final Collection<OnmsCategory> rowCategories, final Collection<OnmsCategory> columnCategories) {
-    	
-        return getHibernateTemplate().execute(new HibernateCallback<List<OnmsNode>>() {
-
-            @SuppressWarnings("unchecked")
-            @Override
-            public List<OnmsNode> doInHibernate(Session session) throws HibernateException, SQLException {
-                
-                return (List<OnmsNode>)session.createQuery("select distinct n from OnmsNode as n "
-                + "join n.categories c1 "
-                + "join n.categories c2 "
-                + "left join fetch n.assetRecord "
-                + "left join fetch n.ipInterfaces as iface "
-                + "left join fetch n.snmpInterfaces as snmpIface"
-                + "left join fetch iface.monitoredServices as monSvc "
-                + "left join fetch monSvc.serviceType "
-                + "left join fetch monSvc.currentOutages "
-                + "where c1 in (:rowCategories) "
-                + "and c2 in (:colCategories) "
-                + "and n.type != 'D'")
-                .setParameterList("rowCategories", rowCategories)
-                .setParameterList("colCategories", columnCategories)
-                .list();
-                
-
-            }
-
-        });
-        
+        return (List<OnmsNode>)sessionFactory.getCurrentSession().createQuery("select distinct n from OnmsNode as n "
+        + "join n.categories c1 "
+        + "join n.categories c2 "
+        + "left join fetch n.assetRecord "
+        + "left join fetch n.ipInterfaces as iface "
+        + "left join fetch n.snmpInterfaces as snmpIface"
+        + "left join fetch iface.monitoredServices as monSvc "
+        + "left join fetch monSvc.serviceType "
+        + "left join fetch monSvc.currentOutages "
+        + "where c1 in (:rowCategories) "
+        + "and c2 in (:colCategories) "
+        + "and n.type != 'D'")
+        .setParameterList("rowCategories", rowCategories)
+        .setParameterList("colCategories", columnCategories)
+        .list();
     }
-    
+
     public static class SimpleSurveillanceStatus implements SurveillanceStatus {
         
         private int m_serviceOutages;
@@ -258,51 +242,43 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
     }
     @Override
     public SurveillanceStatus findSurveillanceStatusByCategoryLists(final Collection<OnmsCategory> rowCategories, final Collection<OnmsCategory> columnCategories) {
-        return getHibernateTemplate().execute(new HibernateCallback<SurveillanceStatus>() {
-
-            @Override
-            public SurveillanceStatus doInHibernate(Session session) throws HibernateException, SQLException {
-                return (SimpleSurveillanceStatus)session.createSQLQuery("select" +
-                		" count(distinct case when outages.outageid is not null and monSvc.status = 'A' then monSvc.id else null end) as svcCount," +
-                		" count(distinct case when outages.outageid is null and monSvc.status = 'A' then node.nodeid else null end) as upNodeCount," +
-                		" count(distinct node.nodeid) as nodeCount" +
-                		" from node" +
-                		" join category_node cn1 using (nodeid)" +
-                		" join category_node cn2 using (nodeid)" +
-                		" left outer join ipinterface ip using (nodeid)" +
-                		" left outer join ifservices monsvc on (monsvc.ipinterfaceid = ip.id)" +
-                		" left outer join outages on (outages.ifserviceid = monsvc.id and outages.ifregainedservice is null)" +
-                        " where nodeType <> 'D'" +
-                		" and cn1.categoryid in (:rowCategories)" +
-                		" and cn2.categoryid in (:columnCategories)"
-                		)
-                		.setParameterList("rowCategories", rowCategories)
-                		.setParameterList("columnCategories", columnCategories)
-                		.setResultTransformer(new ResultTransformer() {
-                            private static final long serialVersionUID = 5152094813503430377L;
-
-                            @Override
-                            public Object transformTuple(Object[] tuple, String[] aliases) {
-                                logger.debug("tuple length = " + tuple.length);
-                                for (int i = 0; i < tuple.length; i++) {
-                                    logger.debug(i + ": " + tuple[i] + " (" + tuple[i].getClass() + ")");
-                                }
-                                return new SimpleSurveillanceStatus((Number)tuple[0], (Number)tuple[1], (Number)tuple[2]);
-                            }
-
-                            // Implements Hibernate API
-                            @SuppressWarnings("unchecked")
-                            @Override
-							public List transformList(List collection) {
-                                return collection;
-                            }
-                		    
-                		})
-                        .uniqueResult();
-            }
-
-        });
-
+        return (SimpleSurveillanceStatus)sessionFactory.getCurrentSession().createSQLQuery("select" +
+            " count(distinct case when outages.outageid is not null and monSvc.status = 'A' then monSvc.id else null end) as svcCount," +
+            " count(distinct case when outages.outageid is null and monSvc.status = 'A' then node.nodeid else null end) as upNodeCount," +
+            " count(distinct node.nodeid) as nodeCount" +
+            " from node" +
+            " join category_node cn1 using (nodeid)" +
+            " join category_node cn2 using (nodeid)" +
+            " left outer join ipinterface ip using (nodeid)" +
+            " left outer join ifservices monsvc on (monsvc.ipinterfaceid = ip.id)" +
+            " left outer join outages on (outages.ifserviceid = monsvc.id and outages.ifregainedservice is null)" +
+            " where nodeType <> 'D'" +
+            " and cn1.categoryid in (:rowCategories)" +
+            " and cn2.categoryid in (:columnCategories)"
+            )
+            .setParameterList("rowCategories", rowCategories)
+            .setParameterList("columnCategories", columnCategories)
+            .setResultTransformer(new ResultTransformer() {
+                private static final long serialVersionUID = 5152094813503430377L;
+            
+                @Override
+                public Object transformTuple(Object[] tuple, String[] aliases) {
+                    LogUtils.debugf(this, "tuple length = " + tuple.length);
+                    for (int i = 0; i < tuple.length; i++) {
+                        LogUtils.debugf(this, i + ": " + tuple[i] + " (" + tuple[i].getClass() + ")");
+                    }
+                    return new SimpleSurveillanceStatus((Number)tuple[0], (Number)tuple[1], (Number)tuple[2]);
+                }
+            
+                // Implements Hibernate API
+                @SuppressWarnings("unchecked")
+                @Override
+            	public List transformList(List collection) {
+                    return collection;
+                }
+                
+            })
+            .uniqueResult();
     }
 
 
@@ -310,7 +286,7 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
     @SuppressWarnings("unchecked")
     @Override
     public Map<String, Integer> getForeignIdToNodeIdMap(String foreignSource) {
-        List<Object[]> pairs = getHibernateTemplate().find("select n.id, n.foreignId from OnmsNode n where n.foreignSource = ?", foreignSource);
+        List<Object[]> pairs = sessionFactory.getCurrentSession().createQuery("select n.id, n.foreignId from OnmsNode n where n.foreignSource = ?").setParameter(0, foreignSource).list();
         Map<String, Integer> foreignIdMap = new HashMap<String, Integer>();
         for (Object[] pair : pairs) {
             foreignIdMap.put((String)pair[1], (Integer)pair[0]);
@@ -376,8 +352,8 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
     /** {@inheritDoc} */
     @Override
     public void deleteObsoleteInterfaces(Integer nodeId, Date scanStamp) {
-        getHibernateTemplate().bulkUpdate("delete from OnmsIpInterface ipInterface where ipInterface.node.id = ? and ipInterface.isSnmpPrimary != 'P' and (ipInterface.ipLastCapsdPoll is null or ipInterface.ipLastCapsdPoll < ?)", new Object[] { nodeId, scanStamp });
-        getHibernateTemplate().bulkUpdate("delete from OnmsSnmpInterface snmpInterface where snmpInterface.node.id = ? and (snmpInterface.lastCapsdPoll is null or snmpInterface.lastCapsdPoll < ?)", new Object[] { nodeId, scanStamp });
+        bulkUpdate("delete from OnmsIpInterface ipInterface where ipInterface.node.id = ? and ipInterface.isSnmpPrimary != 'P' and (ipInterface.ipLastCapsdPoll is null or ipInterface.ipLastCapsdPoll < ?)", new Object[] { nodeId, scanStamp });
+        bulkUpdate("delete from OnmsSnmpInterface snmpInterface where snmpInterface.node.id = ? and (snmpInterface.lastCapsdPoll is null or snmpInterface.lastCapsdPoll < ?)", new Object[] { nodeId, scanStamp });
     }
 
     /** {@inheritDoc} */

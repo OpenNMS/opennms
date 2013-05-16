@@ -29,22 +29,18 @@
 package org.opennms.netmgt.dao.hibernate;
 
 import java.net.InetAddress;
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.hibernate.HibernateException;
-import org.hibernate.Session;
 import org.opennms.netmgt.dao.OutageDao;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.ServiceSelector;
 import org.opennms.netmgt.model.outage.OutageSummary;
-import org.springframework.orm.hibernate3.HibernateCallback;
 
 public class OutageDaoHibernate extends AbstractDaoHibernate<OnmsOutage, Integer> implements OutageDao {
 
@@ -78,18 +74,10 @@ public class OutageDaoHibernate extends AbstractDaoHibernate<OnmsOutage, Integer
     /** {@inheritDoc} */
     @Override
     public Collection<OnmsOutage> findAll(final Integer offset, final Integer limit) {
-        return (Collection<OnmsOutage>)getHibernateTemplate().execute(new HibernateCallback<Collection<OnmsOutage>>() {
-
-            @SuppressWarnings("unchecked")
-            @Override
-            public Collection<OnmsOutage> doInHibernate(final Session session) throws HibernateException, SQLException {
-                return session.createCriteria(OnmsOutage.class)
-                .setFirstResult(offset)
-                .setMaxResults(limit)
-                .list();
-            }
-
-        });
+        return sessionFactory.getCurrentSession().createCriteria(OnmsOutage.class)
+        .setFirstResult(offset)
+        .setMaxResults(limit)
+        .list();
     }
 
     /** {@inheritDoc} */

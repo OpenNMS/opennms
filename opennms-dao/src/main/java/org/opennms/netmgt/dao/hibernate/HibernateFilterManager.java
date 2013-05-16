@@ -28,14 +28,8 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
-import java.sql.SQLException;
-
-import org.hibernate.HibernateException;
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.opennms.netmgt.model.FilterManager;
-import org.springframework.orm.hibernate3.HibernateCallback;
-import org.springframework.orm.hibernate3.HibernateTemplate;
 
 /**
  * <p>HibernateFilterManager class.</p>
@@ -45,7 +39,7 @@ import org.springframework.orm.hibernate3.HibernateTemplate;
  */
 public class HibernateFilterManager implements FilterManager {
     
-    private HibernateTemplate m_template;
+    private SessionFactory m_sessionFactory;
     
     
     /**
@@ -54,7 +48,7 @@ public class HibernateFilterManager implements FilterManager {
      * @param sessionFactory a {@link org.hibernate.SessionFactory} object.
      */
     public void setSessionFactory(SessionFactory sessionFactory) {
-        m_template = new HibernateTemplate(sessionFactory);
+        m_sessionFactory = sessionFactory;
     }
 
     /* (non-Javadoc)
@@ -65,17 +59,7 @@ public class HibernateFilterManager implements FilterManager {
      */
     @Override
     public void disableAuthorizationFilter() {
-        HibernateCallback<Object> cb = new HibernateCallback<Object>() {
-
-            @Override
-            public Object doInHibernate(Session session) throws HibernateException, SQLException {
-                session.disableFilter(AUTH_FILTER_NAME);
-                return null;
-            }
-            
-        };
-        
-        m_template.execute(cb);
+        m_sessionFactory.getCurrentSession().disableFilter(AUTH_FILTER_NAME);
     }
 
     /* (non-Javadoc)
@@ -88,17 +72,6 @@ public class HibernateFilterManager implements FilterManager {
      */
     @Override
     public void enableAuthorizationFilter(final String[] authorizationGroups) {
-        HibernateCallback<Object> cb = new HibernateCallback<Object>() {
-
-            @Override
-            public Object doInHibernate(Session session) throws HibernateException, SQLException {
-                session.enableFilter(AUTH_FILTER_NAME).setParameterList("userGroups", authorizationGroups);
-                return null;
-            }
-            
-        };
-        
-        m_template.execute(cb);
+        m_sessionFactory.getCurrentSession().enableFilter(AUTH_FILTER_NAME).setParameterList("userGroups", authorizationGroups);
     }
-
 }

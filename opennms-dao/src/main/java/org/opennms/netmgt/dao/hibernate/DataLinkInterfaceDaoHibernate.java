@@ -32,14 +32,11 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import org.hibernate.HibernateException;
-import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 import org.opennms.netmgt.dao.DataLinkInterfaceDao;
 import org.opennms.netmgt.model.DataLinkInterface;
-import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.netmgt.model.OnmsCriteria;
-import org.springframework.orm.hibernate3.HibernateCallback;
+import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 
 public class DataLinkInterfaceDaoHibernate extends AbstractDaoHibernate<DataLinkInterface, Integer> implements DataLinkInterfaceDao {
     /**
@@ -53,16 +50,10 @@ public class DataLinkInterfaceDaoHibernate extends AbstractDaoHibernate<DataLink
     @SuppressWarnings("unchecked")
     @Override
     public Collection<DataLinkInterface> findAll(final Integer offset, final Integer limit) {
-        return getHibernateTemplate().execute(new HibernateCallback<Collection<DataLinkInterface>>() {
-
-            @Override
-            public Collection<DataLinkInterface> doInHibernate(Session session) throws HibernateException {
-                return session.createCriteria(DataLinkInterface.class)
-                .setFirstResult(offset)
-                .setMaxResults(limit)
-                .list();
-            }
-        });
+        return sessionFactory.getCurrentSession().createCriteria(DataLinkInterface.class)
+            .setFirstResult(offset)
+            .setMaxResults(limit)
+            .list();
     }
 
     /** {@inheritDoc} */

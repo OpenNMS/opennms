@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
@@ -127,7 +128,7 @@ public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterfac
 
         // Add all primary addresses first
         @SuppressWarnings("unchecked")
-        List<Object[]> l = getHibernateTemplate().find("select distinct ipInterface.ipAddress, ipInterface.node.id from OnmsIpInterface as ipInterface where ipInterface.isSnmpPrimary = 'P'");
+        List<Object[]> l = sessionFactory.getCurrentSession().createQuery("select distinct ipInterface.ipAddress, ipInterface.node.id from OnmsIpInterface as ipInterface where ipInterface.isSnmpPrimary = 'P'").list();
         for (Object[] tuple : l) {
             InetAddress ip = (InetAddress) tuple[0];
             Integer nodeId = (Integer) tuple[1];
@@ -136,7 +137,7 @@ public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterfac
 
         // Add all non-primary addresses only if those addresses doesn't exist on the map.
         @SuppressWarnings("unchecked")
-        List<Object[]> s = getHibernateTemplate().find("select distinct ipInterface.ipAddress, ipInterface.node.id from OnmsIpInterface as ipInterface where ipInterface.isSnmpPrimary != 'P'");
+        List<Object[]> s = sessionFactory.getCurrentSession().createQuery("select distinct ipInterface.ipAddress, ipInterface.node.id from OnmsIpInterface as ipInterface where ipInterface.isSnmpPrimary != 'P'").list();
         for (Object[] tuple : s) {
             InetAddress ip = (InetAddress) tuple[0];
             Integer nodeId = (Integer) tuple[1];
@@ -180,7 +181,7 @@ public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterfac
         } else {
             OnmsIpInterface retval = primaryInterfaces.iterator().next();
             if (primaryInterfaces.size() > 1) {
-                logger.warn("Multiple primary SNMP interfaces for node " + nodeId + ", returning most recently scanned interface: " + retval.getInterfaceId());
+                LogUtils.warnf(this, "Multiple primary SNMP interfaces for node %d, returning most recently scanned interface: %s", nodeId, retval.getInterfaceId());
             }
             return retval;
         }

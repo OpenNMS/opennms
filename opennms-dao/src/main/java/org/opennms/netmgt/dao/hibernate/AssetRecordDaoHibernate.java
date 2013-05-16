@@ -28,17 +28,17 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.ProjectionList;
 import org.hibernate.criterion.Projections;
 import org.hibernate.transform.Transformers;
 import org.opennms.netmgt.dao.AssetRecordDao;
 import org.opennms.netmgt.model.OnmsAssetRecord;
-
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class AssetRecordDaoHibernate extends AbstractDaoHibernate<OnmsAssetRecord, Integer> implements AssetRecordDao {
 
@@ -75,7 +75,7 @@ public class AssetRecordDaoHibernate extends AbstractDaoHibernate<OnmsAssetRecor
     @Override
     public Map<String, Integer> findImportedAssetNumbersToNodeIds(String foreignSource) {
 
-        @SuppressWarnings("unchecked") List<Object[]> assetNumbers = getHibernateTemplate().find("select a.node.id, a.assetNumber from OnmsAssetRecord a where a.assetNumber like '" + foreignSource + "%'");
+        @SuppressWarnings("unchecked") List<Object[]> assetNumbers = sessionFactory.getCurrentSession().createQuery("select a.node.id, a.assetNumber from OnmsAssetRecord a where a.assetNumber like ?").setParameter(0, foreignSource + "%").list();
 
         Map<String, Integer> assetNumberMap = new HashMap<String, Integer>();
         for (Object[] an : assetNumbers) {
@@ -153,7 +153,6 @@ public class AssetRecordDaoHibernate extends AbstractDaoHibernate<OnmsAssetRecor
         criteria.setProjection(Projections.distinct(projList));
         criteria.setResultTransformer(Transformers.aliasToBean(OnmsAssetRecord.class));
 
-        @SuppressWarnings("unchecked") List<OnmsAssetRecord> result = getHibernateTemplate().findByCriteria(criteria);
-        return result;
+        return criteria.getExecutableCriteria(sessionFactory.getCurrentSession()).list();
     }
 }
