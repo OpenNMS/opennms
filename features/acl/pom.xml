@@ -89,6 +89,10 @@
 			<groupId>commons-dbcp</groupId>
 		</dependency>
 		<dependency>
+			<artifactId>commons-collections</artifactId>
+			<groupId>commons-collections</groupId>
+		</dependency>
+		<dependency>
 			<groupId>postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 		</dependency>

@@ -744,7 +744,7 @@
     <maven.surefire.report.plugin.version>2.14.1</maven.surefire.report.plugin.version>
     <maven.eclipse.plugin.version>2.8</maven.eclipse.plugin.version>
     <maven.pax.plugin.version>1.5</maven.pax.plugin.version>
-    <antlr.version>2.7.6</antlr.version>
+    <antlr.version>2.7.7</antlr.version>
 
     <!-- turn down the default DEBUG logLevel. Override on the command line if you want -->
     <mock.logLevel>WARN</mock.logLevel>
@@ -854,7 +854,7 @@
     <xercesVersion>2.9.1</xercesVersion>
     <xmlApisVersion>1.4.01</xmlApisVersion>
 
-    <springVersion>3.0.7.RELEASE</springVersion>
+    <springVersion>3.1.4.RELEASE</springVersion>
     <!-- ALWAYS change aspectj to match the version referenced in the spring poms -->
     <aspectjVersion>1.6.8</aspectjVersion>
     <springWebFlowVersion>2.3.0.RELEASE</springWebFlowVersion>

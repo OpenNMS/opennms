@@ -15,13 +15,14 @@
     can depend on to use the hibernate library.
   </description>
   <properties>
-    <annotationsVersion>3.4.0.GA</annotationsVersion>
-    <commonsAnnotationsVersion>3.1.0.GA</commonsAnnotationsVersion>
-    <ejbVersion>1.0.2.GA</ejbVersion>
-    <entityManagerVersion>3.4.0.GA</entityManagerVersion>
-    <hibernateVersion>3.3.1.GA</hibernateVersion>
+    <!-- <annotationsVersion>3.5.6-Final</annotationsVersion> -->
+    <commonsAnnotationsVersion>4.0.2.Final</commonsAnnotationsVersion>
+    <!-- <ejbVersion>1.0.2.GA</ejbVersion> -->
+    <entityManagerVersion>4.1.12.Final</entityManagerVersion>
+    <hibernateVersion>4.1.12.Final</hibernateVersion>
   </properties>
   <dependencies>
+    <!--
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>ejb3-persistence</artifactId>
@@ -50,8 +51,9 @@
         </exclusion>
       </exclusions>
     </dependency>
+    -->
     <dependency>
-      <groupId>org.hibernate</groupId>
+      <groupId>org.hibernate.common</groupId>
       <artifactId>hibernate-commons-annotations</artifactId>
       <version>${commonsAnnotationsVersion}</version>
       <exclusions>
