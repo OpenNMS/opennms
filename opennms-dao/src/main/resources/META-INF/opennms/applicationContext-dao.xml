@@ -29,7 +29,7 @@
 
   <bean id="timeKeeper" class="org.opennms.core.utils.DefaultTimeKeeper" />
 
-  <bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+  <bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
     <property name="dataSource" ref="dataSource" />
     <property name="packagesToScan">
       <list>
@@ -57,7 +57,7 @@
     </property>
   </bean>
 
-  <bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+  <bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
     <property name="sessionFactory" ref="sessionFactory" />
     <property name="nestedTransactionAllowed" value="true"/>
   </bean>
