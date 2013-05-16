@@ -281,12 +281,14 @@ public class ServicePageTest extends OpenNMSSeleniumTestCase {
         }
         assertTrue(selenium.isTextPresent("Routers"));
         assertTrue(selenium.isTextPresent("Surveillance View: default"));
-        selenium.click("link=Distributed Map");
+        selenium.click("//a[@href='maps.htm']");
+        waitForPageToLoad();
+        selenium.click("link=Distributed");
         waitForPageToLoad();
         assertTrue(selenium.isElementPresent("link=Applications"));
         selenium.goBack();
         waitForPageToLoad();
-        selenium.click("link=Map");
+        selenium.click("link=SVG");
         waitForPageToLoad();
         assertTrue(selenium.isTextPresent("Network Topology Maps"));
         selenium.click("link=Add Node");

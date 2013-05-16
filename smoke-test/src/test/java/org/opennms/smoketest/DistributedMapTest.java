@@ -35,7 +35,9 @@ public class DistributedMapTest extends OpenNMSSeleniumTestCase {
     @Before
     public void setUp() throws Exception {
     	super.setUp();
-        selenium.click("link=Distributed Map");
+    	selenium.click("//a[@href='maps.htm']");
+    	waitForPageToLoad();
+        selenium.click("link=Distributed");
         waitForPageToLoad();
     }
 
