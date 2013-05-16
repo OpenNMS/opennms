@@ -197,7 +197,7 @@ public class SearchControl extends Control {
     }
 
     private void initializeContainerWidget() {
-        m_container = HTMLPanel.wrap(SearchControlImpl.createElement("leaflet-control-search"));
+        m_container = new HTMLPanel("<div class\"leaflet-control-search\"></div>");
         m_container.addStyleName("leaflet-control");
     }
 

@@ -73,15 +73,14 @@ public class NodeMapWidget extends Widget implements MarkerProvider, SearchConsu
     private Logger logger = Logger.getLogger(getClass().getName());
 
     public NodeMapWidget() {
-        super();
-        setStyleName("v-openlayers");
-        logger.log(Level.INFO, "div ID = " + getElement().getId());
-        
         m_div = Document.get().createDivElement();
         m_div.setId("gwt-map");
         m_div.getStyle().setWidth(100, Unit.PCT);
         m_div.getStyle().setHeight(100, Unit.PCT);
         setElement(m_div);
+
+        setStyleName("v-openlayers");
+        logger.log(Level.INFO, "div ID = " + getElement().getId());
 
         m_filter = new MarkerFilter() {
             @Override
@@ -341,7 +340,7 @@ public class NodeMapWidget extends Widget implements MarkerProvider, SearchConsu
                     for (final NodeMarker marker : m_markers.getDisabledMarkers()) {
                         bounds.extend(marker.getLatLng());
                     }
-                    logger.log(Level.INFO, "first update, zooming to " + bounds.toBBoxString());
+                    //logger.log(Level.INFO, "first update, zooming to " + bounds.toBBoxString());
                     m_map.fitBounds(bounds);
                     m_firstUpdate = false;
                 }

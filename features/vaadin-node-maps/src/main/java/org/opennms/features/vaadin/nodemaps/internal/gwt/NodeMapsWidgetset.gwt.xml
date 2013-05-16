@@ -4,18 +4,6 @@
 
     <inherits name="com.vaadin.DefaultWidgetSet" />
     <inherits name="org.discotools.gwt.leaflet.Core" />
-
-    <!-- This is required in order to use google map as base layer. -->
-    <script src="http://maps.google.com/maps/api/js?sensor=false" />
-    <script src="openlayers/OpenLayers.js" />
-    <script src="Google.js" />
-    <script src="markercluster/leaflet.markercluster.js" />
-    <!-- <script src="leaflet-search/leaflet-search.js" /> -->
-
-    <stylesheet src="markercluster/MarkerCluster.css" />
-    <stylesheet src="markercluster/MarkerCluster.Default.css" />
-    <!-- <stylesheet src="leaflet-search/leaflet-search.css" /> -->
-    <stylesheet src="node-maps.css" />
     <!-- 
           Compiler error: The Cross-Site-Iframe linker does not support <script> tags in the gwt.xml files, 
           but the gwt.xml file (or the gwt.xml files which it includes) contains the following script tags: 

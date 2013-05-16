@@ -60,19 +60,17 @@ public class MapWidgetComponent extends NodeMap {
     private TransactionOperations m_transactionOperations;
     private String m_searchString;
 
-    public MapWidgetComponent(final NodeDao nodeDao, final AssetRecordDao assetDao, final AlarmDao alarmDao, final GeocoderService geocoder) {
+    public MapWidgetComponent(final NodeDao nodeDao, final AssetRecordDao assetDao, final AlarmDao alarmDao, final GeocoderService geocoder, TransactionOperations transaction) {
         m_nodeDao = nodeDao;
         m_assetDao = assetDao;
         m_alarmDao = alarmDao;
         m_geocoderService = geocoder;
+        m_transactionOperations = transaction;
+        showNodes(getNodeData());
     }
 
-    public MapWidgetComponent() {
-
-    }
-
-    private void getNodeData() {
-        if (m_nodeDao == null) return;
+    private Map<Integer, NodeEntry> getNodeData() {
+        if (m_nodeDao == null) return new HashMap<Integer, NodeEntry>();
 
         m_log.debug("getting nodes");
         final CriteriaBuilder cb = new CriteriaBuilder(OnmsNode.class);
@@ -174,6 +172,8 @@ public class MapWidgetComponent extends NodeMap {
                 }
             }
         });
+
+        return nodes;
     }
 
     public void setNodeDao(final NodeDao nodeDao) {
@@ -211,10 +211,6 @@ public class MapWidgetComponent extends NodeMap {
         return coordinates;
     }
 
-
-    public void setTransactionOperation(final TransactionOperations tx) {
-        m_transactionOperations = tx;
-    }
 
     public void setSearchString(final String searchString) {
         m_searchString = searchString;

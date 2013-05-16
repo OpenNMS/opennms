@@ -17,7 +17,7 @@ xsi:schemaLocation="
 		<property name="alarmDao" ref="alarmDao" />
 		<property name="geocoderService" ref="geocoderService" />
 		<property name="transactionOperations" ref="transactionTemplate" />
-		<property name="headerProvider" ref="onmsHeaderProvider" />
+		<!--<property name="headerProvider" ref="onmsHeaderProvider" />-->
 	</bean>
 
 	<bean id="nodeMapsApplicationFactory" class="org.opennms.features.vaadin.nodemaps.internal.NodeMapsApplicationFactory" >

@@ -30,9 +30,11 @@ package org.opennms.features.vaadin.nodemaps.internal;
 
 import com.github.wolfie.refresher.Refresher;
 import com.vaadin.annotations.JavaScript;
+import com.vaadin.annotations.StyleSheet;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
 import com.vaadin.server.VaadinRequest;
+import com.vaadin.server.VaadinService;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
@@ -40,10 +42,12 @@ import org.opennms.features.geocoder.GeocoderService;
 import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.dao.AssetRecordDao;
 import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.web.api.OnmsHeaderProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.support.TransactionOperations;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -61,7 +65,7 @@ import java.io.InputStream;
  * <li>http://openlayers.org/dev/examples/strategy-cluster.html</li>
  * <li>http://developers.cloudmade.com/projects/web-maps-api/examples/marker-clustering</li>
  * </ul>
- * 
+ *
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 /*
@@ -87,10 +91,15 @@ import java.io.InputStream;
 @Title("OpenNMS Node Maps")
 @Theme("opennms")
 @JavaScript({
-    "http://cdn.leafletjs.com/leaflet-0.5.1/leaflet-src.js",
-    "gwt/public/openlayers/OpenLayers.js",
-    "gwt/public/markercluster/leaflet.markercluster.js"
+        "http://maps.google.com/maps/api/js?sensor=false",
+        "http://cdn.leafletjs.com/leaflet-0.5.1/leaflet-src.js",
+        "gwt/public/openlayers/OpenLayers.js",
+        "gwt/public/markercluster/leaflet.markercluster.js"
 })
+@StyleSheet({
+        "gwt/public/markercluster/MarkerCluster.css",
+        "gwt/public/markercluster/MarkerCluster.Default.css",
+        "gwt/public/node-maps.css"})
 public class NodeMapsApplication extends UI {
 
     private static final int REFRESH_INTERVAL = 5 * 60 * 1000;
@@ -100,18 +109,17 @@ public class NodeMapsApplication extends UI {
     private AlarmDao m_alarmDao;
     private GeocoderService m_geocoderService;
     private TransactionOperations m_transaction;
-    private String m_headerHtml;
 
     private VerticalLayout m_rootLayout;
 
     private Logger m_log = LoggerFactory.getLogger(getClass());
     private MapWidgetComponent m_mapPanel;
+    private OnmsHeaderProvider m_headerProvider;
 
     /**
      * Sets the OpenNMS Node DAO.
-     * 
-     * @param nodeDao
-     *            the new OpenNMS Node DAO
+     *
+     * @param nodeDao the new OpenNMS Node DAO
      */
 
     public void setNodeDao(final NodeDao nodeDao) {
@@ -134,8 +142,9 @@ public class NodeMapsApplication extends UI {
         m_transaction = tx;
     }
 
-    public void setHeaderHtml(final String headerHtml) {
-        m_headerHtml = headerHtml;
+    public void setOnmsHeaderProvider(final OnmsHeaderProvider headerProvider) {
+
+        m_headerProvider = headerProvider;
     }
 
     @Override
@@ -147,12 +156,7 @@ public class NodeMapsApplication extends UI {
     }
 
     private void createMapPanel(String searchString) {
-        m_mapPanel = new MapWidgetComponent();
-        m_mapPanel.setNodeDao(m_nodeDao);
-        m_mapPanel.setAssetRecordDao(m_assetDao);
-        m_mapPanel.setAlarmDao(m_alarmDao);
-        m_mapPanel.setGeocoderService(m_geocoderService);
-        m_mapPanel.setTransactionOperation(m_transaction);
+        m_mapPanel = new MapWidgetComponent(m_nodeDao, m_assetDao, m_alarmDao, m_geocoderService, m_transaction);
         m_mapPanel.setSearchString(searchString);
         m_mapPanel.setSizeFull();
     }
@@ -162,7 +166,7 @@ public class NodeMapsApplication extends UI {
         m_rootLayout.setSizeFull();
         setContent(m_rootLayout);
 
-        addHeader();
+//        addHeader();
         m_rootLayout.addComponent(m_mapPanel);
         m_rootLayout.setExpandRatio(m_mapPanel, 1.0f);
     }
@@ -170,7 +174,7 @@ public class NodeMapsApplication extends UI {
     private void addHeader() {
         InputStream is = null;
         try {
-            is = new ByteArrayInputStream(m_headerHtml.getBytes());
+            is = new ByteArrayInputStream(m_headerProvider.getHeaderHtml((HttpServletRequest) VaadinService.getCurrentRequest()).getBytes());
             final CustomLayout headerLayout = new CustomLayout(is);
             headerLayout.setHeight("150px");
             headerLayout.setWidth("100%");

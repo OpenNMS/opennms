@@ -122,7 +122,7 @@ public class NodeMapConnector extends AbstractComponentConnector {
 
     @Override
     protected Widget createWidget() {
-        return GWT.create(NodeMapWidget.class);
+        return new NodeMapWidget();
     }
 
     @Override
