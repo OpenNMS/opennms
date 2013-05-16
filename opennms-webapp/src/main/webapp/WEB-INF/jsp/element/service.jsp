@@ -42,7 +42,8 @@
         org.opennms.netmgt.config.poller.Service,
         org.opennms.netmgt.config.poller.Parameter,
         org.opennms.netmgt.model.OnmsMonitoredService,
-		org.opennms.web.springframework.security.Authentication
+        org.opennms.netmgt.poller.ServiceMonitor,
+        org.opennms.web.springframework.security.Authentication
 	"
 %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
@@ -60,8 +61,8 @@
     PollerConfig pollerCfgFactory = PollerConfigFactory.getInstance();
     pollerCfgFactory.rebuildPackageIpListMap();
 
-    Enumeration<Package> en = pollerCfgFactory.enumeratePackage();
     Package lastPkg = null;
+    Enumeration<Package> en = pollerCfgFactory.enumeratePackage();
     while (en.hasMoreElements()) {
         Package pkg = en.nextElement();
         if (!pkg.getRemote() &&
@@ -70,20 +71,30 @@
             lastPkg = pkg;
         }
     }
+    pageContext.setAttribute("packageName", lastPkg == null ? "N/A" : lastPkg.getName());
+
+    ServiceMonitor monitor = pollerCfgFactory.getServiceMonitor(serviceName);
+    pageContext.setAttribute("monitorClass", monitor == null ? "N/A" : monitor.getClass().getName());
 
     Map<String,String> parameters = new TreeMap<String,String>();
+    Map<String,String> xmlParams  = new TreeMap<String,String>();
     if (lastPkg != null) {
-        pageContext.setAttribute("package", lastPkg.getName());
         for (Service s : lastPkg.getServiceCollection()) {
             if (s.getName().equalsIgnoreCase(serviceName)) {
                 for (Parameter p : s.getParameterCollection()) {
-                    if (p.getValue() != null) {
+                    if (p.getKey().toLowerCase().equals("password")) {
+                        continue; // Hide passwords for security reasons
+                    }
+                    if (p.getValue() == null) {
+                        xmlParams.put(p.getKey(), p.getAnyObject().toString().replaceAll("<","&lt;").replaceAll(">", "&gt;").replaceAll("[\\r\\n]+", "<br/>"));
+                    } else {
                         parameters.put(p.getKey(), p.getValue());
                     }
                 }
             }
         }
         pageContext.setAttribute("parameters", parameters);
+        pageContext.setAttribute("xmlParams", xmlParams);
     }
 %>
 
@@ -175,25 +186,35 @@ function doDelete() {
                 <th>Polling Status</th>
                 <td>${service.statusLong}</td>
               </tr>
-              <c:if test="${package != null}">
-                <tr>
-                  <th>Polling Package</th>
-                  <td>${package}</td>
-                </tr>
-              </c:if>
+              <tr>
+                <th>Polling Package</th>
+                <td>${packageName}</td>
+              </tr>
+              <tr>
+                <th>Monitor Class</th>
+                <td>${monitorClass}</td>
+              </tr>
             </table>
             <c:if test="${parameters != null}">
               <h3>Service Parameters</h3>
               <table class="o-box">
               <c:forEach var="entry" items="${parameters}">
                 <tr>
-                  <th>${entry.key}</th>
+                  <th nowrap>${entry.key}</th>
                   <td>${entry.value}</td>
                 </tr>
               </c:forEach>
               </table>
             </c:if>
-          
+            <c:if test="${xmlParams != null}">
+              <c:forEach var="entry" items="${xmlParams}">
+                <h3>${entry.key}</h3>
+                <table class="o-box">
+                  <tr><td>${entry.value}</td></tr>
+                </table>
+              </c:forEach>
+            </c:if>
+
             <!-- Availability box -->
             <jsp:include page="/includes/serviceAvailability-box.jsp" flush="false" />
             
