@@ -34,8 +34,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
+import org.hibernate.engine.spi.SessionImplementor;
+import org.hibernate.type.StringType;
 import org.hibernate.usertype.UserType;
 import org.opennms.core.utils.InetAddressComparator;
 import org.opennms.core.utils.InetAddressUtils;
@@ -95,28 +96,28 @@ public class InetAddressUserType implements UserType {
     }
 
     @Override
-    public Object nullSafeGet(final ResultSet rs, final String[] names, final Object owner) throws HibernateException, SQLException {
-        return InetAddressUtils.getInetAddress((String)Hibernate.STRING.nullSafeGet(rs, names[0]));
+    public Object nullSafeGet(final ResultSet rs, final String[] names, final SessionImplementor session, final Object owner) throws HibernateException, SQLException {
+        return InetAddressUtils.getInetAddress((String)StringType.INSTANCE.get(rs, names[0], session));
     }
 
     @Override
-    public void nullSafeSet(final PreparedStatement st, final Object value, final int index) throws HibernateException, SQLException {
+    public void nullSafeSet(final PreparedStatement st, final Object value, final int index, final SessionImplementor session) throws HibernateException, SQLException {
         if (value == null) {
-            Hibernate.STRING.nullSafeSet(st, null, index);
+            StringType.INSTANCE.set(st, null, index, session);
         } else if (value instanceof InetAddress){
             // Format the IP address into a uniform format
-            Hibernate.STRING.nullSafeSet(st, InetAddressUtils.toIpAddrString((InetAddress)value), index);
+            StringType.INSTANCE.set(st, InetAddressUtils.toIpAddrString((InetAddress)value), index, session);
         } else if (value instanceof String){
             try {
                 // Format the IP address into a uniform format
-                Hibernate.STRING.nullSafeSet(st, InetAddressUtils.toIpAddrString(InetAddressUtils.getInetAddress((String)value)), index);
+                StringType.INSTANCE.set(st, InetAddressUtils.toIpAddrString(InetAddressUtils.getInetAddress((String)value)), index, session);
             } catch (final IllegalArgumentException e) {
                 // If the argument is not a valid IP address, then just pass it as-is. This
                 // can occur of the query is performing a LIKE query (ie. '192.168.%').
                 //
                 // TODO: Add more validation of this string
                 //
-                Hibernate.STRING.nullSafeSet(st, (String)value, index);
+                StringType.INSTANCE.set(st, (String)value, index, session);
             }
         }
     }

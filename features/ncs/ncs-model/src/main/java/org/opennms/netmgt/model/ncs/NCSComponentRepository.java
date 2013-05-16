@@ -62,7 +62,7 @@ public interface NCSComponentRepository {
      *
      * @return a int.
      */
-    int countAll();
+    long countAll();
 
     /**
      * <p>delete</p>
@@ -90,7 +90,7 @@ public interface NCSComponentRepository {
      * @param onmsCrit a {@link org.opennms.netmgt.model.OnmsCriteria} object.
      * @return a int.
      */
-    int countMatching(final OnmsCriteria onmsCrit);
+    long countMatching(final OnmsCriteria onmsCrit);
     
     /**
      * <p>get</p>
