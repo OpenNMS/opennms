@@ -139,7 +139,60 @@
 	    float: right;
 	    padding: 2px 0px 5px 0px;
 	}
+
+	div.nav-dropdown {
+		list-style: none;
+		position: relative;
+		display: inline;
+		width: 100%;
+	}
+
+	a.nav-dropdown {
+		padding: 5px;
+		text-decoration: none;
+		display: inline;
+		white-space: nowrap;
+		width: auto;
+	}
+
+	a.nav-dropdown:hover {
+		text-decoration: none !important;
+	}
+
+	a.nav-dropdown > span.nav-item {
+		vertical-align: bottom;
+		font-size: 5px;
+	}
+
+	.navbar li > div.nav-dropdown > ul {
+	    background-color: #444;
+	    border: 1px solid #888;
+	    color: #FFF;
+	    text-shadow: rgba(0,0,0,0.5) 1px 1px 1px;
+		display: block;
+		list-style: none;
+		left:-9999px;
+		z-index: 10;
+		position: absolute;
+		padding: 0;
+		margin-top: 2px;
+}
+
+	.navbar li > div.nav-dropdown > ul > li {
+		padding: 5px;
+		display: block;
+	}
+
+	.navbar li:hover > div.nav-dropdown > ul {
+		left: 0;
+	}
 	
+
+	.navbar li > div.nav-dropdown > ul > li > a {
+		white-space: nowrap;
+	}
+
+
 /*  --------------------------------------------------
     :: Layout (Onms Column Layout)
     -------------------------------------------------- */
