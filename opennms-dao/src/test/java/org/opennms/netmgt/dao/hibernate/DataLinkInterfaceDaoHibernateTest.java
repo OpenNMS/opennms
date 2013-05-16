@@ -93,6 +93,7 @@ public class DataLinkInterfaceDaoHibernateTest implements InitializingBean {
 
     @Test
     @JUnitTemporaryDatabase
+    @Transactional
     public void testFindById() throws Exception {
         // Note: This ID is based upon the creation order in DatabasePopulator - if you change
         // the DatabasePopulator by adding additional new objects that use the onmsNxtId sequence
@@ -118,6 +119,7 @@ public class DataLinkInterfaceDaoHibernateTest implements InitializingBean {
     }
 
     @Test
+    @Transactional
     public void testFindByCriteria() throws Exception {
         OnmsCriteria criteria = new OnmsCriteria(DataLinkInterface.class);
         criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
@@ -134,6 +136,7 @@ public class DataLinkInterfaceDaoHibernateTest implements InitializingBean {
     }
 
     @Test
+    @Transactional
     public void testFindByStatus() throws Exception {
         OnmsCriteria criteria = new OnmsCriteria(DataLinkInterface.class);
         criteria.add(Restrictions.eq("status", StatusType.ACTIVE));

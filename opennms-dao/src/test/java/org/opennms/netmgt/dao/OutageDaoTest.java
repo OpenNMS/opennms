@@ -121,20 +121,30 @@ public class OutageDaoTest implements InitializingBean, TemporaryDatabaseAware<T
 
     @Before
     public void setUp() throws Exception {
-        OnmsServiceType t = new OnmsServiceType("ICMP");
-        m_serviceTypeDao.save(t);
-
-        // Initialize Filter DAO
-        // Give the filter DAO access to the same TemporaryDatabase data source
-        // as the autowired DAOs
-
-        System.setProperty("opennms.home", "src/test/resources");
-        DatabaseSchemaConfigFactory.init();
-        JdbcFilterDao jdbcFilterDao = new JdbcFilterDao();
-        jdbcFilterDao.setDataSource(m_database);
-        jdbcFilterDao.setDatabaseSchemaConfigFactory(DatabaseSchemaConfigFactory.getInstance());
-        jdbcFilterDao.afterPropertiesSet();
-        FilterDaoFactory.setInstance(jdbcFilterDao);
+        m_transTemplate.execute(new TransactionCallback<Object>() {
+            @Override
+            public Object doInTransaction(TransactionStatus status) {
+                OnmsServiceType t = new OnmsServiceType("ICMP");
+                m_serviceTypeDao.save(t);
+        
+                // Initialize Filter DAO
+                // Give the filter DAO access to the same TemporaryDatabase data source
+                // as the autowired DAOs
+        
+                System.setProperty("opennms.home", "src/test/resources");
+                try {
+                    DatabaseSchemaConfigFactory.init();
+                } catch (Throwable e) {
+                    throw new RuntimeException(e);
+                }
+                JdbcFilterDao jdbcFilterDao = new JdbcFilterDao();
+                jdbcFilterDao.setDataSource(m_database);
+                jdbcFilterDao.setDatabaseSchemaConfigFactory(DatabaseSchemaConfigFactory.getInstance());
+                jdbcFilterDao.afterPropertiesSet();
+                FilterDaoFactory.setInstance(jdbcFilterDao);
+                return null;
+            }
+        });
     }
 
     @Test

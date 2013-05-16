@@ -38,6 +38,7 @@ import java.util.List;
 
 import junit.framework.Assert;
 
+import org.hibernate.PropertyValueException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.criteria.Alias;
@@ -57,7 +58,6 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.test.ThrowableAnticipator;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.transaction.BeforeTransaction;
 import org.springframework.transaction.annotation.Transactional;
@@ -226,7 +226,7 @@ public class AlarmDaoTest implements InitializingBean {
         alarm.setCounter(1);
         
         ThrowableAnticipator ta = new ThrowableAnticipator();
-        ta.anticipate(new DataIntegrityViolationException("not-null property references a null or transient value: org.opennms.netmgt.model.OnmsAlarm.distPoller; nested exception is org.hibernate.PropertyValueException: not-null property references a null or transient value: org.opennms.netmgt.model.OnmsAlarm.distPoller"));
+        ta.anticipate(new PropertyValueException("not-null property references a null or transient value", "org.opennms.netmgt.model.OnmsAlarm", "distPoller"));
         
         try {
             m_alarmDao.save(alarm);

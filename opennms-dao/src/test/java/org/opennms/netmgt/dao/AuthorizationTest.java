@@ -137,32 +137,10 @@ public class AuthorizationTest implements InitializingBean {
    }
    
    public void enableAuthorizationFilter(final String... groupNames) {
-       
-       HibernateCallback<Object> cb = new HibernateCallback<Object>() {
-
-           @Override
-           public Object doInHibernate(Session session) throws HibernateException, SQLException {
-               session.enableFilter("authorizedOnly").setParameterList("userGroups", groupNames);
-               return null;
-           }
-           
-       };
-       
-       ((AlarmDaoHibernate)m_alarmDao).getHibernateTemplate().execute(cb);
+       ((AlarmDaoHibernate)m_alarmDao).getSessionFactory().getCurrentSession().enableFilter("authorizedOnly").setParameterList("userGroups", groupNames);
    }
 
    public void disableAuthorizationFilter() {
-       
-       HibernateCallback<Object> cb = new HibernateCallback<Object>() {
-
-           @Override
-           public Object doInHibernate(Session session) throws HibernateException, SQLException {
-               session.disableFilter("authorizedOnly");
-               return null;
-           }
-           
-       };
-       
-       ((AlarmDaoHibernate)m_alarmDao).getHibernateTemplate().execute(cb);
+       ((AlarmDaoHibernate)m_alarmDao).getSessionFactory().getCurrentSession().disableFilter("authorizedOnly");
    }
 }

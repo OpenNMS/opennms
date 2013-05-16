@@ -59,7 +59,6 @@ import org.opennms.netmgt.model.OnmsUserNotification;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -320,8 +319,7 @@ public class AnnotationTest implements InitializingBean {
 	}
 	
 	private <T> void assertLoadAll(Class<T> annotatedClass, Checker<T> checker) {
-		HibernateTemplate template = new HibernateTemplate(m_sessionFactory);
-		Collection<T> results = template.loadAll(annotatedClass);
+		Collection<T> results = m_sessionFactory.getCurrentSession().createCriteria(annotatedClass).list();
 		assertNotNull(results);
 		
 		checker.checkCollection(results);

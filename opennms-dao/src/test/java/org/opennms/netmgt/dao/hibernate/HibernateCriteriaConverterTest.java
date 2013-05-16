@@ -48,6 +48,7 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -61,6 +62,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(dirtiesContext=false)
+@Transactional
 public class HibernateCriteriaConverterTest implements InitializingBean {
     @Autowired
     DatabasePopulator m_populator;
@@ -90,6 +92,7 @@ public class HibernateCriteriaConverterTest implements InitializingBean {
     }
 
 	@Test
+	@Rollback(false)
 	public void testNodeQuery() throws Exception {
 		List<OnmsNode> nodes;
 
@@ -111,6 +114,7 @@ public class HibernateCriteriaConverterTest implements InitializingBean {
 	}
 
     @Test
+    @Rollback(false)
     public void testNodeIlikeQuery() {
         final CriteriaBuilder cb = new CriteriaBuilder(OnmsNode.class);
         cb.isNotNull("id").eq("label", "node1").alias("ipInterfaces", "ipInterface", JoinType.LEFT_JOIN).ilike("ipInterface.ipAddress", "1%");
@@ -119,7 +123,7 @@ public class HibernateCriteriaConverterTest implements InitializingBean {
     }
 
 	@Test
-	@Transactional
+    @Rollback(false)
 	public void testDistinctQuery() {
 		List<OnmsNode> nodes = null;
 

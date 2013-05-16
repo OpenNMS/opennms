@@ -67,6 +67,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(dirtiesContext=false)
+@Transactional
 public class AcknowledgmentDaoTest implements InitializingBean {
 	@Autowired
     private AcknowledgmentDao m_acknowledgmentDao;
@@ -108,7 +109,6 @@ public class AcknowledgmentDaoTest implements InitializingBean {
     }
 
 	@Test
-	@Transactional
     public void testSaveUnspecified() {
         OnmsAcknowledgment ack = new OnmsAcknowledgment();
         ack.setAckTime(new Date());
@@ -133,7 +133,6 @@ public class AcknowledgmentDaoTest implements InitializingBean {
 	}
 
 	@Test
-    @Transactional
     public void testSaveWithAlarm() {
         OnmsEvent event = new OnmsEvent();
         event.setEventLog("Y");
