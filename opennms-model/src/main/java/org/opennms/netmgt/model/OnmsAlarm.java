@@ -36,6 +36,7 @@ import java.util.Map;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -43,6 +44,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
+import javax.persistence.MapKeyColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
@@ -56,9 +58,7 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.hibernate.ObjectNotFoundException;
-import org.hibernate.annotations.CollectionOfElements;
 import org.hibernate.annotations.Filter;
-import org.hibernate.annotations.MapKey;
 import org.hibernate.annotations.Type;
 import org.opennms.core.xml.bind.InetAddressXmlAdapter;
 import org.springframework.core.style.ToStringCreator;
@@ -1012,9 +1012,9 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
      * @return a {@link java.util.Map} object.
      */
     @XmlTransient
-    @CollectionOfElements
+    @ElementCollection
     @JoinTable(name="alarm_attributes", joinColumns = @JoinColumn(name="alarmId"))
-    @MapKey(columns=@Column(name="attribute"))
+    @MapKeyColumn(name="attribute")
     @Column(name="attributeValue", nullable=false)
     public Map<String, String> getDetails() {
         return m_details;

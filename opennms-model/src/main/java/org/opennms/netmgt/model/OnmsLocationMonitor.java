@@ -32,6 +32,7 @@ import java.util.Date;
 import java.util.Map;
 
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -39,14 +40,13 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
+import javax.persistence.MapKeyColumn;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
-import org.hibernate.annotations.CollectionOfElements;
-import org.hibernate.annotations.MapKey;
 import org.springframework.core.style.ToStringCreator;
 
 /**
@@ -202,9 +202,9 @@ public class OnmsLocationMonitor implements Comparable<OnmsLocationMonitor> {
      *
      * @return a {@link java.util.Map} object.
      */
-    @CollectionOfElements
+    @ElementCollection
     @JoinTable(name="location_monitor_details", joinColumns = @JoinColumn(name="locationMonitorId"))
-    @MapKey(columns=@Column(name="property"))
+    @MapKeyColumn(name="property")
     @Column(name="propertyValue", nullable=false)
     public Map<String, String> getDetails() {
         return m_details;
