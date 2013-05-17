@@ -11,7 +11,7 @@ import com.vaadin.ui.VerticalLayout;
  * The Application's "main" class
  */
 @SuppressWarnings("serial")
-@Theme("opennms")
+@Theme("dashboard")
 @Title("OpenNMS Dashboard")
 public class DashboardUI extends UI {
 

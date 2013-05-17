@@ -14,6 +14,7 @@ public class MapDashlet extends VerticalLayout {
         setCaption("Network disruptions within the last 30 minutes");
         Image image = new Image(null, new ThemeResource("img/map.png"));
         image.setSizeFull();
+        image.setHeight("200px");
         addComponent(image);
     }
 }

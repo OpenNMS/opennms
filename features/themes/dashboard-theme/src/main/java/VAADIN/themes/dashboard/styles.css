@@ -1,6 +1,6 @@
 @import "../reindeer/legacy-styles.css";
 
-.opennms .v-portlet-slot {
+.dashboard .v-portlet-slot {
     background: #fff !important;
     -webkit-border-radius: 4px !important;
     -moz-border-radius: 4px !important;
@@ -10,7 +10,7 @@
     box-shadow: 0 2px 3px rgba(0, 0, 0, 0.14), 0 0 0 1px rgba(0, 0, 0, 0.07) !important;
 }
 
-.opennms .v-portlet-header {
+.dashboard .v-portlet-header {
     color: #fff !important;
     text-shadow: 0 1px 1px #000 !important;
     background: #5d6167 !important;
@@ -21,15 +21,15 @@
     background: -ms-linear-gradient(top, #5d6167 0%, #393939 100%) !important;
 }
 
-.opennms .v-portlet-content-wrapper {
+.dashboard .v-portlet-content-wrapper {
     border: none !important;
 }
 
-.opennms .v-portlet .v-portlet-header-button {
+.dashboard .v-portlet .v-portlet-header-button {
     margin-right: 3px;
     border-radius: 3px;
 }
-.opennms.v-app {
+.dashboard.v-app {
     background: #dfe0e1;
     background: -moz-linear-gradient(top, #d8d9da 0%, #e6e7e8 10%, #e0e1e2 100%);
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #d8d9da), color-stop(10%, #e6e7e8), color-stop(100%, #e0e1e2));
@@ -38,34 +38,34 @@
     background: -ms-linear-gradient(top, #d8d9da 0%, #e6e7e8 10%, #e0e1e2 100%);
 }
 
-.opennms table td {
+.dashboard table td {
     padding-right: 5px !important;
 }
 
-.opennms .header {
+.dashboard .header {
     background: #fff;
     border-bottom: 2px solid #ccc;
 }
 
-.opennms .node-label {
+.dashboard .node-label {
     padding: 5px 10px;
     border-bottom: 1px solid #ccc;
 }
-.opennms .node-label.severe {
+.dashboard .node-label.severe {
     background: #FFEBCD;
     border-left: 5px solid orange;
 }
-.opennms .node-label.warning {
+.dashboard .node-label.warning {
     background: #FFF5CD;
     border-left: 5px solid yellow;
 }
 
-.sandwhich-board .node-label {
+.dashboard .sandwhich-board .node-label {
     font-size: 36px;
     padding: 20px 20px;
 }
 
-.sandwhich-board .progress-paused {
+.dashboard .sandwhich-board .progress-paused {
     font-size: 24px;
     font-weight: bold;
     background: orange;

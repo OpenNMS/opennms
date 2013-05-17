@@ -172,6 +172,12 @@
 			<type>pom</type>
 			<scope>provided</scope>
 		</dependency>
+
+        <dependency>
+            <groupId>org.opennms.features.themes</groupId>
+            <artifactId>dashboard-theme</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 	</dependencies>
 
 </project>
