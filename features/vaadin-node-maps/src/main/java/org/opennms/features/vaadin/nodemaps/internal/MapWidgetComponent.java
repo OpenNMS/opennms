@@ -53,19 +53,35 @@ import java.util.Map;
 public class MapWidgetComponent extends NodeMap {
 
     private Logger m_log = LoggerFactory.getLogger(getClass());
+    private String m_searchString;
+
     private NodeDao m_nodeDao;
     private AssetRecordDao m_assetDao;
     private AlarmDao m_alarmDao;
     private GeocoderService m_geocoderService;
-    private TransactionOperations m_transactionOperations;
-    private String m_searchString;
+    private TransactionOperations m_transaction;
 
-    public MapWidgetComponent(final NodeDao nodeDao, final AssetRecordDao assetDao, final AlarmDao alarmDao, final GeocoderService geocoder, TransactionOperations transaction) {
+    public void setNodeDao(final NodeDao nodeDao) {
         m_nodeDao = nodeDao;
+    }
+
+    public void setAssetRecordDao(final AssetRecordDao assetDao) {
         m_assetDao = assetDao;
+    }
+
+    public void setAlarmDao(final AlarmDao alarmDao) {
         m_alarmDao = alarmDao;
-        m_geocoderService = geocoder;
-        m_transactionOperations = transaction;
+    }
+
+    public void setGeocoderService(final GeocoderService geocoderService) {
+        m_geocoderService = geocoderService;
+    }
+
+    public void setTransactionOperations(final TransactionOperations tx) {
+        m_transaction = tx;
+    }
+
+    public MapWidgetComponent() {
         showNodes(getNodeData());
     }
 
@@ -164,7 +180,7 @@ public class MapWidgetComponent extends NodeMap {
         }
 
         m_log.debug("saving {} updated asset records to the database", updatedAssets.size());
-        m_transactionOperations.execute(new TransactionCallbackWithoutResult() {
+        m_transaction.execute(new TransactionCallbackWithoutResult() {
             @Override
             protected void doInTransactionWithoutResult(final TransactionStatus status) {
                 for (final OnmsAssetRecord asset : updatedAssets) {
@@ -174,22 +190,6 @@ public class MapWidgetComponent extends NodeMap {
         });
 
         return nodes;
-    }
-
-    public void setNodeDao(final NodeDao nodeDao) {
-        m_nodeDao = nodeDao;
-    }
-
-    public void setAssetRecordDao(final AssetRecordDao assetDao) {
-        m_assetDao = assetDao;
-    }
-
-    public void setAlarmDao(final AlarmDao alarmDao) {
-        m_alarmDao = alarmDao;
-    }
-
-    public void setGeocoderService(final GeocoderService geocoderService) {
-        m_geocoderService = geocoderService;
     }
 
     /**

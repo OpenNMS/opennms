@@ -46,6 +46,5 @@
 
     <inherits name="com.github.wolfie.refresher.RefresherWidgetset"/>
 
-
     <inherits name="org.vaadin.peter.contextmenu.ContextmenuWidgetset" />
 </module>

@@ -31,7 +31,7 @@ public class OpenlayersWidgetCompontentTest {
         m_assetDao = EasyMock.createMock(AssetRecordDao.class);
         m_alarmDao = EasyMock.createMock(AlarmDao.class);
         m_geocoder = EasyMock.createMock(GeocoderService.class);
-        m_component = new MapWidgetComponent(m_nodeDao, m_assetDao, m_alarmDao, m_geocoder, null);
+        m_component = new MapWidgetComponent();
     }
 
     @Test

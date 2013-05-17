@@ -12,13 +12,16 @@ xsi:schemaLocation="
 	<reference id="onmsHeaderProvider" interface="org.opennms.web.api.OnmsHeaderProvider" availability="optional" />
 
 	<bean id="nodeMapsApplication" class="org.opennms.features.vaadin.nodemaps.internal.NodeMapsApplication" scope="prototype">
-		<property name="nodeDao" ref="nodeDao" />
-		<property name="assetRecordDao" ref="assetDao" />
-		<property name="alarmDao" ref="alarmDao" />
-		<property name="geocoderService" ref="geocoderService" />
-		<property name="transactionOperations" ref="transactionTemplate" />
-		<!--<property name="headerProvider" ref="onmsHeaderProvider" />-->
+		<property name="headerProvider" ref="onmsHeaderProvider" />
 	</bean>
+
+    <bean id="mapWidget" class="org.opennms.features.vaadin.nodemaps.internal.MapWidgetComponent" scope="prototype">
+        <property name="nodeDao" ref="nodeDao" />
+        <property name="assetRecordDao" ref="assetDao" />
+        <property name="alarmDao" ref="alarmDao" />
+        <property name="geocoderService" ref="geocoderService" />
+        <property name="transactionOperations" ref="transactionTemplate" />
+    </bean>
 
 	<bean id="nodeMapsApplicationFactory" class="org.opennms.features.vaadin.nodemaps.internal.NodeMapsApplicationFactory" >
 		<!-- Blueprint container bean -->
