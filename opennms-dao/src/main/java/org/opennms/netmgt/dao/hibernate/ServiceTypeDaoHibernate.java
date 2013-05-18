@@ -40,7 +40,6 @@ public class ServiceTypeDaoHibernate extends AbstractCachingDaoHibernate<OnmsSer
     public ServiceTypeDaoHibernate() {
 		super(OnmsServiceType.class, false);
 	}
-    
 
     /** {@inheritDoc} */
     @Override
@@ -62,7 +61,10 @@ public class ServiceTypeDaoHibernate extends AbstractCachingDaoHibernate<OnmsSer
         String query = "select COUNT(*) from OnmsServiceType svcType, OnmsMonitoredService as svc" +
         		"where svcType.id = svc.serviceType and svc.status != 'D'" +
         		"and svc.ipInterface.node.id = ? and svc.ipInterface.ipAddres = ? and svcType.name = ?";
-        return queryInt(query, nodeId, ipAddr, service);
+        int count = queryInt(query, nodeId, ipAddr, service);
+        if (log().isDebugEnabled())
+            log().debug("countServicesForInterface: count services for interface " + nodeId + "/" + ipAddr + ": found " + count);
+        return count;
     }
     
     private ThreadCategory log() {
