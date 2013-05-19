@@ -509,7 +509,7 @@ public class Provisioner implements SpringServiceDaemon {
             /* we don't force a scan on node added so new suspect doesn't cause 2 simultaneous node scans
              * New nodes that are created another way shouldn't have a 'lastCapsPoll' timestamp set 
              */ 
-            scheduleForNode = getProvisionService().getScheduleForNode(new Long(e.getNodeid()).intValue(), false);
+            scheduleForNode = getProvisionService().getScheduleForNode(e.getNodeid().intValue(), false);
         } catch (Throwable t) {
             log().error("getScheduleForNode fails", t);
         }
@@ -528,7 +528,7 @@ public class Provisioner implements SpringServiceDaemon {
     @EventHandler(uei = EventConstants.FORCE_RESCAN_EVENT_UEI)
     public void handleForceRescan(Event e) {
         removeNodeFromScheduleQueue(new Long(e.getNodeid()).intValue());
-        NodeScanSchedule scheduleForNode = getProvisionService().getScheduleForNode(new Long(e.getNodeid()).intValue(), true);
+        NodeScanSchedule scheduleForNode = getProvisionService().getScheduleForNode(e.getNodeid().intValue(), true);
         if (scheduleForNode != null) {
             addToScheduleQueue(scheduleForNode);
         }
@@ -591,7 +591,7 @@ public class Provisioner implements SpringServiceDaemon {
     public void handleNodeUpdated(Event e) {
         // scan now since a reimport has occurred
         removeNodeFromScheduleQueue(new Long(e.getNodeid()).intValue());
-        NodeScanSchedule scheduleForNode = getProvisionService().getScheduleForNode(new Long(e.getNodeid()).intValue(), true);
+        NodeScanSchedule scheduleForNode = getProvisionService().getScheduleForNode(e.getNodeid().intValue(), true);
         if (scheduleForNode != null) {
             addToScheduleQueue(scheduleForNode);
         }
@@ -605,7 +605,7 @@ public class Provisioner implements SpringServiceDaemon {
      */
     @EventHandler(uei = EventConstants.NODE_DELETED_EVENT_UEI)
     public void handleNodeDeletedEvent(Event e) {
-        removeNodeFromScheduleQueue(new Long(e.getNodeid()).intValue());
+        removeNodeFromScheduleQueue(e.getNodeid().intValue());
         
     }
     

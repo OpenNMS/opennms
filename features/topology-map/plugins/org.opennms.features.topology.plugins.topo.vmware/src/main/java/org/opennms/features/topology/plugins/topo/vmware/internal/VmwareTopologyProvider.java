@@ -45,16 +45,17 @@ import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class VmwareTopologyProvider extends SimpleGraphProvider implements GraphProvider {
 
     public static final String TOPOLOGY_NAMESPACE_VMWARE = "vmware";
+    private static final Logger LOG = LoggerFactory.getLogger(VmwareTopologyProvider.class);
 
     private final String SPLIT_REGEXP = " *, *";
-
     private NodeDao m_nodeDao;
     private IpInterfaceDao m_ipInterfaceDao;
-
     private boolean m_generated = false;
 
     public VmwareTopologyProvider() {
@@ -82,12 +83,12 @@ public class VmwareTopologyProvider extends SimpleGraphProvider implements Graph
     }
 
     public void debug(Vertex vmwareVertex) {
-        System.err.println("-+- id: " + vmwareVertex.getId());
-        System.err.println(" |- hashCode: " + vmwareVertex.hashCode());
-        System.err.println(" |- label: " + vmwareVertex.getLabel());
-        System.err.println(" |- ip: " + vmwareVertex.getIpAddress());
-        System.err.println(" |- iconKey: " + vmwareVertex.getIconKey());
-        System.err.println(" |- nodeId: " + vmwareVertex.getNodeID());
+        LOG.debug("-+- id: " + vmwareVertex.getId());
+        LOG.debug(" |- hashCode: " + vmwareVertex.hashCode());
+        LOG.debug(" |- label: " + vmwareVertex.getLabel());
+        LOG.debug(" |- ip: " + vmwareVertex.getIpAddress());
+        LOG.debug(" |- iconKey: " + vmwareVertex.getIconKey());
+        LOG.debug(" |- nodeId: " + vmwareVertex.getNodeID());
 
         for (EdgeRef edge : getEdgeIdsForVertex(vmwareVertex)) {
             Edge vmwareEdge = getEdge(edge);
@@ -95,9 +96,9 @@ public class VmwareTopologyProvider extends SimpleGraphProvider implements Graph
             if (vmwareVertex.equals(edgeTo)) {
                 edgeTo = vmwareEdge.getSource().getVertex();
             }
-            System.err.println(" |- edgeTo: " + edgeTo);
+            LOG.debug(" |- edgeTo: " + edgeTo);
         }
-        System.err.println(" '- parent: " + (vmwareVertex.getParent() == null ? null : vmwareVertex.getParent().getId()));
+        LOG.debug(" '- parent: " + (vmwareVertex.getParent() == null ? null : vmwareVertex.getParent().getId()));
     }
 
     public void debugAll() {
@@ -357,15 +358,12 @@ public class VmwareTopologyProvider extends SimpleGraphProvider implements Graph
     @Override
     public void refresh() {
         m_generated = true;
-
-        // reset container
         resetContainer();
 
         // get all host systems
         List<OnmsNode> hostSystems = m_nodeDao.findAllByVarCharAssetColumn("vmwareManagedEntityType", "HostSystem");
-
         if (hostSystems.isEmpty()) {
-            System.err.println("No host systems with defined VMware assets fields found!");
+            LOG.info("refresh: No host systems with defined VMware assets fields found!");
         } else {
             for (OnmsNode hostSystem : hostSystems) {
                 addHostSystem(hostSystem);
@@ -374,15 +372,13 @@ public class VmwareTopologyProvider extends SimpleGraphProvider implements Graph
 
         // get all virtual machines
         List<OnmsNode> virtualMachines = m_nodeDao.findAllByVarCharAssetColumn("vmwareManagedEntityType", "VirtualMachine");
-
         if (virtualMachines.isEmpty()) {
-            System.err.println("No virtual machines with defined VMware assets fields found!");
+            LOG.info("refresh: No virtual machines with defined VMware assets fields found!");
         } else {
             for (OnmsNode virtualMachine : virtualMachines) {
                 addVirtualMachine(virtualMachine);
             }
         }
-
         debugAll();
     }
 }

@@ -449,6 +449,40 @@
         <property name="eventConfDao" ref="eventConfDao"/>
     </bean>
 
+    <bean name="mapMenuEntries" class="org.opennms.web.navigate.MenuDropdownNavBarEntry">
+        <property name="name" value="Maps" />
+        <property name="url" value="maps.htm" />
+        <property name="entries">
+            <list>
+                <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
+                    <property name="name" value="Distributed"/>
+                    <property name="url" value="RemotePollerMap/index.jsp"/>
+                    <property name="locationMatch" value="RemotePollerMap"/>
+                </bean>
+                <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
+                    <property name="name" value="Topology"/>
+                    <property name="url" value="topology"/>
+                    <property name="locationMatch" value="topology"/>
+                </bean>
+                <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
+                    <property name="name" value="Geographical"/>
+                    <property name="url" value="node-maps"/>
+                    <property name="locationMatch" value="node-maps"/>
+                </bean>
+                <bean class="org.opennms.web.navigate.FileBasedNavBarEntry">
+                    <property name="name" value="SVG"/>
+                    <property name="url" value="map/index.jsp"/>
+                    <property name="locationMatch" value="map"/>
+                    <property name="file" value="${opennms.home}/etc/map.enable"/>
+                </bean>
+            </list>
+        </property>
+    </bean>
+
+    <bean name="/maps.htm" class="org.opennms.web.controller.MapsController">
+        <property name="mapMenuEntries" ref="mapMenuEntries" />
+    </bean>
+
     <!--  "includes" -->
     <bean id="headerProvider" name="/navBar.htm" class="org.opennms.web.controller.NavBarController">
         <property name="navBarItems">
@@ -533,24 +567,7 @@
                     <property name="locationMonitorDao" ref="locationMonitorDao"/>
                 </bean>
 
-                <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
-                    <property name="name" value="Distributed Map"/>
-                    <property name="url" value="RemotePollerMap/index.jsp"/>
-                    <property name="locationMatch" value="RemotePollerMap"/>
-                </bean>
-
-                <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
-                    <property name="name" value="Topology Map"/>
-                    <property name="url" value="topology"/>
-                    <property name="locationMatch" value="topology"/>
-                </bean>
-
-                <bean class="org.opennms.web.navigate.FileBasedNavBarEntry">
-                    <property name="name" value="Map"/>
-                    <property name="url" value="map/index.jsp"/>
-                    <property name="locationMatch" value="map"/>
-                    <property name="file" value="${opennms.home}/etc/map.enable"/>
-                </bean>
+                <ref bean="mapMenuEntries" />
 
                 <bean class="org.opennms.web.navigate.ProvisionUserNavBarEntry">
                     <property name="name" value="Add Node"/>

@@ -1,8 +1,9 @@
+<%--
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,29 +27,33 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.smoketest;
+--%>
 
-import org.junit.Before;
-import org.junit.Test;
+<%@ page contentType="text/html;charset=UTF-8" language="java"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
+<jsp:include page="/includes/header.jsp" flush="false">
+	<jsp:param name="title" value="OpenNMS Maps" />
+	<jsp:param name="breadcrumb" value="Maps" />
+</jsp:include>
 
+<h3 class="o-box">OpenNMS Maps</h3>
+<div class="boxWrapper">
+<ul class="plain o-box">
+<c:forEach var="entry" items="${entries.entries}">
+	<c:choose>
+		<c:when test="${empty entry.url}">
+			<li>${entry.name}</li>
+		</c:when>
+		<c:otherwise>
+			<li><a href="${entry.url}">${entry.name}</a></li>
+		</c:otherwise>
+	</c:choose>
+</c:forEach>
+</ul>
+</div>
 
-public class MapPageTest extends OpenNMSSeleniumTestCase {
-    @Before
-    public void setUp() throws Exception {
-    	super.setUp();
-        selenium.click("//a[@href='maps.htm']");
-        waitForPageToLoad();
-        selenium.click("link=Distributed");
-        waitForPageToLoad();
-    }
-
-    @Test
-    public void testMapPage() throws Exception {
-        assertTrue(selenium.isElementPresent("id=mainSvgDocument"));
-        assertTrue(selenium.isTextPresent("Network Topology Maps"));
-        selenium.click("link=Log out");
-        waitForPageToLoad();
-    }
-
-}
+<jsp:include page="/includes/footer.jsp" flush="false" >
+	<jsp:param name="location" value="map" />
+</jsp:include>
+    

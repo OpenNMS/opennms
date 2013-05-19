@@ -68,16 +68,10 @@ public class AlarmDaoHibernate extends AbstractDaoHibernate<OnmsAlarm, Integer> 
             "ORDER BY min(alarm.lastEventTime) DESC, node.label ASC"
         );
     }
-<<<<<<< HEAD
-=======
     
->>>>>>> 28b069f... Partially migrated org.opennms.netmgt.capsd.BroadcastEventProcessor to Hibernate and added necessary method in DAOs
     public int deleteAlarm(long nodeId) {
         String query = "Delete OnmsAlarm as alarm where alarm.node.id = ?";
         return queryInt(query, nodeId);
     }
-<<<<<<< HEAD
-=======
 
->>>>>>> 28b069f... Partially migrated org.opennms.netmgt.capsd.BroadcastEventProcessor to Hibernate and added necessary method in DAOs
 }

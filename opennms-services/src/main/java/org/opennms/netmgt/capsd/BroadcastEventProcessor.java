@@ -184,68 +184,6 @@ public class BroadcastEventProcessor implements InitializingBean {
     private NodeDaoHibernate m_nodeDao;
     
     private ServiceTypeDaoHibernate m_serviceTypeDao;
-    /**
-     * Counts the number of interfaces on the node other than a given interface
-     * 
-     * @param dbConn
-     *            the database connection
-     * @param nodeid
-     *            the node to check interfaces for
-     * @param ipAddr
-     *            the interface not to include in the count
-     * @return the numer of interfaces other than the given one
-     * @throws SQLException
-     *             if an error occurs talking to the database
-     */
-    private int countOtherInterfacesOnNode(Connection dbConn, long nodeId, String ipAddr) throws SQLException {
-        int count = m_ipInterfaceDao.getCountOfOtherInterfacesOnNode(nodeId, ipAddr);
-        if (log().isDebugEnabled())
-            log().debug("countServicesForInterface: count services for interface " + nodeId + "/" + ipAddr + ": found " + count);
-
-        return count;
-    }
-
-    /**
-     * Counts the number of other non deleted services associated with the
-     * interface defined by nodeid/ipAddr
-     * 
-     * @param dbConn
-     *            the database connection
-     * @param nodeId
-     *            the node to chck
-     * @param ipAddr
-     *            the interface to check
-     * @param service
-     *            the name of the service not to include
-     * @return the number of non deleted services, other than serviceId
-     */
-    private int countOtherServicesOnInterface(Connection dbConn, long nodeId, String ipAddr, String service) throws SQLException {
-        int count = m_serviceTypeDao.getCountOfServicesOnInterface(nodeId, ipAddr, service);
-        if (log().isDebugEnabled())
-            log().debug("countServicesForInterface: count services for interface " + nodeId + "/" + ipAddr + ": found " + count);
-
-        return count;
-    }
-
-    /**
-     * Counts the number of non deleted services on a node on interfaces other
-     * than a given interface
-     * 
-     * @param dbConn
-     *            the database connection
-     * @param nodeId
-     *            the nodeid to check
-     * @param ipAddr
-     *            the address of the interface not to include
-     * @return the number of non deleted services on other interfaces
-     */
-    private int countServicesOnOtherInterfaces(Connection dbConn, long nodeId, String ipAddr) throws SQLException {
-        int count = m_monitoredServiceDao.getCountOfServicesOnOtherInterfaces(nodeId, ipAddr);
-        if (log().isDebugEnabled())
-            log().debug("countServicesOnOtherInterfaces: count services for node " + nodeId + ": found " + count);
-
-        return count;
-    }
 
     /**
      * Helper method used to create add an interface to a node.
@@ -435,7 +373,7 @@ public class BroadcastEventProcessor implements InitializingBean {
      * @return a list of events that need to be sent in response to these
      *         changes
      * @throws SQLException
-     * @throws FailedOperationException//        final String DB_COUNT_OTHER_INTERFACES_ON_NODE = "SELECT count(*) FROM ipinterface WHERE nodeID=? and ipAddr != ? and isManaged != 'D'";
+     * @throws FailedOperationException
      */
     private List<Event> doAddServiceMapping(Connection dbConn, String ipaddr, String serviceName, long txNo) throws SQLException, FailedOperationException {
         PreparedStatement stmt = null;
@@ -632,7 +570,7 @@ public class BroadcastEventProcessor implements InitializingBean {
 
         // if this is the last ip interface for the node then delete the node
         // instead
-        if (!EventUtils.isNonIpInterface(ipAddr) && isPropagationEnabled() && countOtherInterfacesOnNode(dbConn, nodeid, ipAddr) == 0) {
+        if (!EventUtils.isNonIpInterface(ipAddr) && isPropagationEnabled() && m_ipInterfaceDao.getCountOfOtherInterfacesOnNode(nodeid, ipAddr) == 0) {
             // there are no other ifs for this node so delete the node
             eventsToSend = doDeleteNode(dbConn, source, nodeid, txNo);
         } else {
@@ -851,8 +789,8 @@ public class BroadcastEventProcessor implements InitializingBean {
             // if this is the last service for the interface or the last service
             // for the node then send delete events for the interface or node
             // instead
-            int otherSvcsOnIfCnt = countOtherServicesOnInterface(dbConn, nodeid, ipAddr, service);
-            if (otherSvcsOnIfCnt == 0 && countServicesOnOtherInterfaces(dbConn, nodeid, ipAddr) == 0) {
+            int otherSvcsOnIfCnt = m_serviceTypeDao.getCountOfServicesOnInterface(nodeid, ipAddr, service);
+            if (otherSvcsOnIfCnt == 0 && m_monitoredServiceDao.getCountOfServicesOnOtherInterfaces(nodeid, ipAddr) == 0) {
                 // no services on this interface or any other interface on this
                 // node so delete
                 // node

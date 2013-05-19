@@ -81,6 +81,12 @@ xsi:schemaLocation="
         <value>Log Message</value>
       </array>
     </property>
+    
+    <property name="nonCollapsibleColumns">
+    	<list>
+   			<value>selection</value>
+    	</list>
+    </property>
   </bean>
   
   <bean id="alarmViewContribution" class="org.opennms.features.topology.api.support.BlueprintIViewContribution">

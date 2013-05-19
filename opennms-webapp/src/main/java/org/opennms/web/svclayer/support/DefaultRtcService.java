@@ -33,7 +33,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.hibernate.criterion.CriteriaSpecification;
 import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
@@ -144,11 +143,11 @@ public class DefaultRtcService implements RtcService, InitializingBean {
     public OnmsCriteria createOutageCriteria() {
         OnmsCriteria outageCriteria = new OnmsCriteria(OnmsOutage.class, "outage");
 
-        outageCriteria.createAlias("monitoredService", "monitoredService", CriteriaSpecification.INNER_JOIN);
+        outageCriteria.createAlias("monitoredService", "monitoredService", OnmsCriteria.INNER_JOIN);
         outageCriteria.add(Restrictions.eq("monitoredService.status", "A"));
-        outageCriteria.createAlias("monitoredService.ipInterface", "ipInterface", CriteriaSpecification.INNER_JOIN);
+        outageCriteria.createAlias("monitoredService.ipInterface", "ipInterface", OnmsCriteria.INNER_JOIN);
         outageCriteria.add(Restrictions.ne("ipInterface.isManaged", "D"));
-        outageCriteria.createAlias("monitoredService.ipInterface.node", "node", CriteriaSpecification.INNER_JOIN);
+        outageCriteria.createAlias("monitoredService.ipInterface.node", "node", OnmsCriteria.INNER_JOIN);
         outageCriteria.add(Restrictions.ne("node.type", "D"));
         
         return outageCriteria;
@@ -164,12 +163,12 @@ public class DefaultRtcService implements RtcService, InitializingBean {
         OnmsCriteria serviceCriteria = new OnmsCriteria(OnmsMonitoredService.class, "monitoredService");
 
         serviceCriteria.add(Restrictions.eq("monitoredService.status", "A"));
-        serviceCriteria.createAlias("ipInterface", "ipInterface", CriteriaSpecification.INNER_JOIN);
+        serviceCriteria.createAlias("ipInterface", "ipInterface", OnmsCriteria.INNER_JOIN);
         serviceCriteria.add(Restrictions.ne("ipInterface.isManaged", "D"));
-        serviceCriteria.createAlias("ipInterface.node", "node", CriteriaSpecification.INNER_JOIN);
+        serviceCriteria.createAlias("ipInterface.node", "node", OnmsCriteria.INNER_JOIN);
         serviceCriteria.add(Restrictions.ne("node.type", "D"));
-        serviceCriteria.createAlias("serviceType", "serviceType", CriteriaSpecification.INNER_JOIN);
-        serviceCriteria.createAlias("currentOutages", "currentOutages", CriteriaSpecification.LEFT_JOIN);
+        serviceCriteria.createAlias("serviceType", "serviceType", OnmsCriteria.INNER_JOIN);
+        serviceCriteria.createAlias("currentOutages", "currentOutages", OnmsCriteria.INNER_JOIN);
         
         return serviceCriteria;
     }
