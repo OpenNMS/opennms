@@ -254,4 +254,30 @@ abstract public class XmlTest<T> {
         return retDifferences;
     }
 
+    public static void assertXpathDoesNotMatch(final String xml, final String expression) throws XPathExpressionException {
+        final NodeList nodes = xpathGetNodesMatching(xml, expression);
+        assertTrue("Must get at least one node back from the query '" + expression + "'", nodes == null || nodes.getLength() == 0);
+    }
+
+    public static void assertXpathMatches(final String xml, final String expression) throws XPathExpressionException {
+        final NodeList nodes = xpathGetNodesMatching(xml, expression);
+        assertTrue("Must get at least one node back from the query '" + expression + "'", nodes != null && nodes.getLength() != 0);
+    }
+
+    protected static NodeList xpathGetNodesMatching(final String xml, final String expression) throws XPathExpressionException {
+        final XPath query = XPathFactory.newInstance().newXPath();
+        StringReader sr = null;
+        InputSource is = null;
+        NodeList nodes = null;
+        try {
+            sr = new StringReader(xml);
+            is = new InputSource(sr);
+            nodes = (NodeList)query.evaluate(expression, is, XPathConstants.NODESET);
+        } finally {
+            sr.close();
+            IOUtils.closeQuietly(sr);
+        }
+        return nodes;
+    }
+
 }
