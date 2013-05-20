@@ -307,6 +307,7 @@
         </statement>
     </trigger>
     -->
+
     <!-- Trigger details for Alarm Notification of events that are cleared from UI. -->
     <trigger name="selectClearedAlarmFromUi" operator="&gt;=" row-count="1" >
       <statement>
@@ -320,6 +321,25 @@
     </trigger>
 
     
+
+
+	<!-- Enable these automations to maintain the accesspoints table -->
+    <!--
+    <trigger name="selectAccessPointsMissingFromTable" operator="&gt;=" row-count="1" >
+      <statement>
+          SELECT assets.serialnumber AS _serialnumber,
+                 node.nodeid AS _nodeid,
+                 assets.pollercategory AS _package
+            FROM node
+           JOIN category_node ON node.nodeid = category_node.nodeid
+           JOIN categories ON category_node.categoryid = categories.categoryid
+           JOIN assets ON node.nodeid = assets.nodeid
+           WHERE categories.categoryname = 'AccessPoint' 
+             AND NOT EXISTS (SELECT 1 FROM accesspoints WHERE physaddr=assets.serialnumber)
+      </statement>
+    </trigger>
+    -->
+
   </triggers>
     
   <actions>

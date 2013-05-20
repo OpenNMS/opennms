@@ -248,10 +248,11 @@ public class DefaultNodeLinkService implements NodeLinkService, InitializingBean
     @Override
     public String getPrimaryAddress(int nodeId) {
         OnmsNode node = m_nodeDao.get(nodeId);
-        OnmsIpInterface primaryInterface = node.getPrimaryInterface();
-        
-        if(node != null && primaryInterface != null) {
-            return InetAddressUtils.str(primaryInterface.getIpAddress());
+        if (node != null) {
+            OnmsIpInterface primaryInterface = node.getPrimaryInterface();
+            if(primaryInterface != null) {
+                return InetAddressUtils.str(primaryInterface.getIpAddress());
+            }
         }
         
         return null;

@@ -113,7 +113,7 @@ public class AlarmListJ2eeConnectionManagerThread extends Thread implements Alar
 			 * send some alarms then try to send them. If the
 			 * connection has failed, reconnect. 
 			 */
-			if((status == CONNECTED) && ((send_status == SEND) | (send_status == REBUILD)) )
+			if((status == CONNECTED) && ((send_status == SEND) || (send_status == REBUILD)) )
 			{
 				if (log.isDebugEnabled()) log.debug("AlarmListJ2eeConnectionManagerThread.run() Sending alarms");
 				try

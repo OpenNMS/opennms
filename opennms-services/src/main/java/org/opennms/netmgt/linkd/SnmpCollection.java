@@ -848,12 +848,12 @@ public final class SnmpCollection implements ReadyRunnable {
 
     /** {@inheritDoc} */
     @Override
-    public boolean equals(ReadyRunnable run) {
-        if (run instanceof SnmpCollection
-                && this.getPackageName().equals(run.getPackageName())) {
+    public boolean equals(Object run) {
+        if (run instanceof SnmpCollection) {
             SnmpCollection c = (SnmpCollection) run;
-            if (c.getTarget().equals(m_address))
+            if (this.getPackageName().equals(c.getPackageName()) && c.getTarget().equals(m_address)) {
                 return true;
+            }
         }
         return false;
     }

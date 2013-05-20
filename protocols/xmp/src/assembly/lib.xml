@@ -11,7 +11,7 @@
       <useProjectArtifact>false</useProjectArtifact>
       <outputDirectory>lib</outputDirectory>
       <includes>
-        <include>org.krupczak:Xmp</include>
+        <include>org.krupczak:xmp</include>
       </includes>
       <fileMode>0644</fileMode>
       <directoryMode>0755</directoryMode>

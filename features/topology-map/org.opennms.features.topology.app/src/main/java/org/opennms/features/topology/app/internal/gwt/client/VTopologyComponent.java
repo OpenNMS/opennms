@@ -69,7 +69,6 @@ import com.google.gwt.touch.client.Point;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.Window.Navigator;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -609,7 +608,7 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 
             @Override
             public void call(GWTVertex vert, int index) {
-                Window.alert("Vertex: " + vert.getLabel() + " was double clicked" );
+                
                 
             }
         };

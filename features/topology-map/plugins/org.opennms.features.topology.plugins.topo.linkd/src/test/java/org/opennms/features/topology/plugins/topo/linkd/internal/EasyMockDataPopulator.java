@@ -469,7 +469,7 @@ public class EasyMockDataPopulator {
          * on the namespace and id tuple.
          */
         Vertex mockVertex = EasyMock.createMock(Vertex.class);
-        EasyMock.expect(mockVertex.getId()).andReturn("1").anyTimes();
+        EasyMock.expect(mockVertex.getId()).andReturn("v0").anyTimes();
         EasyMock.expect(mockVertex.getLabel()).andReturn(null).anyTimes();
         EasyMock.replay(mockVertex);
         AbstractEdge[] edgeidsforvertex1 = {

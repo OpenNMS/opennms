@@ -33,6 +33,15 @@
 	contentType="text/html"
 	session="true"
 	import="
+        java.util.Map,
+        java.util.TreeMap,
+        java.util.Enumeration,
+        org.opennms.netmgt.config.PollerConfigFactory,
+        org.opennms.netmgt.config.PollerConfig,
+        org.opennms.netmgt.config.poller.Package,
+        org.opennms.netmgt.config.poller.Service,
+        org.opennms.netmgt.config.poller.Parameter,
+        org.opennms.netmgt.model.OnmsMonitoredService,
 		org.opennms.web.springframework.security.Authentication
 	"
 %>
@@ -41,7 +50,42 @@
 <%@taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 
+<%
+    OnmsMonitoredService service = (OnmsMonitoredService)request.getAttribute("service");
 
+    String ipAddr = service.getIpAddress().getHostAddress();
+    String serviceName = service.getServiceName();
+
+    PollerConfigFactory.init();
+    PollerConfig pollerCfgFactory = PollerConfigFactory.getInstance();
+    pollerCfgFactory.rebuildPackageIpListMap();
+
+    Enumeration<Package> en = pollerCfgFactory.enumeratePackage();
+    Package lastPkg = null;
+    while (en.hasMoreElements()) {
+        Package pkg = en.nextElement();
+        if (!pkg.getRemote() &&
+            pollerCfgFactory.isServiceInPackageAndEnabled(serviceName, pkg) &&
+            pollerCfgFactory.isInterfaceInPackage(ipAddr, pkg)) {
+            lastPkg = pkg;
+        }
+    }
+
+    Map<String,String> parameters = new TreeMap<String,String>();
+    if (lastPkg != null) {
+        pageContext.setAttribute("package", lastPkg.getName());
+        for (Service s : lastPkg.getServiceCollection()) {
+            if (s.getName().equalsIgnoreCase(serviceName)) {
+                for (Parameter p : s.getParameterCollection()) {
+                    if (p.getValue() != null) {
+                        parameters.put(p.getKey(), p.getValue());
+                    }
+                }
+            }
+        }
+        pageContext.setAttribute("parameters", parameters);
+    }
+%>
 
 <c:url var="eventUrl" value="event/list.htm">
   <c:param name="filter" value="node= ${service.ipInterface.node.id}"/> 
@@ -131,7 +175,24 @@ function doDelete() {
                 <th>Polling Status</th>
                 <td>${service.statusLong}</td>
               </tr>
+              <c:if test="${package != null}">
+                <tr>
+                  <th>Polling Package</th>
+                  <td>${package}</td>
+                </tr>
+              </c:if>
             </table>
+            <c:if test="${parameters != null}">
+              <h3>Service Parameters</h3>
+              <table class="o-box">
+              <c:forEach var="entry" items="${parameters}">
+                <tr>
+                  <th>${entry.key}</th>
+                  <td>${entry.value}</td>
+                </tr>
+              </c:forEach>
+              </table>
+            </c:if>
           
             <!-- Availability box -->
             <jsp:include page="/includes/serviceAvailability-box.jsp" flush="false" />

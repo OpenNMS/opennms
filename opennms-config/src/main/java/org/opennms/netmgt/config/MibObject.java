@@ -291,8 +291,8 @@ public class MibObject implements Collectable {
                 // 'alias' and 'type', values are optional so we need to check
                 // for null
                 //
-                if ((m_alias == null && aMibObject.getInstance() == null) || m_alias.equals(aMibObject.getAlias())) {
-                    if ((m_type == null && aMibObject.getType() == null) || m_type.equals(aMibObject.getType())) {
+                if ((m_alias == null && aMibObject.getInstance() == null) || (m_alias != null && aMibObject != null && m_alias.equals(aMibObject.getAlias()))) {
+                    if ((m_type == null && aMibObject.getType() == null) || (m_type != null && aMibObject != null && m_type.equals(aMibObject.getType()))) {
                         return true;
                     }
                 }
