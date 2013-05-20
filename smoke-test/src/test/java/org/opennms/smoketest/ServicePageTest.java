@@ -214,7 +214,7 @@ public class ServicePageTest extends OpenNMSSeleniumTestCase {
     }
 
     @Test
-    public void testAllTopLevelLinks () throws InterruptedException {
+    public void testAllTopLevelLinks() throws InterruptedException {
         selenium.click("link=Node List");
         waitForPageToLoad();
         long endTime = System.currentTimeMillis() + 60000;
@@ -283,14 +283,11 @@ public class ServicePageTest extends OpenNMSSeleniumTestCase {
         assertTrue(selenium.isTextPresent("Surveillance View: default"));
         selenium.click("//a[@href='maps.htm']");
         waitForPageToLoad();
-        selenium.click("link=Distributed");
+        selenium.click("//div[@id='content']//a[contains(@href,'RemotePollerMap')]");
         waitForPageToLoad();
         assertTrue(selenium.isElementPresent("link=Applications"));
         selenium.goBack();
         waitForPageToLoad();
-        selenium.click("link=SVG");
-        waitForPageToLoad();
-        assertTrue(selenium.isTextPresent("Network Topology Maps"));
         selenium.click("link=Add Node");
         waitForPageToLoad();
         assertTrue(selenium.isTextPresent("Node Quick-Add"));
