@@ -198,7 +198,7 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
     <property name="quartzProperties">
       <props>
         <!-- Configure Main Scheduler Properties -->
-        <prop key="org.quartz.scheduler.instanceId">ReportSchdeuler</prop>
+        <prop key="org.quartz.scheduler.instanceId">ReportScheduler</prop>
         <!-- Configure ThreadPool -->
         <prop key="org.quartz.threadPool.class">org.quartz.simpl.SimpleThreadPool</prop>
         <prop key="org.quartz.threadPool.threadCount">1</prop>

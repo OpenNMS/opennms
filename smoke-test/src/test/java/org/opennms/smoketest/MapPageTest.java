@@ -39,7 +39,7 @@ public class MapPageTest extends OpenNMSSeleniumTestCase {
     	super.setUp();
         selenium.click("//a[@href='maps.htm']");
         waitForPageToLoad();
-        selenium.click("link=Distributed");
+        selenium.click("//div[@id='content']//a[contains(@href,'map/index.jsp')]");
         waitForPageToLoad();
     }
 
