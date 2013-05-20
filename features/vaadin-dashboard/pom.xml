@@ -9,15 +9,15 @@
 		<version>1.13.0-SNAPSHOT</version>
 	</parent>
 	<groupId>org.opennms.features</groupId>
-	<artifactId>vaadin-node-maps</artifactId>
+	<artifactId>vaadin-dashboard</artifactId>
 	<packaging>bundle</packaging>
-	<name>OpenNMS Node Maps</name>
+	<name>OpenNMS Dashboard</name>
 	<description>
-    OpenNMS Vaadin UI for displaying nodes on geographical maps using assets records.
+    OpenNMS Vaadin Dashboard
   </description>
 	<properties>
-		<bundle.symbolicName>org.opennms.features.vaadin-node-maps</bundle.symbolicName>
-		<bundle.namespace>org.opennms.features.vaadin.nodemaps</bundle.namespace>
+		<bundle.symbolicName>org.opennms.features.vaadin-dashboard</bundle.symbolicName>
+		<bundle.namespace>org.opennms.features.vaadin.dashboard</bundle.namespace>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
@@ -29,7 +29,7 @@
 			<resource>
 				<directory>src/main/java</directory>
 				<includes>
-					<include>org/opennms/features/vaadin/nodemaps/internal/gwt/public/**</include>
+					<include>org/opennms/features/vaadin/dashboard/internal/gwt/public/**</include>
 				</includes>
 			</resource>
 		</resources>
@@ -45,8 +45,7 @@
 					<instructions>
 						<Bundle-SymbolicName>${bundle.symbolicName}</Bundle-SymbolicName>
 						<Bundle-Version>${project.version}</Bundle-Version>
-						<Export-Package>!${bundle.namespace}.internal.*,${bundle.namespace}.*;version="${project.version}"</Export-Package>
-						<Private-Package>${bundle.namespace}.internal.*</Private-Package>
+						<Export-Package>${bundle.namespace}.*;version="${project.version}"</Export-Package>
 					</instructions>
 				</configuration>
 			</plugin>
@@ -67,7 +66,7 @@
                     <compileReport>true</compileReport>
                     <style>OBF</style>
                     <strict>true</strict>
-                    <runTarget>http://localhost:8980/opennms/node-maps</runTarget>
+                    <runTarget>http://localhost:8980/opennms/dashboard</runTarget>
                     <gwtSdkFirstInClasspath>true</gwtSdkFirstInClasspath>
                 </configuration>
                 <executions>
@@ -90,11 +89,10 @@
 				<groupId>org.opennms.maven.plugins</groupId>
 				<artifactId>features-maven-plugin</artifactId>
 				<configuration>
-					<bundles>
-						<bundle>mvn:org.opennms.features/vaadin-node-maps/${project.version}</bundle>
-						<bundle>mvn:org.opennms.features.geocoder/org.opennms.features.geocoder.google/${project.version}</bundle>
-						<bundle>mvn:org.opennms.features.geocoder/org.opennms.features.geocoder.nominatim/${project.version}</bundle>
-					</bundles>
+                    <bundles>
+                        <bundle>mvn:org.opennms.features/vaadin-dashboard/${project.version}</bundle>
+                        <bundle>wrap:mvn:org.vaadin.addon/PortalLayout/2.0.alpha5</bundle>
+                    </bundles>
 					<features>
 						<feature>vaadin</feature>
 					</features>
@@ -142,6 +140,12 @@
 	</pluginRepositories>
 
 	<dependencies>
+        <dependency>
+            <groupId>org.vaadin.addon</groupId>
+            <artifactId>PortalLayout</artifactId>
+            <version>2.0.alpha5</version>
+        </dependency>
+
 		<!-- OSGi Dependencies -->
 
 		<dependency>
@@ -168,81 +172,12 @@
 			<type>pom</type>
 			<scope>provided</scope>
 		</dependency>
-		<!-- Node Maps Dependencies -->
 
-		<dependency>
-			<groupId>org.opennms.features.geocoder</groupId>
-			<artifactId>org.opennms.features.geocoder.api</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.discotools.gwt.leaflet</groupId>
-			<artifactId>gwtl-core</artifactId>
-			<version>0.3-ONMS-20130305-1</version>
-			<optional>true</optional>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.opennms.dependencies</groupId>
-			<artifactId>spring-dependencies</artifactId>
-			<scope>provided</scope>
-			<type>pom</type>
-		</dependency>
-		<dependency>
-			<groupId>org.opennms.core</groupId>
-			<artifactId>org.opennms.core.lib</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.opennms</groupId>
-			<artifactId>opennms-config</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.opennms</groupId>
-			<artifactId>opennms-dao</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.opennms</groupId>
-			<artifactId>opennms-web-api</artifactId>
-			<scope>provided</scope>
-		</dependency>
-
-		<!-- Tests Dependencies -->
-
-		<dependency>
-			<groupId>org.easymock</groupId>
-			<artifactId>easymock</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.opennms.features.geocoder</groupId>
-			<artifactId>org.opennms.features.geocoder.nominatim</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.powermock</groupId>
-			<artifactId>powermock-module-junit4</artifactId>
-			<version>1.5</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.powermock</groupId>
-			<artifactId>powermock-api-easymock</artifactId>
-			<version>1.5</version>
-			<scope>test</scope>
-		</dependency>  
-		<dependency>
-		    <groupId>com.googlecode.gwt-test-utils</groupId>
-		    <artifactId>gwt-test-utils</artifactId>
-		    <version>0.44</version>
-		    <scope>test</scope>
-		</dependency>
+        <dependency>
+            <groupId>org.opennms.features.themes</groupId>
+            <artifactId>dashboard-theme</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 	</dependencies>
 
 </project>

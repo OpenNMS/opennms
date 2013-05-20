@@ -1,7 +1,6 @@
 package org.opennms.features.vaadin.nodemaps.ui;
 
-import static org.junit.Assert.assertEquals;
-
+import com.vaadin.server.PaintTarget;
 import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -16,7 +15,7 @@ import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsGeolocation;
 import org.opennms.netmgt.model.OnmsNode;
 
-import com.vaadin.server.PaintTarget;
+import static org.junit.Assert.assertEquals;
 
 public class OpenlayersWidgetCompontentTest {
     private NodeDao m_nodeDao;
@@ -32,7 +31,7 @@ public class OpenlayersWidgetCompontentTest {
         m_assetDao = EasyMock.createMock(AssetRecordDao.class);
         m_alarmDao = EasyMock.createMock(AlarmDao.class);
         m_geocoder = EasyMock.createMock(GeocoderService.class);
-        m_component = new MapWidgetComponent(m_nodeDao, m_assetDao, m_alarmDao, m_geocoder);
+        m_component = new MapWidgetComponent();
     }
 
     @Test

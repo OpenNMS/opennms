@@ -28,6 +28,14 @@
 
 package org.opennms.features.vaadin.nodemaps.internal;
 
+import com.vaadin.server.VaadinRequest;
+import org.opennms.web.api.OnmsHeaderProvider;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletInputStream;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -36,16 +44,6 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Locale;
 import java.util.Map;
-
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletInputStream;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
-import org.opennms.web.api.OnmsHeaderProvider;
-
-import com.vaadin.server.VaadinRequest;
 
 /**
  * This class creates an {@link HttpServletRequest} object that delegates all calls to

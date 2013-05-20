@@ -28,30 +28,23 @@
 
 package org.opennms.features.vaadin.nodemaps.internal;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-
+import com.github.wolfie.refresher.Refresher;
+import com.vaadin.annotations.JavaScript;
+import com.vaadin.annotations.StyleSheet;
+import com.vaadin.annotations.Theme;
+import com.vaadin.annotations.Title;
+import com.vaadin.server.VaadinRequest;
+import com.vaadin.ui.CustomLayout;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
 import org.opennms.core.utils.LogUtils;
-import org.opennms.features.geocoder.GeocoderService;
-import org.opennms.netmgt.dao.AlarmDao;
-import org.opennms.netmgt.dao.AssetRecordDao;
-import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.web.api.OnmsHeaderProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.support.TransactionOperations;
 
-import com.github.wolfie.refresher.Refresher;
-import com.vaadin.annotations.JavaScript;
-import com.vaadin.annotations.Theme;
-import com.vaadin.annotations.Title;
-import com.vaadin.client.VConsole;
-import com.vaadin.server.VaadinRequest;
-import com.vaadin.ui.AbsoluteLayout;
-import com.vaadin.ui.CustomLayout;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.UI;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * The Class Node Maps Application.
@@ -66,7 +59,7 @@ import com.vaadin.ui.UI;
  * <li>http://openlayers.org/dev/examples/strategy-cluster.html</li>
  * <li>http://developers.cloudmade.com/projects/web-maps-api/examples/marker-clustering</li>
  * </ul>
- * 
+ *
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 /*
@@ -91,73 +84,61 @@ import com.vaadin.ui.UI;
 @SuppressWarnings("serial")
 @Title("OpenNMS Node Maps")
 @Theme("opennms")
-@JavaScript({ 
-    //"http://cdn.leafletjs.com/leaflet-0.4.5/leaflet.js"
-    //"http://cdn.leafletjs.com/leaflet-0.4.5/leaflet-src.js"
-    //"http://cdn.leafletjs.com/leaflet-0.5.1/leaflet.js",
-
-    "http://cdn.leafletjs.com/leaflet-0.5.1/leaflet-src.js",
-    "gwt/public/openlayers/OpenLayers.js",
-    "gwt/public/markercluster/leaflet.markercluster.js"
-
-    //"http://maps.google.com/maps/api/js?sensor=false&output=embed",
-    //"gwt/public/Google.js",
+@JavaScript({
+        "http://maps.google.com/maps/api/js?sensor=false",
+        "http://cdn.leafletjs.com/leaflet-0.5.1/leaflet-src.js",
+        "gwt/public/openlayers/OpenLayers.js",
+        "gwt/public/markercluster/leaflet.markercluster.js"
 })
+@StyleSheet({
+        "gwt/public/markercluster/MarkerCluster.css",
+        "gwt/public/markercluster/MarkerCluster.Default.css",
+        "gwt/public/node-maps.css"})
 public class NodeMapsApplication extends UI {
 
     private static final int REFRESH_INTERVAL = 5 * 60 * 1000;
-
-    private NodeDao m_nodeDao;
-    private AssetRecordDao m_assetDao;
-    private AlarmDao m_alarmDao;
-    private GeocoderService m_geocoderService;
-    private TransactionOperations m_transaction;
-    private OnmsHeaderProvider m_headerProvider;
-    private String m_headerHtml;
-
-    private AbsoluteLayout m_rootLayout;
+    private VerticalLayout m_rootLayout;
 
     private Logger m_log = LoggerFactory.getLogger(getClass());
 
-    /**
-     * Sets the OpenNMS Node DAO.
-     * 
-     * @param m_nodeDao
-     *            the new OpenNMS Node DAO
-     */
+    private MapWidgetComponent m_mapPanel;
+    private OnmsHeaderProvider m_headerProvider;
+    private String m_headerHtml;
 
-    public void setNodeDao(final NodeDao nodeDao) {
-        m_nodeDao = nodeDao;
-    }
-
-    public void setAssetRecordDao(final AssetRecordDao assetDao) {
-        m_assetDao = assetDao;
-    }
-
-    public void setAlarmDao(final AlarmDao alarmDao) {
-        m_alarmDao = alarmDao;
-    }
-
-    public void setGeocoderService(final GeocoderService geocoderService) {
-        m_geocoderService = geocoderService;
-    }
-
-    public void setTransactionOperations(final TransactionOperations tx) {
-        m_transaction = tx;
+    public void setHeaderProvider(final OnmsHeaderProvider headerProvider) {
+        m_headerProvider = headerProvider;
     }
 
     public void setHeaderHtml(final String headerHtml) {
         m_headerHtml = headerHtml;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see com.vaadin.Application#init()
-     */
-    @Override
-    public void init(VaadinRequest request) {
-        m_log.debug("initializing");
 
+    @Override
+    protected void init(VaadinRequest vaadinRequest) {
+        m_log.debug("initializing");
+        createMapPanel(vaadinRequest.getParameter("search"));
+        createRootLayout(vaadinRequest);
+        addRefresher();
+    }
+
+    private void createMapPanel(String searchString) {
+        m_mapPanel = new MapWidgetComponent();
+        m_mapPanel.setSearchString(searchString);
+        m_mapPanel.setSizeFull();
+    }
+
+    private void createRootLayout(VaadinRequest request) {
+        m_rootLayout = new VerticalLayout();
+        m_rootLayout.setSizeFull();
+        setContent(m_rootLayout);
+
+        addHeader(request);
+        m_rootLayout.addComponent(m_mapPanel);
+        m_rootLayout.setExpandRatio(m_mapPanel, 1.0f);
+    }
+
+    private void addHeader(VaadinRequest request) {
         if (m_headerProvider != null) {
             try {
                 setHeaderHtml(m_headerProvider.getHeaderHtml(new HttpServletRequestVaadinImpl(request)));
@@ -165,82 +146,30 @@ public class NodeMapsApplication extends UI {
                 LogUtils.warnf(this, e, "failed to get header HTML for request " + request.getPathInfo());
             }
         }
-
-        final MapWidgetComponent mapPanel = new MapWidgetComponent();
-        mapPanel.setNodeDao(m_nodeDao);
-        mapPanel.setAssetRecordDao(m_assetDao);
-        mapPanel.setAlarmDao(m_alarmDao);
-        mapPanel.setGeocoderService(m_geocoderService);
-        mapPanel.setTransactionOperation(m_transaction);
-        mapPanel.setSizeFull();
-
-        m_rootLayout = new AbsoluteLayout();
-        m_rootLayout.setSizeFull();
-
-        /*
-         * TODO: Figure out how to implement this in Vaadin 7
-        addParameterHandler(new ParameterHandler() {
-            @Override
-            public void handleParameters(final Map<String, String[]> parameters) {
-                if (parameters.containsKey("search")) {
-                    mapPanel.setSearchString(parameters.get("search")[0].toString());
-                    / *
-                    int nodeId = parseInt(parameters.get("nodeId")[0], 0);
-                    if (nodeId > 0) {
-                        mapPanel.setSearchString("nodeId=" + nodeId);
-                    }
-                    * /
-                }
-            }
-        });
-        */
-
-        setContent(m_rootLayout);
-
-        String mapLayerPosition = "top:0px; left:0px; right:0px; bottom:0px;";
         if (m_headerHtml != null) {
-            final Panel header = new Panel("header");
-            header.setCaption(null);
-            header.setSizeUndefined();
-            header.addStyleName("onmsheader");
             InputStream is = null;
             try {
                 is = new ByteArrayInputStream(m_headerHtml.getBytes());
-                final CustomLayout layout = new CustomLayout(is);
-                header.setContent(layout);
-                m_rootLayout.addComponent(header, "top: 0px; left: 0px; right:0px;");
-                mapLayerPosition = "top:100px; left:0px; right:0px; bottom:0px;";
+                final CustomLayout headerLayout = new CustomLayout(is);
+                headerLayout.setWidth("100%");
+                headerLayout.addStyleName("onmsheader");
+                m_rootLayout.addComponent(headerLayout);
             } catch (final IOException e) {
                 if (is != null) {
                     try {
                         is.close();
                     } catch (final IOException closeE) {
-                        VConsole.log("failed to close HTML input stream");
-                        VConsole.log(closeE);
+                        m_log.debug("failed to close HTML input stream", closeE);
                     }
                 }
-                VConsole.log("failed to get header layout data");
-                VConsole.log(e);
+                m_log.debug("failed to get header layout data", e);
             }
         }
-        m_rootLayout.addComponent(mapPanel, mapLayerPosition);
+    }
 
-        // TODO: Change this call to use the Extension/Connector pattern
+    private void addRefresher() {
         final Refresher refresher = new Refresher();
         refresher.setRefreshInterval(REFRESH_INTERVAL);
-        //m_rootLayout.addComponent(refresher);
-    }
-
-    public int parseInt(String intStr, int defaultValue) {
-        try {
-            return Integer.parseInt(intStr);
-        } catch (Exception e) {
-            return defaultValue;
-        }
-    }
-
-    
-    public void setHeaderProvider(final OnmsHeaderProvider headerProvider) {
-        m_headerProvider = headerProvider;
+        addExtension(refresher);
     }
 }
