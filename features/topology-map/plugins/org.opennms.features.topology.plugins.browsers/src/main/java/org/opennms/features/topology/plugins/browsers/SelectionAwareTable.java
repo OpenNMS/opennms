@@ -29,6 +29,8 @@
 package org.opennms.features.topology.plugins.browsers;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -46,7 +48,8 @@ public class SelectionAwareTable extends Table implements SelectionListener, Sel
 
 	private final OnmsDaoContainer<?,? extends Serializable> m_container;
 	private final Set<SelectionNotifier> m_selectionNotifiers = new CopyOnWriteArraySet<SelectionNotifier>();
-
+	private List<String> nonCollapsibleColumns = new ArrayList<String>();
+	
 	/**
 	 *  Leave OnmsDaoContainer without generics; the Aries blueprint code cannot match up
 	 *  the arguments if you put the generic types in.
@@ -108,7 +111,7 @@ public class SelectionAwareTable extends Table implements SelectionListener, Sel
 	 * that the {@link SelectionListener} instances are registered with all of the
 	 * {@link ColumnGenerator} classes that also implement {@link SelectionNotifier}.
 	 */
-	public void setColumnGenerators(@SuppressWarnings("rawtypes") Map generators) {
+	public void setColumnGenerators(@SuppressWarnings("unchecked") Map generators) {
 		for (Object key : generators.keySet()) {
 			super.addGeneratedColumn(key, (ColumnGenerator)generators.get(key));
 			// If any of the column generators are {@link SelectionNotifier} instances,
@@ -131,4 +134,24 @@ public class SelectionAwareTable extends Table implements SelectionListener, Sel
 		} catch (ClassCastException e) {}
 		super.setCellStyleGenerator(generator);
 	}
+	
+	/**
+	 * Sets the non collapsbile columns.
+	 * @param nonCollapsibleColumns
+	 */
+	public void setNonCollapsibleColumns(List<String> nonCollapsibleColumns) {
+	    // set all elements to collapsible
+	    for (Object eachPropertyId : m_container.getContainerPropertyIds()) {
+	        setColumnCollapsible(eachPropertyId,  true);
+	    }
+	    
+	    // set new value
+	    if (nonCollapsibleColumns == null) nonCollapsibleColumns = new ArrayList<String>();
+        this.nonCollapsibleColumns = nonCollapsibleColumns;
+        
+        // set non collapsible
+        for (Object eachPropertyId : this.nonCollapsibleColumns) {
+            setColumnCollapsible(eachPropertyId,  false);
+        }
+    }
 }

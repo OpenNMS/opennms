@@ -213,8 +213,8 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
     private void addCriteriaForMaclike(OnmsCriteria criteria, String macLike) {
         String macLikeStripped = macLike.replaceAll("[:-]", "");
         
-        criteria.createAlias("node.snmpInterfaces", "snmpInterface", CriteriaSpecification.LEFT_JOIN);
-        criteria.createAlias("node.arpInterfaces", "arpInterface", CriteriaSpecification.LEFT_JOIN);
+        criteria.createAlias("node.snmpInterfaces", "snmpInterface", OnmsCriteria.LEFT_JOIN);
+        criteria.createAlias("node.arpInterfaces", "arpInterface", OnmsCriteria.LEFT_JOIN);
         Disjunction physAddrDisjunction = Restrictions.disjunction();
         physAddrDisjunction.add(Restrictions.ilike("snmpInterface.physAddr", macLikeStripped, MatchMode.ANYWHERE));
         physAddrDisjunction.add(Restrictions.ilike("arpInterface.physAddr", macLikeStripped, MatchMode.ANYWHERE));
