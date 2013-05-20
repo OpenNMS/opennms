@@ -55,6 +55,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
     private GroupManager m_groupManager;
     
     /** {@inheritDoc} */
+    @Override
     public void deleteGroup(String name) {
         try {
             m_groupManager.deleteGroup(name);
@@ -64,6 +65,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void deleteRole(String name) {
         try {
             m_groupManager.deleteRole(name);
@@ -73,6 +75,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void deleteUser(String name) {
         try {
             m_groupManager.deleteUser(name);
@@ -82,11 +85,13 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
     }
 
     /** {@inheritDoc} */
+    @Override
     public List<Group> findGroupsForUser(String user) {
         return m_groupManager.findGroupsForUser(user);
     }
 
     /** {@inheritDoc} */
+    @Override
     public Group getGroup(String name) {
         try {
             return m_groupManager.getGroup(name);
@@ -100,6 +105,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
      *
      * @return a {@link java.util.List} object.
      */
+    @Override
     public List<String> getGroupNames() {
         try {
             return m_groupManager.getGroupNames();
@@ -113,6 +119,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
      *
      * @return a {@link java.util.Map} object.
      */
+    @Override
     public Map<String, Group> getGroups() {
         try {
             return m_groupManager.getGroups();
@@ -122,6 +129,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
     }
 
     /** {@inheritDoc} */
+    @Override
     public Role getRole(String name) {
         try {
             return m_groupManager.getRole(name);
@@ -135,11 +143,13 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
      *
      * @return an array of {@link java.lang.String} objects.
      */
+    @Override
     public String[] getRoleNames() {
         return m_groupManager.getRoleNames();
     }
 
     /** {@inheritDoc} */
+    @Override
     public OwnedIntervalSequence getRoleScheduleEntries(String role, Date start, Date end) {
         try {
             return m_groupManager.getRoleScheduleEntries(role, start, end);
@@ -153,6 +163,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
      *
      * @return a {@link java.util.Collection} object.
      */
+    @Override
     public Collection<Role> getRoles() {
         try {
             return m_groupManager.getRoles();
@@ -162,6 +173,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
     }
 
     /** {@inheritDoc} */
+    @Override
     public List<Schedule> getSchedulesForRoleAt(String role, Date time) {
         try {
             return m_groupManager.getSchedulesForRoleAt(role, time);
@@ -171,6 +183,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
     }
 
     /** {@inheritDoc} */
+    @Override
     public List<Schedule> getUserSchedulesForRole(String user, String role) {
         try {
             return m_groupManager.getUserSchedulesForRole(user, role);
@@ -180,6 +193,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
     }
 
     /** {@inheritDoc} */
+    @Override
     public long groupNextOnDuty(String group, Calendar time) {
         try {
             return m_groupManager.groupNextOnDuty(group, time);
@@ -189,6 +203,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean hasGroup(String name) {
         try {
             return m_groupManager.hasGroup(name);
@@ -198,6 +213,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isGroupOnDuty(String group, Calendar time) {
         try {
             return m_groupManager.isGroupOnDuty(group, time);
@@ -207,6 +223,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isUserScheduledForRole(String user, String role, Date time) {
         try {
             return m_groupManager.isUserScheduledForRole(user, role, time);
@@ -216,6 +233,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void renameGroup(String oldName, String newName) {
         try {
             m_groupManager.renameGroup(oldName, newName);
@@ -225,6 +243,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void renameUser(String oldName, String newName) {
         try {
             m_groupManager.renameUser(oldName, newName);
@@ -234,6 +253,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void saveGroup(String name, Group details) {
         try {
             m_groupManager.saveGroup(name, details);
@@ -245,6 +265,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
     /**
      * <p>saveGroups</p>
      */
+    @Override
     public void saveGroups() {
         try {
             m_groupManager.saveGroups();
@@ -254,6 +275,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void saveRole(Role name) {
         try {
             m_groupManager.saveRole(name);
@@ -263,11 +285,13 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setGroups(Map<String, Group> groups) {
         m_groupManager.setGroups(groups);
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean userHasRole(String user, String role) {
         try {
             return m_groupManager.userHasRole(user, role);
@@ -309,6 +333,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getDefaultMapForUser(String user) {
         for (Group group: findGroupsForUser(user)) {
             if (group.getDefaultMap() != null)

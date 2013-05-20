@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,6 +26,13 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
+/************************************************************************
+ * Change history
+ *
+ * 2013-04-18 Updated package names to match new XMP JAR (jeffg@opennms.org)
+ *
+ ************************************************************************/
+
 package org.opennms.netmgt.protocols.xmp.capsd;
 
 import java.net.InetAddress;
@@ -33,9 +40,9 @@ import java.util.Map;
 
 import org.apache.regexp.RE;
 import org.apache.regexp.RESyntaxException;
-import org.krupczak.Xmp.SocketOpts;
-import org.krupczak.Xmp.Xmp;
-import org.krupczak.Xmp.XmpSession;
+import org.krupczak.xmp.SocketOpts;
+import org.krupczak.xmp.Xmp;
+import org.krupczak.xmp.XmpSession;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.AbstractPlugin;
@@ -151,6 +158,7 @@ public final class XmpPlugin extends AbstractPlugin {
      *
      * @return The protocol name for this plugin.
      */
+    @Override
     public String getProtocolName() {
         return PROTOCOL_NAME;
     }
@@ -161,6 +169,7 @@ public final class XmpPlugin extends AbstractPlugin {
      * Returns true if the protocol defined by this plugin is supported. If the
      * protocol is not supported then a false value is returned to the caller.
      */
+    @Override
     public boolean isProtocolSupported(InetAddress address) {
         throw new UnsupportedOperationException("Undirected XMP checking not supported");
     }
@@ -174,6 +183,7 @@ public final class XmpPlugin extends AbstractPlugin {
      * additional information by key-name. These key-value pairs can be added to
      * service events if needed.
      */
+    @Override
     public boolean isProtocolSupported(InetAddress address, Map<String, Object> qualifiers) {
         ThreadCategory log = ThreadCategory.getInstance(getClass());
         XmpConfig protoConfig = XmpConfigFactory.getInstance().getXmpConfig();

@@ -69,6 +69,7 @@ public class RadiusDetectorClient implements Client<AttributeList, RadiusPacket>
     private String m_secret = DEFAULT_SECRET;
     private RadiusAuthenticator m_authenticator = new MSCHAPv2Authenticator();
     
+    @Override
     public void connect(final InetAddress address, final int port, final int timeout) throws IOException, Exception {
         AttributeFactory.loadAttributeDictionary("net.jradius.dictionary.AttributeDictionaryImpl");
     	m_radiusClient = new RadiusClient(address, getSecret(), getAuthPort(), getAcctPort(), convertTimeout(timeout));
@@ -79,15 +80,18 @@ public class RadiusDetectorClient implements Client<AttributeList, RadiusPacket>
 		return timeout/1000 > 0 ? timeout/1000 : 1;
 	}
 
+    @Override
 	public void close() {
     	m_radiusClient.close();
     }
 
+    @Override
     public RadiusPacket receiveBanner() throws IOException {
         // TODO Auto-generated method stub
         return null;
     }
 
+    @Override
     public RadiusPacket sendRequest(final AttributeList attributes) throws Exception {
     	final AccessRequest request = new AccessRequest(m_radiusClient, attributes);
     	return m_radiusClient.authenticate(request, getAuthenticator(), 0);

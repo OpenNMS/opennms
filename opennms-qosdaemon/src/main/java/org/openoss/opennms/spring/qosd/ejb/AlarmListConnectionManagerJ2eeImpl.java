@@ -65,11 +65,13 @@ public class AlarmListConnectionManagerJ2eeImpl implements AlarmListConnectionMa
 	 *
 	 * @return a int.
 	 */
+        @Override
 	public int getStatus() {
 		return cmt.getStatus();
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public void init(PropertiesLoader props, Properties env) {
 		cmt.init(props, env);
 	}
@@ -77,11 +79,13 @@ public class AlarmListConnectionManagerJ2eeImpl implements AlarmListConnectionMa
 	/**
 	 * <p>kill</p>
 	 */
+        @Override
 	public void kill() {
 		cmt.kill();
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public void reset_list(String _rebuilt_message) {
 		cmt.reset_list(_rebuilt_message);
 	}
@@ -91,11 +95,13 @@ public class AlarmListConnectionManagerJ2eeImpl implements AlarmListConnectionMa
 	 *
 	 * @throws java.lang.IllegalStateException if any.
 	 */
+        @Override
 	public void run() throws IllegalStateException {
 		cmt.run();
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public void send(Hashtable<AlarmKey,AlarmValue> alarmList) {
 		cmt.send(alarmList);
 
@@ -104,6 +110,7 @@ public class AlarmListConnectionManagerJ2eeImpl implements AlarmListConnectionMa
 	/**
 	 * Causes the thread supporting the connection Manager to start
 	 */
+        @Override
 	public void start(){
 		cmt.start();
 	}
@@ -114,6 +121,7 @@ public class AlarmListConnectionManagerJ2eeImpl implements AlarmListConnectionMa
 	 *
 	 * @return a javax$oss$fm$monitor$AlarmValue object.
 	 */
+        @Override
 	public  javax.oss.fm.monitor.AlarmValue makeAlarmValue(){
 		return cmt.makeAlarmValue();
 		
@@ -126,6 +134,7 @@ public class AlarmListConnectionManagerJ2eeImpl implements AlarmListConnectionMa
 	 *
 	 * @return a javax$oss$fm$monitor$AlarmValue object.
 	 */
+        @Override
 	public javax.oss.fm.monitor.AlarmValue makeAlarmValueFromSpec(){
 		return cmt.makeAlarmValueFromSpec();
 	}
@@ -137,6 +146,7 @@ public class AlarmListConnectionManagerJ2eeImpl implements AlarmListConnectionMa
 	 *
 	 * Used by jmx mbean QoSD to pass in Spring Application context
 	 */
+        @Override
 	public  void setApplicationContext(ClassPathXmlApplicationContext m_context){
 		cmt.setApplicationContext(m_context);
 	}

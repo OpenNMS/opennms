@@ -113,6 +113,7 @@ public class JBossConnectionFactory {
         } else if (jbossVersion.startsWith("3")){
                 PrivilegedAction<IsolatingClassLoader> action = new PrivilegedAction<IsolatingClassLoader>() {
 
+                    @Override
                     public IsolatingClassLoader run() {
                         try {
                             return new IsolatingClassLoader(

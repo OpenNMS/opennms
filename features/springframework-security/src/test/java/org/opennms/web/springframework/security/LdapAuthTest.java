@@ -69,6 +69,7 @@ public class LdapAuthTest implements InitializingBean {
      */
     private static class AccesAnticipator implements FilterChain {
         private boolean m_called = false;
+        @Override
         public void doFilter(ServletRequest arg0, ServletResponse arg1) throws IOException, ServletException {
             m_called = true;
         }

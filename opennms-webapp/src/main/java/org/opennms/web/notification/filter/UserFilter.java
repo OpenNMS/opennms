@@ -84,6 +84,7 @@ public class UserFilter extends OneArgFilter<String> {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return ("<NoticeFactory.UserFilter: " + this.getDescription() + ">");
     }
@@ -98,6 +99,7 @@ public class UserFilter extends OneArgFilter<String> {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean equals(Object obj) {
         return (this.toString().equals(obj.toString()));
     }

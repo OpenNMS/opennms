@@ -59,6 +59,7 @@ public class RTCDebugServlet extends HttpServlet {
      *
      * @throws javax.servlet.ServletException if any.
      */
+    @Override
     public void init() throws ServletException {
         try {
             this.model = CategoryModel.getInstance();
@@ -72,6 +73,7 @@ public class RTCDebugServlet extends HttpServlet {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String categoryName = request.getParameter("category");
 

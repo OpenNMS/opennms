@@ -120,6 +120,7 @@ public abstract class MultilineHttpDetector extends AsyncBasicDetectorMinaImpl<L
     protected static ResponseValidator<MultilineHttpResponse> contains(final String pattern, final String url, final boolean isCheckCode, final int maxRetCode){
         return new ResponseValidator<MultilineHttpResponse>(){
 
+            @Override
             public boolean validate(final MultilineHttpResponse message) {
                 
                 try {

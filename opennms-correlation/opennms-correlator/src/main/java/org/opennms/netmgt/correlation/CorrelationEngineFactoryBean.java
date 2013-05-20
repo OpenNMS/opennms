@@ -60,6 +60,7 @@ public class CorrelationEngineFactoryBean implements FactoryBean<List<Correlatio
      * @return a {@link java.lang.Object} object.
      * @throws java.lang.Exception if any.
      */
+        @Override
     public List<CorrelationEngine> getObject() throws Exception {
         return m_correlationEngines;
     }
@@ -69,6 +70,7 @@ public class CorrelationEngineFactoryBean implements FactoryBean<List<Correlatio
      *
      * @return a {@link java.lang.Class} object.
      */
+        @Override
     public Class<?> getObjectType() {
         return m_correlationEngines.getClass();
     }
@@ -78,6 +80,7 @@ public class CorrelationEngineFactoryBean implements FactoryBean<List<Correlatio
      *
      * @return a boolean.
      */
+        @Override
     public boolean isSingleton() {
         return true;
     }
@@ -106,6 +109,7 @@ public class CorrelationEngineFactoryBean implements FactoryBean<List<Correlatio
     }
 
     /** {@inheritDoc} */
+        @Override
     public void setApplicationContext(final ApplicationContext applicationContext) throws BeansException {
         m_applicationContext = applicationContext;
     }

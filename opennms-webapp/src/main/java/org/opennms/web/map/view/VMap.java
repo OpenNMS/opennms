@@ -303,66 +303,79 @@ final public class VMap extends DbMap {
     }
     
     /** {@inheritDoc} */
+    @Override
     public  void setAccessMode(String accessMode) {
     	super.setAccessMode(accessMode);
     }
     
     /** {@inheritDoc} */
+    @Override
     public  void setBackground(String background) {
     	super.setBackground(background);
     }
     
     /** {@inheritDoc} */
+    @Override
     public void setCreateTime(Timestamp createTime) {
     	super.setCreateTime(createTime);
     }
     
     /** {@inheritDoc} */
+    @Override
     public void setLastModifiedTime(Timestamp lastModifiedTime) {
     	super.setLastModifiedTime(lastModifiedTime);
     }
     
     /** {@inheritDoc} */
+    @Override
     public void setName(String name) {
     	super.setName(name);
     }
     
     /** {@inheritDoc} */
+    @Override
     public void setOffsetX(int offsetX) {
     	super.setOffsetX(offsetX);
     }
     
     /** {@inheritDoc} */
+    @Override
     public void setOffsetY(int offsetY) {
     	super.setOffsetY(offsetY);
     }
     
     /** {@inheritDoc} */
+    @Override
     public void setOwner(String owner) {
     	super.setOwner(owner);
     }
     
     /** {@inheritDoc} */
+    @Override
     public void setScale(float scale) {
     	super.setScale(scale);
     }
     
     /** {@inheritDoc} */
+    @Override
     public void setType(String type) {
     	super.setType(type);
     }
     
     /** {@inheritDoc} */
+    @Override
     public void setWidth(int width) {
     	super.setWidth(width);
     }
     
     /** {@inheritDoc} */
+    @Override
     public void setHeight(int height) {
     	super.setHeight(height);
     }
     
     /** {@inheritDoc} */
+    @Override
     public void setUserLastModifies(String userLastModifies) {
     	super.setUserLastModifies(userLastModifies);
     }
@@ -372,6 +385,7 @@ final public class VMap extends DbMap {
      *
      * @return a boolean.
      */
+    @Override
     public boolean isNew() {
     	return super.isNew();
     }

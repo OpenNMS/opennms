@@ -13,6 +13,8 @@
     <module>activemq</module>
     <module>activemq-web</module>
     <module>asterisk</module>
+    <module>camel</module>
+    <module>camel-test</module>
     <module>castor</module>
     <module>dbpool</module>
     <module>dnsjava</module>

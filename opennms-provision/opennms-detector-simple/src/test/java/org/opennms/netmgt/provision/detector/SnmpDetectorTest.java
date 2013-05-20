@@ -98,6 +98,7 @@ public class SnmpDetectorTest implements ApplicationContextAware {
          
      }
 
+    @Override
     public void setApplicationContext(final ApplicationContext applicationContext) throws BeansException {
         m_applicationContext = applicationContext;
     }

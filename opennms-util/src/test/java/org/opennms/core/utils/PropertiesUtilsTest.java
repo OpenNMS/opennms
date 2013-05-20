@@ -37,6 +37,7 @@ public class PropertiesUtilsTest extends TestCase {
     private Properties m_propsOne;
     private Properties m_propsTwo;
 
+    @Override
     protected void setUp() throws Exception {
         m_propsOne = new Properties();
         m_propsOne.setProperty("prop.one", "one");
@@ -56,6 +57,7 @@ public class PropertiesUtilsTest extends TestCase {
         m_propsTwo.setProperty("prop.foo", "first geek ordinal");
     }
 
+    @Override
     protected void tearDown() throws Exception {
     }
     

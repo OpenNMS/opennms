@@ -1316,6 +1316,7 @@ final class SuspectEventProcessor implements Runnable {
     /**
      * This is where all the work of the class is done.
      */
+    @Override
     public void run() {
 
         // Convert interface InetAddress object

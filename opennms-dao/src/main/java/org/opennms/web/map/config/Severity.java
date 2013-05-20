@@ -60,6 +60,7 @@ public class Severity implements Comparable<Severity> {
 	 *
 	 * Compares the Severity to another in input by ids.
 	 */
+        @Override
 	public int compareTo(Severity otherSev){
 		Severity othSev = otherSev;
 		if(this.id==othSev.getId()) return 0;

@@ -57,6 +57,7 @@ public class AddNamedAutoIncrementChange extends AddAutoIncrementChange {
     	m_sequenceName = sequenceName;
     }
     
+    @Override
     public SqlStatement[] generateStatements(final Database database) {
     	final List<SqlStatement> statements = new ArrayList<SqlStatement>();
         if (database instanceof PostgresDatabase) {

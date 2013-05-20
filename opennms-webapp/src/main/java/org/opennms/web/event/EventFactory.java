@@ -1196,7 +1196,6 @@ public class EventFactory {
      * @return an array of {@link org.opennms.web.event.Event} objects.
      * @throws java.sql.SQLException if any.
      */
-    // FIXME: Don't reuse the same "element" variable for multiple objects.
     protected static Event[] rs2Events(ResultSet rs) throws SQLException {
         Event[] events = null;
         Vector<Event> vector = new Vector<Event>();
@@ -1204,102 +1203,65 @@ public class EventFactory {
         while (rs.next()) {
             Event event = new Event();
 
-            Object element = Integer.valueOf(rs.getInt("eventID"));
-            event.id = ((Integer) element).intValue();
+            event.id = rs.getInt("eventID");
+            event.uei = rs.getString("eventUei");
+            event.snmp = rs.getString("eventSnmp");
 
-            element = rs.getString("eventUei");
-            event.uei = (String) element;
+            // event received time cannot be null
+            Timestamp timestamp = rs.getTimestamp("eventTime");
+            event.time = new Date(timestamp.getTime());
 
-            element = rs.getString("eventSnmp");
-            event.snmp = (String) element;
-
-            element = rs.getTimestamp("eventTime");
-            event.time = new Date(((Timestamp) element).getTime());
-
-            element = rs.getString("eventHost");
-            event.host = (String) element;
-
-            element = rs.getString("eventSnmpHost");
-            event.snmphost = (String) element;
-
-            element = rs.getString("eventDpName");
-            event.dpName = (String) element;
-
-            element = rs.getString("eventParms");
-            event.parms = (String) element;
+            event.host = rs.getString("eventHost");
+            event.snmphost = rs.getString("eventSnmpHost");
+            event.dpName = rs.getString("eventDpName");
+            event.parms = rs.getString("eventParms");
 
             // node id can be null
-            element = rs.getObject("nodeID");
-            if (element == null) {
-                event.nodeID = Integer.valueOf(0);
-            } else {
-                event.nodeID = (Integer) element;
-            }
+            Object element = rs.getObject("nodeID");
+            event.nodeID = (element == null) ? Integer.valueOf(0) : (Integer) element;
 
-            element = rs.getString("ipAddr");
-            event.ipAddr = (String) element;
+            event.ipAddr = rs.getString("ipAddr");
 
+            // service id can be null 
             element = rs.getObject("serviceID");
-            event.serviceID = (Integer) element;
+            event.serviceID = (element == null ) ? Integer.valueOf(0) : (Integer) element;
 
-            element = rs.getString("nodeLabel");
-            event.nodeLabel = (String) element;
+            event.nodeLabel = rs.getString("nodeLabel");
+            event.serviceName = rs.getString("serviceName");
 
-            element = rs.getString("serviceName");
-            event.serviceName = (String) element;
+            // event create time cannot be null 
+            timestamp = rs.getTimestamp("eventCreateTime");
+            event.createTime = new Date(timestamp.getTime());
 
-            element = rs.getTimestamp("eventCreateTime");
-            event.createTime = new Date(((Timestamp) element).getTime());
+            event.description = rs.getString("eventDescr");
+            event.logGroup = rs.getString("eventLoggroup");
+            event.logMessage = rs.getString("eventLogmsg");
 
-            element = rs.getString("eventDescr");
-            event.description = (String) element;
+            event.severity = OnmsSeverity.get(rs.getInt("eventSeverity"));
 
-            element = rs.getString("eventLoggroup");
-            event.logGroup = (String) element;
+            event.operatorInstruction = rs.getString("eventOperInstruct");
+            event.autoAction = rs.getString("eventAutoAction");
+            event.operatorAction = rs.getString("eventOperAction");
+            event.operatorActionMenuText = rs.getString("eventOperActionMenuText");
+            event.notification = rs.getString("eventNotification");
+            event.troubleTicket = rs.getString("eventTticket");
 
-            element = rs.getString("eventLogmsg");
-            event.logMessage = (String) element;
-
-            element = OnmsSeverity.get(rs.getInt("eventSeverity"));
-            event.severity = ((OnmsSeverity) element);
-
-            element = rs.getString("eventOperInstruct");
-            event.operatorInstruction = (String) element;
-
-            element = rs.getString("eventAutoAction");
-            event.autoAction = (String) element;
-
-            element = rs.getString("eventOperAction");
-            event.operatorAction = (String) element;
-
-            element = rs.getString("eventOperActionMenuText");
-            event.operatorActionMenuText = (String) element;
-
-            element = rs.getString("eventNotification");
-            event.notification = (String) element;
-
-            element = rs.getString("eventTticket");
-            event.troubleTicket = (String) element;
-
+            // trouble ticket state can be null
             element = rs.getObject("eventTticketState");
-            event.troubleTicketState = (Integer) element;
+            event.troubleTicketState = (element == null ) ? Integer.valueOf(0) : (Integer) element;
 
-            element = rs.getString("eventForward");
-            event.forward = (String) element;
+            event.forward = rs.getString("eventForward");
+            event.mouseOverText = rs.getString("eventMouseOverText");
 
-            element = rs.getString("eventMouseOverText");
-            event.mouseOverText = (String) element;
+            event.acknowledgeUser = rs.getString("eventAckUser");
 
-            element = rs.getString("eventAckUser");
-            event.acknowledgeUser = (String) element;
+            // acknowledge time can be null
+            timestamp = rs.getTimestamp("eventAckTime");
+            event.acknowledgeTime = (timestamp != null) ? new Date(timestamp.getTime()) : null; 
 
-            element = rs.getTimestamp("eventAckTime");
-            if (element != null) {
-                event.acknowledgeTime = new Date(((Timestamp) element).getTime());
-            }
-
+            // alarm id can be null
             element = rs.getObject("alarmid");
-            event.alarmId = (Integer) element;
+            event.alarmId = (element == null ) ? Integer.valueOf(0) : (Integer) element;
 
             vector.addElement(event);
         }

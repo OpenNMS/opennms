@@ -102,6 +102,7 @@ public class EventTranslator extends AbstractServiceDaemon implements EventListe
     /**
      * <p>onInit</p>
      */
+    @Override
     protected void onInit() {
         if (m_initialized) return;
         
@@ -123,6 +124,7 @@ public class EventTranslator extends AbstractServiceDaemon implements EventListe
     /**
      * <p>onStop</p>
      */
+    @Override
     protected void onStop() {
         m_initialized = false;
         m_eventMgr = null;
@@ -137,6 +139,7 @@ public class EventTranslator extends AbstractServiceDaemon implements EventListe
     }
 
     /** {@inheritDoc} */
+    @Override
     public void onEvent(Event e) {
 
         if (isReloadConfigEvent(e)) {

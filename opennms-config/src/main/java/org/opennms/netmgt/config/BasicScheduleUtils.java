@@ -72,9 +72,15 @@ public abstract class BasicScheduleUtils {
      * @return a boolean.
      */
     public static boolean isTimeInSchedule(final Calendar cal, final BasicSchedule sched) {
-        LogUtils.debugf(BasicScheduleUtils.class, "isTimeInOutage: checking for time '%s' in schedule '%s'", cal.getTime(), sched.getName());
+        if (cal == null) {
+            LogUtils.warnf(BasicScheduleUtils.class, "isTimeInOutage: calendar is null");
+            return false;
+        } else if (sched == null) {
+            LogUtils.warnf(BasicScheduleUtils.class, "isTimeInOutage: schedule is null");
+            return false;
+        }
 
-        if (cal == null || sched == null) return false;
+        LogUtils.debugf(BasicScheduleUtils.class, "isTimeInOutage: checking for time '%s' in schedule '%s'", cal.getTime(), sched.getName());
 
         Calendar outCalBegin = new GregorianCalendar();
         Calendar outCalEnd = new GregorianCalendar();

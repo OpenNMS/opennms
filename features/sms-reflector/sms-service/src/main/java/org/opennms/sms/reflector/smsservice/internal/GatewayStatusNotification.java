@@ -64,6 +64,7 @@ public class GatewayStatusNotification implements IGatewayStatusNotification, Ap
 	}
 	
 	/** {@inheritDoc} */
+        @Override
 	public void process(String gtwId, GatewayStatuses oldStatus, GatewayStatuses newStatus) {
 		for(IGatewayStatusNotification listener : getListeners()){
 			if (listener != this) {
@@ -89,6 +90,7 @@ public class GatewayStatusNotification implements IGatewayStatusNotification, Ap
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		m_applicationContext = applicationContext;
 	}

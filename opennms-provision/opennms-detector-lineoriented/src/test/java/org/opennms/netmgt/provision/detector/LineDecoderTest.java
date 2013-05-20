@@ -69,6 +69,7 @@ public class LineDecoderTest {
         protected RequestHandler errorString(final String error) {
             return new RequestHandler() {
 
+                @Override
                 public void doRequest(OutputStream out) throws IOException {
                     out.write(String.format("%s", error).getBytes());
                     
@@ -81,6 +82,7 @@ public class LineDecoderTest {
         protected RequestHandler shutdownServer(final String response) {
             return new RequestHandler() {
                 
+                @Override
                 public void doRequest(OutputStream out) throws IOException {
                     out.write(String.format("%s\r\n", response).getBytes());
                     stopServer();

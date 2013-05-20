@@ -95,6 +95,7 @@ public class HibernateCriteriaConverter implements CriteriaConverter<DetachedCri
     @Override
     public DetachedCriteria convertForCount(final Criteria criteria) {
         final HibernateCriteriaVisitor visitor = new HibernateCriteriaVisitor() {
+            @Override
             public void visitOrder(final Order order) {
                 // skip order-by when converting for count
             }
@@ -105,6 +106,7 @@ public class HibernateCriteriaConverter implements CriteriaConverter<DetachedCri
     }
 
     public static class CountHibernateCriteriaVisitor extends HibernateCriteriaVisitor {
+        @Override
         public void visitOrder(final Order order) {
             // skip order-by when converting for count
         }

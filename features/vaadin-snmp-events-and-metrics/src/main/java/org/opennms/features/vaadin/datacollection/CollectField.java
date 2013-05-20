@@ -134,6 +134,7 @@ public class CollectField extends CustomField<Collect> implements Button.ClickLi
         super.setReadOnly(readOnly);
     }
 
+    @Override
     public void buttonClick(Button.ClickEvent event) {
         final Button btn = event.getButton();
         if (btn == add) {

@@ -12,6 +12,21 @@ public class SharedVertex {
     private String m_iconUrl;
     private String m_label;
     private String m_tooltipText;
+    private String m_statusCount;
+
+    /**
+     * @return the statusCount
+     */
+    public String getStatusCount() {
+        return m_statusCount;
+    }
+
+    /**
+     * @param statusCount the statusCount to set
+     */
+    public void setStatusCount(String statusCount) {
+        this.m_statusCount = statusCount;
+    }
 
     public void setKey(String key) {
         m_key = key;

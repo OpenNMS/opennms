@@ -90,18 +90,22 @@ public class XMPPNotificationManager {
 	private static XMPPNotificationManager instance = null;
 
 	private ConnectionListener conlistener = new ConnectionListener() {
+                @Override
 		public void connectionClosed() {
 			log().debug("XMPP connection closed");
 		}
 
+                @Override
 		public void connectionClosedOnError(Exception e) {
 			log().warn("XMPP connection closed", e);
 		}
 
+                @Override
         public void reconnectingIn(int seconds) {
             if (log().isDebugEnabled()) log().debug("XMPP reconnecting in " + seconds + " seconds");
         }
 
+                @Override
         public void reconnectionFailed(Exception e) {
             log().warn("XMPP reconnection failed", e);
             xmpp.disconnect();
@@ -109,6 +113,7 @@ public class XMPPNotificationManager {
             
         }
 
+                @Override
         public void reconnectionSuccessful() {
             log().debug("XMPP reconnection succeeded");
         }
@@ -267,6 +272,7 @@ public class XMPPNotificationManager {
 	 */
 
 	private static class NullMessageListener implements MessageListener {
+        @Override
         public void processMessage(Chat chat, Message message) {
         }
 	}

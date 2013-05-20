@@ -97,6 +97,7 @@ public class FilterPanel extends Composite {
             super.add(appName);
             Anchor removeLink = new Anchor("remove");
             removeLink.addClickHandler(new ClickHandler() {
+                @Override
                 public void onClick(ClickEvent event) {
                     m_eventBus.fireEvent(new ApplicationDeselectedEvent(app));
                 }
@@ -122,10 +123,12 @@ public class FilterPanel extends Composite {
             m_filters = filters;
         }
 
+        @Override
         protected void dispatch(FiltersChangedEventHandler handler) {
             handler.onFiltersChanged(m_filters);
         }
 
+        @Override
         public GwtEvent.Type<FiltersChangedEventHandler> getAssociatedType() {
             return TYPE;
         }
@@ -147,10 +150,12 @@ public class FilterPanel extends Composite {
             m_selected = selected;
         }
 
+        @Override
         protected void dispatch(StatusSelectionChangedEventHandler handler) {
             handler.onStatusSelectionChanged(m_status, m_selected);
         }
 
+        @Override
         public GwtEvent.Type<StatusSelectionChangedEventHandler> getAssociatedType() {
             return TYPE;
         }

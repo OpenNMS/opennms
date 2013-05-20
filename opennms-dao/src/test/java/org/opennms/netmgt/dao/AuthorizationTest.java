@@ -140,6 +140,7 @@ public class AuthorizationTest implements InitializingBean {
        
        HibernateCallback<Object> cb = new HibernateCallback<Object>() {
 
+           @Override
            public Object doInHibernate(Session session) throws HibernateException, SQLException {
                session.enableFilter("authorizedOnly").setParameterList("userGroups", groupNames);
                return null;
@@ -154,6 +155,7 @@ public class AuthorizationTest implements InitializingBean {
        
        HibernateCallback<Object> cb = new HibernateCallback<Object>() {
 
+           @Override
            public Object doInHibernate(Session session) throws HibernateException, SQLException {
                session.disableFilter("authorizedOnly");
                return null;

@@ -353,6 +353,7 @@ public class DefaultNodeLinkServiceTest implements InitializingBean {
     public void addPrimaryServiceToNode(final int nodeId, final String serviceName){
         m_transactionTemplate.execute(new TransactionCallback<Object>() {
             
+            @Override
             public Object doInTransaction(TransactionStatus status) {
                 OnmsServiceType svcType = m_serviceTypeDao.findByName(serviceName);
                 if(svcType == null){
@@ -382,6 +383,7 @@ public class DefaultNodeLinkServiceTest implements InitializingBean {
     public void saveLinkState(final OnmsLinkState linkState){
         m_transactionTemplate.execute(new TransactionCallback<Object>() {
             
+            @Override
             public Object doInTransaction(final TransactionStatus status) {
                 m_linkStateDao.saveOrUpdate(linkState);
                 m_linkStateDao.flush();

@@ -108,16 +108,19 @@ public final class LldpLocalGroup extends AggregateTracker {
     }
     
     /** {@inheritDoc} */
+    @Override
     protected void storeResult(SnmpResult res) {
         m_store.storeResult(res);
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void reportGenErr(String msg) {
         log().warn("Error retrieving lldpLocalGroup from "+m_address+". "+msg);
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void reportNoSuchNameErr(String msg) {
         log().info("Error retrieving lldpLocalGroup from "+m_address+". "+msg);
     }

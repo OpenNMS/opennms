@@ -67,6 +67,7 @@ public class JdbcEventdServiceManager implements InitializingBean, EventdService
      * @see org.opennms.netmgt.eventd.EventdServiceManager#getServiceId(java.lang.String)
      */
     /** {@inheritDoc} */
+    @Override
     public synchronized int getServiceId(String serviceName) throws DataAccessException {
         Assert.notNull(serviceName, "The serviceName argument must not be null");
 
@@ -101,10 +102,12 @@ public class JdbcEventdServiceManager implements InitializingBean, EventdService
     /**
      * <p>dataSourceSync</p>
      */
+    @Override
     public synchronized void dataSourceSync() {
         m_serviceMap.clear();
         
         new JdbcTemplate(m_dataSource).query(EventdConstants.SQL_DB_SVC_TABLE_READ, new RowCallbackHandler() {
+            @Override
             public void processRow(ResultSet resultSet) throws SQLException {
                 m_serviceMap.put(resultSet.getString(2), resultSet.getInt(1));
             }

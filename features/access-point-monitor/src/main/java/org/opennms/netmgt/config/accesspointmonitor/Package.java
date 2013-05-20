@@ -253,6 +253,7 @@ public class Package implements Serializable, Comparable<Package> {
         return null;
     }
 
+    @Override
     public int compareTo(Package obj) {
         return new CompareToBuilder()
             .append(getName(), obj.getName())

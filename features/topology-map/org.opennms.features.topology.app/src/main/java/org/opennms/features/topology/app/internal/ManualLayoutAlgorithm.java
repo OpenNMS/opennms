@@ -33,6 +33,7 @@ import org.opennms.features.topology.api.LayoutAlgorithm;
 
 public class ManualLayoutAlgorithm implements LayoutAlgorithm {
 
+        @Override
 	public void updateLayout(GraphContainer graph) {
 		// don't layout anything
 	}

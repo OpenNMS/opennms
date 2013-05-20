@@ -133,6 +133,7 @@ public class IsolatingClassLoader extends URLClassLoader {
      * Override to only check parent ClassLoader if the class name
      * doesn't match our list of isolated classes.
      */
+    @Override
     protected synchronized Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
         
         boolean isolated = m_isolatedClassNames.contains(name);

@@ -87,15 +87,25 @@ public class MockCollectionResource implements CollectionResource {
             final String attrName = entry.getKey();
             final String attrValue = entry.getValue();
             CollectionAttribute attribute = new CollectionAttribute() {
+                @Override
                 public CollectionResource getResource() { return resource; }
+                @Override
                 public String getStringValue() { return attrValue; }
+                @Override
                 public String getNumericValue() { return attrValue; }
+                @Override
                 public String getName() { return attrName; }
+                @Override
                 public void storeAttribute(Persister persister) {}
+                @Override
                 public boolean shouldPersist(ServiceParameters params) { return true; }
+                @Override
                 public CollectionAttributeType getAttributeType() { return null; }
+                @Override
                 public void visit(CollectionSetVisitor visitor) { }
+                @Override
                 public String getType() { return "string"; }
+                @Override
                 public String getMetricIdentifier() { return "MOCK_"+getName(); }
             };
             visitor.visitAttribute(attribute);
@@ -135,6 +145,7 @@ public class MockCollectionResource implements CollectionResource {
         return attributes;
     }
 
+    @Override
     public TimeKeeper getTimeKeeper() {
         return null;
     }

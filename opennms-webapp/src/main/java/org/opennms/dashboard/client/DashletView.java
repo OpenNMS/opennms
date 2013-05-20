@@ -68,11 +68,13 @@ public class DashletView extends Composite {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getTitle() {
         return m_dashlet.getTitle();
     }
     
     /** {@inheritDoc} */
+    @Override
     public void setTitle(String title) {
         m_dashlet.setTitle(title);
     }

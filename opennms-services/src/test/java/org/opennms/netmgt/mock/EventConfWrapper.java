@@ -57,10 +57,12 @@ public class EventConfWrapper {
         return m_event;
     }
 
+    @Override
     public int hashCode() {
         return m_event.getUei().hashCode();
     }
     
+    @Override
     public String toString() {
     		StringBuffer b = new StringBuffer("Event: ");
     		if (m_event.getAutoacknowledge() != null) {

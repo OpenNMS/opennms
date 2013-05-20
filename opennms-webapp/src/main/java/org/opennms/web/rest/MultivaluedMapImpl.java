@@ -67,6 +67,7 @@ public class MultivaluedMapImpl extends HashMap<String, List<String>> implements
 	 * @param key a {@link java.lang.String} object.
 	 * @param value a {@link java.lang.String} object.
 	 */
+    @Override
 	public void add(String key, String value) {
 		List<String> valueList=super.get(key);
 		if(valueList==null) {
@@ -82,6 +83,7 @@ public class MultivaluedMapImpl extends HashMap<String, List<String>> implements
 	 * @param key a {@link java.lang.String} object.
 	 * @return a {@link java.lang.String} object.
 	 */
+    @Override
 	public String getFirst(String key) {
 		List<String> values=super.get(key);
 		if(values == null || values.size()==0) {
@@ -96,6 +98,7 @@ public class MultivaluedMapImpl extends HashMap<String, List<String>> implements
 	 * @param key a {@link java.lang.String} object.
 	 * @param value a {@link java.lang.String} object.
 	 */
+    @Override
 	public void putSingle(String key, String value) {
 		List<String> list=new ArrayList<String>();
 		list.add(value);

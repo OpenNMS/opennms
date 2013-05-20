@@ -80,6 +80,7 @@ public class PrimaryType implements Comparable<PrimaryType>, Serializable {
         } else return false;
     }
 
+    @Override
     public int compareTo(final PrimaryType collType) {
         return getIndex(m_collType) - getIndex(collType.m_collType);
     }

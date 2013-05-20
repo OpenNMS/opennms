@@ -67,7 +67,6 @@ import com.google.gwt.touch.client.Point;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.Window.Navigator;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -197,6 +196,7 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 			return m_dragBehavior;
 		}
 
+                @Override
 		public void draw(GWTGraph graph, final TopologyView<TopologyViewRenderer> topologyView, GWTBoundingBox oldBBox) {
 			D3 edgeSelection = getEdgeSelection(graph, topologyView);
 
@@ -205,6 +205,7 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 			vertexSelection.enter().create(GWTVertex.create()).call(setupEventHandlers())
 			.attr("transform", new Func<String, GWTVertex>() {
 
+                                @Override
 				public String call(GWTVertex vertex, int index) {
 					return "translate(" + vertex.getInitialX() + "," +  vertex.getInitialY() + ")";
 				}
@@ -222,6 +223,7 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 				}
 			}).attr("transform", new Func<String, GWTVertex>(){
 
+                                @Override
 				public String call(GWTVertex vertex, int index) {
 					return "translate(" + vertex.getInitialX() + "," +  vertex.getInitialY() + ")";
 				}
@@ -323,6 +325,7 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 			D3 vertexGroup = D3.d3().select( topologyView.getVertexGroup() );
             Func<String, GWTVertex> vertexIdentifierFunction = new Func<String, GWTVertex>() {
 
+                                @Override
 				public String call(GWTVertex param, int index) {
 					return "" + param.getId();
 				}
@@ -336,6 +339,7 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 			D3 edgeGroup = D3.d3().select(topologyView.getEdgeGroup());
             Func<String, GWTEdge> edgeIdentifierFunction = new Func<String, GWTEdge>() {
 
+                                @Override
 				public String call(GWTEdge edge, int index) {
 					/*
 					TODO Figure out how to do this in the new GWT API
@@ -477,6 +481,7 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 		D3Drag d3Pan = D3.getDragBehavior();
 		d3Pan.on(D3Events.DRAG_START.event(), new Handler<Element>() {
 
+                        @Override
 			public void call(Element elem, int index) {
 			    handlerManager.onDragStart(elem);
 			}
@@ -484,6 +489,7 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 
 		d3Pan.on(D3Events.DRAG.event(), new Handler<Element>() {
 
+                        @Override
 			public void call(Element elem, int index) {
 			    handlerManager.onDrag(elem);
 			}
@@ -491,6 +497,7 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 
 		d3Pan.on(D3Events.DRAG_END.event(), new Handler<Element>() {
 
+                        @Override
 			public void call(Element elem, int index) {
 			    handlerManager.onDragEnd(elem);
 			}
@@ -508,6 +515,7 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
     private Handler<GWTVertex> vertexContextMenuHandler() {
 		return new D3Events.Handler<GWTVertex>() {
 
+                        @Override
 			public void call(final GWTVertex vertex, int index) {
 				showContextMenu(vertex.getId(), D3.getEvent().getClientX(), D3.getEvent().getClientY(), "vertex");
 				D3.getEvent().preventDefault();
@@ -519,6 +527,7 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 	private Handler<GWTEdge> edgeContextHandler(){
 		return new D3Events.Handler<GWTEdge>() {
 
+                        @Override
 			public void call(final GWTEdge edge, int index) {
 
 				showContextMenu(edge.getId(), D3.getEvent().getClientX(), D3.getEvent().getClientY(), "edge");
@@ -532,6 +541,7 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 	private Handler<GWTVertex> vertexTooltipHandler() {
 		return new Handler<GWTVertex>() {
 
+                        @Override
 			public void call(GWTVertex t, int index) {
 				if(m_client != null) {
 					Event event = (Event) D3.getEvent();
@@ -547,6 +557,7 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 	private Handler<GWTEdge> edgeTooltipHandler(){
 		return new Handler<GWTEdge>() {
 
+                        @Override
 			public void call(GWTEdge edge, int index) {
 				if(m_client != null) {
 					Event event = D3.getEvent().cast();
@@ -577,6 +588,7 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 	private Handler<GWTVertex> vertexClickHandler() {
 		return new D3Events.Handler<GWTVertex>(){
 
+                        @Override
 			public void call(GWTVertex vertex, int index) {
 				NativeEvent event = D3.getEvent();
 				SVGGElement vertexElement = event.getCurrentEventTarget().cast();
@@ -605,7 +617,7 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 
             @Override
             public void call(GWTVertex vert, int index) {
-                Window.alert("Vertex: " + vert.getLabel() + " was double clicked" );
+                
                 
             }
         };
@@ -614,6 +626,7 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 	private Handler<GWTVertex> vertexDragEndHandler() {
 		return new Handler<GWTVertex>() {
 
+                        @Override
 			public void call(GWTVertex vertex, int index) {
 			    if(D3.getEvent().getButton() != NativeEvent.BUTTON_RIGHT) {
 			    
@@ -652,6 +665,7 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 	private Handler<GWTVertex> vertexDragStartHandler() {
 		return new Handler<GWTVertex>() {
 
+                        @Override
 			public void call(GWTVertex vertex, int index) {
 				NativeEvent event = D3.getEvent();
 				Element draggableElement = Element.as(event.getEventTarget()).getParentElement();
@@ -678,6 +692,7 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 	private Handler<GWTVertex> vertexDragHandler() {
 		return new Handler<GWTVertex>() {
 
+                        @Override
 			public void call(GWTVertex vertex, int index) {
 
 				m_dragObject.move();
@@ -724,11 +739,13 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
             
             vertex.setStatus(sharedVertex.getStatus());
 
+            vertex.setStatusCount(sharedVertex.getStatusCount());
+
             graph.addVertex(vertex);
 		}
-		
+
 		for(SharedEdge sharedEdge : componentState.getEdges()) {
-		    String edgeKey = sharedEdge.getKey();
+			String edgeKey = sharedEdge.getKey();
             String sourceKey = sharedEdge.getSourceKey();
             String targetKey = sharedEdge.getTargetKey();
             

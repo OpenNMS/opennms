@@ -66,18 +66,22 @@ public class OpenNMSReportPlugin extends AbstractSystemReportPlugin implements I
         BeanUtils.assertAutowiring(this);
     }
 
+    @Override
     public String getName() {
         return "OpenNMS";
     }
 
+    @Override
     public String getDescription() {
         return "OpenNMS core information, version, and basic configuration";
     }
 
+    @Override
     public int getPriority() {
         return 3;
     }
 
+    @Override
     public TreeMap<String, Resource> getEntries() {
         final TreeMap<String,Resource> map = new TreeMap<String,Resource>();
         final InputStream is = this.getClass().getResourceAsStream("/version.properties");

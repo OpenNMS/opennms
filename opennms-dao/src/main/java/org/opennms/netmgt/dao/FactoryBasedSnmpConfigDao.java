@@ -45,6 +45,7 @@ import org.springframework.beans.factory.InitializingBean;
  * @author brozow
  * @version $Id: $
  */
+// TODO MVR what should we do here?
 public class FactoryBasedSnmpConfigDao implements SnmpConfigDao, InitializingBean {
     
     private static final MarshallingExceptionTranslator TRANSLATOR = new MarshallingExceptionTranslator();
@@ -64,6 +65,7 @@ public class FactoryBasedSnmpConfigDao implements SnmpConfigDao, InitializingBea
     }
 
     /** {@inheritDoc} */
+    @Override
     public SnmpAgentConfig getAgentConfig(final InetAddress agentAddress) {
         return getSnmpPeerFactory().getAgentConfig(agentAddress);
     }
@@ -73,6 +75,7 @@ public class FactoryBasedSnmpConfigDao implements SnmpConfigDao, InitializingBea
      *
      * @return a {@link org.opennms.netmgt.snmp.SnmpConfiguration} object.
      */
+    @Override
     public SnmpConfiguration getDefaults() {
     	final SnmpConfig config = getSnmpConfig();
 
@@ -142,6 +145,7 @@ public class FactoryBasedSnmpConfigDao implements SnmpConfigDao, InitializingBea
 
 
     /** {@inheritDoc} */
+    @Override
     public void saveAsDefaults(final SnmpConfiguration newDefaults) {
     	final SnmpConfig config = getSnmpConfig();
         
@@ -197,6 +201,7 @@ public class FactoryBasedSnmpConfigDao implements SnmpConfigDao, InitializingBea
     }
     
     /** {@inheritDoc} */
+    @Override
     public void saveOrUpdate(final SnmpAgentConfig newConfig) {
         
     	final SnmpAgentConfig oldConfig = getAgentConfig(newConfig.getAddress());

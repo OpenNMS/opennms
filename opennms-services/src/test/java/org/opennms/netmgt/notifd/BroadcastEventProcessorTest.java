@@ -52,6 +52,7 @@ import org.opennms.netmgt.xml.event.Event;
 public class BroadcastEventProcessorTest extends NotificationsTestCase {
 
     @Before
+    @Override
     public void setUp() throws Exception {
         super.setUp();
 
@@ -59,6 +60,7 @@ public class BroadcastEventProcessorTest extends NotificationsTestCase {
     }
 
     @After
+    @Override
     public void tearDown() throws Exception {
         super.tearDown(true);
     }

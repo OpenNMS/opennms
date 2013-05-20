@@ -88,6 +88,7 @@ final public class StrafePingMonitor extends AbstractServiceMonitor {
      * discovery. All exchanges are SOAP/XML compliant.
      * </P>
      */
+    @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         NetworkInterface<InetAddress> iface = svc.getNetInterface();
 
@@ -123,6 +124,7 @@ final public class StrafePingMonitor extends AbstractServiceMonitor {
             
             Collections.sort(responseTimes, new Comparator<Number>() {
 
+                @Override
                 public int compare(Number arg0, Number arg1) {
                     if (arg0 == null) {
                         return -1;

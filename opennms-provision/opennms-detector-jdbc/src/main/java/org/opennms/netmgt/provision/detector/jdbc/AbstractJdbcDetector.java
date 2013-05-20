@@ -71,6 +71,7 @@ public abstract class AbstractJdbcDetector extends BasicDetector<JDBCRequest, JD
     protected static ResponseValidator<JDBCResponse> resultSetNotNull(){
         return new ResponseValidator<JDBCResponse>() {
 
+            @Override
             public boolean validate(JDBCResponse response) {
                 return response.resultSetNotNull();
             }

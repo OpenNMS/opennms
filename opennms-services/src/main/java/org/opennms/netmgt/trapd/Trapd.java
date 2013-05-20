@@ -32,16 +32,13 @@ import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.sql.SQLException;
-import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 
 import javax.annotation.Resource;
 
 import org.apache.log4j.Category;
 import org.apache.log4j.Logger;
-import org.opennms.core.concurrent.WaterfallExecutor;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
@@ -146,13 +143,7 @@ public class Trapd extends AbstractServiceDaemon implements TrapProcessorFactory
     /** {@inheritDoc} */
     @Override
     public void trapReceived(TrapNotification trapNotification) {
-        try {
-            WaterfallExecutor.waterfall(Collections.singletonList(m_backlogQ), m_processorFactory.getInstance(trapNotification));
-        } catch (InterruptedException e) {
-            LogUtils.warnf(this, e, "addTrap: Error adding trap to queue");
-        } catch (ExecutionException e) {
-            LogUtils.warnf(this, e, "addTrap: Error adding trap to queue");
-        }
+        m_backlogQ.submit(m_processorFactory.getInstance(trapNotification));
     }
 
     /**

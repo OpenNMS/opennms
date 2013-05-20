@@ -117,6 +117,7 @@ public class VacuumdTest implements TemporaryDatabaseAware<MockDatabase>, Initia
 
     private MockDatabase m_database;
 
+    @Override
     public void setTemporaryDatabase(MockDatabase database) {
         m_database = database;
     }

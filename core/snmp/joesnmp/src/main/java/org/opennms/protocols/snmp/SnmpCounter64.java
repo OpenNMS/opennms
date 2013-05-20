@@ -131,7 +131,7 @@ public class SnmpCounter64 extends Object implements SnmpSyntax, Cloneable, Seri
      *             Throws if the passed value is a null reference.
      */
     public SnmpCounter64(String value) {
-        if (m_value == null)
+        if (value == null)
             throw new NullPointerException("The constructor argument must not be null");
 
         m_value = new BigInteger(value);
@@ -167,6 +167,7 @@ public class SnmpCounter64 extends Object implements SnmpSyntax, Cloneable, Seri
      * @return The ASN.1 value for the SnmpCounter64
      * 
      */
+    @Override
     public byte typeId() {
         return ASNTYPE;
     }
@@ -185,6 +186,7 @@ public class SnmpCounter64 extends Object implements SnmpSyntax, Cloneable, Seri
      * @return The byte immediantly after the last encoded byte.
      * 
      */
+    @Override
     public int encodeASN(byte[] buf, int offset, AsnEncoder encoder) throws AsnEncodingException {
         return encoder.buildUInteger64(buf, offset, typeId(), getValue());
     }
@@ -204,6 +206,7 @@ public class SnmpCounter64 extends Object implements SnmpSyntax, Cloneable, Seri
      * @return The byte immediantly after the last decoded byte of information.
      * 
      */
+    @Override
     public int decodeASN(byte[] buf, int offset, AsnEncoder encoder) throws AsnDecodingException {
         Object[] rVals = encoder.parseUInteger64(buf, offset);
 
@@ -220,6 +223,7 @@ public class SnmpCounter64 extends Object implements SnmpSyntax, Cloneable, Seri
      * 
      * @return A duplciate copy of the current object
      */
+    @Override
     public SnmpSyntax duplicate() {
         return new SnmpCounter64(this);
     }
@@ -229,6 +233,7 @@ public class SnmpCounter64 extends Object implements SnmpSyntax, Cloneable, Seri
      * 
      * @return A duplciate copy of the current object
      */
+    @Override
     public Object clone() {
         return new SnmpCounter64(this);
     }
@@ -237,6 +242,7 @@ public class SnmpCounter64 extends Object implements SnmpSyntax, Cloneable, Seri
      * Returns the string representation of the object.
      * 
      */
+    @Override
     public String toString() {
         return getValue().toString();
     }

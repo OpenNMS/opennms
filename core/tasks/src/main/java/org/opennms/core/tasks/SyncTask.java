@@ -95,6 +95,7 @@ public class SyncTask extends Task {
      */
     final Runnable getRunnable() {
         return new Runnable() {
+          @Override
           public void run() {
               try {
                   SyncTask.this.run();
@@ -102,6 +103,7 @@ public class SyncTask extends Task {
                   LogUtils.debugf(this, t, "Exception occurred executing task %s", SyncTask.this);
               }
           }
+          @Override
           public String toString() { return "Runner for "+SyncTask.this; }
         };
     }
@@ -129,6 +131,7 @@ public class SyncTask extends Task {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return m_action == null ? super.toString() : m_action.toString();
     }

@@ -91,6 +91,7 @@ public final class FtpPlugin extends AbstractTcpPlugin {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected boolean checkProtocol(Socket socket, ConnectionConfig config) throws IOException {
         BufferedReader rdr = new BufferedReader(new InputStreamReader(socket.getInputStream()));
   

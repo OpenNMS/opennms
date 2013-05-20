@@ -77,6 +77,7 @@ import com.ibatis.sqlmap.client.SqlMapExecutor;
 public class UserRepositoryIbatis extends SqlMapClientTemplate implements UserRepository {
 
     /** {@inheritDoc} */
+    @Override
     public UserDTO getUserCredentials(String id) {
         return (UserDTO) queryForObject("getUserCredentials", new Long(id));
     }
@@ -89,27 +90,32 @@ public class UserRepositoryIbatis extends SqlMapClientTemplate implements UserRe
     }
 
     /** {@inheritDoc} */
+    @Override
     public Long insertUser(UserDTO user) {
         user.setPassword(Cripto.stringToSHA(user.getPassword()));
         return (Long) insert("insertUser", user);
     }
 
     /** {@inheritDoc} */
+    @Override
     public Integer updatePassword(UserDTO user) {
         return update("updateUserPassword", user);
     }
 
     /** {@inheritDoc} */
+    @Override
     public UserAuthoritiesDTO getUserWithAuthorities(String username) {
         return (UserAuthoritiesDTO) queryForObject("getUserWithAuthorities", username);
     }
 
     /** {@inheritDoc} */
+    @Override
     public UserAuthoritiesDTO getUserWithAuthoritiesByID(Integer sid) {
         return (UserAuthoritiesDTO) queryForObject("getUserWithAuthoritiesById", sid);
     }
 
     /** {@inheritDoc} */
+    @Override
     public UserView getUser(String id) {
         return (UserView) queryForObject("getUser", Integer.valueOf(id));
     }
@@ -119,22 +125,26 @@ public class UserRepositoryIbatis extends SqlMapClientTemplate implements UserRe
      *
      * @return a {@link java.lang.Integer} object.
      */
+    @Override
     public Integer getUsersNumber() {
         return (Integer) queryForObject("getUsersNumber");
     }
 
     /** {@inheritDoc} */
+    @Override
     public Boolean disableUser(String id) {
         return update("disableUser", new Long(id)) == 1 ? true : false;
     }
 
     /** {@inheritDoc} */
+    @Override
     public Object getIdUser(String username) {
         return queryForObject("getIdUser", username);
     }
 
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
+    @Override
     public List<UserDTOLight> getDisabledUsers(Pager pager) {
         Map params = new HashMap();
         params.put("limit", pager.getItemsNumberOnPage());
@@ -144,6 +154,7 @@ public class UserRepositoryIbatis extends SqlMapClientTemplate implements UserRe
 
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
+    @Override
     public List<UserDTOLight> getEnabledUsers(Pager pager) {
         Map params = new HashMap();
         params.put("limit", pager.getItemsNumberOnPage());
@@ -152,6 +163,7 @@ public class UserRepositoryIbatis extends SqlMapClientTemplate implements UserRe
     }
 
     /** {@inheritDoc} */
+    @Override
     public Boolean save(UserAuthoritiesDTO user) {
         return user.isNew() ? insert(user) : update(user);
     }
@@ -176,6 +188,7 @@ public class UserRepositoryIbatis extends SqlMapClientTemplate implements UserRe
 
         return execute(new SqlMapClientCallback<Boolean>() {
             @SuppressWarnings("unchecked")
+            @Override
             public Boolean doInSqlMapClient(SqlMapExecutor executor) {
                 int ris = 0;
                 try {

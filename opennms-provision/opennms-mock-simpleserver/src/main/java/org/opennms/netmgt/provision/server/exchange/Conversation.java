@@ -174,6 +174,7 @@ public class Conversation {
     public static ResponseHandler startsWith(final String response){
         return new ResponseHandler(){
 
+            @Override
             public boolean matches(String input) {
                 return input.startsWith(response);      
             }
@@ -190,6 +191,7 @@ public class Conversation {
     public static ResponseHandler contains(final String response){
         return new ResponseHandler(){
 
+            @Override
             public boolean matches(String input) {
                return input.contains(response);
             }
@@ -206,6 +208,7 @@ public class Conversation {
     public static ResponseHandler regexpMatches(final String response){
         return new ResponseHandler(){
 
+            @Override
             public boolean matches(String input) {
                return input.matches(response);
             }

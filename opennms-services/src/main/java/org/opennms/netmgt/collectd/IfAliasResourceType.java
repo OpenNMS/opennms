@@ -62,6 +62,7 @@ public class IfAliasResourceType extends ResourceType {
     }
 
     /** {@inheritDoc} */
+    @Override
     public SnmpCollectionResource findResource(SnmpInstId inst) {
         // This is here for completeness but it should not get called here.
         // findAliasedResource should be called instead
@@ -69,6 +70,7 @@ public class IfAliasResourceType extends ResourceType {
         return null;
     }
     /** {@inheritDoc} */
+    @Override
     public SnmpCollectionResource findAliasedResource(SnmpInstId inst, String ifAlias) {
         Integer key = inst.toInt();
         AliasedResource resource = (AliasedResource) m_aliasedIfs.get(key);
@@ -99,6 +101,7 @@ public class IfAliasResourceType extends ResourceType {
      *
      * @return a {@link java.util.Collection} object.
      */
+    @Override
     public Collection<SnmpAttributeType> loadAttributeTypes() {
         return getCollection().getAliasAttributeTypes(getAgent());
    }
@@ -108,6 +111,7 @@ public class IfAliasResourceType extends ResourceType {
      *
      * @return a {@link java.util.Collection} object.
      */
+    @Override
     public Collection<AliasedResource> getResources() {
         return m_aliasedIfs.values();
     }

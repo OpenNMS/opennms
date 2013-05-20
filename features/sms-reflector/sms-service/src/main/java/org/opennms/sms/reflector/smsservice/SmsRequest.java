@@ -154,6 +154,7 @@ public class SmsRequest extends MobileMsgRequest {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
     	return new ToStringCreator(this)
     		.append("recipient", getRecipient())

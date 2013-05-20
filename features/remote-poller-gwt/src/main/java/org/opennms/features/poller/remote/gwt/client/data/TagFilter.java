@@ -43,6 +43,7 @@ public class TagFilter implements LocationFilter {
         return m_selectedTag;
     }
 
+    @Override
     public boolean matches(final LocationInfo location) {
         return getSelectedTag() == null ? true : location.hasTag(getSelectedTag());
     }

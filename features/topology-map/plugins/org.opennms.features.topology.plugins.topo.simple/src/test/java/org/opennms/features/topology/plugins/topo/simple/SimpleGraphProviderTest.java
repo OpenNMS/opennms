@@ -91,7 +91,6 @@ public class SimpleGraphProviderTest {
 
         @Override
         public boolean isChecked() {
-            // TODO Auto-generated method stub
             return false;
         }
 

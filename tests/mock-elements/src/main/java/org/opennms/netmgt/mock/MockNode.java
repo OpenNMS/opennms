@@ -86,6 +86,7 @@ public class MockNode extends MockContainer<MockNetwork,MockInterface> {
     }
 
     // impl
+    @Override
     Object getKey() {
         return new Integer(m_nodeid);
     }
@@ -115,6 +116,7 @@ public class MockNode extends MockContainer<MockNetwork,MockInterface> {
      *
      * @return a {@link org.opennms.netmgt.mock.MockNetwork} object.
      */
+    @Override
     public MockNetwork getNetwork() {
         return (MockNetwork) getParent();
     }
@@ -154,6 +156,7 @@ public class MockNode extends MockContainer<MockNetwork,MockInterface> {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
     	return new ToStringBuilder(this)
     		.append("id", m_nodeid)
@@ -163,6 +166,7 @@ public class MockNode extends MockContainer<MockNetwork,MockInterface> {
 
     // impl
     /** {@inheritDoc} */
+    @Override
     public void visit(MockVisitor v) {
         super.visit(v);
         v.visitNode(this);
@@ -174,6 +178,7 @@ public class MockNode extends MockContainer<MockNetwork,MockInterface> {
      *
      * @return a {@link org.opennms.netmgt.xml.event.Event} object.
      */
+    @Override
     public Event createUpEvent() {
         return MockEventUtil.createNodeUpEvent("Test", this);
     }
@@ -183,6 +188,7 @@ public class MockNode extends MockContainer<MockNetwork,MockInterface> {
      *
      * @return a {@link org.opennms.netmgt.xml.event.Event} object.
      */
+    @Override
     public Event createDownEvent() {
         return MockEventUtil.createNodeDownEvent("Test", this);
     }
@@ -202,6 +208,7 @@ public class MockNode extends MockContainer<MockNetwork,MockInterface> {
      *
      * @return a {@link org.opennms.netmgt.xml.event.Event} object.
      */
+    @Override
     public Event createNewEvent() {
         return MockEventUtil.createNodeAddedEvent("Test", this);
     }
@@ -211,6 +218,7 @@ public class MockNode extends MockContainer<MockNetwork,MockInterface> {
      *
      * @return a {@link org.opennms.netmgt.xml.event.Event} object.
      */
+    @Override
     public Event createDeleteEvent() {
         return MockEventUtil.createNodeDeletedEvent("Test", this);
     }

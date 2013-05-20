@@ -296,6 +296,7 @@ public class XmlrpcAnticipator implements XmlRpcHandler {
 
     // Implements Apache XMLRPC API
     @SuppressWarnings("unchecked")
+    @Override
     public Object execute(String method, Vector vector) {
         if (m_webServer == null) {
             String message = "Hey!  We aren't initialized (anymore)!  "
@@ -375,6 +376,7 @@ public class XmlrpcAnticipator implements XmlRpcHandler {
         return b.toString();
     }
 
+    @Override
     protected void finalize() {
         try {
             shutdown();

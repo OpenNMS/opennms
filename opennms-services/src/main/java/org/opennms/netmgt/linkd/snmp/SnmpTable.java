@@ -103,6 +103,7 @@ public abstract class SnmpTable<T extends SnmpStore> extends AggregateTracker im
      *
      * @return a {@link java.util.Iterator} object.
      */
+    @Override
     public Iterator<T> iterator() {
         return m_results.values().iterator();
     }

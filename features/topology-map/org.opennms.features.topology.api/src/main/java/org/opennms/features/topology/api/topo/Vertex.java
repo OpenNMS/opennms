@@ -39,6 +39,7 @@ public interface Vertex extends VertexRef {
 
 	Item getItem();
 
+        @Override
 	String getLabel();
 
 	String getTooltipText();

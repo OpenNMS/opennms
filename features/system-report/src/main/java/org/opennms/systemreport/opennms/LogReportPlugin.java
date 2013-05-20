@@ -38,18 +38,22 @@ import org.springframework.core.io.Resource;
 
 public class LogReportPlugin extends AbstractSystemReportPlugin {
 
+    @Override
     public String getName() {
         return "Logs";
     }
 
+    @Override
     public String getDescription() {
         return "OpenNMS log files (full output only)";
     }
 
+    @Override
     public int getPriority() {
         return 21;
     }
 
+    @Override
     public TreeMap<String, Resource> getEntries() {
         final TreeMap<String,Resource> map = new TreeMap<String,Resource>();
         File f = new File(System.getProperty("opennms.home") + File.separator + "logs");

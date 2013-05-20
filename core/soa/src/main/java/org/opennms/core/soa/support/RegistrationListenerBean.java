@@ -167,6 +167,7 @@ public class RegistrationListenerBean<T> implements RegistrationListener<T>, Ini
     }
 
     /** {@inheritDoc} */
+    @Override
     public void providerRegistered(Registration registration, Object provider) {
         if (StringUtils.hasText(m_bindMethod)) {
             invokeMethod(m_bindMethod, registration);
@@ -174,6 +175,7 @@ public class RegistrationListenerBean<T> implements RegistrationListener<T>, Ini
     }
     
     /** {@inheritDoc} */
+    @Override
     public void providerUnregistered(Registration registration, Object provider) {
         if (StringUtils.hasText(m_unbindMethod)) {
             invokeMethod(m_unbindMethod, registration);

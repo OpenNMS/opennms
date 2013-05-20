@@ -2,7 +2,9 @@ package org.opennms.features.topology.plugins.status.internal;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.features.topology.api.topo.Status;
@@ -20,15 +22,25 @@ public class AlarmStatusProvider implements StatusProvider {
 
         private int m_statusId;
         private String m_label;
+        private int m_alarmCount = 0;
 
-        public AlarmStatus(int id, String label) {
+        public AlarmStatus(int id, String label, int count) {
             m_statusId = id;
             m_label = label;
+            m_alarmCount = count;
         }
 
         @Override
         public String computeStatus() {
             return m_label.toLowerCase();
+        }
+
+        @Override
+        public Map<String, String> getStatusProperties() {
+            Map<String, String> statusMap = new HashMap<String, String>();
+            statusMap.put("status", m_label.toLowerCase());
+            statusMap.put("statusCount", "" + m_alarmCount);
+            return statusMap;
         }
         
     }
@@ -67,7 +79,6 @@ public class AlarmStatusProvider implements StatusProvider {
                     builder.eq("node.id", nodeId);
                     builder.ge("severity", OnmsSeverity.WARNING);
                     builder.orderBy("severity").desc();
-                    builder.limit(1);
                     
                     return getStatusForCriteria(builder);
                 }catch(NumberFormatException e) {
@@ -83,34 +94,58 @@ public class AlarmStatusProvider implements StatusProvider {
 
     private Status getStatusForCriteria(CriteriaBuilder builder) {
         final List<OnmsAlarm> alarms = m_alarmDao.findMatching(builder.toCriteria());
-        if(alarms != null && alarms.size() == 1) {
+        if(alarms != null && alarms.size() >= 1) {
             final OnmsAlarm alarm = alarms.get(0);
             final OnmsSeverity severity = alarm.getSeverity();
-            Status vertexStatus = new AlarmStatus(severity.getId(), severity.getLabel());
+            Status vertexStatus = new AlarmStatus(severity.getId(), severity.getLabel(), getUnAckAlarmCount(alarms));
             return vertexStatus;
         } else {
             return createIndeterminateStatus();
         }
     }
 
-    private Status getStatusForGroup(VertexRef groupRef) {
-        List<Vertex> vertices = getVertexProvider().getChildren(groupRef);
-        Collection<Integer> nodeIds = new ArrayList<Integer>();
+    private int getUnAckAlarmCount(List<OnmsAlarm> alarms) {
+        int count = 0;
         
-        for(Vertex vertex : vertices) {
-            if(!vertex.isGroup()) {
-               nodeIds.add(vertex.getNodeID());
+        for(OnmsAlarm alarm : alarms) {
+            if(!alarm.isAcknowledged()) {
+                count++;
             }
         }
         
-        CriteriaBuilder builder = new CriteriaBuilder(OnmsAlarm.class);
-        builder.alias("node", "node");
-        builder.in("node.id", nodeIds);
-        builder.ge("severity", OnmsSeverity.WARNING);
-        builder.orderBy("severity").desc();
-        builder.limit(1);
+        return count;
+    }
+
+    private Status getStatusForGroup(VertexRef groupRef) {
         
-        return getStatusForCriteria(builder);
+        
+        Collection<Integer> nodeIds = new ArrayList<Integer>();
+        
+        getChildrenRecursively(groupRef, nodeIds);
+        
+        if(nodeIds.size() >= 1) {
+            CriteriaBuilder builder = new CriteriaBuilder(OnmsAlarm.class);
+            builder.alias("node", "node");
+            builder.in("node.id", nodeIds);
+            builder.ge("severity", OnmsSeverity.WARNING);
+            builder.orderBy("node.id").asc();
+            builder.orderBy("severity").desc();
+            
+            return getStatusForCriteria(builder);
+        }else {
+            return createIndeterminateStatus();
+        }
+    }
+
+    private void getChildrenRecursively(VertexRef groupRef, Collection<Integer> nodeIds) {
+        List<Vertex> vertices = getVertexProvider().getChildren(groupRef);
+        for(Vertex vertex : vertices) {
+            if(!vertex.isGroup()) {
+               nodeIds.add(vertex.getNodeID());
+            } else {
+                getChildrenRecursively(vertex, nodeIds);
+            }
+        }
     }
 
     private boolean isGroup(VertexRef vertexRef) {
@@ -122,7 +157,7 @@ public class AlarmStatusProvider implements StatusProvider {
     }
 
     private Status createIndeterminateStatus() {
-        return new AlarmStatus(OnmsSeverity.INDETERMINATE.getId(), OnmsSeverity.INDETERMINATE.getLabel());
+        return new AlarmStatus(OnmsSeverity.INDETERMINATE.getId(), OnmsSeverity.INDETERMINATE.getLabel(), 0);
     }
 
     @Override

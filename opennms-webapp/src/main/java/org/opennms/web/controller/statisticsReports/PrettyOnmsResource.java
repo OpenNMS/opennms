@@ -54,6 +54,7 @@ public class PrettyOnmsResource extends OnmsResource {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return this.getResourceType().getLabel() + ": " + this.getLabel();
     }

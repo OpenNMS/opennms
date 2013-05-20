@@ -86,6 +86,7 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void initialize(Map<String, Object> parameters) {
         m_serviceMonitor.initialize(parameters);
     }
@@ -95,11 +96,13 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
      *
      * @param svc a {@link org.opennms.netmgt.poller.MonitoredService} object.
      */
+    @Override
     public void initialize(MonitoredService svc) {
         m_serviceMonitor.initialize(svc);
     }
 
     /** {@inheritDoc} */
+    @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         PollStatus status = m_serviceMonitor.poll(svc, parameters);
 
@@ -296,11 +299,13 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
     /**
      * <p>release</p>
      */
+    @Override
     public void release() {
         m_serviceMonitor.release();
     }
 
     /** {@inheritDoc} */
+    @Override
     public void release(MonitoredService svc) {
         m_serviceMonitor.release(svc);
     }

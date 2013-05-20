@@ -49,12 +49,14 @@ public class SpringResourceAccessor implements ResourceAccessor {
     }
     
     /** {@inheritDoc} */
+    @Override
     public InputStream getResourceAsStream(final String file) throws IOException {
     	final Resource resource = getResource(file);
         return resource.getInputStream();
     }
 
     /** {@inheritDoc} */
+    @Override
     public Enumeration<URL> getResources(final String packageName) throws IOException {
     	final Vector<URL> tmp = new Vector<URL>();
         tmp.add(getResource(packageName).getURL());
@@ -96,6 +98,7 @@ public class SpringResourceAccessor implements ResourceAccessor {
      *
      * @return a {@link java.lang.ClassLoader} object.
      */
+    @Override
     public ClassLoader toClassLoader() {
         return getResourceLoader().getClassLoader();
     }

@@ -132,6 +132,7 @@ public class EditForeignSourceController extends SimpleFormController {
             m_formPath = "foreignSourceEditForm.formData."+path;
         }
         
+        @Override
         public String toString() {
             return new ToStringBuilder(this)
                 .append("foreign source", m_foreignSourceName)

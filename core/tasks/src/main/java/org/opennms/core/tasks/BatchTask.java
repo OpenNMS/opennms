@@ -52,6 +52,7 @@ public class BatchTask extends ContainerTask<BatchTask> {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return "batch task";
     }

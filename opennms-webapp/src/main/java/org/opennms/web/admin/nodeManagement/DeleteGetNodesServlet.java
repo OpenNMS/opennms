@@ -67,6 +67,7 @@ public class DeleteGetNodesServlet extends HttpServlet {
      *
      * @throws javax.servlet.ServletException if any.
      */
+    @Override
     public void init() throws ServletException {
         try {
             DataSourceFactory.init();
@@ -75,6 +76,7 @@ public class DeleteGetNodesServlet extends HttpServlet {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession user = request.getSession(true);
 
@@ -108,10 +110,9 @@ public class DeleteGetNodesServlet extends HttpServlet {
                     newNode.setNodeID(nodeSet.getInt(1));
                     newNode.setNodeLabel(nodeSet.getString(2));
                     allNodes.add(newNode);
-
+                    lineCount++;
                 }
             }
-            // FIXME: linecount never modified???
             userSession.setAttribute("lineItems.delete.jsp", Integer.valueOf(lineCount));
 
             nodeSet.close();

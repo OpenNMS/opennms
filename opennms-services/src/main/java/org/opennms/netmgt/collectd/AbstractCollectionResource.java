@@ -75,10 +75,12 @@ public abstract class AbstractCollectionResource implements CollectionResource {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getOwnerName() {
         return m_agent.getHostAddress();    }
 
     /** {@inheritDoc} */
+    @Override
     public File getResourceDir(RrdRepository repository) {
         return new File(repository.getRrdBaseDir(), m_agent.getStorageDir().toString());
     }
@@ -111,6 +113,7 @@ public abstract class AbstractCollectionResource implements CollectionResource {
     }
     
     /** {@inheritDoc} */
+    @Override
     public void visit(CollectionSetVisitor visitor) {
         visitor.visitResource(this);
         for (AttributeGroup group: m_attributeGroups.values()) {
@@ -124,6 +127,7 @@ public abstract class AbstractCollectionResource implements CollectionResource {
      *
      * @return a int.
      */
+    @Override
     public abstract int getType();
 
     /**
@@ -131,9 +135,11 @@ public abstract class AbstractCollectionResource implements CollectionResource {
      *
      * @return a boolean.
      */
+    @Override
     public abstract boolean rescanNeeded();
 
     /** {@inheritDoc} */
+    @Override
     public abstract boolean shouldPersist(ServiceParameters params);
 
     /**
@@ -141,10 +147,12 @@ public abstract class AbstractCollectionResource implements CollectionResource {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getLabel() {
         return null;
     }
     
+    @Override
     public TimeKeeper getTimeKeeper() {
         return null;
     }

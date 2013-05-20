@@ -36,7 +36,6 @@ import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.GraphDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.ResourceDao;
-import org.opennms.netmgt.dao.support.NodeSourceResourceType;
 import org.opennms.netmgt.dao.RrdDao;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.PrefabGraph;

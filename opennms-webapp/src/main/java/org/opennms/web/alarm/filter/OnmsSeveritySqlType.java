@@ -51,6 +51,7 @@ public class OnmsSeveritySqlType implements SQLType<OnmsSeverity> {
      * @param value a {@link org.opennms.netmgt.model.OnmsSeverity} object.
      * @throws java.sql.SQLException if any.
      */
+    @Override
     public void bindParam(final PreparedStatement ps, final int parameterIndex, final OnmsSeverity value) throws SQLException {
         ps.setInt(parameterIndex, value.getId());
     }
@@ -62,6 +63,7 @@ public class OnmsSeveritySqlType implements SQLType<OnmsSeverity> {
      * @param value2 a {@link org.opennms.netmgt.model.OnmsSeverity} object.
      * @return an array of {@link org.opennms.netmgt.model.OnmsSeverity} objects.
      */
+    @Override
     public OnmsSeverity[] createArray(final OnmsSeverity value1, final OnmsSeverity value2) {
         return new OnmsSeverity[] { value1, value2 };
     }
@@ -72,6 +74,7 @@ public class OnmsSeveritySqlType implements SQLType<OnmsSeverity> {
      * @param value a {@link org.opennms.netmgt.model.OnmsSeverity} object.
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String formatValue(final OnmsSeverity value) {
         return String.valueOf(value.getId());
     }
@@ -82,6 +85,7 @@ public class OnmsSeveritySqlType implements SQLType<OnmsSeverity> {
      * @param value a {@link org.opennms.netmgt.model.OnmsSeverity} object.
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getValueAsString(final OnmsSeverity value) {
         return String.valueOf(value.getId());
     }

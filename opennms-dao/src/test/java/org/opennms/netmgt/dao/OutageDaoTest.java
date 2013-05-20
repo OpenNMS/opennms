@@ -109,6 +109,7 @@ public class OutageDaoTest implements InitializingBean, TemporaryDatabaseAware<T
 
     private TemporaryDatabase m_database;
 
+    @Override
     public void setTemporaryDatabase(TemporaryDatabase database) {
         m_database = database;
     }
@@ -169,6 +170,7 @@ public class OutageDaoTest implements InitializingBean, TemporaryDatabaseAware<T
     @JUnitTemporaryDatabase
     public void testGetMatchingOutages() {
         m_transTemplate.execute(new TransactionCallback<Object>() {
+            @Override
             public Object doInTransaction(TransactionStatus status) {
                 OnmsNode node = new OnmsNode(getLocalHostDistPoller());
                 node.setLabel("localhost");
@@ -185,6 +187,7 @@ public class OutageDaoTest implements InitializingBean, TemporaryDatabaseAware<T
          */
 
         m_transTemplate.execute(new TransactionCallback<Object>() {
+            @Override
             public Object doInTransaction(TransactionStatus status) {
                 String[] svcs = new String[] { "ICMP" };
                 ServiceSelector selector = new ServiceSelector("ipAddr IPLIKE 172.16.1.1", Arrays.asList(svcs));
@@ -199,6 +202,7 @@ public class OutageDaoTest implements InitializingBean, TemporaryDatabaseAware<T
     @JUnitTemporaryDatabase
     public void testGetMatchingOutagesWithEmptyServiceList() {
         m_transTemplate.execute(new TransactionCallback<Object>() {
+            @Override
             public Object doInTransaction(TransactionStatus status) {
                 OnmsNode node = new OnmsNode(getLocalHostDistPoller());
                 node.setLabel("localhost");
@@ -215,6 +219,7 @@ public class OutageDaoTest implements InitializingBean, TemporaryDatabaseAware<T
          */
 
         m_transTemplate.execute(new TransactionCallback<Object>() {
+            @Override
             public Object doInTransaction(TransactionStatus status) {
                 ServiceSelector selector = new ServiceSelector("ipAddr IPLIKE 172.16.1.1", new ArrayList<String>(0));
                 Collection<OnmsOutage> outages = m_outageDao.matchingCurrentOutages(selector);

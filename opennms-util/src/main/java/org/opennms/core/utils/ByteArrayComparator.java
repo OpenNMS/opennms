@@ -39,6 +39,7 @@ import java.util.Comparator;
  */
 public class ByteArrayComparator implements Comparator<byte[]> {
 
+    @Override
     public int compare(byte[] a, byte[] b) {
         if (a == null && b == null) {
             return 0;

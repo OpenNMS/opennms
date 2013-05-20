@@ -71,6 +71,7 @@ public class BackupTablesFoundException extends Exception {
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
+    @Override
 	public String toString() {
 		StringBuffer m = new StringBuffer(getMessage());
 		m.append("\nBackup tables: \n\t");

@@ -48,6 +48,7 @@ public class VmwareCollectionSet implements CollectionSet {
         m_collectionResources = new ArrayList<VmwareCollectionResource>();
     }
 
+    @Override
     public int getStatus() {
         return m_status;
     }
@@ -56,6 +57,7 @@ public class VmwareCollectionSet implements CollectionSet {
         m_status = status;
     }
 
+    @Override
     public void visit(final CollectionSetVisitor visitor) {
         visitor.visitCollectionSet(this);
 
@@ -70,10 +72,12 @@ public class VmwareCollectionSet implements CollectionSet {
         return m_collectionResources;
     }
 
+    @Override
     public boolean ignorePersist() {
         return false;
     }
 
+    @Override
     public Date getCollectionTimestamp() {
         return m_timestamp;
     }

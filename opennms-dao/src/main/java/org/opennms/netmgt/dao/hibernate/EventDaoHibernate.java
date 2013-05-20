@@ -43,6 +43,7 @@ public class EventDaoHibernate extends AbstractDaoHibernate<OnmsEvent, Integer>
 	}
 
     /** {@inheritDoc} */
+        @Override
     public int deletePreviousEventsForAlarm(Integer id, OnmsEvent e) throws DataAccessException {
         String hql = "delete from OnmsEvent where alarmid = ? and eventid != ?";
         Object[] values = {id, e.getId()};

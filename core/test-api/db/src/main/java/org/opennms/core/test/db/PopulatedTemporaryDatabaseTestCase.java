@@ -116,6 +116,7 @@ public class PopulatedTemporaryDatabaseTestCase extends
         assertTrue("iplike directory exists at ../opennms-iplike: " + ipLikeDir.getAbsolutePath(), ipLikeDir.exists());
         
         File[] ipLikePlatformDirs = ipLikeDir.listFiles(new FileFilter() {
+            @Override
             public boolean accept(File file) {
                 if (file.getName().matches("opennms-iplike-.*") && file.isDirectory()) {
                     return true;
@@ -137,6 +138,7 @@ public class PopulatedTemporaryDatabaseTestCase extends
             }
           
             File[] ipLikeFiles = ipLikeTargetDir.listFiles(new FileFilter() {
+                @Override
                 public boolean accept(File file) {
                     if (file.isFile() && file.getName().matches("opennms-iplike-.*\\.(so|dylib)")) {
                         return true;

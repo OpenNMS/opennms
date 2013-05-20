@@ -75,7 +75,7 @@ public class RemoveVertexFromGroupOperation implements Constants, Operation {
 
 		final UI window = operationContext.getMainWindow();
 
-		final Window groupNamePrompt = new Window("Remove Item From Group");
+		final Window groupNamePrompt = new Window("Remove This Item From a Group");
 		groupNamePrompt.setModal(true);
 		groupNamePrompt.setResizable(false);
 		groupNamePrompt.setHeight("180px");
@@ -88,6 +88,7 @@ public class RemoveVertexFromGroupOperation implements Constants, Operation {
 		FormFieldFactory fieldFactory = new FormFieldFactory() {
 			private static final long serialVersionUID = 243277720538924081L;
 
+			@Override
 			public Field<?> createField(Item item, Object propertyId, Component uiContext) {
 				// Identify the fields by their Property ID.
 				String pid = (String) propertyId;

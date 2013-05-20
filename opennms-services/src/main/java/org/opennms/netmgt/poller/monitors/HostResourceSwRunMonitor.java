@@ -30,6 +30,7 @@ package org.opennms.netmgt.poller.monitors;
 
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
+import java.lang.StringIndexOutOfBoundsException;
 import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
@@ -114,6 +115,7 @@ public class HostResourceSwRunMonitor extends SnmpMonitorStrategy {
      *                Thrown if an unrecoverable error occurs that prevents the
      *                plug-in from functioning.
      */
+    @Override
     public void initialize(Map<String, Object> parameters) {
         // Initialize the SnmpPeerFactory
         //
@@ -139,6 +141,7 @@ public class HostResourceSwRunMonitor extends SnmpMonitorStrategy {
      *                interface from being monitored.
      * @param svc a {@link org.opennms.netmgt.poller.MonitoredService} object.
      */
+    @Override
     public void initialize(MonitoredService svc) {
         super.initialize(svc);
         return;
@@ -154,6 +157,7 @@ public class HostResourceSwRunMonitor extends SnmpMonitorStrategy {
      * @exception RuntimeException
      *                Thrown for any uncrecoverable errors.
      */
+    @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         NetworkInterface<InetAddress> iface = svc.getNetInterface();
 
@@ -297,7 +301,15 @@ public class HostResourceSwRunMonitor extends SnmpMonitorStrategy {
     }
 
     private static String stripExtraQuotes(String string) {
-        return StringUtils.stripFrontBack(string, "\"", "\"");
+        String stripped;
+        try {
+            stripped = StringUtils.stripFrontBack(string, "\"", "\"");
+        } catch (StringIndexOutOfBoundsException e) {
+            // Sometimes these are zero-length, see NMS-5852
+            stripped = string;
+        }
+
+        return stripped;
     }
 
 }

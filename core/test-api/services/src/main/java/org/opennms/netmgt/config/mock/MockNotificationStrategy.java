@@ -55,6 +55,7 @@ public class MockNotificationStrategy implements NotificationStrategy {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.notifd.NotificationStrategy#send(java.util.List)
      */
+    @Override
     public int send(List<Argument> arguments) {
         MockUtil.println("Message sent with arguments:"+arguments);
         

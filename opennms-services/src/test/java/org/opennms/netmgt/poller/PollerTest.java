@@ -1051,6 +1051,7 @@ public class PollerTest {
 		}
 		
 		MockVisitor gainSvcSender = new MockVisitorAdapter() {
+                        @Override
 			public void visitService(MockService svc) {
 				Event event = MockEventUtil
 						.createNodeGainedServiceEvent("Test", svc);
@@ -1233,6 +1234,7 @@ public class PollerTest {
 
 	private void anticipateServicesUp(MockElement node) {
 		MockVisitor eventCreator = new MockVisitorAdapter() {
+                        @Override
 			public void visitService(MockService svc) {
 				anticipateUp(svc);
 			}
@@ -1242,6 +1244,7 @@ public class PollerTest {
 
 	private void anticipateServicesDown(MockElement node) {
 		MockVisitor eventCreator = new MockVisitorAdapter() {
+                        @Override
 			public void visitService(MockService svc) {
 				anticipateDown(svc);
 			}
@@ -1251,6 +1254,7 @@ public class PollerTest {
 
 	private void createOutages(MockElement element, final Event event) {
 		MockVisitor outageCreater = new MockVisitorAdapter() {
+                        @Override
 			public void visitService(MockService svc) {
 			    if (svc.getMgmtStatus().equals(SvcMgmtStatus.ACTIVE)) {
 			        m_db.createOutage(svc, event);
@@ -1262,6 +1266,7 @@ public class PollerTest {
 
 	private void bringDownCritSvcs(MockElement element) {
 		MockVisitor markCritSvcDown = new MockVisitorAdapter() {
+                        @Override
 			public void visitService(MockService svc) {
 				if ("ICMP".equals(svc.getSvcName())) {
 					svc.bringDown();
@@ -1303,6 +1308,7 @@ public class PollerTest {
 								.getTime());
 		}
 
+                @Override
 		public void processRow(ResultSet rs) throws SQLException {
 			assertEquals(m_svc.getNodeId(), rs.getInt("nodeId"));
 			assertEquals(m_svc.getIpAddr(), rs.getString("ipAddr"));

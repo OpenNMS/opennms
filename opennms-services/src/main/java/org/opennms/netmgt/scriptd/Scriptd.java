@@ -85,6 +85,7 @@ public final class Scriptd extends AbstractServiceDaemon {
     /**
      * Initialize the <em>Scriptd</em> service.
      */
+    @Override
     protected void onInit() {
 
         // Load the configuration information
@@ -128,6 +129,7 @@ public final class Scriptd extends AbstractServiceDaemon {
     /**
      * <p>onStart</p>
      */
+    @Override
     protected void onStart() {
 		if (m_execution == null) {
 		    init();
@@ -140,6 +142,7 @@ public final class Scriptd extends AbstractServiceDaemon {
     /**
      * <p>onStop</p>
      */
+    @Override
     protected void onStop() {
 		try {
             if (m_execution != null) {
@@ -159,6 +162,7 @@ public final class Scriptd extends AbstractServiceDaemon {
     /**
      * <p>onPause</p>
      */
+    @Override
     protected void onPause() {
 		m_execution.pause();
 	}
@@ -166,6 +170,7 @@ public final class Scriptd extends AbstractServiceDaemon {
     /**
      * <p>onResume</p>
      */
+    @Override
     protected void onResume() {
 		m_execution.resume();
 	}

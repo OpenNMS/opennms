@@ -48,6 +48,7 @@ public class JdbcIfInfoGetter implements IfInfoGetter {
      * @see org.opennms.netmgt.threshd.IfInfoGetter#getIfInfoForNodeAndLabel(int, java.lang.String)
      */
     /** {@inheritDoc} */
+    @Override
     public Map<String, String> getIfInfoForNodeAndLabel(int nodeId, String ifLabel) {
         Map<String, String> ifInfo = new HashMap<String, String>();
         ifInfo = IfLabel.getInterfaceInfoFromIfLabel(nodeId, ifLabel);
@@ -55,6 +56,7 @@ public class JdbcIfInfoGetter implements IfInfoGetter {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getIfLabel(int nodeId, String ipAddress) {
         return IfLabel.getIfLabel(nodeId, ipAddress);
     }

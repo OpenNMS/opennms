@@ -128,6 +128,7 @@ public final class DhcpPlugin extends AbstractPlugin {
      *
      * @return The name of the protocol for the plugin.
      */
+    @Override
     public String getProtocolName() {
         return PROTOCOL_NAME;
     }
@@ -141,6 +142,7 @@ public final class DhcpPlugin extends AbstractPlugin {
      * listenter that matches our original request then a value of true is
      * returned to the caller.
      */
+    @Override
     public boolean isProtocolSupported(InetAddress host) {
         return isServer(host, DEFAULT_RETRY, DEFAULT_TIMEOUT);
     }
@@ -154,6 +156,7 @@ public final class DhcpPlugin extends AbstractPlugin {
      * listenter that matches our original request then a value of true is
      * returned to the caller.
      */
+    @Override
     public boolean isProtocolSupported(InetAddress host, Map<String, Object> qualifiers) {
         int retries = DEFAULT_RETRY;
         int timeout = DEFAULT_TIMEOUT;

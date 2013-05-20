@@ -59,6 +59,7 @@ public class Pager extends Composite {
             
             m_label.addClickHandler(new ClickHandler() {
 
+                @Override
                 public void onClick(ClickEvent sender) {
                     adjustPage(m_direction);
                     

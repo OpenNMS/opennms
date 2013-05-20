@@ -66,6 +66,7 @@ public class V4Pinger extends AbstractPinger<Inet4Address> {
         }
     }
     
+    @Override
     public void run() {
         try {
             final int pingerId = getPingerId();
@@ -91,6 +92,7 @@ public class V4Pinger extends AbstractPinger<Inet4Address> {
         return new IPPacket(datagram.getContent()).getPayload();
     }
     
+    @Override
     public void ping(final Inet4Address addr, final int identifier, final int sequenceNumber, final long threadId, final long count, final long interval, final int packetSize) throws InterruptedException {
         final NativeDatagramSocket socket = getPingSocket();
         for(int i = sequenceNumber; i < sequenceNumber + count; i++) {

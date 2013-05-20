@@ -132,6 +132,7 @@ public class SnmpAssetProvisioningAdapter extends SimplerQueuedProvisioningAdapt
 		Assert.notNull(node, "doAdd: failed to return node for given nodeId:"+nodeId);
 
 		InetAddress ipaddress = m_template.execute(new TransactionCallback<InetAddress>() {
+                        @Override
 			public InetAddress doInTransaction(TransactionStatus arg0) {
 				return getIpForNode(node);
 			}
@@ -246,6 +247,7 @@ public class SnmpAssetProvisioningAdapter extends SimplerQueuedProvisioningAdapt
 		Assert.notNull(node, "doUpdate: failed to return node for given nodeId:"+nodeId);
 
 		final InetAddress ipaddress = m_template.execute(new TransactionCallback<InetAddress>() {
+                        @Override
 			public InetAddress doInTransaction(final TransactionStatus arg0) {
 				return getIpForNode(node);
 			}
@@ -367,6 +369,7 @@ public class SnmpAssetProvisioningAdapter extends SimplerQueuedProvisioningAdapt
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
+        @Override
 	public String getName() {
 		return NAME;
 	}

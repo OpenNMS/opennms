@@ -56,6 +56,7 @@ public class PollAnticipator {
          * an element it visits.
          */
         MockVisitor anticipateSvcs = new MockVisitorAdapter() {
+            @Override
             public void visitService(MockService svc) {
                 anticipatePoll(svc);
             }

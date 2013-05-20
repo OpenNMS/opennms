@@ -34,10 +34,12 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.lang.builder.CompareToBuilder;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TableTracker extends CollectionTracker implements RowCallback, RowResultFactory {
+	
+	private static final transient Logger LOG = LoggerFactory.getLogger(TableTracker.class);
 
     private final SnmpTableResult m_tableResult;
 
@@ -97,12 +99,14 @@ public class TableTracker extends CollectionTracker implements RowCallback, RowR
         return new CombinedColumnResponseProcessor(processors);
     }
 
+        @Override
     public void storeResult(SnmpResult res) {
         //System.err.println(String.format("storeResult: %s", res));
-    	ThreadCategory.getInstance(SnmpResult.class).debug(String.format("storeResult: %s", res));
+    	LOG.debug("storeResult: {}", res);
         m_tableResult.storeResult(res);
     }
     
+        @Override
     public void rowCompleted(SnmpRowResult row) {
         // the default implementation just forwards this to the super class
         // like the defaults for other CollectionTrackers except this does it
@@ -112,6 +116,7 @@ public class TableTracker extends CollectionTracker implements RowCallback, RowR
         }
     }
 
+        @Override
     public SnmpRowResult createRowResult(int columnCount, SnmpInstId instance) {
         return m_tableResult.createRowResult(columnCount, instance);
     }
@@ -121,10 +126,14 @@ public class TableTracker extends CollectionTracker implements RowCallback, RowR
         List<ColumnTracker> sortedTrackerList = new ArrayList<ColumnTracker>(m_columnTrackers);
 
         Collections.sort(sortedTrackerList, new Comparator<ColumnTracker>() {
+            @Override
             public int compare(ColumnTracker o1, ColumnTracker o2) {
-                return new CompareToBuilder()
-                    .append(o1.getLastInstance(), o2.getLastInstance())
-                    .toComparison();
+            	SnmpInstId lhs = o1.getLastInstance();
+				SnmpInstId rhs = o2.getLastInstance();
+				if (lhs == rhs) return 0;
+				if (lhs == null) return -1;
+				if (rhs == null) return 1;
+				return lhs.compareTo(rhs);
             }
         });
         
@@ -149,6 +158,7 @@ public class TableTracker extends CollectionTracker implements RowCallback, RowR
             m_processors = processors;
         }
 
+        @Override
         public void processResponse(SnmpObjId responseObjId, SnmpValue val) {
             try {
             ResponseProcessor rp = m_processors.get(m_currentIndex);
@@ -164,6 +174,7 @@ public class TableTracker extends CollectionTracker implements RowCallback, RowR
 
         }
 
+        @Override
         public boolean processErrors(int errorStatus, int errorIndex) {
             
             /*

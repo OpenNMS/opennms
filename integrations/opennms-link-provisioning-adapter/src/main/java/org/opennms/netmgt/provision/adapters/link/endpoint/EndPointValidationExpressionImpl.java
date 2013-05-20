@@ -65,6 +65,7 @@ public abstract class EndPointValidationExpressionImpl implements EndPointValida
     }
     
     /** {@inheritDoc} */
+    @Override
     public abstract void validate(EndPoint endPoint) throws EndPointStatusException;
 
 }

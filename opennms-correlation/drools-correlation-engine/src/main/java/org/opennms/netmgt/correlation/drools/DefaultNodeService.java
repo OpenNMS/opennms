@@ -43,6 +43,7 @@ public class DefaultNodeService implements NodeService {
     private NodeDao m_nodeDao;
 
     /** {@inheritDoc} */
+    @Override
     public Long getParentNode(final Long nodeid) {
     	final OnmsNode node = m_nodeDao.get(nodeid.intValue());
         Assert.notNull(node, "Unable to find node with id "+nodeid);

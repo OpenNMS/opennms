@@ -820,6 +820,76 @@ public class EventConstants {
     public final static String PARM_NEW_PRIMARY_SNMP_ADDRESS = "newPrimarySnmpAddress";
 
     /**
+     * The parameter name for the "SNMP security name string" when sent as an event parameter.
+     */
+    public final static String PARM_SNMP_SECURITY_NAME = "securityName";
+    
+    /**
+     * The parameter name for the "SNMP security level string" when sent as an event parameter.
+     */
+    public final static String PARM_SNMP_SECURITY_LEVEL = "securityLevel";
+    
+    /**
+     * The parameter name for the "SNMP auth passphrase string" when sent as an event parameter.
+     */
+    public final static String PARM_SNMP_AUTH_PASSPHRASE = "authPassphrase";
+    
+    /**
+     * The parameter name for the "SNMP auth protocol string" when sent as an event parameter.
+     */
+    public final static String PARM_SNMP_AUTH_PROTOCOL = "authProtocol";
+    
+    /**
+     * The parameter name for the "SNMP engine id string" when sent as an event parameter.
+     */
+    public final static String PARM_SNMP_ENGINE_ID = "engineId";
+    
+    /**
+     * The parameter name for the "SNMP context engine id string" when sent as an event parameter.
+     */
+    public final static String PARM_SNMP_CONTEXT_ENGINE_ID = "contextEngineId";
+    
+    /**
+     * The parameter name for the "SNMP enterprise id string" when sent as an event parameter.
+     */
+    public final static String PARM_SNMP_ENTERPRISE_ID = "enterpriseId";
+    
+    /**
+     * The parameter name for the "SNMP context name string" when sent as an event parameter.
+     */
+    public final static String PARM_SNMP_CONTEXT_NAME = "contextName"; 
+    
+    /**
+     * The parameter name for the "SNMP privacy passphrase string" when sent as an event parameter.
+     */
+    public final static String PARM_SNMP_PRIVACY_PASSPHRASE = "privPassphrase";
+    
+    /**
+     * The parameter name for the "SNMP privacy protocol string" when sent as an event parameter.
+     */
+    public final static String PARM_SNMP_PRIVACY_PROTOCOL = "privProtocol";
+    
+    /**
+     * The parameter name for the "SNMP max repetitions string" when sent as an event parameter.
+     */
+    public final static String PARM_SNMP_MAX_REPETITIONS = "maxRepetitions";
+    
+    /**
+     * The parameter name for the "SNMP max request size string" when sent as an event parameter.
+     */
+    public final static String PARM_SNMP_MAX_REQUEST_SIZE = "maxRequestSize";
+    
+    /**
+     * The parameter name for the "SNMP max vars per pdu string" when sent as an event parameter.
+     */
+    public final static String PARM_SNMP_MAX_VARS_PER_PDU = "maxVarsPerPdu";
+    
+    /**
+     * The parameter name for the "SNMP proxy host string" when sent as an event parameter.
+     */
+    public final static String PARM_SNMP_PROXY_HOST= "proxyHost";
+    
+    /**
      * The first IP address in a range of IP addresses when sent as an event
      * parm.
      */
@@ -832,9 +902,21 @@ public class EventConstants {
     public final static String PARM_LAST_IP_ADDRESS = "lastIPAddress";
 
     /**
-     * The SNMP community string when sent as an event parm.
+     * The SNMP read community string when sent as an event parm.
+     * @deprecated use {@link #PARM_SNMP_READ_COMMUNITY_STRING} instead
      */
+    @Deprecated
     public final static String PARM_COMMUNITY_STRING = "communityString";
+    
+    /**
+     * The SNMP read community string when sent as an event parm.
+     */
+    public final static String PARM_SNMP_READ_COMMUNITY_STRING = "readCommunityString";
+    
+    /**
+     * The SNMP write community string when sent as an event parm.
+     */
+    public final static String PARM_SNMP_WRITE_COMMUNITY_STRING = "writeCommunityString";
 
     /**
      * Service monitor qualifier when sent as an event parm
@@ -1082,6 +1164,7 @@ public class EventConstants {
     public final static SnmpObjId OID_SNMP_IFINDEX = SnmpObjId.get(".1.3.6.1.2.1.2.2.1.1");
 
     public static final ThreadLocal<DateFormat> FORMATTER_FULL = new ThreadLocal<DateFormat>() {
+        @Override
         protected synchronized DateFormat initialValue() {
             int timeFormat = DateFormat.FULL;
             // The DateFormat.FULL format for France/Germany do not include the seconds digit
@@ -1102,6 +1185,7 @@ public class EventConstants {
     };
 
     public static final ThreadLocal<DateFormat> FORMATTER_LONG = new ThreadLocal<DateFormat>() {
+        @Override
         protected synchronized DateFormat initialValue() {
             final DateFormat formatter = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.LONG);
             formatter.setLenient(true);
@@ -1110,6 +1194,7 @@ public class EventConstants {
     };
     
     public static final ThreadLocal<DateFormat> FORMATTER_FULL_GMT = new ThreadLocal<DateFormat>() {
+        @Override
         protected synchronized DateFormat initialValue() {
             int timeFormat = DateFormat.FULL;
             // The DateFormat.FULL format for France/Germany do not include the seconds digit
@@ -1131,6 +1216,7 @@ public class EventConstants {
     };
 
     public static final ThreadLocal<DateFormat> FORMATTER_LONG_GMT = new ThreadLocal<DateFormat>() {
+        @Override
         protected synchronized DateFormat initialValue() {
             final DateFormat formatter = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.LONG);
             formatter.setLenient(true);
@@ -1140,6 +1226,7 @@ public class EventConstants {
     };
 
     public static final ThreadLocal<DateFormat> FORMATTER_CUSTOM = new ThreadLocal<DateFormat>() {
+        @Override
         protected synchronized DateFormat initialValue() {
             final DateFormat formatter = new SimpleDateFormat("EEEEE, d MMMMM yyyy k:mm:ss 'o''clock' z");
             formatter.setLenient(true);
@@ -1148,6 +1235,7 @@ public class EventConstants {
     };
 
     public static final ThreadLocal<DateFormat> FORMATTER_DEFAULT = new ThreadLocal<DateFormat>() {
+        @Override
         protected synchronized DateFormat initialValue() {
             final DateFormat formatter = DateFormat.getDateTimeInstance();
             formatter.setLenient(true);

@@ -45,6 +45,7 @@ public class AccessPointMonitorConfigDaoJaxb extends AbstractJaxbConfigDao<Acces
         super(AccessPointMonitorConfig.class, "Access Point Monitor Configuration");
     }
 
+    @Override
     public AccessPointMonitorConfig getConfig() {
         return getContainer().getObject();
     }

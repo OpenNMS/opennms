@@ -181,6 +181,7 @@ public class GWTPollResult implements Serializable, IsSerializable, Comparable<G
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
+        @Override
 	public String toString() {
 		return "GWTPollResult[status=" + m_status + ",timestamp=" + m_timestamp + ",responseTime=" + m_responseTime + ",reason=" + m_reason + "]";
 	}
@@ -191,6 +192,7 @@ public class GWTPollResult implements Serializable, IsSerializable, Comparable<G
 	 * @param that a {@link org.opennms.features.poller.remote.gwt.client.GWTPollResult} object.
 	 * @return a int.
 	 */
+        @Override
 	public int compareTo(GWTPollResult that) {
 		return new CompareToBuilder()
 			.append(this.getTimestamp(), that.getTimestamp())

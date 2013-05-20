@@ -90,6 +90,7 @@ public class PolledService implements MonitoredService, Serializable, Comparable
      *
      * @return a {@link java.net.InetAddress} object.
      */
+    @Override
     public InetAddress getAddress() {
         return m_netInterface.getAddress();
     }
@@ -99,6 +100,7 @@ public class PolledService implements MonitoredService, Serializable, Comparable
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getIpAddr() {
         return InetAddressUtils.str(m_netInterface.getAddress());
     }
@@ -108,6 +110,7 @@ public class PolledService implements MonitoredService, Serializable, Comparable
      *
      * @return a {@link org.opennms.netmgt.poller.NetworkInterface} object.
      */
+    @Override
     public NetworkInterface<InetAddress> getNetInterface() {
         return m_netInterface;
     }
@@ -117,6 +120,7 @@ public class PolledService implements MonitoredService, Serializable, Comparable
      *
      * @return a int.
      */
+    @Override
     public int getNodeId() {
         return m_nodeId;
     }
@@ -126,6 +130,7 @@ public class PolledService implements MonitoredService, Serializable, Comparable
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getNodeLabel() {
         return m_nodeLabel;
     }
@@ -135,6 +140,7 @@ public class PolledService implements MonitoredService, Serializable, Comparable
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getSvcName() {
         return m_svcName;
     }
@@ -194,6 +200,7 @@ public class PolledService implements MonitoredService, Serializable, Comparable
      * @param that a {@link org.opennms.netmgt.poller.remote.PolledService} object.
      * @return a int.
      */
+    @Override
     public int compareTo(final PolledService that) {
         if (that == null) return -1;
         return new CompareToBuilder()
@@ -205,6 +212,7 @@ public class PolledService implements MonitoredService, Serializable, Comparable
             .toComparison();
     }
 
+    @Override
     public String getSvcUrl() {
         return null;
     }

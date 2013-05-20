@@ -52,6 +52,7 @@ public class DaemonManagerDefault implements DaemonManager {
 	/**
 	 * <p>pause</p>
 	 */
+        @Override
 	public void pause() {
         for(ServiceDaemon serviceDaemon : m_serviceDaemons) {
 			serviceDaemon.pause();
@@ -61,6 +62,7 @@ public class DaemonManagerDefault implements DaemonManager {
 	/**
 	 * <p>resume</p>
 	 */
+        @Override
 	public void resume() {
         for(ServiceDaemon serviceDaemon : m_serviceDaemons) {
 			serviceDaemon.resume();
@@ -70,6 +72,7 @@ public class DaemonManagerDefault implements DaemonManager {
 	/**
 	 * <p>start</p>
 	 */
+        @Override
 	public void start() {
         for(ServiceDaemon serviceDaemon : m_serviceDaemons) {
 			serviceDaemon.start();
@@ -81,6 +84,7 @@ public class DaemonManagerDefault implements DaemonManager {
 	 *
 	 * @return a {@link java.util.Map} object.
 	 */
+        @Override
 	public Map<String, String> status() {
         Map<String, String> stati = new HashMap<String, String>();
         for(ServiceDaemon serviceDaemon : m_serviceDaemons) {
@@ -92,6 +96,7 @@ public class DaemonManagerDefault implements DaemonManager {
 	/**
 	 * <p>stop</p>
 	 */
+        @Override
 	public void stop() {
         for(ServiceDaemon serviceDaemon : m_serviceDaemons) {
 			stopService(serviceDaemon);

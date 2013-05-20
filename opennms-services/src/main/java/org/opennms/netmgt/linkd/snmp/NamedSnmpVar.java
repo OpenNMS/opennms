@@ -236,6 +236,7 @@ public final class NamedSnmpVar implements Collectable {
      *
      * @return a {@link org.opennms.netmgt.snmp.CollectionTracker} object.
      */
+    @Override
     public CollectionTracker getCollectionTracker() {
         return m_isTabular ? (CollectionTracker)new ColumnTracker(getSnmpObjId()) : 
                              (CollectionTracker)new SingleInstanceTracker(getSnmpObjId(), SnmpInstId.INST_ZERO);

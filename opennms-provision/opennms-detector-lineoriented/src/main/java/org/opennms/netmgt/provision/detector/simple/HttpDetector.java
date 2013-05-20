@@ -123,6 +123,7 @@ public class HttpDetector extends AsyncBasicDetectorMinaImpl<LineOrientedRequest
     protected static ResponseValidator<HttpStatusResponse> contains(final String pattern, final String url, final boolean isCheckCode, final int maxRetCode){
         return new ResponseValidator<HttpStatusResponse>(){
 
+            @Override
             public boolean validate(final HttpStatusResponse message) {
                 
                 try {

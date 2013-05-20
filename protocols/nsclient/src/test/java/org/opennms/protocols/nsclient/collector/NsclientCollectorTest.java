@@ -87,6 +87,7 @@ public class NsclientCollectorTest extends AbstractNsclientTest {
     }
 
     @Before
+    @Override
     public void setUp() throws Exception {
         super.setUp();
         startServer("None&8&", "10");
@@ -115,6 +116,7 @@ public class NsclientCollectorTest extends AbstractNsclientTest {
     }
 
     @After
+    @Override
     public void tearDown() throws Exception {
         stopServer();
         EasyMock.verify(m_ipInterfaceDao, m_eventProxy);

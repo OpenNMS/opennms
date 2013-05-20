@@ -40,6 +40,7 @@ import org.opennms.netmgt.snmp.SnmpAgentConfig;
  */
 public class AnAgentConfigFactory implements SnmpAgentConfigFactory {
 
+    @Override
     public SnmpAgentConfig getAgentConfig(final InetAddress address) {
     	final SnmpAgentConfig agentConfig = new SnmpAgentConfig(address);
         agentConfig.setVersion(SnmpAgentConfig.DEFAULT_VERSION);

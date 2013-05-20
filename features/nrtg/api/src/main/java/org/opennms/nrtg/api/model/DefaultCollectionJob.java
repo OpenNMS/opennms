@@ -304,6 +304,7 @@ public class DefaultCollectionJob implements CollectionJob {
         return destinationStringBuilder.substring(0, destinationStringBuilder.toString().length() - 2);
     }
 
+    @Override
     public String getOnmsLogicMetricId(String metricId) {
         return m_onmsLogicMetricIdMapping.get(metricId);
     }

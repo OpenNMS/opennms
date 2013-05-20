@@ -79,7 +79,9 @@ public class DefaultSelectionManager implements SelectionManager {
 
 	@Override
 	public void addSelectionListener(SelectionListener listener) {
-		m_addedListeners.add(listener);
+		if (listener != null) {
+			m_addedListeners.add(listener);
+		}
 	}
 	
 	@Override
@@ -99,11 +101,11 @@ public class DefaultSelectionManager implements SelectionManager {
 	@Override
 	public void selectionChanged(SelectionContext selectionContext) {
 		for(SelectionListener listener : m_listeners) {
-			LoggerFactory.getLogger(this.getClass()).debug("Invoking selectionChanged() on {}", listener);
+			LoggerFactory.getLogger(this.getClass()).debug("Invoking selectionChanged() on: {}, {}", listener.getClass().getName(), listener);
 			listener.selectionChanged(selectionContext);
 		}
 		for(SelectionListener listener : m_addedListeners) {
-			LoggerFactory.getLogger(this.getClass()).debug("Invoking selectionChanged() on {}", listener);
+			LoggerFactory.getLogger(this.getClass()).debug("Invoking selectionChanged() on: {}, {}", listener.getClass().getName(), listener);
 			listener.selectionChanged(selectionContext);
 		}
 	}

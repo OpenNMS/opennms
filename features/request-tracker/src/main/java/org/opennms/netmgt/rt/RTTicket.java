@@ -160,6 +160,7 @@ public class RTTicket implements Serializable {
         m_customFields.add(customField);
     }
 
+    @Override
     public String toString() {
         StringBuilder customFields = new StringBuilder();
         for (CustomField cf : m_customFields) {

@@ -65,6 +65,7 @@ public class RTUser implements Serializable {
         return m_email;
     }
     
+        @Override
     public String toString() {
         return new ToStringBuilder(this)
             .append("id", m_id)

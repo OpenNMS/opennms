@@ -81,6 +81,7 @@ public class ReverseDnsProvisioningAdapter extends SimpleQueuedProvisioningAdapt
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void afterPropertiesSet() throws Exception {        
         String dnsServer = System.getProperty("importer.adapter.dns.server");
         if (!StringUtils.isBlank(dnsServer)) {
@@ -136,6 +137,7 @@ public class ReverseDnsProvisioningAdapter extends SimpleQueuedProvisioningAdapt
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getName() {
         return ADAPTER_NAME;
     }

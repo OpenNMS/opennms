@@ -99,6 +99,7 @@ public class MenuBarBuilder extends MenuBuilder<MenuBar.Command, MenuItem> {
     }
 
 	@SuppressWarnings("unchecked")
+    @Override
 	protected void addMenuItems(MenuItem subMenu, Map<String, Object> value) {
 	    
 	    Set<Entry<String, Object>> sortedEntrySet = getSortedSubmenuGroup(subMenu.getText(), value);

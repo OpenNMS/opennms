@@ -114,6 +114,7 @@ public class AutomationProcessor implements ReadyRunnable {
 			return getTrigger().getName();
 		}
 		
+        @Override
 		public String toString() {
 			return m_trigger == null ? "<No-Trigger>" : m_trigger.getName();
 		}
@@ -356,6 +357,7 @@ public class AutomationProcessor implements ReadyRunnable {
 			return m_action.getName();
 		}
 		
+        @Override
 		public String toString() {
 			return m_action.getName();
 		}
@@ -487,6 +489,7 @@ public class AutomationProcessor implements ReadyRunnable {
             m_rs = rs;
         }
 
+        @Override
         public String getSymbolValue(String symbol) {
             try {
                 return m_rs.getString(symbol);
@@ -499,6 +502,7 @@ public class AutomationProcessor implements ReadyRunnable {
     
     static class InvalidSymbolTable implements PropertiesUtils.SymbolTable {
 
+        @Override
         public String getSymbolValue(String symbol) {
             throw new IllegalArgumentException("token "+symbol+" is not allowed for "+this+" when no trigger is being processed");
         }
@@ -685,6 +689,7 @@ public class AutomationProcessor implements ReadyRunnable {
     /**
      * <p>run</p>
      */
+    @Override
     public void run() {
 
         Date startDate = new Date();
@@ -860,6 +865,7 @@ public class AutomationProcessor implements ReadyRunnable {
      *
      * @return a boolean.
      */
+    @Override
     public boolean isReady() {
         return m_ready;
     }

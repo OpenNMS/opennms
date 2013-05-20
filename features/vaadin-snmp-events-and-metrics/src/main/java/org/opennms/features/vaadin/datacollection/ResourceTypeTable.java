@@ -69,6 +69,7 @@ public abstract class ResourceTypeTable extends Table {
         setHeight("250px");
         addValueChangeListener(new Property.ValueChangeListener() {
             @SuppressWarnings("unchecked")
+            @Override
             public void valueChange(Property.ValueChangeEvent event) {
                 if (getValue() != null) {
                     BeanItem<ResourceType> item = (BeanItem<ResourceType>) getContainerDataSource().getItem(getValue());

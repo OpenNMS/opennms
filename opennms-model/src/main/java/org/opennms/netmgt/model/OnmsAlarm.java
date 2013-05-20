@@ -55,6 +55,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.hibernate.ObjectNotFoundException;
 import org.hibernate.annotations.CollectionOfElements;
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.MapKey;
@@ -288,6 +289,7 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
 	@XmlTransient
 	@ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="nodeId")
+    @Override
     public OnmsNode getNode() {
         return this.m_node;
     }
@@ -700,6 +702,12 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
         this.m_alarmAckUser = alarmackuser;
     }
 
+    @Transient
+    @XmlTransient
+    public boolean isAcknowledged() {
+        return getAlarmAckUser() != null;
+    }
+
     /**
      * <p>getAlarmAckTime</p>
      *
@@ -760,7 +768,13 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
      */
     public void setLastEvent(OnmsEvent event) {
         this.m_lastEvent = event;
-        if (event!=null) this.m_lastEventTime = event.getEventTime(); // alarm can be saved with no associated event
+        if (event!=null) {
+            try {
+                this.m_lastEventTime = event.getEventTime(); // alarm can be saved with no associated event
+            } catch (final ObjectNotFoundException e) {
+                // ignore errors getting this event from the DB
+            }
+        }
     }
 
     /**
@@ -788,6 +802,7 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return new ToStringCreator(this)
             .append("alarmid", getId())
@@ -1057,6 +1072,7 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     }
     
     /** {@inheritDoc} */
+    @Override
     public void acknowledge(String user) {
         if (m_alarmAckTime == null || m_alarmAckUser == null) {
             m_alarmAckTime = Calendar.getInstance().getTime();
@@ -1065,17 +1081,20 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     }
     
     /** {@inheritDoc} */
+    @Override
     public void unacknowledge(String ackUser) {
         m_alarmAckTime = null;
         m_alarmAckUser = null;
     }
     
     /** {@inheritDoc} */
+    @Override
     public void clear(String ackUser) {
         m_severity = OnmsSeverity.CLEARED;
     }
     
     /** {@inheritDoc} */
+    @Override
     public void escalate(String ackUser) {
         m_severity = OnmsSeverity.escalate(m_severity);
 //        m_alarmAckUser = ackUser;
@@ -1088,6 +1107,7 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
      * @return a {@link org.opennms.netmgt.model.AckType} object.
      */
     @Transient
+    @Override
     public AckType getType() {
         return AckType.ALARM;
     }
@@ -1098,6 +1118,7 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
      * @return a {@link java.lang.Integer} object.
      */
     @Transient
+    @Override
     public Integer getAckId() {
         return m_id;
     }
@@ -1108,6 +1129,7 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
      * @return a {@link java.lang.String} object.
      */
     @Transient
+    @Override
     public String getAckUser() {
         return m_alarmAckUser;
     }
@@ -1118,6 +1140,7 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
      * @return a {@link java.util.Date} object.
      */
     @Transient
+    @Override
     public Date getAckTime() {
         return m_alarmAckTime;
     }

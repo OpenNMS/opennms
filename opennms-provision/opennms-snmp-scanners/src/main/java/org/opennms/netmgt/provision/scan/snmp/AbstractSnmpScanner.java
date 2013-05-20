@@ -91,6 +91,7 @@ public class AbstractSnmpScanner implements Scanner {
     /**
      * <p>init</p>
      */
+    @Override
     public void init() {
         Assert.notNull(m_snmpAgentConfigFactory, "snmpAgentConfigFactory must be set");
 
@@ -109,6 +110,7 @@ public class AbstractSnmpScanner implements Scanner {
      * @see org.opennms.netmgt.provision.Scanner#scan(org.opennms.netmgt.provision.ScanContext)
      */
     /** {@inheritDoc} */
+    @Override
     public void scan(ScanContext context) throws InterruptedException {
         InetAddress agentAddress = context.getAgentAddress("SNMP");
         if (agentAddress == null) {
@@ -157,6 +159,7 @@ public class AbstractSnmpScanner implements Scanner {
     protected SnmpExchange getSingleInstance(final String base, final String inst) {
         SnmpExchange exchange = new SnmpExchange() {
             Storer m_storer;
+            @Override
             public CollectionTracker createTracker(final ScanContext scanContext) {
                 return new SingleInstanceTracker(base, inst) {
                     @Override
@@ -166,6 +169,7 @@ public class AbstractSnmpScanner implements Scanner {
                     
                 };
             }
+            @Override
             public void andStoreIn(Storer storer) {
                 m_storer = storer;
             }

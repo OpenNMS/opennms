@@ -41,6 +41,7 @@ import org.apache.felix.shell.Command;
 public class SmsPingCommand implements Command {
 
 	/** {@inheritDoc} */
+        @Override
 	public void execute(String s, PrintStream out, PrintStream err) {
 		try {
 			String[] command = s.split("\\s");
@@ -68,6 +69,7 @@ public class SmsPingCommand implements Command {
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
+        @Override
 	public String getName() {
 		return "smsPing";
 	}
@@ -77,6 +79,7 @@ public class SmsPingCommand implements Command {
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
+        @Override
 	public String getShortDescription() {
 		return "Initiates an smsPing to the desired phonenumber";
 	}
@@ -86,6 +89,7 @@ public class SmsPingCommand implements Command {
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
+        @Override
 	public String getUsage() {
 		return "smsPing <phoneNumber>";
 	}

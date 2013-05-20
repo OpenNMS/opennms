@@ -99,6 +99,7 @@ public class OnmsUser implements UserDetails {
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
+    @Override
 	public String getPassword() {
 		return m_password;
 	}
@@ -143,6 +144,7 @@ public class OnmsUser implements UserDetails {
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
+    @Override
 	public String getUsername() {
 		return m_username;
 	}
@@ -169,6 +171,7 @@ public class OnmsUser implements UserDetails {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return new ToStringBuilder(this)
             .append("username", m_username)
@@ -182,6 +185,7 @@ public class OnmsUser implements UserDetails {
 	 *
 	 * @return an array of {@link org.springframework.security.GrantedAuthority} objects.
 	 */
+    @Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		return m_authorities;
 	}
@@ -200,6 +204,7 @@ public class OnmsUser implements UserDetails {
 	 *
 	 * @return a boolean.
 	 */
+    @Override
 	public boolean isAccountNonExpired() {
 		return true;
 	}
@@ -209,6 +214,7 @@ public class OnmsUser implements UserDetails {
 	 *
 	 * @return a boolean.
 	 */
+    @Override
 	public boolean isAccountNonLocked() {
 		return true;
 	}
@@ -218,6 +224,7 @@ public class OnmsUser implements UserDetails {
 	 *
 	 * @return a boolean.
 	 */
+    @Override
 	public boolean isCredentialsNonExpired() {
 		return true;
 	}
@@ -227,6 +234,7 @@ public class OnmsUser implements UserDetails {
 	 *
 	 * @return a boolean.
 	 */
+    @Override
 	public boolean isEnabled() {
 		return true;
 	}

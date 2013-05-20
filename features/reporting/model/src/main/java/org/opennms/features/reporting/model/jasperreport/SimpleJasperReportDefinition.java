@@ -48,36 +48,45 @@ public class SimpleJasperReportDefinition implements BasicReportDefinition,
     private boolean m_allowAccess;
     
     @XmlElement(name = "description")
+    @Override
     public String getDescription() {
         return m_description;
     }
     @XmlElement(name = "display-name")
+    @Override
     public String getDisplayName() {
         return m_displayName;
     }
     @XmlElement(name = "engine")
+    @Override
     public String getEngine() {
         return m_engine;
     }
     @XmlElement(name = "id")
+    @Override
     public String getId() {
         return m_id;
     }
     @XmlElement(name = "online")
+    @Override
     public boolean getOnline() {
         return m_online;
     }
     @XmlElement(name = "report-service")
+    @Override
     public String getReportService() {
         return m_reportService;
     }
+    @Override
     public String getRepositoryId() {
         return m_repositoryId;
     }
     @XmlElement(name = "template")
+    @Override
     public String getTemplate() {
         return m_template;
     }
+    @Override
     public void setDescription(String description) {
         m_description = description;
     }
@@ -92,21 +101,27 @@ public class SimpleJasperReportDefinition implements BasicReportDefinition,
         m_allowAccess = allowAccess;
     }
 
+    @Override
     public void setDisplayName(String displayName) {
         m_displayName = displayName;
     }
+    @Override
     public void setEngine(String engine) {
         m_engine = engine;
     }
+    @Override
     public void setId(String id) {
         m_id = id;
     }
+    @Override
     public void setOnline(boolean online) {
         m_online = online;
     }
+    @Override
     public void setReportService(String reportService) {
         m_reportService = reportService;
     }
+    @Override
     public void setTemplate(String template) {
         m_template = template;
     }

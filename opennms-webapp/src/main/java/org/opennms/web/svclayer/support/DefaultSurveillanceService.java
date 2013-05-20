@@ -80,6 +80,7 @@ public class DefaultSurveillanceService implements SurveillanceService {
             return m_nodeDao.findAllByCategoryList(categories);
         }
 
+        @Override
         public SurveillanceStatus[][] calculateCellStatus(final SurveillanceView sView, final ProgressMonitor progressMonitor) {
 
         	final List<Collection<OnmsNode>> nodesByRowIndex = new ArrayList<Collection<OnmsNode>>();
@@ -120,6 +121,7 @@ public class DefaultSurveillanceService implements SurveillanceService {
             return cellStatus;
         }
 
+        @Override
         public int getPhaseCount(final SurveillanceView sView) {
             return sView.getRowCount()+sView.getColumnCount()+1;
         }
@@ -146,6 +148,7 @@ public class DefaultSurveillanceService implements SurveillanceService {
         }
         
 
+        @Override
         public SurveillanceStatus[][] calculateCellStatus(final SurveillanceView sView, final ProgressMonitor progressMonitor) {
         	final SurveillanceStatus[][] cellStatus = new SurveillanceStatus[sView.getRowCount()][sView.getColumnCount()];
 
@@ -168,6 +171,7 @@ public class DefaultSurveillanceService implements SurveillanceService {
         }
 
 
+        @Override
         public int getPhaseCount(final SurveillanceView sView) {
             return sView.getRowCount()*sView.getColumnCount();
         }
@@ -194,6 +198,7 @@ public class DefaultSurveillanceService implements SurveillanceService {
         }
         
 
+        @Override
         public SurveillanceStatus[][] calculateCellStatus(final SurveillanceView sView, final ProgressMonitor progressMonitor) {
 
         	final SurveillanceStatus[][] cellStatus = new SurveillanceStatus[sView.getRowCount()][sView.getColumnCount()];
@@ -218,6 +223,7 @@ public class DefaultSurveillanceService implements SurveillanceService {
         }
 
 
+        @Override
         public int getPhaseCount(final SurveillanceView sView) {
             return sView.getRowCount()*sView.getColumnCount();
         }
@@ -305,6 +311,7 @@ public class DefaultSurveillanceService implements SurveillanceService {
      * Creates a custom table object containing intersected rows and
      * columns and categories.
      */
+    @Override
     public SimpleWebTable createSurveillanceTable(final String surveillanceViewName, final ProgressMonitor progressMonitor) {
         
         CellStatusStrategy strategy = getCellStatusStrategy();
@@ -460,11 +467,13 @@ public class DefaultSurveillanceService implements SurveillanceService {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getHeaderRefreshSeconds(final String viewName) {
         return m_surveillanceConfigDao.getView(viewName == null ? m_surveillanceConfigDao.getDefaultView().getName() : viewName).getRefreshSeconds();
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isViewName(final String viewName) {
         View view = ( viewName == null ? m_surveillanceConfigDao.getDefaultView() : m_surveillanceConfigDao.getView(viewName) );
         return (view == null) ? false : true;
@@ -475,6 +484,7 @@ public class DefaultSurveillanceService implements SurveillanceService {
      *
      * @return a {@link java.util.List} object.
      */
+    @Override
     public List<String> getViewNames() {
     	final List<String> viewNames = new ArrayList<String>(m_surveillanceConfigDao.getViews().getViewCount());
         for (final View view : getViewCollection()) {

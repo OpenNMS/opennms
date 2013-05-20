@@ -70,6 +70,7 @@ public class IteratorIterator<T> implements Iterator<T>, Iterable<T> {
      *
      * @return a boolean.
      */
+    @Override
     public boolean hasNext() {
         while ((m_currentIter == null || !m_currentIter.hasNext())
                 && m_iterIter.hasNext()) {
@@ -85,6 +86,7 @@ public class IteratorIterator<T> implements Iterator<T>, Iterable<T> {
      *
      * @return a T object.
      */
+    @Override
     public T next() {
         if (m_currentIter == null) {
             m_currentIter = m_iterIter.next();
@@ -95,6 +97,7 @@ public class IteratorIterator<T> implements Iterator<T>, Iterable<T> {
     /**
      * <p>remove</p>
      */
+    @Override
     public void remove() {
         m_currentIter.remove();
     }
@@ -104,6 +107,7 @@ public class IteratorIterator<T> implements Iterator<T>, Iterable<T> {
      *
      * @return a {@link java.util.Iterator} object.
      */
+    @Override
     public Iterator<T> iterator() {
         return this;
     }

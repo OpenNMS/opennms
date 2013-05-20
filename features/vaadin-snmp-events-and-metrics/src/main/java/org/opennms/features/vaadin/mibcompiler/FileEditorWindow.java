@@ -32,15 +32,15 @@ import java.io.File;
 import org.opennms.features.vaadin.api.Logger;
 
 import com.vaadin.data.util.TextFileProperty;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.themes.Runo;
 import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.themes.Runo;
 
 /**
  * The File Editor Window.
@@ -114,6 +114,7 @@ public class FileEditorWindow extends Window implements Button.ClickListener {
     /* (non-Javadoc)
      * @see com.vaadin.ui.Button.ClickListener#buttonClick(com.vaadin.ui.Button.ClickEvent)
      */
+    @Override
     public void buttonClick(ClickEvent event) {
         if (event.getButton().equals(save)) {
             if (editor.isReadOnly()) {

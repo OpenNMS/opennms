@@ -211,6 +211,7 @@ public class IncludeCollectionField extends CustomField<IncludeCollectionField.I
                                        new MessageBox.ButtonConfig(MessageBox.ButtonType.NO, "No"));
         mb.addStyleName(Runo.WINDOW_DIALOG);
         mb.show(new EventListener() {
+            @Override
             public void buttonClicked(ButtonType buttonType) {
                 if (buttonType == MessageBox.ButtonType.YES) {
                     table.removeItem(itemId);

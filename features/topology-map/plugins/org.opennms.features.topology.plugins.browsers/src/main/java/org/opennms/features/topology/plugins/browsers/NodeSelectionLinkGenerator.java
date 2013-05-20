@@ -96,7 +96,9 @@ public class NodeSelectionLinkGenerator implements ColumnGenerator, SelectionNot
 
 	@Override
 	public void addSelectionListener(SelectionListener listener) {
-		m_selectionListeners.add(listener);
+		if (listener != null) {
+			m_selectionListeners.add(listener);
+		}
 	}
 	
 	@Override

@@ -89,14 +89,17 @@ public class MockDatabase extends TemporaryDatabase implements EventWriter {
     public void populate(MockNetwork network) {
 
         MockVisitor dbCreater = new MockVisitorAdapter() {
+            @Override
             public void visitNode(MockNode node) {
                 writeNode(node);
             }
             
+            @Override
             public void visitInterface(MockInterface iface) {
                 writeInterface(iface);
             }
             
+            @Override
             public void visitService(MockService svc) {
                 writeService(svc);
             }
@@ -347,6 +350,7 @@ public class MockDatabase extends TemporaryDatabase implements EventWriter {
         String critSql = (criteria == null ? "" : " where "+criteria);
         final List<Outage> outages = new LinkedList<Outage>();
         Querier loadExisting = new Querier(this, "select * from outages "+critSql) {
+            @Override
             public void processRow(ResultSet rs) throws SQLException {
                 Outage outage = new Outage(rs.getInt("nodeId"), rs.getString("ipAddr"), rs.getInt("serviceId"));
                 outage.setLostEvent(rs.getInt("svcLostEventID"), rs.getTimestamp("ifLostService"));
@@ -361,6 +365,7 @@ public class MockDatabase extends TemporaryDatabase implements EventWriter {
         loadExisting.execute(values);
         
         Querier setServiceNames = new Querier(this, "select * from service") {
+            @Override
             public void processRow(ResultSet rs) throws SQLException {
                 int serviceId = rs.getInt("serviceId");
                 String serviceName = rs.getString("serviceName");
@@ -438,6 +443,7 @@ public class MockDatabase extends TemporaryDatabase implements EventWriter {
     public Collection<Integer> findNoticesForEvent(Event event) {
         final List<Integer> notifyIds = new LinkedList<Integer>();
         Querier loadExisting = new Querier(this, "select notifyId from notifications where eventID = ?") {
+            @Override
             public void processRow(ResultSet rs) throws SQLException {
                 notifyIds.add(rs.getInt(1));
             }

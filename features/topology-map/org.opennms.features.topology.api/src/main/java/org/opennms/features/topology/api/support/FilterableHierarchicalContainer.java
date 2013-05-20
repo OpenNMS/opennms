@@ -321,10 +321,12 @@ public class FilterableHierarchicalContainer extends HierarchicalContainer imple
         return toBeIncluded;
     }
     
+    @Override
     public void setFilteredItemIds(List<Object> itemIds) {
         m_filteredItems = itemIds;
     }
     
+    @Override
     public List<Object> getFilteredItemIds(){
         return m_filteredItems;
     }

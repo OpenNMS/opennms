@@ -85,6 +85,7 @@ final public class OmsaStorageMonitor extends SnmpMonitorStrategy {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void initialize(Map<String, Object> parameters) {
         try {
             SnmpPeerFactory.init();
@@ -102,12 +103,14 @@ final public class OmsaStorageMonitor extends SnmpMonitorStrategy {
      *
      * @param svc a {@link org.opennms.netmgt.poller.MonitoredService} object.
      */
+    @Override
     public void initialize(MonitoredService svc) {
         super.initialize(svc);
         return;
     }
 
     /** {@inheritDoc} */
+    @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         NetworkInterface<InetAddress> iface = svc.getNetInterface();
         

@@ -32,8 +32,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import com.vaadin.server.ExternalResource;
-import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.shared.ui.MarginInfo;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
@@ -171,6 +171,7 @@ public class PingWindow extends Window{
 		/*Creates the Ping button and sets up the listener*/
 		pingButton = new Button("Ping"); 
 		pingButton.addClickListener(new Button.ClickListener() {
+			@Override
 			public void buttonClick(ClickEvent event) {
 				changeBrowserURL(buildURL());
 			}

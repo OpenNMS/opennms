@@ -86,6 +86,7 @@ public class GpDetector extends BasicDetector<GpRequest, GpResponse>{
     private static ResponseValidator<GpResponse> responseMatches(final String banner) {
         return new ResponseValidator<GpResponse>(){
 
+            @Override
             public boolean validate(final GpResponse response) {
                 return response.validate(banner);
             }

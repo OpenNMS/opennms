@@ -94,6 +94,7 @@ public class SnmpOpaque extends SnmpOctetString {
      * @return The ASN.1 identifier.
      * 
      */
+    @Override
     public byte typeId() {
         return ASNTYPE;
     }
@@ -104,6 +105,7 @@ public class SnmpOpaque extends SnmpOctetString {
      * @return A duplicate of self
      * 
      */
+    @Override
     public SnmpSyntax duplicate() {
         return new SnmpOpaque(this);
     }
@@ -114,6 +116,7 @@ public class SnmpOpaque extends SnmpOctetString {
      * @return A duplicate of self
      * 
      */
+    @Override
     public Object clone() {
         return new SnmpOpaque(this);
     }
@@ -122,6 +125,7 @@ public class SnmpOpaque extends SnmpOctetString {
      * Returns a string representation of the object.
      * 
      */
+    @Override
     public String toString() {
         //
         // format the string for hex

@@ -71,6 +71,7 @@ import org.extremecomponents.util.HtmlBuilder;
  */
 public class FixedRowCompact extends AbstractHtmlView {
 	/** {@inheritDoc} */
+        @Override
 	protected void beforeBodyInternal(TableModel model) {
 		getTableBuilder().tableStart();
 
@@ -90,6 +91,7 @@ public class FixedRowCompact extends AbstractHtmlView {
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	protected void afterBodyInternal(TableModel model) {
 		getCalcBuilder().defaultCalcLayout();
 

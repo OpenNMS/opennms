@@ -80,6 +80,7 @@ public final class JnaPingReply implements ResponseWithId<JnaPingRequestId>, Ech
      *
      * @return a {@link org.opennms.netmgt.icmp.spi.PingRequestId} object.
      */
+    @Override
     public JnaPingRequestId getRequestId() {
         return new JnaPingRequestId(getAddress(), getIdentifier(), getSequenceNumber(), getThreadId());
     }
@@ -98,30 +99,37 @@ public final class JnaPingReply implements ResponseWithId<JnaPingRequestId>, Ech
      *
      * @return a boolean.
      */
+    @Override
     public boolean isEchoReply() {
         return m_packet.isEchoReply();
     }
 
+    @Override
     public int getIdentifier() {
         return m_packet.getIdentifier();
     }
 
+    @Override
     public int getSequenceNumber() {
         return m_packet.getSequenceNumber();
     }
 
+    @Override
     public long getThreadId() {
         return m_packet.getThreadId();
     }
 
+    @Override
     public long getReceivedTimeNanos() {
         return m_packet.getReceivedTimeNanos();
     }
 
+    @Override
     public long getSentTimeNanos() {
         return m_packet.getSentTimeNanos();
     }
 
+    @Override
     public double elapsedTime(TimeUnit timeUnit) {
         return m_packet.elapsedTime(timeUnit);
     }

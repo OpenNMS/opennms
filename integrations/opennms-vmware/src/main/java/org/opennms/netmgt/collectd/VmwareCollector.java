@@ -34,7 +34,6 @@ import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.protocols.vmware.VmwareViJavaAccess;
 import org.opennms.netmgt.collectd.vmware.vijava.*;
 import org.opennms.netmgt.config.collector.AttributeGroupType;
 import org.opennms.netmgt.config.collector.CollectionSet;
@@ -46,6 +45,7 @@ import org.opennms.netmgt.dao.VmwareDatacollectionConfigDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.model.events.EventProxy;
+import org.opennms.protocols.vmware.VmwareViJavaAccess;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,10 +54,7 @@ import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.MalformedURLException;
 import java.rmi.RemoteException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * The Class VmwareCollector
@@ -90,6 +87,7 @@ public class VmwareCollector implements ServiceCollector {
      * @throws CollectionInitializationException
      *
      */
+    @Override
     public void initialize(Map<String, String> parameters) throws CollectionInitializationException {
 
         if (m_nodeDao == null) {
@@ -150,6 +148,7 @@ public class VmwareCollector implements ServiceCollector {
      * @throws CollectionInitializationException
      *
      */
+    @Override
     public void initialize(CollectionAgent agent, Map<String, Object> parameters) throws CollectionInitializationException {
         OnmsNode onmsNode = m_nodeDao.get(agent.getNodeId());
 
@@ -166,6 +165,7 @@ public class VmwareCollector implements ServiceCollector {
     /**
      * This method is used for cleanup.
      */
+    @Override
     public void release() {
     }
 
@@ -174,6 +174,7 @@ public class VmwareCollector implements ServiceCollector {
      *
      * @param agent the collection agent
      */
+    @Override
     public void release(CollectionAgent agent) {
     }
 
@@ -186,6 +187,7 @@ public class VmwareCollector implements ServiceCollector {
      * @return the generated collection set
      * @throws CollectionException
      */
+    @Override
     public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, Object> parameters) throws CollectionException {
 
         String collectionName = ParameterMap.getKeyedString(parameters, "collection", ParameterMap.getKeyedString(parameters, "vmware-collection", null));
@@ -257,10 +259,9 @@ public class VmwareCollector implements ServiceCollector {
                 VmwareCollectionResource vmwareCollectionResource = new VmwareSingleInstanceCollectionResource(agent);
 
                 for (Attrib attrib : vmwareGroup.getAttrib()) {
-
-                    if (vmwarePerformanceValues.hasInstances(attrib.getName())) {
+                    if (!vmwarePerformanceValues.hasSingleValue(attrib.getName())) {
                         // warning
-                        logger.warn("Warning! Found multi instance value '{}' defined as single instance attribute for node '{}'", attrib.getName(), agent.getNodeId());
+                        logger.debug("Warning! No single value for '{}' defined as single instance attribute for node {}", attrib.getName(), agent.getNodeId());
                     } else {
                         final VmwareCollectionAttributeType attribType = new VmwareCollectionAttributeType(attrib, attribGroupType);
                         logger.debug("Storing single instance value " + attrib.getName() + "='" + vmwarePerformanceValues.getValue(attrib.getName()) + "for node " + agent.getNodeId());
@@ -272,30 +273,36 @@ public class VmwareCollector implements ServiceCollector {
             } else {
                 // multi instance value
 
-                Set<String> instanceSet = null;
+                Set<String> instanceSet = new TreeSet<String>();
 
                 HashMap<String, VmwareMultiInstanceCollectionResource> resources = new HashMap<String, VmwareMultiInstanceCollectionResource>();
 
                 for (Attrib attrib : vmwareGroup.getAttrib()) {
+
                     if (!vmwarePerformanceValues.hasInstances(attrib.getName())) {
                         // warning
-                        logger.warn("Warning! Found single instance value '{}' defined as multi instance attribute for node {}", attrib.getName(), agent.getNodeId());
+                        logger.debug("Warning! No multi instance value for '{}' defined as multi instance attribute for node {}", attrib.getName(), agent.getNodeId());
                     } else {
 
-                        instanceSet = vmwarePerformanceValues.getInstances(attrib.getName());
+                        Set<String> newInstances = vmwarePerformanceValues.getInstances(attrib.getName());
 
-                        for (String instance : instanceSet) {
-                            if (!resources.containsKey(instance)) {
+                        final VmwareCollectionAttributeType attribType = new VmwareCollectionAttributeType(attrib, attribGroupType);
+
+                        for (String instance : newInstances) {
+                            if (!instanceSet.contains(instance)) {
                                 resources.put(instance, new VmwareMultiInstanceCollectionResource(agent, instance, vmwareGroup.getResourceType()));
+                                instanceSet.add(instance);
                             }
 
-                            logger.debug("Storing multi instance value " + attrib.getName() + "[" + instance + "]='" + vmwarePerformanceValues.getValue(attrib.getName()) + "' for node " +
+                            resources.get(instance).setAttributeValue(attribType, String.valueOf(vmwarePerformanceValues.getValue(attrib.getName(), instance)));
+
+                            logger.debug("Storing multi instance value " + attrib.getName() + "[" + instance + "]='" + vmwarePerformanceValues.getValue(attrib.getName(), instance) + "' for node " +
                                     agent.getNodeId());
                         }
                     }
                 }
 
-                if (instanceSet != null) {
+                if (!instanceSet.isEmpty()) {
                     final Attrib attrib = new Attrib();
                     attrib.setName(vmwareGroup.getResourceType() + "Name");
                     attrib.setAlias(vmwareGroup.getResourceType() + "Name");
@@ -303,7 +310,7 @@ public class VmwareCollector implements ServiceCollector {
 
                     for (String instance : instanceSet) {
                         final VmwareCollectionAttributeType attribType = new VmwareCollectionAttributeType(attrib, attribGroupType);
-                        //TODO indigo: check if instance / instance is right
+
                         logger.debug("Storing multi instance value " + attrib.getName() + "[" + instance + "]='" + instance + "' for node " + agent.getNodeId());
                         resources.get(instance).setAttributeValue(attribType, instance);
                     }
@@ -328,6 +335,7 @@ public class VmwareCollector implements ServiceCollector {
      * @param collectionName the collection's name
      * @return the Rrd repository
      */
+    @Override
     public RrdRepository getRrdRepository(final String collectionName) {
         return m_vmwareDatacollectionConfigDao.getRrdRepository(collectionName);
     }

@@ -48,11 +48,13 @@ public class ReferenceBeanDefinitionParser extends AbstractSingleBeanDefinitionP
     public static final String FILTER_ATTR = "filter";
     
     /** {@inheritDoc} */
+    @Override
     protected Class<?> getBeanClass(Element element) {
         return ReferenceFactoryBean.class;
     }
     
     /** {@inheritDoc} */
+    @Override
     public void doParse(Element element, ParserContext context, BeanDefinitionBuilder bean){
         
         bean.addPropertyReference("serviceRegistry", Constants.SERVICE_REGISTRY_BEAN_NAME);

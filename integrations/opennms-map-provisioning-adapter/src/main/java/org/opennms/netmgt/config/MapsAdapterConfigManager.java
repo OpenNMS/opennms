@@ -136,10 +136,12 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
      public MapsAdapterConfigManager() {
      }
     
+    @Override
      public Lock getReadLock() {
          return m_readLock;
      }
      
+    @Override
      public Lock getWriteLock() {
          return m_writeLock;
      }
@@ -522,6 +524,7 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
      *
      * @return a {@link java.util.List} object.
      */
+    @Override
     public List<Cmap> getAllMaps() {
         getReadLock().lock();
         try {
@@ -535,6 +538,7 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
     }
 
     /** {@inheritDoc} */
+    @Override
     public Map<String, Celement> getElementByAddress(final String ipaddr) {
         getReadLock().lock();
         try {
@@ -565,6 +569,7 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
     }
 
     /** {@inheritDoc} */
+    @Override
     public List<Csubmap> getSubMaps(final String mapName) {
         getReadLock().lock();
         try {
@@ -584,6 +589,7 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
      *
      * @return a int.
      */
+    @Override
     public int getMapElementDimension() {
         getReadLock().lock();
         try {
@@ -594,6 +600,7 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
     }
 
     /** {@inheritDoc} */
+    @Override
     public Map<String,Csubmap> getContainerMaps(final String submapName) {
         getReadLock().lock();
         try {
@@ -620,6 +627,7 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
      *
      * @return a {@link java.util.Map} object.
      */
+    @Override
     public Map<String, List<Csubmap>> getsubMaps() {
         getReadLock().lock();
         try {
@@ -642,6 +650,7 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
      *
      * @return a {@link java.util.Map} object.
      */
+    @Override
     public Map<String,List<Celement>> getCelements() {
         getReadLock().lock();
         try {
@@ -666,6 +675,7 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
      * newly added one, the package IP list should be rebuilt so that poller
      * could know which package this IP/service pair is in.
      */
+    @Override
     public void rebuildPackageIpListMap() {
         createPackageIpListMap();
     }

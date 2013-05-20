@@ -112,6 +112,7 @@ public abstract class EventPanel extends Panel {
 
         HorizontalLayout toolbar = new HorizontalLayout();
         toolbar.addComponent(new Button("Save Events File", new Button.ClickListener() {
+            @Override
             public void buttonClick(ClickEvent event) {
                 events.setEvent(eventTable.getOnmsEvents());
                 logger.info("The events have been saved.");
@@ -119,6 +120,7 @@ public abstract class EventPanel extends Panel {
             }
         }));
         toolbar.addComponent(new Button("Cancel", new Button.ClickListener() {
+            @Override
             public void buttonClick(Button.ClickEvent event) {
                 logger.info("Event processing has been canceled");
                 cancel();
@@ -128,6 +130,7 @@ public abstract class EventPanel extends Panel {
         mainLayout.setComponentAlignment(toolbar, Alignment.MIDDLE_RIGHT);
 
         eventTable = new EventTable(events) {
+            @Override
             public void updateExternalSource(org.opennms.netmgt.xml.eventconf.Event event) {
                 eventForm.setEventDataSource(event);
                 eventForm.setVisible(true);
@@ -160,6 +163,7 @@ public abstract class EventPanel extends Panel {
         mainLayout.setComponentAlignment(add, Alignment.MIDDLE_RIGHT);
 
         eventForm = new EventForm() {
+            @Override
             public void saveEvent(org.opennms.netmgt.xml.eventconf.Event event) {
                 if (isNew) {
                     eventTable.addEvent(event);
@@ -169,6 +173,7 @@ public abstract class EventPanel extends Panel {
                 }
                 eventTable.refreshRowCache();
             }
+            @Override
             public void deleteEvent(org.opennms.netmgt.xml.eventconf.Event event) {
                 logger.info("Event " + event.getUei() + " has been removed.");
                 eventTable.select(null);
@@ -223,6 +228,7 @@ public abstract class EventPanel extends Panel {
                                            new MessageBox.ButtonConfig(MessageBox.ButtonType.NO, "No"));
             mb.addStyleName(Runo.WINDOW_DIALOG);
             mb.show(new EventListener() {
+                @Override
                 public void buttonClicked(ButtonType buttonType) {
                     if (buttonType == MessageBox.ButtonType.YES) {
                         validateFile(file, events, logger);
@@ -258,6 +264,7 @@ public abstract class EventPanel extends Panel {
                                            new MessageBox.ButtonConfig(MessageBox.ButtonType.NO, "No"));
             mb.addStyleName(Runo.WINDOW_DIALOG);
             mb.show(new EventListener() {
+                @Override
                 public void buttonClicked(ButtonType buttonType) {
                     if (buttonType == MessageBox.ButtonType.YES) {
                         saveFile(file, events, logger);

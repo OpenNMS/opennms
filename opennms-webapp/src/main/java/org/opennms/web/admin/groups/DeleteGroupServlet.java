@@ -52,6 +52,7 @@ public class DeleteGroupServlet extends HttpServlet {
     private static final long serialVersionUID = -2354357068390448288L;
 
     /** {@inheritDoc} */
+    @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String groupName = request.getParameter("groupName");
 

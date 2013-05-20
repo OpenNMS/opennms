@@ -61,6 +61,7 @@ public class DbPollEvent extends PollEvent {
      *
      * @return a int.
      */
+    @Override
     public int getEventId() {
         return m_eventId;
     }
@@ -70,6 +71,7 @@ public class DbPollEvent extends PollEvent {
      *
      * @return a {@link java.util.Date} object.
      */
+    @Override
     public Date getDate() {
         return m_date;
     }
@@ -79,6 +81,7 @@ public class DbPollEvent extends PollEvent {
      *
      * @return a int.
      */
+    @Override
     public int hashCode() { return m_eventId; }
     
     /**
@@ -93,6 +96,7 @@ public class DbPollEvent extends PollEvent {
     }
     
     /** {@inheritDoc} */
+    @Override
     public boolean equals(Object o) {
         if (o instanceof PollEvent)
             return equals((PollEvent)o);
@@ -104,6 +108,7 @@ public class DbPollEvent extends PollEvent {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return "DbPollEvent[ id: "+getEventId()+" ]";
     }

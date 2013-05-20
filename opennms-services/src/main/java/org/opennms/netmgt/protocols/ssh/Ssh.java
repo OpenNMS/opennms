@@ -311,6 +311,7 @@ public class Ssh extends org.opennms.netmgt.protocols.AbstractPoll {
     }
 
     /** {@inheritDoc} */
+    @Override
     public PollStatus poll(final TimeoutTracker tracker) throws InsufficientParametersException {
         tracker.startAttempt();
         final boolean isAvailable = tryConnect();

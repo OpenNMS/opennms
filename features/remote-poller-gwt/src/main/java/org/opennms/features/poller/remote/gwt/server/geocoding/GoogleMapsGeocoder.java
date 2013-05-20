@@ -63,6 +63,7 @@ public class GoogleMapsGeocoder implements Geocoder {
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public GWTLatLng geocode(String geolocation) throws GeocoderException {
 		try {
 			List<GeoAddress> addresses = m_standardizer.standardizeToGeoAddresses(geolocation);

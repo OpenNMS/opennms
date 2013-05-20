@@ -41,10 +41,12 @@ import org.extremecomponents.table.interceptor.RowInterceptor;
  */
 public class RedRow implements RowInterceptor {
     /** {@inheritDoc} */
+    @Override
     public void addRowAttributes(TableModel tableModel, Row row) {
     } 
 
     /** {@inheritDoc} */
+    @Override
     public void modifyRowAttributes(TableModel model, Row row) {
         //Map outage = (Map) model.getCurrentRowBean();
         //String outagetime = (String) outage.get("up");

@@ -64,6 +64,7 @@ public class AttributeGroupType {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof AttributeGroupType) {
             AttributeGroupType groupType = (AttributeGroupType)obj;
@@ -77,6 +78,7 @@ public class AttributeGroupType {
      *
      * @return a int.
      */
+    @Override
     public int hashCode() {
         return m_name.hashCode();
     }
@@ -122,6 +124,7 @@ public class AttributeGroupType {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return "AttrGroupType[name="+m_name+", ifType="+m_ifType+']' ;
     }

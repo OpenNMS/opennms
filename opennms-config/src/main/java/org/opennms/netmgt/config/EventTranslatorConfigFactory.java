@@ -153,6 +153,7 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void update() throws Exception  {
         
         synchronized (this) {
@@ -275,6 +276,7 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
      *
      * @return a {@link java.util.List} object.
      */
+    @Override
     public List<String> getUEIList() {
     		return getTranslationUEIs();
     }
@@ -300,6 +302,7 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isTranslationEvent(Event e) {
 		for (TranslationSpec spec : getTranslationSpecs()) {
 			if (spec.matches(e))
@@ -309,6 +312,7 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
     }
     
 	/** {@inheritDoc} */
+    @Override
 	public List<Event> translateEvent(Event e) {
 		ArrayList<Event> events = new ArrayList<Event>();
 		for (TranslationSpec spec : getTranslationSpecs()) {
@@ -521,6 +525,7 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
 	class FieldAssignmentSpec extends AssignmentSpec {
 		FieldAssignmentSpec(Assignment field) { super(field); }
 		
+                @Override
 		protected void setValue(Event targetEvent, String value) {
 			try {
 				BeanWrapper bean = PropertyAccessorFactory.forBeanPropertyAccess(targetEvent);
@@ -538,6 +543,7 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
 			super(assign);
 		}
 
+                @Override
 		protected void setValue(Event targetEvent, String value) {
 			if (value == null) {
 			    log().debug("Value of parameter is null setting to blank");
@@ -602,6 +608,7 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
 		}
 		
 
+                @Override
 		public boolean matches(Event e) {
 			if (m_constant.getMatches() != null) {
                 log().warn("ConstantValueSpec.matches: matches not allowed for constant value.");
@@ -611,6 +618,7 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
 		}
 
 
+                @Override
 		public String getResult(Event srcEvent) {
 			return m_constant.getResult();
 		}
@@ -619,11 +627,13 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
 
 	class ValueSpecUnspecified extends ValueSpec {
 		
+                @Override
 		public boolean matches(Event e) {
 			// TODO: this should probably throw an exception since it makes no sense
 			return true;
 		}
 
+                @Override
 		public String getResult(Event srcEvent) {
 			return "value unspecified";
 		}
@@ -652,6 +662,7 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
 			return nestedValues;
 		}
 
+                @Override
 		public boolean matches(Event e) {
 		    for (ValueSpec nestedVal : getNestedValues()) {
 				if (!nestedVal.matches(e))
@@ -707,6 +718,7 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
             return new Query(querier, args);
 		}
 		
+                @Override
 		public String getResult(Event srcEvent) {
 		    Query query = createQuery(srcEvent);
             query.execute();
@@ -733,6 +745,7 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
 		Value m_val;
 		AttributeValueSpec(Value val) { m_val = val; }
 
+                @Override
 		public boolean matches(Event e) {
 			
 			String attributeValue = getAttributeValue(e);
@@ -762,6 +775,7 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
             }
 		}
 
+                @Override
 		public String getResult(Event srcEvent) {
 			if (m_val.getMatches() == null) return m_val.getResult();
 
@@ -820,6 +834,7 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
 			super(val);
 		}
 
+                @Override
 		public String getAttributeValue(Event e) {
 			try {
 				BeanWrapper bean = getBeanWrapper(e);
@@ -841,6 +856,7 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
 	class ParameterValueSpec extends AttributeValueSpec {
 		ParameterValueSpec(Value val) { super(val); }
 		
+                @Override
 		public String getAttributeValue(Event e) {
 			
 			String attrName = getAttributeName();

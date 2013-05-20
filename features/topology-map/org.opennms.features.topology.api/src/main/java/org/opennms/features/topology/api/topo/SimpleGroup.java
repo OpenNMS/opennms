@@ -28,14 +28,9 @@
 
 package org.opennms.features.topology.api.topo;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class SimpleGroup extends AbstractVertex {
 
-	List<AbstractVertex> m_members = new ArrayList<AbstractVertex>();
-
-	int m_mapid;
+	private int m_mapid;
 
 	public SimpleGroup(String namespace, String groupId) {
 		this(namespace, groupId, -1);

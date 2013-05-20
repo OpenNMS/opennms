@@ -60,6 +60,7 @@ public class FtpDetectorTest {
        
         m_server = new SimpleServer() {
            
+            @Override
             public void onInit() {
                 setBanner("220 ProFTPD 1.3.0 Server (ProFTPD)");
                 addResponseHandler(matches("quit"), shutdownServer("221 Goodbye."));

@@ -73,6 +73,7 @@ public abstract class AsyncMultilineDetectorMinaImpl extends AsyncBasicDetectorM
     protected static ResponseValidator<MultilineOrientedResponse> expectCodeRange(final int beginRange, final int endRange){
         return new ResponseValidator<MultilineOrientedResponse>() {
             
+            @Override
             public boolean validate(final MultilineOrientedResponse response) {
                 return response.expectedCodeRange(beginRange, endRange);
             }
@@ -85,6 +86,7 @@ public abstract class AsyncMultilineDetectorMinaImpl extends AsyncBasicDetectorM
     public ResponseValidator<MultilineOrientedResponse> startsWith(final String pattern){
         return new ResponseValidator<MultilineOrientedResponse>(){
 
+            @Override
             public boolean validate(final MultilineOrientedResponse response) {
                 return response.startsWith(pattern);
             }

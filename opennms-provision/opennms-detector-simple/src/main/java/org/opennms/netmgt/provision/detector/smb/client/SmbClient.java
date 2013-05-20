@@ -52,12 +52,14 @@ public class SmbClient implements Client<LineOrientedRequest, NbtAddressResponse
     /**
      * <p>close</p>
      */
+    @Override
     public void close() {
         // TODO Auto-generated method stub
         
     }
 
     /** {@inheritDoc} */
+    @Override
     public void connect(InetAddress address, int port, int timeout) throws IOException, Exception {
        m_address = InetAddressUtils.str(address);
        m_nbtAddress = NbtAddress.getByName(m_address);
@@ -69,6 +71,7 @@ public class SmbClient implements Client<LineOrientedRequest, NbtAddressResponse
      * @return a {@link org.opennms.netmgt.provision.detector.smb.response.NbtAddressResponse} object.
      * @throws java.io.IOException if any.
      */
+    @Override
     public NbtAddressResponse receiveBanner() throws IOException {
         return receiveResponse();
     }
@@ -81,6 +84,7 @@ public class SmbClient implements Client<LineOrientedRequest, NbtAddressResponse
      * @throws java.io.IOException if any.
      * @throws java.lang.Exception if any.
      */
+    @Override
     public NbtAddressResponse sendRequest(LineOrientedRequest request) throws IOException, Exception {
         return receiveResponse();
     }

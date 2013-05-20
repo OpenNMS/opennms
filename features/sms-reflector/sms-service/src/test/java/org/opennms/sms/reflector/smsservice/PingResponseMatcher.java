@@ -36,6 +36,7 @@ package org.opennms.sms.reflector.smsservice;
  * @author brozow
  */
 class PingResponseMatcher implements MobileMsgResponseMatcher {
+    @Override
     public boolean matches(MobileMsgRequest request, MobileMsgResponse response) {
         
         if (!(request instanceof SmsRequest)) return false;

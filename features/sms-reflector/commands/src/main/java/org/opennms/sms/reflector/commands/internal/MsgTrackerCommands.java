@@ -60,18 +60,21 @@ public class MsgTrackerCommands implements CommandProvider
         MobileMsgResponse m_response;
         CountDownLatch m_latch = new CountDownLatch(1);
 
+        @Override
         public void handleError(final MobileMsgRequest request, final Throwable t) {
             t.printStackTrace();
             LogUtils.warnf(this, t, "failed request: %s", request);
             m_latch.countDown();
         }
 
+        @Override
         public boolean handleResponse(MobileMsgRequest request, MobileMsgResponse response) {
             m_response = response;
             m_latch.countDown();
             return true;
         }
 
+        @Override
         public void handleTimeout(MobileMsgRequest request) {
            tracef("Request %s timed out!", request); 
             m_latch.countDown();
@@ -95,6 +98,7 @@ public class MsgTrackerCommands implements CommandProvider
             m_regex = regex;
         }
 
+        @Override
         public boolean matches(MobileMsgRequest request, MobileMsgResponse response) {
             tracef("Using regex: %s to match response: %s", m_regex, response );
             boolean retVal = response.getText().matches(m_regex);
@@ -102,6 +106,7 @@ public class MsgTrackerCommands implements CommandProvider
             return retVal;
         }
 
+        @Override
         public String toString() {
             return new ToStringBuilder(this)
                 .append("regex", m_regex)
@@ -189,6 +194,7 @@ public class MsgTrackerCommands implements CommandProvider
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getHelp() { 
         StringBuffer buffer = new StringBuffer(); 
         buffer.append("---Msg Tracker Commands---");

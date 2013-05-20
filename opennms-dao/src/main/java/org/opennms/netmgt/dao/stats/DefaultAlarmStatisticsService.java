@@ -46,12 +46,14 @@ public class DefaultAlarmStatisticsService extends AbstractBaseStatisticsService
     }
 
     @Transactional
+    @Override
     public int getAcknowledgedCount(final Criteria criteria) {
     	criteria.addRestriction(org.opennms.core.criteria.restrictions.Restrictions.isNotNull("alarmAckUser"));
         return m_alarmDao.countMatching(criteria);
     }
 
     @Transactional
+    @Override
     public OnmsAlarm getAcknowledged(final Criteria criteria) {
         criteria.addRestriction(org.opennms.core.criteria.restrictions.Restrictions.isNotNull("alarmAckUser"));
         criteria.setLimit(1);
@@ -61,6 +63,7 @@ public class DefaultAlarmStatisticsService extends AbstractBaseStatisticsService
     }
 
     @Transactional
+    @Override
     public OnmsAlarm getUnacknowledged(final Criteria criteria) {
         criteria.addRestriction(org.opennms.core.criteria.restrictions.Restrictions.isNull("alarmAckUser"));
         criteria.setLimit(1);

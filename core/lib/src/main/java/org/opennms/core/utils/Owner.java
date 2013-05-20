@@ -137,6 +137,7 @@ public class Owner implements Comparable<Owner> {
     }
     
     /** {@inheritDoc} */
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof Owner) {
             Owner o = (Owner) obj;
@@ -150,6 +151,7 @@ public class Owner implements Comparable<Owner> {
      *
      * @return a int.
      */
+    @Override
     public int hashCode() {
         return m_user.hashCode();
     }
@@ -160,6 +162,7 @@ public class Owner implements Comparable<Owner> {
      * @param o a {@link org.opennms.core.utils.Owner} object.
      * @return a int.
      */
+    @Override
     public int compareTo(Owner o) {
         return m_user.compareTo(o.m_user);
     }
@@ -169,6 +172,7 @@ public class Owner implements Comparable<Owner> {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return m_user;
     }

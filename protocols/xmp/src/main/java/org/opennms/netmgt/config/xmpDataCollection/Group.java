@@ -375,6 +375,7 @@ import org.exolab.castor.xml.Unmarshaller;
      * 
      * @return a hash code value for the object.
      */
+    @Override
     public int hashCode(
     ) {
         int result = 17;

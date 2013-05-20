@@ -55,14 +55,17 @@ public class XmlSystemReportFormatter extends AbstractSystemReportFormatter impl
         return "Simple output in XML text format";
     }
 
+    @Override
     public String getContentType() {
         return "text/xml";
     }
 
+    @Override
     public String getExtension() {
         return "xml";
     }
 
+    @Override
     public boolean canStdout() {
         return true;
     }

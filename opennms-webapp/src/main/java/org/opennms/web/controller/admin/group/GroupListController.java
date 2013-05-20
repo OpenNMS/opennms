@@ -59,6 +59,7 @@ public class GroupListController extends AbstractController {
 		Map<String, Group> groups = m_groupManager.getGroups();
 		List<Group> groupList = new ArrayList<Group>(groups.values());
 		Collections.sort(groupList, new Comparator<Group>() {
+                    @Override
 		    public int compare(Group g1, Group g2) {
 		        return g1.getName().toLowerCase().compareTo(g2.getName().toLowerCase());
 		    }

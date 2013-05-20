@@ -70,6 +70,7 @@ abstract public class AbstractServiceMonitor implements ServiceMonitor {
      *                Thrown if an unrecoverable error occurs that prevents the
      *                plug-in from functioning.
      */
+    @Override
     public void initialize(Map<String, Object> parameters) {
     }
 
@@ -91,6 +92,7 @@ abstract public class AbstractServiceMonitor implements ServiceMonitor {
      * @exception java.lang.RuntimeException
      *                Thrown if an error occurs during deallocation.
      */
+    @Override
     public void release() {
     }
 
@@ -113,6 +115,7 @@ abstract public class AbstractServiceMonitor implements ServiceMonitor {
      *                interface from being monitored.
      * @param svc a {@link org.opennms.netmgt.poller.MonitoredService} object.
      */
+    @Override
     public void initialize(MonitoredService svc) {}
 
     /**
@@ -134,10 +137,12 @@ abstract public class AbstractServiceMonitor implements ServiceMonitor {
      *                Thrown if an unrecoverable error occurs that prevents the
      *                interface from being monitored.
      */
+    @Override
     public void release(MonitoredService svc) {
     }
     
     /** {@inheritDoc} */
+    @Override
     abstract public PollStatus poll(MonitoredService svc, Map<String, Object> parameters);
 
 	/**

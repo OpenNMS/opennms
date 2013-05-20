@@ -33,5 +33,6 @@ import com.google.gwt.user.cellview.client.CellTable.Style;
 
 public interface OnmsTableResources extends CellTable.Resources {
     @Source({"customCellTableStyles.css"})
+    @Override
     Style cellTableStyle();
 }

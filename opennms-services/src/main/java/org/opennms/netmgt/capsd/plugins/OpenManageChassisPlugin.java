@@ -87,6 +87,7 @@ public final class OpenManageChassisPlugin extends SnmpPlugin {
      *
      * @return The protocol name for this plugin.
      */
+    @Override
     public String getProtocolName() {
         return PROTOCOL_NAME;
     }
@@ -100,6 +101,7 @@ public final class OpenManageChassisPlugin extends SnmpPlugin {
      * return additional information by key-name. These key-value pairs can be
      * added to service events if needed.
      */
+    @Override
     public boolean isProtocolSupported(InetAddress ipaddr,
             Map<String, Object> qualifiers) {
         try {

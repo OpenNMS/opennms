@@ -7,7 +7,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
 
     <reference id="alarmDao" interface="org.opennms.netmgt.dao.AlarmDao" availability="mandatory" />
     <reference id="linkdTopologyProvider" interface="org.opennms.features.topology.api.topo.VertexProvider" availability="optional" 
-            filter="(name=Linkd)" />
+            filter="(label=Linkd)" />
 
 	<service interface="org.opennms.features.topology.api.topo.StatusProvider" >
 	   <service-properties>

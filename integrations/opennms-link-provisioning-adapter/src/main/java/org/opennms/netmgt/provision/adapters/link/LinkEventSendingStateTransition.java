@@ -62,6 +62,7 @@ public class LinkEventSendingStateTransition implements LinkStateTransition {
     /**
      * <p>onLinkDown</p>
      */
+    @Override
     public void onLinkDown() {
         sendDataLinkEvent(EventConstants.DATA_LINK_FAILED_EVENT_UEI);
     }
@@ -81,6 +82,7 @@ public class LinkEventSendingStateTransition implements LinkStateTransition {
     /**
      * <p>onLinkUp</p>
      */
+    @Override
     public void onLinkUp() {
         sendDataLinkEvent(EventConstants.DATA_LINK_RESTORED_EVENT_UEI);
     }
@@ -88,6 +90,7 @@ public class LinkEventSendingStateTransition implements LinkStateTransition {
     /**
      * <p>onLinkUnknown</p>
      */
+    @Override
     public void onLinkUnknown() {
         sendDataLinkEvent(EventConstants.DATA_LINK_UNMANAGED_EVENT_UEI);
     }

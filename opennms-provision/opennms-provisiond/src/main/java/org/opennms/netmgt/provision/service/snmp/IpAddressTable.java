@@ -93,6 +93,7 @@ public class IpAddressTable extends SnmpTable<IpAddressTableEntry> {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected IpAddressTableEntry createTableEntry(final SnmpObjId base, final SnmpInstId inst, final Object val) {
         return new IpAddressTableEntry();
     }

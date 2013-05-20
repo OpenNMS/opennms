@@ -57,6 +57,7 @@ public class ThresholdingEventProxy implements EventProxy {
     }
     
     /** {@inheritDoc} */
+    @Override
     public void send(Event event) throws EventProxyException {
         add(event);
     }
@@ -67,6 +68,7 @@ public class ThresholdingEventProxy implements EventProxy {
      * @param eventLog a {@link org.opennms.netmgt.xml.event.Log} object.
      * @throws org.opennms.netmgt.model.events.EventProxyException if any.
      */
+    @Override
     public void send(Log eventLog) throws EventProxyException {
         for (Event e : eventLog.getEvents().getEventCollection()) {
             add(e);

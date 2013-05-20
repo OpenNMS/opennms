@@ -297,6 +297,7 @@ public class Ssh extends AbstractPoll {
     }
 
     /** {@inheritDoc} */
+    @Override
     public PollStatus poll(TimeoutTracker tracker) throws InsufficientParametersException {
         tracker.startAttempt();
         boolean isAvailable = tryConnect();

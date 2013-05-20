@@ -38,10 +38,12 @@ public class ThrowableAnticipatorTest extends TestCase {
     public ThrowableAnticipatorTest() {
     }
 
+    @Override
     protected void setUp() throws Exception {
         m_anticipator = new ThrowableAnticipator();
     }
 
+    @Override
     protected void tearDown() throws Exception {
         m_anticipator.verifyAnticipated();
     }

@@ -13,6 +13,7 @@ public abstract class VlanTableBasic extends SnmpTable<SnmpStore> implements Vla
 		super(address, tableName, columns);
 	}
 
+        @Override
 	public List<OnmsVlan> getVlansForSnmpCollection() {
 		List<OnmsVlan> vlans = new ArrayList<OnmsVlan>();
 		vlans.add(new OnmsVlan(

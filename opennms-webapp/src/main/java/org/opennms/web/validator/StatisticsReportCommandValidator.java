@@ -47,11 +47,13 @@ public class StatisticsReportCommandValidator implements Validator, Initializing
     private StatisticsReportDao m_statisticsReportDao;
 
     /** {@inheritDoc} */
+    @Override
     public boolean supports(Class<?> clazz) {
         return clazz.equals(StatisticsReportCommand.class);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void validate(Object obj, Errors errors) {
         StatisticsReportCommand cmd = (StatisticsReportCommand) obj;
         

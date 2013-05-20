@@ -47,26 +47,32 @@ public class VmwareCollectionAttribute extends AbstractCollectionAttribute imple
         m_value = value;
     }
 
+    @Override
     public CollectionAttributeType getAttributeType() {
         return m_attribType;
     }
 
+    @Override
     public String getName() {
         return m_alias;
     }
 
+    @Override
     public String getMetricIdentifier() {
         return "Vmware_" + m_attribType.getName();
     }
 
+    @Override
     public String getNumericValue() {
         return m_value;
     }
 
+    @Override
     public CollectionResource getResource() {
         return m_resource;
     }
 
+    @Override
     public String getStringValue() {
         return m_value; //Should this be null instead?
     }
@@ -74,14 +80,17 @@ public class VmwareCollectionAttribute extends AbstractCollectionAttribute imple
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean shouldPersist(final ServiceParameters params) {
         return true;
     }
 
+    @Override
     public String getType() {
         return m_attribType.getType();
     }
 
+    @Override
     public String toString() {
         return "VmwareCollectionAttribute " + m_alias + "=" + m_value;
     }

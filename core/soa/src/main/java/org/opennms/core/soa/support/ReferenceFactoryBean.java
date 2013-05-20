@@ -81,6 +81,7 @@ public class ReferenceFactoryBean<T> implements FactoryBean<T>, InitializingBean
      * @return a {@link java.lang.Object} object.
      * @throws java.lang.Exception if any.
      */
+    @Override
     public T getObject() throws Exception {
         
         if (m_provider == null) {
@@ -94,6 +95,7 @@ public class ReferenceFactoryBean<T> implements FactoryBean<T>, InitializingBean
      *
      * @return a {@link java.lang.Class} object.
      */
+    @Override
     public Class<? extends T> getObjectType() {
         return m_serviceInterface;
     }
@@ -103,6 +105,7 @@ public class ReferenceFactoryBean<T> implements FactoryBean<T>, InitializingBean
      *
      * @return a boolean.
      */
+    @Override
     public boolean isSingleton() {
         return true;
     }

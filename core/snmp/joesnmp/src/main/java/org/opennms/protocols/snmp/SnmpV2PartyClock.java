@@ -113,6 +113,7 @@ public class SnmpV2PartyClock extends SnmpUInt32 {
      * @return The ASN.1 type.
      * 
      */
+    @Override
     public byte typeId() {
         return ASNTYPE;
     }
@@ -123,6 +124,7 @@ public class SnmpV2PartyClock extends SnmpUInt32 {
      * @return A newly created copy of self.
      * 
      */
+    @Override
     public SnmpSyntax duplicate() {
         return new SnmpV2PartyClock(this);
     }
@@ -133,6 +135,7 @@ public class SnmpV2PartyClock extends SnmpUInt32 {
      * @return A newly created copy of self.
      * 
      */
+    @Override
     public Object clone() {
         return new SnmpV2PartyClock(this);
     }
@@ -141,6 +144,7 @@ public class SnmpV2PartyClock extends SnmpUInt32 {
      * Returns the string representation of the object.
      * 
      */
+    @Override
     public String toString() {
         StringBuffer buf = new StringBuffer();
         long time = getValue();

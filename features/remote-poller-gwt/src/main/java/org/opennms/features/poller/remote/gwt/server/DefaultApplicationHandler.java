@@ -88,6 +88,7 @@ public class DefaultApplicationHandler implements ApplicationHandler {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void start(final int size) {
     }
 
@@ -96,6 +97,7 @@ public class DefaultApplicationHandler implements ApplicationHandler {
      *
      * @param application a {@link org.opennms.netmgt.model.OnmsApplication} object.
      */
+    @Override
     public void handle(final OnmsApplication application) {
         final ApplicationInfo applicationInfo = getLocationDataService().getApplicationInfo(application);
         final ApplicationUpdatedRemoteEvent event = new ApplicationUpdatedRemoteEvent(applicationInfo);
@@ -109,6 +111,7 @@ public class DefaultApplicationHandler implements ApplicationHandler {
     /**
      * <p>finish</p>
      */
+    @Override
     public void finish() {
         if (m_oldApplicationNames != null) {
             for (final String appName : m_oldApplicationNames) {

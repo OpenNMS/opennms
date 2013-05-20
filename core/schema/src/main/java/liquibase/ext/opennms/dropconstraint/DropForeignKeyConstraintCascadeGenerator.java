@@ -44,6 +44,7 @@ public class DropForeignKeyConstraintCascadeGenerator extends DropForeignKeyCons
 		return super.getPriority() + 1;
 	}
 
+        @Override
     public Sql[] generateSql(final DropForeignKeyConstraintStatement statement, final Database database, final SqlGeneratorChain sqlGeneratorChain) {
 		final Sql[] superSql = super.generateSql(statement, database, sqlGeneratorChain);
 		if (statement instanceof DropForeignKeyConstraintCascadeStatement) {

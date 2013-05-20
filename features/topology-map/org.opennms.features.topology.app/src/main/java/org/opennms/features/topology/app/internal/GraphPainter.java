@@ -22,29 +22,22 @@ public class GraphPainter extends BaseGraphVisitor {
 
 	private final GraphContainer m_graphContainer;
 	private final IconRepositoryManager m_iconRepoManager;
-	private final SelectionManager m_selectionManager;
 	private final Layout m_layout;
 	private final StatusProvider m_statusProvider;
 	private final TopologyComponentState m_componentState;
-    private List<SharedVertex> m_vertices = new ArrayList<SharedVertex>();
-    private List<SharedEdge> m_edges = new ArrayList<SharedEdge>();
+    private final List<SharedVertex> m_vertices = new ArrayList<SharedVertex>();
+    private final List<SharedEdge> m_edges = new ArrayList<SharedEdge>();
 
-	GraphPainter(GraphContainer graphContainer, Layout layout, IconRepositoryManager iconRepoManager, SelectionManager selectionManager, StatusProvider statusProvider, TopologyComponentState componentState) {
+	GraphPainter(GraphContainer graphContainer, Layout layout, IconRepositoryManager iconRepoManager, StatusProvider statusProvider, TopologyComponentState componentState) {
 		m_graphContainer = graphContainer;
 		m_layout = layout;
 		m_iconRepoManager = iconRepoManager;
-		m_selectionManager = selectionManager;
 		m_statusProvider = statusProvider;
 		m_componentState = componentState;
 	}
 	
 	public StatusProvider getStatusProvider() {
 	    return m_statusProvider;
-	}
-
-	@Override
-	public void visitGraph(Graph graph) throws PaintException {
-		//m_target.startTag("graph");
 	}
 
 	@Override
@@ -57,7 +50,7 @@ public class GraphPainter extends BaseGraphVisitor {
 		v.setInitialY(initialLocation.getY());
 		v.setX(location.getX());
 		v.setY(location.getY());
-		v.setSelected(isSelected(m_selectionManager, vertex));
+		v.setSelected(isSelected(m_graphContainer.getSelectionManager(), vertex));
 		if(m_graphContainer.getStatusProvider() != null) {
 		    v.setStatus(getStatus(vertex));
 		}
@@ -85,7 +78,7 @@ public class GraphPainter extends BaseGraphVisitor {
 		e.setKey(edge.getKey());
 		e.setSourceKey(getSourceKey(edge));
 		e.setTargetKey(getTargetKey(edge));
-		e.setSelected(isSelected(m_selectionManager, edge));
+		e.setSelected(isSelected(m_graphContainer.getSelectionManager(), edge));
 		e.setCssClass(getStyleName(edge));
 		e.setTooltipText(getTooltipText(edge));
 		m_edges.add(e);
@@ -104,8 +97,8 @@ public class GraphPainter extends BaseGraphVisitor {
 
 	@Override
 	public void completeGraph(Graph graph) throws PaintException {
-	    m_componentState.setVertices(m_vertices);
-	    m_componentState.setEdges(m_edges);
+		m_componentState.setVertices(m_vertices);
+		m_componentState.setEdges(m_edges);
 	}
 
 	private String getSourceKey(Edge edge) {
@@ -124,7 +117,7 @@ public class GraphPainter extends BaseGraphVisitor {
 		// If the style is null, use a blank string
 		styleName = (styleName == null ? "" : styleName);
 
-		return isSelected(m_selectionManager, edge) ? styleName + " selected" : styleName;
+		return isSelected(m_graphContainer.getSelectionManager(), edge) ? styleName + " selected" : styleName;
 	}
 
 	private static boolean isSelected(SelectionManager selectionManager, Vertex vertex) {

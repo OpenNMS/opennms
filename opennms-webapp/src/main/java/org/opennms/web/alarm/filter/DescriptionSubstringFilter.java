@@ -55,6 +55,7 @@ public class DescriptionSubstringFilter extends SubstringFilter {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getTextDescription() {
         return ("description containing \"" + getValue() + "\"");
     }
@@ -64,6 +65,7 @@ public class DescriptionSubstringFilter extends SubstringFilter {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return ("<DescriptionSubstringFilter: " + this.getDescription() + ">");
     }
@@ -78,6 +80,7 @@ public class DescriptionSubstringFilter extends SubstringFilter {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean equals(Object obj) {
         return (this.toString().equals(obj.toString()));
     }

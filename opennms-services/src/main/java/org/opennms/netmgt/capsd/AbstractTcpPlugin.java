@@ -273,6 +273,7 @@ public abstract class AbstractTcpPlugin extends AbstractPlugin {
      *
      * @return The protocol name for this plugin.
      */
+    @Override
     final public String getProtocolName() {
         return m_protocolName;
     }
@@ -283,6 +284,7 @@ public abstract class AbstractTcpPlugin extends AbstractPlugin {
      * Returns true if the protocol defined by this plugin is supported. If the
      * protocol is not supported then a false value is returned to the caller.
      */
+    @Override
     final public boolean isProtocolSupported(InetAddress address) {
         return isProtocolSupported(address, null);
     }
@@ -296,6 +298,7 @@ public abstract class AbstractTcpPlugin extends AbstractPlugin {
      * additional information by key-name. These key-value pairs can be added to
      * service events if needed.
      */
+    @Override
     final public boolean isProtocolSupported(InetAddress address, Map<String, Object> qualifiers) {
 
         List<ConnectionConfig> connList = getConnectionConfigList(qualifiers, address);

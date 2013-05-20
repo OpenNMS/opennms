@@ -36,9 +36,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.NoRouteToHostException;
 import java.net.Socket;
-import java.security.cert.Certificate;
 import java.util.Map;
-import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocket;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
@@ -89,6 +87,7 @@ public final class SSLCertPlugin extends AbstractPlugin {
      *
      * @return The protocol name for this plugin.
      */
+    @Override
     public String getProtocolName() {
         return PROTOCOL_NAME;
     }

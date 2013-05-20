@@ -97,6 +97,7 @@ public final class JniPingResponse implements ResponseWithId<JniPingRequestId>, 
      *
      * @return a {@link org.opennms.netmgt.icmp.spi.PingRequestId} object.
      */
+    @Override
     public JniPingRequestId getRequestId() {
         return new JniPingRequestId(this);
     }

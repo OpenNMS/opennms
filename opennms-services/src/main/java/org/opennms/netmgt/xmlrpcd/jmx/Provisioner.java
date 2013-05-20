@@ -54,6 +54,7 @@ public class Provisioner implements ProvisionerMBean {
     /**
      * <p>init</p>
      */
+    @Override
     public void init() {
         XmlRpc.debug = "true".equalsIgnoreCase(System.getProperty("xmlrpc.debug", "false"));
     }
@@ -61,6 +62,7 @@ public class Provisioner implements ProvisionerMBean {
     /**
      * <p>start</p>
      */
+    @Override
     public void start() {
         m_status = Fiber.STARTING;
         ThreadCategory.getInstance().debug("SPRING: thread.classLoader="+Thread.currentThread().getContextClassLoader());;
@@ -72,6 +74,7 @@ public class Provisioner implements ProvisionerMBean {
     /**
      * <p>stop</p>
      */
+    @Override
     public void stop() {
         m_status = Fiber.STOP_PENDING;
         m_context.close();
@@ -85,6 +88,7 @@ public class Provisioner implements ProvisionerMBean {
      *
      * @return a int.
      */
+    @Override
     public int getStatus() {
         return m_status;
     }
@@ -94,6 +98,7 @@ public class Provisioner implements ProvisionerMBean {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getStatusText() {
         return Fiber.STATUS_NAMES[m_status];
     }
@@ -103,6 +108,7 @@ public class Provisioner implements ProvisionerMBean {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String status() {
         return getStatusText();
     }

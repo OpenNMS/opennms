@@ -65,6 +65,7 @@ public class MockAgentTest extends TestCase {
     private MockNetwork m_network;
     private MockProxy m_proxy;
 
+    @Override
     protected void setUp() throws Exception {
         MockUtil.println("------------ Begin Test "+getName()+" --------------------------");
         MockLogAppender.setupLogging();
@@ -106,6 +107,7 @@ public class MockAgentTest extends TestCase {
 
     }
 
+    @Override
     protected void tearDown() throws Exception {
         m_proxy.stop();
         

@@ -106,14 +106,17 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
             this(pollerConfiguration.getConfigurationTimestamp(), pollerConfiguration.getPolledServices());
         }
 
+        @Override
         public Date getConfigurationTimestamp() {
             return m_timestamp;
         }
 
+        @Override
         public PolledService[] getPolledServices() {
             return m_polledServices;
         }
 
+        @Override
         public long getServerTime() {
             return m_serverTime;
         }
@@ -297,7 +300,11 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
             SimplePollerConfiguration pollerConfiguration = cache.get(pollingPackageName);
             if (pollerConfiguration == null) {
                 pollerConfiguration = createPollerConfiguration(mon, pollingPackageName);
-                cache.putIfAbsent(pollingPackageName, pollerConfiguration);
+                SimplePollerConfiguration configInCache = cache.putIfAbsent(pollingPackageName, pollerConfiguration);
+                // Make sure that we get the up-to-date value out of the ConcurrentHashMap
+                if (configInCache != null) {
+                    pollerConfiguration = configInCache;
+                }
             }
             
             // construct a copy so the serverTime gets updated (and avoid threading issues)

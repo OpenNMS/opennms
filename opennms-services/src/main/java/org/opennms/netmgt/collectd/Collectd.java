@@ -170,6 +170,7 @@ public class Collectd extends AbstractServiceDaemon implements
     /**
      * <p>onInit</p>
      */
+    @Override
     protected void onInit() {
         Assert.notNull(m_collectorConfigDao, "collectorConfigDao must not be null");
         Assert.notNull(m_eventIpcManager, "eventIpcManager must not be null");
@@ -260,10 +261,12 @@ public class Collectd extends AbstractServiceDaemon implements
 
         ReadyRunnable interfaceScheduler = new ReadyRunnable() {
 
+            @Override
             public boolean isReady() {
                 return true;
             }
 
+            @Override
             public void run() {
                 final String prefix = ThreadCategory.getPrefix();
                 try {
@@ -346,6 +349,7 @@ public class Collectd extends AbstractServiceDaemon implements
 
             m_transTemplate.execute(new TransactionCallback<Object>() {
 
+                @Override
                 public Object doInTransaction(TransactionStatus status) {
                     
                     // Loop through collectors and schedule for each one present
@@ -710,6 +714,7 @@ public class Collectd extends AbstractServiceDaemon implements
      * Event Identifier and the appropriate action is taking based on each
      * UEI.
      */
+    @Override
     public void onEvent(final Event event) {
     	
     	String prefix = ThreadCategory.getPrefix();
@@ -717,6 +722,7 @@ public class Collectd extends AbstractServiceDaemon implements
     		ThreadCategory.setPrefix(getName());
     		m_transTemplate.execute(new TransactionCallback<Object>() {
 
+                            @Override
     			public Object doInTransaction(TransactionStatus status) {
     				onEventInTransaction(event);
     				return null;

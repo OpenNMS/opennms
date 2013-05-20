@@ -59,10 +59,12 @@ public class FinishPollerConfigServlet extends HttpServlet {
      *
      * @throws javax.servlet.ServletException if any.
      */
+    @Override
     public void init() throws ServletException {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         EventBuilder bldr = new EventBuilder("uei.opennms.org/internal/reloadPollerConfig", "webUI");
 

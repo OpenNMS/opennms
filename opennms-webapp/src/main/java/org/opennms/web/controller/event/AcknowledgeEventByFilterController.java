@@ -93,6 +93,7 @@ public class AcknowledgeEventByFilterController extends AbstractController imple
      * Acknowledge the events specified in the POST and then redirect the client
      * to an appropriate URL for display.
      */
+    @Override
     public ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         // required parameter
         String[] filterStrings = request.getParameterValues("filter");

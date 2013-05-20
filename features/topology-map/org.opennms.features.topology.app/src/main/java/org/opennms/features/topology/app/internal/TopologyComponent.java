@@ -45,7 +45,6 @@ import org.opennms.features.topology.api.MapViewManagerListener;
 import org.opennms.features.topology.api.Point;
 import org.opennms.features.topology.api.SelectionContext;
 import org.opennms.features.topology.api.SelectionListener;
-import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.GraphContainer.ChangeListener;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.Vertex;
@@ -66,6 +65,8 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
     
     TopologyComponentServerRpc m_rpc = new TopologyComponentServerRpc(){
 
+        private static final long serialVersionUID = 6945103738578953304L;
+
         @Override
         public void doubleClicked(MouseEventDetails eventDetails) {
             double scale = getViewManager().getScale() + 0.25;
@@ -74,7 +75,7 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
 
         @Override
         public void deselectAllItems() {
-            m_selectionManager.deselectAll();
+            m_graphContainer.getSelectionManager().deselectAll();
         }
 
         @Override
@@ -84,7 +85,7 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
 
         @Override
         public void backgroundClicked() {
-            m_selectionManager.deselectAll();
+            m_graphContainer.getSelectionManager().deselectAll();
         }
 
         @Override
@@ -172,22 +173,20 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
     private final List<MenuItemUpdateListener> m_menuItemStateListener = new ArrayList<MenuItemUpdateListener>();
     private final ContextMenuHandler m_contextMenuHandler;
     private final IconRepositoryManager m_iconRepoManager;
-    private final SelectionManager m_selectionManager;
     private String m_activeTool = "pan";
 
     private Set<VertexUpdateListener> m_vertexUpdateListeners = new CopyOnWriteArraySet<VertexUpdateListener>();
 
-    public TopologyComponent(GraphContainer dataSource, IconRepositoryManager iconRepositoryManager, SelectionManager selectionManager, ContextMenuHandler contextMenuHandler) {
+    public TopologyComponent(GraphContainer dataSource, IconRepositoryManager iconRepositoryManager, ContextMenuHandler contextMenuHandler) {
 	    m_graphContainer = dataSource;
 	    m_iconRepoManager = iconRepositoryManager;
-	    m_selectionManager = selectionManager;
 	    m_contextMenuHandler = contextMenuHandler;
 	    
 	    registerRpc(m_rpc);
 	    
 	    setGraph(m_graphContainer.getGraph());
 		
-		m_selectionManager.addSelectionListener(new SelectionListener() {
+		m_graphContainer.getSelectionManager().addSelectionListener(new SelectionListener() {
 			
 			@Override
 			public void selectionChanged(SelectionContext selectionContext) {
@@ -227,7 +226,8 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
 	    getState().setActiveTool(m_activeTool);
 	    
 	    Graph graph = getGraph();
-	    GraphVisitor painter = new GraphPainter(m_graphContainer, graph.getLayout(), m_iconRepoManager, m_selectionManager, m_graphContainer.getStatusProvider(), getState());
+		//Set Status provider from the graph container because I may move it later
+	    GraphVisitor painter = new GraphPainter(m_graphContainer, graph.getLayout(), m_iconRepoManager, m_graphContainer.getStatusProvider(), getState());
 	    try {
             graph.visit(painter);
         } catch (Exception e) {
@@ -236,33 +236,6 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
         }
 	}
 	
-//    @Override
-//    public void paintContent(PaintTarget target) throws PaintException {
-//        super.paintContent(target);
-//        target.addAttribute("activeTool", m_activeTool);
-//        
-//        BoundingBox boundingBox = getBoundingBox();
-//        //System.out.println(m_viewManager);
-//        target.addAttribute("boundX", boundingBox.getX());
-//        target.addAttribute("boundY", boundingBox.getY());
-//        target.addAttribute("boundWidth", boundingBox.getWidth());
-//        target.addAttribute("boundHeight", boundingBox.getHeight());
-//        
-//		Graph graph = getGraph();
-//		//Set Status provider from the graph container because I may move it later
-//		GraphVisitor painter = new GraphPainter(m_graphContainer, graph.getLayout(), m_iconRepoManager, m_selectionManager, target, m_graphContainer.getStatusProvider());
-//
-//		try {
-//			graph.visit(painter);
-//		} catch(PaintException e) {
-//			throw e;
-//		} catch (Exception e) {
-//			throw new RuntimeException(e);
-//		}
-//        
-//        
-//    }
-
     private BoundingBox getBoundingBox() {
         
         return getViewManager().getCurrentBoundingBox();
@@ -276,7 +249,7 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
 		}
 
 		Collection<VertexRef> vertexTrees = m_graphContainer.getVertexRefForest(vertexRefs);
-	    m_selectionManager.setSelectedVertexRefs(vertexTrees);
+	    m_graphContainer.getSelectionManager().setSelectedVertexRefs(vertexTrees);
 	}
 
 	private void addVerticesToSelection(String... vertexKeys) {
@@ -288,13 +261,13 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
 
 		Collection<VertexRef> vertexTrees = m_graphContainer.getVertexRefForest(vertexRefs);
 		
-		m_selectionManager.selectVertexRefs(vertexTrees);
+		m_graphContainer.getSelectionManager().selectVertexRefs(vertexTrees);
     }
     
 	private void selectEdge(String edgeKey) {
 		Edge edge = getGraph().getEdgeByKey(edgeKey);
 		
-		m_selectionManager.setSelectedEdgeRefs(Collections.singleton(edge));
+		m_graphContainer.getSelectionManager().setSelectedEdgeRefs(Collections.singleton(edge));
 
 	}
 
@@ -311,9 +284,9 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
         getGraph().getLayout().setLocation(vertex, x, y);
 
         if (selected) {
-        	m_selectionManager.selectVertexRefs(Collections.singleton(vertex));
+        	m_graphContainer.getSelectionManager().selectVertexRefs(Collections.singleton(vertex));
         } else {
-        	m_selectionManager.deselectVertexRefs(Collections.singleton(vertex));
+        	m_graphContainer.getSelectionManager().deselectVertexRefs(Collections.singleton(vertex));
         }
     }
     
@@ -344,17 +317,19 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
 	    }
 	}
 
+    @Override
 	public void graphChanged(GraphContainer container) {
 		Graph graph = container.getGraph();
         setGraph(graph);
 		
 		getViewManager().setMapBounds(graph.getLayout().getBounds());
-		computeBoundsForSelected(m_selectionManager);
+		computeBoundsForSelected(m_graphContainer.getSelectionManager());
 	}
 	
 	/**
 	 * ValueChange listener for the scale property
 	 */
+    @Override
     public void valueChange(ValueChangeEvent event) {
         
         double scale = (Double) event.getProperty().getValue();

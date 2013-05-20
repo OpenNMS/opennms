@@ -35,10 +35,12 @@ public class NCSAlarmListNavItem implements PageNavEntry {
     private String m_name;
     private String m_url;
     
+    @Override
     public String getName() {
         return m_name;
     }
 
+    @Override
     public String getUrl() {
         return m_url;
     }

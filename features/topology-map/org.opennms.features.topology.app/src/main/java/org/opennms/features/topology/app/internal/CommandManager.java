@@ -33,7 +33,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Dictionary;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -43,7 +42,6 @@ import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.OperationContext.DisplayLocation;
-import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.TopoContextMenu.TopoContextMenuItem;
 import org.slf4j.LoggerFactory;
@@ -52,8 +50,8 @@ import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItemClickEvent;
 
 import com.vaadin.ui.MenuBar;
-import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.UI;
+import com.vaadin.ui.MenuBar.MenuItem;
 
 public class CommandManager {
 
@@ -80,6 +78,7 @@ public class CommandManager {
 			return m_graphContainer;
 		}
 		
+                @Override
 		public DisplayLocation getDisplayLocation() {
 			return m_displayLocation;
 		}
@@ -149,7 +148,7 @@ public class CommandManager {
 		m_menuItemUpdateListeners.remove(listener);
 	}
 
-	MenuBar getMenuBar(GraphContainer graphContainer, UI mainWindow, SelectionManager selectionManager) {
+	MenuBar getMenuBar(GraphContainer graphContainer, UI mainWindow) {
 		OperationContext opContext = new DefaultOperationContext(mainWindow, graphContainer, DisplayLocation.MENUBAR);
 		MenuBarBuilder menuBarBuilder = new MenuBarBuilder();
 		menuBarBuilder.setTopLevelMenuOrder(m_topLevelMenuOrder);
@@ -157,7 +156,7 @@ public class CommandManager {
 		
 		for (Command command : m_commandList) {
 			String menuPosition = command.getMenuPosition();
-			MenuBar.Command menuCommand = menuCommand(command, graphContainer, mainWindow, opContext, selectionManager);
+			MenuBar.Command menuCommand = menuCommand(command, graphContainer, mainWindow, opContext);
 			updateCommandToOperationMap(command, menuCommand);
 			menuBarBuilder.addMenuCommand(menuCommand, menuPosition);
 		}
@@ -205,12 +204,13 @@ public class CommandManager {
 
 	public MenuBar.Command menuCommand(final Command command,
 			final GraphContainer graphContainer, final UI mainWindow,
-			final OperationContext operationContext, final SelectionManager selectionManager) {
+			final OperationContext operationContext) {
 
 		return new MenuBar.Command() {
 
+                        @Override
 			public void menuSelected(MenuItem selectedItem) {
-				List<VertexRef> targets = new ArrayList<VertexRef>(selectionManager.getSelectedVertexRefs());
+				List<VertexRef> targets = new ArrayList<VertexRef>(graphContainer.getSelectionManager().getSelectedVertexRefs());
 
 				DefaultOperationContext context = (DefaultOperationContext) operationContext;
 				context.setChecked(selectedItem.isChecked());
@@ -262,14 +262,11 @@ public class CommandManager {
 	}
 
 	private void removeCommand(Operation operation) {
-		Iterator<Command> it = m_commandList.iterator();
-		while (it.hasNext()) {
-			Command command = it.next();
+		for (Command command : m_commandList) {
 			if (command.getOperation() == operation) {
-				it.remove(); 
+				removeCommand(command); 
 			}
 		}
-		updateCommandListeners();
 	}
 
 	private void removeCommand(Command command) {
@@ -318,13 +315,13 @@ public class CommandManager {
 		return m_subMenuGroupOrder;
 	}
 
-	public void updateMenuItem(MenuItem menuItem, GraphContainer graphContainer, UI mainWindow, SelectionManager selectionManager) {
+	public void updateMenuItem(MenuItem menuItem, GraphContainer graphContainer, UI mainWindow) {
 		DefaultOperationContext operationContext = new DefaultOperationContext(mainWindow, graphContainer, DisplayLocation.MENUBAR);
 		Operation operation = getOperationByMenuItemCommand(menuItem.getCommand());
 		
 		//Check for null because separators have no Operation
 		if(operation != null) {
-    		List<VertexRef> selectedVertices = new ArrayList<VertexRef>(selectionManager.getSelectedVertexRefs());
+    		List<VertexRef> selectedVertices = new ArrayList<VertexRef>(graphContainer.getSelectionManager().getSelectedVertexRefs());
 			boolean visibility = operation.display(selectedVertices, operationContext);
     		menuItem.setVisible(visibility);
     		boolean enabled = operation.enabled(selectedVertices, operationContext);

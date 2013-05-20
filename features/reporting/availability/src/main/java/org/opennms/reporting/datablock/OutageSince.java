@@ -98,6 +98,7 @@ public class OutageSince {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return " Node Name: " + m_nodename + " Out Time Since : " + new Date(m_outTime) + " Outage : " + m_outage;
     }

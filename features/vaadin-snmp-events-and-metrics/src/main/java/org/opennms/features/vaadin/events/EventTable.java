@@ -74,6 +74,7 @@ public abstract class EventTable extends Table {
         setWidth("100%");
         setHeight("250px");
         addValueChangeListener(new Property.ValueChangeListener() {
+            @Override
             public void valueChange(Property.ValueChangeEvent event) {
                 if (getValue() != null) {
                     updateExternalSource(getEvent(getValue()));

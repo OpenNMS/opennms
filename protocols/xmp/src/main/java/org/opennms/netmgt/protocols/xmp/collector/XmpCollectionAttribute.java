@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -25,6 +25,13 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+
+/************************************************************************
+ * Change history
+ *
+ * 2013-04-18 Updated package names to match new XMP JAR (jeffg@opennms.org)
+ *
+ ************************************************************************/
 
 /*
 * OCA CONTRIBUTION ACKNOWLEDGEMENT - NOT PART OF LEGAL BOILERPLATE
@@ -52,8 +59,8 @@
 
 package org.opennms.netmgt.protocols.xmp.collector;
 
-import org.krupczak.Xmp.Xmp;
-import org.krupczak.Xmp.XmpVar;
+import org.krupczak.xmp.Xmp;
+import org.krupczak.xmp.XmpVar;
 import org.opennms.netmgt.collectd.AbstractCollectionAttribute;
 import org.opennms.netmgt.config.collector.CollectionAttribute;
 import org.opennms.netmgt.config.collector.CollectionAttributeType;
@@ -97,6 +104,7 @@ implements CollectionAttribute
      *
      * @return a {@link org.opennms.netmgt.config.collector.CollectionAttributeType} object.
      */
+    @Override
     public CollectionAttributeType getAttributeType() { return attribType; }
 
     /**
@@ -114,6 +122,7 @@ implements CollectionAttribute
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getName() 
     { 
         return new String(alias);
@@ -124,6 +133,7 @@ implements CollectionAttribute
      *
      * @return a {@link org.opennms.netmgt.config.collector.CollectionResource} object.
      */
+    @Override
     public CollectionResource getResource() { return resource; }
 
     /**
@@ -131,6 +141,7 @@ implements CollectionAttribute
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getNumericValue() { return aVar.getValue(); }
 
     /**
@@ -138,9 +149,11 @@ implements CollectionAttribute
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getType() { return Xmp.syntaxToString(aVar.xmpSyntax); }
 
     /** {@inheritDoc} */
+    @Override
     public boolean shouldPersist(ServiceParameters params) { return true; }
 
     //public void visit(CollectionSetVisitor visitor) { super(visitor); }
@@ -150,6 +163,7 @@ implements CollectionAttribute
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() 
     { 
         return "XmpCollectionAttribute "+alias+"="+aVar.getValue()+" attribType="+attribType; 
@@ -160,6 +174,7 @@ implements CollectionAttribute
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getStringValue() { return aVar.getValue(); }
 
     @Override

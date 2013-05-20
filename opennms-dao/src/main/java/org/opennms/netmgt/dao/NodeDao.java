@@ -144,6 +144,7 @@ public interface NodeDao extends OnmsDao<OnmsNode, Integer> {
      *
      * @return a {@link java.util.List} object.
      */
+    @Override
     List<OnmsNode> findAll();
 
     /**

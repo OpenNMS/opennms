@@ -49,6 +49,7 @@ public class MatchingRequestLocator implements RequestLocator<MobileMsgRequest, 
      * @param request a {@link org.opennms.sms.reflector.smsservice.MobileMsgRequest} object.
      * @return a boolean.
      */
+    @Override
     public boolean trackRequest(MobileMsgRequest request) {
         m_requests.add(request);
         return true;
@@ -60,6 +61,7 @@ public class MatchingRequestLocator implements RequestLocator<MobileMsgRequest, 
      * @param response a {@link org.opennms.sms.reflector.smsservice.MobileMsgResponse} object.
      * @return a {@link org.opennms.sms.reflector.smsservice.MobileMsgRequest} object.
      */
+    @Override
     public MobileMsgRequest locateMatchingRequest(MobileMsgResponse response) {
         for(MobileMsgRequest request : m_requests) {
             
@@ -77,6 +79,7 @@ public class MatchingRequestLocator implements RequestLocator<MobileMsgRequest, 
      * @param timedOutRequest a {@link org.opennms.sms.reflector.smsservice.MobileMsgRequest} object.
      * @return a {@link org.opennms.sms.reflector.smsservice.MobileMsgRequest} object.
      */
+    @Override
     public MobileMsgRequest requestTimedOut(MobileMsgRequest timedOutRequest) {
         return m_requests.remove(timedOutRequest) ? timedOutRequest : null;
     }
@@ -86,6 +89,7 @@ public class MatchingRequestLocator implements RequestLocator<MobileMsgRequest, 
      *
      * @param request a {@link org.opennms.sms.reflector.smsservice.MobileMsgRequest} object.
      */
+    @Override
     public void requestComplete(MobileMsgRequest request) {
         m_requests.remove(request);
     }

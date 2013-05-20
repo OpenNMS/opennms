@@ -50,12 +50,14 @@ public class EventIpcManagerEventHandlerProxy implements EventHandler, Initializ
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean processEvent(Event event) {
         m_eventIpcManager.sendNow(event);
         return true;
     }
 
     /** {@inheritDoc} */
+    @Override
     public void receiptSent(EventReceipt event) {
         // do nothing
     }

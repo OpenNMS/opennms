@@ -59,6 +59,7 @@ public class OpenNMSJUnit4ClassRunner extends SpringJUnit4ClassRunner {
 
     private static class ClassNameComparator implements Comparator<TestExecutionListener> {
 
+        @Override
         public int compare(TestExecutionListener o1, TestExecutionListener o2) {
             return o1.getClass().getName().compareTo(o2.getClass().getName());
         }

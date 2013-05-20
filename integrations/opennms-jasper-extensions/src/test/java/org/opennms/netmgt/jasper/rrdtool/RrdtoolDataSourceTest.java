@@ -52,34 +52,42 @@ public class RrdtoolDataSourceTest {
 			this.value = value;
 		}
 
+                @Override
 		public JRPropertiesHolder getParentProperties() {
 			return null;
 		}
 
+                @Override
 		public JRPropertiesMap getPropertiesMap() {
 			return null;
 		}
 
+                @Override
 		public boolean hasProperties() {
 			return false;
 		}
 
+                @Override
 		public String getDescription() {
 			return null;
 		}
 
+                @Override
 		public String getName() {
 			return name;
 		}
 
+                @Override
 		public Class<?> getValueClass() {
 			return value;
 		}
 
+                @Override
 		public String getValueClassName() {
 			return value.getName();
 		}
 
+                @Override
 		public void setDescription(String arg0) {
 		}
 

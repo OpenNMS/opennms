@@ -77,6 +77,7 @@ public class NrpeRequest {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return String.format("Request: %s", Arrays.toString(m_command));
     }

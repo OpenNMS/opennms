@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -25,6 +25,13 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+
+/************************************************************************
+ * Change history
+ *
+ * 2013-04-18 Updated package names to match new XMP JAR (jeffg@opennms.org)
+ *
+ ************************************************************************/
 
 /*
 * OCA CONTRIBUTION ACKNOWLEDGEMENT - NOT PART OF LEGAL BOILERPLATE
@@ -61,11 +68,11 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.krupczak.Xmp.SocketOpts;
-import org.krupczak.Xmp.Xmp;
-import org.krupczak.Xmp.XmpMessage;
-import org.krupczak.Xmp.XmpSession;
-import org.krupczak.Xmp.XmpVar;
+import org.krupczak.xmp.SocketOpts;
+import org.krupczak.xmp.Xmp;
+import org.krupczak.xmp.XmpMessage;
+import org.krupczak.xmp.XmpSession;
+import org.krupczak.xmp.XmpVar;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.collectd.CollectionAgent;
@@ -316,6 +323,7 @@ public class XmpCollector implements ServiceCollector {
      *
      * initialize our XmpCollector with global parameters *
      */
+    @Override
     public void initialize(Map<String, String> parameters)
     {
         // parameters come from collectd-configuration.xml 
@@ -389,6 +397,7 @@ public class XmpCollector implements ServiceCollector {
      * initialize the querying of a particular agent/interface with
      * parameters specific to this agent/interface *
      */
+    @Override
     public void initialize(CollectionAgent agent, Map<String, Object> parameters)
     {
         log().debug("initialize agent/params called for "+agent);
@@ -411,6 +420,7 @@ public class XmpCollector implements ServiceCollector {
      * Release/stop all querying of agents/interfaces and release
      *       state associated with them *
      */
+    @Override
     public void release() 
     {
         log().info("release()");
@@ -427,6 +437,7 @@ public class XmpCollector implements ServiceCollector {
      *
      * Release/stop querying a particular agent *
      */
+    @Override
     public void release(CollectionAgent agent)
     {
         log().info("release agent called for "+agent);
@@ -455,6 +466,7 @@ public class XmpCollector implements ServiceCollector {
      *       collection cycle.  Parameters are a map of String Key/String
      *       Value passed in.  Keys come from collectd config
      */
+    @Override
     public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, 
             Map<String, Object> parameters)
     {
@@ -624,6 +636,7 @@ public class XmpCollector implements ServiceCollector {
     }
 
     /** {@inheritDoc} */
+    @Override
     public RrdRepository getRrdRepository(String collectionName)
     {
         log().debug("XMP getRrdRepository called for "+collectionName);

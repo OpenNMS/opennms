@@ -36,6 +36,7 @@ import javax.management.ObjectName;
 public class ObjectNameEditor extends PropertyEditorSupport {
 
     /** {@inheritDoc} */
+    @Override
     public void setAsText(String text) throws IllegalArgumentException {
         try {
             setValue(new ObjectName(text));

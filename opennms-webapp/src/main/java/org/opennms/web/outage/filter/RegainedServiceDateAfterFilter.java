@@ -67,6 +67,7 @@ public class RegainedServiceDateAfterFilter extends GreaterThanFilter<Date> {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getTextDescription() {
         return ("regained service date after \"" + getValue() + "\"");
     }
@@ -76,6 +77,7 @@ public class RegainedServiceDateAfterFilter extends GreaterThanFilter<Date> {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return ("<Regained Service Date After Filter: " + this.getDescription() + ">");
     }
@@ -90,6 +92,7 @@ public class RegainedServiceDateAfterFilter extends GreaterThanFilter<Date> {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean equals(Object obj) {
         return (this.toString().equals(obj.toString()));
     }

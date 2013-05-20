@@ -45,6 +45,7 @@ public class Win32ServicePlugin extends SnmpPlugin {
 	private static final String DEFAULT_SERVICE_NAME = "Server";
 	
 	/** {@inheritDoc} */
+        @Override
 	public boolean isProtocolSupported(InetAddress address, Map<String, Object> qualifiers) {
 		String serviceName = ParameterMap.getKeyedString(qualifiers, "service-name", DEFAULT_SERVICE_NAME);
 		int snLength = serviceName.length();

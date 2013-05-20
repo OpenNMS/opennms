@@ -47,6 +47,7 @@ class EmptyPollerConfiguration implements PollerConfiguration, Serializable {
      *
      * @return a {@link java.util.Date} object.
      */
+    @Override
     public Date getConfigurationTimestamp() {
         return new Date(0);
     }
@@ -56,10 +57,12 @@ class EmptyPollerConfiguration implements PollerConfiguration, Serializable {
      *
      * @return an array of {@link org.opennms.netmgt.poller.remote.PolledService} objects.
      */
+    @Override
     public PolledService[] getPolledServices() {
         return new PolledService[0];
     }
 
+    @Override
     public long getServerTime() {
         return 0;
     }

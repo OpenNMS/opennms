@@ -190,6 +190,7 @@ public final class PollerConfigFactory extends PollerConfigManager {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void saveXml(final String xml) throws IOException {
         if (xml != null) {
             getWriteLock().lock();
@@ -215,6 +216,7 @@ public final class PollerConfigFactory extends PollerConfigManager {
      * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
+    @Override
     public void update() throws IOException, MarshalException, ValidationException {
         getWriteLock().lock();
         try {

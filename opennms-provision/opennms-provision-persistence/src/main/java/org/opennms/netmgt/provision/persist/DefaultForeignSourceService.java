@@ -83,10 +83,12 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setDeployedForeignSourceRepository(ForeignSourceRepository repo) {
         m_deployedForeignSourceRepository = repo;
     }
     /** {@inheritDoc} */
+    @Override
     public void setPendingForeignSourceRepository(ForeignSourceRepository repo) {
         m_pendingForeignSourceRepository = repo;
     }
@@ -96,6 +98,7 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
      *
      * @return a {@link java.util.Set} object.
      */
+    @Override
     public Set<ForeignSource> getAllForeignSources() {
         Set<ForeignSource> foreignSources = new TreeSet<ForeignSource>();
         foreignSources.addAll(m_pendingForeignSourceRepository.getForeignSources());
@@ -108,6 +111,7 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
     }
 
     /** {@inheritDoc} */
+    @Override
     public ForeignSource getForeignSource(String name) {
         ForeignSource fs = m_pendingForeignSourceRepository.getForeignSource(name);
         if (fs.isDefault()) {
@@ -117,12 +121,14 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
     }
 
     /** {@inheritDoc} */
+    @Override
     public ForeignSource saveForeignSource(String name, ForeignSource fs) {
         normalizePluginConfigs(fs);
         m_pendingForeignSourceRepository.save(fs);
         return fs;
     }
     /** {@inheritDoc} */
+    @Override
     public void deleteForeignSource(String name) {
         if (name.equals("default")) {
             m_pendingForeignSourceRepository.resetDefaultForeignSource();
@@ -134,6 +140,7 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
         }
     }
     /** {@inheritDoc} */
+    @Override
     public ForeignSource cloneForeignSource(String name, String target) {
         ForeignSource fs = getForeignSource(name);
         fs.setDefault(false);
@@ -144,6 +151,7 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
     }
 
     /** {@inheritDoc} */
+    @Override
     public ForeignSource addParameter(String foreignSourceName, String pathToAdd) {
         ForeignSource fs = getForeignSource(foreignSourceName);
         PropertyPath path = new PropertyPath(pathToAdd);
@@ -164,6 +172,7 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
     }
 
     /** {@inheritDoc} */
+    @Override
     public ForeignSource deletePath(String foreignSourceName, String pathToDelete) {
         ForeignSource fs = getForeignSource(foreignSourceName);
         PropertyPath path = new PropertyPath(pathToDelete);
@@ -191,6 +200,7 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
 
 
     /** {@inheritDoc} */
+    @Override
     public ForeignSource addDetectorToForeignSource(String foreignSource, String name) {
         ForeignSource fs = getForeignSource(foreignSource);
         PluginConfig pc = new PluginConfig(name, "unknown");
@@ -199,6 +209,7 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
         return fs;
     }
     /** {@inheritDoc} */
+    @Override
     public ForeignSource deleteDetector(String foreignSource, String name) {
         ForeignSource fs = getForeignSource(foreignSource);
         List<PluginConfig> detectors = fs.getDetectors();
@@ -214,6 +225,7 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
     }
     
     /** {@inheritDoc} */
+    @Override
     public ForeignSource addPolicyToForeignSource(String foreignSource, String name) {
         ForeignSource fs = getForeignSource(foreignSource);
         PluginConfig pc = new PluginConfig(name, "unknown");
@@ -222,6 +234,7 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
         return fs;
     }
     /** {@inheritDoc} */
+    @Override
     public ForeignSource deletePolicy(String foreignSource, String name) {
         ForeignSource fs = getForeignSource(foreignSource);
         List<PluginConfig> policies = fs.getPolicies();
@@ -241,6 +254,7 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
      *
      * @return a {@link java.util.Map} object.
      */
+    @Override
     public Map<String, String> getDetectorTypes() {
         if (m_detectors == null) {
             Map<String,String> detectors = new TreeMap<String,String>();
@@ -265,6 +279,7 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
      *
      * @return a {@link java.util.Map} object.
      */
+    @Override
     public Map<String, String> getPolicyTypes() {
         if (m_policies == null) {
             Map<String,String> policies = new TreeMap<String,String>();
@@ -293,6 +308,7 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
      *
      * @return a {@link java.util.Map} object.
      */
+    @Override
     public Map<String,PluginWrapper> getWrappers() {
         if (m_wrappers == null && m_policies != null && m_detectors != null) {
             m_wrappers = new HashMap<String,PluginWrapper>(m_policies.size());

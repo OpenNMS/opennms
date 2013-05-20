@@ -44,6 +44,7 @@ public class NodeInfoOperation extends AbstractOperation {
     private String m_nodePageURL;
     private String m_nodeListURL;
 
+    @Override
     public Undoer execute(final List<VertexRef> targets, final OperationContext operationContext) {
         String label = "";
         int nodeID = -1;
@@ -92,6 +93,7 @@ public class NodeInfoOperation extends AbstractOperation {
         
     }
 
+    @Override
     public String getId() {
         return "contextNodeInfo";
     }

@@ -310,6 +310,7 @@ public class OnmsSnmpCollection {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return getName();
     }

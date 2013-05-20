@@ -76,6 +76,7 @@ public final class ServletPipeline
             this.handler = handler;
         }
 
+        @Override
         public void forward(ServletRequest req, ServletResponse res)
             throws ServletException, IOException
         {
@@ -86,6 +87,7 @@ public final class ServletPipeline
             this.handler.handle(new RequestWrapper((HttpServletRequest)req, this.path), (HttpServletResponse)res);
         }
 
+        @Override
         public void include(ServletRequest req, ServletResponse res)
             throws ServletException, IOException
         {
@@ -104,6 +106,7 @@ public final class ServletPipeline
             this.requestUri = requestUri;
         }
 
+        @Override
         public String getRequestURI()
         {
             return this.requestUri;

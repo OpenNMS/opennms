@@ -158,6 +158,7 @@ public class ServicePollState implements Comparable<ServicePollState>, Serializa
      * @param that a {@link org.opennms.netmgt.poller.remote.ServicePollState} object.
      * @return a int.
      */
+    @Override
     public int compareTo(final ServicePollState that) {
         if (that == null) return -1;
         final PolledService thisService = this.getPolledService();

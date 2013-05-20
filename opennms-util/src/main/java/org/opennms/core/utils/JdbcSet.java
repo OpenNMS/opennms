@@ -79,11 +79,13 @@ public class JdbcSet<E> extends AbstractSet<E> {
             super(entriesIter, addedIter);
         }
 
+        @Override
         public E next() {
             m_last = super.next();
             return m_last;
         }
 
+        @Override
         public void remove() {
             m_removed.add(m_last);
             super.remove();
@@ -96,6 +98,7 @@ public class JdbcSet<E> extends AbstractSet<E> {
      *
      * @return a {@link java.util.Iterator} object.
      */
+    @Override
     public Iterator<E> iterator() {
         return new JdbcSetIterator(m_entries.iterator(), m_added.iterator());
     }
@@ -105,6 +108,7 @@ public class JdbcSet<E> extends AbstractSet<E> {
      *
      * @return a int.
      */
+    @Override
     public int size() {
         return m_added.size() + m_entries.size();
     }
@@ -115,6 +119,7 @@ public class JdbcSet<E> extends AbstractSet<E> {
      * @param o a E object.
      * @return a boolean.
      */
+    @Override
     public boolean add(E o) {
         if (contains(o)) {
             return false;

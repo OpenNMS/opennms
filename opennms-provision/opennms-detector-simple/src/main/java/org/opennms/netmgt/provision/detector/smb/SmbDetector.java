@@ -91,6 +91,7 @@ public class SmbDetector extends BasicDetector<LineOrientedRequest, NbtAddressRe
     private static ResponseValidator<NbtAddressResponse> validateAddressIsNotSame(){
         return new ResponseValidator<NbtAddressResponse>() {
 
+            @Override
             public boolean validate(NbtAddressResponse response) {
                 return response.validateAddressIsNotSame();
             }

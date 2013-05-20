@@ -52,6 +52,7 @@ public class SSLClient extends MultilineOrientedClient implements Client<LineOri
     
 
     /** {@inheritDoc} */
+    @Override
     public void connect(final InetAddress address, final int port, final int timeout) throws IOException {
         m_socket = getWrappedSocket(address, port, timeout);
         setOutput(m_socket.getOutputStream());

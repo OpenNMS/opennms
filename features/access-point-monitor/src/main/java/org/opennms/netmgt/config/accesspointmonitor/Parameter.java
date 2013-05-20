@@ -88,6 +88,7 @@ public class Parameter implements Serializable, Comparable<Parameter>, Cloneable
         m_value = value;
     }
 
+    @Override
     public int compareTo(Parameter obj) {
         return new CompareToBuilder()
             .append(getKey(), obj.getKey())

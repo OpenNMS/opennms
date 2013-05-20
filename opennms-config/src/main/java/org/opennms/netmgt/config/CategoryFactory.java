@@ -106,10 +106,12 @@ public final class CategoryFactory implements CatFactory {
         m_config = CastorUtils.unmarshal(Catinfo.class, resource);
     }
     
+    @Override
     public Lock getReadLock() {
         return m_readLock;
     }
     
+    @Override
     public Lock getWriteLock() {
         return m_writeLock;
     }
@@ -188,6 +190,7 @@ public final class CategoryFactory implements CatFactory {
      *
      * @return the categories configuration
      */
+    @Override
     public Catinfo getConfig() {
         getReadLock().lock();
         try {
@@ -420,6 +423,7 @@ public final class CategoryFactory implements CatFactory {
      *
      * Return the category specified by name.
      */
+    @Override
     public Category getCategory(final String name) {
         getReadLock().lock();
         try {
@@ -442,6 +446,7 @@ public final class CategoryFactory implements CatFactory {
      *
      * Return the normal value for the specified category.
      */
+    @Override
     public double getNormal(final String catlabel) {
         final Category cat = getCategory(catlabel);
         return (cat == null? -1.0 : cat.getNormal());
@@ -452,6 +457,7 @@ public final class CategoryFactory implements CatFactory {
      *
      * Return the warning value for the specified category.
      */
+    @Override
     public double getWarning(final String catlabel) {
         final Category cat = getCategory(catlabel);
         return (cat == null? -1.0 : cat.getWarning());
@@ -489,6 +495,7 @@ public final class CategoryFactory implements CatFactory {
      * Return the effective rule for the specified category. The category rule
      * ANDed with the rule of the category group that the category belongs to.
      */
+    @Override
     public String getEffectiveRule(final String catlabel) {
         getReadLock().lock();
         try {

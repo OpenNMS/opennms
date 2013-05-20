@@ -87,6 +87,7 @@ public class SimpleServerHandler extends IoHandlerAdapter {
     }
     
     /** {@inheritDoc} */
+    @Override
     public void sessionIdle(IoSession session, IdleStatus status) throws Exception {
         LogUtils.infof(this, "IDLE " + session.getIdleCount(status));
     }

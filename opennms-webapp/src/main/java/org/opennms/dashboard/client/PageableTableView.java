@@ -68,6 +68,7 @@ public abstract class PageableTableView extends DashletView implements Pageable 
     /**
      * <p>onDashLoad</p>
      */
+    @Override
     public void onDashLoad() {
         addToTitleBar(m_pager, DockPanel.CENTER);
     }
@@ -89,6 +90,7 @@ public abstract class PageableTableView extends DashletView implements Pageable 
 	 *
 	 * @return a int.
 	 */
+    @Override
 	public abstract int getElementCount();
 
     /**
@@ -171,6 +173,7 @@ public abstract class PageableTableView extends DashletView implements Pageable 
 	 *
 	 * @return a int.
 	 */
+    @Override
 	public int getCurrentElement() {
 	    return m_currentIndex;
 	}
@@ -180,6 +183,7 @@ public abstract class PageableTableView extends DashletView implements Pageable 
 	 *
 	 * @return a int.
 	 */
+    @Override
 	public int getPageSize() {
 	    return m_pageSize;
 	}
@@ -194,6 +198,7 @@ public abstract class PageableTableView extends DashletView implements Pageable 
 	}
 
 	/** {@inheritDoc} */
+    @Override
 	public void setCurrentElement(int element) {
 	    m_currentIndex = element;
 	    refresh();

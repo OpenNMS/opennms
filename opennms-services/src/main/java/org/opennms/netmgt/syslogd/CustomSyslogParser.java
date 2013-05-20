@@ -62,6 +62,7 @@ public class CustomSyslogParser extends SyslogParser {
         return new CustomSyslogParser(text);
     }
 
+    @Override
     public SyslogMessage parse() throws SyslogParserException {
         final SyslogMessage syslogMessage = new SyslogMessage();
 

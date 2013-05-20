@@ -62,6 +62,7 @@ public class AutoIntegerReplacement implements ColumnChangeReplacement {
     }
     
     /** {@inheritDoc} */
+    @Override
     public Integer getColumnReplacement(ResultSet rs, Map<String, ColumnChange> columnChanges) {
         return getInt();
     }
@@ -71,6 +72,7 @@ public class AutoIntegerReplacement implements ColumnChangeReplacement {
      *
      * @return a boolean.
      */
+    @Override
     public boolean addColumnIfColumnIsNew() {
         return true;
     }
@@ -78,6 +80,7 @@ public class AutoIntegerReplacement implements ColumnChangeReplacement {
     /**
      * <p>close</p>
      */
+    @Override
     public void close() {
     }
 }

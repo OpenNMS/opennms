@@ -52,6 +52,7 @@ public class JavaMailDeliveryService implements ReportDeliveryService {
 
     /** {@inheritDoc} 
      * @throws ReportDeliveryException */
+    @Override
     public void deliverReport(Report report, String fileName) throws ReportDeliveryException {
         try {
 

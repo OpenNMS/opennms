@@ -37,14 +37,17 @@ public class OnmsWbemPropSetBiosStub implements OnmsWbemPropertySet {
     public OnmsWbemPropSetBiosStub(OnmsWbemProperty prop) {
         releaseDate = prop;
     }
+    @Override
     public Integer count() throws WmiException {
         return null;
     }
 
+    @Override
     public OnmsWbemProperty get(Integer idx) throws WmiException {
         return null;
     }
 
+    @Override
     public OnmsWbemProperty getByName(String name) throws WmiException {      
         if(name.equals("ReleaseDate")) return releaseDate;
         throw new WmiException("Failed to perform WMI operation: Unknown name. [0x80020006]");

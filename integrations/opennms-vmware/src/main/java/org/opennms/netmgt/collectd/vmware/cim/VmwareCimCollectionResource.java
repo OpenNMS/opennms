@@ -42,14 +42,17 @@ public abstract class VmwareCimCollectionResource extends AbstractCollectionReso
         m_nodeId = agent.getNodeId();
     }
 
+    @Override
     public int getType() {
         return -1; //Is this right?
     }
 
+    @Override
     public boolean rescanNeeded() {
         return false;
     }
 
+    @Override
     public boolean shouldPersist(final ServiceParameters params) {
         return true;
     }
@@ -59,10 +62,13 @@ public abstract class VmwareCimCollectionResource extends AbstractCollectionReso
         addAttribute(attr);
     }
 
+    @Override
     public abstract String getResourceTypeName();
 
+    @Override
     public abstract String getInstance();
 
+    @Override
     public String getParent() {
         return Integer.toString(m_nodeId);
     }

@@ -118,6 +118,7 @@ public class HttpMonitor extends AbstractServiceMonitor {
      * Provided that the interface's response is valid we set the service status to
      * SERVICE_AVAILABLE and return.
      */
+    @Override
     public PollStatus poll(final MonitoredService svc, final Map<String, Object> parameters) {
         final NetworkInterface<InetAddress> iface = svc.getNetInterface();
         final String nodeLabel = svc.getNodeLabel();

@@ -332,6 +332,7 @@ public final class SnmpCollection implements ReadyRunnable {
      * thread context synchronization must be added.
      * </p>
      */
+    @Override
     public void run() {
         if (suspendCollection) {
             EventBuilder builder = new EventBuilder(
@@ -339,6 +340,7 @@ public final class SnmpCollection implements ReadyRunnable {
                     "Linkd");
             builder.setNodeid(m_nodeid);
             builder.setInterface(m_address);
+            builder.addParam("runnable", "snmpCollection");
             m_linkd.getEventForwarder().sendNow(builder.getEvent());
             LogUtils.debugf(this, "run: address: %s Suspended!",
                             str(m_address));
@@ -376,6 +378,7 @@ public final class SnmpCollection implements ReadyRunnable {
                                                 "Linkd");
         builder.setNodeid(m_nodeid);
         builder.setInterface(m_address);
+        builder.addParam("runnable", "snmpCollection");
         m_linkd.getEventForwarder().sendNow(builder.getEvent());
 
         final String hostAddress = str(m_address);
@@ -542,6 +545,7 @@ public final class SnmpCollection implements ReadyRunnable {
                                    "Linkd");
         builder.setNodeid(m_nodeid);
         builder.setInterface(m_address);
+        builder.addParam("runnable", "snmpCollection");
         m_linkd.getEventForwarder().sendNow(builder.getEvent());
 
     }
@@ -672,6 +676,7 @@ public final class SnmpCollection implements ReadyRunnable {
      * schedule
      * </p>
      */
+    @Override
     public void schedule() {
         if (m_scheduler == null)
             throw new IllegalStateException(
@@ -696,6 +701,7 @@ public final class SnmpCollection implements ReadyRunnable {
      * 
      * @return a boolean.
      */
+    @Override
     public boolean isReady() {
         return true;
     }
@@ -707,6 +713,7 @@ public final class SnmpCollection implements ReadyRunnable {
      * 
      * @return Returns the suspendCollection.
      */
+    @Override
     public boolean isSuspended() {
         return suspendCollection;
     }
@@ -716,6 +723,7 @@ public final class SnmpCollection implements ReadyRunnable {
      * suspend
      * </p>
      */
+    @Override
     public void suspend() {
         this.suspendCollection = true;
     }
@@ -725,6 +733,7 @@ public final class SnmpCollection implements ReadyRunnable {
      * wakeUp
      * </p>
      */
+    @Override
     public void wakeUp() {
     	setAgentConfig(m_linkd.getSnmpAgentConfig(m_address));
         this.suspendCollection = false;
@@ -735,6 +744,7 @@ public final class SnmpCollection implements ReadyRunnable {
      * unschedule
      * </p>
      */
+    @Override
     public void unschedule() {
         if (m_scheduler == null)
             throw new IllegalStateException(
@@ -837,12 +847,13 @@ public final class SnmpCollection implements ReadyRunnable {
     }
 
     /** {@inheritDoc} */
-    public boolean equals(ReadyRunnable run) {
-        if (run instanceof SnmpCollection
-                && this.getPackageName().equals(run.getPackageName())) {
+    @Override
+    public boolean equals(Object run) {
+        if (run instanceof SnmpCollection) {
             SnmpCollection c = (SnmpCollection) run;
-            if (c.getTarget().equals(m_address))
+            if (this.getPackageName().equals(c.getPackageName()) && c.getTarget().equals(m_address)) {
                 return true;
+            }
         }
         return false;
     }
@@ -854,6 +865,7 @@ public final class SnmpCollection implements ReadyRunnable {
      * 
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getInfo() {
         return "ReadyRunnable SnmpCollection" + " ip=" + str(getTarget())
                 + " port=" + getPort() + " community=" + getReadCommunity()
@@ -973,11 +985,13 @@ public final class SnmpCollection implements ReadyRunnable {
      * 
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getPackageName() {
         return packageName;
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setPackageName(String packageName) {
         this.packageName = packageName;
     }

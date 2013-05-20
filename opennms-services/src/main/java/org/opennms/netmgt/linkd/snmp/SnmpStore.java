@@ -93,6 +93,7 @@ public class SnmpStore extends AbstractSnmpStore {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void storeResult(SnmpResult res) {
         putValue(res.getBase().toString(), res.getValue());
         for (NamedSnmpVar var : ms_elemList) {

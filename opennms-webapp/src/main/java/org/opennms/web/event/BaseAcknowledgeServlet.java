@@ -69,6 +69,7 @@ public abstract class BaseAcknowledgeServlet extends HttpServlet {
 	 *
 	 * @throws javax.servlet.ServletException if any.
 	 */
+        @Override
 	public void init() throws ServletException {
 	    ServletConfig config = this.getServletConfig();
 	

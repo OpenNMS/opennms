@@ -81,6 +81,7 @@ public class PassiveStatusKey {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean equals(Object o) {
         if (o instanceof PassiveStatusKey) {
             PassiveStatusKey key = (PassiveStatusKey) o;
@@ -96,6 +97,7 @@ public class PassiveStatusKey {
      *
      * @return a int.
      */
+    @Override
     public int hashCode() {
         return getNodeLabel().hashCode() ^ getIpAddr().hashCode() ^ getServiceName().hashCode();
     }
@@ -105,6 +107,7 @@ public class PassiveStatusKey {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return getNodeLabel()+':'+getIpAddr()+':'+getServiceName();
     }

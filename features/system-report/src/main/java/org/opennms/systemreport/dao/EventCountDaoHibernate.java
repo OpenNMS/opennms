@@ -47,9 +47,11 @@ public class EventCountDaoHibernate extends AbstractDaoHibernate<OnmsEvent, Inte
         super(OnmsEvent.class);
     }
 
+    @Override
     public Set<CountedObject<String>> getUeiCounts(final Integer limit) {
         Set<CountedObject<String>> ueis = new TreeSet<CountedObject<String>>();
         HibernateCallback<List<CountedObject<String>>> hc = new HibernateCallback<List<CountedObject<String>>>() {
+            @Override
             public List<CountedObject<String>> doInHibernate(Session session) throws HibernateException {
                 Query queryObject = session.createQuery("SELECT event.eventUei, COUNT(event.eventUei) FROM OnmsEvent event GROUP BY event.eventUei ORDER BY COUNT(event.eventUei) desc");
                 queryObject.setMaxResults(limit);

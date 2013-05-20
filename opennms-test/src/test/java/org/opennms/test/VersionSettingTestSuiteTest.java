@@ -41,10 +41,12 @@ public class VersionSettingTestSuiteTest extends TestCase {
         return new VersionSettingTestSuite(VersionSettingTestSuiteTest.class, "Version 1 Suite", 1);
     }
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
     }
 
+    @Override
     protected void tearDown() throws Exception {
         super.tearDown();
     }

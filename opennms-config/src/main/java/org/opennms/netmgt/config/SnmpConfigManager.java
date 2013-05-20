@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -36,156 +36,165 @@ import org.opennms.netmgt.config.snmp.Definition;
 import org.opennms.netmgt.config.snmp.SnmpConfig;
 
 /**
- * This class handles merging a new Definition into the current running SNMP Configuration.
- *
+ * This class handles merging a new Definition into the current running SNMP
+ * Configuration.
+ * 
  * @author <a href="mailto:david@opennms.org>David Hustace</a>
  */
 public class SnmpConfigManager {
 
-    private SnmpConfig m_config;
-    private List<MergeableDefinition> m_definitions = new ArrayList<MergeableDefinition>();
-    
-    
-    /**
-     * <p>Constructor for SnmpConfigManager.</p>
-     *
-     * @param config a {@link org.opennms.netmgt.config.snmp.SnmpConfig} object.
-     */
-    public SnmpConfigManager(SnmpConfig config) {
-        m_config = config;
-        for(Definition def : m_config.getDefinitionCollection()) {
-            m_definitions.add(new MergeableDefinition(def));
+	private SnmpConfig m_config;
+	private List<MergeableDefinition> m_definitions = new ArrayList<MergeableDefinition>();
+
+	/**
+	 * <p>
+	 * Constructor for SnmpConfigManager.
+	 * </p>
+	 * 
+	 * @param config
+	 *            a {@link org.opennms.netmgt.config.snmp.SnmpConfig} object.
+	 */
+	public SnmpConfigManager(SnmpConfig config) {
+		m_config = config;
+		for (Definition def : m_config.getDefinitionCollection()) {
+			m_definitions.add(new MergeableDefinition(def));
+		}
+	}
+
+	/**
+	 * Removes all values from the definition (def) which are already set by the
+	 * default {@link #m_config} object and are not different from those values
+	 * (e.g. the port of the definition is set and equally to the port set in
+	 * the SnmpConfig)
+	 * 
+	 * @param def
+	 *            The Definition where the defaults get removed
+	 */
+	private void removeDefaults(Definition def) {
+		if (areEquals(m_config.getPort(), def.getPort())) def.setPort(null);
+		if (areEquals(m_config.getAuthPassphrase(), def.getAuthPassphrase())) def.setAuthPassphrase(null);
+		if (areEquals(m_config.getAuthProtocol(), def.getAuthProtocol())) def.setAuthProtocol(null);
+		if (areEquals(m_config.getContextEngineId(), def.getContextEngineId())) def.setContextEngineId(null);
+		if (areEquals(m_config.getContextName(), def.getContextName())) def.setContextName(null);
+		if (areEquals(m_config.getEngineId(), def.getEngineId())) def.setEngineId(null);
+		if (areEquals(m_config.getEnterpriseId(), def.getEnterpriseId())) def.setEnterpriseId(null);
+		if (areEquals(m_config.getMaxRepetitions(), def.getMaxRepetitions())) def.setMaxRepetitions(null);
+		if (areEquals(m_config.getMaxVarsPerPdu(), def.getMaxVarsPerPdu())) def.setMaxVarsPerPdu(null);
+		if (areEquals(m_config.getPrivacyPassphrase(), def.getPrivacyPassphrase())) def.setPrivacyPassphrase(null);
+		if (areEquals(m_config.getPrivacyProtocol(), def.getPrivacyProtocol())) def.setPrivacyProtocol(null);
+		if (areEquals(m_config.getProxyHost(), def.getProxyHost())) def.setProxyHost(null);
+		if (areEquals(m_config.getMaxRequestSize(), def.getMaxRequestSize())) def.setMaxRequestSize(null);
+		if (areEquals(m_config.getWriteCommunity(), def.getWriteCommunity())) def.setWriteCommunity(null);
+		if (areEquals(m_config.getVersion(), def.getVersion())) def.setVersion(null);
+		if (areEquals(m_config.getTimeout(), def.getTimeout())) def.setTimeout(null);
+		if (areEquals(m_config.getSecurityName(), def.getSecurityName())) def.setSecurityName(null);
+		if (areEquals(m_config.getSecurityLevel(), def.getSecurityLevel())) def.setSecurityLevel(null);
+		if (areEquals(m_config.getRetry(), def.getRetry())) def.setRetry(null);
+		if (areEquals(m_config.getReadCommunity(), def.getReadCommunity())) def.setReadCommunity(null);
+	}
+
+	/**
+	 * <p>
+	 * getConfig
+	 * </p>
+	 * 
+	 * @return a {@link org.opennms.netmgt.config.snmp.SnmpConfig} object.
+	 */
+	public SnmpConfig getConfig() {
+		return m_config;
+	}
+
+	private List<MergeableDefinition> getDefinitions() {
+		return m_definitions;
+	}
+
+	private void addDefinition(MergeableDefinition def) {
+		m_definitions.add(def);
+		getConfig().addDefinition(def.getConfigDef());
+	}
+
+	private void removeEmptyDefinitions() {
+		for (Iterator<MergeableDefinition> iter = getDefinitions().iterator(); iter.hasNext();) {
+			MergeableDefinition def = iter.next();
+			if (def.isEmpty()) {
+				getConfig().removeDefinition(def.getConfigDef());
+				iter.remove();
+			}
+		}
+	}
+
+	/**
+	 * This is the exposed method for moving the data from a configureSNMP event
+	 * into the SnmpConfig from SnmpPeerFactory.
+	 * 
+	 * @param eventDef
+	 *            a {@link org.opennms.netmgt.config.snmp.Definition} object.
+	 */
+	public void mergeIntoConfig(final Definition eventDef) {
+		removeDefaults(eventDef); 
+		MergeableDefinition eventToMerge = new MergeableDefinition(eventDef);
+
+		// remove pass
+		purgeRangesFromDefinitions(eventToMerge);
+
+		if (eventToMerge.isTrivial()) return;
+
+		// add pass
+		MergeableDefinition matchingDef = findMatchingDefinition(eventToMerge);
+		if (matchingDef == null) {
+			addDefinition(eventToMerge);
+		} else {
+			matchingDef.mergeMatchingAttributeDef(eventToMerge);
+		}
+
+	}
+
+	/**
+	 * This method purges specifics and ranges from definitions that don't match
+	 * the attributes specified in the event (the updateDef)
+	 * 
+	 * @param updatedDef
+	 * @param eventDef
+	 */
+	private void purgeRangesFromDefinitions(MergeableDefinition eventDefinition) {
+		for (MergeableDefinition def : getDefinitions()) {
+			def.removeRanges(eventDefinition);
+		}
+		removeEmptyDefinitions();
+	}
+
+
+	private MergeableDefinition findMatchingDefinition(MergeableDefinition def) {
+		for (MergeableDefinition d : getDefinitions()) {
+			if (d.matches(def)) {
+				return d;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Checks if the two objects are equal or not. They are equal if 
+	 * <ul>
+	 * 	<li>obj1 and obj2 are null</li>
+	 *  <li>obj1 and obj2 are not null and obj1.equals(obj2)</li>
+	 * </ul>
+	 * 
+	 * Otherwise they are not equal.
+	 * 
+	 * @param obj1 Object 1
+	 * @param obj2 Object 2
+	 * @return true if obj1 and obj2 are equal, otherwise false.
+	 */
+	protected static final <T> boolean areEquals(T obj1, T obj2) {
+		boolean match = false;
+        if (obj1 == null && obj2 == null) {
+            match = true;
+        } else if (obj1 == null || obj2 == null) {
+            match = false;
+        } else if (obj1.equals(obj2)) {
+            match = true;
         }
-    }
-
-    /**
-     * <p>getConfig</p>
-     *
-     * @return a {@link org.opennms.netmgt.config.snmp.SnmpConfig} object.
-     */
-    public SnmpConfig getConfig() {
-        return m_config;
-    }
-    
-    private List<MergeableDefinition> getDefinitions() {
-//        List<MergeableDefinition> definitions = new ArrayList<MergeableDefinition>();
-//        for(Definition def : m_config.getDefinitionCollection()) {
-//            definitions.add(new MergeableDefinition(def));
-//        }
-//        return definitions;
-        return m_definitions;
-        
-    }
-    
-    private void addDefinition(MergeableDefinition def) {
-        m_definitions.add(def);
-        getConfig().addDefinition(def.getConfigDef());
-    }
-
-    private void removeEmptyDefinitions() {
-        for(Iterator<MergeableDefinition> iter = getDefinitions().iterator(); iter.hasNext();) {
-            MergeableDefinition def = iter.next();
-            if (def.isEmpty()) {
-                getConfig().removeDefinition(def.getConfigDef());
-                iter.remove();
-            }
-        }
-    }
-
-
-    
-    /**
-     * This is the exposed method for moving the data from a configureSNMP event
-     * into the SnmpConfig from SnmpPeerFactory.
-     *
-     * @param eventDef a {@link org.opennms.netmgt.config.snmp.Definition} object.
-     */
-    public void mergeIntoConfig(final Definition eventDef)  {
-
-        MergeableDefinition eventDefinition = new MergeableDefinition(eventDef);
-
-        // remove pass
-        purgeRangesFromDefinitions(eventDefinition);
-        
-        if (eventDefinition.isTrivial()) return;
-
-        // add pass
-        MergeableDefinition matchingDef = findMatchingDefinition(eventDefinition);
-        if (matchingDef == null) {
-            addDefinition(eventDefinition);
-        } else {
-            matchingDef.mergeMatchingAttributeDef(eventDefinition);
-        }
-
-    }
-    
-    private void purgeRangesFromDefinitions(MergeableDefinition eventDefinition) {
-        purgeOtherDefs(null, eventDefinition);
-    }
-
-    /**
-     * This method is used to find a definition with then current config that matches the
-     * attributes of a Definition.
-     *
-     * @param eventDef a {@link org.opennms.netmgt.config.snmp.Definition} object.
-     * @return a {@link org.opennms.netmgt.config.MergeableDefinition} object.
-     */
-    MergeableDefinition findDefMatchingAttributes(final Definition eventDef) {
-        
-        MergeableDefinition newDef = new MergeableDefinition(eventDef);
-        return findMatchingDefinition(newDef);
-    }
-
-    private MergeableDefinition findMatchingDefinition(MergeableDefinition def) {
-
-        for(MergeableDefinition d : getDefinitions()) {
-            if (d.matches(def)) {
-                return d;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * This method purges specifics and ranges from definitions that don't
-     * match the attributes specified in the event (the updateDef)
-     * 
-     * @param updatedDef
-     * @param eventDef
-     */
-    private void purgeOtherDefs(final MergeableDefinition updatedDef, MergeableDefinition eventDefinition) {
-        
-        for(MergeableDefinition def : getDefinitions()) {
-
-            //don't mess with current updated def
-            if (updatedDef != null && def.getConfigDef() == updatedDef.getConfigDef()) continue;
-
-            def.removeRanges(eventDefinition);
-
-        }
-        
-        removeEmptyDefinitions();
-        
-        
-    }
-
-
-
-    /**
-     * Optimize all definitions in the current configuration.
-     */
-    public void optimizeAllDefs() {
-        // This needs to be called only by code holding the SnmpPeerFactory writeLock
-        Definition[] defs = getConfig().getDefinition();
-        for (int i = 0; i < defs.length; i++) {
-            MergeableDefinition definition = new MergeableDefinition(defs[i]);
-            if (definition.getConfigDef().getSpecificCount() > 0) {
-                definition.optimizeSpecifics();
-            }
-            if (definition.getConfigDef().getRangeCount() > 1) {
-                definition.optimizeRanges();
-            }
-        }
-        getConfig().setDefinition(defs);
-    }
+        return match;
+	}
 }

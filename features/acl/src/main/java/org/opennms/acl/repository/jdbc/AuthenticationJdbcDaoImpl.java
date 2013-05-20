@@ -66,6 +66,7 @@ public class AuthenticationJdbcDaoImpl extends JdbcDaoImpl {
      *
      * Load the user detail in the authentication phase
      */
+    @Override
     public UserDetails loadUserByUsername(String username) {
         try {
             UserDetails user = super.loadUserByUsername(username);

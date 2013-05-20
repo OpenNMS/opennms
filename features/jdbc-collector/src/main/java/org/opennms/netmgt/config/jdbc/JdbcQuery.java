@@ -151,6 +151,7 @@ public class JdbcQuery implements Serializable, Comparable<JdbcQuery> {
         m_instanceColumn = instanceColumn;
     }
 
+    @Override
     public int compareTo(JdbcQuery obj) {
         return new CompareToBuilder()
             .append(getQueryName(), obj.getQueryName())

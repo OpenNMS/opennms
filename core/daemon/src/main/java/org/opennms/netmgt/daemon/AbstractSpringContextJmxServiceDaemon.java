@@ -86,6 +86,7 @@ public abstract class AbstractSpringContextJmxServiceDaemon<T extends SpringServ
     /**
      * <p>init</p>
      */
+    @Override
     public final void init() {
         setLoggingCategory();
   
@@ -99,6 +100,7 @@ public abstract class AbstractSpringContextJmxServiceDaemon<T extends SpringServ
     /**
      * <p>start</p>
      */
+    @Override
     public final void start() {
         setLoggingCategory();
         
@@ -137,6 +139,7 @@ public abstract class AbstractSpringContextJmxServiceDaemon<T extends SpringServ
     /**
      * <p>stop</p>
      */
+    @Override
     public final void stop() {
         setLoggingCategory();
         
@@ -154,6 +157,7 @@ public abstract class AbstractSpringContextJmxServiceDaemon<T extends SpringServ
      *
      * @return a int.
      */
+    @Override
     public final int getStatus() {
         return m_status;
     }
@@ -167,6 +171,7 @@ public abstract class AbstractSpringContextJmxServiceDaemon<T extends SpringServ
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public final String status() {
         setLoggingCategory();
         
@@ -178,6 +183,7 @@ public abstract class AbstractSpringContextJmxServiceDaemon<T extends SpringServ
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public final String getStatusText() {
         return status();
     }

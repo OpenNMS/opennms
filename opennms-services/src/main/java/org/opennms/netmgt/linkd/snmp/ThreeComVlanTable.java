@@ -57,6 +57,7 @@ public class ThreeComVlanTable extends VlanTableBasic {
     }
     
     /** {@inheritDoc} */
+        @Override
     protected ThreeComVlanTableEntry createTableEntry(SnmpObjId base, SnmpInstId inst, Object val) {
         return new ThreeComVlanTableEntry();
     }

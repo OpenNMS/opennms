@@ -1,0 +1,3 @@
+All images/icons (simply images in following text) in this folder are downloaded from http://www.everaldo.com/crystal.
+The original file names has been altered.
+All images are released under LGPL (http://www.gnu.org/licenses/lgpl.html).

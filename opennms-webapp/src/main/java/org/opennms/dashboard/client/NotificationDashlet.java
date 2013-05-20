@@ -87,11 +87,13 @@ public class NotificationDashlet extends Dashlet {
             m_suveillanceService = svc;
         }
 
+        @Override
         public void onFailure(Throwable caught) {
             loadError(caught);
             error(caught);
         }
 
+        @Override
         public void onSuccess(Notification[] result) {
             onDataLoaded(result);
         }
@@ -105,6 +107,7 @@ public class NotificationDashlet extends Dashlet {
     }
     
     /** {@inheritDoc} */
+    @Override
     public void setSurveillanceSet(SurveillanceSet set) {
         m_loader.load(set);
     }

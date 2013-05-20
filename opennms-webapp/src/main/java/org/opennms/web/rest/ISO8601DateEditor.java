@@ -67,7 +67,7 @@ public class ISO8601DateEditor extends PropertyEditorSupport {
 	public void setAsText(String text) throws IllegalArgumentException {
 		Date date;
 		try {
-			int epoch=Integer.parseInt(text);
+			long epoch=Long.parseLong(text);
 			date=new Date(epoch);
 		} catch (NumberFormatException e) {
 		    date = new Date(m_formatter.parseMillis(text));

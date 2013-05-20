@@ -1,0 +1,39 @@
+@import "../reindeer/styles.css";
+
+.v-textfield-error {
+	background-image: url('../reindeer/common/icons/error.png') !important;
+	background-repeat: no-repeat !important;
+    background-position: right 50% !important;
+    background-attachment: scroll !important;
+}
+
+/* .v-button { */
+/*       display: block; */
+/*       border: none; */
+/*       margin: auto; */
+/*       background: transparent; */
+/* } */
+
+/* /* .editlayout .v-button span { */ */
+/* /*       font-size: x-small; */ */
+/* /* } */ */
+
+/* .v-button .v-button-wrap,  */
+/* .v-disabled.v-button .v-button-wrap { */
+/*    background: transparent; */
+/*    border: none; */
+/*    -webkit-border-radius: 0; */
+/*    -moz-border-radius: 0; */
+/*    border-radius: 0; */
+/*    -webkit-box-shadow: none; */
+/*    -moz-box-shadow: none; */
+/*    box-shadow: none; */
+/* } */
+
+/* .v-button:active .v-button-wrap, */
+/* .v-button.v-pressed .v-button-wrap { */
+/*    background: transparent; */
+/*    -webkit-box-shadow: none; */
+/*    -moz-box-shadow: none; */
+/*    box-shadow: none; */
+/*  }  */

@@ -33,17 +33,21 @@ import org.opennms.netmgt.xml.event.Event;
 public class EventForwarderDefaultImpl extends AbstractEventForwarder implements
 		EventForwarder {
 
+        @Override
 	public void flushEvent(Event event) {
 		super.filter(event);
 	}
 
+        @Override
 	public void flushSyncEvent(Event event) {
 		super.filter(event);
 	}
 		
+        @Override
 	public void sendStartSync() {
 	}
 
+        @Override
 	public void sendEndSync() {
 	} 
 	

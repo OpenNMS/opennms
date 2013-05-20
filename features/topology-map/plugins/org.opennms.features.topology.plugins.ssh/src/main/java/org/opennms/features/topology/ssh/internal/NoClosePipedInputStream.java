@@ -319,6 +319,7 @@ public class NoClosePipedInputStream extends InputStream{
      *           <a href=#BROKEN> <code>broken</code></a>, closed,
      *           or if an I/O error occurs.
      */
+    @Override
     public synchronized int read()  throws IOException {
         if (!connected) {
             throw new IOException("Pipe not connected");
@@ -368,6 +369,7 @@ public class NoClosePipedInputStream extends InputStream{
      *           {@link #connect(java.io.PipedOutputStream) unconnected},
      *           closed, or if an I/O error occurs.
      */
+    @Override
     public synchronized int read(byte b[], int off, int len)  throws IOException {
         if (b == null) {
             throw new NullPointerException();
@@ -427,6 +429,7 @@ public class NoClosePipedInputStream extends InputStream{
      * @exception  IOException  if an I/O error occurs.
      * @since   JDK1.0.2
      */
+    @Override
     public synchronized int available() throws IOException {
         if(in < 0)
             return 0;

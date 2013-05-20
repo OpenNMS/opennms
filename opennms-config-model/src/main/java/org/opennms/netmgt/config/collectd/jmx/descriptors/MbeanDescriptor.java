@@ -335,6 +335,7 @@ import org.opennms.netmgt.config.collectd.jmx.Mbean;
                     throw new IllegalStateException(ex.toString());
                 }
             }
+            @Override
             public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
                 try {
                     Mbean target = (Mbean) object;
@@ -384,6 +385,7 @@ import org.opennms.netmgt.config.collectd.jmx.Mbean;
                     throw new IllegalStateException(ex.toString());
                 }
             }
+            @Override
             public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
                 try {
                     Mbean target = (Mbean) object;
@@ -436,6 +438,7 @@ import org.opennms.netmgt.config.collectd.jmx.Mbean;
                     throw new IllegalStateException(ex.toString());
                 }
             }
+            @Override
             public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
                 try {
                     Mbean target = (Mbean) object;
@@ -557,6 +560,7 @@ import org.opennms.netmgt.config.collectd.jmx.Mbean;
      * of a global
      * element or element with anonymous type definition.
      */
+    @Override
     public boolean isElementDefinition(
     ) {
         return _elementDefinition;

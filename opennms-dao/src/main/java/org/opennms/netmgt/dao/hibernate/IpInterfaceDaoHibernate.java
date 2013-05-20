@@ -59,22 +59,26 @@ public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterfac
     }
 
     /** {@inheritDoc} */
+    @Override
     public OnmsIpInterface get(OnmsNode node, String ipAddress) {
         return findUnique("from OnmsIpInterface as ipInterface where ipInterface.node = ? and ipInterface.ipAddress = ?", node, ipAddress);
     }
 
     /** {@inheritDoc} */
+    @Override
     public List<OnmsIpInterface> findByIpAddress(String ipAddress) {
         return find("from OnmsIpInterface ipInterface where ipInterface.ipAddress = ?", ipAddress);
     }
     
     /** {@inheritDoc} */
+    @Override
     public List<OnmsIpInterface> findByNodeId(Integer nodeId) {
         Assert.notNull(nodeId, "nodeId cannot be null");
         return find("from OnmsIpInterface ipInterface where ipInterface.node.id = ?", nodeId);
     }
 
     /** {@inheritDoc} */
+    @Override
     public OnmsIpInterface findByNodeIdAndIpAddress(Integer nodeId, String ipAddress) {
         return findUnique("select ipInterface from OnmsIpInterface as ipInterface where ipInterface.node.id = ? and ipInterface.ipAddress = ?", 
                           nodeId, 
@@ -83,6 +87,7 @@ public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterfac
     }
 
     /** {@inheritDoc} */
+    @Override
     public OnmsIpInterface findByForeignKeyAndIpAddress(String foreignSource, String foreignId, String ipAddress) {
         return findUnique("select ipInterface from OnmsIpInterface as ipInterface join ipInterface.node as node where node.foreignSource = ? and node.foreignId = ? and ipInterface.ipAddress = ?", 
                           foreignSource, 
@@ -92,12 +97,14 @@ public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterfac
     }
 
     /** {@inheritDoc} */
+    @Override
     public List<OnmsIpInterface> findByServiceType(String svcName) {
         
         return find(m_findByServiceTypeQuery, svcName);
     }
 
     /** {@inheritDoc} */
+    @Override
     public List<OnmsIpInterface> findHierarchyByServiceType(String svcName) {
         return find("select distinct ipInterface " +
                     "from OnmsIpInterface as ipInterface " +
@@ -114,6 +121,7 @@ public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterfac
      *
      * @return a {@link java.util.Map} object.
      */
+    @Override
     public Map<InetAddress, Integer> getInterfacesForNodes() {
         Map<InetAddress, Integer> map = new HashMap<InetAddress, Integer>();
 

@@ -65,6 +65,7 @@ public class DefaultCategoryStatusServiceTest extends TestCase {
 	private CategoryConfigDao categoryDao;
 	private OutageDao outageDao;
 	
+        @Override
 	protected void setUp() throws Exception {
 		super.setUp();
 		viewDisplayDao = createMock(ViewDisplayDao.class);

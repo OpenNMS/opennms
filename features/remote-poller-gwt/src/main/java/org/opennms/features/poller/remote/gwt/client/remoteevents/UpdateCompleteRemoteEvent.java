@@ -47,6 +47,7 @@ public class UpdateCompleteRemoteEvent implements MapRemoteEvent {
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public void dispatch(final MapRemoteEventHandler locationManager) {
 		locationManager.updateComplete();
 	}
@@ -56,6 +57,7 @@ public class UpdateCompleteRemoteEvent implements MapRemoteEvent {
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
+        @Override
 	public String toString() {
 		return "UpdateCompleteRemoteEvent[]";
 	}

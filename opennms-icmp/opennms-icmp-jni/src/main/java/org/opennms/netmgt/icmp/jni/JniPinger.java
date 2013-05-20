@@ -147,14 +147,17 @@ public class JniPinger implements Pinger {
 	    }
 	}
 	
+    @Override
 	public void initialize4() throws Exception {
 	    initialize();
 	}
 
+    @Override
 	public void initialize6() throws Exception {
 	    throw new IllegalStateException("This pinger does not support IPv6.");
 	}
 
+    @Override
 	public boolean isV4Available() {
 	    try {
 	        initialize();
@@ -165,6 +168,7 @@ public class JniPinger implements Pinger {
 	    return false;
 	}
 
+    @Override
 	public boolean isV6Available() {
 	    return false;
 	}
@@ -180,6 +184,7 @@ public class JniPinger implements Pinger {
      * @param cb a {@link org.opennms.netmgt.icmp.jni.PingResponseCallback} object.
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void ping(final InetAddress host, final long timeout, final int retries, final int packetsize, final int sequenceId, final PingResponseCallback cb) throws Exception {
         initialize();
         s_pingTracker.sendRequest(new JniPingRequest(host, m_pingerId, sequenceId, timeout, retries, packetsize, new LogPrefixPreservingPingResponseCallback(cb)));
@@ -196,6 +201,7 @@ public class JniPinger implements Pinger {
      * @param cb a {@link org.opennms.netmgt.icmp.jni.PingResponseCallback} object.
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void ping(final InetAddress host, final long timeout, final int retries, final int sequenceId, final PingResponseCallback cb) throws Exception {
         initialize();
         s_pingTracker.sendRequest(new JniPingRequest(host, m_pingerId, sequenceId, timeout, retries, DEFAULT_PACKET_SIZE, new LogPrefixPreservingPingResponseCallback(cb)));
@@ -217,6 +223,7 @@ public class JniPinger implements Pinger {
      * @throws IOException if any.
      * @throws java.lang.Exception if any.
      */
+    @Override
     public Number ping(final InetAddress host, final long timeout, final int retries, final int packetsize) throws Exception {
         final SinglePingResponseCallback cb = new SinglePingResponseCallback(host);
         ping(host, timeout, retries, packetsize,(short)1, cb);
@@ -241,6 +248,7 @@ public class JniPinger implements Pinger {
      * @throws IOException if any.
      * @throws java.lang.Exception if any.
      */
+    @Override
     public Number ping(final InetAddress host, final long timeout, final int retries) throws Exception {
         return ping(host, timeout, retries, DEFAULT_PACKET_SIZE);
     }
@@ -254,6 +262,7 @@ public class JniPinger implements Pinger {
 	 * @throws InterruptedException if any.
 	 * @throws java.lang.Exception if any.
 	 */
+    @Override
 	public Number ping(final InetAddress host) throws Exception {
         return ping(host, DEFAULT_TIMEOUT, DEFAULT_RETRIES);
 	}
@@ -268,6 +277,7 @@ public class JniPinger implements Pinger {
 	 * @return a {@link java.util.List} object.
 	 * @throws java.lang.Exception if any.
 	 */
+    @Override
 	public List<Number> parallelPing(final InetAddress host, final int count, final long timeout, final long pingInterval) throws Exception {
 	    initialize();
 	    final ParallelPingResponseCallback cb = new ParallelPingResponseCallback(count);

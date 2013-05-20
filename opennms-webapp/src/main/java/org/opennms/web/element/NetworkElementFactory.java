@@ -155,6 +155,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     private static final Comparator<Interface> INTERFACE_COMPARATOR = new InterfaceComparator();
 
     public static class InterfaceComparator implements Comparator<Interface> {
+        @Override
         public int compare(Interface o1, Interface o2) {
 
             // Sort by IP first if the IPs are non-0.0.0.0
@@ -1341,9 +1342,11 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     /* (non-Javadoc)
 	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getNodesWithCategories(org.springframework.transaction.support.TransactionTemplate, java.lang.String[], boolean)
 	 */
+    @Override
     public List<OnmsNode> getNodesWithCategories(TransactionTemplate transTemplate, final String[] categories1, final boolean onlyNodesWithDownAggregateStatus) {
         return transTemplate.execute(new TransactionCallback<List<OnmsNode>>() {
 
+            @Override
             public List<OnmsNode> doInTransaction(TransactionStatus arg0) {
                 return getNodesWithCategories(categories1, onlyNodesWithDownAggregateStatus);
             }
@@ -1387,6 +1390,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     public List<OnmsNode> getNodesWithCategories(TransactionTemplate transTemplate, final String[] categories1, final String[] categories2, final boolean onlyNodesWithDownAggregateStatus) {
         return transTemplate.execute(new TransactionCallback<List<OnmsNode>>() {
 
+            @Override
             public List<OnmsNode> doInTransaction(TransactionStatus status) {
                 return getNodesWithCategories(categories1, categories2, onlyNodesWithDownAggregateStatus);
             }

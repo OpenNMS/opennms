@@ -45,6 +45,7 @@ public class ServiceNameComparator implements Comparator<Service> {
      * @param s2 a {@link org.opennms.web.element.Service} object.
      * @return a int.
      */
+    @Override
     public int compare(Service s1, Service s2) {
         return s1.getServiceName().compareTo(s2.getServiceName());
     }

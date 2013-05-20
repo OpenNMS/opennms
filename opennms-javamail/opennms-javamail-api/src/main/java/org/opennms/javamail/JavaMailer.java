@@ -255,6 +255,7 @@ public class JavaMailer {
         Authenticator auth;
         if (isAuthenticate()) {
             auth = new Authenticator() {
+                @Override
                 protected PasswordAuthentication getPasswordAuthentication() {
                     return new PasswordAuthentication(getUser(), getPassword());
                 }
@@ -488,19 +489,23 @@ public class JavaMailer {
             }  
         }  
           
+        @Override
         public String getContentType() {
             log().debug("getContentType: " + contentType);
             return contentType;  
         }  
    
+        @Override
         public InputStream getInputStream() throws IOException {  
             return new ByteArrayInputStream(baos.toByteArray());  
         }  
    
+        @Override
         public String getName() {  
             return name;  
         }  
    
+        @Override
         public OutputStream getOutputStream() throws IOException {  
             throw new IOException("Cannot write to this read-only resource");  
         }  
@@ -850,14 +855,17 @@ public class JavaMailer {
             m_category = threadCategory;
         }
 
+        @Override
         public void messageDelivered(TransportEvent event) {
             logEvent("message delivered", event);
         }
 
+        @Override
         public void messageNotDelivered(TransportEvent event) {
             logEvent("message not delivered", event);
         }
 
+        @Override
         public void messagePartiallyDelivered(TransportEvent event) {
             logEvent("message partially delivered", event);
         }

@@ -74,16 +74,19 @@ public class DefaultQueueHandler implements NotifdQueueHandler {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setQueueID(final String queueID) {
         m_queueID = queueID;
     }
 
     /** {@inheritDoc} */
+    @Override
     public synchronized void setNoticeQueue(final NoticeQueue noticeQueue) {
         m_noticeQueue = noticeQueue;
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setInterval(final String interval) {
         m_interval = TimeConverter.convertToMillis(interval);
     }
@@ -95,6 +98,7 @@ public class DefaultQueueHandler implements NotifdQueueHandler {
      * <code>STOP_PENDING</code> then the method will return as quickly as
      * possible.
      */
+    @Override
     public void run() {
         synchronized (this) {
             m_status = RUNNING;
@@ -147,6 +151,7 @@ public class DefaultQueueHandler implements NotifdQueueHandler {
     /**
      * <p>processQueue</p>
      */
+    @Override
     public void processQueue() {
         if (m_noticeQueue != null) {
             synchronized(m_noticeQueue) {
@@ -188,6 +193,7 @@ public class DefaultQueueHandler implements NotifdQueueHandler {
      * @throws java.lang.IllegalStateException
      *             Thrown if the fiber is stopped or has never run.
      */
+    @Override
     public synchronized void start() {
         m_status = STARTING;
 
@@ -203,6 +209,7 @@ public class DefaultQueueHandler implements NotifdQueueHandler {
      * @throws java.lang.IllegalStateException
      *             Thrown if the fiber was never started.
      */
+    @Override
     public synchronized void stop() {
         if (m_status != STOPPED)
             m_status = STOP_PENDING;
@@ -218,6 +225,7 @@ public class DefaultQueueHandler implements NotifdQueueHandler {
      * @throws java.lang.IllegalStateException
      *             Thrown if the fiber is stopped or has never run.
      */
+    @Override
     public synchronized void pause() {
         if (m_status == RUNNING || m_status == RESUME_PENDING) {
             m_status = PAUSE_PENDING;
@@ -233,6 +241,7 @@ public class DefaultQueueHandler implements NotifdQueueHandler {
      * @throws java.lang.IllegalStateException
      *             Thrown if the fiber is stopped or has never run.
      */
+    @Override
     public synchronized void resume() {
         if (m_status == PAUSED || m_status == PAUSE_PENDING) {
             m_status = RESUME_PENDING;
@@ -245,6 +254,7 @@ public class DefaultQueueHandler implements NotifdQueueHandler {
      *
      * @return The name of the fiber.
      */
+    @Override
     public String getName() {
         return m_queueID;
     }
@@ -256,6 +266,7 @@ public class DefaultQueueHandler implements NotifdQueueHandler {
      * @see org.opennms.core.fiber.PausableFiber
      * @see org.opennms.core.fiber.Fiber
      */
+    @Override
     public synchronized int getStatus() {
         return m_status;
     }

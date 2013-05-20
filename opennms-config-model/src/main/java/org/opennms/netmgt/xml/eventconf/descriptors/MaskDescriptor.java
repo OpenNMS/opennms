@@ -119,6 +119,7 @@ public class MaskDescriptor extends org.exolab.castor.xml.util.XMLClassDescripto
                     throw new IllegalStateException(ex.toString());
                 }
             }
+            @Override
             public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
                 try {
                     Mask target = (Mask) object;
@@ -167,6 +168,7 @@ public class MaskDescriptor extends org.exolab.castor.xml.util.XMLClassDescripto
                     throw new IllegalStateException(ex.toString());
                 }
             }
+            @Override
             public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
                 try {
                     Mask target = (Mask) object;
@@ -287,6 +289,7 @@ public class MaskDescriptor extends org.exolab.castor.xml.util.XMLClassDescripto
      * of a global
      * element or element with anonymous type definition.
      */
+    @Override
     public boolean isElementDefinition(
     ) {
         return _elementDefinition;

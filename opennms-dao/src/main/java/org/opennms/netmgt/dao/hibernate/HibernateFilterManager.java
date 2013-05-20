@@ -63,9 +63,11 @@ public class HibernateFilterManager implements FilterManager {
     /**
      * <p>disableAuthorizationFilter</p>
      */
+    @Override
     public void disableAuthorizationFilter() {
         HibernateCallback<Object> cb = new HibernateCallback<Object>() {
 
+            @Override
             public Object doInHibernate(Session session) throws HibernateException, SQLException {
                 session.disableFilter(AUTH_FILTER_NAME);
                 return null;
@@ -84,9 +86,11 @@ public class HibernateFilterManager implements FilterManager {
      *
      * @param authorizationGroups an array of {@link java.lang.String} objects.
      */
+    @Override
     public void enableAuthorizationFilter(final String[] authorizationGroups) {
         HibernateCallback<Object> cb = new HibernateCallback<Object>() {
 
+            @Override
             public Object doInHibernate(Session session) throws HibernateException, SQLException {
                 session.enableFilter(AUTH_FILTER_NAME).setParameterList("userGroups", authorizationGroups);
                 return null;
