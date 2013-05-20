@@ -255,13 +255,21 @@ abstract public class XmlTest<T> {
     }
 
     public static void assertXpathDoesNotMatch(final String xml, final String expression) throws XPathExpressionException {
+        assertXpathDoesNotMatch(null, xml, expression);
+    }
+
+    public static void assertXpathDoesNotMatch(final String description, final String xml, final String expression) throws XPathExpressionException {
         final NodeList nodes = xpathGetNodesMatching(xml, expression);
-        assertTrue("Must get at least one node back from the query '" + expression + "'", nodes == null || nodes.getLength() == 0);
+        assertTrue(description == null? ("Must get at least one node back from the query '" + expression + "'") : description, nodes == null || nodes.getLength() == 0);
     }
 
     public static void assertXpathMatches(final String xml, final String expression) throws XPathExpressionException {
+        assertXpathMatches(null, xml, expression);
+    }
+
+    public static void assertXpathMatches(final String description, final String xml, final String expression) throws XPathExpressionException {
         final NodeList nodes = xpathGetNodesMatching(xml, expression);
-        assertTrue("Must get at least one node back from the query '" + expression + "'", nodes != null && nodes.getLength() != 0);
+        assertTrue(description == null? ("Must get at least one node back from the query '" + expression + "'") : description, nodes != null && nodes.getLength() != 0);
     }
 
     protected static NodeList xpathGetNodesMatching(final String xml, final String expression) throws XPathExpressionException {
