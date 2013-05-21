@@ -113,6 +113,7 @@ public class IpInterfaceScan implements RunInBatch {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return new ToStringBuilder(this)
         	.append("address", m_address)
@@ -130,6 +131,7 @@ public class IpInterfaceScan implements RunInBatch {
      */
     public Callback<Boolean> servicePersister(final BatchTask currentPhase, final String serviceName) {
         return new Callback<Boolean>() {
+            @Override
             public void complete(final Boolean serviceDetected) {
                 final String hostAddress = str(getAddress());
 				infof(this, "Attempted to detect service %s on address %s: %s", serviceName, hostAddress, serviceDetected);
@@ -137,6 +139,7 @@ public class IpInterfaceScan implements RunInBatch {
 
                     currentPhase.getBuilder().addSequence(
                             new RunInBatch() {
+                                @Override
                                 public void run(final BatchTask batch) {
                                     if ("SNMP".equals(serviceName)) {
                                         setupAgentInfo(currentPhase);
@@ -144,6 +147,7 @@ public class IpInterfaceScan implements RunInBatch {
                                 }
                             }, 
                             new RunInBatch() {
+                                @Override
                                 public void run(final BatchTask batch) {
                                     getProvisionService().addMonitoredService(getNodeId(), hostAddress, serviceName);
                                 }
@@ -156,6 +160,7 @@ public class IpInterfaceScan implements RunInBatch {
                 getProvisionService().updateMonitoredServiceState(getNodeId(), hostAddress, serviceName); // NMS-3906
             }
 
+            @Override
             public void handleException(final Throwable t) {
                 infof(this, t, "Exception occurred while trying to detect service %s on address %s", serviceName, str(getAddress()));
             }
@@ -164,6 +169,7 @@ public class IpInterfaceScan implements RunInBatch {
 
     Runnable runDetector(final SyncServiceDetector detector, final Callback<Boolean> cb) {
         return new Runnable() {
+            @Override
             public void run() {
                 try {
                     infof(this, "Attemping to detect service %s on address %s", detector.getServiceName(), str(getAddress()));
@@ -204,6 +210,7 @@ public class IpInterfaceScan implements RunInBatch {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void run(final BatchTask currentPhase) {
     	final Collection<ServiceDetector> detectors = getProvisionService().getDetectorsForForeignSource(getForeignSource() == null ? "default" : getForeignSource());
 

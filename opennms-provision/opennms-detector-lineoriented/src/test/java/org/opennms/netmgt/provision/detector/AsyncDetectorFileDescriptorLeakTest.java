@@ -102,6 +102,7 @@ public class AsyncDetectorFileDescriptorLeakTest {
     private void setUpServer(final String banner, final int bannerDelay) throws Exception {
         m_server = new SimpleServer() {
             
+            @Override
             public void onInit() {
                 if (banner != null) {
                     setBanner(banner);

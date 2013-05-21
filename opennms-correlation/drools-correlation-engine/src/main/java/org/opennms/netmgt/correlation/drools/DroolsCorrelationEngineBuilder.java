@@ -224,6 +224,7 @@ public class DroolsCorrelationEngineBuilder extends PropertyEditorRegistrySuppor
 	}
 
 	/** {@inheritDoc} */
+        @Override
     public void onApplicationEvent(final ApplicationEvent appEvent) {
         if (appEvent instanceof ContextRefreshedEvent) {
             final ApplicationContext appContext = ((ContextRefreshedEvent)appEvent).getApplicationContext();

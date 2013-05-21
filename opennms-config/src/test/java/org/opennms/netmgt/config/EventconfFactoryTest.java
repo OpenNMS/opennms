@@ -368,6 +368,7 @@ public class EventconfFactoryTest {
         assertTrue("events directory is a directory at " + eventsDirFile.getAbsolutePath(), eventsDirFile.isDirectory());
         
         File[] eventFilesOnDiskArray = eventsDirFile.listFiles(new FilenameFilter() {
+            @Override
             public boolean accept(File file, String name) {
                 return name.endsWith(".xml");
             } });
@@ -450,50 +451,62 @@ public class EventconfFactoryTest {
             m_inputStream = inputStream;
         }
         
+        @Override
         public InputStream getInputStream() {
             return m_inputStream;
         }
 
+        @Override
         public Resource createRelative(String relative) throws IOException {
             return m_delegate.createRelative(relative);
         }
 
+        @Override
         public boolean exists() {
             return m_delegate.exists();
         }
 
+        @Override
         public String getDescription() {
             return m_delegate.getDescription();
         }
 
+        @Override
         public File getFile() throws IOException {
             return m_delegate.getFile();
         }
 
+        @Override
         public String getFilename() {
             return m_delegate.getFilename();
         }
 
+        @Override
         public URL getURL() throws IOException {
             return m_delegate.getURL();
         }
 
+        @Override
         public boolean isOpen() {
             return m_delegate.isOpen();
         }
 
+        @Override
         public URI getURI() throws IOException {
             return m_delegate.getURI();
         }
 
+        @Override
         public boolean isReadable() {
             return m_delegate.isReadable();
         }
 
+        @Override
         public long lastModified() throws IOException {
             return m_delegate.lastModified();
         }
 
+        @Override
         public long contentLength() throws IOException {
             return m_delegate.contentLength();
         }

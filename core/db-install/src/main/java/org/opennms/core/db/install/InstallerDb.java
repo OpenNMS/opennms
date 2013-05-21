@@ -81,6 +81,7 @@ public class InstallerDb {
     
     private static Comparator<Constraint> constraintComparator = new Comparator<Constraint>() {
 
+                @Override
 		public int compare(final Constraint o1, final Constraint o2) {
 			return o1.getName().compareTo(o2.getName());
 		}
@@ -160,6 +161,7 @@ public class InstallerDb {
 	private final Pattern m_createLanguagePattern = Pattern.compile("(?i)\\s*create\\s+trusted procedural language\\s+[\"']?(\\w+)[\"']?.*");
 
 	private final FileFilter m_sqlFilter = new FileFilter() {
+            @Override
 	    public boolean accept(final File pathname) {
 	        return (pathname.getName().startsWith("get") && pathname.getName().endsWith(".sql"))
 	             || pathname.getName().endsWith("Trigger.sql");

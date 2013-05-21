@@ -117,6 +117,7 @@ public class SnmpCollectorTest implements InitializingBean, TemporaryDatabaseAwa
 
 	private SnmpAgentConfig m_agentConfig;
 
+    @Override
     public void setTemporaryDatabase(TemporaryDatabase database) {
         m_database = database;
     }
@@ -486,6 +487,7 @@ public class SnmpCollectorTest implements InitializingBean, TemporaryDatabaseAwa
         return file + RrdUtils.getExtension();
     }
 
+    @Override
     public void setTestContext(TestContext context) {
         m_context = context;
     }

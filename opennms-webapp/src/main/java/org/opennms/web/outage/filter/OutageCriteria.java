@@ -50,10 +50,15 @@ public class OutageCriteria {
     }
 
     public static class BaseOutageCriteriaVisitor<E extends Exception> implements OutageCriteriaVisitor<E> {
+        @Override
         public void visitOutageType(OutageType ackType) throws E { }
+        @Override
         public void visitFilter(Filter filter) throws E { }
+        @Override
         public void visitLimit(int limit, int offset) throws E { }
+        @Override
         public void visitGroupBy() throws E { }
+        @Override
         public void visitSortStyle(SortStyle sortStyle) throws E { }
     }
     

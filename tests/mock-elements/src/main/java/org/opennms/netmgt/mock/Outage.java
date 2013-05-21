@@ -67,14 +67,17 @@ public class Outage {
             m_serviceId == svc.getId();
     }
     
+    @Override
     public int hashCode() {
         return 0;
     }
     
+    @Override
     public String toString() {
         return "Outage["+m_nodeId+"/"+m_ipAddr+"/"+(m_serviceName == null ? ""+m_serviceId : m_serviceName)+" cause: "+m_lostEventId+" resolution: "+m_regainedEventId+" ]";
     }
     
+    @Override
     public boolean equals(Object o) {
         if (! (o instanceof Outage)) return false;
         Outage outage = (Outage)o;

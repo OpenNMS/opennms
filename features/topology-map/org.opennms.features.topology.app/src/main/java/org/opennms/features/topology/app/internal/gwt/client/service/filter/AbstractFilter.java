@@ -6,6 +6,7 @@ import org.opennms.features.topology.app.internal.gwt.client.service.Filter;
 
 public abstract class AbstractFilter implements Filter {
 
+    @Override
     public abstract boolean match(Map<String, String> properties);
 
     @Override

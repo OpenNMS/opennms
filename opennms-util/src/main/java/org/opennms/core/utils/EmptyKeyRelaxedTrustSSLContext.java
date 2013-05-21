@@ -61,16 +61,19 @@ public final class EmptyKeyRelaxedTrustSSLContext extends SSLContextSpi {
             KeyManager[] keyManager = null;
             TrustManager[] trustManagers = { new X509TrustManager() {
 
+                @Override
                 public void checkClientTrusted(X509Certificate[] chain,
                         String authType) throws CertificateException {
                     // Perform no checks
                 }
 
+                @Override
                 public void checkServerTrusted(X509Certificate[] chain,
                         String authType) throws CertificateException {
                     // Perform no checks
                 }
 
+                @Override
                 public X509Certificate[] getAcceptedIssuers() {
                     return null;
                 }}

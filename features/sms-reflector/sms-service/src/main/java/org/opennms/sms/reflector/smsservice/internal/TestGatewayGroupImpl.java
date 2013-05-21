@@ -55,6 +55,7 @@ public class TestGatewayGroupImpl implements GatewayGroup {
 	 *
 	 * @return an array of {@link org.smslib.AGateway} objects.
 	 */
+        @Override
 	public AGateway[] getGateways() {
 		return m_gateways;
 	}

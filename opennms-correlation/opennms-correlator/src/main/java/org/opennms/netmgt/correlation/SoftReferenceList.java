@@ -95,41 +95,50 @@ public class SoftReferenceList<T> extends AbstractSequentialList<T> {
 			m_queue = queue;
 		}
 
+                @Override
 		public void add(final E o) {
 			assertNotNull(o);
 			m_it.add(createRef(o));
 		}
 
+                @Override
 		public boolean hasNext() {
 			return m_it.hasNext();
 		}
 
+                @Override
 		public boolean hasPrevious() {
 			return m_it.hasPrevious();
 		}
 
+                @Override
 		public E next() {
 			final SoftReference<E> ref = m_it.next();
 			return ref.get();
 		}
 
+                @Override
 		public int nextIndex() {
 			return m_it.nextIndex();
 		}
 
+                @Override
 		public E previous() {
 			final SoftReference<E> ref = m_it.previous();
 			return ref.get();
 		}
 
+                @Override
 		public int previousIndex() {
 			return m_it.previousIndex();
 		}
 
+                @Override
 		public void remove() {
 			m_it.remove();
 		}
 
+                @Override
 		public void set(final E o) {
 			assertNotNull(o);
 			m_it.set(createRef(o));

@@ -60,6 +60,7 @@ public class GeocodingUpdatingRemoteEvent implements MapRemoteEvent {
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public void dispatch(final MapRemoteEventHandler presenter) {
 //		Window.alert("updating geocoding: " + m_count + "/" + m_size);
 	}
@@ -69,6 +70,7 @@ public class GeocodingUpdatingRemoteEvent implements MapRemoteEvent {
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
+        @Override
 	public String toString() {
 	    return "GeocodingUpdatingRemoteEvent[count=" + m_count + ",size=" + m_size + "]";
 	}

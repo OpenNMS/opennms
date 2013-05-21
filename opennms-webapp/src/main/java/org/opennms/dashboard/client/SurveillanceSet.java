@@ -61,12 +61,15 @@ public abstract class SurveillanceSet implements IsSerializable {
     
     public static class DefaultSurveillanceSet extends SurveillanceSet {
         
+        @Override
         public boolean isDefault() { return true; }
         
+        @Override
         public String toString() {
             return "All Surveillance Nodes";
         }
         
+        @Override
         public void visit(Visitor v) {
             v.visitAll();
         }

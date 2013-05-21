@@ -99,6 +99,7 @@ public class TicketNotificationStrategy implements NotificationStrategy {
 		public AlarmStateRowCallbackHandler() {
 			m_alarmState = null;
 		}
+                @Override
         public void processRow(ResultSet rs) throws SQLException {
         	m_alarmState = new AlarmState(rs.getInt(1), rs.getString(2), rs.getInt(3));
         }
@@ -112,6 +113,7 @@ public class TicketNotificationStrategy implements NotificationStrategy {
 	}
 
     /** {@inheritDoc} */
+        @Override
 	public int send(List<Argument> arguments) {
         String eventID = null;
         String eventUEI = null;

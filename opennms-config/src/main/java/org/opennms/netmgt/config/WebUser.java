@@ -62,11 +62,13 @@ public class WebUser {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return m_name;
     }
     
     /** {@inheritDoc} */
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof WebUser) {
             WebUser u = (WebUser)obj;
@@ -80,6 +82,7 @@ public class WebUser {
      *
      * @return a int.
      */
+    @Override
     public int hashCode() {
         return m_name.hashCode();
     }

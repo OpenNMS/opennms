@@ -169,6 +169,7 @@ public class Phase extends BatchTask {
         
         private Runnable phaseRunner() {
             return new Runnable() {
+                @Override
                 public void run() {
                     try {
                         doInvoke(m_phase.getLifeCycleInstance());
@@ -176,6 +177,7 @@ public class Phase extends BatchTask {
                         LogUtils.infof(this, e, "failed to invoke lifecycle instance");
                     }
                 }
+                @Override
                 public String toString() {
                     return "Runner for "+m_phase.toString();
                 }
@@ -240,6 +242,7 @@ public class Phase extends BatchTask {
             return null;
         }
 
+        @Override
         public String toString() {
             return String.format("%s.%s(%s)", m_target.getClass().getSimpleName(), m_method.getName(), m_phase.getLifeCycleInstance());
         }
@@ -252,6 +255,7 @@ public class Phase extends BatchTask {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return String.format("Phase %s of lifecycle %s", getName(), m_lifecycle.getName());
     }

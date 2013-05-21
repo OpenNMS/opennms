@@ -124,6 +124,7 @@ public final class SmtpMonitor extends AbstractServiceMonitor {
      * the service status to SERVICE_AVAILABLE and return.
      * </P>
      */
+    @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         NetworkInterface<InetAddress> iface = svc.getNetInterface();
 

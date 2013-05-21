@@ -121,6 +121,7 @@ public abstract class SimplerQueuedProvisioningAdapter extends SimpleQueuedProvi
         switch (op.getType()) {
         case ADD:
             m_template.execute(new TransactionCallback<Object>() {
+                @Override
                 public Object doInTransaction(TransactionStatus arg0) {
                     log().debug("processPendingOperationForNode: calling doAddNode() for node: " + op.getNodeId() );
                     doAddNode(op.getNodeId());
@@ -130,6 +131,7 @@ public abstract class SimplerQueuedProvisioningAdapter extends SimpleQueuedProvi
             break;
         case UPDATE:
             m_template.execute(new TransactionCallback<Object>() {
+                @Override
                 public Object doInTransaction(TransactionStatus arg0) {
                     log().debug("processPendingOperationForNode: calling doUpdateNode() for node: " + op.getNodeId() );
                     doUpdateNode(op.getNodeId());
@@ -139,6 +141,7 @@ public abstract class SimplerQueuedProvisioningAdapter extends SimpleQueuedProvi
             break;
         case DELETE:
             m_template.execute(new TransactionCallback<Object>() {
+                @Override
                 public Object doInTransaction(TransactionStatus arg0) {
                     log().debug("processPendingOperationForNode: calling doDeleteNode() for node: " + op.getNodeId() );
                     doDeleteNode(op.getNodeId());
@@ -148,6 +151,7 @@ public abstract class SimplerQueuedProvisioningAdapter extends SimpleQueuedProvi
             break;
         case CONFIG_CHANGE:
             m_template.execute(new TransactionCallback<Object>() {
+                @Override
                 public Object doInTransaction(TransactionStatus arg0) {
                     log().debug("processPendingOperationForNode: calling doNotifyConfigChange() for node: " + op.getNodeId() );
                     doNotifyConfigChange(op.getNodeId());

@@ -214,6 +214,7 @@ public class CiscoPingMibMonitor extends SnmpMonitorStrategy {
 			return oids;
 		}
 		
+                @Override
 		public String toString() {
 			StringBuilder sb = new StringBuilder("CiscoPingEntry: [ciscoPingSerialNumber=");
 			sb.append(m_ciscoPingSerialNumber).append(",");
@@ -359,6 +360,7 @@ public class CiscoPingMibMonitor extends SnmpMonitorStrategy {
      *                Thrown if an unrecoverable error occurs that prevents the
      *                plug-in from functioning.
      */
+    @Override
     public void initialize(Map<String, Object> parameters) {
         // Initialize the SnmpPeerFactory
         //
@@ -384,6 +386,7 @@ public class CiscoPingMibMonitor extends SnmpMonitorStrategy {
      *                interface from being monitored.
      * @param svc a {@link org.opennms.netmgt.poller.MonitoredService} object.
      */
+    @Override
     public void initialize(MonitoredService svc) {
     	// Get the NodeDao from the common context so we can look up nodes in poll()
     	// Cannot use the pollerdContext because it creates a circular reference
@@ -405,6 +408,7 @@ public class CiscoPingMibMonitor extends SnmpMonitorStrategy {
      * @exception RuntimeException
      *                Thrown for any unrecoverable errors.
      */
+    @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         InetAddress targetIpAddr = (InetAddress) determineTargetAddress(svc, parameters);
     	

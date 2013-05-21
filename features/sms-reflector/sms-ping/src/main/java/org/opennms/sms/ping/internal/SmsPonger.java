@@ -58,6 +58,7 @@ public class SmsPonger implements OnmsInboundMessageNotification {
     Map<String,String> s_tokenResponses = buildTokenResponses();
     
     /** {@inheritDoc} */
+    @Override
     public void process(AGateway gateway, MessageTypes msgType, InboundMessage msg) {
         debugf("SmsPonger.processInboundMessage");
         

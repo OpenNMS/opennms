@@ -253,6 +253,7 @@ public class PollablesTest {
             m_cause = cause;
         }
 
+        @Override
         public void visitElement(PollableElement element) {
             if (!element.hasOpenOutage())
                 element.setCause(m_cause);
@@ -277,6 +278,7 @@ public class PollablesTest {
 
         
         Querier querier = new Querier(db, sql) {
+            @Override
             public void processRow(ResultSet rs) throws SQLException {
                 int nodeId = rs.getInt("nodeId");
                 String nodeLabel = rs.getString("nodeLabel");
@@ -669,12 +671,14 @@ public class PollablesTest {
     @Test
     public void testStatus() throws Exception {
         PollableVisitor updater = new PollableVisitorAdaptor() {
+            @Override
             public void visitElement(PollableElement e) {
                 e.updateStatus(PollStatus.down());
             }
         };
         m_network.visit(updater);
         PollableVisitor downChecker = new PollableVisitorAdaptor() {
+            @Override
             public void visitElement(PollableElement e) {
                 assertEquals(PollStatus.down(), e.getStatus());
                 assertEquals(true, e.isStatusChanged());
@@ -683,6 +687,7 @@ public class PollablesTest {
         m_network.visit(downChecker);
         m_network.resetStatusChanged();
         PollableVisitor statusChangedChecker = new PollableVisitorAdaptor() {
+            @Override
             public void visitElement(PollableElement e) {
                 assertEquals(false, e.isStatusChanged());
             }
@@ -693,18 +698,21 @@ public class PollablesTest {
         m_network.recalculateStatus();
         
         PollableVisitor upChecker = new PollableVisitorAdaptor() {
+            @Override
             public void visitNode(PollableNode node) {
                 if (node == pDot1Icmp.getNode())
                     assertUp(node);
                 else
                     assertDown(node);
             }
+            @Override
             public void visitInterface(PollableInterface iface) {
                 if (iface == pDot1Icmp.getInterface())
                     assertUp(iface);
                 else
                     assertDown(iface);
             }
+            @Override
             public void visitService(PollableService s) {
                 if (s == pDot1Icmp)
                     assertUp(s);
@@ -2307,6 +2315,7 @@ public class PollablesTest {
     @Test
     public void testLock() throws Exception {
         final Runnable r = new Runnable() {
+            @Override
             public void run() {
                 m_lockCount++;
                 assertEquals(1, m_lockCount);
@@ -2317,6 +2326,7 @@ public class PollablesTest {
         };
         
         final Runnable locker = new Runnable() {
+            @Override
             public void run() {
                 pNode1.withTreeLock(r);
             }
@@ -2337,6 +2347,7 @@ public class PollablesTest {
     @Test
     public void testLockTimeout() throws Exception {
         final Runnable r = new Runnable() {
+            @Override
             public void run() {
                 m_lockCount++;
                 assertEquals(1, m_lockCount);
@@ -2347,12 +2358,14 @@ public class PollablesTest {
         };
         
         final Runnable locker = new Runnable() {
+            @Override
             public void run() {
                 pNode1.withTreeLock(r);
             }
         };
         
         final Runnable lockerWithTimeout = new Runnable() {
+            @Override
             public void run() {
                 try {
                     pNode1.withTreeLock(r, 500);
@@ -2429,6 +2442,7 @@ public class PollablesTest {
 
     private void anticipateUnresponsive(MockElement element) {
         MockVisitor visitor = new MockVisitorAdapter() {
+            @Override
             public void visitService(MockService svc) {
                 m_anticipator.anticipateEvent(svc.createUnresponsiveEvent());
             }
@@ -2438,6 +2452,7 @@ public class PollablesTest {
 
     private void anticipateResponsive(MockElement element) {
         MockVisitor visitor = new MockVisitorAdapter() {
+            @Override
             public void visitService(MockService svc) {
                 m_anticipator.anticipateEvent(svc.createResponsiveEvent());
             }
@@ -2457,6 +2472,7 @@ public class PollablesTest {
      */
     private void assertNoPoll(MockElement elem) {
         MockVisitor zeroAsserter = new MockVisitorAdapter() {
+            @Override
             public void visitService(MockService svc) {
                 assertEquals("Unexpected poll count for "+svc, 0, svc.getPollCount());
             }
@@ -2511,6 +2527,7 @@ public class PollablesTest {
         
         return svcNode.withTreeLock(new Callable<PollableService>() {
 
+            @Override
             public PollableService call() throws Exception {
                 PollableService svc = addServiceToNetwork(m_network, nodeId, nodeLabel, ipAddr, serviceName, null, null, null, m_scheduler, m_pollerConfig, m_pollerConfig);
                 //svcNode.recalculateStatus();

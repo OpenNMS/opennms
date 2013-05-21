@@ -28,10 +28,7 @@
 
 package org.opennms.web.rest;
 
-import java.net.URL;
 import java.text.ParseException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -53,8 +50,6 @@ import javax.xml.bind.ValidationException;
 
 import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.model.events.EventProxy;
-import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionAsset;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionAssetCollection;
@@ -68,7 +63,6 @@ import org.opennms.netmgt.provision.persist.requisition.RequisitionMonitoredServ
 import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionNodeCollection;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;

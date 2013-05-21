@@ -49,6 +49,7 @@ import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 
 public class DBAuthoritiesAuth extends DbUnit {
 
+    @Override
     public IDataSet getDataSet() throws Exception {
         return new FlatXmlDataSetBuilder().build(new FileInputStream("src/test/resources/org/opennms/acl/conf/dbunit/authorities_auth-test.xml"));
     }

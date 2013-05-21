@@ -44,11 +44,13 @@ public class SpringBoard implements SpringBoardMBean {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getContextDir() {
         return (contextDir == null ? null : contextDir.getAbsolutePath());
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setContextDir(String contextDir) {
         // TODO Auto-generated method stub
         
@@ -57,6 +59,7 @@ public class SpringBoard implements SpringBoardMBean {
     /**
      * <p>start</p>
      */
+    @Override
     public void start() {
         String appContext = System.getProperty("opennms.appcontext", "opennms-appContext.xml");
         File contextFile = new File(contextDir, appContext);
@@ -69,6 +72,7 @@ public class SpringBoard implements SpringBoardMBean {
      *
      * @return a {@link java.util.List} object.
      */
+    @Override
     public List<String> status() {
         return Collections.singletonList(m_context.toString());
     }
@@ -76,6 +80,7 @@ public class SpringBoard implements SpringBoardMBean {
     /**
      * <p>stop</p>
      */
+    @Override
     public void stop() {
         m_context.close();
     }

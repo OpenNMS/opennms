@@ -764,6 +764,7 @@ public final class EventExpander implements EventProcessor, InitializingBean {
 
 
     /** {@inheritDoc} */
+    @Override
     public void process(Header eventHeader, Event event) {
         expandEvent(event);
     }

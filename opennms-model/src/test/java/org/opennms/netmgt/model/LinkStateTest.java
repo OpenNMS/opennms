@@ -156,12 +156,15 @@ public class LinkStateTest {
     
     public LinkStateTransition createEmptyTransition() {
         return new LinkStateTransition() {
+            @Override
             public void onLinkUp() {
                 
                 
                 
             }
+            @Override
             public void onLinkUnknown() {}
+            @Override
             public void onLinkDown() {}
         };
     }

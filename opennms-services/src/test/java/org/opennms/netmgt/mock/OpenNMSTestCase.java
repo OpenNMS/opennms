@@ -134,6 +134,7 @@ public class OpenNMSTestCase extends TestCase {
         m_version = version;
     }
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         MockUtil.println("------------ Begin Test "+this+" --------------------------");
@@ -249,6 +250,7 @@ public class OpenNMSTestCase extends TestCase {
         }
     }
 
+    @Override
     protected void tearDown() throws Exception {
         if(m_runSupers) {
             if (isStartEventd()) m_eventd.stop();
@@ -287,6 +289,7 @@ public class OpenNMSTestCase extends TestCase {
         return m_db.getJdbcTemplate();
     }
 
+    @Override
     public String toString() {
         return super.toString() + " - " + getSnmpImplementation() + " " + myVersion();
     }

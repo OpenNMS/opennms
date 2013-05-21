@@ -52,6 +52,7 @@ public class MapSubAgent implements SubAgent {
         m_base = new OID(baseOID);
     }
     
+    @Override
     public OID getBaseOID() {
         return new OID(m_base);
     }
@@ -68,6 +69,7 @@ public class MapSubAgent implements SubAgent {
         return next;
     }
     
+    @Override
     public VariableBinding getNext(OID requested) {
         OID successor = nextOID(requested);
         SortedMap<OID, Variable> tailMap = m_values.tailMap(successor);
@@ -81,6 +83,7 @@ public class MapSubAgent implements SubAgent {
         
     }
     
+    @Override
     public VariableBinding get(OID requested) {
         if (!m_values.containsKey(requested)) {
             return null;

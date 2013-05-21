@@ -140,12 +140,14 @@ public class DefaultTicketerServiceLayerIntegrationTest implements InitializingB
 
 	public static class TestTicketerPlugin implements Plugin {
 
+                @Override
 		public Ticket get(String ticketId) {
 			Ticket ticket = new Ticket();
 			ticket.setId(ticketId);
 			return ticket;
 		}
 
+                @Override
 		public void saveOrUpdate(Ticket ticket) {
 			ticket.setId("testId");
 		}

@@ -51,12 +51,14 @@ public class StoreRequestPropertiesFilter implements Filter {
     private String m_relativeServletPathAttribute;
 
     /** {@inheritDoc} */
+    @Override
     public void init(FilterConfig config) throws ServletException {
         m_servletPathAttribute = config.getInitParameter("servletPathAttribute");
         m_relativeServletPathAttribute = config.getInitParameter("relativeServletPathAttribute");
     }
 
     /** {@inheritDoc} */
+    @Override
     public void doFilter(ServletRequest request, ServletResponse response,
             FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
@@ -80,6 +82,7 @@ public class StoreRequestPropertiesFilter implements Filter {
     /**
      * <p>destroy</p>
      */
+    @Override
     public void destroy() {
         // Nothing to destroy that a GC won't take care of. :-)
     }

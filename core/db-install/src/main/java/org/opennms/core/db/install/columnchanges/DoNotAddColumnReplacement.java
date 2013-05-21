@@ -43,6 +43,7 @@ import org.opennms.core.db.install.ColumnChangeReplacement;
 
 public class DoNotAddColumnReplacement implements ColumnChangeReplacement {
     /** {@inheritDoc} */
+    @Override
     public Object getColumnReplacement(ResultSet rs, Map<String, ColumnChange> columnChanges) throws SQLException {
         return null;
     }
@@ -52,6 +53,7 @@ public class DoNotAddColumnReplacement implements ColumnChangeReplacement {
      *
      * @return a boolean.
      */
+    @Override
     public boolean addColumnIfColumnIsNew() {
         return false;
     }
@@ -60,6 +62,7 @@ public class DoNotAddColumnReplacement implements ColumnChangeReplacement {
     /**
      * <p>close</p>
      */
+    @Override
     public void close() {
     }
 }

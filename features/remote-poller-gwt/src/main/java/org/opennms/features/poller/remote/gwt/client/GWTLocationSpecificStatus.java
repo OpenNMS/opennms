@@ -131,6 +131,7 @@ public class GWTLocationSpecificStatus implements Serializable, IsSerializable {
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
+        @Override
 	public String toString() {
 		return "GWTLocationSpecificStatus[id=" + m_id + ",locationMonitor=" + m_locationMonitor + ",monitoredService=" + m_monitoredService + ",pollResult=" + m_pollResult + "]";
 	}

@@ -75,6 +75,7 @@ public class AttributeStatistic implements Comparable<AttributeStatistic> {
      * @param o a {@link org.opennms.netmgt.model.AttributeStatistic} object.
      * @return a int.
      */
+    @Override
     public int compareTo(AttributeStatistic o) {
         int diff;
         

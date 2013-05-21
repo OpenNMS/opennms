@@ -54,6 +54,7 @@ public class SshTest extends TestCase {
     private TimeoutTracker tt;
     Ssh ssh;
     
+    @Override
     public void setUp() throws Exception {
         Map<String, String> parameters = new HashMap<String,String>();
         parameters.put("retries", "0");

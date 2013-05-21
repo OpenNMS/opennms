@@ -45,6 +45,7 @@ public class Win32ServiceMonitor extends SnmpMonitor {
 	private static final String DEFAULT_SERVICE_NAME = "Server";
 	
 	/** {@inheritDoc} */
+        @Override
 	public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
 		String serviceName = ParameterMap.getKeyedString(parameters, "service-name", DEFAULT_SERVICE_NAME);
 		int snLength = serviceName.length();

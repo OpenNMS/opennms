@@ -80,6 +80,7 @@ public class MicroblogNotificationStrategy implements NotificationStrategy {
     }
 
     /** {@inheritDoc} */
+    @Override
     public int send(List<Argument> arguments) {
         Twitter svc = buildUblogService(arguments);
         String messageBody = buildMessageBody(arguments);

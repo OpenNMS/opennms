@@ -112,6 +112,7 @@ public class NodeScanSchedule {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return new ToStringBuilder(this)
             .append("foreign source", m_foreignSource)
@@ -127,6 +128,7 @@ public class NodeScanSchedule {
      *
      * @return a int.
      */
+    @Override
     public int hashCode() {
         return new HashCodeBuilder()
             .append(m_foreignSource)

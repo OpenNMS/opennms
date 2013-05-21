@@ -64,12 +64,14 @@ public class QoSD extends AbstractServiceDaemon implements QoSDMBean {
 	/**
 	 * <p>onInit</p>
 	 */
+        @Override
 	protected void onInit() {}
 
 
 	/**
 	 * <p>onStart</p>
 	 */
+        @Override
 	protected void onStart() {
 
 
@@ -144,6 +146,7 @@ public class QoSD extends AbstractServiceDaemon implements QoSDMBean {
 	/**
 	 * <p>onStop</p>
 	 */
+        @Override
 	protected void onStop() {
 		getQoSD().stop();
 

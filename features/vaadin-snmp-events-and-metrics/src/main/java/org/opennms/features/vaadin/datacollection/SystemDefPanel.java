@@ -103,6 +103,7 @@ public class SystemDefPanel extends VerticalLayout {
         };
 
         add = new Button("Add System Definition", new Button.ClickListener() {
+            @Override
             public void buttonClick(Button.ClickEvent event) {
                 SystemDef sysDef = new SystemDef();
                 sysDef.setName("New System Definition");

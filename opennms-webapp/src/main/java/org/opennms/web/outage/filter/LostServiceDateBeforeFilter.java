@@ -67,6 +67,7 @@ public class LostServiceDateBeforeFilter extends LessThanFilter<Date> {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getTextDescription() {
         return ("lost service date before \"" + getValue() + "\"");
     }
@@ -76,6 +77,7 @@ public class LostServiceDateBeforeFilter extends LessThanFilter<Date> {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return ("<Lost Service Date Before Filter: " + this.getDescription() + ">");
     }
@@ -90,6 +92,7 @@ public class LostServiceDateBeforeFilter extends LessThanFilter<Date> {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean equals(Object obj) {
         return (this.toString().equals(obj.toString()));
     }

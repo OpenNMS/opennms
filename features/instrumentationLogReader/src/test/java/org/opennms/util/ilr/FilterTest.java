@@ -55,6 +55,7 @@ public class FilterTest {
     @Test
     public void testCreatePredicate() {
         Predicate<Integer> predicate = new Predicate<Integer>() {
+            @Override
             public boolean apply(Integer i) {
                 if(i == 1){
                     return true;
@@ -90,6 +91,7 @@ public class FilterTest {
     public void testFilterEvenNumbersOut() {
         List<Integer> list = Arrays.asList(new Integer[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
         Collection<Integer> oddNumbers = filter(list, new Predicate<Integer>() {
+            @Override
             public boolean apply(Integer i) {
                 if (i % 2 != 0) {
                     return true;
@@ -138,6 +140,7 @@ public class FilterTest {
     public void testFilterOddNumbersOut() {
         List<Integer> list = Arrays.asList(new Integer[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
         Collection<Integer> evenNumbers = filter(list, new Predicate<Integer>() {
+            @Override
             public boolean apply(Integer i) {
                 if (i % 2 == 0) {
                     return true;

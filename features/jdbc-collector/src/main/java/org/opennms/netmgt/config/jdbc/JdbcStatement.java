@@ -52,6 +52,7 @@ public class JdbcStatement implements Serializable, Comparable<JdbcStatement> {
         m_jdbcQuery = jdbcQuery;
     }
     
+    @Override
     public int compareTo(JdbcStatement obj) {
         return new CompareToBuilder()
             .append(getJdbcQuery(), obj.getJdbcQuery())

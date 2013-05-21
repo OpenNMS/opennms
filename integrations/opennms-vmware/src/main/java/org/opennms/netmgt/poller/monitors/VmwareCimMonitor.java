@@ -117,6 +117,7 @@ public class VmwareCimMonitor extends AbstractServiceMonitor {
      *
      * @param parameters the parameter map to use
      */
+    @Override
     public void initialize(Map<String, Object> parameters) {
         m_nodeDao = BeanUtils.getBean("daoContext", "nodeDao", NodeDao.class);
         if (m_nodeDao == null) {
@@ -131,6 +132,7 @@ public class VmwareCimMonitor extends AbstractServiceMonitor {
      * @param parameters the parameter map
      * @return the poll status for this system
      */
+    @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         OnmsNode onmsNode = m_nodeDao.get(svc.getNodeId());
 

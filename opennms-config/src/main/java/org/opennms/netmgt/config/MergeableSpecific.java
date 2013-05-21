@@ -65,10 +65,12 @@ public final class MergeableSpecific implements Comparable<String> {
      * @param specific a {@link java.lang.String} object.
      * @return a int.
      */
+    @Override
     public int compareTo(String specific) {
         return m_comparator.compare(m_specific, specific);
     }
     
+    @Override
     public boolean equals(final Object o) {
     	if (!(o instanceof MergeableSpecific)) return false;
     	final MergeableSpecific that = (MergeableSpecific)o;
@@ -78,6 +80,7 @@ public final class MergeableSpecific implements Comparable<String> {
     		.isEquals();
     }
 
+    @Override
     public int hashCode() {
     	return new HashCodeBuilder(7, 51)
     		.append(getValue())
@@ -105,6 +108,7 @@ public final class MergeableSpecific implements Comparable<String> {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return m_specific;
     }

@@ -130,6 +130,7 @@ public Integer getId() {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return new ToStringCreator(this)
             .append("ipAddr", getIpAddr())
@@ -138,6 +139,7 @@ public Integer getId() {
     }
 
 	/** {@inheritDoc} */
+    @Override
 	public void visit(EntityVisitor visitor) {
 		// TODO Auto-generated method stub
 		throw new RuntimeException("visitor method not implemented");

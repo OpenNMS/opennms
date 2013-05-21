@@ -56,6 +56,7 @@ public class MultilineOrientedClient implements Client<LineOrientedRequest, Mult
     /**
      * <p>close</p>
      */
+    @Override
     public void close() {
         Socket socket = m_socket;
         m_socket = null;
@@ -69,6 +70,7 @@ public class MultilineOrientedClient implements Client<LineOrientedRequest, Mult
     }
 
     /** {@inheritDoc} */
+    @Override
     public void connect(final InetAddress address, final int port, final int timeout) throws IOException {
         final Socket socket = new Socket();
         socket.connect(new InetSocketAddress(address, port), timeout);
@@ -84,6 +86,7 @@ public class MultilineOrientedClient implements Client<LineOrientedRequest, Mult
      * @return a {@link org.opennms.netmgt.provision.detector.simple.response.MultilineOrientedResponse} object.
      * @throws java.io.IOException if any.
      */
+    @Override
     public MultilineOrientedResponse receiveBanner() throws IOException {
         return receiveResponse();
     }
@@ -95,6 +98,7 @@ public class MultilineOrientedClient implements Client<LineOrientedRequest, Mult
      * @return a {@link org.opennms.netmgt.provision.detector.simple.response.MultilineOrientedResponse} object.
      * @throws java.io.IOException if any.
      */
+    @Override
     public MultilineOrientedResponse sendRequest(final LineOrientedRequest request) throws IOException {
         request.send(getOutput());
         return receiveResponse();

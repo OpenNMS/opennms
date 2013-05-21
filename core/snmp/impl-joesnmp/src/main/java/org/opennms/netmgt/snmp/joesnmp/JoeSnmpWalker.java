@@ -68,23 +68,28 @@ public class JoeSnmpWalker extends SnmpWalker {
             reset();
         }
         
+        @Override
         public void reset() {
             m_nextPdu = new SnmpPduRequest(SnmpPduRequest.GETNEXT);
             m_nextPdu.setRequestId(SnmpPduPacket.nextSequence());
         }
 
+        @Override
         public SnmpPduPacket getPdu() {
             return m_nextPdu;
         }
         
+        @Override
         public void addOid(SnmpObjId snmpObjId) {
             SnmpVarBind varBind = new SnmpVarBind(new SnmpObjectId(snmpObjId.getIds()));
             m_nextPdu.addVarBind(varBind);
         }
 
+        @Override
         public void setNonRepeaters(int numNonRepeaters) {
         }
 
+        @Override
         public void setMaxRepetitions(int maxRepetitions) {
         }
 
@@ -99,24 +104,29 @@ public class JoeSnmpWalker extends SnmpWalker {
             reset();
         }
         
+        @Override
         public void reset() {
             m_bulkPdu = new SnmpPduBulk();
             m_bulkPdu.setRequestId(SnmpPduPacket.nextSequence());
         }
 
+        @Override
         public SnmpPduPacket getPdu() {
             return m_bulkPdu;
         }
 
+        @Override
         public void addOid(SnmpObjId snmpObjId) {
             SnmpVarBind varBind = new SnmpVarBind(new SnmpObjectId(snmpObjId.getIds()));
             m_bulkPdu.addVarBind(varBind);
         }
 
+        @Override
         public void setNonRepeaters(int numNonRepeaters) {
             m_bulkPdu.setNonRepeaters(numNonRepeaters);
         }
 
+        @Override
         public void setMaxRepetitions(int maxRepetitions) {
             m_bulkPdu.setMaxRepititions(maxRepetitions);
         }
@@ -125,6 +135,7 @@ public class JoeSnmpWalker extends SnmpWalker {
     
     public class JoeSnmpResponseHandler implements SnmpHandler {
 
+        @Override
         public void snmpReceivedPdu(SnmpSession session, int command, SnmpPduPacket pdu) {
             
             try {
@@ -144,10 +155,12 @@ public class JoeSnmpWalker extends SnmpWalker {
             }
         }
 
+        @Override
         public void snmpInternalError(SnmpSession session, int err, SnmpSyntax pdu) {
             handleError(getName()+": snmpInternalError: " + err + " for: " + getAddress());
         }
 
+        @Override
         public void snmpTimeoutError(SnmpSession session, SnmpSyntax pdu) {
             handleTimeout(getName()+": snmpTimeoutError for: " + getAddress());
         }
@@ -179,17 +192,20 @@ public class JoeSnmpWalker extends SnmpWalker {
         return peer;        
     }
 
+        @Override
     public void start() {
         LOG.info("Walking "+getName()+" for "+getAddress()+" using version "+SnmpSMI.getVersionString(getVersion())+" with config: "+m_agentConfig);
         super.start();
     }
 
+        @Override
     protected WalkerPduBuilder createPduBuilder(int maxVarsPerPdu) {
         return (getVersion() == SnmpSMI.SNMPV1 
                 ? (JoeSnmpPduBuilder)new GetNextBuilder(maxVarsPerPdu) 
                 : (JoeSnmpPduBuilder)new GetBulkBuilder(maxVarsPerPdu));
     }
 
+        @Override
     protected void sendNextPdu(WalkerPduBuilder pduBuilder) throws SocketException {
         JoeSnmpPduBuilder joePduBuilder = (JoeSnmpPduBuilder)pduBuilder;
         if (m_session == null) m_session = new SnmpSession(m_peer);
@@ -201,6 +217,7 @@ public class JoeSnmpWalker extends SnmpWalker {
         return m_peer.getParameters().getVersion();
     }
 
+        @Override
     protected void close() {
         if (m_session != null) {
             m_session.close();

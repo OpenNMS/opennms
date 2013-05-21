@@ -138,6 +138,7 @@ public class ServerDataSource implements DataSourceInterface {
 	 *
 	 * @throws java.lang.Throwable if any.
 	 */
+        @Override
 	protected void finalize() throws Throwable {
 		log.debug("Finalizing...closing db connections");
 		super.finalize();
@@ -151,6 +152,7 @@ public class ServerDataSource implements DataSourceInterface {
 	
 
 	/** {@inheritDoc} */
+        @Override
 	public String getSeverity(Object id){
 
 		String result = "-1";
@@ -240,6 +242,7 @@ public class ServerDataSource implements DataSourceInterface {
 
 	
 	/** {@inheritDoc} */
+        @Override
 	public String getStatus(Object id){
 
 		String result = "-1";
@@ -315,6 +318,7 @@ public class ServerDataSource implements DataSourceInterface {
 	}
 	
 	/** {@inheritDoc} */
+        @Override
 	public double getAvailability(Object id) {
 		// not implemented
 		return -1;

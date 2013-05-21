@@ -57,6 +57,7 @@ public class ExtremeNetworkVlanTable extends VlanTableBasic implements VlanTable
     }
     
     /** {@inheritDoc} */
+        @Override
     protected ExtremeNetworkVlanTableEntry createTableEntry(SnmpObjId base, SnmpInstId inst, Object val) {
         return new ExtremeNetworkVlanTableEntry();
     }

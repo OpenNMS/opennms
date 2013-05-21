@@ -38,18 +38,22 @@ import org.springframework.core.io.Resource;
 
 public class ConfigurationReportPlugin extends AbstractSystemReportPlugin {
 
+    @Override
     public String getName() {
         return "Configuration";
     }
 
+    @Override
     public String getDescription() {
         return "Append all OpenNMS configuration files (full output only)";
     }
 
+    @Override
     public int getPriority() {
         return 20;
     }
 
+    @Override
     public TreeMap<String, Resource> getEntries() {
         final TreeMap<String,Resource> map = new TreeMap<String,Resource>();
         File f = new File(System.getProperty("opennms.home") + File.separator + "etc");

@@ -86,6 +86,7 @@ public class JRobinRrdGraphDetails implements RrdGraphDetails {
      * @return a {@link java.io.InputStream} object.
      * @throws org.opennms.netmgt.rrd.RrdException if any.
      */
+    @Override
     public InputStream getInputStream() throws RrdException {
         assertGraphProduced();
 
@@ -97,6 +98,7 @@ public class JRobinRrdGraphDetails implements RrdGraphDetails {
      *
      * @return an array of {@link java.lang.String} objects.
      */
+    @Override
     public String[] getPrintLines() {
         return m_rrdGraph.getRrdGraphInfo().getPrintLines();
     }
@@ -107,6 +109,7 @@ public class JRobinRrdGraphDetails implements RrdGraphDetails {
      * @return a int.
      * @throws org.opennms.netmgt.rrd.RrdException if any.
      */
+    @Override
     public int getHeight() throws RrdException {
         assertGraphProduced();
         
@@ -119,6 +122,7 @@ public class JRobinRrdGraphDetails implements RrdGraphDetails {
      * @return a int.
      * @throws org.opennms.netmgt.rrd.RrdException if any.
      */
+    @Override
     public int getWidth() throws RrdException {
         assertGraphProduced();
         

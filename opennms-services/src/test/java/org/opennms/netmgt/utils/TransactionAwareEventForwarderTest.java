@@ -91,6 +91,7 @@ public class TransactionAwareEventForwarderTest implements InitializingBean {
     @Test
     public void testSendEventsOnCommit() {
         m_transTemplate.execute(new TransactionCallback<Object>() {
+            @Override
             public Object doInTransaction(TransactionStatus status) {
                 Event event = sendEvent();
                 getEventAnticipator().anticipateEvent(event);
@@ -108,6 +109,7 @@ public class TransactionAwareEventForwarderTest implements InitializingBean {
     @Test
     public void testSendEventsOnRollback() {
         m_transTemplate.execute(new TransactionCallback<Object>() {
+            @Override
             public Object doInTransaction(TransactionStatus status) {
                 sendEvent();
                 status.setRollbackOnly();
@@ -120,6 +122,7 @@ public class TransactionAwareEventForwarderTest implements InitializingBean {
     @Test
     public void testTwoTransactions() {
         m_transTemplate.execute(new TransactionCallback<Object>() {
+            @Override
             public Object doInTransaction(TransactionStatus status) {
                 Event event = sendEvent();
                 getEventAnticipator().anticipateEvent(event);
@@ -128,6 +131,7 @@ public class TransactionAwareEventForwarderTest implements InitializingBean {
         });
 
         m_transTemplate.execute(new TransactionCallback<Object>() {
+            @Override
             public Object doInTransaction(TransactionStatus status) {
                 Event event = sendEvent();
                 getEventAnticipator().anticipateEvent(event);
@@ -139,6 +143,7 @@ public class TransactionAwareEventForwarderTest implements InitializingBean {
     @Test
     public void testCommitRollbackCommit() {
         m_transTemplate.execute(new TransactionCallback<Object>() {
+            @Override
             public Object doInTransaction(TransactionStatus status) {
                 Event event = sendEvent();
                 getEventAnticipator().anticipateEvent(event);
@@ -147,6 +152,7 @@ public class TransactionAwareEventForwarderTest implements InitializingBean {
         });
 
         m_transTemplate.execute(new TransactionCallback<Object>() {
+            @Override
             public Object doInTransaction(TransactionStatus status) {
                 // Doesn't matter how many events we send here, they're
                 // all gonna get rolled back
@@ -160,6 +166,7 @@ public class TransactionAwareEventForwarderTest implements InitializingBean {
         });
 
         m_transTemplate.execute(new TransactionCallback<Object>() {
+            @Override
             public Object doInTransaction(TransactionStatus status) {
                 Event event = sendEvent();
                 getEventAnticipator().anticipateEvent(event);

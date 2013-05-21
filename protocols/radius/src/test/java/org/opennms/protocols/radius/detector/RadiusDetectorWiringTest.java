@@ -71,6 +71,7 @@ public class RadiusDetectorWiringTest implements ApplicationContextAware {
         testWiredDetector(RadiusAuthDetector.class);
     }
     
+    @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         m_applicationContext = applicationContext;
         

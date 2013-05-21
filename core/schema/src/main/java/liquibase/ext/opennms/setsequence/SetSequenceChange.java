@@ -75,6 +75,7 @@ public class SetSequenceChange extends AbstractChange {
 		return m_tables;
 	}
 
+    @Override
 	public SqlStatement[] generateStatements(final Database database) {
 		final SetSequenceStatement statement = new SetSequenceStatement(getSequenceName());
 		statement.setValue(m_value);
@@ -84,6 +85,7 @@ public class SetSequenceChange extends AbstractChange {
 		return new SqlStatement[] { statement };
 	}
 
+    @Override
 	public String getConfirmationMessage() {
 		return "Sequence " + m_sequenceName + " updated";
 	}

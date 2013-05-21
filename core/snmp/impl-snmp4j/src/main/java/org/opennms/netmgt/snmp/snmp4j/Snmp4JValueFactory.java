@@ -47,46 +47,57 @@ import org.snmp4j.smi.TimeTicks;
 
 public class Snmp4JValueFactory implements SnmpValueFactory {
 
+    @Override
     public SnmpValue getOctetString(byte[] bytes) {
         return new Snmp4JValue(new OctetString(bytes));
     }
 
+    @Override
     public SnmpValue getCounter32(long val) {
         return new Snmp4JValue(new Counter32(val));
     }
 
+    @Override
     public SnmpValue getCounter64(BigInteger bigInt) {
         return new Snmp4JValue(new Counter64(bigInt.longValue()));
     }
 
+    @Override
     public SnmpValue getGauge32(long val) {
         return new Snmp4JValue(new Gauge32(val));
     }
 
+    @Override
     public SnmpValue getInt32(int val) {
         return new Snmp4JValue(new Integer32(val));
     }
 
+    @Override
     public SnmpValue getIpAddress(InetAddress val) {
         return new Snmp4JValue(new IpAddress(val));
     }
 
+    @Override
     public SnmpValue getObjectId(SnmpObjId objId) {
         return new Snmp4JValue(new OID(objId.getIds()));
     }
 
+    @Override
     public SnmpValue getTimeTicks(long val) {
         return new Snmp4JValue(new TimeTicks(val));
     }
 
+    @Override
     public SnmpValue getNull() {
         return new Snmp4JValue(new Null());
     }
 
+    @Override
     public SnmpValue getValue(int type, byte[] bytes) {
         return new Snmp4JValue(type, bytes);
     }
 
+    @Override
     public SnmpValue getOpaque(byte[] bs) {
         return new Snmp4JValue(new Opaque(bs));
     }

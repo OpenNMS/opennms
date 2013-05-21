@@ -109,6 +109,7 @@ public class OspfNbrInterface {
      * 
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return new ToStringBuilder(this).append("ospfNbrRouterId" ,m_ospfNbrRouterId)
                                         .append("ospfNbrIpAddress",m_ospfNbrIpAddr)

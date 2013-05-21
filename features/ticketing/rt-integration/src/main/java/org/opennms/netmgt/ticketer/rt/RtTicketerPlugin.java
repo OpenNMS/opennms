@@ -85,6 +85,7 @@ public class RtTicketerPlugin implements Plugin {
 	 *
 	 * Gets ticket details from the RT trouble ticket system
 	 */
+    @Override
 	public Ticket get(final String ticketId) throws PluginException {
 
 		Ticket ticket = null;
@@ -117,6 +118,7 @@ public class RtTicketerPlugin implements Plugin {
 	 * RT trouble ticket system. Ticket updates are currently limited to updating
 	 * the ticket status only.
 	 */
+    @Override
 	public void saveOrUpdate(final Ticket newTicket) throws PluginException {
 		
 		String newTicketID;

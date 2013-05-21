@@ -106,6 +106,7 @@ final public class DnsMonitor extends AbstractServiceMonitor {
      * the service status is set to SERVICE_AVAILABLE and the method returns.
      * </P>
      */
+    @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         NetworkInterface<InetAddress> iface = svc.getNetInterface();
 

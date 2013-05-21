@@ -56,11 +56,13 @@ public class NtpClient implements Client<NtpMessage, DatagramPacket> {
     /**
      * <p>close</p>
      */
+    @Override
     public void close() {
         m_socket.close();
     }
 
     /** {@inheritDoc} */
+    @Override
     public void connect(final InetAddress address, final int port, final int timeout) throws IOException, Exception {
         LogUtils.debugf(this, "Address: %s, port: %d, timeout: %d", address, port, timeout);
         m_socket = new DatagramSocket();
@@ -76,6 +78,7 @@ public class NtpClient implements Client<NtpMessage, DatagramPacket> {
      * @throws java.io.IOException if any.
      * @throws java.lang.Exception if any.
      */
+    @Override
     public DatagramPacket receiveBanner() throws IOException, Exception {
         throw new UnsupportedOperationException("Client<NtpMessage,DatagramPacket>.receiveBanner is not yet implemented");
     }
@@ -88,6 +91,7 @@ public class NtpClient implements Client<NtpMessage, DatagramPacket> {
      * @throws java.io.IOException if any.
      * @throws java.lang.Exception if any.
      */
+    @Override
     public DatagramPacket sendRequest(final NtpMessage request) throws IOException, Exception {
         
         final byte[] buf = new NtpMessage().toByteArray();

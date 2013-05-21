@@ -126,6 +126,7 @@ public class SnmpPduBulk extends SnmpPduPacket {
      * 
      * @return A newly created copy of self.
      */
+    @Override
     public SnmpSyntax duplicate() {
         return new SnmpPduBulk(this);
     }
@@ -136,6 +137,7 @@ public class SnmpPduBulk extends SnmpPduPacket {
      * 
      * @return A newly created copy of self.
      */
+    @Override
     public Object clone() {
         return new SnmpPduBulk(this);
     }

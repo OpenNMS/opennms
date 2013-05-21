@@ -265,6 +265,7 @@ public class DbElement implements Cloneable {
      *
      * @return a {@link org.opennms.web.map.db.DbElement} object.
      */
+    @Override
     public DbElement clone() {
         try {
             return (DbElement) super.clone();

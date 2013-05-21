@@ -95,6 +95,7 @@ public class NotificationCommandFactory extends NotificationCommandManager {
      * @throws java.io.FileNotFoundException if any.
      * @throws java.io.IOException if any.
      */
+    @Override
     public void update() throws MarshalException, ValidationException, FileNotFoundException, IOException {
         InputStream configIn = new FileInputStream(ConfigFileConstants.getFile(ConfigFileConstants.NOTIF_COMMANDS_CONF_FILE_NAME));
         parseXML(configIn);

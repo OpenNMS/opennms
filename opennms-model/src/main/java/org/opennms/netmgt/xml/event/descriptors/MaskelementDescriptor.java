@@ -165,6 +165,7 @@ import org.opennms.netmgt.xml.event.Maskelement;
                     throw new IllegalStateException(ex.toString());
                 }
             }
+            @Override
             public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
                 try {
                     Maskelement target = (Maskelement) object;
@@ -290,6 +291,7 @@ import org.opennms.netmgt.xml.event.Maskelement;
      * of a global
      * element or element with anonymous type definition.
      */
+    @Override
     public boolean isElementDefinition(
     ) {
         return _elementDefinition;

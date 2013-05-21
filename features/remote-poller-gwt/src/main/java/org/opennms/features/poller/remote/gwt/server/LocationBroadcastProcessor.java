@@ -125,6 +125,7 @@ public class LocationBroadcastProcessor implements InitializingBean, DisposableB
     /**
      * <p>destroy</p>
      */
+    @Override
     public void destroy() {
         if (m_task != null) {
             m_task.cancel();

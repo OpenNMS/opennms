@@ -119,6 +119,7 @@ public class DefaultNodeService implements NodeService {
     		"}]" +
     		"}";
     
+    @Override
     public void getAllIpInterfacesForNode(int nodeId, RequestCallback callback) {
         String url = BASE_URL + nodeId + "/ipinterfaces?limit=0";
         sendRequest(callback, url);
@@ -126,17 +127,20 @@ public class DefaultNodeService implements NodeService {
 
     
     
+    @Override
     public void getAllSnmpInterfacesForNode(int nodeId, RequestCallback callback) {
         String url = BASE_URL + nodeId + "/snmpinterfaces?limit=0";
         sendRequest(callback, url);
     }
 
+    @Override
     public void findIpInterfacesMatching(int nodeId, String parameter, String value, RequestCallback callback) {
         String url = BASE_URL + nodeId + "/ipinterfaces?" + parameter + "=" + value + "&comparator=contains&limit=0";
         sendRequest(callback, url);
         
     }
 
+    @Override
     public void findSnmpInterfacesMatching(int nodeId, String parameter, String value, RequestCallback callback) {
         String url = BASE_URL + nodeId + "/snmpinterfaces?" + parameter + "=" + value;
         if(!parameter.equals("ifIndex") && !parameter.equals("ifSpeed")) {

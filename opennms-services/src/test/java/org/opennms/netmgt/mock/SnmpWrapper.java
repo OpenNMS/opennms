@@ -42,6 +42,7 @@ public class SnmpWrapper {
 		return m_snmp;
 	}
 	
+        @Override
 	public String toString() {
         return EventUtils.toString(m_snmp);
 	}

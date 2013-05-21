@@ -130,6 +130,7 @@ public class SnmpCounter32 extends SnmpUInt32 {
      * 
      * @return The ASN.1 value for this object.
      */
+    @Override
     public byte typeId() {
         return ASNTYPE;
     }
@@ -140,6 +141,7 @@ public class SnmpCounter32 extends SnmpUInt32 {
      * @return The newly created duplicate object.
      * 
      */
+    @Override
     public SnmpSyntax duplicate() {
         return new SnmpCounter32(this);
     }
@@ -150,6 +152,7 @@ public class SnmpCounter32 extends SnmpUInt32 {
      * @return The newly created duplicate object.
      * 
      */
+    @Override
     public Object clone() {
         return new SnmpCounter32(this);
     }

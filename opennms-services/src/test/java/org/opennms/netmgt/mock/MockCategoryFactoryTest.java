@@ -73,6 +73,7 @@ public class MockCategoryFactoryTest extends TestCase {
 		" </categorygroup>" +
 		"</catinfo>";
 	
+        @Override
 	protected void setUp() throws Exception {
 		super.setUp();
 		m_mockCatFactory = new MockCategoryFactory(MOCK_CATEGORY_CONFIG);
@@ -80,6 +81,7 @@ public class MockCategoryFactoryTest extends TestCase {
 		m_catFactory = CategoryFactory.getInstance();
 	}
 
+        @Override
 	protected void tearDown() throws Exception {
 		super.tearDown();
 	}

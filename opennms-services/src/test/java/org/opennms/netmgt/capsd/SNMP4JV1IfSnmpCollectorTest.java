@@ -31,6 +31,7 @@ package org.opennms.netmgt.capsd;
 import org.opennms.netmgt.capsd.IfSnmpCollectorTestCase.SNMP4JIfSnmpCollectorTestCase;
 
 public class  SNMP4JV1IfSnmpCollectorTest extends SNMP4JIfSnmpCollectorTestCase {
+    @Override
     public void setUp() throws Exception {
         setVersion(1);
         super.setUp();

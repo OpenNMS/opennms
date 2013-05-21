@@ -43,34 +43,42 @@ public class JoeSnmpV1TrapBuilder implements SnmpV1TrapBuilder {
     
     SnmpPduTrap trap = new SnmpPduTrap();
 
+    @Override
     public void setEnterprise(SnmpObjId enterpriseId) {
         trap.setEnterprise(new SnmpObjectId(enterpriseId.getIds()));
     }
 
+    @Override
     public void setAgentAddress(InetAddress agentAddress) {
         trap.setAgentAddress(new SnmpIPAddress(agentAddress));
     }
 
+    @Override
     public void setGeneric(int generic) {
         trap.setGeneric(generic);
     }
 
+    @Override
     public void setSpecific(int specific) {
         trap.setSpecific(specific);
     }
 
+    @Override
     public void setTimeStamp(long timeStamp) {
         trap.setTimeStamp(timeStamp);
     }
 
+    @Override
     public void send(String destAddr, int destPort, String community) throws Exception {
         JoeSnmpStrategy.send(destAddr, destPort, community, trap);
     }
 
+    @Override
     public void sendTest(String destAddr, int destPort, String community) throws Exception {
         JoeSnmpStrategy.sendTest(destAddr, destPort, community, trap);
     }
 
+    @Override
     public void addVarBind(SnmpObjId name, SnmpValue value) {
         SnmpSyntax val = ((JoeSnmpValue) value).getSnmpSyntax();
         trap.addVarBind(new SnmpVarBind(new SnmpObjectId(name.getIds()), val));

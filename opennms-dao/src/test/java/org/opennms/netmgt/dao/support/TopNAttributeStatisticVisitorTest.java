@@ -212,6 +212,7 @@ public class TopNAttributeStatisticVisitorTest extends TestCase {
         /**
          * @see org.opennms.netmgt.model.OnmsAttribute#getName()
          */
+        @Override
         public String getName() {
             return m_name;
         }
@@ -219,6 +220,7 @@ public class TopNAttributeStatisticVisitorTest extends TestCase {
         /**
          * @see org.opennms.netmgt.model.OnmsAttribute#getResource()
          */
+        @Override
         public OnmsResource getResource() {
             return m_resource;
         }
@@ -226,6 +228,7 @@ public class TopNAttributeStatisticVisitorTest extends TestCase {
         /**
          * @see org.opennms.netmgt.model.OnmsAttribute#setResource(org.opennms.netmgt.model.OnmsResource)
          */
+        @Override
         public void setResource(OnmsResource resource) {
             m_resource = resource;
         }

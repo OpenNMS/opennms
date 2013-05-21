@@ -43,26 +43,32 @@ public class PollableVisitorAdaptor implements PollableVisitor {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void visitService(PollableService service) {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void visitInterface(PollableInterface interface1) {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void visitNode(PollableNode node) {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void visitNetwork(PollableNetwork network) {
     }
     
     /** {@inheritDoc} */
+    @Override
     public void visitContainer(PollableContainer container) {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void visitElement(PollableElement element) {
     }
 }

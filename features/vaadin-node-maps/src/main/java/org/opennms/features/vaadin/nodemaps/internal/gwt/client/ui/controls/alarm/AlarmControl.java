@@ -94,6 +94,7 @@ public class AlarmControl extends Control {
         if (m_searchConsumer != null) m_searchConsumer.clearSearch();
     }
 
+    @Override
     public AlarmControl addTo(final Map map) {
         return (AlarmControl)super.addTo(map);
     }

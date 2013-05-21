@@ -524,6 +524,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return new ToStringCreator(this)
             .append("snmpipadentnetmask", getNetMask())
@@ -544,6 +545,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void visit(EntityVisitor visitor) {
         visitor.visitSnmpInterface(this);
         visitor.visitSnmpInterfaceComplete(this);

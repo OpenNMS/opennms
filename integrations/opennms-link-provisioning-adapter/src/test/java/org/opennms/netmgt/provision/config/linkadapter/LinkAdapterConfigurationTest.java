@@ -87,6 +87,7 @@ public class LinkAdapterConfigurationTest implements InitializingBean {
             m_schemaFile = schemaFile;
         }
         
+        @Override
         public Result createOutput(String namespaceUri, String suggestedFileName) throws IOException {
             return new StreamResult(m_schemaFile);
         }

@@ -40,6 +40,7 @@ import org.opennms.core.utils.LogUtils;
 
 public class SyslogMessage {
     private static final ThreadLocal<DateFormat> m_dateFormat = new ThreadLocal<DateFormat>() {
+        @Override
         protected DateFormat initialValue() {
             final DateFormat dateFormat = new SimpleDateFormat("MMM dd HH:mm:ss");
             dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -48,6 +49,7 @@ public class SyslogMessage {
     };
 
     private static final ThreadLocal<DateFormat> m_rfc3339Format = new ThreadLocal<DateFormat>() {
+        @Override
         protected DateFormat initialValue() {
             final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
             dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -214,6 +216,7 @@ public class SyslogMessage {
         return m_fullText;
     }
 
+    @Override
     public String toString() {
         return new ToStringBuilder(this)
             .append("facility", m_facility)

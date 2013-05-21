@@ -106,6 +106,7 @@ final class BroadcastEventProcessor implements EventListener {
      * available for processing. Each message is examined for its Universal
      * Event Identifier and the appropriate action is taking based on each UEI.
      */
+    @Override
     public void onEvent(final Event event) {
     	final String eventUei = event.getUei();
         if (eventUei == null) {
@@ -143,6 +144,7 @@ final class BroadcastEventProcessor implements EventListener {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getName() {
         return "Xmlrpcd:BroadcastEventProcessor_" + m_nameSuffix;
     }

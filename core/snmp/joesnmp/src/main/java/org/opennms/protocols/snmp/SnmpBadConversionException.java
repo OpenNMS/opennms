@@ -99,6 +99,7 @@ public class SnmpBadConversionException extends Exception {
      * Prints the stack trace of the exception. If the exception has been
      * chained then the original exception is also printed to the stream.
      */
+    @Override
     public void printStackTrace() {
         this.printStackTrace(System.err);
     }
@@ -110,6 +111,7 @@ public class SnmpBadConversionException extends Exception {
      * @param writer
      *            The stream to writer the stack trace onto.
      */
+    @Override
     public void printStackTrace(PrintWriter writer) {
         super.printStackTrace(writer);
         if (m_chained != null) {
@@ -127,6 +129,7 @@ public class SnmpBadConversionException extends Exception {
      * @param stream
      *            The stream to writer the stack trace onto.
      */
+    @Override
     public void printStackTrace(PrintStream stream) {
         super.printStackTrace(stream);
         if (m_chained != null) {

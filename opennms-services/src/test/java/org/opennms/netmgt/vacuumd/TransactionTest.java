@@ -55,6 +55,7 @@ public class TransactionTest extends TestCase {
     DataSource m_ds;
     DataSource m_ds2;
 
+        @Override
 	protected void setUp() throws Exception {
 		super.setUp();
         
@@ -70,6 +71,7 @@ public class TransactionTest extends TestCase {
 		
 	}
 
+        @Override
 	protected void tearDown() throws Exception {
 		super.tearDown();
 	}

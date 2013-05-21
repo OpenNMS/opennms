@@ -119,6 +119,7 @@ public abstract class AsyncBasicDetectorNettyImpl<Request, Response> extends Asy
             ClientBootstrap bootstrap = new ClientBootstrap(m_factory);
 
             bootstrap.setPipelineFactory(new ChannelPipelineFactory() {
+                @Override
                 public ChannelPipeline getPipeline() throws Exception {
                     ChannelPipeline retval = Channels.pipeline();
 

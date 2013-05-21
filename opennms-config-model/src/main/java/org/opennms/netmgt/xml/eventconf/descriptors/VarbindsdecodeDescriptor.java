@@ -163,6 +163,7 @@ public class VarbindsdecodeDescriptor extends org.exolab.castor.xml.util.XMLClas
                     throw new IllegalStateException(ex.toString());
                 }
             }
+            @Override
             public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
                 try {
                     Varbindsdecode target = (Varbindsdecode) object;
@@ -284,6 +285,7 @@ public class VarbindsdecodeDescriptor extends org.exolab.castor.xml.util.XMLClas
      * of a global
      * element or element with anonymous type definition.
      */
+    @Override
     public boolean isElementDefinition(
     ) {
         return _elementDefinition;

@@ -43,6 +43,7 @@ class LocationSpecificStatusComparator implements Comparator<GWTLocationSpecific
      * @param b a {@link org.opennms.features.poller.remote.gwt.client.GWTLocationSpecificStatus} object.
      * @return a int.
      */
+    @Override
     public int compare(final GWTLocationSpecificStatus a, final GWTLocationSpecificStatus b) {
         return new CompareToBuilder()
             .append(a.getMonitoredService(), b.getMonitoredService())

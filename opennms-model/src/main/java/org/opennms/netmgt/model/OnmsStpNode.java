@@ -107,6 +107,7 @@ public class OnmsStpNode {
             m_basebridgetype = baseBridgeType;
         }
 
+                @Override
         public int compareTo(BridgeBaseType o) {
             return getIndex(m_basebridgetype) - getIndex(o.m_basebridgetype);
         }
@@ -120,6 +121,7 @@ public class OnmsStpNode {
             throw new IllegalArgumentException("illegal baseBridgeType code '"+code+"'");
         }
 
+                @Override
         public boolean equals(Object o) {
             if (o instanceof BridgeBaseType) {
                 return m_basebridgetype.intValue() == ((BridgeBaseType)o).m_basebridgetype.intValue();
@@ -127,10 +129,12 @@ public class OnmsStpNode {
             return false;
         }
 
+                @Override
         public int hashCode() {
             return toString().hashCode();
         }
 
+                @Override
         public String toString() {
             return String.valueOf(m_basebridgetype);
         }
@@ -209,6 +213,7 @@ public class OnmsStpNode {
             m_stpprotocolspecification = stpProtocolSpecification;
         }
 
+                @Override
         public int compareTo(StpProtocolSpecification o) {
             return getIndex(m_stpprotocolspecification) - getIndex(o.m_stpprotocolspecification);
         }
@@ -222,6 +227,7 @@ public class OnmsStpNode {
             throw new IllegalArgumentException("illegal StpProtocolSpecification code '"+code+"'");
         }
 
+                @Override
         public boolean equals(Object o) {
             if (o instanceof StpProtocolSpecification) {
                 return m_stpprotocolspecification.intValue() == ((StpProtocolSpecification)o).m_stpprotocolspecification.intValue();
@@ -229,10 +235,12 @@ public class OnmsStpNode {
             return false;
         }
 
+                @Override
         public int hashCode() {
             return toString().hashCode();
         }
 
+                @Override
         public String toString() {
             return String.valueOf(m_stpprotocolspecification);
         }
@@ -444,6 +452,7 @@ public class OnmsStpNode {
 		m_baseVlanName = baseVlanName;
 	}
 	
+    @Override
 	public String toString() {
 	    return new ToStringBuilder(this)
 	        .append("id", m_id)

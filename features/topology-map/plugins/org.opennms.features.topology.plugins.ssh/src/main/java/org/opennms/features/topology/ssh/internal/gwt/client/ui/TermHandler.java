@@ -79,6 +79,7 @@ public class TermHandler implements KeyUpHandler, KeyDownHandler, KeyPressHandle
 	 * The onKeyDown method handles all keys that are held down, before
 	 * KeyUp and KeyPress events are triggered.
 	 */
+        @Override
 	public void onKeyDown(KeyDownEvent event) {
 		code = new Code(event);
 		if (!code.isControlKey()){
@@ -94,6 +95,7 @@ public class TermHandler implements KeyUpHandler, KeyDownHandler, KeyPressHandle
 	 * The onKeyPress method handles all keys that were held down and then lifted up,
 	 * after the KeyDown and KeyUp events are triggered
 	 */
+        @Override
 	public void onKeyPress(KeyPressEvent event) {
 		code = new Code(event);
 		if (code.getCharCode() > 31 && code.getCharCode() < 127) {
@@ -107,6 +109,7 @@ public class TermHandler implements KeyUpHandler, KeyDownHandler, KeyPressHandle
 	 * The onKeyUp method handles all keys that were lifted up, after the KeyDown
 	 * event is triggered and before the KeyPress event is triggered
 	 */
+        @Override
 	public void onKeyUp(KeyUpEvent event) {/*Do not handle KeyUp events*/}
 
 	/**

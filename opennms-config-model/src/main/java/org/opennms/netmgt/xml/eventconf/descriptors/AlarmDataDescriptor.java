@@ -454,6 +454,7 @@ public class AlarmDataDescriptor extends org.exolab.castor.xml.util.XMLClassDesc
      * of a global
      * element or element with anonymous type definition.
      */
+    @Override
     public boolean isElementDefinition(
     ) {
         return _elementDefinition;

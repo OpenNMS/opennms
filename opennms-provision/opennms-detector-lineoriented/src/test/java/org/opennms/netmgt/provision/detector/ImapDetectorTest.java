@@ -76,6 +76,7 @@ public class ImapDetectorTest implements ApplicationContextAware {
     public void testServerSuccess() throws Exception{
         m_server  = new SimpleServer() {
             
+            @Override
             public void onInit() {
                 setBanner("* OK THIS IS A BANNER FOR IMAP");
                 addResponseHandler(contains("LOGOUT"), shutdownServer("* BYE\r\nONMSCAPSD OK"));
@@ -108,6 +109,7 @@ public class ImapDetectorTest implements ApplicationContextAware {
     public void testDetectorFailUnexpectedBanner() throws Exception{
         m_server  = new SimpleServer() {
             
+            @Override
             public void onInit() {
                 setBanner("* NOT OK THIS IS A BANNER FOR IMAP");
             }
@@ -136,6 +138,7 @@ public class ImapDetectorTest implements ApplicationContextAware {
     public void testDetectorFailUnexpectedLogoutResponse() throws Exception{
         m_server  = new SimpleServer() {
             
+            @Override
             public void onInit() {
                 setBanner("* NOT OK THIS IS A BANNER FOR IMAP");
                 addResponseHandler(contains("LOGOUT"), singleLineRequest("* NOT OK"));
@@ -164,6 +167,7 @@ public class ImapDetectorTest implements ApplicationContextAware {
     /* (non-Javadoc)
      * @see org.springframework.context.ApplicationContextAware#setApplicationContext(org.springframework.context.ApplicationContext)
      */
+    @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         m_applicationContext = applicationContext;
     }

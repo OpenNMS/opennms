@@ -59,10 +59,12 @@ public class DefaultServiceRegistryTest {
         
         Set<T> m_providers = new LinkedHashSet<T>();
 
+        @Override
         public void providerRegistered(Registration registration, T provider) {
             m_providers.add(provider);
         }
 
+        @Override
         public void providerUnregistered(Registration registration, T provider) {
             m_providers.remove(provider);
         }

@@ -151,6 +151,7 @@ public final class UdpEventReceiver implements EventReceiver, UdpEventReceiverMB
     /**
      * <p>start</p>
      */
+    @Override
     public synchronized void start() {
         assertNotRunning();
 
@@ -196,6 +197,7 @@ public final class UdpEventReceiver implements EventReceiver, UdpEventReceiverMB
     /**
      * <p>stop</p>
      */
+    @Override
     public synchronized void stop() {
         if (m_status == STOPPED) {
             return;
@@ -225,6 +227,7 @@ public final class UdpEventReceiver implements EventReceiver, UdpEventReceiverMB
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getName() {
         return "Event UDP Receiver[" + m_dgPort + "]";
     }
@@ -234,6 +237,7 @@ public final class UdpEventReceiver implements EventReceiver, UdpEventReceiverMB
      *
      * @return a int.
      */
+    @Override
     public int getStatus() {
         return m_status;
     }
@@ -243,6 +247,7 @@ public final class UdpEventReceiver implements EventReceiver, UdpEventReceiverMB
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getStatusText() {
         return STATUS_NAMES[getStatus()];
     }
@@ -252,6 +257,7 @@ public final class UdpEventReceiver implements EventReceiver, UdpEventReceiverMB
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String status() {
         return getStatusText();
     }
@@ -259,12 +265,14 @@ public final class UdpEventReceiver implements EventReceiver, UdpEventReceiverMB
     /**
      * <p>init</p>
      */
+    @Override
     public void init() {
     }
 
     /**
      * <p>destroy</p>
      */
+    @Override
     public void destroy() {
     }
 
@@ -289,6 +297,7 @@ public final class UdpEventReceiver implements EventReceiver, UdpEventReceiverMB
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setPort(Integer port) {
         assertNotRunning();
 
@@ -300,6 +309,7 @@ public final class UdpEventReceiver implements EventReceiver, UdpEventReceiverMB
      *
      * @return a {@link java.lang.Integer} object.
      */
+    @Override
     public Integer getPort() {
         return m_dgPort;
     }
@@ -310,6 +320,7 @@ public final class UdpEventReceiver implements EventReceiver, UdpEventReceiverMB
      * Adds a new event handler to receiver. When new events are received the
      * decoded event is passed to the handler.
      */
+    @Override
     public void addEventHandler(EventHandler handler) {
         synchronized (m_eventHandlers) {
             if (!m_eventHandlers.contains(handler)) {
@@ -325,6 +336,7 @@ public final class UdpEventReceiver implements EventReceiver, UdpEventReceiverMB
      * received. The handler is removed based upon the method
      * <code>equals()</code> inherieted from the <code>Object</code> class.
      */
+    @Override
     public void removeEventHandler(EventHandler handler) {
         synchronized (m_eventHandlers) {
             m_eventHandlers.remove(handler);
@@ -350,16 +362,19 @@ public final class UdpEventReceiver implements EventReceiver, UdpEventReceiverMB
     }
 
     /** {@inheritDoc} */
+    @Override
     public void addEventHandler(String name) throws MalformedObjectNameException, InstanceNotFoundException {
         addEventHandler(new EventHandlerMBeanProxy(new ObjectName(name)));
     }
 
     /** {@inheritDoc} */
+    @Override
     public void removeEventHandler(String name) throws MalformedObjectNameException, InstanceNotFoundException {
         removeEventHandler(new EventHandlerMBeanProxy(new ObjectName(name)));
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setLogPrefix(String prefix) {
         m_logPrefix = prefix;
     }

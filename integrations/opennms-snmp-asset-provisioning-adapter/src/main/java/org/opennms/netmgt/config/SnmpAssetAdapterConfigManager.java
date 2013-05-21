@@ -89,10 +89,12 @@ public class SnmpAssetAdapterConfigManager implements SnmpAssetAdapterConfig {
 		reloadXML(lastModified, reader);
 	}
 
+    @Override
     public Lock getReadLock() {
         return m_readLock;
     }
     
+    @Override
     public Lock getWriteLock() {
         return m_writeLock;
     }
@@ -123,6 +125,7 @@ public class SnmpAssetAdapterConfigManager implements SnmpAssetAdapterConfig {
 	 * @throws org.exolab.castor.xml.MarshalException if any.
 	 * @throws org.exolab.castor.xml.ValidationException if any.
 	 */
+    @Override
 	public void update() throws IOException, MarshalException, ValidationException {
 	    getWriteLock().lock();
 	    try {
@@ -159,6 +162,7 @@ public class SnmpAssetAdapterConfigManager implements SnmpAssetAdapterConfig {
 	 * 
 	 * TODO: Support matching based on IP address
 	 */
+    @Override
 	public AssetField[] getAssetFieldsForAddress(final InetAddress address, final String sysoid) {
 	    getReadLock().lock();
 	    

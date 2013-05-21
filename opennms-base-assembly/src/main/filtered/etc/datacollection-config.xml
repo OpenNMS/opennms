@@ -34,6 +34,7 @@
         <include-collection dataCollectionGroup="Force10"/>
         <include-collection dataCollectionGroup="Foundry Networks"/>
         <include-collection dataCollectionGroup="HP"/>
+        <include-collection dataCollectionGroup="HWg"/>
         <include-collection dataCollectionGroup="IBM"/>
         <include-collection dataCollectionGroup="IP Unity"/>
         <include-collection dataCollectionGroup="Juniper"/>

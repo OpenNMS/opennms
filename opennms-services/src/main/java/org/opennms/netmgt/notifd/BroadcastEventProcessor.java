@@ -153,6 +153,7 @@ public final class BroadcastEventProcessor implements EventListener {
      * This method is invoked by the EventIpcManager when a new event is
      * available for processing.
      */
+    @Override
     public void onEvent(Event event) {
         if (event == null) return;
 
@@ -329,6 +330,7 @@ public final class BroadcastEventProcessor implements EventListener {
 
             final Map<String, List<String>> userNotifications = new HashMap<String, List<String>>();
             RowProcessor ackNotifProcessor = new RowProcessor() {
+                @Override
                 public void processRow(ResultSet rs) throws SQLException {
                     String userID = rs.getString("userID");
                     String contactInfo = rs.getString("contactinfo");
@@ -925,6 +927,7 @@ public final class BroadcastEventProcessor implements EventListener {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getName() {
         return "Notifd:BroadcastEventProcessor";
     }

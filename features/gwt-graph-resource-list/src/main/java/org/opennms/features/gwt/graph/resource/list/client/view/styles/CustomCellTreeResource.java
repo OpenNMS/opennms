@@ -34,6 +34,7 @@ import com.google.gwt.user.cellview.client.CellTree.Style;
 public interface CustomCellTreeResource extends CellTree.Resources {
 
     @Source({"ReportCellTree.css"})
+    @Override
     Style cellTreeStyle();
 
 }

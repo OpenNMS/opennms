@@ -94,6 +94,7 @@ public class SshDetector extends BasicDetector<NullRequest, SshResponse>{
         
         return new ResponseValidator<SshResponse>(){
 
+            @Override
             public boolean validate(SshResponse response) {
                 return response.isAvailable();
             }

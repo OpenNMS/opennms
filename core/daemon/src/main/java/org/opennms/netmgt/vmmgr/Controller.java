@@ -370,6 +370,7 @@ public class Controller {
         final String password_f = password;
         
         return new Authenticator() {
+            @Override
             protected PasswordAuthentication getPasswordAuthentication() {
                 return new PasswordAuthentication(username_f,
                                                   password_f.toCharArray());

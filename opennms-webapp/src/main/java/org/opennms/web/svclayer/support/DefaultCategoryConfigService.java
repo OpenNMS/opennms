@@ -53,6 +53,7 @@ public class DefaultCategoryConfigService implements CategoryConfigService {
      *
      * @return a {@link java.util.Collection} object.
      */
+    @Override
     public Collection<Category> getCategories() {
         return m_categoryConfigDao.findAll();
     }
@@ -62,6 +63,7 @@ public class DefaultCategoryConfigService implements CategoryConfigService {
      *
      * @return a {@link java.util.List} object.
      */
+    @Override
     public List<String> getCategoriesList() {
         List<String> categories = new ArrayList<String>();
         Collection<Category> catCollection = m_categoryConfigDao.findAll();;

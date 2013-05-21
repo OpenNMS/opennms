@@ -48,6 +48,7 @@ public class DiscoveryPingResponseCallback implements PingResponseCallback {
     final static String EVENT_SOURCE_VALUE = "OpenNMS.Discovery";
 
     /** {@inheritDoc} */
+    @Override
     public void handleResponse(InetAddress address, EchoPacket response) {
         EventBuilder eb = new EventBuilder(EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI, EVENT_SOURCE_VALUE);
         eb.setInterface(address);
@@ -68,11 +69,13 @@ public class DiscoveryPingResponseCallback implements PingResponseCallback {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void handleTimeout(InetAddress address, EchoPacket request) {
         log().debug("request timed out: " + address);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void handleError(InetAddress address, EchoPacket request, Throwable t) {
         log().debug("an error occurred pinging " + address, t);
     }

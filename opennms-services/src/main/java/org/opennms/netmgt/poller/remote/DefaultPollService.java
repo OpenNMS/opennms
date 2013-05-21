@@ -59,6 +59,7 @@ public class DefaultPollService implements PollService {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setServiceMonitorLocators(Collection<ServiceMonitorLocator> locators) {
         m_locators = locators;
         
@@ -71,12 +72,14 @@ public class DefaultPollService implements PollService {
     }
     
     /** {@inheritDoc} */
+    @Override
     public void initialize(PolledService polledService) {
         ServiceMonitor monitor = getServiceMonitor(polledService);
         monitor.initialize(polledService);
     }
 
     /** {@inheritDoc} */
+    @Override
     public PollStatus poll(PolledService polledService) {
         ServiceMonitor monitor = getServiceMonitor(polledService);
         PollStatus result = monitor.poll(polledService, polledService.getMonitorConfiguration());
@@ -94,6 +97,7 @@ public class DefaultPollService implements PollService {
     // FIXME: this is never called but should be
     // also monitor.release() isn't called either
     /** {@inheritDoc} */
+    @Override
     public void release(PolledService polledService) {
         ServiceMonitor monitor = getServiceMonitor(polledService);
         monitor.release(polledService);

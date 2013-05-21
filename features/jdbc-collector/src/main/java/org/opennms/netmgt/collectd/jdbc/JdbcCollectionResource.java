@@ -40,10 +40,12 @@ public abstract class JdbcCollectionResource extends AbstractCollectionResource 
         super(agent);
     }
 
+    @Override
     public boolean shouldPersist(ServiceParameters params) {
         return true;
     }
 
+    @Override
     public boolean rescanNeeded() {
         // A rescan is never needed for the JdbcCollector, at least on resources
         return false;
@@ -54,18 +56,23 @@ public abstract class JdbcCollectionResource extends AbstractCollectionResource 
         addAttribute(attr);
     }
 
+    @Override
     public int getType() {
         return -1; //Is this right?
     }
 
+    @Override
     public abstract String getResourceTypeName();
 
+    @Override
     public abstract String getInstance();
     
+    @Override
     public String getParent() {
         return m_agent.getStorageDir().toString();
     }
 
+    @Override
     public TimeKeeper getTimeKeeper() {
         return null;
     }

@@ -60,6 +60,7 @@ public class ExecCommandController implements Controller {
 	ThreadCategory log;
 
 	/** {@inheritDoc} */
+        @Override
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
    		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
 		log = ThreadCategory.getInstance(this.getClass());
@@ -148,6 +149,7 @@ public class ExecCommandController implements Controller {
     		"<h3><font face='courier,arial'>Executing "+comm+" for the IP address "+address+"</h3>");
 			new Thread(new Runnable()
 			{
+                            @Override
 			    public void run()
 			    {
 			        try

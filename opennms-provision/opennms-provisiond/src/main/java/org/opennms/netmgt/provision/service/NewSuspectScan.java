@@ -83,6 +83,7 @@ public class NewSuspectScan implements RunInBatch {
     }
     
     /** {@inheritDoc} */
+    @Override
     public void run(final BatchTask phase) {
         scanUndiscoveredNode(phase);
     }
@@ -111,11 +112,13 @@ public class NewSuspectScan implements RunInBatch {
     private ScanProgress createScanProgress() {
         return new ScanProgress() {
             private boolean m_aborted = false;
+            @Override
             public void abort(final String message) {
                 m_aborted = true;
                 LogUtils.infof(this, message);
             }
 
+            @Override
             public boolean isAborted() {
                 return m_aborted;
             }};

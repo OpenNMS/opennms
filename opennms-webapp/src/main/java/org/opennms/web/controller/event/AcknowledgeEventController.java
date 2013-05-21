@@ -99,6 +99,7 @@ public class AcknowledgeEventController extends AbstractController implements In
      * Acknowledge the events specified in the POST and then redirect the client
      * to an appropriate URL for display.
      */
+    @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
         // required parameter

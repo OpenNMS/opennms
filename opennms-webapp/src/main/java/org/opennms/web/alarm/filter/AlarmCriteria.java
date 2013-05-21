@@ -53,9 +53,13 @@ public class AlarmCriteria {
     }
     
     public static class BaseAlarmCriteriaVisitor<E extends Exception> implements AlarmCriteriaVisitor<E> {
+        @Override
         public void visitAckType(AcknowledgeType ackType) throws E { }
+        @Override
         public void visitFilter(Filter filter) throws E { }
+        @Override
         public void visitLimit(int limit, int offset) throws E { }
+        @Override
         public void visitSortStyle(SortStyle sortStyle) throws E { }
     }
     

@@ -59,11 +59,13 @@ public class AlarmEventSynchronization implements EventSynchronization {
 		super();
     }
 
+        @Override
 	public void addEventForwarder(EventForwarder forwarder) {
 		if (forwarder != null)
 			m_forwarders.add(forwarder);
 	}
 
+        @Override
 	public void sync() {
 		
 		for (EventForwarder forwarder: m_forwarders) {
@@ -157,6 +159,7 @@ public class AlarmEventSynchronization implements EventSynchronization {
         return event;
     }
 	
+        @Override
 	public List<Event> getEvents() {
         BeanFactoryReference bf = BeanUtils.getBeanFactory("daoContext");
         final AlarmDao alarmDao = BeanUtils.getBean(bf,"alarmDao", AlarmDao.class);
@@ -164,6 +167,7 @@ public class AlarmEventSynchronization implements EventSynchronization {
         TransactionTemplate transTemplate = BeanUtils.getBean(bf, "transactionTemplate",TransactionTemplate.class);
         try {
                 transTemplate.execute(new TransactionCallback<Object>() {
+                @Override
                 public Object doInTransaction(final TransactionStatus status) {
                     Map<String, OnmsAlarm> forwardAlarms = new HashMap<String, OnmsAlarm>();
                 	for (OnmsAlarm alarm : alarmDao.findAll()) {

@@ -88,6 +88,7 @@ public abstract class BaseFilter<T> implements Filter {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getDescription() {
         return m_filterName+"="+getValueString();
     }
@@ -136,9 +137,11 @@ public abstract class BaseFilter<T> implements Filter {
      *
      * @return a {@link org.hibernate.criterion.Criterion} object.
      */
+    @Override
     public abstract Criterion getCriterion();
 
     /** {@inheritDoc} */
+    @Override
     public abstract int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException;
 
     /**
@@ -146,6 +149,7 @@ public abstract class BaseFilter<T> implements Filter {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public abstract String getParamSql();
 
     /**
@@ -153,6 +157,7 @@ public abstract class BaseFilter<T> implements Filter {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public abstract String getSql();
 
     /**
@@ -160,6 +165,7 @@ public abstract class BaseFilter<T> implements Filter {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public abstract String getTextDescription();
 
     /**

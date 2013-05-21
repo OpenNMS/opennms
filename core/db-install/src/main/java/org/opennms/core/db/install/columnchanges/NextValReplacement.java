@@ -95,6 +95,7 @@ public class NextValReplacement implements ColumnChangeReplacement {
         */
 
         /** {@inheritDoc} */
+        @Override
         public Integer getColumnReplacement(ResultSet rs, Map<String, ColumnChange> columnChanges) throws SQLException {
             ResultSet r = getStatement().executeQuery();
             
@@ -113,6 +114,7 @@ public class NextValReplacement implements ColumnChangeReplacement {
          *
          * @return a boolean.
          */
+        @Override
         public boolean addColumnIfColumnIsNew() {
             return true;
         }
@@ -122,6 +124,7 @@ public class NextValReplacement implements ColumnChangeReplacement {
          *
          * @throws java.sql.SQLException if any.
          */
+        @Override
         public void close() throws SQLException {
             finalize();
         }
@@ -131,6 +134,7 @@ public class NextValReplacement implements ColumnChangeReplacement {
          *
          * @throws java.sql.SQLException if any.
          */
+        @Override
         protected void finalize() throws SQLException {
             if (m_statement != null) {
                 m_statement.close();

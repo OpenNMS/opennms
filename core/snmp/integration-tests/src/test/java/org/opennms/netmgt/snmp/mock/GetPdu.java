@@ -35,6 +35,7 @@ public class GetPdu extends RequestPdu {
         super();
     }
 
+    @Override
     protected TestVarBind getResponseVarBind(TestAgent agent, SnmpObjId objId, int errIndex) {
         return agent.getResponseVarBind(objId, errIndex);
     }

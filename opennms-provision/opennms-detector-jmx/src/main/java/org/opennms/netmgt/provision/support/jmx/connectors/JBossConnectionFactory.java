@@ -170,6 +170,7 @@ public class JBossConnectionFactory {
         ClassLoader icl;
 
         final PrivilegedAction<ClassLoader> p = new PrivilegedAction<ClassLoader>() {
+            @Override
             public ClassLoader run() {
                 try {
                     return new IsolatingClassLoader("jboss", new URL[] { clientJar.toURI().toURL() }, originalLoader, packages, true);

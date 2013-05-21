@@ -55,6 +55,7 @@ public class DefaultRrdDao implements RrdDao, InitializingBean {
     private String m_rrdBinaryPath;
 
     /** {@inheritDoc} */
+    @Override
     public double getPrintValue(OnmsAttribute attribute, String cf, long start, long end) {
         return getPrintValues(attribute, cf, start, end)[0];
     }
@@ -69,6 +70,7 @@ public class DefaultRrdDao implements RrdDao, InitializingBean {
      * @param printFunctions a {@link java.lang.String} object.
      * @return an array of double.
      */
+    @Override
     public double[] getPrintValues(OnmsAttribute attribute, String rraConsolidationFunction, long startTimeInMillis, long endTimeInMillis, String... printFunctions) {
         Assert.notNull(attribute, "attribute argument must not be null");
         Assert.notNull(rraConsolidationFunction, "rraConsolicationFunction argument must not be null");
@@ -206,6 +208,7 @@ public class DefaultRrdDao implements RrdDao, InitializingBean {
      * Create an RRD graph.
      * @see org.opennms.netmgt.dao.RrdDao#createGraph(java.lang.String, java.io.File)
      */
+    @Override
     public InputStream createGraph(String command, File workDir) throws DataRetrievalFailureException {
        try {
            return m_rrdStrategy.createGraph(command, workDir);
@@ -220,6 +223,7 @@ public class DefaultRrdDao implements RrdDao, InitializingBean {
      * @see org.opennms.netmgt.dao.RrdDao#getGraphTopOffsetWithText()
      * @return a int.
      */
+    @Override
     public int getGraphTopOffsetWithText() {
         return m_rrdStrategy.getGraphTopOffsetWithText();
     }
@@ -230,6 +234,7 @@ public class DefaultRrdDao implements RrdDao, InitializingBean {
      * @see org.opennms.netmgt.dao.RrdDao#getGraphLeftOffset()
      * @return a int.
      */
+    @Override
     public int getGraphLeftOffset() {
         return m_rrdStrategy.getGraphLeftOffset();
     }
@@ -240,11 +245,13 @@ public class DefaultRrdDao implements RrdDao, InitializingBean {
      * @see org.opennms.netmgt.dao.RrdDao#getGraphRightOffset()
      * @return a int.
      */
+    @Override
     public int getGraphRightOffset() {
         return m_rrdStrategy.getGraphRightOffset();
     }
 
     /** {@inheritDoc} */
+    @Override
     public Double getLastFetchValue(OnmsAttribute attribute, int interval) throws DataAccessResourceFailureException {
         Assert.notNull(attribute, "attribute argument must not be null");
         Assert.isTrue(interval > 0, "interval argument must be greater than zero");
@@ -261,6 +268,7 @@ public class DefaultRrdDao implements RrdDao, InitializingBean {
     }
 
     /** {@inheritDoc} */
+    @Override
     public Double getLastFetchValue(OnmsAttribute attribute, int interval, int range) throws DataAccessResourceFailureException {
         Assert.notNull(attribute, "attribute argument must not be null");
         Assert.isTrue(interval > 0, "interval argument must be greater than zero");

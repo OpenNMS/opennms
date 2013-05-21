@@ -63,6 +63,7 @@ public class ControllerTest {
         c.setHttpRequestReadTimeout(2000);
         
         Thread clientThread = new Thread(new Runnable() {
+            @Override
             public void run() {
                 c.invokeOperation("testClientTimeout");
             }
@@ -71,6 +72,7 @@ public class ControllerTest {
         final StringBuffer exceptionBuffer = new StringBuffer();
         
         UncaughtExceptionHandler handler  = new UncaughtExceptionHandler() {
+            @Override
             public void uncaughtException(Thread thread, Throwable t) {
                 exceptionBuffer.append(t.toString());
             }
@@ -81,6 +83,7 @@ public class ControllerTest {
         clientThread.start();
         
         Thread acceptThread = new Thread(new Runnable() {
+            @Override
             public void run() {
                 try {
                     server.accept();

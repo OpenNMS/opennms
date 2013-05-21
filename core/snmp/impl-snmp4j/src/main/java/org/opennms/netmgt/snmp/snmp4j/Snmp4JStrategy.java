@@ -126,6 +126,7 @@ public class Snmp4JStrategy implements SnmpStrategy {
      * @param name
      * @param tracker
      */
+        @Override
     public SnmpWalker createWalker(SnmpAgentConfig snmpAgentConfig, String name, CollectionTracker tracker) {
         return new Snmp4JWalker(new Snmp4JAgentConfig(snmpAgentConfig), name, tracker);
     }
@@ -133,10 +134,12 @@ public class Snmp4JStrategy implements SnmpStrategy {
     /**
      * Not yet implemented.  Use a walker.
      */
+        @Override
     public SnmpValue[] getBulk(SnmpAgentConfig agentConfig, SnmpObjId[] oid) {
     	throw new UnsupportedOperationException("Snmp4JStrategy.getBulk not yet implemented.");
     }
 
+        @Override
     public SnmpValue set(final SnmpAgentConfig agentConfig, final SnmpObjId oid, final SnmpValue value) {
     	LOG.debug("set: OID: {} value: {} for Agent: {}", oid, value,  agentConfig);
         
@@ -147,6 +150,7 @@ public class Snmp4JStrategy implements SnmpStrategy {
         return retvalues[0];
     }
 
+        @Override
     public SnmpValue[] set(final SnmpAgentConfig agentConfig, final SnmpObjId[] oids, final SnmpValue[] values) {
     	LOG.debug("set: OIDs: {} values: {} for Agent: {}", oids, values, agentConfig);
         
@@ -162,6 +166,7 @@ public class Snmp4JStrategy implements SnmpStrategy {
      * @param oid
      *
      */
+        @Override
     public SnmpValue get(SnmpAgentConfig agentConfig, SnmpObjId oid) {
     	LOG.debug("get: OID: {} for Agent: {}", oid, agentConfig);
         
@@ -181,6 +186,7 @@ public class Snmp4JStrategy implements SnmpStrategy {
      *        get was unsuccessful, then the first elment
      *        of the array will be null and lenth of 1. 
      */
+        @Override
     public SnmpValue[] get(SnmpAgentConfig agentConfig, SnmpObjId[] oids) {
     	LOG.debug("get: OID: {} for Agent: {}", oids, agentConfig);
         
@@ -194,6 +200,7 @@ public class Snmp4JStrategy implements SnmpStrategy {
      * @param oid
      * 
      */
+        @Override
     public SnmpValue getNext(SnmpAgentConfig agentConfig, SnmpObjId oid) {
     	LOG.debug("getNext: OID: {} for Agent: {}", oid, agentConfig);
         
@@ -210,6 +217,7 @@ public class Snmp4JStrategy implements SnmpStrategy {
      *        getNext was unsuccessful, then the first element
      *        of the array will be null and length of 1. 
      */
+        @Override
     public SnmpValue[] getNext(SnmpAgentConfig agentConfig, SnmpObjId[] oids) {
     	LOG.debug("getNext: OID: {} for Agent: {}", oids, agentConfig);
         
@@ -343,6 +351,7 @@ public class Snmp4JStrategy implements SnmpStrategy {
         return retvalues;
     }
 
+        @Override
     public SnmpValueFactory getValueFactory() {
         if (m_valueFactory == null) {
             m_valueFactory = new Snmp4JValueFactory();
@@ -407,10 +416,12 @@ public class Snmp4JStrategy implements SnmpStrategy {
             return m_transportMapping;
         }
         
+        @Override
         public int hashCode() {
             return (m_listener.hashCode() + m_address.hashCode() ^ m_port);
         }
         
+        @Override
 		public boolean equals(final Object obj) {
             if (obj instanceof RegistrationInfo) {
             	final RegistrationInfo info = (RegistrationInfo) obj;
@@ -421,6 +432,7 @@ public class Snmp4JStrategy implements SnmpStrategy {
         
     }
 
+        @Override
     public void registerForTraps(final TrapNotificationListener listener, final TrapProcessorFactory processorFactory, InetAddress address, int snmpTrapPort, List<SnmpV3User> snmpUsers) throws IOException {
     	final RegistrationInfo info = new RegistrationInfo(listener, address, snmpTrapPort);
         
@@ -473,40 +485,49 @@ public class Snmp4JStrategy implements SnmpStrategy {
         snmp.listen();
     }
     
+        @Override
     public void registerForTraps(final TrapNotificationListener listener, final TrapProcessorFactory processorFactory, InetAddress address, int snmpTrapPort) throws IOException {
         registerForTraps(listener, processorFactory, address, snmpTrapPort, null);
     }
 
+        @Override
     public void registerForTraps(final TrapNotificationListener listener, final TrapProcessorFactory processorFactory, final int snmpTrapPort) throws IOException {
     	registerForTraps(listener, processorFactory, null, snmpTrapPort);
     }
 
+        @Override
     public void unregisterForTraps(final TrapNotificationListener listener, InetAddress address, int snmpTrapPort) throws IOException {
         RegistrationInfo info = s_registrations.remove(listener);
         closeQuietly(info.getSession());
     }
 
+        @Override
     public void unregisterForTraps(final TrapNotificationListener listener, final int snmpTrapPort) throws IOException {
         RegistrationInfo info = s_registrations.remove(listener);
         closeQuietly(info.getSession());
     }
 
+        @Override
     public SnmpV1TrapBuilder getV1TrapBuilder() {
         return new Snmp4JV1TrapBuilder(this);
     }
 
+        @Override
     public SnmpTrapBuilder getV2TrapBuilder() {
         return new Snmp4JV2TrapBuilder(this);
     }
 
+        @Override
     public SnmpV3TrapBuilder getV3TrapBuilder() {
         return new Snmp4JV3TrapBuilder(this);
     }
 
+        @Override
     public SnmpV2TrapBuilder getV2InformBuilder() {
         return new Snmp4JV2InformBuilder(this);
     }
 
+        @Override
     public SnmpV3TrapBuilder getV3InformBuilder() {
         return new Snmp4JV3InformBuilder(this);
     }
@@ -590,6 +611,7 @@ public class Snmp4JStrategy implements SnmpStrategy {
         }
     }
 
+        @Override
 	public byte[] getLocalEngineID() {
 		return MPv3.createLocalEngineID();
 	}

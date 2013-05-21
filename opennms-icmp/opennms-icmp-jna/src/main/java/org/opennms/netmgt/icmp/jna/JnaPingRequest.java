@@ -118,6 +118,7 @@ public class JnaPingRequest implements Request<JnaPingRequestId, JnaPingRequest,
      * @param reply a {@link org.opennms.netmgt.icmp.spi.JnaPingReply.PingReply} object.
      * @return a boolean.
      */
+    @Override
     public boolean processResponse(final JnaPingReply reply) {
         try {
             m_log.debug(System.currentTimeMillis()+": Ping Response Received for request: "+this);
@@ -133,6 +134,7 @@ public class JnaPingRequest implements Request<JnaPingRequestId, JnaPingRequest,
      *
      * @return a {@link org.opennms.netmgt.JnaPingRequest.AbstractPingRequest} object.
      */
+    @Override
     public JnaPingRequest processTimeout() {
         try {
             JnaPingRequest returnval = null;
@@ -161,6 +163,7 @@ public class JnaPingRequest implements Request<JnaPingRequestId, JnaPingRequest,
     }
 
     /** {@inheritDoc} */
+    @Override
     public long getDelay(final TimeUnit unit) {
         return unit.convert(m_expiration - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
     }
@@ -171,6 +174,7 @@ public class JnaPingRequest implements Request<JnaPingRequestId, JnaPingRequest,
      * @param request a {@link java.util.concurrent.Delayed} object.
      * @return a int.
      */
+    @Override
     public int compareTo(final Delayed request) {
         final long myDelay = getDelay(TimeUnit.MILLISECONDS);
         final long otherDelay = request.getDelay(TimeUnit.MILLISECONDS);
@@ -184,11 +188,13 @@ public class JnaPingRequest implements Request<JnaPingRequestId, JnaPingRequest,
      *
      * @return a {@link org.opennms.netmgt.icmp.spi.JnaPingRequestId.PingRequestId} object.
      */
+    @Override
     public JnaPingRequestId getId() {
         return m_id;
     }
 
     /** {@inheritDoc} */
+    @Override
     public void processError(final Throwable t) {
         try {
             m_callback.handleError(getAddress(), this, t);
@@ -206,6 +212,7 @@ public class JnaPingRequest implements Request<JnaPingRequestId, JnaPingRequest,
      *
      * @return a boolean.
      */
+    @Override
     public boolean isProcessed() {
         return m_processed.get();
     }

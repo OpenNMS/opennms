@@ -87,6 +87,7 @@ public class AsyncTask<T> extends Task {
     
     private Callback<T> callback() {
         return new Callback<T>() {
+            @Override
             public void complete(T t) {
 		try {
 		    if (m_callback != null) {
@@ -96,6 +97,7 @@ public class AsyncTask<T> extends Task {
 		    markTaskAsCompleted();
 		}
             }
+            @Override
             public void handleException(Throwable t) {
 		try {
 		    if (m_callback != null) {

@@ -87,6 +87,7 @@ public class UserInfo extends Object implements Cloneable {
      *
      * @return a {@link java.lang.Object} object.
      */
+    @Override
     public Object clone() {
         UserInfo clone = new UserInfo();
         clone.setUserId(m_userId);
@@ -290,6 +291,7 @@ public class UserInfo extends Object implements Cloneable {
      *
      * @return String, a string representation
      */
+    @Override
     public String toString() {
         StringBuffer buffer = new StringBuffer();
 

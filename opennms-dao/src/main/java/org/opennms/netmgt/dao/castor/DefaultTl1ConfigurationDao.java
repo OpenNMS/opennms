@@ -59,6 +59,7 @@ public class DefaultTl1ConfigurationDao extends AbstractCastorConfigDao<Tl1dConf
      *
      * @return a {@link java.util.List} object.
      */
+    @Override
     public List<Tl1Element> getElements() {
         return Collections.unmodifiableList(getContainer().getObject().getTl1ElementCollection());
     }
@@ -68,6 +69,7 @@ public class DefaultTl1ConfigurationDao extends AbstractCastorConfigDao<Tl1dConf
      *
      * @throws org.springframework.dao.DataAccessResourceFailureException if any.
      */
+    @Override
     public void update() throws DataAccessResourceFailureException {
         getContainer().reload();
     }

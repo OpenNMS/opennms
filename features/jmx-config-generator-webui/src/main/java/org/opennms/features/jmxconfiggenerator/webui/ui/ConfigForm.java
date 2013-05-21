@@ -41,7 +41,6 @@ import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.validator.RegexpValidator;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.Form;
 import com.vaadin.ui.TextField;
 

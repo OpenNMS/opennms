@@ -42,6 +42,7 @@ import org.extremecomponents.table.interceptor.ColumnInterceptor;
 public class FivePercentWidthId implements ColumnInterceptor {
 
 	/** {@inheritDoc} */
+        @Override
 	public void addColumnAttributes(TableModel arg0, Column arg1) {
 		String value = arg1.getPropertyValueAsString();
             
@@ -55,6 +56,7 @@ public class FivePercentWidthId implements ColumnInterceptor {
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public void modifyColumnAttributes(TableModel arg0, Column arg1) {
 		// TODO Auto-generated method stub
 		

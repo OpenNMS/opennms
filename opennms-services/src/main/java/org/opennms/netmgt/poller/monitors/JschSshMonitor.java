@@ -72,6 +72,7 @@ final public class JschSshMonitor extends AbstractServiceMonitor {
     }
 
     /** {@inheritDoc} */
+    @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         return m_monitor.poll(svc, parameters);
     }

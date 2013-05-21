@@ -61,26 +61,32 @@ public class ZipSystemReportFormatter extends AbstractSystemReportFormatter impl
         }
     }
 
+    @Override
     public String getName() {
         return "zip";
     }
 
+    @Override
     public String getDescription() {
         return "Compressed file of all resources (full output)";
     }
 
+    @Override
     public String getContentType() {
         return "application/zip";
     }
 
+    @Override
     public String getExtension() {
         return "zip";
     }
 
+    @Override
     public boolean canStdout() {
         return false;
     }
 
+    @Override
     public void begin() {
         super.begin();
         try {
@@ -92,6 +98,7 @@ public class ZipSystemReportFormatter extends AbstractSystemReportFormatter impl
         }
     }
 
+    @Override
     public void write(final SystemReportPlugin plugin) {
         final String name = plugin.getName() + ".txt";
         try {
@@ -151,6 +158,7 @@ public class ZipSystemReportFormatter extends AbstractSystemReportFormatter impl
         }
     }
 
+    @Override
     public void end() {
         try {
             m_zipOutputStream.closeEntry();

@@ -72,10 +72,12 @@ public class DefaultRrdSummaryService implements RrdSummaryService, Initializing
         class SummaryHolder implements ResourceParent {
             Summary m_summary = new Summary();
 
+            @Override
             public void addResource(Resource resource) {
                 m_summary.addResource(resource);
             }
 
+            @Override
             public void commit() {
 
             }
@@ -84,10 +86,12 @@ public class DefaultRrdSummaryService implements RrdSummaryService, Initializing
                 return m_summary;
             }
 
+            @Override
             public boolean isRoot() {
                 return true;
             }
 
+            @Override
             public String toString() {
                 return "[root]";
             }
@@ -114,6 +118,7 @@ public class DefaultRrdSummaryService implements RrdSummaryService, Initializing
                 return m_commited;
             }
 
+            @Override
             public void commit() {
                 if (isCommited()) return;
                 if (m_parent != null) m_parent.commit();
@@ -121,6 +126,7 @@ public class DefaultRrdSummaryService implements RrdSummaryService, Initializing
                 m_commited = true;
             }
 
+            @Override
             public void addResource(Resource resource) {
                 m_resource.addResource(resource);
             }
@@ -141,10 +147,12 @@ public class DefaultRrdSummaryService implements RrdSummaryService, Initializing
                 }
             }
 
+            @Override
             public String toString() {
                 return (getParent() == null ? "[root]" : getParent().toString())+".["+m_resource.getName()+"]";
             }
 
+            @Override
             public boolean isRoot() {
                 return false;
             }
@@ -287,6 +295,7 @@ public class DefaultRrdSummaryService implements RrdSummaryService, Initializing
             walker.setNodeDao(m_nodeDao);
             walker.setFilter(filterRule);
             walker.setVisitor(new AbstractEntityVisitor() {
+                @Override
                 public void visitNode(OnmsNode node) {
 
                     OnmsResource nodeResource = getResourceForNode(node);
@@ -448,6 +457,7 @@ public class DefaultRrdSummaryService implements RrdSummaryService, Initializing
     }
 
     /** {@inheritDoc} */
+    @Override
     public Summary getSummary(SummarySpecification spec) {
         return getSummary(spec.getFilterRule(), spec.getStartTime(), spec.getEndTime(), spec.getAttributeSieve());
     }

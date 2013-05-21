@@ -57,6 +57,7 @@ public class OnmsWbemMethodImpl implements OnmsWbemMethod {
      * @return a {@link java.lang.String} object.
      * @throws org.opennms.protocols.wmi.WmiException if any.
      */
+        @Override
     public String getWmiName()throws WmiException {
         try {
             return wbemMethodDispatch.get("Name").getObjectAsString2();
@@ -71,6 +72,7 @@ public class OnmsWbemMethodImpl implements OnmsWbemMethod {
      * @return a {@link java.lang.String} object.
      * @throws org.opennms.protocols.wmi.WmiException if any.
      */
+        @Override
     public String getWmiOrigin() throws WmiException {
         try {
             return wbemMethodDispatch.get("Origin").getObjectAsString2();
@@ -82,6 +84,7 @@ public class OnmsWbemMethodImpl implements OnmsWbemMethod {
     /**
      * <p>getWmiOutParameters</p>
      */
+        @Override
     public void getWmiOutParameters() {
         return; // TODO IMPLEEMNT THIS
     }
@@ -89,6 +92,7 @@ public class OnmsWbemMethodImpl implements OnmsWbemMethod {
     /**
      * <p>getWmiInParameters</p>
      */
+        @Override
     public void getWmiInParameters() {
         return; // TODO IMPLEEMNT THIS
     }

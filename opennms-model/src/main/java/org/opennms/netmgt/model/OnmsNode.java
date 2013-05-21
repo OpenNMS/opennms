@@ -812,6 +812,7 @@ public class OnmsNode extends OnmsEntity implements Serializable,
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         ToStringCreator retval = new ToStringCreator(this);
         retval.append("id", m_id);
@@ -830,6 +831,7 @@ public class OnmsNode extends OnmsEntity implements Serializable,
     }
 
 	/** {@inheritDoc} */
+    @Override
 	public void visit(EntityVisitor visitor) {
 		visitor.visitNode(this);
 		
@@ -917,6 +919,7 @@ public class OnmsNode extends OnmsEntity implements Serializable,
      * @param o a {@link org.opennms.netmgt.model.OnmsNode} object.
      * @return a int.
      */
+    @Override
     public int compareTo(OnmsNode o) {
         String compareLabel = "";
         Integer compareId = 0;

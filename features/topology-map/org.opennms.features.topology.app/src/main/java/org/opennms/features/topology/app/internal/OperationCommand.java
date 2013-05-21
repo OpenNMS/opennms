@@ -108,10 +108,12 @@ public class OperationCommand extends Action implements Command  {
         return contextLocation != null;
     }
     
+    @Override
     public String toString() {
         return getCaption();
     }
     
+    @Override
     public Operation getOperation() {
         return m_operation;
     }

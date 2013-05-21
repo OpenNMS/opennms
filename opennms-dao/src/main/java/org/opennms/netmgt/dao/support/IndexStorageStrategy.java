@@ -42,6 +42,7 @@ public class IndexStorageStrategy implements StorageStrategy {
     protected StorageStrategyService m_storageStrategyService;
 
     /** {@inheritDoc} */
+    @Override
     public String getRelativePathForAttribute(String resourceParent, String resource,
             String attribute) {
         StringBuffer buffer = new StringBuffer();
@@ -59,6 +60,7 @@ public class IndexStorageStrategy implements StorageStrategy {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setResourceTypeName(String name) {
         m_resourceTypeName = name;
     }
@@ -73,16 +75,19 @@ public class IndexStorageStrategy implements StorageStrategy {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getResourceNameFromIndex(CollectionResource resource) {
         return resource.getInstance();
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setStorageStrategyService(StorageStrategyService agent) {
         m_storageStrategyService = agent;
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setParameters(List<Parameter> parameterCollection) throws IllegalArgumentException {
         // Empty method, this strategy takes no parameters
     }

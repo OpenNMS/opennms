@@ -67,10 +67,12 @@ public class BSFClient implements Client<BSFRequest, BSFResponse> {
     /**
      * <p>close</p>
      */
+    @Override
     public void close() {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void connect(final InetAddress address, final int port, final int timeout) throws IOException, Exception {
         m_results = new HashMap<String,String>();
         BSFManager bsfManager = new BSFManager();
@@ -142,6 +144,7 @@ public class BSFClient implements Client<BSFRequest, BSFResponse> {
      * @throws java.io.IOException if any.
      * @throws java.lang.Exception if any.
      */
+    @Override
     public BSFResponse receiveBanner() throws IOException, Exception {
         LogUtils.debugf(this, "Results: %s", m_results);
         final BSFResponse response = new BSFResponse(m_results);
@@ -156,6 +159,7 @@ public class BSFClient implements Client<BSFRequest, BSFResponse> {
      * @throws java.io.IOException if any.
      * @throws java.lang.Exception if any.
      */
+    @Override
     public BSFResponse sendRequest(final BSFRequest request) throws IOException, Exception {
         return null;
     }

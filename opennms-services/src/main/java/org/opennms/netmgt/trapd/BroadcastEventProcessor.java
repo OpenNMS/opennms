@@ -111,6 +111,7 @@ public final class BroadcastEventProcessor implements EventListener, Initializin
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void destroy() throws Exception {
         close();
     }
@@ -122,6 +123,7 @@ public final class BroadcastEventProcessor implements EventListener, Initializin
      * available for processing. Each message is examined for its Universal
      * Event Identifier and the appropriate action is taking based on each UEI.
      */
+    @Override
     public void onEvent(Event event) {
         ThreadCategory log = ThreadCategory.getInstance(getClass());
 
@@ -170,6 +172,7 @@ public final class BroadcastEventProcessor implements EventListener, Initializin
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getName() {
         return "Trapd:BroadcastEventProcessor";
     }

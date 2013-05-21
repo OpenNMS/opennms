@@ -41,6 +41,7 @@ public class NotRestriction extends BaseRestriction {
         return m_restriction;
     }
 
+    @Override
     public void visit(final RestrictionVisitor visitor) {
         visitor.visitNot(this);
         getRestriction().visit(visitor);

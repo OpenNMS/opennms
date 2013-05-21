@@ -68,11 +68,13 @@ public class TcpCodecFactory implements ProtocolCodecFactory {
     }
     
     /** {@inheritDoc} */
+    @Override
     public ProtocolDecoder getDecoder(final IoSession session) throws Exception {
         return m_decoder;
     }
 
     /** {@inheritDoc} */
+    @Override
     public ProtocolEncoder getEncoder(final IoSession session) throws Exception {
         return m_encoder;
     }

@@ -45,7 +45,6 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.dns.annotations.DNSEntry;
 import org.opennms.core.test.dns.annotations.DNSZone;
 import org.opennms.core.test.dns.annotations.JUnitDNSServer;
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.ServiceMonitor;

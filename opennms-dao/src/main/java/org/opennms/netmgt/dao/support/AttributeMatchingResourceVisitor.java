@@ -46,6 +46,7 @@ public class AttributeMatchingResourceVisitor implements ResourceVisitor, Initia
     private String m_attributeMatch;
     
     /** {@inheritDoc} */
+    @Override
     public void visit(OnmsResource resource) {
         for (OnmsAttribute attribute : resource.getAttributes()) {
             if (m_attributeMatch.equals(attribute.getName())) {

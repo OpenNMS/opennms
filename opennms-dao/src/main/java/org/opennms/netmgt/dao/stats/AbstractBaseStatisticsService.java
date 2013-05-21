@@ -44,6 +44,7 @@ public abstract class AbstractBaseStatisticsService<T> implements StatisticsServ
     public abstract OnmsDao<T, Integer> getDao();
 
     @Transactional
+    @Override
 	public int getTotalCount(final Criteria criteria) {
         return getDao().countMatching(criteria);
 	}

@@ -65,11 +65,13 @@ import org.springframework.stereotype.Service;
 public class UserServiceImpl implements UserService {
 
     /** {@inheritDoc} */
+    @Override
     public UserDTO getUserCredentials(String id) {
         return userRepository.getUserCredentials(id);
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean save(UserDTO user) {
         return user.isNew() ? userRepository.insertUser(user) > 0 : updatePassword(user);
     }
@@ -80,6 +82,7 @@ public class UserServiceImpl implements UserService {
      * @param user a {@link org.opennms.acl.model.UserAuthoritiesDTO} object.
      * @return a boolean.
      */
+    @Override
     public boolean save(UserAuthoritiesDTO user) {
         return userRepository.save(user);
     }
@@ -97,26 +100,31 @@ public class UserServiceImpl implements UserService {
     }
 
     /** {@inheritDoc} */
+    @Override
     public UserAuthoritiesDTO getUserWithAuthorities(String username) {
         return userRepository.getUserWithAuthorities(username);
     }
 
     /** {@inheritDoc} */
+    @Override
     public UserAuthoritiesDTO getUserWithAuthoritiesByID(Integer sid) {
         return userRepository.getUserWithAuthoritiesByID(sid);
     }
 
     /** {@inheritDoc} */
+    @Override
     public UserView getUser(String id) {
         return userRepository.getUser(id);
     }
 
     /** {@inheritDoc} */
+    @Override
     public Boolean disableUser(String id) {
         return userRepository.disableUser(id);
     }
 
     /** {@inheritDoc} */
+    @Override
     public Object getIdUser(String username) {
         return userRepository.getIdUser(username);
     }
@@ -126,6 +134,7 @@ public class UserServiceImpl implements UserService {
      *
      * @return a {@link java.lang.Integer} object.
      */
+    @Override
     public Integer getUsersNumber() {
         return userRepository.getUsersNumber();
     }
@@ -135,16 +144,19 @@ public class UserServiceImpl implements UserService {
      *
      * @return a {@link java.lang.Integer} object.
      */
+    @Override
     public Integer getTotalItemsNumber() {
         return userRepository.getUsersNumber();
     }
 
     /** {@inheritDoc} */
+    @Override
     public List<UserDTOLight> getDisabledUsers(Pager pager) {
         return userRepository.getDisabledUsers(pager);
     }
 
     /** {@inheritDoc} */
+    @Override
     public List<UserDTOLight> getEnabledUsers(Pager pager) {
         return userRepository.getEnabledUsers(pager);
     }

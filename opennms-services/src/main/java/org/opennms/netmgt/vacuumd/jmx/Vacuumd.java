@@ -48,6 +48,7 @@ public class Vacuumd implements VacuumdMBean {
     /**
      * <p>init</p>
      */
+    @Override
     public void init() {
 
         EventIpcManagerFactory.init();
@@ -65,6 +66,7 @@ public class Vacuumd implements VacuumdMBean {
     /**
      * <p>start</p>
      */
+    @Override
     public void start() {
         getVacuumd().start();
     }
@@ -77,6 +79,7 @@ public class Vacuumd implements VacuumdMBean {
     /**
      * <p>stop</p>
      */
+    @Override
     public void stop() {
         getVacuumd().stop();
     }
@@ -91,6 +94,7 @@ public class Vacuumd implements VacuumdMBean {
      *
      * @return a int.
      */
+    @Override
     public int getStatus() {
         return getVacuumd().getStatus();
     }
@@ -105,6 +109,7 @@ public class Vacuumd implements VacuumdMBean {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String status() {
         return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
     }
@@ -119,6 +124,7 @@ public class Vacuumd implements VacuumdMBean {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getStatusText() {
         return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
     }

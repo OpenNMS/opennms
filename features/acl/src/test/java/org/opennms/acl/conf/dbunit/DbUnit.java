@@ -82,6 +82,7 @@ public abstract class DbUnit extends DBTestCase {
 
     }
 
+    @Override
     public IDatabaseTester newDatabaseTester() throws Exception {
     	return new DefaultDatabaseTester(setUpConnection());
     }

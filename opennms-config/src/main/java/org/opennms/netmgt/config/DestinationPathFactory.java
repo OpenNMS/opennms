@@ -122,6 +122,7 @@ public class DestinationPathFactory extends DestinationPathManager {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void saveXML(String writerString) throws IOException {
         if (writerString != null) {
             Writer fileWriter = new OutputStreamWriter(new FileOutputStream(m_pathsConfFile), "UTF-8");
@@ -139,6 +140,7 @@ public class DestinationPathFactory extends DestinationPathManager {
      * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.io.FileNotFoundException if any.
      */
+    @Override
     public void update() throws IOException, MarshalException, ValidationException, FileNotFoundException {
         if (m_lastModified != m_pathsConfFile.lastModified()) {
             reload();

@@ -41,6 +41,7 @@ public class ValueWrapper {
 		return m_value;
 	}
 	
+        @Override
 	public String toString() {
 		return m_value.getType() + "(" + m_value.getEncoding() + "): " + m_value.getContent();
 	}

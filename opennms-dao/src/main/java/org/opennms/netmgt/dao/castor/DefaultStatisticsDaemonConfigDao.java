@@ -70,6 +70,7 @@ public class DefaultStatisticsDaemonConfigDao extends AbstractCastorConfigDao<St
      *
      * @return a {@link java.util.List} object.
      */
+    @Override
     public List<Report> getReports() {
         return getConfig().getReports();
     }
@@ -79,6 +80,7 @@ public class DefaultStatisticsDaemonConfigDao extends AbstractCastorConfigDao<St
      *
      * @return a {@link java.util.List} object.
      */
+    @Override
     public List<StatsdPackage> getPackages() {
         return getConfig().getPackages();
     }
@@ -88,6 +90,7 @@ public class DefaultStatisticsDaemonConfigDao extends AbstractCastorConfigDao<St
      *
      * @throws org.springframework.dao.DataAccessResourceFailureException if any.
      */
+    @Override
     public void reloadConfiguration() throws DataAccessResourceFailureException {
         getContainer().reload();
         this.verifyMarshaledConfiguration();

@@ -38,6 +38,7 @@ public abstract class AbstractHttpActivator
         return this.controller;
     }
 
+    @Override
     protected void doStart()
         throws Exception
     {
@@ -46,6 +47,7 @@ public abstract class AbstractHttpActivator
         this.eventDispatcher = new EventDispatcher(this.controller);
     }
 
+    @Override
     protected void doStop()
         throws Exception
     {

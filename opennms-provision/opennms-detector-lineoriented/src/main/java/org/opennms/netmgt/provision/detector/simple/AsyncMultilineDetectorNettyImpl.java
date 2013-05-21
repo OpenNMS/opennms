@@ -83,6 +83,7 @@ public abstract class AsyncMultilineDetectorNettyImpl extends AsyncBasicDetector
     protected static ResponseValidator<MultilineOrientedResponse> expectCodeRange(final int beginRange, final int endRange){
         return new ResponseValidator<MultilineOrientedResponse>() {
             
+            @Override
             public boolean validate(final MultilineOrientedResponse response) {
                 return response.expectedCodeRange(beginRange, endRange);
             }
@@ -95,6 +96,7 @@ public abstract class AsyncMultilineDetectorNettyImpl extends AsyncBasicDetector
     public ResponseValidator<MultilineOrientedResponse> startsWith(final String pattern){
         return new ResponseValidator<MultilineOrientedResponse>(){
 
+            @Override
             public boolean validate(final MultilineOrientedResponse response) {
                 return response.startsWith(pattern);
             }

@@ -95,6 +95,7 @@ public class WorkDuration {
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
+        @Override
 	public String toString() {
 		return (m_name == null ? "" : m_name+": ")+(m_start == -1L ? "has not begun": elapsedTime());
 	}

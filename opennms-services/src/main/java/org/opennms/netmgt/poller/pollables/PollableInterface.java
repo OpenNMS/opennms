@@ -85,6 +85,7 @@ public class PollableInterface extends PollableContainer {
      *
      * @return a {@link org.opennms.netmgt.poller.pollables.PollContext} object.
      */
+    @Override
     public PollContext getContext() {
         return getNode().getContext();
     }
@@ -133,6 +134,7 @@ public class PollableInterface extends PollableContainer {
      */
     public PollableService createService(final String svcName) {
         return withTreeLock(new Callable<PollableService>() {
+            @Override
             public PollableService call() {
 
                 PollableService svc = new PollableService(PollableInterface.this, svcName);
@@ -156,12 +158,14 @@ public class PollableInterface extends PollableContainer {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected Object createMemberKey(PollableElement member) {
         PollableService svc = (PollableService)member;
         return svc.getSvcName();
     }
     
     /** {@inheritDoc} */
+    @Override
     protected void visitThis(PollableVisitor v) {
         super.visitThis(v);
         v.visitInterface(this);
@@ -170,6 +174,7 @@ public class PollableInterface extends PollableContainer {
     /**
      * <p>recalculateStatus</p>
      */
+    @Override
     public void recalculateStatus() {
         PollableService criticalSvc = getCriticalService();
         if (criticalSvc != null) {
@@ -193,12 +198,14 @@ public class PollableInterface extends PollableContainer {
      *
      * @return a {@link org.opennms.netmgt.poller.pollables.PollableElement} object.
      */
+    @Override
     public PollableElement selectPollElement() {
         PollableService critSvc = getCriticalService();
         return (critSvc != null ? critSvc : super.selectPollElement());
     }
     
     /** {@inheritDoc} */
+    @Override
     protected PollStatus poll(PollableElement elem) {
         PollableService critSvc = getCriticalService();
         if (getStatus().isUp() || critSvc == null || elem == critSvc)
@@ -208,6 +215,7 @@ public class PollableInterface extends PollableContainer {
     }
     
     /** {@inheritDoc} */
+    @Override
     public PollStatus pollRemainingMembers(PollableElement member) {
         PollableService critSvc = getCriticalService();
         
@@ -227,12 +235,14 @@ public class PollableInterface extends PollableContainer {
             
     }
     /** {@inheritDoc} */
+    @Override
     public Event createDownEvent(Date date) {
         return getContext().createEvent(EventConstants.INTERFACE_DOWN_EVENT_UEI, getNodeId(), getAddress(), null, date, getStatus().getReason());
     }
     
     
     /** {@inheritDoc} */
+    @Override
     public Event createUpEvent(Date date) {
         return getContext().createEvent(EventConstants.INTERFACE_UP_EVENT_UEI, getNodeId(), getAddress(), null, date, getStatus().getReason());
     }
@@ -242,6 +252,7 @@ public class PollableInterface extends PollableContainer {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() { return getNode()+":"+getIpAddr(); }
 
     /**
@@ -259,6 +270,7 @@ public class PollableInterface extends PollableContainer {
         final PollableNode secondNode = (oldNode.getNodeId() <= newNode.getNodeId() ? newNode : oldNode);
         
         final Runnable reparent = new Runnable() {
+            @Override
             public void run() {
                 oldNode.resetStatusChanged();
                 newNode.resetStatusChanged();
@@ -279,6 +291,7 @@ public class PollableInterface extends PollableContainer {
                         // if the new Node has a node outage then we recursively set the 
                         // causes so when process events we properly handle the causes
                         PollableVisitor visitor = new PollableVisitorAdaptor() {
+                            @Override
                             public void visitElement(PollableElement element) {
                                 boolean matches = (element.getCause() == null ? oldNode.getCause() == null : element.getCause().equals(oldNode.getCause()));
                                 if (matches) {
@@ -302,6 +315,7 @@ public class PollableInterface extends PollableContainer {
         };
         
         Runnable lockSecondNodeAndRun = new Runnable() {
+            @Override
             public void run() {
                 secondNode.withTreeLock(reparent);
             }

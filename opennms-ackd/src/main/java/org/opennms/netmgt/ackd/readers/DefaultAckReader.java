@@ -100,6 +100,7 @@ public class DefaultAckReader implements AckReader, InitializingBean {
     }
 
     /** {@inheritDoc} */
+    @Override
     public synchronized void start(final ScheduledThreadPoolExecutor executor, final ReaderSchedule schedule, boolean reloadConfig) throws IllegalStateException {
         if (reloadConfig) {
             //FIXME:The reload of JavaMailConfiguration is made here because the DAO is there. Perhaps that should be changed.
@@ -129,6 +130,7 @@ public class DefaultAckReader implements AckReader, InitializingBean {
      *
      * @throws java.lang.IllegalStateException if any.
      */
+    @Override
     public synchronized void pause() throws IllegalStateException {
         if (AckReaderState.STARTED.equals(getState()) || AckReaderState.RESUMED.equals(getState())) {
             log().info("pause: lock acquired; pausing reader...");
@@ -149,6 +151,7 @@ public class DefaultAckReader implements AckReader, InitializingBean {
     }
 
     /** {@inheritDoc} */
+    @Override
     public synchronized void resume(final ScheduledThreadPoolExecutor executor) throws IllegalStateException {
         if (AckReaderState.PAUSED.equals(getState())) {
             setState(AckReaderState.RESUME_PENDING);
@@ -170,6 +173,7 @@ public class DefaultAckReader implements AckReader, InitializingBean {
      *
      * @throws java.lang.IllegalStateException if any.
      */
+    @Override
     public synchronized void stop() throws IllegalStateException {
         if (!AckReaderState.STOPPED.equals(getState())) {
             setState(AckReaderState.STOP_PENDING);
@@ -221,6 +225,7 @@ public class DefaultAckReader implements AckReader, InitializingBean {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setAckProcessor(AckProcessor ackProcessor) {
         m_ackProcessor = ackProcessor;
     }
@@ -230,6 +235,7 @@ public class DefaultAckReader implements AckReader, InitializingBean {
      *
      * @return a {@link org.opennms.netmgt.ackd.readers.AckProcessor} object.
      */
+    @Override
     public AckProcessor getAckProcessor() {
         return m_ackProcessor;
     }
@@ -287,6 +293,7 @@ public class DefaultAckReader implements AckReader, InitializingBean {
      *
      * @return a AckReaderState object.
      */
+    @Override
     public AckReaderState getState() {
         return m_state;
     }
@@ -305,11 +312,13 @@ public class DefaultAckReader implements AckReader, InitializingBean {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getName() {
         return m_name;
     }
 
     /** {@inheritDoc} */
+    @Override
     public synchronized void setName(String name) {
         m_name = name;
     }

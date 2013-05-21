@@ -54,6 +54,7 @@ public class SnmpTrapNotificationStrategy implements NotificationStrategy {
     private List<Argument> m_arguments;
 
     /** {@inheritDoc} */
+    @Override
     public int send (List<Argument> arguments) {
         
         m_arguments = arguments;

@@ -90,6 +90,7 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
      *
      * @return a {@link java.util.List} object.
      */
+    @Override
     public List<TriggerDescription> getTriggerDescriptions() {
 
         List<TriggerDescription> triggerDescriptions = new ArrayList<TriggerDescription>();
@@ -114,6 +115,7 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
     }
 
     /** {@inheritDoc} */
+    @Override
     public Boolean exists(String triggerName) {
 
         Boolean found = false;
@@ -139,6 +141,7 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
      * .lang.String)
      */
     /** {@inheritDoc} */
+    @Override
     public void removeTrigger(String triggerName) {
         try {
             m_scheduler.unscheduleJob(triggerName, m_triggerGroup);
@@ -156,6 +159,7 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
      *
      * @param triggerNames an array of {@link java.lang.String} objects.
      */
+    @Override
     public void removeTriggers(String[] triggerNames) {
         for (String triggerName : triggerNames) {
             removeTrigger(triggerName);
@@ -171,6 +175,7 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
      * org.springframework.webflow.execution.RequestContext)
      */
     /** {@inheritDoc} */
+    @Override
     public String addCronTrigger(String id, ReportParameters criteria,
             DeliveryOptions deliveryOptions,
             String cronExpression, RequestContext context) {
@@ -238,6 +243,7 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
      * org.springframework.webflow.execution.RequestContext)
      */
     /** {@inheritDoc} */
+    @Override
     public String execute(String id, ReportParameters criteria,
             DeliveryOptions deliveryOptions, RequestContext context) {
 

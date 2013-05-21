@@ -98,6 +98,7 @@ public class TcaDataCollectionConfigTest {
 		/* (non-Javadoc)
 		 * @see javax.xml.bind.SchemaOutputResolver#createOutput(java.lang.String, java.lang.String)
 		 */
+                @Override
 		public Result createOutput(String namespaceUri, String suggestedFileName) throws IOException {
 			return new StreamResult(m_schemaFile);
 		}

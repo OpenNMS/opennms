@@ -157,6 +157,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         getRancidCategories();
         
         m_template.execute(new TransactionCallback<Object>() {
+            @Override
             public Object doInTransaction(TransactionStatus arg0) {
                 buildRancidNodeMap();
                 return null;
@@ -223,6 +224,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         Assert.notNull(node, "doAdd: failed to return node for given nodeId:"+nodeId);
 
         String ipaddress = m_template.execute(new TransactionCallback<String>() {
+            @Override
             public String doInTransaction(TransactionStatus arg0) {
                 return getSuitableIpForRancid(node);
             }
@@ -282,6 +284,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         Assert.notNull(node, "doUpdate: failed to return node for given nodeId:"+nodeId);
  
         String ipaddress = m_template.execute(new TransactionCallback<String>() {
+            @Override
             public String doInTransaction(TransactionStatus arg0) {
                 return getSuitableIpForRancid(node);
             }
@@ -533,6 +536,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getName() {
         return ADAPTER_NAME;
     }
@@ -666,6 +670,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         log().debug("processPendingOperationForNode: " + op.getType() + " for node: " + op.getNodeId() );
         if (op.getType() == AdapterOperationType.ADD) {
             m_template.execute(new TransactionCallback<Object>() {
+                @Override
                 public Object doInTransaction(TransactionStatus arg0) {
                     doAdd(op.getNodeId(),m_cp,true);
                     return null;
@@ -673,6 +678,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
             });
         } else if (op.getType() == AdapterOperationType.UPDATE) {
             m_template.execute(new TransactionCallback<Object>() {
+                @Override
                 public Object doInTransaction(TransactionStatus arg0) {
                     doUpdate(op.getNodeId(),m_cp,true);
                     return null;
@@ -680,6 +686,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
             });
         } else if (op.getType() == AdapterOperationType.DELETE) {
             m_template.execute(new TransactionCallback<Object>() {
+                @Override
                 public Object doInTransaction(TransactionStatus arg0) {
                     doDelete(op.getNodeId(),m_cp,true);
                     return null;
@@ -687,6 +694,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
             });
         } else if (op.getType() == AdapterOperationType.CONFIG_CHANGE) {
             m_template.execute(new TransactionCallback<Object>() {
+                @Override
                 public Object doInTransaction(TransactionStatus arg0) {
                     doNodeConfigChanged(op.getNodeId(),m_cp,true);
                     return null;
@@ -711,6 +719,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
                 try {
                     factory.update();
                     m_template.execute(new TransactionCallback<Object>() {
+                        @Override
                         public Object doInTransaction(TransactionStatus arg0) {
                             buildRancidNodeMap();
                             return null;

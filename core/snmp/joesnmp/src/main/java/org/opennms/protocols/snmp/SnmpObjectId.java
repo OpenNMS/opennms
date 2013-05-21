@@ -560,6 +560,7 @@ public class SnmpObjectId extends Object implements SnmpSyntax, Cloneable, Seria
      *         otherwise.
      * 
      */
+    @Override
     public boolean equals(Object o) {
         if (o instanceof SnmpObjectId) {
             return (compare(((SnmpObjectId) o).m_data) == 0);
@@ -577,6 +578,7 @@ public class SnmpObjectId extends Object implements SnmpSyntax, Cloneable, Seria
      * @return Returns the dotted decimal object id string.
      * 
      */
+    @Override
     public String toString() {
         //
         // assume two digit ids, plus one dot(.) per id.
@@ -609,6 +611,7 @@ public class SnmpObjectId extends Object implements SnmpSyntax, Cloneable, Seria
      * 
      * @since 1.8
      */
+    @Override
     public int hashCode() {
         int hash = 0;
         for (int i = 0; i < m_data.length; i++) {
@@ -620,6 +623,7 @@ public class SnmpObjectId extends Object implements SnmpSyntax, Cloneable, Seria
     /**
      * Used to get the ASN.1 type for this particular object.
      */
+    @Override
     public byte typeId() {
         return ASNTYPE;
     }
@@ -641,6 +645,7 @@ public class SnmpObjectId extends Object implements SnmpSyntax, Cloneable, Seria
      * @exception AsnEncodingException
      *                Thrown if the encoder finds an error in the buffer.
      */
+    @Override
     public int encodeASN(byte[] buf, int offset, AsnEncoder encoder) throws AsnEncodingException {
         return encoder.buildObjectId(buf, offset, typeId(), m_data);
     }
@@ -665,6 +670,7 @@ public class SnmpObjectId extends Object implements SnmpSyntax, Cloneable, Seria
      *                Thrown by the encoder if an error occurs trying to decode
      *                the data buffer.
      */
+    @Override
     public int decodeASN(byte[] buf, int offset, AsnEncoder encoder) throws AsnDecodingException {
         Object[] rVals = encoder.parseObjectId(buf, offset);
 
@@ -682,6 +688,7 @@ public class SnmpObjectId extends Object implements SnmpSyntax, Cloneable, Seria
      * @return A new copy of self.
      * 
      */
+    @Override
     public SnmpSyntax duplicate() {
         return new SnmpObjectId(this);
     }
@@ -697,6 +704,7 @@ public class SnmpObjectId extends Object implements SnmpSyntax, Cloneable, Seria
      * @return Returns a new SnmpObjectId copy of self.
      * 
      */
+    @Override
     public Object clone() {
         return new SnmpObjectId(this);
     }

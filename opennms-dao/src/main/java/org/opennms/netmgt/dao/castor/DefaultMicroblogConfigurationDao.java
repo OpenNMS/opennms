@@ -54,6 +54,7 @@ public class DefaultMicroblogConfigurationDao extends AbstractCastorConfigDao<Mi
      *
      * @return a {@link org.opennms.netmgt.config.microblog.MicroblogConfiguration} object.
      */
+    @Override
     public MicroblogConfiguration getConfig() {
         return getContainer().getObject();
     }
@@ -70,6 +71,7 @@ public class DefaultMicroblogConfigurationDao extends AbstractCastorConfigDao<Mi
      *
      * @throws org.springframework.dao.DataAccessResourceFailureException if any.
      */
+    @Override
     public void reloadConfiguration() throws DataAccessResourceFailureException {
         getContainer().reload();
     }
@@ -79,6 +81,7 @@ public class DefaultMicroblogConfigurationDao extends AbstractCastorConfigDao<Mi
      *
      * @return a {@link org.opennms.netmgt.config.microblog.MicroblogProfile} object.
      */
+    @Override
     public MicroblogProfile getDefaultProfile() {
         String defaultProfileName = getContainer().getObject().getDefaultMicroblogProfileName();
         log().debug("Requesting default microblog, which is called '" + defaultProfileName + "'");
@@ -86,6 +89,7 @@ public class DefaultMicroblogConfigurationDao extends AbstractCastorConfigDao<Mi
     }
 
     /** {@inheritDoc} */
+    @Override
     public MicroblogProfile getProfile(String name) {
         if (name == null)
             return null;

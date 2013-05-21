@@ -43,6 +43,7 @@ public class OutputSuckingParser extends Thread {
         m_input = input;
     }
     
+    @Override
     public void run() {
         final InputStreamReader isr = new InputStreamReader(m_input);
         final BufferedReader reader = new BufferedReader(isr);

@@ -75,6 +75,7 @@ public abstract class GroupTable extends Table {
         });
         addListener(new Property.ValueChangeListener() {
             @SuppressWarnings("unchecked")
+            @Override
             public void valueChange(Property.ValueChangeEvent event) {
                 if (getValue() != null) {
                     BeanItem<Group> item = (BeanItem<Group>) getContainerDataSource().getItem(getValue());

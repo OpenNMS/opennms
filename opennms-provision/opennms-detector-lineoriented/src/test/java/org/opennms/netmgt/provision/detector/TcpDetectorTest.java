@@ -105,6 +105,7 @@ public class TcpDetectorTest implements ApplicationContextAware {
         
         m_server = new SimpleServer() {
             
+            @Override
             public void onInit() {
                setBanner("Hello");
             }
@@ -117,6 +118,7 @@ public class TcpDetectorTest implements ApplicationContextAware {
         DetectFuture future = m_detector.isServiceDetected(m_server.getInetAddress());
         future.addListener(new DetectFutureListener<DetectFuture>() {
 
+            @Override
             public void operationComplete(DetectFuture future) {
                 TcpDetector detector = m_detector;
                 m_detector = null;
@@ -138,6 +140,7 @@ public class TcpDetectorTest implements ApplicationContextAware {
         
         m_server = new SimpleServer() {
             
+            @Override
             public void onInit() {
             	
             }
@@ -161,6 +164,7 @@ public class TcpDetectorTest implements ApplicationContextAware {
         
         m_server = new SimpleServer() {
             
+            @Override
             public void onInit() {
                 setTimeout(3000);
             }
@@ -184,6 +188,7 @@ public class TcpDetectorTest implements ApplicationContextAware {
         
         m_server = new SimpleServer() {
             
+            @Override
             public void onInit() {
                 setTimeout(3000);
             }
@@ -210,6 +215,7 @@ public class TcpDetectorTest implements ApplicationContextAware {
         
         m_server = new SimpleServer() {
             
+            @Override
             public void onInit() {
                setBanner("BLIP");
             }
@@ -238,6 +244,7 @@ public class TcpDetectorTest implements ApplicationContextAware {
         
         m_server = new SimpleServer() {
             
+            @Override
             public void onInit() {
                shutdownServer("Closing");
             }
@@ -264,6 +271,7 @@ public class TcpDetectorTest implements ApplicationContextAware {
         DetectFuture future = m_detector.isServiceDetected(InetAddress.getLocalHost());
         future.addListener(new DetectFutureListener<DetectFuture>() {
 
+            @Override
             public void operationComplete(DetectFuture future) {
                 TcpDetector detector = m_detector;
                 m_detector = null;

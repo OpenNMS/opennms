@@ -62,11 +62,13 @@ public class SshClient implements Client<NullRequest, SshResponse> {
     /**
      * <p>close</p>
      */
+    @Override
     public void close() {
         
     }
 
     /** {@inheritDoc} */
+    @Override
     public void connect(InetAddress address, int port, int timeout) throws IOException, Exception {
         Map<String,?> emptyMap = Collections.emptyMap();
         TimeoutTracker tracker = new TimeoutTracker(emptyMap, SshClient.DEFAULT_RETRY, timeout);
@@ -129,6 +131,7 @@ public class SshClient implements Client<NullRequest, SshResponse> {
      * @throws java.io.IOException if any.
      * @throws java.lang.Exception if any.
      */
+    @Override
     public SshResponse receiveBanner() throws IOException, Exception {
         SshResponse response = new SshResponse();
         response.receive(m_isAvailable);
@@ -143,6 +146,7 @@ public class SshClient implements Client<NullRequest, SshResponse> {
      * @throws java.io.IOException if any.
      * @throws java.lang.Exception if any.
      */
+    @Override
     public SshResponse sendRequest(NullRequest request) throws IOException, Exception {
         return null;
     }

@@ -84,6 +84,7 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
      *
      * @return a {@link java.util.Set} object.
      */
+    @Override
     public Set<String> getActiveForeignSourceNames() {
         m_readLock.lock();
         try {
@@ -130,6 +131,7 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
      * @return a int.
      * @throws org.opennms.netmgt.provision.persist.ForeignSourceRepositoryException if any.
      */
+    @Override
     public int getForeignSourceCount() throws ForeignSourceRepositoryException {
         m_readLock.lock();
         try {
@@ -145,6 +147,7 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
      * @return a {@link java.util.Set} object.
      * @throws org.opennms.netmgt.provision.persist.ForeignSourceRepositoryException if any.
      */
+    @Override
     public Set<ForeignSource> getForeignSources() throws ForeignSourceRepositoryException {
         m_readLock.lock();
         try {
@@ -164,6 +167,7 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
     }
 
     /** {@inheritDoc} */
+    @Override
     public ForeignSource getForeignSource(final String foreignSourceName) throws ForeignSourceRepositoryException {
         if (foreignSourceName == null) {
             throw new ForeignSourceRepositoryException("can't get a foreign source with a null name!");
@@ -184,6 +188,7 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
     }
 
     /** {@inheritDoc} */
+    @Override
     public void save(final ForeignSource foreignSource) throws ForeignSourceRepositoryException {
     	if (foreignSource == null) {
             throw new ForeignSourceRepositoryException("can't save a null foreign source!");
@@ -220,6 +225,7 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
     }
 
     /** {@inheritDoc} */
+    @Override
     public void delete(final ForeignSource foreignSource) throws ForeignSourceRepositoryException {
         m_writeLock.lock();
         try {
@@ -241,6 +247,7 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
      * @return a {@link java.util.Set} object.
      * @throws org.opennms.netmgt.provision.persist.ForeignSourceRepositoryException if any.
      */
+    @Override
     public Set<Requisition> getRequisitions() throws ForeignSourceRepositoryException {
         m_readLock.lock();
         try {
@@ -265,6 +272,7 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
     }
     
     /** {@inheritDoc} */
+    @Override
     public Requisition getRequisition(final String foreignSourceName) throws ForeignSourceRepositoryException {
         if (foreignSourceName == null) {
             throw new ForeignSourceRepositoryException("can't get a requisition with a null foreign source name!");
@@ -288,6 +296,7 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
      * @return a {@link org.opennms.netmgt.provision.persist.requisition.Requisition} object.
      * @throws org.opennms.netmgt.provision.persist.ForeignSourceRepositoryException if any.
      */
+    @Override
     public Requisition getRequisition(final ForeignSource foreignSource) throws ForeignSourceRepositoryException {
         if (foreignSource == null) {
             throw new ForeignSourceRepositoryException("can't get a requisition with a null foreign source name!");
@@ -306,6 +315,7 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
      * @param requisition a {@link org.opennms.netmgt.provision.persist.requisition.Requisition} object.
      * @throws org.opennms.netmgt.provision.persist.ForeignSourceRepositoryException if any.
      */
+    @Override
     public void save(final Requisition requisition) throws ForeignSourceRepositoryException {
         if (requisition == null) {
             throw new ForeignSourceRepositoryException("can't save a null requisition!");
@@ -343,6 +353,7 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
      * @param requisition a {@link org.opennms.netmgt.provision.persist.requisition.Requisition} object.
      * @throws org.opennms.netmgt.provision.persist.ForeignSourceRepositoryException if any.
      */
+    @Override
     public void delete(final Requisition requisition) throws ForeignSourceRepositoryException {
         if (requisition == null) {
             throw new ForeignSourceRepositoryException("can't delete a null requisition!");
@@ -389,6 +400,7 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
     }
     
     /** {@inheritDoc} */
+    @Override
     public URL getRequisitionURL(final String foreignSource) throws ForeignSourceRepositoryException {
         m_readLock.lock();
         try {

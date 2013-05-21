@@ -167,9 +167,9 @@ public class OnmsRestService {
 		final Criteria currentCriteria = builder.toCriteria();
 
 		for (final String key : params.keySet()) {
-		    // NOSONAR the interface of MultivaluedMap.class declares List<String> as return value, 
-		    // the actual implementation com.sun.jersey.core.util.MultivaluedMapImpl returns a String, so this is fine in some way ...
-			for (final String paramValue : params.get(key)) {
+			for (final String paramValue : params.get(key)) { // NOSONAR
+                        // NOSONAR the interface of MultivaluedMap.class declares List<String> as return value, 
+                        // the actual implementation com.sun.jersey.core.util.MultivaluedMapImpl returns a String, so this is fine in some way ...
 				if ("null".equalsIgnoreCase(paramValue)) {
 					builder.isNull(key);
 				} else if ("notnull".equalsIgnoreCase(paramValue)) {

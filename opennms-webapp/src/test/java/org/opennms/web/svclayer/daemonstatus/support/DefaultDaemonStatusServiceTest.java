@@ -49,6 +49,7 @@ public class DefaultDaemonStatusServiceTest extends TestCase {
 
 	private DaemonStatusDao daemonStatusDao;
 
+        @Override
 	protected void setUp() throws Exception {
 		super.setUp();
 		daemonStatusDao = createMock(DaemonStatusDao.class);

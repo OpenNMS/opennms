@@ -57,6 +57,7 @@ public class DefaultDistributedPollerServiceTest extends TestCase {
     private LocationMonitorDao m_locationMonitorDao;
     private DefaultDistributedPollerService m_distributedPollerService;
     
+    @Override
     protected void setUp() {
         m_mocks = new LinkedList<Object>();
         

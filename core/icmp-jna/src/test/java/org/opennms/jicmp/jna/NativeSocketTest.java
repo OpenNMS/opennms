@@ -151,6 +151,7 @@ public class NativeSocketTest {
                 NativeDatagramSocket.IPPROTO_UDP);
         
         Thread t = new Thread("Listener") {
+            @Override
             public void run() {
                 try {
                     while(true) {

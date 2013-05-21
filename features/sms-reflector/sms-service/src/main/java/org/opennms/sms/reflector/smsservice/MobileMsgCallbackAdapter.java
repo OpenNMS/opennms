@@ -54,21 +54,25 @@ public class MobileMsgCallbackAdapter implements MobileMsgResponseCallback {
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public void handleError(final MobileMsgRequest request, final Throwable t) {
 		getCb().handleException(t);
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public boolean handleResponse(final MobileMsgRequest request, final MobileMsgResponse packet) {
 		getCb().complete(packet);
 		return true;
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public void handleTimeout(final MobileMsgRequest request) {
 		getCb().handleException(new SocketTimeoutException("timed out processing request " + request));
 	}
 	
+        @Override
 	public String toString() {
 	    return new ToStringBuilder(this)
 	        .append("callback", cb)

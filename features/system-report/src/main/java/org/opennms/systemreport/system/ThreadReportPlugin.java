@@ -44,18 +44,22 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 
 public class ThreadReportPlugin extends AbstractSystemReportPlugin {
+    @Override
     public String getName() {
         return "Threads";
     }
 
+    @Override
     public String getDescription() {
         return "Java thread dump (full output only)";
     }
 
+    @Override
     public int getPriority() {
         return 10;
     }
 
+    @Override
     public TreeMap<String, Resource> getEntries() {
         final TreeMap<String,Resource> map = new TreeMap<String,Resource>();
 

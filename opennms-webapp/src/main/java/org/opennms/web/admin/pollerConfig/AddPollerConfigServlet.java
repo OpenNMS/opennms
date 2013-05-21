@@ -36,12 +36,10 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -68,174 +66,68 @@ import org.opennms.web.api.Util;
  *
  * @author <A HREF="mailto:jacinta@opennms.org">Jacinta Remedios </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:jacinta@opennms.org">Jacinta Remedios </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @version $Id: $
- * @since 1.8.1
  */
 public class AddPollerConfigServlet extends HttpServlet {
-    /**
-     * 
-     */
     private static final long serialVersionUID = 8025629129971135727L;
 
-    PollerConfiguration pollerConfig = null;
+    @Override
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String user_id = request.getRemoteUser();
 
-    CapsdConfiguration capsdConfig = null;
+        PollerConfiguration pollerConfig = null;
+        CapsdConfiguration capsdConfig = null;
+        Map<String, Service> pollerServices = new HashMap<String, Service>();
+        Map<String, ProtocolPlugin> capsdProtocols = new HashMap<String, ProtocolPlugin>();
+        List<ProtocolPlugin> capsdColl = new ArrayList<ProtocolPlugin>();
+        Properties props = new Properties();
+        org.opennms.netmgt.config.poller.Package firstPackage;
 
-    protected String redirectSuccess;
-
-    Map<String, Service> pollerServices = new HashMap<String, Service>();
-
-    Map<String, ProtocolPlugin> capsdProtocols = new HashMap<String, ProtocolPlugin>();
-
-    List<ProtocolPlugin> capsdColl = new ArrayList<ProtocolPlugin>();
-
-    org.opennms.netmgt.config.poller.Package pkg = null;
-
-    Collection<ProtocolPlugin> pluginColl = null;
-
-    Properties props = new Properties();
-
-    PollerConfig pollerFactory = null;
-
-    CapsdConfig capsdFactory = null;
-
-    boolean errorflag = false;
-
-    /**
-     * <p>init</p>
-     *
-     * @throws javax.servlet.ServletException if any.
-     */
-    public void init() throws ServletException {
-        ServletConfig config = this.getServletConfig();
         try {
             props.load(new FileInputStream(ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONF_FILE_NAME)));
             PollerConfigFactory.init();
-            pollerFactory = PollerConfigFactory.getInstance();
+            PollerConfig pollerFactory = PollerConfigFactory.getInstance();
             pollerConfig = pollerFactory.getConfiguration();
 
             if (pollerConfig == null) {
                 // response.sendRedirect( "error.jsp?error=2");
-                errorflag = true;
-                throw new ServletException("Poller Configuration file is empty");
+                throw new ServletException("Poller configuration file is empty");
             }
             CapsdConfigFactory.init();
-            capsdFactory = CapsdConfigFactory.getInstance();
+            CapsdConfig capsdFactory = CapsdConfigFactory.getInstance();
             capsdConfig = capsdFactory.getConfiguration();
 
             if (capsdConfig == null) {
                 // response.sendRedirect( "error.jsp?error=3");
-                errorflag = true;
-                throw new ServletException("Capsd Configuration file is empty");
+                throw new ServletException("Capsd configuration file is empty");
             }
         } catch (Throwable e) {
             throw new ServletException(e.getMessage());
         }
-        initPollerServices();
-        initCapsdProtocols();
-        this.redirectSuccess = config.getInitParameter("redirect.success");
-        if (this.redirectSuccess == null) {
-            throw new ServletException("Missing required init parameter: redirect.success");
-        }
-    }
 
-    /**
-     * <p>reloadFiles</p>
-     *
-     * @throws javax.servlet.ServletException if any.
-     */
-    public void reloadFiles() throws ServletException {
-        ServletConfig config = this.getServletConfig();
-        try {
-            props.load(new FileInputStream(ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONF_FILE_NAME)));
-            PollerConfigFactory.init();
-            pollerFactory = PollerConfigFactory.getInstance();
-            pollerConfig = pollerFactory.getConfiguration();
-
-            if (pollerConfig == null) {
-                // response.sendRedirect( "error.jsp?error=2");
-                errorflag = true;
-                throw new ServletException("Poller Configuration file is empty");
+        pollerServices = new HashMap<String, Service>();
+        Collection<org.opennms.netmgt.config.poller.Package> packageColl = pollerConfig.getPackageCollection();
+        if (packageColl != null && packageColl.size() > 0) {
+            firstPackage = packageColl.iterator().next();
+            for (org.opennms.netmgt.config.poller.Package pkg : packageColl) {
+                for(Service svcProp : pkg.getServiceCollection()) {
+                    pollerServices.put(svcProp.getName(), svcProp);
+                }
             }
-            CapsdConfigFactory.init();
-            capsdFactory = CapsdConfigFactory.getInstance();
-            capsdConfig = capsdFactory.getConfiguration();
-
-            if (capsdConfig == null) {
-                errorflag = true;
-                // response.sendRedirect( "error.jsp?error=3");
-                throw new ServletException("Capsd Configuration file is empty");
-            }
-        } catch (Throwable e) {
-            throw new ServletException(e.getMessage());
+        } else {
+            throw new ServletException("Poller configuration file contains no packages.");
         }
-        initPollerServices();
-        initCapsdProtocols();
-        this.redirectSuccess = config.getInitParameter("redirect.success");
-        if (this.redirectSuccess == null) {
-            throw new ServletException("Missing required init parameter: redirect.success");
-        }
-    }
-
-    /**
-     * <p>initCapsdProtocols</p>
-     */
-    public void initCapsdProtocols() {
-        capsdProtocols = new HashMap<String, ProtocolPlugin>();
-        pluginColl = getProtocolPlugins();
+        Collection<ProtocolPlugin> pluginColl = capsdConfig.getProtocolPluginCollection();
         if (pluginColl != null) {
-            Iterator<ProtocolPlugin> pluginiter = pluginColl.iterator();
-            while (pluginiter.hasNext()) {
-                ProtocolPlugin plugin = pluginiter.next();
+            for (ProtocolPlugin plugin : pluginColl) {
                 capsdColl.add(plugin);
                 capsdProtocols.put(plugin.getProtocol(), plugin);
             }
         }
-    }
-
-    private List<ProtocolPlugin> getProtocolPlugins() {
-        return capsdConfig.getProtocolPluginCollection();
-    }
-
-    /**
-     * <p>initPollerServices</p>
-     */
-    public void initPollerServices() {
-        pollerServices = new HashMap<String, Service>();
-        Collection<org.opennms.netmgt.config.poller.Package> packageColl = getPackages();
-        if (packageColl != null) {
-            Iterator<org.opennms.netmgt.config.poller.Package> pkgiter = packageColl.iterator();
-            if (pkgiter.hasNext()) {
-                pkg = pkgiter.next();
-                Collection<Service> svcColl = getServicesForPackage();
-                Iterator<Service> svcIter = svcColl.iterator();
-                Service svcProp = null;
-                while (svcIter.hasNext()) {
-                    svcProp = svcIter.next();
-                    pollerServices.put(svcProp.getName(), svcProp);
-                }
-            }
+        String redirectSuccess = getServletConfig().getInitParameter("redirect.success");
+        if (redirectSuccess == null) {
+            throw new ServletException("Missing required init parameter: redirect.success");
         }
-    }
 
-    private List<Service> getServicesForPackage() {
-        return pkg.getServiceCollection();
-    }
-
-    private List<org.opennms.netmgt.config.poller.Package> getPackages() {
-        return pollerConfig.getPackageCollection();
-    }
-
-    /** {@inheritDoc} */
-    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String user_id = request.getRemoteUser();
-
-        errorflag = false;
-        reloadFiles();
-        // String query = request.getQueryString();
-        // if(query != null)
         {
             String check1 = request.getParameter("check1");
             String name1 = request.getParameter("name1");
@@ -244,13 +136,11 @@ public class AddPollerConfigServlet extends HttpServlet {
 
             List<String> checkedList = new ArrayList<String>();
             if (name1 != null && !name1.equals("")) {
-                addPollerInfo(check1, name1, port1, user_id, protoArray1, response, request);
-                if (errorflag) {
+                if (!addPollerInfo(pollerConfig, firstPackage, props, check1, name1, port1, user_id, protoArray1, response, request)) {
                     return;
                 }
                 checkedList.add(name1);
-                addCapsdInfo(name1, port1, user_id, protoArray1, response, request);
-                if (!errorflag) {
+                if (addCapsdInfo(capsdConfig, firstPackage, props, name1, port1, user_id, protoArray1, response, request)) {
                     props.setProperty("service." + name1 + ".protocol", protoArray1);
                 } else {
                     return;
@@ -269,10 +159,7 @@ public class AddPollerConfigServlet extends HttpServlet {
                 throw new ServletException(e);
             }
         }
-
-        if (!errorflag) {
-            response.sendRedirect(this.redirectSuccess);
-        }
+        response.sendRedirect(redirectSuccess);
     }
 
     /**
@@ -287,40 +174,24 @@ public class AddPollerConfigServlet extends HttpServlet {
      * @throws javax.servlet.ServletException if any.
      * @throws java.io.IOException if any.
      */
-    @SuppressWarnings("null")
-    public void addCapsdInfo(String name, String port, String user, String protocol, HttpServletResponse response, HttpServletRequest request) throws ServletException, IOException {
+    private boolean addCapsdInfo(CapsdConfiguration capsdConfig, org.opennms.netmgt.config.poller.Package pkg, Properties props, String name, String port, String user, String protocol, HttpServletResponse response, HttpServletRequest request) throws ServletException, IOException {
         // Check to see if the name is duplicate of the already specified names
         // first.
-        Collection<ProtocolPlugin> tmpCapsd = getProtocolPlugins();
-        Iterator<ProtocolPlugin> iter = tmpCapsd.iterator();
-        Service pollersvc = null;
-        while (iter.hasNext()) {
-            ProtocolPlugin svc = iter.next();
+        for (ProtocolPlugin svc : capsdConfig.getProtocolPluginCollection()) {
             if (svc.getProtocol().equals(name)) {
                 // delete from the poller configuration.
-                Collection<Service> tmpPollers = getServicesForPackage();
-                Iterator<Service> polleriter = tmpPollers.iterator();
-                boolean removePoller = false;
-                while (polleriter.hasNext()) {
-                    pollersvc = polleriter.next();
+                for (Service pollersvc : pkg.getServiceCollection()) {
                     if (pollersvc.getName().equals(name)) {
-                        removePoller = true;
+                        Collection<Service> tmpPoller = pkg.getServiceCollection();
+                        if (tmpPoller.contains(pollersvc) && pollersvc.getName().equals(name)) {
+                            tmpPoller.remove(pollersvc);
+                            response.sendRedirect(Util.calculateUrlBase(request, "/admin/error.jsp?error=1&name=" + name));
+                            return false;
+                        }
                         break;
                     }
                 }
-                
-                if (removePoller) {
-                    Collection<Service> tmpPoller = getServicesForPackage();
-                    if (tmpPoller.contains(pollersvc) && pollersvc.getName().equals(name)) {
-                        errorflag = true;
-                        tmpPoller.remove(pollersvc);
-                        response.sendRedirect(Util.calculateUrlBase(request, "/admin/error.jsp?error=1&name=" + name));
-                        return;
-                    }
-                }
                 break;
-                // throw new ServletException ("ProtocolPlugin name " + name + "
-                // is already defined.. Try assigning another unique name");
             }
         }
         ProtocolPlugin pluginAdd = new ProtocolPlugin();
@@ -330,6 +201,8 @@ public class AddPollerConfigServlet extends HttpServlet {
             pluginAdd.setClassName(className);
             pluginAdd.setScan("on");
             pluginAdd.setUserDefined("true");
+
+            // Set banner property
             org.opennms.netmgt.config.capsd.Property newprop = new org.opennms.netmgt.config.capsd.Property();
             String banner = "*";
             if (props.get("banner") != null) {
@@ -339,6 +212,7 @@ public class AddPollerConfigServlet extends HttpServlet {
             newprop.setKey("banner");
             pluginAdd.addProperty(newprop);
 
+            // Add port(s) property
             newprop = new org.opennms.netmgt.config.capsd.Property();
             if (port != null && !port.equals("")) {
                 newprop.setValue(port);
@@ -350,10 +224,8 @@ public class AddPollerConfigServlet extends HttpServlet {
                 pluginAdd.addProperty(newprop);
             } else {
                 if (props.get("service." + protocol + ".port") == null || ((String) props.get("service." + protocol + ".port")).equals("")) {
-                    errorflag = true;
                     response.sendRedirect(Util.calculateUrlBase(request, "admin/error.jsp?error=0&name=" + "service." + protocol + ".port"));
-                    pluginAdd = null;
-                    return;
+                    return false;
                 } else {
                     port = (String) props.get("service." + protocol + ".port");
                     newprop.setValue(port);
@@ -365,6 +237,8 @@ public class AddPollerConfigServlet extends HttpServlet {
                     pluginAdd.addProperty(newprop);
                 }
             }
+
+            // Add timeout property
             newprop = new org.opennms.netmgt.config.capsd.Property();
             String timeout = "3000";
             if (props.get("timeout") != null) {
@@ -372,10 +246,9 @@ public class AddPollerConfigServlet extends HttpServlet {
             }
             newprop.setValue(timeout);
             newprop.setKey("timeout");
-            if (pluginAdd != null) {
-                pluginAdd.addProperty(newprop);
-            }
+            pluginAdd.addProperty(newprop);
 
+            // Add retry property
             newprop = new org.opennms.netmgt.config.capsd.Property();
             String retry = "3";
             if (props.get("retry") != null) {
@@ -383,17 +256,16 @@ public class AddPollerConfigServlet extends HttpServlet {
             }
             newprop.setValue(retry);
             newprop.setKey("retry");
-            if (pluginAdd != null) {
-                pluginAdd.addProperty(newprop);
-                capsdProtocols.put(name, pluginAdd);
-                pluginColl = capsdProtocols.values();
-                capsdColl.add(pluginAdd);
-                capsdConfig.addProtocolPlugin(pluginAdd);
-            }
+            pluginAdd.addProperty(newprop);
+
+            // Add the plugin to the capsdConfig
+            capsdConfig.addProtocolPlugin(pluginAdd);
+
+            // Everything worked, return true
+            return true;
         } else {
-            errorflag = true;
             response.sendRedirect(Util.calculateUrlBase(request, "admin/error.jsp?error=0&name=" + "service." + protocol + ".capsd-class"));
-            return;
+            return false;
         }
     }
 
@@ -410,19 +282,13 @@ public class AddPollerConfigServlet extends HttpServlet {
      * @throws javax.servlet.ServletException if any.
      * @throws java.io.IOException if any.
      */
-    public void addPollerInfo(String bPolled, String name, String port, String user, String protocol, HttpServletResponse response, HttpServletRequest request) throws ServletException, IOException {
+    private boolean addPollerInfo(PollerConfiguration pollerConfig, org.opennms.netmgt.config.poller.Package pkg, Properties props, String bPolled, String name, String port, String user, String protocol, HttpServletResponse response, HttpServletRequest request) throws ServletException, IOException {
         // Check to see if the name is duplicate of the already specified names
         // first.
-        Collection<Service> tmpPollers = getServicesForPackage();
-        Iterator<Service> iter = tmpPollers.iterator();
-        while (iter.hasNext()) {
-            Service svc = iter.next();
+        for (Service svc : pkg.getServiceCollection()) {
             if (svc.getName().equals(name)) {
-                errorflag = true;
                 response.sendRedirect(Util.calculateUrlBase(request, "admin/error.jsp?error=1&name=" + name));
-                return;
-                // throw new ServletException ("Service name " + name + " is
-                // already defined.. Try assigning another unique name");
+                return false;
             }
         }
 
@@ -437,16 +303,15 @@ public class AddPollerConfigServlet extends HttpServlet {
             newService.setName(name);
             newService.setUserDefined("true");
 
-            Collection<Monitor> monitorColl = getMonitors();
+            Collection<Monitor> monitorColl = pollerConfig.getMonitorCollection();
             Monitor newMonitor = new Monitor();
             String monitor = (String) props.get("service." + protocol + ".monitor");
             if (monitor != null) {
                 newMonitor.setService(name);
                 newMonitor.setClassName(monitor);
             } else {
-                errorflag = true;
                 response.sendRedirect(Util.calculateUrlBase(request, "admin/error.jsp?error=0&name=" + "service." + protocol + ".monitor"));
-                return;
+                return false;
             }
 
             if (props.get("interval") != null) {
@@ -485,15 +350,13 @@ public class AddPollerConfigServlet extends HttpServlet {
             newprop = new org.opennms.netmgt.config.poller.Parameter();
             if (port == null || port.equals("")) {
                 if (props.get("service." + protocol + ".port") == null || ((String) props.get("service." + protocol + ".port")).equals("")) {
-                    errorflag = true;
                     newMonitor = null;
                     newService = null;
                     response.sendRedirect(Util.calculateUrlBase(request, "admin/error.jsp?error=0&name=" + "service." + protocol + ".port"));
-                    return;
+                    return false;
                 } else {
                     port = (String) props.get("service." + protocol + ".port");
                 }
-
             }
 
             newprop.setValue(port);
@@ -512,9 +375,6 @@ public class AddPollerConfigServlet extends HttpServlet {
                 pkg.addService(newService);
             }
         }
-    }
-
-    private List<Monitor> getMonitors() {
-        return pollerConfig.getMonitorCollection();
+        return true;
     }
 }

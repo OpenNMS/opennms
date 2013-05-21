@@ -127,6 +127,7 @@ public class OnmsVlan {
             m_vlanStatus = vlanType;
         }
 
+                @Override
         public int compareTo(VlanStatus o) {
             return getIndex(m_vlanStatus) - getIndex(o.m_vlanStatus);
         }
@@ -140,6 +141,7 @@ public class OnmsVlan {
             throw new IllegalArgumentException("illegal vlanStatus code '"+code+"'");
         }
 
+                @Override
         public boolean equals(Object o) {
             if (o instanceof VlanStatus) {
                 return m_vlanStatus.intValue() == ((VlanStatus)o).m_vlanStatus.intValue();
@@ -147,10 +149,12 @@ public class OnmsVlan {
             return false;
         }
 
+                @Override
         public int hashCode() {
             return toString().hashCode();
         }
 
+                @Override
         public String toString() {
             return String.valueOf(m_vlanStatus);
         }
@@ -321,6 +325,7 @@ public class OnmsVlan {
             m_vlanType = vlanType;
         }
 
+            @Override
         public int compareTo(VlanType o) {
             return getIndex(m_vlanType) - getIndex(o.m_vlanType);
         }
@@ -334,6 +339,7 @@ public class OnmsVlan {
             throw new IllegalArgumentException("illegal vlanType code '"+code+"'");
         }
 
+            @Override
         public boolean equals(Object o) {
             if (o instanceof VlanType) {
                 return m_vlanType.intValue() == ((VlanType)o).m_vlanType.intValue();
@@ -341,10 +347,12 @@ public class OnmsVlan {
             return false;
         }
 
+            @Override
         public int hashCode() {
             return toString().hashCode();
         }
 
+            @Override
         public String toString() {
             return String.valueOf(m_vlanType);
         }

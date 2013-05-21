@@ -238,6 +238,7 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
         return center;
     }
     
+    @Override
     public SVGPoint getPoint(int clientX, int clientY) {
         SVGGElement g = getSVGViewPort().cast();
         SVGMatrix stateTF = g.getCTM().inverse();

@@ -95,6 +95,7 @@ public class GoogleMapsPanel extends Composite implements MapPanel {
         initializeMapPanel();
 
         m_mapWidget.addMapMoveEndHandler(new MapMoveEndHandler() {
+            @Override
             public void onMoveEnd(MapMoveEndEvent event) {
                 m_eventBus.fireEvent(new MapPanelBoundsChangedEvent(getBounds()));
             }
@@ -106,6 +107,7 @@ public class GoogleMapsPanel extends Composite implements MapPanel {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void showLocationDetails(final String name, final String htmlTitle, final String htmlContent) {
         final Marker m = m_markers.get(name);
 
@@ -117,6 +119,7 @@ public class GoogleMapsPanel extends Composite implements MapPanel {
             panel.add(new HTML(htmlContent));
             getMapWidget().getInfoWindow().open(m.getLatLng(), new InfoWindowContent(panel.toString()));
             getMapWidget().getInfoWindow().addInfoWindowCloseClickHandler(new InfoWindowCloseClickHandler() {
+                @Override
                 public void onCloseClick(InfoWindowCloseClickEvent event) {
                     getMapWidget().returnToSavedPosition();
                 }
@@ -129,11 +132,13 @@ public class GoogleMapsPanel extends Composite implements MapPanel {
      *
      * @return a {@link org.opennms.features.poller.remote.gwt.client.GWTBounds} object.
      */
+    @Override
     public GWTBounds getBounds() {
         return toGWTBounds(getMapWidget().getBounds());
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setBounds(GWTBounds b) {
         LatLngBounds bounds = toLatLngBounds(b);
     	getMapWidget().setCenter(bounds.getCenter(), getMapWidget().getBoundsZoomLevel(bounds));
@@ -146,6 +151,7 @@ public class GoogleMapsPanel extends Composite implements MapPanel {
         getMapWidget().setScrollWheelZoomEnabled(true);
       
         Window.addResizeHandler(new ResizeHandler() {
+            @Override
             public void onResize(final ResizeEvent resizeEvent) {
                 if (getMapWidget() != null) {
                     getMapWidget().checkResizeAndCenter();
@@ -178,6 +184,7 @@ public class GoogleMapsPanel extends Composite implements MapPanel {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void placeMarker(final GWTMarkerState marker) {
     	m_markerStates.put(marker.getName(), marker);
 
@@ -202,6 +209,7 @@ public class GoogleMapsPanel extends Composite implements MapPanel {
             m_marker = marker;
         }
 
+        @Override
         public void onClick(final MarkerClickEvent mke) {
             //showLocationDetails(m_marker);
             m_eventBus.fireEvent(new GWTMarkerClickedEvent(m_marker));
@@ -213,6 +221,7 @@ public class GoogleMapsPanel extends Composite implements MapPanel {
      *
      * @return a {@link com.google.gwt.user.client.ui.Widget} object.
      */
+    @Override
     public Widget getWidget() {
         return this;
     }

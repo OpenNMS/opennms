@@ -61,6 +61,7 @@ import org.springframework.stereotype.Service;
 public class AuthorityServiceImpl implements AuthorityService {
 
     /** {@inheritDoc} */
+    @Override
     public List<AuthorityDTO> getGroupAuthorities(Integer id) {
         return authorityRepository.getGroupAuthorities(id);
     }
@@ -70,6 +71,7 @@ public class AuthorityServiceImpl implements AuthorityService {
      *
      * @return a {@link java.util.List} object.
      */
+    @Override
     public List<AuthorityDTO> getFreeAuthoritiesForGroup() {
         return authorityRepository.getFreeAuthoritiesForGroup();
     }
@@ -79,22 +81,26 @@ public class AuthorityServiceImpl implements AuthorityService {
      *
      * @return a {@link java.util.List} object.
      */
+    @Override
     public List<AuthorityDTO> getAuthorities() {
         return authorityRepository.getAuthorities();
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean insertGroupAuthorities(Integer id, List<Integer> authorities) {
         authorityRepository.removeGroupFromAuthorities(id);
         return authorityRepository.saveAuthorities(id, authorities);
     }
 
     /** {@inheritDoc} */
+    @Override
     public List<AuthorityDTO> getFreeAuthorities(String username) {
         return authorityRepository.getFreeAuthorities(username);
     }
 
     /** {@inheritDoc} */
+    @Override
     public List<AuthorityDTO> getUserAuthorities(String username) {
         return authorityRepository.getUserAuthorities(username);
     }
@@ -104,26 +110,31 @@ public class AuthorityServiceImpl implements AuthorityService {
      *
      * @return a {@link java.lang.Integer} object.
      */
+    @Override
     public Integer getTotalItemsNumber() {
         return getAuthoritiesNumber();
     }
 
     /** {@inheritDoc} */
+    @Override
     public AuthorityDTO getAuthority(Integer id) {
         return authorityRepository.getAuthority(id);
     }
 
     /** {@inheritDoc} */
+    @Override
     public List<AuthorityDTO> getAuthorities(Pager pager) {
         return authorityRepository.getAuthorities(pager);
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean removeAuthority(Integer id) {
         return authorityRepository.removeAuthority(id);
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean save(AuthorityDTO authority) {
         return authorityRepository.save(authority);
     }
@@ -133,11 +144,13 @@ public class AuthorityServiceImpl implements AuthorityService {
      *
      * @return a {@link java.lang.Integer} object.
      */
+    @Override
     public Integer getAuthoritiesNumber() {
         return authorityRepository.getAuthoritiesNumber();
     }
 
     /** {@inheritDoc} */
+    @Override
     public List<Integer> getIdItemsAuthority(Integer id) {
         return authorityRepository.getIdItemsAuthority(id);
     }

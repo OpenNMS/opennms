@@ -50,6 +50,7 @@ public class MultiOutputRrdStrategy implements RrdStrategy<List<Object>,List<Obj
     private int m_fetchStrategyIndex;
 
     /** {@inheritDoc} */
+    @Override
     public void setConfigurationProperties(Properties configurationParameters) {
         // We don't use any configuration properties
     }
@@ -115,6 +116,7 @@ public class MultiOutputRrdStrategy implements RrdStrategy<List<Object>,List<Obj
      * @param rrd a {@link java.util.List} object.
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void closeFile(List<Object> rrd) throws Exception {
         for (int i = 0; i < rrd.size(); i++) {
             m_strategies.get(i).closeFile(rrd.get(i));
@@ -122,6 +124,7 @@ public class MultiOutputRrdStrategy implements RrdStrategy<List<Object>,List<Obj
     }
 
     /** {@inheritDoc} */
+    @Override
     public List<Object> createDefinition(String creator, String directory, String rrdName,
             int step, List<RrdDataSource> dataSources, List<String> rraList)
             throws Exception {
@@ -133,6 +136,7 @@ public class MultiOutputRrdStrategy implements RrdStrategy<List<Object>,List<Obj
     }
 
     /** {@inheritDoc} */
+    @Override
     public void createFile(List<Object> rrdDef, Map<String, String> attributeMappings) throws Exception {
         for (int i = 0; i < rrdDef.size(); i++) {
             m_strategies.get(i).createFile(rrdDef.get(i), attributeMappings);
@@ -140,24 +144,28 @@ public class MultiOutputRrdStrategy implements RrdStrategy<List<Object>,List<Obj
     }
 
     /** {@inheritDoc} */
+    @Override
     public InputStream createGraph(String command, File workDir)
     throws IOException, RrdException {
         return m_strategies.get(m_graphStrategyIndex).createGraph(command, workDir);
     }
 
     /** {@inheritDoc} */
+    @Override
     public RrdGraphDetails createGraphReturnDetails(String command, File workDir)
     throws IOException, RrdException {
         return m_strategies.get(m_graphStrategyIndex).createGraphReturnDetails(command, workDir);
     }
 
     /** {@inheritDoc} */
+    @Override
     public Double fetchLastValue(String rrdFile, String ds, int interval)
     throws NumberFormatException, RrdException {
         return m_strategies.get(m_fetchStrategyIndex).fetchLastValue(rrdFile, ds, interval);
     }
 
     /** {@inheritDoc} */
+    @Override
     public Double fetchLastValue(String rrdFile, String ds,
             String consolidationFunction, int interval)
     throws NumberFormatException, RrdException {
@@ -165,6 +173,7 @@ public class MultiOutputRrdStrategy implements RrdStrategy<List<Object>,List<Obj
     }
 
     /** {@inheritDoc} */
+    @Override
     public Double fetchLastValueInRange(String rrdFile, String ds,
             int interval, int range) throws NumberFormatException, RrdException {
         return m_strategies.get(m_fetchStrategyIndex).fetchLastValueInRange(rrdFile, ds, interval, range);
@@ -175,6 +184,7 @@ public class MultiOutputRrdStrategy implements RrdStrategy<List<Object>,List<Obj
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getDefaultFileExtension() {
         return m_strategies.get(m_fetchStrategyIndex).getDefaultFileExtension();
     }
@@ -184,6 +194,7 @@ public class MultiOutputRrdStrategy implements RrdStrategy<List<Object>,List<Obj
      *
      * @return a int.
      */
+    @Override
     public int getGraphLeftOffset() {
         return m_strategies.get(m_graphStrategyIndex).getGraphLeftOffset();
     }
@@ -193,6 +204,7 @@ public class MultiOutputRrdStrategy implements RrdStrategy<List<Object>,List<Obj
      *
      * @return a int.
      */
+    @Override
     public int getGraphRightOffset() {
         return m_strategies.get(m_graphStrategyIndex).getGraphRightOffset();
     }
@@ -202,6 +214,7 @@ public class MultiOutputRrdStrategy implements RrdStrategy<List<Object>,List<Obj
      *
      * @return a int.
      */
+    @Override
     public int getGraphTopOffsetWithText() {
         return m_strategies.get(m_graphStrategyIndex).getGraphTopOffsetWithText();
     }
@@ -211,6 +224,7 @@ public class MultiOutputRrdStrategy implements RrdStrategy<List<Object>,List<Obj
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getStats() {
         StringBuffer retval = new StringBuffer();
         for (RrdStrategy<?, ?> strategy : m_strategies) {
@@ -221,6 +235,7 @@ public class MultiOutputRrdStrategy implements RrdStrategy<List<Object>,List<Obj
     }
 
     /** {@inheritDoc} */
+    @Override
     public List<Object> openFile(String fileName) throws Exception {
         List<Object> retval = new ArrayList<Object>();
         for (RrdStrategy<Object, Object> strategy : m_strategies) {
@@ -230,6 +245,7 @@ public class MultiOutputRrdStrategy implements RrdStrategy<List<Object>,List<Obj
     }
 
     /** {@inheritDoc} */
+    @Override
     public void promoteEnqueuedFiles(Collection<String> rrdFiles) {
         for (RrdStrategy<Object, Object> strategy : m_strategies) {
             strategy.promoteEnqueuedFiles(rrdFiles);
@@ -237,6 +253,7 @@ public class MultiOutputRrdStrategy implements RrdStrategy<List<Object>,List<Obj
     }
 
     /** {@inheritDoc} */
+    @Override
     public void updateFile(List<Object> rrd, String owner, String data) throws Exception {
         for (int i = 0; i < rrd.size(); i++) {
             m_strategies.get(i).updateFile(rrd.get(i), owner, data);

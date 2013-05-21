@@ -61,6 +61,7 @@ public class NoticeIdNotFoundException extends RuntimeException {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getMessage() {
         return this.message;
     }

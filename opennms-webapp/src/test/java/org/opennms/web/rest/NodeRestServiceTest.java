@@ -30,6 +30,7 @@ package org.opennms.web.rest;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.opennms.core.test.xml.XmlTest.*;
 
 import java.io.StringReader;
 import java.util.Comparator;
@@ -61,7 +62,7 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
 
     @Override
     protected void afterServletStart() throws Exception {
-        MockLogAppender.setupLogging();
+        MockLogAppender.setupLogging(true, "DEBUG");
         m_nodeCounter = 0;
     }
     
@@ -188,6 +189,7 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
         assertEquals(20, list.getTotalCount());
         int i = 0;
         Set<OnmsNode> sortedNodes = new TreeSet<OnmsNode>(new Comparator<OnmsNode>() {
+            @Override
             public int compare(OnmsNode o1, OnmsNode o2) {
                 if (o1 == null && o2 == null) {
                     return 0;
@@ -315,7 +317,7 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
         createIpInterface();
         String url = "/nodes";
         String xml = sendRequest(GET, url, parseParamData("comparator=ilike&match=any&label=1%25&ipInterface.ipAddress=1%25&ipInterface.ipHostName=1%25"), 200);
-        assertTrue(xml, xml.contains("<node type=\"A\" id=\"1\" label=\"TestMachine0\">"));
+        assertXpathMatches(xml, "//node[@type='A' and @id='1' and @label='TestMachine0']");
         assertTrue(xml, xml.contains("count=\"1\""));
         assertTrue(xml, xml.contains("totalCount=\"1\""));
 

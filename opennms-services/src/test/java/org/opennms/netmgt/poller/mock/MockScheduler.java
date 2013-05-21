@@ -57,6 +57,7 @@ public class MockScheduler implements Scheduler {
     }
 
     
+    @Override
     public void schedule(long interval, ReadyRunnable schedule) {
         Long nextTime = Long.valueOf(getCurrentTime()+interval);
         //MockUtil.println("Scheduled "+schedule+" for "+nextTime);
@@ -117,23 +118,29 @@ public class MockScheduler implements Scheduler {
         return getCurrentTime();
     }
 
+    @Override
     public long getCurrentTime() {
         return m_timer.getCurrentTime();
     }
 
+    @Override
 	public void start() {
 		
 	}
 
+    @Override
 	public void stop() {
 	}
 
+    @Override
 	public void pause() {
 	}
 
+    @Override
 	public void resume() {
 	}
 
+    @Override
 	public int getStatus() {
 		return 0;
 	}

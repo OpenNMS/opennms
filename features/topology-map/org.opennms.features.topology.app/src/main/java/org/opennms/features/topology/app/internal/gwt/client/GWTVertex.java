@@ -149,6 +149,7 @@ public class GWTVertex extends JavaScriptObject {
     static Func<String, GWTVertex> selectedFill() {
     	return new Func<String, GWTVertex>(){
     
+                    @Override
     		public String call(GWTVertex vertex, int index) {
     			return vertex.isSelected() ? "blue" : "black";
     		}
@@ -158,6 +159,7 @@ public class GWTVertex extends JavaScriptObject {
     protected static Func<String, GWTVertex> selectionFilter() {
         return new Func<String, GWTVertex>(){
 
+            @Override
             public String call(GWTVertex vertex, int index) {
                 return vertex.isSelected() ? "1" : "0";
             }
@@ -223,6 +225,7 @@ public class GWTVertex extends JavaScriptObject {
     static Func<String, GWTVertex> getTranslation() {
     	return new Func<String, GWTVertex>() {
     
+                    @Override
     		public String call(GWTVertex vertex, int index) {
     			return "translate( " + vertex.getX() + "," + vertex.getY() + ")";
     		}

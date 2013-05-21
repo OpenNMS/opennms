@@ -52,6 +52,7 @@ public class CorrelatorTest extends TestCase {
 	private CorrelationEngine m_engine;
 	private Correlator m_correlator;
 
+        @Override
 	protected void setUp() throws Exception {
 		super.setUp();
 
@@ -65,6 +66,7 @@ public class CorrelatorTest extends TestCase {
 		m_correlator.setCorrelationEngines(Collections.singletonList(m_engine));
 	}
 
+        @Override
 	protected void tearDown() throws Exception {
 		super.tearDown();
 	}

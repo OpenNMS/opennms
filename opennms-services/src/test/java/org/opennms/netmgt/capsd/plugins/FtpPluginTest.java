@@ -79,6 +79,7 @@ public class FtpPluginTest extends TestCase {
     
     public void testSuccess() throws Exception {
         Thread m_serverThread = new Thread(new Runnable() {
+            @Override
             public void run() {
                 try {
                     m_serverSocket.setSoTimeout(1000);
@@ -102,6 +103,7 @@ public class FtpPluginTest extends TestCase {
     
     public void testSuccessMultiLineResponse() throws Exception {
         Thread m_serverThread = new Thread(new Runnable() {
+            @Override
             public void run() {
                 try {
                     m_serverSocket.setSoTimeout(1000);
@@ -128,6 +130,7 @@ public class FtpPluginTest extends TestCase {
 
     public void testFailureWithBogusResponse() throws Exception {
         Thread m_serverThread = new Thread(new Runnable() {
+            @Override
             public void run() {
                 try {
                     m_serverSocket.setSoTimeout(1000);
@@ -146,6 +149,7 @@ public class FtpPluginTest extends TestCase {
 
     public void testMonitorFailureWithNoResponse() throws Exception {
         Thread m_serverThread = new Thread(new Runnable() {
+            @Override
             public void run() {
                 try {
                     m_serverSocket.setSoTimeout(1000);

@@ -105,6 +105,7 @@ public class ResourceTypePanel extends VerticalLayout {
         };
 
         add = new Button("Add Resource Type", new Button.ClickListener() {
+            @Override
             public void buttonClick(Button.ClickEvent event) {
                 ResourceType rt = new ResourceType();
                 rt.setName("New Resource Type");

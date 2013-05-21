@@ -64,6 +64,7 @@ public class Notifd extends AbstractServiceDaemon implements NotifdMBean {
     /**
      * <p>onInit</p>
      */
+    @Override
     protected void onInit() {
         EventIpcManagerFactory.init();
 
@@ -145,6 +146,7 @@ public class Notifd extends AbstractServiceDaemon implements NotifdMBean {
     /**
      * <p>onStart</p>
      */
+    @Override
     protected void onStart() {
         getNotifd().start();
     }
@@ -152,6 +154,7 @@ public class Notifd extends AbstractServiceDaemon implements NotifdMBean {
     /**
      * <p>onStop</p>
      */
+    @Override
     protected void onStop() {
         getNotifd().stop();
     }
@@ -162,6 +165,7 @@ public class Notifd extends AbstractServiceDaemon implements NotifdMBean {
      *
      * @return a int.
      */
+    @Override
     public int getStatus() {
         return getNotifd().getStatus();
     }

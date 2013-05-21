@@ -87,6 +87,7 @@ public class InetNetworkInterface implements NetworkInterface<InetAddress>, Seri
      *
      * @return a int.
      */
+    @Override
     public int getType() {
         return TYPE_INET;
     }
@@ -100,6 +101,7 @@ public class InetNetworkInterface implements NetworkInterface<InetAddress>, Seri
      *
      * @return a {@link java.lang.Object} object.
      */
+    @Override
     public InetAddress getAddress() {
         return m_address;
     }
@@ -131,6 +133,7 @@ public class InetNetworkInterface implements NetworkInterface<InetAddress>, Seri
      *                Thrown if the passed key is empty or null.
      * @see java.util.Map#get(java.lang.Object)
      */
+    @Override
     public synchronized <V> V getAttribute(String property) {
         Object rc = null;
         if (m_properties != null)
@@ -156,6 +159,7 @@ public class InetNetworkInterface implements NetworkInterface<InetAddress>, Seri
      *                Thrown if the property name is empty or null.
      * @see java.util.Map#put(java.lang.Object, java.lang.Object)
      */
+    @Override
     public synchronized Object setAttribute(String property, Object value) {
         if (m_properties == null)
             m_properties = new HashMap<String, Object>();

@@ -40,7 +40,6 @@ import javax.net.ssl.*;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.security.KeyStore;
-import java.security.Security;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.HashMap;
@@ -156,6 +155,7 @@ public class JMXSecureConnectionFactory {
 
     private static class AnyServerX509TrustManager implements X509TrustManager {
         // Documented in X509TrustManager
+        @Override
         public X509Certificate[] getAcceptedIssuers() {
             // since client authentication is not supported by this
             // trust manager, there's no certificate authority trusted
@@ -164,6 +164,7 @@ public class JMXSecureConnectionFactory {
         }
 
         // Documented in X509TrustManager
+        @Override
         public void checkClientTrusted(X509Certificate[] certs, String authType)
                 throws CertificateException {
             // this trust manager is dedicated to server authentication
@@ -171,6 +172,7 @@ public class JMXSecureConnectionFactory {
         }
 
         // Documented in X509TrustManager
+        @Override
         public void checkServerTrusted(X509Certificate[] certs, String authType)
                 throws CertificateException {
             // any certificate sent by the server is automatically accepted

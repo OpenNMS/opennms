@@ -67,6 +67,7 @@ public class XmlCollectionSet implements CollectionSet {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.config.collector.CollectionSet#getStatus()
      */
+    @Override
     public int getStatus() {
         return m_status;
     }
@@ -101,6 +102,7 @@ public class XmlCollectionSet implements CollectionSet {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.config.collector.CollectionSet#visit(org.opennms.netmgt.config.collector.CollectionSetVisitor)
      */
+    @Override
     public void visit(CollectionSetVisitor visitor) {
         visitor.visitCollectionSet(this);
 
@@ -113,6 +115,7 @@ public class XmlCollectionSet implements CollectionSet {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.config.collector.CollectionSet#ignorePersist()
      */
+    @Override
     public boolean ignorePersist() {
         return false;
     }
@@ -120,6 +123,7 @@ public class XmlCollectionSet implements CollectionSet {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.config.collector.CollectionSet#getCollectionTimestamp()
      */
+    @Override
     public Date getCollectionTimestamp() {
         return m_timestamp;
     }

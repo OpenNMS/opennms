@@ -159,6 +159,7 @@ public abstract class MobileMsgRequest implements Request<String, MobileMsgReque
     }
 
     /** {@inheritDoc} */
+    @Override
     public long getDelay(TimeUnit unit) {
         return unit.convert(m_expiration - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
     }
@@ -168,9 +169,11 @@ public abstract class MobileMsgRequest implements Request<String, MobileMsgReque
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public abstract String getId();
 
     /** {@inheritDoc} */
+    @Override
     public void processError(Throwable t) {
         try {
             m_cb.handleError(this, t);
@@ -185,6 +188,7 @@ public abstract class MobileMsgRequest implements Request<String, MobileMsgReque
      * @param response a {@link org.opennms.sms.reflector.smsservice.MobileMsgResponse} object.
      * @return a boolean.
      */
+    @Override
     public boolean processResponse(MobileMsgResponse response) {
         try {
             response.setRequest(this);
@@ -199,6 +203,7 @@ public abstract class MobileMsgRequest implements Request<String, MobileMsgReque
      *
      * @return a {@link org.opennms.sms.reflector.smsservice.MobileMsgRequest} object.
      */
+    @Override
     public MobileMsgRequest processTimeout() {
         try {
             MobileMsgRequest retry = createNextRetry();
@@ -224,6 +229,7 @@ public abstract class MobileMsgRequest implements Request<String, MobileMsgReque
      * @param o a {@link java.util.concurrent.Delayed} object.
      * @return a int.
      */
+    @Override
     public int compareTo(Delayed o) {
         long thisVal = this.getDelay(TimeUnit.NANOSECONDS);
         long anotherVal = o.getDelay(TimeUnit.NANOSECONDS);
@@ -245,10 +251,12 @@ public abstract class MobileMsgRequest implements Request<String, MobileMsgReque
      *
      * @return a boolean.
      */
+    @Override
     public boolean isProcessed() {
         return m_processed;
     }
 
+    @Override
     public String toString() {
         return new ToStringBuilder(this)
             .append("matcher", m_responseMatcher)

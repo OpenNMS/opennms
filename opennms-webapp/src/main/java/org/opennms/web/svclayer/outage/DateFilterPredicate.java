@@ -87,6 +87,7 @@ public class DateFilterPredicate implements Predicate
      *
      * Use the filter parameters to filter out the table.
      */
+    @Override
     public boolean evaluate(Object bean)
     {
         boolean match = false;

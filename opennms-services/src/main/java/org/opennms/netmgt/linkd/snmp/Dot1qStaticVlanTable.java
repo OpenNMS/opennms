@@ -57,6 +57,7 @@ public class Dot1qStaticVlanTable extends VlanTableBasic implements VlanTable {
     }
     
     /** {@inheritDoc} */
+        @Override
     protected Dot1qStaticVlanTableEntry createTableEntry(SnmpObjId base, SnmpInstId inst, Object val) {
         return new Dot1qStaticVlanTableEntry();
     }

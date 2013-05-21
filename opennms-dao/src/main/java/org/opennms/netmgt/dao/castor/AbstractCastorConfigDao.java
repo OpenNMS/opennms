@@ -161,6 +161,7 @@ public abstract class AbstractCastorConfigDao<K, V> implements InitializingBean 
     }
     
     public class CastorReloadCallback implements FileReloadCallback<V> {
+        @Override
         public V reload(final V object, final Resource resource) {
             return loadConfig(resource);
         }

@@ -50,6 +50,7 @@ public class DeleteViewServlet extends HttpServlet {
     private static final long serialVersionUID = 5700775415816346802L;
 
     /** {@inheritDoc} */
+    @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String viewName = request.getParameter("viewName");
 

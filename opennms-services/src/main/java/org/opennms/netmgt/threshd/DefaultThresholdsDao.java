@@ -51,11 +51,13 @@ public class DefaultThresholdsDao implements ThresholdsDao, InitializingBean {
     private ThresholdingConfigFactory m_thresholdingConfigFactory;
     
     /** {@inheritDoc} */
+    @Override
     public ThresholdGroup get(String name) {
         return get(name, null);
     }
 
     /** {@inheritDoc} */
+    @Override
     public ThresholdGroup merge(ThresholdGroup group) {
         return get(group.getName(), group);
     }
@@ -191,6 +193,7 @@ public class DefaultThresholdsDao implements ThresholdsDao, InitializingBean {
      *
      * @return a {@link org.opennms.netmgt.config.ThresholdingConfigFactory} object.
      */
+    @Override
     public ThresholdingConfigFactory getThresholdingConfigFactory() {
         return m_thresholdingConfigFactory;
     }

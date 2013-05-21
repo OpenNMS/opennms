@@ -151,6 +151,7 @@ public final class ThresholdEntity implements Cloneable {
      *
      * @return a {@link org.opennms.netmgt.threshd.ThresholdEntity} object.
      */
+    @Override
     public ThresholdEntity clone() {
         ThresholdEntity clone = new ThresholdEntity();
         for (ThresholdEvaluatorState thresholdItem : getThresholdEvaluatorStates(null)) {
@@ -167,6 +168,7 @@ public final class ThresholdEntity implements Cloneable {
      *
      * @return String which represents the content of this ThresholdEntity
      */
+    @Override
     public String toString() {
         if (!hasThresholds()) {
             return "";

@@ -58,6 +58,7 @@ public class SeverityBetweenFilter extends BetweenFilter<OnmsSeverity> {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getTextDescription() {
         return "alarm severity between " + getSeverityLabel(getFirst()) + " and " + getSeverityLabel(getLast());
     }
@@ -71,6 +72,7 @@ public class SeverityBetweenFilter extends BetweenFilter<OnmsSeverity> {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return ("<AlarmCriteria.SeverityBetweenFilter: " + this.getDescription() + ">");
     }

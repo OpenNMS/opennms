@@ -71,6 +71,7 @@ public class TimeoutSecureXmlRpcTransport extends DefaultXmlRpcTransport {
      * @return a {@link java.io.InputStream} object.
      * @throws java.io.IOException if any.
      */
+    @Override
     public InputStream sendXmlRpc(final byte [] request) throws IOException {
         con = url.openConnection();
         LogUtils.debugf(this, "Setting read timeout to %d", m_timeout);

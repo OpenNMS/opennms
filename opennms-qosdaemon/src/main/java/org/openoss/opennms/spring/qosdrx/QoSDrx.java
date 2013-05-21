@@ -28,7 +28,6 @@
 
 package org.openoss.opennms.spring.qosdrx;
 
-import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.dao.AlarmDao;
@@ -153,6 +152,7 @@ public class QoSDrx extends AbstractServiceDaemon {
 	/**
 	 * Method to set up the fiber.
 	 */
+        @Override
 	protected void onInit()
 	{
 		ThreadCategory log = getLog();	//Get a reference to the QosDrx logger instance assigned by OpenNMS
@@ -170,6 +170,7 @@ public class QoSDrx extends AbstractServiceDaemon {
 	/**
 	 * The start() method loads the configuration for the QoSDrx daemon and starts the initialOssBeanRunner
 	 */
+        @Override
 	protected void onStart()
 	{
 		ThreadCategory log = getLog();	//Get a reference to the QoSDrx logger instance assigned by OpenNMS
@@ -191,6 +192,7 @@ public class QoSDrx extends AbstractServiceDaemon {
 	 * finish. Its purpose is to clean everything up, e.g. close any JNDI or
 	 * database connections, before the fiber's execution is ended.
 	 */
+        @Override
 	protected void onStop()
 	{
 		ThreadCategory log = getLog(); //Get a reference to the QoSDrx logger instance assigned by OpenNMS
@@ -205,6 +207,7 @@ public class QoSDrx extends AbstractServiceDaemon {
 	 *
 	 * NOTE QoSDrx.pause() NOT IMPLEMENTED - this method does nothing and returns
 	 */
+        @Override
 	protected void onPause()
 	{
 		//	Get a reference to the QoSD logger instance assigned by OpenNMS
@@ -223,6 +226,7 @@ public class QoSDrx extends AbstractServiceDaemon {
 	 *
 	 * NOTE QoSDrx.resume() NOT IMPLEMENTED - this method does nothing and returns
 	 */
+        @Override
 	protected void onResume()
 	{
 		//	Get a reference to the QoSD logger instance assigned by OpenNMS

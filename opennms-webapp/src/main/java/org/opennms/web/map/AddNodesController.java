@@ -94,6 +94,7 @@ public class AddNodesController extends AbstractController {
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		
 		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);

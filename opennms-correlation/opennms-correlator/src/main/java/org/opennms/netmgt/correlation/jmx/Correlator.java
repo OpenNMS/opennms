@@ -42,6 +42,7 @@ public class Correlator implements CorrelatorMBean {
      * 
      * Retrieves the Spring context for the correlator.
      */
+    @Override
     public void init() {
         final BeanFactoryLocator bfl = DefaultLocatorFactory.getInstance();
         final BeanFactoryReference bf = bfl.useBeanFactory("correlatorContext");
@@ -55,6 +56,7 @@ public class Correlator implements CorrelatorMBean {
     /**
      * Start the correlator daemon.
      */
+    @Override
     public void start() {
         if (getBean() != null) getBean().start();
     }
@@ -62,6 +64,7 @@ public class Correlator implements CorrelatorMBean {
     /**
      * Stop the correlator daemon.
      */
+    @Override
     public void stop() {
         if (getBean() != null) getBean().stop();
     }
@@ -71,6 +74,7 @@ public class Correlator implements CorrelatorMBean {
      * 
      * @return The integer constant from {@link Fiber} that represents the daemon's status.
      */
+    @Override
     public int getStatus() {
         return getBean() == null? Fiber.STOPPED : getBean().getStatus();
     }
@@ -80,6 +84,7 @@ public class Correlator implements CorrelatorMBean {
      * 
      * @return The status, as text.
      */
+    @Override
     public String getStatusText() {
         return Fiber.STATUS_NAMES[getStatus()];
     }
@@ -89,6 +94,7 @@ public class Correlator implements CorrelatorMBean {
      * 
      * @return The status, as text.
      */
+    @Override
     public String status() {
         return Fiber.STATUS_NAMES[getStatus()];
     }

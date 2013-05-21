@@ -119,6 +119,7 @@ import org.opennms.netmgt.xml.event.Parms;
                     throw new IllegalStateException(ex.toString());
                 }
             }
+            @Override
             public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
                 try {
                     Parms target = (Parms) object;
@@ -241,6 +242,7 @@ import org.opennms.netmgt.xml.event.Parms;
      * of a global
      * element or element with anonymous type definition.
      */
+    @Override
     public boolean isElementDefinition(
     ) {
         return _elementDefinition;

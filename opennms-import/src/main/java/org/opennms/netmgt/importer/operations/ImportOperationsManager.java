@@ -164,10 +164,12 @@ public class ImportOperationsManager {
     	
     	private Iterator<Entry<String, Integer>> m_foreignIdIterator = m_foreignIdToNodeMap.entrySet().iterator();
 
+            @Override
 		public boolean hasNext() {
 			return m_foreignIdIterator.hasNext();
 		}
 
+            @Override
 		public ImportOperation next() {
             Entry<String, Integer> entry = m_foreignIdIterator.next();
             Integer nodeId = entry.getValue();
@@ -176,6 +178,7 @@ public class ImportOperationsManager {
 			
 		}
 
+            @Override
 		public void remove() {
 			m_foreignIdIterator.remove();
 		}
@@ -195,6 +198,7 @@ public class ImportOperationsManager {
     		m_iterIter = iters.iterator();
     	}
     	
+            @Override
 		public boolean hasNext() {
 			while((m_currentIter == null || !m_currentIter.hasNext()) && m_iterIter.hasNext()) {
 				m_currentIter = m_iterIter.next();
@@ -204,10 +208,12 @@ public class ImportOperationsManager {
 			return (m_currentIter == null ? false: m_currentIter.hasNext());
 		}
 
+            @Override
 		public ImportOperation next() {
 			return m_currentIter.next();
 		}
 
+            @Override
 		public void remove() {
 			m_currentIter.remove();
 		}
@@ -261,6 +267,7 @@ public class ImportOperationsManager {
 		for (Iterator<ImportOperation> it = iterator; it.hasNext();) {
     		final ImportOperation oper = it.next();
     		Runnable r = new Runnable() {
+                            @Override
     			public void run() {
     				preprocessOperation(oper, template, dao, dbPool);
     			}
@@ -287,6 +294,7 @@ public class ImportOperationsManager {
 		log().info("Preprocess: "+oper);
 		oper.gatherAdditionalData();
 		Runnable r = new Runnable() {
+                        @Override
 			public void run() {
 				persistOperation(oper, template, dao);
 			}
@@ -338,6 +346,7 @@ public class ImportOperationsManager {
 	 */
     private List<Event> persistToDatabase(final ImportOperation oper, TransactionTemplate template) {
 		List<Event> events = template.execute(new TransactionCallback<List<Event>>() {
+                        @Override
 			public List<Event> doInTransaction(TransactionStatus status) {
 				List<Event> result = oper.persist();
                 return result;

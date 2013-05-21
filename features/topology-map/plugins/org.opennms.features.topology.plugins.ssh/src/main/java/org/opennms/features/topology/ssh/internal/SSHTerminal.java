@@ -190,6 +190,7 @@ public class SSHTerminal extends AbstractComponent {
 		/**
 		 * Runs the terminal and reads/writes when necessary
 		 */
+                @Override
 		public void run() {
 			try {
 				for (;;) {

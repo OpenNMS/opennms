@@ -157,6 +157,7 @@ public class EventsDescriptor extends org.exolab.castor.xml.util.XMLClassDescrip
                     throw new IllegalStateException(ex.toString());
                 }
             }
+            @Override
             public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
                 try {
                     Events target = (Events) object;
@@ -206,6 +207,7 @@ public class EventsDescriptor extends org.exolab.castor.xml.util.XMLClassDescrip
                     throw new IllegalStateException(ex.toString());
                 }
             }
+            @Override
             public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
                 try {
                     Events target = (Events) object;
@@ -329,6 +331,7 @@ public class EventsDescriptor extends org.exolab.castor.xml.util.XMLClassDescrip
      * of a global
      * element or element with anonymous type definition.
      */
+    @Override
     public boolean isElementDefinition(
     ) {
         return _elementDefinition;

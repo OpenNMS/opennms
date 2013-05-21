@@ -40,6 +40,7 @@ public class OspfIfTable extends SnmpTable<OspfIfTableEntry>{
     }
     
     /** {@inheritDoc} */
+    @Override
     protected OspfIfTableEntry createTableEntry(SnmpObjId base, SnmpInstId inst, Object val) {
         return new OspfIfTableEntry();
     }

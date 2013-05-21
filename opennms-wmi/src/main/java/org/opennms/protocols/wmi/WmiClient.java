@@ -88,6 +88,7 @@ public class WmiClient implements IWmiClient {
     }
 
     /** {@inheritDoc} */
+    @Override
     public OnmsWbemObjectSet performInstanceOf(final String wmiClass) throws WmiException {
         try {
             // Execute the InstancesOf method on the remote SWbemServices object.
@@ -102,11 +103,13 @@ public class WmiClient implements IWmiClient {
     }
 
     /** {@inheritDoc} */
+    @Override
     public OnmsWbemObjectSet performExecQuery(final String strQuery) throws WmiException {
         return performExecQuery(strQuery, "WQL", OnmsWbemFlagReturnEnum.wbemFlagReturnImmediately.getReturnFlagValue());
     }
     
     /** {@inheritDoc} */
+    @Override
     public OnmsWbemObjectSet performExecQuery (final String strQuery, final String strQueryLanguage, final Integer flags) throws WmiException {
         try {
             final JIVariant results[] = m_WbemServices.callMethodA("ExecQuery", new Object[]{new JIString(strQuery), JIVariant.OPTIONAL_PARAM(), JIVariant.OPTIONAL_PARAM(),JIVariant.OPTIONAL_PARAM()});
@@ -217,6 +220,7 @@ public class WmiClient implements IWmiClient {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void connect(final String domain, final String username, final String password) throws WmiException {
         try {
 
@@ -273,6 +277,7 @@ public class WmiClient implements IWmiClient {
      *
      * @throws org.opennms.protocols.wmi.WmiException if any.
      */
+    @Override
     public void disconnect() throws WmiException {
         try {
             JISession.destroySession(m_Session);

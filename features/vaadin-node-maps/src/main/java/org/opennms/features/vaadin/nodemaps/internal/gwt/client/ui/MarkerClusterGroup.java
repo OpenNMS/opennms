@@ -23,6 +23,7 @@ public class MarkerClusterGroup extends FeatureGroup {
         this(MarkerClusterGroupImpl.create(options.getJSObject()));
     }
 
+    @Override
     public MarkerClusterGroup addLayer(final ILayer layer) {
         MarkerClusterGroupImpl.addLayer(getJSObject(), layer.getJSObject());
         return this;
@@ -37,6 +38,7 @@ public class MarkerClusterGroup extends FeatureGroup {
         return this;
     }
 
+    @Override
     public MarkerClusterGroup bindPopup(final String htmlContent, final Options options) {
         MarkerClusterGroupImpl.bindPopup(getJSObject(), htmlContent, options.getJSObject());   
         return this;

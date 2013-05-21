@@ -45,10 +45,12 @@ public class AggregateTracker extends CollectionTracker {
         public ChildTrackerPduBuilder(int maxVarsPerPdu) {
             super(maxVarsPerPdu);
         }
+        @Override
         public void addOid(SnmpObjId snmpObjId) {
             m_oids.add(snmpObjId);
         }
     
+        @Override
         public void setNonRepeaters(int nonRepeaters) {
             m_nonRepeaters = nonRepeaters;
         }
@@ -61,6 +63,7 @@ public class AggregateTracker extends CollectionTracker {
             return size() - getNonRepeaters();
         }
     
+        @Override
         public void setMaxRepetitions(int maxRepititions) {
             m_maxRepititions = maxRepititions;
         }
@@ -156,6 +159,7 @@ public class AggregateTracker extends CollectionTracker {
             m_childPduBuilders = builders;
         }
     
+        @Override
         public void processResponse(SnmpObjId snmpObjId, SnmpValue val) {
             ChildTrackerPduBuilder childBuilder = getChildBuilder(m_currResponseIndex++);
             childBuilder.getResponseProcessor().processResponse(snmpObjId, val);
@@ -191,6 +195,7 @@ public class AggregateTracker extends CollectionTracker {
             return ((zeroBasedIndex - m_nonRepeaters) % m_repeaters) + m_nonRepeaters;
         }
     
+        @Override
         public boolean processErrors(int errorStatus, int errorIndex) {
             if (errorStatus == TOO_BIG_ERR) {
                 int maxVarsPerPdu = m_pduBuilder.getMaxVarsPerPdu();
@@ -237,6 +242,7 @@ public class AggregateTracker extends CollectionTracker {
         }
     }
     
+    @Override
     public void setFailed(boolean failed) {
         super.setFailed(failed);
         for (CollectionTracker child : m_children) {
@@ -244,6 +250,7 @@ public class AggregateTracker extends CollectionTracker {
         }
     }
 
+    @Override
     public void setTimedOut(boolean timedOut) {
         super.setTimedOut(timedOut);
         for (CollectionTracker child : m_children) {
@@ -268,6 +275,7 @@ public class AggregateTracker extends CollectionTracker {
         return true;
     }
     
+    @Override
     public ResponseProcessor buildNextPdu(final PduBuilder parentBuilder) {
         
         // first process the child trackers that aren't finished up to maxVars 

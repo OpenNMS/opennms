@@ -52,6 +52,7 @@ public class OneToOnePersister extends BasePersister {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void visitAttribute(CollectionAttribute attribute) {
         pushShouldPersist(attribute);
         if (shouldPersist()) {
@@ -61,6 +62,7 @@ public class OneToOnePersister extends BasePersister {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void completeAttribute(CollectionAttribute attribute) {
         if (shouldPersist()) {
         	commitBuilder();

@@ -35,7 +35,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 import org.opennms.core.utils.LogUtils;
@@ -45,7 +44,6 @@ import com.vaadin.ui.AbstractOrderedLayout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TabSheet;

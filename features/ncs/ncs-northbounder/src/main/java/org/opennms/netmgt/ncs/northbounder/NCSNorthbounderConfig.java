@@ -61,11 +61,13 @@ public class NCSNorthbounderConfig implements Serializable, Comparable<NCSNorthb
 
     public static enum HttpMethod {
         POST {
+                @Override
         	HttpEntityEnclosingRequestBase getRequestMethod(URI uri) {
         		return new HttpPost(uri);
         	}
         },
         PUT {
+                @Override
         	HttpEntityEnclosingRequestBase getRequestMethod(URI uri) {
         		return new HttpPut(uri);
         	}

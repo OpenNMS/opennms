@@ -63,6 +63,7 @@ public class ErrorDialogBox extends PopupPanel {
         m_errorLabel.setText("hello");
         Button ok = new Button("OK");
         ok.addClickHandler(new ClickHandler() {
+          @Override
           public void onClick(ClickEvent event) {
               ErrorDialogBox.this.hide();
           }

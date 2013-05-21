@@ -126,6 +126,7 @@ class XmpCollectionResource extends AbstractCollectionResource
 
     // get the location where we are supposed to write our data to
     /** {@inheritDoc} */
+    @Override
     public File getResourceDir(RrdRepository repository)
     {
 
@@ -178,6 +179,7 @@ class XmpCollectionResource extends AbstractCollectionResource
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getInstance()
     {
         // for node level resources, no instance
@@ -196,6 +198,7 @@ class XmpCollectionResource extends AbstractCollectionResource
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getResourceTypeName() { return nodeTypeName; };
 
     /**
@@ -213,6 +216,7 @@ class XmpCollectionResource extends AbstractCollectionResource
      *
      * @return a int.
      */
+    @Override
     public int getType() { return nodeType; }
     /**
      * <p>setType</p>
@@ -226,8 +230,10 @@ class XmpCollectionResource extends AbstractCollectionResource
      *
      * @return a boolean.
      */
+    @Override
     public boolean rescanNeeded() { return false; }
     /** {@inheritDoc} */
+    @Override
     public boolean shouldPersist(ServiceParameters params) { return true; }
 
     /**
@@ -242,9 +248,11 @@ class XmpCollectionResource extends AbstractCollectionResource
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() { return "XmpCollectionResource for "+agent+" resType="+resourceType+" instance="+instance+" nodeType="+nodeTypeName+" nodeType="+nodeType; }
 
     /** {@inheritDoc} */
+    @Override
     public void visit(CollectionSetVisitor visitor) 
     { 
         log().debug("XmpCollectionResource: visit starting with "+ getGroups().size()+" attribute groups");
@@ -262,6 +270,7 @@ class XmpCollectionResource extends AbstractCollectionResource
 
     } /* visit */
 
+    @Override
     public String getParent() {
         return agent.getStorageDir().toString();
     }

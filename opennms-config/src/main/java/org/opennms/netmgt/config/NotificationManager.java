@@ -1106,6 +1106,7 @@ public abstract class NotificationManager {
     public Map<String, String> rebuildParameterMap(final int notifId, final String resolutionPrefix, final boolean skipNumericPrefix) throws Exception {
         final Map<String, String> parmMap = new HashMap<String, String>();
         Querier querier = new Querier(m_dataSource, "select notifications.*, service.* from notifications left outer join service on notifications.serviceID = service.serviceID  where notifyId = ?") {
+            @Override
             public void processRow(ResultSet rs) throws SQLException {
                 
                 /*
@@ -1237,6 +1238,7 @@ public abstract class NotificationManager {
         final Event event = new Event();
         Querier querier = new Querier(m_dataSource, "select * from events where eventid = ?", new RowProcessor() {
 
+            @Override
             public void processRow(ResultSet rs) throws SQLException {
                 event.setDbid(rs.getInt("eventid"));
                 event.setUei(rs.getString("eventuei"));

@@ -128,6 +128,7 @@ public abstract class BaseConnectionFactory implements ClosableDataSource {
      * @return a int.
      * @throws java.sql.SQLException if any.
      */
+    @Override
     public abstract int getLoginTimeout() throws SQLException;
 
     /**

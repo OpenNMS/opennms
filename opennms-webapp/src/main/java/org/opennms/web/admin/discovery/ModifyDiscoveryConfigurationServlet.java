@@ -63,6 +63,7 @@ public class ModifyDiscoveryConfigurationServlet extends HttpServlet {
 	protected static ThreadCategory log = ThreadCategory.getInstance("WEB");
 
 	/** {@inheritDoc} */
+    @Override
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
 	    log.info("Loading Discovery configuration.");
@@ -76,6 +77,7 @@ public class ModifyDiscoveryConfigurationServlet extends HttpServlet {
     }
 	
 	/** {@inheritDoc} */
+    @Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doPost(request, response);
 	}

@@ -202,6 +202,7 @@ public class DurationTest {
                 return item < val;
             }
 
+            @Override
             public void describeTo(Description descr) {
                 descr.appendText("an integer less than ").appendValue(val);
             }
@@ -215,6 +216,7 @@ public class DurationTest {
                 return item > val;
             }
 
+            @Override
             public void describeTo(Description descr) {
                 descr.appendText("an integer greater than ").appendValue(val);
             }

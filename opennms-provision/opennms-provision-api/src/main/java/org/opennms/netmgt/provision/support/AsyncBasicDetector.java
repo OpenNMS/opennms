@@ -139,6 +139,7 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
     protected ResponseValidator<Response> startsWith(final String prefix) {
         return new ResponseValidator<Response>() {
 
+            @Override
             public boolean validate(final Object message) {
                 final String str = message.toString().trim();
                 return str.startsWith(prefix);
@@ -156,6 +157,7 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
     protected ResponseValidator<Response> find(final String regex){
         return new ResponseValidator<Response>() {
 
+            @Override
             public boolean validate(final Object message) {
                 final String str = message.toString().trim();
                 return Pattern.compile(regex).matcher(str).find();

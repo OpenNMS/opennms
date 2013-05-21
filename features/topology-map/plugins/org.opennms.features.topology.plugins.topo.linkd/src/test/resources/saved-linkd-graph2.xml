@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<graph namespace="nodes">
+	<vertex>
+		<iconKey>linkd:system</iconKey>
+		<id>3</id>
+		<ipAddr>192.168.3.1</ipAddr>
+		<label>node3</label>
+		<nodeID>3</nodeID>
+		<x>3</x>
+		<y>3</y>
+		<locked>true</locked>
+		<selected>true</selected>
+		<parent>g2</parent>
+	</vertex>
+	<vertex>
+		<iconKey>linkd:system</iconKey>
+		<id>1</id>
+		<ipAddr>192.168.1.1</ipAddr>
+		<label>node1</label>
+		<nodeID>1</nodeID>
+		<x>1</x>
+		<y>1</y>
+		<locked>true</locked>
+		<selected>true</selected>
+		<parent>g2</parent>
+	</vertex>
+	<vertex>
+		<iconKey>linkd:system</iconKey>
+		<id>4</id>
+		<ipAddr>192.168.4.1</ipAddr>
+		<label>node4</label>
+		<nodeID>4</nodeID>
+		<x>4</x>
+		<y>4</y>
+		<locked>true</locked>
+		<selected>true</selected>
+	</vertex>
+	<vertex>
+		<iconKey>linkd:system</iconKey>
+		<id>2</id>
+		<ipAddr>192.168.2.1</ipAddr>
+		<label>node2</label>
+		<nodeID>2</nodeID>
+		<x>2</x>
+		<y>2</y>
+		<locked>true</locked>
+		<selected>true</selected>
+	</vertex>
+	<group>
+		<iconKey>group</iconKey>
+		<id>g0</id>
+		<ipAddr>127.0.0.1</ipAddr>
+		<label>My Group</label>
+		<tooltipText>My Group</tooltipText>
+		<locked>true</locked>
+		<selected>true</selected>
+	</group>
+	<group>
+		<iconKey>group</iconKey>
+		<id>g1</id>
+		<ipAddr>127.0.0.1</ipAddr>
+		<label>My Group2</label>
+		<tooltipText>My Group2</tooltipText>
+		<locked>true</locked>
+		<selected>true</selected>
+	</group>
+	<group>
+		<iconKey>group</iconKey>
+		<id>g2</id>
+		<ipAddr>127.0.0.1</ipAddr>
+		<label>abc2</label>
+		<tooltipText>abc2</tooltipText>
+		<locked>true</locked>
+		<selected>true</selected>
+		<parent>g1</parent>
+	</group>
+</graph>

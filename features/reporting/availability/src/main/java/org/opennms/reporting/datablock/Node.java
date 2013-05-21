@@ -55,6 +55,7 @@ public class Node extends StandardNamedObject {
             return new InterfaceComparator(svc.getName());
         }
 
+        @Override
         public boolean equals(Object o) {
             boolean rc = false;
             if (o != null) {
@@ -491,6 +492,7 @@ public class Node extends StandardNamedObject {
      *
      * @return The string representation.
      */
+    @Override
     public String toString() {
         StringBuffer retVal = new StringBuffer();
         String nl = System.getProperty("line.separator");

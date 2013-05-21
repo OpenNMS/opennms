@@ -49,6 +49,7 @@ public class MockInterval implements ScheduleInterval {
         m_interval = interval;
     }
     
+    @Override
     public long getInterval() {
         return m_interval;
     }
@@ -75,6 +76,7 @@ public class MockInterval implements ScheduleInterval {
         m_suspensions.add(new Suspension(start, end));
     }
     
+    @Override
     public boolean scheduledSuspension() {
         for (Suspension suspension : m_suspensions) {
             if (suspension.contains(m_timer.getCurrentTime())) {

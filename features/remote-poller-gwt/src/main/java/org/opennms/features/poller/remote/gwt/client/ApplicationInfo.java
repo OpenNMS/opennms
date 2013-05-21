@@ -191,6 +191,7 @@ public class ApplicationInfo implements Serializable, IsSerializable, Comparable
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public boolean equals(Object aThat) {
 		if (this == aThat) return true;
 		if (!(aThat instanceof ApplicationInfo)) return false;
@@ -206,6 +207,7 @@ public class ApplicationInfo implements Serializable, IsSerializable, Comparable
 	 *
 	 * @return a int.
 	 */
+        @Override
 	public int hashCode() {
 		return new HashCodeBuilder()
 			.append(this.getId())
@@ -219,6 +221,7 @@ public class ApplicationInfo implements Serializable, IsSerializable, Comparable
 	 * @param that a {@link org.opennms.features.poller.remote.gwt.client.ApplicationInfo} object.
 	 * @return a int.
 	 */
+        @Override
 	public int compareTo(final ApplicationInfo that) {
 		return new CompareToBuilder()
 			.append(this.getStatusDetails(), that.getStatusDetails())
@@ -242,6 +245,7 @@ public class ApplicationInfo implements Serializable, IsSerializable, Comparable
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
+        @Override
 	public String toString() {
 		return "ApplicationInfo[id=" + m_id
 			+ ",name=" + m_name

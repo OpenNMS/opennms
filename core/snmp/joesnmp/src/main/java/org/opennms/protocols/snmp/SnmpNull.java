@@ -86,6 +86,7 @@ public class SnmpNull extends Object implements SnmpSyntax, Cloneable, Serializa
      * @return The ASN.1 value for the SnmpNull
      * 
      */
+    @Override
     public byte typeId() {
         return ASNTYPE;
     }
@@ -104,6 +105,7 @@ public class SnmpNull extends Object implements SnmpSyntax, Cloneable, Serializa
      * @return The byte immediantly after the last encoded byte.
      * 
      */
+    @Override
     public int encodeASN(byte[] buf, int offset, AsnEncoder encoder) throws AsnEncodingException {
         return encoder.buildNull(buf, offset, typeId());
     }
@@ -122,6 +124,7 @@ public class SnmpNull extends Object implements SnmpSyntax, Cloneable, Serializa
      * @return The byte immediantly after the last decoded byte of information.
      * 
      */
+    @Override
     public int decodeASN(byte[] buf, int offset, AsnEncoder encoder) throws AsnDecodingException {
         Object[] rVals = encoder.parseNull(buf, offset);
 
@@ -138,6 +141,7 @@ public class SnmpNull extends Object implements SnmpSyntax, Cloneable, Serializa
      * @return A duplicate of the current object.
      * 
      */
+    @Override
     public SnmpSyntax duplicate() {
         return new SnmpNull(this);
     }
@@ -149,6 +153,7 @@ public class SnmpNull extends Object implements SnmpSyntax, Cloneable, Serializa
      * @return A duplicate of the current object.
      * 
      */
+    @Override
     public Object clone() {
         return new SnmpNull(this);
     }
@@ -157,6 +162,7 @@ public class SnmpNull extends Object implements SnmpSyntax, Cloneable, Serializa
      * Returns a string representation of the SNMP Null object
      * 
      */
+    @Override
     public String toString() {
         return "";
     }

@@ -77,18 +77,21 @@ public class NodeAclRepositoryIbatis extends SqlMapClientTemplate implements Ite
      * @return a {@link java.util.List} object.
      */
     @SuppressWarnings("unchecked")
+    @Override
     public List<NodeONMSDTO> getItems() {
         return queryForList("selectNodes");
     }
 
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
+    @Override
     public List<NodeONMSDTO> getAuthorityItems(List<Integer> items) {
         return items.size() > 0 ? queryForList("selectNodesAuthority", items) : new ArrayList<NodeONMSDTO>(0);
     }
 
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
+    @Override
     public List<NodeONMSDTO> getFreeItems(List<Integer> items) {
         return items.size() > 0 ? queryForList("selectFreeNodesAuthority", items) : queryForList("selectNodes");
     }

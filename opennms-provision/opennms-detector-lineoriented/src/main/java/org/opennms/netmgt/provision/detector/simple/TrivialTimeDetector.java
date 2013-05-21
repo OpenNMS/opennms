@@ -96,6 +96,7 @@ public class TrivialTimeDetector extends BasicDetector<TrivialTimeRequest, Trivi
 
     private static ResponseValidator<TrivialTimeResponse> validate() {
         return new ResponseValidator<TrivialTimeResponse>() {
+            @Override
             public boolean validate(final TrivialTimeResponse response) {
                 return response.isAvailable();
             }

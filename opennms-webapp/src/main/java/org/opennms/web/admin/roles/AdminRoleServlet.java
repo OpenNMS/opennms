@@ -84,12 +84,14 @@ public class AdminRoleServlet extends HttpServlet implements Servlet {
     }
     
     private class ListAction implements Action {
+        @Override
         public String execute(HttpServletRequest request, HttpServletResponse response) {
             return LIST;
         }
     }
     
     private class DeleteAction implements Action {
+        @Override
         public String execute(HttpServletRequest request, HttpServletResponse response) throws ServletException {
             getRoleManager().deleteRole(request.getParameter("role"));
             Action list = new ListAction();
@@ -99,6 +101,7 @@ public class AdminRoleServlet extends HttpServlet implements Servlet {
     
     private class ViewAction implements Action {
         
+        @Override
         public String execute(HttpServletRequest request, HttpServletResponse response) throws ServletException {
             try {
                 WebRole role = (WebRole)request.getAttribute("role");
@@ -120,6 +123,7 @@ public class AdminRoleServlet extends HttpServlet implements Servlet {
     
     private class AddEntryAction implements Action {
         
+        @Override
         public String execute(HttpServletRequest request, HttpServletResponse response) throws ServletException {
             try {
                 WebRole role = getRoleManager().getRole(request.getParameter("role"));
@@ -140,6 +144,7 @@ public class AdminRoleServlet extends HttpServlet implements Servlet {
     
     private class EditEntryAction implements Action {
         
+        @Override
         public String execute(HttpServletRequest request, HttpServletResponse response) throws ServletException {
             WebRole role = getRoleManager().getRole(request.getParameter("role"));
             request.setAttribute("role", role);
@@ -174,6 +179,7 @@ public class AdminRoleServlet extends HttpServlet implements Servlet {
     
     private class SaveEntryAction implements Action {
         
+        @Override
         public String execute(HttpServletRequest request, HttpServletResponse response) throws ServletException {
             try {
                 WebRole role = getRoleManager().getRole(request.getParameter("role"));
@@ -242,6 +248,7 @@ public class AdminRoleServlet extends HttpServlet implements Servlet {
     
     private class EditDetailsAction implements Action {
         
+        @Override
         public String execute(HttpServletRequest request, HttpServletResponse response) throws ServletException {
             WebRole role = getRoleManager().getRole(request.getParameter("role"));
             request.setAttribute("role", role);
@@ -252,6 +259,7 @@ public class AdminRoleServlet extends HttpServlet implements Servlet {
     
     private class NewAction implements Action {
         
+        @Override
         public String execute(HttpServletRequest request, HttpServletResponse response) throws ServletException {
             WebRole role = getRoleManager().createRole();
             role.setName("NewRole");
@@ -263,6 +271,7 @@ public class AdminRoleServlet extends HttpServlet implements Servlet {
     
     private class SaveDetailsAction implements Action {
         
+        @Override
         public String execute(HttpServletRequest request, HttpServletResponse response) throws ServletException {
             if (request.getParameter("save") != null) {
                 String roleName = request.getParameter("role");
@@ -328,6 +337,7 @@ public class AdminRoleServlet extends HttpServlet implements Servlet {
 	 * @see javax.servlet.http.HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	/** {@inheritDoc} */
+    @Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         doIt(request, response);
 	}  	
@@ -336,6 +346,7 @@ public class AdminRoleServlet extends HttpServlet implements Servlet {
 	 * @see javax.servlet.http.HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	/** {@inheritDoc} */
+    @Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         doIt(request, response);
 	}
@@ -345,6 +356,7 @@ public class AdminRoleServlet extends HttpServlet implements Servlet {
      *
      * @throws javax.servlet.ServletException if any.
      */
+    @Override
     public void init() throws ServletException {
         super.init();
 

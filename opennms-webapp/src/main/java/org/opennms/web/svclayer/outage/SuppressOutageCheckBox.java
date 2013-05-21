@@ -44,11 +44,13 @@ import org.extremecomponents.table.core.TableModel;
 import org.extremecomponents.table.view.html.ColumnBuilder;
 public class SuppressOutageCheckBox implements Cell {
 	/** {@inheritDoc} */
+        @Override
 	public String getExportDisplay(TableModel model, Column column) {
 		return null;
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public String getHtmlDisplay(TableModel model, Column column) {
 		ColumnBuilder columnBuilder = new ColumnBuilder(column);
 

@@ -48,11 +48,13 @@ public class LocationMonitorIdValidator implements Validator, InitializingBean {
     private LocationMonitorDao m_locationMonitorDao;
 
     /** {@inheritDoc} */
+    @Override
     public boolean supports(Class<?> clazz) {
         return clazz.equals(LocationMonitorIdCommand.class);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void validate(Object obj, Errors errors) {
         LocationMonitorIdCommand cmd = (LocationMonitorIdCommand) obj;
         

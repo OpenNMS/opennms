@@ -87,6 +87,7 @@ final public class CitrixMonitor extends AbstractServiceMonitor {
      * code indicates that we are talking to an Citrix server ('ICA' appears in
      * the response) we set the service status to SERVICE_AVAILABLE and return.
      */
+    @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
 
         // Get the category logger

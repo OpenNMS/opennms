@@ -45,6 +45,7 @@ public class GraphResourceList implements EntryPoint {
   /**
    * This is the entry point method.
    */
+    @Override
     public void onModuleLoad() {
         
         if(Navigator.getUserAgent().contains("MSIE")) {

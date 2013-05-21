@@ -116,6 +116,7 @@ class DefaultLifeCycleInstance extends SequenceTask implements LifeCycleInstance
      *
      * @return a {@link java.util.List} object.
      */
+    @Override
     public List<String> getPhaseNames() {
         List<String> phaseNames = new ArrayList<String>(m_phases.length);
         for(Phase phase : m_phases) {
@@ -129,11 +130,13 @@ class DefaultLifeCycleInstance extends SequenceTask implements LifeCycleInstance
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getName() {
         return m_name;
     }
 
     /** {@inheritDoc} */
+    @Override
     public Object getAttribute(String key) {
         return m_attributes.get(key);
     }
@@ -146,6 +149,7 @@ class DefaultLifeCycleInstance extends SequenceTask implements LifeCycleInstance
      * @param <T> a T object.
      * @return a T object.
      */
+    @Override
     public <T> T getAttribute(String key, T defaultValue) {
         if (getAttribute(key) == null) {
             return defaultValue;
@@ -168,17 +172,20 @@ class DefaultLifeCycleInstance extends SequenceTask implements LifeCycleInstance
     }
 
     /** {@inheritDoc} */
+    @Override
     public <T> T getAttribute(String key, Class<T> type) {
         return type.cast(getAttribute(key));
     }
 
     /** {@inheritDoc} */
+    @Override
     public LifeCycleInstance setAttribute(String key, Object value) {
         m_attributes.put(key, value);
         return this;
     }
     
     /** {@inheritDoc} */
+    @Override
     public <T> T findAttributeByType(Class<T> clazz) {
         T result = null;
         for(Entry<String, Object> entry : m_attributes.entrySet()) {
@@ -195,6 +202,7 @@ class DefaultLifeCycleInstance extends SequenceTask implements LifeCycleInstance
 
     
     /** {@inheritDoc} */
+    @Override
     public LifeCycleInstance createNestedLifeCycle(BatchTask containingPhase, String lifeCycleName) {
         return m_repository.createNestedLifeCycleInstance(containingPhase, lifeCycleName, m_providers);
     }
@@ -202,6 +210,7 @@ class DefaultLifeCycleInstance extends SequenceTask implements LifeCycleInstance
     /**
      * <p>trigger</p>
      */
+    @Override
     public void trigger() {
         if (m_containingPhase != null) {
             m_containingPhase.add(this);
@@ -215,6 +224,7 @@ class DefaultLifeCycleInstance extends SequenceTask implements LifeCycleInstance
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return new ToStringBuilder(this)
             .append("name", m_name)

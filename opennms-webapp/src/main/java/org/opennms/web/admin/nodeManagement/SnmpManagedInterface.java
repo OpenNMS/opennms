@@ -259,6 +259,7 @@ public class SnmpManagedInterface implements Serializable, Comparable<SnmpManage
      * @param obj a {@link org.opennms.web.admin.nodeManagement.SnmpManagedInterface} object.
      * @return a int.
      */
+    @Override
     public int compareTo(SnmpManagedInterface obj) {
         return new CompareToBuilder()
             .append(getSnmpInterfaceId(), obj.getSnmpInterfaceId())

@@ -110,6 +110,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
             executor.schedule(this);
         }
         
+        @Override
         public void execute() {
             doApplicationUpdate(m_applicationInfo);
         }
@@ -131,6 +132,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
             executor.schedule(this);
         }
 
+        @Override
         public boolean execute() {
             if(m_locations.isEmpty()) {
                 return false;
@@ -202,6 +204,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         initialize(view.getSelectedStatuses());
     }
 
+    @Override
     public void initialize(Set<Status> statuses) {
         m_statusFilter.setStatuses(statuses);
         
@@ -220,12 +223,14 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
 
     private void startStatusEvents() {
         getRemoteService().start(new AsyncCallback<Void>() {
+            @Override
             public void onFailure(Throwable throwable) {
                 // Log.debug("unable to start location even service backend", throwable);
                 Window.alert("unable to start location event service backend: " + throwable.getMessage());
                 throw new InitializationException("remote service start failed", throwable);
             }
         
+            @Override
             public void onSuccess(Void voidArg) {
               
             }
@@ -249,6 +254,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
     }
 
     /** {@inheritDoc} */
+    @Override
     public void addLocationManagerInitializationCompleteEventHandler(LocationManagerInitializationCompleteEventHander handler) {
         m_handlerManager.addHandler(LocationManagerInitializationCompleteEvent.TYPE, handler);
     };
@@ -316,6 +322,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         // for now, LocationInfo is Comparable and has a natural sort ordering
         // based on status, priority, and name
         Collections.sort(inBounds, new Comparator<LocationInfo>() {
+            @Override
             public int compare(LocationInfo o1, LocationInfo o2) {
                 return o1.compareTo(o2);
             }
@@ -335,6 +342,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
      *
      * Handler triggered when a user clicks on a specific location record.
      */
+    @Override
     public void onLocationSelected(final LocationPanelSelectEvent event) {
         showLocationDetails(event.getLocationName());
     }
@@ -344,6 +352,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         // in the content
         final LocationInfo loc = m_dataManager.getLocation(locationName);
         m_remoteService.getLocationDetails(locationName, new AsyncCallback<LocationDetails>() {
+            @Override
             public void onFailure(final Throwable t) {
                 String htmlTitle = "Error Getting Location Details";
                 String htmlContent = "<p>An error occurred getting the location details.</p>" + "<pre>"
@@ -351,6 +360,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
                 m_view.showLocationDetails(locationName, htmlTitle, htmlContent);
             }
 
+            @Override
             public void onSuccess(final LocationDetails locationDetails) {
                 m_view.showLocationDetails(
                     locationName,
@@ -367,6 +377,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
      *
      * Refresh the list of locations whenever the map panel boundaries change.
      */
+    @Override
     public void onBoundsChanged(final MapPanelBoundsChangedEvent e) {
         // make sure each location's marker is up-to-date
         updateAllMarkerStates();
@@ -383,6 +394,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
      * Invoked by the {@link LocationUpdatedRemoteEvent} and
      * {@link LocationsUpdatedRemoteEvent} events.
      */
+    @Override
     public void updateLocation(final LocationInfo newLocation) {
         if (newLocation != null) {
             LocationInfo oldLocation = m_dataManager.getLocation(newLocation.getName());
@@ -420,6 +432,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
      * Invoked by the {@link org.opennms.features.poller.remote.gwt.client.remoteevents.ApplicationUpdatedRemoteEvent} and
      * {@link org.opennms.features.poller.remote.gwt.client.remoteevents.ApplicationUpdatedRemoteEvent} events.
      */
+    @Override
     public void updateApplication(final ApplicationInfo applicationInfo) {
         ApplicationUpdater appUpdater = new ApplicationUpdater(applicationInfo);
         appUpdater.schedule(m_executor);
@@ -453,6 +466,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
     }
 
     /** {@inheritDoc} */
+    @Override
     public void removeApplication(final String applicationName) {
         final ApplicationInfo info = m_dataManager.getApplicationInfo(applicationName);
         m_dataManager.removeApplication(applicationName);
@@ -467,6 +481,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
     /**
      * Invoked by the {@link UpdateCompleteRemoteEvent} event.
      */
+    @Override
     public void updateComplete() {
         m_dataManager.updateComplete();
         if (!m_updated) {
@@ -477,6 +492,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
     }
 
     /** {@inheritDoc} */
+    @Override
     public void onFiltersChanged(Filters filters) {
         // TODO: Update state inside of this object to track the filter state
         // (if necessary)
@@ -485,6 +501,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
     }
 
     /** {@inheritDoc} */
+    @Override
     public void onTagSelected(String tagName) {
         // Update state inside of this object to track the selected tag
         m_tagFilter.setSelectedTag(tagName);
@@ -497,6 +514,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
     /**
      * <p>onTagCleared</p>
      */
+    @Override
     public void onTagCleared() {
         // Update state inside of this object to track the selected tag
         m_tagFilter.setSelectedTag(null);
@@ -530,11 +548,13 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
     }
 
     /** {@inheritDoc} */
+    @Override
     public void onGWTMarkerClicked(GWTMarkerClickedEvent event) {
         GWTMarkerState markerState = event.getMarkerState();
         showLocationDetails(markerState.getName());
     }
     
+    @Override
     public void onGWTMarkerInfoWindowRefresh(GWTMarkerInfoWindowRefreshEvent event) {
         refreshLocationInfoWindowDetails(event.getMarkerState().getName());
     }
@@ -544,6 +564,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
     }
 
     /** {@inheritDoc} */
+    @Override
     public void onStatusSelectionChanged(Status status, boolean selected) {
         if (selected) {
             m_statusFilter.addStatus(status);
@@ -557,6 +578,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
     }
 
     /** {@inheritDoc} */
+    @Override
     public void onApplicationSelected(final ApplicationSelectedEvent event) {
         
         
@@ -576,10 +598,12 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         
         m_remoteService.getApplicationDetails(applicationName, new AsyncCallback<ApplicationDetails>() {
 
+            @Override
             public void onFailure(final Throwable t) {
                 // TODO: Do something on failure.
             }
 
+            @Override
             public void onSuccess(final ApplicationDetails applicationDetails) {
                 m_eventBus.fireEvent(new ApplicationDetailsRetrievedEvent(applicationDetails));
             }
@@ -587,6 +611,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
     }
 
     /** {@inheritDoc} */
+    @Override
     public void onApplicationDeselected(ApplicationDeselectedEvent event) {
         // Remove the application from the selected application list
         m_applicationFilter.removeApplication(event.getAppInfo());
@@ -599,6 +624,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
     /**
      * <p>locationClicked</p>
      */
+    @Override
     public void locationClicked() {
         m_selectedFilter = m_locationViewFilter;
         updateAllMarkerStates();
@@ -607,6 +633,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
     /**
      * <p>applicationClicked</p>
      */
+    @Override
     public void applicationClicked() {
         m_selectedFilter = m_applicationViewFilter;
         updateAllMarkerStates();
@@ -663,6 +690,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         return sb.toString();
     }
 
+    @Override
     public void updateLocations(Collection<LocationInfo> locations) {
         LocationUpdater locUpdater = new LocationUpdater(locations);
         locUpdater.schedule(m_executor);

@@ -173,6 +173,7 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
     /**
      * <p>run</p>
      */
+    @Override
     public void run() {
         log().info("Vacuumd scheduling started");
 
@@ -331,6 +332,7 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
     }
 
     /** {@inheritDoc} */
+    @Override
     public void onEvent(Event event) {
         
         if (isReloadConfigEvent(event)) {

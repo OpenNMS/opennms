@@ -160,6 +160,7 @@ public abstract class AbstractJaxbConfigDao<K, V> implements InitializingBean {
     }
     
     public class JaxbReloadCallback implements FileReloadCallback<V> {
+        @Override
         public V reload(final V object, final Resource resource) {
             return loadConfig(resource);
         }

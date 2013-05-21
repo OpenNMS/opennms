@@ -49,6 +49,7 @@ public final class ServletHandler
         return this.servlet;
     }
 
+    @Override
     public void init()
         throws ServletException
     {
@@ -57,6 +58,7 @@ public final class ServletHandler
         this.servlet.init(config);
     }
 
+    @Override
     public void destroy()
     {
         this.servlet.destroy();
@@ -100,6 +102,7 @@ public final class ServletHandler
         }
     }
 
+    @Override
     public int compareTo(ServletHandler other)
     {
         return other.alias.length() - this.alias.length();

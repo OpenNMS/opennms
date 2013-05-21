@@ -43,12 +43,15 @@ public class ResourceQueryExecuter extends JRAbstractQueryExecuter {
         parseQuery();
     }
 
+    @Override
     public boolean cancelQuery() throws JRException {
         return false;
     }
 
+    @Override
     public void close() {}
 
+    @Override
     public JRDataSource createDatasource() throws JRException {
         return new ResourceQueryCommand().executeCommand(getQueryString());
     }

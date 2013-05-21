@@ -58,6 +58,7 @@ public class Avail implements Comparable<Avail> {
 	 *
 	 * Compares the Avail to another in input by min.
 	 */
+        @Override
 	public int compareTo(final Avail otherAvail) {
 		if(this.min==otherAvail.getMin()) return 0;
 		else if(this.min<otherAvail.getMin()) return -1;

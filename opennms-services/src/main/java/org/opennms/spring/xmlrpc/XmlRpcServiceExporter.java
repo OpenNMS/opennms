@@ -119,6 +119,7 @@ public class XmlRpcServiceExporter extends RemoteExporter implements Initializin
      *
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void destroy() throws Exception {
         if (serviceName == null || "".equals(serviceName)) {
             this.webServer.removeHandler("$default");
@@ -138,6 +139,7 @@ public class XmlRpcServiceExporter extends RemoteExporter implements Initializin
             super(code, message);
         }
         
+        @Override
         public String toString() {
             return getMessage();
         }
@@ -145,6 +147,7 @@ public class XmlRpcServiceExporter extends RemoteExporter implements Initializin
     }
 
     /** {@inheritDoc} */
+    @Override
     public Object execute(String method, @SuppressWarnings("unchecked") Vector params) throws Exception {
         
         log().debug("calling: "+method+'('+toArgList(params)+')');

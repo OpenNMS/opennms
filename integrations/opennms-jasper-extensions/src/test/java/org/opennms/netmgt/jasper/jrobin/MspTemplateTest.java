@@ -70,6 +70,7 @@ public class MspTemplateTest {
             m_factor = 2 * Math.PI / period;
         }
         
+        @Override
         public double evaluate(long timestamp) {
             long x = timestamp - m_startTime;
             double ret = (m_amplitude * Math.sin(m_factor * x)) + m_offset;
@@ -96,6 +97,7 @@ public class MspTemplateTest {
             m_factor = 2 * Math.PI / period;
         }
         
+        @Override
         public double evaluate(long timestamp) {
             long x = timestamp - m_startTime;
             double ret = (m_amplitude * Math.cos(m_factor * x)) + m_offset;
@@ -113,6 +115,7 @@ public class MspTemplateTest {
             m_b = b;
         }
 
+        @Override
         public double evaluate(long timestamp) {
             return m_a.evaluate(timestamp)*m_b.evaluate(timestamp);
         }
@@ -127,6 +130,7 @@ public class MspTemplateTest {
             m_function = function;
         }
 
+        @Override
         public double evaluate(long timestamp) {
             double m_diff = m_function.evaluate(timestamp);
             m_prevValue += m_diff;

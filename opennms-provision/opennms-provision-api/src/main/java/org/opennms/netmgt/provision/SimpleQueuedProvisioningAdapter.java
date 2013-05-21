@@ -105,6 +105,7 @@ public abstract class SimpleQueuedProvisioningAdapter implements ProvisioningAda
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public abstract String getName();
     
     /**
@@ -151,6 +152,7 @@ public abstract class SimpleQueuedProvisioningAdapter implements ProvisioningAda
      * @see org.opennms.netmgt.provision.ProvisioningAdapter#addNode(int)
      */
     /** {@inheritDoc} */
+    @Override
     public final void addNode(int nodeId) {
         AdapterOperation op = new AdapterOperation(Integer.valueOf(nodeId), AdapterOperationType.ADD, 
                                                    createScheduleForNode(nodeId, AdapterOperationType.ADD));
@@ -167,6 +169,7 @@ public abstract class SimpleQueuedProvisioningAdapter implements ProvisioningAda
      * @see org.opennms.netmgt.provision.ProvisioningAdapter#updateNode(int)
      */
     /** {@inheritDoc} */
+    @Override
     public final void updateNode(int nodeId) {
         AdapterOperation op = new AdapterOperation(Integer.valueOf(nodeId), AdapterOperationType.UPDATE, 
                                                    createScheduleForNode(nodeId, AdapterOperationType.UPDATE));
@@ -182,6 +185,7 @@ public abstract class SimpleQueuedProvisioningAdapter implements ProvisioningAda
      * @see org.opennms.netmgt.provision.ProvisioningAdapter#deleteNode(int)
      */
     /** {@inheritDoc} */
+    @Override
     public final void deleteNode(int nodeId) {
         AdapterOperation op = new AdapterOperation(Integer.valueOf(nodeId), AdapterOperationType.DELETE, 
                                                    createScheduleForNode(nodeId, AdapterOperationType.DELETE));
@@ -197,6 +201,7 @@ public abstract class SimpleQueuedProvisioningAdapter implements ProvisioningAda
      * @see org.opennms.netmgt.provision.ProvisioningAdapter#nodeConfigChanged(int)
      */
     /** {@inheritDoc} */
+    @Override
     public final void nodeConfigChanged(int nodeId) {
         AdapterOperation op = new AdapterOperation(Integer.valueOf(nodeId), AdapterOperationType.CONFIG_CHANGE, 
                                                    createScheduleForNode(nodeId, AdapterOperationType.CONFIG_CHANGE));
@@ -214,6 +219,7 @@ public abstract class SimpleQueuedProvisioningAdapter implements ProvisioningAda
      *
      * Override this implementation if needed.
      */
+    @Override
     public void init() {
         
     }
@@ -397,6 +403,7 @@ public abstract class SimpleQueuedProvisioningAdapter implements ProvisioningAda
             return "Operation: "+m_type+" on Node: "+m_nodeId;
         }
         
+        @Override
         public void run() {
             try {
                 if (isNodeReady(this)) {

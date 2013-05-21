@@ -194,6 +194,7 @@ public class OutageSvcTimesList extends ArrayList<Outage> {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         String retVal = "";
         for(Outage outage : this) {

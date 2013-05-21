@@ -56,11 +56,13 @@ public class ThresholdEvaluatorRelativeChange implements ThresholdEvaluator {
     private static final String TYPE = "relativeChange";
 
     /** {@inheritDoc} */
+    @Override
     public ThresholdEvaluatorState getThresholdEvaluatorState(BaseThresholdDefConfigWrapper threshold) {
         return new ThresholdEvaluatorStateRelativeChange(threshold);
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean supportsType(String type) {
         return TYPE.equals(type);
     }
@@ -96,10 +98,12 @@ public class ThresholdEvaluatorRelativeChange implements ThresholdEvaluator {
             setMultiplier(thresholdConfig.getValue());
         }
 
+        @Override
         public BaseThresholdDefConfigWrapper getThresholdConfig() {
             return m_thresholdConfig;
         }
 
+        @Override
         public Status evaluate(double dsValue) {
         	//Fix for Bug 2275 so we handle negative numbers
         	//It will not handle values which cross the 0 boundary (from - to +, or v.v.) properly, but
@@ -138,6 +142,7 @@ public class ThresholdEvaluatorRelativeChange implements ThresholdEvaluator {
             m_lastSample = lastSample;
         }
 
+        @Override
         public Event getEventForState(Status status, Date date, double dsValue, CollectionResourceWrapper resource) {
             if (status == Status.TRIGGERED) {
                 String uei=getThresholdConfig().getTriggeredUEI();
@@ -175,16 +180,19 @@ public class ThresholdEvaluatorRelativeChange implements ThresholdEvaluator {
             m_multiplier = multiplier;
         }
 
+        @Override
         public ThresholdEvaluatorState getCleanClone() {
             return new ThresholdEvaluatorStateRelativeChange(m_thresholdConfig);
         }
 
         // FIXME This must be implemented correctly
+        @Override
         public boolean isTriggered() {
             return false;
         }
         
         // FIXME This must be implemented correctly
+        @Override
         public void clearState() {
         }
 
