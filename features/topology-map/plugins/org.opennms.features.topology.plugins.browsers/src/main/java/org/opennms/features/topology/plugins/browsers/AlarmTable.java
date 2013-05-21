@@ -122,6 +122,20 @@ public class AlarmTable extends SelectionAwareTable implements HasExtraComponent
 		}
 	}
 
+	private class RefreshLinkButton extends Button {
+	    
+	    private RefreshLinkButton(String caption) {
+	        super(caption);
+	        setStyleName(BaseTheme.BUTTON_LINK);
+	        addListener(new ClickListener() {
+                @Override
+                public void buttonClick(ClickEvent event) {
+                    AlarmTable.this.refreshRowCache();
+                }
+	        });
+	    }
+	}
+	
 	private class SelectAllButton extends Button {
 
 		private CheckboxGenerator m_generator;
@@ -164,6 +178,7 @@ public class AlarmTable extends SelectionAwareTable implements HasExtraComponent
 
 	private final CheckboxButton m_submitButton;
 	private final NativeSelect m_ackCombo;
+	private final Button m_refreshButton = new RefreshLinkButton("Refresh");
 	private final SelectAllButton m_selectAllButton = new SelectAllButton("Select All");
 	private final ResetSelectionButton m_resetButton = new ResetSelectionButton("Clear");
 	private final AlarmRepository m_alarmRepo;
@@ -188,7 +203,6 @@ public class AlarmTable extends SelectionAwareTable implements HasExtraComponent
 
 		m_submitButton = new CheckboxButton("Submit");
 		m_submitButton.setCombo(m_ackCombo);
-
 	}
 	
 	@Override
@@ -220,6 +234,7 @@ public class AlarmTable extends SelectionAwareTable implements HasExtraComponent
 	@Override
 	public Component[] getExtraComponents() {
 		return new Component[] {
+		        m_refreshButton,
 				m_selectAllButton,
 				m_resetButton,
 				m_ackCombo,

@@ -30,8 +30,11 @@ package org.opennms.features.topology.plugins.browsers;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import org.opennms.features.topology.api.support.DialogWindow;
 import org.opennms.features.topology.api.support.InfoWindow;
 import org.opennms.features.topology.api.support.InfoWindow.LabelCreator;
+import org.opennms.netmgt.dao.AlarmDao;
+import org.opennms.netmgt.model.OnmsAlarm;
 
 import com.vaadin.data.Property;
 import com.vaadin.ui.Button;
@@ -45,12 +48,14 @@ public class AlarmIdColumnLinkGenerator implements ColumnGenerator {
 
 	private static final long serialVersionUID = 621311104480258016L;
 	private final String alarmIdPropertyName;
-
+	private final AlarmDao alarmDao;
+	
 	/**
 	 * @param alarmIdPropertyName Property name of the alarm Id property (e.g. "id")
 	 */
-	public AlarmIdColumnLinkGenerator(final String alarmIdPropertyName) {
+	public AlarmIdColumnLinkGenerator(final AlarmDao alarmDao, final String alarmIdPropertyName) {
 		this.alarmIdPropertyName = alarmIdPropertyName;
+		this.alarmDao = alarmDao;
 	}
 
 	@Override
@@ -64,9 +69,20 @@ public class AlarmIdColumnLinkGenerator implements ColumnGenerator {
 		Button button = new Button("" + alarmId);
 		button.setStyleName(BaseTheme.BUTTON_LINK);
 		button.addListener(new ClickListener() {
+            private static final long serialVersionUID = 3698209256202413810L;
 
-			@Override
+            @Override
 			public void buttonClick(ClickEvent event) {
+			    // try if alarm is there, otherwise show information dialog
+			    OnmsAlarm alarm = alarmDao.get((Integer) alarmId);
+			    if (alarm == null) {
+		           new DialogWindow(source.getWindow(), 
+		                         "Alarm does not exist!", 
+		                         "The alarm information cannot be shown. \nThe alarm does not exist anymore. \n\nPlease refresh the Alarm Table.");
+			        return;
+			    }
+			    
+			    // alarm still exists, show alarm details
 				try {
 					source.getWindow().addWindow(
 						new InfoWindow(new URL(source.getWindow().getURL(), "../../alarm/detail.htm?id=" + alarmId), new LabelCreator() {
@@ -77,7 +93,6 @@ public class AlarmIdColumnLinkGenerator implements ColumnGenerator {
 							}
 						}));
 				} catch (MalformedURLException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
