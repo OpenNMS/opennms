@@ -180,7 +180,7 @@ public class AlarmTable extends SelectionAwareTable implements HasExtraComponent
 	private final NativeSelect m_ackCombo;
 	private final Button m_refreshButton = new RefreshLinkButton("Refresh");
 	private final SelectAllButton m_selectAllButton = new SelectAllButton("Select All");
-	private final ResetSelectionButton m_resetButton = new ResetSelectionButton("Clear");
+	private final ResetSelectionButton m_resetButton = new ResetSelectionButton("Deselect All");
 	private final AlarmRepository m_alarmRepo;
 	private Set<ItemSetChangeListener> m_itemSetChangeListeners = new HashSet<ItemSetChangeListener>();
 
