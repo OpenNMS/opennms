@@ -659,7 +659,22 @@ public class JsmiMibParser implements MibParser, Serializable {
      * @return the trap enterprise
      */
     private String getTrapEnterprise(Notification trap) {
-        return getMatcherForOid(getTrapOid(trap)).group(1);
+        String trapOid = getMatcherForOid(getTrapOid(trap)).group(1);
+        
+        /* RFC3584 sec 3.2 (1) bullet 2 sub-bullet 1 states:
+         * 
+         * "If the next-to-last sub-identifier of the snmpTrapOID value
+         * is zero, then the SNMPv1 enterprise SHALL be the SNMPv2
+         * snmpTrapOID value with the last 2 sub-identifiers removed..."
+         * 
+         * Issue SPC-592 boils down to the fact that we were not doing the above.
+         * 
+         */
+        
+        if (trapOid.endsWith(".0")) {
+            trapOid = trapOid.substring(0, trapOid.length() - 2);
+        }
+        return trapOid;
     }
 
     /**
