@@ -202,7 +202,7 @@ public class CreateGroupOperation implements Constants, Operation {
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public boolean isValidValue(String value) {
+			protected boolean isValidValue(String value) {
 				if (value == null) return false;
 				if ( !(value instanceof String)) return false;
 				return !((String)value).trim().isEmpty();
@@ -219,7 +219,7 @@ public class CreateGroupOperation implements Constants, Operation {
 			private static final long serialVersionUID = -2351672151921474546L;
 
 			@Override
-			public boolean isValidValue(String value) {
+			protected boolean isValidValue(String value) {
 				try {
 					final Collection<? extends Vertex> vertexIds = graphContainer.getBaseTopology().getVertices();
 					final Collection<String> groupLabels = new ArrayList<String>();

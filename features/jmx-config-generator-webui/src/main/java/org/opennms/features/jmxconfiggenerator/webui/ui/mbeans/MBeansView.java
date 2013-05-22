@@ -49,8 +49,6 @@ import com.vaadin.data.Validator;
 import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.ui.AbstractSplitPanel;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.Form;
@@ -58,6 +56,8 @@ import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 
 public class MBeansView extends VerticalLayout implements ClickListener, ModelChangeListener, ViewStateChangedListener {
 
@@ -139,7 +139,7 @@ public class MBeansView extends VerticalLayout implements ClickListener, ModelCh
 		}
 		if (event.getButton().equals(buttonPanel.getNext())) {
 			if (!isValid()) {
-				UIHelper.showValidationError(getWindow(), "There are errors on this view. Please fix them first");
+				UIHelper.showValidationError("There are errors on this view. Please fix them first");
 				return;
 			}
 			model.setJmxDataCollectionAccordingToSelection(controller
@@ -190,7 +190,6 @@ public class MBeansView extends VerticalLayout implements ClickListener, ModelCh
 
 		panel.setContent(layout);
 		component.setCaption(null);
-		panel.setScrollable(true);
 		return panel;
 	}
 
@@ -213,7 +212,7 @@ public class MBeansView extends VerticalLayout implements ClickListener, ModelCh
 		
 		Validator attributeNameValidator = new AttributeNameValidator();
 		Validator attributeLengthValidator = new StringLengthValidator(String.format("Maximal length is %d", Config.ATTRIBUTES_ALIAS_MAX_LENGTH), 0, Config.ATTRIBUTES_ALIAS_MAX_LENGTH, false);  // TODO do it more dynamically
-		UniqueAttributeNameValidator attributeUniqueNameValidator = new UniqueAttributeNameValidator(controller, new HashMap<Object, Field>());
+		UniqueAttributeNameValidator attributeUniqueNameValidator = new UniqueAttributeNameValidator(controller, new HashMap<Object, Field<String>>());
 		
 		
 		// 1. validate each MBean (Mbean name without required check!)

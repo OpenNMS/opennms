@@ -125,7 +125,7 @@ public class RenameGroupOperation implements Constants, Operation {
 			private static final long serialVersionUID = 79618011585921224L;
 
 			@Override
-			public boolean isValidValue(String value) {
+			protected boolean isValidValue(String value) {
 				try {
 					final Collection<? extends Vertex> vertexIds = graphContainer.getBaseTopology().getVertices();
 					final Collection<String> groupLabels = new ArrayList<String>();

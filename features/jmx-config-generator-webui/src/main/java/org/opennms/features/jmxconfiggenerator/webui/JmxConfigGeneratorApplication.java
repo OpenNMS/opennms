@@ -52,14 +52,20 @@ import org.opennms.features.jmxconfiggenerator.webui.ui.UiState;
 import org.opennms.features.jmxconfiggenerator.webui.ui.mbeans.MBeansView;
 import org.opennms.xmlns.xsd.config.jmx_datacollection.JmxDatacollectionConfig;
 
+import com.vaadin.annotations.Theme;
 import com.vaadin.data.util.BeanItem;
+import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.Notification.Type;
 
+@Theme(Config.STYLE_NAME)
 @SuppressWarnings("serial")
-public class JmxConfigGeneratorApplication extends com.vaadin.Application implements ModelChangeListener<UiModel> {
+public class JmxConfigGeneratorApplication extends UI implements ModelChangeListener<UiModel> {
 
 	/**
 	 * The Header panel which holds the steps which are necessary to complete
@@ -81,8 +87,7 @@ public class JmxConfigGeneratorApplication extends com.vaadin.Application implem
 	private Map<UiState, Component> viewCache = new HashMap<UiState, Component>();
 
 	@Override
-	public void init() {
-		setTheme(Config.STYLE_NAME);
+	protected void init(VaadinRequest request) {
 		initHeaderPanel();
 		initContentPanel();
 		initMainWindow();
@@ -109,19 +114,20 @@ public class JmxConfigGeneratorApplication extends com.vaadin.Application implem
 	 * it.
 	 */
 	private void initMainWindow() {
-		setMainWindow(new Window("JmxConfigGenerator GUI Tool"));
-		getMainWindow().setContent(new VerticalLayout());
-		getMainWindow().getContent().setSizeFull();
-		getMainWindow().setSizeFull();
-		getMainWindow().addComponent(headerPanel);
-		getMainWindow().addComponent(contentPanel);
+		Window window = new Window("JmxConfigGenerator GUI Tool");
+		VerticalLayout layout = new VerticalLayout();
+		layout.addComponent(headerPanel);
+		layout.addComponent(contentPanel);
 		// content Panel should use most of the space :)
-		((VerticalLayout) getMainWindow().getContent()).setExpandRatio(contentPanel, 1);
+		layout.setExpandRatio(contentPanel, 1);
+		window.setContent(layout);
+		window.getContent().setSizeFull();
+		window.setSizeFull();
+		addWindow(window);
 	}
 
 	private void setContentPanelComponent(Component c) {
-		contentPanel.removeAllComponents();
-		contentPanel.addComponent(c);
+		contentPanel.setContent(c);
 	}
 	
 	public void updateView(UiState uiState) {
@@ -186,7 +192,7 @@ public class JmxConfigGeneratorApplication extends com.vaadin.Application implem
 
 	public void showProgressWindow(String label) {
 		getProgressWindow().setLabelText(label);
-		getMainWindow().addWindow(getProgressWindow());
+		addWindow(getProgressWindow());
 	}
 
 	private void registerListener(Class<?> aClass, ModelChangeListener<?> listener) {
@@ -213,7 +219,7 @@ public class JmxConfigGeneratorApplication extends com.vaadin.Application implem
                 model.setRawModel(generateJmxConfigModel);
                 
                 updateView(UiState.MbeansView);
-                getMainWindow().removeWindow(getProgressWindow());
+                removeWindow(getProgressWindow());
             } catch (MalformedURLException ex) {
                 handleError(ex);
             } catch (IOException ex) {
@@ -225,8 +231,8 @@ public class JmxConfigGeneratorApplication extends com.vaadin.Application implem
 
         private void handleError(Exception ex) {
             //TODO logging?
-            getMainWindow().showNotification("Connection error", "An error occured during connection jmx service. Please verify connection settings.<br/><br/>" + ex.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
-            getMainWindow().removeWindow(getProgressWindow());
+            Notification.show("Connection error", "An error occured during connection jmx service. Please verify connection settings.<br/><br/>" + ex.getMessage(), Type.ERROR_MESSAGE);
+            removeWindow(getProgressWindow());
         }
     }
 
@@ -251,7 +257,7 @@ public class JmxConfigGeneratorApplication extends com.vaadin.Application implem
 
 			model.updateOutput();
 			updateView(UiState.ResultView);
-			getMainWindow().removeWindow(getProgressWindow());
+			removeWindow(getProgressWindow());
 		}
 	}
 

@@ -38,11 +38,12 @@ import org.opennms.features.jmxconfiggenerator.webui.data.UiModel;
 
 import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanItem;
+import com.vaadin.data.util.converter.Converter.ConversionException;
 import com.vaadin.data.validator.RegexpValidator;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Form;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 
 /**
  * This form handles editing of a {@link ServiceConfig} model.
@@ -60,7 +61,7 @@ public class ConfigForm extends Form implements ModelChangeListener<UiModel>, Cl
 		this.app = app;
 		setImmediate(true);
 		setDescription(UIHelper.loadContentFromFile(getClass(), "/descriptions/ServiceConfiguration.html"));
-		setWriteThrough(true);
+		setBuffered(false);
 		setFooter(buttonPanel);
 	}
 
@@ -74,7 +75,7 @@ public class ConfigForm extends Form implements ModelChangeListener<UiModel>, Cl
 	public void buttonClick(ClickEvent event) {
 		if (buttonPanel.getNext().equals(event.getButton())) {
 			if (!isValid()) {
-				UIHelper.showValidationError(getWindow(),
+				UIHelper.showValidationError(
 						"There are still errors on this page. You cannot continue. Please check if all required fields have been filled.");
 				return;
 			}
@@ -143,7 +144,8 @@ public class ConfigForm extends Form implements ModelChangeListener<UiModel>, Cl
 		for (Object property : getVisibleItemProperties()) {
 			String propName = property.toString();
 			if (getField(propName) != null && optionDescriptions.get(propName) != null) {
-				getField(propName).setDescription(optionDescriptions.get(propName));
+				// There is no tooltip description in Vaadin 7
+				//getField(propName).setDescription(optionDescriptions.get(propName));
 			}
 		}
 	}

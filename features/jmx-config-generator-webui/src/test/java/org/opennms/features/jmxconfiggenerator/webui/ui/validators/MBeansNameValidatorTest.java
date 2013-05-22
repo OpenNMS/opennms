@@ -28,10 +28,12 @@
 
 package org.opennms.features.jmxconfiggenerator.webui.ui.validators;
 
-import org.opennms.features.jmxconfiggenerator.webui.ui.validators.NameValidator;
-import com.vaadin.data.Validator;
+import static junit.framework.Assert.fail;
 import junit.framework.Assert;
+
 import org.junit.Test;
+
+import com.vaadin.data.Validator;
 
 /**
  *
@@ -60,9 +62,14 @@ public class MBeansNameValidatorTest {
 		validate(validator, FAIL, false);
 	}
 
-	public static void validate(Validator validator, String[] OK, boolean succeed) {
-		for (String validateMe : OK) {
-			Assert.assertEquals(validateMe, succeed, validator.isValid(validateMe));
+	public static void validate(Validator validator, String[] names, boolean shouldSucceed) {
+		for (String validateMe : names) {
+			try {
+				validator.validate(validateMe);
+				if (!shouldSucceed) fail("Validation succeeded unexpectedly: " + validateMe);
+			} catch (Throwable e) {
+				if (shouldSucceed) fail("Validation failed: " + validateMe);
+			}
 		}
 	}
 }
