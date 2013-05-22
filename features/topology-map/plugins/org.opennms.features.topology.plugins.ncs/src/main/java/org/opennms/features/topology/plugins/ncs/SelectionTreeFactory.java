@@ -28,45 +28,22 @@
 
 package org.opennms.features.topology.plugins.ncs;
 
-import org.opennms.features.topology.api.IViewContribution;
 import org.opennms.features.topology.api.WidgetContext;
+import org.opennms.features.topology.api.support.BlueprintIViewContribution;
 import org.osgi.service.blueprint.container.BlueprintContainer;
 
-import com.vaadin.terminal.Resource;
-
-public class SelectionTreeFactory implements IViewContribution {
-
-	private final BlueprintContainer m_container;
-	private final String m_beanName;
-	private String m_title;
+public class SelectionTreeFactory extends BlueprintIViewContribution {
 
 	public SelectionTreeFactory(BlueprintContainer container, String beanName) {
-		m_container = container;
-		m_beanName = beanName;
+	    super(container, beanName);
 	}
 
 	@Override
 	public SelectionTree getView(WidgetContext widgetContext) {
 		// Get the component by asking the blueprint container to instantiate a prototype bean 
-		SelectionTree tree = (SelectionTree)m_container.getComponentInstance(m_beanName);
+		SelectionTree tree = (SelectionTree)getBlueprintContainer().getComponentInstance(getBeanName());
 		tree.setGraphContainer(widgetContext.getGraphContainer());
 		return tree;
 	}
 
-	/**
-	 * Returns null.
-	 */
-	@Override
-	public Resource getIcon() {
-		return null;
-	}
-
-	@Override
-	public String getTitle() {
-		return m_title;
-	}
-
-	public void setTitle(String title) {
-		m_title = title;
-	}
 }

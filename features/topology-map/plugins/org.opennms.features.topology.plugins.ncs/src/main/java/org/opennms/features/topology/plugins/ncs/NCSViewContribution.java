@@ -94,4 +94,9 @@ public class NCSViewContribution implements IViewContribution {
         m_ncsEdgeProvider = ncsEdgeProvider;
     }
 
+    @Override
+    public String getId() {
+        return getTitle();
+    }
+
 }

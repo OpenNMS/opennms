@@ -46,6 +46,14 @@ public class BlueprintIViewContribution implements IViewContribution {
 		m_beanName = beanName;
 	}
 
+	protected BlueprintContainer getBlueprintContainer() {
+	    return m_container;
+	}
+	
+	protected String getBeanName() {
+	    return m_beanName;
+	}
+	
 	@Override
 	public Component getView(WidgetContext widgetContext) {
 		// Get the component by asking the blueprint container to instantiate a prototype bean 
@@ -68,5 +76,10 @@ public class BlueprintIViewContribution implements IViewContribution {
 
 	public void setTitle(String title) {
 		m_title = title;
+	}
+	
+	@Override
+	public String getId() {
+	    return m_beanName;
 	}
 }

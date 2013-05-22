@@ -39,5 +39,6 @@ public interface IViewContribution {
 	Component getView(WidgetContext widgetContext);
 	String getTitle();
 	Resource getIcon();
-
+	String getId();
+	
 }

@@ -36,16 +36,17 @@ import java.util.List;
 
 import org.opennms.core.utils.LogUtils;
 import org.opennms.features.topology.api.GraphContainer;
-import org.opennms.features.topology.api.HasExtraComponents;
 import org.opennms.features.topology.api.HistoryManager;
-import org.opennms.features.topology.api.IViewContribution;
 import org.opennms.features.topology.api.MapViewManager;
 import org.opennms.features.topology.api.MapViewManagerListener;
 import org.opennms.features.topology.api.SelectionContext;
 import org.opennms.features.topology.api.SelectionListener;
 import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.SelectionNotifier;
+import org.opennms.features.topology.api.Widget;
 import org.opennms.features.topology.api.WidgetContext;
+import org.opennms.features.topology.api.WidgetManager;
+import org.opennms.features.topology.api.WidgetUpdateListener;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.app.internal.TopoContextMenu.TopoContextMenuItem;
 import org.opennms.features.topology.app.internal.TopologyComponent.VertexUpdateListener;
@@ -64,7 +65,6 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.HorizontalSplitPanel;
@@ -74,9 +74,6 @@ import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.Slider;
-import com.vaadin.ui.TabSheet;
-import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
-import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UriFragmentUtility;
 import com.vaadin.ui.UriFragmentUtility.FragmentChangedEvent;
@@ -276,15 +273,15 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 		m_commandManager.addCommandUpdateListener(this);
 
 		menuBarUpdated(m_commandManager);
-		if(m_widgetManager.widgetCount() != 0) {
-		    updateWidgetView(m_widgetManager);
-		} else {
-		    m_layout.addComponent(m_treeMapSplitPanel, getBelowMenuPosition());
-		}
-		
-		if(m_treeWidgetManager.widgetCount() != 0) {
-		    updateAccordionView(m_treeWidgetManager);
-		}
+//		if(!m_widgetManager.isEmpty("alarmBrowser")) {
+//		    updateWidgetView(m_widgetManager.getWidget("alarmBrowser"));
+//		} else {
+//		    m_layout.addComponent(m_treeMapSplitPanel, getBelowMenuPosition());
+//		}
+//		
+//		if(!m_widgetManager.isEmpty("nodesTree")) {
+//		    updateAccordionView(m_widgetManager.getWidget("nodesTree"));
+//		}
 
 		// If there was existing history, then restore that history snapshot.
 		if (fragment != null) {
@@ -312,17 +309,17 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 	 * Update the Accordion View with installed widgets
 	 * @param treeWidgetManager
 	 */
-    private void updateAccordionView(WidgetManager treeWidgetManager) {
-        m_treeAccordion.removeAllComponents();
-        
-        m_treeAccordion.addTab(m_tree, m_tree.getTitle());
-        for(IViewContribution widget : treeWidgetManager.getWidgets()) {
-            if(widget.getIcon() != null) {
-                m_treeAccordion.addTab(widget.getView(this), widget.getTitle(), widget.getIcon());
-            }else {
-                m_treeAccordion.addTab(widget.getView(this), widget.getTitle());
-            }
-        }
+    private void updateAccordionView(Widget treeWidget) {
+//        m_treeAccordion.removeAllComponents();
+//        
+//        m_treeAccordion.addTab(m_tree, m_tree.getTitle());
+//        for(IViewContribution widget : treeWidgetManager.getWidgets()) {
+//            if(widget.getIcon() != null) {
+//                m_treeAccordion.addTab(widget.getView(this), widget.getTitle(), widget.getIcon());
+//            } else {
+//                m_treeAccordion.addTab(widget.getView(this), widget.getTitle());
+//            }
+//        }
     }
 
     /**
@@ -333,10 +330,21 @@ public class TopologyWidgetTestApplication extends Application implements Comman
      * 
      * @param widgetManager
      */
-    private void updateWidgetView(WidgetManager widgetManager) {
+    private void updateWidgetView(WidgetUpdateEvent event) {
         synchronized (m_layout) {
+            // ADD or Remove SelectionListener
+            try {
+                if (event.getType().isBind()) m_graphContainer.getSelectionManager().addSelectionListener((SelectionListener)event.getChangedElement());
+                if (event.getType().isUnbind()) m_graphContainer.getSelectionManager().removeSelectionListener((SelectionListener)event.getChangedElement());
+            } catch (ClassCastException e) {}
+            try {
+                if (event.getType().isBind()) ((SelectionNotifier)event.getChangedElement()).addSelectionListener(m_graphContainer.getSelectionManager());
+                if (event.getType().isUnbind()) ((SelectionNotifier)event.getChangedElement()).removeSelectionListener(m_graphContainer.getSelectionManager());
+            } catch (ClassCastException e) {}
+                
+            // build ui
             m_layout.removeAllComponents();
-            if(widgetManager.widgetCount() == 0) {
+            if(event.getSource().isEmpty()) {
                 m_layout.addComponent(m_treeMapSplitPanel, getBelowMenuPosition());
             } else {
                 VerticalSplitPanel bottomLayoutBar = new VerticalSplitPanel();
@@ -344,10 +352,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
                 // Split the screen 70% top, 30% bottom
                 bottomLayoutBar.setSplitPosition(70, Sizeable.UNITS_PERCENTAGE);
                 bottomLayoutBar.setSizeFull();
-
-                // Add the tabsheet to the layout
-                bottomLayoutBar.addComponent(getTabSheet(widgetManager, this));
-
+                bottomLayoutBar.addComponent(event.getSource().getView(this));
                 m_layout.addComponent(bottomLayoutBar, getBelowMenuPosition());
             }
             m_layout.requestRepaint();
@@ -360,85 +365,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 
     private String getBelowMenuPosition() {
         return "top: " + (HEADER_HEIGHT + MENU_BAR_HEIGHT) + "px; left: 0px; right:0px; bottom:0px;";
-    }
-
-    /**
-     * Gets a {@link TabSheet} view for all widgets in this manager.
-     * 
-     * @return TabSheet
-     */
-    private Component getTabSheet(WidgetManager manager, WidgetContext widgetContext) {
-        // Use an absolute layout for the bottom panel
-        AbsoluteLayout bottomLayout = new AbsoluteLayout();
-        bottomLayout.setSizeFull();
-        
-        final TabSheet tabSheet = new TabSheet();
-        tabSheet.setSizeFull();
-
-        for(IViewContribution viewContrib : manager.getWidgets()) {
-            // Create a new view instance
-            final Component view = viewContrib.getView(widgetContext);
-            try {
-                m_graphContainer.getSelectionManager().addSelectionListener((SelectionListener)view);
-            } catch (ClassCastException e) {}
-            try {
-                ((SelectionNotifier)view).addSelectionListener(m_graphContainer.getSelectionManager());
-            } catch (ClassCastException e) {}
-
-            // Icon can be null
-            tabSheet.addTab(view, viewContrib.getTitle(), viewContrib.getIcon());
-
-            // If the component supports the HasExtraComponents interface, then add the extra 
-            // components to the tab bar
-            try {
-                Component[] extras = ((HasExtraComponents)view).getExtraComponents();
-                if (extras != null && extras.length > 0) {
-                    // For any extra controls, add a horizontal layout that will float
-                    // on top of the right side of the tab panel
-                    final HorizontalLayout extraControls = new HorizontalLayout();
-                    extraControls.setHeight(32, Sizeable.UNITS_PIXELS);
-                    extraControls.setSpacing(true);
-
-                    // Add the extra controls to the layout
-                    for (Component component : extras) {
-                        extraControls.addComponent(component);
-                        extraControls.setComponentAlignment(component, Alignment.MIDDLE_RIGHT);
-                    }
-
-                    // Add a TabSheet.SelectedTabChangeListener to show or hide the extra controls
-                    tabSheet.addListener(new SelectedTabChangeListener() {
-                        private static final long serialVersionUID = 6370347645872323830L;
-
-                        @Override
-                        public void selectedTabChange(SelectedTabChangeEvent event) {
-                            final TabSheet source = (TabSheet) event.getSource();
-                            if (source == tabSheet) {
-                                // Bizarrely enough, getSelectedTab() returns the contained
-                                // Component, not the Tab itself.
-                                //
-                                // If the first tab was selected...
-                                if (source.getSelectedTab() == view) {
-                                    extraControls.setVisible(true);
-                                } else {
-                                    extraControls.setVisible(false);
-                                }
-                            }
-                        }
-                    });
-
-                    // Place the extra controls on the absolute layout
-                    bottomLayout.addComponent(extraControls, "top:0px;right:5px;z-index:100");
-                }
-            } catch (ClassCastException e) {}
-            view.setSizeFull();
-        }
-
-        // Add the tabsheet to the layout
-        bottomLayout.addComponent(tabSheet);
-
-        return bottomLayout;
-    }
-    
+    }    
 
     /**
      * Creates the west area layout including the
@@ -586,20 +513,20 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 
     public void setWidgetManager(WidgetManager widgetManager) {
         if(m_widgetManager != null) {
-            m_widgetManager.removeUpdateListener(this);
+//            m_widgetManager.removeUpdateListener(this);
         }
         m_widgetManager = widgetManager;
-        m_widgetManager.addUpdateListener(this);
+//        m_widgetManager.addUpdateListener(this);
     }
 
 
     @Override
-    public void widgetListUpdated(WidgetManager widgetManager) {
+    public void widgetContentUpdated(WidgetUpdateEvent event) {
         if(isRunning()) {
-            if(widgetManager == m_widgetManager) {
-                updateWidgetView(widgetManager);
-            }else if(widgetManager == m_treeWidgetManager) {
-                updateAccordionView(widgetManager);
+            if("alarmBrowser".equals(event.getSource().getId())) {
+                updateWidgetView(event);
+            }else if("nodeTree".equals(event.getSource().getId())) {
+//                updateAccordionView(event);
             }
         }
     }
@@ -610,14 +537,14 @@ public class TopologyWidgetTestApplication extends Application implements Comman
     }
 
 
-    public void setTreeWidgetManager(WidgetManager treeWidgetManager) {
-        if(m_treeWidgetManager != null) {
-            m_treeWidgetManager.removeUpdateListener(this);
-        }
-        
-        m_treeWidgetManager = treeWidgetManager;
-        m_treeWidgetManager.addUpdateListener(this);
-    }
+//    public void setTreeWidgetManager(WidgetManager treeWidgetManager) {
+//        if(m_treeWidgetManager != null) {
+//            m_treeWidgetManager.removeUpdateListener(this);
+//        }
+//        
+//        m_treeWidgetManager = treeWidgetManager;
+//        m_treeWidgetManager.addUpdateListener(this);
+//    }
 
 
     @Override

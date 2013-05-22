@@ -181,4 +181,17 @@ xsi:schemaLocation="
     </service-properties>
   </service>
 
+
+	<bean id="alarmBrowserWidget" class="org.opennms.features.topology.api.BrowserWidget">
+		<argument ref="blueprintContainer"/>
+		<argument value="alarmBrowser"/>
+	</bean>
+
+    <reference-list interface="org.opennms.features.topology.api.IViewContribution" availability="optional" filter="(location=bottom)">
+        <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="alarmBrowserWidget"/>
+    </reference-list>
+
+	<service interface="org.opennms.features.topology.api.Widget" ref="alarmBrowserWidget">
+		<description>Alarm Browser Widget service.</description>
+	</service>
 </blueprint>
