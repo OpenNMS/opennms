@@ -328,7 +328,16 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
                 PageSequenceHttpUriRequest method = getMethod(uri);
 
                 if (getVirtualHost(svc) != null) {
-                    method.getParams().setParameter(ClientPNames.VIRTUAL_HOST, new HttpHost(getVirtualHost(svc), uri.getPort()));
+                    // According to the standard, adding the default ports to the host header is optional, and this makes IIS 7.5 happy.
+                    HttpHost host = null;
+                    if ("https".equals(uri.getScheme()) && uri.getPort() == 443) { // Suppress the addition of default port for HTTPS
+                        host = new HttpHost(getVirtualHost(svc));
+                    } else if ("http".equals(uri.getScheme()) && uri.getPort() == 80) { //  Suppress the addition of default port for HTTP
+                        host = new HttpHost(getVirtualHost(svc));
+                    } else {  // Add the port if it is non-standard
+                        host = new HttpHost(getVirtualHost(svc), uri.getPort());
+                    }
+                    method.getParams().setParameter(ClientPNames.VIRTUAL_HOST, host);
                 }
 
                 if (getUserAgent() != null) {

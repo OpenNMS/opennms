@@ -68,39 +68,38 @@ public class AlarmTable extends SelectionAwareTable implements HasExtraComponent
 
 				private static final long serialVersionUID = 4351558084135658129L;
 
-				// TODO Use the actual username
 				@Override
 				public void buttonClick(final ClickEvent event) {
-					Set<Integer> selected = m_generator.getSelectedIds();
+					Set<Integer> selected = m_generator.getSelectedIds(AlarmTable.this);
 					if (selected.size() > 0) {
 						String action = (String)m_ackCombo.getValue();
 						if (ACTION_ACKNOWLEDGE.equals(action)) {
 							m_alarmRepo.acknowledgeAlarms(
 									ArrayUtils.toPrimitive(selected.toArray(new Integer[0])), 
-									"admin",
+									getUser(),
 									new Date()
 							);
 						} else if (ACTION_UNACKNOWLEDGE.equals(action)) {
 							m_alarmRepo.unacknowledgeAlarms(
 									ArrayUtils.toPrimitive(selected.toArray(new Integer[0])), 
-									"admin"
+									getUser()
 							);
 						} else if (ACTION_ESCALATE.equals(action)) {
 							m_alarmRepo.escalateAlarms(
 									ArrayUtils.toPrimitive(selected.toArray(new Integer[0])), 
-									"admin",
+									getUser(),
 									new Date()
 							);
 						} else if (ACTION_CLEAR.equals(action)) {
 							m_alarmRepo.clearAlarms(
 									ArrayUtils.toPrimitive(selected.toArray(new Integer[0])), 
-									"admin",
+									getUser(),
 									new Date()
 							);
 						}
 
 						// Clear the checkboxes
-						m_generator.clearSelectedIds();
+						m_generator.clearSelectedIds(AlarmTable.this);
 
 						AlarmTable.this.containerItemSetChange(new ItemSetChangeEvent() {
 							private static final long serialVersionUID = 7086486972418241175L;
@@ -123,6 +122,20 @@ public class AlarmTable extends SelectionAwareTable implements HasExtraComponent
 		}
 	}
 
+	private class RefreshLinkButton extends Button {
+	    
+	    private RefreshLinkButton(String caption) {
+	        super(caption);
+	        setStyleName(BaseTheme.BUTTON_LINK);
+	        addListener(new ClickListener() {
+                @Override
+                public void buttonClick(ClickEvent event) {
+                    AlarmTable.this.refreshRowCache();
+                }
+	        });
+	    }
+	}
+	
 	private class SelectAllButton extends Button {
 
 		private CheckboxGenerator m_generator;
@@ -133,7 +146,7 @@ public class AlarmTable extends SelectionAwareTable implements HasExtraComponent
 			addListener(new ClickListener() {
 				@Override
 				public void buttonClick(ClickEvent event) {
-					m_generator.selectAll();
+					m_generator.selectAll(AlarmTable.this);
 				}
 			});
 		}
@@ -153,7 +166,7 @@ public class AlarmTable extends SelectionAwareTable implements HasExtraComponent
 			addListener(new ClickListener() {
 				@Override
 				public void buttonClick(ClickEvent event) {
-					m_generator.clearSelectedIds();
+					m_generator.clearSelectedIds(AlarmTable.this);
 				}
 			});
 		}
@@ -165,8 +178,9 @@ public class AlarmTable extends SelectionAwareTable implements HasExtraComponent
 
 	private final CheckboxButton m_submitButton;
 	private final NativeSelect m_ackCombo;
+	private final Button m_refreshButton = new RefreshLinkButton("Refresh");
 	private final SelectAllButton m_selectAllButton = new SelectAllButton("Select All");
-	private final ResetSelectionButton m_resetButton = new ResetSelectionButton("Clear");
+	private final ResetSelectionButton m_resetButton = new ResetSelectionButton("Deselect All");
 	private final AlarmRepository m_alarmRepo;
 	private Set<ItemSetChangeListener> m_itemSetChangeListeners = new HashSet<ItemSetChangeListener>();
 
@@ -189,7 +203,6 @@ public class AlarmTable extends SelectionAwareTable implements HasExtraComponent
 
 		m_submitButton = new CheckboxButton("Submit");
 		m_submitButton.setCombo(m_ackCombo);
-
 	}
 	
 	@Override
@@ -221,10 +234,15 @@ public class AlarmTable extends SelectionAwareTable implements HasExtraComponent
 	@Override
 	public Component[] getExtraComponents() {
 		return new Component[] {
+		        m_refreshButton,
 				m_selectAllButton,
 				m_resetButton,
 				m_ackCombo,
 				m_submitButton
 		};
+	}
+	
+	private String getUser() {
+	    return (String) getApplication().getUser();
 	}
 }

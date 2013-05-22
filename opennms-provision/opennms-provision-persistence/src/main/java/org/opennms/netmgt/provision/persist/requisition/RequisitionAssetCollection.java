@@ -80,6 +80,7 @@ public class RequisitionAssetCollection extends LinkedList<RequisitionAsset> {
      * @param assets a {@link java.util.List} object.
      */
     public void setAssetFields(List<RequisitionAsset> assets) {
+        if (assets == this) return;
         clear();
         addAll(assets);
     }

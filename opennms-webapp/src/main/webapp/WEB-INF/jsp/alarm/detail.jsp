@@ -562,6 +562,7 @@
         <td colspan="3"> 
             <form method="post" action="alarm/saveJournal.htm">        
                 <textarea style="width:99%" name="journalMemoBody" ><%=alarm.getReductionKeyMemo() == null? "" : (alarm.getReductionKeyMemo().getBody() != null ? alarm.getReductionKeyMemo().getBody() : "")%></textarea>
+                <textarea style="width:99%" name="journalMemoBody" ><%=(alarm.getReductionKeyMemo() != null && alarm.getReductionKeyMemo().getBody() != null) ? alarm.getReductionKeyMemo().getBody() : ""%></textarea>
                 <br/>
                 <input type="hidden" name="alarmId" value="<%=alarm.getId()%>"/>
                 <input type="submit" value="Save" />    

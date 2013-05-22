@@ -428,15 +428,16 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
 		m_svgDragHandlerManager.setCurrentDragHandler(PanHandler.DRAG_BEHAVIOR_KEY);
 		setupDragBehavior(m_topologyView.getSVGElement(), m_svgDragHandlerManager);
 		D3 svgElement = D3.d3().select(m_topologyView.getSVGElement());
-        svgElement.on("dblclick", new Handler<Void>() {
-
-            @Override
-            public void call(Void t, int index) {
-                JsArrayInteger pos = D3.getMouse(m_topologyView.getSVGElement());
-                onBackgroundDoubleClick(m_topologyView.getPoint(pos.get(0), pos.get(1)));
-            }
-        
-		}).on("mousewheel", new Handler<Void>() {
+//        svgElement.on("dblclick", new Handler<Void>() {
+//
+//            @Override
+//            public void call(Void t, int index) {
+//                JsArrayInteger pos = D3.getMouse(m_topologyView.getSVGElement());
+//                onBackgroundDoubleClick(m_topologyView.getPoint(pos.get(0), pos.get(1)));
+//            }
+//        
+//		})
+		svgElement.on("mousewheel", new Handler<Void>() {
 
             @Override
             public void call(Void t, int index) {
