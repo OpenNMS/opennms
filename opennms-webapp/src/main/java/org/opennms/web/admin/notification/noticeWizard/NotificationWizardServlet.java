@@ -125,11 +125,6 @@ public class NotificationWizardServlet extends HttpServlet {
         } catch (Throwable e) {
             throw new ServletException("Failed to initialize NotifdConfigFactory: " + e, e);
         }
-        try {
-            NotificationFactory.init();
-        } catch (Throwable e) {
-            throw new ServletException("Failed to initialize NotificationFactory: " + e, e);
-        }
         
         String redirect;
 
