@@ -44,6 +44,7 @@ xsi:schemaLocation="
         </entry>
         <entry key="id">
         	<bean class="org.opennms.features.topology.plugins.browsers.AlarmIdColumnLinkGenerator">
+        		<argument ref="alarmDao"/>
         		<argument value="id"/>
         	</bean>
         </entry>

@@ -128,9 +128,6 @@ public class SelectionAwareTable extends Table implements SelectionListener, Sel
 	 */
 	@Override
 	public void setCellStyleGenerator(CellStyleGenerator generator) {
-		try {
-			((TableAware)generator).setTable(this);
-		} catch (ClassCastException e) {}
 		super.setCellStyleGenerator(generator);
 	}
 

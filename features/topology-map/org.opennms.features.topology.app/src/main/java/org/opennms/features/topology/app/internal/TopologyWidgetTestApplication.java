@@ -158,8 +158,9 @@ public class TopologyWidgetTestApplication extends UI implements CommandUpdateLi
 
         Page.getCurrent().addUriFragmentChangedListener(this);
 
-        if(m_showHeader && m_headerHtml != null) {
-        }
+        ///////////////////////////////////////////////////////////////////////////////////////
+        // TODO I think that the header layout code has gone missing from this init() method //
+        ///////////////////////////////////////////////////////////////////////////////////////
 
         m_layout = new AbsoluteLayout();
         m_layout.setSizeFull();
@@ -181,7 +182,7 @@ public class TopologyWidgetTestApplication extends UI implements CommandUpdateLi
         m_topologyComponent.addVertexUpdateListener(this);
         
         final Slider slider = new Slider(0, 1);
-        
+
         slider.setPropertyDataSource(scale);
         slider.setResolution(1);
         slider.setHeight("300px");

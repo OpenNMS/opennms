@@ -247,7 +247,7 @@
     <tr class="<%=alarm.getSeverity().getLabel()%>">
         <td colspan="3">
             <form method="post" action="alarm/saveSticky.htm">        
-                <textarea style="width:99%" name="stickyMemoBody" ><%=alarm.getStickyMemo().getBody() != null ? alarm.getStickyMemo().getBody() : ""%></textarea>
+                <textarea style="width:99%" name="stickyMemoBody" ><%=(alarm.getStickyMemo() != null && alarm.getStickyMemo().getBody() != null) ? alarm.getStickyMemo().getBody() : ""%></textarea>
                 <br/>
                 <input type="hidden" name="alarmId" value="<%=alarm.getId()%>"/>
                 <form:input type="submit" value="Save" />    
@@ -260,7 +260,7 @@
 
         <td colspan="3"> 
             <form method="post" action="alarm/saveJournal.htm">        
-                <textarea style="width:99%" name="journalMemoBody" ><%=alarm.getReductionKeyMemo().getBody() != null ? alarm.getReductionKeyMemo().getBody() : ""%></textarea>
+                <textarea style="width:99%" name="journalMemoBody" ><%=(alarm.getReductionKeyMemo() != null && alarm.getReductionKeyMemo().getBody() != null) ? alarm.getReductionKeyMemo().getBody() : ""%></textarea>
                 <br/>
                 <input type="hidden" name="alarmId" value="<%=alarm.getId()%>"/>
                 <form:input type="submit" value="Save" />    
@@ -272,13 +272,29 @@
         </td>
     </tr>
     <tr class="<%=alarm.getSeverity().getLabel()%>">
-        <td><strong>Author:</strong>&nbsp;<%=alarm.getStickyMemo().getAuthor() != null ? alarm.getStickyMemo().getAuthor() : ""%></td>
-        <td><strong>Updated:</strong>&nbsp;<fmt:formatDate value="<%=alarm.getStickyMemo().getUpdated()%>" type="BOTH" /></td>
-        <td><strong>Created:</strong>&nbsp;<fmt:formatDate value="<%=alarm.getStickyMemo().getCreated()%>" type="BOTH" /></td>
+        <td><strong>Author:</strong>&nbsp;<%=(alarm.getStickyMemo() != null && alarm.getStickyMemo().getAuthor() != null) ? alarm.getStickyMemo().getAuthor() : ""%></td>
+        <td><strong>Updated:</strong>&nbsp;
+        	<%if (alarm.getStickyMemo() != null) { %>
+        		<fmt:formatDate value="<%=alarm.getStickyMemo().getUpdated()%>" type="BOTH" />
+        	<%}%>
+        </td>
+        <td><strong>Created:</strong>&nbsp;
+        	<%if (alarm.getStickyMemo() != null) { %>
+        		<fmt:formatDate value="<%=alarm.getStickyMemo().getCreated()%>" type="BOTH" />
+        	<%}%>
+        </td>
         
-        <td><strong>Author:&nbsp;</strong><%=alarm.getReductionKeyMemo().getAuthor() != null ? alarm.getReductionKeyMemo().getAuthor() : ""%></td>
-        <td><strong>Updated:</strong>&nbsp;<fmt:formatDate value="<%=alarm.getReductionKeyMemo().getUpdated()%>" type="BOTH" /></td>
-        <td><strong>Created:</strong>&nbsp;<fmt:formatDate value="<%=alarm.getReductionKeyMemo().getCreated()%>" type="BOTH" /></td>
+        <td><strong>Author:&nbsp;</strong><%=(alarm.getReductionKeyMemo() != null && alarm.getReductionKeyMemo().getAuthor() != null) ? alarm.getReductionKeyMemo().getAuthor() : ""%></td>
+        <td><strong>Updated:</strong>&nbsp;
+        	<%if (alarm.getReductionKeyMemo() != null) {%>
+        		<fmt:formatDate value="<%=alarm.getReductionKeyMemo().getUpdated()%>" type="BOTH" />
+        	<%}%>
+        </td>
+        <td><strong>Created:</strong>&nbsp;
+        	<%if (alarm.getReductionKeyMemo() != null) {%>
+        		<fmt:formatDate value="<%=alarm.getReductionKeyMemo().getCreated()%>" type="BOTH" />
+        	<%}%>
+        </td>
     </tr>
 </tr>
 

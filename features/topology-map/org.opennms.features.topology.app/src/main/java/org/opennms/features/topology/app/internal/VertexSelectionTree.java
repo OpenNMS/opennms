@@ -33,7 +33,6 @@ public class VertexSelectionTree extends Tree implements SelectionListener {
             	Collection<VertexRef> vertices = m_graphContainer.getVertexRefForest(refs);
             	m_graphContainer.getSelectionManager().setSelectedVertexRefs(vertices);
             	
-            	getContainerDataSource().fireItemSetChange();
             }
         });
 
