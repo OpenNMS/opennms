@@ -295,7 +295,7 @@ public class AlarmRepositoryHibernate implements AlarmRepository, InitializingBe
     @Transactional
     public void removeStickyMemo(Integer alarmId) {
         OnmsAlarm onmsAlarm = m_alarmDao.get(alarmId);
-        if (onmsAlarm != null) {
+        if (onmsAlarm != null && onmsAlarm.getStickyMemo() != null) {
             m_memoDao.delete(onmsAlarm.getStickyMemo());
             onmsAlarm.setStickyMemo(null);
         }
@@ -308,7 +308,7 @@ public class AlarmRepositoryHibernate implements AlarmRepository, InitializingBe
     @Transactional
     public void removeReductionKeyMemo(int alarmId) {
         OnmsAlarm onmsAlarm = m_alarmDao.get(alarmId);
-        if (onmsAlarm != null) {
+        if (onmsAlarm != null && onmsAlarm.getReductionKeyMemo() != null) {
             m_memoDao.delete(onmsAlarm.getReductionKeyMemo());
             onmsAlarm.setReductionKeyMemo(null);
         }

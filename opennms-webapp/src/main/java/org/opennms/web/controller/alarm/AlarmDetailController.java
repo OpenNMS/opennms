@@ -399,7 +399,7 @@ public class AlarmDetailController extends MultiActionController {
 		return mv;
 	}
 
-    public ModelAndView clearSticky(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws Exception {
+    public ModelAndView removeStickyMemo(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws Exception {
         int alarmId;
         String alarmIdString = "";
 
@@ -416,7 +416,7 @@ public class AlarmDetailController extends MultiActionController {
         }
     }
 
-    public ModelAndView saveSticky(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws Exception {
+    public ModelAndView saveStickyMemo(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws Exception {
         int alarmId;
         String alarmIdString = "";
 
@@ -426,7 +426,6 @@ public class AlarmDetailController extends MultiActionController {
             alarmId = Integer.parseInt(alarmIdString);
             String stickyMemoBody = httpServletRequest.getParameter("stickyMemoBody");
             m_alarmRepository.updateStickyMemo(alarmId, stickyMemoBody, httpServletRequest.getRemoteUser());
-
             return new ModelAndView(new RedirectView("detail.htm", true), "id", alarmId);
         } catch (NumberFormatException e) {
             logger.error("Could not parse alarm ID '{}' to integer.", httpServletRequest.getParameter("alarmId"));
@@ -434,7 +433,7 @@ public class AlarmDetailController extends MultiActionController {
         }
     }
 
-    public ModelAndView clearJournal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws Exception {
+    public ModelAndView removeJournalMemo(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws Exception {
         int alarmId;
         String alarmIdString = "";
 
@@ -451,7 +450,7 @@ public class AlarmDetailController extends MultiActionController {
         }
     }
 
-    public ModelAndView saveJournal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws Exception {
+    public ModelAndView saveJournalMemo(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws Exception {
         int alarmId;
         String alarmIdString = "";
 
