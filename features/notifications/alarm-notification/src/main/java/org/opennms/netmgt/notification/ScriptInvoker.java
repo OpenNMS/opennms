@@ -121,12 +121,12 @@ public class ScriptInvoker {
 			int shellExitStatus = shellProcess.waitFor();
 			timer.cancel();
 			LogUtils.debugf(this, "Error status " + shellExitStatus);
-			if (shellExitStatus != 0 && m_errorHandling == false && shellExitStatus != 143) {
+			if (shellExitStatus != 0 && m_errorHandling == false) {
 				LogUtils.debugf(this, "Error while invoking "
 						+ this.m_scriptName + " with '" + this.m_alarmXml
-						+ "' as argument.But errorhandling is set to false.");
-			} else if (shellExitStatus != 0 && m_errorHandling == true
-					&& count != 0) {
+						+ "' as argument.But errorhandling is set to false or timeout exceeded.");
+			} else if (shellExitStatus != 0 && shellExitStatus != 143 && m_errorHandling == true
+					&& count != 0 ) {
 				LogUtils.debugf(this,
 						"Error Handling Enabled.Current retry count is "
 								+ count + ".The script will be invoked after "
@@ -135,10 +135,10 @@ public class ScriptInvoker {
 				m_isAlreadyInvoked = true;
 				count = count - 1;
 				invokeScript();
-			} else if (shellExitStatus != 0 && m_errorHandling == true
+			} else if (shellExitStatus != 0 && shellExitStatus != 143 && m_errorHandling == true
 					&& count == 0) {
 				LogUtils.debugf(this,
-						"No of retry count exceeded. Script will not be invoked again.");
+						"Number of retry count exceeded. Script will not be invoked again.");
 			}
 			// errorOutput.close();
 			// consoleOutput.close();

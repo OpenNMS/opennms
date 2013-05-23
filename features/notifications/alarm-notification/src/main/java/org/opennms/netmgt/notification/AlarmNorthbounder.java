@@ -175,9 +175,21 @@ public class AlarmNorthbounder extends AbstractNorthbounder{
 
 							LogUtils.debugf(this, "The UEI " + configuredUei
 									+ " is configured for alarm notification.");
-							int notificationThreshold = Integer.parseInt(uei.getNotificationThreshold());
+							int notificationThreshold = 0;
+							try{
+								notificationThreshold = Integer.parseInt(uei.getNotificationThreshold());
+							}catch(NumberFormatException n) {
+								LogUtils.errorf(this,"Notification Threshold " + uei.getNotificationThreshold() + 
+										" is not a valid integer.Taking default value which is 5");
+								notificationThreshold = 5;
+							}
 							int alarmCount = northboundalarm.getCount();
-							if(alarmCount % notificationThreshold != 1) {
+							if(notificationThreshold == 0) {
+								LogUtils.debugf(this, "Notification Threshold cannot be 0.Taking default value which is 5");
+								notificationThreshold = 5;
+							}
+							
+							if(alarmCount % notificationThreshold != 1 && notificationThreshold != 1 ) {
 								isAlarmRequired = false;
 								LogUtils.debugf(this, "The northbound alarm count " + alarmCount +" does not match thresholdNotification " + notificationThreshold);
 							}else {
@@ -664,11 +676,19 @@ public class AlarmNorthbounder extends AbstractNorthbounder{
 			OnmsIpInterface onmsIpInterface = null;
 			String ipaddr = northboundalarm.getIpAddr().getHostAddress();
 			if (m_ipInterfaceDao != null && nodeId != null && ipaddr != null ) {
+				Integer ifIndex = null;
+				
 				onmsIpInterface = m_ipInterfaceDao.findByNodeIdAndIpAddress(
 						nodeId, ipaddr);
-				Integer ifIndex = null;
+				
 				if (onmsIpInterface != null) {
-					ifIndex = onmsIpInterface.getIfIndex();
+					try{
+						ifIndex = onmsIpInterface.getIfIndex();
+					}catch(Exception e){
+						LogUtils.errorf(this, "Error while getting index for node "
+								+ northboundalarm.getNodeId() + e.getMessage());
+						ifIndex = null;
+					}
 					if (ifIndex != null) {
 						nbiAlarm.setIfindex(String.valueOf(ifIndex));
 						OnmsSnmpInterface onmsSnmpInterface = m_snmpInterfaceDao
@@ -712,7 +732,13 @@ public class AlarmNorthbounder extends AbstractNorthbounder{
 						nodeId, ipaddr);
 				Integer ifIndex = null;
 				if (onmsIpInterface != null) {
-					ifIndex = onmsIpInterface.getIfIndex();
+					try{
+						ifIndex = onmsIpInterface.getIfIndex();
+					}catch(Exception e){
+						LogUtils.errorf(this, "Error while getting index for node "
+								+ northboundalarm.getNodeId() + e.getMessage());
+						ifIndex = null;
+					}
 					if (ifIndex != null) {
 						nbiAlarm.setIfindex(String.valueOf(ifIndex));
 						OnmsSnmpInterface onmsSnmpInterface = m_snmpInterfaceDao
