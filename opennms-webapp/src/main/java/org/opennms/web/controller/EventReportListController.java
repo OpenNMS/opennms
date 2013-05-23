@@ -31,6 +31,7 @@ package org.opennms.web.controller;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -80,7 +81,20 @@ public class EventReportListController extends AbstractController {
 		File f = new File(filename);
 
 		File[] files = f.listFiles();
-		Arrays.sort(files);
+		Arrays.sort( files, new Comparator<File>(){
+			public int compare(File o1, File o2) {
+				if ((o1.lastModified()) > (o2.lastModified())) {
+					return -1;
+				}
+				else if ((o1.lastModified()) < (o2.lastModified())) {
+					return +1;
+				}
+				else {
+					return 0;
+				}
+			}
+		});
+
 		if (files != null && files.length > 0) {
 			int page = 1;
 			int recordsPerPage = 20;
