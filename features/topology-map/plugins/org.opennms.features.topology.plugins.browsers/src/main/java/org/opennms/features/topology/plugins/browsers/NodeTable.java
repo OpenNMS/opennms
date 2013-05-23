@@ -29,8 +29,12 @@
 package org.opennms.features.topology.plugins.browsers;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 
+import org.apache.commons.lang.ArrayUtils;
+import org.opennms.core.criteria.Order;
 import org.opennms.core.utils.InetAddressComparator;
 import org.opennms.netmgt.model.OnmsNode;
 import org.slf4j.LoggerFactory;
@@ -144,5 +148,22 @@ public class NodeTable extends SelectionAwareTable {
 		} catch (Throwable e) {
 			LoggerFactory.getLogger(table.getClass()).error("Reflection call failed inside NodeTable.setTableSortContainerPropertyId()", e);
 		}
+	}
+
+	@Override
+	public void sort(Object[] propertyId, boolean[] ascending) {
+		if (propertyId.length > ascending.length) {
+			throw new IllegalArgumentException("Property list and ascending list are different sizes");
+		}
+
+		List<Object> newIds = new ArrayList<Object>();
+		List<Boolean> newAsc = new ArrayList<Boolean>();
+		for(int i = 0; i < propertyId.length; i++) {
+			if (!"primaryInterface".equals(propertyId[i])) {
+				newIds.add(propertyId[i]);
+				newAsc.add(ascending[i]);
+			}
+		}
+		super.sort(newIds.toArray(new Object[0]), ArrayUtils.toPrimitive(newAsc.toArray(new Boolean[0])));
 	}
 }
