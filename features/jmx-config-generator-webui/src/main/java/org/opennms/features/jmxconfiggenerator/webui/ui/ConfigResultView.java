@@ -42,6 +42,7 @@ import org.opennms.features.jmxconfiggenerator.webui.data.UiModel;
 import org.opennms.features.jmxconfiggenerator.webui.data.UiModel.OutputDataKey;
 
 import com.vaadin.server.DownloadStream;
+import com.vaadin.server.FileDownloader;
 import com.vaadin.server.StreamResource;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Button;
@@ -103,6 +104,7 @@ public class ConfigResultView extends CustomComponent implements ModelChangeList
 			tabSheet.addTab(eachContent, eachContent.getCaption());
 		tabSheet.setSelectedTab(0); // select first component!
 
+		buttonPanel.getNext().setVisible(false); // TODO MVR enable button again and allow to download
 		buttonPanel.getNext().setCaption("download all");
 		buttonPanel.getNext().setIcon(IconProvider.getIcon(IconProvider.BUTTON_SAVE));
 
@@ -113,7 +115,7 @@ public class ConfigResultView extends CustomComponent implements ModelChangeList
 	@Override
 	public void buttonClick(ClickEvent event) {
 		if (event.getSource().equals(buttonPanel.getPrevious())) app.updateView(UiState.MbeansView);
-		if (event.getSource().equals(buttonPanel.getNext())) downloadConfigFile(event);
+//		if (event.getSource().equals(buttonPanel.getNext())) downloadConfigFile(event);
 	}
 
 	/**
@@ -135,7 +137,8 @@ public class ConfigResultView extends CustomComponent implements ModelChangeList
 					.getDescriptionText());
 		}
 		// initiate download
-		event.getButton().getUI().open(new DownloadResource(zipContentMap, DOWNLOAD_FILE_NAME, getUI()));
+//                new FileDownloader(new DownloadResource(zipContentMap, DOWNLOAD_FILE_NAME, getUI())).extend(event.getButton());
+//		event.getButton().getUI().open(new DownloadResource(zipContentMap, DOWNLOAD_FILE_NAME, getUI()));
 	}
 
 	/**

@@ -202,7 +202,7 @@ public class UIHelper {
 	 * {@link Closeable#close()} occurs, the IOException is catched and logged.
 	 * No further information is forwarded.
 	 */
-	public static final void closeSilently(Closeable closeable) {
+	public static void closeSilently(Closeable closeable) {
 		if (closeable == null) return; // prevent NPE
 		try {
 			closeable.close();

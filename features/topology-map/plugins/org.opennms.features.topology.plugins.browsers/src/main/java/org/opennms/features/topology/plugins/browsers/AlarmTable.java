@@ -243,6 +243,6 @@ public class AlarmTable extends SelectionAwareTable implements HasExtraComponent
 	}
 	
 	private String getUser() {
-	    return (String)getUI().getUser();
+	    return "admin"; // TODO use real user name
 	}
 }
