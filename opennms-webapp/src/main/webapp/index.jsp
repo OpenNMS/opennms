@@ -30,6 +30,13 @@
 --%>
 
 <%@page language="java" contentType="text/html" session="true"  %>
+<%
+        response.setHeader("X-Frame-Options", "SAMEORIGIN");
+        response.setHeader("Pragma", "no-cache");
+        if (request.getProtocol().equals("HTTP/1.1")) {
+                response.setHeader("Cache-Control", "no-store ");
+        }
+%>
 
 <jsp:include page="/includes/header.jsp" flush="false">
 	<jsp:param name="title" value="Web Console" />

@@ -29,6 +29,14 @@
 
 --%>
 
+<%
+        response.setHeader("X-Frame-Options", "SAMEORIGIN");
+        response.setHeader("Pragma", "no-cache");
+        if (request.getProtocol().equals("HTTP/1.1")) {
+                response.setHeader("Cache-Control", "no-store ");
+        }
+%>
+
 <%@ taglib prefix='c' uri='http://java.sun.com/jsp/jstl/core'%>
 
 <jsp:include page="/includes/header.jsp" flush="false">
