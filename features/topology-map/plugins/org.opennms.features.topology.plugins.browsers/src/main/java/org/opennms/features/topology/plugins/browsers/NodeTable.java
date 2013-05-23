@@ -72,21 +72,21 @@ public class NodeTable extends SelectionAwareTable {
 				if (o2 == null) {
 					return 0;
 				} else {
-					return -1;
+					return 1;
 				}
 			} else {
 				if (o2 == null) {
-					return 1;
+					return -1;
 				} else {
 					if (o1.getPrimaryInterface() == null) {
 						if (o2.getPrimaryInterface() == null) {
 							return 0;
 						} else {
-							return -1;
+							return 1;
 						}
 					} else {
 						if (o2.getPrimaryInterface() == null) {
-							return 1;
+							return -1;
 						} else {
 							return new InetAddressComparator().compare(o1.getPrimaryInterface().getIpAddress(), o2.getPrimaryInterface().getIpAddress());
 						}
@@ -107,21 +107,21 @@ public class NodeTable extends SelectionAwareTable {
 				if ("primaryInterface".equals(column)) {
 					if (nodeContainer.additionalSorting.size() == 0) {
 						nodeContainer.additionalSorting.add(new PrimaryInterfaceAddressComparator());
-						setTableSortContainerPropertyId(NodeTable.this, "primaryInterface", false);
+						setTableSortContainerPropertyId(NodeTable.this, "primaryInterface", true);
 					} else if (nodeContainer.additionalSorting.size() == 1) {
 						Comparator<OnmsNode> comparator = nodeContainer.additionalSorting.get(0);
 						if (comparator instanceof PrimaryInterfaceAddressComparator) {
 							nodeContainer.additionalSorting.set(0, new ReverseComparator<OnmsNode>(comparator));
-							setTableSortContainerPropertyId(NodeTable.this, "primaryInterface", true);
+							setTableSortContainerPropertyId(NodeTable.this, "primaryInterface", false);
 						} else {
 							nodeContainer.additionalSorting.set(0, new PrimaryInterfaceAddressComparator());
-							setTableSortContainerPropertyId(NodeTable.this, "primaryInterface", false);
+							setTableSortContainerPropertyId(NodeTable.this, "primaryInterface", true);
 						}
 					} else {
 						// Unexpected number of comparators in the list...
 						nodeContainer.additionalSorting.clear();
 						nodeContainer.additionalSorting.add(new PrimaryInterfaceAddressComparator());
-						setTableSortContainerPropertyId(NodeTable.this, "primaryInterface", false);
+						setTableSortContainerPropertyId(NodeTable.this, "primaryInterface", true);
 					}
 				} else {
 					nodeContainer.additionalSorting.clear();
@@ -156,6 +156,8 @@ public class NodeTable extends SelectionAwareTable {
 			throw new IllegalArgumentException("Property list and ascending list are different sizes");
 		}
 
+		// Remove "primaryInterface" from the list of sortable properties and rely on the 
+		// HeaderClickListener to perform the sorting.
 		List<Object> newIds = new ArrayList<Object>();
 		List<Boolean> newAsc = new ArrayList<Boolean>();
 		for(int i = 0; i < propertyId.length; i++) {
