@@ -78,6 +78,7 @@ final public class IcmpMonitor extends AbstractServiceMonitor {
      * discovery. All exchanges are SOAP/XML compliant.
      * </P>
      */
+    @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         NetworkInterface<InetAddress> iface = svc.getNetInterface();
 

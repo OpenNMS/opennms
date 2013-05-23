@@ -145,6 +145,7 @@ public final class SyslogHandler implements Fiber {
     /**
      * <p>start</p>
      */
+    @Override
     public synchronized void start() {
         if (m_status != START_PENDING)
             throw new RuntimeException("The Fiber is in an incorrect state");
@@ -191,6 +192,7 @@ public final class SyslogHandler implements Fiber {
     /**
      * <p>stop</p>
      */
+    @Override
     public synchronized void stop() {
         if (m_status == STOPPED)
             return;
@@ -220,6 +222,7 @@ public final class SyslogHandler implements Fiber {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getName() {
         return "SyslogdHandler[" + getIpAddress() + ":" + m_dgPort + "]";
     }
@@ -229,6 +232,7 @@ public final class SyslogHandler implements Fiber {
      *
      * @return a int.
      */
+    @Override
     public int getStatus() {
         return m_status;
     }

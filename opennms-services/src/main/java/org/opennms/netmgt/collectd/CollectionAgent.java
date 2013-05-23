@@ -118,6 +118,7 @@ public interface CollectionAgent extends NetworkInterface<InetAddress>,StorageSt
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public abstract String toString();
 
     /**
@@ -125,6 +126,7 @@ public interface CollectionAgent extends NetworkInterface<InetAddress>,StorageSt
      *
      * @return a {@link org.opennms.netmgt.snmp.SnmpAgentConfig} object.
      */
+    @Override
     public abstract SnmpAgentConfig getAgentConfig();
 
     /**

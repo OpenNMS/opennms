@@ -58,6 +58,7 @@ public class StringPropertyAttribute implements OnmsAttribute {
      * @see org.opennms.netmgt.model.OnmsAttribute#getName()
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getName() {
         return m_name;
     }
@@ -78,11 +79,13 @@ public class StringPropertyAttribute implements OnmsAttribute {
      * @see org.opennms.netmgt.model.OnmsAttribute#getResource()
      * @return a {@link org.opennms.netmgt.model.OnmsResource} object.
      */
+    @Override
     public OnmsResource getResource() {
         return m_resource;
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setResource(OnmsResource resource) {
         m_resource = resource;
     }

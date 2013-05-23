@@ -272,6 +272,7 @@ public class MibObject implements Collectable {
      * the argument is a MibObject object with the same object identifier,
      * instance, alias and type.
      */
+    @Override
     public boolean equals(Object object) {
         if (object == null)
             return false;
@@ -290,8 +291,8 @@ public class MibObject implements Collectable {
                 // 'alias' and 'type', values are optional so we need to check
                 // for null
                 //
-                if ((m_alias == null && aMibObject.getInstance() == null) || m_alias.equals(aMibObject.getAlias())) {
-                    if ((m_type == null && aMibObject.getType() == null) || m_type.equals(aMibObject.getType())) {
+                if ((m_alias == null && aMibObject.getInstance() == null) || (m_alias != null && aMibObject != null && m_alias.equals(aMibObject.getAlias()))) {
+                    if ((m_type == null && aMibObject.getType() == null) || (m_type != null && aMibObject != null && m_type.equals(aMibObject.getType()))) {
                         return true;
                     }
                 }
@@ -309,6 +310,7 @@ public class MibObject implements Collectable {
      *
      * @return a int.
      */
+    @Override
     public int hashCode() {
         return m_oid.hashCode();
     }
@@ -319,6 +321,7 @@ public class MibObject implements Collectable {
      *
      * @return String which represents the content of this MibObject
      */
+    @Override
     public String toString() {
         StringBuffer buffer = new StringBuffer();
 
@@ -337,6 +340,7 @@ public class MibObject implements Collectable {
      *
      * @return a {@link org.opennms.netmgt.snmp.CollectionTracker} object.
      */
+    @Override
     public CollectionTracker getCollectionTracker() {
         if (INSTANCE_IFINDEX.equals(getInstance()) || getResourceType() != null) {
             return (CollectionTracker) new ColumnTracker(SnmpObjId.get(getOid()));

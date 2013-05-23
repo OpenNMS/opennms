@@ -54,6 +54,7 @@ public class LineOrientedClient implements Client<LineOrientedRequest, LineOrien
     private BufferedReader m_in;
     
     /** {@inheritDoc} */
+    @Override
     public void connect(final InetAddress host, final int port, final int timeout) throws IOException, Exception {        
         final Socket socket = new Socket();
         socket.connect(new InetSocketAddress(host, port), timeout);
@@ -71,6 +72,7 @@ public class LineOrientedClient implements Client<LineOrientedRequest, LineOrien
      * @return a {@link org.opennms.netmgt.provision.detector.simple.response.LineOrientedResponse} object.
      * @throws java.io.IOException if any.
      */
+    @Override
     public LineOrientedResponse sendRequest(final LineOrientedRequest request) throws IOException {
         request.send(getOutput());
         return receiveResponse();
@@ -93,6 +95,7 @@ public class LineOrientedClient implements Client<LineOrientedRequest, LineOrien
      * @throws java.io.IOException if any.
      * @return a {@link org.opennms.netmgt.provision.detector.simple.response.LineOrientedResponse} object.
      */
+    @Override
     public LineOrientedResponse receiveBanner() throws IOException {
         return receiveResponse();
     }
@@ -101,6 +104,7 @@ public class LineOrientedClient implements Client<LineOrientedRequest, LineOrien
     /**
      * <p>close</p>
      */
+    @Override
     public void close() {
         final Socket socket = m_socket;
         m_socket = null;

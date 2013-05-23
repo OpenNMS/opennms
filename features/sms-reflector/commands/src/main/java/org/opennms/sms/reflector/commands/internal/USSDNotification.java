@@ -39,6 +39,7 @@ import org.smslib.IUSSDNotification;
 import org.smslib.USSDResponse;
 public class USSDNotification implements IUSSDNotification {
     /** {@inheritDoc} */
+    @Override
     public void process(String gatewayId, USSDResponse ussdResponse) {
         debugf(">>> Inbound USSD detected from gateway %s : %s",  gatewayId, ussdResponse.getContent());
         debugf(">>> USSD session status: %s", ussdResponse.getSessionStatus());

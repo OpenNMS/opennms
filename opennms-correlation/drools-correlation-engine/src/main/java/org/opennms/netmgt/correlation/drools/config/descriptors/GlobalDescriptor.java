@@ -359,6 +359,7 @@ import org.opennms.netmgt.correlation.drools.config.Global;
      * of a global
      * element or element with anonymous type definition.
      */
+    @Override
     public boolean isElementDefinition(
     ) {
         return _elementDefinition;

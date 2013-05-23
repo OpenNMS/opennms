@@ -46,6 +46,7 @@ import org.opennms.core.utils.ParameterMap;
 public class JDBCQueryPlugin extends JDBCPlugin {
     
     /** {@inheritDoc} */
+    @Override
     public boolean checkStatus(Connection con, Map<String, Object> qualifiers) {
         Statement st = null; 
         String query = ParameterMap.getKeyedString(qualifiers, "query", null);

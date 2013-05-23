@@ -42,6 +42,7 @@ public class ApplicationFilter implements LocationFilter {
         return m_applications;
     }
 
+    @Override
     public boolean matches(final LocationInfo location) {
         if(getApplications().size() == 0) {
             return true;

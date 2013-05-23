@@ -64,11 +64,13 @@ public class NodeResourceType extends ResourceType {
     }
 
     /** {@inheritDoc} */
+    @Override
     public SnmpCollectionResource findResource(SnmpInstId inst) {
         return m_nodeInfo;
     }
 
     /** {@inheritDoc} */
+    @Override
     public SnmpCollectionResource findAliasedResource(SnmpInstId inst, String ifAlias) {
     // This is here for completeness but it should not get called from here.
     // findResource should be called instead
@@ -81,6 +83,7 @@ public class NodeResourceType extends ResourceType {
      *
      * @return a {@link java.util.Collection} object.
      */
+    @Override
     public Collection<NodeInfo> getResources() {
         return Collections.singleton(m_nodeInfo);
     }

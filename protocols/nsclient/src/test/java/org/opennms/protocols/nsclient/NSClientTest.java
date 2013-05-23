@@ -51,6 +51,7 @@ public class NSClientTest extends AbstractNsclientTest {
     };
 
     @Before
+    @Override
     public void setUp() throws Exception {
         super.setUp();
         startServer("None&8&", "10");
@@ -58,6 +59,7 @@ public class NSClientTest extends AbstractNsclientTest {
     }
 
     @After
+    @Override
     public void tearDown() throws Exception{
         stopServer();
         super.tearDown();

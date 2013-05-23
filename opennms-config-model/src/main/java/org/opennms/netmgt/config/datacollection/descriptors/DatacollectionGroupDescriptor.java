@@ -163,6 +163,7 @@ import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
                     throw new IllegalStateException(ex.toString());
                 }
             }
+            @Override
             public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
                 try {
                     DatacollectionGroup target = (DatacollectionGroup) object;
@@ -211,6 +212,7 @@ import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
                     throw new IllegalStateException(ex.toString());
                 }
             }
+            @Override
             public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
                 try {
                     DatacollectionGroup target = (DatacollectionGroup) object;
@@ -259,6 +261,7 @@ import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
                     throw new IllegalStateException(ex.toString());
                 }
             }
+            @Override
             public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
                 try {
                     DatacollectionGroup target = (DatacollectionGroup) object;
@@ -380,6 +383,7 @@ import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
      * of a global
      * element or element with anonymous type definition.
      */
+    @Override
     public boolean isElementDefinition(
     ) {
         return _elementDefinition;

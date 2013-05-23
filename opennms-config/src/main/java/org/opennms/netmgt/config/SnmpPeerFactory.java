@@ -324,6 +324,7 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
     }
 
     /** {@inheritDoc} */
+    @Override
     public SnmpAgentConfig getAgentConfig(final InetAddress agentAddress) {
         return getAgentConfig(agentAddress, VERSION_UNSPECIFIED);
     }

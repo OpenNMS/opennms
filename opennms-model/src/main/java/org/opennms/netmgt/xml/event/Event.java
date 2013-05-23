@@ -1817,6 +1817,7 @@ public class Event implements Serializable {
 		_uuid = uuid;
 	}
 
+    @Override
 	public String toString() {
 		return new ToStringBuilder(this)
 			.append("uuid", _uuid)

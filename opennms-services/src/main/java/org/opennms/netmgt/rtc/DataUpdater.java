@@ -502,6 +502,7 @@ final class DataUpdater implements Runnable {
     /**
      * Process the event depending on the UEI and update date
      */
+    @Override
     public void run() {
         ThreadCategory log = ThreadCategory.getInstance(DataUpdater.class);
 

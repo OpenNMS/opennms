@@ -85,6 +85,7 @@ public class GraphDashlet extends Dashlet {
     }
     
     /** {@inheritDoc} */
+    @Override
     public void setSurveillanceSet(SurveillanceSet set) {
         m_view.getTopLevelResourceLoader().load(set);
     }
@@ -92,6 +93,7 @@ public class GraphDashlet extends Dashlet {
     public class GraphView extends DashletView {
         private VerticalPanel m_panel = new VerticalPanel();
         private SimplePager m_pager = new SimplePager(new SimplePageable() {
+            @Override
             public void adjustPage(int direction) {
                 m_prefabGraphListBox.adjustSelectedValue(direction);
             }
@@ -138,6 +140,7 @@ public class GraphDashlet extends Dashlet {
         }
         
         
+        @Override
         public void onDashLoad() {
             addToTitleBar(m_pager, DockPanel.CENTER);
         }
@@ -159,6 +162,7 @@ public class GraphDashlet extends Dashlet {
                 m_surveillanceService.getResources(surveillanceSet, this);
             }
 
+            @Override
             public void onDataLoaded(String[][] resources) {
                 super.onDataLoaded(resources);
 
@@ -168,6 +172,7 @@ public class GraphDashlet extends Dashlet {
         }
 
         public class TopLevelResourceChangeHandler extends DirectionalChangeHandler {
+            @Override
             public void onChange(ChangeEvent event, int direction) {
                 String resourceId = m_view.m_topLevelResourceListBox.getSelectedValue();
                 if (resourceId == null) {
@@ -193,6 +198,7 @@ public class GraphDashlet extends Dashlet {
                 m_surveillanceService.getChildResources(resourceId, this);
             }
 
+            @Override
             public void onDataLoaded(String[][] resources) {
                 super.onDataLoaded(resources);
 
@@ -203,6 +209,7 @@ public class GraphDashlet extends Dashlet {
         }
 
         public class ChildResourceChangeHandler extends DirectionalChangeHandler {
+            @Override
             public void onChange(ChangeEvent event, int direction) {
                 String resourceId = m_view.m_childResourceListBox.getSelectedValue();
                 if (resourceId == null) {
@@ -234,6 +241,7 @@ public class GraphDashlet extends Dashlet {
                 m_surveillanceService.getPrefabGraphs(resourceId, this);
             }
 
+            @Override
             public void onDataLoaded(String[][] prefabGraphs) {
                 super.onDataLoaded(prefabGraphs);
 
@@ -243,6 +251,7 @@ public class GraphDashlet extends Dashlet {
         }
 
         public class PrefabGraphChangeHandler extends DirectionalChangeHandler {
+            @Override
             public void onChange(ChangeEvent event, int direction) {
                 String name = m_view.m_prefabGraphListBox.getSelectedValue();
                 if (name == null || "".equals(name)) {

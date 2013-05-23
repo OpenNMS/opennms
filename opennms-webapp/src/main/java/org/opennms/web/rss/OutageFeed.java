@@ -74,6 +74,7 @@ public class OutageFeed extends AbstractFeed {
      *
      * @return a {@link com.sun.syndication.feed.synd.SyndFeed} object.
      */
+    @Override
     public SyndFeed getFeed() {
         SyndFeed feed = new SyndFeedImpl();
 

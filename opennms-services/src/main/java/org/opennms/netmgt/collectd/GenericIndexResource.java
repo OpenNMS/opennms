@@ -75,6 +75,7 @@ public class GenericIndexResource extends SnmpCollectionResource {
      * @return a {@link java.lang.String} object.
      */
     // NMS-5062: Avoid call getLabel here, otherwise the SiblingColumnStorageStrategy will fail if DEBUG is enabled for Collectd.
+    @Override
     public String toString() {
         return "node["+getCollectionAgent().getNodeId() + "]." + getResourceTypeName() + "[" + getInstance() + "]";
     }
@@ -97,6 +98,7 @@ public class GenericIndexResource extends SnmpCollectionResource {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getResourceTypeName() {
         return m_name;
     }
@@ -106,6 +108,7 @@ public class GenericIndexResource extends SnmpCollectionResource {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getInstance() {
         return m_inst.toString();
     }
@@ -114,6 +117,7 @@ public class GenericIndexResource extends SnmpCollectionResource {
         return ((GenericIndexResourceType)getResourceType()).getStorageStrategy();
     }
 
+    @Override
     public String getParent() {
         return getCollectionAgent().getStorageDir().toString();
     }
@@ -127,6 +131,7 @@ public class GenericIndexResource extends SnmpCollectionResource {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getLabel() {
         if (m_resourceLabel == null) {
             m_resourceLabel = getStrategy().getResourceNameFromIndex(this);

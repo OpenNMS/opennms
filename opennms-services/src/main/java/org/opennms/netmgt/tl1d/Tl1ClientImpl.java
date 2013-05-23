@@ -95,6 +95,7 @@ public class Tl1ClientImpl implements Tl1Client {
     /**
      * <p>start</p>
      */
+    @Override
     public void start() {
         log().info("start: TL1 client: "+m_host+":"+String.valueOf(m_port));
         log().info("start:Connection delay = " + m_reconnectionDelay );
@@ -102,6 +103,7 @@ public class Tl1ClientImpl implements Tl1Client {
 
         m_socketReader = new Thread("TL1-Socket-Reader") {
 
+            @Override
             public void run() {
                 readMessages();
             }
@@ -118,6 +120,7 @@ public class Tl1ClientImpl implements Tl1Client {
     /**
      * <p>stop</p>
      */
+    @Override
     public void stop() {
         log().info("Stopping TL1 client: "+m_host+":"+String.valueOf(m_port));
         setStarted(false);
@@ -306,6 +309,7 @@ public class Tl1ClientImpl implements Tl1Client {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getHost() {
         return m_host;
     }
@@ -314,6 +318,7 @@ public class Tl1ClientImpl implements Tl1Client {
      * @see org.opennms.netmgt.tl1d.Tl1Client#setHost(java.lang.String)
      */
     /** {@inheritDoc} */
+    @Override
     public void setHost(String host) {
         m_host = host;
     }
@@ -326,6 +331,7 @@ public class Tl1ClientImpl implements Tl1Client {
      *
      * @return a int.
      */
+    @Override
     public int getPort() {
         return m_port;
     }
@@ -334,6 +340,7 @@ public class Tl1ClientImpl implements Tl1Client {
      * @see org.opennms.netmgt.tl1d.Tl1Client#setPort(int)
      */
     /** {@inheritDoc} */
+    @Override
     public void setPort(int port) {
         m_port = port;
     }
@@ -346,6 +353,7 @@ public class Tl1ClientImpl implements Tl1Client {
       *
       * @return a long.
       */
+    @Override
      public long getReconnectionDelay() {
         return m_reconnectionDelay;
     }
@@ -354,6 +362,7 @@ public class Tl1ClientImpl implements Tl1Client {
      * @see org.opennms.netmgt.tl1d.Tl1Client#setReconnectionDelay(long)
      */
     /** {@inheritDoc} */
+    @Override
     public void setReconnectionDelay(long reconnectionDelay) {
         m_reconnectionDelay = reconnectionDelay;
     }
@@ -363,11 +372,13 @@ public class Tl1ClientImpl implements Tl1Client {
      *
      * @return a {@link java.util.concurrent.BlockingQueue} object.
      */
+    @Override
     public BlockingQueue<Tl1AutonomousMessage> getTl1Queue() {
         return m_tl1Queue;
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setTl1Queue(BlockingQueue<Tl1AutonomousMessage> tl1Queue) {
         m_tl1Queue = tl1Queue;
     }
@@ -377,11 +388,13 @@ public class Tl1ClientImpl implements Tl1Client {
      *
      * @return a {@link org.opennms.netmgt.tl1d.Tl1AutonomousMessageProcessor} object.
      */
+    @Override
     public Tl1AutonomousMessageProcessor getMessageProcessor() {
         return m_messageProcessor;
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setMessageProcessor(Tl1AutonomousMessageProcessor messageProcessor) {
         m_messageProcessor = messageProcessor;
     }
@@ -405,6 +418,7 @@ public class Tl1ClientImpl implements Tl1Client {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setLog(ThreadCategory log) {
         m_log = log;
     }

@@ -142,6 +142,7 @@ public class Tl1d extends AbstractServiceDaemon {
     /**
      * <p>onInit</p>
      */
+    @Override
     public synchronized void onInit() {
         initializeTl1Connections();  
     }
@@ -149,10 +150,12 @@ public class Tl1d extends AbstractServiceDaemon {
     /**
      * <p>onStart</p>
      */
+    @Override
     public synchronized void onStart() {
         log().info("onStart: Initializing Tl1d message processing." );
         
         m_tl1MesssageProcessor = new Thread("Tl1-Message-Processor") {
+            @Override
             public void run() {
                 doMessageProcessing();
             }
@@ -182,6 +185,7 @@ public class Tl1d extends AbstractServiceDaemon {
 	/**
 	 * <p>onStop</p>
 	 */
+    @Override
 	public synchronized void onStop() {
 		stopListeners();
         m_tl1MesssageProcessor.interrupt();
@@ -278,6 +282,7 @@ public class Tl1d extends AbstractServiceDaemon {
      *
      * @return The service's status.
      */
+    @Override
     public synchronized int getStatus() {
         return m_status;
     }

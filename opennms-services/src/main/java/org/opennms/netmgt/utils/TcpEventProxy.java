@@ -34,7 +34,6 @@ import java.io.InputStream;
 import java.io.InterruptedIOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.lang.reflect.UndeclaredThrowableException;
 import java.net.ConnectException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -106,6 +105,7 @@ public final class TcpEventProxy implements EventProxy {
      * @exception UndeclaredThrowableException
      *                thrown if the send fails for any reason
      */
+    @Override
     public void send(Event event) throws EventProxyException {
         Log elog = new Log();
         Events events = new Events();
@@ -125,6 +125,7 @@ public final class TcpEventProxy implements EventProxy {
      *                thrown if the send fails for any reason
      * @throws org.opennms.netmgt.model.events.EventProxyException if any.
      */
+    @Override
     public void send(Log eventLog) throws EventProxyException {
         Connection connection = null;
         try {
@@ -165,6 +166,7 @@ public final class TcpEventProxy implements EventProxy {
             m_writer = new OutputStreamWriter(new BufferedOutputStream(m_sock.getOutputStream()), Charset.forName("UTF-8"));
             m_input = m_sock.getInputStream();
             m_rdrThread = new Thread("TcpEventProxy Input Discarder") {
+                @Override
                 public void run() {
                     for (int ch = 0; ch != -1; ) {
                         try {
@@ -202,6 +204,7 @@ public final class TcpEventProxy implements EventProxy {
             }
         }
         
+        @Override
         protected void finalize() throws Throwable {
             close();
         }

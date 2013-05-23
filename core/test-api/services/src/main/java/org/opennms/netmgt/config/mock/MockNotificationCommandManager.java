@@ -49,6 +49,7 @@ public class MockNotificationCommandManager extends NotificationCommandManager {
         }
     }
     
+    @Override
     public void update() throws Exception {
         
     }

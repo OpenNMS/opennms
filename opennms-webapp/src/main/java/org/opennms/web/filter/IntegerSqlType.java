@@ -46,6 +46,7 @@ public class IntegerSqlType implements SQLType<Integer> {
      * @param value a {@link java.lang.Integer} object.
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String formatValue(Integer value) {
         return value.toString();
     }
@@ -56,6 +57,7 @@ public class IntegerSqlType implements SQLType<Integer> {
      * @param value a {@link java.lang.Integer} object.
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getValueAsString(Integer value) {
         return String.valueOf(value);
     }
@@ -68,6 +70,7 @@ public class IntegerSqlType implements SQLType<Integer> {
      * @param value a {@link java.lang.Integer} object.
      * @throws java.sql.SQLException if any.
      */
+    @Override
     public void bindParam(PreparedStatement ps, int parameterIndex, Integer value) throws SQLException {
         ps.setInt(parameterIndex, value);
     }
@@ -79,6 +82,7 @@ public class IntegerSqlType implements SQLType<Integer> {
      * @param value2 a {@link java.lang.Integer} object.
      * @return an array of {@link java.lang.Integer} objects.
      */
+    @Override
     public Integer[] createArray(Integer value1, Integer value2) {
         return new Integer[] { value1, value2 };
     }

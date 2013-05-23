@@ -65,6 +65,7 @@ import org.opennms.netmgt.xml.event.Tticket;
 public class NotifdTest extends NotificationsTestCase {
 
     @Before
+    @Override
     public void setUp() throws Exception {
         super.setUp();
 
@@ -73,6 +74,7 @@ public class NotifdTest extends NotificationsTestCase {
     }
 
     @After
+    @Override
     public void tearDown() throws Exception {
         super.tearDown();
     }
@@ -412,6 +414,7 @@ public class NotifdTest extends NotificationsTestCase {
         
         final Collection<List<String>> actualResults = new LinkedList<List<String>>();
         RowProcessor rp = new RowProcessor() {
+            @Override
             public void processRow(ResultSet rs) throws SQLException {
                 List<String> cmdList = new LinkedList<String>();
                 cmdList.add(rs.getString("userID"));

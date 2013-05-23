@@ -56,6 +56,7 @@ public final class PerformanceDataProtos {
       return defaultInstance;
     }
     
+    @Override
     public PerformanceDataReading getDefaultInstanceForType() {
       return defaultInstance;
     }
@@ -65,6 +66,7 @@ public final class PerformanceDataProtos {
       return org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.internal_static_PerformanceDataReading_descriptor;
     }
     
+    @Override
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
       return org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.internal_static_PerformanceDataReading_fieldAccessorTable;
@@ -103,6 +105,7 @@ public final class PerformanceDataProtos {
       return value_.get(index);
     }
     
+    @Override
     public final boolean isInitialized() {
       if (!hasPath) return false;
       if (!hasOwner) return false;
@@ -110,6 +113,7 @@ public final class PerformanceDataProtos {
       return true;
     }
     
+    @Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       if (hasPath()) {
@@ -128,6 +132,7 @@ public final class PerformanceDataProtos {
     }
     
     private int memoizedSerializedSize = -1;
+    @Override
     public int getSerializedSize() {
       int size = memoizedSerializedSize;
       if (size != -1) return size;
@@ -215,10 +220,12 @@ public final class PerformanceDataProtos {
     }
     
     public static Builder newBuilder() { return Builder.create(); }
+    @Override
     public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder(org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReading prototype) {
       return newBuilder().mergeFrom(prototype);
     }
+    @Override
     public Builder toBuilder() { return newBuilder(this); }
     
     public static final class Builder extends
@@ -234,10 +241,12 @@ public final class PerformanceDataProtos {
         return builder;
       }
       
+      @Override
       protected org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReading internalGetResult() {
         return result;
       }
       
+      @Override
       public Builder clear() {
         if (result == null) {
           throw new IllegalStateException(
@@ -247,22 +256,27 @@ public final class PerformanceDataProtos {
         return this;
       }
       
+      @Override
       public Builder clone() {
         return create().mergeFrom(result);
       }
       
+      @Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
         return org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReading.getDescriptor();
       }
       
+      @Override
       public org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReading getDefaultInstanceForType() {
         return org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReading.getDefaultInstance();
       }
       
+      @Override
       public boolean isInitialized() {
         return result.isInitialized();
       }
+      @Override
       public org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReading build() {
         if (result != null && !isInitialized()) {
           throw newUninitializedMessageException(result);
@@ -279,6 +293,7 @@ public final class PerformanceDataProtos {
         return buildPartial();
       }
       
+      @Override
       public org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReading buildPartial() {
         if (result == null) {
           throw new IllegalStateException(
@@ -293,6 +308,7 @@ public final class PerformanceDataProtos {
         return returnMe;
       }
       
+      @Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReading) {
           return mergeFrom((org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReading)other);
@@ -323,6 +339,7 @@ public final class PerformanceDataProtos {
         return this;
       }
       
+      @Override
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -479,6 +496,7 @@ public final class PerformanceDataProtos {
       return defaultInstance;
     }
     
+    @Override
     public PerformanceDataReadings getDefaultInstanceForType() {
       return defaultInstance;
     }
@@ -488,6 +506,7 @@ public final class PerformanceDataProtos {
       return org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.internal_static_PerformanceDataReadings_descriptor;
     }
     
+    @Override
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
       return org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.internal_static_PerformanceDataReadings_fieldAccessorTable;
@@ -505,6 +524,7 @@ public final class PerformanceDataProtos {
       return message_.get(index);
     }
     
+    @Override
     public final boolean isInitialized() {
       for (org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReading element : getMessageList()) {
         if (!element.isInitialized()) return false;
@@ -512,6 +532,7 @@ public final class PerformanceDataProtos {
       return true;
     }
     
+    @Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       for (org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReading element : getMessageList()) {
@@ -521,6 +542,7 @@ public final class PerformanceDataProtos {
     }
     
     private int memoizedSerializedSize = -1;
+    @Override
     public int getSerializedSize() {
       int size = memoizedSerializedSize;
       if (size != -1) return size;
@@ -594,10 +616,12 @@ public final class PerformanceDataProtos {
     }
     
     public static Builder newBuilder() { return Builder.create(); }
+    @Override
     public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder(org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReadings prototype) {
       return newBuilder().mergeFrom(prototype);
     }
+    @Override
     public Builder toBuilder() { return newBuilder(this); }
     
     public static final class Builder extends
@@ -613,10 +637,12 @@ public final class PerformanceDataProtos {
         return builder;
       }
       
+      @Override
       protected org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReadings internalGetResult() {
         return result;
       }
       
+      @Override
       public Builder clear() {
         if (result == null) {
           throw new IllegalStateException(
@@ -626,22 +652,27 @@ public final class PerformanceDataProtos {
         return this;
       }
       
+      @Override
       public Builder clone() {
         return create().mergeFrom(result);
       }
       
+      @Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
         return org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReadings.getDescriptor();
       }
       
+      @Override
       public org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReadings getDefaultInstanceForType() {
         return org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReadings.getDefaultInstance();
       }
       
+      @Override
       public boolean isInitialized() {
         return result.isInitialized();
       }
+      @Override
       public org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReadings build() {
         if (result != null && !isInitialized()) {
           throw newUninitializedMessageException(result);
@@ -658,6 +689,7 @@ public final class PerformanceDataProtos {
         return buildPartial();
       }
       
+      @Override
       public org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReadings buildPartial() {
         if (result == null) {
           throw new IllegalStateException(
@@ -672,6 +704,7 @@ public final class PerformanceDataProtos {
         return returnMe;
       }
       
+      @Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReadings) {
           return mergeFrom((org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReadings)other);
@@ -693,6 +726,7 @@ public final class PerformanceDataProtos {
         return this;
       }
       
+      @Override
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -819,6 +853,7 @@ public final class PerformanceDataProtos {
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
+        @Override
         public com.google.protobuf.ExtensionRegistry assignDescriptors(
             com.google.protobuf.Descriptors.FileDescriptor root) {
           descriptor = root;

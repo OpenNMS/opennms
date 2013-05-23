@@ -39,10 +39,12 @@ public class OnmsWbemObjectSetBiosStub implements OnmsWbemObjectSet {
         objStub = obj;
     }
 
+    @Override
     public Integer count() throws WmiException {
         return 1;
     }
 
+    @Override
     public OnmsWbemObject get(Integer idx) throws WmiException {
         if (idx == 0) {
             return objStub;

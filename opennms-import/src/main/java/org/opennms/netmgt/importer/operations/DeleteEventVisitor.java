@@ -51,16 +51,19 @@ public final class DeleteEventVisitor extends AbstractEntityVisitor {
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public void visitMonitoredServiceComplete(OnmsMonitoredService monSvc) {
 		m_events.add(EventUtils.createServiceDeletedEvent("ModelImporter", monSvc.getNodeId().longValue(), InetAddressUtils.str(monSvc.getIpAddress()), monSvc.getServiceType().getName(), -1L));
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public void visitIpInterfaceComplete(OnmsIpInterface iface) {
 		m_events.add(EventUtils.createInterfaceDeletedEvent("ModelImporter", iface.getNode().getId().longValue(), InetAddressUtils.str(iface.getIpAddress()), -1L));
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public void visitNodeComplete(OnmsNode node) {
 		m_events.add(EventUtils.createNodeDeletedEvent("ModelImporter", node.getId().intValue(), node.getLabel(), node.getLabel(), -1L));
 	}

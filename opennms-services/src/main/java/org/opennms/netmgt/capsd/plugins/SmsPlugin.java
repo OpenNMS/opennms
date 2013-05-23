@@ -56,6 +56,7 @@ public class SmsPlugin implements Plugin {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getProtocolName() {
         return PROTOCOL_NAME;
     }
@@ -64,6 +65,7 @@ public class SmsPlugin implements Plugin {
      * @see org.opennms.netmgt.capsd.Plugin#isProtocolSupported(java.net.InetAddress)
      */
     /** {@inheritDoc} */
+    @Override
     public boolean isProtocolSupported(InetAddress address) {
         return isProtocolSupported(address, null);
     }
@@ -72,6 +74,7 @@ public class SmsPlugin implements Plugin {
      * @see org.opennms.netmgt.capsd.Plugin#isProtocolSupported(java.net.InetAddress, java.util.Map)
      */
     /** {@inheritDoc} */
+    @Override
     public boolean isProtocolSupported(InetAddress address, Map<String, Object> qualifiers) {
 
         try {

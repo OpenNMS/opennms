@@ -217,6 +217,7 @@ public class Statsd implements SpringServiceDaemon {
         }
         
         getTransactionTemplate().execute(new TransactionCallbackWithoutResult() {
+            @Override
             public void doInTransactionWithoutResult(TransactionStatus status) {
                 log().debug("Starting report " + report);
                 report.walk();

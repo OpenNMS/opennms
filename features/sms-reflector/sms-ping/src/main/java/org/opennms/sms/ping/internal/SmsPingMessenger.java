@@ -82,6 +82,7 @@ public class SmsPingMessenger implements Messenger<PingRequest, PingReply>, Onms
      * @param request a {@link org.opennms.sms.ping.internal.PingRequest} object.
      * @throws java.lang.Exception if any.
      */
+    @Override
     public void sendRequest(PingRequest request) throws Exception {
     	request.setSentTimestamp(System.currentTimeMillis());
         debugf("SmsMessenger.sendRequest %s", request);
@@ -91,12 +92,14 @@ public class SmsPingMessenger implements Messenger<PingRequest, PingReply>, Onms
     }
 
     /** {@inheritDoc} */
+    @Override
     public void start(Queue<PingReply> replyQueue) {
         debugf("SmsMessenger.start");
         m_replyQueue = replyQueue;
     }
     
     /** {@inheritDoc} */
+    @Override
     public void process(AGateway gateway, MessageTypes msgType, InboundMessage msg) {
     	long receiveTime = System.currentTimeMillis();
     	

@@ -158,6 +158,7 @@ public final class XmpPlugin extends AbstractPlugin {
      *
      * @return The protocol name for this plugin.
      */
+    @Override
     public String getProtocolName() {
         return PROTOCOL_NAME;
     }
@@ -168,6 +169,7 @@ public final class XmpPlugin extends AbstractPlugin {
      * Returns true if the protocol defined by this plugin is supported. If the
      * protocol is not supported then a false value is returned to the caller.
      */
+    @Override
     public boolean isProtocolSupported(InetAddress address) {
         throw new UnsupportedOperationException("Undirected XMP checking not supported");
     }
@@ -181,6 +183,7 @@ public final class XmpPlugin extends AbstractPlugin {
      * additional information by key-name. These key-value pairs can be added to
      * service events if needed.
      */
+    @Override
     public boolean isProtocolSupported(InetAddress address, Map<String, Object> qualifiers) {
         ThreadCategory log = ThreadCategory.getInstance(getClass());
         XmpConfig protoConfig = XmpConfigFactory.getInstance().getXmpConfig();

@@ -46,6 +46,7 @@ public class ReportJobFactory implements JobFactory {
     private Reportd m_reportd;
 
     /** {@inheritDoc} */
+    @Override
     public Job newJob(TriggerFiredBundle bundle) throws SchedulerException {
 
         JobDetail jobDetail = bundle.getJobDetail();

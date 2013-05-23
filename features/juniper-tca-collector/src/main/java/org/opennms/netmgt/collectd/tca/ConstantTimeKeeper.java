@@ -71,6 +71,7 @@ public class ConstantTimeKeeper implements TimeKeeper {
     /* (non-Javadoc)
      * @see org.opennms.core.utils.TimeKeeper#getTimeZone()
      */
+    @Override
     public TimeZone getTimeZone() {
         return TimeZone.getDefault();
     }

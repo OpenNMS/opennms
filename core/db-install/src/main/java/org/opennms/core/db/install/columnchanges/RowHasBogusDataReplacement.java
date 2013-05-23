@@ -57,6 +57,7 @@ public class RowHasBogusDataReplacement implements ColumnChangeReplacement {
     }
     
     /** {@inheritDoc} */
+    @Override
     public Object getColumnReplacement(ResultSet rs, Map<String, ColumnChange> columnChanges) throws SQLException {
         throw new IllegalArgumentException("The '" + m_column
                                            + "' column in the '"
@@ -76,6 +77,7 @@ public class RowHasBogusDataReplacement implements ColumnChangeReplacement {
      *
      * @return a boolean.
      */
+    @Override
     public boolean addColumnIfColumnIsNew() {
         return true;
     }
@@ -83,6 +85,7 @@ public class RowHasBogusDataReplacement implements ColumnChangeReplacement {
     /**
      * <p>close</p>
      */
+    @Override
     public void close() {
     }
 }

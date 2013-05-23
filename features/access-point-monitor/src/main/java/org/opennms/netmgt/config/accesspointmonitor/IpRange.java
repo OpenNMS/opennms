@@ -60,6 +60,7 @@ public class IpRange implements Serializable, Comparable<IpRange> {
         m_end = end;
     }
 
+    @Override
     public int compareTo(IpRange obj) {
         return new CompareToBuilder()
             .append(getBegin(), obj.getBegin())

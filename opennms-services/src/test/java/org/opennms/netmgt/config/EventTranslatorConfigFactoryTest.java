@@ -56,6 +56,7 @@ public class EventTranslatorConfigFactoryTest extends OpenNMSTestCase {
     /*
      * @see TestCase#setUp()
      */
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         MockLogAppender.setupLogging();
@@ -85,12 +86,14 @@ public class EventTranslatorConfigFactoryTest extends OpenNMSTestCase {
     /*
      * @see TestCase#tearDown()
      */
+    @Override
     protected void tearDown() throws Exception {
         super.tearDown();
 		MockLogAppender.assertNoWarningsOrGreater();
 
     }
     
+    @Override
     public void testDoNothing() {
         // FIXME: This is because the below test is commented out
     }

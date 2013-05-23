@@ -53,6 +53,7 @@ public class TestCallback implements MobileMsgResponseCallback {
     /* (non-Javadoc)
      * @see org.opennms.sms.reflector.smsservice.SmsResponseCallback#handleError(org.opennms.sms.reflector.smsservice.SmsRequest, java.lang.Throwable)
      */
+    @Override
     public void handleError(MobileMsgRequest request, Throwable t) {
         System.err.println("Error processing SmsRequest: " + request);
         m_latch.countDown();
@@ -61,6 +62,7 @@ public class TestCallback implements MobileMsgResponseCallback {
     /* (non-Javadoc)
      * @see org.opennms.sms.reflector.smsservice.SmsResponseCallback#handleResponse(org.opennms.sms.reflector.smsservice.SmsRequest, org.opennms.sms.reflector.smsservice.SmsResponse)
      */
+    @Override
     public boolean handleResponse(MobileMsgRequest request, MobileMsgResponse response) {
         m_response.set(response);
         m_latch.countDown();
@@ -70,6 +72,7 @@ public class TestCallback implements MobileMsgResponseCallback {
     /* (non-Javadoc)
      * @see org.opennms.sms.reflector.smsservice.SmsResponseCallback#handleTimeout(org.opennms.sms.reflector.smsservice.SmsRequest)
      */
+    @Override
     public void handleTimeout(MobileMsgRequest request) {
         System.err.println("Timeout waiting for SmsRequest: " + request);
         m_latch.countDown();

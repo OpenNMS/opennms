@@ -73,6 +73,7 @@ public class VTerminal extends GwtTerminal implements Paintable {
 	 * The updateFromUIDL method handles all communication from the server and passes
 	 * the data along to the GwtTerminal widget which updates the client side view.
 	 */
+        @Override
 	public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
 
 		// This call should be made first. Ensure correct implementation,

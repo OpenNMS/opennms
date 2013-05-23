@@ -55,6 +55,7 @@ public class AvailCalculator {
         
         SortedSet<OnmsLocationSpecificStatus> m_statusChanges = new TreeSet<OnmsLocationSpecificStatus>(new Comparator<OnmsLocationSpecificStatus>(){
 
+            @Override
             public int compare(OnmsLocationSpecificStatus o1, OnmsLocationSpecificStatus o2) {
                 return o1.getPollResult().getTimestamp().compareTo(o2.getPollResult().getTimestamp());
             }

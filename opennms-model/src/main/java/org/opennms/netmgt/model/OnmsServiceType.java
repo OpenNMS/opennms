@@ -122,6 +122,7 @@ public class OnmsServiceType implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return new ToStringCreator(this)
             .append("id", getId())
@@ -130,6 +131,7 @@ public class OnmsServiceType implements Serializable {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof OnmsServiceType) {
             OnmsServiceType t = (OnmsServiceType)obj;
@@ -143,6 +145,7 @@ public class OnmsServiceType implements Serializable {
      *
      * @return a int.
      */
+    @Override
     public int hashCode() {
         return m_id.intValue();
     }

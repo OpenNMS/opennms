@@ -95,6 +95,7 @@ public class LocationDetails implements Serializable, IsSerializable {
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
+        @Override
 	public String toString() {
 		return "LocationDetails[locationMonitorState=" + m_locationMonitorState + ",applicationState=" + m_applicationState + "]";
 	}

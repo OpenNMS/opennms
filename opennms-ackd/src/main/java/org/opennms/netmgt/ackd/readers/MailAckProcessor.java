@@ -358,6 +358,7 @@ class MailAckProcessor implements AckProcessor {
     /**
      * <p>run</p>
      */
+    @Override
     public void run() {
         try {
             log().info("run: Processing mail acknowledgments (opposed to femail acks ;)..." );
@@ -412,6 +413,7 @@ class MailAckProcessor implements AckProcessor {
     /**
      * <p>reloadConfigs</p>
      */
+    @Override
     public synchronized void reloadConfigs() {
         log().debug("reloadConfigs: lock acquired; reloading configuration...");
         m_jmConfigDao.reloadConfiguration();

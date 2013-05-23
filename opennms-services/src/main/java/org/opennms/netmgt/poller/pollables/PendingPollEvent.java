@@ -64,6 +64,7 @@ public class PendingPollEvent extends PollEvent {
      *
      * @return a {@link java.util.Date} object.
      */
+    @Override
     public Date getDate() {
         try {
             return EventConstants.parseToDate(m_event.getTime());
@@ -78,6 +79,7 @@ public class PendingPollEvent extends PollEvent {
      *
      * @return a int.
      */
+    @Override
     public int getEventId() {
         return m_event.getDbid();
     }
@@ -138,6 +140,7 @@ public class PendingPollEvent extends PollEvent {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return m_event+", uei: "+m_event.getUei()+", id: "+m_event.getDbid()+", isPending: "+m_pending+", list size: "+m_pendingOutages.size();
     }

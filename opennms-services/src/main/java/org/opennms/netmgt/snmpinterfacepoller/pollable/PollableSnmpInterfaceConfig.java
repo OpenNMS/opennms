@@ -47,6 +47,7 @@ public class PollableSnmpInterfaceConfig implements ScheduleInterval {
      *
      * @return a long.
      */
+    @Override
     public long getInterval() {
         return interval;
     }
@@ -56,6 +57,7 @@ public class PollableSnmpInterfaceConfig implements ScheduleInterval {
      *
      * @return a boolean.
      */
+    @Override
     public boolean scheduledSuspension() {
         return false;
     }

@@ -119,6 +119,7 @@ import org.opennms.netmgt.config.nsclient.Wpms;
                     throw new IllegalStateException(ex.toString());
                 }
             }
+            @Override
             public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
                 try {
                     Wpms target = (Wpms) object;
@@ -241,6 +242,7 @@ import org.opennms.netmgt.config.nsclient.Wpms;
      * of a global
      * element or element with anonymous type definition.
      */
+    @Override
     public boolean isElementDefinition(
     ) {
         return _elementDefinition;

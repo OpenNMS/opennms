@@ -127,6 +127,7 @@ public class AvailabilityDatabasePopulatorTest implements InitializingBean {
 					"AND (ifServices.ipaddr = '192.168.100.1') AND ipinterface.ipaddr = '192.168.100.1' AND ipinterface.isManaged ='M' AND " + 
 					"(ifServices.serviceid = service.serviceid) AND (ifservices.status = 'A')) AND node.nodeid = 1 AND node.nodetype = 'A'", 
 					new RowMapper<OnmsMonitoredService>() {
+                                                @Override
 						public OnmsMonitoredService mapRow(ResultSet rs, int rowNum) throws SQLException {
 							OnmsMonitoredService retval = new OnmsMonitoredService(oneHundredDotOne, m_serviceTypeDao.findByName(rs.getString("servicename")));
 							return retval;

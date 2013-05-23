@@ -65,6 +65,7 @@ public class EventTranslator extends AbstractServiceDaemon implements EventTrans
     /**
      * <p>onInit</p>
      */
+    @Override
     protected void onInit() {
         ThreadCategory log = ThreadCategory.getInstance(this.getClass());
         try {
@@ -103,6 +104,7 @@ public class EventTranslator extends AbstractServiceDaemon implements EventTrans
     /**
      * <p>onStart</p>
      */
+    @Override
     protected void onStart() {
         getEventTranslator().start();
     }
@@ -110,6 +112,7 @@ public class EventTranslator extends AbstractServiceDaemon implements EventTrans
     /**
      * <p>onStop</p>
      */
+    @Override
     protected void onStop() {
         getEventTranslator().stop();
     }
@@ -119,6 +122,7 @@ public class EventTranslator extends AbstractServiceDaemon implements EventTrans
      *
      * @return a int.
      */
+    @Override
     public int getStatus() {
         return getEventTranslator().getStatus();
     }

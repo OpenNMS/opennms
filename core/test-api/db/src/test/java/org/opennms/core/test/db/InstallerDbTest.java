@@ -65,6 +65,7 @@ public class InstallerDbTest extends TemporaryDatabaseTestCase {
 
     private ByteArrayOutputStream m_outputStream;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         
@@ -93,6 +94,7 @@ public class InstallerDbTest extends TemporaryDatabaseTestCase {
         m_connection = getInstallerDb().getDataSource().getConnection();
     }
 
+    @Override
     public void tearDown() throws Exception {
         if (isEnabled()) {
             m_installerDb.closeColumnReplacements();

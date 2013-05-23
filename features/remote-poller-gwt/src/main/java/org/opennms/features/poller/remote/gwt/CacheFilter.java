@@ -51,16 +51,19 @@ public class CacheFilter implements Filter {
 	private static final long ONE_DAY = 1000 * 60 * 60 * 24;
 
 	/** {@inheritDoc} */
+        @Override
 	public void init(final FilterConfig config) throws ServletException {
 	}
 
 	/**
 	 * <p>destroy</p>
 	 */
+        @Override
 	public void destroy() {
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public void doFilter(final ServletRequest req, final ServletResponse resp, final FilterChain chain) throws IOException, ServletException {
 		if (!(req instanceof HttpServletRequest)) {
 			chain.doFilter(req, resp);

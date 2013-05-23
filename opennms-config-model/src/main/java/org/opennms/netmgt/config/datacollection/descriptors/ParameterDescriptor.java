@@ -277,6 +277,7 @@ import org.opennms.netmgt.config.datacollection.Parameter;
      * of a global
      * element or element with anonymous type definition.
      */
+    @Override
     public boolean isElementDefinition(
     ) {
         return _elementDefinition;

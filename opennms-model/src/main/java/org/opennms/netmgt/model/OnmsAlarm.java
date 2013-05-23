@@ -289,6 +289,7 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
 	@XmlTransient
 	@ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="nodeId")
+    @Override
     public OnmsNode getNode() {
         return this.m_node;
     }
@@ -801,6 +802,7 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return new ToStringCreator(this)
             .append("alarmid", getId())
@@ -1070,6 +1072,7 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     }
     
     /** {@inheritDoc} */
+    @Override
     public void acknowledge(String user) {
         if (m_alarmAckTime == null || m_alarmAckUser == null) {
             m_alarmAckTime = Calendar.getInstance().getTime();
@@ -1078,17 +1081,20 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     }
     
     /** {@inheritDoc} */
+    @Override
     public void unacknowledge(String ackUser) {
         m_alarmAckTime = null;
         m_alarmAckUser = null;
     }
     
     /** {@inheritDoc} */
+    @Override
     public void clear(String ackUser) {
         m_severity = OnmsSeverity.CLEARED;
     }
     
     /** {@inheritDoc} */
+    @Override
     public void escalate(String ackUser) {
         m_severity = OnmsSeverity.escalate(m_severity);
 //        m_alarmAckUser = ackUser;
@@ -1101,6 +1107,7 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
      * @return a {@link org.opennms.netmgt.model.AckType} object.
      */
     @Transient
+    @Override
     public AckType getType() {
         return AckType.ALARM;
     }
@@ -1111,6 +1118,7 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
      * @return a {@link java.lang.Integer} object.
      */
     @Transient
+    @Override
     public Integer getAckId() {
         return m_id;
     }
@@ -1121,6 +1129,7 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
      * @return a {@link java.lang.String} object.
      */
     @Transient
+    @Override
     public String getAckUser() {
         return m_alarmAckUser;
     }
@@ -1131,6 +1140,7 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
      * @return a {@link java.util.Date} object.
      */
     @Transient
+    @Override
     public Date getAckTime() {
         return m_alarmAckTime;
     }

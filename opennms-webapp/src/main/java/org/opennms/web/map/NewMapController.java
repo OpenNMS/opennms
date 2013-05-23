@@ -84,6 +84,7 @@ public class NewMapController implements Controller {
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response)
 			throws IOException {
 

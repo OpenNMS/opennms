@@ -92,6 +92,7 @@ public class DefaultSiteStatusViewService implements SiteStatusViewService {
      * accepts the AggregateStatusView model object.
      * @see org.opennms.web.svclayer.SiteStatusViewService#createAggregateStatusView(java.lang.String)
      */
+    @Override
     public AggregateStatusView createAggregateStatusView(String statusViewName) {
         AggregateStatusView statusView = new AggregateStatusView();
         statusViewName = (statusViewName == null ? m_siteStatusViewConfigDao.getDefaultView().getName() : statusViewName);
@@ -154,6 +155,7 @@ public class DefaultSiteStatusViewService implements SiteStatusViewService {
      * with the asset record for the given nodeid.
      * @see org.opennms.web.svclayer.SiteStatusViewService#createAggregateStatusesUsingNodeId(int, java.lang.String)
      */
+    @Override
     public Collection<AggregateStatus> createAggregateStatusesUsingNodeId(int nodeId, String viewName) {
 
         OnmsNode node = m_nodeDao.load(nodeId);
@@ -171,6 +173,7 @@ public class DefaultSiteStatusViewService implements SiteStatusViewService {
      * for the requested view.
      * @see org.opennms.web.svclayer.SiteStatusViewService#createAggregateStatuses(org.opennms.netmgt.model.AggregateStatusView, java.lang.String)
      */
+    @Override
     public Collection<AggregateStatus> createAggregateStatuses(AggregateStatusView statusView, String statusSite) {
         if (statusView == null) {
             throw new IllegalArgumentException("statusView argument cannot be null");
@@ -287,6 +290,7 @@ public class DefaultSiteStatusViewService implements SiteStatusViewService {
 
 
     /** {@inheritDoc} */
+    @Override
     public Collection<AggregateStatus> createAggregateStatuses(AggregateStatusView statusView) {
         if (! "assets".equalsIgnoreCase("assets")) {
             throw new IllegalArgumentException("statusView only currently supports asset table columns");
@@ -295,6 +299,7 @@ public class DefaultSiteStatusViewService implements SiteStatusViewService {
     }
 
     /** {@inheritDoc} */
+    @Override
     public AggregateStatus getAggregateStatus(String statusViewName, String statusSite, String rowLabel) {
         
         AggregateStatusView statusView = createAggregateStatusView(statusViewName);
@@ -310,6 +315,7 @@ public class DefaultSiteStatusViewService implements SiteStatusViewService {
 
 
     /** {@inheritDoc} */
+    @Override
     public Collection<OnmsNode> getNodes(String statusViewName, String statusSite, String rowLabel) {
         if (statusViewName == null) {
             statusViewName = m_siteStatusViewConfigDao.getDefaultView().getName();

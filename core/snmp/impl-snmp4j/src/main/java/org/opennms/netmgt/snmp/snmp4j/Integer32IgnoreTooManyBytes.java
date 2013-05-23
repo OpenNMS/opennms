@@ -60,6 +60,7 @@ public class Integer32IgnoreTooManyBytes extends Integer32
     setValue(value);
   }
 
+  @Override
   public void decodeBER(BERInputStream inputStream) throws java.io.IOException {
     BER.MutableByte type = new BER.MutableByte();
 	int length;
@@ -96,6 +97,7 @@ public class Integer32IgnoreTooManyBytes extends Integer32
     setValue(newValue);
   }
 
+  @Override
   public Object clone() {
     return new Integer32IgnoreTooManyBytes(getValue());
   }

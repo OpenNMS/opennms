@@ -175,6 +175,7 @@ public class RemotePollerAvailabilityService extends OnmsRestService {
                     public void run() {
                         m_defList = m_transactionTemplate.execute(new TransactionCallback<OnmsLocationAvailDefinitionList>() {
     
+                            @Override
                             public OnmsLocationAvailDefinitionList doInTransaction(TransactionStatus status) {
                                 return getAvailabilityList(getTimeChunkerFromMidnight(), getSortedApplications(), null, null);
                             }

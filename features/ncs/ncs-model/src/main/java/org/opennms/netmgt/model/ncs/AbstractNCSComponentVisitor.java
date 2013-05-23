@@ -30,7 +30,9 @@ package org.opennms.netmgt.model.ncs;
 
 public class AbstractNCSComponentVisitor implements NCSComponentVisitor {
 
+    @Override
     public void visitComponent(NCSComponent component) {}
+    @Override
     public void completeComponent(NCSComponent component) {}
 
 }

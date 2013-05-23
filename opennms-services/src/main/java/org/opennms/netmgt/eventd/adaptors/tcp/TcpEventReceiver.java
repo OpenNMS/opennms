@@ -151,6 +151,7 @@ public final class TcpEventReceiver implements EventReceiver, TcpEventReceiverMB
      *             Thrown if the fiber is in an erronous state or the underlying
      *             thread cannot be started.
      */
+    @Override
     public synchronized void start() {
         assertNotRunning();
 
@@ -185,6 +186,7 @@ public final class TcpEventReceiver implements EventReceiver, TcpEventReceiverMB
      * children threads of this object are terminated and
      * {@link java.lang.Thread#join joined}.
      */
+    @Override
     public synchronized void stop() {
         if (m_status == STOPPED) {
             return;
@@ -213,6 +215,7 @@ public final class TcpEventReceiver implements EventReceiver, TcpEventReceiverMB
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getName() {
         return "Event TCP Receiver[" + m_tcpPort + "]";
     }
@@ -222,6 +225,7 @@ public final class TcpEventReceiver implements EventReceiver, TcpEventReceiverMB
      *
      * @return a int.
      */
+    @Override
     public int getStatus() {
         return m_status;
     }
@@ -231,6 +235,7 @@ public final class TcpEventReceiver implements EventReceiver, TcpEventReceiverMB
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getStatusText() {
         return STATUS_NAMES[getStatus()];
     }
@@ -240,6 +245,7 @@ public final class TcpEventReceiver implements EventReceiver, TcpEventReceiverMB
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String status() {
         return getStatusText();
     }
@@ -247,6 +253,7 @@ public final class TcpEventReceiver implements EventReceiver, TcpEventReceiverMB
     /**
      * Called when the fiber is initialized
      */
+    @Override
     public void init() {
         // do nothing
     }
@@ -254,6 +261,7 @@ public final class TcpEventReceiver implements EventReceiver, TcpEventReceiverMB
     /**
      * Called when the fiber is destroyed
      */
+    @Override
     public void destroy() {
         // do nothing
     }
@@ -264,6 +272,7 @@ public final class TcpEventReceiver implements EventReceiver, TcpEventReceiverMB
      * Adds a new event handler to receiver. When new events are received the
      * decoded event is passed to the handler.
      */
+    @Override
     public void addEventHandler(EventHandler handler) {
         synchronized (m_eventHandlers) {
             if (!m_eventHandlers.contains(handler)) {
@@ -279,6 +288,7 @@ public final class TcpEventReceiver implements EventReceiver, TcpEventReceiverMB
      * received. The handler is removed based upon the method
      * <code>equals()</code> inherieted from the <code>Object</code> class.
      */
+    @Override
     public void removeEventHandler(EventHandler handler) {
         synchronized (m_eventHandlers) {
             m_eventHandlers.remove(handler);
@@ -328,11 +338,13 @@ public final class TcpEventReceiver implements EventReceiver, TcpEventReceiverMB
      *
      * @return a {@link java.lang.Integer} object.
      */
+    @Override
     public Integer getPort() {
         return m_tcpPort;
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setPort(final Integer port) {
         assertNotRunning();
         
@@ -340,16 +352,19 @@ public final class TcpEventReceiver implements EventReceiver, TcpEventReceiverMB
     }
 
     /** {@inheritDoc} */
+    @Override
     public void addEventHandler(String name) throws MalformedObjectNameException, InstanceNotFoundException {
         addEventHandler(new EventHandlerMBeanProxy(new ObjectName(name)));
     }
 
     /** {@inheritDoc} */
+    @Override
     public void removeEventHandler(String name) throws MalformedObjectNameException, InstanceNotFoundException {
         removeEventHandler(new EventHandlerMBeanProxy(new ObjectName(name)));
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setLogPrefix(String prefix) {
         m_logPrefix = prefix;
     }
@@ -361,6 +376,7 @@ public final class TcpEventReceiver implements EventReceiver, TcpEventReceiverMB
      * the connection is terminated by the server. The connection is always
      * terminated after an event receipt is generated, if one is required.
      */
+    @Override
     public void setEventsPerConnection(Integer number) {
         assertNotRunning();
 

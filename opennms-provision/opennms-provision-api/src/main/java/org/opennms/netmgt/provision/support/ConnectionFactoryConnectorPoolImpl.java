@@ -154,6 +154,7 @@ public class ConnectionFactoryConnectorPoolImpl extends ConnectionFactory {
     private IoFutureListener<ConnectFuture> portSwitcher(final SocketConnector connector, final SocketAddress remoteAddress, final IoSessionInitializer<? extends ConnectFuture> init, final IoHandler handler) {
         return new IoFutureListener<ConnectFuture>() {
 
+            @Override
             public void operationComplete(ConnectFuture future) {
                 try {
                     Throwable e = future.getException();

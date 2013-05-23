@@ -89,6 +89,7 @@ public class Group implements Cloneable {
      *
      * @return a {@link org.opennms.web.admin.groups.parsers.Group} object.
      */
+    @Override
     public Group clone() {
         try {
             super.clone();
@@ -245,6 +246,7 @@ public class Group implements Cloneable {
      *
      * @return a string representation
      */
+    @Override
     public String toString() {
         StringBuffer buffer = new StringBuffer();
 

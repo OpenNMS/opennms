@@ -88,6 +88,7 @@ public class DnsProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
         
         //load current nodes into the map
         m_template.execute(new TransactionCallback<Object>() {
+            @Override
             public Object doInTransaction(TransactionStatus arg0) {
                 createDnsRecordMap();
                 return null;
@@ -167,6 +168,7 @@ public class DnsProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getName() {
         return ADAPTER_NAME;
     }
@@ -186,6 +188,7 @@ public class DnsProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
         log().info("processPendingOperationForNode: Handling Operation: "+op);
         if (op.getType() == AdapterOperationType.ADD || op.getType() == AdapterOperationType.UPDATE) {
             m_template.execute(new TransactionCallback<Object>() {
+                @Override
                 public Object doInTransaction(TransactionStatus arg0) {
                     doUpdate(op);
                     return null;
@@ -193,6 +196,7 @@ public class DnsProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
             });
         } else if (op.getType() == AdapterOperationType.DELETE) {
             m_template.execute(new TransactionCallback<Object>() {
+                @Override
                 public Object doInTransaction(TransactionStatus arg0) {
                     doDelete(op);
                     return null;

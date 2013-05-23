@@ -71,6 +71,7 @@ public final class RxtxCommands
 			this.intp = intp;
 		}
 
+                @Override
 		public void serialEvent(SerialPortEvent ev) {
 
 			switch( ev.getEventType() )
@@ -590,6 +591,7 @@ public final class RxtxCommands
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
+        @Override
 	public String getHelp() {
 		StringBuilder buf = new StringBuilder();
 		buf.append("--- RXTX Commands ---")

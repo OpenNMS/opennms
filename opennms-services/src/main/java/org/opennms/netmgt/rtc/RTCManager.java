@@ -217,6 +217,7 @@ public final class RTCManager extends AbstractServiceDaemon {
          * Starts the task. When run, simply inform the manager that this has
          * been called by the timer
          */
+        @Override
         public void run() {
             timerTaskComplete(this);
         }
@@ -438,6 +439,7 @@ public final class RTCManager extends AbstractServiceDaemon {
     /**
      * <p>onInit</p>
      */
+    @Override
     protected void onInit() {
 
         // load the rtc configuration
@@ -539,6 +541,7 @@ public final class RTCManager extends AbstractServiceDaemon {
     /**
      * <p>onStart</p>
      */
+    @Override
     protected synchronized void onStart() {
 		//
         // Start all the threads
@@ -589,6 +592,7 @@ public final class RTCManager extends AbstractServiceDaemon {
     /**
      * <p>onStop</p>
      */
+    @Override
     protected synchronized void onStop() {
 		try {
             if (log().isDebugEnabled())

@@ -129,6 +129,7 @@ public abstract class ResourceTypeForm extends Form implements ClickListener {
     /* (non-Javadoc)
      * @see com.vaadin.ui.Button.ClickListener#buttonClick(com.vaadin.ui.Button.ClickEvent)
      */
+    @Override
     public void buttonClick(ClickEvent event) {
         Button source = event.getButton();
         if (source == save) {
@@ -153,6 +154,7 @@ public abstract class ResourceTypeForm extends Form implements ClickListener {
                                            new MessageBox.ButtonConfig(MessageBox.ButtonType.NO, "No"));
             mb.addStyleName(Runo.WINDOW_DIALOG);
             mb.show(new EventListener() {
+                @Override
                 public void buttonClicked(ButtonType buttonType) {
                     if (buttonType == MessageBox.ButtonType.YES) {
                         setVisible(false);

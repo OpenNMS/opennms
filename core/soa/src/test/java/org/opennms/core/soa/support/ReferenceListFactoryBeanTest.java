@@ -54,10 +54,12 @@ public class ReferenceListFactoryBeanTest {
     private final class CountingListener implements RegistrationListener<Hello> {
         private int m_totalProvided = 0;
 
+        @Override
         public void providerRegistered(Registration registration, Hello provider) {
             m_totalProvided++;
         }
 
+        @Override
         public void providerUnregistered(Registration registration, Hello provider) {
             m_totalProvided--;
         }

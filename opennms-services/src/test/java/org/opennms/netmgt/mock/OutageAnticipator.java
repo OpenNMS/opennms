@@ -81,6 +81,7 @@ public class OutageAnticipator implements EventListener {
      */
     public synchronized void anticipateOutageOpened(MockElement element, final Event lostService) {
         MockVisitor outageCounter = new MockVisitorAdapter() {
+            @Override
             public void visitService(MockService svc) {
                 if (!m_db.hasOpenOutage(svc) || anticipatesClose(svc)) {
                     m_expectedOpenCount++;
@@ -142,6 +143,7 @@ public class OutageAnticipator implements EventListener {
     
     public synchronized void deanticipateOutageClosed(MockElement element, final Event regainService) {
         MockVisitor outageCounter = new MockVisitorAdapter() {
+            @Override
             public void visitService(MockService svc) {
                 if (anticipatesClose(svc)) {
                     // Decrease the open ones.. leave the total the same
@@ -161,6 +163,7 @@ public class OutageAnticipator implements EventListener {
 
     public synchronized void anticipateOutageClosed(MockElement element, final Event regainService) {
         MockVisitor outageCounter = new MockVisitorAdapter() {
+            @Override
             public void visitService(MockService svc) {
                 if ((m_db.hasOpenOutage(svc) || anticipatesOpen(svc)) && !anticipatesClose(svc)) {
                     // Decrease the open ones.. leave the total the same
@@ -233,6 +236,7 @@ public class OutageAnticipator implements EventListener {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.eventd.EventListener#getName()
      */
+    @Override
     public String getName() {
         return "OutageAnticipator";
     }
@@ -240,6 +244,7 @@ public class OutageAnticipator implements EventListener {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.eventd.EventListener#onEvent(org.opennms.netmgt.xml.event.Event)
      */
+    @Override
     public synchronized void onEvent(Event e) {
         for (Outage outage : getOutageList(m_pendingOpens, e)) {
             outage.setLostEvent(e.getDbid(), MockEventUtil.convertEventTimeIntoTimestamp(e.getTime()));

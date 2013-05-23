@@ -47,6 +47,7 @@ public class DefaultJasperReportConfigDao extends
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getEngine(String id) {
         Report report = getReport(id);
         if (report != null) {
@@ -56,6 +57,7 @@ public class DefaultJasperReportConfigDao extends
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getTemplateLocation(String id) {
         Report report = getReport(id);
         if (report != null) {

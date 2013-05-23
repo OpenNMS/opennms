@@ -113,6 +113,7 @@ public class IpInterfaceDaoTest implements InitializingBean {
     public void testGetByService() {
         List<OnmsIpInterface> ifaces = m_ipInterfaceDao.findByServiceType("SNMP");
         Collections.sort(ifaces, new Comparator<OnmsIpInterface>() {
+            @Override
             public int compare(OnmsIpInterface o1, OnmsIpInterface o2) {
                 return Integer.valueOf(o1.getNode().getId()).compareTo(o2.getNode().getId());
             }

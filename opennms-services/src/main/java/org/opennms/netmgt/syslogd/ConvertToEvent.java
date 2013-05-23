@@ -531,6 +531,7 @@ final class ConvertToEvent {
      * agent's address &amp; port. If the passed instance is from the same
      * agent then it is considered equal.
      */
+    @Override
     public boolean equals(final Object o) {
         if (o != null && o instanceof ConvertToEvent) {
             final ConvertToEvent e = (ConvertToEvent) o;
@@ -546,6 +547,7 @@ final class ConvertToEvent {
      *
      * @return The 32-bit has code for the instance.
      */
+    @Override
     public int hashCode() {
         return (m_port ^ m_sender.hashCode());
     }
@@ -555,6 +557,7 @@ final class ConvertToEvent {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return new ToStringBuilder(this)
             .append("Sender", m_sender)

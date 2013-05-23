@@ -55,6 +55,7 @@ public class AliasedAttribute extends SnmpAttribute {
 	private SnmpAttribute m_attr;
 
 	/** {@inheritDoc} */
+        @Override
 	public boolean equals(Object obj) {
 		return m_attr.equals(obj);
 	}
@@ -64,6 +65,7 @@ public class AliasedAttribute extends SnmpAttribute {
 	 *
 	 * @return a {@link org.opennms.netmgt.collectd.SnmpAttributeType} object.
 	 */
+        @Override
 	public SnmpAttributeType getAttributeType() {
 		return m_attr.getAttributeType();
 	}
@@ -73,6 +75,7 @@ public class AliasedAttribute extends SnmpAttribute {
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
+        @Override
 	public String getName() {
 		return m_attr.getName();
 	}
@@ -82,6 +85,7 @@ public class AliasedAttribute extends SnmpAttribute {
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
+        @Override
 	public String getType() {
 		return m_attr.getType();
 	}
@@ -91,6 +95,7 @@ public class AliasedAttribute extends SnmpAttribute {
 	 *
 	 * @return a {@link org.opennms.netmgt.snmp.SnmpValue} object.
 	 */
+        @Override
 	public SnmpValue getValue() {
 		return m_attr.getValue();
 	}
@@ -100,6 +105,7 @@ public class AliasedAttribute extends SnmpAttribute {
 	 *
 	 * @return a int.
 	 */
+        @Override
 	public int hashCode() {
 		return m_attr.hashCode();
 	}
@@ -109,11 +115,13 @@ public class AliasedAttribute extends SnmpAttribute {
 	 *
 	 * @return a {@link org.opennms.core.utils.ThreadCategory} object.
 	 */
+        @Override
 	public ThreadCategory log() {
 		return m_attr.log();
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public boolean shouldPersist(ServiceParameters params) {
 		return m_attr.shouldPersist(params);
 	}
@@ -123,6 +131,7 @@ public class AliasedAttribute extends SnmpAttribute {
      *
      * @return a {@link java.lang.String} object.
      */
+        @Override
     public String toString() {
         return getResource()+"."+getAttributeType()+" = "+getValue();
     }

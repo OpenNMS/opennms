@@ -273,6 +273,7 @@ import org.opennms.netmgt.xml.event.Autoacknowledge;
      * of a global
      * element or element with anonymous type definition.
      */
+    @Override
     public boolean isElementDefinition(
     ) {
         return _elementDefinition;

@@ -54,6 +54,7 @@ public class DefaultDatabaseReportConfigDao extends AbstractCastorConfigDao<Data
     
     
     /** {@inheritDoc} */
+    @Override
     public String getReportService(String name) {
         
         Report report = getReport(name);
@@ -67,6 +68,7 @@ public class DefaultDatabaseReportConfigDao extends AbstractCastorConfigDao<Data
     }
     
     /** {@inheritDoc} */
+    @Override
     public String getDisplayName(String name) {
         
         Report report = getReport(name);
@@ -96,6 +98,7 @@ public class DefaultDatabaseReportConfigDao extends AbstractCastorConfigDao<Data
      *
      * @return a {@link java.util.List} object.
      */
+    @Override
     public List<Report> getReports() {
         
         return getContainer().getObject();
@@ -107,6 +110,7 @@ public class DefaultDatabaseReportConfigDao extends AbstractCastorConfigDao<Data
      *
      * @return a {@link java.util.List} object.
      */
+    @Override
     public List<Report> getOnlineReports() {
         
         List<Report> onlineReports = new ArrayList<Report>();

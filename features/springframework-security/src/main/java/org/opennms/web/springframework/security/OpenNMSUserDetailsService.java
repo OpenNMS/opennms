@@ -38,11 +38,13 @@ import org.springframework.util.Assert;
 public class OpenNMSUserDetailsService implements UserDetailsService, InitializingBean {
 	private SpringSecurityUserDao m_userDao;
 	
+        @Override
 	public void afterPropertiesSet() throws Exception {
 	    Assert.notNull(m_userDao);
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public UserDetails loadUserByUsername(final String username) throws UsernameNotFoundException, DataAccessException {
 	    final UserDetails userDetails = m_userDao.getByUsername(username);
 		

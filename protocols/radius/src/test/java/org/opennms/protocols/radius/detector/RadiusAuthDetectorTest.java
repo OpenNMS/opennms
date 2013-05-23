@@ -82,6 +82,7 @@ public class RadiusAuthDetectorTest implements ApplicationContextAware, Initiali
 	public void testRunDetectorInTempThread() throws InterruptedException {
 		for(int i = 0; i < 1000; i++) {
 			Thread t = new Thread() {
+                                @Override
 				public void run() {
 					try {
 						testDetectorFail();

@@ -133,6 +133,7 @@ public class InstanceStrategyIntegrationTest implements InitializingBean, Tempor
     private static final String PASSIVE_STATUS_UEI = "uei.opennms.org/services/passiveServiceStatus";
     private static final String SNMP_DATA_PATH = "/org/opennms/netmgt/accesspointmonitor/poller/instancestrategy/";
 
+    @Override
     public void setTemporaryDatabase(TemporaryDatabase database) {
         m_database = database;
     }

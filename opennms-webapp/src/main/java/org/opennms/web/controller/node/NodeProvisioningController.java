@@ -62,6 +62,7 @@ public class NodeProvisioningController extends AbstractController implements
      * client to an appropriate URL for display.
      */
     @Transactional
+    @Override
     public ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         
         String user = SecurityContextHolder.getContext().getAuthentication().getName();

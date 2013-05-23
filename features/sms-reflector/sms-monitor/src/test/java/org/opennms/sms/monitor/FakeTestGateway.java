@@ -72,6 +72,7 @@ public class FakeTestGateway extends AGateway
 			m_message = message;
 			m_expiration = System.currentTimeMillis() + milliseconds;
 		}
+                @Override
 		public void run() {
 			if (m_message != null) {
 				System.err.println("QueueRunner(run): " + getService().getInboundNotification());
@@ -86,11 +87,13 @@ public class FakeTestGateway extends AGateway
 			}
 		}
 
+                @Override
 		public long getDelay(TimeUnit unit) {
 			long remainder = m_expiration - System.currentTimeMillis();
 			return unit.convert(remainder, TimeUnit.MILLISECONDS);
 		}
 
+                @Override
 		public int compareTo(Delayed o) {
 			long thisVal = this.getDelay(TimeUnit.NANOSECONDS);
 			long anotherVal = o.getDelay(TimeUnit.NANOSECONDS);
@@ -132,6 +135,7 @@ public class FakeTestGateway extends AGateway
 		this.incomingMessagesThread = new Thread(new Runnable()
 		{
 			// Run thread to fake incoming messages
+                        @Override
 			public void run()
 			{
 				while (!FakeTestGateway.this.incomingMessagesThread.isInterrupted())

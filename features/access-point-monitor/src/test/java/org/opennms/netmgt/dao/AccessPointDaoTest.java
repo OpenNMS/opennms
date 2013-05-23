@@ -83,6 +83,7 @@ public class AccessPointDaoTest implements InitializingBean, TemporaryDatabaseAw
 
     private final static String AP3_MAC = "0C:0D:0E:0F:01:02";
 
+    @Override
     public void setTemporaryDatabase(TemporaryDatabase database) {
         m_database = database;
     }

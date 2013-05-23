@@ -53,6 +53,7 @@ public class SetSequenceGenerator extends AbstractSqlGenerator<SetSequenceStatem
     	return m_tempTableName;
     }
     
+        @Override
 	public ValidationErrors validate(final SetSequenceStatement statement, final Database database, final SqlGeneratorChain sqlGeneratorChain) {
         ValidationErrors validationErrors = new ValidationErrors();
         validationErrors.checkRequiredField("sequenceName", statement.getSequenceName());
@@ -66,6 +67,7 @@ public class SetSequenceGenerator extends AbstractSqlGenerator<SetSequenceStatem
         return validationErrors;
 	}
 
+        @Override
 	public Sql[] generateSql(final SetSequenceStatement statement, final Database database, final SqlGeneratorChain sqlGeneratorChain) {
 		final StringBuffer sb = new StringBuffer();
 		sb.append("SELECT pg_catalog.setval(").append("'").append(statement.getSequenceName()).append("',");

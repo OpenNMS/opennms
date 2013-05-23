@@ -266,8 +266,10 @@ public class AvailabilityData {
 
             List<String> monitoredServices = new ArrayList<String>(cat.getServiceCollection());
 
-            if (m_availabilityDataService == null)
+            if (m_availabilityDataService == null) {
                 log.debug("DATA SERVICE IS NULL");
+                throw new IllegalStateException("Data service is null");
+            }
             m_nodes = m_availabilityDataService.getNodes(cat, m_startTime, m_endTime);
             
             if (log.isDebugEnabled()) {

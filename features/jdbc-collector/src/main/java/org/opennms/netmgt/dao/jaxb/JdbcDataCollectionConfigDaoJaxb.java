@@ -39,6 +39,7 @@ public class JdbcDataCollectionConfigDaoJaxb extends AbstractJaxbConfigDao<JdbcD
         super(JdbcDataCollectionConfig.class, "JDBC Data Collection Configuration");
     }
 
+    @Override
     public JdbcDataCollection getDataCollectionByName(String name) {
         JdbcDataCollectionConfig jdcc = getContainer().getObject();
         for (JdbcDataCollection dataCol : jdcc.getJdbcDataCollections()) {
@@ -50,11 +51,13 @@ public class JdbcDataCollectionConfigDaoJaxb extends AbstractJaxbConfigDao<JdbcD
         return null;
     }
 
+    @Override
     public JdbcDataCollection getDataCollectionByIndex(int idx) {
         JdbcDataCollectionConfig jdcc = getContainer().getObject();
         return jdcc.getJdbcDataCollections().get(idx);
     }
 
+    @Override
     public JdbcDataCollectionConfig getConfig() {
         return getContainer().getObject();
     }

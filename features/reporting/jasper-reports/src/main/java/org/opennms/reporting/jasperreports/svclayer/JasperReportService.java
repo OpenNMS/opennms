@@ -80,6 +80,7 @@ public class JasperReportService implements ReportService {
     /**
      * {@inheritDoc}
      */
+    @Override
     public List<ReportFormat> getFormats(String reportId) {
         List<ReportFormat> formats = new ArrayList<ReportFormat>();
         formats.add(ReportFormat.PDF);
@@ -92,6 +93,7 @@ public class JasperReportService implements ReportService {
      *
      * @throws ReportException
      */
+    @Override
     public ReportParameters getParameters(String reportId)
             throws ReportException {
 
@@ -308,6 +310,7 @@ public class JasperReportService implements ReportService {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void render(String ReportId, String location, ReportFormat format,
                        OutputStream outputStream) throws ReportException {
         try {
@@ -346,6 +349,7 @@ public class JasperReportService implements ReportService {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String run(HashMap<String, Object> reportParms, String reportId)
             throws ReportException {
         String baseDir = System.getProperty("opennms.report.dir");
@@ -455,6 +459,7 @@ public class JasperReportService implements ReportService {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void runAndRender(HashMap<String, Object> reportParms,
                              String reportId, ReportFormat format, OutputStream outputStream)
             throws ReportException {
@@ -628,6 +633,7 @@ public class JasperReportService implements ReportService {
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean validate(HashMap<String, Object> reportParms,
                             String reportId) {
         // returns true until we can take parameters

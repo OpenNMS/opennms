@@ -57,6 +57,7 @@ public class NewPasswordActionServlet extends HttpServlet {
     private static final long serialVersionUID = 6803675433403988004L;
 
     /** {@inheritDoc} */
+    @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
             UserFactory.init();

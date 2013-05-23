@@ -51,6 +51,7 @@ public class MockDatabaseTest extends TestCase {
     private MockDatabase m_db;
     private MockDatabase m_secondDb;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
 
@@ -76,6 +77,7 @@ public class MockDatabaseTest extends TestCase {
 
     }
 
+    @Override
     protected void tearDown() throws Exception {
         super.tearDown();
         
@@ -85,6 +87,7 @@ public class MockDatabaseTest extends TestCase {
     
     public void testNodeQuery() {
         Querier querier = new Querier(m_db, "select * from node") {
+            @Override
             public void processRow(ResultSet rs) throws SQLException {
                 int nodeId = rs.getInt("nodeId");
                 String label = rs.getString("nodeLabel");
@@ -117,6 +120,7 @@ public class MockDatabaseTest extends TestCase {
     
     public void testIFQuery() {
         Querier querier = new Querier(m_db, "select * from ipInterface") {
+            @Override
             public void processRow(ResultSet rs) throws SQLException {
                 int nodeId = rs.getInt("nodeId");
                 String ipAddr = rs.getString("ipAddr");
@@ -132,6 +136,7 @@ public class MockDatabaseTest extends TestCase {
     
     public void testServiceQuery() {
         Querier querier = new Querier(m_db, "select nodeId, ipAddr, ifServices.status as status, ifServices.serviceId as serviceId, service.serviceName as serviceName from ifServices, service where ifServices.serviceId = service.serviceId;") {
+            @Override
             public void processRow(ResultSet rs) throws SQLException {
                 int nodeId = rs.getInt("nodeId");
                 String ipAddr = rs.getString("ipAddr");
@@ -167,6 +172,7 @@ public class MockDatabaseTest extends TestCase {
         m_db.createOutage(svc, svcLostEvent);
         assertEquals(2, m_db.countOutagesForService(svc));
         Querier querier = new Querier(m_db, "select * from outages") {
+            @Override
             public void processRow(ResultSet rs) throws SQLException {
                 int nodeId = rs.getInt("nodeId");
                 String ipAddr = rs.getString("ipAddr");

@@ -154,6 +154,7 @@ public class XmlrpcdTest extends OpenNMSTestCase {
             ("<local-server server-name=\"nms1\" verify-server=\"false\">\n" +
             "</local-server>\n").getBytes());
     
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         
@@ -186,6 +187,7 @@ public class XmlrpcdTest extends OpenNMSTestCase {
         }
     }
 
+    @Override
     protected void tearDown() throws Exception {
         if (m_anticipator1 != null) {
             m_anticipator1.shutdown();
@@ -200,6 +202,7 @@ public class XmlrpcdTest extends OpenNMSTestCase {
         anticipator.anticipateCall("notifyReceivedEvent", "0", EventConstants.XMLRPC_NOTIFICATION_EVENT_UEI, "test connection");
     }
 
+    @Override
     public void testDoNothing() {
         super.testDoNothing();
         finishUp();

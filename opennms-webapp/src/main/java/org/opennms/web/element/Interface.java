@@ -30,7 +30,6 @@ package org.opennms.web.element;
 
 import static org.opennms.core.utils.InetAddressUtils.str;
 
-import java.sql.Date;
 import java.util.List;
 
 import org.opennms.core.utils.InetAddressUtils;
@@ -359,6 +358,7 @@ public class Interface {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return m_ipHostName;
     }

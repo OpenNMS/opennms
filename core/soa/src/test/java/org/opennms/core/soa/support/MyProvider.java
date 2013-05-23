@@ -44,10 +44,12 @@ public class MyProvider implements Hello, Goodbye {
         m_name = name;
     }
 
+    @Override
     public void sayHello() throws IOException {
         m_helloSaid++;
     }
 
+    @Override
     public void sayGoodbye() throws IOException {
         m_goodbyeSaid++;
     }

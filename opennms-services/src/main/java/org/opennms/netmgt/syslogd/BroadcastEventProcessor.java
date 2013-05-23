@@ -78,6 +78,7 @@ final class BroadcastEventProcessor implements EventListener {
      * Event Identifier and the appropriate action is taking based on each
      * UEI.
      */
+    @Override
     public void onEvent(Event event) {
         ThreadCategory log = ThreadCategory.getInstance(getClass());
 
@@ -120,6 +121,7 @@ final class BroadcastEventProcessor implements EventListener {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getName() {
         return "Syslogd:BroadcastEventProcessor";
     }

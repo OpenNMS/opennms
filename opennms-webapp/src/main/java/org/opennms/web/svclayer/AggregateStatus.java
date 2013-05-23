@@ -84,6 +84,7 @@ public class AggregateStatus implements SurveillanceStatus {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getStatus() {
         return m_status;
     }
@@ -97,6 +98,7 @@ public class AggregateStatus implements SurveillanceStatus {
      *
      * @return a {@link java.lang.Integer} object.
      */
+    @Override
     public Integer getDownEntityCount() {
         return m_downNodes.size();
     }
@@ -138,6 +140,7 @@ public class AggregateStatus implements SurveillanceStatus {
      *
      * @return a {@link java.lang.Integer} object.
      */
+    @Override
     public Integer getTotalEntityCount() {
         return m_totalEntityCount;
     }

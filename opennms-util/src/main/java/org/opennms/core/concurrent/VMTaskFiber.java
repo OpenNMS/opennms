@@ -186,6 +186,7 @@ public class VMTaskFiber implements Fiber, Runnable {
      * called after the internal thread starts up, and returns when the entry
      * method's thread exits.
      */
+    @Override
     public void run() {
         Object[] passedArgs = new Object[1];
         passedArgs[0] = m_mainArgs;
@@ -212,6 +213,7 @@ public class VMTaskFiber implements Fiber, Runnable {
     /**
      * Starts the current fiber running.
      */
+    @Override
     public synchronized void start() {
         m_fiberStatus = STARTING;
         Thread t = new Thread(m_thrGroup, this, m_taskName + "-main");
@@ -226,6 +228,7 @@ public class VMTaskFiber implements Fiber, Runnable {
      * <code>STOP_PENDING</code>. When the main thread exits then the service
      * is considered stopped!
      */
+    @Override
     public synchronized void stop() {
         if (m_fiberStatus != STOPPED)
             m_fiberStatus = STOP_PENDING;
@@ -237,6 +240,7 @@ public class VMTaskFiber implements Fiber, Runnable {
      *
      * @return The current status of the fiber.
      */
+    @Override
     public synchronized int getStatus() {
         return m_fiberStatus;
     }
@@ -246,6 +250,7 @@ public class VMTaskFiber implements Fiber, Runnable {
      *
      * @return The VM Task's name.
      */
+    @Override
     public String getName() {
         return m_taskName;
     }

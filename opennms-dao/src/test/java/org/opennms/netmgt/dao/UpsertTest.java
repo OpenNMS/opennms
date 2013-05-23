@@ -164,6 +164,7 @@ public class UpsertTest implements InitializingBean {
             m_ifName = ifName;
         }
         
+        @Override
         public void run() {
             try {
                 OnmsSnmpInterface snmpIface = new OnmsSnmpInterface();

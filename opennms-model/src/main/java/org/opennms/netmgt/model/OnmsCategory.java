@@ -195,6 +195,7 @@ public class OnmsCategory implements Serializable, Comparable<OnmsCategory> {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return new ToStringCreator(this)
             .append("id", getId())
@@ -205,6 +206,7 @@ public class OnmsCategory implements Serializable, Comparable<OnmsCategory> {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof OnmsCategory) {
             OnmsCategory t = (OnmsCategory)obj;
@@ -218,6 +220,7 @@ public class OnmsCategory implements Serializable, Comparable<OnmsCategory> {
      *
      * @return a int.
      */
+    @Override
     public int hashCode() {
         return m_name.hashCode();
     }
@@ -228,6 +231,7 @@ public class OnmsCategory implements Serializable, Comparable<OnmsCategory> {
      * @param o a {@link org.opennms.netmgt.model.OnmsCategory} object.
      * @return a int.
      */
+    @Override
     public int compareTo(OnmsCategory o) {
         return m_name.compareToIgnoreCase(o.m_name);
     }

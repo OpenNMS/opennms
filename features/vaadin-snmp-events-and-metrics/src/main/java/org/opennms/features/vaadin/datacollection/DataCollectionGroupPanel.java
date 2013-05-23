@@ -101,11 +101,13 @@ public abstract class DataCollectionGroupPanel extends Panel implements TabSheet
 
         final HorizontalLayout toolbar = new HorizontalLayout();
         toolbar.addComponent(new Button("Save Data Collection File", new Button.ClickListener() {
+            @Override
             public void buttonClick(ClickEvent event) {
                 processDataCollection(dataCollectionConfigDao, logger);
             }
         }));
         toolbar.addComponent(new Button("Cancel", new Button.ClickListener() {
+            @Override
             public void buttonClick(Button.ClickEvent event) {
                 cancel();
                 logger.info("Data collection processing has been canceled");
@@ -136,6 +138,7 @@ public abstract class DataCollectionGroupPanel extends Panel implements TabSheet
     /* (non-Javadoc)
      * @see com.vaadin.ui.TabSheet.SelectedTabChangeListener#selectedTabChange(com.vaadin.ui.TabSheet.SelectedTabChangeEvent)
      */
+    @Override
     public void selectedTabChange(SelectedTabChangeEvent event) {
         TabSheet tabsheet = event.getTabSheet();
         Tab tab = tabsheet.getTab(tabsheet.getSelectedTab());
@@ -192,6 +195,7 @@ public abstract class DataCollectionGroupPanel extends Panel implements TabSheet
                                            new MessageBox.ButtonConfig(MessageBox.ButtonType.NO, "No"));
             mb.addStyleName(Runo.WINDOW_DIALOG);
             mb.show(new EventListener() {
+                @Override
                 public void buttonClicked(ButtonType buttonType) {
                     if (buttonType == MessageBox.ButtonType.YES) {
                         saveFile(file, dcGroup, logger);

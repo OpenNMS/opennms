@@ -66,36 +66,43 @@ public class SnmpUtilsTest extends MockSnmpAgentTestCase implements TrapProcesso
     private TestTrapListener m_trapListener;
 
     static private final class TestTrapProcessor implements TrapProcessor {
+        @Override
         public void setCommunity(String community) {
             // TODO Auto-generated method stub
             
         }
 
+        @Override
         public void setTimeStamp(long timeStamp) {
             // TODO Auto-generated method stub
             
         }
 
+        @Override
         public void setVersion(String version) {
             // TODO Auto-generated method stub
             
         }
 
+        @Override
         public void setAgentAddress(InetAddress agentAddress) {
             // TODO Auto-generated method stub
             
         }
 
+        @Override
         public void processVarBind(SnmpObjId name, SnmpValue value) {
             // TODO Auto-generated method stub
             
         }
 
+        @Override
         public void setTrapAddress(InetAddress trapAddress) {
             // TODO Auto-generated method stub
             
         }
 
+        @Override
         public void setTrapIdentity(TrapIdentity trapIdentity) {
             // TODO Auto-generated method stub
             
@@ -106,10 +113,12 @@ public class SnmpUtilsTest extends MockSnmpAgentTestCase implements TrapProcesso
         private boolean m_error = false;
         private int m_receivedTrapCount = 0;
 
+        @Override
         public void trapReceived(TrapNotification trapNotification) {
             m_receivedTrapCount++;
         }
 
+        @Override
         public void trapError(int error, String msg) {
             m_error = true;
         }
@@ -266,6 +275,7 @@ public class SnmpUtilsTest extends MockSnmpAgentTestCase implements TrapProcesso
         assertEquals("Unexpected number of traps Received", 1, m_trapListener.getReceivedTrapCount());
     }
     
+        @Override
     public TrapProcessor createTrapProcessor() {
         return new TestTrapProcessor();
     }

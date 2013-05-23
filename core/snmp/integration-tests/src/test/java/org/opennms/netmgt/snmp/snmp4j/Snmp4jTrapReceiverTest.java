@@ -75,10 +75,12 @@ public class Snmp4jTrapReceiverTest extends MockSnmpAgentTestCase implements Tra
         private boolean m_error = false;
         private int m_receivedTrapCount = 0;
 
+        @Override
         public void trapReceived(TrapNotification trapNotification) {
             m_receivedTrapCount++;
         }
 
+        @Override
         public void trapError(int error, String msg) {
             m_error = true;
         }
@@ -93,12 +95,19 @@ public class Snmp4jTrapReceiverTest extends MockSnmpAgentTestCase implements Tra
     }
 
     private final class TestTrapProcessor implements TrapProcessor {
+        @Override
         public void setCommunity(String community) {}
+        @Override
         public void setTimeStamp(long timeStamp) {}
+        @Override
         public void setVersion(String version) {}
+        @Override
         public void setAgentAddress(InetAddress agentAddress) {}
+        @Override
         public void setTrapAddress(InetAddress trapAddress) {}
+        @Override
         public void processVarBind(SnmpObjId name, SnmpValue value) {}
+        @Override
         public void setTrapIdentity(TrapIdentity trapIdentity) {}
     }
 
@@ -168,10 +177,12 @@ public class Snmp4jTrapReceiverTest extends MockSnmpAgentTestCase implements Tra
         Thread.sleep(1000);
     }
 
+        @Override
     public TrapProcessor createTrapProcessor() {
         return new TestTrapProcessor();
     }
 
+        @Override
     public synchronized void processPdu(CommandResponderEvent cmdRespEvent) {
         PDU pdu = cmdRespEvent.getPDU();
         System.out.println("Received PDU... " + pdu);

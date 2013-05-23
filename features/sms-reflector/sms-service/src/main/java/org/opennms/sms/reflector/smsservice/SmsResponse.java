@@ -65,6 +65,7 @@ public class SmsResponse extends MobileMsgResponse {
      *
      * @return the text
      */
+    @Override
     public String getText() {
         return m_msg.getText();
     }

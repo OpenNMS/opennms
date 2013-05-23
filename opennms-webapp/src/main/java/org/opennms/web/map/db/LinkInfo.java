@@ -67,6 +67,7 @@ public class LinkInfo {
 	}
 	
 	/** {@inheritDoc} */
+    @Override
 	public boolean equals(Object obj) {
 		if (obj instanceof LinkInfo ) {
 			LinkInfo ol = (LinkInfo) obj;
@@ -81,6 +82,7 @@ public class LinkInfo {
 	 *
 	 * @return a int.
 	 */
+    @Override
 	public int hashCode() {
 		return this.id;
 	}

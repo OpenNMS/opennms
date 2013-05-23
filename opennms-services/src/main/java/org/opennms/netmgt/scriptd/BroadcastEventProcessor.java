@@ -83,6 +83,7 @@ final class BroadcastEventProcessor implements EventListener {
      * available for processing. Each event is queued for handling by the
      * Executor.
      */
+    @Override
     public void onEvent(Event event) {
         if (event == null) {
             return;
@@ -111,6 +112,7 @@ final class BroadcastEventProcessor implements EventListener {
      *
      * @return The ID of this event listener.
      */
+    @Override
     public String getName() {
         return "Scriptd:BroadcastEventProcessor";
     }

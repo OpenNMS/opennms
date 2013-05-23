@@ -43,11 +43,13 @@ public class DataCollectionConfigFileTest extends TestCase {
     private DataCollectionVisitor m_visitor;
     
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         
         InvocationHandler noNullsAllowed = new InvocationHandler() {
 
+            @Override
             public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
                 assertNotNull(args);
                 assertEquals(1, args.length);
@@ -62,6 +64,7 @@ public class DataCollectionConfigFileTest extends TestCase {
         m_visitor = (DataCollectionVisitor)m_invocationAnticipator.getProxy();
     }
 
+    @Override
     protected void tearDown() throws Exception {
         super.tearDown();
     }

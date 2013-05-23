@@ -56,12 +56,15 @@ public class MockMonitor implements ServiceMonitor {
         m_svcName = svcName;
     }
 
+    @Override
     public void initialize(MonitoredService svc) {
     }
 
+    @Override
     public void initialize(Map<String, Object> parameters) {
     }
 
+    @Override
     public PollStatus poll(MonitoredService monSvc, Map<String, Object> parameters) {
         synchronized(m_network) {
             int nodeId = monSvc.getNodeId();
@@ -79,9 +82,11 @@ public class MockMonitor implements ServiceMonitor {
         }
     }
 
+    @Override
     public void release() {
     }
 
+    @Override
     public void release(MonitoredService svc) {
     }
 

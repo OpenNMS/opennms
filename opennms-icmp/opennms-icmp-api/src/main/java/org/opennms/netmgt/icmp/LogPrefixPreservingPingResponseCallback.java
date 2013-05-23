@@ -40,6 +40,7 @@ public class LogPrefixPreservingPingResponseCallback implements PingResponseCall
         m_cb = cb;
     }
 
+    @Override
     public void handleError(InetAddress address, EchoPacket request, Throwable t) {
         String oldPrefix = ThreadCategory.getPrefix();
         try {
@@ -50,6 +51,7 @@ public class LogPrefixPreservingPingResponseCallback implements PingResponseCall
         }
     }
 
+    @Override
     public void handleResponse(InetAddress address, EchoPacket response) {
         String oldPrefix = ThreadCategory.getPrefix();
         try {
@@ -60,6 +62,7 @@ public class LogPrefixPreservingPingResponseCallback implements PingResponseCall
         }
     }
 
+    @Override
     public void handleTimeout(InetAddress address, EchoPacket request) {
         String oldPrefix = ThreadCategory.getPrefix();
         try {

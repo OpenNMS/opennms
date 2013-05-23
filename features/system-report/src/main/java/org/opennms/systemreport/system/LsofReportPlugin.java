@@ -37,18 +37,22 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 
 public class LsofReportPlugin extends AbstractSystemReportPlugin {
+    @Override
     public String getName() {
         return "lsof";
     }
 
+    @Override
     public String getDescription() {
         return "Output of the 'lsof' command (full output only)";
     }
 
+    @Override
     public int getPriority() {
         return 12;
     }
 
+    @Override
     public TreeMap<String, Resource> getEntries() {
         final TreeMap<String,Resource> map = new TreeMap<String,Resource>();
         String lsofOutput = null;

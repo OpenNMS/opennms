@@ -107,6 +107,7 @@ final class Client extends Observable implements Runnable, Fiber {
          * DHCP server. If a response is received it will be forwarded to the
          * client which requested that the DHCP request be generated.
          */
+        @Override
         public void run() {
             ThreadCategory log = ThreadCategory.getInstance(this.getClass());
 
@@ -195,6 +196,7 @@ final class Client extends Observable implements Runnable, Fiber {
     /**
      * <p>start</p>
      */
+    @Override
     public synchronized void start() {
         if (m_worker != null)
             throw new IllegalStateException("The fiber has already been started");
@@ -212,6 +214,7 @@ final class Client extends Observable implements Runnable, Fiber {
     /**
      * <p>stop</p>
      */
+    @Override
     public synchronized void stop() {
         m_status = STOP_PENDING;
         try {
@@ -229,6 +232,7 @@ final class Client extends Observable implements Runnable, Fiber {
      *
      * @return a int.
      */
+    @Override
     public synchronized int getStatus() {
         return m_status;
     }
@@ -238,6 +242,7 @@ final class Client extends Observable implements Runnable, Fiber {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getName() {
         return m_name;
     }
@@ -245,6 +250,7 @@ final class Client extends Observable implements Runnable, Fiber {
     /**
      * <p>run</p>
      */
+    @Override
     public void run() {
         ThreadCategory log = ThreadCategory.getInstance(this.getClass());
         boolean isOk = true;

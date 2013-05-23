@@ -47,41 +47,49 @@ public class DefaultTaskMonitor implements TaskMonitor {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void completed(final Task task) {
         log("completed(%s)", task);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void prerequisiteAdded(final Task monitored, final Task prerequsite) {
         log("prerequisiteAdded(%s, %s)", monitored, prerequsite);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void prerequisiteCompleted(final Task monitored, final Task prerequisite) {
         log("prerequisiteCompleted(%s, %s)", monitored, prerequisite);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void scheduled(final Task task) {
         log("scheduled(%s)", task);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void started(final Task task) {
         log("started(%s)", task);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void submitted(final Task task) {
         log("submitted(%s)", task);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void monitorException(final Throwable t) {
         log(t, "monitorException(%s)", t);
     }
     
     /** {@inheritDoc} */
+    @Override
     public TaskMonitor getChildTaskMonitor(final Task task, final Task child) {
         return this;
     }

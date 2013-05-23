@@ -202,6 +202,7 @@ public class HttpPlugin extends AbstractTcpPlugin {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected boolean checkProtocol(Socket socket, ConnectionConfig config) throws IOException {
         boolean isAServer = false;
 
@@ -277,6 +278,7 @@ public class HttpPlugin extends AbstractTcpPlugin {
      *      java.net.InetAddress)
      */
     /** {@inheritDoc} */
+    @Override
     protected List<ConnectionConfig> getConnectionConfigList(Map<String, Object> qualifiers, InetAddress address) {
         int[] ports = getKeyedIntegerArray(qualifiers, PROPERTY_NAME_PORT, m_defaultPorts);
 

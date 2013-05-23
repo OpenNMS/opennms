@@ -204,6 +204,7 @@ public class CorrelationDescriptor extends org.exolab.castor.xml.util.XMLClassDe
                     throw new IllegalStateException(ex.toString());
                 }
             }
+            @Override
             public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
                 try {
                     Correlation target = (Correlation) object;
@@ -453,6 +454,7 @@ public class CorrelationDescriptor extends org.exolab.castor.xml.util.XMLClassDe
      * of a global
      * element or element with anonymous type definition.
      */
+    @Override
     public boolean isElementDefinition(
     ) {
         return _elementDefinition;

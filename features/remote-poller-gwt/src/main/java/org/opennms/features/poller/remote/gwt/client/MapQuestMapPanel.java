@@ -97,6 +97,7 @@ public class MapQuestMapPanel extends Composite implements MapPanel, HasDoubleCl
             setMarkerState(markerState);
         }
 
+        @Override
         public void onClick(final ClickEvent event) {
             m_currentInfoWindowLatLng  = getMarkerState().getLatLng();
             m_eventBus.fireEvent(new GWTMarkerClickedEvent(getMarkerState()));
@@ -184,6 +185,7 @@ public class MapQuestMapPanel extends Composite implements MapPanel, HasDoubleCl
         m_map.setCenter(MQALatLng.newInstance("0,0"));
 
         m_map.addMoveEndHandler(new MoveEndHandler() {
+            @Override
             public void onMoveEnd(final MoveEndEvent event) {
                 m_eventBus.fireEvent(new MapPanelBoundsChangedEvent(getBounds()));
             }
@@ -191,6 +193,7 @@ public class MapQuestMapPanel extends Composite implements MapPanel, HasDoubleCl
         
         m_map.addClickHandler(new com.googlecode.gwtmapquest.transaction.event.ClickHandler() {
             
+            @Override
             public void onClicked(final com.googlecode.gwtmapquest.transaction.event.ClickEvent event) {
                 m_clickCounter.incrementCounter(event.getLL());
             }
@@ -198,12 +201,14 @@ public class MapQuestMapPanel extends Composite implements MapPanel, HasDoubleCl
         
         m_map.addDblClickHandler(new DblClickHandler() {
             
+            @Override
             public void onDblClicked(DblClickEvent event) {
                 m_clickCounter.incrementCounter(event.getLL());
             }
         });
         
         m_map.addZoomEndHandler(new ZoomEndHandler() {
+            @Override
             public void onZoomEnd(ZoomEndEvent event) {
                 m_eventBus.fireEvent(new MapPanelBoundsChangedEvent(getBounds()));
             }
@@ -211,6 +216,7 @@ public class MapQuestMapPanel extends Composite implements MapPanel, HasDoubleCl
         
         m_map.addShapeAddedHandler(new ShapeAddedHandler() {
 
+            @Override
             public void onShapeAdded(ShapeAddedEvent event) {
                 Element mqPoiDiv = DOM.getElementById("mqpoidiv");
                 Element markerElement = Element.as(mqPoiDiv.getLastChild());
@@ -220,6 +226,7 @@ public class MapQuestMapPanel extends Composite implements MapPanel, HasDoubleCl
         });
 
         Window.addResizeHandler(new ResizeHandler() {
+            @Override
             public void onResize(ResizeEvent event) {
                 syncMapSizeWithParent();
             }
@@ -227,6 +234,7 @@ public class MapQuestMapPanel extends Composite implements MapPanel, HasDoubleCl
     }
 
     /** {@inheritDoc} */
+    @Override
     public void showLocationDetails(final String name, final String htmlTitle, final String htmlContent) {
         final MQAPoi point = getMarker(name);
         if (point != null) {
@@ -273,11 +281,13 @@ public class MapQuestMapPanel extends Composite implements MapPanel, HasDoubleCl
      *
      * @return a {@link org.opennms.features.poller.remote.gwt.client.GWTBounds} object.
      */
+    @Override
     public GWTBounds getBounds() {
         return toGWTBounds(m_map.getBounds());
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setBounds(final GWTBounds b) {
         m_map.zoomToRect(toMQARectLL(b));
     }
@@ -305,6 +315,7 @@ public class MapQuestMapPanel extends Composite implements MapPanel, HasDoubleCl
     }
 
     /** {@inheritDoc} */
+    @Override
     public void placeMarker(final GWTMarkerState marker) {
         MQAPoi m = getMarker(marker.getName());
 
@@ -336,16 +347,19 @@ public class MapQuestMapPanel extends Composite implements MapPanel, HasDoubleCl
      *
      * @return a {@link com.google.gwt.user.client.ui.Widget} object.
      */
+    @Override
     public Widget getWidget() {
         return this;
     }
 
     /** {@inheritDoc} */
+    @Override
     public HandlerRegistration addDoubleClickHandler(DoubleClickHandler handler) {
         return addDomHandler(handler, DoubleClickEvent.getType());
     }
 
     /** {@inheritDoc} */
+    @Override
     public HandlerRegistration addClickHandler(ClickHandler handler) {
         return addDomHandler(handler, ClickEvent.getType());
     }
@@ -356,6 +370,7 @@ public class MapQuestMapPanel extends Composite implements MapPanel, HasDoubleCl
         
     }
 
+    @Override
     public void onResize() {
         syncMapSizeWithParent();
     }

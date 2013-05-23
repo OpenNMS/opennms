@@ -297,6 +297,7 @@ import org.opennms.netmgt.config.datacollection.SnmpCollection;
                     throw new IllegalStateException(ex.toString());
                 }
             }
+            @Override
             public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
                 try {
                     SnmpCollection target = (SnmpCollection) object;
@@ -345,6 +346,7 @@ import org.opennms.netmgt.config.datacollection.SnmpCollection;
                     throw new IllegalStateException(ex.toString());
                 }
             }
+            @Override
             public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
                 try {
                     SnmpCollection target = (SnmpCollection) object;
@@ -544,6 +546,7 @@ import org.opennms.netmgt.config.datacollection.SnmpCollection;
      * of a global
      * element or element with anonymous type definition.
      */
+    @Override
     public boolean isElementDefinition(
     ) {
         return _elementDefinition;

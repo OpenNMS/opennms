@@ -51,6 +51,7 @@ public final class EventFormFieldFactory implements FormFieldFactory {
     /* (non-Javadoc)
      * @see com.vaadin.ui.FormFieldFactory#createField(com.vaadin.data.Item, java.lang.Object, com.vaadin.ui.Component)
      */
+    @Override
     public Field createField(Item item, Object propertyId, Component uiContext) {
         if ("logMsgDest".equals(propertyId)) {
             final ComboBox dest = new ComboBox("Destination");

@@ -68,6 +68,7 @@ public class Tl1AutonomousMessageProcessor implements Tl1MessageProcessor {
      * @see org.opennms.netmgt.tl1d.Tl1MessageProcessor#process(java.lang.String, int)
      */
     /** {@inheritDoc} */
+    @Override
     public Tl1AutonomousMessage process(String rawMessage, int messageType) {
 
         StringTokenizer lineParser = new StringTokenizer(rawMessage, "\n");

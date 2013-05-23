@@ -64,6 +64,7 @@ public class SnmpNodeScanner extends AbstractSnmpScanner {
      */
     public static Storer sysObjectId() {
         return new Storer() {
+            @Override
             public void storeResult(ScanContext scanContext, SnmpResult res) {
                 scanContext.updateSysObjectId(res.getValue().toDisplayString());
             }
@@ -77,6 +78,7 @@ public class SnmpNodeScanner extends AbstractSnmpScanner {
      */
     public static Storer sysName() {
         return new Storer() {
+            @Override
             public void storeResult(ScanContext scanContext, SnmpResult res) {
                 scanContext.updateSysName(res.getValue().toDisplayString());
             }
@@ -90,6 +92,7 @@ public class SnmpNodeScanner extends AbstractSnmpScanner {
      */
     public static Storer sysDescription() {
         return new Storer() {
+            @Override
             public void storeResult(ScanContext scanContext, SnmpResult res) {
                 scanContext.updateSysDescription(res.getValue().toDisplayString());
             }
@@ -103,6 +106,7 @@ public class SnmpNodeScanner extends AbstractSnmpScanner {
      */
     public static Storer sysLocation() {
         return new Storer() {
+            @Override
             public void storeResult(ScanContext scanContext, SnmpResult res) {
                 scanContext.updateSysLocation(res.getValue().toDisplayString());
             }
@@ -116,6 +120,7 @@ public class SnmpNodeScanner extends AbstractSnmpScanner {
      */
     public static Storer sysContact() {
         return new Storer() {
+            @Override
             public void storeResult(ScanContext scanContext, SnmpResult res) {
                 scanContext.updateSysContact(res.getValue().toDisplayString());
             }

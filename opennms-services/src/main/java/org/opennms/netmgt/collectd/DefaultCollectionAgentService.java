@@ -111,6 +111,7 @@ public class DefaultCollectionAgentService implements CollectionAgentService {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getHostAddress() {
         return InetAddressUtils.str(getInetAddress());
     }
@@ -123,6 +124,7 @@ public class DefaultCollectionAgentService implements CollectionAgentService {
      *
      * @return a {@link java.lang.Boolean} object.
      */
+    @Override
     public Boolean isStoreByForeignSource() {
         return Boolean.getBoolean("org.opennms.rrd.storeByForeignSource");
     }
@@ -135,6 +137,7 @@ public class DefaultCollectionAgentService implements CollectionAgentService {
      *
      * @return a int.
      */
+    @Override
     public int getNodeId() {
         return getIpInterface().getNode().getId() == null ? -1 : getIpInterface().getNode().getId().intValue();
     }
@@ -147,6 +150,7 @@ public class DefaultCollectionAgentService implements CollectionAgentService {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getForeignSource() {
        return getIpInterface().getNode().getForeignSource() == null ? null : getIpInterface().getNode().getForeignSource();
     }
@@ -159,6 +163,7 @@ public class DefaultCollectionAgentService implements CollectionAgentService {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getForeignId() {
        return getIpInterface().getNode().getForeignId() == null ? null : getIpInterface().getNode().getForeignId();
     }
@@ -171,6 +176,7 @@ public class DefaultCollectionAgentService implements CollectionAgentService {
      *
      * @return a {@link java.io.File} object.
      */
+    @Override
     public File getStorageDir() {
         File dir = new File(String.valueOf(getIpInterface().getNode().getId()));
         if(isStoreByForeignSource() && !(getIpInterface().getNode().getForeignSource() == null) && !(getIpInterface().getNode().getForeignId() == null)) {
@@ -185,6 +191,7 @@ public class DefaultCollectionAgentService implements CollectionAgentService {
      *
      * @return a int.
      */
+    @Override
     public int getIfIndex() {
         return (getIpInterface().getIfIndex() == null ? -1 : getIpInterface().getIfIndex().intValue());
     }
@@ -197,6 +204,7 @@ public class DefaultCollectionAgentService implements CollectionAgentService {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getSysObjectId() {
         return getIpInterface().getNode().getSysObjectId();
     }
@@ -206,6 +214,7 @@ public class DefaultCollectionAgentService implements CollectionAgentService {
      *
      * @return a {@link org.opennms.netmgt.model.PrimaryType} object.
      */
+    @Override
     public PrimaryType getIsSnmpPrimary() {
         return getIpInterface().getIsSnmpPrimary();
     }
@@ -218,6 +227,7 @@ public class DefaultCollectionAgentService implements CollectionAgentService {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return "Agent[nodeid = "+getNodeId()+" ipaddr= "+getHostAddress()+']';
     }
@@ -230,6 +240,7 @@ public class DefaultCollectionAgentService implements CollectionAgentService {
      *
      * @return a {@link org.opennms.netmgt.snmp.SnmpAgentConfig} object.
      */
+    @Override
     public SnmpAgentConfig getAgentConfig() {
         return SnmpPeerFactory.getInstance().getAgentConfig(getInetAddress());
     }
@@ -242,6 +253,7 @@ public class DefaultCollectionAgentService implements CollectionAgentService {
      *
      * @return a {@link java.util.Set} object.
      */
+    @Override
     public Set<SnmpIfData> getSnmpInterfaceData() {
         
         Set<OnmsSnmpInterface> snmpIfs = getSnmpInterfaces();
@@ -290,6 +302,7 @@ public class DefaultCollectionAgentService implements CollectionAgentService {
      *
      * @return a {@link java.net.InetAddress} object.
      */
+    @Override
     public InetAddress getInetAddress() {
         return getIpInterface().getIpAddress();
     }

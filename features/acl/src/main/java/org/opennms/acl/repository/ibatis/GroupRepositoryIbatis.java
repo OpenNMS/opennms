@@ -81,11 +81,13 @@ public class GroupRepositoryIbatis extends SqlMapClientTemplate implements Group
 
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
+    @Override
     public List<GroupDTO> getUserGroupsWithAutorities(String username) {
         return queryForList("getUserGroupsComplete", username);
     }
 
     /** {@inheritDoc} */
+    @Override
     public Boolean hasUsers(Integer id) {
         return queryForList("getGroupMembers", id).size() > 0;
     }
@@ -102,17 +104,20 @@ public class GroupRepositoryIbatis extends SqlMapClientTemplate implements Group
     }
 
     /** {@inheritDoc} */
+    @Override
     public Boolean deleteUserGroups(String username) {
         return delete("deleteUserGroups", username) > 0;
     }
 
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
+    @Override
     public List<GroupDTO> getFreeGroups(String username) {
         return queryForList("getFreeGroups", username);
     }
 
     /** {@inheritDoc} */
+    @Override
     public GroupDTO getGroup(Integer id) {
         return (GroupDTO) queryForObject("getGroup", id);
     }
@@ -123,15 +128,18 @@ public class GroupRepositoryIbatis extends SqlMapClientTemplate implements Group
      * @return a {@link java.util.List} object.
      */
     @SuppressWarnings("unchecked")
+    @Override
     public List<GroupDTO> getGroups() {
         return queryForList("getAllGroups");
     }
 
     /** {@inheritDoc} */
+    @Override
     public Boolean saveGroups(final String username, final List<Integer> groups) {
 
         return execute(new SqlMapClientCallback<Boolean>() {
             @SuppressWarnings("unchecked")
+            @Override
             public Boolean doInSqlMapClient(SqlMapExecutor executor) {
                 int ris = 0;
                 try {
@@ -159,6 +167,7 @@ public class GroupRepositoryIbatis extends SqlMapClientTemplate implements Group
 
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
+    @Override
     public List<GroupDTO> getGroups(Pager pager) {
         Map params = new HashMap();
         params.put("limit", pager.getItemsNumberOnPage());
@@ -171,22 +180,26 @@ public class GroupRepositoryIbatis extends SqlMapClientTemplate implements Group
      *
      * @return a {@link java.lang.Integer} object.
      */
+    @Override
     public Integer getGroupsNumber() {
         return (Integer) queryForObject("getGroupsNumber");
     }
 
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
+    @Override
     public List<GroupDTO> getUserGroups(String username) {
         return queryForList("getUserGroups", username);
     }
 
     /** {@inheritDoc} */
+    @Override
     public Boolean removeGroup(Integer id) {
         return delete("deleteGroup", id) == 1;
     }
 
     /** {@inheritDoc} */
+    @Override
     public Boolean save(GroupDTO group) {
         return group.isNew() ? add(group) : update(group);
     }
@@ -215,6 +228,7 @@ public class GroupRepositoryIbatis extends SqlMapClientTemplate implements Group
 
         return execute(new SqlMapClientCallback<Boolean>() {
             @SuppressWarnings("unchecked")
+            @Override
             public Boolean doInSqlMapClient(SqlMapExecutor executor) {
                 int ris = 0;
                 try {

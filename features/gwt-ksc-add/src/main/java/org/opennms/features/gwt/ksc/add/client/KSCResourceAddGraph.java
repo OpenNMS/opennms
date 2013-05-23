@@ -55,6 +55,7 @@ public class KSCResourceAddGraph implements EntryPoint {
             "]" +
         "}";
 
+    @Override
     public void onModuleLoad() {
         final KscReportService service = new DefaultKscReportService();
         final NodeList<Element> nodes = RootPanel.getBodyElement().getElementsByTagName("opennms-addKscReport");

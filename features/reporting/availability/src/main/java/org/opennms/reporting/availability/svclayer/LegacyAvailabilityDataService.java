@@ -90,6 +90,7 @@ public class LegacyAvailabilityDataService implements
     }
 
     /** {@inheritDoc} */
+    @Override
     public List<Node> getNodes(org.opennms.netmgt.config.categories.Category category, long startTime, long endTime) throws AvailabilityDataServiceException {
         
         m_nodes = new ArrayList<Node>();

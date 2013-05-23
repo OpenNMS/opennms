@@ -51,10 +51,12 @@ public class TestGatewayGroupLoader implements InitializingBean {
 		Assert.notNull(m_serviceRegistry, "serviceRegistry must not be null");
 		
 		GatewayGroup g = new GatewayGroup(){
+                        @Override
 			public AGateway[] getGateways() {
 				return new AGateway[] { new TestGateway("ACM0") };
 			}
 			
+                        @Override
 			public String toString() {
 				return "I am a monkey gateway!";
 			}

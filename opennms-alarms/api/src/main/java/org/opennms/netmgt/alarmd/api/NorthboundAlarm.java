@@ -525,10 +525,12 @@ public class NorthboundAlarm implements Preservable {
 		return m_eventParms;
 	}
 
+        @Override
 	public boolean isPreserved() {
     	return m_preserved;
     }
 
+        @Override
     public void setPreserved(boolean preserved) {
     	m_preserved = preserved;
     }

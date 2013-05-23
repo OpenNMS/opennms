@@ -44,6 +44,7 @@ public class ResourceTypeFilteringResourceVisitor implements ResourceVisitor, In
     private String m_resourceTypeMatch;
 
     /** {@inheritDoc} */
+    @Override
     public void visit(OnmsResource resource) {
         if (m_resourceTypeMatch.equals(resource.getResourceType().getName())) {
             m_delegatedVisitor.visit(resource);

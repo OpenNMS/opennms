@@ -61,6 +61,7 @@ public class DefaultDaemonStatusService implements DaemonStatusService {
 	 *
 	 * @return a {@link java.util.Map} object.
 	 */
+        @Override
 	public Map<String, ServiceInfo> getCurrentDaemonStatus() {
 		// TODO Auto-generated method stub
 		Map<String, ServiceInfo> info = daemonStatusDao.getCurrentDaemonStatus();
@@ -72,6 +73,7 @@ public class DefaultDaemonStatusService implements DaemonStatusService {
 	 *
 	 * @return a {@link java.util.Collection} object.
 	 */
+        @Override
 	public Collection<ServiceInfo> getCurrentDaemonStatusColl() {
 		// TODO Auto-generated method stub
 		return daemonStatusDao.getCurrentDaemonStatus().values();
@@ -85,6 +87,7 @@ public class DefaultDaemonStatusService implements DaemonStatusService {
 	 * @param daemons an array of {@link java.lang.String} objects.
 	 * @return a {@link java.util.Map} object.
 	 */
+        @Override
 	public Map<String, ServiceInfo> performOperationOnDaemons(String operation, String[] daemons) {
 		// TODO Auto-generated method stub
 		for(int i = 0; i < daemons.length; i++){
@@ -104,6 +107,7 @@ public class DefaultDaemonStatusService implements DaemonStatusService {
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public Map<String, ServiceInfo> restartDaemon(String service) {
 		ServiceDaemon serviceDaemon = daemonStatusDao.getServiceHandle(service);
 		serviceDaemon.stop();
@@ -112,6 +116,7 @@ public class DefaultDaemonStatusService implements DaemonStatusService {
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public Map<String, ServiceInfo> startDaemon(String service) {
 		ServiceDaemon serviceDaemon = daemonStatusDao.getServiceHandle(service);
 		serviceDaemon.start();
@@ -119,6 +124,7 @@ public class DefaultDaemonStatusService implements DaemonStatusService {
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public Map<String, ServiceInfo> stopDaemon(String service) {
 		// TODO Auto-generated method stub
 		return getCurrentDaemonStatus();

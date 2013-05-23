@@ -80,6 +80,7 @@ public class NominatimGeocoder implements Geocoder {
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public GWTLatLng geocode(final String geolocation) throws GeocoderException {
 		final HttpUriRequest method = new HttpGet(getUrl(geolocation));
 		method.addHeader("User-Agent", "OpenNMS-MapquestGeocoder/1.0");

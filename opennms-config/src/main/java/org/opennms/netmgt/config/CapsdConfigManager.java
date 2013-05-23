@@ -176,6 +176,7 @@ public abstract class CapsdConfigManager implements CapsdConfig {
      * @throws java.io.IOException if any.
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
+    @Override
     public synchronized void save() throws MarshalException, IOException, ValidationException {
         log().debug("Saving capsd configuration");
         
@@ -196,11 +197,13 @@ public abstract class CapsdConfigManager implements CapsdConfig {
      *
      * @return a {@link org.opennms.netmgt.config.capsd.CapsdConfiguration} object.
      */
+    @Override
     public CapsdConfiguration getConfiguration() {
         return m_config;
     }
 
     /** {@inheritDoc} */
+    @Override
     public ProtocolPlugin getProtocolPlugin(String svcName) {
         for (ProtocolPlugin plugin : getProtocolPlugins()) {
             if (plugin.getProtocol().equals(svcName)) {
@@ -211,6 +214,7 @@ public abstract class CapsdConfigManager implements CapsdConfig {
     }
     
     /** {@inheritDoc} */
+    @Override
     public void addProtocolPlugin(ProtocolPlugin plugin) {
         m_config.addProtocolPlugin(plugin);
     }
@@ -222,6 +226,7 @@ public abstract class CapsdConfigManager implements CapsdConfig {
      *
      * The target of the search.
      */
+    @Override
     public SmbAuth getSmbAuth(String target) {
         SmbConfig cfg = m_config.getSmbConfig();
         if (cfg == null) {
@@ -244,6 +249,7 @@ public abstract class CapsdConfigManager implements CapsdConfig {
      * Checks the configuration to determine if the target is managed or
      * unmanaged.
      */
+    @Override
     public boolean isAddressUnmanaged(InetAddress target) {
         String managementPolicy = m_config.getManagementPolicy();
         boolean managedByDefault = (managementPolicy == null || managementPolicy.equalsIgnoreCase("managed"));
@@ -421,6 +427,7 @@ public abstract class CapsdConfigManager implements CapsdConfig {
      *
      * @return a long.
      */
+    @Override
     public long getRescanFrequency() {
         long frequency = -1;
     
@@ -439,6 +446,7 @@ public abstract class CapsdConfigManager implements CapsdConfig {
      *
      * @return a long.
      */
+    @Override
     public long getInitialSleepTime() {
         long sleep = -1;
     
@@ -457,6 +465,7 @@ public abstract class CapsdConfigManager implements CapsdConfig {
      *
      * @return a int.
      */
+    @Override
     public int getMaxSuspectThreadPoolSize() {
         return m_config.getMaxSuspectThreadPoolSize();
     }
@@ -466,6 +475,7 @@ public abstract class CapsdConfigManager implements CapsdConfig {
      *
      * @return a int.
      */
+    @Override
     public int getMaxRescanThreadPoolSize() {
         return m_config.getMaxRescanThreadPoolSize();
     }
@@ -477,6 +487,7 @@ public abstract class CapsdConfigManager implements CapsdConfig {
      *
      * @return a boolean.
      */
+    @Override
     public boolean getAbortProtocolScansFlag() {
         boolean abortFlag = false;
     
@@ -493,6 +504,7 @@ public abstract class CapsdConfigManager implements CapsdConfig {
      *
      * @return a boolean.
      */
+    @Override
     public boolean getDeletePropagationEnabled() {
         boolean propagationEnabled = true;
         
@@ -510,6 +522,7 @@ public abstract class CapsdConfigManager implements CapsdConfig {
      *
      * @return boolean flag as a string value
      */
+    @Override
     public String getXmlrpc() {
         return m_config.getXmlrpc();
     }
@@ -519,6 +532,7 @@ public abstract class CapsdConfigManager implements CapsdConfig {
      *
      * @return a boolean.
      */
+    @Override
     public boolean isXmlRpcEnabled() {
         return "true".equalsIgnoreCase(getXmlrpc());
     }
@@ -612,6 +626,7 @@ public abstract class CapsdConfigManager implements CapsdConfig {
 	 * This method is responsbile for determining the node's primary SNMP
 	 * interface from the specified list of InetAddress objects.
 	 */
+    @Override
 	public InetAddress determinePrimarySnmpInterface(List<InetAddress> addressList, boolean strict) {
 		InetAddress primaryIf = null;
 	
@@ -650,6 +665,7 @@ public abstract class CapsdConfigManager implements CapsdConfig {
      *
      * @return a {@link java.util.List} object.
      */
+    @Override
     public List<String> getConfiguredProtocols() {
         List<String> protocols = new ArrayList<String>();
         for (ProtocolPlugin plugin : getProtocolPlugins()) {
@@ -667,6 +683,7 @@ public abstract class CapsdConfigManager implements CapsdConfig {
      *
      * @return a {@link java.util.List} object.
      */
+    @Override
     public List<ProtocolPlugin> getProtocolPlugins() {
         return m_config.getProtocolPluginCollection();
     }
@@ -688,26 +705,31 @@ public abstract class CapsdConfigManager implements CapsdConfig {
     }
 
     /** {@inheritDoc} */
+    @Override
     public List<ProtocolConfiguration> getProtocolConfigurations(ProtocolPlugin plugin) {
         return plugin.getProtocolConfigurationCollection();
     }
 
     /** {@inheritDoc} */
+    @Override
     public List<Property> getPluginProperties(ProtocolPlugin plugin) {
         return plugin.getPropertyCollection();
     }
 
     /** {@inheritDoc} */
+    @Override
     public List<Property> getProtocolConfigurationProperties(ProtocolConfiguration pluginConf) {
         return pluginConf.getPropertyCollection();
     }
 
     /** {@inheritDoc} */
+    @Override
     public List<Range> getRanges(ProtocolConfiguration pluginConf) {
         return pluginConf.getRangeCollection();
     }
     
     /** {@inheritDoc} */
+    @Override
     public List<String> getSpecifics(ProtocolConfiguration pluginConf) {
         return pluginConf.getSpecificCollection();
     }

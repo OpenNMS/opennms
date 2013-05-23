@@ -154,6 +154,7 @@ public class GroupFactory extends GroupManager {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void saveXml(String data) throws IOException {
         if (data != null) {
             Writer fileWriter = new OutputStreamWriter(new FileOutputStream(m_groupsConfFile), "UTF-8");
@@ -170,6 +171,7 @@ public class GroupFactory extends GroupManager {
      * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
+    @Override
     public void update() throws IOException, MarshalException, ValidationException {
         if (m_lastModified != m_groupsConfFile.lastModified()) {
             reload();

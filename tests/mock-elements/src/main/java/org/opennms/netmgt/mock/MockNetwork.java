@@ -51,6 +51,7 @@ public class MockNetwork extends MockContainer<MockContainer<?,?>,MockElement> {
      *
      * @return a {@link org.opennms.netmgt.xml.event.Event} object.
      */
+    @Override
     public Event createDownEvent() {
         throw new UnsupportedOperationException("Cannot generate down event for the network");
     }
@@ -59,6 +60,7 @@ public class MockNetwork extends MockContainer<MockContainer<?,?>,MockElement> {
      *
      * @return a {@link org.opennms.netmgt.xml.event.Event} object.
      */
+    @Override
     public Event createUpEvent() {
         throw new UnsupportedOperationException("Cannot generate up event for the network");
     }
@@ -67,6 +69,7 @@ public class MockNetwork extends MockContainer<MockContainer<?,?>,MockElement> {
      *
      * @return a {@link org.opennms.netmgt.xml.event.Event} object.
      */
+    @Override
     public Event createNewEvent() {
         throw new UnsupportedOperationException("Cannot generate new event for the network");
     }
@@ -75,6 +78,7 @@ public class MockNetwork extends MockContainer<MockContainer<?,?>,MockElement> {
      *
      * @return a {@link org.opennms.netmgt.xml.event.Event} object.
      */
+    @Override
     public Event createDeleteEvent() {
         throw new UnsupportedOperationException("Cannot generate delete event for the network");
     }
@@ -236,6 +240,7 @@ public class MockNetwork extends MockContainer<MockContainer<?,?>,MockElement> {
     }
 
     // impl
+    @Override
     Object getKey() {
         return this;
     }
@@ -276,6 +281,7 @@ public class MockNetwork extends MockContainer<MockContainer<?,?>,MockElement> {
                 return node;
             }
 
+            @Override
             public void visitInterface(MockInterface iface) {
                 if (iface.getIpAddr().equals(ipAddr)) {
                     node = iface.getNode();
@@ -405,6 +411,7 @@ public class MockNetwork extends MockContainer<MockContainer<?,?>,MockElement> {
     public int getNodeCount() {
         class NodeCounter extends MockVisitorAdapter {
             int count = 0;
+            @Override
             public void visitNode(MockNode node) {
                 count++;
             }
@@ -425,6 +432,7 @@ public class MockNetwork extends MockContainer<MockContainer<?,?>,MockElement> {
     public int getInterfaceCount() {
         class InterfaceCounter extends MockVisitorAdapter {
             int count = 0;
+            @Override
             public void visitInterface(MockInterface iface) {
                 count++;
             }
@@ -445,6 +453,7 @@ public class MockNetwork extends MockContainer<MockContainer<?,?>,MockElement> {
     public int getServiceCount() {
         class ServiceCounter extends MockVisitorAdapter {
             int count = 0;
+            @Override
             public void visitService(MockService svc) {
                 count++;
             }
@@ -457,6 +466,7 @@ public class MockNetwork extends MockContainer<MockContainer<?,?>,MockElement> {
         return counter.getCount();
     }
 
+    @Override
     public String toString() {
     	return new ToStringBuilder(this)
     		.append("critical-service", m_criticalService)

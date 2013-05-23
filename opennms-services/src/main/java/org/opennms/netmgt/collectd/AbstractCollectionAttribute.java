@@ -57,6 +57,7 @@ public abstract class AbstractCollectionAttribute implements  CollectionAttribut
      *
      * @return a {@link org.opennms.netmgt.config.collector.CollectionAttributeType} object.
      */
+    @Override
     public abstract CollectionAttributeType getAttributeType();
 
     /**
@@ -64,6 +65,7 @@ public abstract class AbstractCollectionAttribute implements  CollectionAttribut
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public abstract String getName();
 
     /**
@@ -71,13 +73,15 @@ public abstract class AbstractCollectionAttribute implements  CollectionAttribut
      *
      * @return a {@link java.lang.String} object.
      */
-    public abstract String getNumericValue() ;
+    @Override
+    public abstract String getNumericValue();
 
     /**
      * <p>getResource</p>
      *
      * @return a {@link org.opennms.netmgt.config.collector.CollectionResource} object.
      */
+    @Override
     public abstract CollectionResource getResource();
 
     /**
@@ -85,17 +89,21 @@ public abstract class AbstractCollectionAttribute implements  CollectionAttribut
      *
      * @return a {@link java.lang.String} object.
      */
-    public abstract String getStringValue() ;
+    @Override
+    public abstract String getStringValue();
 
     /** {@inheritDoc} */
+    @Override
     public abstract boolean shouldPersist(ServiceParameters params);
 
     /** {@inheritDoc} */
+    @Override
     public void storeAttribute(Persister persister) {
         getAttributeType().storeAttribute(this, persister);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void visit(CollectionSetVisitor visitor) {
         log().debug("Visiting attribute "+this);
         visitor.visitAttribute(this);

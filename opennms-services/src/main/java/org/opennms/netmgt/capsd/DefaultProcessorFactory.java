@@ -61,6 +61,7 @@ public class DefaultProcessorFactory implements SuspectEventProcessorFactory, Re
      * @see org.opennms.netmgt.capsd.SuspectEventProcessorFactory#createSuspectEventProcessor(java.lang.String)
      */
     /** {@inheritDoc} */
+    @Override
     public SuspectEventProcessor createSuspectEventProcessor(String ifAddress) {
         return new SuspectEventProcessor(m_capsdDbSyncer, m_pluginManager, ifAddress);
     }
@@ -69,6 +70,7 @@ public class DefaultProcessorFactory implements SuspectEventProcessorFactory, Re
      * @see org.opennms.netmgt.capsd.RescanProcessorFactory#createRescanProcessor(int)
      */
     /** {@inheritDoc} */
+    @Override
     public RescanProcessor createRescanProcessor(int nodeId) {
         return new RescanProcessor(nodeId, false, m_capsdDbSyncer, m_pluginManager);
     }
@@ -77,6 +79,7 @@ public class DefaultProcessorFactory implements SuspectEventProcessorFactory, Re
      * @see org.opennms.netmgt.capsd.RescanProcessorFactory#createForcedRescanProcessor(int)
      */
     /** {@inheritDoc} */
+    @Override
     public RescanProcessor createForcedRescanProcessor(int nodeId) {
         return new RescanProcessor(nodeId, true, m_capsdDbSyncer, m_pluginManager);
     }

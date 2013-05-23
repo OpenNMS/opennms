@@ -143,6 +143,7 @@ public class DataCollectionGroupAdminPanel extends VerticalLayout {
                                                new MessageBox.ButtonConfig(MessageBox.ButtonType.NO, "No"));
                 mb.addStyleName(Runo.WINDOW_DIALOG);
                 mb.show(new EventListener() {
+                    @Override
                     public void buttonClicked(ButtonType buttonType) {
                         if (buttonType == MessageBox.ButtonType.YES) {
                             LogUtils.infof(this, "deleting file %s", file);

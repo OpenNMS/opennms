@@ -57,6 +57,7 @@ public interface AttributeDefinition {
      * @param o a {@link java.lang.Object} object.
      * @return a boolean.
      */
+    @Override
     public abstract boolean equals(Object o);
     
     /**
@@ -64,6 +65,7 @@ public interface AttributeDefinition {
      *
      * @return a int.
      */
+    @Override
     public abstract int hashCode();
 
 }

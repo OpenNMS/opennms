@@ -66,6 +66,7 @@ public class DeleteOperation extends AbstractImportOperation {
      *
      * @return a {@link java.util.List} object.
      */
+    @Override
     public List<Event> persist() {
 
     	//TODO: whatif node comes back as null?  can this happend?
@@ -89,6 +90,7 @@ public class DeleteOperation extends AbstractImportOperation {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
     	return "DELETE: Node "+m_nodeId;
     }
@@ -96,6 +98,7 @@ public class DeleteOperation extends AbstractImportOperation {
 	/**
 	 * <p>gatherAdditionalData</p>
 	 */
+    @Override
 	public void gatherAdditionalData() {
 		// no additional data to gather
 	}

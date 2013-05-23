@@ -45,6 +45,7 @@ public class FakeTestGatewayFactoryBean implements InitializingBean {
 		
 		GatewayGroup gatewayGroup = new GatewayGroup() {
 
+                        @Override
 			public AGateway[] getGateways() {
 				System.err.println("getting ACM0");
 				return new AGateway[] { new FakeTestGateway( "ACM0" ) };

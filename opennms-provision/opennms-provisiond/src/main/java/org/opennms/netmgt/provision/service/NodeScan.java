@@ -236,26 +236,31 @@ public class NodeScan implements RunInBatch {
     }
     
     /** {@inheritDoc} */
+    @Override
     public void run(final BatchTask parent) {
         infof(this, "Scanning node %d/%s/%s", m_nodeId, m_foreignSource, m_foreignId);
 
         parent.getBuilder().addSequence(
                 new RunInBatch() {
+                    @Override
                     public void run(final BatchTask phase) {
                         loadNode(phase);
                     }
                 },
                 new RunInBatch() {
+                    @Override
                     public void run(final BatchTask phase) {
                         detectAgents(phase);
                     }
                 },
                 new RunInBatch() {
+                    @Override
                     public void run(final BatchTask phase) {
                         handleAgentUndetected(phase);
                     }
                 },
                 new RunInBatch() {
+                    @Override
                     public void run(final BatchTask phase) {
                         scanCompleted(phase);
                     }
@@ -269,6 +274,7 @@ public class NodeScan implements RunInBatch {
     ScheduledFuture<?> schedule(ScheduledExecutorService executor, NodeScanSchedule schedule) {
         
     	final Runnable r = new Runnable() {
+            @Override
             public void run() {
                 try {
                     
@@ -354,6 +360,7 @@ public class NodeScan implements RunInBatch {
             m_node = node;
         }
             
+        @Override
         public String toString() {
             return new ToStringBuilder(this)
                 .append("address", m_agentAddress)
@@ -594,6 +601,7 @@ public class NodeScan implements RunInBatch {
                         // add call to the SNMP interface collection enable policies
         
                         final Runnable r = new Runnable() {
+                            @Override
                             public void run() {
                                 getProvisionService().updateSnmpInterfaceAttributes(getNodeId(), snmpIfaceResult);
                             }
@@ -624,30 +632,36 @@ public class NodeScan implements RunInBatch {
             }
         }
 
+        @Override
         public void run(final ContainerTask<?> parent) {
             parent.getBuilder().addSequence(
                     new NodeInfoScan(getNode(),getAgentAddress(), getForeignSource(), this, getAgentConfigFactory(), getProvisionService(), getNodeId()),
                     new RunInBatch() {
+                        @Override
                         public void run(final BatchTask phase) {
                             detectPhysicalInterfaces(phase);
                         }
                     },
                     new RunInBatch() {
+                        @Override
                         public void run(final BatchTask phase) {
                         	detectIpAddressTable(phase);
                         }
                     },
                     new RunInBatch() {
+                        @Override
                         public void run(final BatchTask phase) {
                             detectIpInterfaceTable(phase);
                         }
                     },
                     new RunInBatch() {
+                        @Override
                         public void run(final BatchTask phase) {
                             deleteObsoleteResources();
                         }
                     },
                     new RunInBatch() {
+                        @Override
                         public void run(final BatchTask phase) {
                             completed();
                         }
@@ -709,24 +723,29 @@ public class NodeScan implements RunInBatch {
             debugf(this, "Finished phase %s", phase);
         }
 
+        @Override
         public void run(final ContainerTask<?> parent) {
             parent.getBuilder().addSequence(
                     new RunInBatch() {
+                        @Override
                         public void run(final BatchTask phase) {
                             applyNodePolicies(phase);
                         }
                     },
                     new RunInBatch() {
+                        @Override
                         public void run(final BatchTask phase) {
                             stampProvisionedInterfaces(phase);
                         }
                     },
                     new RunInBatch() {
+                        @Override
                         public void run(final BatchTask phase) {
                             deleteObsoleteResources(phase);
                         }
                     },
                     new RunInBatch() {
+                        @Override
                         public void run(final BatchTask phase) {
                             doPersistNodeInfo(phase);
                         }
@@ -778,6 +797,7 @@ public class NodeScan implements RunInBatch {
             return m_provisionService;
         }
 
+        @Override
         public String toString() {
             return new ToStringBuilder(this)
                 .append("foreign source", getForeignSource())
@@ -796,6 +816,7 @@ public class NodeScan implements RunInBatch {
 
         protected Runnable ipUpdater(final BatchTask currentPhase, final OnmsIpInterface iface) {
             Runnable r = new Runnable() {
+                @Override
                 public void run() {
                     updateIpInterface(currentPhase, iface);
                 }
@@ -810,6 +831,7 @@ public class NodeScan implements RunInBatch {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return new ToStringBuilder(this)
             .append("foreign source", m_foreignSource)

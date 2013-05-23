@@ -128,6 +128,7 @@ public class SnmpObjId implements Comparable<SnmpObjId> {
     
     
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof SnmpObjId)
             return compareTo((SnmpObjId)obj) == 0;
@@ -135,10 +136,12 @@ public class SnmpObjId implements Comparable<SnmpObjId> {
             return false;
     }
 
+    @Override
     public int hashCode() {
         return 0;
     }
 
+    @Override
     public String toString() {
         StringBuffer buf = new StringBuffer(length()*2+10); // a guess at the str len
         for(int i = 0; i < length(); i++) {
@@ -154,6 +157,7 @@ public class SnmpObjId implements Comparable<SnmpObjId> {
         return true;
     }
 
+    @Override
     public int compareTo(SnmpObjId o) {
         if (o == null) throw new NullPointerException("o is null");
         SnmpObjId other = (SnmpObjId)o;

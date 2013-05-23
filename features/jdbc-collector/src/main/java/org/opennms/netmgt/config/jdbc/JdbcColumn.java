@@ -91,6 +91,7 @@ public class JdbcColumn implements Serializable, Comparable<JdbcColumn> {
         m_alias = alias;
     }
 
+    @Override
     public int compareTo(JdbcColumn obj) {
         return new CompareToBuilder()
             .append(getColumnName(), obj.getColumnName())

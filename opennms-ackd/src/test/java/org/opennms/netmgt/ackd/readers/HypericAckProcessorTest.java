@@ -98,6 +98,7 @@ public class HypericAckProcessorTest implements InitializingBean {
 
         class AckdConfigDao extends DefaultAckdConfigurationDao {
 
+            @Override
             public AckdConfiguration getConfig() {
                 AckdConfiguration config = new AckdConfiguration();
                 config.setAckExpression("~(?i)^AcK$");

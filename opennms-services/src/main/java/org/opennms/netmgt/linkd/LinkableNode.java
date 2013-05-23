@@ -141,6 +141,7 @@ public class LinkableNode {
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
+    @Override
 	public String toString() {
 	    return new ToStringBuilder(this)
 	        .append("nodeId", m_nodeId)

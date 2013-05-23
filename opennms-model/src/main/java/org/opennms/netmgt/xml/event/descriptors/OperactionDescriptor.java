@@ -317,6 +317,7 @@ import org.opennms.netmgt.xml.event.Operaction;
      * of a global
      * element or element with anonymous type definition.
      */
+    @Override
     public boolean isElementDefinition(
     ) {
         return _elementDefinition;

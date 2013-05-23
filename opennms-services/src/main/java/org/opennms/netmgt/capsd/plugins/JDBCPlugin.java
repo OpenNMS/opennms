@@ -231,6 +231,7 @@ public class JDBCPlugin extends AbstractPlugin {
      *
      * @return String Protocol Name
      */
+    @Override
     public String getProtocolName() {
         return PROTOCOL_NAME;
     }
@@ -243,6 +244,7 @@ public class JDBCPlugin extends AbstractPlugin {
      * empty. is recomended to use the parametric method instead (unless your
      * DBA is dummy enugh to leave a JDBC server with no password!!!).
      */
+    @Override
     public boolean isProtocolSupported(InetAddress address) {
         boolean status = false;
 
@@ -270,6 +272,7 @@ public class JDBCPlugin extends AbstractPlugin {
      * <li><b>retry </b>- How many times will try to check for the service
      * </ul>
      */
+    @Override
     public boolean isProtocolSupported(InetAddress address, Map<String, Object> qualifiers) {
         boolean status = false;
 

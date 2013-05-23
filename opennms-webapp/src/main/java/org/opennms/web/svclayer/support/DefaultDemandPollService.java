@@ -78,6 +78,7 @@ public class DefaultDemandPollService implements DemandPollService {
 		m_monitoredServiceDao = monitoredServiceDao;
 	}
 
+        @Override
 	public DemandPoll pollMonitoredService(final int nodeId, final InetAddress ipAddr, final int ifIndex, final int serviceId) {
 	    final DemandPoll demandPoll = new DemandPoll();
 		demandPoll.setRequestTime(new Date());
@@ -94,6 +95,7 @@ public class DefaultDemandPollService implements DemandPollService {
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public DemandPoll getUpdatedResults(final int pollId) {
 		return m_demandPollDao.get(pollId);
 	}

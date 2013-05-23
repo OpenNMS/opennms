@@ -180,6 +180,7 @@ public class ServiceTemplate implements Serializable, Comparable<ServiceTemplate
         m_status = status;
     }
 
+    @Override
     public int compareTo(ServiceTemplate obj) {
         return new CompareToBuilder()
             .append(getName(), obj.getName())

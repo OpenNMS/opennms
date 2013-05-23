@@ -97,7 +97,7 @@ public final class Message implements Serializable {
         m_target = (InetAddress) in.readObject();
 
         byte[] buf = new byte[in.readInt()];
-        in.read(buf, 0, buf.length);
+        in.readFully(buf, 0, buf.length);
 
         m_dhcpmsg = new DHCPMessage(buf);
     }

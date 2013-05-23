@@ -72,6 +72,7 @@ public class SnmpIfCollector extends AggregateTracker {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
     	StringBuffer buffer = new StringBuffer();
     	
@@ -135,21 +136,25 @@ public class SnmpIfCollector extends AggregateTracker {
     }
     
 	/** {@inheritDoc} */
+    @Override
 	protected void reportGenErr(String msg) {
         log().warn(m_primaryIf+": genErr collecting ifData. "+msg);
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void reportNoSuchNameErr(String msg) {
         log().info(m_primaryIf+": noSuchName collecting ifData. "+msg);
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void reportTooBigErr(String msg) {
         log().info(m_primaryIf+": request tooBig. "+msg);
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void storeResult(SnmpResult res) {
         if(res.getBase().toString().equals(SnmpCollector.IFALIAS_OID) && (res.getValue().isNull() || res.getValue().toDisplayString() == null || res.getValue().toDisplayString().equals(""))) {
             log().debug("Skipping storeResult. Null or zero length ifAlias");

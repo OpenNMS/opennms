@@ -57,6 +57,7 @@ public class SnmpTableResultTest {
             return m_rowCount;
         }
 
+        @Override
         public void rowCompleted(SnmpRowResult result) {
             m_rowCount++;
             m_receivedRows.add(result);

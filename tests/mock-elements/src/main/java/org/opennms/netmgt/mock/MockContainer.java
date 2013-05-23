@@ -65,6 +65,7 @@ abstract public class MockContainer<P extends MockContainer<?,?>, C extends Mock
     @Override
     public void addAnticipator(final PollAnticipator trigger) {
         MockVisitor triggerAdder = new MockVisitorAdapter() {
+            @Override
             public void visitService(MockService service) {
                 service.addAnticipator(trigger);
             }
@@ -121,6 +122,7 @@ abstract public class MockContainer<P extends MockContainer<?,?>, C extends Mock
                 return pollCount;
             }
 
+            @Override
             public void visitService(MockService service) {
                 pollCount += service.getPollCount();
             }
@@ -152,6 +154,7 @@ abstract public class MockContainer<P extends MockContainer<?,?>, C extends Mock
     @Override
     public void removeAnticipator(final PollAnticipator trigger) {
         MockVisitor triggerRemover = new MockVisitorAdapter() {
+            @Override
             public void visitService(MockService service) {
                 service.removeAnticipator(trigger);
             }
@@ -177,6 +180,7 @@ abstract public class MockContainer<P extends MockContainer<?,?>, C extends Mock
     @Override
     public void resetPollCount() {
         class PollCountReset extends MockVisitorAdapter {
+            @Override
             public void visitService(MockService service) {
                 service.resetPollCount();
             }

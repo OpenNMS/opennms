@@ -50,6 +50,7 @@ public class SimpleJobPublisher implements JobPublisher {
 
     // Name of the queue we will be sending messages to
     // private static String subject = "TESTQUEUE";
+    @Override
     public void publishJob(CollectionJob job, String site) {
         try {
             // Getting JMS connection from the server and starting it

@@ -110,6 +110,7 @@ public class DefaultEndPointConfigurationDao extends AbstractCastorConfigDao<End
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getXsd() {
         StringResolver resolver = new StringResolver();
         try {
@@ -126,6 +127,7 @@ public class DefaultEndPointConfigurationDao extends AbstractCastorConfigDao<End
      *
      * @return a {@link org.opennms.netmgt.provision.adapters.link.endpoint.EndPointTypeValidator} object.
      */
+    @Override
     public EndPointTypeValidator getValidator() {
         Assert.notNull(getContainer(), "no container found!");
         Assert.notNull(getContainer().getObject(), "no configuration loaded!");
@@ -133,6 +135,7 @@ public class DefaultEndPointConfigurationDao extends AbstractCastorConfigDao<End
     }
 
     /** {@inheritDoc} */
+    @Override
     public synchronized void save(EndPointTypeValidator validator) {
         Assert.notNull(getContainer(), "no container found!");
         Assert.notNull(getContainer().getObject(), "no configuration loaded!");

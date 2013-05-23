@@ -195,6 +195,7 @@ public class SnmpUInt32 extends Object implements SnmpSyntax, Cloneable, Seriali
      * @return The ASN.1 value for the SnmpUInt32
      * 
      */
+    @Override
     public byte typeId() {
         return ASNTYPE;
     }
@@ -213,6 +214,7 @@ public class SnmpUInt32 extends Object implements SnmpSyntax, Cloneable, Seriali
      * @return The byte immediantly after the last encoded byte.
      * 
      */
+    @Override
     public int encodeASN(byte[] buf, int offset, AsnEncoder encoder) throws AsnEncodingException {
         return encoder.buildUInteger32(buf, offset, typeId(), getValue());
     }
@@ -232,6 +234,7 @@ public class SnmpUInt32 extends Object implements SnmpSyntax, Cloneable, Seriali
      * @return The byte immediantly after the last decoded byte of information.
      * 
      */
+    @Override
     public int decodeASN(byte[] buf, int offset, AsnEncoder encoder) throws AsnDecodingException {
         Object[] rVals = encoder.parseUInteger32(buf, offset);
 
@@ -248,6 +251,7 @@ public class SnmpUInt32 extends Object implements SnmpSyntax, Cloneable, Seriali
      * 
      * @return A duplciate copy of the current object
      */
+    @Override
     public SnmpSyntax duplicate() {
         return new SnmpUInt32(this);
     }
@@ -257,6 +261,7 @@ public class SnmpUInt32 extends Object implements SnmpSyntax, Cloneable, Seriali
      * 
      * @return A duplciate copy of the current object
      */
+    @Override
     public Object clone() {
         return new SnmpUInt32(this);
     }
@@ -265,12 +270,14 @@ public class SnmpUInt32 extends Object implements SnmpSyntax, Cloneable, Seriali
      * Returns the string representation of the object.
      * 
      */
+    @Override
     public String toString() {
         return Long.toString(getValue());
     }
     
     
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof SnmpUInt32 ) {
             SnmpUInt32 uint = (SnmpUInt32)obj;
@@ -280,6 +287,7 @@ public class SnmpUInt32 extends Object implements SnmpSyntax, Cloneable, Seriali
         return false;
     }
 
+    @Override
     public int hashCode() {
         return 0;
     }

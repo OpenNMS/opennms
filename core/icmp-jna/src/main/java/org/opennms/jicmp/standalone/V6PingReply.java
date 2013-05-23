@@ -59,23 +59,28 @@ class V6PingReply extends ICMPv6EchoPacket implements PingReply {
     	return Type.EchoReply.equals(getType());
     }
 
+    @Override
     public long getSentTimeNanos() {
         return getContentBuffer().getLong(8);
     }
     
+    @Override
     public long getReceivedTimeNanos() {
         return m_receivedTimeNanos;
     }
     
+    @Override
     public double elapsedTime(TimeUnit unit) {
         double nanosPerUnit = TimeUnit.NANOSECONDS.convert(1, unit);
         return getElapsedTimeNanos() / nanosPerUnit;
     }
 
+    @Override
     public long getElapsedTimeNanos() {
         return getReceivedTimeNanos() - getSentTimeNanos();
     }
 
+    @Override
     public long getThreadId() {
     	return getIdentifier();
     }

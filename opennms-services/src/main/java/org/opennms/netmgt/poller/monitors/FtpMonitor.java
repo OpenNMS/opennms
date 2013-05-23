@@ -91,6 +91,7 @@ final public class FtpMonitor extends AbstractServiceMonitor {
      * FTP 'QUIT' command is sent. Provided that the interface's response is
      * valid we set the service status to SERVICE_AVAILABLE and return.
      */
+    @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         NetworkInterface<InetAddress> iface = svc.getNetInterface();
 

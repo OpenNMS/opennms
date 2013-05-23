@@ -88,6 +88,7 @@ final public class VMapInfo {
 	}
 	
 	/** {@inheritDoc} */
+    @Override
 	public boolean equals(Object obj){
 		VMapInfo otherMapMenu = (VMapInfo) obj;
 		if(id==otherMapMenu.getId()){

@@ -372,23 +372,28 @@ public class OnmsCriteria implements Serializable {
             return new OnmsCriteria.OnmsDetachedCriteria(clazz.getName() , alias);
         }
         
+        @Override
         public OnmsCriteria.OnmsDetachedCriteria createAlias(String associationPath, String alias, int joinType) {
             m_impl.createAlias(associationPath, alias, joinType);
             return this;
         }
 
+        @Override
         public OnmsCriteria.OnmsDetachedCriteria createCriteria(String associationPath, int joinType) {
             return new OnmsCriteria.OnmsDetachedCriteria(m_impl, m_impl.createCriteria(associationPath, joinType));
         }
         
+        @Override
         public OnmsCriteria.OnmsDetachedCriteria createCriteria(String associationPath, String alias) {
             return new OnmsCriteria.OnmsDetachedCriteria(m_impl, m_impl.createCriteria(associationPath));
         }
 
+        @Override
         public OnmsCriteria.OnmsDetachedCriteria createCriteria(String associationPath, String alias, int joinType) {
             return new OnmsCriteria.OnmsDetachedCriteria(m_impl, m_impl.createCriteria(associationPath, alias, joinType));
         }
 
+        @Override
         public OnmsCriteria.OnmsDetachedCriteria createCriteria(String associationPath) throws HibernateException {
             return new OnmsCriteria.OnmsDetachedCriteria(m_impl, m_impl.createCriteria(associationPath));
         }

@@ -54,6 +54,7 @@ public class TaskCreationTest extends NotificationsTestCase {
     private String[] m_commands;
 
     @Before
+    @Override
     public void setUp() throws Exception {
         super.setUp();
         m_eventProcessor = m_notifd.getBroadcastEventProcessor();
@@ -68,6 +69,7 @@ public class TaskCreationTest extends NotificationsTestCase {
 
 
     @After
+    @Override
     public void tearDown() throws Exception {
         super.tearDown();
     }

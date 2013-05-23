@@ -119,6 +119,7 @@ public class IPAddress implements Comparable<IPAddress> {
      * @param o a {@link org.opennms.netmgt.model.discovery.IPAddress} object.
      * @return a int.
      */
+    @Override
     public int compareTo(final IPAddress o) {
         return new ByteArrayComparator().compare(m_ipAddr, o.toOctets());
     }

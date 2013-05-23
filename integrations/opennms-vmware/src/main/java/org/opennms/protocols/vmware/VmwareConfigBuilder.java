@@ -70,7 +70,7 @@ public class VmwareConfigBuilder {
             String def = "report.vmware" + apiVersion + "." + aliasName + ".name=" + aliasName + "\n" + "report.vmware" + apiVersion + "." + aliasName + ".columns=" + aliasName + "\n";
 
             if (multiInstance) {
-                def += "report.vmware" + apiVersion + "." + aliasName + ".propertiesValues=" + groupName + "Name\n";
+                def += "report.vmware" + apiVersion + "." + aliasName + ".propertiesValues=vmware" + apiVersion + groupName + "Name\n";
             }
 
             def += "report.vmware" + apiVersion + "." + aliasName + ".type=" + resourceType + "\n" + "report.vmware" + apiVersion + "." + aliasName + ".command=--title=\"" + aliasName + (multiInstance ? " {" + resourceType + "Name}" : "") + "\" \\\n" + "--vertical-label=\"" + aliasName + "\" \\\n" + "DEF:xxx={rrd1}:"
@@ -113,6 +113,7 @@ public class VmwareConfigBuilder {
     private String versionInformation = "", apiVersion = "";
 
     private static class TrustAllManager implements javax.net.ssl.TrustManager, javax.net.ssl.X509TrustManager {
+        @Override
         public java.security.cert.X509Certificate[] getAcceptedIssuers() {
             return null;
         }
@@ -125,10 +126,12 @@ public class VmwareConfigBuilder {
             return true;
         }
 
+        @Override
         public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType) throws java.security.cert.CertificateException {
             return;
         }
 
+        @Override
         public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType) throws java.security.cert.CertificateException {
             return;
         }
@@ -387,15 +390,19 @@ public class VmwareConfigBuilder {
 
         buffer.append("<datacollection-group name=\"VMware" + apiVersion + "\">\n\n");
 
+        TreeSet<String> groupNames = new TreeSet<String>();
+
         for (String collectionName : collections.keySet()) {
             Map<String, TreeSet<VMwareConfigMetric>> collection = collections.get(collectionName);
-            for (String groupName : collection.keySet()) {
-                if (!"node".equalsIgnoreCase(groupName)) {
-                    buffer.append("  <resourceType name=\"vmware" + apiVersion + groupName + "\" label=\"VMware v" + apiVersion + " " + groupName + "\" resourceLabel=\"${" + groupName + "Name}\">\n");
-                    buffer.append("    <persistenceSelectorStrategy class=\"org.opennms.netmgt.collectd.PersistAllSelectorStrategy\"/>\n");
-                    buffer.append("    <storageStrategy class=\"org.opennms.netmgt.dao.support.IndexStorageStrategy\"/>\n");
-                    buffer.append("  </resourceType>\n\n");
-                }
+            groupNames.addAll(collection.keySet());
+        }
+
+        for (String groupName : groupNames) {
+            if (!"node".equalsIgnoreCase(groupName)) {
+                buffer.append("  <resourceType name=\"vmware" + apiVersion + groupName + "\" label=\"VMware v" + apiVersion + " " + groupName + "\" resourceLabel=\"${vmware" + apiVersion + groupName + "Name}\">\n");
+                buffer.append("    <persistenceSelectorStrategy class=\"org.opennms.netmgt.collectd.PersistAllSelectorStrategy\"/>\n");
+                buffer.append("    <storageStrategy class=\"org.opennms.netmgt.dao.support.IndexStorageStrategy\"/>\n");
+                buffer.append("  </resourceType>\n\n");
             }
         }
 
@@ -516,6 +523,7 @@ public class VmwareConfigBuilder {
         HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
 
         HostnameVerifier hv = new HostnameVerifier() {
+            @Override
             public boolean verify(String urlHostName, SSLSession session) {
                 return true;
             }

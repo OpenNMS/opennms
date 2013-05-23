@@ -57,6 +57,7 @@ public class GroupPersister extends BasePersister {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void visitGroup(AttributeGroup group) {
         pushShouldPersist(group);
         if (shouldPersist()) {
@@ -75,6 +76,7 @@ public class GroupPersister extends BasePersister {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void completeGroup(AttributeGroup group) {
         if (shouldPersist()) {
             commitBuilder();

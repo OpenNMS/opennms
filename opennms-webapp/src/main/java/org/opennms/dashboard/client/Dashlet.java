@@ -64,6 +64,7 @@ public abstract class Dashlet extends Composite {
             initWidget(m_panel);
         }
         
+        @Override
         public void setTitle(String title) {
             m_label.setText(title);
         }
@@ -116,11 +117,13 @@ public abstract class Dashlet extends Composite {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getTitle() {
         return m_title;
     }
     
     /** {@inheritDoc} */
+    @Override
     public void setTitle(String title) {
         m_title = title;
         m_titleWidget.setTitle(m_title);
@@ -148,6 +151,7 @@ public abstract class Dashlet extends Composite {
     /**
      * <p>onLoad</p>
      */
+    @Override
     protected void onLoad() {
         if (m_loader == null) {
             m_loader = new DashletLoader();

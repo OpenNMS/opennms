@@ -77,6 +77,7 @@ public class DefaultReportStoreService implements ReportStoreService {
      *
      * @param ids an array of {@link java.lang.Integer} objects.
      */
+    @Override
     public void delete(Integer[] ids) {
         for (Integer id : ids) {
             delete(id); 
@@ -88,6 +89,7 @@ public class DefaultReportStoreService implements ReportStoreService {
      *
      * @param id a {@link java.lang.Integer} object.
      */
+    @Override
     public void delete(Integer id) {
         String deleteFile = new String(m_reportCatalogDao.get(id).getLocation());
         boolean success = (new File(deleteFile).delete());
@@ -104,6 +106,7 @@ public class DefaultReportStoreService implements ReportStoreService {
      *
      * @return a {@link java.util.List} object.
      */
+    @Override
     public List<ReportCatalogEntry> getAll() {
         OnmsCriteria onmsCrit = new OnmsCriteria(ReportCatalogEntry.class);
         onmsCrit.addOrder(Order.desc("date"));
@@ -115,6 +118,7 @@ public class DefaultReportStoreService implements ReportStoreService {
      *
      * @return a {@link java.util.Map} object.
      */
+    @Override
     public Map<String, Object> getFormatMap() {
         HashMap <String, Object> formatMap = new HashMap<String, Object>();
         //TODO Tak: This call will be heavy if many RemoteRepositories are involved. Is this method necessary?
@@ -132,6 +136,7 @@ public class DefaultReportStoreService implements ReportStoreService {
     }
     
     /** {@inheritDoc} */
+    @Override
     public void render(Integer id, ReportFormat format, OutputStream outputStream) {
         ReportCatalogEntry catalogEntry = m_reportCatalogDao.get(id);
         String reportServiceName = m_globalReportRepository.getReportService(catalogEntry.getReportId());
@@ -149,17 +154,20 @@ public class DefaultReportStoreService implements ReportStoreService {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void save(final ReportCatalogEntry reportCatalogEntry) {
         m_reportCatalogDao.save(reportCatalogEntry);
         m_reportCatalogDao.flush();
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setReportCatalogDao(ReportCatalogDao reportCatalogDao) {
         m_reportCatalogDao = reportCatalogDao;
     }
     
     /** {@inheritDoc} */
+    @Override
     public void setReportServiceLocator(ReportServiceLocator reportServiceLocator) {
         m_reportServiceLocator = reportServiceLocator;
     }

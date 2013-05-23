@@ -50,6 +50,7 @@ public class SpecificComparator implements Comparator<String>, Serializable {
      * @param spec2 a {@link java.lang.String} object.
      * @return -1 for spec1 < spec2, 0 for spec1 == spec2, 1 for spec1 > spec2
      */
+        @Override
     public int compare(final String spec1, final String spec2) {
     	final InetAddress addr1 = InetAddressUtils.addr(spec1);
 		final InetAddress addr2 = InetAddressUtils.addr(spec2);

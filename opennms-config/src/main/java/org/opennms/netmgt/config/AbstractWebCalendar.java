@@ -44,6 +44,7 @@ public abstract class AbstractWebCalendar implements WebCalendar {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     abstract public String getMonthAndYear(); 
     
     /**
@@ -51,6 +52,7 @@ public abstract class AbstractWebCalendar implements WebCalendar {
      *
      * @return a {@link java.util.Date} object.
      */
+    @Override
     abstract public Date getPreviousMonth();
     
     /**
@@ -58,6 +60,7 @@ public abstract class AbstractWebCalendar implements WebCalendar {
      *
      * @return a {@link java.util.Date} object.
      */
+    @Override
     abstract public Date getNextMonth();
     
     /**
@@ -65,6 +68,7 @@ public abstract class AbstractWebCalendar implements WebCalendar {
      *
      * @return an array of {@link org.opennms.web.admin.roles.Week} objects.
      */
+    @Override
     abstract public Week[] getWeeks();
 
 }

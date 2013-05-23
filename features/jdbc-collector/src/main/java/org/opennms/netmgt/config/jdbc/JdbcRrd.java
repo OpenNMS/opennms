@@ -81,6 +81,7 @@ public class JdbcRrd implements Serializable, Comparable<JdbcRrd> {
         m_jdbcRras.remove(rra);
     }
     
+    @Override
     public int compareTo(JdbcRrd obj) {
         return new CompareToBuilder()
             .append(getStep(), obj.getStep())

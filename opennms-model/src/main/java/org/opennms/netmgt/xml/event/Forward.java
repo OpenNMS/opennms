@@ -165,6 +165,7 @@ public class Forward implements Serializable {
         this._state = state;
     }
 
+        @Override
     public String toString() {
     	return new ToStringBuilder(this)
     		.append("content", _content)

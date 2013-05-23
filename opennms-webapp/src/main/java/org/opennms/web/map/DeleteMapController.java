@@ -80,6 +80,7 @@ public class DeleteMapController implements Controller {
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		
 		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);

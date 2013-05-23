@@ -114,6 +114,7 @@ public class DatabasePopulator {
     public void populateDatabase() {
         if (POPULATE_DATABASE_IN_SEPARATE_TRANSACTION) {
             m_transTemplate.execute(new TransactionCallback<Object>() {
+                @Override
                 public Object doInTransaction(final TransactionStatus status) {
                     doPopulateDatabase();
                     return null;

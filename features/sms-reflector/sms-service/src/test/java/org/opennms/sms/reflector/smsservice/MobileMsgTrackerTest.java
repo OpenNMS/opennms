@@ -74,12 +74,14 @@ public class MobileMsgTrackerTest {
 			m_start.set(startTime);
 		}
 
+                @Override
 		public void complete(MobileMsgResponse t) {
 			if (t != null) {
 				m_end.set(System.currentTimeMillis());
 			}
 		}
 
+                @Override
 		public void handleException(Throwable t) {
 		}
 		
@@ -103,6 +105,7 @@ public class MobileMsgTrackerTest {
         /* (non-Javadoc)
          * @see org.opennms.protocols.rt.Messenger#sendRequest(java.lang.Object)
          */
+        @Override
         public void sendRequest(MobileMsgRequest request) throws Exception {
             // fake send this
             request.setSendTimestamp(System.currentTimeMillis());
@@ -111,6 +114,7 @@ public class MobileMsgTrackerTest {
         /* (non-Javadoc)
          * @see org.opennms.protocols.rt.Messenger#start(java.util.Queue)
          */
+        @Override
         public void start(Queue<MobileMsgResponse> q) {
             m_q = q;
         }
@@ -164,6 +168,7 @@ public class MobileMsgTrackerTest {
         /* (non-Javadoc)
          * @see org.opennms.sms.reflector.smsservice.SmsResponseCallback#handleError(org.opennms.sms.reflector.smsservice.SmsRequest, java.lang.Throwable)
          */
+        @Override
         public void handleError(MobileMsgRequest request, Throwable t) {
             methodCalled("handleError");
             System.err.println("Error processing SmsRequest: " + request);
@@ -173,6 +178,7 @@ public class MobileMsgTrackerTest {
         /* (non-Javadoc)
          * @see org.opennms.sms.reflector.smsservice.SmsResponseCallback#handleResponse(org.opennms.sms.reflector.smsservice.SmsRequest, org.opennms.sms.reflector.smsservice.SmsResponse)
          */
+        @Override
         public boolean handleResponse(MobileMsgRequest request, MobileMsgResponse response) {
             methodCalled("handleResponse");
             m_response.set(response);
@@ -183,6 +189,7 @@ public class MobileMsgTrackerTest {
         /* (non-Javadoc)
          * @see org.opennms.sms.reflector.smsservice.SmsResponseCallback#handleTimeout(org.opennms.sms.reflector.smsservice.SmsRequest)
          */
+        @Override
         public void handleTimeout(MobileMsgRequest request) {
             methodCalled("handleTimeout");
             System.err.println("Timeout waiting for SmsRequest: " + request);

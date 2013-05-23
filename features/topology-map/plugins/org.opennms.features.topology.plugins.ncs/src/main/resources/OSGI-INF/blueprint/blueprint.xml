@@ -11,6 +11,8 @@ xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
         </cm:default-properties>
     </cm:property-placeholder>
     
+    <bean id="customHttpClientConfigurer" class="org.opennms.features.topology.plugins.ncs.internal.CustomHttpClientConfigurer"/>
+    
     <camelContext id="camel1" xmlns="http://camel.apache.org/schema/blueprint">
         <propertyPlaceholder id="properties" location="blueprint:ncsPlugin"
                                 prefixToken="[[" suffixToken="]]" />
@@ -20,12 +22,12 @@ xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
             <setHeader headerName="CamelHttpUri">
                 <simple>[[junoSpaceBaseUrl]]api/space/nsas/service-management/services/${header.foreignId}?appName=${header.foreignSource}</simple>
             </setHeader>
-            <to uri="http://dummyhost"/>
+            <to uri="https4://dummyhost?httpClientConfigurer=customHttpClientConfigurer"/>
             <bean ref="ncsPathRouteUtil" method="getServiceName" />
             <setHeader headerName="CamelHttpUri">
-                <simple>[[junoSpaceBaseUrl]]api/space/nsas/${headers.serviceType}/service-management/services/${header.foreignId}/servicepath?deviceA=${header.deviceA}&amp;deviceZ=${header.deviceZ}</simple>
+                <simple>[[junoSpaceBaseUrl]]api/space/nsas/${headers.serviceType}/service-management/services/${header.foreignId}/servicepath?httpClientConfigurer=customHttpClientConfigurer&amp;deviceA=${header.deviceA}&amp;deviceZ=${header.deviceZ}</simple>
             </setHeader>
-            <to uri="http://dummyhost"/>
+            <to uri="https4://dummyhost?httpClientConfigurer=customHttpClientConfigurer"/>
             <bean ref="ncsPathRouteUtil" method="createPath" />
         </route>
     </camelContext>

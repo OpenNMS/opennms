@@ -44,6 +44,7 @@ xsi:schemaLocation="
         </entry>
         <entry key="id">
         	<bean class="org.opennms.features.topology.plugins.browsers.AlarmIdColumnLinkGenerator">
+        		<argument ref="alarmDao"/>
         		<argument value="id"/>
         	</bean>
         </entry>
@@ -81,6 +82,12 @@ xsi:schemaLocation="
         <value>Log Message</value>
       </array>
     </property>
+    
+    <property name="nonCollapsibleColumns">
+    	<list>
+   			<value>selection</value>
+    	</list>
+    </property>
   </bean>
   
   <bean id="alarmViewContribution" class="org.opennms.features.topology.api.support.BlueprintIViewContribution">
@@ -101,7 +108,7 @@ xsi:schemaLocation="
     <argument ref="nodeDao" />
   </bean>
 
-  <bean id="nodeTable" class="org.opennms.features.topology.plugins.browsers.SelectionAwareTable" scope="prototype">
+  <bean id="nodeTable" class="org.opennms.features.topology.plugins.browsers.NodeTable" scope="prototype">
     <argument value="Nodes"/>
     <argument ref="nodeDaoContainer" />
     <property name="columnReorderingAllowed" value="true"/>

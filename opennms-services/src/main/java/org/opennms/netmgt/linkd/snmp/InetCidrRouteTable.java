@@ -64,6 +64,7 @@ public class InetCidrRouteTable extends SnmpTable<InetCidrRouteTableEntry>
         super(address, "ipRouteTable", InetCidrRouteTableEntry.ms_elemList);
    }
    
+   @Override
     protected InetCidrRouteTableEntry createTableEntry(SnmpObjId base, SnmpInstId inst, Object val) {
         return new InetCidrRouteTableEntry();
     }

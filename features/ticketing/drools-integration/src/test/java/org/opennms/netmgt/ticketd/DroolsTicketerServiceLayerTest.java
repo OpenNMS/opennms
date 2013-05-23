@@ -105,6 +105,7 @@ public class DroolsTicketerServiceLayerTest extends TestCase {
     private void expectNewAlarmState(final TroubleTicketState state) {
         m_alarmDao.saveOrUpdate(m_alarm);
         EasyMock.expectLastCall().andAnswer(new IAnswer<Object>() {
+            @Override
             public Object answer() throws Throwable {
                 OnmsAlarm alarm = (OnmsAlarm) EasyMock.getCurrentArguments()[0];
                 assertEquals(state, alarm.getTTicketState());
@@ -123,6 +124,7 @@ public class DroolsTicketerServiceLayerTest extends TestCase {
             e.printStackTrace();
         }
         EasyMock.expectLastCall().andAnswer(new IAnswer<Object>() {
+            @Override
             public Object answer() throws Throwable {
                 Ticket ticket = (Ticket) EasyMock.getCurrentArguments()[0];
                 assertNull(ticket.getId());

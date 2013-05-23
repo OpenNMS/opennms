@@ -63,6 +63,7 @@ public class JBossConnectionWrapper implements ConnectionWrapper {
     /**
      * <p>close</p>
      */
+    @Override
     public void close() {
         mbeanServer = null;
     }
@@ -75,6 +76,7 @@ public class JBossConnectionWrapper implements ConnectionWrapper {
      *
      * @return a {@link javax.management.MBeanServerConnection} object.
      */
+    @Override
     public MBeanServerConnection getMBeanServer() {
         return mbeanServer;
     }

@@ -82,6 +82,7 @@ public class LinkProvisioningAdapter extends SimplerQueuedProvisioningAdapter im
     }
 
     /** {@inheritDoc} */
+    @Override
     public void doAddNode(final int endPointId) {
         final String endPoint1 = m_nodeLinkService.getNodeLabel(endPointId);
         final String endPoint2 = m_linkMatchResolver.getAssociatedEndPoint(endPoint1);
@@ -102,6 +103,7 @@ public class LinkProvisioningAdapter extends SimplerQueuedProvisioningAdapter im
     }
     
     /** {@inheritDoc} */
+    @Override
     public void doUpdateNode(final int nodeid) {
         createLinkForNodeIfNecessary(nodeid);
     }
@@ -111,11 +113,13 @@ public class LinkProvisioningAdapter extends SimplerQueuedProvisioningAdapter im
     }
 
     /** {@inheritDoc} */
+    @Override
     public void doDeleteNode(final int nodeid) {
         //This is handle using cascading deletes from the node table to the datalink table
     }
     
     /** {@inheritDoc} */
+    @Override
     public void doNotifyConfigChange(final int nodeid) {
     }
     

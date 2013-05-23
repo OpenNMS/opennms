@@ -54,6 +54,7 @@ public class VarCharReplacement implements ColumnChangeReplacement {
     }
 
     /** {@inheritDoc} */
+    @Override
     public Object getColumnReplacement(ResultSet rs, Map<String, ColumnChange> columnChanges) throws SQLException {
         return m_replacement;
     }
@@ -63,6 +64,7 @@ public class VarCharReplacement implements ColumnChangeReplacement {
      *
      * @return a boolean.
      */
+    @Override
     public boolean addColumnIfColumnIsNew() {
         return true;
     }
@@ -70,6 +72,7 @@ public class VarCharReplacement implements ColumnChangeReplacement {
     /**
      * <p>close</p>
      */
+    @Override
     public void close() {
     }
 }

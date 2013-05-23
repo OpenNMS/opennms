@@ -43,6 +43,7 @@
 package org.opennms.acl.ui;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -128,12 +129,14 @@ public class UserController implements InitializingBean {
     @RequestMapping("/user.selection.page")
     public ModelAndView selection(@RequestParam("includedHidden") String ids, HttpServletRequest req) throws Exception {
         GenericUser user = WebUtils.getUser(req);
-        if (user != null && ids != null && ids.length() > 0) {
-            user.setNewGroups(WebUtils.extractIdGrantedAuthorityFromString(ids, Constants.COMMA));
-        } else {
-            user.setNewGroups(new ArrayList<Integer>());
+        if (user != null) {
+            if (ids != null && ids.length() > 0) {
+                user.setNewGroups(WebUtils.extractIdGrantedAuthorityFromString(ids, Constants.COMMA));
+            } else {
+                user.setNewGroups(Collections.<Integer>emptyList());
+            }
+            user.save();
         }
-        user.save();
         return new ModelAndView(new StringBuilder(Constants.REDIRECT_USER_AUTHORITIES).append("?").append(Constants.USER_SID).append("=").append(user.getId()).toString());
     }
 

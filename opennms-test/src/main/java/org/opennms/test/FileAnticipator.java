@@ -443,6 +443,7 @@ public class FileAnticipator extends Assert {
         assertInitialized();
 
         Collections.sort(m_expecting, new Comparator<File>() {
+            @Override
             public int compare(File a, File b) {
                 return a.getAbsolutePath().compareTo(b.getAbsolutePath());
             }

@@ -40,12 +40,14 @@ public class CollectdConfigFileTest extends TestCase {
     private InvocationAnticipator m_invocationAnticipator;
     private CollectdConfigVisitor m_visitor;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         m_invocationAnticipator = new InvocationAnticipator(CollectdConfigVisitor.class);
         m_visitor = (CollectdConfigVisitor)m_invocationAnticipator.getProxy();
     }
 
+    @Override
     protected void tearDown() throws Exception {
         super.tearDown();
     }

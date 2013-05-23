@@ -41,6 +41,7 @@ public class SnmpV3TrapEventForwarder extends SnmpTrapForwarderHelper implements
 		super(ip,port,securityLevel,securityname,authPassPhrase,authProtocol,privPassPhrase,privprotocol,snmpTrapHelper);
 	}
 
+        @Override
 	public void flushEvent(Event event) {
 		event =	super.filter(event);
 		if (event != null) {
@@ -54,14 +55,17 @@ public class SnmpV3TrapEventForwarder extends SnmpTrapForwarderHelper implements
 		}		
 	}
 
+        @Override
 	public void flushSyncEvent(Event event) {
 		flushEvent(event);
 	}
 
+        @Override
 	public void sendStartSync() {
 		throw new UnsupportedOperationException();
 	}
 
+        @Override
 	public void sendEndSync() {
 		throw new UnsupportedOperationException();
 	}

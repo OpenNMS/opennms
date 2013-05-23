@@ -162,18 +162,21 @@ public abstract class JMXThresholder implements ServiceThresholder {
      *                Thrown if an unrecoverable error occurs that prevents the
      *                plug-in from functioning.
      */
+    @Override
     public void initialize(Map<?,?> parameters) {
     }
 
     /**
      * <p>reinitialize</p>
      */
+    @Override
     public void reinitialize() {
         //Nothing to do 
     }
     /**
      * Responsible for freeing up any resources held by the thresholder.
      */
+    @Override
     public void release() {
         // Nothing to release...
     }
@@ -184,6 +187,7 @@ public abstract class JMXThresholder implements ServiceThresholder {
      * Responsible for performing all necessary initialization for the specified
      * interface in preparation for thresholding.
      */
+    @Override
     public void initialize(ThresholdNetworkInterface iface, Map<?,?> parameters) {
         // Get interface address from NetworkInterface
         if (iface.getType() != NetworkInterface.TYPE_INET) {
@@ -364,6 +368,7 @@ public abstract class JMXThresholder implements ServiceThresholder {
      * Responsible for releasing any resources associated with the specified
      * interface.
      */
+    @Override
     public void release(ThresholdNetworkInterface iface) {
         // Nothing to release...
     }
@@ -373,6 +378,7 @@ public abstract class JMXThresholder implements ServiceThresholder {
      *
      * Perform threshold checking.
      */
+    @Override
     public int check(ThresholdNetworkInterface iface, EventProxy eproxy, Map<?,?> parameters) {
         ThreadCategory log = log();
         String dsDir = serviceName;

@@ -167,17 +167,20 @@ public class Poller implements InitializingBean, PollObserver, ConfigurationChan
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public void pollCompleted(String pollId, PollStatus pollStatus) {
 		log().info("Complete Poll for "+pollId+" status = "+pollStatus);
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public void pollStarted(String pollId) {
 		log().info("Begin Poll for "+pollId);
 		
 	}
 
     /** {@inheritDoc} */
+        @Override
     public void configurationChanged(PropertyChangeEvent e) {
         try {
             unschedulePolls();
@@ -189,6 +192,7 @@ public class Poller implements InitializingBean, PollObserver, ConfigurationChan
     }
 
     /** {@inheritDoc} */
+        @Override
     public void propertyChange(PropertyChangeEvent evt) {
         try {
             if (Boolean.TRUE.equals(evt.getNewValue())) {

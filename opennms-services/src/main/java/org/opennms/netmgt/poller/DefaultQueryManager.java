@@ -92,6 +92,7 @@ public class DefaultQueryManager implements QueryManager {
     private DataSource m_dataSource;
 
     /** {@inheritDoc} */
+    @Override
     public void setDataSource(DataSource dataSource) {
         m_dataSource = dataSource;
     }
@@ -101,6 +102,7 @@ public class DefaultQueryManager implements QueryManager {
      *
      * @return a {@link javax.sql.DataSource} object.
      */
+    @Override
     public DataSource getDataSource() {
         return m_dataSource;
     }
@@ -111,6 +113,7 @@ public class DefaultQueryManager implements QueryManager {
 
 
     /** {@inheritDoc} */
+    @Override
     public boolean activeServiceExists(String whichEvent, int nodeId, String ipAddr, String serviceName) {
         ThreadCategory log = log();
         java.sql.Connection dbConn = null;
@@ -145,6 +148,7 @@ public class DefaultQueryManager implements QueryManager {
     }
 
     /** {@inheritDoc} */
+    @Override
     public List<Integer> getActiveServiceIdsForInterface(String ipaddr) throws SQLException {
         final DBUtils d = new DBUtils(getClass());
         java.sql.Connection dbConn = null;
@@ -173,6 +177,7 @@ public class DefaultQueryManager implements QueryManager {
     }
 
     /** {@inheritDoc} */
+    @Override
     public int getNodeIDForInterface(String ipaddr) throws SQLException {
         ThreadCategory log = log();
 
@@ -205,6 +210,7 @@ public class DefaultQueryManager implements QueryManager {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getNodeLabel(int nodeId) throws SQLException {
         ThreadCategory log = log();
 
@@ -236,6 +242,7 @@ public class DefaultQueryManager implements QueryManager {
     }
 
     /** {@inheritDoc} */
+    @Override
     public int getServiceCountForInterface(String ipaddr) throws SQLException {
         ThreadCategory log = log();
         java.sql.Connection dbConn = null;
@@ -266,6 +273,7 @@ public class DefaultQueryManager implements QueryManager {
     }
 
     /** {@inheritDoc} */
+    @Override
     public List<IfKey> getInterfacesWithService(String svcName) throws SQLException {
         List<IfKey> ifkeys = new ArrayList<IfKey>();
         ThreadCategory log = log();
@@ -302,6 +310,7 @@ public class DefaultQueryManager implements QueryManager {
     }
 
     /** {@inheritDoc} */
+    @Override
     public Date getServiceLostDate(int nodeId, String ipAddr, String svcName, int serviceId) {
         ThreadCategory log = ThreadCategory.getInstance(Poller.class);
         log.debug("getting last known status for address: " + ipAddr + " service: " + svcName);
@@ -395,6 +404,7 @@ public class DefaultQueryManager implements QueryManager {
     }
     
     /** {@inheritDoc} */
+    @Override
     public void openOutage(String outageIdSQL, int nodeId, String ipAddr, String svcName, int dbId, String time) {
         
         int attempt = 0;
@@ -438,6 +448,7 @@ public class DefaultQueryManager implements QueryManager {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void resolveOutage(int nodeId, String ipAddr, String svcName, int dbId, String time) {
         int attempt = 0;
         boolean notUpdated = true;
@@ -472,6 +483,7 @@ public class DefaultQueryManager implements QueryManager {
     }
     
     /** {@inheritDoc} */
+    @Override
     public void reparentOutages(String ipAddr, int oldNodeId, int newNodeId) {
         try {
             log().info("reparenting outages for "+oldNodeId+":"+ipAddr+" to new node "+newNodeId);
@@ -516,6 +528,7 @@ public class DefaultQueryManager implements QueryManager {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String[] getCriticalPath(int nodeId) {
         final String[] cpath = new String[2];
         Querier querier = new Querier(getDataSource(), "SELECT criticalpathip, criticalpathservicename FROM pathoutage where nodeid=?") {
@@ -539,6 +552,7 @@ public class DefaultQueryManager implements QueryManager {
         return cpath;
     }
 
+    @Override
     public List<String[]> getNodeServices(int nodeId){
         final LinkedList<String[]> servicemap = new LinkedList<String[]>();
         Querier querier = new Querier(getDataSource(),SQL_FETCH_INTERFACES_AND_SERVICES_ON_NODE) {

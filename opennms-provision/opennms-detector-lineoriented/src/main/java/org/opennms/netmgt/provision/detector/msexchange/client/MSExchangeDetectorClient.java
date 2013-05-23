@@ -58,11 +58,13 @@ public class MSExchangeDetectorClient implements Client<LineOrientedRequest, MSE
     /**
      * <p>close</p>
      */
+    @Override
     public void close() {
         
     }
 
     /** {@inheritDoc} */
+    @Override
     public void connect(final InetAddress address, final int port, final int timeout) throws IOException, Exception {
         setImapResponse(connectAndGetResponse(address, getImapPort(), timeout));
         setPop3Response(connectAndGetResponse(address, getPop3Port(), timeout));
@@ -116,6 +118,7 @@ public class MSExchangeDetectorClient implements Client<LineOrientedRequest, MSE
      * @throws java.io.IOException if any.
      * @throws java.lang.Exception if any.
      */
+    @Override
     public MSExchangeResponse receiveBanner() throws IOException, Exception {
         MSExchangeResponse response = new MSExchangeResponse();
         response.setPop3Response(getPop3Response());
@@ -131,6 +134,7 @@ public class MSExchangeDetectorClient implements Client<LineOrientedRequest, MSE
      * @throws java.io.IOException if any.
      * @throws java.lang.Exception if any.
      */
+    @Override
     public MSExchangeResponse sendRequest(LineOrientedRequest request) throws IOException, Exception {
         return null;
     }

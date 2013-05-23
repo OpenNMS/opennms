@@ -110,6 +110,7 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public void foundInterface(final String ipAddr, final Object descr, final InterfaceSnmpPrimaryType snmpPrimary, final boolean managed, final int status) {
 		
 		if ("".equals(ipAddr)) {
@@ -140,6 +141,7 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
 	/**
 	 * <p>gatherAdditionalData</p>
 	 */
+        @Override
 	public void gatherAdditionalData() {
     	updateSnmpData();
 	}
@@ -149,6 +151,7 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
      *
      * @return a {@link java.util.List} object.
      */
+        @Override
     public List<Event> persist() {
     	return doPersist();
 	}
@@ -257,7 +260,7 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
         
         if (snmpIf == null) {
             // if not then create one
-            snmpIf = new OnmsSnmpInterface(m_node, new Integer(ifIndex));
+            snmpIf = new OnmsSnmpInterface(m_node, ifIndex);
             snmpIf.setIfAlias(m_collector.getIfAlias(ifIndex));
             snmpIf.setIfName(m_collector.getIfName(ifIndex));
             snmpIf.setIfType(getIfType(ifIndex));
@@ -312,6 +315,7 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public void foundMonitoredService(String serviceName) {
         OnmsServiceType svcType = getServiceType(serviceName);
         OnmsMonitoredService service = new OnmsMonitoredService(m_currentInterface, svcType);
@@ -321,12 +325,14 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
     }
 
     /** {@inheritDoc} */
+        @Override
     public void foundCategory(String name) {
         OnmsCategory category = getCategory(name);
         m_node.getCategories().add(category);
     }
 
     /** {@inheritDoc} */
+        @Override
     public void foundAsset(String name, String value) {
         BeanWrapper w = PropertyAccessorFactory.forBeanPropertyAccess(m_node.getAssetRecord());
         try {

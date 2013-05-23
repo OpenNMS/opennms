@@ -63,6 +63,7 @@ public class PassiveStatusd extends AbstractServiceDaemon implements PassiveStat
     /**
      * <p>onInit</p>
      */
+    @Override
     protected void onInit() {
         ThreadCategory log = ThreadCategory.getInstance(this.getClass());
         try {
@@ -94,6 +95,7 @@ public class PassiveStatusd extends AbstractServiceDaemon implements PassiveStat
     /**
      * <p>onStart</p>
      */
+    @Override
     protected void onStart() {
         getPassiveStatusKeeper().start();
     }
@@ -101,6 +103,7 @@ public class PassiveStatusd extends AbstractServiceDaemon implements PassiveStat
     /**
      * <p>onStop</p>
      */
+    @Override
     protected void onStop() {
         getPassiveStatusKeeper().stop();
     }
@@ -110,6 +113,7 @@ public class PassiveStatusd extends AbstractServiceDaemon implements PassiveStat
      *
      * @return a int.
      */
+    @Override
     public int getStatus() {
         return getPassiveStatusKeeper().getStatus();
     }

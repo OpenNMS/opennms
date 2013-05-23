@@ -75,6 +75,7 @@ public class SnmpEndOfMibView extends SnmpV2Error {
      * @return ASN.1 identifier
      * 
      */
+    @Override
     public byte typeId() {
         return ASNTYPE;
     }
@@ -84,6 +85,7 @@ public class SnmpEndOfMibView extends SnmpV2Error {
      * 
      * @return A duplicate of self
      */
+    @Override
     public SnmpSyntax duplicate() {
         return new SnmpEndOfMibView(this);
     }
@@ -93,6 +95,7 @@ public class SnmpEndOfMibView extends SnmpV2Error {
      * 
      * @return A duplicate of self
      */
+    @Override
     public Object clone() {
         return new SnmpEndOfMibView(this);
     }
@@ -101,6 +104,7 @@ public class SnmpEndOfMibView extends SnmpV2Error {
      * Returns the string representation of the object.
      * 
      */
+    @Override
     public String toString() {
         return "SNMP End-of-MIB-View";
     }

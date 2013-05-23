@@ -50,6 +50,7 @@ public class ThresholdExpressionTestCase extends TestCase {
     
     Expression expression;
     
+    @Override
     public void setUp() {
         expression=new Expression();
         expression.setType("high");

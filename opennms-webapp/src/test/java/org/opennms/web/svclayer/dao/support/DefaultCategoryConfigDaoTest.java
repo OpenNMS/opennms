@@ -61,6 +61,7 @@ public class DefaultCategoryConfigDaoTest extends TestCase {
 	/* (non-Javadoc)
 	 * @see junit.framework.TestCase#setUp()
 	 */
+        @Override
 	protected void setUp() throws Exception {
 		super.setUp();
 		MockUtil.println("------------ Begin Test "+getName()+" --------------------------");

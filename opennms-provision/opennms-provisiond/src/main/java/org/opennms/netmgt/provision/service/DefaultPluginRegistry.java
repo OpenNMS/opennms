@@ -128,11 +128,13 @@ public class DefaultPluginRegistry implements PluginRegistry, InitializingBean {
     }
 
     /** {@inheritDoc} */
+    @Override
     public <T> Collection<T> getAllPlugins(Class<T> pluginClass) {
         return beansOfType(pluginClass).values();
     }
     
     /** {@inheritDoc} */
+    @Override
     public <T> T getPluginInstance(Class<T> pluginClass, PluginConfig pluginConfig) {
         T pluginInstance = beanWithNameOfType(pluginConfig.getPluginClass(), pluginClass);
         if (pluginInstance == null) {

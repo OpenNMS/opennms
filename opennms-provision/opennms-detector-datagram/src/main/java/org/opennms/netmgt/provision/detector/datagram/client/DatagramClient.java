@@ -53,6 +53,7 @@ public class DatagramClient implements Client<DatagramPacket, DatagramPacket> {
     /**
      * <p>close</p>
      */
+    @Override
     public void close() {
         m_socket.close();
     }
@@ -61,6 +62,7 @@ public class DatagramClient implements Client<DatagramPacket, DatagramPacket> {
      * @see org.opennms.netmgt.provision.detector.Client#connect(java.net.InetAddress, int, int)
      */
     /** {@inheritDoc} */
+    @Override
     public void connect(final InetAddress address, final int port, final int timeout) throws IOException {
         LogUtils.debugf(this, "Address: %s, port: %d, timeout: %d", address, port, timeout);
 
@@ -78,6 +80,7 @@ public class DatagramClient implements Client<DatagramPacket, DatagramPacket> {
      * @return a {@link java.net.DatagramPacket} object.
      * @throws java.io.IOException if any.
      */
+    @Override
     public DatagramPacket receiveBanner() throws IOException {
         throw new UnsupportedOperationException("Client<DatagramPacket,DatagramPacket>.receiveBanner is not yet implemented");
         
@@ -93,6 +96,7 @@ public class DatagramClient implements Client<DatagramPacket, DatagramPacket> {
      * @return a {@link java.net.DatagramPacket} object.
      * @throws java.io.IOException if any.
      */
+    @Override
     public DatagramPacket sendRequest(final DatagramPacket request) throws IOException {
 
         m_socket.send(request);

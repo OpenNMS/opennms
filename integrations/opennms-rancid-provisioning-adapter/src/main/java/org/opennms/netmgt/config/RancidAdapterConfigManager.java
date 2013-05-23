@@ -385,6 +385,7 @@ abstract public class RancidAdapterConfigManager implements RancidAdapterConfig 
     
 
     /** {@inheritDoc} */
+    @Override
     public long getDelay(final String ipaddr) {
         getReadLock().lock();
         try {
@@ -398,6 +399,7 @@ abstract public class RancidAdapterConfigManager implements RancidAdapterConfig 
     }
     
     /** {@inheritDoc} */
+    @Override
     public int getRetries(final String ipaddr) {
         getReadLock().lock();
         try {
@@ -411,6 +413,7 @@ abstract public class RancidAdapterConfigManager implements RancidAdapterConfig 
     }
             
     /** {@inheritDoc} */
+    @Override
     public boolean useCategories(final String ipaddr) {
         getReadLock().lock();
         try {
@@ -424,6 +427,7 @@ abstract public class RancidAdapterConfigManager implements RancidAdapterConfig 
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getType(final String sysoid) {
         getReadLock().lock();
         try {
@@ -441,6 +445,7 @@ abstract public class RancidAdapterConfigManager implements RancidAdapterConfig 
     
 
     /** {@inheritDoc} */
+    @Override
     public boolean isCurTimeInSchedule(final String ipaddr) {
         getReadLock().lock();
         try {

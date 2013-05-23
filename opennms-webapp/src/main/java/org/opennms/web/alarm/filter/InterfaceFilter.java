@@ -59,6 +59,7 @@ public class InterfaceFilter extends EqualsFilter<String> {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return ("<AlarmFactory.InterfaceFilter: " + this.getDescription() + ">");
     }
@@ -73,6 +74,7 @@ public class InterfaceFilter extends EqualsFilter<String> {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean equals(Object obj) {
         return (this.toString().equals(obj.toString()));
     }

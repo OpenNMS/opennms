@@ -51,6 +51,7 @@ public class RangeComparator implements Comparator<Range>, Serializable {
      * @param rng2 a {@link org.opennms.netmgt.config.common.Range} object.
      * @return a int.
      */
+        @Override
     public int compare(final Range rng1, final Range rng2) {
     	final InetAddress addr1 = InetAddressUtils.addr(rng1.getBegin());
 		final InetAddress addr2 = InetAddressUtils.addr(rng2.getBegin());

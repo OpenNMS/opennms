@@ -40,18 +40,22 @@ import org.springframework.core.io.Resource;
 
 public class JavaReportPlugin extends AbstractSystemReportPlugin {
 
+    @Override
     public String getName() {
         return "Java";
     }
 
+    @Override
     public String getDescription() {
         return "Java and JVM information";
     }
 
+    @Override
     public int getPriority() {
         return 1;
     }
 
+    @Override
     public TreeMap<String, Resource> getEntries() {
         final TreeMap<String,Resource> map = new TreeMap<String,Resource>();
         map.put("Class Version", getResourceFromProperty("java.class.version"));

@@ -90,6 +90,7 @@ public final class PingReply implements ResponseWithId<PingRequestId> {
      *
      * @return a {@link org.opennms.sms.ping.PingRequestId} object.
      */
+    @Override
     public PingRequestId getRequestId() {
         return m_requestId;
     }

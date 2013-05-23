@@ -168,6 +168,7 @@ public class ImportOperationsManagerTest implements InitializingBean {
 
 
         m_transTemplate.execute(new TransactionCallback<OnmsNode>() {
+            @Override
             public OnmsNode doInTransaction(TransactionStatus status) {
                 OnmsServiceType icmp = m_serviceTypeDao.findByName("ICMP");
                 OnmsServiceType snmp = m_serviceTypeDao.findByName("SNMP");
@@ -186,6 +187,7 @@ public class ImportOperationsManagerTest implements InitializingBean {
         //m_distPollerDao.clear();
 
         m_transTemplate.execute(new TransactionCallback<Object>() {
+            @Override
             public Object doInTransaction(TransactionStatus status) {
                 OnmsNode node = m_nodeDao.findByForeignId("imported:", "7");
                 assertNotNull(node);
@@ -261,6 +263,7 @@ public class ImportOperationsManagerTest implements InitializingBean {
 
         m_transTemplate.execute(new TransactionCallback<Object>() {
 
+            @Override
             public Object doInTransaction(TransactionStatus status) {
                 AbstractImportVisitor accountant = new ImportAccountant(opsMgr);
                 specFile.visitImport(accountant);
@@ -276,6 +279,7 @@ public class ImportOperationsManagerTest implements InitializingBean {
 
     private Map<String, Integer> getAssetNumberMapInTransaction(final SpecFile specFile) {
         Map<String, Integer> assetNumbers = m_transTemplate.execute(new TransactionCallback<Map<String, Integer>>() {
+            @Override
             public Map<String, Integer> doInTransaction(TransactionStatus status) {
                 return Collections.unmodifiableMap(getAssetNumberMap(specFile.getForeignSource()));
             }

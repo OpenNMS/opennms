@@ -83,6 +83,7 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
     private SiteStatusViewConfigDao m_siteStatusViewConfigDao;
 
     /** {@inheritDoc} */
+    @Override
     public NodeListModel createNodeList(NodeListCommand command) {
         Collection<OnmsNode> onmsNodes = null;
         
@@ -212,8 +213,8 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
     private void addCriteriaForMaclike(OnmsCriteria criteria, String macLike) {
         String macLikeStripped = macLike.replaceAll("[:-]", "");
         
-        criteria.createAlias("node.snmpInterfaces", "snmpInterface", CriteriaSpecification.LEFT_JOIN);
-        criteria.createAlias("node.arpInterfaces", "arpInterface", CriteriaSpecification.LEFT_JOIN);
+        criteria.createAlias("node.snmpInterfaces", "snmpInterface", OnmsCriteria.LEFT_JOIN);
+        criteria.createAlias("node.arpInterfaces", "arpInterface", OnmsCriteria.LEFT_JOIN);
         Disjunction physAddrDisjunction = Restrictions.disjunction();
         physAddrDisjunction.add(Restrictions.ilike("snmpInterface.physAddr", macLikeStripped, MatchMode.ANYWHERE));
         physAddrDisjunction.add(Restrictions.ilike("arpInterface.physAddr", macLikeStripped, MatchMode.ANYWHERE));
@@ -466,6 +467,7 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
          */
         private static final long serialVersionUID = 1538654897829381114L;
 
+        @Override
         public int compare(final OnmsIpInterface o1, final OnmsIpInterface o2) {
             int diff;
 
@@ -534,6 +536,7 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
          */
         private static final long serialVersionUID = 3751865611949289845L;
 
+        @Override
         public int compare(OnmsSnmpInterface o1, OnmsSnmpInterface o2) {
             int diff;
             
@@ -573,6 +576,7 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
 
         private static final long serialVersionUID = 2955682030166384496L;
 
+        @Override
         public int compare(OnmsArpInterface o1, OnmsArpInterface o2) {
             int diff;
 

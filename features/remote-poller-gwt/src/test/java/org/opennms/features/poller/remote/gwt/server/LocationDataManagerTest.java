@@ -306,10 +306,12 @@ public class LocationDataManagerTest implements InitializingBean {
     public static LocationUpdatedRemoteEvent hasStatus(final Status status) {
         reportMatcher(new IArgumentMatcher() {
 
+            @Override
             public void appendTo(StringBuffer buffer) {
                 buffer.append("hasStatus(\"" + status + "\")");
             }
 
+            @Override
             public boolean matches(Object argument) {
                 if (argument instanceof LocationUpdatedRemoteEvent) {
                     LocationUpdatedRemoteEvent e = (LocationUpdatedRemoteEvent)argument;

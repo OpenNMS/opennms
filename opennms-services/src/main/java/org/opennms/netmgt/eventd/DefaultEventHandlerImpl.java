@@ -64,6 +64,7 @@ public final class DefaultEventHandlerImpl implements InitializingBean, EventHan
      * @see org.opennms.netmgt.eventd.EventHandler#createRunnable(org.opennms.netmgt.xml.event.Log)
      */
     /** {@inheritDoc} */
+    @Override
     public EventHandlerRunnable createRunnable(Log eventLog) {
         return new EventHandlerRunnable(eventLog);
     }
@@ -86,6 +87,7 @@ public final class DefaultEventHandlerImpl implements InitializingBean, EventHan
          * event parms, add event to database and send event to appropriate
          * listeners.
          */
+        @Override
         public void run() {
             Events events = m_eventLog.getEvents();
             if (events == null || events.getEventCount() <= 0) {

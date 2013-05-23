@@ -64,6 +64,7 @@ public class SinglePingResponseCallback implements PingResponseCallback {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void handleResponse(InetAddress address, EchoPacket response) {
         try {
             info("got response for address " + address + ", thread " + response.getIdentifier() + ", seq " + response.getSequenceNumber() + " with a responseTime "+response.elapsedTime(TimeUnit.MILLISECONDS)+"ms");
@@ -78,6 +79,7 @@ public class SinglePingResponseCallback implements PingResponseCallback {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void handleTimeout(InetAddress address, EchoPacket request) {
         try {
             assert(request != null);
@@ -88,6 +90,7 @@ public class SinglePingResponseCallback implements PingResponseCallback {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void handleError(InetAddress address, EchoPacket request, Throwable t) {
         try {
             m_error = t;

@@ -57,6 +57,7 @@ public class EventIpcBroadcastProcessor implements EventProcessor, InitializingB
     }
 
     /** {@inheritDoc} */
+    @Override
     public void process(Header eventHeader, Event event) {
         if (event.getLogmsg() != null && event.getLogmsg().getDest().equals("suppress")) {
             LogUtils.debugf(this, "process: skip sending event %s to other daemons because is marked as suppress", event.getUei());

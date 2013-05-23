@@ -51,10 +51,12 @@ public class AccessPointStatusUserType implements UserType {
     public AccessPointStatusUserType() {
     }
 
+    @Override
     public Object assemble(final Serializable cached, final Object owner) {
         return deepCopy(cached);
     }
 
+    @Override
     public Object deepCopy(final Object value) {
         if (value == null) {
             return null;
@@ -66,10 +68,12 @@ public class AccessPointStatusUserType implements UserType {
         }
     }
 
+    @Override
     public Serializable disassemble(final Object value) {
         return (Serializable) deepCopy(value);
     }
 
+    @Override
     public boolean equals(final Object x, final Object y) {
         if (x == y) {
             return true;
@@ -80,18 +84,22 @@ public class AccessPointStatusUserType implements UserType {
         return x.equals(y);
     }
 
+    @Override
     public int hashCode(final Object x) {
         return x.hashCode();
     }
 
+    @Override
     public boolean isMutable() {
         return false;
     }
 
+    @Override
     public Object nullSafeGet(final ResultSet rs, final String[] names, final Object owner) throws SQLException {
         return AccessPointStatus.get(rs.getInt(names[0]));
     }
 
+    @Override
     public void nullSafeSet(final PreparedStatement st, final Object value, final int index) throws SQLException {
         if (value == null) {
             st.setInt(index, 1);
@@ -106,14 +114,17 @@ public class AccessPointStatusUserType implements UserType {
         }
     }
 
+    @Override
     public Object replace(final Object original, final Object target, final Object owner) {
         return original;
     }
 
+    @Override
     public Class<AccessPointStatus> returnedClass() {
         return AccessPointStatus.class;
     }
 
+    @Override
     public int[] sqlTypes() {
         return new int[] { java.sql.Types.INTEGER };
     }

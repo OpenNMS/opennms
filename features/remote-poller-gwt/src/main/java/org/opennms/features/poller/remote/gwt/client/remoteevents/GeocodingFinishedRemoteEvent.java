@@ -57,6 +57,7 @@ public class GeocodingFinishedRemoteEvent implements MapRemoteEvent {
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public void dispatch(final MapRemoteEventHandler presenter) {
 //		Window.alert("Updated geocoding on " + m_size + " location definitions.");
 	}
@@ -66,6 +67,7 @@ public class GeocodingFinishedRemoteEvent implements MapRemoteEvent {
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
+        @Override
 	public String toString() {
 	    return "GeocodingFinishedRemoteEvent[size=" + m_size + "]";
 	}

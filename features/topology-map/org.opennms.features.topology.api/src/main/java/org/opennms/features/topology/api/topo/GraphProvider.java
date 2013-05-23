@@ -59,6 +59,7 @@ public interface GraphProvider extends VertexProvider, EdgeProvider {
 
 	void removeEdges(EdgeRef... edges);
 
+        @Override
 	boolean setParent(VertexRef vertexId, VertexRef parentId);
 
 	Edge connectVertices(VertexRef sourceVertextId, VertexRef targetVertextId);

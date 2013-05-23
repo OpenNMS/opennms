@@ -102,6 +102,7 @@ public class GroupPanel extends VerticalLayout {
         };
 
         add = new Button("Add Group", new Button.ClickListener() {
+            @Override
             public void buttonClick(Button.ClickEvent event) {
                 Group group = new Group();
                 group.setName("New Group");

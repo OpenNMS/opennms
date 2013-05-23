@@ -428,6 +428,7 @@ public class Correlation implements Serializable {
         this._state = state;
     }
 
+        @Override
     public String toString() {
     	return new ToStringBuilder(this)
     		.append("state", _state)

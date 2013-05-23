@@ -109,6 +109,7 @@ public class AccessPointMonitordTest implements InitializingBean, TemporaryDatab
     private final static String AP3_MAC = "F0:05:BA:11:00:FF";
     private final static int PACKAGE_SCAN_INTERVAL = 1000;
 
+    @Override
     public void setTemporaryDatabase(TemporaryDatabase database) {
         m_database = database;
     }

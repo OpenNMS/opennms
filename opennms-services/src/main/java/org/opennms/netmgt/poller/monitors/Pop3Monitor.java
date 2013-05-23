@@ -98,6 +98,7 @@ final public class Pop3Monitor extends AbstractServiceMonitor {
      * service status to SERVICE_AVAILABLE and return.
      * </P>
      */
+    @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         NetworkInterface<InetAddress> iface = svc.getNetInterface();
 

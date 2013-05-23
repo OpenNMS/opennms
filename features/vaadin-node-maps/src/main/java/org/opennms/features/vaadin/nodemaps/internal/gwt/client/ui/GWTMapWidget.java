@@ -259,10 +259,12 @@ public class GWTMapWidget extends Widget implements MarkerProvider, SearchConsum
         return m_filter.matches(marker);
     }
 
+    @Override
     public boolean isSearching() {
         return m_searchString != null && !"".equals(m_searchString);
     }
 
+    @Override
     public void refresh() {
         if (m_markers == null) {
             VConsole.log("markers not initialized yet, skipping update");
@@ -357,6 +359,7 @@ public class GWTMapWidget extends Widget implements MarkerProvider, SearchConsum
         refresh();
     }
 
+    @Override
     public List<NodeMarker> getMarkers() {
         return m_markers.getMarkers();
     }

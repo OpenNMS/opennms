@@ -67,6 +67,7 @@ public class DeleteServiceServlet extends HttpServlet {
      *      javax.servlet.http.HttpServletResponse)
      */
     /** {@inheritDoc} */
+    @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
             checkParameters(request);

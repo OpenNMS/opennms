@@ -131,6 +131,7 @@ public class SimpleConversationEndPoint {
     protected static ResponseHandler startsWith(final String prefix) {
         return new ResponseHandler() {
 
+            @Override
             public boolean matches(String input) {
                 return input.startsWith(prefix);
             }
@@ -147,6 +148,7 @@ public class SimpleConversationEndPoint {
     protected static ResponseHandler contains(final String phrase) {
         return new ResponseHandler() {
 
+            @Override
             public boolean matches(String input) {
                 return input.contains(phrase);
             }
@@ -163,6 +165,7 @@ public class SimpleConversationEndPoint {
     protected static ResponseHandler matches(final String regex) {
         return new ResponseHandler() {
             
+            @Override
             public boolean matches(String input) {
                 return input.matches(regex);
             }
@@ -195,6 +198,7 @@ public class SimpleConversationEndPoint {
     protected static RequestHandler singleLineRequest(final String request) {
       return new RequestHandler() {
 
+          @Override
           public void doRequest(OutputStream out) throws IOException {
               out.write(String.format("%s\r\n", request).getBytes());
           }
@@ -211,6 +215,7 @@ public class SimpleConversationEndPoint {
     protected static RequestHandler multilineLineRequest(final String[] request) {
         return new RequestHandler() {
 
+            @Override
             public void doRequest(OutputStream out) throws IOException {
                 for(int i = 0; i < request.length; i++) {
                     out.write(String.format("%s\r\n", request[i]).getBytes());

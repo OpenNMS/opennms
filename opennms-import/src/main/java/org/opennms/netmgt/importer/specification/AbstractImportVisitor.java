@@ -44,50 +44,62 @@ import org.opennms.netmgt.importer.config.Node;
 public class AbstractImportVisitor implements ImportVisitor {
 
     /** {@inheritDoc} */
+    @Override
     public void visitModelImport(ModelImport mi) {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void completeModelImport(ModelImport modelImport) {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void visitNode(Node node) {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void completeNode(Node node) {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void visitInterface(Interface iface) {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void completeInterface(Interface iface) {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void visitMonitoredService(MonitoredService svc) {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void completeMonitoredService(MonitoredService svc) {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void visitCategory(Category category) {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void completeCategory(Category category) {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void visitAsset(Asset asset) {
     }
     
     /** {@inheritDoc} */
+    @Override
     public void completeAsset(Asset asset) {
     }
 }

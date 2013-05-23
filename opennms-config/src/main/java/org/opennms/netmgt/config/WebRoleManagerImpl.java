@@ -61,6 +61,7 @@ public class WebRoleManagerImpl implements WebRoleManager, WebUserManager, WebGr
             super(name);
         }
         
+        @Override
         public String toString() {
             return "Invalid User ["+getName()+"]";
         }
@@ -74,6 +75,7 @@ public class WebRoleManagerImpl implements WebRoleManager, WebUserManager, WebGr
             super.setUsers(new ArrayList<WebUser>());
         }
         
+        @Override
         public String toString() {
             return "Invalid Group ["+getName()+"]";
         }
@@ -210,6 +212,7 @@ public class WebRoleManagerImpl implements WebRoleManager, WebUserManager, WebGr
      *
      * @return a {@link org.opennms.netmgt.config.WebRole} object.
      */
+    @Override
     public WebRole createRole() {
         return new ManagedRole();
     }
@@ -237,19 +240,23 @@ public class WebRoleManagerImpl implements WebRoleManager, WebUserManager, WebGr
             m_role = null;
         }
         
+        @Override
         public void setDescription(String description) {
             super.setDescription(description);
             m_flags.set(DESCR);
         }
         
+        @Override
         public void setDefaultUser(WebUser defaultUser) {
             super.setDefaultUser(defaultUser);
             m_flags.set(USER);
         }
+        @Override
         public void setMembershipGroup(WebGroup memberShipGroup) {
             super.setMembershipGroup(memberShipGroup);
             m_flags.set(GROUP);
         }
+        @Override
         public void setName(String name) {
             super.setName(name);
             m_flags.set(NAME);
@@ -287,18 +294,22 @@ public class WebRoleManagerImpl implements WebRoleManager, WebUserManager, WebGr
             }
             
         }
+        @Override
         public Collection<WebUser> getCurrentUsers() {
             if (m_role == null) {
                 return new ArrayList<WebUser>(0);
             }
             return getUsersScheduleForRole(this, new Date());
         }
+        @Override
         public WebCalendar getCalendar(Date month) {
             return new MonthlyCalendar(month, m_role, m_groupManager);
         }
+        @Override
         public Schedule getSchedule(int schedIndex) {
             return m_role.getSchedule(schedIndex);
         }
+        @Override
         public Time getTime(int schedIndex, int timeIndex) {
             return getSchedule(schedIndex).getTime(timeIndex);
         }
@@ -358,6 +369,7 @@ public class WebRoleManagerImpl implements WebRoleManager, WebUserManager, WebGr
      *
      * @return a {@link java.util.Collection} object.
      */
+    @Override
     public Collection<WebRole> getRoles() {
         Collection<Role> roles = m_groupManager.getRoles();
         List<WebRole> webRoles = new ArrayList<WebRole>(roles.size());
@@ -368,6 +380,7 @@ public class WebRoleManagerImpl implements WebRoleManager, WebUserManager, WebGr
     }
 
     /** {@inheritDoc} */
+    @Override
     public void deleteRole(String roleName) {
         try {
             m_groupManager.deleteRole(roleName);
@@ -377,12 +390,14 @@ public class WebRoleManagerImpl implements WebRoleManager, WebUserManager, WebGr
     }
 
     /** {@inheritDoc} */
+    @Override
     public WebRole getRole(String roleName) {
         Role role = getBackingRole(roleName);
         return (role == null ? null : getWebRole(role));
     }
 
     /** {@inheritDoc} */
+    @Override
     public void saveRole(WebRole webRole) {
         try {
             ManagedRole mgdRole = getManagedRole(webRole);
@@ -397,6 +412,7 @@ public class WebRoleManagerImpl implements WebRoleManager, WebUserManager, WebGr
      *
      * @return a {@link java.util.Collection} object.
      */
+    @Override
     public Collection<WebUser> getUsers() {
         List<WebUser> users = new ArrayList<WebUser>();
         for (User u : getBackingUsers()) {
@@ -406,6 +422,7 @@ public class WebRoleManagerImpl implements WebRoleManager, WebUserManager, WebGr
     }
 
     /** {@inheritDoc} */
+    @Override
     public WebUser getUser(String name) {
         return getWebUser(name);
     }
@@ -415,6 +432,7 @@ public class WebRoleManagerImpl implements WebRoleManager, WebUserManager, WebGr
      *
      * @return a {@link java.util.Collection} object.
      */
+    @Override
     public Collection<WebGroup> getGroups() {
         List<WebGroup> groups = new ArrayList<WebGroup>();
         for (Group group : getBackingGroups()) {
@@ -424,6 +442,7 @@ public class WebRoleManagerImpl implements WebRoleManager, WebUserManager, WebGr
     }
 
     /** {@inheritDoc} */
+    @Override
     public WebGroup getGroup(String groupName) {
         return getWebGroup(groupName);
     }

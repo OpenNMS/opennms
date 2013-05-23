@@ -183,6 +183,7 @@ public class SnmpTrapHelper {
          *                be created for any reason (e.g. encoding not
          *                supported, invalid value, etc.).
          */
+        @Override
         public void addVarBind(SnmpTrapBuilder trap, String name, String encoding, String value) throws SnmpTrapHelperException {
 
             byte[] contents;
@@ -223,6 +224,7 @@ public class SnmpTrapHelper {
          *                be created for any reason (e.g. encoding not
          *                supported, invalid value, etc.).
          */
+        @Override
         public void addVarBind(SnmpTrapBuilder trap, String name, String encoding, String value) throws SnmpTrapHelperException {
 
             if (EventConstants.XML_ENCODING_TEXT.equals(encoding)) {
@@ -261,6 +263,7 @@ public class SnmpTrapHelper {
          * 
          * @return The newly-created variable binding
          */
+        @Override
         public void addVarBind(SnmpTrapBuilder trap, String name, String encoding, String value) {
             trap.addVarBind(SnmpObjId.get(name), SnmpUtils.getValueFactory().getNull());
         }
@@ -290,6 +293,7 @@ public class SnmpTrapHelper {
          *                be created for any reason (e.g. encoding not
          *                supported, invalid value, etc.).
          */
+        @Override
         public void addVarBind(SnmpTrapBuilder trap, String name, String encoding, String value) throws SnmpTrapHelperException {
 
             if (EventConstants.XML_ENCODING_TEXT.equals(encoding)) {
@@ -324,6 +328,7 @@ public class SnmpTrapHelper {
          *                be created for any reason (e.g. encoding not
          *                supported, invalid value, etc.).
          */
+        @Override
         public void addVarBind(SnmpTrapBuilder trap, String name, String encoding, String value) throws SnmpTrapHelperException {
 
             if (EventConstants.XML_ENCODING_TEXT.equals(encoding)) {
@@ -362,6 +367,7 @@ public class SnmpTrapHelper {
          *                be created for any reason (e.g. encoding not
          *                supported, invalid value, etc.).
          */
+        @Override
         public void addVarBind(SnmpTrapBuilder trap, String name, String encoding, String value) throws SnmpTrapHelperException {
 
             if (EventConstants.XML_ENCODING_TEXT.equals(encoding)) {
@@ -410,6 +416,7 @@ public class SnmpTrapHelper {
          *                be created for any reason (e.g. encoding not
          *                supported, invalid value, etc.).
          */
+        @Override
         public void addVarBind(SnmpTrapBuilder trap, String name, String encoding, String value) throws SnmpTrapHelperException {
 
             if (EventConstants.XML_ENCODING_TEXT.equals(encoding)) {
@@ -458,6 +465,7 @@ public class SnmpTrapHelper {
          *                be created for any reason (e.g. encoding not
          *                supported, invalid value, etc.).
          */
+        @Override
         public void addVarBind(SnmpTrapBuilder trap, String name, String encoding, String value) throws SnmpTrapHelperException {
 
             if (EventConstants.XML_ENCODING_TEXT.equals(encoding)) {
@@ -506,6 +514,7 @@ public class SnmpTrapHelper {
          *                be created for any reason (e.g. encoding not
          *                supported, invalid value, etc.).
          */
+        @Override
         public void addVarBind(SnmpTrapBuilder trap, String name, String encoding, String value) throws SnmpTrapHelperException {
 
             if (EventConstants.XML_ENCODING_BASE64.equals(encoding)) {
@@ -540,6 +549,7 @@ public class SnmpTrapHelper {
          *                be created for any reason (e.g. encoding not
          *                supported, invalid value, etc.).
          */
+        @Override
         public void addVarBind(SnmpTrapBuilder trap, String name, String encoding, String value) throws SnmpTrapHelperException {
 
             if (EventConstants.XML_ENCODING_TEXT.equals(encoding)) {

@@ -73,12 +73,14 @@ public class MockLogAppender extends AppenderSkeleton {
     }
 
     /** {@inheritDoc} */
+    @Override
     public synchronized void doAppend(final LoggingEvent event) {
         super.doAppend(event);
         receivedLogLevel(event.getLevel());
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void append(final LoggingEvent event) {
         s_events.add(event);
     }
@@ -86,6 +88,7 @@ public class MockLogAppender extends AppenderSkeleton {
     /**
      * <p>close</p>
      */
+    @Override
     public void close() {
     }
 
@@ -94,6 +97,7 @@ public class MockLogAppender extends AppenderSkeleton {
      *
      * @return a boolean.
      */
+    @Override
     public boolean requiresLayout() {
         return false;
     }

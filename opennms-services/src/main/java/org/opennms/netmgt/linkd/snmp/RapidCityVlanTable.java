@@ -57,6 +57,7 @@ public class RapidCityVlanTable extends VlanTableBasic {
     }
     
     /** {@inheritDoc} */
+        @Override
     protected RapidCityVlanTableEntry createTableEntry(SnmpObjId base, SnmpInstId inst, Object val) {
         return new RapidCityVlanTableEntry();
     }

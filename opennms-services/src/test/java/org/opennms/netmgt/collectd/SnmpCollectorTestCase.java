@@ -97,10 +97,12 @@ public class SnmpCollectorTestCase extends OpenNMSTestCase {
     protected IpInterfaceDao m_ifaceDao;
     protected EasyMockUtils m_easyMockUtils;
     
+    @Override
     public void setVersion(int version) {
         super.setVersion(version);
     }
 
+    @Override
     protected void setUp() throws Exception {
         setStartEventd(false);
         super.setUp();
@@ -122,6 +124,7 @@ public class SnmpCollectorTestCase extends OpenNMSTestCase {
         
     }
 
+    @Override
     protected void tearDown() throws Exception {
         m_mockAgent.shutDownAndWait();
         super.tearDown();
@@ -255,6 +258,7 @@ public class SnmpCollectorTestCase extends OpenNMSTestCase {
         addAttribute("ifSpeed", ".1.3.6.1.2.1.2.2.1.5", "ifIndex", "gauge");
     }
     
+    @Override
     public void testDoNothing() {}
 
     public List<MibObject> getAttributeList() {

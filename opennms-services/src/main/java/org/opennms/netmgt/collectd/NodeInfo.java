@@ -68,11 +68,13 @@ public final class NodeInfo extends SnmpCollectionResource {
       *
       * @return a int.
       */
+        @Override
      public int getType() {
         return -1;
     }
 
     /** {@inheritDoc} */
+        @Override
     public File getResourceDir(RrdRepository repository) {
         File rrdBaseDir = repository.getRrdBaseDir();
         return new File(rrdBaseDir, getCollectionAgent().getStorageDir().toString());
@@ -83,6 +85,7 @@ public final class NodeInfo extends SnmpCollectionResource {
      *
      * @return a {@link java.lang.String} object.
      */
+        @Override
     public String toString() {
         return "node["+m_nodeId+']';
     }
@@ -106,6 +109,7 @@ public final class NodeInfo extends SnmpCollectionResource {
     }
 
     /** {@inheritDoc} */
+        @Override
     public boolean shouldPersist(ServiceParameters params) {
         return true;
     }
@@ -115,6 +119,7 @@ public final class NodeInfo extends SnmpCollectionResource {
      *
      * @return a {@link java.lang.String} object.
      */
+        @Override
     public String getResourceTypeName() {
         return "node"; //This is a nodeInfo; must be a node type resource
     }
@@ -125,6 +130,7 @@ public final class NodeInfo extends SnmpCollectionResource {
      *
      * @return a {@link java.lang.String} object.
      */
+        @Override
     public String getInstance() {
         return null; //For node type resources, use the default instance
     }
@@ -134,10 +140,12 @@ public final class NodeInfo extends SnmpCollectionResource {
      *
      * @return a {@link java.lang.String} object.
      */
+        @Override
     public String getLabel() {
         return null;
     }
 
+        @Override
     public String getParent() {
         return m_agent.getStorageDir().toString();
     }

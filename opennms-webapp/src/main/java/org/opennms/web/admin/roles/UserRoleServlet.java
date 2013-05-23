@@ -70,6 +70,7 @@ import org.opennms.netmgt.config.WebRoleManager;
     }
     
     private class ListAction implements Action {
+        @Override
         public String execute(HttpServletRequest request, HttpServletResponse response) {
             return LIST;
         }
@@ -78,6 +79,7 @@ import org.opennms.netmgt.config.WebRoleManager;
     
     private class ViewAction implements Action {
         
+        @Override
         public String execute(HttpServletRequest request, HttpServletResponse response) throws ServletException {
             try {
                 WebRole role = (WebRole)request.getAttribute("role");
@@ -126,6 +128,7 @@ import org.opennms.netmgt.config.WebRoleManager;
 	 * @see javax.servlet.http.HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	/** {@inheritDoc} */
+    @Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         doIt(request, response);
 	}  	
@@ -134,6 +137,7 @@ import org.opennms.netmgt.config.WebRoleManager;
 	 * @see javax.servlet.http.HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	/** {@inheritDoc} */
+    @Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         doIt(request, response);
 	}
@@ -143,6 +147,7 @@ import org.opennms.netmgt.config.WebRoleManager;
      *
      * @throws javax.servlet.ServletException if any.
      */
+    @Override
     public void init() throws ServletException {
         super.init();
 

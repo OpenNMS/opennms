@@ -64,6 +64,7 @@ public class SnmpPluginTest extends OpenNMSTestCase {
     /**
      * Required method for TestCase
      */
+    @Override
     protected void setUp() throws Exception {
         assertNotNull("The org.opennms.snmp.strategyClass must be set to run this test", System.getProperty("org.opennms.snmp.strategyClass"));
         super.setUp();
@@ -76,6 +77,7 @@ public class SnmpPluginTest extends OpenNMSTestCase {
     /**
      * Required method for TestCase
      */
+    @Override
     protected void tearDown() throws Exception {
         super.tearDown();
     }

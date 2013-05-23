@@ -55,6 +55,7 @@ public class Updater extends JDBCTemplate {
         super(db, sql);
     }
 
+    @Override
     void executeStmt(PreparedStatement stmt) throws SQLException {
         stmt.executeUpdate();
     }

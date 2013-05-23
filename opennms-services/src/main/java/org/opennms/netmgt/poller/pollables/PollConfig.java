@@ -52,6 +52,7 @@ public interface PollConfig extends Timer {
      *
      * @return a long.
      */
+    @Override
     public long getCurrentTime(); 
     
     /**

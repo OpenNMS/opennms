@@ -29,10 +29,7 @@
 package org.opennms.netmgt.jetty;
 
 import java.io.File;
-import java.net.InetAddress;
-import java.util.Map;
 import java.util.Properties;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jetty.ajp.Ajp13SocketConnector;
 import org.eclipse.jetty.util.ssl.SslContextFactory;

@@ -142,6 +142,7 @@ public final class Dhcpd extends AbstractServiceDaemon implements Runnable, Obse
     /**
      * <p>onStart</p>
      */
+    @Override
     protected void onStart() {
         boolean relayMode = false;
         log().debug("start: DHCP client daemon starting...");
@@ -236,6 +237,7 @@ public final class Dhcpd extends AbstractServiceDaemon implements Runnable, Obse
     /**
      * <p>onStop</p>
      */
+    @Override
     protected void onStop() {
 	if (m_worker == null) {
             return;
@@ -278,6 +280,7 @@ public final class Dhcpd extends AbstractServiceDaemon implements Runnable, Obse
      * The main routine of the DHCP server. This method accepts incoming client
      * requests and starts new client handlers to process each request.
      */
+    @Override
     public void run() {
         
         try {
@@ -345,6 +348,7 @@ public final class Dhcpd extends AbstractServiceDaemon implements Runnable, Obse
      * This method is called by the observable instances that the server has
      * registered to receive.
      */
+    @Override
     public void update(Observable inst, Object ignored) {
         synchronized (this) {
             if (m_clients != null) {
@@ -399,6 +403,7 @@ public final class Dhcpd extends AbstractServiceDaemon implements Runnable, Obse
     /**
      * <p>onInit</p>
      */
+    @Override
     protected void onInit() {
     	
     }

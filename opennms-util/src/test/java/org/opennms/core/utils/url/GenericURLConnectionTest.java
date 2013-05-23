@@ -54,6 +54,7 @@ public class GenericURLConnectionTest extends TestCase {
     private URL m_baseUrlPathQueryString;
 
     @Before
+    @Override
     public void setUp() throws Exception {
         m_baseUrl = new URL("http://host.subdomain.domain.tld");
         m_userOnlyUrl = new URL("http://user@host.subdomain.domain.tld");

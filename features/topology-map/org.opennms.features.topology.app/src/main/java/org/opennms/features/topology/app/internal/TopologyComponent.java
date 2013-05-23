@@ -333,6 +333,7 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
 	    }
 	}
 
+    @Override
 	public void graphChanged(GraphContainer container) {
 		Graph graph = container.getGraph();
         setGraph(graph);
@@ -344,6 +345,7 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
 	/**
 	 * ValueChange listener for the scale property
 	 */
+    @Override
     public void valueChange(ValueChangeEvent event) {
         
         double scale = (Double) event.getProperty().getValue();

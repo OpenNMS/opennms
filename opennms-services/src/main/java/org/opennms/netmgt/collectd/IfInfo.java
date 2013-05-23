@@ -85,6 +85,7 @@ public final class IfInfo extends SnmpCollectionResource {
      *
      * @return a int.
      */
+    @Override
     public int getType() {
         return m_snmpIfData.getIfType();
     }
@@ -94,6 +95,7 @@ public final class IfInfo extends SnmpCollectionResource {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getLabel() {
         return m_snmpIfData.getLabelForRRD();
     }
@@ -217,6 +219,7 @@ public final class IfInfo extends SnmpCollectionResource {
     }
 
     /** {@inheritDoc} */
+    @Override
     public File getResourceDir(RrdRepository repository) {
         File rrdBaseDir = repository.getRrdBaseDir();
         File dir = new File (rrdBaseDir, getCollectionAgent().getStorageDir().toString());
@@ -228,6 +231,7 @@ public final class IfInfo extends SnmpCollectionResource {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return "node["+ getNodeId() + "].interfaceSnmp[" + getLabel() + ']';
     }
@@ -241,6 +245,7 @@ public final class IfInfo extends SnmpCollectionResource {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean shouldPersist(ServiceParameters serviceParameters) {
 
         boolean shdprsist = shouldStore(serviceParameters) && (isScheduledForCollection() || serviceParameters.forceStoreByAlias(getCurrentIfAlias()));
@@ -253,6 +258,7 @@ public final class IfInfo extends SnmpCollectionResource {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getResourceTypeName() {
         return "if"; //This is IfInfo, must be an interface
     }
@@ -262,10 +268,12 @@ public final class IfInfo extends SnmpCollectionResource {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getInstance() {
         return Integer.toString(getIndex()); //For interfaces, use ifIndex as it's unique within a node (by definition)
     }
 
+    @Override
     public String getParent() {
         return getCollectionAgent().getStorageDir().toString();
     }

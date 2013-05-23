@@ -215,6 +215,7 @@ public class IPAddressRange implements Comparable<IPAddressRange>, Iterable<IPAd
      *
      * @return a {@link java.util.Iterator} object.
      */
+    @Override
     public Iterator<IPAddress> iterator() {
         return new IPAddressRangeIterator(this);
     }
@@ -229,10 +230,12 @@ public class IPAddressRange implements Comparable<IPAddressRange>, Iterable<IPAd
             m_next = range.getBegin();
         }
 
+        @Override
         public boolean hasNext() {
             return (m_next != null);
         }
 
+        @Override
         public IPAddress next() {
             if (m_next == null) {
                 throw new NoSuchElementException("Already returned the last element");
@@ -246,12 +249,14 @@ public class IPAddressRange implements Comparable<IPAddressRange>, Iterable<IPAd
             return next;
         }
 
+        @Override
         public void remove() {
             throw new UnsupportedOperationException("IPAddressRangeIterator.remove() is not yet implemented");
         }
         
     }
     
+    @Override
     public int compareTo(IPAddressRange r) {
         if (this.comesBefore(r)) {
             // this is less than 

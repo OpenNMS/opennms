@@ -116,6 +116,7 @@ public class XmlSource extends XmlGroups implements Serializable, Comparable<Xml
     /* (non-Javadoc)
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
+    @Override
     public int compareTo(XmlSource obj) {
         return new CompareToBuilder()
         .append(getUrl(), obj.getUrl())

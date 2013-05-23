@@ -37,6 +37,7 @@ public class PopulatedTemporaryDatabaseTestCaseTest extends
      * Can we properly initialize the TestCase (including loading the database)?
      *
      */
+    @Override
     public void testNothing() {
         // nothing... this class mainly tests our super's setUp() 
     }

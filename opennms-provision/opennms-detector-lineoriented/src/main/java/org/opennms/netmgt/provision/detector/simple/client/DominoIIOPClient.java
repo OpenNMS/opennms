@@ -51,6 +51,7 @@ public class DominoIIOPClient extends LineOrientedClient {
     private int m_iorPort = 1000;
     
     /** {@inheritDoc} */
+    @Override
     public void connect(final InetAddress host, final int port, final int timeout) throws IOException, Exception {        
         if(!preconnect(host, getIorPort(), timeout)) {
             throw new Exception("Failed to preconnect");

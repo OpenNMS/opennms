@@ -82,6 +82,7 @@ public class JniRrdStrategy implements RrdStrategy<JniRrdStrategy.CreateCommand 
 			this.parameter = parameter;
 		}
 		
+            @Override
 		public String toString() {
 			return operation + " " + filename + " " + parameter;
 		}
@@ -98,6 +99,7 @@ public class JniRrdStrategy implements RrdStrategy<JniRrdStrategy.CreateCommand 
     }
 
     /** {@inheritDoc} */
+        @Override
     public void setConfigurationProperties(Properties configurationParameters) {
         this.m_configurationProperties = configurationParameters;
     }
@@ -110,6 +112,7 @@ public class JniRrdStrategy implements RrdStrategy<JniRrdStrategy.CreateCommand 
      * @param rrd a {@link java.lang.StringBuffer} object.
      * @throws java.lang.Exception if any.
      */
+        @Override
     public void closeFile(StringBuffer rrd) throws Exception {
         String command = rrd.toString();
         String[] results = Interface.launch(command);
@@ -119,6 +122,7 @@ public class JniRrdStrategy implements RrdStrategy<JniRrdStrategy.CreateCommand 
     }
 
     /** {@inheritDoc} */
+        @Override
     public CreateCommand createDefinition(String creator, String directory, String rrdName, int step, List<RrdDataSource> dataSources, List<String> rraList) throws Exception {
         File f = new File(directory);
         f.mkdirs();
@@ -164,6 +168,7 @@ public class JniRrdStrategy implements RrdStrategy<JniRrdStrategy.CreateCommand 
      * @param createCommand a {@link java.lang.String} object.
      * @throws java.lang.Exception if any.
      */
+        @Override
     public void createFile(CreateCommand createCommand, Map<String, String> attributeMappings) throws Exception {
         if (createCommand == null) {
         	log().debug("createRRD: skipping RRD file");
@@ -188,6 +193,7 @@ public class JniRrdStrategy implements RrdStrategy<JniRrdStrategy.CreateCommand 
      * not provide files that may be open, this constructs the beginning portion
      * of the rrd command to update the file.
      */
+        @Override
     public StringBuffer openFile(String fileName) throws Exception {
         return new StringBuffer("update " + fileName);
     }
@@ -202,6 +208,7 @@ public class JniRrdStrategy implements RrdStrategy<JniRrdStrategy.CreateCommand 
      * possibility of getting performance benefit by doing more than one write
      * per open. The updates are all performed at once in the closeFile method.
      */
+        @Override
     public void updateFile(StringBuffer rrd, String owner, String data) throws Exception {
         rrd.append(' ');
         rrd.append(data);
@@ -222,11 +229,13 @@ public class JniRrdStrategy implements RrdStrategy<JniRrdStrategy.CreateCommand 
      * Fetches the last value directly from the rrd file using the JNI
      * Interface.
      */
+        @Override
     public Double fetchLastValue(String rrdFile, String ds, int interval) throws NumberFormatException, RrdException {
         return fetchLastValue(rrdFile, ds, "AVERAGE", interval);
     }
 
     /** {@inheritDoc} */
+        @Override
     public Double fetchLastValue(String rrdFile, String ds, String consolidationFunction, int interval) {
         /*
          * Generate rrd_fetch() command through jrrd JNI interface in order to
@@ -312,6 +321,7 @@ public class JniRrdStrategy implements RrdStrategy<JniRrdStrategy.CreateCommand 
     }
 
     /** {@inheritDoc} */
+        @Override
     public Double fetchLastValueInRange(String rrdFile, String ds, int interval, int range) throws NumberFormatException, RrdException {
         // Generate rrd_fetch() command through jrrd JNI interface in order to
         // retrieve
@@ -415,6 +425,7 @@ public class JniRrdStrategy implements RrdStrategy<JniRrdStrategy.CreateCommand 
      * directory. The output stream of the command (a PNG image) is copied to a
      * the InputStream returned from the method.
      */
+        @Override
     public InputStream createGraph(String command, File workDir) throws IOException, RrdException {
         byte[] byteArray = createGraphAsByteArray(command, workDir);
         return new ByteArrayInputStream(byteArray);
@@ -453,6 +464,7 @@ public class JniRrdStrategy implements RrdStrategy<JniRrdStrategy.CreateCommand 
      *
      * @return a {@link java.lang.String} object.
      */
+        @Override
     public String getStats() {
         return "";
     }
@@ -472,6 +484,7 @@ public class JniRrdStrategy implements RrdStrategy<JniRrdStrategy.CreateCommand 
      *
      * @return a int.
      */
+        @Override
     public int getGraphLeftOffset() {
         return 65;
     }
@@ -481,6 +494,7 @@ public class JniRrdStrategy implements RrdStrategy<JniRrdStrategy.CreateCommand 
      *
      * @return a int.
      */
+        @Override
     public int getGraphRightOffset() {
         return -30;
     }
@@ -490,6 +504,7 @@ public class JniRrdStrategy implements RrdStrategy<JniRrdStrategy.CreateCommand 
      *
      * @return a int.
      */
+        @Override
     public int getGraphTopOffsetWithText() {
         return -75;
     }
@@ -499,11 +514,13 @@ public class JniRrdStrategy implements RrdStrategy<JniRrdStrategy.CreateCommand 
      *
      * @return a {@link java.lang.String} object.
      */
+        @Override
     public String getDefaultFileExtension() {
         return ".rrd";
     }
     
     /** {@inheritDoc} */
+        @Override
     public RrdGraphDetails createGraphReturnDetails(String command, File workDir) throws IOException, org.opennms.netmgt.rrd.RrdException {
         // Creating Temp PNG File
         File pngFile = File.createTempFile("opennms.rrdtool.", ".png");
@@ -554,6 +571,7 @@ public class JniRrdStrategy implements RrdStrategy<JniRrdStrategy.CreateCommand 
     }
 
     /** {@inheritDoc} */
+        @Override
     public void promoteEnqueuedFiles(Collection<String> rrdFiles) {
         // no need to do anything since this strategy doesn't queue
     }

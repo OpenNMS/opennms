@@ -228,6 +228,7 @@ public class OnmsAccessPoint implements Serializable, Comparable<OnmsAccessPoint
      * 
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return new ToStringCreator(this)
             .append("physAddr", getPhysAddr())
@@ -244,6 +245,7 @@ public class OnmsAccessPoint implements Serializable, Comparable<OnmsAccessPoint
      * 
      * @return a {@link java.lang.int} object.
      */
+    @Override
     public int compareTo(OnmsAccessPoint o) {
         return m_physAddr.compareTo(o.m_physAddr);
     }

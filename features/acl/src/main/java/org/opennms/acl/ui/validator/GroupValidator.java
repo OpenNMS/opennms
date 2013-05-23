@@ -60,11 +60,13 @@ public class GroupValidator implements Validator {
 
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
+    @Override
     public boolean supports(Class clazz) {
         return GroupDTO.class.isAssignableFrom(clazz);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void validate(Object command, Errors err) {
         // GroupDTO group = (GroupDTO) command;
         ValidationUtils.rejectIfEmptyOrWhitespace(err, "name", "name.required.value", "name is required.");

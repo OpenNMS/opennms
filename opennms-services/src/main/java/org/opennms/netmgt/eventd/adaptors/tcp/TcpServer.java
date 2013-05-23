@@ -245,6 +245,7 @@ final class TcpServer implements Runnable {
      * created to process the connection. This method encapsulates that control
      * logic so that it can be executed in it's own java thread.
      */
+    @Override
     public void run() {
         // get the thread context for the ability to stop the process
         m_context = Thread.currentThread();

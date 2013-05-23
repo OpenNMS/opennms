@@ -83,11 +83,13 @@ public class AlarmDashlet extends Dashlet {
             m_suveillanceService = svc;
         }
 
+        @Override
         public void onFailure(Throwable caught) {
             loadError(caught);
             error(caught);
         }
 
+        @Override
         public void onSuccess(Alarm[] result) {
             onDataLoaded(result);
         }
@@ -101,6 +103,7 @@ public class AlarmDashlet extends Dashlet {
     }
     
     /** {@inheritDoc} */
+    @Override
     public void setSurveillanceSet(SurveillanceSet set) {
         m_loader.load(set);
     }

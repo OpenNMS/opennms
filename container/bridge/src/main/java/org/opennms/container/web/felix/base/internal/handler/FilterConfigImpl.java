@@ -36,21 +36,25 @@ public final class FilterConfigImpl
         this.initParams = initParams;
     }
 
+    @Override
     public String getFilterName()
     {
         return this.name;
     }
 
+    @Override
     public ServletContext getServletContext()
     {
         return this.context;
     }
 
+    @Override
     public String getInitParameter(String name)
     {
         return this.initParams.get(name);
     }
 
+    @Override
     public Enumeration<String> getInitParameterNames()
     {
         return Collections.enumeration(this.initParams.keySet());

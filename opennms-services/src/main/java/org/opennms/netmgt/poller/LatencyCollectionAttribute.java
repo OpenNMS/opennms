@@ -66,6 +66,7 @@ public class LatencyCollectionAttribute implements CollectionAttribute {
      *
      * @return a {@link org.opennms.netmgt.config.collector.CollectionAttributeType} object.
      */
+    @Override
     public CollectionAttributeType getAttributeType() {
         return null;
     }
@@ -75,6 +76,7 @@ public class LatencyCollectionAttribute implements CollectionAttribute {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getName() {
         return m_name;
     }
@@ -84,6 +86,7 @@ public class LatencyCollectionAttribute implements CollectionAttribute {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getNumericValue() {
         return m_value.toString();
     }
@@ -93,6 +96,7 @@ public class LatencyCollectionAttribute implements CollectionAttribute {
      *
      * @return a {@link org.opennms.netmgt.config.collector.CollectionResource} object.
      */
+    @Override
     public CollectionResource getResource() {
         return m_resource;
     }
@@ -102,6 +106,7 @@ public class LatencyCollectionAttribute implements CollectionAttribute {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getStringValue() {
         return null;
     }
@@ -111,20 +116,24 @@ public class LatencyCollectionAttribute implements CollectionAttribute {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getType() {
         return "gauge";
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean shouldPersist(ServiceParameters params) {
         return true;
     }
 
     /** {@inheritDoc} */
+    @Override
     public void storeAttribute(Persister persister) {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void visit(CollectionSetVisitor visitor) {
     }
 

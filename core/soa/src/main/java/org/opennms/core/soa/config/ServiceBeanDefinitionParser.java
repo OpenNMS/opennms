@@ -75,11 +75,13 @@ public class ServiceBeanDefinitionParser extends AbstractSingleBeanDefinitionPar
     
     
     /** {@inheritDoc} */
+    @Override
     protected Class<?> getBeanClass(Element element) {
         return ServiceFactoryBean.class;
     }
 
     /** {@inheritDoc} */
+    @Override
     public void doParse(Element element, ParserContext context, BeanDefinitionBuilder bean) {
         
         String ref = element.getAttribute(REF_ATTR);

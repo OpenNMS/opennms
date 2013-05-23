@@ -67,6 +67,7 @@ public class DroolsTicketerServiceLayer extends DefaultTicketerServiceLayer {
     	return m_configDao;
     }
     
+    @Override
     public void reloadTicketer() {
         log().debug("reloadTicketer: Reloading ticketer");
         m_knowledgeBase = createKnowledgeBase();
@@ -95,6 +96,7 @@ public class DroolsTicketerServiceLayer extends DefaultTicketerServiceLayer {
 	 * @param alarm OpenNMS Model class alarm
 	 * @return OpenNMS Ticket processed by Drools logic.
 	 */
+    @Override
     protected Ticket createTicketFromAlarm(OnmsAlarm alarm) {
         log().debug("createTicketFromAlarm: Processing ticket.");
         
@@ -125,6 +127,7 @@ public class DroolsTicketerServiceLayer extends DefaultTicketerServiceLayer {
     * Convenience logging.
     * @return a log4j Category for this class
     */
+    @Override
     ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }

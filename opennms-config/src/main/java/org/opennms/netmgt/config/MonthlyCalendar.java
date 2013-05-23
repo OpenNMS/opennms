@@ -82,6 +82,7 @@ public class MonthlyCalendar extends AbstractWebCalendar {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getMonthAndYear() {
         return new SimpleDateFormat("MMMM yyyy").format(m_calendar.getTime());
     }
@@ -109,6 +110,7 @@ public class MonthlyCalendar extends AbstractWebCalendar {
      *
      * @return an array of {@link org.opennms.web.admin.roles.Week} objects.
      */
+    @Override
     public Week[] getWeeks() {
         Calendar weekBegin = getDateOfFirstWeek();
         List<Week> weeks = new ArrayList<Week>(6);
@@ -129,6 +131,7 @@ public class MonthlyCalendar extends AbstractWebCalendar {
      *
      * @return a java$util$Date object.
      */
+    @Override
     public Date getNextMonth() {
         return new GregorianCalendar(getYear(), getMonth()+1, 1).getTime();
     }
@@ -138,6 +141,7 @@ public class MonthlyCalendar extends AbstractWebCalendar {
      *
      * @return a java$util$Date object.
      */
+    @Override
     public Date getPreviousMonth() {
         return new GregorianCalendar(getYear(), getMonth()-1, 1).getTime();
     }

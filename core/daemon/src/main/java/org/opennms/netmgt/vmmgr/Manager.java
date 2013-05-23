@@ -86,6 +86,7 @@ public class Manager implements ManagerMBean {
     /**
      * <p>stop</p>
      */
+    @Override
     public void stop() {
         setLogPrefix();
 
@@ -115,6 +116,7 @@ public class Manager implements ManagerMBean {
      *
      * @return a {@link java.util.List} object.
      */
+    @Override
     public List<String> status() {
         setLogPrefix();
 
@@ -156,6 +158,7 @@ public class Manager implements ManagerMBean {
      * exit immediately.  This method is usually invoked via JMX from
      * another process as the last stage of shutting down OpenNMS.
      */
+    @Override
     public void doSystemExit() {
         setLogPrefix();
 
@@ -183,6 +186,7 @@ public class Manager implements ManagerMBean {
         }
         log().debug("Thread dump of " + threads.size() + " threads (" + daemons + " daemons):");
         Map<Thread, StackTraceElement[]> sortedThreads = new TreeMap<Thread, StackTraceElement[]>(new Comparator<Thread>() {
+            @Override
             public int compare(Thread t1, Thread t2) {
                 return new Long(t1.getId()).compareTo(new Long(t2.getId()));
             }
@@ -206,6 +210,7 @@ public class Manager implements ManagerMBean {
     /**
      * <p>doTestLoadLibraries</p>
      */
+    @Override
     public void doTestLoadLibraries() {
         setLogPrefix();
         testPinger();

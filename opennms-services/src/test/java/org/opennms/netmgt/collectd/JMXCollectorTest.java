@@ -51,7 +51,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import static org.junit.Assert.*;
 import org.opennms.netmgt.config.collectd.jmx.Attrib;
-import org.opennms.netmgt.config.collectd.jmx.JmxDatacollectionConfig;
 
 /**
  *

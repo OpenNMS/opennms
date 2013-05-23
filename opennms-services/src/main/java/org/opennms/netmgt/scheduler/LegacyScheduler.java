@@ -192,17 +192,21 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
 	 * @see org.opennms.netmgt.scheduler.Scheduler#schedule(long, org.opennms.netmgt.scheduler.ReadyRunnable)
 	 */
     /** {@inheritDoc} */
+    @Override
     public synchronized void schedule(long interval, final ReadyRunnable runnable) {
         final long timeToRun = getCurrentTime()+interval;
         ReadyRunnable timeKeeper = new ReadyRunnable() {
+            @Override
             public boolean isReady() {
                 return getCurrentTime() >= timeToRun && runnable.isReady();
             }
             
+            @Override
             public void run() {
                 runnable.run();
             }
             
+            @Override
             public String toString() { return runnable.toString()+" (ready in "+Math.max(0, timeToRun-getCurrentTime())+"ms)"; }
         };
         schedule(timeKeeper, interval);
@@ -216,6 +220,7 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
      *
      * @return a long.
      */
+    @Override
     public long getCurrentTime() {
         return System.currentTimeMillis();
     }
@@ -226,6 +231,7 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
     /**
      * <p>start</p>
      */
+    @Override
     public synchronized void start() {
         Assert.state(m_worker == null, "The fiber has already run or is running");
 
@@ -242,6 +248,7 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
     /**
      * <p>stop</p>
      */
+    @Override
     public synchronized void stop() {
         Assert.state(m_worker != null, "The fiber has never been started");
 
@@ -258,6 +265,7 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
     /**
      * <p>pause</p>
      */
+    @Override
     public synchronized void pause() {
         Assert.state(m_worker != null, "The fiber has never been started");
         Assert.state(m_status != STOPPED && m_status != STOP_PENDING, "The fiber is not running or a stop is pending");
@@ -276,6 +284,7 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
     /**
      * <p>resume</p>
      */
+    @Override
     public synchronized void resume() {
         Assert.state(m_worker != null, "The fiber has never been started");
         Assert.state(m_status != STOPPED && m_status != STOP_PENDING, "The fiber is not running or a stop is pending");
@@ -296,6 +305,7 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
      *
      * @return a int.
      */
+    @Override
     public synchronized int getStatus() {
         if (m_worker != null && m_worker.isAlive() == false) {
             m_status = STOPPED;
@@ -308,6 +318,7 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getName() {
         return m_runner.toString();
     }
@@ -336,6 +347,7 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
      * the runnable queues for ready objects and then enqueuing them into the
      * thread pool for execution.
      */
+    @Override
     public void run() {
         synchronized (this) {
             m_status = RUNNING;

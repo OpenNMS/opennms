@@ -270,6 +270,7 @@ public class LocationInfo implements IsSerializable, Serializable, Comparable<Lo
 	}
 
 	/** {@inheritDoc} */
+        @Override
 	public boolean equals(Object aThat) {
 		if (this == aThat) return true;
 		if (!(aThat instanceof LocationInfo)) return false;
@@ -282,6 +283,7 @@ public class LocationInfo implements IsSerializable, Serializable, Comparable<Lo
 	 *
 	 * @return a int.
 	 */
+        @Override
 	public int hashCode() {
 		return new HashCodeBuilder()
 			.append(this.getName())
@@ -294,6 +296,7 @@ public class LocationInfo implements IsSerializable, Serializable, Comparable<Lo
 	 * @param that a {@link org.opennms.features.poller.remote.gwt.client.location.LocationInfo} object.
 	 * @return a int.
 	 */
+        @Override
 	public int compareTo(final LocationInfo that) {
 		return new CompareToBuilder()
 			.append(this.getStatusDetails(), that.getStatusDetails())
@@ -307,6 +310,7 @@ public class LocationInfo implements IsSerializable, Serializable, Comparable<Lo
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
+        @Override
 	public String toString() {
 		return "LocationInfo[name=" + m_name
 			+ ",area=" + m_area

@@ -120,6 +120,7 @@ import org.opennms.netmgt.config.poller.Outage;
                     throw new IllegalStateException(ex.toString());
                 }
             }
+            @Override
             public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
                 try {
                     Outage target = (Outage) object;
@@ -168,6 +169,7 @@ import org.opennms.netmgt.config.poller.Outage;
                     throw new IllegalStateException(ex.toString());
                 }
             }
+            @Override
             public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
                 try {
                     Outage target = (Outage) object;
@@ -292,6 +294,7 @@ import org.opennms.netmgt.config.poller.Outage;
      * of a global
      * element or element with anonymous type definition.
      */
+    @Override
     public boolean isElementDefinition(
     ) {
         return _elementDefinition;

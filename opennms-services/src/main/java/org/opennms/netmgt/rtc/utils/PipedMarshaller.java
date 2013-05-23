@@ -65,6 +65,7 @@ public class PipedMarshaller {
             m_in = new PipedReader(m_out);
         }
 
+        @Override
         public void run() {
             try {
                 Marshaller.marshal(m_obj, m_out);

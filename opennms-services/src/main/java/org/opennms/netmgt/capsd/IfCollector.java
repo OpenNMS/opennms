@@ -325,6 +325,7 @@ public final class IfCollector implements Runnable {
      * The main collection routine of the class. This method is used to poll the
      * address, and any additional interfaces discovered via SNMP.
      */
+    @Override
     public void run() {
         if (log().isDebugEnabled()) {
             log().debug("IfCollector.run: run method invoked to collect information for address " + InetAddressUtils.str(m_target));

@@ -79,6 +79,7 @@ public class MonitoredServiceDaoTest implements InitializingBean {
 
 	@Test
 	@Transactional
+	@JUnitTemporaryDatabase
 	public void testLazy() {
     	
     	List<OnmsMonitoredService> allSvcs = m_monitoredServiceDao.findAll();
@@ -95,6 +96,7 @@ public class MonitoredServiceDaoTest implements InitializingBean {
     
     @Test
     @Transactional
+    @JUnitTemporaryDatabase
     public void testGetByCompositeId() {
     	OnmsMonitoredService monSvc = m_monitoredServiceDao.get(m_databasePopulator.getNode1().getId(), addr("192.168.1.1"), "SNMP");
     	assertNotNull(monSvc);

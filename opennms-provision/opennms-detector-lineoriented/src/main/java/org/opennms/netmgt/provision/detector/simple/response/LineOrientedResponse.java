@@ -126,6 +126,7 @@ public class LineOrientedResponse {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return String.format("Response: %s", getResponse());
     }
