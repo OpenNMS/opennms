@@ -745,10 +745,21 @@ if (isPurgeExport)
     var actionStatus = "<%=actionStatus%>";
     var seperateStatus = actionStatus.split(",");
     var regularNoun = (parseInt(seperateStatus[0]) == 1)?'event ':'events ';
-    var alarmRegularNoun = (parseInt(seperateStatus[0]) == 1)?'alarm is ':'alarms are';
+    var eventSelected = parseInt(seperateStatus[2]);
+   
     var queryStatus = seperateStatus[1];
     if(queryStatus == "<%=EventPurgeController.SUCCESS_ACTION%>"){
-	alert("The "+regularNoun+" that does not have active " + alarmRegularNoun +" successfully deleted from the DB.");
+    var activeAlarm = eventSelected - parseInt(seperateStatus[0]) ;
+    var eventsNotDeleted = '';
+    var alarmRegularNoun = parseInt(activeAlarm) == 1 ? 'event':'events';
+    
+	var popupMessage = " The events that doesn't have correlated alarms were deleted from the database. \n";
+	var eventsDeleted =" Events deleted : " +  seperateStatus[0] ;
+	if(parseInt(activeAlarm) > 1) {
+		var activeAlarmCount = parseInt(eventSelected) - parseInt(seperateStatus[0]);
+		eventsNotDeleted = "\n Events not deleted : "+activeAlarmCount;
+	}
+    alert(popupMessage+ eventsDeleted + eventsNotDeleted);
     }else if(queryStatus == "<%=EventPurgeController.FAILURE_ACTION%>"){
 	alert("The "+regularNoun+" not able to delete from the DB");
     }

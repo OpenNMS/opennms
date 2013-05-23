@@ -103,5 +103,5 @@ public interface WebEventRepository {
      */
     public abstract void unacknowledgeAll();
     
-    public abstract void purgeEvents(List<Integer> eventIds);
+    public abstract int purgeEvents(List<Integer> eventIds);
 }

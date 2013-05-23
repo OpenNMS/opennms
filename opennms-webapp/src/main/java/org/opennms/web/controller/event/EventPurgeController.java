@@ -205,10 +205,11 @@ public class EventPurgeController extends AbstractController implements Initiali
 		}
         
         // handle the purge action
+        int eventsDeleted =0;
         if (action.equals(PURGE_ACTION) || action.equals(PURGEALL_ACTION) ) {
         	try{
-        		m_webEventRepository.purgeEvents(eventIds);
-        		request.getSession().setAttribute("actionStatus", eventList.size()+","+SUCCESS_ACTION);
+        		eventsDeleted = m_webEventRepository.purgeEvents(eventIds);
+        		request.getSession().setAttribute("actionStatus", eventsDeleted +","+SUCCESS_ACTION+","+eventList.size());
         	} catch(final Exception e){
         		request.getSession().setAttribute("actionStatus", eventList.size()+","+FAILURE_ACTION);
         	    logger.error("Unable to do this action for this event Id's.", eventIds);

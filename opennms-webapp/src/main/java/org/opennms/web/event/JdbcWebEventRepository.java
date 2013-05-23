@@ -301,7 +301,7 @@ public class JdbcWebEventRepository implements WebEventRepository, InitializingB
     }
 
 	@Override
-	public void purgeEvents(List<Integer> eventIds) {
+	public int purgeEvents(List<Integer> eventIds) {
 		throw new UnsupportedOperationException("Not supported yet. JdbcWebAlarmRepositony is deprecated.");		
 	}
 
