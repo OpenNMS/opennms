@@ -28,10 +28,14 @@
 
 package org.opennms.features.topology.plugins.browsers;
 
+import java.lang.reflect.Method;
 import java.util.Comparator;
 
 import org.opennms.core.utils.InetAddressComparator;
 import org.opennms.netmgt.model.OnmsNode;
+import org.slf4j.LoggerFactory;
+
+import com.vaadin.ui.Table;
 
 @SuppressWarnings("serial")
 public class NodeTable extends SelectionAwareTable {
@@ -99,26 +103,46 @@ public class NodeTable extends SelectionAwareTable {
 				if ("primaryInterface".equals(column)) {
 					if (nodeContainer.additionalSorting.size() == 0) {
 						nodeContainer.additionalSorting.add(new PrimaryInterfaceAddressComparator());
+						setTableSortContainerPropertyId(NodeTable.this, "primaryInterface", false);
 					} else if (nodeContainer.additionalSorting.size() == 1) {
 						Comparator<OnmsNode> comparator = nodeContainer.additionalSorting.get(0);
 						if (comparator instanceof PrimaryInterfaceAddressComparator) {
 							nodeContainer.additionalSorting.set(0, new ReverseComparator<OnmsNode>(comparator));
+							setTableSortContainerPropertyId(NodeTable.this, "primaryInterface", true);
 						} else {
 							nodeContainer.additionalSorting.set(0, new PrimaryInterfaceAddressComparator());
+							setTableSortContainerPropertyId(NodeTable.this, "primaryInterface", false);
 						}
 					} else {
 						// Unexpected number of comparators in the list...
 						nodeContainer.additionalSorting.clear();
 						nodeContainer.additionalSorting.add(new PrimaryInterfaceAddressComparator());
+						setTableSortContainerPropertyId(NodeTable.this, "primaryInterface", false);
 					}
-					refreshRowCache();
 				} else {
 					nodeContainer.additionalSorting.clear();
-					// We need to refresh the rows here too because the sorting for the other columns seems to be applied
-					// before this listener is fired.
-					refreshRowCache();
 				}
+
+				// We need to refresh the rows even if we are clearing the additionalSorting because 
+				// the sorting for the other columns seems to be applied before this listener is fired.
+				refreshRowCache();
 			}
 		});
+	}
+
+	private static void setTableSortContainerPropertyId(Table table, String propertyId, boolean ascending) {
+		// ARGH This method should probably be protected but it is private... so I have 
+		// to invoke it via reflection. :/
+		try {
+			Method method = Table.class.getDeclaredMethod("setSortContainerPropertyId", Object.class, boolean.class);
+			method.setAccessible(true);
+			method.invoke(table, "primaryInterface", false);
+
+			method = Table.class.getDeclaredMethod("setSortAscending", boolean.class, boolean.class);
+			method.setAccessible(true);
+			method.invoke(table, ascending, false);
+		} catch (Throwable e) {
+			LoggerFactory.getLogger(table.getClass()).error("Reflection call failed inside NodeTable.setTableSortContainerPropertyId()", e);
+		}
 	}
 }
