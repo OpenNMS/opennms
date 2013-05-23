@@ -39,6 +39,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.hibernate.criterion.Restrictions;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.utils.BeanUtils;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.AcknowledgmentDao;
 import org.opennms.netmgt.dao.AlarmDao;
@@ -330,45 +331,69 @@ public class AlarmRepositoryHibernate implements AlarmRepository, InitializingBe
     
     @Override
     @Transactional
-	public void purgeAlarms(List<Integer> alarmIds,HashMap<Integer, List<Integer>> eventIdsForAlarms ,HashMap<Integer, List<Integer>> ackRefIdsForAlarms) {
-		
-		List<String> deleteSuccessStatus = new ArrayList<String>();
-		List<String> deleteFailStatus = new ArrayList<String>();
-	
-		log().debug("Alarm Id's received : "+alarmIds);
-		for(Integer alarmId : alarmIds){
-			//Delete an alarm by Id
-			if(m_alarmDao.deleteAlarmById(alarmId)>0){
-				
-				//Delete the events by Id
-				for(Integer eventId : eventIdsForAlarms.get(alarmId)){
-					if(m_eventDao.deleteEventById(eventId)>0){
-						deleteSuccessStatus.add(String.valueOf(eventId));
-					}else{
-						log().warn("An Event id "+eventId+" does not exist in DB");
+    public List<String> getFilterStringsForEvent(OnmsAlarm alarm){
+    	
+    	String filterToken[] = {"node=","interface=","exactUei=","ifindex="};
+    	List<String> filtersString = new ArrayList<String>();
+    	
+    	if(alarm.getNodeId()!= null){
+    		filtersString.add(filterToken[0].concat(String.valueOf(alarm.getNodeId())));
+    	}
+    	if(alarm.getIpAddr()!= null){
+    		filtersString.add(filterToken[1].concat(InetAddressUtils.str(alarm.getIpAddr())));
+    	}
+    	if(alarm.getUei()!= null){
+    		filtersString.add(filterToken[2].concat(alarm.getUei()));
+    	}
+    	if(alarm.getIfIndex()!= null){
+    		filtersString.add(filterToken[3].concat(String.valueOf(alarm.getIfIndex())));
+    	}
+    	
+    	return filtersString;
+    }
+    
+    @Override
+    @Transactional
+	public void purgeAlarms(List<Integer> alarmIds) {
+    	for(Integer alarmId : alarmIds){
+    		//Delete an alarm by Id
+    		try{
+				if(m_alarmDao.deleteAlarmById(alarmId)>0){
+					log().warn("An Alarm ["+alarmId+"] is successfully deleted from the DB");
+					
+					//Delete the events by alarmId
+					try{
+						if(m_eventDao.deleteEventByAlarmId(alarmId)>0){
+							log().warn("The event for the alarm ["+alarmId+"] is successfully deleted from the DB");
+						} else {
+							log().warn("The event for alarm ["+alarmId+"] does not exist in the DB");
+						}
+					} catch(Exception ex){
+						ex.printStackTrace();
+						log().error("Unable to delete the event for the alarm ["+alarmId+"] from then DB");
 					}
-				}
-				log().debug("The Event Id's "+deleteSuccessStatus+" are successfully deleted from the DB for alarm id "+alarmId);
-				
-				//Delete the acknowledgments by refId
-				deleteSuccessStatus.clear();
-				for(Integer refId : ackRefIdsForAlarms.get(alarmId)){
-					if(m_ackDao.deleteAcknowledgmentByRefId((int)refId)>0){
-						deleteSuccessStatus.add(String.valueOf(refId));
-					}else{
-						deleteFailStatus.add(String.valueOf(refId));
+					
+					//Delete the acknowledgments by refId
+					try{
+						if(m_ackDao.deleteAcknowledgmentByRefId((int)alarmId)>0){
+							log().warn("The acknowledgment for the alarm ["+alarmId+"] is successfully deleted from the DB");
+						} else {
+							log().warn("The acknowledgment for the alarm ["+alarmId+"] does not exist in the DB");
+						}
+					} catch(Exception ex) {
+						ex.printStackTrace();
+						log().error("Unable to delete the acknowledgment for the alarm ["+alarmId+"] from then DB");
 					}
+					
+				} else {
+					log().warn("An alarm ["+alarmId+"] does not exist in the DB");
 				}
-				if(deleteSuccessStatus.size()>0)
-				log().debug("The Acknowledgment Id's "+deleteSuccessStatus+" are successfully deleted from the DB for alarm id "+alarmId);
-				if(deleteFailStatus.size()>0)
-				log().debug("The Acknowledgment Id's "+deleteFailStatus+" does not exist in the DB for alarm id "+alarmId);
-				
-			}else{
-				log().warn("An Alarm id "+alarmId+" does not exist in db");
-			}
-		}
-	}
+    		} catch(Exception ex){
+    			ex.printStackTrace();
+    			log().error("Unable to delete an alarm ["+alarmId+"] from then DB");
+    		}
+    	}
+    }
     
     private static ThreadCategory log() {
 		return ThreadCategory.getInstance(AlarmRepositoryHibernate.class);

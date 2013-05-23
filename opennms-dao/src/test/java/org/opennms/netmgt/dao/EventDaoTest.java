@@ -115,4 +115,25 @@ public class EventDaoTest implements InitializingBean {
         assertEquals(service.getNodeId(), newEvent.getNode().getId());
         assertEquals(event.getIpAddr(), newEvent.getIpAddr());
     }
+	
+	@Test
+    @Transactional
+    public void testDeleteEventById() {
+		
+		OnmsEvent event = new OnmsEvent();
+		event.setEventUei("uei://org/opennms/test/deleteEventTest");
+		event.setEventTime(new Date());
+		event.setEventSource("deleteEventTest");
+		event.setDistPoller(m_distPollerDao.load("localhost"));
+		event.setEventCreateTime(new Date());
+		event.setEventSeverity(new Integer(7));
+		event.setEventLog("Y");
+        event.setEventDisplay("Y");
+	    m_eventDao.save(event);
+	    
+	    System.out.println("E0 ID : "+event.getId());
+	    
+    	int deleteEventStatus = m_eventDao.deleteEventById(event.getId());
+    	assertEquals(1, deleteEventStatus);
+    }
 }

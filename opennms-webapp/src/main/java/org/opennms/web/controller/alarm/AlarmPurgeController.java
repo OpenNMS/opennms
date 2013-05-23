@@ -29,22 +29,18 @@
 package org.opennms.web.controller.alarm;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.dao.AlarmRepository;
 import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.web.alarm.AcknowledgeType;
 import org.opennms.web.alarm.AlarmUtil;
 import org.opennms.web.alarm.filter.AlarmCriteria;
-import org.opennms.web.event.Event;
-import org.opennms.web.event.EventUtil;
 import org.opennms.web.event.WebEventRepository;
-import org.opennms.web.event.filter.EventCriteria;
 import org.opennms.web.filter.Filter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,13 +74,8 @@ public class AlarmPurgeController extends AbstractController implements Initiali
 	/**
 	 * OpenNMS alarm default acknowledge type
 	 */
-	private org.opennms.web.alarm.AcknowledgeType m_defaultAlarmAcknowledgeType = org.opennms.web.alarm.AcknowledgeType.UNACKNOWLEDGED;;
+	private AcknowledgeType m_defaultAlarmAcknowledgeType = AcknowledgeType.UNACKNOWLEDGED;
 	
-	/**
-	 * OpenNMS event default acknowledge type
-	 */
-	private org.opennms.web.event.AcknowledgeType m_defaultEventAcknowledgeType = org.opennms.web.event.AcknowledgeType.UNACKNOWLEDGED;;
-
     /**
 	 * OpenNMS alarm repository
 	 */
@@ -143,41 +134,6 @@ public class AlarmPurgeController extends AbstractController implements Initiali
     }
 
     /**
-	 * <p>
-	 * getFiltersForEvent
-	 * </p>
-	 * 
-	 * @return list of {@link org.opennms.web.filter.Filter} object.
-	 */
-    public List<Filter> getFiltersForEvent(OnmsAlarm alarm, String nodeid, String exactuei, String ipaddress){
-    	
-    	String filtersString[] = new String[3];
-    	int filterCount = 0;
-    	
-    	if(alarm.getNodeId()!= null){
-    		filtersString[filterCount++] = nodeid.concat(String.valueOf(alarm.getNodeId()));
-    	}
-    	if(alarm.getIpAddr()!= null){
-    		filtersString[filterCount++] = ipaddress.concat(InetAddressUtils.str(alarm.getIpAddr()));
-    	}
-    	if(alarm.getUei()!= null){
-    		filtersString[filterCount++] = exactuei.concat(alarm.getUei());
-    	}
-    	
-    	List<Filter> filterList = new ArrayList<Filter>();
-    	for (String filterString : filtersString) {
-    		try{
-    			if(filterString != null){
-    				filterList.add(EventUtil.getFilter(filterString, getServletContext()));
-    			}
-    		} catch(Exception e){
-    			logger.error("Could not retrieve filter name for filterString='{}'", filterString);
-    		}
-        }
-    	return filterList;
-    }
-
-    /**
      * {@inheritDoc}
      *
      * Purge or purge all action of the selected alarms specified in the POST and then redirect 
@@ -191,38 +147,24 @@ public class AlarmPurgeController extends AbstractController implements Initiali
     	String[] alarmIdStrings = request.getParameterValues("alarm");
         String action = request.getParameter("actionCode");
         
-        List<OnmsAlarm> alarmList = new ArrayList<OnmsAlarm>();
-        if (alarmIdStrings != null) {
-        	
-        	// Convert the alarm id strings to int's
-            int[] alarmIds = new int[alarmIdStrings.length];
-            for (int i = 0; i < alarmIds.length; i++) {
+        List<Integer> alarmIds = new ArrayList<Integer>();
+        if (alarmIdStrings != null && action.equals(PURGE_ACTION)) {
+            for (int i = 0; i < alarmIdStrings.length; i++) {
             	try{
-            		alarmIds[i] = WebSecurityUtils.safeParseInt(alarmIdStrings[i]);
+            		alarmIds.add(WebSecurityUtils.safeParseInt(alarmIdStrings[i]));
             	} catch (Exception e) {
     				logger.error("Could not parse alarm ID '{}' to integer.",alarmIdStrings[i]);
     			}
             }
-            
-            // Get alarm by it's id
-    		for (int alarmId : alarmIds) {
-    			try {
-        			alarmList.add(m_webAlarmRepository.getAlarm(alarmId));
-    			} catch (Exception e) {
-    				logger.error("Could not retrieve alarm from webAlarmRepository for ID='{}'", alarmId);
-    			}
-    		}
         }
         
         // Handle the acknowledge type parameter
         String ackTypeString = request.getParameter("acktype");
-        
-        org.opennms.web.alarm.AcknowledgeType alarmAckType = m_defaultAlarmAcknowledgeType;
-        org.opennms.web.event.AcknowledgeType eventAckType = m_defaultEventAcknowledgeType;
+        AcknowledgeType alarmAckType = m_defaultAlarmAcknowledgeType;
         
         if (ackTypeString != null) {
         	try{
-		        alarmAckType = org.opennms.web.alarm.AcknowledgeType.getAcknowledgeType(ackTypeString);
+		        alarmAckType = AcknowledgeType.getAcknowledgeType(ackTypeString);
 	        } catch (Exception e) {
 				logger.error("Could not retrieve acknowledge type for this '{}'.",ackTypeString);
 			}
@@ -231,6 +173,7 @@ public class AlarmPurgeController extends AbstractController implements Initiali
         // Handle the filter parameter
         List<Filter> filterList = new ArrayList<Filter>();
         String[] filterStrings = request.getParameterValues("filter");
+        
         if (action.equals(PURGEALL_ACTION)) {
         	if(filterStrings != null){
 	            for (int i = 0; i < filterStrings.length; i++) {
@@ -244,65 +187,25 @@ public class AlarmPurgeController extends AbstractController implements Initiali
         
         //Get the alarms by alarm criteria
         Filter[] alarmFilters = filterList.toArray(new Filter[0]);
+        
         if(action.equals(PURGEALL_ACTION)){
-        	
+        	alarmIds.clear();
         	AlarmCriteria alarmQueryCriteria = new AlarmCriteria(alarmAckType,alarmFilters);
 	        OnmsAlarm[] alarms = m_webAlarmRepository.getMatchingAlarms(AlarmUtil.getOnmsCriteria(alarmQueryCriteria));
-	        
 	        for(OnmsAlarm alarm : alarms){
-	        	alarmList.add(alarm);
+	        	alarmIds.add(alarm.getId());
 	        }
         }
-        
-        // Handle the default event key filters parameter
-        String nodeidKey = request.getParameter("nodeid");
-        String exactueiKey = request.getParameter("exactuei");
-        String ipaddressKey = request.getParameter("ipaddress");
-        
-        HashMap<Integer, List<Integer>> eventIdsForAlarms = new HashMap<Integer, List<Integer>>();
-        HashMap<Integer, List<Integer>> ackRefIdsForAlarms = new HashMap<Integer, List<Integer>>();
-        List<Integer> alarmIds = new ArrayList<Integer>();
-        
-        for(OnmsAlarm alarm : alarmList){
-        	
-	        //Get default event filters
-        	filterList.clear();
-	        filterList = getFiltersForEvent(alarm,nodeidKey,exactueiKey,ipaddressKey);
-
-	    	Filter[] filters = filterList.toArray(new Filter[0]);
-	        List<Integer> eventIdsList = new ArrayList<Integer>();
-	        List<Integer> ackRefIdsList = new ArrayList<Integer>();
-	        
-	        if(alarm != null){
-	        	
-	        	//Get the events by event criteria
-	        	Event[] events = null;
-	        	EventCriteria eventCriteria = new EventCriteria(eventAckType, filters);
-	        	try{
-	        		events = m_webEventRepository.getMatchingEvents(eventCriteria);
-	        	} catch(Exception e){
-	        		logger.error("Could not retrieve events for this EventCriteria ='{}'", eventCriteria);
-	        	}
-		        
-		        //Get the event Id's as well as acknowledge refId's
-	        	for(Event event : events){
-	        		eventIdsList.add(event.getId());
-	        		if(event.getAlarmId()!=null && event.getAlarmId()>0 && (!ackRefIdsList.contains(event.getAlarmId())))
-	        			ackRefIdsList.add(event.getAlarmId());
-	    		}
-	        }
-	        alarmIds.add(alarm.getId());
-	        eventIdsForAlarms.put(alarm.getId(), eventIdsList);
-	        ackRefIdsForAlarms.put(alarm.getId(), ackRefIdsList);
-		}
         
         // Handle the purge action
         if (action.equals(PURGE_ACTION) || action.equals(PURGEALL_ACTION)) {
         	try{
-        		m_webAlarmRepository.purgeAlarms(alarmIds,eventIdsForAlarms,ackRefIdsForAlarms);
-        		request.getSession().setAttribute("actionStatus", alarmList.size()+","+SUCCESS_ACTION);
-        	} catch(final Exception e){
-        		request.getSession().setAttribute("actionStatus", alarmList.size()+","+FAILURE_ACTION);
+        		m_webAlarmRepository.purgeAlarms(alarmIds);
+        		request.getSession().setAttribute("actionStatus", alarmIds.size()+","+SUCCESS_ACTION);
+        		logger.info("The Purge action is successfully completed for the alarm Id's "+alarmIds+" ");
+        	} catch(final Exception ex){
+        		ex.printStackTrace();
+        		request.getSession().setAttribute("actionStatus", alarmIds.size()+","+FAILURE_ACTION);
         	    logger.error("Unable to do purge action for this alarm Id's.", alarmIds);
         	}
         } else {

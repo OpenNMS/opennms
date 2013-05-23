@@ -174,4 +174,20 @@ public class AcknowledgmentDaoTest implements InitializingBean {
         assertEquals(ack2.getAckUser(), alarm2.getAlarmAckUser());
         assertEquals(ack2.getAckTime(), alarm2.getAlarmAckTime());
     }
+	
+	@Test
+    @Transactional
+    public void testDeleteAcknowledgmentByRefId() {
+		
+		OnmsAcknowledgment ack = new OnmsAcknowledgment();
+        ack.setAckTime(new Date());
+        ack.setAckUser("test-admin");
+        ack.setAckType(AckType.UNSPECIFIED);
+        ack.setAckAction(AckAction.UNSPECIFIED);
+        ack.setRefId(7);
+        m_acknowledgmentDao.save(ack);
+        
+    	int deleteAckStatus = m_acknowledgmentDao.deleteAcknowledgmentByRefId(ack.getRefId());
+    	assertEquals(1, deleteAckStatus);
+    }
 }

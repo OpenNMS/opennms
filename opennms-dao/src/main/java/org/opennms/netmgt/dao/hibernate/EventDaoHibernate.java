@@ -62,4 +62,16 @@ public class EventDaoHibernate extends AbstractDaoHibernate<OnmsEvent, Integer>
         }
         return 0;
     }
+    
+    /** {@inheritDoc} */
+    public int deleteEventByAlarmId(Integer eventId) throws DataAccessException {
+        try {
+        	String hql = "delete from OnmsEvent where alarmid = ?";
+            Object[] values = {eventId};
+            return bulkDelete(hql, values);
+        } catch (final Exception e) {
+            LogUtils.warnf(this, e, "Unable to delete an event with Id %d", eventId);
+        }
+        return 0;
+    }
 }

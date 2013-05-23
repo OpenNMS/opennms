@@ -260,41 +260,6 @@ public class AlarmDetailController extends MultiActionController {
 	}
 
 	/**
-	 * <p>
-	 * getFiltersForEvent
-	 * </p>
-	 * 
-	 * @return list of {@link org.opennms.web.filter.Filter} object.
-	 */
-    public List<Filter> getFiltersForEvent(OnmsAlarm alarm, String nodeid, String exactuei, String ipaddress){
-    	
-    	String filtersString[] = new String[3];
-    	int filterCount = 0;
-    	
-    	if(alarm.getNodeId()!= null){
-    		filtersString[filterCount++] = nodeid.concat(String.valueOf(alarm.getNodeId()));
-    	}
-    	if(alarm.getIpAddr()!= null){
-    		filtersString[filterCount++] = ipaddress.concat(InetAddressUtils.str(alarm.getIpAddr()));
-    	}
-    	if(alarm.getUei()!= null){
-    		filtersString[filterCount++] = exactuei.concat(alarm.getUei());
-    	}
-    	
-    	List<Filter> filterList = new ArrayList<Filter>();;
-    	for (String filterString : filtersString) {
-    		try{
-    			if(filterString != null){
-    				filterList.add(EventUtil.getFilter(filterString, getServletContext()));
-    			}
-    		} catch(Exception e){
-    			logger.error("Could not retrieve filter name for filterString='{}'", filterString);
-    		}
-        }
-    	return filterList;
-    }
-    
-	/**
 	 * {@inheritDoc} Display alarm detail page
 	 */
 	public ModelAndView detail(HttpServletRequest httpServletRequest,HttpServletResponse httpServletResponse) throws Exception {
@@ -363,25 +328,19 @@ public class AlarmDetailController extends MultiActionController {
 			}
 		}
 
-		// handle the default event key filters parameter
-        String nodeidKey = httpServletRequest.getParameter("nodeid");
-        String exactueiKey = httpServletRequest.getParameter("exactuei");
-        String ipaddressKey = httpServletRequest.getParameter("ipaddress");
-        
 		// handle the filter parameters
 		List<Filter> filterList = new ArrayList<Filter>();
-		String[] filterStrings = httpServletRequest.getParameterValues("filter");
-		if (filterStrings != null) {
-			for (String filterString : filterStrings) {
-				Filter filter = EventUtil.getFilter(filterString,getServletContext());
-				if (filter != null) {
-					filterList.add(filter);
-				}
-			}
-		} else {
-			if (m_alarm != null) {
-				filterList = getFiltersForEvent(m_alarm,nodeidKey,exactueiKey,ipaddressKey);
-			}
+		if (m_alarm != null) {
+        	for (String filterString : m_alarmRepository.getFilterStringsForEvent(m_alarm)) {
+        		try{
+        			Filter filter= EventUtil.getFilter(filterString, getServletContext());
+        			if(filter != null){
+        				filterList.add(filter);
+        			}
+        		} catch(Exception e){
+        			logger.error("Could not retrieve filter name for filterString='{}'", filterString);
+        		}
+            }
 		}
 
 		// handle the display parameter

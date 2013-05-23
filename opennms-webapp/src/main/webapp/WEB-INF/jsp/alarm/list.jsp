@@ -282,17 +282,6 @@
 	// Progress bar for purge and export action
 	progressBar(100, $('#progressBar'));
 	
-	// Get the export action status
-	var timerId = 0;
-	function exportStatus(){
-		var actionStatus = " ";
-		actionStatus = "<%=AlarmReportController.ACTION_STATUS%>";
-		if(actionStatus == "Y"){
-			clearInterval(timerId);
-			hideProgressBar();
-			actionStatus = " ";
-		}
-	}
 	</script>
   
       <!-- menu -->
@@ -467,7 +456,7 @@
           <td class="divider bright" valign="middle" rowspan="1">
 	  
 	   <!-- Get the events details for this Alarm Id -->
-          <a style="vertical-align:middle" href="<%=this.makeLink(alarms[i])%>"><%=alarms[i].getId()%></a>
+          <a style="vertical-align:middle" href="alarm/detail.htm?id=<%=alarms[i].getId()%>"><%=alarms[i].getId()%></a>
 	   
 	<c:if test="<%= alarms[i].getStickyMemo() != null && alarms[i].getStickyMemo().getId() != null%>">
                 <img style="vertical-align:middle" src="images/AlarmMemos/StickyMemo.png" width="20" height="20" 
@@ -782,21 +771,6 @@
         }
 
         return( labels );
-    }
-    
-     public String makeLink(OnmsAlarm alarm) {
-		StringBuffer buffer = new StringBuffer( "alarm/detail.htm" );
-		buffer.append( "?id="+alarm.getId());
-		if(alarm.getNodeId() != null){
-			buffer.append( "&amp;filter=node%3D").append(alarm.getNodeId());
-		}
-		if (alarm.getIpAddr() != null){
-			buffer.append( "&amp;filter=interface%3D").append(InetAddressUtils.str(alarm.getIpAddr()));
-		} 
-		if(alarm.getUei() != null) {
-			buffer.append( "&amp;filter=exactUei%3D").append(alarm.getUei());
-		}
-		return(buffer.toString());
     }
 %>
 <script type="text/javascript">

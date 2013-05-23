@@ -52,8 +52,12 @@ import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
-import org.opennms.netmgt.model.alarm.AlarmSummary;
+import org.opennms.netmgt.model.AckAction;
+import org.opennms.netmgt.model.AckType;
+import org.opennms.netmgt.model.OnmsAcknowledgment;
+import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.test.JUnitConfigurationEnvironment;
+import org.opennms.netmgt.model.alarm.AlarmSummary;
 import org.opennms.test.ThrowableAnticipator;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,6 +89,9 @@ public class AlarmDaoTest implements InitializingBean {
 
 	@Autowired
 	private AlarmDao m_alarmDao;
+	
+	@Autowired
+    private AcknowledgmentDao m_acknowledgmentDao;
 
 	@Autowired
 	private DatabasePopulator m_databasePopulator;
@@ -298,15 +305,60 @@ public class AlarmDaoTest implements InitializingBean {
         }
 
         @Test
+    	@Transactional
+    	public void testSaveForAlarmPurge() {
+        	
+        	OnmsNode node = m_nodeDao.findAll().iterator().next();
+        	OnmsIpInterface iface = (OnmsIpInterface)node.getIpInterfaces().iterator().next();
+        	
+    	    OnmsEvent event = new OnmsEvent();
+    	    event.setNode(node);
+    	    event.setIpAddr(iface.getIpAddress());
+    	    event.setEventUei("uei://org/opennms/test/deleteAlarmPurgeTest");
+    		event.setEventTime(new Date());
+    		event.setEventSource("deleteAlarmPurgeTest");
+    		event.setDistPoller(m_distPollerDao.load("localhost"));
+    		event.setEventCreateTime(new Date());
+    		event.setEventSeverity(new Integer(7));
+    		event.setEventLog("Y");
+            event.setEventDisplay("Y");
+    	    
+    	    OnmsAlarm alarm = new OnmsAlarm();
+    	    alarm.setNode(node);
+    	    alarm.setIpAddr(event.getIpAddr());
+    	    alarm.setUei(event.getEventUei());
+    	    alarm.setDistPoller(m_distPollerDao.load("localhost"));
+    	    alarm.setCounter(1);
+    	    alarm.setSeverityId(event.getEventSeverity());
+    	    m_alarmDao.save(alarm);
+    	    
+    	    event.setAlarm(alarm);
+    	    m_eventDao.save(event);
+    	   
+    	    
+    	    OnmsAcknowledgment ack = new OnmsAcknowledgment();
+            ack.setAckTime(new Date());
+            ack.setAckUser("test-admin");
+            ack.setAckType(AckType.UNSPECIFIED);
+            ack.setAckAction(AckAction.UNSPECIFIED);
+            ack.setRefId(alarm.getId());
+            m_acknowledgmentDao.save(ack);
+    	}
+    	
+        @Test
         @Transactional
-        public void testSortOnNodeLabel() {
-            Criteria criteria = new Criteria(OnmsAlarm.class);
-            criteria.setAliases(Arrays.asList(new Alias[] {
-                    new Alias("node", "node", JoinType.LEFT_JOIN)
-            }));
-            criteria.setOrders(Arrays.asList(new Order[] {
-                    Order.asc("node.label")
-            }));
-            m_alarmDao.findMatching(criteria);
+        public void testDeleteAlarmById() {
+        	
+        	OnmsAlarm alarm = new OnmsAlarm();
+            alarm.setUei("uei://org/opennms/test/deleteAlarmTest");
+            alarm.setDistPoller(m_distPollerDao.load("localhost"));
+            alarm.setCounter(1);
+            alarm.setSeverityId(new Integer(7));
+            m_alarmDao.save(alarm);
+            
+           
+            
+        	int deleteAlarmStatus = m_alarmDao.deleteAlarmById(alarm.getId());
+        	Assert.assertEquals(1, deleteAlarmStatus);
         }
 }

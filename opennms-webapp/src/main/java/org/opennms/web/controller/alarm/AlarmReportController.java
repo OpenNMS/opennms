@@ -73,8 +73,8 @@ public class AlarmReportController extends AbstractController implements Initial
     /** Constant <code>EXPORTALL_ACTION="2"</code> */
     public final static String EXPORTALL_ACTION = "2";
     
-    /** Constant <code>ACTION_STATUS="N"</code> */
-    public static String ACTION_STATUS = "N";
+    /** To hold report file name <code>FILE_NAME="EMPTY"</code> */
+    public static String FILE_NAME = "EMPTY";
     
 	/**
 	 * OpenNMS alarm default acknowledge type
@@ -148,41 +148,6 @@ public class AlarmReportController extends AbstractController implements Initial
         Assert.notNull(m_webAlarmRepository, "webAlarmRepository must be set");
         Assert.notNull(m_webEventRepository, "webEventRepository must be set");
         Assert.notNull(m_reportWrapperService, "webAlarmRepository must be set");
-    }
-
-    /**
-	 * <p>
-	 * getFiltersForEvent
-	 * </p>
-	 * 
-	 * @return list of {@link org.opennms.web.filter.Filter} object.
-	 */
-    public List<Filter> getFiltersForEvent(OnmsAlarm alarm, String nodeid, String exactuei, String ipaddress){
-    	
-    	String filtersString[] = new String[3];
-    	int filterCount = 0;
-    	
-    	if(alarm.getNodeId()!= null){
-    		filtersString[filterCount++] = nodeid.concat(String.valueOf(alarm.getNodeId()));
-    	}
-    	if(alarm.getIpAddr()!= null){
-    		filtersString[filterCount++] = ipaddress.concat(InetAddressUtils.str(alarm.getIpAddr()));
-    	}
-    	if(alarm.getUei()!= null){
-    		filtersString[filterCount++] = exactuei.concat(alarm.getUei());
-    	}
-    	
-    	List<Filter> filterList = new ArrayList<Filter>();;
-    	for (String filterString : filtersString) {
-    		try{
-    			if(filterString != null){
-    				filterList.add(EventUtil.getFilter(filterString, getServletContext()));
-    			}
-    		} catch(Exception e){
-    			logger.error("Could not retrieve filter name for filterString='{}'", filterString);
-    		}
-        }
-    	return filterList;
     }
 
     /**
@@ -288,15 +253,13 @@ public class AlarmReportController extends AbstractController implements Initial
         } else{
         	logger.error("Unknown file format : " + requestFormat);
         }
-    	response.setHeader("Content-disposition", "inline; filename=alarm_report"+new SimpleDateFormat("_MMddyyyy_HHmmss").format(new Date())+"."+requestFormat.toLowerCase());
+    	
+    	FILE_NAME =  "alarm_report"+new SimpleDateFormat("_MMddyyyy_HHmmss").format(new Date())+"."+requestFormat.toLowerCase();
+    			
+    	response.setHeader("Content-disposition", "inline; filename="+FILE_NAME);
     	response.setHeader("Pragma", "public");
     	response.setHeader("Cache-Control", "cache");
     	response.setHeader("Cache-Control", "must-revalidate");
-        
-        // Handle the default event key filters parameter
-        String nodeidKey = request.getParameter("nodeid");
-        String exactueiKey = request.getParameter("exactuei");
-        String ipaddressKey = request.getParameter("ipaddress");
         
         HashMap<Integer, List<Integer>> eventIdsForAlarms = new HashMap<Integer, List<Integer>>();
         List<Integer> alarmIds = new ArrayList<Integer>();
@@ -305,8 +268,17 @@ public class AlarmReportController extends AbstractController implements Initial
         	
 	        //Get the default event filters
         	filterList.clear();
-	        filterList = getFiltersForEvent(alarm,nodeidKey,exactueiKey,ipaddressKey);
-
+        	for (String filterString : m_webAlarmRepository.getFilterStringsForEvent(alarm)) {
+        		try{
+        			Filter filter= EventUtil.getFilter(filterString, getServletContext());
+        			if(filter != null){
+        				filterList.add(filter);
+        			}
+        		} catch(Exception e){
+        			logger.error("Could not retrieve filter name for filterString='{}'", filterString);
+        		}
+            }
+        	
 	    	Filter[] filters = filterList.toArray(new Filter[0]);
 	        List<Integer> eventIdsList = new ArrayList<Integer>();
 	        

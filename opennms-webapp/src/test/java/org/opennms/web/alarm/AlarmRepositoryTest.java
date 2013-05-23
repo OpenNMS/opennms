@@ -32,7 +32,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import org.junit.Assert;
@@ -42,12 +44,22 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.BeanUtils;
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.dao.AcknowledgmentDao;
 import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.AlarmRepository;
+import org.opennms.netmgt.dao.DistPollerDao;
+import org.opennms.netmgt.dao.EventDao;
+import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.model.AckAction;
+import org.opennms.netmgt.model.AckType;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCriteria;
+import org.opennms.netmgt.model.OnmsEvent;
+import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.web.alarm.filter.AcknowledgedByFilter;
@@ -55,9 +67,19 @@ import org.opennms.web.alarm.filter.AlarmCriteria;
 import org.opennms.web.alarm.filter.AlarmIdFilter;
 import org.opennms.web.alarm.filter.NodeNameLikeFilter;
 import org.opennms.web.alarm.filter.SeverityFilter;
+import org.opennms.web.event.Event;
+import org.opennms.web.event.WebEventRepository;
+import org.opennms.web.event.filter.EventCriteria;
+import org.opennms.web.event.filter.ExactUEIFilter;
+import org.opennms.web.event.filter.IPAddrLikeFilter;
+import org.opennms.web.event.filter.IfIndexFilter;
+import org.opennms.web.event.filter.InterfaceFilter;
+import org.opennms.web.event.filter.NodeFilter;
 import org.opennms.web.filter.Filter;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -82,6 +104,24 @@ public class AlarmRepositoryTest implements InitializingBean {
     
     @Autowired
     AlarmDao m_alarmDao;
+    
+    @Autowired
+    DistPollerDao m_distPollerDao;
+	
+	@Autowired
+	EventDao m_eventDao;
+
+	@Autowired
+	NodeDao m_nodeDao;
+    
+    @Autowired
+    WebEventRepository m_eventRepo;
+    
+    @Autowired
+    ApplicationContext m_appContext;
+    
+    @Autowired
+    AcknowledgmentDao m_acknowledgmentDao;
     
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -279,5 +319,75 @@ public class AlarmRepositoryTest implements InitializingBean {
         Assert.assertEquals(1, acks.size());
         Assert.assertEquals("agalue", acks.get(0).getAckUser());
     }
+    
+/*    @Test
+    @Transactional
+    public void testPurgeAlarms(){
+    	
+    	OnmsEvent event = new OnmsEvent();
+	    OnmsNode node = m_nodeDao.findAll().iterator().next();
+	    event.setNode(node);
+	    OnmsIpInterface iface = (OnmsIpInterface)node.getIpInterfaces().iterator().next();
+	    event.setIpAddr(iface.getIpAddress());
+	    event.setEventUei("uei://org/opennms/test/deleteAlarmPurgeTest");
+		event.setEventTime(new Date());
+		event.setEventSource("deleteAlarmPurgeTest");
+		event.setDistPoller(m_distPollerDao.load("localhost"));
+		event.setEventCreateTime(new Date());
+		event.setEventSeverity(new Integer(7));
+		event.setIfIndex(7);
+		event.setEventLog("Y");
+        event.setEventDisplay("Y");
+	    
+	    OnmsAlarm alarm = new OnmsAlarm();
+	    alarm.setNode(node);
+	    alarm.setIpAddr(event.getIpAddr());
+	    alarm.setUei(event.getEventUei());
+	    alarm.setDistPoller(m_distPollerDao.load("localhost"));
+	    alarm.setIfIndex(event.getIfIndex());
+	    alarm.setCounter(1);
+	    alarm.setSeverityId(event.getEventSeverity());
+	    m_alarmDao.save(alarm);
+	    
+	    event.setAlarm(alarm);
+	    m_eventDao.save(event);
+	    
+	    OnmsAcknowledgment ack = new OnmsAcknowledgment();
+        ack.setAckTime(new Date());
+        ack.setAckUser("test-admin");
+        ack.setAckType(AckType.UNSPECIFIED);
+        ack.setAckAction(AckAction.UNSPECIFIED);
+        ack.setRefId(event.getAlarm().getId());
+        m_acknowledgmentDao.save(ack);
 
+    	List<Integer> alarmIds = new ArrayList<Integer>();
+        assertNotNull(alarm);
+        alarmIds.add(alarm.getId());
+        
+        assertNotNull(alarm.getNodeId());
+        assertNotNull(alarm.getIpAddr());
+        assertNotNull(alarm.getUei());
+        assertNotNull(alarm.getIfIndex());
+        Filter[] filters = new Filter[] { new InterfaceFilter(InetAddressUtils.str(alarm.getIpAddr())) , new ExactUEIFilter(alarm.getUei()) , new NodeFilter(alarm.getNodeId(), m_appContext) , new IfIndexFilter(alarm.getIfIndex())};
+        EventCriteria eventCriteria = new EventCriteria(filters);
+        Event[] events = m_eventRepo.getMatchingEvents(eventCriteria);
+
+        List<Integer> eventIdsList = new ArrayList<Integer>();
+        List<Integer> ackRefIdsList = new ArrayList<Integer>();
+        HashMap<Integer, List<Integer>> eventIdsForAlarms = new HashMap<Integer, List<Integer>>();
+        HashMap<Integer, List<Integer>> ackRefIdsForAlarms = new HashMap<Integer, List<Integer>>();
+        
+    	for(Event eventIterator : events){
+    		assertNotNull(eventIterator);
+    		eventIdsList.add(eventIterator.getId());
+    		assertNotNull(eventIterator.getAlarmId());
+    		ackRefIdsList.add(eventIterator.getAlarmId());
+		}
+    	
+    	alarmIds.add(alarm.getId());
+        eventIdsForAlarms.put(alarm.getId(), eventIdsList);
+        ackRefIdsForAlarms.put(alarm.getId(), ackRefIdsList);
+        
+        m_alarmRepo.purgeAlarms(alarmIds, eventIdsForAlarms, ackRefIdsForAlarms);
+    }*/
 }
