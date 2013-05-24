@@ -30,10 +30,14 @@ package org.opennms.netmgt.model;
 
 import java.io.Serializable;
 import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -66,6 +70,7 @@ import javax.xml.bind.annotation.XmlTransient;
 
 import org.hibernate.annotations.Filter;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.model.events.AddEventVisitor;
 import org.opennms.netmgt.model.events.DeleteEventVisitor;
@@ -939,19 +944,64 @@ public class OnmsNode extends OnmsEntity implements Serializable,
 
     /**
      * <p>getPrimaryInterface</p>
+     * 
+     * This function should be kept similar to {@link IpInterfaceDao#findPrimaryInterfaceByNodeId()}.
      *
      * @return a {@link org.opennms.netmgt.model.OnmsIpInterface} object.
      */
     @Transient
-	public OnmsIpInterface getPrimaryInterface() {
-		for(OnmsIpInterface iface : getIpInterfaces()) {
-			if (PrimaryType.PRIMARY.equals(iface.getIsSnmpPrimary())) {
-				return iface;
-			}
-		}
-		return null;
-	}
-    
+    public OnmsIpInterface getPrimaryInterface() {
+        List<OnmsIpInterface> primaryInterfaces = new ArrayList<OnmsIpInterface>();
+        for(OnmsIpInterface iface : getIpInterfaces()) {
+            if (PrimaryType.PRIMARY.equals(iface.getIsSnmpPrimary())) {
+                primaryInterfaces.add(iface);
+            }
+        }
+        if (primaryInterfaces.size() < 1) {
+            return null;
+        } else {
+            if (primaryInterfaces.size() > 1) {
+                // Sort the list by the last capabilities scan time so that we return the most recent value
+                Collections.sort(primaryInterfaces, new Comparator<OnmsIpInterface>() {
+                    @Override
+                    public int compare(OnmsIpInterface o1, OnmsIpInterface o2) {
+                        if (o1 == null) {
+                            if (o2 == null) {
+                                return 0;
+                            } else {
+                                return -1; // Put nulls at the end of the list
+                            }
+                        } else {
+                            if (o2 == null) {
+                                return 1; // Put nulls at the end of the list
+                            } else {
+                                if (o1.getIpLastCapsdPoll() == null) {
+                                    if (o2.getIpLastCapsdPoll() == null) {
+                                        return 0;
+                                    } else {
+                                        return 1; // Descending order
+                                    }
+                                } else {
+                                    if (o2.getIpLastCapsdPoll() == null) {
+                                        return -1; // Descending order
+                                    } else {
+                                        // Reverse the comparison so that we get a descending order
+                                        return o2.getIpLastCapsdPoll().compareTo(o1.getIpLastCapsdPoll());
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+                OnmsIpInterface retval = primaryInterfaces.iterator().next();
+                LogUtils.warnf(this, "Multiple primary SNMP interfaces for node %d, returning most recently scanned interface: %s", m_id, retval.getInterfaceId());
+                return retval;
+            } else {
+                return primaryInterfaces.iterator().next();
+            }
+        }
+    }
+
     /**
      * <p>getInterfaceWithService</p>
      *

@@ -97,8 +97,13 @@ MAXIMUM_SIZE_STACK_SEGMENT=8192
 
 
 # Load opennms.conf, if it exists, to override above configuration options.
-if [ -f $OPENNMS_HOME/etc/opennms.conf ]; then
-	. $OPENNMS_HOME/etc/opennms.conf
+if [ -f "${OPENNMS_HOME}/etc/opennms.conf" ]; then
+	. "${OPENNMS_HOME}/etc/opennms.conf"
+fi
+
+# Load ~/.opennms-dev/opennms.conf if it exists, to override above configuration options.
+if [ -f "${HOME}/.opennms-dev/opennms.conf" ]; then
+	. "${HOME}/.opennms-dev/opennms.conf"
 fi
 
 show_help () {
