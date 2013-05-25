@@ -10,110 +10,11 @@
                    definition for information purposes. For graph templates use should refer to
                    the performance metrics using the XML Object Name (auto-generated ID)
     -->
-
-
-     <xml-group name="lteMm|Procedure" resource-type="lteMmprocedure"
-        key-xpath="@measObjLdn"
-        resource-xpath="/measCollecFile/measData/measInfo[@measInfoId='lteMm|procedure']/measValue"
-        timestamp-xpath="/measCollecFile/fileFooter/measCollec/@endTime"
-        timestamp-format="yyyy-MM-dd'T'HH:mm:ssZ">
-        <xml-object name="label" type="STRING" xpath="@measObjLdn" />
-        <xml-object name="suspect" type="STRING" xpath="suspect" />
-        <xml-object name="varadd1710" type="GAUGE" xpath="r[@p=1]" />  <!-- MM.EpsAttachAtt.E -->
-        <xml-object name="varadd1711" type="GAUGE" xpath="r[@p=2]" />  <!-- MM.EpsAttachSucc.E --> 
-        <xml-object name="varadd1712" type="GAUGE" xpath="r[@p=5]" />  <!-- VS.MM.IntraMmeTauAtt-->
-        <xml-object name="varadd1713" type="GAUGE" xpath="r[@p=6]" />  <!-- VS.MM.IntraMmeTauSucc  -->
-        <xml-object name="varadd1714" type="GAUGE" xpath="r[@p=7]" />  <!-- VS.MM.InterMmeTauAtt-->
-        <xml-object name="varadd1715" type="GAUGE" xpath="r[@p=8]" />   <!-- VS.MM.InterMmeTauSucc -->                                                                 
-        <xml-object name="varadd1716" type="GAUGE" xpath="r[@p=18]" />  <!-- MM.PagingEpsAtt  --> 
-        <xml-object name="varadd1717" type="GAUGE" xpath="r[@p=19]" />  <!-- MM.PagingEpsFail  -->                                                                 
-    </xml-group>
-
-    <xml-group name="lteMm|tau" resource-type="lteMmtau"
-        key-xpath="@measObjLdn"
-        resource-xpath="/measCollecFile/measData/measInfo[@measInfoId='lteMm|tau']/measValue"
-        timestamp-xpath="/measCollecFile/fileFooter/measCollec/@endTime"
-        timestamp-format="yyyy-MM-dd'T'HH:mm:ssZ">
-         <xml-object name="label" type="STRING" xpath="@measObjLdn" />
-        <xml-object name="suspect" type="STRING" xpath="suspect" />
-        <xml-object name="varadd1718" type="GAUGE" xpath="r[@p=8]" />  <!-- MM.PeriodicTauAtt -->
-        <xml-object name="varadd1719" type="GAUGE" xpath="r[@p=9]" />  <!-- MM.PeriodicTauSucc -->                                                                    
-    </xml-group>
-
-     <xml-group name="lteMm|general" resource-type="lteMmgeneral"
-        key-xpath="@measObjLdn"
-        resource-xpath="/measCollecFile/measData/measInfo[@measInfoId='lteMm|general']/measValue"
-        timestamp-xpath="/measCollecFile/fileFooter/measCollec/@endTime"
-        timestamp-format="yyyy-MM-dd'T'HH:mm:ssZ">
-         <xml-object name="label" type="STRING" xpath="@measObjLdn" />
-        <xml-object name="suspect" type="STRING" xpath="suspect" />
-        <xml-object name="varadd1720" type="GAUGE" xpath="r[@p=4]" />  <!-- MM.RegisteredSubNbrMax -->
-        <xml-object name="varadd1721" type="GAUGE" xpath="r[@p=8]" />  <!-- VS.MM.RegisteredRoamerSubNbrMax.E -->                                                                    
-    </xml-group>
-
-    <xml-group name="lteSm|general" resource-type="lteSmgeneral"
-        key-xpath="@measObjLdn"
-        resource-xpath="/measCollecFile/measData/measInfo[@measInfoId='lteSm|general']/measValue"
-        timestamp-xpath="/measCollecFile/fileFooter/measCollec/@endTime"
-        timestamp-format="yyyy-MM-dd'T'HH:mm:ssZ">
-         <xml-object name="label" type="STRING" xpath="@measObjLdn" />
-        <xml-object name="suspect" type="STRING" xpath="suspect" />
-        <xml-object name="varadd1722" type="GAUGE" xpath="r[@p=3]" />  <!-- SM.MaxNbrActDedicatedBearer -->                                                                     
-    </xml-group>
-
-   <xml-group name="lteSm|procedure" resource-type="lteSmprocedure"
-        key-xpath="@measObjLdn"
-        resource-xpath="/measCollecFile/measData/measInfo[@measInfoId='lteSm|procedure']/measValue"
-        timestamp-xpath="/measCollecFile/fileFooter/measCollec/@endTime"
-        timestamp-format="yyyy-MM-dd'T'HH:mm:ssZ">
-         <xml-object name="label" type="STRING" xpath="@measObjLdn" />
-        <xml-object name="suspect" type="STRING" xpath="suspect" />
-        <xml-object name="varadd1723" type="GAUGE" xpath="r[@p=1]" />  <!-- SM.ActDefaultEpsBearerAttachAtt -->
-        <xml-object name="varadd1724" type="GAUGE" xpath="r[@p=2]" />  <!-- SM.ActDefaultEpsBearerAttachSucc -->
-        <xml-object name="varadd1725" type="GAUGE" xpath="r[@p=6]" />  <!-- SM.DefaultBearerDeactPdnDisconnAtt -->
-        <xml-object name="varadd1726" type="GAUGE" xpath="r[@p=7]" />  <!-- SM.DefaultBearerDeactPdnDisconnSuc -->                                                                    
-    </xml-group>
-
-     <xml-group name="sc-loadControl" resource-type="scLoadControl"
-        key-xpath="@measObjLdn"
-        resource-xpath="/measCollecFile/measData/measInfo[@measInfoId='sc|loadControl']/measValue"
-        timestamp-xpath="/measCollecFile/fileFooter/measCollec/@endTime"
-        timestamp-format="yyyy-MM-dd'T'HH:mm:ssZ">
-        <xml-object name="label" type="STRING" xpath="@measObjLdn" />
-        <xml-object name="suspect" type="STRING" xpath="suspect" />
-        <xml-object name="var0853" type="GAUGE" xpath="r[@p=1]" /> <!-- VS.SM.IrauFailActPdpContext.Level.PLMN -->
-        <xml-object name="var0854" type="GAUGE" xpath="r[@p=2]" /> <!-- VS.SM.FailActPdpContext.Rate.PLMN -->
-        <xml-object name="var0855" type="GAUGE" xpath="r[@p=3]" /> <!-- VS.SM.FailActPdpContext.Level.PLMN -->
-        <xml-object name="var0856" type="GAUGE" xpath="r[@p=4]" /> <!-- SM.FailActPdpContext.PLMN -->
-        <xml-object name="var0857" type="GAUGE" xpath="r[@p=5]" /> <!-- SM.SuccActPdpContext.PLMN -->
-        <xml-object name="var0858" type="GAUGE" xpath="r[@p=6]" /> <!-- SM.AttActPdpContext.PLMN -->
-        <xml-object name="var0859" type="GAUGE" xpath="r[@p=7]" /> <!-- SM.NbrActPdpContext.PLMN -->
-        <xml-object name="var0860" type="GAUGE" xpath="r[@p=8]" /> <!-- MM.FailInterSgsnRaUpdate.Rate.PLMN -->
-        <xml-object name="var0861" type="GAUGE" xpath="r[@p=9]" /> <!-- MM.FailInterSgsnRaUpdate.Level.PLMN -->
-        <xml-object name="var0862" type="GAUGE" xpath="r[@p=10]" /> <!-- MM.FailInterSgsnRaUpdate.PLMN -->
-        <xml-object name="var0863" type="GAUGE" xpath="r[@p=11]" /> <!-- MM.SuccInterSgsnRaUpdate.PLMN -->
-        <xml-object name="var0864" type="GAUGE" xpath="r[@p=12]" /> <!-- MM.AttInterSgsnRaUpdate.PLMN -->
-        <xml-object name="var0865" type="GAUGE" xpath="r[@p=13]" /> <!-- VS.MM.AttachFail.Rate.PLMN -->
-        <xml-object name="var0866" type="GAUGE" xpath="r[@p=14]" /> <!-- VS.MM.AttachFail.Level.PLMN -->
-        <xml-object name="var0867" type="GAUGE" xpath="r[@p=15]" /> <!-- VS.MM.AttachSucc.PLMN -->
-        <xml-object name="var0868" type="GAUGE" xpath="r[@p=16]" /> <!-- VS.MM.AttachAtt.PLMN -->
-        <xml-object name="var0869" type="GAUGE" xpath="r[@p=17]" /> <!-- MM.RegisteredActSubNbr.PLMN -->
-        <xml-object name="var0870" type="GAUGE" xpath="r[@p=18]" /> <!-- SM.ActDefaultEpsBearerSucc.PLMN -->
-        <xml-object name="var0871" type="GAUGE" xpath="r[@p=19]" /> <!-- SM.ActDefaultEpsBearerAtt.PLMN -->
-        <xml-object name="var0872" type="GAUGE" xpath="r[@p=20]" /> <!-- SM.NbrActDefaultEpsBearer.PLMN -->
-        <xml-object name="var0873" type="GAUGE" xpath="r[@p=21]" /> <!-- VS.MM.InterMmeTauAtt.PLMN -->
-        <xml-object name="var0874" type="GAUGE" xpath="r[@p=22]" /> <!-- VS.MM.InterMmeTauSucc.PLMN -->
-        <xml-object name="var0875" type="GAUGE" xpath="r[@p=23]" /> <!-- SM.ActDedicatedEpsBearerSucc.PLMN -->
-        <xml-object name="var0876" type="GAUGE" xpath="r[@p=24]" /> <!-- SM.ActDedicatedEpsBearerAtt.PLMN -->
-        <xml-object name="var0877" type="GAUGE" xpath="r[@p=25]" /> <!-- SM.NbrActDedicatedEpsBearer.PLMN -->
-    </xml-group>
- 
     <xml-group name="dns-dns" resource-type="dnsDns"
         key-xpath="@measObjLdn"
         resource-xpath="/measCollecFile/measData/measInfo[@measInfoId='dns|dns']/measValue"
         timestamp-xpath="/measCollecFile/fileFooter/measCollec/@endTime"
         timestamp-format="yyyy-MM-dd'T'HH:mm:ssZ">
-        <xml-object name="label" type="STRING" xpath="@measObjLdn" />  
         <xml-object name="suspect" type="STRING" xpath="suspect" />
         <xml-object name="var0001" type="GAUGE" xpath="r[@p=1]" /> <!-- DNS.TotalQueryAtt -->
         <xml-object name="var0002" type="GAUGE" xpath="r[@p=2]" /> <!-- DNS.StaticCacheSucc -->
@@ -294,13 +195,12 @@
         <xml-object name="var0121" type="GAUGE" xpath="r[@p=12]" /> <!-- VS.MM.MsAttachReqUnknownPtmsi.G -->
         <xml-object name="var0122" type="GAUGE" xpath="r[@p=13]" /> <!-- VS.MM.MsAttachReqUnknownTlli.G -->
     </xml-group>
-    <xml-group name="gprsMm-attachFail" resource-type="gprsMmProcedure"
+    <xml-group name="gprsMm-attachFail" resource-type="gprsMmAttachFail"
         key-xpath="@measObjLdn"
         resource-xpath="/measCollecFile/measData/measInfo[@measInfoId='gprsMm|attachFail']/measValue"
         timestamp-xpath="/measCollecFile/fileFooter/measCollec/@endTime"
         timestamp-format="yyyy-MM-dd'T'HH:mm:ssZ">
         <xml-object name="suspect" type="STRING" xpath="suspect" />
-        <xml-object name="label" type="STRING" xpath="@measObjLdn" />
         <xml-object name="var0123" type="GAUGE" xpath="r[@p=1]" /> <!-- VS.MM.AttachRej.AccessRestriction.G -->
         <xml-object name="var0124" type="GAUGE" xpath="r[@p=2]" /> <!-- MM.FailedGprsAttach.Other.G -->
         <xml-object name="var0125" type="GAUGE" xpath="r[@p=3]" /> <!-- MM.FailedGprsAttach.GprsSvcNotAllowed_7.G -->
@@ -371,7 +271,6 @@
         timestamp-xpath="/measCollecFile/fileFooter/measCollec/@endTime"
         timestamp-format="yyyy-MM-dd'T'HH:mm:ssZ">
         <xml-object name="suspect" type="STRING" xpath="suspect" />
-        <xml-object name="label" type="STRING" xpath="@measObjLdn" />
         <xml-object name="var0179" type="GAUGE" xpath="r[@p=1]" /> <!-- MM.NbrActAttachedSub.G -->
         <xml-object name="var0180" type="GAUGE" xpath="r[@p=2]" /> <!-- MM.NbrSubReady.G -->
         <xml-object name="var0181" type="GAUGE" xpath="r[@p=3]" /> <!-- MM.NbrSubStandby.G -->
@@ -379,7 +278,6 @@
         <xml-object name="var0183" type="GAUGE" xpath="r[@p=5]" /> <!-- MM.MaxNbrSubReady.G -->
         <xml-object name="var0184" type="GAUGE" xpath="r[@p=6]" /> <!-- MM.MaxNbrSubStandby.G -->
         <xml-object name="var0185" type="GAUGE" xpath="r[@p=7]" /> <!-- VS.MM.NbrActCombiAttachedSub.G -->
-        <xml-object name="varadd0186" type="GAUGE" xpath="r[@p=9]" /> <!-- VS.MM.MaxNbrRoamerAttachedSub.G -->
     </xml-group>
     <xml-group name="gprsMm-irau" resource-type="gprsMmIrau"
         key-xpath="@measObjLdn"
@@ -397,13 +295,12 @@
         <xml-object name="var0193" type="GAUGE" xpath="r[@p=8]" /> <!-- VS.MM.FailInterSgsnRaUpdate.Ignored.G -->
         <xml-object name="var0194" type="GAUGE" xpath="r[@p=9]" /> <!-- MM.AttInterSgsnRaUpdate.G -->
     </xml-group>
-    <xml-group name="gprsMm-irauFail" resource-type="gprsMmProcedure"
+    <xml-group name="gprsMm-irauFail" resource-type="gprsMmIrauFail"
         key-xpath="@measObjLdn"
         resource-xpath="/measCollecFile/measData/measInfo[@measInfoId='gprsMm|irauFail']/measValue"
         timestamp-xpath="/measCollecFile/fileFooter/measCollec/@endTime"
         timestamp-format="yyyy-MM-dd'T'HH:mm:ssZ">
         <xml-object name="suspect" type="STRING" xpath="suspect" />
-        <xml-object name="label" type="STRING" xpath="@measObjLdn" />
         <xml-object name="var0195" type="GAUGE" xpath="r[@p=1]" /> <!-- VS.MM.FailInterSgsnRaUpdate.AccessRestriction.G -->
         <xml-object name="var0196" type="GAUGE" xpath="r[@p=2]" /> <!-- VS.MM.FailInterSgsnRaUpdate.Other.G -->
         <xml-object name="var0197" type="GAUGE" xpath="r[@p=3]" /> <!-- MM.FailInterSgsnRaUpdate.GprsSvcNotAllowed_7.G -->
@@ -451,7 +348,6 @@
         timestamp-xpath="/measCollecFile/fileFooter/measCollec/@endTime"
         timestamp-format="yyyy-MM-dd'T'HH:mm:ssZ">
         <xml-object name="suspect" type="STRING" xpath="suspect" />
-        <xml-object name="label" type="STRING" xpath="@measObjLdn" />
         <xml-object name="var0228" type="GAUGE" xpath="r[@p=1]" /> <!-- VS.MM.AttachReqAccepted.G -->
         <xml-object name="var0229" type="GAUGE" xpath="r[@p=2]" /> <!-- VS.MM.AttIrauOut.G -->
         <xml-object name="var0230" type="GAUGE" xpath="r[@p=3]" /> <!-- VS.MM.FailIrauOut.G -->
@@ -473,7 +369,6 @@
         timestamp-xpath="/measCollecFile/fileFooter/measCollec/@endTime"
         timestamp-format="yyyy-MM-dd'T'HH:mm:ssZ">
         <xml-object name="suspect" type="STRING" xpath="suspect" />
-        <xml-object name="label" type="STRING" xpath="@measObjLdn" />
         <xml-object name="var0242" type="GAUGE" xpath="r[@p=1]" /> <!-- VS.MM.FailIntraSgsnRaUpdate.Aborted.G -->
         <xml-object name="var0243" type="GAUGE" xpath="r[@p=2]" /> <!-- MM.AttCombiIntraSgsnRaUpdate.G -->
         <xml-object name="var0244" type="GAUGE" xpath="r[@p=3]" /> <!-- VS.MM.FailIntraSgsnRaUpdate.Duplicate.G -->
@@ -488,13 +383,12 @@
         <xml-object name="var0253" type="GAUGE" xpath="r[@p=12]" /> <!-- ISYSC.SuccIntraSgsnUmtsGsmRau -->
         <xml-object name="var0254" type="GAUGE" xpath="r[@p=13]" /> <!-- VS.MM.SuccIntraSgsnRaUpdate.PtmsiRealloc.G -->
     </xml-group>
-    <xml-group name="gprsMm-rauFail" resource-type="gprsMmProcedure"
+    <xml-group name="gprsMm-rauFail" resource-type="gprsMmRauFail"
         key-xpath="@measObjLdn"
         resource-xpath="/measCollecFile/measData/measInfo[@measInfoId='gprsMm|rauFail']/measValue"
         timestamp-xpath="/measCollecFile/fileFooter/measCollec/@endTime"
         timestamp-format="yyyy-MM-dd'T'HH:mm:ssZ">
         <xml-object name="suspect" type="STRING" xpath="suspect" />
-        <xml-object name="label" type="STRING" xpath="@measObjLdn" />
         <xml-object name="var0255" type="GAUGE" xpath="r[@p=1]" /> <!-- VS.MM.FailIntraSgsnRaUpdate.AccessRestriction.G -->
         <xml-object name="var0256" type="GAUGE" xpath="r[@p=2]" /> <!-- VS.MM.FailIntraSgsnRaUpdate.Other.G -->
         <xml-object name="var0257" type="GAUGE" xpath="r[@p=3]" /> <!-- MM.FailIntraSgsnRaUpdate.GprsSvcNotAllowed_7.G -->
@@ -567,13 +461,12 @@
         <xml-object name="var0310" type="GAUGE" xpath="r[@p=11]" /> <!-- VS.SNR.Reject.RemappedCause.G -->
         <xml-object name="var0311" type="GAUGE" xpath="r[@p=12]" /> <!-- VS.SNR.Reject.TryAnotherCell.G -->
     </xml-group>
-    <xml-group name="gprsSm-deactivation" resource-type="gprsSmProcedure"
+    <xml-group name="gprsSm-deactivation" resource-type="gprsSmDeactivation"
         key-xpath="@measObjLdn"
         resource-xpath="/measCollecFile/measData/measInfo[@measInfoId='gprsSm|deactivation']/measValue"
         timestamp-xpath="/measCollecFile/fileFooter/measCollec/@endTime"
         timestamp-format="yyyy-MM-dd'T'HH:mm:ssZ">
         <xml-object name="suspect" type="STRING" xpath="suspect" />
-        <xml-object name="label" type="STRING" xpath="@measObjLdn" />
         <xml-object name="var0312" type="GAUGE" xpath="r[@p=1]" /> <!-- VS.SM.DeactGgsn.MultipleSessions.G -->
         <xml-object name="var0313" type="GAUGE" xpath="r[@p=2]" /> <!-- VS.SM.DeactHlr.CancelLocation.G -->
         <xml-object name="var0314" type="GAUGE" xpath="r[@p=3]" /> <!-- VS.SM.DeactHlr.IsdOrDsdDeactivation.G -->
@@ -619,7 +512,6 @@
         timestamp-xpath="/measCollecFile/fileFooter/measCollec/@endTime"
         timestamp-format="yyyy-MM-dd'T'HH:mm:ssZ">
         <xml-object name="suspect" type="STRING" xpath="suspect" />
-        <xml-object name="label" type="STRING" xpath="@measObjLdn" />
         <xml-object name="var0350" type="GAUGE" xpath="r[@p=1]" /> <!-- SM.NbrActivePdpPerSgsn.G -->
         <xml-object name="var0351" type="GAUGE" xpath="r[@p=2]" /> <!-- SM.NbrActPdpContext.G -->
         <xml-object name="var0352" type="GAUGE" xpath="r[@p=3]" /> <!-- VS.SM.CurrentNbrRoamers.G -->
@@ -717,7 +609,7 @@
         <xml-object name="var0423" type="GAUGE" xpath="r[@p=28]" /> <!-- SM.AttModPdpContextSgsn.G -->
         <xml-object name="var0424" type="GAUGE" xpath="r[@p=29]" /> <!-- VS.SM.ModReqMsgNoMoreRetriesSgsn.G -->
     </xml-group>
-    <xml-group name="gprsSm-priActGgsnFail" resource-type="gprsSmProcedure"
+    <xml-group name="gprsSm-priActGgsnFail" resource-type="gprsSmPriActGgsnFail"
         key-xpath="@measObjLdn"
         resource-xpath="/measCollecFile/measData/measInfo[@measInfoId='gprsSm|priActGgsnFail']/measValue"
         timestamp-xpath="/measCollecFile/fileFooter/measCollec/@endTime"
@@ -739,7 +631,7 @@
         <xml-object name="var0438" type="GAUGE" xpath="r[@p=14]" /> <!-- VS.SM.FailActPdpCtxtMs.Ggsn.OptionalIeIncorrect_203.G -->
         <xml-object name="var0439" type="GAUGE" xpath="r[@p=15]" /> <!-- VS.SM.FailActPdpCtxtMs.Ggsn.SystemFailure_204.G -->
     </xml-group>
-    <xml-group name="gprsSm-primaryAct" resource-type="gprsSmProcedure"
+    <xml-group name="gprsSm-primaryAct" resource-type="gprsSmPrimaryAct"
         key-xpath="@measObjLdn"
         resource-xpath="/measCollecFile/measData/measInfo[@measInfoId='gprsSm|primaryAct']/measValue"
         timestamp-xpath="/measCollecFile/fileFooter/measCollec/@endTime"
@@ -758,7 +650,7 @@
         <xml-object name="var0450" type="GAUGE" xpath="r[@p=11]" /> <!-- VS.SM.AttActPdpContextStatic.G -->
         <xml-object name="var0451" type="GAUGE" xpath="r[@p=12]" /> <!-- VS.SM.SuccActPdpContextStatic.G -->
     </xml-group>
-    <xml-group name="gprsSm-primaryActFail" resource-type="gprsSmProcedure"
+    <xml-group name="gprsSm-primaryActFail" resource-type="gprsSmPrimaryActFail"
         key-xpath="@measObjLdn"
         resource-xpath="/measCollecFile/measData/measInfo[@measInfoId='gprsSm|primaryActFail']/measValue"
         timestamp-xpath="/measCollecFile/fileFooter/measCollec/@endTime"
@@ -812,7 +704,6 @@
         timestamp-xpath="/measCollecFile/fileFooter/measCollec/@endTime"
         timestamp-format="yyyy-MM-dd'T'HH:mm:ssZ">
         <xml-object name="suspect" type="STRING" xpath="suspect" />
-        <xml-object name="label" type="STRING" xpath="@measObjLdn" />
         <xml-object name="var0493" type="GAUGE" xpath="r[@p=1]" /> <!-- SM.SuccDeactPdpContextGgsn.G -->
         <xml-object name="var0494" type="GAUGE" xpath="r[@p=2]" /> <!-- VS.SM.SuccDeactsHlr.G -->
         <xml-object name="var0495" type="GAUGE" xpath="r[@p=3]" /> <!-- VS.SM.SuccQosActivatesLocal.G -->
@@ -856,7 +747,7 @@
         <xml-object name="var0526" type="GAUGE" xpath="r[@p=16]" /> <!-- VS.SM.FailActSecondPdpContextMs.Ggsn.OptionalIeIncorrect_203.G -->
         <xml-object name="var0527" type="GAUGE" xpath="r[@p=17]" /> <!-- VS.SM.FailActSecondPdpContextMs.Ggsn.SystemFailure_204.G -->
     </xml-group>
-    <xml-group name="gprsSm-secondaryAct" resource-type="gprsSmProcedure"
+    <xml-group name="gprsSm-secondaryAct" resource-type="gprsSmSecondaryAct"
         key-xpath="@measObjLdn"
         resource-xpath="/measCollecFile/measData/measInfo[@measInfoId='gprsSm|secondaryAct']/measValue"
         timestamp-xpath="/measCollecFile/fileFooter/measCollec/@endTime"
@@ -869,7 +760,7 @@
         <xml-object name="var0532" type="GAUGE" xpath="r[@p=5]" /> <!-- VS.SM.ActSecondPdpContextIgnored.G -->
         <xml-object name="var0533" type="GAUGE" xpath="r[@p=6]" /> <!-- SM.SuccActSecondPdpContext.G -->
     </xml-group>
-    <xml-group name="gprsSm-secondaryActFail" resource-type="gprsSmProcedure"
+    <xml-group name="gprsSm-secondaryActFail" resource-type="gprsSmSecondaryActFail"
         key-xpath="@measObjLdn"
         resource-xpath="/measCollecFile/measData/measInfo[@measInfoId='gprsSm|secondaryActFail']/measValue"
         timestamp-xpath="/measCollecFile/fileFooter/measCollec/@endTime"
@@ -1746,13 +1637,12 @@
         <xml-object name="var1171" type="GAUGE" xpath="r[@p=10]" /> <!-- VS.MM.MsAttachReqUnknownImsi.U -->
         <xml-object name="var1172" type="GAUGE" xpath="r[@p=11]" /> <!-- VS.MM.MsAttachReqUnknownPtmsi.U -->
     </xml-group>
-    <xml-group name="umtsMm-attachFail" resource-type="umtsMmProcedure"
+    <xml-group name="umtsMm-attachFail" resource-type="umtsMmAttachFail"
         key-xpath="@measObjLdn"
         resource-xpath="/measCollecFile/measData/measInfo[@measInfoId='umtsMm|attachFail']/measValue"
         timestamp-xpath="/measCollecFile/fileFooter/measCollec/@endTime"
         timestamp-format="yyyy-MM-dd'T'HH:mm:ssZ">
         <xml-object name="suspect" type="STRING" xpath="suspect" />
-        <xml-object name="label" type="STRING" xpath="@measObjLdn" />
         <xml-object name="var1173" type="GAUGE" xpath="r[@p=1]" /> <!-- VS.MM.AttachRej.AccessRestriction.U -->
         <xml-object name="var1174" type="GAUGE" xpath="r[@p=2]" /> <!-- MM.FailedGprsAttach.Other.U -->
         <xml-object name="var1175" type="GAUGE" xpath="r[@p=3]" /> <!-- MM.FailedGprsAttach.GprsSvcNotAllowed_7.U -->
@@ -1820,7 +1710,6 @@
         timestamp-xpath="/measCollecFile/fileFooter/measCollec/@endTime"
         timestamp-format="yyyy-MM-dd'T'HH:mm:ssZ">
         <xml-object name="suspect" type="STRING" xpath="suspect" />
-        <xml-object name="label" type="STRING" xpath="@measObjLdn" />
         <xml-object name="var1226" type="GAUGE" xpath="r[@p=1]" /> <!-- MM.NbrActAttachedSub.U -->
         <xml-object name="var1227" type="GAUGE" xpath="r[@p=2]" /> <!-- MM.NbrSubPmmConnected.U -->
         <xml-object name="var1228" type="GAUGE" xpath="r[@p=3]" /> <!-- MM.NbrSubPmmIdle.U -->
@@ -1828,7 +1717,6 @@
         <xml-object name="var1230" type="GAUGE" xpath="r[@p=5]" /> <!-- MM.MaxNbrSubPmmConnected.U -->
         <xml-object name="var1231" type="GAUGE" xpath="r[@p=6]" /> <!-- MM.MaxNbrSubPmmIdle.U -->
         <xml-object name="var1232" type="GAUGE" xpath="r[@p=7]" /> <!-- VS.MM.NbrActCombiAttachedSub.U -->
-        <xml-object name="varadd1233" type="GAUGE" xpath="r[@p=9]" />   <!-- VS.MM.MaxNbrRoamerAttachedSub.U -->
     </xml-group>
     <xml-group name="umtsMm-irau" resource-type="umtsMmIrau"
         key-xpath="@measObjLdn"
@@ -1846,13 +1734,12 @@
         <xml-object name="var1240" type="GAUGE" xpath="r[@p=8]" /> <!-- VS.MM.FailInterSgsnRaUpdate.Ignored.U -->
         <xml-object name="var1241" type="GAUGE" xpath="r[@p=9]" /> <!-- MM.AttInterSgsnRaUpdate.U -->
     </xml-group>
-    <xml-group name="umtsMm-irauFail" resource-type="umtsMmProcedure"
+    <xml-group name="umtsMm-irauFail" resource-type="umtsMmIrauFail"
         key-xpath="@measObjLdn"
         resource-xpath="/measCollecFile/measData/measInfo[@measInfoId='umtsMm|irauFail']/measValue"
         timestamp-xpath="/measCollecFile/fileFooter/measCollec/@endTime"
         timestamp-format="yyyy-MM-dd'T'HH:mm:ssZ">
         <xml-object name="suspect" type="STRING" xpath="suspect" />
-        <xml-object name="label" type="STRING" xpath="@measObjLdn" />
         <xml-object name="var1242" type="GAUGE" xpath="r[@p=1]" /> <!-- VS.MM.FailInterSgsnRaUpdate.AccessRestriction.U -->
         <xml-object name="var1243" type="GAUGE" xpath="r[@p=2]" /> <!-- VS.MM.FailInterSgsnRaUpdate.Other.U -->
         <xml-object name="var1244" type="GAUGE" xpath="r[@p=3]" /> <!-- MM.FailInterSgsnRaUpdate.GprsSvcNotAllowed_7.U -->
@@ -1904,7 +1791,6 @@
         timestamp-xpath="/measCollecFile/fileFooter/measCollec/@endTime"
         timestamp-format="yyyy-MM-dd'T'HH:mm:ssZ">
         <xml-object name="suspect" type="STRING" xpath="suspect" />
-        <xml-object name="label" type="STRING" xpath="@measObjLdn" />
         <xml-object name="var1279" type="GAUGE" xpath="r[@p=1]" /> <!-- VS.MM.AttachReqAccepted.U -->
         <xml-object name="var1280" type="GAUGE" xpath="r[@p=2]" /> <!-- VS.MM.AttIrauOut.U -->
         <xml-object name="var1281" type="GAUGE" xpath="r[@p=3]" /> <!-- VS.MM.FailIrauOut.U -->
@@ -1926,7 +1812,6 @@
         timestamp-xpath="/measCollecFile/fileFooter/measCollec/@endTime"
         timestamp-format="yyyy-MM-dd'T'HH:mm:ssZ">
         <xml-object name="suspect" type="STRING" xpath="suspect" />
-        <xml-object name="label" type="STRING" xpath="@measObjLdn" />
         <xml-object name="var1293" type="GAUGE" xpath="r[@p=1]" /> <!-- VS.MM.FailIntraSgsnRaUpdate.Aborted.U -->
         <xml-object name="var1294" type="GAUGE" xpath="r[@p=2]" /> <!-- MM.AttCombiIntraSgsnRaUpdate.U -->
         <xml-object name="var1295" type="GAUGE" xpath="r[@p=3]" /> <!-- VS.MM.FailIntraSgsnRaUpdate.Duplicate.U -->
@@ -1941,13 +1826,12 @@
         <xml-object name="var1304" type="GAUGE" xpath="r[@p=12]" /> <!-- ISYSC.SuccIntraSgsnGsmUmtsRau -->
         <xml-object name="var1305" type="GAUGE" xpath="r[@p=13]" /> <!-- VS.MM.SuccIntraSgsnRaUpdate.PtmsiRealloc.U -->
     </xml-group>
-    <xml-group name="umtsMm-rauFail" resource-type="umtsMmProcedure"
+    <xml-group name="umtsMm-rauFail" resource-type="umtsMmRauFail"
         key-xpath="@measObjLdn"
         resource-xpath="/measCollecFile/measData/measInfo[@measInfoId='umtsMm|rauFail']/measValue"
         timestamp-xpath="/measCollecFile/fileFooter/measCollec/@endTime"
         timestamp-format="yyyy-MM-dd'T'HH:mm:ssZ">
         <xml-object name="suspect" type="STRING" xpath="suspect" />
-        <xml-object name="label" type="STRING" xpath="@measObjLdn" />
         <xml-object name="var1306" type="GAUGE" xpath="r[@p=1]" /> <!-- VS.MM.FailIntraSgsnRaUpdate.AccessRestriction.U -->
         <xml-object name="var1307" type="GAUGE" xpath="r[@p=2]" /> <!-- VS.MM.FailIntraSgsnRaUpdate.Other.U -->
         <xml-object name="var1308" type="GAUGE" xpath="r[@p=3]" /> <!-- MM.FailIntraSgsnRaUpdate.GprsSvcNotAllowed_7.U -->
@@ -2019,13 +1903,12 @@
         <xml-object name="var1360" type="GAUGE" xpath="r[@p=11]" /> <!-- VS.SNR.Reject.RemappedCause.U -->
         <xml-object name="var1361" type="GAUGE" xpath="r[@p=12]" /> <!-- VS.SNR.Reject.TryAnotherCell.U -->
     </xml-group>
-    <xml-group name="umtsSm-deactivation" resource-type="umtsSmProcedure"
+    <xml-group name="umtsSm-deactivation" resource-type="umtsSmDeactivation"
         key-xpath="@measObjLdn"
         resource-xpath="/measCollecFile/measData/measInfo[@measInfoId='umtsSm|deactivation']/measValue"
         timestamp-xpath="/measCollecFile/fileFooter/measCollec/@endTime"
         timestamp-format="yyyy-MM-dd'T'HH:mm:ssZ">
         <xml-object name="suspect" type="STRING" xpath="suspect" />
-        <xml-object name="label" type="STRING" xpath="@measObjLdn" />
         <xml-object name="var1362" type="GAUGE" xpath="r[@p=1]" /> <!-- VS.SM.DeactGgsn.MultipleSessions.U -->
         <xml-object name="var1363" type="GAUGE" xpath="r[@p=2]" /> <!-- VS.SM.DeactHlr.CancelLocation.U -->
         <xml-object name="var1364" type="GAUGE" xpath="r[@p=3]" /> <!-- VS.SM.DeactHlr.IsdOrDsdDeactivation.U -->
@@ -2071,7 +1954,6 @@
         timestamp-xpath="/measCollecFile/fileFooter/measCollec/@endTime"
         timestamp-format="yyyy-MM-dd'T'HH:mm:ssZ">
         <xml-object name="suspect" type="STRING" xpath="suspect" />
-        <xml-object name="label" type="STRING" xpath="@measObjLdn" />
         <xml-object name="var1400" type="GAUGE" xpath="r[@p=1]" /> <!-- SM.NbrActivePdpPerSgsn.U -->
         <xml-object name="var1401" type="GAUGE" xpath="r[@p=2]" /> <!-- SM.NbrActPdpContext.U -->
         <xml-object name="var1402" type="GAUGE" xpath="r[@p=3]" /> <!-- VS.SM.CurrentNbrRoamers.U -->
@@ -2199,13 +2081,12 @@
         <xml-object name="var1496" type="GAUGE" xpath="r[@p=14]" /> <!-- VS.SM.FailActPdpCtxtMs.Ggsn.OptionalIeIncorrect_203.U -->
         <xml-object name="var1497" type="GAUGE" xpath="r[@p=15]" /> <!-- VS.SM.FailActPdpCtxtMs.Ggsn.SystemFailure_204.U -->
     </xml-group>
-    <xml-group name="umtsSm-primaryAct" resource-type="umtsSmProcedure"
+    <xml-group name="umtsSm-primaryAct" resource-type="umtsSmPrimaryAct"
         key-xpath="@measObjLdn"
         resource-xpath="/measCollecFile/measData/measInfo[@measInfoId='umtsSm|primaryAct']/measValue"
         timestamp-xpath="/measCollecFile/fileFooter/measCollec/@endTime"
         timestamp-format="yyyy-MM-dd'T'HH:mm:ssZ">
         <xml-object name="suspect" type="STRING" xpath="suspect" />
-        <xml-object name="label" type="STRING" xpath="@measObjLdn" />
         <xml-object name="var1498" type="GAUGE" xpath="r[@p=1]" /> <!-- VS.SM.AttActIpv6PdpContextDyn.U -->
         <xml-object name="var1499" type="GAUGE" xpath="r[@p=2]" /> <!-- VS.SM.SuccActIpv6PdpContextDyn.U -->
         <xml-object name="var1500" type="GAUGE" xpath="r[@p=3]" /> <!-- SM.AttActPdpContextDyn.U -->
@@ -2219,13 +2100,12 @@
         <xml-object name="var1508" type="GAUGE" xpath="r[@p=11]" /> <!-- VS.SM.AttActPdpContextStatic.U -->
         <xml-object name="var1509" type="GAUGE" xpath="r[@p=12]" /> <!-- VS.SM.SuccActPdpContextStatic.U -->
     </xml-group>
-    <xml-group name="umtsSm-primaryActFail" resource-type="umtsSmProcedure"
+    <xml-group name="umtsSm-primaryActFail" resource-type="umtsSmPrimaryActFail"
         key-xpath="@measObjLdn"
         resource-xpath="/measCollecFile/measData/measInfo[@measInfoId='umtsSm|primaryActFail']/measValue"
         timestamp-xpath="/measCollecFile/fileFooter/measCollec/@endTime"
         timestamp-format="yyyy-MM-dd'T'HH:mm:ssZ">
         <xml-object name="suspect" type="STRING" xpath="suspect" />
-        <xml-object name="label" type="STRING" xpath="@measObjLdn" />
         <xml-object name="var1510" type="GAUGE" xpath="r[@p=1]" /> <!-- VS.SM.FailActPdpCtxtMs.ApnTypeConflict_112.U -->
         <xml-object name="var1511" type="GAUGE" xpath="r[@p=2]" /> <!-- VS.SM.FailActPdpCtxtMs.UserAuthFail_29.BlackListMe.U -->
         <xml-object name="var1512" type="GAUGE" xpath="r[@p=3]" /> <!-- SM.FailActPdpCtxtMs.ConditionalIeError_100.U -->
@@ -2274,7 +2154,6 @@
         timestamp-xpath="/measCollecFile/fileFooter/measCollec/@endTime"
         timestamp-format="yyyy-MM-dd'T'HH:mm:ssZ">
         <xml-object name="suspect" type="STRING" xpath="suspect" />
-        <xml-object name="label" type="STRING" xpath="@measObjLdn" />
         <xml-object name="var1551" type="GAUGE" xpath="r[@p=1]" /> <!-- SM.SuccDeactPdpContextGgsn.U -->
         <xml-object name="var1552" type="GAUGE" xpath="r[@p=2]" /> <!-- VS.SM.SuccDeactsHlr.U -->
         <xml-object name="var1553" type="GAUGE" xpath="r[@p=3]" /> <!-- VS.SM.SuccQosActivatesLocal.U -->
@@ -2318,13 +2197,12 @@
         <xml-object name="var1584" type="GAUGE" xpath="r[@p=16]" /> <!-- VS.SM.FailActSecondPdpContextMs.Ggsn.OptionalIeIncorrect_203.U -->
         <xml-object name="var1585" type="GAUGE" xpath="r[@p=17]" /> <!-- VS.SM.FailActSecondPdpContextMs.Ggsn.SystemFailure_204.U -->
     </xml-group>
-    <xml-group name="umtsSm-secondaryAct" resource-type="umtsSmProcedure"
+    <xml-group name="umtsSm-secondaryAct" resource-type="umtsSmSecondaryAct"
         key-xpath="@measObjLdn"
         resource-xpath="/measCollecFile/measData/measInfo[@measInfoId='umtsSm|secondaryAct']/measValue"
         timestamp-xpath="/measCollecFile/fileFooter/measCollec/@endTime"
         timestamp-format="yyyy-MM-dd'T'HH:mm:ssZ">
         <xml-object name="suspect" type="STRING" xpath="suspect" />
-        <xml-object name="label" type="STRING" xpath="@measObjLdn" />
         <xml-object name="var1586" type="GAUGE" xpath="r[@p=1]" /> <!-- VS.SM.AttActSecondIpv6PdpContext.U -->
         <xml-object name="var1587" type="GAUGE" xpath="r[@p=2]" /> <!-- VS.SM.SuccActSecondIpv6PdpContext.U -->
         <xml-object name="var1588" type="GAUGE" xpath="r[@p=3]" /> <!-- SM.AttActSecondPdpContext.U -->
@@ -2332,13 +2210,12 @@
         <xml-object name="var1590" type="GAUGE" xpath="r[@p=5]" /> <!-- VS.SM.ActSecondPdpContextIgnored.U -->
         <xml-object name="var1591" type="GAUGE" xpath="r[@p=6]" /> <!-- SM.SuccActSecondPdpContext.U -->
     </xml-group>
-    <xml-group name="umtsSm-secondaryActFail" resource-type="umtsSmProcedure"
+    <xml-group name="umtsSm-secondaryActFail" resource-type="umtsSmSecondaryActFail"
         key-xpath="@measObjLdn"
         resource-xpath="/measCollecFile/measData/measInfo[@measInfoId='umtsSm|secondaryActFail']/measValue"
         timestamp-xpath="/measCollecFile/fileFooter/measCollec/@endTime"
         timestamp-format="yyyy-MM-dd'T'HH:mm:ssZ">
         <xml-object name="suspect" type="STRING" xpath="suspect" />
-        <xml-object name="label" type="STRING" xpath="@measObjLdn" />
         <xml-object name="var1592" type="GAUGE" xpath="r[@p=1]" /> <!-- VS.SM.FailActSecondPdpContextMs.UserAuthFail_29.BlackListMe.U -->
         <xml-object name="var1593" type="GAUGE" xpath="r[@p=2]" /> <!-- VS.SM.FailActSecondPdpContextMs.ConditionalIeError_100.U -->
         <xml-object name="var1594" type="GAUGE" xpath="r[@p=3]" /> <!-- VS.SM.FailActSecondPdpContextMs.DetachReqActReject.U -->
@@ -2423,7 +2300,6 @@
         timestamp-xpath="/measCollecFile/fileFooter/measCollec/@endTime"
         timestamp-format="yyyy-MM-dd'T'HH:mm:ssZ">
         <xml-object name="suspect" type="STRING" xpath="suspect" />
-        <xml-object name="label" type="STRING" xpath="@measObjLdn" />
         <xml-object name="var1648" type="GAUGE" xpath="r[@p=1]" /> <!-- cpu-utilization -->
         <xml-object name="var1649" type="GAUGE" xpath="r[@p=2]" /> <!-- memory-utilization -->
     </xml-group>
