@@ -1,0 +1,659 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="event_report_csv" pageWidth="4000" pageHeight="842" columnWidth="3940" leftMargin="30" rightMargin="30" topMargin="30" bottomMargin="30" whenResourceMissingType="Empty">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.pageFooter" value="pageFooter"/>
+	<property name="net.sf.jasperreports.export.html.exclude.origin.band.pageFooter" value="pageFooter"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.band.pageFooter" value="pageFooter"/>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<field name="alarmId" class="java.lang.Integer">
+		<fieldDescription><![CDATA[alarmId]]></fieldDescription>
+	</field>
+	<field name="nodeLabel" class="java.lang.String">
+		<fieldDescription><![CDATA[nodeLabel]]></fieldDescription>
+	</field>
+	<field name="eventId" class="java.lang.Integer">
+		<fieldDescription><![CDATA[eventId]]></fieldDescription>
+	</field>
+	<field name="eventUEI" class="java.lang.String">
+		<fieldDescription><![CDATA[eventUEI]]></fieldDescription>
+	</field>
+	<field name="nodeId" class="java.lang.Integer">
+		<fieldDescription><![CDATA[nodeId]]></fieldDescription>
+	</field>
+	<field name="ipAddr" class="java.lang.String">
+		<fieldDescription><![CDATA[ipAddr]]></fieldDescription>
+	</field>
+	<field name="serviceId" class="java.lang.Integer">
+		<fieldDescription><![CDATA[serviceId]]></fieldDescription>
+	</field>
+	<field name="ifIndex" class="java.lang.Integer">
+		<fieldDescription><![CDATA[ifIndex]]></fieldDescription>
+	</field>
+	<field name="eventParms" class="java.lang.String">
+		<fieldDescription><![CDATA[eventParms]]></fieldDescription>
+	</field>
+	<field name="eventTime" class="java.lang.String">
+		<fieldDescription><![CDATA[eventTime]]></fieldDescription>
+	</field>
+	<field name="eventHost" class="java.lang.String">
+		<fieldDescription><![CDATA[eventHost]]></fieldDescription>
+	</field>
+	<field name="eventSnmpHost" class="java.lang.String">
+		<fieldDescription><![CDATA[eventSnmpHost]]></fieldDescription>
+	</field>
+	<field name="eventSource" class="java.lang.String">
+		<fieldDescription><![CDATA[eventSource]]></fieldDescription>
+	</field>
+	<field name="eventDpName" class="java.lang.String">
+		<fieldDescription><![CDATA[eventDpName]]></fieldDescription>
+	</field>
+	<field name="eventCreateTime" class="java.lang.String">
+		<fieldDescription><![CDATA[eventCreateTime]]></fieldDescription>
+	</field>
+	<field name="eventDescr" class="java.lang.String">
+		<fieldDescription><![CDATA[eventDescr]]></fieldDescription>
+	</field>
+	<field name="eventLogGroup" class="java.lang.String">
+		<fieldDescription><![CDATA[eventLogGroup]]></fieldDescription>
+	</field>
+	<field name="eventLogMsg" class="java.lang.String">
+		<fieldDescription><![CDATA[eventLogMsg]]></fieldDescription>
+	</field>
+	<field name="eventSeverity" class="java.lang.String">
+		<fieldDescription><![CDATA[eventSeverity]]></fieldDescription>
+	</field>
+	<field name="eventPathOutage" class="java.lang.String">
+		<fieldDescription><![CDATA[eventPathOutage]]></fieldDescription>
+	</field>
+	<field name="eventCorrelation" class="java.lang.String">
+		<fieldDescription><![CDATA[eventCorrelation]]></fieldDescription>
+	</field>
+	<field name="eventSuppressedCount" class="java.lang.Integer">
+		<fieldDescription><![CDATA[eventSuppressedCount]]></fieldDescription>
+	</field>
+	<field name="eventOperInstruct" class="java.lang.String">
+		<fieldDescription><![CDATA[eventOperInstruct]]></fieldDescription>
+	</field>
+	<field name="eventAutoAction" class="java.lang.String">
+		<fieldDescription><![CDATA[eventAutoAction]]></fieldDescription>
+	</field>
+	<field name="eventOperAction" class="java.lang.String">
+		<fieldDescription><![CDATA[eventOperAction]]></fieldDescription>
+	</field>
+	<field name="eventOperActionMenuText" class="java.lang.String">
+		<fieldDescription><![CDATA[eventOperActionMenuText]]></fieldDescription>
+	</field>
+	<field name="eventNotification" class="java.lang.String">
+		<fieldDescription><![CDATA[eventNotification]]></fieldDescription>
+	</field>
+	<field name="eventTTicket" class="java.lang.String">
+		<fieldDescription><![CDATA[eventTTicket]]></fieldDescription>
+	</field>
+	<field name="eventTTicketState" class="java.lang.Integer">
+		<fieldDescription><![CDATA[eventTTicketState]]></fieldDescription>
+	</field>
+	<field name="eventForward" class="java.lang.String">
+		<fieldDescription><![CDATA[eventForward]]></fieldDescription>
+	</field>
+	<field name="eventMouseOverText" class="java.lang.String">
+		<fieldDescription><![CDATA[eventMouseOverText]]></fieldDescription>
+	</field>
+	<field name="eventLog" class="java.lang.String">
+		<fieldDescription><![CDATA[eventLog]]></fieldDescription>
+	</field>
+	<field name="eventDisplay" class="java.lang.String">
+		<fieldDescription><![CDATA[eventDisplay]]></fieldDescription>
+	</field>
+	<field name="eventAckUser" class="java.lang.String">
+		<fieldDescription><![CDATA[eventAckUser]]></fieldDescription>
+	</field>
+	<field name="eventAckTime" class="java.lang.String">
+		<fieldDescription><![CDATA[eventAckTime]]></fieldDescription>
+	</field>
+	<field name="eventSnmp" class="java.lang.String">
+		<fieldDescription><![CDATA[eventSnmp]]></fieldDescription>
+	</field>
+	<title>
+		<band height="73">
+			<staticText>
+				<reportElement mode="Opaque" x="50" y="56" width="64" height="14" forecolor="#FFFFFF" backcolor="#999999"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Node Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="114" y="56" width="45" height="14" forecolor="#FFFFFF" backcolor="#999999"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Event Id]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="159" y="56" width="112" height="14" forecolor="#FFFFFF" backcolor="#999999"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Event UEI]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="851" y="56" width="107" height="14" forecolor="#FFFFFF" backcolor="#999999"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Event Creation Time]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="2518" y="56" width="76" height="14" forecolor="#FFFFFF" backcolor="#999999"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Event Ack Time]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="2594" y="56" width="74" height="14" forecolor="#FFFFFF" backcolor="#999999"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Event Ack User]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="2451" y="56" width="67" height="14" forecolor="#FFFFFF" backcolor="#999999"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Event Display]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="12" width="316" height="20" forecolor="#3399FF"/>
+				<textElement verticalAlignment="Bottom">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Event Report]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" pattern="MM/dd/yyyy hh:mm:ss a">
+				<reportElement x="0" y="32" width="114" height="12" forecolor="#3399FF"/>
+				<textElement>
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression class="java.util.Date"><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="56" width="50" height="14" forecolor="#FFFFFF" backcolor="#999999"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Alarm Id]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="271" y="56" width="45" height="14" forecolor="#FFFFFF" backcolor="#999999"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Node ID]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="316" y="56" width="53" height="14" forecolor="#FFFFFF" backcolor="#999999"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[IP Address]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="369" y="56" width="48" height="14" forecolor="#FFFFFF" backcolor="#999999"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Service ID]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="417" y="56" width="38" height="14" forecolor="#FFFFFF" backcolor="#999999"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[IfIndex]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="455" y="56" width="61" height="14" forecolor="#FFFFFF" backcolor="#999999"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Event Parms]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="516" y="56" width="60" height="14" forecolor="#FFFFFF" backcolor="#999999"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ Event Time]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="576" y="56" width="53" height="14" forecolor="#FFFFFF" backcolor="#999999"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Event Host]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="629" y="56" width="62" height="14" forecolor="#FFFFFF" backcolor="#999999"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Event Source]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="691" y="56" width="76" height="14" forecolor="#FFFFFF" backcolor="#999999"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Event DP Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="767" y="56" width="84" height="14" forecolor="#FFFFFF" backcolor="#999999"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Event SNMP host]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="958" y="56" width="87" height="14" forecolor="#FFFFFF" backcolor="#999999"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Event Description]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="1045" y="56" width="82" height="14" forecolor="#FFFFFF" backcolor="#999999"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Event Log Group]]></text>
+			</staticText>
+			<staticText>
+				<reportElement  mode="Opaque" x="1127" y="56" width="96" height="14" forecolor="#FFFFFF" backcolor="#999999"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Event Log Message]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="1223" y="56" width="70" height="14" forecolor="#FFFFFF" backcolor="#999999"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Event Severity]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="1293" y="56" width="87" height="14" forecolor="#FFFFFF" backcolor="#999999"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Event Pathoutage]]></text>
+			</staticText>
+			<staticText>
+				<reportElement  mode="Opaque" x="1380" y="56" width="87" height="14" forecolor="#FFFFFF" backcolor="#999999"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Event Correlation]]></text>
+			</staticText>
+			<staticText>
+				<reportElement  mode="Opaque" x="1467" y="56" width="120" height="14" forecolor="#FFFFFF" backcolor="#999999"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Event Suppressed Count]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="1587" y="56" width="94" height="14" forecolor="#FFFFFF" backcolor="#999999"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Event OperInstruct]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="1681" y="56" width="85" height="14" forecolor="#FFFFFF" backcolor="#999999"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Event Autoaction]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="1766" y="56" width="79" height="14" forecolor="#FFFFFF" backcolor="#999999"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Event Operation]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="1845" y="56" width="141" height="14" forecolor="#FFFFFF" backcolor="#999999"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Event Operation on Menutext]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="1986" y="56" width="87" height="14" forecolor="#FFFFFF" backcolor="#999999"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Event Notification]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="2073" y="56" width="62" height="14" forecolor="#FFFFFF" backcolor="#999999"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Event Ticket]]></text>
+			</staticText>
+			<staticText>
+				<reportElement  mode="Opaque" x="2135" y="56" width="89" height="14" forecolor="#FFFFFF" backcolor="#999999"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Event Ticket State]]></text>
+			</staticText>
+			<staticText>
+				<reportElement  mode="Opaque" x="2224" y="56" width="71" height="14" forecolor="#FFFFFF" backcolor="#999999"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Event Forward]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="2295" y="56" width="108" height="14" forecolor="#FFFFFF" backcolor="#999999"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Event Mouse Overtext]]></text>
+			</staticText>
+			<staticText>
+				<reportElement  mode="Opaque" x="2403" y="56" width="48" height="14" forecolor="#FFFFFF" backcolor="#999999"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Event Log]]></text>
+			</staticText>
+			<staticText>
+				<reportElement  mode="Opaque" x="2668" y="56" width="84" height="14" forecolor="#FFFFFF" backcolor="#999999"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Event SNMP]]></text>
+			</staticText>
+		</band>
+	</title>
+	<detail>
+		<band height="19">
+			<rectangle>
+				<reportElement  stretchType="RelativeToBandHeight" x="1" y="-3" width="2751" height="15"/>
+				<graphicElement>
+					<pen lineWidth="0.7"/>
+				</graphicElement>
+			</rectangle>
+			<textField isStretchWithOverflow="true">
+				<reportElement  x="50" y="0" width="64" height="15"/>
+				<textElement textAlignment="Left" verticalAlignment="Top">
+					<font size="9" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{nodeLabel} != null) ?  $F{nodeLabel} : "-"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement  x="114" y="0" width="45" height="15"/>
+				<textElement textAlignment="Left" verticalAlignment="Top">
+					<font size="9" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{eventId} != null) ? String.valueOf($F{eventId}) : "-"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement  x="271" y="0" width="45" height="15"/>
+				<textElement textAlignment="Left" verticalAlignment="Top">
+					<font size="9" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{nodeId} != null) ? String.valueOf($F{nodeId}) : "-"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement  x="0" y="0" width="50" height="15"/>
+				<textElement textAlignment="Left" verticalAlignment="Top">
+					<font size="9" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{alarmId} != null) ? String.valueOf($F{alarmId}) : "-"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement  x="159" y="0" width="112" height="15"/>
+				<textElement textAlignment="Left" verticalAlignment="Top">
+					<font size="9" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{eventUEI} != null) ? $F{eventUEI} : "-"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement  x="271" y="0" width="45" height="15"/>
+				<textElement textAlignment="Left" verticalAlignment="Top">
+					<font size="9" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{nodeId} != null) ? String.valueOf($F{nodeId}) : "-"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement  x="455" y="0" width="61" height="15"/>
+				<textElement textAlignment="Left" verticalAlignment="Top">
+					<font size="9" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{eventParms} != null) ? $F{eventParms} : "-"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement  x="691" y="0" width="76" height="15"/>
+				<textElement textAlignment="Left" verticalAlignment="Top">
+					<font size="9" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{eventDpName} != null) ? $F{eventDpName} : "-"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement  x="2073" y="0" width="62" height="15"/>
+				<textElement textAlignment="Left" verticalAlignment="Top">
+					<font size="9" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{eventTTicket} != null) ? $F{eventTTicket} : "-"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement  x="2224" y="0" width="71" height="15"/>
+				<textElement textAlignment="Left" verticalAlignment="Top">
+					<font size="9" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{eventForward}!= null) ? $F{eventForward} : "-"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement  x="516" y="0" width="60" height="15"/>
+				<textElement textAlignment="Left" verticalAlignment="Top">
+					<font size="9" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{eventTime} != null) ? $F{eventTime} : "-"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement  x="629" y="0" width="62" height="15"/>
+				<textElement textAlignment="Left" verticalAlignment="Top">
+					<font size="9" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{eventSource} != null) ? $F{eventSource} : "-"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement  x="958" y="0" width="87" height="15"/>
+				<textElement textAlignment="Left" verticalAlignment="Top">
+					<font size="9" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{eventDescr} != null) ? $F{eventDescr} : "-"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement  x="1467" y="0" width="120" height="15"/>
+				<textElement textAlignment="Left" verticalAlignment="Top">
+					<font size="9" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{eventSuppressedCount} != null) ? String.valueOf($F{eventSuppressedCount}) : "-"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement  x="2135" y="0" width="89" height="15"/>
+				<textElement textAlignment="Left" verticalAlignment="Top">
+					<font size="9" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{eventTTicketState} != null) ? String.valueOf($F{eventTTicketState}) : "-"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement  x="2403" y="0" width="48" height="15"/>
+				<textElement textAlignment="Left" verticalAlignment="Top">
+					<font size="9" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{eventLog} != null) ? $F{eventLog} : "-"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement  x="316" y="0" width="53" height="15"/>
+				<textElement textAlignment="Left" verticalAlignment="Top">
+					<font size="9" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{ipAddr} != null) ? String.valueOf($F{ipAddr}) : "-"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement  x="369" y="0" width="48" height="15"/>
+				<textElement textAlignment="Left" verticalAlignment="Top">
+					<font size="9" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{serviceId} != null) ? String.valueOf($F{serviceId}) : "-"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement  x="417" y="0" width="38" height="15"/>
+				<textElement textAlignment="Left" verticalAlignment="Top">
+					<font size="9" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{ifIndex} != null) ?  String.valueOf($F{ifIndex}) : "-"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement  x="576" y="0" width="53" height="15"/>
+				<textElement textAlignment="Left" verticalAlignment="Top">
+					<font size="9" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{eventHost} != null) ? $F{eventHost}: "-"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement  x="767" y="0" width="84" height="15"/>
+				<textElement textAlignment="Left" verticalAlignment="Top">
+					<font size="9" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{eventSnmpHost} != null) ? $F{eventSnmpHost} : "-"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement  x="1293" y="0" width="87" height="15"/>
+				<textElement textAlignment="Left" verticalAlignment="Top">
+					<font size="9" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{eventPathOutage} != null) ? $F{eventPathOutage} : "-"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement  x="2295" y="0" width="108" height="15"/>
+				<textElement textAlignment="Left" verticalAlignment="Top">
+					<font size="9" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{eventMouseOverText} != null) ? $F{eventMouseOverText}: "-"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement  x="2594" y="0" width="74" height="15"/>
+				<textElement textAlignment="Left" verticalAlignment="Top">
+					<font size="9" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{eventAckUser} != null) ? $F{eventAckUser}: "-"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement  x="851" y="0" width="107" height="15"/>
+				<textElement textAlignment="Left" verticalAlignment="Top">
+					<font size="9" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{eventCreateTime} != null) ? $F{eventCreateTime}: "-"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement  x="1045" y="0" width="82" height="15"/>
+				<textElement textAlignment="Left" verticalAlignment="Top">
+					<font size="9" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{eventLogGroup} != null) ? $F{eventLogGroup} : "-"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement  x="1127" y="0" width="96" height="15"/>
+				<textElement textAlignment="Left" verticalAlignment="Top">
+					<font size="9" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{eventLogMsg} != null) ? $F{eventLogMsg} : "-"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement  x="1223" y="0" width="70" height="15"/>
+				<textElement textAlignment="Left" verticalAlignment="Top">
+					<font size="9" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{eventSeverity} != null) ? String.valueOf($F{eventSeverity}) : "-"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement  x="1380" y="0" width="87" height="15"/>
+				<textElement textAlignment="Left" verticalAlignment="Top">
+					<font size="9" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{eventCorrelation} != null) ? $F{eventCorrelation} : "-"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement  x="1587" y="0" width="94" height="15"/>
+				<textElement textAlignment="Left" verticalAlignment="Top">
+					<font size="9" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{eventOperInstruct} != null) ?$F{eventOperInstruct}: "-"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement  x="1681" y="0" width="85" height="15"/>
+				<textElement textAlignment="Left" verticalAlignment="Top">
+					<font size="9" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{eventAutoAction} != null) ? $F{eventAutoAction} : "-"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement  x="1766" y="0" width="79" height="15"/>
+				<textElement textAlignment="Left" verticalAlignment="Top">
+					<font size="9" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{eventOperAction} != null) ? $F{eventOperAction} : "-"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement  x="1845" y="0" width="141" height="15"/>
+				<textElement textAlignment="Left" verticalAlignment="Top">
+					<font size="9" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{eventOperActionMenuText} != null) ? $F{eventOperActionMenuText}: "-"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement  x="1986" y="0" width="87" height="15"/>
+				<textElement textAlignment="Left" verticalAlignment="Top">
+					<font size="9" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{eventNotification} != null) ? $F{eventNotification} : "-"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement  x="2451" y="0" width="67" height="15"/>
+				<textElement textAlignment="Left" verticalAlignment="Top">
+					<font size="9" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{eventDisplay} != null) ? $F{eventDisplay} : "-"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement  x="2518" y="0" width="76" height="15"/>
+				<textElement textAlignment="Left" verticalAlignment="Top">
+					<font size="9" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{eventAckTime} !=null) ? $F{eventAckTime} : "-"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement  x="2668" y="0" width="84" height="15"/>
+				<textElement textAlignment="Left" verticalAlignment="Top">
+					<font size="9" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{eventSnmp} != null) ? $F{eventSnmp} : "-"]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

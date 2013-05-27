@@ -65,6 +65,11 @@
 		for (var i = 0; i < radios.length; i++) {       
 			if (radios[i].checked) {
 			    document.acknowledge_form.format.value = radios[i].value;
+                           if(radios[i].value == "CSV") {
+				document.acknowledge_form.reportId.value = "local_event-report-csv";
+			    }else{
+				document.acknowledge_form.reportId.value = "local_event-report";
+			    }
 			    break;
 			}
 		}

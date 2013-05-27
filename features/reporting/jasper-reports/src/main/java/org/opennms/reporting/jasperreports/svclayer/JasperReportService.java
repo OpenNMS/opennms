@@ -36,6 +36,7 @@ import net.sf.jasperreports.engine.export.JRHtmlExporter;
 import net.sf.jasperreports.engine.export.JRHtmlExporterParameter;
 import net.sf.jasperreports.engine.export.JRXlsExporterParameter;
 import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
+import net.sf.jasperreports.engine.fill.JRGzipVirtualizer;
 import net.sf.jasperreports.engine.fill.JRParameterDefaultValuesEvaluator;
 import net.sf.jasperreports.engine.util.JRLoader;
 import net.sf.jasperreports.engine.xml.JRPrintXmlLoader;
@@ -709,7 +710,7 @@ public class JasperReportService implements ReportService {
     	
     	// Get the event report details
         ArrayList<EventReportStructure> eventReportList = new ArrayList<EventReportStructure>();
-        eventReportList = getEventReportList(eventIds);
+        eventReportList = getEventReportList(eventIds,format);
 		
         JasperReport jasperReport = null;
         JasperPrint jasperPrint = null;
@@ -725,6 +726,10 @@ public class JasperReportService implements ReportService {
         if ("null".equalsIgnoreCase(m_globalReportRepository.getEngine(reportId))) {
             try {
          		JRBeanCollectionDataSource beanColDataSource = new JRBeanCollectionDataSource(eventReportList);
+         		
+         		JRGzipVirtualizer virtualizer = new JRGzipVirtualizer(10240);
+         		reportParms.put(JRParameter.REPORT_VIRTUALIZER, virtualizer);
+
          		jasperPrint = JasperFillManager.fillReport(jasperReport,reportParms,beanColDataSource);
          		
          		if(ReportFormat.PDF == format || ReportFormat.CSV == format ){
@@ -747,12 +752,12 @@ public class JasperReportService implements ReportService {
         File eventReportfolder = new File(baseDir);  
 		if (!eventReportfolder.exists()){  
 			if(eventReportfolder.mkdir()){
-				System.out.println("The event report folder is successfully created in "+baseDir+" location");
+				log.debug("The event report folder is successfully created in "+baseDir+" location");
 			} else {
-				System.out.println("unable to creat the event report folder in "+baseDir+" location");
+				log.debug("unable to creat the event report folder in "+baseDir+" location");
 			}
 		}else{  
-			System.out.println("The event report folder is already exist in server location");
+			log.debug("The event report folder is already exist in server location");
 		}
 		
 		// Store the event report into the local server
@@ -760,10 +765,8 @@ public class JasperReportService implements ReportService {
  		OutputStream outputReportStream = null;
 		try{
 			outputReportStream = new FileOutputStream (outputFileName);
-			log.info("The event report is currently exporting...");
 			if(ReportFormat.PDF == format || ReportFormat.CSV == format ){
      			exportReport(format, jasperPrint, outputReportStream);
-     			log.info("The event report is successfully stored in the local server");
      		} else if(ReportFormat.HTML == format) {
      			exportReportToHtml(jasperPrint,outputReportStream);
      		} else if(ReportFormat.XLS == format){
@@ -778,33 +781,153 @@ public class JasperReportService implements ReportService {
 		}
 	}
 	
-	public ArrayList<EventReportStructure> getEventReportList(List<Integer> eventIds){
+	public ArrayList<EventReportStructure> getEventReportList(List<Integer> eventIds,ReportFormat format) throws ReportException{
     	
+		// Date format for an alarm events
+	    SimpleDateFormat formater = new SimpleDateFormat("MM/dd/yy hh:mm:ss aaa",Locale.ENGLISH);
+	    
 	    ArrayList<EventReportStructure> eventReportList = new ArrayList<EventReportStructure>();
-		for(Integer eventId : eventIds){
-			
-			// Get the events by it's id's
-			OnmsEvent onmsEvent = m_eventDao.get(eventId);
-			eventReportList.add(getEventReportStructure(onmsEvent));
-		}
+	   
+	    if(ReportFormat.CSV ==format)
+			for(Integer eventId : eventIds){
+				
+				// Get the events by it's id's
+				OnmsEvent onmsEvent = m_eventDao.get(eventId);
+				eventReportList.add(getEventReportStructureforCSV(onmsEvent));
+			}
+	    else {
+			for(Integer eventId : eventIds){
+				
+				// Get the events by it's id's
+				OnmsEvent onmsEvent = m_eventDao.get(eventId);
+		 		if(onmsEvent != null)
+				eventReportList.add(getEventReportStructure(onmsEvent));
+			}
+	    }
 		return eventReportList;
     }
 
-	 public EventReportStructure getEventReportStructure(OnmsEvent onmsEvent){
+	 public EventReportStructure getEventReportStructure(OnmsEvent onmsEvent) throws ReportException{
 	    	
 	    	// Date format for an events
 		 SimpleDateFormat formater = new SimpleDateFormat("MM/dd/yy hh:mm:ss aaa",Locale.ENGLISH);
-		    
+		 try{		    
 		 EventReportStructure eventJasperReportStructure = new EventReportStructure();
-		 eventJasperReportStructure.setNodeLabel(onmsEvent.getNodeLabel());
+		 
+		 try{
+			 if(onmsEvent.getNodeLabel() != null){
+				 eventJasperReportStructure.setNodeLabel(onmsEvent.getNodeLabel());
+			 }else{
+				 eventJasperReportStructure.setNodeLabel(null);
+			 }
+		 } catch(Exception e){
+			 eventJasperReportStructure.setNodeLabel(null);
+		 }
+		 
+		 if(onmsEvent != null)
 		 eventJasperReportStructure.setEventId(onmsEvent.getId());
 		 OnmsAlarm onmsAlarm = onmsEvent.getAlarm();
 		 if(onmsAlarm != null)
 			 eventJasperReportStructure.setAlarmId(onmsAlarm.getId());
 		 eventJasperReportStructure.setEventUEI(onmsEvent.getEventUei());
-		 eventJasperReportStructure.setCreateTime(String.valueOf(formater.format(onmsEvent.getEventCreateTime())));
 		 eventJasperReportStructure.setEventLogMsg(onmsEvent.getEventLogMsg());
+		 if(onmsEvent.getEventCreateTime()!=null)
+		 eventJasperReportStructure.setCreateTime(String.valueOf(formater.format(onmsEvent.getEventCreateTime())));
 		 return eventJasperReportStructure;
+		 }
+		
+		 catch(Exception e)
+		 {
+			 log.error("Error in EventReportStructure report", e);
+	            throw new ReportException("Error in EventReportStructure report", e);
+		 }
+		 
+	 }
+	
+	
+	
+
+	 public EventReportStructure getEventReportStructureforCSV(OnmsEvent onmsEvent) throws ReportException{
+	    	
+	    	// Date format for an events
+		 SimpleDateFormat formater = new SimpleDateFormat("MM/dd/yy hh:mm:ss aaa",Locale.ENGLISH);
+		 try{
+			 		 		    
+		 EventReportStructure eventJasperReportStructure = new EventReportStructure();
+		 
+		 try{
+			 if(onmsEvent.getNodeLabel() != null){
+				 eventJasperReportStructure.setNodeLabel(onmsEvent.getNodeLabel());
+			 }else{
+				 eventJasperReportStructure.setNodeLabel(null);
+			 }
+		 } catch(Exception e){
+			 eventJasperReportStructure.setNodeLabel(null);
+		 }
+		 if(onmsEvent != null)
+		 eventJasperReportStructure.setEventId(onmsEvent.getId());
+		 OnmsAlarm onmsAlarm = onmsEvent.getAlarm();
+		 if(onmsAlarm != null)
+			 eventJasperReportStructure.setAlarmId(onmsAlarm.getId());
+		 eventJasperReportStructure.setEventUEI(onmsEvent.getEventUei());
+		 
+		 try{
+			 if(onmsEvent.getNode()!=null){
+				 eventJasperReportStructure.setNodeId(onmsEvent.getNode().getId());
+			 }
+			 else{
+				 eventJasperReportStructure.setNodeId(null);
+			 }
+		 } catch(Exception e){
+			 eventJasperReportStructure.setNodeId(null);
+		 }
+		 
+		 if(onmsEvent.getEventTime()!=null)
+		 eventJasperReportStructure.setEventTime(String.valueOf(formater.format(onmsEvent.getEventTime())));
+		 eventJasperReportStructure.setEventHost(onmsEvent.getEventHost());
+		 eventJasperReportStructure.setEventSource(onmsEvent.getEventSource());
+		 if(onmsEvent.getIpAddr()!=null)
+		 eventJasperReportStructure.setIpAddr(onmsEvent.getIpAddr().getHostAddress());
+		 if(onmsEvent.getDistPoller()!=null)
+		 eventJasperReportStructure.setEventDpName(onmsEvent.getDistPoller().getName());//needto confirm
+	     eventJasperReportStructure.setEventSnmpHost(onmsEvent.getEventSnmpHost());
+	     if(onmsEvent.getServiceType() !=null)
+	     eventJasperReportStructure.setServiceID(onmsEvent.getServiceType().getId());//need to clarify
+	     eventJasperReportStructure.setEventSnmp(onmsEvent.getEventSnmp());
+	     eventJasperReportStructure.setEventParms(onmsEvent.getEventParms());
+	     if(onmsEvent.getEventCreateTime()!=null)
+	     eventJasperReportStructure.setEventCreateTime(String.valueOf(formater.format(onmsEvent.getEventCreateTime())));
+	     eventJasperReportStructure.setEventDescr(onmsEvent.getEventDescr());
+	     eventJasperReportStructure.setEventLogGroup(onmsEvent.getEventLogGroup());
+	     eventJasperReportStructure.setEventLogMsg(onmsEvent.getEventLogMsg());
+	     eventJasperReportStructure.setEventSeverity(onmsEvent.getSeverityLabel().toString());
+	     eventJasperReportStructure.setEventPathOutage(onmsEvent.getEventPathOutage());
+	     eventJasperReportStructure.setEventCorrelation(onmsEvent.getEventCorrelation());
+	     eventJasperReportStructure.setEventSuppressedCount(onmsEvent.getEventSuppressedCount());
+	     eventJasperReportStructure.setEventOperInstruct(onmsEvent.getEventOperInstruct());
+	     eventJasperReportStructure.setEventAutoAction(onmsEvent.getEventAutoAction());
+	     eventJasperReportStructure.setEventOperAction(onmsEvent.getEventOperAction());
+	     eventJasperReportStructure.setEventOperActionMenuText(onmsEvent.getEventOperActionMenuText());
+	     eventJasperReportStructure.setEventNotification(onmsEvent.getEventNotification());
+	     eventJasperReportStructure.setEventTTicket(onmsEvent.getEventTTicket());
+	     eventJasperReportStructure.setEventTTicketState(onmsEvent.getEventTTicketState());
+	     eventJasperReportStructure.setEventForward(onmsEvent.getEventForward());
+	     eventJasperReportStructure.setEventMouseOverText(onmsEvent.getEventMouseOverText());
+	     eventJasperReportStructure.setEventLog(onmsEvent.getEventLog());
+	     eventJasperReportStructure.setEventDisplay(onmsEvent.getEventDisplay());
+	     eventJasperReportStructure.setEventAckUser(onmsEvent.getEventAckUser());
+	     if(onmsEvent.getEventAckTime()!=null)
+	     eventJasperReportStructure.setEventAckTime(String.valueOf(formater.format(onmsEvent.getEventAckTime())));	        
+	     eventJasperReportStructure.setIfIndex(onmsEvent.getIfIndex());
+	     return eventJasperReportStructure;
+		 }
+		 
+		 catch(Exception e)
+		 {
+			 log.error("Error in EventReportStructure CSV report ", e);
+	         throw new ReportException("Error in EventReportStructure CSV report ", e); 
+			 
+		 }
 	 }
 	 
 	public void setEventDao(EventDao m_eventDao) {
@@ -833,6 +956,8 @@ public class JasperReportService implements ReportService {
         if ("null".equalsIgnoreCase(m_globalReportRepository.getEngine(reportId))) {
             try {
          		JRBeanCollectionDataSource beanColDataSource = new JRBeanCollectionDataSource(alarmReportList);
+         		JRGzipVirtualizer virtualizer = new JRGzipVirtualizer(10240);
+         		reportParms.put(JRParameter.REPORT_VIRTUALIZER, virtualizer);
          		jasperPrint = JasperFillManager.fillReport(jasperReport,reportParms,beanColDataSource);
          		
          		if(ReportFormat.PDF == format || ReportFormat.CSV == format ){
