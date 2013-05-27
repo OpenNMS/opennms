@@ -310,9 +310,9 @@ public class DefaultReportWrapperService implements ReportWrapperService {
 
     /** {@inheritDoc} */
     public void	getAlarmReport(List<Integer> alarmIds,HashMap<Integer, List<Integer>> eventIdsForAlarms ,
-        		String reportId, ReportFormat reportFormat, OutputStream outputStream){
+        		String reportId, ReportFormat reportFormat, OutputStream outputStream, String fileName){
     	try {
-    		getReportService(reportId).runAndRender(alarmIds,eventIdsForAlarms,reportId,reportFormat,outputStream);
+    		getReportService(reportId).runAndRender(alarmIds,eventIdsForAlarms,reportId,reportFormat,outputStream, fileName);
 		} catch (ReportException reportException) {
 			log.error("failed to run or render report: " + reportId, reportException);
 		}

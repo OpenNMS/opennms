@@ -165,7 +165,7 @@ public class AlarmReportController extends AbstractController implements Initial
         String action = request.getParameter("actionCode");
         
         List<OnmsAlarm> alarmList = new ArrayList<OnmsAlarm>();
-        if (alarmIdStrings != null) {
+        if (alarmIdStrings != null && action.equals(EXPORT_ACTION)) {
         	
         	// Convert the alarm id strings to int's
             int[] alarmIds = new int[alarmIdStrings.length];
@@ -229,7 +229,7 @@ public class AlarmReportController extends AbstractController implements Initial
         //Get the alarms by alarm criteria
         Filter[] alarmFilters = filterList.toArray(new Filter[0]);
         if(action.equals(EXPORTALL_ACTION)){
-        	
+        	alarmList.clear();
         	AlarmCriteria alarmQueryCriteria = new AlarmCriteria(alarmAckType,alarmFilters);
         	OnmsAlarm[] alarms = m_webAlarmRepository.getMatchingAlarms(AlarmUtil.getOnmsCriteria(alarmQueryCriteria));
 	        
@@ -311,7 +311,7 @@ public class AlarmReportController extends AbstractController implements Initial
         if (action.equals(EXPORT_ACTION)|| action.equals(EXPORTALL_ACTION)) {
         	try{
         		m_reportWrapperService.getAlarmReport(alarmIds, eventIdsForAlarms, reportId,
-        				ReportFormat.valueOf(requestFormat), response.getOutputStream());
+        				ReportFormat.valueOf(requestFormat), response.getOutputStream(), FILE_NAME);
         	} catch(final Exception e){
         	    logger.error("Unable to do export action for this alarm Id's.", alarmIds);
         	}

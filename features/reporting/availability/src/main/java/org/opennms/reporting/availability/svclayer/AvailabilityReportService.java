@@ -315,7 +315,7 @@ public class AvailabilityReportService implements ReportService {
     
     /** {@inheritDoc} */
     public void	runAndRender(List<Integer> alarmIds,HashMap<Integer, List<Integer>> eventIdsForAlarms ,
-        		String reportId, ReportFormat reportFormat, OutputStream outputStream){
+        		String reportId, ReportFormat reportFormat, OutputStream outputStream, String fileName){
     	throw new UnsupportedOperationException("Not supported yet. AvailabilityReportService is deprecated.");
     }
     

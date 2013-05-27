@@ -13,6 +13,8 @@
                 report-service="jasperReportService" description="trivial Jasper report using null datasource" />
         <report id="alarm-report" display-name="Alarm JasperReport" online="true"
                 report-service="jasperReportService" description="Alarm Jasper report using null datasource" />
+	<report id="alarm-report-csv" display-name="Alarm JasperReport" online="true"
+                report-service="jasperReportService" description="Alarm Jasper report using null datasource" />
         <report id="event-report" display-name="Event JasperReport" online="true"
                 report-service="jasperReportService" description="Event Jasper report using null datasource" />
 	    <report id="parameter-test" display-name="parameter test report" online="true"

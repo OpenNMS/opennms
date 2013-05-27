@@ -131,10 +131,11 @@ public interface ReportService {
      * @param reportId a {@link java.lang.String} object.
      * @param reportFormat format to render the report
      * @param outputStream stream to render the resulting report
+	 * @param fileName a {@link java.lang.String} object.
      * @throws org.opennms.api.reporting.ReportException if any.
      */
     public abstract void runAndRender(List<Integer> alarmIds,HashMap<Integer, List<Integer>> eventIdsForAlarms ,
-    		String reportId, ReportFormat reportFormat, OutputStream outputStream) throws ReportException;
+    		String reportId, ReportFormat reportFormat, OutputStream outputStream, String fileName) throws ReportException;
 	
     /**
      * This method retrieves the event details taken by the report

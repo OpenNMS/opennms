@@ -6,6 +6,7 @@
         <report id="sample-report" template="sample-report.jrxml" engine="jdbc" />
         <report id="trivial-report" template="trivial-report.jrxml" engine="null" />
 	<report id="alarm-report" template="alarm-report.jrxml" engine="null" />
+	<report id="alarm-report-csv" template="alarm-report-csv.jrxml" engine="null" />
 	<report id="event-report" template="event-report.jrxml" engine="null" />
         <report id="parameter-test" template="parameter-test.jrxml" engine="null" />
         <report id="Early-Morning-Report" template="Early-Morning-Report.jrxml" engine="jdbc" />

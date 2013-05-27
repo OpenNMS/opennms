@@ -47,6 +47,7 @@ import org.opennms.api.reporting.ReportService;
 import org.opennms.api.reporting.parameter.*;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.db.DataSourceFactory;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.features.reporting.repository.global.GlobalReportRepository;
 import org.opennms.netmgt.dao.AcknowledgmentDao;
@@ -759,8 +760,10 @@ public class JasperReportService implements ReportService {
  		OutputStream outputReportStream = null;
 		try{
 			outputReportStream = new FileOutputStream (outputFileName);
+			log.info("The event report is currently exporting...");
 			if(ReportFormat.PDF == format || ReportFormat.CSV == format ){
      			exportReport(format, jasperPrint, outputReportStream);
+     			log.info("The event report is successfully stored in the local server");
      		} else if(ReportFormat.HTML == format) {
      			exportReportToHtml(jasperPrint,outputReportStream);
      		} else if(ReportFormat.XLS == format){
@@ -777,9 +780,6 @@ public class JasperReportService implements ReportService {
 	
 	public ArrayList<EventReportStructure> getEventReportList(List<Integer> eventIds){
     	
-		// Date format for an alarm events
-	    SimpleDateFormat formater = new SimpleDateFormat("MM/dd/yy hh:mm:ss aaa",Locale.ENGLISH);
-	    
 	    ArrayList<EventReportStructure> eventReportList = new ArrayList<EventReportStructure>();
 		for(Integer eventId : eventIds){
 			
@@ -812,11 +812,12 @@ public class JasperReportService implements ReportService {
 	}
 
     public void runAndRender(List<Integer> alarmIds,HashMap<Integer, List<Integer>> eventIdsForAlarms ,
-    		String reportId, ReportFormat format, OutputStream outputStream) throws ReportException {
+    		String reportId, ReportFormat format, OutputStream outputStream, String fileName) throws ReportException {
     	
+    	log.info("Enter into the rundAndRender action for alarm report");
     	// Get the alarm report details
         ArrayList<AlarmReportStructure> alarmReportList = new ArrayList<AlarmReportStructure>();
-        alarmReportList = getAlarmReportList(alarmIds,eventIdsForAlarms);
+        alarmReportList = getAlarmReportList(alarmIds,eventIdsForAlarms,format);
 		
         JasperReport jasperReport = null;
         JasperPrint jasperPrint = null;
@@ -849,30 +850,35 @@ public class JasperReportService implements ReportService {
             }
         }
         
+        String baseDir = System.getProperty("opennms.alarm.report.dir");
+        File alarmReportfolder = new File(baseDir);
+        
         // Create the alarm report folder if it's not exist already
-        String baseDir = System.getProperty("opennms.report.dir")+"/alarm";
-        File alarmReportfolder = new File(baseDir);  
-		if (!alarmReportfolder.exists()){  
-			if(alarmReportfolder.mkdir()){
-				System.out.println("The alarm report folder is successfully created in "+baseDir+" location");
+        if (!alarmReportfolder.exists()){
+        	baseDir = System.getProperty("opennms.report.dir")+"/alarm";
+        	alarmReportfolder = new File(baseDir);
+        	if(alarmReportfolder.mkdir()){
+        		 log.debug("The alarm report folder is successfully created in "+baseDir+" location");
 			} else {
-				System.out.println("unable to creat the alarm report folder in "+baseDir+" location");
+				 log.error("Unable to creat the alarm report folder in "+baseDir+" location");
 			}
-		}else{  
-			System.out.println("The alarm report folder is already exist in server location");
-		}
+        }
 		
-		// Store the alarm report into the local server
- 		String outputFileName = new String(baseDir + "/" + jasperReport.getName()+ new SimpleDateFormat("_MMddyyyy_HHmmss").format(new Date())+"."+String.valueOf(format).toLowerCase());
+		// To Store the alarm report in the local server
+ 		String outputFileName = new String(baseDir + "/" + fileName);
  		OutputStream outputReportStream = null;
 		try{
+			log.info("The alarm report is currently exporting...");
 			outputReportStream = new FileOutputStream (outputFileName);
 			if(ReportFormat.PDF == format || ReportFormat.CSV == format ){
      			exportReport(format, jasperPrint, outputReportStream);
+     			log.info("The alarm report is successfully stored in the local server");
      		} else if(ReportFormat.HTML == format) {
      			exportReportToHtml(jasperPrint,outputReportStream);
+     			log.info("The alarm report is successfully stored in the local server");
      		} else if(ReportFormat.XLS == format){
      			exportReportToXls(jasperPrint,outputReportStream);
+     			log.info("The alarm report is successfully stored in the local server");
      		} else {
      			log.error("Unknown file format : " + format);
      		}
@@ -881,10 +887,11 @@ public class JasperReportService implements ReportService {
 		} catch (FileNotFoundException e) {
 			log.error("unable to find the server location ", e);
 		}
+		log.info("Terminated from the rundAndRender action for alarm report");
     }
     
     
-    public ArrayList<AlarmReportStructure> getAlarmReportList(List<Integer> alarmIds, HashMap<Integer, List<Integer>> eventIdsForAlarms){
+    public ArrayList<AlarmReportStructure> getAlarmReportList(List<Integer> alarmIds, HashMap<Integer, List<Integer>> eventIdsForAlarms, ReportFormat format){
     	
 		// Date format for an alarm events
 	    SimpleDateFormat formater = new SimpleDateFormat("MM/dd/yy hh:mm:ss aaa",Locale.ENGLISH);
@@ -982,15 +989,15 @@ public class JasperReportService implements ReportService {
 				    			}
 							}
 							if(isEmptyAcknowledgment){
-								alarmReportList.add(getAlarmReportStructure(onmsAlarm, currOnmsEvent, null));
+								alarmReportList.add(getAlarmReportStructure(onmsAlarm, currOnmsEvent, null,format));
 							} else {
-								alarmReportList.add(getAlarmReportStructure(onmsAlarm, currOnmsEvent, getAckStatus));
+								alarmReportList.add(getAlarmReportStructure(onmsAlarm, currOnmsEvent, getAckStatus, format));
 							}
 						} else {
-							alarmReportList.add(getAlarmReportStructure(onmsAlarm, currOnmsEvent, null));
+							alarmReportList.add(getAlarmReportStructure(onmsAlarm, currOnmsEvent, null, format));
 						}
 					} else {
-						alarmReportList.add(getAlarmReportStructure(onmsAlarm, currOnmsEvent, null));
+						alarmReportList.add(getAlarmReportStructure(onmsAlarm, currOnmsEvent, null, format));
 					}
 				}
 			}
@@ -998,23 +1005,34 @@ public class JasperReportService implements ReportService {
 		return alarmReportList;
     }
 
-    public AlarmReportStructure getAlarmReportStructure(OnmsAlarm onmsAlarm, OnmsEvent onmsEvent, String[] ackStatus){
+    public AlarmReportStructure getAlarmReportStructure(OnmsAlarm onmsAlarm, OnmsEvent onmsEvent, String[] ackStatus, ReportFormat format){
     	
     	// Date format for an alarm events
 	    SimpleDateFormat formater = new SimpleDateFormat("MM/dd/yy hh:mm:ss aaa",Locale.ENGLISH);
 	    
     	AlarmReportStructure alarmJasperReportStructure = new AlarmReportStructure();
-		alarmJasperReportStructure.setNodeLabel(onmsAlarm.getNodeLabel());
-		alarmJasperReportStructure.setEventId(onmsEvent.getId());
-		if(onmsEvent.getAlarm()!= null){
+
+    	if(onmsEvent.getAlarm()!= null){
 			if(onmsEvent.getAlarm().getId() != 0){
 				alarmJasperReportStructure.setAlarmId(onmsEvent.getAlarm().getId());
 			} else{
 				alarmJasperReportStructure.setAlarmId(0);
 			}
 		}
+
+		 try{
+			 if(onmsAlarm.getNodeLabel() != null){
+				 alarmJasperReportStructure.setNodeLabel(onmsAlarm.getNodeLabel());
+			 }else{
+				 alarmJasperReportStructure.setNodeLabel(null);
+			 }
+		 } catch(Exception e){
+			 alarmJasperReportStructure.setNodeLabel(null);
+		 }
+		 
+		alarmJasperReportStructure.setEventId(onmsEvent.getId());
 		alarmJasperReportStructure.setEventUEI(onmsEvent.getEventUei());
-		alarmJasperReportStructure.setCreateTime(String.valueOf(formater.format(onmsEvent.getEventCreateTime())));
+
 		if(ackStatus != null){
 			alarmJasperReportStructure.setAckTime(ackStatus[0]);
 			alarmJasperReportStructure.setAckUser(ackStatus[1]);
@@ -1024,6 +1042,158 @@ public class JasperReportService implements ReportService {
 			alarmJasperReportStructure.setAckUser(null);
 			alarmJasperReportStructure.setAckAction(null);
 		}
+		
+		if(onmsEvent.getEventCreateTime() != null){
+			alarmJasperReportStructure.setEventCreateTime(String.valueOf(formater.format(onmsEvent.getEventCreateTime())));
+		} else {
+			alarmJasperReportStructure.setEventCreateTime(null);
+		}
+		
+		if(ReportFormat.CSV == format){
+			if(onmsAlarm.getDistPoller() != null){
+				alarmJasperReportStructure.setDpName(onmsAlarm.getDistPoller().getName());
+			} else {
+				alarmJasperReportStructure.setDpName(null);
+			}
+			
+			alarmJasperReportStructure.setNodeId(onmsAlarm.getNodeId());
+			alarmJasperReportStructure.setIpAddr(InetAddressUtils.str(onmsAlarm.getIpAddr()));
+			
+			if(onmsAlarm.getServiceType() != null){
+				alarmJasperReportStructure.setServiceID(onmsAlarm.getServiceType().getId());
+			} else {
+				alarmJasperReportStructure.setServiceID(null);
+			}
+			
+			alarmJasperReportStructure.setReductionKey(onmsAlarm.getReductionKey());
+			alarmJasperReportStructure.setAlarmType(onmsAlarm.getAlarmType());
+			alarmJasperReportStructure.setCounter(onmsAlarm.getCounter());
+			alarmJasperReportStructure.setSeverity(onmsAlarm.getSeverityLabel());
+			
+			if(onmsAlarm.getLastEvent() != null){
+				alarmJasperReportStructure.setLastEventId(onmsAlarm.getLastEvent().getId());
+			} else {
+				alarmJasperReportStructure.setLastEventId(null);
+			}
+			
+			alarmJasperReportStructure.setFirstEventTime(String.valueOf(formater.format(onmsAlarm.getFirstEventTime())));
+			alarmJasperReportStructure.setLastEventTime(String.valueOf(formater.format(onmsAlarm.getLastEventTime())));
+			
+			if(onmsAlarm.getFirstAutomationTime() != null){
+				alarmJasperReportStructure.setFirstAutomationTime(String.valueOf(formater.format(onmsAlarm.getFirstAutomationTime())));
+			} else {
+				alarmJasperReportStructure.setFirstAutomationTime(null);
+			}
+			
+			if(onmsAlarm.getLastAutomationTime() != null){
+				alarmJasperReportStructure.setLastAutomationTime(String.valueOf(formater.format(onmsAlarm.getLastAutomationTime())));
+			} else {
+				alarmJasperReportStructure.setLastAutomationTime(null);
+			}
+			
+			alarmJasperReportStructure.setDescription(onmsAlarm.getDescription());
+			alarmJasperReportStructure.setLogMsg(onmsAlarm.getLogMsg());
+			alarmJasperReportStructure.setOperInstruct(onmsAlarm.getOperInstruct());
+			alarmJasperReportStructure.settTicketId(onmsAlarm.getTTicketId());
+			alarmJasperReportStructure.settTicketState(String.valueOf(onmsAlarm.getTTicketState()).trim());
+			alarmJasperReportStructure.setMouseOverText(onmsAlarm.getMouseOverText());
+			
+			if(onmsAlarm.getSuppressedUntil()!= null){
+				alarmJasperReportStructure.setSuppressedUntil(String.valueOf(formater.format(onmsAlarm.getSuppressedUntil())));
+			} else {
+				alarmJasperReportStructure.setSuppressedUntil(null);
+			}
+			
+			if(onmsAlarm.getSuppressedTime() != null){
+				alarmJasperReportStructure.setSuppressedTime(String.valueOf(formater.format(onmsAlarm.getSuppressedTime())));
+			} else {
+				alarmJasperReportStructure.setSuppressedTime(null);
+			}
+			
+			alarmJasperReportStructure.setAlarmAckUser(onmsAlarm.getAlarmAckUser());
+			
+			if(onmsAlarm.getAlarmAckTime() != null){
+				alarmJasperReportStructure.setAlarmAckTime(String.valueOf(formater.format(onmsAlarm.getAlarmAckTime())));
+			} else {
+				alarmJasperReportStructure.setAlarmAckTime(null);
+			}
+			
+			alarmJasperReportStructure.setSuppressedUser(onmsAlarm.getSuppressedUser());
+			alarmJasperReportStructure.setManagedObjectInstance(onmsAlarm.getManagedObjectInstance());
+			alarmJasperReportStructure.setManagedObjectType(onmsAlarm.getManagedObjectType());
+			alarmJasperReportStructure.setApplicationDN(onmsAlarm.getApplicationDN());
+			alarmJasperReportStructure.setOssPrimaryKey(onmsAlarm.getOssPrimaryKey());
+			alarmJasperReportStructure.setX733AlarmType(onmsAlarm.getX733AlarmType());
+			alarmJasperReportStructure.setX733ProbableCause(onmsAlarm.getX733ProbableCause());
+			alarmJasperReportStructure.setQosAlarmState(onmsAlarm.getQosAlarmState());
+			alarmJasperReportStructure.setClearKey(onmsAlarm.getClearKey());
+			alarmJasperReportStructure.setIfIndex(onmsAlarm.getIfIndex());
+			alarmJasperReportStructure.setEventParms(onmsAlarm.getEventParms());
+			
+			if(onmsAlarm.getStickyMemo() != null){
+				alarmJasperReportStructure.setStickyMemo(onmsAlarm.getStickyMemo().getBody());
+			} else {
+				alarmJasperReportStructure.setStickyMemo(null);
+			}
+			
+			if(onmsEvent.getEventTime() != null){
+				alarmJasperReportStructure.setEventTime(String.valueOf(formater.format(onmsEvent.getEventTime())));
+			} else {
+				alarmJasperReportStructure.setEventTime(null);
+			}
+			
+			alarmJasperReportStructure.setEventHost(onmsEvent.getEventHost());
+			alarmJasperReportStructure.setEventSource(onmsEvent.getEventSource());
+			
+			if(onmsEvent.getDistPoller() != null){
+				alarmJasperReportStructure.setEventDbName(onmsEvent.getDistPoller().getName());
+			} else {
+				alarmJasperReportStructure.setEventDbName(null);
+			}
+			
+			alarmJasperReportStructure.setEventSnmpHost(onmsEvent.getEventSnmpHost());
+			
+			if(onmsEvent.getServiceType() != null){
+				alarmJasperReportStructure.setEventServiceID(onmsEvent.getServiceType().getId());
+			} else {
+				alarmJasperReportStructure.setEventServiceID(null);
+			}
+			
+			alarmJasperReportStructure.setEventParms(onmsEvent.getEventParms());
+			alarmJasperReportStructure.setEventDescr(onmsEvent.getEventDescr());
+			alarmJasperReportStructure.setEventLogGroup(onmsEvent.getEventLogGroup());
+			alarmJasperReportStructure.setEventLogMsg(onmsEvent.getEventLogMsg());
+			alarmJasperReportStructure.setEventSeverity(String.valueOf(onmsEvent.getSeverityLabel()));
+			alarmJasperReportStructure.setEventPathOutage(onmsEvent.getEventPathOutage());
+			alarmJasperReportStructure.setEventCorrelation(onmsEvent.getEventCorrelation());
+			alarmJasperReportStructure.setEventSuppressedCount(onmsEvent.getEventSuppressedCount());
+			alarmJasperReportStructure.setEventOperInstruct(onmsEvent.getEventOperInstruct());
+			alarmJasperReportStructure.setEventAutoAction(onmsEvent.getEventAutoAction());
+			alarmJasperReportStructure.setEventOperAction(onmsEvent.getEventOperAction());
+			alarmJasperReportStructure.setEventOperActionMenuText(onmsEvent.getEventOperActionMenuText());
+			alarmJasperReportStructure.setEventNotification(onmsEvent.getEventNotification());
+			alarmJasperReportStructure.setEventTTicket(onmsEvent.getEventTTicket());
+			alarmJasperReportStructure.setEventTTicketState(onmsEvent.getEventTTicketState());
+			alarmJasperReportStructure.setEventForward(onmsEvent.getEventForward());
+			alarmJasperReportStructure.setEventMouseOverText(onmsEvent.getEventMouseOverText());
+			alarmJasperReportStructure.setEventLog(onmsEvent.getEventLog());
+			alarmJasperReportStructure.setEventDisplay(onmsEvent.getEventDisplay());
+			
+			if(onmsEvent.getEventAckTime() != null){
+				alarmJasperReportStructure.setEventAckTime(String.valueOf(formater.format(onmsEvent.getEventAckTime())));
+			} else {
+				alarmJasperReportStructure.setEventAckTime(null);
+			}
+			
+			alarmJasperReportStructure.setEventAckUser(onmsEvent.getEventAckUser());
+			alarmJasperReportStructure.setEventIfIndex(onmsEvent.getIfIndex());
+			
+			if(onmsEvent.getIpAddr() != null){
+				alarmJasperReportStructure.setEventIpAddr(InetAddressUtils.str(onmsEvent.getIpAddr()));
+			} else {
+				alarmJasperReportStructure.setEventIpAddr(null);
+			}
+    	}
     	return alarmJasperReportStructure;
     }
     

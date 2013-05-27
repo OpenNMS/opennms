@@ -21,8 +21,8 @@
 	<field name="eventUEI" class="java.lang.String">
 		<fieldDescription><![CDATA[eventUEI]]></fieldDescription>
 	</field>
-	<field name="createTime" class="java.lang.String">
-		<fieldDescription><![CDATA[createTime]]></fieldDescription>
+	<field name="eventCreateTime" class="java.lang.String">
+		<fieldDescription><![CDATA[eventCreateTime]]></fieldDescription>
 	</field>
 	<field name="ackTime" class="java.lang.String">
 		<fieldDescription><![CDATA[ackTime]]></fieldDescription>
@@ -154,7 +154,7 @@
 				<textElement textAlignment="Left" verticalAlignment="Top">
 					<font size="9" isBold="false"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[" "+(($F{createTime} != null) ? $F{createTime} : "-")]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[" "+(($F{eventCreateTime} != null) ? $F{eventCreateTime} : "-")]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true">
 				<reportElement x="337" y="0" width="71" height="15"/>

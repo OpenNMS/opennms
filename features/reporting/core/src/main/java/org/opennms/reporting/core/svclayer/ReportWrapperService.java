@@ -132,9 +132,10 @@ public interface ReportWrapperService {
      * @param reportId a {@link java.lang.String} object.
      * @param reportFormat format to render the report
      * @param outputStream stream to render the resulting report
+     * @param fileName a {@link java.lang.String} object.
      */
     public abstract void getAlarmReport(List<Integer> alarmIds,HashMap<Integer, List<Integer>> eventIdsForAlarms ,
-    		String reportId, ReportFormat reportFormat, OutputStream outputStream);
+    		String reportId, ReportFormat reportFormat, OutputStream outputStream, String fileName);
     /**
      * This method retrieves the event details taken by the report
      *
