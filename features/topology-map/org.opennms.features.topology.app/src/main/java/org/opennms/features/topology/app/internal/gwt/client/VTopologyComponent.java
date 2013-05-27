@@ -470,6 +470,8 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 		m_graphDrawerNoTransition = new SVGGraphDrawerNoTransition(dragBehavior, m_serviceRegistry);
 		
 		setTopologyViewRenderer(m_graphDrawer);
+		
+		sendPhysicalDimensions();
 	}
 
     
@@ -793,7 +795,6 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
         graph.setBoundingBox(GWTBoundingBox.create(x, y, width, height));
 		setGraph(graph, oldBBox);
         
-		sendPhysicalDimensions();
 	}
 	
 	private void sendPhysicalDimensions() {

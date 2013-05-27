@@ -342,7 +342,7 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
         if(!m_activeTool.equals(toolname)) {
             m_activeTool = toolname;
             getState().setActiveTool(toolname);
-            requestRepaint();
+            updateGraph();
         }
     }
 
@@ -367,7 +367,7 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
     @Override
     public void boundingBoxChanged(MapViewManager viewManager) {
         setScale(viewManager.getScale());
-        requestRepaint();
+        updateGraph();
     }
     
     public MapViewManager getViewManager() {
