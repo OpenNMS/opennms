@@ -210,7 +210,7 @@ a:hover {
 <%--For displaying The Table --%>
 <c:choose>
 	<c:when test="${empty alarmList}">
-		<b><p>Alarm reports are not available.</p></b>
+		<b><p>No Alarm Report found.</p></b>
 	</c:when>
 
 	<c:otherwise>

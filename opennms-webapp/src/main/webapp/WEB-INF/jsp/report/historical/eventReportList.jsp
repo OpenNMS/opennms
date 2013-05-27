@@ -217,7 +217,7 @@ a:hover {
 		<%--For displaying The Table --%>
 		<c:choose>
 			<c:when test="${empty eventList}">
-				<b><p>Event reports are not available.</p></b>
+				<b><p>No Event Report found.</p></b>
 			</c:when>
 
 			<c:otherwise>
