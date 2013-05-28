@@ -126,7 +126,7 @@
       <useProjectArtifact>false</useProjectArtifact>
       <outputDirectory>lib/endorsed</outputDirectory>
       <includes>
-        <include>javax.xml.bind:com.springsource.javax.xml.bind</include>
+        <include>org.opennms.dependencies:jaxb-dependencies:pom</include>
       </includes>
       <fileMode>0644</fileMode>
       <directoryMode>0755</directoryMode>
@@ -135,7 +135,7 @@
       <useProjectArtifact>false</useProjectArtifact>
       <outputDirectory>lib</outputDirectory>
       <excludes>
-        <exclude>javax.xml.bind:com.springsource.javax.xml.bind</exclude>
+        <exclude>org.opennms.dependencies:jaxb-dependencies:pom</exclude>
         <exclude>org.opennms:opennms-bootstrap</exclude>
         <exclude>org.opennms:opennms-install</exclude>
         <exclude>org.opennms.features:org.opennms.features.system-report</exclude>
