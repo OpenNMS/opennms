@@ -404,18 +404,6 @@
           <groupId>commons-logging</groupId>
           <artifactId>commons-logging</artifactId>
         </exclusion>
-        <exclusion>
-          <groupId>javax.xml</groupId>
-          <artifactId>jaxb-api</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>com.sun.xml.bind</groupId>
-          <artifactId>jaxb-impl</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>javax.xml</groupId>
-          <artifactId>jaxb-api</artifactId>
-        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
@@ -464,9 +452,9 @@
       <type>pom</type>
     </dependency>
     <dependency>
-      <groupId>com.sun.xml</groupId>
-      <artifactId>com.springsource.com.sun.xml.bind</artifactId>
-      <version>${springJaxbVersion}</version>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>jaxb-dependencies</artifactId>
+      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
