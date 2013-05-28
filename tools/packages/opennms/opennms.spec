@@ -702,6 +702,9 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(664 root root 775)
+%{instprefix}/etc/examples/Juniper/mcg/3gpp.kpis.xml
+%{instprefix}/etc/examples/Juniper/mcg/MCG-xml-datacollection-config.xml
+%{instprefix}/etc/examples/Juniper/mcg/MCG-collectd-configuration.xml
 
 %files core -f %{_tmppath}/files.main
 %defattr(664 root root 775)
