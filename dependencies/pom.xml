@@ -25,6 +25,7 @@
     <module>jasper</module>
     <module>jasypt</module>
     <module>javamail</module>
+    <module>jaxb</module>
     <module>jcifs</module>
     <module>jdbc-pool</module>
     <module>jersey</module>

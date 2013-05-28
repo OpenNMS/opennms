@@ -134,6 +134,13 @@
       <artifactId>geoGoogle</artifactId>
       <scope>provided</scope>
     </dependency>
+    <!-- for geoGoogle -->
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>jaxb-dependencies</artifactId>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
     <!-- GWT -->
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
