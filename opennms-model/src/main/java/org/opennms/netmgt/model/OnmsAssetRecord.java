@@ -45,13 +45,10 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
@@ -65,7 +62,6 @@ import org.springframework.core.style.ToStringCreator;
 @XmlRootElement(name = "assetRecord")
 @Entity
 @Table(name = "assets")
-@XmlAccessorType(XmlAccessType.NONE)
 public class OnmsAssetRecord implements Serializable {
     /**
      * Constant <code>AUTOENABLED="A"</code>
@@ -437,11 +433,6 @@ public class OnmsAssetRecord implements Serializable {
     @XmlIDREF
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "nodeId")
-    /* FIXME: This works around a bug in the JAXB that is included in JDK 7.  If/when
-     * we eventually require JDK 8, we can remove this.  See
-     * https://java.net/jira/browse/JAXB-900 for details.
-     */
-    @XmlJavaTypeAdapter(value=OnmsAnyTypeAdapter.class)
     public OnmsNode getNode() {
         return m_node;
     }
