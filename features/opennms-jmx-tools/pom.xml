@@ -28,14 +28,6 @@
                         </goals>
                     </execution>
                 </executions>
-<!--
-                <exclusions>
-                    <exclusion>
-                        <groupId>com.sun.xml.bind</groupId>
-                        <artifactId>jaxb-impl</artifactId>
-                    </exclusion>
-                </exclusions>
--->
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
