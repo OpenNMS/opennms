@@ -228,12 +228,12 @@ abstract public class XmlTest<T> {
         return xml;
     }
 
-    public static void assertXmlEquals(final String xmlA, final String xmlB) throws Exception {
-        final List<Difference> differences = getDifferences(xmlA, xmlB);
+    public static void assertXmlEquals(final String expectedXml, final String actualXml) throws Exception {
+        final List<Difference> differences = getDifferences(expectedXml, actualXml);
         if (differences.size() > 0) {
-            LogUtils.debugf(XmlTest.class, "XML:\n\n%s\n\n...does not match XML:\n\n%s", xmlA, xmlB);
+            LogUtils.debugf(XmlTest.class, "XML:\n\n%s\n\n...does not match XML:\n\n%s", expectedXml, actualXml);
         }
-        assertEquals("number of XMLUnit differences between the example xml and the generated xml should be 0", 0, differences.size());
+        assertEquals("number of XMLUnit differences between the expected xml and the actual xml should be 0", 0, differences.size());
     }
 
     protected static List<Difference> getDifferences(final String xmlA, final String xmlB) throws SAXException, IOException {
