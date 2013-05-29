@@ -174,15 +174,13 @@
 	 * On Version change only the specificy section is shown.
 	 */
 	function onVersionChange() {
-		var versionElements = new Array(document.getElementById("v1v2"),
-				document.getElementById("v3"));
-
+		var versionElements = new Array(document.getElementById("v1v2"), document.getElementById("v3"));
+		var selectedElement = null;
 		//  determine selected element
-		if (document.getElementById("version").value == "v1"
-				|| document.getElementById("version").value == "v2c")
-			var selectedElement = document.getElementById("v1v2");
+		if (document.getElementById("version").value == "v1" || document.getElementById("version").value == "v2c")
+			selectedElement = document.getElementById("v1v2");
 		if (document.getElementById("version").value == "v3")
-			var selectedElement = document.getElementById("v3");
+			selectedElement = document.getElementById("v3");
 
 		// hide all not selected elements and show selected Element
 		for ( var elementIndex in versionElements) {
@@ -248,8 +246,8 @@
 <div class="tooltip" id="securityLevelTT"><p><b>Default: </b>noAuthNoPriv|authNoPriv|authPriv<br/>The security level for SNMP v3 authentication. If you leave it empty the security level is determined automatically as follows:<ul><li>if no authentication passphrase is set <u>noAuthNoPriv</u> is determined</li><li>if authentication passphrase is set but a privacy passphrase is not <u>authNoPriv</u> is determined</li><li>if authentication and privacy passphrase is set <u>authPriv</u> is determined</ul></p></div>
 <div class="tooltip" id="authPassPhraseTT"><p><b>Default: </b><%=SnmpConfiguration.DEFAULT_AUTH_PASS_PHRASE %><br/>The passphrase to use for SNMP v3 authentication.</p></div>
 <div class="tooltip" id="authProtocolTT"><p><b>Default: </b><%=SnmpConfiguration.DEFAULT_AUTH_PROTOCOL %><br/>The authentication protocol for SNMP v3.</p></div>
-<div class="tooltip" id="privacyPassPhraseTT"><p><b>Default: </b><%=SnmpConfiguration.DEFAULT_PRIV_PASS_PHRASE %><br/>A privacy pass phrase used to encrypt the contents of SNMP v3 packages.</p></div>
-<div class="tooltip" id="privacyProtocolTT"><p><b>Default: </b><%=SnmpConfiguration.DEFAULT_PRIV_PROTOCOL %><br/>The privacy protocol used to encrypt the contents of SNMP v3 packages.</p></div>
+<div class="tooltip" id="privPassPhraseTT"><p><b>Default: </b><%=SnmpConfiguration.DEFAULT_PRIV_PASS_PHRASE %><br/>A privacy pass phrase used to encrypt the contents of SNMP v3 packages.</p></div>
+<div class="tooltip" id="privProtocolTT"><p><b>Default: </b><%=SnmpConfiguration.DEFAULT_PRIV_PROTOCOL %><br/>The privacy protocol used to encrypt the contents of SNMP v3 packages.</p></div>
 <div class="tooltip" id="engineIdTT"><p><b>Default: </b>-<br/>The engine id of the target agent.</p></div>
 <div class="tooltip" id="contextEngineIdTT"><p><b>Default: </b>-<br/>The name of the context to obtain data from the target agent.</p></div>
 <div class="tooltip" id="contextNameTT"><p><b>Default: </b>-<br/>The context engine id of the target entity on the agent.</p></div>
@@ -503,17 +501,17 @@
 					<tr>
 						<td width="25%">Privacy Passphrase:</td>
 						<td width="50%">
-							<input style="width:120px;" name="privacyPassPhrase" value="<%=privPassPhrase%>" />
-							<img src="css/images/ui-trans_1x1.png" class="info" onMouseOver="showTT('privacyPassPhraseTT')" onMouseOut="hideTT()"/>
+							<input style="width:120px;" name="privPassPhrase" value="<%=privPassPhrase%>" />
+							<img src="css/images/ui-trans_1x1.png" class="info" onMouseOver="showTT('privPassPhraseTT')" onMouseOut="hideTT()"/>
 							</td>
 					</tr>
 					<tr>
 						<td width="25%">Privacy Protocol:</td>
 						<td width="50%">
-							<select name="privacyProtocol" style="width: 120px">
+							<select name="privProtocol" style="width: 120px">
 								<%=getOptions(privProtocol, "", "", "DES", "AES", "AES192", "AES256")%>
 							</select>
-							<img src="css/images/ui-trans_1x1.png" class="info" onMouseOver="showTT('privacyProtocolTT')" onMouseOut="hideTT()"/>
+							<img src="css/images/ui-trans_1x1.png" class="info" onMouseOver="showTT('privProtocolTT')" onMouseOut="hideTT()"/>
 							
 						</td>
 					</tr>
