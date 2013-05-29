@@ -190,7 +190,7 @@ public class SnmpConfigServlet extends HttpServlet {
 		String authProtocol = request.getParameter("authProtocol");
 		String privPassPhrase = request.getParameter("privPassPhrase");
 		String privProtocol = request.getParameter("privProtocol");
-		String engineId = request.getParameter("eingineId");
+		String engineId = request.getParameter("engineId");
 		String contextEngineId = request.getParameter("contextEngineId");
 		String contextName = request.getParameter("contextName");
 		String enterpriseId = request.getParameter("enterpriseId");

@@ -101,6 +101,12 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>jaxb-dependencies</artifactId>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.phonebook</artifactId>
     </dependency>
@@ -148,25 +154,6 @@
     <dependency>
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.sun.xml</groupId>
-      <artifactId>com.springsource.com.sun.xml.bind</artifactId>
-      <version>2.1.7</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>javax.xml.stream</groupId>
-      <artifactId>com.springsource.javax.xml.stream</artifactId>
-      <version>1.0.1</version>
-      <scope>provided</scope>
-      <optional>true</optional>
-    </dependency>
-    <dependency>
-      <groupId>javax.xml.bind</groupId>
-      <artifactId>com.springsource.javax.xml.bind</artifactId>
-      <version>2.1.7</version>
       <scope>provided</scope>
     </dependency>
     <!-- test dependencies -->

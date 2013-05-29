@@ -39,7 +39,7 @@
                 <configuration>
                     <bundles>
                         <bundle>mvn:org.opennms.features/jmxconfiggenerator/${project.version}</bundle>
-                        <bundle>wrap:mvn:com.sun.xml.bind/jaxb-impl/2.2.6</bundle>
+                        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jaxb-impl/2.2.6_1</bundle>
                         <bundle>wrap:mvn:args4j/args4j/${args4j.version}</bundle>
                         <bundle>wrap:mvn:org.jvnet.opendmk/jmxremote_optional/${jmxremote.optional.version}</bundle>
                         <bundle>wrap:mvn:commons-io/commons-io/${commons.io.version}</bundle>
@@ -61,14 +61,14 @@
                         </goals>
                     </execution>
                 </executions>
-<!--
-                <exclusions>
-                    <exclusion>
-                        <groupId>com.sun.xml.bind</groupId>
-                        <artifactId>jaxb-impl</artifactId>
-                    </exclusion>
-                </exclusions>
--->
+                <dependencies>
+                    <dependency>
+                        <groupId>org.opennms.dependencies</groupId>
+                        <artifactId>jaxb-dependencies</artifactId>
+                        <type>pom</type>
+                        <version>${project.version}</version>
+                    </dependency>
+                </dependencies>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

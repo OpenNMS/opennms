@@ -68,13 +68,6 @@
             <groupId>com.atlassian.jira</groupId>
             <artifactId>jira-rest-java-client</artifactId>
             <version>1.0</version>
-            <exclusions>
-                <!-- Exclude JAXB dependencies -->
-                <exclusion>
-                    <groupId>com.sun.xml.bind</groupId>
-                    <artifactId>jaxb-impl</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
     </dependencies>
 </project>
