@@ -209,12 +209,13 @@ public class Events implements Serializable {
     }
 
     public void setEvent(final List<Event> events) {
+        if (m_events == events) return;
         m_events.clear();
         m_events.addAll(events);
     }
 
     public void setEventCollection(final List<Event> events) {
-        m_events = events;
+        setEvent(events);
     }
 
     public void setEventFile(final int index, final String eventFile) throws IndexOutOfBoundsException {
@@ -232,10 +233,9 @@ public class Events implements Serializable {
     }
 
     public void setEventFile(final List<String> eventFiles) {
+        if (m_eventFiles == eventFiles) return;
         m_eventFiles.clear();
-        for (final String eventFile : eventFiles) {
-        	m_eventFiles.add(eventFile.intern());
-        }
+        m_eventFiles.addAll(eventFiles);
     }
 
     public void setEventFileCollection(final List<String> eventFiles) {

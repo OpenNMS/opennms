@@ -340,6 +340,7 @@ public class DNSServer {
     }
 
     public void setPorts(final List<Integer> ports) {
+        if (m_ports == ports) return;
         m_ports.clear();
         m_ports.addAll(ports);
     }
@@ -349,6 +350,7 @@ public class DNSServer {
     }
     
     public void setAddresses(final List<InetAddress> addresses) {
+        if (m_addresses == addresses) return;
         m_addresses.clear();
         m_addresses.addAll(addresses);
     }

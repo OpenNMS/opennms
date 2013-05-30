@@ -152,12 +152,13 @@ public class Filters implements Serializable {
     }
 
     public void setFilter(final List<Filter> filters) {
+        if (m_filters == filters) return;
         m_filters.clear();
         m_filters.addAll(filters);
     }
 
     public void setFilterCollection(final List<Filter> filters) {
-        m_filters = filters;
+        setFilter(filters);
     }
 
     public static Filters unmarshal(final Reader reader) throws MarshalException, ValidationException {
