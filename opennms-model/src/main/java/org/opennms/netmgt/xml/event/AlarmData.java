@@ -318,8 +318,10 @@ public class AlarmData implements Serializable {
         m_updateFieldList.addAll(fields);
     }
     
-    public void setUpdateFieldCollection(Collection<UpdateField> fields) {
-        setUpdateField(fields);
+    public void setUpdateFieldCollection(final Collection<UpdateField> fields) {
+        if (m_updateFieldList == fields) return;
+        m_updateFieldList.clear();
+        m_updateFieldList.addAll(fields);
     }
 
     public String toString() {
