@@ -43,6 +43,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 import org.exolab.castor.xml.MarshalException;
@@ -195,6 +196,9 @@ public class Event implements Serializable {
 
     @XmlElement(name="filters", required=false)
 	private Filters m_filters;
+
+    @XmlTransient
+	private EventMatcher m_matcher;
 
     public void addAutoaction(final Autoaction autoaction) throws IndexOutOfBoundsException {
         m_autoactions.add(autoaction);
@@ -871,6 +875,22 @@ public class Event implements Serializable {
 			return false;
 		}
 		return true;
+	}
+	
+	private EventMatcher constructMatcher() {
+		if (m_mask == null || m_mask.getMaskelementCount() <= 0) {
+			return m_uei == null ? EventMatchers.falseMatcher() : EventMatchers.ueiMatcher(m_uei);
+		} else {
+			return m_mask.constructMatcher();
+		}
+	}
+
+	public boolean matches(org.opennms.netmgt.xml.event.Event matchingEvent) {
+		return m_matcher.matches(matchingEvent);
+	}
+
+	public void initialize() {
+		m_matcher = constructMatcher();
 	}
 
 }

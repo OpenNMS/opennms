@@ -1,0 +1,520 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<?meta name="GENERATOR" content="XML::Smart/1.6.9 Perl/5.008008 [linux]" ?>
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.4.8</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>1</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxCollUnavailableDest</uei>
+    <event-label>JUNIPER-COLLECTOR-MIB defined trap event: jnxCollUnavailableDest</event-label>
+    <descr><![CDATA[
+<p>Notification of an unavailable destination failure encountered
+while transferring a collector file.</p><table>
+	<tr><td><b>
+
+	ifDescr</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxCollNotifyDate</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxCollNotifyUrl</b></td><td>
+	%parm[#3]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxCollNotifyInetType</b></td><td>
+	%parm[#4]%;</td><td><p>
+		unknown(0)
+		ipv4(1)
+		ipv6(2)
+		ipv4z(3)
+		ipv6z(4)
+		dns(16)
+	</p></td></tr>
+	<tr><td><b>
+
+	jnxCollNotifyInetAddress</b></td><td>
+	%parm[#5]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxCollUnavailableDest trap received 
+			ifDescr=%parm[#1]% 
+			jnxCollNotifyDate=%parm[#2]% 
+			jnxCollNotifyUrl=%parm[#3]% 
+			jnxCollNotifyInetType=%parm[#4]% 
+			jnxCollNotifyInetAddress=%parm[#5]%</p>
+		]]></logmsg>
+    <severity>Warning</severity>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.4.8</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>2</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxCollUnavailableDestCleared</uei>
+    <event-label>JUNIPER-COLLECTOR-MIB defined trap event: jnxCollUnavailableDestCleared</event-label>
+    <descr><![CDATA[
+<p>This indicates a previous unavailable destination failure 
+has been resolved.</p><table>
+	<tr><td><b>
+
+	ifDescr</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxCollNotifyDate</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxCollNotifyUrl</b></td><td>
+	%parm[#3]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxCollNotifyInetType</b></td><td>
+	%parm[#4]%;</td><td><p>
+		unknown(0)
+		ipv4(1)
+		ipv6(2)
+		ipv4z(3)
+		ipv6z(4)
+		dns(16)
+	</p></td></tr>
+	<tr><td><b>
+
+	jnxCollNotifyInetAddress</b></td><td>
+	%parm[#5]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxCollUnavailableDestCleared trap received 
+			ifDescr=%parm[#1]% 
+			jnxCollNotifyDate=%parm[#2]% 
+			jnxCollNotifyUrl=%parm[#3]% 
+			jnxCollNotifyInetType=%parm[#4]% 
+			jnxCollNotifyInetAddress=%parm[#5]%</p>
+		]]></logmsg>
+    <severity>Cleared</severity>
+    <alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.4.8</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>3</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxCollUnsuccessfulTransfer</uei>
+    <event-label>JUNIPER-COLLECTOR-MIB defined trap event: jnxCollUnsuccessfulTransfer</event-label>
+    <descr><![CDATA[
+<p>This indicates an error was encountered while attempting
+a file transfer.</p><table>
+	<tr><td><b>
+
+	ifDescr</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxCollNotifyDate</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxCollNotifyFile</b></td><td>
+	%parm[#3]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxCollNotifyUrl</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxCollNotifyInetType</b></td><td>
+	%parm[#5]%;</td><td><p>
+		unknown(0)
+		ipv4(1)
+		ipv6(2)
+		ipv4z(3)
+		ipv6z(4)
+		dns(16)
+	</p></td></tr>
+	<tr><td><b>
+
+	jnxCollNotifyInetAddress</b></td><td>
+	%parm[#6]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxCollNotifyError</b></td><td>
+	%parm[#7]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxCollNotifyFtpResultCode</b></td><td>
+	%parm[#8]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxCollNotifyFtpErrorText</b></td><td>
+	%parm[#9]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxCollUnsuccessfulTransfer trap received 
+			ifDescr=%parm[#1]% 
+			jnxCollNotifyDate=%parm[#2]% 
+			jnxCollNotifyFile=%parm[#3]% 
+			jnxCollNotifyUrl=%parm[#4]% 
+			jnxCollNotifyInetType=%parm[#5]% 
+			jnxCollNotifyInetAddress=%parm[#6]% 
+			jnxCollNotifyError=%parm[#7]% 
+			jnxCollNotifyFtpResultCode=%parm[#8]% 
+			jnxCollNotifyFtpErrorText=%parm[#9]%</p>
+		]]></logmsg>
+    <severity>Warning</severity>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%:%parm[#7]%:%parm[#8]%:%parm[#9]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.4.8</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>4</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxCollFlowOverload</uei>
+    <event-label>JUNIPER-COLLECTOR-MIB defined trap event: jnxCollFlowOverload</event-label>
+    <descr><![CDATA[
+<p>This indicates a soft or hard flow overload condition has been
+triggered.</p><table>
+	<tr><td><b>
+
+	ifDescr</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxCollPicIfStateChangeDate</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxCollNotifyOverloadType</b></td><td>
+	%parm[#3]%;</td><td><p>
+		softOverload(1)
+		hardOverload(2)
+	</p></td></tr>
+	<tr><td><b>
+
+	jnxCollNotifyNewRecordRate</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxCollPicIfCreatedFiles</b></td><td>
+	%parm[#5]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxCollPicIfDestroyedFiles</b></td><td>
+	%parm[#6]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxCollFlowOverload trap received 
+			ifDescr=%parm[#1]% 
+			jnxCollPicIfStateChangeDate=%parm[#2]% 
+			jnxCollNotifyOverloadType=%parm[#3]% 
+			jnxCollNotifyNewRecordRate=%parm[#4]% 
+			jnxCollPicIfCreatedFiles=%parm[#5]% 
+			jnxCollPicIfDestroyedFiles=%parm[#6]%</p>
+		]]></logmsg>
+    <severity>Warning</severity>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.4.8</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>5</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxCollFlowOverloadCleared</uei>
+    <event-label>JUNIPER-COLLECTOR-MIB defined trap event: jnxCollFlowOverloadCleared</event-label>
+    <descr><![CDATA[
+<p>This indicates a soft or hard flow overload condition has been
+cleared.</p><table>
+	<tr><td><b>
+
+	ifDescr</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxCollPicIfStateChangeDate</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxCollNotifyOverloadType</b></td><td>
+	%parm[#3]%;</td><td><p>
+		softOverload(1)
+		hardOverload(2)
+	</p></td></tr>
+	<tr><td><b>
+
+	jnxCollNotifyNewRecordRate</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxCollPicIfCreatedFiles</b></td><td>
+	%parm[#5]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxCollPicIfDestroyedFiles</b></td><td>
+	%parm[#6]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxCollFlowOverloadCleared trap received 
+			ifDescr=%parm[#1]% 
+			jnxCollPicIfStateChangeDate=%parm[#2]% 
+			jnxCollNotifyOverloadType=%parm[#3]% 
+			jnxCollNotifyNewRecordRate=%parm[#4]% 
+			jnxCollPicIfCreatedFiles=%parm[#5]% 
+			jnxCollPicIfDestroyedFiles=%parm[#6]%</p>
+		]]></logmsg>
+    <severity>Cleared</severity>
+    <alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxCollFlowOverload:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.4.8</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxCollMemoryUnavailable</uei>
+    <event-label>JUNIPER-COLLECTOR-MIB defined trap event: jnxCollMemoryUnavailable</event-label>
+    <descr><![CDATA[
+<p>This indicates a memory unavailable condition has been
+triggered.</p><table>
+	<tr><td><b>
+
+	ifDescr</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxCollPicIfStateChangeDate</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxCollNotifyMemThresh</b></td><td>
+	%parm[#3]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxCollNotifyMemUtil</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxCollNotifyMemFree</b></td><td>
+	%parm[#5]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxCollMemoryUnavailable trap received 
+			ifDescr=%parm[#1]% 
+			jnxCollPicIfStateChangeDate=%parm[#2]% 
+			jnxCollNotifyMemThresh=%parm[#3]% 
+			jnxCollNotifyMemUtil=%parm[#4]% 
+			jnxCollNotifyMemFree=%parm[#5]%</p>
+		]]></logmsg>
+    <severity>Major</severity>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.4.8</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>7</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxCollMemoryAvailable</uei>
+    <event-label>JUNIPER-COLLECTOR-MIB defined trap event: jnxCollMemoryAvailable</event-label>
+    <descr><![CDATA[
+<p>This indicates a memory unavailable condition has been
+cleared.</p><table>
+	<tr><td><b>
+
+	ifDescr</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxCollPicIfStateChangeDate</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxCollNotifyMemThresh</b></td><td>
+	%parm[#3]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxCollNotifyMemUtil</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxCollNotifyMemFree</b></td><td>
+	%parm[#5]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxCollMemoryAvailable trap received 
+			ifDescr=%parm[#1]% 
+			jnxCollPicIfStateChangeDate=%parm[#2]% 
+			jnxCollNotifyMemThresh=%parm[#3]% 
+			jnxCollNotifyMemUtil=%parm[#4]% 
+			jnxCollNotifyMemFree=%parm[#5]%</p>
+		]]></logmsg>
+    <severity>Cleared</severity>
+    <alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxCollMemoryUnavailable:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.4.8</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>8</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxCollFtpSwitchover</uei>
+    <event-label>JUNIPER-COLLECTOR-MIB defined trap event: jnxCollFtpSwitchover</event-label>
+    <descr><![CDATA[
+<p>This indicates an FTP server switchover has occurred.</p><table>
+	<tr><td><b>
+
+	ifDescr</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxCollNotifyDate</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxCollNotifyFromFtpServerInetType</b></td><td>
+	%parm[#3]%;</td><td><p>
+		unknown(0)
+		ipv4(1)
+		ipv6(2)
+		ipv4z(3)
+		ipv6z(4)
+		dns(16)
+	</p></td></tr>
+	<tr><td><b>
+
+	jnxCollNotifyFromFtpServerInetAddress</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxCollNotifyFromFtpServerType</b></td><td>
+	%parm[#5]%;</td><td><p>
+		primary(1)
+		secondary(2)
+	</p></td></tr>
+	<tr><td><b>
+
+	jnxCollNotifyToFtpServerInetType</b></td><td>
+	%parm[#6]%;</td><td><p>
+		unknown(0)
+		ipv4(1)
+		ipv6(2)
+		ipv4z(3)
+		ipv6z(4)
+		dns(16)
+	</p></td></tr>
+	<tr><td><b>
+
+	jnxCollNotifyToFtpServerInetAddress</b></td><td>
+	%parm[#7]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxCollNotifyToFtpServerType</b></td><td>
+	%parm[#8]%;</td><td><p>
+		primary(1)
+		secondary(2)
+	</p></td></tr>
+	<tr><td><b>
+
+	jnxCollNotifyInitiatedBy</b></td><td>
+	%parm[#9]%;</td><td><p>
+		cli(1)
+		automatic(2)
+	</p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxCollFtpSwitchover trap received 
+			ifDescr=%parm[#1]% 
+			jnxCollNotifyDate=%parm[#2]% 
+			jnxCollNotifyFromFtpServerInetType=%parm[#3]% 
+			jnxCollNotifyFromFtpServerInetAddress=%parm[#4]% 
+			jnxCollNotifyFromFtpServerType=%parm[#5]% 
+			jnxCollNotifyToFtpServerInetType=%parm[#6]% 
+			jnxCollNotifyToFtpServerInetAddress=%parm[#7]% 
+			jnxCollNotifyToFtpServerType=%parm[#8]% 
+			jnxCollNotifyInitiatedBy=%parm[#9]%</p>
+		]]></logmsg>
+    <severity>Normal</severity>
+    <alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%:%parm[#7]%:%parm[#8]%:%parm[#9]%"/>
+  </event>
+</events>
+
