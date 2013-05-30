@@ -1,0 +1,98 @@
+<!-- Start of auto generated data from MIB: JUNIPER-MOBILE-GW-SGW-MFWD-MIB -->
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+	<event>
+		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgSgwMfwdBufMemThresRaise</uei>
+		<event-label>JUNIPER-MOBILE-GW-SGW-MFWD-MIB defined trap event: jnxMbgSgwMfwdBufMemThresRaise</event-label>
+		<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.3.66.2.7</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+		</mask>
+		<descr>
+&lt;p&gt;This notification signifies that the high memory buffering threshold 
+for MFWD has reached at the SPIC level. 
+The gateway name, SPIC name and memory buffer threshold will be 
+displayed.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgGwName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgSgwMfwdServicePicName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgSgwMfwdBufMemLimit&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+		</descr>
+			<logmsg dest='logndisplay'>&lt;p&gt;
+			jnxMbgSgwMfwdBufMemThresRaise trap received 
+				jnxMbgGwName=%parm[#1]% 
+				jnxMbgSgwMfwdServicePicName=%parm[#2]% 
+				jnxMbgSgwMfwdBufMemLimit=%parm[#3]%&lt;/p&gt;
+			</logmsg>
+		<severity>Warning</severity>
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
+	</event>
+	<event>
+		<uei>uei.opennms.org/vendor/Juniper/traps/clear/jnxMbgSgwMfwdBufMemThresClear</uei>
+		<event-label>JUNIPER-MOBILE-GW-SGW-MFWD-MIB defined trap event: jnxMbgSgwMfwdBufMemThresClear</event-label>
+		<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.3.66.2.7</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>2</mevalue>
+		</maskelement>
+		</mask>
+		<descr>
+&lt;p&gt;This notification signifies that the low memory buffering threshold 
+for MFWD has reached at the SPIC level. 
+The gateway name, SPIC name and memory buffer threshold will be 
+displayed.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgGwName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgSgwMfwdServicePicName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgSgwMfwdBufMemLimit&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+		</descr>
+			<logmsg dest='logndisplay'>&lt;p&gt;
+			jnxMbgSgwMfwdBufMemThresClear trap received 
+				jnxMbgGwName=%parm[#1]% 
+				jnxMbgSgwMfwdServicePicName=%parm[#2]% 
+				jnxMbgSgwMfwdBufMemLimit=%parm[#3]%&lt;/p&gt;
+			</logmsg>
+		<severity>Cleared</severity>
+		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgSgwMfwdBufMemThresRaise:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
+	</event>
+</events>
+<!-- End of auto generated data from MIB: JUNIPER-MOBILE-GW-SGW-MFWD-MIB -->

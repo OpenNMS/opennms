@@ -1,0 +1,2797 @@
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf"><!-- Start of auto generated data from MIB: FOUNDRY-SN-TRAP-MIB -->
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapChasPwrSupply</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapChasPwrSupply</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when a power supply fails to operate normally. The value is a packed bit string; the 2 power supplies status are encoded into 4 bits (a nibble). The following shows the meaning of each bit: (bit 0 is the least significant bit). bit position meaning ------------ ------- 4-31 reserved 3 Power Supply 2 DC (0=bad, 1=good). 2 Power Supply 1 DC (0=bad, 1=good). 1 Power Supply 2 present status (0=present, 1=not-present). 0 Power Supply 1 present status (0=present, 1=not-present).&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;snChasPwrSupplyStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt;Foundry Networks Trap: snTrapChasPwrSupply trap received snChasPwrSupplyStatus=%parm[#1]%&lt;/p&gt;</logmsg>
+        <severity>Major</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>2</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapLockedAddressViolation</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapLockedAddressViolation</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when more source MAC addresses are received from a port than the maximum number of addresses configured to that port.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;snSwViolatorPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;snSwViolatorMacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt;Foundry Networks Trap: snTrapLockedAddressViolation trap received snSwViolatorPortNumber=%parm[#1]% snSwViolatorMacAddress=%parm[#2]%&lt;/p&gt;</logmsg>
+        <severity>Major</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>3</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapOspfIfStateChange</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapOspfIfStateChange</event-label>
+        <descr>&lt;p&gt;An ospfIfStateChange trap signifies that there has been a change in the state of a non-virtual OSPF interface. This trap should be generated when the interface state regresses (e.g., goes from Dr to Down) or progresses to a terminal state (i.e., Point-to-Point, DR Other, Dr, or Backup).&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;snOspfRouterId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;snOspfIfStatusIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;snOspfIfStatusState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt;Foundry Networks Trap: snTrapOspfIfStateChange trap received snOspfRouterId=%parm[#1]% snOspfIfStatusIpAddress=%parm[#2]% snOspfIfStatusState=%parm[#3]%&lt;/p&gt;</logmsg>
+        <severity>Minor</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>4</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapOspfVirtIfStateChange</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapOspfVirtIfStateChange</event-label>
+        <descr>&lt;p&gt;An ospfIfStateChange trap signifies that there has been a change in the state of an OSPF vir- tual interface. This trap should be generated when the inter- face state regresses (e.g., goes from Point- to-Point to Down) or progresses to a terminal state (i.e., Point-to-Point).&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;snOspfRouterId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;snOspfVirtIfStatusAreaID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;snOspfVirtIfStatusNeighbor&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;snOspfVirtIfStatusState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt;Foundry Networks Trap: snTrapOspfVirtIfStateChange trap received snOspfRouterId=%parm[#1]% snOspfVirtIfStatusAreaID=%parm[#2]% snOspfVirtIfStatusNeighbor=%parm[#3]% snOspfVirtIfStatusState=%parm[#4]%&lt;/p&gt;</logmsg>
+        <severity>Minor</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>5</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snOspfNbrStateChange</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snOspfNbrStateChange</event-label>
+        <descr>&lt;p&gt;An ospfNbrStateChange trap signifies that there has been a change in the state of a non- virtual OSPF neighbor. This trap should be generated when the neighbor state regresses (e.g., goes from Attempt or Full to 1-Way or Down) or progresses to a terminal state (e.g., 2-Way or Full). When an neighbor transitions from or to Full on non-broadcast multi-access and broadcast networks, the trap should be gen- erated by the designated router. A designated router transitioning to Down will be noted by ospfIfStateChange.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;snOspfRouterId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;snOspfNbrIpAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;snOspfNbrRtrId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;snOspfNbrState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt;Foundry Networks Trap: snOspfNbrStateChange trap received snOspfRouterId=%parm[#1]% snOspfNbrIpAddr=%parm[#2]% snOspfNbrRtrId=%parm[#3]% snOspfNbrState=%parm[#4]%&lt;/p&gt;</logmsg>
+        <severity>Minor</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snOspfVirtNbrStateChange</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snOspfVirtNbrStateChange</event-label>
+        <descr>&lt;p&gt;An ospfIfStateChange trap signifies that there has been a change in the state of an OSPF vir- tual neighbor. This trap should be generated when the neighbor state regresses (e.g., goes from Attempt or Full to 1-Way or Down) or progresses to a terminal state (e.g., Full).&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;snOspfRouterId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;snOspfVirtNbrArea&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;snOspfVirtNbrRtrId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;snOspfVirtNbrState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt;Foundry Networks Trap: snOspfVirtNbrStateChange trap received snOspfRouterId=%parm[#1]% snOspfVirtNbrArea=%parm[#2]% snOspfVirtNbrRtrId=%parm[#3]% snOspfVirtNbrState=%parm[#4]%&lt;/p&gt;</logmsg>
+        <severity>Minor</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>7</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snOspfIfConfigError</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snOspfIfConfigError</event-label>
+        <descr>&lt;p&gt;An ospfIfConfigError trap signifies that a packet has been received on a non-virtual in- terface from a router whose configuration parameters conflict with this router's confi- guration parameters. Note that the event op- tionMismatch should cause a trap only if it prevents an adjacency from forming.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;snOspfRouterId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;snOspfIfStatusIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;snOspfPacketSrc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;snOspfConfigErrorType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;snOspfPacketType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt;Foundry Networks Trap: snOspfIfConfigError trap received snOspfRouterId=%parm[#1]% snOspfIfStatusIpAddress=%parm[#2]% snOspfPacketSrc=%parm[#3]% snOspfConfigErrorType=%parm[#4]% snOspfPacketType=%parm[#5]%&lt;/p&gt;</logmsg>
+        <severity>Major</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>8</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snOspfVirtIfConfigError</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snOspfVirtIfConfigError</event-label>
+        <descr>&lt;p&gt;An ospfConfigError trap signifies that a pack- et has been received on a virtual interface from a router whose configuration parameters conflict with this router's configuration parameters. Note that the event optionMismatch should cause a trap only if it prevents an ad- jacency from forming.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;snOspfRouterId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;snOspfVirtIfStatusAreaID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;snOspfVirtIfStatusNeighbor&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;snOspfConfigErrorType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;snOspfPacketType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt;Foundry Networks Trap: snOspfVirtIfConfigError trap received snOspfRouterId=%parm[#1]% snOspfVirtIfStatusAreaID=%parm[#2]% snOspfVirtIfStatusNeighbor=%parm[#3]% snOspfConfigErrorType=%parm[#4]% snOspfPacketType=%parm[#5]%&lt;/p&gt;</logmsg>
+        <severity>Major</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>9</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snOspfIfAuthFailure</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snOspfIfAuthFailure</event-label>
+        <descr>&lt;p&gt;An ospfIfAuthFailure trap signifies that a packet has been received on a non-virtual in- terface from a router whose authentication key or authentication type conflicts with this router's authentication key or authentication type.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;snOspfRouterId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;snOspfIfStatusIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;snOspfPacketSrc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;snOspfConfigErrorType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;snOspfPacketType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt;Foundry Networks Trap: snOspfIfAuthFailure trap received snOspfRouterId=%parm[#1]% snOspfIfStatusIpAddress=%parm[#2]% snOspfPacketSrc=%parm[#3]% snOspfConfigErrorType=%parm[#4]% snOspfPacketType=%parm[#5]%&lt;/p&gt;</logmsg>
+        <severity>Minor</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>10</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snOspfVirtIfAuthFailure</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snOspfVirtIfAuthFailure</event-label>
+        <descr>&lt;p&gt;An ospfVirtIfAuthFailure trap signifies that a packet has been received on a virtual interface from a router whose authentication key or au- thentication type conflicts with this router's authentication key or authentication type.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;snOspfRouterId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;snOspfVirtIfStatusAreaID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;snOspfVirtIfStatusNeighbor&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;snOspfConfigErrorType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;snOspfPacketType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt;Foundry Networks Trap: snOspfVirtIfAuthFailure trap received snOspfRouterId=%parm[#1]% snOspfVirtIfStatusAreaID=%parm[#2]% snOspfVirtIfStatusNeighbor=%parm[#3]% snOspfConfigErrorType=%parm[#4]% snOspfPacketType=%parm[#5]%&lt;/p&gt;</logmsg>
+        <severity>Minor</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>11</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snOspfIfRxBadPacket</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snOspfIfRxBadPacket</event-label>
+        <descr>&lt;p&gt;An ospfIfRxBadPacket trap signifies that an OSPF packet has been received on a non-virtual interface that cannot be parsed.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;snOspfRouterId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;snOspfIfStatusIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;snOspfPacketSrc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;snOspfPacketType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt;Foundry Networks Trap: snOspfIfRxBadPacket trap received snOspfRouterId=%parm[#1]% snOspfIfStatusIpAddress=%parm[#2]% snOspfPacketSrc=%parm[#3]% snOspfPacketType=%parm[#4]%&lt;/p&gt;</logmsg>
+        <severity>Minor</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>12</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snOspfVirtIfRxBadPacket</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snOspfVirtIfRxBadPacket</event-label>
+        <descr>&lt;p&gt;An ospfRxBadPacket trap signifies that an OSPF packet has been received on a virtual interface that cannot be parsed.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;snOspfRouterId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;snOspfVirtIfStatusAreaID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;snOspfVirtIfStatusNeighbor&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;snOspfPacketType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt;Foundry Networks Trap: snOspfVirtIfRxBadPacket trap received snOspfRouterId=%parm[#1]% snOspfVirtIfStatusAreaID=%parm[#2]% snOspfVirtIfStatusNeighbor=%parm[#3]% snOspfPacketType=%parm[#4]%&lt;/p&gt;</logmsg>
+        <severity>Minor</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>13</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snOspfTxRetransmit</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snOspfTxRetransmit</event-label>
+        <descr>&lt;p&gt;An ospfTxRetransmit trap signifies than an OSPF packet has been retransmitted on a non- virtual interface. All packets that may be re- transmitted are associated with an LSDB entry. The LS type, LS ID, and Router ID are used to identify the LSDB entry.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;snOspfRouterId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;snOspfIfStatusIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;snOspfNbrRtrId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;snOspfPacketType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;snOspfLsdbType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;snOspfLsdbLsId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;snOspfLsdbRouterId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#7]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt;Foundry Networks Trap: snOspfTxRetransmit trap received snOspfRouterId=%parm[#1]% snOspfIfStatusIpAddress=%parm[#2]% snOspfNbrRtrId=%parm[#3]% snOspfPacketType=%parm[#4]% snOspfLsdbType=%parm[#5]% snOspfLsdbLsId=%parm[#6]% snOspfLsdbRouterId=%parm[#7]%&lt;/p&gt;</logmsg>
+        <severity>Minor</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>14</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/ospfVirtIfTxRetransmit</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: ospfVirtIfTxRetransmit</event-label>
+        <descr>&lt;p&gt;An ospfTxRetransmit trap signifies than an OSPF packet has been retransmitted on a virtual interface. All packets that may be retransmit- ted are associated with an LSDB entry. The LS type, LS ID, and Router ID are used to identify the LSDB entry.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;snOspfRouterId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;snOspfVirtIfStatusAreaID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;snOspfVirtIfStatusNeighbor&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;snOspfPacketType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;snOspfLsdbType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;snOspfLsdbLsId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;snOspfLsdbRouterId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#7]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt;Foundry Networks Trap: ospfVirtIfTxRetransmit trap received snOspfRouterId=%parm[#1]% snOspfVirtIfStatusAreaID=%parm[#2]% snOspfVirtIfStatusNeighbor=%parm[#3]% snOspfPacketType=%parm[#4]% snOspfLsdbType=%parm[#5]% snOspfLsdbLsId=%parm[#6]% snOspfLsdbRouterId=%parm[#7]%&lt;/p&gt;</logmsg>
+        <severity>Minor</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>15</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snOspfOriginateLsa</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snOspfOriginateLsa</event-label>
+        <descr>&lt;p&gt;An ospfOriginateLsa trap signifies that a new LSA has been originated by this router. This trap should not be invoked for simple refreshes of LSAs (which happesn every 30 minutes), but instead will only be invoked when an LSA is (re)originated due to a topology change. Addi- tionally, this trap does not include LSAs that are being flushed because they have reached MaxAge.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;snOspfRouterId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;snOspfLsdbAreaId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;snOspfLsdbType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;snOspfLsdbLsId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;snOspfLsdbRouterId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt;Foundry Networks Trap: snOspfOriginateLsa trap received snOspfRouterId=%parm[#1]% snOspfLsdbAreaId=%parm[#2]% snOspfLsdbType=%parm[#3]% snOspfLsdbLsId=%parm[#4]% snOspfLsdbRouterId=%parm[#5]%&lt;/p&gt;</logmsg>
+        <severity>Minor</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>16</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snOspfMaxAgeLsa</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snOspfMaxAgeLsa</event-label>
+        <descr>&lt;p&gt;An ospfMaxAgeLsa trap signifies that one of the LSA in the router's link-state database has aged to MaxAge.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;snOspfRouterId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;snOspfLsdbAreaId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;snOspfLsdbType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;snOspfLsdbLsId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;snOspfLsdbRouterId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt;Foundry Networks Trap: snOspfMaxAgeLsa trap received snOspfRouterId=%parm[#1]% snOspfLsdbAreaId=%parm[#2]% snOspfLsdbType=%parm[#3]% snOspfLsdbLsId=%parm[#4]% snOspfLsdbRouterId=%parm[#5]%&lt;/p&gt;</logmsg>
+        <severity>Minor</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>17</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snOspfLsdbOverflow</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snOspfLsdbOverflow</event-label>
+        <descr>&lt;p&gt;An ospfLsdbOverflow trap signifies that the number of LSAs in the router's link-state data- base has exceeded ospfExtLsdbLimit.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;snOspfRouterId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;snOspfExtLsdbLimit&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt;Foundry Networks Trap: snOspfLsdbOverflow trap received snOspfRouterId=%parm[#1]% snOspfExtLsdbLimit=%parm[#2]%&lt;/p&gt;</logmsg>
+        <severity>Minor</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>18</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snOspfLsdbApproachingOverflow</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snOspfLsdbApproachingOverflow</event-label>
+        <descr>&lt;p&gt;An ospfLsdbApproachingOverflow trap signifies that the number of LSAs in the router's link- state database has exceeded ninety percent of ospfExtLsdbLimit.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;snOspfRouterId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;snOspfExtLsdbLimit&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt;Foundry Networks Trap: snOspfLsdbApproachingOverflow trap received snOspfRouterId=%parm[#1]% snOspfExtLsdbLimit=%parm[#2]%&lt;/p&gt;</logmsg>
+        <severity>Minor</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>19</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapL4MaxSessionLimitReached</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapL4MaxSessionLimitReached</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when the maximum number of connections reached.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snL4MaxSessionLimit&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapL4MaxSessionLimitReached trap received snL4MaxSessionLimit=%parm[#1]%&lt;/p&gt; </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>20</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapL4TcpSynLimitReached</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapL4TcpSynLimitReached</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when the number of TCP SYN limits reached.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snL4TcpSynLimit&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapL4TcpSynLimitReached trap received snL4TcpSynLimit=%parm[#1]%&lt;/p&gt; </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>21</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapL4RealServerUp</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapL4RealServerUp</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when the load balancing real server is up.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snL4TrapRealServerIP&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snL4TrapRealServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapL4RealServerUp trap received snL4TrapRealServerIP=%parm[#1]% snL4TrapRealServerName=%parm[#2]%&lt;/p&gt; </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>22</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapL4RealServerDown</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapL4RealServerDown</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when the load balancing real server is down.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snL4TrapRealServerIP&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snL4TrapRealServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapL4RealServerDown trap received snL4TrapRealServerIP=%parm[#1]% snL4TrapRealServerName=%parm[#2]%&lt;/p&gt; </logmsg>
+        <severity>Major</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>23</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapL4RealServerPortUp</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapL4RealServerPortUp</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when the load balancing real server TCP port is up.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snL4TrapRealServerIP&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snL4TrapRealServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snL4TrapRealServerPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapL4RealServerPortUp trap received snL4TrapRealServerIP=%parm[#1]% snL4TrapRealServerName=%parm[#2]% snL4TrapRealServerPort=%parm[#3]%&lt;/p&gt; </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>24</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapL4RealServerPortDown</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapL4RealServerPortDown</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when the load balancing real server TCP port is down.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snL4TrapRealServerIP&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snL4TrapRealServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snL4TrapRealServerPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapL4RealServerPortDown trap received snL4TrapRealServerIP=%parm[#1]% snL4TrapRealServerName=%parm[#2]% snL4TrapRealServerPort=%parm[#3]%&lt;/p&gt; </logmsg>
+        <severity>Minor</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>25</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapL4RealServerMaxConnectionLimitReached</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapL4RealServerMaxConnectionLimitReached</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when the real server reaches maximum number of connections.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snL4TrapRealServerIP&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snL4TrapRealServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snL4TrapRealServerCurConnections&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapL4RealServerMaxConnectionLimitReached trap received snL4TrapRealServerIP=%parm[#1]% snL4TrapRealServerName=%parm[#2]% snL4TrapRealServerCurConnections=%parm[#3]%&lt;/p&gt; </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>26</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapL4BecomeStandby</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapL4BecomeStandby</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when the server load balancing switch changes state from active to standby.&lt;/p&gt;&lt;table&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapL4BecomeStandby trap received&lt;/p&gt; </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>27</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapL4BecomeActive</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapL4BecomeActive</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when the server load balancing switch changes state from standby to active.&lt;/p&gt;&lt;table&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapL4BecomeActive trap received&lt;/p&gt; </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>28</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapModuleInserted</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapModuleInserted</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when a module was inserted to the chassis during system running.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snAgentBrdIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapModuleInserted trap received snAgentBrdIndex=%parm[#1]%&lt;/p&gt; </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>29</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapModuleRemoved</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapModuleRemoved</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when a module was removed from the chassis during system running.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snAgentBrdIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapModuleRemoved trap received snAgentBrdIndex=%parm[#1]%&lt;/p&gt; </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>30</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapChasPwrSupplyFailed</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapChasPwrSupplyFailed</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when a power supply fails to operate normally.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snChasPwrSupplyIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snChasPwrSupplyDescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapChasPwrSupplyFailed trap received snChasPwrSupplyIndex=%parm[#1]% snChasPwrSupplyDescription=%parm[#2]%&lt;/p&gt; </logmsg>
+        <severity>Minor</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>31</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapChasFanFailed</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapChasFanFailed</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when a fan fails to operate normally.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snChasFanIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snChasFanDescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapChasFanFailed trap received snChasFanIndex=%parm[#1]% snChasFanDescription=%parm[#2]%&lt;/p&gt; </logmsg>
+        <severity>Minor</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>32</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapLockedAddressViolation2</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapLockedAddressViolation2</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when more source MAC addresses are received from a port than the maximum number of addresses configured to that port.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapLockedAddressViolation2 trap received snAgGblTrapMessage=%parm[#1]%&lt;/p&gt; </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>33</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapFsrpIfStateChange</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapFsrpIfStateChange</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when a FSRP routing device changed state from active to standby or vice-versa.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapFsrpIfStateChange trap received snAgGblTrapMessage=%parm[#1]%&lt;/p&gt; </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>34</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapVrrpIfStateChange</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapVrrpIfStateChange</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when a VRRP routing device changed state from master to backup or vice-versa.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapVrrpIfStateChange trap received snAgGblTrapMessage=%parm[#1]%&lt;/p&gt; </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>35</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapMgmtModuleRedunStateChange</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapMgmtModuleRedunStateChange</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when the management module changes redundancy state.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapMgmtModuleRedunStateChange trap received snAgGblTrapMessage=%parm[#1]%&lt;/p&gt; </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>36</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapTemperatureWarning</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapTemperatureWarning</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when the actual temperature reading is above the warning temperature threshold.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapTemperatureWarning trap received snAgGblTrapMessage=%parm[#1]%&lt;/p&gt; </logmsg>
+        <severity>Minor</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>37</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapAccessListDeny</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapAccessListDeny</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when a packet was denied by an access list.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapAccessListDeny trap received snAgGblTrapMessage=%parm[#1]%&lt;/p&gt; </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>38</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapMacFilterDeny</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapMacFilterDeny</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when a packet was denied by a MAC address filter.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapMacFilterDeny trap received snAgGblTrapMessage=%parm[#1]%&lt;/p&gt; </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>39</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapL4GslbRemoteUp</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapL4GslbRemoteUp</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when the connection to the remote SI is established.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapL4GslbRemoteUp trap received snAgGblTrapMessage=%parm[#1]%&lt;/p&gt; </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>40</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapL4GslbRemoteDown</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapL4GslbRemoteDown</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when the connection to the remote SI is down.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapL4GslbRemoteDown trap received snAgGblTrapMessage=%parm[#1]%&lt;/p&gt; </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>41</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapL4GslbRemoteControllerUp</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapL4GslbRemoteControllerUp</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when the connection to the GSLB SI is established.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapL4GslbRemoteControllerUp trap received snAgGblTrapMessage=%parm[#1]%&lt;/p&gt; </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>42</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapL4GslbRemoteControllerDown</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapL4GslbRemoteControllerDown</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when the connection to the GSLB SI is down.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapL4GslbRemoteControllerDown trap received snAgGblTrapMessage=%parm[#1]%&lt;/p&gt; </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>43</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapL4GslbHealthCheckIpUp</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapL4GslbHealthCheckIpUp</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when GSLB health check for an address transitions from down to active state.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapL4GslbHealthCheckIpUp trap received snAgGblTrapMessage=%parm[#1]%&lt;/p&gt; </logmsg>
+        <severity>Cleared</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>44</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapL4GslbHealthCheckIpDown</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapL4GslbHealthCheckIpDown</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when GSLB health check for an address transitions from active to down state.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapL4GslbHealthCheckIpDown trap received snAgGblTrapMessage=%parm[#1]%&lt;/p&gt; </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>45</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapL4GslbHealthCheckIpPortUp</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapL4GslbHealthCheckIpPortUp</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when a given port for a health check address is up.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapL4GslbHealthCheckIpPortUp trap received snAgGblTrapMessage=%parm[#1]%&lt;/p&gt; </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>46</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapL4GslbHealthCheckIpPortDown</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapL4GslbHealthCheckIpPortDown</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when a given port for a health check address is down.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapL4GslbHealthCheckIpPortDown trap received snAgGblTrapMessage=%parm[#1]%&lt;/p&gt; </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>47</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapL4FirewallBecomeStandby</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapL4FirewallBecomeStandby</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when the server load balancing switch Firewall changes state from active to standby.&lt;/p&gt;&lt;table&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapL4FirewallBecomeStandby trap received&lt;/p&gt; </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>48</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapL4FirewallBecomeActive</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapL4FirewallBecomeActive</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when the server load balancing switch Firewall changes state from standby to active.&lt;/p&gt;&lt;table&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapL4FirewallBecomeActive trap received&lt;/p&gt; </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>49</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapL4FirewallPathUp</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapL4FirewallPathUp</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when the server load balancing switch Firewall path is up.&lt;/p&gt;&lt;table&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapL4FirewallPathUp trap received&lt;/p&gt; </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>50</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapL4FirewallPathDown</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapL4FirewallPathDown</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when the server load balancing switch Firewall path is down.&lt;/p&gt;&lt;table&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapL4FirewallPathDown trap received&lt;/p&gt; </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>51</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapIcmpLocalExceedBurst</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapIcmpLocalExceedBurst</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when incoming ICMP exceeds burst-MAX.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapIcmpLocalExceedBurst trap received snAgGblTrapMessage=%parm[#1]%&lt;/p&gt; </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>52</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapIcmpTransitExceedBurst</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapIcmpTransitExceedBurst</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when transit ICMP exceeds burst-MAX.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapIcmpTransitExceedBurst trap received snAgGblTrapMessage=%parm[#1]%&lt;/p&gt; </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>53</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapTcpLocalExceedBurst</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapTcpLocalExceedBurst</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when incoming TCP SYN exceeds burst-MAX.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapTcpLocalExceedBurst trap received snAgGblTrapMessage=%parm[#1]%&lt;/p&gt; </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>54</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapTcpTransitExceedBurst</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapTcpTransitExceedBurst</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when transit TCP exceeds burst-MAX.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapTcpTransitExceedBurst trap received snAgGblTrapMessage=%parm[#1]%&lt;/p&gt; </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>55</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapL4ContentVerification</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapL4ContentVerification</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when the HTTP match-list pattern is found.&lt;/p&gt;&lt;table&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapL4ContentVerification trap received&lt;/p&gt; </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>56</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapDuplicateIp</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapDuplicateIp</event-label>
+        <descr>&lt;p&gt;Duplicate IP address detected.&lt;/p&gt;&lt;table&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapDuplicateIp trap received&lt;/p&gt; </logmsg>
+        <severity>Minor</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>57</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapMplsProblem</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapMplsProblem</event-label>
+        <descr>&lt;p&gt;MPLS Problem Detected.&lt;/p&gt;&lt;table&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapMplsProblem trap received&lt;/p&gt; </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>58</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapMplsException</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapMplsException</event-label>
+        <descr>&lt;p&gt;MPLS Exception Detected.&lt;/p&gt;&lt;table&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapMplsException trap received&lt;/p&gt; </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>59</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapMplsAudit</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapMplsAudit</event-label>
+        <descr>&lt;p&gt;MPLS Audit Trap.&lt;/p&gt;&lt;table&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapMplsAudit trap received&lt;/p&gt; </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>60</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapMplsDeveloper</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapMplsDeveloper</event-label>
+        <descr>&lt;p&gt;MPLS Developer Trap.&lt;/p&gt;&lt;table&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapMplsDeveloper trap received&lt;/p&gt; </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>61</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapNoBmFreeQueue</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapNoBmFreeQueue</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when no free queue is available in buffer manager.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapNoBmFreeQueue trap received snAgGblTrapMessage=%parm[#1]%&lt;/p&gt; </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>62</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapSmcDmaDrop</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapSmcDmaDrop</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when SMC DMA packet is dropped.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapSmcDmaDrop trap received snAgGblTrapMessage=%parm[#1]%&lt;/p&gt; </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>63</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapSmcBpDrop</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapSmcBpDrop</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when SMC BackPlane packet is dropped.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapSmcBpDrop trap received snAgGblTrapMessage=%parm[#1]%&lt;/p&gt; </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>64</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapBmWriteSeqDrop</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapBmWriteSeqDrop</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when BM write sequence packet is dropped.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapBmWriteSeqDrop trap received snAgGblTrapMessage=%parm[#1]%&lt;/p&gt; </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>65</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapBgpPeerUp</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapBgpPeerUp</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when the bgp peer is up.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapBgpPeerUp trap received snAgGblTrapMessage=%parm[#1]%&lt;/p&gt; </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>66</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapBgpPeerDown</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapBgpPeerDown</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when the bgp peer is down.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapBgpPeerDown trap received snAgGblTrapMessage=%parm[#1]%&lt;/p&gt; </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>67</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapL4RealServerResponseTimeLowerLimit</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapL4RealServerResponseTimeLowerLimit</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when the real server average response time exceeds lower threshold.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapL4RealServerResponseTimeLowerLimit trap received snAgGblTrapMessage=%parm[#1]%&lt;/p&gt; </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>68</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapL4RealServerResponseTimeUpperLimit</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapL4RealServerResponseTimeUpperLimit</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when the real server average response time exceeds upper threshold.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapL4RealServerResponseTimeUpperLimit trap received snAgGblTrapMessage=%parm[#1]%&lt;/p&gt; </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>69</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapL4TcpAttackRateExceedMax</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapL4TcpAttackRateExceedMax</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when the TCP attack rate exceeds configured maximum.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapL4TcpAttackRateExceedMax trap received snAgGblTrapMessage=%parm[#1]%&lt;/p&gt; </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>70</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapL4TcpAttackRateExceedThreshold</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapL4TcpAttackRateExceedThreshold</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when the TCP attack rate exceeds 80% of configured maximum.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapL4TcpAttackRateExceedThreshold trap received snAgGblTrapMessage=%parm[#1]%&lt;/p&gt; </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>71</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapL4ConnectionRateExceedMax</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapL4ConnectionRateExceedMax</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when the L4 connection rate exceeds configured maximum.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapL4ConnectionRateExceedMax trap received snAgGblTrapMessage=%parm[#1]%&lt;/p&gt; </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>72</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapL4ConnectionRateExceedThreshold</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapL4ConnectionRateExceedThreshold</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when the L4 connection rate exceeds 80% of configured maximum&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapL4ConnectionRateExceedThreshold trap received snAgGblTrapMessage=%parm[#1]%&lt;/p&gt; </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>73</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapRunningConfigChanged</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapRunningConfigChanged</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when the running configuration was changed.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapRunningConfigChanged trap received snAgGblTrapMessage=%parm[#1]%&lt;/p&gt; </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>74</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapStartupConfigChanged</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapStartupConfigChanged</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when the startup configuration was changed.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapStartupConfigChanged trap received snAgGblTrapMessage=%parm[#1]%&lt;/p&gt; </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>75</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapUserLogin</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapUserLogin</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when user login.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapUserLogin trap received snAgGblTrapMessage=%parm[#1]%&lt;/p&gt; </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>76</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapUserLogout</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapUserLogout</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when user logout.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapUserLogout trap received snAgGblTrapMessage=%parm[#1]%&lt;/p&gt; </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>77</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapPortSecurityViolation</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapPortSecurityViolation</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when insecure MAC addresses are received from a port with MAC security feature enabled.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapPortSecurityViolation trap received snAgGblTrapMessage=%parm[#1]%&lt;/p&gt; </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>78</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapPortSecurityShutdown</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapPortSecurityShutdown</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when insecure MAC addresses are received from a port caused the port to shutdown.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapPortSecurityShutdown trap received snAgGblTrapMessage=%parm[#1]%&lt;/p&gt; </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>79</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapMrpStateChange</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapMrpStateChange</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when a MRP switching and routing device changed state to disabled, blocking, preforwarding, forwarding, unknown.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapMrpStateChange trap received snAgGblTrapMessage=%parm[#1]%&lt;/p&gt; </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>80</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapMrpCamError</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapMrpCamError</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when a MRP Cam Error occurs.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapMrpCamError trap received snAgGblTrapMessage=%parm[#1]%&lt;/p&gt; </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>81</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapChasPwrSupplyOK</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapChasPwrSupplyOK</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when a power supply operational status changed from failure to normal.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snChasPwrSupplyIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snChasPwrSupplyDescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapChasPwrSupplyOK trap received snChasPwrSupplyIndex=%parm[#1]% snChasPwrSupplyDescription=%parm[#2]%&lt;/p&gt; </logmsg>
+        <severity>Cleared</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>82</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapVrrpeIfStateChange</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapVrrpeIfStateChange</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when a VRRPE routing device switched between states master, backup, intialized or unknown.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapVrrpeIfStateChange trap received snAgGblTrapMessage=%parm[#1]%&lt;/p&gt; </logmsg>
+        <severity>Indeterminate</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>83</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapVsrpIfStateChange</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapVsrpIfStateChange</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when a VSRP switching and routing device switched between states master, backup, intialized or unknown.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapVsrpIfStateChange trap received snAgGblTrapMessage=%parm[#1]%&lt;/p&gt; </logmsg>
+        <severity>Indeterminate</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>84</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapSrcIpAddressViolation</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapSrcIpAddressViolation</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when a rogue device spoofs source IP address for denial of service attack.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapSrcIpAddressViolation trap received snAgGblTrapMessage=%parm[#1]%&lt;/p&gt; </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>85</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapMacAuthEnable</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapMacAuthEnable</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when MAC-Authentication is enabled on an interface.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapMacAuthEnable trap received snAgGblTrapMessage=%parm[#1]%&lt;/p&gt; </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>86</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapMacAuthDisable</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapMacAuthDisable</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when MAC-Authentication is disabled on an interface.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapMacAuthDisable trap received snAgGblTrapMessage=%parm[#1]%&lt;/p&gt; </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>87</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapMacAuthMACAccepted</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapMacAuthMACAccepted</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when MAC-Authentication is successful on an interface.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapMacAuthMACAccepted trap received snAgGblTrapMessage=%parm[#1]%&lt;/p&gt; </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>88</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapMacAuthMACRejected</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapMacAuthMACRejected</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when MAC-Authentication is failed on an interface.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapMacAuthMACRejected trap received snAgGblTrapMessage=%parm[#1]%&lt;/p&gt; </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>89</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapMacAuthPortDisabled</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapMacAuthPortDisabled</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when an interface is disabled due to MAC-Authentication detecting a DOS attack on that interface.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapMacAuthPortDisabled trap received snAgGblTrapMessage=%parm[#1]%&lt;/p&gt; </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>110</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapClientLoginReject</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapClientLoginReject</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when a login attempt by a telnet or SSH client fails.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapClientLoginReject trap received snAgGblTrapMessage=%parm[#1]%&lt;/p&gt; </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>111</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapLocalUserConfigChange</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapLocalUserConfigChange</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when a local user configuration is changed.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapLocalUserConfigChange trap received snAgGblTrapMessage=%parm[#1]%&lt;/p&gt; </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>112</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapVlanConfigChange</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapVlanConfigChange</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when a vlan configuration is changed.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapVlanConfigChange trap received snAgGblTrapMessage=%parm[#1]%&lt;/p&gt; </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>113</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapAclConfigChange</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapAclConfigChange</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when a ACL configuration is changed.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapAclConfigChange trap received snAgGblTrapMessage=%parm[#1]%&lt;/p&gt; </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>114</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapMacFilterConfigChange</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapMacFilterConfigChange</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when a MAC Filter configuration is changed.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapMacFilterConfigChange trap received snAgGblTrapMessage=%parm[#1]%&lt;/p&gt; </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>115</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapSNMPConfigChange</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapSNMPConfigChange</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when a SNMP configuration is changed.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapSNMPConfigChange trap received snAgGblTrapMessage=%parm[#1]%&lt;/p&gt; </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>116</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapSyslogConfigChange</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapSyslogConfigChange</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when a Syslog configuration is changed.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapSyslogConfigChange trap received snAgGblTrapMessage=%parm[#1]%&lt;/p&gt; </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>117</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapPasswordConfigChange</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapPasswordConfigChange</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when enable or line password is changed.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapPasswordConfigChange trap received snAgGblTrapMessage=%parm[#1]%&lt;/p&gt; </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>118</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapServerStatusChange</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapServerStatusChange</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when a server is disabled or enabled.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapServerStatusChange trap received snAgGblTrapMessage=%parm[#1]%&lt;/p&gt; </logmsg>
+        <severity>Indeterminate</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>119</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapL4RealServerPortMaxConnectionLimitReached</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapL4RealServerPortMaxConnectionLimitReached</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when the real server's port reaches maximum number of connections.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapL4RealServerPortMaxConnectionLimitReached trap received snAgGblTrapMessage=%parm[#1]%&lt;/p&gt; </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>120</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapL4LinkDown</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapL4LinkDown</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when the ISP link goes down.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snL4TrapLinkName&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snL4LinkVirtualInterface&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapL4LinkDown trap received snL4TrapLinkName=%parm[#1]% snL4LinkVirtualInterface=%parm[#2]%&lt;/p&gt; </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>121</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapL4LinkUp</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapL4LinkUp</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when the ISP link goes up.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snL4TrapLinkName&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snL4LinkVirtualInterface&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapL4LinkUp trap received snL4TrapLinkName=%parm[#1]% snL4LinkVirtualInterface=%parm[#2]%&lt;/p&gt; </logmsg>
+        <severity>Cleared</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>122</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapPortPriorityChange</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapPortPriorityChange</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when the priority of a port is changed.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapPortPriorityChange trap received snAgGblTrapMessage=%parm[#1]%&lt;/p&gt; </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>123</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapAutoPortDisableTrigger</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapAutoPortDisableTrigger</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when automatic port disable was triggered.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapAutoPortDisableTrigger trap received snAgGblTrapMessage=%parm[#1]%&lt;/p&gt; </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>124</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapAutoPortDisableRelease</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapAutoPortDisableRelease</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when automatic port disable was released.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapAutoPortDisableRelease trap received snAgGblTrapMessage=%parm[#1]%&lt;/p&gt; </logmsg>
+        <severity>Cleared</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>125</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapPnPStatusChange</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapPnPStatusChange</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when plug-and-play status change.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; wgPnPStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt; other(1) discovered(2) configured(3) operational(4) &lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; wgPnPStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt; other(1) discovered(2) configured(3) operational(4) &lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapPnPStatusChange trap received wgPnPStatus=%parm[#1]% wgPnPStatus=%parm[#2]% snAgGblTrapMessage=%parm[#3]%&lt;/p&gt; </logmsg>
+        <severity>Indeterminate</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>126</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapWirelessIsrpPeerStateChange</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapWirelessIsrpPeerStateChange</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when ISRP Peer changes state.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapWirelessIsrpPeerStateChange trap received snAgGblTrapMessage=%parm[#1]%&lt;/p&gt; </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>127</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapWirelessStationStateChange</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapWirelessStationStateChange</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when a wireless station's state changes.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapWirelessStationStateChange trap received snAgGblTrapMessage=%parm[#1]%&lt;/p&gt; </logmsg>
+        <severity>Indeterminate</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>128</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapWirelessStationRoamingEventTriggered</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapWirelessStationRoamingEventTriggered</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when we received a MOVE request from the AP&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapWirelessStationRoamingEventTriggered trap received snAgGblTrapMessage=%parm[#1]%&lt;/p&gt; </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>129</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapWirelessSappStateChange</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapWirelessSappStateChange</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when SAPP between an AP and a FIPS changes state.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapWirelessSappStateChange trap received snAgGblTrapMessage=%parm[#1]%&lt;/p&gt; </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>130</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapExternalPowerConnectionStatus</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapExternalPowerConnectionStatus</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when the external power supply connecting or disconnecting to a power over ethernet module.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapExternalPowerConnectionStatus trap received snAgGblTrapMessage=%parm[#1]%&lt;/p&gt; </logmsg>
+        <severity>Indeterminate</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>131</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapDot1xSecurityViolation</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapDot1xSecurityViolation</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when a malicious mac address was detected.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapDot1xSecurityViolation trap received snAgGblTrapMessage=%parm[#1]%&lt;/p&gt; </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>132</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapDot1xPortLinkChange</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapDot1xPortLinkChange</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when software port link status has changed to up or down.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapDot1xPortLinkChange trap received snAgGblTrapMessage=%parm[#1]%&lt;/p&gt; </logmsg>
+        <severity>Indeterminate</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>133</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapDot1xPortControlChange</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapDot1xPortControlChange</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when software port control status has changed to authorize or unauthorize.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapDot1xPortControlChange trap received snAgGblTrapMessage=%parm[#1]%&lt;/p&gt; </logmsg>
+        <severity>Indeterminate</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>134</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapDot1xVlanIdChange</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapDot1xVlanIdChange</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when VLAN ID of a port has changed.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapDot1xVlanIdChange trap received snAgGblTrapMessage=%parm[#1]%&lt;/p&gt; </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>135</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapDot1xFilterSetupFailure</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapDot1xFilterSetupFailure</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when software failed to setup a filter to a mac address of a port.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapDot1xFilterSetupFailure trap received snAgGblTrapMessage=%parm[#1]%&lt;/p&gt; </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.1991</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>136</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/foundry/traps/snTrapDot1xError</uei>
+        <event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapDot1xError</event-label>
+        <descr>&lt;p&gt;The SNMP trap that is generated when software detected system error.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; Foundry Event: snTrapDot1xError trap received snAgGblTrapMessage=%parm[#1]%&lt;/p&gt; </logmsg>
+        <severity>Warning</severity>
+    </event>
+	<event>
+		<mask>
+			<maskelement>
+				<mename>id</mename>
+				<mevalue>.1.3.6.1.4.1.1991</mevalue>
+			</maskelement>
+			<maskelement>
+				<mename>generic</mename>
+				<mevalue>6</mevalue>
+			</maskelement>
+			<maskelement>
+				<mename>specific</mename>
+				<mevalue>145</mevalue>
+			</maskelement>
+		</mask>
+		<uei>uei.opennms.org/vendor/foundry/traps/snTrapUDLDLinkDown</uei>
+		<event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapUDLDLinkDown</event-label>
+		<descr>
+	&lt;p&gt;The SNMP trap that is generated when UDLD port link status
+	has changed to down.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		ifIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+		</descr>
+			<logmsg dest='logndisplay'>&lt;p&gt;
+				snTrapUDLDLinkDown trap received 
+				ifIndex=%parm[#1]% 
+				snAgGblTrapMessage=%parm[#2]%&lt;/p&gt;
+			</logmsg>
+		<severity>Warning</severity>
+	</event>
+	<event>
+		<mask>
+			<maskelement>
+				<mename>id</mename>
+				<mevalue>.1.3.6.1.4.1.1991</mevalue>
+			</maskelement>
+			<maskelement>
+				<mename>generic</mename>
+				<mevalue>6</mevalue>
+			</maskelement>
+			<maskelement>
+				<mename>specific</mename>
+				<mevalue>146</mevalue>
+			</maskelement>
+		</mask>
+		<uei>uei.opennms.org/vendor/foundry/traps/snTrapUDLDLinkUp</uei>
+		<event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapUDLDLinkUp</event-label>
+		<descr>
+	&lt;p&gt;The SNMP trap that is generated when UDLD port link status
+	has changed to up.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		ifIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+		</descr>
+			<logmsg dest='logndisplay'>&lt;p&gt;
+				snTrapUDLDLinkUp trap received 
+				ifIndex=%parm[#1]% 
+				snAgGblTrapMessage=%parm[#2]%&lt;/p&gt;
+			</logmsg>
+		<severity>Cleared</severity>
+	</event>
+	<event>
+		<mask>
+			<maskelement>
+				<mename>id</mename>
+				<mevalue>.1.3.6.1.4.1.1991</mevalue>
+			</maskelement>
+			<maskelement>
+				<mename>generic</mename>
+				<mevalue>6</mevalue>
+			</maskelement>
+			<maskelement>
+				<mename>specific</mename>
+				<mevalue>147</mevalue>
+			</maskelement>
+		</mask>
+		<uei>uei.opennms.org/vendor/foundry/traps/snTrapMacBasedVlanEnabled</uei>
+		<event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapMacBasedVlanEnabled</event-label>
+		<descr>
+	&lt;p&gt;The SNMP trap that is generated when MAC based VLAN is enabled.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+		</descr>
+			<logmsg dest='logndisplay'>&lt;p&gt;
+				snTrapMacBasedVlanEnabled trap received 
+				snAgGblTrapMessage=%parm[#1]%&lt;/p&gt;
+			</logmsg>
+		<severity>Normal</severity>
+	</event>
+	<event>
+		<mask>
+			<maskelement>
+				<mename>id</mename>
+				<mevalue>.1.3.6.1.4.1.1991</mevalue>
+			</maskelement>
+			<maskelement>
+				<mename>generic</mename>
+				<mevalue>6</mevalue>
+			</maskelement>
+			<maskelement>
+				<mename>specific</mename>
+				<mevalue>148</mevalue>
+			</maskelement>
+		</mask>
+		<uei>uei.opennms.org/vendor/foundry/traps/snTrapMacBasedVlanDisabled</uei>
+		<event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapMacBasedVlanDisabled</event-label>
+		<descr>
+	&lt;p&gt;The SNMP trap that is generated when MAC based VLAN is disabled.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+		</descr>
+			<logmsg dest='logndisplay'>&lt;p&gt;
+				snTrapMacBasedVlanDisabled trap received 
+				snAgGblTrapMessage=%parm[#1]%&lt;/p&gt;
+			</logmsg>
+		<severity>Minor</severity>
+	</event>
+	<event>
+		<mask>
+			<maskelement>
+				<mename>id</mename>
+				<mevalue>.1.3.6.1.4.1.1991</mevalue>
+			</maskelement>
+			<maskelement>
+				<mename>generic</mename>
+				<mevalue>6</mevalue>
+			</maskelement>
+			<maskelement>
+				<mename>specific</mename>
+				<mevalue>149</mevalue>
+			</maskelement>
+		</mask>
+		<uei>uei.opennms.org/vendor/foundry/traps/snTrapChasFanNormal</uei>
+		<event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapChasFanNormal</event-label>
+		<descr>
+	&lt;p&gt;The SNMP trap that is generated when a fan operational status
+	changed from failure to normal.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		snChasFanIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		snChasFanDescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+		</descr>
+			<logmsg dest='logndisplay'>&lt;p&gt;
+				snTrapChasFanNormal trap received 
+				snChasFanIndex=%parm[#1]% 
+				snChasFanDescription=%parm[#2]%&lt;/p&gt;
+			</logmsg>
+		<severity>Cleared</severity>
+	</event>
+	<event>
+		<mask>
+			<maskelement>
+				<mename>id</mename>
+				<mevalue>.1.3.6.1.4.1.1991</mevalue>
+			</maskelement>
+			<maskelement>
+				<mename>generic</mename>
+				<mevalue>6</mevalue>
+			</maskelement>
+			<maskelement>
+				<mename>specific</mename>
+				<mevalue>150</mevalue>
+			</maskelement>
+		</mask>
+		<uei>uei.opennms.org/vendor/foundry/traps/snTrapStpRootGuardDetect</uei>
+		<event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapStpRootGuardDetect</event-label>
+		<descr>
+	&lt;p&gt;The SNMP trap that is generated when VLAN's Root-Guarded port received superior BPDU.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		ifIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		snVLanByPortCfgVLanId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+		</descr>
+			<logmsg dest='logndisplay'>&lt;p&gt;
+				snTrapStpRootGuardDetect trap received 
+				ifIndex=%parm[#1]% 
+				snVLanByPortCfgVLanId=%parm[#2]% 
+				snAgGblTrapMessage=%parm[#3]%&lt;/p&gt;
+			</logmsg>
+		<severity>Warning</severity>
+	</event>
+	<event>
+		<mask>
+			<maskelement>
+				<mename>id</mename>
+				<mevalue>.1.3.6.1.4.1.1991</mevalue>
+			</maskelement>
+			<maskelement>
+				<mename>generic</mename>
+				<mevalue>6</mevalue>
+			</maskelement>
+			<maskelement>
+				<mename>specific</mename>
+				<mevalue>151</mevalue>
+			</maskelement>
+		</mask>
+		<uei>uei.opennms.org/vendor/foundry/traps/snTrapStpRootGuardExpire</uei>
+		<event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapStpRootGuardExpire</event-label>
+		<descr>
+	&lt;p&gt;The SNMP trap that is generated when VLAN's ports's Root-Guard expire.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		ifIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		snVLanByPortCfgVLanId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+		</descr>
+			<logmsg dest='logndisplay'>&lt;p&gt;
+				snTrapStpRootGuardExpire trap received 
+				ifIndex=%parm[#1]% 
+				snVLanByPortCfgVLanId=%parm[#2]% 
+				snAgGblTrapMessage=%parm[#3]%&lt;/p&gt;
+			</logmsg>
+		<severity>Warning</severity>
+	</event>
+	<event>
+		<mask>
+			<maskelement>
+				<mename>id</mename>
+				<mevalue>.1.3.6.1.4.1.1991</mevalue>
+			</maskelement>
+			<maskelement>
+				<mename>generic</mename>
+				<mevalue>6</mevalue>
+			</maskelement>
+			<maskelement>
+				<mename>specific</mename>
+				<mevalue>152</mevalue>
+			</maskelement>
+		</mask>
+		<uei>uei.opennms.org/vendor/foundry/traps/snTrapStpBPDUGuardDetect</uei>
+		<event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapStpBPDUGuardDetect</event-label>
+		<descr>
+	&lt;p&gt;The SNMP trap that is generated when VLAN's BPDU-guarded port received BPDU . &lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		ifIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		snVLanByPortCfgVLanId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+		</descr>
+			<logmsg dest='logndisplay'>&lt;p&gt;
+				snTrapStpBPDUGuardDetect trap received 
+				ifIndex=%parm[#1]% 
+				snVLanByPortCfgVLanId=%parm[#2]% 
+				snAgGblTrapMessage=%parm[#3]%&lt;/p&gt;
+			</logmsg>
+		<severity>Warning</severity>
+	</event>
+	<event>
+		<mask>
+			<maskelement>
+				<mename>id</mename>
+				<mevalue>.1.3.6.1.4.1.1991</mevalue>
+			</maskelement>
+			<maskelement>
+				<mename>generic</mename>
+				<mevalue>6</mevalue>
+			</maskelement>
+			<maskelement>
+				<mename>specific</mename>
+				<mevalue>153</mevalue>
+			</maskelement>
+		</mask>
+		<uei>uei.opennms.org/vendor/foundry/traps/snTrapMstpBPDUGuardDetect</uei>
+		<event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapMstpBPDUGuardDetect</event-label>
+		<descr>
+	&lt;p&gt;The SNMP trap that is generated when BPDU-guarded port received BPDU . &lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		ifIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+		</descr>
+			<logmsg dest='logndisplay'>&lt;p&gt;
+				snTrapMstpBPDUGuardDetect trap received 
+				ifIndex=%parm[#1]% 
+				snAgGblTrapMessage=%parm[#2]%&lt;/p&gt;
+			</logmsg>
+		<severity>Warning</severity>
+	</event>
+	<event>
+		<mask>
+			<maskelement>
+				<mename>id</mename>
+				<mevalue>.1.3.6.1.4.1.1991</mevalue>
+			</maskelement>
+			<maskelement>
+				<mename>generic</mename>
+				<mevalue>6</mevalue>
+			</maskelement>
+			<maskelement>
+				<mename>specific</mename>
+				<mevalue>154</mevalue>
+			</maskelement>
+		</mask>
+		<uei>uei.opennms.org/vendor/foundry/traps/snTrapErrorDisableAction</uei>
+		<event-label>FOUNDRY-SN-TRAP-MIB defined trap event: snTrapErrorDisableAction</event-label>
+		<descr>
+	&lt;p&gt;The SNMP trap that is generated when  Interface error-disable is hit or recovery times out . &lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		ifIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		snAgGblTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+		</descr>
+			<logmsg dest='logndisplay'>&lt;p&gt;
+				snTrapErrorDisableAction trap received 
+				ifIndex=%parm[#1]% 
+				snAgGblTrapMessage=%parm[#2]%&lt;/p&gt;
+			</logmsg>
+		<severity>Warning</severity>
+	</event>
+<!-- End of auto generated data from MIB: FOUNDRY-SN-TRAP-MIB -->
+</events>

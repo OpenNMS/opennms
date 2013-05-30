@@ -1,0 +1,420 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<?meta name="GENERATOR" content="XML::Smart/1.6.9 Perl/5.008008 [linux]" ?>
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.4.11</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>1</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxDfcSoftPpsThresholdExceeded</uei>
+    <event-label>JUNIPER-DFC-MIB defined trap event: jnxDfcSoftPpsThresholdExceeded</event-label>
+    <descr><![CDATA[
+<p>Notification of input packet rate (in packet per second) 
+going beyond the configured limit.</p><table>
+	<tr><td><b>
+
+	jnxDfcInterfaceName</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxDfcInputPktRate</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxDfcPpsSoftOverloadLowWatermark</b></td><td>
+	%parm[#3]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxDfcPpsSoftOverloadHighWatermark</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxDfcSoftPpsThresholdExceeded trap received 
+			jnxDfcInterfaceName=%parm[#1]% 
+			jnxDfcInputPktRate=%parm[#2]% 
+			jnxDfcPpsSoftOverloadLowWatermark=%parm[#3]% 
+			jnxDfcPpsSoftOverloadHighWatermark=%parm[#4]%</p>
+		]]></logmsg>
+    <severity>Warning</severity>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.4.11</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>2</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxDfcSoftPpsUnderThreshold</uei>
+    <event-label>JUNIPER-DFC-MIB defined trap event: jnxDfcSoftPpsUnderThreshold</event-label>
+    <descr><![CDATA[
+<p>Notification of input packet rate (in packet per second)
+dropping back to below the configured limit.</p><table>
+	<tr><td><b>
+
+	jnxDfcInterfaceName</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxDfcInputPktRate</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxDfcPpsSoftOverloadLowWatermark</b></td><td>
+	%parm[#3]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxDfcPpsSoftOverloadHighWatermark</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxDfcSoftPpsUnderThreshold trap received 
+			jnxDfcInterfaceName=%parm[#1]% 
+			jnxDfcInputPktRate=%parm[#2]% 
+			jnxDfcPpsSoftOverloadLowWatermark=%parm[#3]% 
+			jnxDfcPpsSoftOverloadHighWatermark=%parm[#4]%</p>
+		]]></logmsg>
+    <severity>Cleared</severity>
+    <alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxDfcSoftPpsThresholdExceeded:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.4.11</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>3</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxDfcHardPpsThresholdExceeded</uei>
+    <event-label>JUNIPER-DFC-MIB defined trap event: jnxDfcHardPpsThresholdExceeded</event-label>
+    <descr><![CDATA[
+<p>Notification of input packet rate (in packet per second)
+going beyond the recommended limit.</p><table>
+	<tr><td><b>
+
+	jnxDfcInterfaceName</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxDfcInputPktRate</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxDfcPpsHardOverloadLowWatermark</b></td><td>
+	%parm[#3]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxDfcPpsHardOverloadHighWatermark</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxDfcHardPpsThresholdExceeded trap received 
+			jnxDfcInterfaceName=%parm[#1]% 
+			jnxDfcInputPktRate=%parm[#2]% 
+			jnxDfcPpsHardOverloadLowWatermark=%parm[#3]% 
+			jnxDfcPpsHardOverloadHighWatermark=%parm[#4]%</p>
+		]]></logmsg>
+    <severity>Major</severity>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.4.11</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>4</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxDfcHardPpsUnderThreshold</uei>
+    <event-label>JUNIPER-DFC-MIB defined trap event: jnxDfcHardPpsUnderThreshold</event-label>
+    <descr><![CDATA[
+<p>Notification of input packet rate (in packet per second)
+dropping back to below the recommended limit.</p><table>
+	<tr><td><b>
+
+	jnxDfcInterfaceName</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxDfcInputPktRate</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxDfcPpsHardOverloadLowWatermark</b></td><td>
+	%parm[#3]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxDfcPpsHardOverloadHighWatermark</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxDfcHardPpsUnderThreshold trap received 
+			jnxDfcInterfaceName=%parm[#1]% 
+			jnxDfcInputPktRate=%parm[#2]% 
+			jnxDfcPpsHardOverloadLowWatermark=%parm[#3]% 
+			jnxDfcPpsHardOverloadHighWatermark=%parm[#4]%</p>
+		]]></logmsg>
+    <severity>Indeterminate</severity>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.4.11</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>5</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxDfcSoftMemThresholdExceeded</uei>
+    <event-label>JUNIPER-DFC-MIB defined trap event: jnxDfcSoftMemThresholdExceeded</event-label>
+    <descr><![CDATA[
+<p>Notification of memory overload condition i.e memory usage 
+is going beyond the configured limit.</p><table>
+	<tr><td><b>
+
+	jnxDfcInterfaceName</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxDfcFlowsUsage</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxDfcCriteriaUsage</b></td><td>
+	%parm[#3]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxDfcMemSoftOverloadLowWatermark</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxDfcMemSoftOverloadHighWatermark</b></td><td>
+	%parm[#5]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxDfcSoftMemThresholdExceeded trap received 
+			jnxDfcInterfaceName=%parm[#1]% 
+			jnxDfcFlowsUsage=%parm[#2]% 
+			jnxDfcCriteriaUsage=%parm[#3]% 
+			jnxDfcMemSoftOverloadLowWatermark=%parm[#4]% 
+			jnxDfcMemSoftOverloadHighWatermark=%parm[#5]%</p>
+		]]></logmsg>
+    <severity>Warning</severity>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.4.11</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxDfcSoftMemUnderThreshold</uei>
+    <event-label>JUNIPER-DFC-MIB defined trap event: jnxDfcSoftMemUnderThreshold</event-label>
+    <descr><![CDATA[
+<p>Notification of memory usage dropping back to below the 
+configured limit.</p><table>
+	<tr><td><b>
+
+	jnxDfcInterfaceName</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxDfcFlowsUsage</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxDfcCriteriaUsage</b></td><td>
+	%parm[#3]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxDfcMemSoftOverloadLowWatermark</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxDfcMemSoftOverloadHighWatermark</b></td><td>
+	%parm[#5]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxDfcSoftMemUnderThreshold trap received 
+			jnxDfcInterfaceName=%parm[#1]% 
+			jnxDfcFlowsUsage=%parm[#2]% 
+			jnxDfcCriteriaUsage=%parm[#3]% 
+			jnxDfcMemSoftOverloadLowWatermark=%parm[#4]% 
+			jnxDfcMemSoftOverloadHighWatermark=%parm[#5]%</p>
+		]]></logmsg>
+    <severity>Cleared</severity>
+    <alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxDfcSoftMemThresholdExceeded:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.4.11</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>7</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxDfcHardMemThresholdExceeded</uei>
+    <event-label>JUNIPER-DFC-MIB defined trap event: jnxDfcHardMemThresholdExceeded</event-label>
+    <descr><![CDATA[
+<p>Notification of memory overload condition i.e memory usage
+is going beyond the recommended limit.</p><table>
+	<tr><td><b>
+
+	jnxDfcInterfaceName</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxDfcFlowsUsage</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxDfcFlowLowWatermark</b></td><td>
+	%parm[#3]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxDfcFlowHighWatermark</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxDfcCriteriaUsage</b></td><td>
+	%parm[#5]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxDfcCriteriaLowWatermark</b></td><td>
+	%parm[#6]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxDfcCriteriaHighWatermark</b></td><td>
+	%parm[#7]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxDfcHardMemThresholdExceeded trap received 
+			jnxDfcInterfaceName=%parm[#1]% 
+			jnxDfcFlowsUsage=%parm[#2]% 
+			jnxDfcFlowLowWatermark=%parm[#3]% 
+			jnxDfcFlowHighWatermark=%parm[#4]% 
+			jnxDfcCriteriaUsage=%parm[#5]% 
+			jnxDfcCriteriaLowWatermark=%parm[#6]% 
+			jnxDfcCriteriaHighWatermark=%parm[#7]%</p>
+		]]></logmsg>
+    <severity>Major</severity>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%:%parm[#7]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.4.11</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>8</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxDfcHardMemUnderThreshold</uei>
+    <event-label>JUNIPER-DFC-MIB defined trap event: jnxDfcHardMemUnderThreshold</event-label>
+    <descr><![CDATA[
+<p>Notification of memory usage dropping back to below the
+recommended limit.</p><table>
+	<tr><td><b>
+
+	jnxDfcInterfaceName</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxDfcFlowsUsage</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxDfcFlowLowWatermark</b></td><td>
+	%parm[#3]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxDfcFlowHighWatermark</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxDfcCriteriaUsage</b></td><td>
+	%parm[#5]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxDfcCriteriaLowWatermark</b></td><td>
+	%parm[#6]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxDfcCriteriaHighWatermark</b></td><td>
+	%parm[#7]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxDfcHardMemUnderThreshold trap received 
+			jnxDfcInterfaceName=%parm[#1]% 
+			jnxDfcFlowsUsage=%parm[#2]% 
+			jnxDfcFlowLowWatermark=%parm[#3]% 
+			jnxDfcFlowHighWatermark=%parm[#4]% 
+			jnxDfcCriteriaUsage=%parm[#5]% 
+			jnxDfcCriteriaLowWatermark=%parm[#6]% 
+			jnxDfcCriteriaHighWatermark=%parm[#7]%</p>
+		]]></logmsg>
+    <severity>Cleared</severity>
+    <alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%:%parm[#7]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxDfcHardMemThresholdExceeded:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%:%parm[#7]%"/>
+  </event>
+</events>
+
