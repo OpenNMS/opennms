@@ -38,6 +38,7 @@ import org.opennms.web.element.ElementUtil;
 import org.opennms.web.element.Service;
 import org.opennms.web.filter.Filter;
 import org.opennms.web.outage.Outage;
+import org.opennms.web.outage.SortStyle;
 import org.opennms.web.outage.WebOutageRepository;
 import org.opennms.web.outage.filter.InterfaceFilter;
 import org.opennms.web.outage.filter.NodeFilter;
@@ -76,7 +77,7 @@ public class ServiceOutagesController extends AbstractController implements Init
             filters.add(new ServiceFilter(service.getServiceId()));
             filters.add(new RecentOutagesFilter());
 
-            OutageCriteria criteria = new OutageCriteria(filters.toArray(new Filter[0]));
+            OutageCriteria criteria = new OutageCriteria(filters.toArray(new Filter[0]), SortStyle.ID, null, -1, -1);
             outages = m_webOutageRepository.getMatchingOutages(criteria);
         }
 

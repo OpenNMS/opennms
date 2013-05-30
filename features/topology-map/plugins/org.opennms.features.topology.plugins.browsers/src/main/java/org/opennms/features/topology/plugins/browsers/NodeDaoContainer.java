@@ -97,8 +97,10 @@ public class NodeDaoContainer extends OnmsDaoContainer<OnmsNode,Integer> {
 		Collection<Object> propertyIds = new HashSet<Object>();
 		propertyIds.addAll(m_properties.keySet());
 
-		// primaryInterface is a complex object so we can't sort on it (yet)
-		propertyIds.remove("primaryInterface");
+		// We have to have special handling inside the NodeTable for this field to be sortable
+		// since it is not a database field. We must sort using Comparators instead of Criteria 
+		// ordering.
+		//propertyIds.remove("primaryInterface");
 
 		return Collections.unmodifiableCollection(propertyIds);
 	}

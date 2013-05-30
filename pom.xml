@@ -1463,6 +1463,12 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
+        <artifactId>jaxb-dependencies</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.dependencies</groupId>
         <artifactId>jcifs-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
@@ -2259,16 +2265,12 @@
             <artifactId>commons-logging</artifactId>
           </exclusion>
           <exclusion>
-            <groupId>javax.xml</groupId>
+            <groupId>javax.xml.bind</groupId>
             <artifactId>jaxb-api</artifactId>
           </exclusion>
           <exclusion>
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-impl</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>javax.xml</groupId>
-            <artifactId>jaxb-api</artifactId>
           </exclusion>
         </exclusions>
       </dependency>

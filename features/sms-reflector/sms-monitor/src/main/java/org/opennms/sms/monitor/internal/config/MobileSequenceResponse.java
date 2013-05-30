@@ -94,6 +94,7 @@ public abstract class MobileSequenceResponse extends MobileSequenceOperation {
 	 * @param matchers a {@link java.util.List} object.
 	 */
 	public void setMatchers(List<SequenceResponseMatcher> matchers) {
+		if (m_matchers == matchers) return;
 		m_matchers.clear();
 		m_matchers.addAll(matchers);
 	}

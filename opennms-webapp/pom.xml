@@ -20,6 +20,40 @@
   <build>
     <plugins>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>test-compile</phase>
+            <goals><goal>copy</goal></goals>
+          </execution>
+        </executions>
+        <configuration>
+          <artifactItems>
+            <artifactItem>
+              <groupId>org.opennms.dependencies</groupId>
+              <artifactId>jaxb-dependencies</artifactId>
+              <type>pom</type>
+              <overWrite>false</overWrite>
+              <outputDirectory>${basedir}/target/endorsed</outputDirectory>
+            </artifactItem>
+          </artifactItems>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <argLine>-Xmx1g -Djava.endorsed.dirs=${basedir}/target/endorsed</argLine>
+          <systemProperties>
+            <property>
+              <name>java.endorsed.dirs</name>
+              <value>${basedir}/target/endorsed</value>
+            </property>
+          </systemProperties>
+        </configuration>
+      </plugin>
+      <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>gwt-maven-plugin</artifactId>
       </plugin>
@@ -218,6 +252,23 @@
     								<versionRange>[1.0,)</versionRange>
     								<goals>
     									<goal>generate</goal>
+    								</goals>
+    							</pluginExecutionFilter>
+    							<action>
+    								<ignore></ignore>
+    							</action>
+    						</pluginExecution>
+    						<pluginExecution>
+    							<pluginExecutionFilter>
+    								<groupId>
+    									org.apache.maven.plugins
+    								</groupId>
+    								<artifactId>
+    									maven-dependency-plugin
+    								</artifactId>
+    								<versionRange>[2.4,)</versionRange>
+    								<goals>
+    									<goal>copy</goal>
     								</goals>
     							</pluginExecutionFilter>
     							<action>
@@ -614,6 +665,11 @@
     <dependency>
       <groupId>org.opennms.core.test-api</groupId>
       <artifactId>org.opennms.core.test-api.http</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.test-api</groupId>
+      <artifactId>org.opennms.core.test-api.xml</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

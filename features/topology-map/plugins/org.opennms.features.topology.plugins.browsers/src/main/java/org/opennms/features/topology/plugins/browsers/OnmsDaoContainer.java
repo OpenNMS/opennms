@@ -31,6 +31,8 @@ package org.opennms.features.topology.plugins.browsers;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -60,6 +62,8 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Sele
 	 * TODO: Fix concurrent access to this field
 	 */
 	protected Criteria m_criteria = new Criteria(getItemClass());
+	
+	public List<Comparator<T>> additionalSorting = new ArrayList<Comparator<T>>();
 
 	/**
 	 * TODO: Fix concurrent access to this field
@@ -135,6 +139,7 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Sele
 	@Override
 	public Collection<?> getItemIds() {
 		List<T> beans = m_dao.findMatching(m_criteria);
+		doAdditionalSorts(beans);
 		List<K> retval = new ArrayList<K>();
 		for (T bean : beans) {
 			retval.add(getId(bean));
@@ -181,12 +186,22 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Sele
 		throw new UnsupportedOperationException("Cannot add new items to this container");
 	}
 
+	private void doAdditionalSorts(List<T> list) {
+		if (additionalSorting.size() > 0) {
+			for (Comparator<T> sort : additionalSorting) {
+				Collections.sort(list, sort);
+			}
+		}
+	}
+
 	/**
 	 * Very inefficient default behavior, override in subclasses.
 	 */
 	@Override
 	public Object firstItemId() {
-		Iterator<T> itr = m_dao.findMatching(m_criteria).iterator();
+		List<T> items = m_dao.findMatching(m_criteria);
+		doAdditionalSorts(items);
+		Iterator<T> itr = items.iterator();
 		if (itr.hasNext()) {
 			return getId(itr.next());
 		} else {
@@ -235,6 +250,7 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Sele
 	@Override
 	public Object lastItemId() {
 		List<T> all = m_dao.findMatching(m_criteria);
+		doAdditionalSorts(all);
 		if (all.size() > 0) {
 			return getId(all.get(all.size() - 1));
 		} else {
@@ -251,7 +267,9 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Sele
 			return null;
 		}
 
-		Iterator<T> itr = m_dao.findMatching(m_criteria).iterator();
+		List<T> beans = m_dao.findMatching(m_criteria);
+		doAdditionalSorts(beans);
+		Iterator<T> itr = beans.iterator();
 		do {
 			if (itemId.equals(getId(itr.next()))) {
 				if (itr.hasNext()) {
@@ -273,7 +291,9 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Sele
 			return null;
 		}
 
-		Iterator<T> itr = m_dao.findMatching(m_criteria).iterator();
+		List<T> beans = m_dao.findMatching(m_criteria);
+		doAdditionalSorts(beans);
+		Iterator<T> itr = beans.iterator();
 		T previous = null;
 		do {
 			T current = (T)itr.next();

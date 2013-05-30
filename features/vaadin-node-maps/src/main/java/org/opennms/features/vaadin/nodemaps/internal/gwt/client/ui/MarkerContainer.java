@@ -42,8 +42,10 @@ public class MarkerContainer implements MarkerProvider {
     }
 
     public void setMarkers(final List<NodeMarker> markers) {
-        m_markers.clear();
-        m_markers.addAll(markers);
+        if (m_markers != markers) {
+            m_markers.clear();
+            m_markers.addAll(markers);
+        }
         refresh();
     }
 

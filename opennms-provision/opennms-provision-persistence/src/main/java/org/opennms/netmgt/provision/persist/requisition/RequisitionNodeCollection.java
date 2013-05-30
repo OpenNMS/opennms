@@ -80,6 +80,7 @@ public class RequisitionNodeCollection extends LinkedList<RequisitionNode> {
      * @param requisitions a {@link java.util.List} object.
      */
     public void setNodes(List<RequisitionNode> requisitions) {
+        if (requisitions == this) return;
         clear();
         addAll(requisitions);
     }

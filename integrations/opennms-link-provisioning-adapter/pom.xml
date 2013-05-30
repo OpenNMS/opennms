@@ -10,7 +10,41 @@
   <name>OpenNMS Link Provisioning Adaptor</name>
   <packaging>bundle</packaging>
   <build>
-    <plugins>
+   <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>test-compile</phase>
+            <goals><goal>copy</goal></goals>
+          </execution>
+        </executions>
+        <configuration>
+          <artifactItems>
+            <artifactItem>
+              <groupId>org.opennms.dependencies</groupId>
+              <artifactId>jaxb-dependencies</artifactId>
+              <type>pom</type>
+              <overWrite>false</overWrite>
+              <outputDirectory>${basedir}/target/endorsed</outputDirectory>
+            </artifactItem>
+          </artifactItems>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <argLine>-Xmx1g -Djava.endorsed.dirs=${basedir}/target/endorsed</argLine>
+          <systemProperties>
+            <property>
+              <name>java.endorsed.dirs</name>
+              <value>${basedir}/target/endorsed</value>
+            </property>
+          </systemProperties>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>org.apache.felix</groupId>
         <artifactId>maven-bundle-plugin</artifactId>
@@ -85,6 +119,39 @@
         </executions>
       </plugin>
     </plugins>
+   <pluginManagement>
+   	<plugins>
+   		<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+   		<plugin>
+   			<groupId>org.eclipse.m2e</groupId>
+   			<artifactId>lifecycle-mapping</artifactId>
+   			<version>1.0.0</version>
+   			<configuration>
+   				<lifecycleMappingMetadata>
+   					<pluginExecutions>
+   						<pluginExecution>
+   							<pluginExecutionFilter>
+   								<groupId>
+   									org.apache.maven.plugins
+   								</groupId>
+   								<artifactId>
+   									maven-dependency-plugin
+   								</artifactId>
+   								<versionRange>[2.4,)</versionRange>
+   								<goals>
+   									<goal>copy</goal>
+   								</goals>
+   							</pluginExecutionFilter>
+   							<action>
+   								<ignore></ignore>
+   							</action>
+   						</pluginExecution>
+   					</pluginExecutions>
+   				</lifecycleMappingMetadata>
+   			</configuration>
+   		</plugin>
+   	</plugins>
+   </pluginManagement>
   </build>
   <dependencies>
     <dependency>
@@ -109,9 +176,9 @@
       from the JAXB implementation inside the Java6 JVM.
     -->
     <dependency>
-      <groupId>com.sun.xml</groupId>
-      <artifactId>com.springsource.com.sun.xml.bind</artifactId>
-      <version>${springJaxbVersion}</version>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>jaxb-dependencies</artifactId>
+      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
@@ -182,19 +249,4 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-  <repositories>
-    <repository>
-      <snapshots>
-        <enabled>false</enabled>
-        <updatePolicy>${updatePolicy}</updatePolicy>
-      </snapshots>
-      <releases>
-        <enabled>true</enabled>
-        <updatePolicy>${updatePolicy}</updatePolicy>
-      </releases>
-      <id>com.springsource.repository.bundles</id>
-      <name>SpringSource Enterprise Bundle Repository</name>
-      <url>http://maven.opennms.org/content/groups/springsource.com-release</url>
-    </repository>
-  </repositories>
 </project>

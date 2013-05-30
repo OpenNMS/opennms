@@ -265,19 +265,8 @@
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>camel-dependencies</artifactId>
       <type>pom</type>
-      <exclusions>
-        <exclusion>
-            <groupId>org.apache.camel</groupId>
-            <artifactId>apache-http</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
-    <dependency>
-        <groupId>org.apache.camel</groupId>
-        <artifactId>camel-http4</artifactId>
-        <version>2.10.4</version>
-    </dependency>
-    
+
     <dependency>
       <groupId>org.opennms.core.test-api</groupId>
       <artifactId>org.opennms.core.test-api.http</artifactId>

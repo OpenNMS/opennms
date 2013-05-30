@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2013 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -36,6 +36,7 @@ import jcifs.netbios.NbtAddress;
 
 import org.apache.log4j.Level;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;
@@ -88,6 +89,14 @@ final public class SmbMonitor extends AbstractServiceMonitor {
      * During the poll ...
      * </P>
      */
+    
+    /**
+     * Do a node-status request before checking name?
+     * First appears in OpenNMS 1.10.10. Default is true.
+     */
+    private static final String DO_NODE_STATUS = "do-node-status";
+    private static final boolean DO_NODE_STATUS_DEFAULT = true;
+    
     @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         NetworkInterface<InetAddress> iface = svc.getNetInterface();
@@ -122,8 +131,15 @@ final public class SmbMonitor extends AbstractServiceMonitor {
          * This try block was updated to reflect the behavior of the plugin.
          */
         final String hostAddress = InetAddressUtils.str(ipv4Addr);
+        
+        final boolean doNodeStatus = ParameterMap.getKeyedBoolean(parameters, DO_NODE_STATUS, DO_NODE_STATUS_DEFAULT);
+        
         try {
-			nbtAddr = NbtAddress.getByName(hostAddress);
+            nbtAddr = NbtAddress.getByName(hostAddress);
+            
+            if (doNodeStatus) {
+                nbtAddr.getNodeType();
+            }
             
             if (!nbtAddr.getHostName().equals(hostAddress))
                 serviceStatus = PollStatus.available();

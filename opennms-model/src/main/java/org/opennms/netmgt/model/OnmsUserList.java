@@ -55,6 +55,7 @@ public class OnmsUserList extends LinkedList<OnmsUser> {
     }
     
     public void setUsers(final List<OnmsUser> users) {
+        if (users == this) return;
         clear();
         addAll(users);
     }

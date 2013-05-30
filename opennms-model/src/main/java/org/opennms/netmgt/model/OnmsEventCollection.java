@@ -81,6 +81,7 @@ public class OnmsEventCollection extends LinkedList<OnmsEvent> {
      * @param events a {@link java.util.List} object.
      */
     public void setEvents(List<OnmsEvent> events) {
+        if (events == this) return;
         clear();
         addAll(events);
     }

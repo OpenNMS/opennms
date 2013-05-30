@@ -566,13 +566,13 @@ public class Event implements Serializable {
     }
 
     public void setAutoaction(final List<Autoaction> autoactions) {
+        if (m_autoactions == autoactions) return;
         m_autoactions.clear();
         m_autoactions.addAll(autoactions);
     }
 
     public void setAutoactionCollection(final List<Autoaction> autoactions) {
-        m_autoactions.clear();
-        m_autoactions.addAll(autoactions);
+        setAutoaction(autoactions);
     }
 
     public void setCorrelation(final Correlation correlation) {
@@ -603,12 +603,13 @@ public class Event implements Serializable {
     }
 
     public void setForward(final List<Forward> forwards) {
+        if (m_forwards == forwards) return;
         m_forwards.clear();
         m_forwards.addAll(forwards);
     }
 
     public void setForwardCollection(final List<Forward> forwards) {
-        m_forwards = forwards;
+        setForward(forwards);
     }
 
     public void setLoggroup(final int index, final String loggroup) throws IndexOutOfBoundsException {
@@ -623,17 +624,13 @@ public class Event implements Serializable {
     }
 
     public void setLoggroup(final List<String> loggroups) {
+        if (m_loggroups == loggroups) return;
         m_loggroups.clear();
-        for (final String group : loggroups) {
-        	m_loggroups.add(group.intern());
-        }
+        m_loggroups.addAll(loggroups);
     }
 
     public void setLoggroupCollection(final List<String> loggroups) {
-        m_loggroups.clear();
-        for (final String group : loggroups) {
-        	m_loggroups.add(group.intern());
-        }
+        setLoggroup(loggroups);
     }
 
     public void setLogmsg(final Logmsg logmsg) {
@@ -660,12 +657,13 @@ public class Event implements Serializable {
     }
 
     public void setOperaction(final List<Operaction> operactions) {
+        if (m_operactions == operactions) return;
         m_operactions.clear();
         m_operactions.addAll(operactions);
     }
 
     public void setOperactionCollection(final List<Operaction> operactions) {
-        m_operactions = operactions;
+        setOperaction(operactions);
     }
 
     public void setOperinstruct(final String operinstruct) {
@@ -684,12 +682,13 @@ public class Event implements Serializable {
     }
 
     public void setScript(final List<Script> scripts) {
+        if (m_scripts == scripts) return;
         m_scripts.clear();
         m_scripts.addAll(scripts);
     }
 
     public void setScriptCollection(final List<Script> scripts) {
-        m_scripts = scripts;
+        setScript(scripts);
     }
 
     public void setSeverity(final String severity) {
@@ -720,12 +719,13 @@ public class Event implements Serializable {
     }
 
     public void setVarbindsdecode(final List<Varbindsdecode> decodes) {
+        if (m_varbindsdecodes == decodes) return;
         m_varbindsdecodes.clear();
         m_varbindsdecodes.addAll(decodes);
     }
 
     public void setVarbindsdecodeCollection(final List<Varbindsdecode> decodes) {
-        m_varbindsdecodes = decodes;
+        setVarbindsdecode(decodes);
     }
 
     public static Event unmarshal(final Reader reader) throws MarshalException, ValidationException {
