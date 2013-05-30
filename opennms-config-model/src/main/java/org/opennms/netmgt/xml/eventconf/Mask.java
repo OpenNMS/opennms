@@ -206,12 +206,13 @@ public class Mask implements Serializable {
     }
 
     public void setMaskelement(final List<Maskelement> elements) {
+        if (m_maskElements == elements) return;
         m_maskElements.clear();
         m_maskElements.addAll(elements);
     }
 
     public void setMaskelementCollection(final List<Maskelement> elements) {
-        m_maskElements = elements;
+        setMaskelement(elements);
     }
 
     public void setVarbind(final int index, final Varbind varbind) throws IndexOutOfBoundsException {
@@ -229,12 +230,13 @@ public class Mask implements Serializable {
     }
 
     public void setVarbind(final List<Varbind> varbinds) {
+        if (m_varbinds == varbinds) return;
         m_varbinds.clear();
         m_varbinds.addAll(varbinds);
     }
 
     public void setVarbindCollection(final List<Varbind> varbinds) {
-        m_varbinds = varbinds;
+        setVarbind(varbinds);
     }
 
     public static Mask unmarshal(final Reader reader) throws MarshalException, ValidationException {

@@ -188,6 +188,7 @@ public class FilterPanel extends Composite {
      */
     public void updateApplicationNames(Collection<String> names) {
         // Update the SuggestBox's Oracle
+        if (names == applicationNames) return;
         applicationNames.clear();
         applicationNames.addAll(names);
     }
@@ -199,6 +200,7 @@ public class FilterPanel extends Composite {
      */
     public void updateSelectedApplications(Collection<ApplicationInfo> apps) {
         // Update the contents of the application filter list
+        if (apps == applicationFilters) return;
         applicationFilters.clear();
         if (apps.size() > 0) {
             noApplicationsCaption.setVisible(false);

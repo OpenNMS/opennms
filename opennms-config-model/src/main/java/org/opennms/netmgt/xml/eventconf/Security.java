@@ -152,12 +152,13 @@ public class Security implements Serializable {
     }
 
     public void setDoNotOverride(final List<String> doNotOverride) {
+        if (m_doNotOverride == doNotOverride) return;
         m_doNotOverride.clear();
         m_doNotOverride.addAll(doNotOverride);
     }
 
     public void setDoNotOverrideCollection(final List<String> doNotOverride) {
-        m_doNotOverride = doNotOverride;
+        setDoNotOverride(doNotOverride);
     }
 
     public static Security unmarshal(final Reader reader) throws MarshalException, ValidationException {
