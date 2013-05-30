@@ -29,6 +29,7 @@
 package org.opennms.netmgt.model.ncs;
 
 import static org.junit.Assert.*;
+import static org.opennms.core.test.xml.XmlTest.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -55,7 +56,7 @@ public class JAXBTest {
 
 
 	@Test
-	public void testMarshall() throws JAXBException, UnsupportedEncodingException, SAXException {
+	public void testMarshall() throws Exception {
 		
 		final String expectedXML = "" +
 				"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
@@ -294,7 +295,7 @@ public class JAXBTest {
 		byte[] utf8 = out.toByteArray();
 
 		String result = new String(utf8, "UTF-8");
-		assertEquals(expectedXML, result);
+		assertXmlEquals(expectedXML, result);
 		
 		System.err.println(result);
 		
@@ -320,7 +321,7 @@ public class JAXBTest {
 		
 		String roundTrip = new String(reout.toByteArray(), "UTF-8");
 		
-		assertEquals(expectedXML, roundTrip);
+		assertXmlEquals(expectedXML, roundTrip);
 	}
 
 }
