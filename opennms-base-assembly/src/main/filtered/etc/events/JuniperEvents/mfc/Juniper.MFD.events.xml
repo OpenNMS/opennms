@@ -1,5 +1,5 @@
 <!-- Juniper's MFC event data generated data from MIB: MFD-ALARM-MIB -->
-<events>
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <event>
 	<mask>
 		<maskelement>

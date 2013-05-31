@@ -1,4 +1,4 @@
-<events>  
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">  
   <event>
         <uei>uei.opennms.org/vendor/Juniper/syslog/rpd_mpls_path_bfd_up</uei>
         <event-label>RPD MPLS Path BFD Up</event-label>

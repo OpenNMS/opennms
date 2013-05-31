@@ -1,4 +1,4 @@
-<events>
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
   <event>
     <uei>uei.opennms.org/nodes/correlation/nodeDownPastHoldDownTime</uei>
     <event-label>OpenNMS-defined node event: nodeDownPastHoldDownTime</event-label>

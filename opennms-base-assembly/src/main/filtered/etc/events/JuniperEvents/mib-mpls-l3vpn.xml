@@ -1,5 +1,5 @@
 <!-- Start of auto generated data from MIB: MPLS-L3VPN-STD-MIB -->
-<events>
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <event>
         <mask>
                 <maskelement>

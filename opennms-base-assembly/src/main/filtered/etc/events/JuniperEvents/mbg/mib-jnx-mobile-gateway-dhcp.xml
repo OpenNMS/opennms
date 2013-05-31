@@ -1,5 +1,5 @@
 <!-- Start of auto generated data from MIB: JUNIPER-MOBILE-GATEWAY-DHCP-MIB -->
-<events>
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgDhcpServerReachability</uei>
 		<event-label>JUNIPER-MOBILE-GATEWAY-DHCP-MIB defined trap event: jnxMbgDhcpServerReachability</event-label>

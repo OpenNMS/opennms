@@ -1,5 +1,5 @@
 <!--   MFC 12.1 version, file created by Javier Guillermo, February 2012 Juniper Professional services> -->
-<events>
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Start of auto generated data from MIB: TMS-MIB -->
 <event>
 	<mask>

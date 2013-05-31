@@ -1,4 +1,4 @@
-<events>
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
   <event>
         <uei>uei.opennms.org/vendor/Juniper/syslog/threshold_crossing_defect</uei>
         <event-label>TCA Defect</event-label>

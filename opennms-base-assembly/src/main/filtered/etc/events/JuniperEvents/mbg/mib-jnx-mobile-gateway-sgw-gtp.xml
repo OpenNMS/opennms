@@ -1,5 +1,5 @@
 <!-- Start of auto generated data from MIB: JUNIPER-MOBILE-GATEWAY-SGW-GTP-MIB -->
-<events>
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgSgwGtpPeerGwDnNotif</uei>
 		<event-label>JUNIPER-MOBILE-GATEWAY-SGW-GTP-MIB defined trap event: jnxMbgSgwGtpPeerGwDnNotif</event-label>

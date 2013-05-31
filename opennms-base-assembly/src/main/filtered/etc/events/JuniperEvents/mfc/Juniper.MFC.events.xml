@@ -5,7 +5,7 @@
 				- 5 new alarms were introduced
 -->
 
-<events>
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
   <event>
     <mask>
       <maskelement>

@@ -1,5 +1,5 @@
 <!-- Start of auto generated data from MIB: JUNIPER-MOBILITY-SGW-CHARGING-MIB -->
-<events>
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgSgwCgGtpGWDownNotify</uei>
 		<event-label>JUNIPER-MOBILITY-SGW-CHARGING-MIB defined trap event: jnxMbgSgwCgGtpGWDownNotify</event-label>

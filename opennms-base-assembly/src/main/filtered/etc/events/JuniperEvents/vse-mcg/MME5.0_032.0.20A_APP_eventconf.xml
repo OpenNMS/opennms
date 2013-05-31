@@ -5,7 +5,7 @@
   Generated on Feb 14, 2012
   Baseline: MME5.0_032.0__Patch16 
 -->
-<events>
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 
   <event>
     <mask>

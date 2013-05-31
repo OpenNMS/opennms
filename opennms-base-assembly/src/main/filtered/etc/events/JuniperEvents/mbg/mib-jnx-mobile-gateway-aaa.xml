@@ -1,5 +1,5 @@
 <!-- Start of auto generated data from MIB: JUNIPER-MOBILE-GATEWAY-AAA-MIB -->
-<events>
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgAAARadiusServerDown</uei>
 		<event-label>JUNIPER-MOBILE-GATEWAY-AAA-MIB defined trap event: jnxMbgAAARadiusServerDown</event-label>

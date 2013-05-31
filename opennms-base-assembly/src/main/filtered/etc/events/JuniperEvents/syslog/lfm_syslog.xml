@@ -1,4 +1,4 @@
-<events>  
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">  
   <event>
         <uei>uei.opennms.org/vendor/Juniper/syslog/lfmd_3ah_linkup</uei>
         <event-label>LFM Link Up</event-label>

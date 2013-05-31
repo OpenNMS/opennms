@@ -1,5 +1,5 @@
 <!-- Start of auto generated data from MIB: JUNIPER-MOBILE-GATEWAY-RMPS-MIB -->
-<events>
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 	<event>
 		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgRMPSServiceStatusChange</uei>
 		<event-label>JUNIPER-MOBILE-GATEWAY-RMPS-MIB defined trap event: jnxMbgRMPSServiceStatusChange</event-label>
