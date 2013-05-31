@@ -239,6 +239,42 @@ public class EventconfFactoryTest {
 		}
     }
     @Test
+    public void testFindByTrap() throws Exception {
+        String enterpriseId = ".1.3.6.1.4.1.5813.1";
+		int generic = 6;
+		int specific = 1;
+        String ip = "127.0.0.1";
+
+        EventBuilder bldr = new EventBuilder(null, "trapd");
+		bldr.setSnmpVersion("v2");
+        bldr.setCommunity("public");
+		bldr.setHost(ip);
+        bldr.setSnmpHost(ip);
+		bldr.setInterface(InetAddress.getByName("127.0.0.1"));
+    
+        // time-stamp (units is hundreths of a second
+		bldr.setSnmpTimeStamp(System.currentTimeMillis()/10);
+    
+        bldr.setGeneric(generic);
+		bldr.setSpecific(specific);
+		bldr.setEnterpriseId(enterpriseId);
+		
+		for(int i = 0; i < 19; i++) {
+			bldr.addParam(".1.3.6."+(i+1), "parm" + (i+1) );
+		}
+		
+		
+    	DefaultEventConfDao eventConfDao = loadConfiguration("eventconf-speedtest/eventconf.xml");
+
+        
+		org.opennms.netmgt.xml.event.Event event = bldr.getEvent();
+		Event eventConf = eventConfDao.findByEvent(event);
+
+        
+        assertNotNull("returned event configuration for event with known UEI '" + knownUEI1 + "' should not be null", eventConf);
+        assertEquals("uei.opennms.org/traps/eventTrap", eventConf.getUei());
+    }
+    @Test
     public void testFindByTrap1000Times() throws Exception {
         String enterpriseId = ".1.3.6.1.4.1.5813.1";
 		int generic = 6;

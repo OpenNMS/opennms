@@ -285,7 +285,8 @@ public class Mask implements Serializable {
 		
 		for(Varbind varbind : m_varbinds) {
 			matchers[index] = varbind.constructMatcher();
- 		}
+			index++;
+		}
 		
 		return EventMatchers.and(matchers);
 	}
