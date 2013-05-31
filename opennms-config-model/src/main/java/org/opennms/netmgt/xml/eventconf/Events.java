@@ -62,7 +62,6 @@ import org.exolab.castor.xml.ValidationException;
 import org.exolab.castor.xml.Validator;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.core.xml.ValidateUsing;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessResourceFailureException;
@@ -109,6 +108,14 @@ public class Events implements Serializable {
 	@XmlTransient
 	private Map<String, Events> m_loadedEventFiles = new LinkedHashMap<String, Events>();
 	
+	@XmlTransient
+	private Partition m_partition;
+	
+	@XmlTransient
+	private Map<String, List<Event>> m_partitionedEvents;
+	
+	@XmlTransient
+	private List<Event> m_nullPartitionedEvents;
 	
     public void addEvent(final Event event) throws IndexOutOfBoundsException {
         m_events.add(event);
@@ -375,6 +382,80 @@ public class Events implements Serializable {
 		return m_global == null ? false : m_global.isSecureTag(tag);
 	}
 	
+	private static interface Partition {
+		List<String> group(Event eventConf);
+		String group(org.opennms.netmgt.xml.event.Event matchingEvent);
+	}
+	
+	private static class EnterpriseIdPartition implements Partition {
+
+		private Field m_field = EventMatchers.field("id");
+
+		@Override
+		public List<String> group(Event eventConf) {
+			return eventConf.getMaskElementValues("id");
+		}
+
+		@Override
+		public String group(org.opennms.netmgt.xml.event.Event matchingEvent) {
+			return m_field.get(matchingEvent);
+		}
+		
+	}
+	
+	private void partitionEvents(Partition partition) {
+		m_partition = partition;
+
+		m_partitionedEvents = new LinkedHashMap<String, List<Event>>();
+		m_nullPartitionedEvents = new ArrayList<Event>();
+		
+		for(Event event : m_events) {
+			List<String> keys = partition.group(event);
+			if (keys == null) {
+				m_nullPartitionedEvents.add(event);
+			} else {
+				for(String key : keys) {
+					List<Event> events = m_partitionedEvents.get(key);
+					if (events == null) {
+						events = new ArrayList<Event>(1);
+						m_partitionedEvents.put(key, events);
+					}
+					events.add(event);
+				}
+			}
+		}
+		
+		
+	}
+	
+	public Event findFirstMatchingEvent(org.opennms.netmgt.xml.event.Event matchingEvent) {
+		String key = m_partition.group(matchingEvent);
+		List<Event> events = m_partitionedEvents.get(key);
+		if (events != null) {
+			for(Event event : events) {
+				if (event.matches(matchingEvent)) {
+					return event;
+				}
+			}
+		} 
+		
+		for(Event event : m_nullPartitionedEvents) {
+			if (event.matches(matchingEvent)) {
+				return event;
+			}
+		}
+		
+		for(Entry<String, Events> loadedEvents : m_loadedEventFiles.entrySet()) {
+			Events subEvents = loadedEvents.getValue();
+			Event event = subEvents.findFirstMatchingEvent(matchingEvent);
+			if (event != null) {
+				return event;
+			}
+		}
+		
+		return null;
+	}
+	
 	public Event findFirstMatchingEvent(EventCriteria criteria) {
 		for(Event event : m_events) {
 			if (criteria.matches(event)) {
@@ -410,15 +491,21 @@ public class Events implements Serializable {
 		
 		return result;
 	}
-
+	
 	public void initialize() {
+		initialize(new EnterpriseIdPartition());
+	}
+
+	public void initialize(Partition partition) {
 		for(Event event : m_events) {
 			event.initialize();
 		}
 		
+		partitionEvents(partition);
+		
 		for(Entry<String, Events> loadedEvents : m_loadedEventFiles.entrySet()) {
 			Events events = loadedEvents.getValue();
-			events.initialize();
+			events.initialize(partition);
 		}
 
 	}

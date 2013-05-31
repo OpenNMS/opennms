@@ -133,6 +133,30 @@ public class EventconfFactoryTest {
         assertEquals("UEI", bldr.getEvent().getUei(), eventConf.getUei());
     }
 
+    @Test
+    public void testFindByEventUeiKnown1000Times() throws Exception {
+    	
+    	final int ATTEMPTS = 10000;
+    	
+        EventBuilder bldr = new EventBuilder(knownUEI1, "testFindByEventUeiKnown");
+
+    	DefaultEventConfDao eventConfDao = loadConfiguration("eventconf-speedtest/eventconf.xml");
+
+    	Event eventConf = null;
+		org.opennms.netmgt.xml.event.Event event = bldr.getEvent();
+        long start = System.currentTimeMillis();
+        for(int i = 0; i < ATTEMPTS; i++) {
+			eventConf = eventConfDao.findByEvent(event);
+        }
+        long end = System.currentTimeMillis();
+        long elapsed = end - start;
+        System.err.printf("%d Attempts: Elapsed: %d ms: events per second %f.%n", ATTEMPTS, elapsed, ATTEMPTS*1000.0/elapsed);
+
+        
+        assertNotNull("returned event configuration for event with known UEI '" + knownUEI1 + "' should not be null", eventConf);
+        assertEquals("UEI", bldr.getEvent().getUei(), eventConf.getUei());
+    }
+
     public class EventCreator  {
         
         private EventBuilder m_eventBuilder;
@@ -214,7 +238,7 @@ public class EventconfFactoryTest {
 		}
     }
     @Test
-    public void testFindByEventUeiKnown1000Times() throws Exception {
+    public void testFindByTrap1000Times() throws Exception {
         String enterpriseId = ".1.3.6.1.4.1.5813.1";
 		int generic = 6;
 		int specific = 1;
@@ -241,7 +265,7 @@ public class EventconfFactoryTest {
 		
     	DefaultEventConfDao eventConfDao = loadConfiguration("eventconf-speedtest/eventconf.xml");
 
-    	final int ATTEMPTS = 1000;
+    	final int ATTEMPTS = 10000;
     	
         Event eventConf = null;
         

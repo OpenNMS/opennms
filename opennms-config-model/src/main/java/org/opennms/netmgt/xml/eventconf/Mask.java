@@ -290,5 +290,19 @@ public class Mask implements Serializable {
 		return EventMatchers.and(matchers);
 	}
 	
+	public Maskelement getMaskElement(String mename) {
+		for(Maskelement element : m_maskElements) {
+			if (mename.equals(mename)) {
+				return element;
+			}
+		}
+		return null;
+	}
+
+	public List<String> getMaskElementValues(String mename) {
+		Maskelement element = getMaskElement(mename);
+		return element == null ? null : element.getMevalueCollection();
+	}
+	
 
 }
