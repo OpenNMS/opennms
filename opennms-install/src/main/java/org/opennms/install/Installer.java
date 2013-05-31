@@ -1060,7 +1060,7 @@ public class Installer {
             }
         }
 
-        System.out.println("- searching for " + libname + ":");
+        System.out.println("- searching for " + fullname + ":");
         for (String dirname : searchPaths) {
             File entry = new File(dirname);
 
@@ -1069,9 +1069,18 @@ public class Installer {
                 dirname = entry.getParent();
             }
 
+
+
             String fullpath = dirname + File.separator + fullname;
             if (loadLibrary(fullpath)) {
                 return fullpath;
+            }
+
+            if (fullname.endsWith(".dylib")) {
+                final String fullPathOldExtension = fullpath.replace(".dylib", ".jnilib");
+                if (loadLibrary(fullPathOldExtension)) {
+                    return fullPathOldExtension;
+                }
             }
         }
 

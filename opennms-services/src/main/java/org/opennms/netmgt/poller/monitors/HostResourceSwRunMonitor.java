@@ -30,6 +30,7 @@ package org.opennms.netmgt.poller.monitors;
 
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
+import java.lang.StringIndexOutOfBoundsException;
 import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
@@ -297,7 +298,15 @@ public class HostResourceSwRunMonitor extends SnmpMonitorStrategy {
     }
 
     private static String stripExtraQuotes(String string) {
-        return StringUtils.stripFrontBack(string, "\"", "\"");
+        String stripped;
+        try {
+            stripped = StringUtils.stripFrontBack(string, "\"", "\"");
+        } catch (StringIndexOutOfBoundsException e) {
+            // Sometimes these are zero-length, see NMS-5852
+            stripped = string;
+        }
+
+        return stripped;
     }
 
 }

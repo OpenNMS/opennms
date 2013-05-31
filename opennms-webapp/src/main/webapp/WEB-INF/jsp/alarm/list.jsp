@@ -296,7 +296,7 @@
 
 
 
-			<th width="8%">
+			<th width="7%">
               <%=this.makeSortLink( parms, SortStyle.ID,        SortStyle.REVERSE_ID,        "id",        "ID" )%>
               <br />
               <%=this.makeSortLink( parms, SortStyle.SEVERITY,  SortStyle.REVERSE_SEVERITY,  "severity",  "Severity"  )%>
@@ -313,14 +313,14 @@
 			<th width="3%">
               <%=this.makeSortLink( parms, SortStyle.COUNT,  SortStyle.REVERSE_COUNT,  "count",  "Count"  )%>
             </th>
-			<th width="20%">
+			<th width="13%">
               <%=this.makeSortLink( parms, SortStyle.LASTEVENTTIME,  SortStyle.REVERSE_LASTEVENTTIME,  "lasteventtime",  "Last Event Time"  )%>
               <c:if test="${param.display == 'long'}">
               <br />
               <%=this.makeSortLink( parms, SortStyle.FIRSTEVENTTIME,  SortStyle.REVERSE_FIRSTEVENTTIME,  "firsteventtime",  "First Event Time"  )%>
               </c:if>
             </th>
-			<th width="48%">Log Msg</th>
+			<th width="56%">Log Msg</th>
 		</tr>
 	</thead>
 
