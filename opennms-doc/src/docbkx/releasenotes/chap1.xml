@@ -72,6 +72,18 @@
 
 	<!-- Start 1.10 -->
 
+	<section id="introduction-1.10.10">
+		<title>Release 1.10.10</title>
+
+		<para>
+			Release 1.10.10 is the latest in the stable series of OpenNMS releases.
+			It contains a number of bugfixes and enhancements.
+		</para>
+		<para>
+			The codename for 1.10.10 is <emphasis>Tumpong</emphasis>.
+		</para>
+	</section>
+
 	<section id="introduction-1.10.9">
 		<title>Release 1.10.9</title>
 
