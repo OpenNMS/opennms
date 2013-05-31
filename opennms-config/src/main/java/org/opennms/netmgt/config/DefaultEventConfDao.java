@@ -224,14 +224,7 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 
 	@Override
 	public Event findByEvent(final org.opennms.netmgt.xml.event.Event matchingEvent) {
-		return m_events.findFirstMatchingEvent(new EventCriteria() {
-
-			@Override
-			public boolean matches(Event e) {
-				return e.matches(matchingEvent);
-			}
-			
-		});
+		return m_events.findFirstMatchingEvent(matchingEvent);
 	}
 
 	@Override

@@ -892,5 +892,9 @@ public class Event implements Serializable {
 	public void initialize() {
 		m_matcher = constructMatcher();
 	}
+	
+	public List<String> getMaskElementValues(String mename) {
+		return m_mask == null ? null : m_mask.getMaskElementValues(mename);
+	}
 
 }
