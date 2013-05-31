@@ -283,19 +283,7 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 
 			events.loadEventFiles(m_configResource, unmarshaller);
 			
-			//m_partition = new EnterpriseIdPartition();
-			m_partition = new Partition() {
-				
-				@Override
-				public String group(org.opennms.netmgt.xml.event.Event matchingEvent) {
-					return null;
-				}
-				
-				@Override
-				public List<String> group(Event eventConf) {
-					return null;
-				}
-			};
+			m_partition = new EnterpriseIdPartition();
 			events.initialize(m_partition);
 
 			m_events = events;
