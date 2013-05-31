@@ -44,9 +44,12 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.xml.eventconf.Event;
+import org.opennms.netmgt.xml.eventconf.EventMatchers;
 import org.opennms.netmgt.xml.eventconf.Events;
+import org.opennms.netmgt.xml.eventconf.Field;
 import org.opennms.netmgt.xml.eventconf.Events.EventCallback;
 import org.opennms.netmgt.xml.eventconf.Events.EventCriteria;
+import org.opennms.netmgt.xml.eventconf.Events.Partition;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessException;
@@ -64,6 +67,8 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 	private Events m_events;
 
 	private Resource m_configResource;
+
+	private Partition m_partition;
 
     private static class EventLabelComparator implements Comparator<Event>, Serializable {
 
@@ -175,7 +180,7 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 	@Override
 	public void addEvent(Event event) {
 		m_events.addEvent(event);
-		m_events.initialize();
+		m_events.initialize(m_partition);
 	}
 
 	@Override
@@ -187,7 +192,7 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 		}
 
 		programmaticEvents.addEvent(event);
-		programmaticEvents.initialize();
+		programmaticEvents.initialize(m_partition);
 
 	}
 
@@ -200,7 +205,7 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 		if (programmaticEvents.getEventCount() <= 0) {
 			m_events.removeLoadedEventFile(m_programmaticStoreRelativePath);
 		} else {
-			programmaticEvents.initialize();
+			programmaticEvents.initialize(m_partition);
 		}
 		return true;
 
@@ -254,6 +259,22 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 		loadConfig();
 	}
 
+	private static class EnterpriseIdPartition implements Partition {
+
+		private Field m_field = EventMatchers.field("id");
+
+		@Override
+		public List<String> group(Event eventConf) {
+			return eventConf.getMaskElementValues("id");
+		}
+
+		@Override
+		public String group(org.opennms.netmgt.xml.event.Event matchingEvent) {
+			return m_field.get(matchingEvent);
+		}
+		
+	}
+	
 	private synchronized void loadConfig() throws DataAccessException {
 		try {
 			Unmarshaller unmarshaller = JaxbUtils.getUnmarshallerFor(Events.class, null, true);
@@ -261,7 +282,21 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 			Events events = load(unmarshaller);
 
 			events.loadEventFiles(m_configResource, unmarshaller);
-			events.initialize();
+			
+			//m_partition = new EnterpriseIdPartition();
+			m_partition = new Partition() {
+				
+				@Override
+				public String group(org.opennms.netmgt.xml.event.Event matchingEvent) {
+					return null;
+				}
+				
+				@Override
+				public List<String> group(Event eventConf) {
+					return null;
+				}
+			};
+			events.initialize(m_partition);
 
 			m_events = events;
 
