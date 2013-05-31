@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,36 +29,25 @@
 package org.opennms.netmgt.provision.adapters.link.config.dao;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.Set;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.ValidationEventHandler;
-import javax.xml.bind.helpers.DefaultValidationEventHandler;
-
+import org.apache.commons.io.IOUtils;
+import org.opennms.core.xml.AbstractJaxbConfigDao;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.core.xml.MarshallingResourceFailureException;
-import org.opennms.netmgt.dao.castor.AbstractCastorConfigDao;
-import org.opennms.netmgt.provision.adapters.link.config.DefaultNamespacePrefixMapper;
 import org.opennms.netmgt.provision.adapters.link.config.linkadapter.LinkAdapterConfiguration;
 import org.opennms.netmgt.provision.adapters.link.config.linkadapter.LinkPattern;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.util.Assert;
 
-/**
- * <p>DefaultLinkAdapterConfigurationDao class.</p>
- *
- * @author ranger
- * @version $Id: $
- */
-public class DefaultLinkAdapterConfigurationDao extends AbstractCastorConfigDao<LinkAdapterConfiguration, LinkAdapterConfiguration> implements LinkAdapterConfigurationDao {
-    private JAXBContext m_context;
-    private Marshaller m_marshaller;
-    private Unmarshaller m_unmarshaller;
-    
+public class DefaultLinkAdapterConfigurationDao extends AbstractJaxbConfigDao<LinkAdapterConfiguration, LinkAdapterConfiguration> implements LinkAdapterConfigurationDao {
     /**
      * <p>Constructor for DefaultLinkAdapterConfigurationDao.</p>
      */
@@ -116,16 +105,29 @@ public class DefaultLinkAdapterConfigurationDao extends AbstractCastorConfigDao<
         if (file == null) {
             throw new DataAccessResourceFailureException("Unable to determine file for " + getConfigResource());
         }
-        try {
-            m_marshaller.marshal(getContainer().getObject(), file);
-        } catch (Throwable e) {
-            throw new DataAccessResourceFailureException("Could not marshal configuration file for " + getConfigResource() + ": " + e, e);
+
+        final StringWriter stringWriter = new StringWriter();
+        JaxbUtils.marshal(getContainer().getObject(), stringWriter);
+
+        if (stringWriter.toString() != null) {
+            OutputStream os = null;
+            Writer fileWriter = null;
+            try {
+                os = new FileOutputStream(file);
+                fileWriter = new OutputStreamWriter(os, "UTF-8");
+                fileWriter.write(stringWriter.toString());
+            } catch (final IOException e) {
+                throw new DataAccessResourceFailureException("Could not write resource " + getConfigResource() + " to file " + file.getPath() + ": " + e, e);
+            } finally {
+                IOUtils.closeQuietly(fileWriter);
+                IOUtils.closeQuietly(os);
+            }
         }
     }
 
     /** {@inheritDoc} */
     @Override
-    protected LinkAdapterConfiguration loadConfig(Resource resource) {
+    protected LinkAdapterConfiguration loadConfig(final Resource resource) {
         long startTime = System.currentTimeMillis();
 
         if (log().isDebugEnabled()) {
@@ -133,40 +135,13 @@ public class DefaultLinkAdapterConfigurationDao extends AbstractCastorConfigDao<
         }
 
         try {
-            InputStream is = resource.getInputStream();
-            LinkAdapterConfiguration config = (LinkAdapterConfiguration)m_unmarshaller.unmarshal(is);
-            is.close();
-            
+            LinkAdapterConfiguration config = JaxbUtils.unmarshal(LinkAdapterConfiguration.class, resource);
             long endTime = System.currentTimeMillis();
             log().info(createLoadedLogMessage(config, (endTime - startTime)));
-
+            log().info(config.toString());
             return config;
         } catch (Throwable e) {
             throw new MarshallingResourceFailureException("Unable to unmarshal the link adapter configuration.", e);
         }
     }
-
-    /** {@inheritDoc} */
-    @Override
-    public void afterPropertiesSet() {
-
-        try {
-            m_context = JAXBContext.newInstance(LinkAdapterConfiguration.class, LinkPattern.class);
-    
-            m_marshaller = m_context.createMarshaller();
-            m_marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-            m_marshaller.setProperty("com.sun.xml.bind.namespacePrefixMapper", new DefaultNamespacePrefixMapper("http://xmlns.opennms.org/xsd/config/map-link-adapter"));
-            
-            m_unmarshaller = m_context.createUnmarshaller();
-            m_unmarshaller.setSchema(null);
-            
-            ValidationEventHandler handler = new DefaultValidationEventHandler();
-            m_unmarshaller.setEventHandler(handler);
-        } catch (Throwable e) {
-            throw new IllegalStateException("Unable to create JAXB context.", e);
-        }
-
-        super.afterPropertiesSet();
-    }
-
 }
