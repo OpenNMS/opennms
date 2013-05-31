@@ -886,6 +886,7 @@ public class Event implements Serializable {
 	}
 
 	public boolean matches(org.opennms.netmgt.xml.event.Event matchingEvent) {
+		System.err.println("Attempting to match event againtst: " + m_matcher);
 		return m_matcher.matches(matchingEvent);
 	}
 

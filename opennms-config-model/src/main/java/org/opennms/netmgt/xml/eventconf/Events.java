@@ -382,25 +382,9 @@ public class Events implements Serializable {
 		return m_global == null ? false : m_global.isSecureTag(tag);
 	}
 	
-	private static interface Partition {
+	public static interface Partition {
 		List<String> group(Event eventConf);
 		String group(org.opennms.netmgt.xml.event.Event matchingEvent);
-	}
-	
-	private static class EnterpriseIdPartition implements Partition {
-
-		private Field m_field = EventMatchers.field("id");
-
-		@Override
-		public List<String> group(Event eventConf) {
-			return eventConf.getMaskElementValues("id");
-		}
-
-		@Override
-		public String group(org.opennms.netmgt.xml.event.Event matchingEvent) {
-			return m_field.get(matchingEvent);
-		}
-		
 	}
 	
 	private void partitionEvents(Partition partition) {
@@ -485,7 +469,6 @@ public class Events implements Serializable {
 		}
 		
 		for(Entry<String, Events> loadedEvents : m_loadedEventFiles.entrySet()) {
-			String eventFile = loadedEvents.getKey();
 			Events events = loadedEvents.getValue();
 			result = events.forEachEvent(result, callback);
 		}
@@ -494,10 +477,6 @@ public class Events implements Serializable {
 		return result;
 	}
 	
-	public void initialize() {
-		initialize(new EnterpriseIdPartition());
-	}
-
 	public void initialize(Partition partition) {
 		for(Event event : m_events) {
 			event.initialize();
