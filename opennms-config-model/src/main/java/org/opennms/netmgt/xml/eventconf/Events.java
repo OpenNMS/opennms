@@ -430,14 +430,16 @@ public class Events implements Serializable {
 	
 	public Event findFirstMatchingEvent(org.opennms.netmgt.xml.event.Event matchingEvent) {
 		String key = m_partition.group(matchingEvent);
-		List<Event> events = m_partitionedEvents.get(key);
-		if (events != null) {
-			for(Event event : events) {
-				if (event.matches(matchingEvent)) {
-					return event;
+		if (key != null) {
+			List<Event> events = m_partitionedEvents.get(key);
+			if (events != null) {
+				for(Event event : events) {
+					if (event.matches(matchingEvent)) {
+						return event;
+					}
 				}
 			}
-		} 
+		}
 		
 		for(Event event : m_nullPartitionedEvents) {
 			if (event.matches(matchingEvent)) {
