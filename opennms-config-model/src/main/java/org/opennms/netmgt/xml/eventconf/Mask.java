@@ -292,7 +292,7 @@ public class Mask implements Serializable {
 	
 	public Maskelement getMaskElement(String mename) {
 		for(Maskelement element : m_maskElements) {
-			if (mename.equals(mename)) {
+			if (mename.equals(element.getMename())) {
 				return element;
 			}
 		}
