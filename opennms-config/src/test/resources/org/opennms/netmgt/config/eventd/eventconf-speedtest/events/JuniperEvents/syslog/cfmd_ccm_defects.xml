@@ -1,0 +1,73 @@
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+  <event>
+        <uei>uei.opennms.org/vendor/Juniper/syslog/cfmd_ccm_defect_cross_connect</uei>
+        <event-label>CFMD CCM Cross-Connect Defect</event-label>
+        <descr>
+            A connectivity-fault management (CFM) maintenance endpoint (MEP) received a
+            continuity check message (CCM) that had an incorrect maintenance association (MA)
+            ID or a maintenance domain (MD) level lower than that of the MEP, each of which
+            indicates a cross-connect error.
+        </descr>
+        <logmsg dest='logndisplay'>CFMD CCM Cross-Connect defect: Level: %parm[#1]%, MD: %parm[#2]%, MA: %parm[#3]%, Interface: %parm[#4]%</logmsg>
+        <severity>Critical</severity>
+	<alarm-data alarm-type="1" reduction-key="uei.opennms.org/vendor/Juniper/syslog/cfmd_ccm_defect:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" />
+  </event>
+  <event>
+        <uei>uei.opennms.org/vendor/Juniper/syslog/cfmd_ccm_defect_error</uei>
+        <event-label>CFMD CCM Error Defect</event-label>
+        <descr>
+            A connectivity-fault management (CFM) maintenance endpoint (MEP) received a
+            continuity check message (CCM) with an incorrect transmission interval or MEP ID, which
+            indicates a configuration error.
+        </descr>
+        <logmsg dest='logndisplay'>CFMD CCM Error defect: Level: %parm[#1]%, MD: %parm[#2]%, MA: %parm[#3]%, Interface: %parm[#4]%</logmsg>
+        <severity>Critical</severity>
+	<alarm-data alarm-type="1" reduction-key="uei.opennms.org/vendor/Juniper/syslog/cfmd_ccm_defect:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" />
+  </event>
+  <event>
+        <uei>uei.opennms.org/vendor/Juniper/syslog/cfmd_ccm_defect_mac_status</uei>
+        <event-label>CFMD CCM Mac Status Defect</event-label>
+        <descr>
+            A connectivity-fault management (CFM) maintenance endpoint (MEP) received a
+            continuity check message (CCM) that contained a 'Port Status' or 'Interface Status' type,
+            length, value (TLV), which indicate a failed bridge port or aggregated port.
+        </descr>
+        <logmsg dest='logndisplay'>CFMD CCM Mac Status defect: Level: %parm[#1]%, MD: %parm[#2]%, MA: %parm[#3]%, Interface: %parm[#4]%</logmsg>
+        <severity>Critical</severity>
+	<alarm-data alarm-type="1" reduction-key="uei.opennms.org/vendor/Juniper/syslog/cfmd_ccm_defect:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" />
+  </event>
+  <event>
+        <uei>uei.opennms.org/vendor/Juniper/syslog/cfmd_ccm_defect_rdi</uei>
+        <event-label>CFMD CCM RDI Defect</event-label>
+        <descr>
+            A connectivity-fault management (CFM) maintenance endpoint (MEP) received a
+            continuity check message (CCM) that had the 'Remote Defect Indication' (RDI) bit set,
+            which indicates that not all configured MEPs are returning CCMs to the transmitting MEP.
+        </descr>
+        <logmsg dest='logndisplay'>CFMD CCM RDI defect: Level: %parm[#1]%, MD: %parm[#2]%, MA: %parm[#3]%, Interface: %parm[#4]%</logmsg>
+        <severity>Critical</severity>
+	<alarm-data alarm-type="1" reduction-key="uei.opennms.org/vendor/Juniper/syslog/cfmd_ccm_defect:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" />
+  </event>
+  <event>
+        <uei>uei.opennms.org/vendor/Juniper/syslog/cfmd_ccm_defect_rmep</uei>
+        <event-label>CFMD CCM RMEP Defect</event-label>
+        <descr>
+            A connectivity-fault management (CFM) maintenance endpoint (MEP) did not receive
+            three consecutive continuity check message (CCM)s from one of the other MEPs in its
+            maintenance association (MA), which indicates a MEP failure or network failure.
+        </descr>
+        <logmsg dest='logndisplay'>CFMD CCM RMEP defect: Level: %parm[#1]%, MD: %parm[#2]%, MA: %parm[#3]%, Interface: %parm[#4]%</logmsg>
+        <severity>Critical</severity>
+	<alarm-data alarm-type="1" reduction-key="uei.opennms.org/vendor/Juniper/syslog/cfmd_ccm_defect:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" />
+  </event>
+  <event>
+        <uei>uei.opennms.org/vendor/Juniper/syslog/cfmd_ccm_defect_none</uei>
+        <event-label>CFMD CCM Defect None</event-label>
+        <descr>
+            No defect was detected
+        </descr>
+        <logmsg dest='logndisplay'>CFMD CCM defect none: Level: %parm[#1]%, MD: %parm[#2]%, MA: %parm[#3]%, Interface: %parm[#4]%</logmsg>
+        <severity>Normal</severity>
+	<alarm-data alarm-type="2" reduction-key="%uei%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" clear-key="uei.opennms.org/vendor/Juniper/syslog/cfmd_ccm_defect:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" />
+  </event>
+</events>

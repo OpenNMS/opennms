@@ -191,4 +191,8 @@ public class Security implements Serializable {
 		return true;
 	}
 
+	public boolean isSecureTag(String tag) {
+		return m_doNotOverride == null ? false : m_doNotOverride.contains(tag);
+	}
+
 }

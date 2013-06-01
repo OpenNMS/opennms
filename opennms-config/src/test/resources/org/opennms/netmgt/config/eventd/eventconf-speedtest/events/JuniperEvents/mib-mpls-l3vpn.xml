@@ -1,0 +1,313 @@
+<!-- Start of auto generated data from MIB: MPLS-L3VPN-STD-MIB -->
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.2.1.10.166.11</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>1</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Juniper/traps/mplsL3VpnVrfUp</uei>
+        <event-label>MPLS-L3VPN-STD-MIB defined trap event: mplsL3VpnVrfUp</event-label>
+        <descr><![CDATA[
+<p>This notification is generated when:
+a. No interface is associated with this VRF, and the first
+   (and only first) interface associated with it has its
+   ifOperStatus change to up(1).
+
+b. One interface is associated with this VRF, and
+   the ifOperStatus of this interface changes to up(1).
+
+c. Multiple interfaces are associated with this VRF, and the
+   ifOperStatus of all interfaces is down(2), and the first
+   of those interfaces has its ifOperStatus change to up(1).</p><table>
+        <tr><td><b>
+
+        mplsL3VpnIfConfRowStatus</b></td><td>
+        %parm[#1]%;</td><td><p>
+                active(1)
+                notInService(2)
+                notReady(3)
+                createAndGo(4)
+                createAndWait(5)
+                destroy(6)
+        </p></td></tr>
+        <tr><td><b>
+
+        mplsL3VpnVrfOperStatus</b></td><td>
+        %parm[#2]%;</td><td><p>
+                up(1)
+                down(2)
+        </p></td></tr></table>
+        ]]></descr>
+                <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+                        mplsL3VpnVrfUp trap received 
+                        mplsL3VpnIfConfRowStatus=%parm[#1]% 
+                        mplsL3VpnVrfOperStatus=%parm[#2]%
+                        mplsL3VpnVrfName= %parm[name-#2]%</p>
+                ]]></logmsg>
+        <severity>Cleared</severity>
+         <alarm-data alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" clear-key="uei.opennms.org/vendor/Juniper/traps/mplsL3VpnVrfDown:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%"/>
+</event>
+<event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.2.1.10.166.11</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>2</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Juniper/traps/mplsL3VpnVrfDown</uei>
+        <event-label>MPLS-L3VPN-STD-MIB defined trap event: mplsL3VpnVrfDown</event-label>
+        <descr><![CDATA[
+<p>This notification is generated when:
+a. One interface is associated with this VRF, and
+   the ifOperStatus of this interface changes from up(1)
+   to down(2).
+
+b. Multiple interfaces are associated with this VRF, and
+   the ifOperStatus of all except one of these interfaces is
+   equal to up(1), and the ifOperStatus of that interface
+   changes from up(1) to down(2).
+
+c. The last interface with ifOperStatus equal to up(1)
+   is disassociated from a VRF.</p><table>
+        <tr><td><b>
+
+        mplsL3VpnIfConfRowStatus</b></td><td>
+        %parm[#1]%;</td><td><p>
+                active(1)
+                notInService(2)
+                notReady(3)
+                createAndGo(4)
+                createAndWait(5)
+                destroy(6)
+        </p></td></tr>
+        <tr><td><b>
+
+        mplsL3VpnVrfOperStatus</b></td><td>
+        %parm[#2]%;</td><td><p>
+                up(1)
+                down(2)
+        </p></td></tr></table>
+        ]]></descr>
+                <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+                        mplsL3VpnVrfDown trap received 
+                        mplsL3VpnIfConfRowStatus=%parm[#1]% 
+                        mplsL3VpnVrfOperStatus=%parm[#2]%
+                        mplsL3VpnVrfName= %parm[name-#2]%</p> 
+                ]]></logmsg>
+        <severity>Major</severity>
+        <alarm-data alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%"/>
+</event>
+<event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.2.1.10.166.11</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>3</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Juniper/traps/mplsL3VpnVrfRouteMidThreshExceeded</uei>
+        <event-label>MPLS-L3VPN-STD-MIB defined trap event: mplsL3VpnVrfRouteMidThreshExceeded</event-label>
+        <descr><![CDATA[
+<p>This notification is generated when the number of routes
+contained by the specified VRF exceeds the value indicated by
+mplsL3VpnVrfMidRouteThreshold.  A single notification MUST be
+generated when this threshold is exceeded, and no other
+notifications of this type should be issued until the value
+of mplsL3VpnVrfPerfCurrNumRoutes has fallen below that of
+mplsL3VpnVrfConfMidRteThresh.</p><table>
+        <tr><td><b>
+
+        mplsL3VpnVrfPerfCurrNumRoutes</b></td><td>
+        %parm[#1]%;</td><td><p></p></td></tr>
+        <tr><td><b>
+
+        mplsL3VpnVrfConfMidRteThresh</b></td><td>
+        %parm[#2]%;</td><td><p></p></td></tr></table>
+        ]]></descr>
+                <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+                        mplsL3VpnVrfRouteMidThreshExceeded trap received 
+                        mplsL3VpnVrfPerfCurrNumRoutes=%parm[#1]% 
+                        mplsL3VpnVrfConfMidRteThresh=%parm[#2]%</p>
+                ]]></logmsg>
+        <severity>Indeterminate</severity>
+</event>
+<event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.2.1.10.166.11</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>4</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Juniper/traps/mplsL3VpnVrfNumVrfRouteMaxThreshExceeded</uei>
+        <event-label>MPLS-L3VPN-STD-MIB defined trap event: mplsL3VpnVrfNumVrfRouteMaxThreshExceeded</event-label>
+        <descr><![CDATA[
+<p>This notification is generated when the number of routes
+contained by the specified VRF exceeds or attempts to exceed
+the maximum allowed value as indicated by
+mplsL3VpnVrfMaxRouteThreshold.  In cases where
+mplsL3VpnVrfConfHighRteThresh is set to the same value
+as mplsL3VpnVrfConfMaxRoutes, mplsL3VpnVrfConfHighRteThresh
+need not be exceeded; rather, just reached for this notification
+to be issued.
+
+Note that mplsL3VpnVrfConfRteMxThrshTime denotes the interval
+at which the this notification will be reissued after the
+maximum value has been exceeded (or reached if
+mplsL3VpnVrfConfMaxRoutes and mplsL3VpnVrfConfHighRteThresh are
+equal) and the initial notification has been issued.  This value
+is intended to prevent continuous generation of notifications by
+an agent in the event that routes are continually added to a VRF
+after it has reached its maximum value.  The default value is 0
+minutes.  If this value is set to 0, the agent should only issue
+a single notification at the time that the maximum threshold has
+been reached, and should not issue any more notifications until
+the value of routes has fallen below the configured threshold
+value.</p><table>
+        <tr><td><b>
+
+        mplsL3VpnVrfPerfCurrNumRoutes</b></td><td>
+        %parm[#1]%;</td><td><p></p></td></tr>
+        <tr><td><b>
+
+        mplsL3VpnVrfConfHighRteThresh</b></td><td>
+        %parm[#2]%;</td><td><p></p></td></tr></table>
+        ]]></descr>
+                <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+                        mplsL3VpnVrfNumVrfRouteMaxThreshExceeded trap received 
+                        mplsL3VpnVrfPerfCurrNumRoutes=%parm[#1]% 
+                        mplsL3VpnVrfConfHighRteThresh=%parm[#2]%</p>
+                ]]></logmsg>
+        <severity>Indeterminate</severity>
+</event>
+<event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.2.1.10.166.11</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>5</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Juniper/traps/mplsL3VpnNumVrfSecIllglLblThrshExcd</uei>
+        <event-label>MPLS-L3VPN-STD-MIB defined trap event: mplsL3VpnNumVrfSecIllglLblThrshExcd</event-label>
+        <descr><![CDATA[
+<p>This notification is generated when the number of illegal
+label violations on a VRF as indicated by
+mplsL3VpnVrfSecIllegalLblVltns has exceeded
+mplsL3VpnIllLblRcvThrsh.  The threshold is not
+included in the varbind here because the value of
+mplsL3VpnVrfSecIllegalLblVltns should be one greater than
+the threshold at the time this notification is issued.</p><table>
+        <tr><td><b>
+
+        mplsL3VpnVrfSecIllegalLblVltns</b></td><td>
+        %parm[#1]%;</td><td><p></p></td></tr></table>
+        ]]></descr>
+                <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+                        mplsL3VpnNumVrfSecIllglLblThrshExcd trap received 
+                        mplsL3VpnVrfSecIllegalLblVltns=%parm[#1]%</p>
+                ]]></logmsg>
+        <severity>Indeterminate</severity>
+</event>
+<event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.2.1.10.166.11</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Juniper/traps/mplsL3VpnNumVrfRouteMaxThreshCleared</uei>
+        <event-label>MPLS-L3VPN-STD-MIB defined trap event: mplsL3VpnNumVrfRouteMaxThreshCleared</event-label>
+        <descr><![CDATA[
+<p>This notification is generated only after the number of routes
+contained by the specified VRF exceeds or attempts to exceed
+the maximum allowed value as indicated by
+mplsVrfMaxRouteThreshold, and then falls below this value.  The
+emission of this notification informs the operator that the
+error condition has been cleared without the operator having to
+query the device.
+
+Note that mplsL3VpnVrfConfRteMxThrshTime denotes the interval at
+which the mplsNumVrfRouteMaxThreshExceeded notification will
+be reissued after the maximum value has been exceeded (or
+reached if mplsL3VpnVrfConfMaxRoutes and
+mplsL3VpnVrfConfHighRteThresh are equal) and the initial
+notification has been issued.  Therefore,
+the generation of this notification should also be emitted with
+this same frequency (assuming that the error condition is
+cleared).  Specifically, if the error condition is reached and
+cleared several times during the period of time specified in
+mplsL3VpnVrfConfRteMxThrshTime, only a single notification will
+be issued to indicate the first instance of the error condition
+as well as the first time the error condition is cleared.
+This behavior is intended to prevent continuous generation of
+notifications by an agent in the event that routes are
+continually added and removed to/from a VRF after it has
+reached its maximum value.  The default value is 0.  If this
+value is set to 0, the agent should issue a notification
+whenever the maximum threshold has been cleared.</p><table>
+        <tr><td><b>
+
+        mplsL3VpnVrfPerfCurrNumRoutes</b></td><td>
+        %parm[#1]%;</td><td><p></p></td></tr>
+        <tr><td><b>
+
+        mplsL3VpnVrfConfHighRteThresh</b></td><td>
+        %parm[#2]%;</td><td><p></p></td></tr></table>
+        ]]></descr>
+                <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+                        mplsL3VpnNumVrfRouteMaxThreshCleared trap received 
+                        mplsL3VpnVrfPerfCurrNumRoutes=%parm[#1]% 
+                        mplsL3VpnVrfConfHighRteThresh=%parm[#2]%</p>
+                ]]></logmsg>
+        <severity>Indeterminate</severity>
+</event>
+</events>
+<!-- End of auto generated data from MIB: MPLS-L3VPN-STD-MIB -->

@@ -28,57 +28,47 @@
 
 package org.opennms.netmgt.config;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
+import java.io.InputStream;
 import java.io.Serializable;
-import java.io.StringWriter;
-import java.io.Writer;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
 import java.util.TreeMap;
-import java.util.Map.Entry;
+import java.util.TreeSet;
 
-import org.opennms.core.utils.LogUtils;
-import org.opennms.core.xml.AbstractJaxbConfigDao;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.stream.StreamSource;
+
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.xml.eventconf.Event;
+import org.opennms.netmgt.xml.eventconf.EventMatchers;
 import org.opennms.netmgt.xml.eventconf.Events;
+import org.opennms.netmgt.xml.eventconf.Field;
+import org.opennms.netmgt.xml.eventconf.Events.EventCallback;
+import org.opennms.netmgt.xml.eventconf.Events.EventCriteria;
+import org.opennms.netmgt.xml.eventconf.Events.Partition;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.core.io.DefaultResourceLoader;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessException;
-import org.springframework.dao.DataAccessResourceFailureException;
-import org.springframework.orm.ObjectRetrievalFailureException;
-import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
+import org.springframework.dao.DataRetrievalFailureException;
 
-/**
- * <p>DefaultEventConfDao class.</p>
- *
- * @author ranger
- * @version $Id: $
- */
-public class DefaultEventConfDao extends AbstractJaxbConfigDao<Events, EventConfiguration> implements EventConfDao, InitializingBean {
-    private static final String DEFAULT_PROGRAMMATIC_STORE_RELATIVE_URL = "events/programmatic.events.xml";
+public class DefaultEventConfDao implements EventConfDao, InitializingBean {
+	private static final String DEFAULT_PROGRAMMATIC_STORE_RELATIVE_PATH = "events/programmatic.events.xml";
 
-    private final EventResourceLoader m_resourceLoader = new EventResourceLoader();
-    
     /**
      * Relative URL for the programmatic store configuration, relative to the
      * root configuration resource (which must be resolvable to a URL).
      */
-    private String m_programmaticStoreRelativeUrl = DEFAULT_PROGRAMMATIC_STORE_RELATIVE_URL;
+    private String m_programmaticStoreRelativePath = DEFAULT_PROGRAMMATIC_STORE_RELATIVE_PATH;
 
-    /**
-     * The programmatic store configuration resource.
-     */
-    private Resource m_programmaticStoreConfigResource;
+	private Events m_events;
+
+	private Resource m_configResource;
+
+	private Partition m_partition;
 
     private static class EventLabelComparator implements Comparator<Event>, Serializable {
 
@@ -90,407 +80,219 @@ public class DefaultEventConfDao extends AbstractJaxbConfigDao<Events, EventConf
         }
     }
 
-    /**
-     * <p>Constructor for DefaultEventConfDao.</p>
-     */
-    public DefaultEventConfDao() {
-        super(Events.class, "event");
-    }
+	public String getProgrammaticStoreRelativeUrl() {
+		return m_programmaticStoreRelativePath;
+	}
 
-    /** {@inheritDoc} */
-    @Override
-    protected String createLoadedLogMessage(final EventConfiguration translatedConfig, final long diffTime) {
-        return "Loaded " + getDescription() + " with " + translatedConfig.getEventCount() + " events from " + translatedConfig.getEventFiles().size() + " files in " + diffTime + "ms";
-    }
+	public void setProgrammaticStoreRelativeUrl(String programmaticStoreRelativeUrl) {
+		m_programmaticStoreRelativePath = programmaticStoreRelativeUrl;
+	}
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.config.EventConfDao#reload()
-     */
-    /**
-     * <p>reload</p>
-     *
-     * @throws org.springframework.dao.DataAccessException if any.
-     */
-    @Override
-    public void reload() throws DataAccessException {
-        getContainer().reload();
-    }
-    
-    /** {@inheritDoc} */
-    @Override
-    public void afterPropertiesSet() throws DataAccessException {
-        /**
-         * It sucks to duplicate this first test from AbstractCastorConfigDao,
-         * but we need to do so to ensure we don't get an NPE while initializing
-         * programmaticStoreConfigResource (if needed).
-         */
-        Assert.state(getConfigResource() != null, "property configResource must be set and be non-null");
-        
-        super.afterPropertiesSet();
-    }
-    
-    /** {@inheritDoc} */
-    @Override
-    protected EventConfiguration translateConfig(final Events events) throws DataAccessException {
-    	final EventConfiguration eventConfiguration = new EventConfiguration();
+	@Override
+	public void reload() throws DataAccessException {
+		try {
+			loadConfig();
+		} catch (Exception e) {
+			throw new DataRetrievalFailureException("Unabled to load " + m_configResource, e);
+		}
+	}
 
-        processEvents(events, getConfigResource(), eventConfiguration, "root", false);
+	@Override
+	public List<Event> getEvents(final String uei) {
+		List<Event> events = m_events.forEachEvent(new ArrayList<Event>(), new EventCallback<List<Event>>() {
 
-        if (events.getGlobal() != null && events.getGlobal().getSecurity() != null) {
-            eventConfiguration.getSecureTags().addAll(events.getGlobal().getSecurity().getDoNotOverrideCollection());
-        }
+			@Override
+			public List<Event> process(List<Event> accum, Event event) {
+				if (uei.equals(event.getUei())) {
+					accum.add(event);
+				}
+				return accum;
+			}
+		});
+		
+		return events.isEmpty() ? null : events;
+	}
 
-        for (final String eventFilePath : events.getEventFileCollection()) {
-            loadAndProcessEvents(m_resourceLoader.getResource(eventFilePath), eventConfiguration, "included", true);
-        }
-        
-        return eventConfiguration;
-    }
+	@Override
+	public List<String> getEventUEIs() {
+		return m_events.forEachEvent(new ArrayList<String>(), new EventCallback<List<String>>() {
 
-    private Events loadAndProcessEvents(final Resource rootResource, final EventConfiguration eventConfiguration, final String resourceDescription, final boolean denyIncludes) {
-    	LogUtils.debugf(this, "DefaultEventConfDao: Loading %s event configuration from %s", resourceDescription, rootResource);
+			@Override
+			public List<String> process(List<String> ueis, Event event) {
+				ueis.add(event.getUei());
+				return ueis;
+			}
+		});
+		
+	}
 
-    	final Events events = JaxbUtils.unmarshal(Events.class, rootResource);
-        processEvents(events, rootResource, eventConfiguration, resourceDescription, denyIncludes);
-        return events;
-    }
+	@Override
+	public Map<String, String> getEventLabels() {
+		return m_events.forEachEvent(new TreeMap<String, String>(), new EventCallback<Map<String, String>>() {
 
-    private void processEvents(final Events events, final Resource resource, final EventConfiguration eventConfiguration, final String resourceDescription, final boolean denyIncludes) {
-        if (denyIncludes) {
-            if (events.getGlobal() != null) {
-                throw new ObjectRetrievalFailureException(Resource.class, resource, "The event resource " + resource + " included from the root event configuration file cannot have a 'global' element", null);
-            }
-            if (events.getEventFileCollection().size() > 0) {
-                throw new ObjectRetrievalFailureException(Resource.class, resource, "The event resource " + resource + " included from the root event configuration file cannot include other configuration files: " + StringUtils.collectionToCommaDelimitedString(events.getEventFileCollection()), null);
-            }
-        }
+			@Override
+			public Map<String, String> process(Map<String, String> ueiToLabelMap, Event event) {
+				ueiToLabelMap.put(event.getUei(), event.getEventLabel());
+				return ueiToLabelMap;
+			}
 
-        eventConfiguration.getEventFiles().put(resource, events);
-        for (final Event event : events.getEventCollection()) {
-            eventConfiguration.getEventConfData().put(event);
-        }
-        
-        LogUtils.infof(this, "DefaultEventConfDao: Loaded %d events from %s event configuration resource: %s", events.getEventCollection().size(), resourceDescription, resource);
-        
-        eventConfiguration.incrementEventCount(events.getEventCount());
-    }
+		});
+	}
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.config.EventConfDao#getEvents(java.lang.String)
-     */
-    /** {@inheritDoc} */
-    @Override
-    public List<Event> getEvents(final String uei) {
-    	final List<Event> events = new ArrayList<Event>();
+	@Override
+	public String getEventLabel(final String uei) {
+		Event event = findByUei(uei);
+		return event == null ? null : event.getEventLabel();
 
-        for (final Events fileEvents : getEventConfiguration().getEventFiles().values()) {
-            for (final Event event : fileEvents.getEventCollection()) {
-                if (event.getUei().equals(uei)) {
-                    events.add(event);
-                }
-            }
-        }
-        
-        if (events.size() > 0) {
-            return events;
-        } else {
-            return null;
-        }
-    }
+	}
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.config.EventConfDao#getEventUEIs()
-     */
-    /**
-     * <p>getEventUEIs</p>
-     *
-     * @return a {@link java.util.List} object.
-     */
-    @Override
-    public List<String> getEventUEIs() {
-        final List<String> eventUEIs = new ArrayList<String>();
-        for (final Events fileEvents : getEventConfiguration().getEventFiles().values()) {
-            for (Event event : fileEvents.getEventCollection()) {
-                eventUEIs.add(event.getUei());
-            }
-        }
-        return eventUEIs;
-    }
+	@Override
+	public void saveCurrent() {
+		m_events.save(m_configResource);
+	}
+	
+	
+	
+	public List<Event> getAllEvents() {
+		return m_events.forEachEvent(new ArrayList<Event>(), new EventCallback<List<Event>>() {
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.config.EventConfDao#getEventLabels()
-     */
-    /**
-     * <p>getEventLabels</p>
-     *
-     * @return a {@link java.util.Map} object.
-     */
-    @Override
-    public Map<String, String> getEventLabels() {
-        final Map<String, String> eventLabels = new TreeMap<String, String>();
-        for (final Events fileEvents : getEventConfiguration().getEventFiles().values()) {
-            for (final Event event : fileEvents.getEventCollection()) {
-                eventLabels.put(event.getUei(), event.getEventLabel());
-            }
-        }
+			@Override
+			public List<Event> process(List<Event> accum, Event event) {
+				accum.add(event);
+				return accum;
+			}
+		});
+	}
 
-        return Collections.unmodifiableMap(eventLabels);
-    }
+	@Override
+	public List<Event> getEventsByLabel() {
+		SortedSet<Event> events = m_events.forEachEvent(new TreeSet<Event>(new EventLabelComparator()), new EventCallback<SortedSet<Event>>() {
+		
+			@Override
+			public SortedSet<Event> process(SortedSet<Event> accum, Event event) {
+				accum.add(event);
+				return accum;
+			}
+		});
+		return new ArrayList<Event>(events);
+	}
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.config.EventConfDao#getEventLabel(java.lang.String)
-     */
-    /** {@inheritDoc} */
-    @Override
-    public String getEventLabel(final String uei) {
-        for (final Events fileEvents : getEventConfiguration().getEventFiles().values()) {
-            for (final Event event : fileEvents.getEventCollection()) {
-                if (event.getUei().equals(uei)) {
-                    return event.getEventLabel();
-                }   
-            }
-        }
-        return "No label found for " + uei;
-    }
+	@Override
+	public void addEvent(Event event) {
+		m_events.addEvent(event);
+		m_events.initialize(m_partition);
+	}
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.config.EventConfDao#saveCurrent()
-     */
-    /**
-     * <p>saveCurrent</p>
-     */
-    @Override
-    public synchronized void saveCurrent() {
-        for (final Entry<Resource, Events> entry : getEventConfiguration().getEventFiles().entrySet()) {
-            final Resource resource = entry.getKey();
-            final Events fileEvents = entry.getValue();
-            
-            final StringWriter stringWriter = new StringWriter();
-            JaxbUtils.marshal(fileEvents, stringWriter);
-            
-            if (stringWriter.toString() != null) {
-                File file;
-                try {
-                    file = resource.getFile();
-                } catch (final IOException e) {
-                    throw new DataAccessResourceFailureException("Event resource '" + resource + "' is not a file resource and cannot be saved.  Nested exception: " + e, e);
-                }
-                
-                final Writer fileWriter;
-                try {
-                    fileWriter = new OutputStreamWriter(new FileOutputStream(file), "UTF-8");
-                } catch (final IOException e) {
-                    throw new DataAccessResourceFailureException("Event file '" + file + "' could not be opened.  Nested exception: " + e, e);
-                }
-                
-                try {
-                    fileWriter.write(stringWriter.toString());
-                } catch (final IOException e) {
-                    throw new DataAccessResourceFailureException("Event file '" + file + "' could not be written to.  Nested exception: " + e, e);
-                }
-                
-                try {
-                    fileWriter.close();
-                } catch (final IOException e) {
-                    throw new DataAccessResourceFailureException("Event file '" + file + "' could not be closed.  Nested exception: " + e, e);
-                }
-            }
-        }
-        
-        final File programmaticStoreFile;
-        try {
-            programmaticStoreFile = getProgrammaticStoreConfigResource().getFile();
-        
-            // Delete the programmatic store if it exists on disk, but isn't in the main store.  This is for cleanliness
-            if (programmaticStoreFile.exists() && (!getEventConfiguration().getEventFiles().containsKey(getProgrammaticStoreConfigResource()))) {
-                LogUtils.infof(this, "Deleting programmatic store configuration file because it is no longer referenced in the root config file %s", getConfigResource());
-                if (!programmaticStoreFile.delete()) {
-                    LogUtils.warnf(this, "Attempted to delete %s, but failed.", programmaticStoreFile);
-                }
-            }
+	@Override
+	public void addEventToProgrammaticStore(Event event) {
+		Events programmaticEvents = m_events.getLoadEventsByFile(m_programmaticStoreRelativePath);
+		if (programmaticEvents == null) {
+			programmaticEvents = new Events();
+			m_events.addLoadedEventFile(m_programmaticStoreRelativePath, programmaticEvents);
+		}
 
-        } catch (final IOException e) {
-            LogUtils.infof(this, "Programmatic store resource '%s'; not attempting to delete an unused programmatic store file if it exists (since we can't test for it).", getProgrammaticStoreConfigResource());
-        }
-        
-        /*
-         * XXX Should we call reload so that the EventConfData object is updated
-         * without the caller having to call reload() themselves? 
-         */
-        //reload();
-    }
+		programmaticEvents.addEvent(event);
+		programmaticEvents.initialize(m_partition);
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.config.EventConfDao#getEventsByLabel()
-     */
-    /**
-     * <p>getEventsByLabel</p>
-     *
-     * @return a {@link java.util.List} object.
-     */
-    @Override
-    public List<Event> getEventsByLabel() {
-        final List<Event> list = new ArrayList<Event>();
-        for (final Events fileEvents : getEventConfiguration().getEventFiles().values()) {
-            list.addAll(fileEvents.getEventCollection());
-        }
-        Collections.sort(list, new EventLabelComparator());
-        return list;
-    }
+	}
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.config.EventConfDao#addEvent(org.opennms.netmgt.xml.eventconf.Event)
-     */
-    /** {@inheritDoc} */
-    @Override
-    public void addEvent(final Event event) {
-        getRootEvents().addEvent(event);
-    }
+	@Override
+	public boolean removeEventFromProgrammaticStore(Event event) {
+		Events programmaticEvents = m_events.getLoadEventsByFile(m_programmaticStoreRelativePath);
+		if (programmaticEvents == null) return false;
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.config.EventConfDao#addEventToProgrammaticStore(org.opennms.netmgt.xml.eventconf.Event)
-     */
-    /** {@inheritDoc} */
-    @Override
-    public void addEventToProgrammaticStore(final Event event) {
-        // Check for, and possibly add the programmatic store to the in-memory structure
-        if (!getEventConfiguration().getEventFiles().containsKey(getProgrammaticStoreConfigResource())) {
-            // Programmatic store did not already exist.  Add an empty Events object for that file
-            getEventConfiguration().getEventFiles().put(getProgrammaticStoreConfigResource(), new Events());
-        }
-        
-        // Check for, and possibly add, the programmatic store event-file entry to the in-memory structure of the root config file
-        final Events root = getRootEvents();
-        if (!root.getEventFileCollection().contains(getProgrammaticStoreRelativeUrl())) {
-            root.addEventFile(getProgrammaticStoreRelativeUrl());
-        }
-        
-        // Finally, do what we came here to do
-        getProgrammaticStoreEvents().addEvent(event);
-    }
+		programmaticEvents.removeEvent(event);
+		if (programmaticEvents.getEventCount() <= 0) {
+			m_events.removeLoadedEventFile(m_programmaticStoreRelativePath);
+		} else {
+			programmaticEvents.initialize(m_partition);
+		}
+		return true;
 
-    @Override
-    public Events getRootEvents() {
-        return getEventConfiguration().getEventFiles().get(getConfigResource());
-    }
+	}
 
-    private Events getProgrammaticStoreEvents() {
-        return getEventConfiguration().getEventFiles().get(getProgrammaticStoreConfigResource());
-    }
-    
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.config.EventConfDao#removeEventFromProgrammaticStore(org.opennms.netmgt.xml.eventconf.Event)
-     */   
-    /** {@inheritDoc} */
-    @Override
-    public boolean removeEventFromProgrammaticStore(final Event event) {
-        if (!getEventConfiguration().getEventFiles().containsKey(getProgrammaticStoreConfigResource())) {
-            return false; // Oops, doesn't exist
-        }
-        
-        final Events events = getProgrammaticStoreEvents();
-        final boolean result = events.removeEvent(event);
-        if (events.getEventCount() == 0) {
-            getEventConfiguration().getEventFiles().remove(getProgrammaticStoreConfigResource());
-            getRootEvents().removeEventFile(getProgrammaticStoreRelativeUrl());
-        }
-        return result;
-    }
+	@Override
+	public boolean isSecureTag(String tag) {
+		return m_events.isSecureTag(tag);
+	}
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.config.EventConfDao#isSecureTag(java.lang.String)
-     */
-    /** {@inheritDoc} */
-    @Override
-    public boolean isSecureTag(final String tag) {
-        return getEventConfiguration().getSecureTags().contains(tag);
-    }
+	@Override
+	public Event findByUei(final String uei) {
+		return m_events.findFirstMatchingEvent(new EventCriteria() {
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.config.EventConfDao#findByUei(java.lang.String)
-     */
-    /** {@inheritDoc} */
-    @Override
-    public Event findByUei(final String uei) {
-        return getEventConfiguration().getEventConfData().getEventByUEI(uei);
-    }
+			@Override
+			public boolean matches(Event e) {
+				return uei.equals(e.getUei());
+			}
+		});
+	}
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.config.EventConfDao#findByEvent(org.opennms.netmgt.xml.event.Event)
-     */
-    /** {@inheritDoc} */
-    @Override
-    public Event findByEvent(final org.opennms.netmgt.xml.event.Event matchingEvent) {
-        return getEventConfiguration().getEventConfData().getEvent(matchingEvent);
-    }
+	@Override
+	public Event findByEvent(final org.opennms.netmgt.xml.event.Event matchingEvent) {
+		return m_events.findFirstMatchingEvent(matchingEvent);
+	}
 
-    private Resource getProgrammaticStoreConfigResource() {
-        if (m_programmaticStoreConfigResource == null) {
-            try {
-                m_programmaticStoreConfigResource = getConfigResource().createRelative(getProgrammaticStoreRelativeUrl());
-            } catch (final IOException e) {
-                log().warn("Could not get a relative resource for the programmatic store configuration file using relative URL '" + getProgrammaticStoreRelativeUrl() + "': " + e, e);
-                throw new DataAccessResourceFailureException("Could not get a relative resource for the programmatic store configuration file using relative URL '" + getProgrammaticStoreRelativeUrl() + "': " + e, e);
-            }
-        }
-        
-        return m_programmaticStoreConfigResource;
-    }
+	@Override
+	public Events getRootEvents() {
+		return m_events;
+	}
 
-    /**
-     * <p>getProgrammaticStoreRelativeUrl</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public String getProgrammaticStoreRelativeUrl() {
-        return m_programmaticStoreRelativeUrl;
-    }
+	public void setConfigResource(Resource configResource) throws IOException {
+		m_configResource = configResource;
+	}
+	
+	private Events load(Unmarshaller unmarshaller) throws Exception {
+		InputStream stream = null;
+		try {
+			stream = m_configResource.getInputStream();
+			StreamSource source = new StreamSource(stream);
+			Events events = unmarshaller.unmarshal(source, Events.class).getValue();
+			
+			return events;
+		} finally {
+			if (stream != null) stream.close();
+		}
+	}
 
-    /**
-     * <p>setProgrammaticStoreRelativeUrl</p>
-     *
-     * @param programmaticStoreRelativeUrl a {@link java.lang.String} object.
-     */
-    public void setProgrammaticStoreRelativeUrl(final String programmaticStoreRelativeUrl) {
-        m_programmaticStoreRelativeUrl = programmaticStoreRelativeUrl;
-    }
+	@Override
+	public void afterPropertiesSet() throws DataAccessException {
+		loadConfig();
+	}
 
-    private EventConfiguration getEventConfiguration() {
-        return getContainer().getObject();
-    }
+	private static class EnterpriseIdPartition implements Partition {
 
-    private class EventResourceLoader extends DefaultResourceLoader {
-        @Override
-        public Resource getResource(final String location) {
-        	final String cleanLocation = StringUtils.cleanPath(location);
+		private Field m_field = EventMatchers.field("id");
 
-        	// Check if this is a spring classpath:foo style resource
-        	// but first make sure if we're on windows that it's not
-        	// just a C:\foo path.
-        	
-        	boolean uriResource = false;
-        	if (org.opennms.core.utils.StringUtils.isLocalWindowsPath(cleanLocation)) {
-        		uriResource = false;
-        	} else if (cleanLocation.contains(":")) {
-        		// otherwise, something with a : is probably a spring URI resource
-        		uriResource = true;
-        	}
+		@Override
+		public List<String> group(Event eventConf) {
+			return eventConf.getMaskElementValues("id");
+		}
 
-            if (uriResource) {
-                return super.getResource(cleanLocation);
-            } else {
-            	final File file = new File(cleanLocation);
-                if (file.isAbsolute()) {
-                    return new FileSystemResource(file);
-                } else {
-                    try {
-                        return getConfigResource().createRelative(cleanLocation);
-                    } catch (final IOException e) {
-                        throw new ObjectRetrievalFailureException(Resource.class, cleanLocation, "Resource location has a relative path, however the configResource does not reference a file, so the relative path cannot be resolved.  The location is: " + cleanLocation, null);
-                    }
-                }
-            }
-        }
-    }
+		@Override
+		public String group(org.opennms.netmgt.xml.event.Event matchingEvent) {
+			return m_field.get(matchingEvent);
+		}
+		
+	}
+	
+	private synchronized void loadConfig() throws DataAccessException {
+		try {
+			Unmarshaller unmarshaller = JaxbUtils.getUnmarshallerFor(Events.class, null, true);
+
+			Events events = load(unmarshaller);
+
+			events.loadEventFiles(m_configResource, unmarshaller);
+			
+			m_partition = new EnterpriseIdPartition();
+			events.initialize(m_partition);
+
+			m_events = events;
+
+		} catch (Exception e) {
+			throw new DataRetrievalFailureException("Unabled to load " + m_configResource, e);
+		}
+
+	}
+
 }
 

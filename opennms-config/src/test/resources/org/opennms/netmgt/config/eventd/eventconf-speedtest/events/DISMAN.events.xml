@@ -1,0 +1,590 @@
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<!-- Custom Net-SNMP Distributed Management Events -->
+<event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.2.1.88.2</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>1</mevalue>
+                </maskelement>
+		<varbind>
+			<vbnumber>1</vbnumber>
+			<vbvalue>dskTable</vbvalue>
+		</varbind>
+        </mask>
+        <uei>uei.opennms.org/standard/netsnmp/traps/dskTableAlertFired</uei>
+        <event-label>NET-SNMP: A dskTable Alert has been triggered.</event-label>
+        <descr>
+&lt;p&gt;The Net-SNMP agent has detected that free space on %parm[#6]% is below
+threshold. The error message is &lt;strong&gt;%parm[#8]%&lt;/strong&gt;.
+&lt;/p&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        Net-SNMP Event: A dskTable threshold has been exceeded 
+                        %parm[#6]%&lt;/p&gt;
+                </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#6]%" alarm-type="3" auto-clean="false" />
+</event>
+<event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.2.1.88.2</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>1</mevalue>
+                </maskelement>
+		<varbind>
+			<vbnumber>1</vbnumber>
+			<vbvalue>procTable</vbvalue>
+		</varbind>
+        </mask>
+        <uei>uei.opennms.org/standard/netsnmp/traps/procTableAlertFired</uei>
+        <event-label>NET-SNMP: A procTable Alert has been triggered.</event-label>
+        <descr>
+&lt;p&gt;The Net-SNMP agent has detected an error with the %parm[#6]% process.
+The error message is &lt;strong&gt;%parm[#7]%&lt;/strong&gt;.
+&lt;/p&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        Net-SNMP Event: A procTable alert has fired for process 
+                        %parm[#6]%&lt;/p&gt;
+                </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#6]%" alarm-type="3" auto-clean="false" />
+</event>
+<event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.2.1.88.2</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>1</mevalue>
+                </maskelement>
+		<varbind>
+			<vbnumber>1</vbnumber>
+			<vbvalue>extTable</vbvalue>
+		</varbind>
+        </mask>
+        <uei>uei.opennms.org/standard/netsnmp/traps/extTableAlertFired</uei>
+        <event-label>NET-SNMP: A extTable Alert has been triggered.</event-label>
+        <descr>
+&lt;p&gt;The Net-SNMP agent has detected an error with the configured extend/exec script %parm[#6]%.
+The error message is &lt;strong&gt;%parm[#7]%&lt;/strong&gt;.
+&lt;/p&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        Net-SNMP Event: A extTable alert has fired for script 
+                        %parm[#6]%&lt;/p&gt;
+                </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#6]%" alarm-type="3" auto-clean="false" />
+</event>
+<event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.2.1.88.2</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>1</mevalue>
+                </maskelement>
+		<varbind>
+			<vbnumber>1</vbnumber>
+			<vbvalue>logMatchTable</vbvalue>
+		</varbind>
+        </mask>
+        <uei>uei.opennms.org/standard/netsnmp/traps/logMatchTableAlertFired</uei>
+        <event-label>NET-SNMP: A logMatchTable Alert has been triggered.</event-label>
+        <descr>
+&lt;p&gt;The Net-SNMP agent has detected an error with the configured logMatchTable entry %parm[#6]%.
+The log file %parm[#7]% contains entries matching the pattern &quot;%parm[#8]%&quot;.
+&lt;/p&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        Net-SNMP Event: A logMatchTable alert has fired for entry %parm[#6]%
+                        in log file %parm[#7]%&lt;/p&gt;
+                </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#6]%" alarm-type="3" auto-clean="false" />
+</event>
+<event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.2.1.88.2</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>2</mevalue>
+                </maskelement>
+		<varbind>
+			<vbnumber>1</vbnumber>
+			<vbvalue>procTable</vbvalue>
+		</varbind>
+        </mask>
+        <uei>uei.opennms.org/standard/netsnmp/traps/procTableAlertRising</uei>
+        <event-label>NET-SNMP: A procTable Rising Alert has been generated.</event-label>
+        <descr>
+&lt;p&gt;The Net-SNMP agent has detected an error with the %parm[#6]% process.
+The error message is &lt;strong&gt;%parm[#7]%&lt;/strong&gt;.
+&lt;/p&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        Net-SNMP Event: A procTable rising alert has generated for process 
+                        %parm[#6]%&lt;/p&gt;
+                </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#6]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.2.1.88.2</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>3</mevalue>
+                </maskelement>
+		<varbind>
+			<vbnumber>1</vbnumber>
+			<vbvalue>procTable</vbvalue>
+		</varbind>
+        </mask>
+        <uei>uei.opennms.org/standard/netsnmp/traps/procTableAlertFalling</uei>
+        <event-label>NET-SNMP: A procTable Falling Alert has been generated.</event-label>
+        <descr>
+&lt;p&gt;The Net-SNMP agent has detected that errors with the %parm[#6]% process are now resolved.
+&lt;/p&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        Net-SNMP Event: A procTable falling alert has generated for process 
+                        %parm[#6]%&lt;/p&gt;
+                </logmsg>
+        <severity>Normal</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#6]%" 
+                    alarm-type="2" 
+                    clear-key="uei.opennms.org/standard/netsnmp/traps/procTableAlertRising:%dpname%:%nodeid%:%parm[#6]%" 
+                    auto-clean="false"/>
+</event>
+<event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.2.1.88.2</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>2</mevalue>
+                </maskelement>
+		<varbind>
+			<vbnumber>1</vbnumber>
+			<vbvalue>dskTable</vbvalue>
+		</varbind>
+        </mask>
+        <uei>uei.opennms.org/standard/netsnmp/traps/dskTableAlertRising</uei>
+        <event-label>NET-SNMP: A dskTable Rising Alert has been generated.</event-label>
+        <descr>
+&lt;p&gt;The Net-SNMP agent has detected an error with the filesystem mounted on %parm[#6]%.
+The filesystem is %parm[#7]% percent full.
+The error message is &lt;strong&gt;%parm[#8]%&lt;/strong&gt;.
+&lt;/p&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        Net-SNMP Event: A dskTable rising alert has generated for filesystem
+                        %parm[#6]% (%parm[#7]% percent full)&lt;/p&gt;
+                </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#6]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.2.1.88.2</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>3</mevalue>
+                </maskelement>
+		<varbind>
+			<vbnumber>1</vbnumber>
+			<vbvalue>dskTable</vbvalue>
+		</varbind>
+        </mask>
+        <uei>uei.opennms.org/standard/netsnmp/traps/dskTableAlertFalling</uei>
+        <event-label>NET-SNMP: A dskTable Falling Alert has been generated.</event-label>
+        <descr>
+&lt;p&gt;The Net-SNMP agent has detected that errors with the filesystem mounted on %parm[#6]% are corrected.
+The filesystem is now %parm[#7]% percent full.
+&lt;/p&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        Net-SNMP Event: A dskTable falling alert has generated for filesystem %parm[#6]%. It is now %parm[#7]% percent full&lt;/p&gt;
+                </logmsg>
+        <severity>Normal</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#6]%" alarm-type="2" auto-clean="false" />
+</event>
+
+<!-- Start of MIB: DISMAN-EVENT-MIB -->
+<event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.2.1.88.2</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>1</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/standard/rfc2981/traps/mteTriggerFired</uei>
+        <event-label>DISMAN-EVENT-MIB defined trap event: mteTriggerFired</event-label>
+        <descr>
+&lt;p&gt;Notification that the trigger indicated by the object
+instances has fired, for triggers with mteTriggerType
+'boolean' or 'existence'.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        mteHotTrigger&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        mteHotTargetName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        mteHotContextName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        mteHotOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        mteHotValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        mteTriggerFired trap received
+                        mteHotTrigger=%parm[#1]%
+                        mteHotTargetName=%parm[#2]%
+                        mteHotContextName=%parm[#3]%
+                        mteHotOID=%parm[#4]%
+                        mteHotValue=%parm[#5]%&lt;/p&gt;
+                </logmsg>
+        <severity>Indeterminate</severity>
+</event>
+<event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.2.1.88.2</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>2</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/standard/rfc2981/traps/mteTriggerRising</uei>
+        <event-label>DISMAN-EVENT-MIB defined trap event: mteTriggerRising</event-label>
+        <descr>
+&lt;p&gt;Notification that the rising threshold was met for triggers
+with mteTriggerType 'threshold'.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        mteHotTrigger&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        mteHotTargetName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        mteHotContextName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+        mteHotOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        mteHotValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        mteTriggerRising trap received
+                        mteHotTrigger=%parm[#1]%
+                        mteHotTargetName=%parm[#2]%
+                        mteHotContextName=%parm[#3]%
+                        mteHotOID=%parm[#4]%
+                        mteHotValue=%parm[#5]%&lt;/p&gt;
+                </logmsg>
+        <severity>Indeterminate</severity>
+</event>
+<event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.2.1.88.2</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>3</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/standard/rfc2981/traps/mteTriggerFalling</uei>
+        <event-label>DISMAN-EVENT-MIB defined trap event: mteTriggerFalling</event-label>
+        <descr>
+&lt;p&gt;Notification that the falling threshold was met for triggers
+with mteTriggerType 'threshold'.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        mteHotTrigger&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        mteHotTargetName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        mteHotContextName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        mteHotOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        mteHotValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        mteTriggerFalling trap received
+                        mteHotTrigger=%parm[#1]%
+                        mteHotTargetName=%parm[#2]%
+                        mteHotContextName=%parm[#3]%
+                        mteHotOID=%parm[#4]%
+                        mteHotValue=%parm[#5]%&lt;/p&gt;
+                </logmsg>
+        <severity>Indeterminate</severity>
+</event>
+<event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.2.1.88.2</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>4</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/standard/rfc2981/traps/mteTriggerFailure</uei>
+        <event-label>DISMAN-EVENT-MIB defined trap event: mteTriggerFailure</event-label>
+        <descr>
+&lt;p&gt;Notification that an attempt to check a trigger has failed.
+
+The network manager must enable this notification only with
+a certain fear and trembling, as it can easily crowd out more
+important information.  It should be used only to help diagnose
+a problem that has appeared in the error counters and can not
+be found otherwise.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        mteHotTrigger&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        mteHotTargetName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        mteHotContextName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        mteHotOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        mteFailedReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+                sampleOverrun(-6)
+                badType(-5)
+                noResponse(-4)
+                destinationUnreachable(-3)
+                badDestination(-2)
+                localResourceLack(-1)
+                noError(0)
+                tooBig(1)
+                noSuchName(2)
+                badValue(3)
+                readOnly(4)
+                genErr(5)
+                noAccess(6)
+                wrongType(7)
+                wrongLength(8)
+                wrongEncoding(9)
+                wrongValue(10)
+                noCreation(11)
+                inconsistentValue(12)
+                resourceUnavailable(13)
+                commitFailed(14)
+                undoFailed(15)
+                authorizationError(16)
+                notWritable(17)
+                inconsistentName(18)
+        &lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        mteTriggerFailure trap received
+                        mteHotTrigger=%parm[#1]%
+                        mteHotTargetName=%parm[#2]%
+                        mteHotContextName=%parm[#3]%
+                        mteHotOID=%parm[#4]%
+                        mteFailedReason=%parm[#5]%&lt;/p&gt;
+                </logmsg>
+        <severity>Indeterminate</severity>
+</event>
+<event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.2.1.88.2</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>5</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/standard/rfc2981/traps/mteEventSetFailure</uei>
+        <event-label>DISMAN-EVENT-MIB defined trap event: mteEventSetFailure</event-label>
+        <descr>
+&lt;p&gt;Notification that an attempt to do a set in response to an
+event has failed.
+
+The network manager must enable this notification only with
+a certain fear and trembling, as it can easily crowd out more
+important information.  It should be used only to help diagnose
+a problem that has appeared in the error counters and can not
+be found otherwise.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        mteHotTrigger&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        mteHotTargetName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        mteHotContextName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        mteHotOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        mteFailedReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+                sampleOverrun(-6)
+                badType(-5)
+                noResponse(-4)
+                destinationUnreachable(-3)
+                badDestination(-2)
+                localResourceLack(-1)
+                noError(0)
+                tooBig(1)
+                noSuchName(2)
+                badValue(3)
+                readOnly(4)
+                genErr(5)
+                noAccess(6)
+                wrongType(7)
+                wrongLength(8)
+                wrongEncoding(9)
+                wrongValue(10)
+                noCreation(11)
+                inconsistentValue(12)
+                resourceUnavailable(13)
+                commitFailed(14)
+                undoFailed(15)
+                authorizationError(16)
+                notWritable(17)
+                inconsistentName(18)
+        &lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        Cisco Event: mteEventSetFailure trap received
+                        mteHotTrigger=%parm[#1]%
+                        mteHotTargetName=%parm[#2]%
+                        mteHotContextName=%parm[#3]%
+                        mteHotOID=%parm[#4]%
+                        mteFailedReason=%parm[#5]%&lt;/p&gt;
+                </logmsg>
+        <severity>Indeterminate</severity>
+</event>
+<!-- End of MIB: DISMAN-EVENT-MIB -->
+</events>

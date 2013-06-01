@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<?meta name="GENERATOR" content="XML::Smart/1.6.9 Perl/5.008008 [linux]" ?>
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.4.14</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>1</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxVccpPortUp</uei>
+    <event-label>JUNIPER-VIRTUALCHASSIS-MIB defined trap event: jnxVccpPortUp</event-label>
+    <descr><![CDATA[
+<p>A PortUp trap signifies that the SNMP entity, acting in an
+agent role, has detected that the jnxVirtualChassisPortOperStatus 
+object for one of its communication links left the  down state
+and transitioned into some other state (but not into the
+notPresent state).  This other state is indicated by the
+included value of jnxVirtualChassisPortOperStatus.</p><table>
+	<tr><td><b>
+
+	jnxVirtualChassisPortAdminStatus</b></td><td>
+	%parm[#1]%;</td><td><p>
+		up(1)
+		down(2)
+		unknown(3)
+	</p></td></tr>
+	<tr><td><b>
+
+	jnxVirtualChassisPortOperStatus</b></td><td>
+	%parm[#2]%;</td><td><p>
+		up(1)
+		down(2)
+		unknown(3)
+	</p></td></tr>
+	<tr><td><b>
+
+	jnxVirtualChassisMemberModel</b></td><td>
+	%parm[#3]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxVirtualChassisMemberLocation</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxVccpPortUp trap received 
+			jnxVirtualChassisPortAdminStatus=%parm[#1]% 
+			jnxVirtualChassisPortOperStatus=%parm[#2]% 
+			jnxVirtualChassisMemberModel=%parm[#3]% 
+			jnxVirtualChassisMemberLocation=%parm[#4]%</p>
+		]]></logmsg>
+    <severity>Cleared</severity>
+    <alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxVccpPortDown:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.4.14</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>2</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxVccpPortDown</uei>
+    <event-label>JUNIPER-VIRTUALCHASSIS-MIB defined trap event: jnxVccpPortDown</event-label>
+    <descr><![CDATA[
+<p>A PortDown trap signifies that the SNMP entity, acting in an
+agent role, has detected that the jnxVirtualChassisPortOperStatus
+object for one of its communication links is about to enter the
+down state from some other state (but not into the
+notPresent state).  This other state is indicated by the
+included value of jnxVirtualChassisPortOperStatus.</p><table>
+	<tr><td><b>
+
+	jnxVirtualChassisPortAdminStatus</b></td><td>
+	%parm[#1]%;</td><td><p>
+		up(1)
+		down(2)
+		unknown(3)
+	</p></td></tr>
+	<tr><td><b>
+
+	jnxVirtualChassisPortOperStatus</b></td><td>
+	%parm[#2]%;</td><td><p>
+		up(1)
+		down(2)
+		unknown(3)
+	</p></td></tr>
+	<tr><td><b>
+
+	jnxVirtualChassisMemberModel</b></td><td>
+	%parm[#3]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxVirtualChassisMemberLocation</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxVccpPortDown trap received 
+			jnxVirtualChassisPortAdminStatus=%parm[#1]% 
+			jnxVirtualChassisPortOperStatus=%parm[#2]% 
+			jnxVirtualChassisMemberModel=%parm[#3]% 
+			jnxVirtualChassisMemberLocation=%parm[#4]%</p>
+		]]></logmsg>
+    <severity>Major</severity>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.4.14</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>3</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxVccpMemberUp</uei>
+    <event-label>JUNIPER-VIRTUALCHASSIS-MIB defined trap event: jnxVccpMemberUp</event-label>
+    <descr><![CDATA[
+<p>A MemberUp trap signifies that the SNMP entity, acting in an
+agent role, has detected that the Member present at the location
+jnxVirtualChassisMemberLocation on one of the Virtual
+Chassis left the down state and transitioned into some other
+state (but not into the notPresent state).</p><table>
+	<tr><td><b>
+
+	jnxVirtualChassisMemberSerialnumber</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxVirtualChassisMemberRole</b></td><td>
+	%parm[#2]%;</td><td><p>
+		master(1)
+		backup(2)
+		linecard(3)
+	</p></td></tr>
+	<tr><td><b>
+
+	jnxVirtualChassisMemberModel</b></td><td>
+	%parm[#3]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxVirtualChassisMemberLocation</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxVccpMemberUp trap received 
+			jnxVirtualChassisMemberSerialnumber=%parm[#1]% 
+			jnxVirtualChassisMemberRole=%parm[#2]% 
+			jnxVirtualChassisMemberModel=%parm[#3]% 
+			jnxVirtualChassisMemberLocation=%parm[#4]%</p>
+		]]></logmsg>
+    <severity>Indeterminate</severity>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.4.14</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>4</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxVccpMemberDown</uei>
+    <event-label>JUNIPER-VIRTUALCHASSIS-MIB defined trap event: jnxVccpMemberDown</event-label>
+    <descr><![CDATA[
+<p>A MemberDown trap signifies that the SNMP entity, acting in an
+agent role, has detected that the Member present at the location
+jnxVirtualChassisMemberLocation on one of the Virtual
+Chassis is about to enter the down state (but not into the notPresent
+state).</p><table>
+	<tr><td><b>
+
+	jnxVirtualChassisMemberSerialnumber</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxVirtualChassisMemberRole</b></td><td>
+	%parm[#2]%;</td><td><p>
+		master(1)
+		backup(2)
+		linecard(3)
+	</p></td></tr>
+	<tr><td><b>
+
+	jnxVirtualChassisMemberModel</b></td><td>
+	%parm[#3]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxVirtualChassisMemberLocation</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxVccpMemberDown trap received 
+			jnxVirtualChassisMemberSerialnumber=%parm[#1]% 
+			jnxVirtualChassisMemberRole=%parm[#2]% 
+			jnxVirtualChassisMemberModel=%parm[#3]% 
+			jnxVirtualChassisMemberLocation=%parm[#4]%</p>
+		]]></logmsg>
+    <severity>Indeterminate</severity>
+  </event>
+</events>
+
