@@ -98,6 +98,11 @@
         event.setOperinstruct(operinstruct);
     }
 
+    String uuid = StringUtils.trimToEmpty(request.getParameter("uuid"));
+    if (StringUtils.isNotBlank(uuid)) {
+        event.setUuid(uuid);
+    }
+
     StringBuffer sb = new StringBuffer();
 
     Enumeration<String> pNames = request.getParameterNames();
@@ -139,6 +144,7 @@
 
 <pre>
 &lt;event&gt;
+  &lt;uuid&gt;<%=uuid%>&lt;/uuid&gt;
   &lt;uei&gt;<%=uei%>&lt;/uei&gt;
   &lt;nodeid&gt;<%=nodeID%>&lt;/nodeid&gt;
   &lt;host&gt;<%=host%>&lt;/host&gt;
