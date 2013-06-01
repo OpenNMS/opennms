@@ -128,7 +128,7 @@ public abstract class EventMatchers  {
 		return new Field() {
 			public String get(Event event) {
 				List<Parm> parms = event.getParmCollection();
-				return vbnumber >= parms.size() ? null : EventUtil.getValueAsString(parms.get(vbnumber-1).getValue());  
+				return vbnumber > parms.size() ? null : EventUtil.getValueAsString(parms.get(vbnumber-1).getValue());  
 			}
 			@Override
 			public String toString() {

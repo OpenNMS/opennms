@@ -34,9 +34,9 @@ public class NCSPathProviderTest{
 
             @Override
             public void configure() throws Exception {
-                from("direct:start").setHeader(Exchange.HTTP_URI, simple("http://localhost:10346/ncs-provider/api/space/nsas/service-management/services/884779")).to("http4://dummyhost")
+                from("direct:start").setHeader(Exchange.HTTP_URI, simple("http://localhost:10346/ncs-provider/api/space/nsas/service-management/services/884779")).to("http://dummyhost")
                     .beanRef("pathProviderUtil", "getServiceName")
-                    .setHeader(Exchange.HTTP_URI, simple("http://localhost:10346/ncs-provider/api/space/nsas/eline-ptp/service-management/services/884779/servicepath?deviceA=${header.deviceA}&deviceZ=${header.deviceZ}")).to("http4://dummyhost")
+                    .setHeader(Exchange.HTTP_URI, simple("http://localhost:10346/ncs-provider/api/space/nsas/eline-ptp/service-management/services/884779/servicepath?deviceA=${header.deviceA}&deviceZ=${header.deviceZ}")).to("http://dummyhost")
                     .beanRef("pathProviderUtil", "createPath");
             }
             

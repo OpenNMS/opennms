@@ -277,6 +277,36 @@
 
 	<!-- Start 1.10 -->
 
+	<section id="opennms-1.10.10">
+		<title>Changes in OpenNMS 1.10.10</title>
+
+		<section id="opennms-1.10.10-bug">
+			<title>Bug</title>
+
+			<itemizedlist>
+				<listitem><para>Bits of event-acknowledgement UI still showing (Issue <ulink url='http://issues.opennms.org/browse/NMS-5733'>NMS-5733</ulink>)</para></listitem>
+				<listitem><para>Updates on strings.properties are not propagated when using the WebUI on a different server (Issue <ulink url='http://issues.opennms.org/browse/NMS-5806'>NMS-5806</ulink>)</para></listitem>
+				<listitem><para>Current event definitions for Aruba Controllers are wrong (Issue <ulink url='http://issues.opennms.org/browse/NMS-5830'>NMS-5830</ulink>)</para></listitem>
+				<listitem><para>Get details from a specific alarmId is redirecting to the wrong page. (Issue <ulink url='http://issues.opennms.org/browse/NMS-5838'>NMS-5838</ulink>)</para></listitem>
+				<listitem><para>Uncaught exception in HostResourceSwRunMonitor when handling empty strings (Issue <ulink url='http://issues.opennms.org/browse/NMS-5852'>NMS-5852</ulink>)</para></listitem>
+				<listitem><para>Outages appears to be not sorted on service.jsp (and probably interface.jsp) (Issue <ulink url='http://issues.opennms.org/browse/NMS-5892'>NMS-5892</ulink>)</para></listitem>
+				<listitem><para>SmbMonitor no longer effective, needs fixing (Issue <ulink url='http://issues.opennms.org/browse/NMS-5894'>NMS-5894</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+		<section id="opennms-1.10.10-enhancement">
+			<title>Enhancement</title>
+
+			<itemizedlist>
+				<listitem><para>SSH button on node information screen (Issue <ulink url='http://issues.opennms.org/browse/NMS-699'>NMS-699</ulink>)</para></listitem>
+				<listitem><para>favicon in webui? (Issue <ulink url='http://issues.opennms.org/browse/NMS-3369'>NMS-3369</ulink>)</para></listitem>
+				<listitem><para>Add nodeID to title field on element/node.jsp (Issue <ulink url='http://issues.opennms.org/browse/NMS-3398'>NMS-3398</ulink>)</para></listitem>
+				<listitem><para>Display the Package Name and Service Parameters on the Service Page (Issue <ulink url='http://issues.opennms.org/browse/NMS-5876'>NMS-5876</ulink>)</para></listitem>
+				<listitem><para>Make optional the addition of default ports to HTTP Host Header on the PSM. (Issue <ulink url='http://issues.opennms.org/browse/NMS-5884'>NMS-5884</ulink>)</para></listitem>
+				<listitem><para>How can I know which poller packages are actively being used for the services on a given interface? (Issue <ulink url='http://issues.opennms.org/browse/NMS-5893'>NMS-5893</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+	</section>
+
 	<section id="opennms-1.10.9">
 		<title>Changes in OpenNMS 1.10.9</title>
 
