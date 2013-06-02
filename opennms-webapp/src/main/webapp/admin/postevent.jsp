@@ -41,9 +41,11 @@
                 org.opennms.netmgt.xml.event.Event,
                 org.opennms.netmgt.xml.event.Parm,
                 org.opennms.netmgt.xml.event.Value,
+                org.opennms.core.xml.JaxbUtils,
                 org.apache.commons.lang.StringUtils
 	"
 %>
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%
     HttpSession user = request.getSession(true);
 
@@ -143,18 +145,12 @@
 <h3>Event Sent...</h3>
 
 <pre>
-&lt;event&gt;
-  &lt;uuid&gt;<%=uuid%>&lt;/uuid&gt;
-  &lt;uei&gt;<%=uei%>&lt;/uei&gt;
-  &lt;nodeid&gt;<%=nodeID%>&lt;/nodeid&gt;
-  &lt;host&gt;<%=host%>&lt;/host&gt;
-  &lt;interface&gt;<%=intface%>&lt;/interface&gt;
-  &lt;service&gt;<%=service%>&lt;/service&gt;
-  &lt;severity&gt;<%=severity%>&lt;/severity&gt;
-  &lt;descr&gt;<%=description%>&lt;/descr&gt;
-  &lt;operinstr&gt;<%=operinstruct%>&lt;/operinstr&gt;
-<%=sb%>
-&lt;/event&gt;
+<%
+  String eventXml = JaxbUtils.marshal(event);
+  // Strip off xml version string
+  eventXml = eventXml.replaceFirst("^<\\?xml[^\\>]+\\?\\>\\s*", "");
+%>
+<c:out value="<%=eventXml%>" />
 </pre>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
