@@ -8,10 +8,15 @@ xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
    <cm:property-placeholder id="ncsPlugin" persistent-id="org.opennms.features.topology.plugin.ncs" update-strategy="reload">
         <cm:default-properties>
             <cm:property name="junoSpaceBaseUrl" value="http://localhost:8080/testing-webapp/" />
+            <cm:property name="username" value="admin" />
+            <cm:property name="password" value="admin" />
         </cm:default-properties>
     </cm:property-placeholder>
     
-    <bean id="customHttpClientConfigurer" class="org.opennms.features.topology.plugins.ncs.internal.CustomHttpClientConfigurer"/>
+    <bean id="customHttpClientConfigurer" class="org.opennms.features.topology.plugins.ncs.internal.CustomHttpClientConfigurer">
+        <property name="username" value="${username}" />
+        <property name="password" value="${password}" />
+    </bean>
     
     <camelContext id="camel1" xmlns="http://camel.apache.org/schema/blueprint">
         <propertyPlaceholder id="properties" location="blueprint:ncsPlugin"
@@ -22,12 +27,12 @@ xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
             <setHeader headerName="CamelHttpUri">
                 <simple>[[junoSpaceBaseUrl]]api/space/nsas/service-management/services/${header.foreignId}?appName=${header.foreignSource}</simple>
             </setHeader>
-            <to uri="https4://dummyhost?httpClientConfigurer=customHttpClientConfigurer"/>
+            <to uri="https://dummyhost?httpClientConfigurer=customHttpClientConfigurer&amp;authUsername=[[username]]&amp;authPassword=[[password]]&amp;authMethod=Basic"/>
             <bean ref="ncsPathRouteUtil" method="getServiceName" />
             <setHeader headerName="CamelHttpUri">
                 <simple>[[junoSpaceBaseUrl]]api/space/nsas/${headers.serviceType}/service-management/services/${header.foreignId}/servicepath?httpClientConfigurer=customHttpClientConfigurer&amp;deviceA=${header.deviceA}&amp;deviceZ=${header.deviceZ}</simple>
             </setHeader>
-            <to uri="https4://dummyhost?httpClientConfigurer=customHttpClientConfigurer"/>
+            <to uri="https://dummyhost?httpClientConfigurer=customHttpClientConfigurer&amp;authUsername=[[username]]&amp;authPassword=[[password]]&amp;authMethod=Basic"/>
             <bean ref="ncsPathRouteUtil" method="createPath" />
         </route>
     </camelContext>

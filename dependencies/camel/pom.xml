@@ -28,7 +28,7 @@
     </dependency>
     <dependency>
       <groupId>org.apache.camel</groupId>
-      <artifactId>camel-http4</artifactId>
+      <artifactId>camel-http</artifactId>
       <version>${camelVersion}</version>
       <exclusions>
         <exclusion>
