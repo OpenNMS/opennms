@@ -35,8 +35,8 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.Alias.JoinType;
+import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
@@ -60,15 +60,13 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml"
 })
 @JUnitConfigurationEnvironment
-@JUnitTemporaryDatabase(dirtiesContext=false)
+@JUnitTemporaryDatabase
 public class HibernateCriteriaConverterTest implements InitializingBean {
     @Autowired
     DatabasePopulator m_populator;
     
     @Autowired
     NodeDao m_nodeDao;
-
-    private static boolean m_populated = false;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -78,19 +76,11 @@ public class HibernateCriteriaConverterTest implements InitializingBean {
     @Before
     public void setUp() {
     	MockLogAppender.setupLogging(true);
-        try {
-            if (!m_populated) {
-                m_populator.populateDatabase();
-            }
-        } catch (final Throwable e) {
-            e.printStackTrace(System.err);
-        } finally {
-            m_populated = true;
-        }
+        m_populator.populateDatabase();
     }
 
 	@Test
-	@JUnitTemporaryDatabase(dirtiesContext=false)
+	@JUnitTemporaryDatabase
 	public void testNodeQuery() throws Exception {
 		List<OnmsNode> nodes;
 
@@ -112,7 +102,7 @@ public class HibernateCriteriaConverterTest implements InitializingBean {
 	}
 
     @Test
-    @JUnitTemporaryDatabase(dirtiesContext=false)
+    @JUnitTemporaryDatabase
     public void testNodeIlikeQuery() {
         final CriteriaBuilder cb = new CriteriaBuilder(OnmsNode.class);
         cb.isNotNull("id").eq("label", "node1").alias("ipInterfaces", "ipInterface", JoinType.LEFT_JOIN).ilike("ipInterface.ipAddress", "1%");
@@ -122,7 +112,7 @@ public class HibernateCriteriaConverterTest implements InitializingBean {
 
 	@Test
 	@Transactional
-	@JUnitTemporaryDatabase(dirtiesContext=false)
+	@JUnitTemporaryDatabase
 	public void testDistinctQuery() {
 		List<OnmsNode> nodes = null;
 
