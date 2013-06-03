@@ -29,6 +29,7 @@
 package org.opennms.web.springframework.security;
 
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.model.OnmsUser;
 import org.springframework.beans.factory.InitializingBean;
@@ -80,7 +81,11 @@ public class HybridOpenNMSUserAuthenticationProvider implements AuthenticationPr
             checkUserPassword(authUsername, authPassword, user);
         } catch (final AuthenticationException e) {
             // if we fail, try refreshing the user manager and re-authenticate
-            m_userManager.reload();
+            try {
+                m_userManager.reload();
+            } catch (final Exception reloadException) {
+                LogUtils.debugf(this, reloadException, "Failed to reload UserManager.");
+            }
             checkUserPassword(authUsername, authPassword, user);
         }
 
