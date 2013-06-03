@@ -90,6 +90,7 @@ public class HibernateCriteriaConverterTest implements InitializingBean {
     }
 
 	@Test
+	@JUnitTemporaryDatabase(dirtiesContext=false)
 	public void testNodeQuery() throws Exception {
 		List<OnmsNode> nodes;
 
@@ -111,6 +112,7 @@ public class HibernateCriteriaConverterTest implements InitializingBean {
 	}
 
     @Test
+    @JUnitTemporaryDatabase(dirtiesContext=false)
     public void testNodeIlikeQuery() {
         final CriteriaBuilder cb = new CriteriaBuilder(OnmsNode.class);
         cb.isNotNull("id").eq("label", "node1").alias("ipInterfaces", "ipInterface", JoinType.LEFT_JOIN).ilike("ipInterface.ipAddress", "1%");
@@ -120,6 +122,7 @@ public class HibernateCriteriaConverterTest implements InitializingBean {
 
 	@Test
 	@Transactional
+	@JUnitTemporaryDatabase(dirtiesContext=false)
 	public void testDistinctQuery() {
 		List<OnmsNode> nodes = null;
 
