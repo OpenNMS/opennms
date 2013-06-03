@@ -97,7 +97,7 @@ function extraInfo()
 function extraInfo2()
 {
     if use_git; then
-        echo "  http://opennms.git.sourceforge.net/git/gitweb.cgi?p=opennms/opennms;a=shortlog;h=$(commit)"
+        echo "  https://github.com/OpenNMS/opennms/commit/$(commit)"
     else
         echo ""
     fi
