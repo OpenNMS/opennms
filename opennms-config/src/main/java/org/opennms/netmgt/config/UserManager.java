@@ -1320,5 +1320,5 @@ public abstract class UserManager {
     public abstract boolean isUpdateNeeded();
     public abstract long getLastModified();
     public abstract long getFileSize();
-    public abstract void reload();
+    public abstract void reload() throws IOException, FileNotFoundException, MarshalException, ValidationException;
 }
