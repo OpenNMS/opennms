@@ -329,48 +329,50 @@ public abstract class AbstractQueryManager implements QueryManager {
             localPortNumberToLocTableEntryMap.put(lldpLocTableEntry.getLldpLocPortNum(), lldpLocTableEntry);
         }
         return localPortNumberToLocTableEntryMap;
+
+    }
+
+    private Integer getLldpIfIndex(int portType, String sysname, String portid, String macAddress, InetAddress ipAddress ) {
+        Integer ifindex=-1;
+        switch (portType) {
+        case LldpMibConstants.LLDP_PORTID_SUBTYPE_INTERFACEALIAS: ifindex=getFromSysnameIfAlias(sysname, portid);
+        break;
+        case LldpMibConstants.LLDP_PORTID_SUBTYPE_PORTCOMPONENT: ifindex=getFromSysnamePortComponent(sysname, portid);
+        break;
+        case LldpMibConstants.LLDP_PORTID_SUBTYPE_MACADDRESS: ifindex=getFromSysnameMacAddress(sysname, macAddress);
+        break;
+        case LldpMibConstants.LLDP_PORTID_SUBTYPE_NETWORKADDRESS: ifindex=getFromSysnameIpAddress(sysname, ipAddress);
+        break;
+        case LldpMibConstants.LLDP_PORTID_SUBTYPE_INTERFACENAME: ifindex=getFromSysnameIfName(sysname, portid);
+        break;
+        case LldpMibConstants.LLDP_PORTID_SUBTYPE_AGENTCIRCUITID: ifindex=getFromSysnameAgentCircuitId(sysname, portid);
+        break;
+        case LldpMibConstants.LLDP_PORTID_SUBTYPE_LOCAL: 
+            try {
+                ifindex=Integer.parseInt(portid);
+            } catch (NumberFormatException e) {
+                ifindex=getFromSysnameIfName(sysname, portid);
+            }
+        break;
+    }
+
+        return ifindex;
     }
 
     private Integer getLldpRemIfIndex(LldpRemTableEntry lldpRemTableEntry) {
-        Integer ifindex=-1;
-        switch (lldpRemTableEntry.getLldpRemPortidSubtype().intValue()) {
-            case LldpMibConstants.LLDP_PORTID_SUBTYPE_INTERFACEALIAS: ifindex=getFromSysnameIfAlias(lldpRemTableEntry.getLldpRemSysname(), lldpRemTableEntry.getLldpRemPortid());
-            break;
-            case LldpMibConstants.LLDP_PORTID_SUBTYPE_PORTCOMPONENT: ifindex=getFromSysnamePortComponent(lldpRemTableEntry.getLldpRemSysname(), lldpRemTableEntry.getLldpRemPortid());
-            break;
-            case LldpMibConstants.LLDP_PORTID_SUBTYPE_MACADDRESS: ifindex=getFromSysnameMacAddress(lldpRemTableEntry.getLldpRemSysname(), lldpRemTableEntry.getLldpRemMacAddress());
-            break;
-            case LldpMibConstants.LLDP_PORTID_SUBTYPE_NETWORKADDRESS: ifindex=getFromSysnameIpAddress(lldpRemTableEntry.getLldpRemSysname(), lldpRemTableEntry.getLldpRemIpAddress());
-            break;
-            case LldpMibConstants.LLDP_PORTID_SUBTYPE_INTERFACENAME: ifindex=getFromSysnameIfName(lldpRemTableEntry.getLldpRemSysname(), lldpRemTableEntry.getLldpRemPortid());
-            break;
-            case LldpMibConstants.LLDP_PORTID_SUBTYPE_AGENTCIRCUITID: ifindex=getFromSysnameAgentCircuitId(lldpRemTableEntry.getLldpRemSysname(), lldpRemTableEntry.getLldpRemPortid());
-            break;
-            case LldpMibConstants.LLDP_PORTID_SUBTYPE_LOCAL: ifindex=Integer.parseInt(lldpRemTableEntry.getLldpRemPortid());
-            break;
-        }
-        return ifindex;        
+        return getLldpIfIndex(lldpRemTableEntry.getLldpRemPortidSubtype().intValue(),
+                              lldpRemTableEntry.getLldpRemSysname(),
+                              lldpRemTableEntry.getLldpRemPortid(),
+                              lldpRemTableEntry.getLldpRemMacAddress(),
+                              lldpRemTableEntry.getLldpRemIpAddress());
     }
     
-    private Integer getLldpLocIfIndex(String sysname, LldpLocTableEntry lldpLocTableEntry) {
-        Integer ifindex=-1;
-        switch (lldpLocTableEntry.getLldpLocPortIdSubtype().intValue()) {
-            case LldpMibConstants.LLDP_PORTID_SUBTYPE_INTERFACEALIAS: ifindex=getFromSysnameIfAlias(sysname, lldpLocTableEntry.getLldpLocPortid());
-            break;
-            case LldpMibConstants.LLDP_PORTID_SUBTYPE_PORTCOMPONENT: ifindex=getFromSysnamePortComponent(sysname, lldpLocTableEntry.getLldpLocPortid());
-            break;
-            case LldpMibConstants.LLDP_PORTID_SUBTYPE_MACADDRESS: ifindex=getFromSysnameMacAddress(sysname, lldpLocTableEntry.getLldpLocMacAddress());
-            break;
-            case LldpMibConstants.LLDP_PORTID_SUBTYPE_NETWORKADDRESS: ifindex=getFromSysnameIpAddress(sysname, lldpLocTableEntry.getLldpLocIpAddress());
-            break;
-            case LldpMibConstants.LLDP_PORTID_SUBTYPE_INTERFACENAME: ifindex=getFromSysnameIfName(sysname, lldpLocTableEntry.getLldpLocPortid());
-            break;
-            case LldpMibConstants.LLDP_PORTID_SUBTYPE_AGENTCIRCUITID: ifindex=getFromSysnameAgentCircuitId(sysname, lldpLocTableEntry.getLldpLocPortid());
-            break;
-            case LldpMibConstants.LLDP_PORTID_SUBTYPE_LOCAL: ifindex=Integer.parseInt(lldpLocTableEntry.getLldpLocPortid());
-            break;
-        }
-        return ifindex;  
+    private Integer getLldpLocIfIndex(String sysname,
+            LldpLocTableEntry lldpLocTableEntry) {
+        return getLldpIfIndex(lldpLocTableEntry.getLldpLocPortIdSubtype().intValue(),
+                              sysname, lldpLocTableEntry.getLldpLocPortid(),
+                              lldpLocTableEntry.getLldpLocMacAddress(),
+                              lldpLocTableEntry.getLldpLocIpAddress());
     }
         
     protected Integer getFromSysnameAgentCircuitId(String lldpRemSysname,
