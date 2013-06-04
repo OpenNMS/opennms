@@ -12,6 +12,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 import org.apache.commons.dbcp.PoolingConnection;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpTrapBuilder;
 import org.opennms.netmgt.snmp.SnmpUtils;
@@ -48,6 +49,7 @@ public class EventdStresser {
     private static int m_persistWait = 60;
     private static boolean m_deleteAllEvents = false;
     private static boolean m_deleteTestEvents = false;
+    @SuppressWarnings("unused")
     private static long m_sleepMillis = 0;
 
     /**
@@ -56,6 +58,8 @@ public class EventdStresser {
      * @param args
      */
     public static void main(String[] args) {
+        LogUtils.logToConsole();
+        LogUtils.enableDebugging();
 
         parseArgs(args);
 
@@ -114,7 +118,7 @@ public class EventdStresser {
 
         System.out.println();
         System.out.println("Example:");
-        System.out.println(REPORT_SPACING + "java -jar opennms-eventd-stresser.jar -D" + PROPERTY_TRAP_SINK + "=127.0.0.1" + " -D" + PROPERTY_TRAP_RATE + "=100");
+        System.out.println(REPORT_SPACING + "java -D\" + PROPERTY_TRAP_SINK + \"=127.0.0.1\" + \" -D\" + PROPERTY_TRAP_RATE + \"=100 -jar opennms-eventd-stresser.jar");
         System.out.println();
         System.out.println();
     }
