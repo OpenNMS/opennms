@@ -23,6 +23,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.LogUtils;
@@ -45,7 +48,8 @@ public class ScriptInvoker {
 	private String m_timeoutInSeconds;
 
 	int count = 0;
-
+	
+	private static ThreadPoolExecutor executorService;
 	/**
 	 * 
 	 * This constructor is used when only basic filter is present.
@@ -56,6 +60,14 @@ public class ScriptInvoker {
 	 * @param numberOfRetries
 	 * @param retryInterval
 	 */
+	
+	static {
+		if(executorService == null) {
+			LinkedBlockingQueue<Runnable> queue = new LinkedBlockingQueue<Runnable>();
+			executorService = new ThreadPoolExecutor(5, 5, 10, TimeUnit.MINUTES, queue);
+		}
+	}
+	
 	public ScriptInvoker(String alarmXml, String scriptName,String timeoutInSeconds,
 			boolean errorHandling, Integer numberOfRetries,
 			Integer retryInterval) {
@@ -73,90 +85,16 @@ public class ScriptInvoker {
 	 * @return
 	 */
 	public boolean invokeScript() throws NorthbounderException {
-
-		LogUtils.debugf(this, "Script " + this.m_scriptName + " to be invoked.");
-		if (!m_isAlreadyInvoked && this.m_numberOfRetries != null)
-			count = this.m_numberOfRetries;
-		String runScript = ConfigFileConstants.getHome()
-				+ "/etc/alarm-notification/scripts/" + m_scriptName;
-		File file = new File(runScript);
-		if (!file.exists()) {
-			LogUtils.errorf(this, "File " + runScript + " is not available.");
+		try{
+			InvokeScript invokeScript = new InvokeScript();
+			executorService.execute(invokeScript);
+		}catch (Exception e) {
+			e.printStackTrace();
+			LogUtils.errorf(this,"Error while invoking script " + e.getMessage());
 			return false;
 		}
-
-		int mid = m_scriptName.lastIndexOf(".");
-		String extn = m_scriptName.substring(mid + 1, m_scriptName.length());
-		String cmd = null;
-		if (extn.equals("sh"))
-			cmd = "bash";
-		else if (extn.equals("pl"))
-			cmd = "perl";
-		else if (extn.equals("py"))
-			cmd = "python";
-		ProcessBuilder processBuilder = new ProcessBuilder(cmd, runScript,
-				this.m_alarmXml);
-		processBuilder.redirectErrorStream(true);
-		final Process shellProcess;
-		try {
-			int timeoutInSeconds = 60 * 1000;
-			try{
-				timeoutInSeconds = Integer.parseInt(m_timeoutInSeconds) * 1000;
-			}catch (Exception e) {
-				LogUtils.debugf(this,"Exception in the configured timeout for script " + this.m_scriptName);
-				timeoutInSeconds = 60*1000;
-			}
-			shellProcess = processBuilder.start();
-			Timer timer = new Timer();
-			timer.schedule(new TimerTask() {
-
-				@Override
-				public void run() {
-					shellProcess.destroy();
-					LogUtils.debugf(this, "Timeout exceeded for the script "
-							+ m_scriptName + ". Error handling will not be done.");
-				}
-			}, timeoutInSeconds);
-			//String output = loadStream(shellProcess.getInputStream());
-			int shellExitStatus = shellProcess.waitFor();
-			timer.cancel();
-			LogUtils.debugf(this, "Error status " + shellExitStatus);
-			if (shellExitStatus != 0 && m_errorHandling == false) {
-				LogUtils.debugf(this, "Error while invoking "
-						+ this.m_scriptName + " with '" + this.m_alarmXml
-						+ "' as argument.But errorhandling is set to false or timeout exceeded.");
-			} else if (shellExitStatus != 0 && shellExitStatus != 143 && m_errorHandling == true
-					&& count != 0 ) {
-				LogUtils.debugf(this,
-						"Error Handling Enabled.Current retry count is "
-								+ count + ".The script will be invoked after "
-								+ this.m_retryInterval + " " + " seconds.");
-				Thread.sleep(this.m_retryInterval.longValue() * 1000);
-				m_isAlreadyInvoked = true;
-				count = count - 1;
-				invokeScript();
-			} else if (shellExitStatus != 0 && shellExitStatus != 143 && m_errorHandling == true
-					&& count == 0) {
-				LogUtils.debugf(this,
-						"Number of retry count exceeded. Script will not be invoked again.");
-			}
-			// errorOutput.close();
-			// consoleOutput.close();
-			/**
-			 * printstacktrace is added as the ScriptInvoker may be called from
-			 * drl file too.
-			 */
-		} catch (IOException ioException) {
-			ioException.printStackTrace();
-			throw new NorthbounderException(ioException);
-		} catch (InterruptedException interruptedException) {
-			interruptedException.printStackTrace();
-			throw new NorthbounderException(interruptedException);
-		} catch (Exception exception) {
-			exception.printStackTrace();
-			throw new NorthbounderException(exception);
-		}
 		return true;
+		
 	}
 
 	private static String loadStream(InputStream s) throws Exception {
@@ -175,5 +113,94 @@ public class ScriptInvoker {
 				br.close();
 		}
 
+	}
+	
+	private class InvokeScript implements  Runnable {
+		
+		public void run() {
+
+
+			LogUtils.debugf(this, "Script " + m_scriptName + " to be invoked.");
+			if (!m_isAlreadyInvoked && m_numberOfRetries != null)
+				count = m_numberOfRetries;
+			String runScript = ConfigFileConstants.getHome()
+					+ "/etc/alarm-notification/scripts/" + m_scriptName;
+			File file = new File(runScript);
+			if (!file.exists()) {
+				LogUtils.errorf(this, "File " + runScript + " is not available.");
+			}
+
+			int mid = m_scriptName.lastIndexOf(".");
+			String extn = m_scriptName.substring(mid + 1, m_scriptName.length());
+			String cmd = null;
+			if (extn.equals("sh"))
+				cmd = "bash";
+			else if (extn.equals("pl"))
+				cmd = "perl";
+			else if (extn.equals("py"))
+				cmd = "python";
+			ProcessBuilder processBuilder = new ProcessBuilder(cmd, runScript,
+					m_alarmXml);
+			processBuilder.redirectErrorStream(true);
+			final Process shellProcess;
+			try {
+				int timeoutInSeconds = 60 * 1000;
+				try{
+					timeoutInSeconds = Integer.parseInt(m_timeoutInSeconds) * 1000;
+				}catch (Exception e) {
+					LogUtils.debugf(this,"Exception in the configured timeout for script " + m_scriptName);
+					timeoutInSeconds = 60*1000;
+				}
+				shellProcess = processBuilder.start();
+				Timer timer = new Timer();
+				timer.schedule(new TimerTask() {
+
+					@Override
+					public void run() {
+						shellProcess.destroy();
+						LogUtils.debugf(this, "Timeout exceeded for the script "
+								+ m_scriptName + ".");
+					}
+				}, timeoutInSeconds);
+				//String output = loadStream(shellProcess.getInputStream());
+				int shellExitStatus = shellProcess.waitFor();
+				timer.cancel();
+				LogUtils.debugf(this, "Error status " + shellExitStatus);
+				if (shellExitStatus != 0 && m_errorHandling == false) {
+					LogUtils.debugf(this, "Error while invoking "
+							+ m_scriptName + " with '" + m_alarmXml
+							+ "' as argument.But errorhandling is set to false.");
+				} else if (shellExitStatus != 0 && m_errorHandling == true
+						&& count != 0 ) {
+					LogUtils.debugf(this,
+							"Error Handling Enabled.Current retry count is "
+									+ count + ".The script "+m_scriptName+" will be invoked after "
+									+ m_retryInterval + " " + " seconds.");
+					Thread.sleep(m_retryInterval.longValue() * 1000);
+					m_isAlreadyInvoked = true;
+					count = count - 1;
+					run();
+				} else if (shellExitStatus != 0 && m_errorHandling == true
+						&& count == 0) {
+					LogUtils.debugf(this,
+							"Number of retry count exceeded. Script " + m_scriptName + " will not be invoked again.");
+				}
+				// errorOutput.close();
+				// consoleOutput.close();
+				/**
+				 * printstacktrace is added as the ScriptInvoker may be called from
+				 * drl file too.
+				 */
+			} catch (IOException ioException) {
+				ioException.printStackTrace();
+				throw new NorthbounderException(ioException);
+			} catch (InterruptedException interruptedException) {
+				interruptedException.printStackTrace();
+				throw new NorthbounderException(interruptedException);
+			} catch (Exception exception) {
+				exception.printStackTrace();
+				throw new NorthbounderException(exception);
+			}
+		}
 	}
 }
