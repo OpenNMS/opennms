@@ -30,7 +30,6 @@ public class NCSServiceContainer extends HierarchicalBeanContainer<Long, NCSServ
 		createRootItems(services);
 		addAll(m_rootItems);
         addAll(createListFromComponents(services));
-		addAll(createListFromComponents(m_dao.findByType("ServiceElement")));
 	}
 	
 
