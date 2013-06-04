@@ -43,9 +43,8 @@ public class CustomHttpClientConfigurer implements HttpClientConfigurer {
 
             UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(getUsername(), getPassword());
             
-            HttpClient httpClient = new HttpClient();
-            httpClient.getState().setCredentials(AuthScope.ANY, credentials);
-            httpClient.getParams().setAuthenticationPreemptive(true);
+            client.getState().setCredentials(AuthScope.ANY, credentials);
+            client.getParams().setAuthenticationPreemptive(true);
 
         } catch (Exception e) {
             throw new RuntimeException(e);
