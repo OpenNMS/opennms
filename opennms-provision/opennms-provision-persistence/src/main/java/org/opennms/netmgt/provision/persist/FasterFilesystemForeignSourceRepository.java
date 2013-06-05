@@ -37,6 +37,7 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
@@ -386,6 +387,21 @@ public class FasterFilesystemForeignSourceRepository extends AbstractForeignSour
         }
     }
     
+    /** {@inheritDoc} */
+    @Override
+    public Date getRequisitionDate(final String foreignSource) throws ForeignSourceRepositoryException {
+        m_readLock.lock();
+        try {
+            final Requisition requisition = getRequisition(foreignSource);
+            if (requisition == null) {
+                return null;
+            }
+            return requisition.getDate();
+        } finally {
+            m_readLock.unlock();
+        }
+    }
+
     /** {@inheritDoc} */
     @Override
     public URL getRequisitionURL(final String foreignSource) throws ForeignSourceRepositoryException {
