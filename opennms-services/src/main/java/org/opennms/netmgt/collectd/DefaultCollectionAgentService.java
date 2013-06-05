@@ -262,8 +262,10 @@ public class DefaultCollectionAgentService implements CollectionAgentService {
         
         for(OnmsSnmpInterface snmpIface : snmpIfs) {
     		logInitializeSnmpIf(snmpIface);
-    		SnmpIfData snmpIfData = new SnmpIfData(snmpIface);
-    		ifData.add(snmpIfData);
+    		if (snmpIface.isCollectionEnabled()) {
+        		SnmpIfData snmpIfData = new SnmpIfData(snmpIface);
+        		ifData.add(snmpIfData);
+    		}
             //ifInfos.add(new IfInfo(type, agent, snmpIfData));
     	}
         return ifData;
