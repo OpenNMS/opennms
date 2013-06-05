@@ -385,8 +385,10 @@ public class RequisitionAccessService {
             Requisition pending = getPendingForeignSourceRepository().getRequisition(getForeignSource());
             Requisition deployed = getDeployedForeignSourceRepository().getRequisition(getForeignSource());
 
-            URL activeUrl = pending == null || (deployed != null && deployed.getDateStamp().compare(pending.getDateStamp()) > -1) ? getDeployedForeignSourceRepository().getRequisitionURL(getForeignSource())
-                : RequisitionFileUtils.createSnapshot(getPendingForeignSourceRepository(), getForeignSource()).toURI().toURL();
+            URL activeUrl = pending == null || (deployed != null && deployed.getDateStamp().compare(pending.getDateStamp()) > -1)
+                ? getDeployedForeignSourceRepository().getRequisitionURL(getForeignSource())
+                : RequisitionFileUtils.createSnapshot(getPendingForeignSourceRepository(), getForeignSource(), pending.getDate()).toURI().toURL();
+
             return activeUrl;
         }
 
