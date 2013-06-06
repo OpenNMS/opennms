@@ -36,27 +36,27 @@
 %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
-  <jsp:param name="title" value="Configure Users and Groups" />
-  <jsp:param name="headTitle" value="Users and Groups" />
+  <jsp:param name="title" value="Configure Users" />
+  <jsp:param name="headTitle" value="Users" />
   <jsp:param name="headTitle" value="Admin" />
   <jsp:param name="location" value="admin" />
   <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
-  <jsp:param name="breadcrumb" value="Users and Groups" />
+  <jsp:param name="breadcrumb" value="Users" />
 </jsp:include>
 
 <div class="TwoColLAdmin" >
-      <h3>Users and Groups</h3>
+      <h3>Users</h3>
 
       <p>
         <a HREF="admin/userGroupView/users/list.jsp">Configure Users</a>
       </p>
+	<!--
       <p>
         <a HREF="admin/userGroupView/groups/list.htm">Configure Groups</a>
       </p>
       <p>
         <a HREF="admin/userGroupView/roles">Configure Roles</a>
       </p>
-      <!--
       <p>
         <a HREF="admin/userGroupView/views/list.jsp">Configure Views</a>
       </p>
@@ -68,7 +68,7 @@
       <p>
         Add new <em>Users</em>, change user names and passwords, and edit notification information.
       </p>
-
+      <!--
       <h3>Groups</h3>
       <p>
         Assign and unassign <em>Users</em> to <em>Groups</em>.
@@ -78,7 +78,7 @@
       <p>
         Configure Roles that define On Call schedules for users.
       </p>
-      <!--
+      
       <h3>Views</h3>
       <p>
         Assign and unassign <em>Users</em> and <em>Groups</em> to <em>Views</em>.

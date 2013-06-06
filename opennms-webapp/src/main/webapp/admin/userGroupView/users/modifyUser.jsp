@@ -188,10 +188,11 @@
 <h3>Modify User: <%=userid%></h3>
 
 <div id="contentleft">
+<%--
   <p>
     <input type="button" value="Reset Password" onClick="resetPassword()" />
   </p>
-
+--%>
     <table width="100%" border="0" cellspacing="0" cellpadding="2">
             <tr>
               <td colspan="2">

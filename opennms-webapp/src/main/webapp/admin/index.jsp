@@ -127,9 +127,11 @@
     <h3>OpenNMS System</h3>
     <div class="boxWrapper">
         <ul class="plain">  
-            <li><a href="admin/userGroupView/index.jsp">Configure Users, Groups and On-Call Roles</a></li>
+            <li><a href="admin/userGroupView/users/list.jsp">Configure Users</a></li>
             <li><a href="admin/sysconfig.jsp">System Information</a></li>
+            <%--
             <li><a href="admin/nodemanagement/instrumentationLogReader.jsp">Instrumentation Log Reader</a></li>
+            --%>
         </ul>
     </div>
 
@@ -177,22 +179,23 @@
         </form>
     </div>    
 
+<%--
     <h3>Node Provisioning</h3>
     <div class="boxWrapper">
         <ul class="plain">  
-<%--
+
             <li><a href="javascript:addInterfacePost()">Add Interface for Scanning</a></li>
             <li><a href="admin/provisioningGroups.htm">Manage Provisioning Requisitions</a></li>
             <li><a href="admin/asset/index.jsp">Import and Export Asset Information</a></li>
---%>
+
             <li><a href="admin/categories.htm">Manage Surveillance Categories</a></li>
-<%--
+
             <li><a href="javascript:deletePost()">Delete Nodes</a></li>
---%>
+
         </ul>
     </div>
 
-<%--
+
     <h3>Distributed Monitoring</h3>
     <div class="boxWrapper">
         <ul class="plain">  
@@ -210,10 +213,8 @@
     <div class="boxWrapper">
         <p>Detailed Documentation on all options can be found on <a title="The OpenNMS Project wiki" href="http://www.opennms.org" target="new">the OpenNMS wiki</a>.
         </p>
-        <p><b>Configure Users, Groups and On-Call Roles</b>: Add, modify or delete
-            existing users. Groups contain users. Roles are built from groups and provide
-            a mechanism to implement calendar-based on-call staff rotations.
-            (User: A person, Group: Administrators, Role: On Duty Staff)
+        <p><b>Configure Users</b>: Add, modify or delete
+            existing users. 
         </p>
 
         <p><b>Notification Status</b>: Notifications will be sent out only if this setting is switched to <em>On</em>.

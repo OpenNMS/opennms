@@ -120,19 +120,23 @@
   Click on the <i>User ID</i> link to view detailed information about a
   user.
 </p>
-
+<%--
 <a id="doNewUser" href="javascript:addNewUser()"><img src="images/add1.gif" alt="Add new user" border="0"></a>
 <a href="javascript:addNewUser()">Add New User</a>
-
+--%>
 <br/>
 <br/>
 
      <table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black">
 
          <tr bgcolor="#999999">
+<%--
           <td width="5%"><b>Delete</b></td>
+--%>
           <td width="5%"><b>Modify</b></td>
+<%--
           <td width="5%"><b>Rename</b></td>
+--%>
           <td width="5%"><b>User ID</b></td>
           <td width="15%"><b>Full Name</b></td>
           <td width="15%"><b>Email</b></td>
@@ -160,6 +164,7 @@
 	      String textPin = userFactory.getTextPin(userid);
          %>
          <tr bgcolor=<%=row%2==0 ? "#ffffff" : "#cccccc"%>>
+<%--
           <% if (!curUser.getUserId().equals("admin")) { %>
           <td width="5%" rowspan="2" align="center"> 
             <a id="<%= "users("+curUser.getUserId()+").doDelete" %>" href="javascript:deleteUser('<%=curUser.getUserId()%>')" onclick="return confirm('Are you sure you want to delete the user <%=curUser.getUserId()%>?')"><img src="images/trash.gif" alt="<%="Delete " + curUser.getUserId()%>"></a> 
@@ -170,9 +175,11 @@
             <img id="<%= "users("+curUser.getUserId()+").doDelete" %>" src="images/trash.gif" alt="Cannot delete admin user">
           </td>
           <% } %>
+--%>
           <td width="5%" rowspan="2" align="center">
             <a id="<%= "users("+curUser.getUserId()+").doModify" %>" href="javascript:modifyUser('<%=curUser.getUserId()%>')"><img src="images/modify.gif"></a>
           </td>
+<%--
           <td width="5%" rowspan="2" align="center">
             <% if ( !curUser.getUserId().equals("admin")) { %>
                 <input id="<%= "users("+curUser.getUserId()+").doRename" %>" type="button" name="rename" value="Rename" onclick="renameUser('<%=curUser.getUserId()%>')">
@@ -180,6 +187,7 @@
                 <input id="<%= "users("+curUser.getUserId()+").doRename" %>" type="button" name="rename" value="Rename" onclick="alert('Sorry, the admin user cannot be renamed.')">
               <% } %>
           </td>
+--%>
           <td width="5%">
             <a id="<%= "users("+curUser.getUserId()+").doDetails" %>" href="javascript:detailUser('<%=curUser.getUserId()%>')"><%=curUser.getUserId()%></a>
           </td>
