@@ -44,7 +44,9 @@ public class NCSPathRouteUtil {
         String nodeForeignSource = (String) in.getHeader("nodeForeignSource");
         String serviceForeignSource = (String) in.getHeader("foreignSource");
         Node servicePath = pathList.item(0);
+        String deviceA = (String) in.getHeader("deviceA");
+        String deviceZ = (String) in.getHeader("deviceZ");
         
-        return new NCSServicePath(servicePath, m_dao, m_nodeDao, nodeForeignSource, serviceForeignSource);
+        return new NCSServicePath(servicePath, m_dao, m_nodeDao, nodeForeignSource, serviceForeignSource, deviceA, deviceZ);
     }
 }
