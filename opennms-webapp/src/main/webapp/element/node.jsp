@@ -376,7 +376,7 @@
         <td>${model.node.sysName}</td>
       </tr>
       <tr>
-        <th>Object&nbsp;ID</th>
+        <th>sysObjectID</th>
         <td>${model.node.sysObjectId}</td>
       </tr>
       <tr>
