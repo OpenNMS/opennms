@@ -83,6 +83,7 @@ public class NodeCategoryPolicyTest implements InitializingBean {
     
     @Test
     @Transactional
+    @JUnitTemporaryDatabase
     public void testMatchingLabel() {
         NodeCategorySettingPolicy p = new NodeCategorySettingPolicy();
         p.setForeignId("1");
@@ -94,6 +95,7 @@ public class NodeCategoryPolicyTest implements InitializingBean {
 
     @Test
     @Transactional
+    @JUnitTemporaryDatabase
     public void testMatchingNothing() {
         NodeCategorySettingPolicy p = new NodeCategorySettingPolicy();
         p.setLabel("~^wankerdoodle$");

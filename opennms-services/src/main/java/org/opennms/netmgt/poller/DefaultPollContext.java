@@ -289,11 +289,17 @@ public class DefaultPollContext implements PollContext, EventListener {
         final int nodeId = svc.getNodeId();
         final String ipAddr = svc.getIpAddr();
         final String svcName = svc.getSvcName();
-        Runnable r = new Runnable() {
+        final Runnable r = new Runnable() {
             @Override
             public void run() {
-                log().debug("run: Opening outage with query manager: "+svc+" with event:"+svcLostEvent);
-                getQueryManager().openOutage(getPollerConfig().getNextOutageIdSql(), nodeId, ipAddr, svcName, svcLostEvent.getEventId(), EventConstants.formatToString(svcLostEvent.getDate()));
+                if (log().isDebugEnabled()) log().debug("run: Opening outage with query manager: "+svc+" with event:"+svcLostEvent);
+
+                final int eventId = svcLostEvent.getEventId();
+                if (eventId > 0) {
+                    getQueryManager().openOutage(getPollerConfig().getNextOutageIdSql(), nodeId, ipAddr, svcName, eventId, EventConstants.formatToString(svcLostEvent.getDate()));
+                } else {
+                    log().warn("run: Failed to determine an eventId for service outage for: " + svc + " with event: " + svcLostEvent);
+                }
             }
 
         };
@@ -311,14 +317,19 @@ public class DefaultPollContext implements PollContext, EventListener {
      */
     /** {@inheritDoc} */
     @Override
-    public void resolveOutage(PollableService svc, final PollEvent svcRegainEvent) {
+    public void resolveOutage(final PollableService svc, final PollEvent svcRegainEvent) {
         final int nodeId = svc.getNodeId();
         final String ipAddr = svc.getIpAddr();
         final String svcName = svc.getSvcName();
-        Runnable r = new Runnable() {
+        final Runnable r = new Runnable() {
             @Override
             public void run() {
-                getQueryManager().resolveOutage(nodeId, ipAddr, svcName, svcRegainEvent.getEventId(), EventConstants.formatToString(svcRegainEvent.getDate()));
+                final int eventId = svcRegainEvent.getEventId();
+                if (eventId > 0) {
+                    getQueryManager().resolveOutage(nodeId, ipAddr, svcName, eventId, EventConstants.formatToString(svcRegainEvent.getDate()));
+                } else {
+                    log().warn("run: Failed to determine an eventId for service regained for: " + svc + " with event: " + svcRegainEvent);
+                }
             }
         };
         if (svcRegainEvent instanceof PendingPollEvent) {
@@ -353,11 +364,11 @@ public class DefaultPollContext implements PollContext, EventListener {
      */
     /** {@inheritDoc} */
     @Override
-    public void onEvent(Event e) {
+    public void onEvent(final Event e) {
         synchronized (m_pendingPollEvents) {
             log().debug("onEvent: Received event: "+e+" uei: "+e.getUei()+", dbid: "+e.getDbid());
-            for (Iterator<PendingPollEvent> it = m_pendingPollEvents .iterator(); it.hasNext();) {
-                PendingPollEvent pollEvent = it.next();
+            for (final Iterator<PendingPollEvent> it = m_pendingPollEvents .iterator(); it.hasNext();) {
+                final PendingPollEvent pollEvent = it.next();
                 log().debug("onEvent: comparing events to poll event: "+pollEvent);
                 if (e.equals(pollEvent.getEvent())) {
                     log().debug("onEvent: completing pollevent: "+pollEvent);

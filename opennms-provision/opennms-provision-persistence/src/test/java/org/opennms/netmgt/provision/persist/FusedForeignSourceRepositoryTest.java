@@ -29,11 +29,18 @@
 package org.opennms.netmgt.provision.persist;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,6 +51,7 @@ import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.UrlResource;
 
 public class FusedForeignSourceRepositoryTest extends ForeignSourceRepositoryTestCase {
@@ -60,23 +68,27 @@ public class FusedForeignSourceRepositoryTest extends ForeignSourceRepositoryTes
     private ForeignSourceRepository m_repository;
 
     @Before
-    public void setUp() {
+    public void setUp() throws IOException {
+        System.err.println("setUp()");
         /* 
          * since we share the filesystem with other tests, best
          * to make sure it's totally clean here.
          */
-        for (ForeignSource fs : m_pending.getForeignSources()) {
+        for (final ForeignSource fs : m_pending.getForeignSources()) {
             m_pending.delete(fs);
         }
-        for (ForeignSource fs : m_active.getForeignSources()) {
+        for (final ForeignSource fs : m_active.getForeignSources()) {
             m_active.delete(fs);
         }
-        for (Requisition r : m_pending.getRequisitions()) {
+        for (final Requisition r : m_pending.getRequisitions()) {
             m_pending.delete(r);
         }
-        for (Requisition r : m_active.getRequisitions()) {
+        for (final Requisition r : m_active.getRequisitions()) {
             m_active.delete(r);
         }
+        
+        FileUtils.deleteDirectory(new File("target/opennms-home/etc/imports/pending"));
+
         m_pending.flush();
         m_active.flush();
     }
@@ -104,19 +116,69 @@ public class FusedForeignSourceRepositoryTest extends ForeignSourceRepositoryTes
     }
 
     @Test
+    public void simpleSnapshotTest() throws URISyntaxException {
+        Requisition pendingReq = createRequisition();
+        m_pending.save(pendingReq);
+        m_pending.flush();
+        pendingReq = m_pending.getRequisition(pendingReq.getForeignSource());
+        final File pendingSnapshot = RequisitionFileUtils.createSnapshot(m_pending, pendingReq.getForeignSource(), pendingReq.getDate());
+
+        m_repository.importResourceRequisition(new FileSystemResource(pendingSnapshot));
+
+        assertFalse(pendingSnapshot.exists());
+        final URL pendingUrl = m_pending.getRequisitionURL(pendingReq.getForeignSource());
+        assertNull(pendingUrl);
+    }
+
+    @Test
+    public void multipleSnapshotTest() throws URISyntaxException, InterruptedException {
+        Requisition pendingReq = createRequisition();
+        m_pending.save(pendingReq);
+        m_pending.flush();
+        final String foreignSource = pendingReq.getForeignSource();
+        pendingReq = m_pending.getRequisition(foreignSource);
+        final File pendingSnapshotA = RequisitionFileUtils.createSnapshot(m_pending, foreignSource, pendingReq.getDate());
+
+        // Now, start a new pending update after the original snapshot is "in progress"
+        pendingReq.updateDateStamp();
+        m_pending.save(pendingReq);
+        m_pending.flush();
+
+        final File pendingSnapshotB = RequisitionFileUtils.createSnapshot(m_pending, foreignSource, pendingReq.getDate());
+
+        // "import" the A snapshot
+        m_repository.importResourceRequisition(new FileSystemResource(pendingSnapshotA));
+
+        assertFalse(pendingSnapshotA.exists());
+        assertTrue(pendingSnapshotB.exists());
+
+        // since there's still a newer snapshot in-progress, the pending test.xml should not have been deleted yet
+        URL pendingUrl = m_pending.getRequisitionURL(foreignSource);
+        assertNotNull(pendingUrl);
+        assertTrue(new File(pendingUrl.toURI()).exists());
+
+        // then, "import" the B snapshot
+        final Requisition bReq = m_repository.importResourceRequisition(new FileSystemResource(pendingSnapshotB));
+        
+        assertFalse(pendingSnapshotA.exists());
+        assertFalse(pendingSnapshotB.exists());
+
+        // now the pending test.xml should be gone
+        pendingUrl = m_pending.getRequisitionURL(foreignSource);
+        assertNull(pendingUrl);
+        
+        // the last (B) pending import should match the deployed
+        final Requisition deployedRequisition = m_active.getRequisition(foreignSource);
+        assertEquals(deployedRequisition.getDate().getTime(), bReq.getDate().getTime());
+    }
+
+    @Test
     public void integrationTest() {
         /*
          * First, the user creates a requisition in the UI, or RESTful
          * interface.
          */
-        Requisition pendingReq = new Requisition("test");
-        RequisitionNode node = new RequisitionNode();
-        node.setForeignId("1");
-        node.setNodeLabel("node label");
-        RequisitionInterface iface = new RequisitionInterface();
-        iface.setIpAddr("192.168.0.1");
-        node.putInterface(iface);
-        pendingReq.putNode(node);
+        Requisition pendingReq = createRequisition();
         m_pending.save(pendingReq);
         m_pending.flush();
 
@@ -148,8 +210,19 @@ public class FusedForeignSourceRepositoryTest extends ForeignSourceRepositoryTes
          * Since it's been officially deployed, the requisition and foreign
          * source should no longer be in the pending repo.
          */
-        System.err.println("requisition = " + m_pending.getRequisition("test"));
         assertNull("the requisition should be null in the pending repo", m_pending.getRequisition("test"));
         assertTrue("the foreign source should be default since there's no specific in the pending repo", m_pending.getForeignSource("test").isDefault());
+    }
+
+    private Requisition createRequisition() {
+        Requisition pendingReq = new Requisition("test");
+        RequisitionNode node = new RequisitionNode();
+        node.setForeignId("1");
+        node.setNodeLabel("node label");
+        RequisitionInterface iface = new RequisitionInterface();
+        iface.setIpAddr("192.168.0.1");
+        node.putInterface(iface);
+        pendingReq.putNode(node);
+        return pendingReq;
     }
 }
