@@ -23,8 +23,8 @@
                 report-service="jasperReportService" description="Availability summary across one or more surveillance categories" />
         <report id="Response-Time-Report" display-name="Response time by node" online="true" 
                 report-service="jasperReportService" description="Response time by node across one or more surveillance categories" />
-        <report id="Serial-Interface-Utilization-Summary" display-name="Serial Serial Interface Utilization Summary" online="true" 
-                report-service="jasperReportService" description="Serial Serial Interface Utilization Summary" />
+        <report id="Serial-Interface-Utilization-Summary" display-name="Serial Interface Utilization Summary" online="true" 
+                report-service="jasperReportService" description="Serial Interface Utilization Summary" />
         <report id="Total-Bytes-Transferred-By-Interface" display-name="Total Bytes Transferred by Interface " online="true" 
                 report-service="jasperReportService" description="Total Bytes Transferred by Interface" />
         <report id="Average-Peak-Traffic-Rates" display-name="Average and Peak Traffic rates for Nodes by Interface" online="true" 
