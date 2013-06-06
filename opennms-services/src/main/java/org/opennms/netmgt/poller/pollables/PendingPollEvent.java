@@ -121,8 +121,9 @@ public class PendingPollEvent extends PollEvent {
         return m_pending;
     }
 
-    private boolean isTimedOut() {
-        return (m_date.getTime() + PENDING_EVENT_TIMEOUT) > System.currentTimeMillis();
+    boolean isTimedOut() {
+        final long timeoutTime = m_date.getTime() + PENDING_EVENT_TIMEOUT;
+        return System.currentTimeMillis() > timeoutTime;
     }
 
     /**
