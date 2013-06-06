@@ -72,8 +72,8 @@ public class AdminSnmpConfigForIpPageTest extends OpenNMSSeleniumTestCase {
     	assertEquals("", selenium.getValue("name=securityLevel"));
     	assertEquals("", selenium.getValue("name=authPassPhrase"));
     	assertEquals("", selenium.getValue("name=authProtocol"));
-    	assertEquals("", selenium.getValue("name=privacyPassPhrase"));
-    	assertEquals("", selenium.getValue("name=privacyProtocol"));
+    	assertEquals("", selenium.getValue("name=privPassPhrase"));
+    	assertEquals("", selenium.getValue("name=privProtocol"));
     	assertEquals("", selenium.getValue("name=engineId"));
     	assertEquals("", selenium.getValue("name=contextEngineId"));
     	assertEquals("", selenium.getValue("name=contextName"));
@@ -106,8 +106,8 @@ public class AdminSnmpConfigForIpPageTest extends OpenNMSSeleniumTestCase {
     	assertEquals("1", selenium.getValue("name=securityLevel")); //authNoPriv
     	assertEquals("0p3nNMSv3", selenium.getValue("name=authPassPhrase"));
     	assertEquals("MD5", selenium.getValue("name=authProtocol"));
-    	assertEquals("0p3nNMSv3", selenium.getValue("name=privacyPassPhrase"));
-    	assertEquals("DES", selenium.getValue("name=privacyProtocol"));
+    	assertEquals("0p3nNMSv3", selenium.getValue("name=privPassPhrase"));
+    	assertEquals("DES", selenium.getValue("name=privProtocol"));
     	assertEquals("", selenium.getValue("name=engineId"));
     	assertEquals("", selenium.getValue("name=contextEngineId"));
     	assertEquals("", selenium.getValue("name=contextName"));
