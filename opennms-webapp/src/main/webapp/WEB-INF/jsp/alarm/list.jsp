@@ -600,6 +600,7 @@
         <% } %>
           <option value="clear">Clear Alarms</option>
           <option value="escalate">Escalate Alarms</option>
+	 <!--
 	  <optgroup label="Export Alarms">
 	        <option value="exportall">Export All</option>
           	<option value="export">Export Selected</option>
@@ -608,6 +609,7 @@
 	        <option value="purgeall">Purge All</option>
           	<option value="purge">Purge Selected</option>
 	   </optgroup>
+	  -->
           </select>
           <input type="button" value="Go" onClick="submitForm(document.alarm_action_form.alarmAction.value)" />
       <% } %>

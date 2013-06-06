@@ -649,17 +649,16 @@
                 this alarm
             </td>
         </tr>
-        <% } // showEscalate || showClear %>      
+        <% } // showEscalate || showClear %>     
+	<!-- 
 		<tr class="<%=alarm.getSeverity().getLabel()%>">
 		    <td>
 			<form method="post" name="alarm_action_form">
-				<!-- Popup message box for alarm export action -->
 				<div class="exportConfirmation" id="exportConfirmation" style="font-size:120%;display:none" >
 					<center>
 						<div id="alertText">&nbsp;</div><br>
 						Select your file format : 
 						<input type="radio" name="format" value="PDF" checked="checked">PDF
-						<!-- <input type="radio" name="format" value="XLS">XLS -->
 						<input type="radio" name="format" value="HTML">HTML
 						<input type="radio" name="format" value="CSV">CSV<br><br>
 						<input type="button" onclick="javascript:callExportAction();" value="Ok" />
@@ -667,7 +666,6 @@
 					</center>
 				</div>
 				
-				<!-- Hidden datas for alarm purge and export action-->
 				<input type="hidden" name="nodeid" value="node=" />
 				<input type="hidden" name="exactuei" value="exactUei=" />
 				<input type="hidden" name="ipaddress" value="interface=" />
@@ -681,6 +679,7 @@
 		    </td>
 		    <td>Export this alarm</td>
 		</tr>
+	-->
     </tbody>
 </table>
 
