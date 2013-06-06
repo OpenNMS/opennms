@@ -48,6 +48,7 @@ public class PendingPollEvent extends PollEvent {
 
     private final Event m_event;
     private Date m_date;
+    private final long m_expirationTimeInMillis;
     private boolean m_pending = true;
     private List<Runnable> m_pendingOutages = new LinkedList<Runnable>();
 
@@ -65,6 +66,7 @@ public class PendingPollEvent extends PollEvent {
             ThreadCategory.getInstance(getClass()).error("Unable to convert event time to date", e);
             m_date = new Date();
         }
+        m_expirationTimeInMillis = m_date.getTime() + PENDING_EVENT_TIMEOUT;
     }
 
     /**
@@ -122,8 +124,7 @@ public class PendingPollEvent extends PollEvent {
     }
 
     boolean isTimedOut() {
-        final long timeoutTime = m_date.getTime() + PENDING_EVENT_TIMEOUT;
-        return System.currentTimeMillis() > timeoutTime;
+        return System.currentTimeMillis() > m_expirationTimeInMillis;
     }
 
     /**
