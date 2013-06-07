@@ -365,7 +365,7 @@ public class Migrator {
         } catch (final SQLException e) {
             throw new MigrationException("an error occurred determining whether the OpenNMS user exists", e);
         } finally {
-            cleanUpDatabase(c, asdf, st, rs);
+            cleanUpDatabase(c, null, st, rs);
         }
     }
 
