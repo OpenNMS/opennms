@@ -46,6 +46,7 @@ import javax.sql.DataSource;
 import liquibase.Liquibase;
 import liquibase.database.DatabaseConnection;
 import liquibase.database.jvm.JdbcConnection;
+import liquibase.exception.DatabaseException;
 import liquibase.logging.LogFactory;
 import liquibase.logging.LogLevel;
 import liquibase.resource.ResourceAccessor;
@@ -177,7 +178,7 @@ public class Migrator {
             } catch (final SQLException e) {
                 throw new MigrationException("an error occurred getting the version from the database", e);
             } finally {
-                cleanUpDatabase(c, st, rs);
+                cleanUpDatabase(c, null, st, rs);
             }
 
             final Matcher m = POSTGRESQL_VERSION_PATTERN.matcher(versionString);
@@ -276,7 +277,7 @@ public class Migrator {
         } catch (final SQLException e) {
             throw new MigrationException("an error occurred getting the version from the database", e);
         } finally {
-            cleanUpDatabase(c, st, rs);
+            cleanUpDatabase(c, null, st, rs);
         }
     }
 
@@ -307,7 +308,7 @@ public class Migrator {
         } catch (final SQLException e) {
             throw new MigrationException("an error occurred determining whether the OpenNMS user exists", e);
         } finally {
-            cleanUpDatabase(c, st, rs);
+            cleanUpDatabase(c, null, st, rs);
         }
     }
 
@@ -333,7 +334,7 @@ public class Migrator {
         } catch (final SQLException e) {
             throw new MigrationException("an error occurred creating the OpenNMS user", e);
         } finally {
-            cleanUpDatabase(c, st, rs);
+            cleanUpDatabase(c, null, st, rs);
         }
     }
 
@@ -364,7 +365,7 @@ public class Migrator {
         } catch (final SQLException e) {
             throw new MigrationException("an error occurred determining whether the OpenNMS user exists", e);
         } finally {
-            cleanUpDatabase(c, st, rs);
+            cleanUpDatabase(c, asdf, st, rs);
         }
     }
 
@@ -427,7 +428,7 @@ public class Migrator {
         } catch (final SQLException e) {
             throw new MigrationException("an error occurred creating the OpenNMS database", e);
         } finally {
-            cleanUpDatabase(c, st, rs);
+            cleanUpDatabase(c, null, st, rs);
         }
     }
 
@@ -473,7 +474,7 @@ public class Migrator {
         } catch (final Throwable e) {
             throw new MigrationException("unable to migrate the database", e);
         } finally {
-            cleanUpDatabase(connection, null, null);
+            cleanUpDatabase(connection, dbConnection, null, null);
         }
     }
 
@@ -501,26 +502,33 @@ public class Migrator {
         return new DefaultResourceLoader(cl);
     }
 
-    private void cleanUpDatabase(final Connection c, final Statement st, final ResultSet rs) {
+    private void cleanUpDatabase(final Connection c, DatabaseConnection dbc, final Statement st, final ResultSet rs) {
         if (rs != null) {
             try {
                 rs.close();
             } catch (final SQLException e) {
-                LogUtils.warnf(this, "unable to close version-check result set", e);
+                LogUtils.warnf(this, e, "Failed to close result set.");
             }
         }
         if (st != null) {
             try {
                 st.close();
             } catch (final SQLException e) {
-                LogUtils.warnf(this, "unable to close version-check statement", e);
+                LogUtils.warnf(this, e, "Failed to close statement.");
+            }
+        }
+        if (dbc != null) {
+            try {
+                dbc.close();
+            } catch (final DatabaseException e) {
+                LogUtils.warnf(this, e, "Failed to close database connection.");
             }
         }
         if (c != null) {
             try {
                 c.close();
             } catch (final SQLException e) {
-                LogUtils.warnf(this, "unable to close version-check connection", e);
+                LogUtils.warnf(this, e, "Failed to close connection.");
             }
         }
     }
