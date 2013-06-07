@@ -177,7 +177,7 @@ public class Migrator {
             } catch (final SQLException e) {
                 throw new MigrationException("an error occurred getting the version from the database", e);
             } finally {
-            	cleanUpDatabase(c, st, rs);
+                cleanUpDatabase(c, st, rs);
             }
 
             final Matcher m = POSTGRESQL_VERSION_PATTERN.matcher(versionString);
@@ -190,7 +190,7 @@ public class Migrator {
 
         return m_databaseVersion;
     }
-    
+
     /**
      * <p>validateDatabaseVersion</p>
      *
@@ -198,7 +198,7 @@ public class Migrator {
      */
     public void validateDatabaseVersion() throws MigrationException {
         if (!m_validateDatabaseVersion) {
-        	LogUtils.infof(this, "skipping database version validation");
+            LogUtils.infof(this, "skipping database version validation");
             return;
         }
         LogUtils.infof(this, "validating database version");
@@ -209,12 +209,12 @@ public class Migrator {
         }
 
         final String message = String.format(
-        		"Unsupported database version \"%f\" -- you need at least %f and less than %f.  "
-        		+ "Use the \"-Q\" option to disable this check if you feel brave and are willing "
-        		+ "to find and fix bugs found yourself.",
-        		dbv.floatValue(), POSTGRES_MIN_VERSION, POSTGRES_MAX_VERSION_PLUS_ONE
-        );
-        
+                                             "Unsupported database version \"%f\" -- you need at least %f and less than %f.  "
+                                                     + "Use the \"-Q\" option to disable this check if you feel brave and are willing "
+                                                     + "to find and fix bugs found yourself.",
+                                                     dbv.floatValue(), POSTGRES_MIN_VERSION, POSTGRES_MAX_VERSION_PLUS_ONE
+                );
+
         if (dbv < POSTGRES_MIN_VERSION || dbv >= POSTGRES_MAX_VERSION_PLUS_ONE) {
             throw new MigrationException(message);
         }
@@ -237,7 +237,7 @@ public class Migrator {
         }
         return "so";
     }
-    
+
     /**
      * <p>createLangPlPgsql</p>
      *
@@ -261,17 +261,17 @@ public class Migrator {
             rs.close();
 
             rs = st.executeQuery("SELECT pg_language.oid "
-                + "FROM pg_language, pg_proc WHERE "
-                + "pg_proc.proname='plpgsql_call_handler' AND "
-                + "pg_proc.proargtypes = '' AND "
-                + "pg_proc.oid = pg_language.lanplcallfoid AND "
-                + "pg_language.lanname = 'plpgsql'");
+                    + "FROM pg_language, pg_proc WHERE "
+                    + "pg_proc.proname='plpgsql_call_handler' AND "
+                    + "pg_proc.proargtypes = '' AND "
+                    + "pg_proc.oid = pg_language.lanplcallfoid AND "
+                    + "pg_language.lanname = 'plpgsql'");
             if (rs.next()) {
                 LogUtils.infof(this, "PL/PgSQL language exists");
             } else {
                 LogUtils.infof(this, "adding PL/PgSQL language");
                 st.execute("CREATE TRUSTED PROCEDURAL LANGUAGE 'plpgsql' "
-                    + "HANDLER plpgsql_call_handler LANCOMPILER 'PL/pgSQL'");
+                        + "HANDLER plpgsql_call_handler LANCOMPILER 'PL/pgSQL'");
             }
         } catch (final SQLException e) {
             throw new MigrationException("an error occurred getting the version from the database", e);
@@ -296,7 +296,7 @@ public class Migrator {
             st = c.createStatement();
             rs = st.executeQuery("SELECT usename FROM pg_user WHERE usename = '" + migration.getDatabaseUser() + "'");
             if (rs.next()) {
-            	final String datname = rs.getString("usename");
+                final String datname = rs.getString("usename");
                 if (datname != null && datname.equalsIgnoreCase(migration.getDatabaseUser())) {
                     return true;
                 } else {
@@ -369,13 +369,13 @@ public class Migrator {
     }
 
     public void createSchema(final Migration migration) throws MigrationException {
-    	if (!m_createDatabase || schemaExists(migration)) {
-    		return;
-    	}
+        if (!m_createDatabase || schemaExists(migration)) {
+            return;
+        }
     }
-    
+
     public boolean schemaExists(final Migration migration) throws MigrationException {
-    	/* FIXME: not sure how to ask postgresql for a schema
+        /* FIXME: not sure how to ask postgresql for a schema
         Statement st = null;
         ResultSet rs = null;
         Connection c = null;
@@ -397,10 +397,10 @@ public class Migrator {
         } finally {
             cleanUpDatabase(c, st, rs);
         }
-        */
-    	return true;
+         */
+        return true;
     }
-    
+
     /**
      * <p>createDatabase</p>
      *
@@ -453,14 +453,15 @@ public class Migrator {
      */
     public void migrate(final Migration migration) throws MigrationException {
         Connection connection = null;
+        DatabaseConnection dbConnection = null;
 
         try {
             connection = m_dataSource.getConnection();
-            final DatabaseConnection dbConnection = new JdbcConnection(connection);
+            dbConnection = new JdbcConnection(connection);
 
             ResourceAccessor accessor = migration.getAccessor();
             if (accessor == null) accessor = new SpringResourceAccessor();
-            
+
             final Liquibase liquibase = new Liquibase( migration.getChangeLog(), accessor, dbConnection );
             liquibase.setChangeLogParameter("install.database.admin.user", migration.getAdminUser());
             liquibase.setChangeLogParameter("install.database.admin.password", migration.getAdminPassword());
@@ -472,14 +473,14 @@ public class Migrator {
         } catch (final Throwable e) {
             throw new MigrationException("unable to migrate the database", e);
         } finally {
-        	cleanUpDatabase(connection, null, null);
+            cleanUpDatabase(connection, null, null);
         }
     }
 
     public void generateChangelog() {
-    	
+
     }
-    
+
     /**
      * <p>getMigrationResourceLoader</p>
      *
@@ -487,8 +488,8 @@ public class Migrator {
      * @return a {@link org.springframework.core.io.ResourceLoader} object.
      */
     protected ResourceLoader getMigrationResourceLoader(final Migration migration) {
-    	final File changeLog = new File(migration.getChangeLog());
-    	final List<URL> urls = new ArrayList<URL>();
+        final File changeLog = new File(migration.getChangeLog());
+        final List<URL> urls = new ArrayList<URL>();
         try {
             if (changeLog.exists()) {
                 urls.add(changeLog.getParentFile().toURI().toURL());
