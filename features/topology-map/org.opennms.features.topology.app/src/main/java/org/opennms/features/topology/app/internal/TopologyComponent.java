@@ -201,7 +201,8 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
                 Map<String, Object> props = (Map<String, Object>) variables.get("scrollWheel");
                 int x = (Integer) props.get("x");
                 int y = (Integer) props.get("y");
-                double scrollVal = (Double) props.get("scrollVal");
+                // inverse the scroll value, otherwise the expected behaviour is inverted
+                double scrollVal = -1 * (Double) props.get("scrollVal");
                 getViewManager().zoomToPoint(getViewManager().getScale() + scrollVal, new Point(x, y));
             }
 
