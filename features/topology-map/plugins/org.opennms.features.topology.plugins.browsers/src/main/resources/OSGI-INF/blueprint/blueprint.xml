@@ -113,6 +113,11 @@ xsi:schemaLocation="
     <argument ref="nodeDaoContainer" />
     <property name="columnReorderingAllowed" value="true"/>
     <property name="columnCollapsingAllowed" value="true"/>
+	<property name="cellStyleGenerator">
+      <bean class="org.opennms.features.topology.plugins.browsers.NodeTableCellStyleGenerator">
+      	<property name="alarmDao" ref="alarmDao"/>
+      </bean>
+    </property>
 
     <!-- Sort by default by label -->
     <property name="sortContainerPropertyId" value="label"/>
