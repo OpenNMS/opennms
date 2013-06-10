@@ -2006,6 +2006,7 @@
   <event-file>events/DellStorageManagement.events.xml</event-file>
   <event-file>events/DISMAN.events.xml</event-file>
   <event-file>events/DISMAN-PING.events.xml</event-file>
+  <event-file>events/Dlink.events.xml</event-file>
   <event-file>events/DMTF.events.xml</event-file>
   <event-file>events/DPS.events.xml</event-file>
   <event-file>events/DS1.events.xml</event-file>
