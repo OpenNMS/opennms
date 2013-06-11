@@ -965,7 +965,7 @@ public abstract class AbstractQueryManager implements QueryManager {
 
             final Integer stpport = dot1dstpptentry.getDot1dStpPort();
 
-            if (stpport == null) {
+            if (stpport == null || stpinterfaces.get(stpport) == null ) {
                 LogUtils.infof(this, "processDot1StpPortTable: Found invalid bridge port. Skipping.");
                 continue;
             }
