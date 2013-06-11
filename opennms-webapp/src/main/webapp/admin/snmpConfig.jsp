@@ -615,5 +615,5 @@
 			the interface page for that device (by selecting the "Update SNMP"
 			link) for these changes to take effect.</p>
 	</div>
-	<jsp:include page="/includes/footer.jsp" flush="false" />
+	<jsp:include page="/includes/footerTooltip.jsp" flush="false" />
 </body>
