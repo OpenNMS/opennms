@@ -40,7 +40,7 @@ $GIT = $ENV{'GIT'};
 if (not defined $GIT or not -x $GIT) {
 	for my $dir (File::Spec->path()) {
 		my $git = File::Spec->catfile($dir, 'git');
-		if ($^O =~ /mswin/i) {
+		if ($^O =~ /(mswin|msys)/i) {
 			$git .= '.exe';
 		}
 		if (-x $git) {
