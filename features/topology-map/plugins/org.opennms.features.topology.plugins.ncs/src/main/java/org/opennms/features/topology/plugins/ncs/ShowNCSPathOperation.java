@@ -2,7 +2,9 @@ package org.opennms.features.topology.plugins.ncs;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
@@ -52,7 +54,7 @@ public class ShowNCSPathOperation implements Operation {
         
         final VertexRef defaultVertRef = targets.get(0);
         final SelectionManager selectionManager = operationContext.getGraphContainer().getSelectionManager();
-        final Collection<VertexRef> vertexRefs = selectionManager.getSelectedVertexRefs();
+        final Collection<VertexRef> vertexRefs = getVertexRefsForNCSService(m_storedCriteria); //selectionManager.getSelectedVertexRefs();
         
         final Window mainWindow = operationContext.getMainWindow();
         
@@ -166,6 +168,16 @@ public class ShowNCSPathOperation implements Operation {
         mainWindow.addWindow(ncsPathPrompt);
         promptForm.getField("Device A").setValue(defaultVertRef.getId());
         return null;
+    }
+
+    private Collection<VertexRef> getVertexRefsForNCSService( NCSServiceCriteria storedCriteria ) {
+        List<Edge> edges = m_ncsEdgeProvider.getEdges(storedCriteria);
+        Set<VertexRef> vertRefList = new HashSet<VertexRef>();
+        for(Edge edge : edges) {
+            vertRefList.add(edge.getSource().getVertex());
+            vertRefList.add(edge.getTarget().getVertex());
+        }
+        return vertRefList;
     }
 
     protected void highlightEdgePaths(NCSServicePath path, GraphProvider graphProvider) {

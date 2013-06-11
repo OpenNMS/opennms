@@ -30,16 +30,4 @@
             <entry key="label" value="VMware"/>
         </service-properties>
     </service>
-
-    <!--
-    <service interface="org.opennms.features.topology.api.Operation">
-        <service-properties>
-            <entry key="operation.menuLocation" value="View"/>
-            <entry key="operation.label" value="Refresh"/>
-        </service-properties>
-        <bean class="org.opennms.features.topology.plugins.topo.vmware.internal.operations.VmwareRefreshOperation">
-            <argument ref="vmwareTopologyProvider"/>
-        </bean>
-    </service>
-    -->
 </blueprint>
