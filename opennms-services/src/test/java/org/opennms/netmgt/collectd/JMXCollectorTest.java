@@ -28,29 +28,39 @@
 
 package org.opennms.netmgt.collectd;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.File;
 import java.io.FileInputStream;
-import org.easymock.EasyMock;
-
 import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import javax.management.MBeanServer;
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
-import org.junit.*;
+
+import org.easymock.EasyMock;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.opennms.netmgt.collectd.JMXCollector.JMXCollectionResource;
 import org.opennms.netmgt.collectd.JMXCollector.JMXCollectionSet;
 import org.opennms.netmgt.collectd.jmxhelper.JmxTest;
 import org.opennms.netmgt.collectd.jmxhelper.JmxTestMBean;
 import org.opennms.netmgt.config.BeanInfo;
 import org.opennms.netmgt.config.JMXDataCollectionConfigFactory;
-import org.opennms.netmgt.config.collector.*;
+import org.opennms.netmgt.config.collectd.jmx.Attrib;
+import org.opennms.netmgt.config.collector.AttributeGroup;
+import org.opennms.netmgt.config.collector.AttributeGroupType;
+import org.opennms.netmgt.config.collector.CollectionAttribute;
+import org.opennms.netmgt.config.collector.CollectionSet;
 import org.opennms.protocols.jmx.connectors.ConnectionWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import static org.junit.Assert.*;
-import org.opennms.netmgt.config.collectd.jmx.Attrib;
 
 /**
  *
@@ -197,7 +207,7 @@ public class JMXCollectorTest {
         JMXCollectionSet jmxCollectionSet = (JMXCollectionSet) collectionSet;
         JMXCollectionResource jmxCollectionResource = jmxCollectionSet.getResource();
         AttributeGroup group = jmxCollectionResource.getGroup(new AttributeGroupType("java_lang_type_OperatingSystem", "all"));
-        assertEquals(10, group.getAttributes().size());
+        assertEquals(8, group.getAttributes().size());
         printDebugAttributeGroup(group);
         
         assertEquals("Collection: " + collectionName + " run successfully", 1, collectionSet.getStatus());
