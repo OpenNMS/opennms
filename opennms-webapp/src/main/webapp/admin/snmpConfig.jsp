@@ -217,6 +217,7 @@
 		background-color: #EEE;
 		z-index: 1000;
 		max-width: 250px;
+		color: black;
 	}
 	
 	.ipAddress {

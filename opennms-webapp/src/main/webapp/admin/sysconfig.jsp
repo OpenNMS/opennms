@@ -100,6 +100,10 @@
 
 </table>
 </div>
+<br/>
+<div>
+<a href="admin/support/systemReportList.htm" font-size="50%">Generate log for troubleshooting</a>
+</div>
 </div>
 <div class="TwoColRight">
   <h3>System Configuration</h3>

@@ -414,7 +414,7 @@
         </tr>
        
         <tr valign="top" class="<%= events[i].getSeverity().getLabel() %>">
-          <td colspan="4"><%=events[i].getLogMessage()%></td>
+          <td colspan="4"><%=this.getTextDesc(events[i].getDescription())%></td>
         </tr>
        
       <% } /*end for*/%>
@@ -575,4 +575,12 @@
         return( labels );
     }
 
+%>
+<%!
+    protected String getTextDesc( String desc ) {
+         if ( desc != null && desc.indexOf("<table>") > 0 ) {
+             return desc.substring( 0, desc.indexOf("<table>"));  
+         }
+         return desc;
+    }
 %>

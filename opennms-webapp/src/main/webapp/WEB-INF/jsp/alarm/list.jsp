@@ -427,7 +427,7 @@
 				      <% } %>
 				      </c:if>
 				</th>
-				<th width="48%">Log Msg</th>
+				<th width="48%">Description</th>
 			</tr>
 		</thead>
 
@@ -582,7 +582,7 @@
 			<% }%>
           </c:if>
           </td>
-          <td class="divider"><%=alarms[i].getLogMsg()%></td>
+          <td class="divider"><%=this.getTextDesc(alarms[i].getDescription())%></td>
        </tr> 
       <% } /*end for*/%>
 	
@@ -773,6 +773,15 @@
         }
 
         return( labels );
+    }
+%>
+
+<%!
+    protected String getTextDesc( String desc ) {
+         if ( desc != null && desc.indexOf("<table>") > 0 ) {
+             return desc.substring( 0, desc.indexOf("<table>"));  
+         }
+         return desc;
     }
 %>
 <script type="text/javascript">

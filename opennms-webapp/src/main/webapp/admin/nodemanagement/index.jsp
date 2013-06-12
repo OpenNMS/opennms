@@ -91,11 +91,11 @@
 
 <div class="TwoColLAdmin">
   <h3>Admin Options</h3>
-
+<!--
   <p>
     <a href="admin/nodelabel.jsp?node=<%=nodeId%>">Change Node Label</a>
   </p>
-
+-->
   <p>
     <a href="javascript:getInterfacesPost()">Manage and Unmanage Interfaces
     and Services</a>
@@ -136,12 +136,12 @@
 <div class="TwoColRAdmin">
 
   <h3>Option Descriptions</h3>
-
+<!--
   <p>
     <b>Change Node Label</b> allows administrators either to specify a node 
     name, or let the system to automatically select the node name.
   </p>
-
+-->
   <p>
     When OpenNMS was first started, the nodes, interfaces, and services
     in the network were either <em>discovered</em> automatically or added
