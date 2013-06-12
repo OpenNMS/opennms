@@ -98,7 +98,7 @@ public class PollerFrontEndIntegrationTest implements InitializingBean, Temporar
     }
 
     @AfterClass
-    public void tearDownAnticipator() throws Throwable {
+    public static void tearDownAnticipator() throws Throwable {
         if (m_fileAnticipator.isInitialized()) {
             m_fileAnticipator.deleteExpected();
         }
