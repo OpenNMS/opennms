@@ -30,11 +30,14 @@ package org.opennms.netmgt.snmp.snmp4j;
 
 import static org.junit.Assert.*;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Collections;
 
 import org.junit.Test;
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.snmp.SnmpConfiguration;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
@@ -70,6 +73,8 @@ public class Snmp4jTrapReceiverTest extends MockSnmpAgentTestCase implements Tra
 	private final Snmp4JStrategy m_strategy = new Snmp4JStrategy();
 
     private int trapCount = 0;
+
+    private InetAddress m_addr = InetAddressUtils.getLocalHostAddress();
 
     private final class TestTrapListener implements TrapNotificationListener {
         private boolean m_error = false;
@@ -121,36 +126,72 @@ public class Snmp4jTrapReceiverTest extends MockSnmpAgentTestCase implements Tra
      *
      */
     @Test
-    public void testTrapReceiverWithoutOpenNMS() throws Exception {
+    public void testTrapReceiverWithoutOpenNMS() {
         System.out.println("SNMP4J: Register for Traps");
         trapCount = 0;
-        Snmp snmp = new Snmp(new DefaultUdpTransportMapping(new UdpAddress(9162)));
-        snmp.addCommandResponder(this);
-        snmp.getUSM().addUser(
-                new OctetString("opennmsUser"),
-                new UsmUser(new OctetString("opennmsUser"), AuthMD5.ID, new OctetString("0p3nNMSv3"), PrivDES.ID, new OctetString("0p3nNMSv3")));
-        snmp.listen();
+        DefaultUdpTransportMapping transportMapping = null;
+        Snmp snmp = null;
 
-        sendTraps();
+        try {
+            transportMapping = new DefaultUdpTransportMapping(new UdpAddress(9162));
+            snmp = new Snmp(transportMapping);
+            
+            snmp.addCommandResponder(this);
+            snmp.getUSM().addUser(
+                    new OctetString("opennmsUser"),
+                    new UsmUser(new OctetString("opennmsUser"), AuthMD5.ID, new OctetString("0p3nNMSv3"), PrivDES.ID, new OctetString("0p3nNMSv3")));
+            snmp.listen();
 
-        System.out.println("SNMP4J: Unregister for Traps");
-        snmp.close();
+            sendTraps();
+        } catch (final IOException e) {
+            LogUtils.debugf(this, e, "Failed to grab UDP port.");
+        } catch (final InterruptedException e) {
+            LogUtils.debugf(this, e, "Interrupted while sending traps.");
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } finally {
+            System.out.println("SNMP4J: Unregister for Traps");
+            if (snmp != null) {
+                try {
+                    snmp.close();
+                } catch (final IOException e) {
+                    LogUtils.debugf(this, e, "Failed to close Snmp object: " + snmp);
+                }
+            }
+            if (transportMapping != null) {
+                try {
+                    transportMapping.close();
+                } catch (final IOException e) {
+                    LogUtils.debugf(this, e, "Failed to close transport mapping: " + transportMapping);
+                }
+            }
+        }
 
         System.out.println("SNMP4J: Checking Trap status");
         assertEquals(2, trapCount);
     }
 
     @Test
-    public void testTrapReceiverWithOpenNMS() throws Exception {
+    public void testTrapReceiverWithOpenNMS() {
         System.out.println("ONMS: Register for Traps");
         TestTrapListener trapListener = new TestTrapListener();
         SnmpV3User user = new SnmpV3User("agalue", "MD5", "0p3nNMSv3", "DES", "0p3nNMSv3");
-        m_strategy.registerForTraps(trapListener, this, InetAddress.getLocalHost(), 9162, Collections.singletonList(user));
-
-        sendTraps();
-
-        System.out.println("ONMS: Unregister for Traps");
-        m_strategy.unregisterForTraps(trapListener, 9162);
+        try {
+            m_strategy.registerForTraps(trapListener, this, m_addr, 9162, Collections.singletonList(user));
+            sendTraps();
+        } catch (final IOException e) {
+            LogUtils.debugf(this, e, "Failed to register for traps.");
+        } catch (final Exception e) {
+            LogUtils.debugf(this, e, "Failed to send traps.");
+        } finally {
+            System.out.println("ONMS: Unregister for Traps");
+            try {
+                m_strategy.unregisterForTraps(trapListener, 9162);
+            } catch (final IOException e) {
+                LogUtils.debugf(this, e, "Failed to unregister for traps.");
+            }
+        }
 
         System.out.println("ONMS: Checking Trap status");
         assertFalse(trapListener.hasError());
@@ -158,6 +199,8 @@ public class Snmp4jTrapReceiverTest extends MockSnmpAgentTestCase implements Tra
     }
 
     private void sendTraps() throws Exception, UnknownHostException, InterruptedException {
+        final String hostAddress = InetAddressUtils.str(m_addr);
+
         System.out.println("Sending V2 Trap");
         SnmpObjId enterpriseId = SnmpObjId.get(".0.0");
         SnmpObjId trapOID = SnmpObjId.get(enterpriseId, new SnmpInstId(1));
@@ -165,7 +208,7 @@ public class Snmp4jTrapReceiverTest extends MockSnmpAgentTestCase implements Tra
         pdu.addVarBind(SnmpObjId.get(".1.3.6.1.2.1.1.3.0"), m_strategy.getValueFactory().getTimeTicks(0));
         pdu.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.1.1.4.1.0"), m_strategy.getValueFactory().getObjectId(trapOID));
         pdu.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.1.1.4.3.0"), m_strategy.getValueFactory().getObjectId(enterpriseId));
-        pdu.send(InetAddress.getLocalHost().getHostAddress(), 9162, "public");
+        pdu.send(hostAddress, 9162, "public");
         Thread.sleep(1000);
 
         System.out.println("Sending V3 Trap");
@@ -173,7 +216,7 @@ public class Snmp4jTrapReceiverTest extends MockSnmpAgentTestCase implements Tra
         pduv3.addVarBind(SnmpObjId.get(".1.3.6.1.2.1.1.3.0"), m_strategy.getValueFactory().getTimeTicks(0));
         pduv3.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.1.1.4.1.0"), m_strategy.getValueFactory().getObjectId(trapOID));
         pduv3.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.1.1.4.3.0"), m_strategy.getValueFactory().getObjectId(enterpriseId));
-        pduv3.send(InetAddress.getLocalHost().getHostAddress(), 9162, SnmpConfiguration.AUTH_PRIV, "opennmsUser", "0p3nNMSv3", SnmpConfiguration.DEFAULT_AUTH_PROTOCOL, "0p3nNMSv3", SnmpConfiguration.DEFAULT_PRIV_PROTOCOL);
+        pduv3.send(hostAddress, 9162, SnmpConfiguration.AUTH_PRIV, "opennmsUser", "0p3nNMSv3", SnmpConfiguration.DEFAULT_AUTH_PROTOCOL, "0p3nNMSv3", SnmpConfiguration.DEFAULT_PRIV_PROTOCOL);
         Thread.sleep(1000);
     }
 

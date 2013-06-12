@@ -90,5 +90,13 @@ xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
 	       <property name="ncsPathProvider" ref="ncsPathProviderService"/>
 	   </bean>
 	</service>
+	
+	<service interface="org.opennms.features.topology.api.Operation">
+       <service-properties>
+            <entry key="operation.label" value="Hide NCS Path"/>
+            <entry key="operation.contextMenuLocation" value=""/>
+        </service-properties>
+       <bean class="org.opennms.features.topology.plugins.ncs.HideNCSPathOperation" />
+    </service>
 
 </blueprint>

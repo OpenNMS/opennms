@@ -135,6 +135,7 @@ public class AlarmRepositoryTest implements InitializingBean {
     
     @Test
     @Transactional
+    @JUnitTemporaryDatabase
     public void testGetAlarmById(){
         OnmsAlarm alarm = m_alarmRepo.getAlarm(1);
         assertNotNull(alarm);
@@ -148,7 +149,7 @@ public class AlarmRepositoryTest implements InitializingBean {
     }
     
     @Test
-    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
+    @JUnitTemporaryDatabase
     public void testCountMatchingAlarms(){
         int alarms = m_alarmRepo.countMatchingAlarms(AlarmUtil.getOnmsCriteria(new AlarmCriteria(new AlarmIdFilter(1))));
         assertEquals(1, alarms);
@@ -159,6 +160,7 @@ public class AlarmRepositoryTest implements InitializingBean {
     
     @Test
     @Transactional
+    @JUnitTemporaryDatabase
     public void testCountMatchingAlarmsBySeverity(){
         AlarmCriteria criteria = new AlarmCriteria();
         int [] matchingAlarms = m_alarmRepo.countMatchingAlarmsBySeverity(AlarmUtil.getOnmsCriteria(criteria));
@@ -176,7 +178,7 @@ public class AlarmRepositoryTest implements InitializingBean {
     }
     
     @Test
-    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
+    @JUnitTemporaryDatabase
     public void testGetMatchingAlarms(){
         OnmsAlarm[] alarms = m_alarmRepo.getMatchingAlarms(AlarmUtil.getOnmsCriteria(new AlarmCriteria(new SeverityFilter(OnmsSeverity.NORMAL), new AlarmIdFilter(1))));
         assertNotNull(alarms);
@@ -188,7 +190,7 @@ public class AlarmRepositoryTest implements InitializingBean {
     }
     
     @Test
-    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
+    @JUnitTemporaryDatabase
     public void testGetUnacknowledgedAlarms() {
         OnmsCriteria acked = AlarmUtil.getOnmsCriteria(new AlarmCriteria(AcknowledgeType.ACKNOWLEDGED, new Filter[0]));
         OnmsCriteria unacked = AlarmUtil.getOnmsCriteria(new AlarmCriteria(AcknowledgeType.UNACKNOWLEDGED, new Filter[0]));
@@ -220,7 +222,7 @@ public class AlarmRepositoryTest implements InitializingBean {
 }
     
     @Test
-    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
+    @JUnitTemporaryDatabase
     public void testAcknowledgeUnacknowledge() {
         
         String user = "TestUser";
@@ -239,6 +241,7 @@ public class AlarmRepositoryTest implements InitializingBean {
     
     @Test
     @Transactional
+    @JUnitTemporaryDatabase
     public void testSort() {
         
         for(SortStyle style : SortStyle.values()) {
@@ -250,6 +253,7 @@ public class AlarmRepositoryTest implements InitializingBean {
 
     @Test
     @Transactional
+    @JUnitTemporaryDatabase
     public void testSortAndSearchBySameProperty() {
         
         Filter[] filters = new Filter[] { new NodeNameLikeFilter("node") };
@@ -261,7 +265,8 @@ public class AlarmRepositoryTest implements InitializingBean {
 
     @Test
     @Transactional
-    public void testAcknowledgeUnacknowledgeAllAlarms(){
+    @JUnitTemporaryDatabase
+    public void testAcknowledgeUnacknowledgeAllAlarms() {
         String user = "TestUser";
         m_alarmRepo.acknowledgeAll(user, new Date());
         
@@ -276,14 +281,15 @@ public class AlarmRepositoryTest implements InitializingBean {
     
     @Test
     @Transactional
+    @JUnitTemporaryDatabase
     public void testCountMatchingBySeverity(){
         int[] matchingAlarmCount = m_alarmRepo.countMatchingAlarmsBySeverity(AlarmUtil.getOnmsCriteria(new AlarmCriteria(new SeverityFilter(OnmsSeverity.NORMAL))));
         assertEquals(8, matchingAlarmCount.length);
     }
     
     @Test
-    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
-    public void testEscalateAlarms(){
+    @JUnitTemporaryDatabase
+    public void testEscalateAlarms() {
         int[] alarmIds = {1};
         m_alarmRepo.escalateAlarms(alarmIds, "TestUser", new Date());
         
@@ -295,7 +301,7 @@ public class AlarmRepositoryTest implements InitializingBean {
     }
     
     @Test
-    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
+    @JUnitTemporaryDatabase
     public void testClearAlarms(){
         OnmsAlarm alarm = m_alarmRepo.getAlarm(1);
         
@@ -311,7 +317,7 @@ public class AlarmRepositoryTest implements InitializingBean {
     }
 
     @Test
-    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
+    @JUnitTemporaryDatabase
     public void testAcknowledgements(){
         m_alarmRepo.acknowledgeAlarms(new int[] { 1 }, "agalue", new Date());
         List<OnmsAcknowledgment> acks = m_alarmRepo.getAcknowledgments(1);
