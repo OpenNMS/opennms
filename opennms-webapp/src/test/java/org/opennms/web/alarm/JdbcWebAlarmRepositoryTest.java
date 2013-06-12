@@ -88,6 +88,7 @@ public class JdbcWebAlarmRepositoryTest implements InitializingBean {
    
     @Test
     @Transactional
+    @JUnitTemporaryDatabase
     public void testCountMatchingAlarms(){
         AlarmCriteria criteria = new AlarmCriteria(new AlarmIdFilter(1));
         int alarms = m_alarmRepo.countMatchingAlarms(criteria);
@@ -98,6 +99,7 @@ public class JdbcWebAlarmRepositoryTest implements InitializingBean {
     
     @Test
     @Transactional
+    @JUnitTemporaryDatabase
     public void testCountMatchingAlarmsBySeverity(){
         AlarmCriteria criteria = new AlarmCriteria();
         int [] matchingAlarms = m_alarmRepo.countMatchingAlarmsBySeverity(criteria);
@@ -115,7 +117,7 @@ public class JdbcWebAlarmRepositoryTest implements InitializingBean {
     }
     
     @Test
-    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
+    @JUnitTemporaryDatabase
     public void testGetAlarm(){
         Alarm[] alarms = m_alarmRepo.getMatchingAlarms(new AlarmCriteria(new AlarmIdFilter(1)));
         assertNotNull(alarms);
@@ -126,7 +128,7 @@ public class JdbcWebAlarmRepositoryTest implements InitializingBean {
     }
     
     @Test
-    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
+    @JUnitTemporaryDatabase
     public void testAcknowledgeUnacknowledgeMatchingAlarms(){
         String user = "TestUser";
         m_alarmRepo.acknowledgeMatchingAlarms(user, new Date(), new AlarmCriteria(new AlarmIdFilter(1)));
@@ -145,6 +147,7 @@ public class JdbcWebAlarmRepositoryTest implements InitializingBean {
     
     @Test
     @Transactional
+    @JUnitTemporaryDatabase
     public void testAcknowledgeUnacknowledgeAllAlarms(){
         String user = "TestUser";
         m_alarmRepo.acknowledgeAll(user, new Date());
@@ -160,13 +163,14 @@ public class JdbcWebAlarmRepositoryTest implements InitializingBean {
     
     @Test
     @Transactional
+    @JUnitTemporaryDatabase
     public void testCountMatchingBySeverity(){
         int[] matchingAlarmCount = m_alarmRepo.countMatchingAlarmsBySeverity(new AlarmCriteria(new SeverityFilter(OnmsSeverity.NORMAL)));
         assertEquals(8, matchingAlarmCount.length);
     }
     
     @Test
-    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
+    @JUnitTemporaryDatabase
     public void testEscalateAlarms(){
         int[] alarmIds = {1};
         m_alarmRepo.escalateAlarms(alarmIds, "TestUser", new Date());
@@ -179,7 +183,7 @@ public class JdbcWebAlarmRepositoryTest implements InitializingBean {
     }
     
     @Test
-    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
+    @JUnitTemporaryDatabase
     public void testClearAlarms(){
         Alarm alarm = m_alarmRepo.getAlarm(1);
         
