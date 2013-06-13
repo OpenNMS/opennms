@@ -28,10 +28,10 @@
 		<defaultValueExpression><![CDATA[new org.opennms.netmgt.jasper.helper.JRobinDirectoryUtil().getInterfaceDirectory($P{snmpifname}, $P{snmpifdescr}, $P{snmpphysaddr})]]></defaultValueExpression>
 	</parameter>
 	<parameter name="inOctets" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA[new org.opennms.netmgt.jasper.helper.JRobinDirectoryUtil().getIfInOctetsDataSource($P{rrdDir}, $P{nodeid}, $P{interface})]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA[new org.opennms.netmgt.jasper.helper.JRobinDirectoryUtil().getIfInOctetsDataSource($P{rrdDir}, String.valueOf($P{nodeid}), $P{interface})]]></defaultValueExpression>
 	</parameter>
 	<parameter name="outOctets" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA[new org.opennms.netmgt.jasper.helper.JRobinDirectoryUtil().getIfOutOctetsDataSource($P{rrdDir}, $P{nodeid}, $P{interface})]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA[new org.opennms.netmgt.jasper.helper.JRobinDirectoryUtil().getIfOutOctetsDataSource($P{rrdDir}, String.valueOf($P{nodeid}), $P{interface})]]></defaultValueExpression>
 	</parameter>
 	<parameter name="ifInOctets_PATH" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA[new org.opennms.netmgt.jasper.helper.JRobinDirectoryUtil().getIfInOctetsJrb($P{rrdDir}, String.valueOf($P{nodeid}), $P{interface})]]></defaultValueExpression>
