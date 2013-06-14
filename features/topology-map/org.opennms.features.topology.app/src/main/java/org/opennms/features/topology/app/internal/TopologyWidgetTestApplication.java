@@ -49,7 +49,7 @@ import org.opennms.features.topology.api.WidgetContext;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.app.internal.TopoContextMenu.TopoContextMenuItem;
 import org.opennms.features.topology.app.internal.TopologyComponent.VertexUpdateListener;
-import org.opennms.features.topology.app.internal.jung.FRLayoutAlgorithm;
+import org.opennms.features.topology.app.internal.jung.CircleLayoutAlgorithm;
 import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
 import org.slf4j.LoggerFactory;
 
@@ -168,7 +168,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 		refresher.setRefreshInterval(5000);
 		getMainWindow().addComponent(refresher);
 
-		m_graphContainer.setLayoutAlgorithm(new FRLayoutAlgorithm());
+		m_graphContainer.setLayoutAlgorithm(new CircleLayoutAlgorithm());
 
 		m_topologyComponent = new TopologyComponent(m_graphContainer, m_iconRepositoryManager, this);
 		m_topologyComponent.setSizeFull();
