@@ -951,6 +951,8 @@ public abstract class AbstractQueryManager implements QueryManager {
             }
 
             final OnmsStpInterface stpInterface = stpinterfaces.get(stpport);
+            if (stpInterface == null )
+		continue;
 
             String stpPortDesignatedBridge = dot1dstpptentry.getDot1dStpPortDesignatedBridge();
             String stpPortDesignatedPort = dot1dstpptentry.getDot1dStpPortDesignatedPort();
