@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.ticketd;
 
+import java.util.Properties;
+
 import org.opennms.api.integration.ticketing.*;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.core.utils.ThreadCategory;
@@ -37,6 +39,7 @@ import org.drools.KnowledgeBaseFactory;
 import org.drools.builder.KnowledgeBuilder;
 import org.drools.builder.KnowledgeBuilderFactory;
 import org.drools.builder.ResourceType;
+import org.drools.compiler.PackageBuilderConfiguration;
 import org.drools.io.ResourceFactory;
 import org.drools.runtime.StatefulKnowledgeSession;
 
@@ -75,7 +78,11 @@ public class DroolsTicketerServiceLayer extends DefaultTicketerServiceLayer {
     
     private KnowledgeBase createKnowledgeBase() {
         log().debug("createKnowledgeBase: Creating Drools KnowledgeBase");
-        KnowledgeBuilder builder = KnowledgeBuilderFactory.newKnowledgeBuilder();
+        final Properties props = new Properties();
+        props.setProperty("drools.dialect.java.compiler.lnglevel", "1.6");
+
+        final PackageBuilderConfiguration conf = new PackageBuilderConfiguration(props);
+        KnowledgeBuilder builder = KnowledgeBuilderFactory.newKnowledgeBuilder(conf);
         
         // Use the rules file defined in the configuration file
         // We will not throw an exception if the rules failed to be parsed
