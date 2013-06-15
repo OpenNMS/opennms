@@ -268,6 +268,8 @@ The filesystem is now %parm[#7]% percent full.
 </event>
 
 <!-- Start of MIB: DISMAN-EVENT-MIB -->
+<!-- Comment out since mib-jnx-space-platform.xml handle the same trap -->
+<!--
 <event>
         <mask>
                 <maskelement>
@@ -320,6 +322,7 @@ instances has fired, for triggers with mteTriggerType
                 </logmsg>
         <severity>Indeterminate</severity>
 </event>
+-->
 <event>
         <mask>
                 <maskelement>
