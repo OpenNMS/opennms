@@ -267,7 +267,7 @@ public abstract class LinkdNetworkBuilder {
     }
     
     protected void printipInterface(String nodeStringId,OnmsIpInterface ipinterface) {
-        System.out.println(nodeStringId+"_IP_IF_MAP.put(InetAddress.getByName(\""+ipinterface.getIpHostName()+"\"), "+ipinterface.getIfIndex()+");");
+        System.out.println(nodeStringId+"_IP_IF_MAP.put(InetAddressUtils.addr(\""+ipinterface.getIpHostName()+"\"), "+ipinterface.getIfIndex()+");");
     }
     
     protected void printSnmpInterface(String nodeStringId,OnmsSnmpInterface snmpinterface) {
@@ -280,7 +280,7 @@ public abstract class LinkdNetworkBuilder {
             if (snmpinterface.getIfAlias() != null)
             System.out.println(nodeStringId+"_IF_IFALIAS_MAP.put("+snmpinterface.getIfIndex()+", \""+snmpinterface.getIfAlias()+"\");");            
             if (snmpinterface.getNetMask() != null && !snmpinterface.getNetMask().getHostAddress().equals("127.0.0.1"))
-            System.out.println(nodeStringId+"_IF_NETMASK_MAP.put("+snmpinterface.getIfIndex()+", InetAddress.getByName(\""+snmpinterface.getNetMask().getHostAddress()+"\"));");
+            System.out.println(nodeStringId+"_IF_NETMASK_MAP.put("+snmpinterface.getIfIndex()+", InetAddressUtils.addr(\""+snmpinterface.getNetMask().getHostAddress()+"\"));");
     }
     
     protected final void printNode(String ipAddr, String prefix) {

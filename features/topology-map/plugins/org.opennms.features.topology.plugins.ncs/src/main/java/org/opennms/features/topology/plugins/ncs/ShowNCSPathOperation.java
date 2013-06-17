@@ -193,12 +193,13 @@ public class ShowNCSPathOperation implements Operation {
             String namespace = targetRef.getNamespace();
             if(!namespace.equals("nodes")) {
                 return false;
+            }else {
+                NCSServiceCriteria criteria = (NCSServiceCriteria) operationContext.getGraphContainer().getCriteria("ncs");
+                return criteria != null && criteria.size() == 1;
             }
         }
         
-        return true;
-        //NCSServiceCriteria criteria = (NCSServiceCriteria) operationContext.getGraphContainer().getCriteria("ncs");
-        //return criteria != null && criteria.size() == 1;
+        return false;
     }
 
     @Override
@@ -207,12 +208,13 @@ public class ShowNCSPathOperation implements Operation {
             String namespace = targetRef.getNamespace();
             if(!namespace.equals("nodes")) {
                 return false;
+            }else {
+                NCSServiceCriteria criteria = (NCSServiceCriteria) operationContext.getGraphContainer().getCriteria("ncs");
+                return criteria != null && criteria.size() == 1;
             }
         }
         
-        return true;
-        //NCSServiceCriteria criteria = (NCSServiceCriteria) operationContext.getGraphContainer().getCriteria("ncs");
-        //return criteria != null && criteria.size() == 1;
+        return false;
     }
 
     @Override

@@ -32,10 +32,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Properties;
+import java.io.IOException;
 
-import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
@@ -48,8 +49,6 @@ import org.opennms.test.FileAnticipator;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.PropertyOverrideConfigurer;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -60,8 +59,9 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/applicationContext-pollerBackEnd.xml",
-        "classpath:/META-INF/opennms/applicationContext-exportedPollerBackEnd-rmi.xml",
+        "classpath:/META-INF/opennms/applicationContext-pollerFrontEnd.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
+        "classpath*:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath:/org/opennms/netmgt/poller/remote/applicationContext-configOverride.xml"
 })
 @JUnitConfigurationEnvironment
@@ -70,11 +70,13 @@ public class PollerFrontEndIntegrationTest implements InitializingBean, Temporar
     @Autowired
     private DatabasePopulator m_populator;
 
-    private FileAnticipator m_fileAnticipator;
+    @Autowired
     private PollerFrontEnd m_frontEnd;
-    private PollerSettings m_settings;
-    private ClassPathXmlApplicationContext m_frontEndContext;
 
+    @Autowired
+    private PollerSettings m_settings;
+
+    private static FileAnticipator m_fileAnticipator;
     private TemporaryDatabase m_database;
 
     @Override
@@ -87,11 +89,16 @@ public class PollerFrontEndIntegrationTest implements InitializingBean, Temporar
         BeanUtils.assertAutowiring(this);
     }
 
-    @After
-    public void afterTest() throws Throwable {
-        m_frontEndContext.stop();
-        m_frontEndContext.close();
+    @BeforeClass
+    public static void setUpAnticipator() throws IOException {
+        m_fileAnticipator = new FileAnticipator();
 
+        final String filename = m_fileAnticipator.expecting("remote-poller.configuration").getCanonicalPath().replace("+", "%2B");
+        System.setProperty("opennms.poller.configuration.resource", "file://" + filename);
+    }
+
+    @AfterClass
+    public static void tearDownAnticipator() throws Throwable {
         if (m_fileAnticipator.isInitialized()) {
             m_fileAnticipator.deleteExpected();
         }
@@ -101,46 +108,7 @@ public class PollerFrontEndIntegrationTest implements InitializingBean, Temporar
 
     @Before
     public void onSetUpInTransactionIfEnabled() throws Exception {
-        m_fileAnticipator = new FileAnticipator();
-
-        String filename = m_fileAnticipator.expecting("remote-poller.configuration").getCanonicalPath();
-        filename = filename.replace("+", "%2B");
-        System.setProperty("opennms.poller.configuration.resource", "file://" + filename);
-
         m_populator.populateDatabase();
-
-        /**
-         * We complete and end the transaction here so that the populated
-         * database gets committed.  If we don't do this, the poller back
-         * end (setup with the contexts in getConfigLocations) won't see
-         * the populated database because it's working in another
-         * transaction.  This will cause one of the asserts in testRegister
-         * to fail because no services will be monitored by the remote
-         * poller.
-         */
-        /*
-        setComplete();
-        endTransaction();
-         */
-
-        m_frontEndContext = new ClassPathXmlApplicationContext(
-                                                               new String[] { 
-                                                                       "classpath:/META-INF/opennms/applicationContext-remotePollerBackEnd-rmi.xml",
-                                                                       "classpath:/META-INF/opennms/applicationContext-pollerFrontEnd.xml",
-                                                               },
-                                                               false
-        );
-
-        Properties props = new Properties();
-        props.setProperty("configCheckTrigger.repeatInterval", "1000");
-
-        PropertyOverrideConfigurer testPropertyConfigurer = new PropertyOverrideConfigurer();
-        testPropertyConfigurer.setProperties(props);
-        m_frontEndContext.addBeanFactoryPostProcessor(testPropertyConfigurer);
-
-        m_frontEndContext.refresh();
-        m_frontEnd = (PollerFrontEnd)m_frontEndContext.getBean("pollerFrontEnd");
-        m_settings = (PollerSettings)m_frontEndContext.getBean("pollerSettings");
     }
 
     @Test
@@ -157,18 +125,38 @@ public class PollerFrontEndIntegrationTest implements InitializingBean, Temporar
         Integer monitorId = m_settings.getMonitorId();
 
         assertTrue(m_frontEnd.isRegistered());
-        assertEquals(1, m_database.getJdbcTemplate().queryForInt("select count(*) from location_monitors where id=?", monitorId));
+        assertEquals(1, getMonitorCount(monitorId));
         assertEquals(5, m_database.getJdbcTemplate().queryForInt("select count(*) from location_monitor_details where locationMonitorId = ?", monitorId));
 
         assertEquals(System.getProperty("os.name"), m_database.getJdbcTemplate().queryForObject("select propertyValue from location_monitor_details where locationMonitorId = ? and property = ?", String.class, monitorId, "os.name"));
 
-        Thread.sleep(60000);
+        long wait = 60000L;
+        while (wait > 0) {
+            Thread.sleep(1000L);
+            wait -= 1000L;
 
-        assertEquals(1, m_database.getJdbcTemplate().queryForInt("select count(*) from location_monitors where id=?", monitorId));
-        assertEquals(0, m_database.getJdbcTemplate().queryForInt("select count(*) from location_monitors where status='DISCONNECTED' and id=?", monitorId));
+            if (getMonitorCount(monitorId) == 1
+                && getDisconnectedCount(monitorId) == 0
+                && getSpecificChangesCount(monitorId) > 0) break;
+        }
 
-        assertTrue("Could not find any pollResults", 0 < m_database.getJdbcTemplate().queryForInt("select count(*) from location_specific_status_changes where locationMonitorId = ?", monitorId));
+        assertEquals(1, getMonitorCount(monitorId));
+        assertEquals(0, getDisconnectedCount(monitorId));
+
+        assertTrue("Could not find any pollResults", 0 < getSpecificChangesCount(monitorId));
 
         m_frontEnd.stop();
+    }
+
+    protected int getSpecificChangesCount(Integer monitorId) {
+        return m_database.getJdbcTemplate().queryForInt("select count(*) from location_specific_status_changes where locationMonitorId = ?", monitorId);
+    }
+
+    protected int getDisconnectedCount(Integer monitorId) {
+        return m_database.getJdbcTemplate().queryForInt("select count(*) from location_monitors where status='DISCONNECTED' and id=?", monitorId);
+    }
+
+    protected int getMonitorCount(Integer monitorId) {
+        return m_database.getJdbcTemplate().queryForInt("select count(*) from location_monitors where id=?", monitorId);
     }
 }

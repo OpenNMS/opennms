@@ -103,6 +103,7 @@ public class DefaultStatisticsReportServiceTest {
         datum.setId(1);
         datum.setResource(resourceRef);
         datum.setReport(report);
+        datum.setValue(0.1d);
         report.addData(datum);
 
         StatisticsReportCommand command = new StatisticsReportCommand();

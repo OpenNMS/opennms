@@ -31,7 +31,6 @@ package org.opennms.netmgt.linkd;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.net.InetAddress;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
@@ -47,6 +46,7 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.core.utils.BeanUtils;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.LinkdConfig;
 import org.opennms.netmgt.config.linkd.Package;
@@ -495,20 +495,20 @@ public class Nms101Test extends Nms101NetworkBuilder implements InitializingBean
     @Test
     public void testDiscoveryOspfGetSubNetAddress() throws Exception {
         DiscoveryLink discovery = m_linkd.getDiscoveryLink("example1");
-        OspfNbrInterface ospfinterface = new OspfNbrInterface(InetAddress.getByName("192.168.9.1"));
-        ospfinterface.setOspfNbrIpAddr(InetAddress.getByName("192.168.15.45"));
+        OspfNbrInterface ospfinterface = new OspfNbrInterface(InetAddressUtils.addr("192.168.9.1"));
+        ospfinterface.setOspfNbrIpAddr(InetAddressUtils.addr("192.168.15.45"));
 
-        ospfinterface.setOspfNbrNetMask(InetAddress.getByName("255.255.255.0"));        
-        assertEquals(InetAddress.getByName("192.168.15.0"), discovery.getSubnetAddress(ospfinterface));
+        ospfinterface.setOspfNbrNetMask(InetAddressUtils.addr("255.255.255.0"));        
+        assertEquals(InetAddressUtils.addr("192.168.15.0"), discovery.getSubnetAddress(ospfinterface));
         
-        ospfinterface.setOspfNbrNetMask(InetAddress.getByName("255.255.0.0"));
-        assertEquals(InetAddress.getByName("192.168.0.0"), discovery.getSubnetAddress(ospfinterface));
+        ospfinterface.setOspfNbrNetMask(InetAddressUtils.addr("255.255.0.0"));
+        assertEquals(InetAddressUtils.addr("192.168.0.0"), discovery.getSubnetAddress(ospfinterface));
 
-        ospfinterface.setOspfNbrNetMask(InetAddress.getByName("255.255.255.252"));
-        assertEquals(InetAddress.getByName("192.168.15.44"), discovery.getSubnetAddress(ospfinterface));
+        ospfinterface.setOspfNbrNetMask(InetAddressUtils.addr("255.255.255.252"));
+        assertEquals(InetAddressUtils.addr("192.168.15.44"), discovery.getSubnetAddress(ospfinterface));
 
-        ospfinterface.setOspfNbrNetMask(InetAddress.getByName("255.255.255.240"));
-        assertEquals(InetAddress.getByName("192.168.15.32"), discovery.getSubnetAddress(ospfinterface));
+        ospfinterface.setOspfNbrNetMask(InetAddressUtils.addr("255.255.255.240"));
+        assertEquals(InetAddressUtils.addr("192.168.15.32"), discovery.getSubnetAddress(ospfinterface));
 
     }
     
