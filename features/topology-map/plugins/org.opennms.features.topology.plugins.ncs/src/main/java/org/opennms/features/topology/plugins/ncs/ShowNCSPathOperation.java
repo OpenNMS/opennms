@@ -1,10 +1,12 @@
 package org.opennms.features.topology.plugins.ncs;
 
+import java.net.ConnectException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.camel.component.http.HttpOperationFailedException;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.SelectionManager;
@@ -130,9 +132,25 @@ public class ShowNCSPathOperation implements Operation {
                     //Select only the vertices in the path
                     selectionManager.setSelectedVertexRefs(path.getVertices());
                     
-                } catch (Exception e) {
-                    LoggerFactory.getLogger(this.getClass()).warn("Exception Occurred while retreiving path {}", e);
-                    mainWindow.showNotification("An error occurred while calculating the path please check the karaf.log file for the exception: \n" + e.getMessage(), Notification.TYPE_ERROR_MESSAGE);
+                }  catch (Exception e) {
+                    
+                    if(e.getCause() instanceof ConnectException ) {
+                        LoggerFactory.getLogger(this.getClass()).warn("Connection Exception Occurred while retreiving path {}", e);
+                        mainWindow.showNotification("Connection Refused when attempting to reach the NetworkAppsApi", Notification.TYPE_ERROR_MESSAGE);
+                    } else if(e.getCause() instanceof HttpOperationFailedException) {
+                        HttpOperationFailedException httpException = (HttpOperationFailedException) e.getCause();
+                        if(httpException.getStatusCode() == 401) {
+                            LoggerFactory.getLogger(this.getClass()).warn("Authentication error when connecting to NetworkAppsApi {}", httpException);
+                            mainWindow.showNotification("Authentication error when connecting to NetworkAppsApi, please check the username and password", Notification.TYPE_ERROR_MESSAGE);
+                        } else {
+                            LoggerFactory.getLogger(this.getClass()).warn("An error occured while retrieving the NCS Path {}", httpException);
+                            mainWindow.showNotification("An error occurred while retrieving the NCS Path\n" + httpException.getMessage(), Notification.TYPE_ERROR_MESSAGE);
+                        }
+                    } else {
+                    
+                        LoggerFactory.getLogger(this.getClass()).warn("Exception Occurred while retreiving path {}", e);
+                        mainWindow.showNotification("An error occurred while calculating the path please check the karaf.log file for the exception: \n" + e.getMessage(), Notification.TYPE_ERROR_MESSAGE);
+                    }
                 }
             }
             
