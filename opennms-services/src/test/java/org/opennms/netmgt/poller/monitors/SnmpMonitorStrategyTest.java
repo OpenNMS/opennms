@@ -33,13 +33,13 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.math.BigInteger;
-import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.snmp.SnmpObjId;
@@ -244,8 +244,8 @@ public class SnmpMonitorStrategyTest {
     }
     
     private SnmpValue ipAddr(String addr) throws UnknownHostException {
-		return SnmpUtils.getValueFactory().getIpAddress(InetAddress.getByName(addr));
-	}
+        return SnmpUtils.getValueFactory().getIpAddress(InetAddressUtils.addr(addr));
+    }
 
 
 

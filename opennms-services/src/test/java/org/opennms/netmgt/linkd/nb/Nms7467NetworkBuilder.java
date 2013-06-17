@@ -30,10 +30,10 @@ package org.opennms.netmgt.linkd.nb;
 
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.OnmsNode;
 
 /**
@@ -152,14 +152,10 @@ public abstract class Nms7467NetworkBuilder extends LinkdNetworkBuilder {
 
     protected static final Map<InetAddress, Integer> CISCO_C870_IP_IF_MAP = new HashMap<InetAddress, Integer>();
     static {
-        try {
-            CISCO_C870_IP_IF_MAP.put(InetAddress.getByName("172.20.1.1"), 12);
-            CISCO_C870_IP_IF_MAP.put(InetAddress.getByName("172.20.2.1"), 13);
-            CISCO_C870_IP_IF_MAP.put(InetAddress.getByName("10.255.255.2"), 12);
-            CISCO_C870_IP_IF_MAP.put(InetAddress.getByName("65.41.39.146"), 14);            
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
+        CISCO_C870_IP_IF_MAP.put(InetAddressUtils.addr("172.20.1.1"), 12);
+        CISCO_C870_IP_IF_MAP.put(InetAddressUtils.addr("172.20.2.1"), 13);
+        CISCO_C870_IP_IF_MAP.put(InetAddressUtils.addr("10.255.255.2"), 12);
+        CISCO_C870_IP_IF_MAP.put(InetAddressUtils.addr("65.41.39.146"), 14);            
     }
 
     protected static final Map<Integer, String> CISCO_C870_IF_IFNAME_MAP = new HashMap<Integer, String>();
@@ -291,11 +287,7 @@ public abstract class Nms7467NetworkBuilder extends LinkdNetworkBuilder {
 
     protected static final Map<InetAddress,Integer> CISCO_WS_C2948_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
     static {
-        try {
-            CISCO_WS_C2948_IP_IF_MAP.put(InetAddress.getByName(CISCO_WS_C2948_IP), 3);
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
+        CISCO_WS_C2948_IP_IF_MAP.put(InetAddressUtils.addr(CISCO_WS_C2948_IP), 3);
     }
     
     protected static final Map<Integer,String> CISCO_WS_C2948_IF_IFNAME_MAP = new HashMap<Integer, String>();
@@ -403,12 +395,7 @@ public abstract class Nms7467NetworkBuilder extends LinkdNetworkBuilder {
     protected static final String NETGEAR_SW_108_SYSOID        = ".1.3.6.1.4.1.4526.100.4.8";
     protected static final Map<InetAddress,Integer> NETGEAR_SW_108_IP_IF_MAP = new HashMap<InetAddress, Integer>();
     static {
-        try {
-            NETGEAR_SW_108_IP_IF_MAP.put(InetAddress.getByName(NETGEAR_SW_108_IP), null);
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
-
+        NETGEAR_SW_108_IP_IF_MAP.put(InetAddressUtils.addr(NETGEAR_SW_108_IP), null);
     }
     protected static final Map<Integer, String> NETGEAR_SW_108_IF_IFNAME_MAP = new HashMap<Integer, String>();
     static {
@@ -479,27 +466,23 @@ public abstract class Nms7467NetworkBuilder extends LinkdNetworkBuilder {
     
     protected static final Map<InetAddress, Integer> LINUX_UBUNTU_IP_IF_MAP = new HashMap<InetAddress, Integer>();
     static {
-        try {
-            LINUX_UBUNTU_IP_IF_MAP.put(InetAddress.getByName("172.20.1.14"), 4);
-            LINUX_UBUNTU_IP_IF_MAP.put(InetAddress.getByName("192.168.122.1"), 5);
-            LINUX_UBUNTU_IP_IF_MAP.put(InetAddress.getByName("2001:0470:e2f1:0000:4261:86ff:fee2:8b53"), 4);
-            LINUX_UBUNTU_IP_IF_MAP.put(InetAddress.getByName("2001:0470:e2f1:0000:695c:e7ef:425e:63b0"), 4);
-            LINUX_UBUNTU_IP_IF_MAP.put(InetAddress.getByName("2001:0470:e2f1:cafe:0dc0:e717:08d3:e5d6"), 4);
-            LINUX_UBUNTU_IP_IF_MAP.put(InetAddress.getByName("2001:0470:e2f1:cafe:1ce0:7066:22d0:a7d6"), 4);
-            LINUX_UBUNTU_IP_IF_MAP.put(InetAddress.getByName("2001:0470:e2f1:cafe:2c16:6246:431b:b906"), 4);
-            LINUX_UBUNTU_IP_IF_MAP.put(InetAddress.getByName("2001:0470:e2f1:cafe:31dc:c786:65ac:d3b1"), 4);
-            LINUX_UBUNTU_IP_IF_MAP.put(InetAddress.getByName("2001:0470:e2f1:cafe:4261:86ff:fee2:8b53"), 4);
-            LINUX_UBUNTU_IP_IF_MAP.put(InetAddress.getByName("2001:0470:e2f1:cafe:4c99:0b4c:ff7b:373b"), 4);
-            LINUX_UBUNTU_IP_IF_MAP.put(InetAddress.getByName("2001:0470:e2f1:cafe:5025:e9c7:5a63:74b4"), 4);
-            LINUX_UBUNTU_IP_IF_MAP.put(InetAddress.getByName("2001:0470:e2f1:cafe:695c:e7ef:425e:63b0"), 4);
-            LINUX_UBUNTU_IP_IF_MAP.put(InetAddress.getByName("2001:0470:e2f1:cafe:697f:fe0e:9e47:1db8"), 4);
-            LINUX_UBUNTU_IP_IF_MAP.put(InetAddress.getByName("2001:0470:e2f1:cafe:7c4d:9f42:d02a:c8bd"), 4);
-            LINUX_UBUNTU_IP_IF_MAP.put(InetAddress.getByName("2001:0470:e2f1:cafe:c1d6:02ad:621a:6401"), 4);
-            LINUX_UBUNTU_IP_IF_MAP.put(InetAddress.getByName("2001:0470:e2f1:cafe:e17a:e1db:31e1:2a2d"), 4);
-            LINUX_UBUNTU_IP_IF_MAP.put(InetAddress.getByName("2001:0470:e2f1:cafe:e8f5:957c:ef2a:f427"), 4);
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
+        LINUX_UBUNTU_IP_IF_MAP.put(InetAddressUtils.addr("172.20.1.14"), 4);
+        LINUX_UBUNTU_IP_IF_MAP.put(InetAddressUtils.addr("192.168.122.1"), 5);
+        LINUX_UBUNTU_IP_IF_MAP.put(InetAddressUtils.addr("2001:0470:e2f1:0000:4261:86ff:fee2:8b53"), 4);
+        LINUX_UBUNTU_IP_IF_MAP.put(InetAddressUtils.addr("2001:0470:e2f1:0000:695c:e7ef:425e:63b0"), 4);
+        LINUX_UBUNTU_IP_IF_MAP.put(InetAddressUtils.addr("2001:0470:e2f1:cafe:0dc0:e717:08d3:e5d6"), 4);
+        LINUX_UBUNTU_IP_IF_MAP.put(InetAddressUtils.addr("2001:0470:e2f1:cafe:1ce0:7066:22d0:a7d6"), 4);
+        LINUX_UBUNTU_IP_IF_MAP.put(InetAddressUtils.addr("2001:0470:e2f1:cafe:2c16:6246:431b:b906"), 4);
+        LINUX_UBUNTU_IP_IF_MAP.put(InetAddressUtils.addr("2001:0470:e2f1:cafe:31dc:c786:65ac:d3b1"), 4);
+        LINUX_UBUNTU_IP_IF_MAP.put(InetAddressUtils.addr("2001:0470:e2f1:cafe:4261:86ff:fee2:8b53"), 4);
+        LINUX_UBUNTU_IP_IF_MAP.put(InetAddressUtils.addr("2001:0470:e2f1:cafe:4c99:0b4c:ff7b:373b"), 4);
+        LINUX_UBUNTU_IP_IF_MAP.put(InetAddressUtils.addr("2001:0470:e2f1:cafe:5025:e9c7:5a63:74b4"), 4);
+        LINUX_UBUNTU_IP_IF_MAP.put(InetAddressUtils.addr("2001:0470:e2f1:cafe:695c:e7ef:425e:63b0"), 4);
+        LINUX_UBUNTU_IP_IF_MAP.put(InetAddressUtils.addr("2001:0470:e2f1:cafe:697f:fe0e:9e47:1db8"), 4);
+        LINUX_UBUNTU_IP_IF_MAP.put(InetAddressUtils.addr("2001:0470:e2f1:cafe:7c4d:9f42:d02a:c8bd"), 4);
+        LINUX_UBUNTU_IP_IF_MAP.put(InetAddressUtils.addr("2001:0470:e2f1:cafe:c1d6:02ad:621a:6401"), 4);
+        LINUX_UBUNTU_IP_IF_MAP.put(InetAddressUtils.addr("2001:0470:e2f1:cafe:e17a:e1db:31e1:2a2d"), 4);
+        LINUX_UBUNTU_IP_IF_MAP.put(InetAddressUtils.addr("2001:0470:e2f1:cafe:e8f5:957c:ef2a:f427"), 4);
     }
 
     protected static final Map<Integer, String> LINUX_UBUNTU_IF_IFNAME_MAP = new HashMap<Integer, String>();
@@ -545,12 +528,7 @@ public abstract class Nms7467NetworkBuilder extends LinkdNetworkBuilder {
 
     protected static final Map<InetAddress,Integer> DARWIN_10_8_IP_IF_MAP = new HashMap<InetAddress, Integer>();
     static {
-        try {
-            DARWIN_10_8_IP_IF_MAP.put(InetAddress.getByName(DARWIN_10_8_IP), 4);
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
-
+        DARWIN_10_8_IP_IF_MAP.put(InetAddressUtils.addr(DARWIN_10_8_IP), 4);
     }
 
     protected static final Map<Integer, String> DARWIN_10_8_IF_IFNAME_MAP = new HashMap<Integer, String>();

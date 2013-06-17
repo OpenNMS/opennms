@@ -54,6 +54,7 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.core.utils.BeanUtils;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.LinkdConfig;
 import org.opennms.netmgt.config.linkd.Package;
 import org.opennms.netmgt.dao.AtInterfaceDao;
@@ -192,13 +193,13 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         assertEquals(false,example1.hasUseCdpDiscovery());
         assertEquals(false,example1.hasUseIpRouteDiscovery());
         
-        assertEquals(false, m_linkdConfig.isInterfaceInPackage(InetAddress.getByName(CISCO_C870_IP), example1));
+        assertEquals(false, m_linkdConfig.isInterfaceInPackage(InetAddressUtils.addr(CISCO_C870_IP), example1));
         
         m_nodeDao.save(getCiscoC870());
         m_nodeDao.flush();
         
         m_linkdConfig.update();
-        assertEquals(true, m_linkdConfig.isInterfaceInPackage(InetAddress.getByName(CISCO_C870_IP), example1));
+        assertEquals(true, m_linkdConfig.isInterfaceInPackage(InetAddressUtils.addr(CISCO_C870_IP), example1));
         
     }
     
@@ -339,7 +340,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         
         assertEquals(5, m_vlanDao.countAll());
         
-        String packageName = m_linkdConfig.getFirstPackageMatch(InetAddress.getByName(CISCO_WS_C2948_IP)).getName();
+        String packageName = m_linkdConfig.getFirstPackageMatch(InetAddressUtils.addr(CISCO_WS_C2948_IP)).getName();
 
         assertEquals("example1", packageName);
         
@@ -429,7 +430,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         // has 0 vlan 
         assertEquals(0, m_vlanDao.countAll());
         
-        String packageName = m_linkdConfig.getFirstPackageMatch(InetAddress.getByName(CISCO_C870_IP)).getName();
+        String packageName = m_linkdConfig.getFirstPackageMatch(InetAddressUtils.addr(CISCO_C870_IP)).getName();
 
         assertEquals("example1", packageName);
         
@@ -545,7 +546,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         // has 0 vlan 
         assertEquals(0, m_vlanDao.countAll());
         
-        String packageName = m_linkdConfig.getFirstPackageMatch(InetAddress.getByName(NETGEAR_SW_108_IP)).getName();
+        String packageName = m_linkdConfig.getFirstPackageMatch(InetAddressUtils.addr(NETGEAR_SW_108_IP)).getName();
 
         assertEquals("example1", packageName);
         
@@ -647,7 +648,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         // has 0 vlan 
         assertEquals(0, m_vlanDao.countAll());
         
-        String packageName = m_linkdConfig.getFirstPackageMatch(InetAddress.getByName(LINUX_UBUNTU_IP)).getName();
+        String packageName = m_linkdConfig.getFirstPackageMatch(InetAddressUtils.addr(LINUX_UBUNTU_IP)).getName();
 
         assertEquals("example1", packageName);
               
@@ -734,7 +735,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         // has 0 vlan 
         assertEquals(0, m_vlanDao.countAll());
         
-        String packageName = m_linkdConfig.getFirstPackageMatch(InetAddress.getByName(DARWIN_10_8_IP)).getName();
+        String packageName = m_linkdConfig.getFirstPackageMatch(InetAddressUtils.addr(DARWIN_10_8_IP)).getName();
 
         assertEquals("example1", packageName);
               
@@ -822,8 +823,8 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         
         assertEquals(0,m_dataLinkInterfaceDao.countAll());
         
-        String macpackageName = m_linkdConfig.getFirstPackageMatch(InetAddress.getByName(DARWIN_10_8_IP)).getName();
-        String ngsw108packageName = m_linkdConfig.getFirstPackageMatch(InetAddress.getByName(NETGEAR_SW_108_IP)).getName();
+        String macpackageName = m_linkdConfig.getFirstPackageMatch(InetAddressUtils.addr(DARWIN_10_8_IP)).getName();
+        String ngsw108packageName = m_linkdConfig.getFirstPackageMatch(InetAddressUtils.addr(NETGEAR_SW_108_IP)).getName();
 
         assertEquals("example1", macpackageName);
         assertEquals("example1", ngsw108packageName);
@@ -868,8 +869,8 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         assertTrue(m_linkd.runSingleSnmpCollection(ciscows.getId()));
         assertTrue(m_linkd.runSingleSnmpCollection(ngsw108.getId()));        
         
-        String ciscowspackageName = m_linkdConfig.getFirstPackageMatch(InetAddress.getByName(CISCO_WS_C2948_IP)).getName();
-        String ngsw108packageName = m_linkdConfig.getFirstPackageMatch(InetAddress.getByName(NETGEAR_SW_108_IP)).getName();
+        String ciscowspackageName = m_linkdConfig.getFirstPackageMatch(InetAddressUtils.addr(CISCO_WS_C2948_IP)).getName();
+        String ngsw108packageName = m_linkdConfig.getFirstPackageMatch(InetAddressUtils.addr(NETGEAR_SW_108_IP)).getName();
 
         assertEquals(0,m_dataLinkInterfaceDao.countAll());
         
@@ -918,8 +919,8 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         
         assertEquals(0,m_dataLinkInterfaceDao.countAll());
         
-        String ciscowspackageName = m_linkdConfig.getFirstPackageMatch(InetAddress.getByName(CISCO_WS_C2948_IP)).getName();
-        String linuxubuntupackageName = m_linkdConfig.getFirstPackageMatch(InetAddress.getByName(LINUX_UBUNTU_IP)).getName();
+        String ciscowspackageName = m_linkdConfig.getFirstPackageMatch(InetAddressUtils.addr(CISCO_WS_C2948_IP)).getName();
+        String linuxubuntupackageName = m_linkdConfig.getFirstPackageMatch(InetAddressUtils.addr(LINUX_UBUNTU_IP)).getName();
 
         assertEquals("example1", ciscowspackageName);
         assertEquals("example1", linuxubuntupackageName);
@@ -973,7 +974,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         
         assertEquals(0,m_dataLinkInterfaceDao.countAll());
         
-        String ciscowspackageName = m_linkdConfig.getFirstPackageMatch(InetAddress.getByName(CISCO_WS_C2948_IP)).getName();
+        String ciscowspackageName = m_linkdConfig.getFirstPackageMatch(InetAddressUtils.addr(CISCO_WS_C2948_IP)).getName();
 
         assertEquals("example1", ciscowspackageName);
                 
@@ -998,7 +999,7 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         
         HibernateEventWriter db = (HibernateEventWriter)m_linkd.getQueryManager();
         
-        final int nodeid = db.getNodeidFromIp(InetAddress.getByName(CISCO_C870_IP)).get(0);
+        final int nodeid = db.getNodeidFromIp(InetAddressUtils.addr(CISCO_C870_IP)).get(0);
         assertEquals(m_nodeDao.findByForeignId("linkd", CISCO_C870_NAME).getId().intValue(), nodeid);
     }
     
