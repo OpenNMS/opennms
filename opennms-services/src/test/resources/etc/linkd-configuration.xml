@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<linkd-configuration threads="5" initial_sleep_time="3600000"
+                     snmp_poll_interval="18000000" discovery_link_interval="1800000">
+    
+
+    <iproutes>
+        <vendor vendor_name="netscreen" sysoidRootMask=".1.3.6.1.4.1.3224"
+                class-name="org.opennms.netmgt.linkd.snmp.IpRouteTable">
+       		<specific>1.51</specific>
+       </vendor>
+       <vendor vendor_name="cisco" sysoidRootMask=".1.3.6.1.4.1.9"
+                class-name="org.opennms.netmgt.linkd.snmp.IpRouteTable">
+       		<specific>1.569</specific>
+       		<specific>5.42</specific>
+       </vendor>
+       <vendor vendor_name="darwin" sysoidRootMask=".1.3.6.1.4.1.8072.3"
+                class-name="org.opennms.netmgt.linkd.snmp.IpRouteTable">
+       		<specific>2.255</specific>
+       </vendor>
+    </iproutes>    
+
+    <vlans>
+
+        <vendor vendor_name="3Com" sysoidRootMask=".1.3.6.1.4.1.43"
+                class-name="org.opennms.netmgt.linkd.snmp.ThreeComVlanTable">
+            <specific>1.9.13.3.1</specific>
+            <specific>10.27.4.1.2.2</specific>
+            <specific>10.27.4.1.2.4</specific>
+            <specific>10.27.4.1.2.11</specific>
+            <specific>1.16.4.3.5</specific>
+            <specific>1.16.4.3.6</specific>
+        </vendor>
+
+        <vendor vendor_name="3Com3870" sysoidRootMask=".1.3.6.1.4.1.43.1"
+                class-name="org.opennms.netmgt.linkd.snmp.Dot1qStaticVlanTable">
+            <specific>8.43</specific>
+            <specific>8.61</specific>
+        </vendor>
+
+        <vendor vendor_name="Nortel" sysoidRootMask=".1.3.6.1.4.1.45.3"
+                class-name="org.opennms.netmgt.linkd.snmp.RapidCityVlanTable">
+            <specific>61.1</specific>
+            <specific>35.1</specific>
+            <specific>53.1</specific>
+        </vendor>
+
+        <vendor vendor_name="Intel" sysoidRootMask=".1.3.6.1.4.1.343.5"
+                class-name="org.opennms.netmgt.linkd.snmp.IntelVlanTable">
+            <specific>1.5</specific>
+        </vendor>
+
+        <vendor vendor_name="HP Networks" sysoidRootMask=".1.3.6.1.4.1.11.2.3.7"
+                class-name="org.opennms.netmgt.linkd.snmp.Dot1qStaticVlanTable">
+            <specific>11.1</specific>
+            <specific>11.3</specific>
+            <specific>11.13</specific>
+            <specific>11.14</specific>
+            <specific>11.18</specific>
+            <specific>11.19</specific>
+            <specific>11.20</specific>
+            <specific>11.23</specific>
+            <specific>11.27</specific>
+            <specific>11.29</specific>
+            <specific>11.32</specific>
+		    <specific>11.45</specific>
+		    <specific>11.50</specific>
+	    	<specific>11.63</specific>
+	 	    <specific>11.66</specific>
+	    	<specific>11.81</specific>
+            <include-range begin="11.6" end="11.11"/>
+        </vendor>
+
+        <vendor vendor_name="cisco" sysoidRootMask=".1.3.6.1.4.1.9"
+                class-name="org.opennms.netmgt.linkd.snmp.CiscoVlanTable">
+            <specific>1.122</specific>
+            <specific>1.209</specific>
+            <specific>1.217</specific>
+            <specific>1.218</specific>
+            <specific>1.222</specific>
+            <specific>1.221</specific>
+            <specific>1.246</specific>
+            <specific>1.247</specific>
+            <specific>1.248</specific>
+            <specific>1.278</specific>
+            <specific>1.282</specific>
+            <specific>1.283</specific>
+            <specific>1.300</specific>
+            <specific>1.370</specific>
+            <specific>1.324</specific>
+            <specific>1.325</specific>
+            <specific>1.359</specific>
+            <specific>1.366</specific>
+            <specific>1.367</specific>
+            <specific>1.400</specific>
+            <specific>1.427</specific>
+            <specific>1.428</specific>
+            <specific>1.429</specific>
+            <specific>1.431</specific>
+            <specific>1.448</specific>
+            <specific>1.502</specific>
+            <specific>1.503</specific>
+            <specific>1.516</specific>
+            <specific>1.527</specific>
+            <specific>1.542</specific>
+            <specific>1.544</specific>
+            <specific>1.559</specific>
+            <specific>1.561</specific>
+            <specific>1.563</specific>
+            <specific>1.564</specific>
+            <specific>1.565</specific>
+            <specific>1.574</specific>
+            <specific>1.576</specific>
+            <specific>1.577</specific>
+            <specific>1.578</specific>
+            <specific>1.615</specific>
+            <specific>1.616</specific>
+            <specific>1.617</specific>
+            <specific>1.618</specific>
+            <specific>1.619</specific>
+            <specific>1.626</specific>
+            <specific>1.633</specific>
+            <specific>1.634</specific>
+            <specific>1.657</specific>
+            <specific>1.659</specific>
+            <specific>1.694</specific>
+            <specific>1.696</specific>
+            <specific>1.697</specific>
+            <specific>1.716</specific>
+            <specific>1.745</specific>
+            <specific>1.748</specific>
+            <specific>1.798</specific>
+            <specific>1.799</specific>
+            <specific>1.1208</specific>
+            <specific>1.1226</specific>
+            <specific>5.7</specific>
+            <specific>5.17</specific>
+            <specific>5.18</specific>
+            <specific>5.20</specific>
+            <specific>5.28</specific>
+            <specific>5.34</specific>
+            <specific>5.36</specific>
+            <specific>5.41</specific>
+            <specific>5.42</specific>
+            <specific>5.46</specific>
+            <specific>5.49</specific>
+            <specific>5.51</specific>
+            <specific>5.59</specific>
+        </vendor>
+
+        <vendor vendor_name="Extreme Networks" sysoidRootMask=".1.3.6.1.4.1.1916"
+                class-name="org.opennms.netmgt.linkd.snmp.ExtremeNetworkVlanTable">
+            <specific>2.11</specific>
+            <specific>2.14</specific>
+            <specific>2.28</specific>
+            <specific>2.58</specific>
+            <specific>2.63</specific>
+        </vendor>
+
+    </vlans>
+
+    <package name="example1">
+		<filter>IPADDR != '0.0.0.0'</filter>
+		<include-range begin="1.1.1.1" end="254.254.254.254"/>
+    </package>
+    
+</linkd-configuration>

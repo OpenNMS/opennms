@@ -32,7 +32,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -56,6 +55,7 @@ import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.LinkdConfig;
+import org.opennms.netmgt.config.LinkdConfigFactory;
 import org.opennms.netmgt.config.linkd.Package;
 import org.opennms.netmgt.dao.AtInterfaceDao;
 import org.opennms.netmgt.dao.DataLinkInterfaceDao;
@@ -77,6 +77,8 @@ import org.opennms.netmgt.model.OnmsStpNode.StpProtocolSpecification;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -95,7 +97,6 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
     @Autowired
     private Linkd m_linkd;
 
-    @Autowired
     private LinkdConfig m_linkdConfig;
 
     @Autowired
@@ -141,6 +142,15 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         super.setSnmpInterfaceDao(m_snmpInterfaceDao);
         MockLogAppender.setupLogging(p);
 
+    }
+
+    @Before
+    public void setUpLinkdConfiguration() throws Exception {
+        LinkdConfigFactory.init();
+        final Resource config = new ClassPathResource("etc/linkd-configuration.xml");
+        final LinkdConfigFactory factory = new LinkdConfigFactory(-1L, config.getInputStream());
+        LinkdConfigFactory.setInstance(factory);
+        m_linkdConfig = LinkdConfigFactory.getInstance();
     }
 
     @After
