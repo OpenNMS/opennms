@@ -72,66 +72,66 @@ import org.snmp4j.transport.DefaultUdpTransportMapping;
 
 @RunWith(Parameterized.class)
 public class MockSnmpAgentTest  {
-	
+
     @Parameters
     public static Collection<Object[]> versions() {
-    	return Arrays.asList(new Object[][] {
-    			{ SnmpConstants.version1 },
-    			{ SnmpConstants.version2c },
-    			{ SnmpConstants.version3 },
-    	});
+        return Arrays.asList(new Object[][] {
+                { SnmpConstants.version1 },
+                { SnmpConstants.version2c },
+                { SnmpConstants.version3 },
+        });
     }
 
     private MockSnmpAgent m_agent;
     private USM m_usm;
-	private ArrayList<AnticipatedRequest> m_requestedVarbinds;
-	private int m_version;
-	
-	private static long DEFAULT_TIMEOUT = 5000;
-	
-	public MockSnmpAgentTest(int version) {
-		m_version = version;
-	}
-	
-    private class AnticipatedRequest {
-    	private String m_requestedOid;
-    	private Variable m_requestedValue;
-    	private String m_expectedOid;
-    	private int m_expectedSyntax;
-    	private Variable m_expectedValue;
-    	
-    	public AnticipatedRequest(String requestedOid, Variable requestedValue) {
-    		m_requestedOid = requestedOid;
-    		m_requestedValue = requestedValue;
-    	}
+    private ArrayList<AnticipatedRequest> m_requestedVarbinds;
+    private int m_version;
 
-    	
-    	public void andExpect(String expectedOid, int expectedSyntax, Variable expectedValue) {
-    		m_expectedOid = expectedOid;
-    		m_expectedSyntax = expectedSyntax;
-    		m_expectedValue = expectedValue;
-    	}
+    private static long DEFAULT_TIMEOUT = 5000;
 
-		public VariableBinding getRequestVarbind() {
-			OID oid = new OID(m_requestedOid);
-			if (m_requestedValue != null) {
-				return new VariableBinding(oid, m_requestedValue);
-			} else {
-				return new VariableBinding(oid);
-			}
-		}
-
-		public void verify(VariableBinding vb) {
-	        assertNotNull("variable binding should not be null", vb);
-	        Variable val = vb.getVariable();
-	        assertNotNull("variable should not be null", val);
-	        assertEquals("OID (value: " + val + ")", new OID(m_expectedOid), vb.getOid());
-	        assertEquals("syntax", m_expectedSyntax, vb.getSyntax());
-	        assertEquals("value", m_expectedValue, val);
-		}
-    	
+    public MockSnmpAgentTest(int version) {
+        m_version = version;
     }
-    
+
+    private class AnticipatedRequest {
+        private String m_requestedOid;
+        private Variable m_requestedValue;
+        private String m_expectedOid;
+        private int m_expectedSyntax;
+        private Variable m_expectedValue;
+
+        public AnticipatedRequest(String requestedOid, Variable requestedValue) {
+            m_requestedOid = requestedOid;
+            m_requestedValue = requestedValue;
+        }
+
+
+        public void andExpect(String expectedOid, int expectedSyntax, Variable expectedValue) {
+            m_expectedOid = expectedOid;
+            m_expectedSyntax = expectedSyntax;
+            m_expectedValue = expectedValue;
+        }
+
+        public VariableBinding getRequestVarbind() {
+            OID oid = new OID(m_requestedOid);
+            if (m_requestedValue != null) {
+                return new VariableBinding(oid, m_requestedValue);
+            } else {
+                return new VariableBinding(oid);
+            }
+        }
+
+        public void verify(VariableBinding vb) {
+            assertNotNull("variable binding should not be null", vb);
+            Variable val = vb.getVariable();
+            assertNotNull("variable should not be null", val);
+            assertEquals("OID (value: " + val + ")", new OID(m_expectedOid), vb.getOid());
+            assertEquals("syntax", m_expectedSyntax, vb.getSyntax());
+            assertEquals("value", m_expectedValue, val);
+        }
+
+    }
+
 
     @Before
     public void setUp() throws Exception {
@@ -141,29 +141,30 @@ public class MockSnmpAgentTest  {
         SecurityModels.getInstance().addSecurityModel(m_usm);
 
         m_agent = MockSnmpAgent.createAgentAndRun(classPathResource("loadSnmpDataTest.properties"), "127.0.0.1/1691");	// Homage to Empire
-        
+
         m_requestedVarbinds = new ArrayList<AnticipatedRequest>();
     }
-    
+
     @After
     public void tearDown() throws Exception {
-    	if (m_agent != null) {
-    		m_agent.shutDownAndWait();
-    	}
+        reset();
+        if (m_agent != null) {
+            m_agent.shutDownAndWait();
+        }
     }
 
     public AnticipatedRequest request(String requestedOid, Variable requestedValue) {
-    	AnticipatedRequest r = new AnticipatedRequest(requestedOid, requestedValue);
-    	m_requestedVarbinds.add(r);
-    	return r;
+        AnticipatedRequest r = new AnticipatedRequest(requestedOid, requestedValue);
+        m_requestedVarbinds.add(r);
+        return r;
     }
-    
+
     public AnticipatedRequest request(String requestOid) {
-    	return request(requestOid, null);
+        return request(requestOid, null);
     }
-    
+
     public void reset() {
-    	m_requestedVarbinds.clear();
+        m_requestedVarbinds.clear();
     }
 
 
@@ -194,96 +195,96 @@ public class MockSnmpAgentTest  {
 
     @Test
     public void testGetNext() throws Exception {
-    	
-    	request("1.3.5.1.1.3").andExpect("1.3.5.1.1.3.0", SMIConstants.SYNTAX_INTEGER, new Integer32(42));
-    	
-    	doGetNext();
+
+        request("1.3.5.1.1.3").andExpect("1.3.5.1.1.3.0", SMIConstants.SYNTAX_INTEGER, new Integer32(42));
+
+        doGetNext();
     }
 
     @Test
     public void testGet() throws Exception {
-    	
-    	request("1.3.5.1.1.3.0").andExpect("1.3.5.1.1.3.0", SMIConstants.SYNTAX_INTEGER, new Integer32(42));
-    	
-    	doGet();
+
+        request("1.3.5.1.1.3.0").andExpect("1.3.5.1.1.3.0", SMIConstants.SYNTAX_INTEGER, new Integer32(42));
+
+        doGet();
 
         m_agent.updateValue("1.3.5.1.1.3.0", new Integer32(77));
-        
-    	request("1.3.5.1.1.3.0").andExpect("1.3.5.1.1.3.0", SMIConstants.SYNTAX_INTEGER, new Integer32(77));
-    	
-    	doGet();
+
+        request("1.3.5.1.1.3.0").andExpect("1.3.5.1.1.3.0", SMIConstants.SYNTAX_INTEGER, new Integer32(77));
+
+        doGet();
 
     }
-    
+
     @Test
     public void testUpdateFromFile() throws Exception {
-    	request("1.3.5.1.1.3.0").andExpect("1.3.5.1.1.3.0", SMIConstants.SYNTAX_INTEGER, new Integer32(42));
-    	
-    	doGet();
+        request("1.3.5.1.1.3.0").andExpect("1.3.5.1.1.3.0", SMIConstants.SYNTAX_INTEGER, new Integer32(42));
+
+        doGet();
 
         m_agent.updateValuesFromResource(classPathResource("differentSnmpData.properties"));
-        
-    	request("1.3.5.1.1.3.0").andExpect("1.3.5.1.1.3.0", SMIConstants.SYNTAX_INTEGER, new Integer32(77));
-    	
-    	doGet();
+
+        request("1.3.5.1.1.3.0").andExpect("1.3.5.1.1.3.0", SMIConstants.SYNTAX_INTEGER, new Integer32(77));
+
+        doGet();
 
     }
 
     @Test
     public void testGetNextMultipleVarbinds() throws Exception {
-    	
-    	request("1.3.5.1.1.3").andExpect("1.3.5.1.1.3.0", SMIConstants.SYNTAX_INTEGER, new Integer32(42));
-    	doGetNext();
 
-    	m_agent.getUsm().setEngineBoots(15);
+        request("1.3.5.1.1.3").andExpect("1.3.5.1.1.3.0", SMIConstants.SYNTAX_INTEGER, new Integer32(42));
+        doGetNext();
 
-    	request("1.3.5.1.1.3").andExpect("1.3.5.1.1.3.0", SMIConstants.SYNTAX_INTEGER, new Integer32(42));
-    	doGetNext();
+        m_agent.getUsm().setEngineBoots(15);
 
-    	request("1.3.5.1.1.3").andExpect("1.3.5.1.1.3.0", SMIConstants.SYNTAX_INTEGER, new Integer32(42));
-    	doGetNext();
+        request("1.3.5.1.1.3").andExpect("1.3.5.1.1.3.0", SMIConstants.SYNTAX_INTEGER, new Integer32(42));
+        doGetNext();
+
+        request("1.3.5.1.1.3").andExpect("1.3.5.1.1.3.0", SMIConstants.SYNTAX_INTEGER, new Integer32(42));
+        doGetNext();
 
         // This statement breaks the internal state of the SNMP4J agent
         // m_agent.getUsm().setLocalEngine(m_agent.getUsm().getLocalEngineID(), 15, 200);
         m_agent.getUsm().removeEngineTime(m_usm.getLocalEngineID());
         m_usm.removeEngineTime(m_agent.getUsm().getLocalEngineID());
 
-    	request("1.3.5.1.1.3").andExpect("1.3.5.1.1.3.0", SMIConstants.SYNTAX_INTEGER, new Integer32(42));
-    	doGetNext();
+        request("1.3.5.1.1.3").andExpect("1.3.5.1.1.3.0", SMIConstants.SYNTAX_INTEGER, new Integer32(42));
+        doGetNext();
 
     }
-    
+
     @Test
     public void testSet() throws Exception {
-    	
+
         final String oid = "1.3.5.1.1.3.0";
-        
-        
+
+
         // current value is 42
         request(oid).andExpect(oid, SMIConstants.SYNTAX_INTEGER, new Integer32(42));
         doGet();
-        
+
         // set a value of 17
         request(oid, new Integer32(17)).andExpect(oid, SMIConstants.SYNTAX_INTEGER32, new Integer32(17));
         doSet();
-        
+
         // request new value and expect 17
         request(oid).andExpect(oid, SMIConstants.SYNTAX_INTEGER, new Integer32(17)); 
         doGet();
-        
+
     }
 
     @Test
     public void testUpdateFromFileWithUSMTimeReset() throws Exception {
         request("1.3.5.1.1.3.0").andExpect("1.3.5.1.1.3.0", SMIConstants.SYNTAX_INTEGER, new Integer32(42));
-		doGet();
+        doGet();
 
         m_agent.getUsm().setEngineBoots(15);
 
         request("1.3.5.1.1.3.0").andExpect("1.3.5.1.1.3.0", SMIConstants.SYNTAX_INTEGER, new Integer32(42));
-		doGet();
+        doGet();
         request("1.3.5.1.1.3.0").andExpect("1.3.5.1.1.3.0", SMIConstants.SYNTAX_INTEGER, new Integer32(42));
-		doGet();
+        doGet();
 
         // This statement breaks the internal state of the SNMP4J agent
         // m_agent.getUsm().setLocalEngine(m_agent.getUsm().getLocalEngineID(), 15, 200);
@@ -291,46 +292,46 @@ public class MockSnmpAgentTest  {
         m_usm.removeEngineTime(m_agent.getUsm().getLocalEngineID());
 
         request("1.3.5.1.1.3.0").andExpect("1.3.5.1.1.3.0", SMIConstants.SYNTAX_INTEGER, new Integer32(42));
-		doGet();
+        doGet();
         request("1.3.5.1.1.3.0").andExpect("1.3.5.1.1.3.0", SMIConstants.SYNTAX_INTEGER, new Integer32(42));
-		doGet();
+        doGet();
 
         m_usm.removeEngineTime(m_agent.getUsm().getLocalEngineID());
 
         request("1.3.5.1.1.3.0").andExpect("1.3.5.1.1.3.0", SMIConstants.SYNTAX_INTEGER, new Integer32(42));
-		doGet();
+        doGet();
         request("1.3.5.1.1.3.0").andExpect("1.3.5.1.1.3.0", SMIConstants.SYNTAX_INTEGER, new Integer32(42));
-		doGet();
+        doGet();
     }
-    
+
     @Test
     public void testSineWaveResponder() throws Exception {
-    	String oid = "1.3.5.1.1.10.0";
+        String oid = "1.3.5.1.1.10.0";
         request(oid).andExpect(oid, SMIConstants.SYNTAX_INTEGER, new Integer32(0));
         doGet();
-        
-    	oid = "1.3.5.1.1.10.30";
+
+        oid = "1.3.5.1.1.10.30";
         request(oid).andExpect(oid, SMIConstants.SYNTAX_INTEGER, new Integer32(50));
         doGet();
-        
-    	oid = "1.3.5.1.1.10.45";
+
+        oid = "1.3.5.1.1.10.45";
         request(oid).andExpect(oid, SMIConstants.SYNTAX_INTEGER, new Integer32(71));
         doGet();
-        
-    	oid = "1.3.5.1.1.10.90";
+
+        oid = "1.3.5.1.1.10.90";
         request(oid).andExpect(oid, SMIConstants.SYNTAX_INTEGER, new Integer32(100));
         doGet();
     }
-    
+
     @Test
     public void testSleeperResponder() throws Exception {
-    	final String myOid = "1.3.5.1.1.11.0";
-    	
-    	// Verify that the sleeper responds correctly
-    	Sleeper.getInstance().setVariable(new Integer32(1));
-    	request(myOid).andExpect(myOid, SMIConstants.SYNTAX_INTEGER, new Integer32(1));
-    	doGet();
-    	
+        final String myOid = "1.3.5.1.1.11.0";
+
+        // Verify that the sleeper responds correctly
+        Sleeper.getInstance().setVariable(new Integer32(1));
+        request(myOid).andExpect(myOid, SMIConstants.SYNTAX_INTEGER, new Integer32(1));
+        doGet();
+
         // Set the timeout
         Sleeper.getInstance().setSleepTime(DEFAULT_TIMEOUT + 1000);
 
@@ -346,21 +347,21 @@ public class MockSnmpAgentTest  {
 
         // Clear the timeout
         Sleeper.getInstance().setSleepTime(0);
-        
+
         // Update the variable
         Sleeper.getInstance().setVariable(new OctetString("Bingo!"));
-    	request(myOid).andExpect(myOid, SMIConstants.SYNTAX_OCTET_STRING, new OctetString("Bingo!"));
-    	doGet();
+        request(myOid).andExpect(myOid, SMIConstants.SYNTAX_OCTET_STRING, new OctetString("Bingo!"));
+        doGet();
     }
 
     @Test
     public void testDynamicVariableCacheAfterUpdateFromFile() throws Exception {
-    	final String oid = "1.3.5.1.1.10.0";
+        final String oid = "1.3.5.1.1.10.0";
         request(oid).andExpect(oid, SMIConstants.SYNTAX_INTEGER, new Integer32(0));
         doGet();
-        
+
         m_agent.updateValuesFromResource(classPathResource("differentSnmpData.properties"));
-        
+
         Sleeper.getInstance().resetWithVariable(new Integer32(42));
         request(oid).andExpect(oid, SMIConstants.SYNTAX_INTEGER, new Integer32(42));
         doGet();
@@ -375,65 +376,65 @@ public class MockSnmpAgentTest  {
     }
 
     private void doGet() throws Exception {
-    	requestAndVerifyResponse(PDU.GET, m_version);
+        requestAndVerifyResponse(PDU.GET, m_version);
     }
-    
+
     private void doGetNext() throws Exception {
-    	requestAndVerifyResponse(PDU.GETNEXT, m_version);
+        requestAndVerifyResponse(PDU.GETNEXT, m_version);
     }
-    
+
     private void doSet() throws Exception {
-    	requestAndVerifyResponse(PDU.SET, m_version);
+        requestAndVerifyResponse(PDU.SET, m_version);
     }
-    
+
     private void requestAndVerifyResponse(int pduType, int version) throws Exception {
-    	PDU pdu = createPDU(version);
-    	
-    	for(AnticipatedRequest a : m_requestedVarbinds) {
-    		pdu.add(a.getRequestVarbind());
-    	}
-    	pdu.setType(pduType);
-    	
-    	PDU response = sendRequest(pdu, version);
-        
+        PDU pdu = createPDU(version);
+
+        for(AnticipatedRequest a : m_requestedVarbinds) {
+            pdu.add(a.getRequestVarbind());
+        }
+        pdu.setType(pduType);
+
+        PDU response = sendRequest(pdu, version);
+
         assertNotNull("request timed out", response);
         System.err.println("Response is: "+response);
         assertTrue("unexpected report pdu: " + ((VariableBinding)response.getVariableBindings().get(0)).getOid(), response.getType() != PDU.REPORT);
-        
+
         assertEquals("Unexpected number of varbinds returned.", m_requestedVarbinds.size(), response.getVariableBindings().size());
-        
+
         for(int i = 0; i < m_requestedVarbinds.size(); i++) {
-        	AnticipatedRequest a = m_requestedVarbinds.get(i);
-        	VariableBinding vb = response.get(i);
-        	a.verify(vb);
+            AnticipatedRequest a = m_requestedVarbinds.get(i);
+            VariableBinding vb = response.get(i);
+            a.verify(vb);
         }
-        
+
         reset();
-        
-    }
-    
-    private PDU createPDU(int version) {
-    	if (version == SnmpConstants.version3) {
-    		return new ScopedPDU();
-    	} else {
-    		return new PDU();
-    	}
-    }
-   
-    private PDU sendRequest(PDU pdu, int version) throws Exception {
-    	if (version == SnmpConstants.version3) {
-    		return sendRequestV3(pdu);
-    	} else {
-    		return sendRequestV1V2(pdu, version);
-    	}
+
     }
 
-	private PDU sendRequestV1V2(PDU pdu, int version) throws Exception {
-		PDU response;
-		CommunityTarget target = new CommunityTarget();
+    private PDU createPDU(int version) {
+        if (version == SnmpConstants.version3) {
+            return new ScopedPDU();
+        } else {
+            return new PDU();
+        }
+    }
+
+    private PDU sendRequest(PDU pdu, int version) throws Exception {
+        if (version == SnmpConstants.version3) {
+            return sendRequestV3(pdu);
+        } else {
+            return sendRequestV1V2(pdu, version);
+        }
+    }
+
+    private PDU sendRequestV1V2(PDU pdu, int version) throws Exception {
+        PDU response;
+        CommunityTarget target = new CommunityTarget();
         target.setCommunity(new OctetString("public"));
         target.setAddress(new UdpAddress(InetAddress.getByName("127.0.0.1"), 1691));
-		target.setVersion(version);
+        target.setVersion(version);
 
         TransportMapping transport = null;
         try {
@@ -448,12 +449,12 @@ public class MockSnmpAgentTest  {
                 transport.close();
             }
         }
-		return response;
-	}
+        return response;
+    }
 
-	private PDU sendRequestV3(PDU pdu) throws IOException {
-		PDU response;
-    	
+    private PDU sendRequestV3(PDU pdu) throws IOException {
+        PDU response;
+
         OctetString userId = new OctetString("opennmsUser");
         OctetString pw = new OctetString("0p3nNMSv3");
 
@@ -463,7 +464,7 @@ public class MockSnmpAgentTest  {
         target.setAddress(new UdpAddress(InetAddress.getByName("127.0.0.1"), 1691));
         target.setVersion(SnmpConstants.version3);
         target.setTimeout(DEFAULT_TIMEOUT);
-        
+
         TransportMapping transport = null;
         try {
             USM usm = new USM(SecurityProtocols.getInstance(), new OctetString(MPv3.createLocalEngineID()), 0);
@@ -475,7 +476,7 @@ public class MockSnmpAgentTest  {
             snmp.getUSM().addUser(userId, user);
 
             transport.listen();
-            
+
             ResponseEvent e = snmp.send(pdu, target);
             response = e.getResponse();
         } finally { 
@@ -483,12 +484,12 @@ public class MockSnmpAgentTest  {
                 transport.close();
             }
         }
-		return response;
-	}
-	
-	private URL classPathResource(String path) {
-		return getClass().getClassLoader().getResource(path);
-	}
+        return response;
+    }
+
+    private URL classPathResource(String path) {
+        return getClass().getClassLoader().getResource(path);
+    }
 
 
 }
