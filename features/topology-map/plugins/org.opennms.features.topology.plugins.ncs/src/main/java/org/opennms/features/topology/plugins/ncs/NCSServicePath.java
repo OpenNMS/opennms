@@ -22,12 +22,19 @@ public class NCSServicePath {
     private String m_nodeForeignSource;
     private LinkedList<NCSVertex> m_vertices = new LinkedList<NCSVertex>();
     private String m_serviceForeignSource;
+    private String m_deviceAForeignID;
+    private String m_deviceZForeignID;
     
-    public NCSServicePath(Node servicePath, NCSComponentRepository dao, NodeDao nodeDao, String nodeForeignSource, String serviceForeignSource) {
+    public NCSServicePath(Node servicePath, NCSComponentRepository dao, NodeDao nodeDao, String nodeForeignSource, String serviceForeignSource, String deviceAID, String deviceZID) {
         m_dao = dao;
         m_nodeDao = nodeDao;
         m_nodeForeignSource = nodeForeignSource;
         m_serviceForeignSource = serviceForeignSource;
+        m_deviceAForeignID = deviceAID;
+        m_deviceZForeignID = deviceZID;
+        
+        //Add device A to path, its not sent in the path
+        m_vertices.add( getVertexRefForForeignId(m_deviceAForeignID, m_nodeForeignSource) );
         NodeList childNodes = servicePath.getChildNodes();
         for(int i = 0; i < childNodes.getLength(); i++) {
             Node item = childNodes.item(i);
@@ -35,6 +42,9 @@ public class NCSServicePath {
                 parsePath(item);
             }
         }
+        
+        //Add device Z to path, its not sent in the path from the server
+        m_vertices.add( getVertexRefForForeignId(m_deviceZForeignID, m_nodeForeignSource) );
     }
 
     private void parsePath(Node item) {
@@ -43,9 +53,11 @@ public class NCSServicePath {
             Node node = lspNode.item(i);
             if(node.getNodeName().equals("LSPNode")) {
                 String nodeForeignId = node.getLastChild().getLastChild().getTextContent();
-                NCSVertex vertex = getVertexRefForForeignId(nodeForeignId, m_nodeForeignSource);
-                if(vertex != null) {
-                    m_vertices.add( vertex );
+                if(!m_deviceAForeignID.equals(nodeForeignId) && !m_deviceZForeignID.equals(nodeForeignId)) {
+                    NCSVertex vertex = getVertexRefForForeignId(nodeForeignId, m_nodeForeignSource);
+                    if(vertex != null) {
+                        m_vertices.add( vertex );
+                    }
                 }
             }
         }
@@ -58,7 +70,6 @@ public class NCSServicePath {
             return vertex;
         }else {
             return null;
-            //return new NCSVertex("space_NodeForeignId: " + nodeForeignId, "Temp Space Node with nodeForeignId: " + nodeForeignId);
         }
         
     }

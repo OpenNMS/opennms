@@ -128,35 +128,21 @@ public class HttpMonitorTest {
         if (m_runTests == false) return;
 
         Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
-        Parameter p = new Parameter();
 
         ServiceMonitor monitor = new HttpMonitor();
         MonitoredService svc = MonitorTestUtils.getMonitoredService(3, "localhost", "HTTP", preferIPv6);
 
-        p.setKey("port");
-        p.setValue("10342");
-        m.put(p.getKey(), p.getValue());
-
-        p.setKey("retry");
-        p.setValue("1");
-        m.put(p.getKey(), p.getValue());
-
-        p.setKey("timeout");
-        p.setValue("500");
-        m.put(p.getKey(), p.getValue());
-
-        p.setKey("response");
-        p.setValue("100-199");
-        m.put(p.getKey(), p.getValue());
+        m.put("port", "10342");
+        m.put("retry", "1");
+        m.put("timeout", "500");
+        m.put("response", "100-199");
 
         PollStatus status = monitor.poll(svc, m);
         MockUtil.println("Reason: "+status.getReason());
         assertEquals(PollStatus.SERVICE_UNAVAILABLE, status.getStatusCode());
         assertNotNull(status.getReason());
 
-        p.setKey("response");
-        p.setValue("100,200,302,400-500");
-        m.put(p.getKey(), p.getValue());
+        m.put("response", "100,200,302,400-500");
 
         monitor = new HttpMonitor();
         status = monitor.poll(svc, m);
@@ -164,9 +150,7 @@ public class HttpMonitorTest {
         assertEquals(PollStatus.SERVICE_AVAILABLE, status.getStatusCode());
         assertNull(status.getReason());
 
-        p.setKey("response");
-        p.setValue("*");
-        m.put(p.getKey(), p.getValue());
+        m.put("response", "*");
 
         monitor = new HttpMonitor();
         status = monitor.poll(svc, m);
@@ -207,34 +191,23 @@ public class HttpMonitorTest {
     public void callTestTimeout(boolean preferIPv6) throws UnknownHostException {
         if (m_runTests == false) return;
 
-        Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
-        Parameter p = new Parameter();
+        final Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
 
-        ServiceMonitor monitor = new HttpMonitor();
+        final ServiceMonitor monitor = new HttpMonitor();
         // We need a routable but unreachable address in order to simulate a timeout
-        MonitoredService svc = MonitorTestUtils.getMonitoredService(3, preferIPv6 ? InetAddressUtils.UNPINGABLE_ADDRESS_IPV6 : InetAddressUtils.UNPINGABLE_ADDRESS, "HTTP");
+        final MonitoredService svc = MonitorTestUtils.getMonitoredService(3, preferIPv6 ? InetAddressUtils.UNPINGABLE_ADDRESS_IPV6 : InetAddressUtils.UNPINGABLE_ADDRESS, "HTTP");
 
-        p.setKey("port");
-        p.setValue("10342");
-        m.put(p.getKey(), p.getValue());
+        m.put("port", "10342");
+        m.put("retry", "1");
+        m.put("timeout", "500");
+        m.put("response", "100-199");
 
-        p.setKey("retry");
-        p.setValue("1");
-        m.put(p.getKey(), p.getValue());
-
-        p.setKey("timeout");
-        p.setValue("500");
-        m.put(p.getKey(), p.getValue());
-
-        p.setKey("response");
-        p.setValue("100-199");
-        m.put(p.getKey(), p.getValue());
-
-        PollStatus status = monitor.poll(svc, m);
-        MockUtil.println("Reason: "+status.getReason());
+        final PollStatus status = monitor.poll(svc, m);
+        final String reason = status.getReason();
+        MockUtil.println("Reason: "+reason);
         assertEquals(PollStatus.SERVICE_UNAVAILABLE, status.getStatusCode());
-        assertNotNull(status.getReason());
-        assertTrue(status.getReason().contains("HTTP connection timeout"));
+        assertNotNull(reason);
+        assertTrue(reason + "should be 'HTTP connection timeout' or 'No route to host'", reason.contains("HTTP connection timeout") || reason.contains("No route to host"));
     }
 
     @Test
@@ -253,53 +226,27 @@ public class HttpMonitorTest {
 
         if (m_runTests == false) return;
 
-        Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
-        Parameter p = new Parameter();
         PollStatus status = null;
-
         ServiceMonitor monitor = new HttpMonitor();
-        MonitoredService svc = MonitorTestUtils.getMonitoredService(3, "localhost", "HTTP", preferIPv6);
 
-        p.setKey("port");
-        p.setValue("10342");
-        m.put(p.getKey(), p.getValue());
+        final Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
+        final MonitoredService svc = MonitorTestUtils.getMonitoredService(3, "localhost", "HTTP", preferIPv6);
 
-        p.setKey("retry");
-        p.setValue("0");
-        m.put(p.getKey(), p.getValue());
-
-        p.setKey("timeout");
-        p.setValue("500");
-        m.put(p.getKey(), p.getValue());
-
-        p.setKey("response");
-        p.setValue("100-499");
-        m.put(p.getKey(), p.getValue());
-
-        p.setKey("verbose");
-        p.setValue("true");
-        m.put(p.getKey(), p.getValue());
-
-        p.setKey("host-name");
-        p.setValue("localhost");
-        m.put(p.getKey(), p.getValue());
-
-        p.setKey("url");
-        p.setValue("/");
-        m.put(p.getKey(), p.getValue());
-
-        p.setKey("response-text");
-        p.setValue("opennmsrulz");
-        m.put(p.getKey(), p.getValue());
+        m.put("port", "10342");
+        m.put("retry", "0");
+        m.put("timeout", "500");
+        m.put("response", "100-499");
+        m.put("verbose", "true");
+        m.put("host-name", "localhost");
+        m.put("url", "/");
+        m.put("response-text", "opennmsrulz");
 
         status = monitor.poll(svc, m);
         MockUtil.println("Reason: "+status.getReason());
         assertEquals(PollStatus.SERVICE_UNAVAILABLE, status.getStatusCode());
         assertNotNull(status.getReason());
 
-        p.setKey("response-text");
-        p.setValue("written by monkeys");
-        m.put(p.getKey(), p.getValue());
+        m.put("response-text", "written by monkeys");
 
         MockUtil.println("\nliteral text check: \"written by monkeys\"");
         monitor = new HttpMonitor();
@@ -308,9 +255,7 @@ public class HttpMonitorTest {
         assertEquals(PollStatus.SERVICE_AVAILABLE, status.getStatusCode());
         assertNull(status.getReason());
 
-        p.setKey("response-text");
-        p.setValue("~.*[Tt]est HTTP [Ss]erver.*");
-        m.put(p.getKey(), p.getValue());
+        m.put("response-text", "~.*[Tt]est HTTP [Ss]erver.*");
 
         MockUtil.println("\nregex check: \".*[Tt]est HTTP [Ss]erver.*\"");
         monitor = new HttpMonitor();
@@ -325,11 +270,8 @@ public class HttpMonitorTest {
     public void testBase64Encoding() {
         if (m_runTests == false) return;
 
-        Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
-        Parameter p = new Parameter();
-        p.setKey("basic-authentication");
-        p.setValue("Aladdin:open sesame");
-        m.put(p.getKey(), p.getValue());
+        final Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
+        m.put("basic-authentication", "Aladdin:open sesame");
         assertEquals("QWxhZGRpbjpvcGVuIHNlc2FtZQ==", HttpMonitor.determineBasicAuthentication(m));
         assertFalse( "QWxhZGRpbjpvcZVuIHNlc2FtZQ==".equals(HttpMonitor.determineBasicAuthentication(m)));
     }
@@ -351,53 +293,26 @@ public class HttpMonitorTest {
         if (m_runTests == false) return;
 
         Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
-        Parameter p = new Parameter();
         PollStatus status = null;
 
         ServiceMonitor monitor = new HttpMonitor();
         MonitoredService svc = MonitorTestUtils.getMonitoredService(1, "localhost", "HTTP", preferIPv6);
 
-        p.setKey("port");
-        p.setValue("10342");
-        m.put(p.getKey(), p.getValue());
-
-        p.setKey("retry");
-        p.setValue("0");
-        m.put(p.getKey(), p.getValue());
-
-        p.setKey("timeout");
-        p.setValue("500");
-        m.put(p.getKey(), p.getValue());
-
-        p.setKey("response");
-        p.setValue("100-302");
-        m.put(p.getKey(), p.getValue());
-
-        p.setKey("verbose");
-        p.setValue("true");
-        m.put(p.getKey(), p.getValue());
-
-        p.setKey("host-name");
-        p.setValue("localhost");
-        m.put(p.getKey(), p.getValue());
-
-        p.setKey("url");
-        p.setValue("/");
-        m.put(p.getKey(), p.getValue());
-
-        p.setKey("basic-authentication");
-        p.setValue("admin:istrator");
-        m.put(p.getKey(), p.getValue());
+        m.put("port", "10342");
+        m.put("retry", "0");
+        m.put("timeout", "500");
+        m.put("response", "100-302");
+        m.put("verbose", "true");
+        m.put("host-name", "localhost");
+        m.put("url", "/");
+        m.put("basic-authentication", "admin:istrator");
 
         status = monitor.poll(svc, m);
         MockUtil.println("Reason: "+status.getReason());
         assertEquals(PollStatus.SERVICE_AVAILABLE, status.getStatusCode());
         assertNull(status.getReason());
 
-
-        p.setKey("basic-authentication");
-        p.setValue("admin:flagrator");
-        m.put(p.getKey(), p.getValue());
+        m.put("basic-authentication", "admin:flagrator");
 
         status = monitor.poll(svc, m);
         MockUtil.println("Reason: "+status.getReason());
@@ -424,48 +339,25 @@ public class HttpMonitorTest {
         if (m_runTests == false) return;
 
         Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
-        Parameter p = new Parameter();
         PollStatus status = null;
 
         ServiceMonitor monitor = new HttpsMonitor();
         MonitoredService svc = MonitorTestUtils.getMonitoredService(1, "localhost", "HTTPS", preferIPv6);
 
-        p.setKey("port");
-        p.setValue("10342");
-        m.put(p.getKey(), p.getValue());
-
-        p.setKey("retry");
-        p.setValue("1");
-        m.put(p.getKey(), p.getValue());
-
-        p.setKey("timeout");
-        p.setValue("500");
-        m.put(p.getKey(), p.getValue());
-
-        p.setKey("response");
-        p.setValue("100-302");
-        m.put(p.getKey(), p.getValue());
-
-        p.setKey("verbose");
-        p.setValue("true");
-        m.put(p.getKey(), p.getValue());
-
-        p.setKey("host-name");
-        p.setValue("localhost");
-        m.put(p.getKey(), p.getValue());
-
-        p.setKey("url");
-        p.setValue("/index.html");
-        m.put(p.getKey(), p.getValue());
+        m.put("port", "10342");
+        m.put("retry", "1");
+        m.put("timeout", "500");
+        m.put("response", "100-302");
+        m.put("verbose", "true");
+        m.put("host-name", "localhost");
+        m.put("url", "/index.html");
 
         status = monitor.poll(svc, m);
         MockUtil.println("Reason: "+status.getReason());
         assertEquals(PollStatus.SERVICE_UNAVAILABLE, status.getStatusCode());
         assertEquals("HTTP response value: 401. Expecting: 100-302./Ports: 10342", status.getReason());
         
-        p.setKey("basic-authentication");
-        p.setValue("admin:istrator");
-        m.put(p.getKey(), p.getValue());
+        m.put("basic-authentication", "admin:istrator");
 
         status = monitor.poll(svc, m);
         MockUtil.println("Reason: "+status.getReason());
@@ -489,43 +381,19 @@ public class HttpMonitorTest {
         if (m_runTests == false) return;
 
         Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
-        Parameter p = new Parameter();
         PollStatus status = null;
 
         ServiceMonitor monitor = new HttpMonitor();
         MonitoredService svc = MonitorTestUtils.getMonitoredService(3, "localhost", "HTTP", preferIPv6);
 
-        p.setKey("host-name");
-        p.setValue("localhost");
-        m.put(p.getKey(), p.getValue());
-
-        p.setKey("url");
-        p.setValue("/twinkies.html");
-        m.put(p.getKey(), p.getValue());
-
-        p.setKey("port");
-        p.setValue("10342");
-        m.put(p.getKey(), p.getValue());
-
-        p.setKey("retry");
-        p.setValue("0");
-        m.put(p.getKey(), p.getValue());
-
-        p.setKey("timeout");
-        p.setValue("500");
-        m.put(p.getKey(), p.getValue());
-
-        p.setKey("response");
-        p.setValue("100-499");
-        m.put(p.getKey(), p.getValue());
-
-        p.setKey("response-text");
-        p.setValue("~.*Don.t you love twinkies..*");
-        m.put(p.getKey(), p.getValue());
-
-        p.setKey("verbose");
-        p.setValue("true");
-        m.put(p.getKey(), p.getValue());
+        m.put("port", "10342");
+        m.put("retry", "0");
+        m.put("timeout", "500");
+        m.put("response", "100-499");
+        m.put("verbose", "true");
+        m.put("host-name", "localhost");
+        m.put("url", "/twinkies.html");
+        m.put("response-text", "~.*Don.t you love twinkies..*");
 
         status = monitor.poll(svc, m);
         MockUtil.println("Reason: "+status.getReason());
@@ -550,37 +418,19 @@ public class HttpMonitorTest {
         if (m_runTests == false) return;
 
         Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
-        Parameter p = new Parameter();
         PollStatus status = null;
 
         ServiceMonitor monitor = new HttpMonitor();
         MockMonitoredService svc = MonitorTestUtils.getMonitoredService(3, "localhost", "HTTP", preferIPv6);
         svc.setNodeLabel("bad.virtual.host.example.com");
 
-        p.setKey("nodelabel-host-name");
-        p.setValue("true");
-        m.put(p.getKey(), p.getValue());
-
-        p.setKey("port");
-        p.setValue("10342");
-        m.put(p.getKey(), p.getValue());
-
-        p.setKey("retry");
-        p.setValue("0");
-        m.put(p.getKey(), p.getValue());
-
-        p.setKey("timeout");
-        p.setValue("500");
-        m.put(p.getKey(), p.getValue());
-
+        m.put("port", "10342");
+        m.put("retry", "0");
+        m.put("timeout", "500");
         // Ensure that we get a 404 for this GET since we're using an inappropriate virtual host
-        p.setKey("response");
-        p.setValue("404");
-        m.put(p.getKey(), p.getValue());
-
-        p.setKey("verbose");
-        p.setValue("true");
-        m.put(p.getKey(), p.getValue());
+        m.put("response", "404");
+        m.put("verbose", "true");
+        m.put("nodelabel-host-name", "true");
 
         status = monitor.poll(svc, m);
         MockUtil.println("Reason: "+status.getReason());
@@ -606,34 +456,16 @@ public class HttpMonitorTest {
         if (m_runTests == false) return;
 
         Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
-        Parameter p = new Parameter();
 
         ServiceMonitor monitor = new HttpMonitor();
         MonitoredService svc = MonitorTestUtils.getMonitoredService(3, "localhost", "HTTP", preferIPv6);
 
-        p.setKey("port");
-        p.setValue("10342");
-        m.put(p.getKey(), p.getValue());
-
-        p.setKey("retry");
-        p.setValue("1");
-        m.put(p.getKey(), p.getValue());
-
-        p.setKey("timeout");
-        p.setValue("500");
-        m.put(p.getKey(), p.getValue());
-
-        p.setKey("host-name");
-        p.setValue("www.google.com");
-        m.put(p.getKey(), p.getValue());
-
-        p.setKey("url");
-        p.setValue("/twinkies.html");
-        m.put(p.getKey(), p.getValue());
-
-        p.setKey("response-text");
-        p.setValue("~.*twinkies.*");
-        m.put(p.getKey(), p.getValue());
+        m.put("port", "10342");
+        m.put("retry", "0");
+        m.put("timeout", "500");
+        m.put("host-name", "www.google.com");
+        m.put("url", "/twinkies.html");
+        m.put("response-text", "~.*twinkies.*");
 
         PollStatus status = monitor.poll(svc, m);
         assertEquals("poll status available", PollStatus.SERVICE_UNAVAILABLE, status.getStatusCode());
@@ -656,34 +488,16 @@ public class HttpMonitorTest {
         if (m_runTests == false) return;
 
         Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
-        Parameter p = new Parameter();
 
         ServiceMonitor monitor = new HttpMonitor();
         MonitoredService svc = MonitorTestUtils.getMonitoredService(3, "localhost", "HTTP", preferIPv6);
 
-        p.setKey("port");
-        p.setValue("10342");
-        m.put(p.getKey(), p.getValue());
-
-        p.setKey("retry");
-        p.setValue("1");
-        m.put(p.getKey(), p.getValue());
-
-        p.setKey("timeout");
-        p.setValue("500");
-        m.put(p.getKey(), p.getValue());
-
-        p.setKey("host-name");
-        p.setValue("www.opennms.org");
-        m.put(p.getKey(), p.getValue());
-
-        p.setKey("url");
-        p.setValue("/twinkies.html");
-        m.put(p.getKey(), p.getValue());
-
-        p.setKey("response-text");
-        p.setValue("~.*twinkies.*");
-        m.put(p.getKey(), p.getValue());
+        m.put("port", "10342");
+        m.put("retry", "1");
+        m.put("timeout", "500");
+        m.put("host-name", "www.opennms.org");
+        m.put("url", "/twinkies.html");
+        m.put("response-text", "~.*twinkies.*");
 
         PollStatus status = monitor.poll(svc, m);
         assertEquals("poll status not available", PollStatus.SERVICE_AVAILABLE, status.getStatusCode());

@@ -151,6 +151,7 @@ public class FtpSystemReportFormatter extends AbstractSystemReportFormatter impl
             }
             LogUtils.infof(this, "uploading %s to %s", f.getName(), path);
             ftp.setFileType(FTP.BINARY_FILE_TYPE);
+            ftp.enterLocalPassiveMode();
             fis = new FileInputStream(m_zipFile);
             if (!ftp.storeFile(f.getName(), fis)) {
                 LogUtils.infof(this, "unable to store file");

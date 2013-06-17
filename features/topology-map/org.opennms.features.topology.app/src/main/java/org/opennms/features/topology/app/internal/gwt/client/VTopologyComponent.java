@@ -899,8 +899,8 @@ public class VTopologyComponent extends Composite implements Paintable, SVGTopol
     @Override
     public void setVertexSelection(List<String> vertIds) {
         m_client.updateVariable(getPaintableId(), "marqueeSelection", vertIds.toArray(new String[]{}), false);
-        m_client.updateVariable(m_paintableId, "shiftKeyPressed", D3.getEvent().getShiftKey(), false);
-        
+        m_client.updateVariable(getPaintableId(), "shiftKeyPressed", D3.getEvent().getShiftKey(), false);
+        m_client.updateVariable(getPaintableId(), "ctrlKeyPressed", D3.getEvent().getCtrlKey(), false);
         m_client.sendPendingVariableChanges();
     }
 

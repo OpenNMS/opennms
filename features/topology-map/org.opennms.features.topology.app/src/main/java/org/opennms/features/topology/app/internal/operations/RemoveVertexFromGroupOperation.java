@@ -75,7 +75,7 @@ public class RemoveVertexFromGroupOperation implements Constants, Operation {
 
 		final Window window = operationContext.getMainWindow();
 
-		final Window groupNamePrompt = new Window("Remove This Item From a Group");
+		final Window groupNamePrompt = new Window("Remove item from this Group");
 		groupNamePrompt.setModal(true);
 		groupNamePrompt.setResizable(false);
 		groupNamePrompt.setHeight("180px");
