@@ -1,7 +1,6 @@
 package org.opennms.features.topology.plugins.ncs;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -14,6 +13,7 @@ import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.plugins.ncs.NCSEdgeProvider.NCSServiceCriteria;
 import org.opennms.features.topology.plugins.ncs.NCSPathEdgeProvider.NCSServicePathCriteria;
+import org.opennms.features.topology.plugins.ncs.internal.NCSCriteriaServiceManager;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.ncs.NCSComponent;
@@ -42,6 +42,7 @@ public class ShowNCSPathOperation implements Operation {
     private NCSComponentRepository m_dao;
     private NodeDao m_nodeDao;
     private NCSServiceCriteria m_storedCriteria;
+    private NCSCriteriaServiceManager m_serviceManager;
     
     @Override
     public Undoer execute(List<VertexRef> targets, final OperationContext operationContext) {
@@ -101,6 +102,7 @@ public class ShowNCSPathOperation implements Operation {
         
         final Form promptForm = new Form() {
 
+
             @Override
             public void commit() {
                 String deviceA = (String)getField("Device A").getValue();
@@ -121,8 +123,9 @@ public class ShowNCSPathOperation implements Operation {
                 try {
                     NCSServicePath path = getNcsPathProvider().getPath(foreignId, foreignSource, deviceANodeForeignId, deviceZNodeForeignId, nodeForeignSource);
                     
-                    operationContext.getGraphContainer().setCriteria(NCSEdgeProvider.createCriteria(Collections.<Long>emptyList()));
-                    operationContext.getGraphContainer().setCriteria(new NCSServicePathCriteria(path.getEdges()));
+                    
+                    NCSServicePathCriteria criteria = new NCSServicePathCriteria(path.getEdges());
+                    m_serviceManager.registerCriteria(criteria, operationContext.getGraphContainer().getSessionId());
                     
                     //Select only the vertices in the path
                     selectionManager.setSelectedVertexRefs(path.getVertices());
@@ -252,6 +255,10 @@ public class ShowNCSPathOperation implements Operation {
 
     public void setNodeDao(NodeDao nodeDao) {
         m_nodeDao = nodeDao;
+    }
+    
+    public void setNcsCriteriaServiceManager(NCSCriteriaServiceManager manager) {
+        m_serviceManager = manager;
     }
 
 }

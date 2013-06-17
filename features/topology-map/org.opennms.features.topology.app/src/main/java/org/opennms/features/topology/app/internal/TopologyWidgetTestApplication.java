@@ -34,6 +34,8 @@ import java.io.InputStream;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.servlet.http.HttpSession;
+
 import org.opennms.core.utils.LogUtils;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.HasExtraComponents;
@@ -46,7 +48,6 @@ import org.opennms.features.topology.api.SelectionListener;
 import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.SelectionNotifier;
 import org.opennms.features.topology.api.WidgetContext;
-import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.app.internal.TopoContextMenu.TopoContextMenuItem;
 import org.opennms.features.topology.app.internal.TopologyComponent.VertexUpdateListener;
 import org.opennms.features.topology.app.internal.jung.FRLayoutAlgorithm;
@@ -58,6 +59,7 @@ import com.vaadin.Application;
 import com.vaadin.data.Property;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.terminal.ThemeResource;
+import com.vaadin.terminal.gwt.server.WebApplicationContext;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Alignment;
@@ -113,7 +115,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
     private String m_headerHtml;
     private boolean m_showHeader = true;
 
-	public TopologyWidgetTestApplication(CommandManager commandManager, HistoryManager historyManager, GraphProvider topologyProvider, ProviderManager providerManager, IconRepositoryManager iconRepoManager, SelectionManager selectionManager) {
+	public TopologyWidgetTestApplication(CommandManager commandManager, HistoryManager historyManager, VEProviderGraphContainer graphContainer, IconRepositoryManager iconRepoManager, SelectionManager selectionManager) {
 
 		// Ensure that selection changes trigger a history save operation
 		selectionManager.addSelectionListener(this);
@@ -124,11 +126,12 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 		m_iconRepositoryManager = iconRepoManager;
 
 		// Create a per-session GraphContainer instance
-		m_graphContainer = new VEProviderGraphContainer(topologyProvider, providerManager);
+		m_graphContainer = graphContainer;
 		m_graphContainer.setSelectionManager(selectionManager);
 		m_graphContainer.addChangeListener(this);
 		m_graphContainer.getMapViewManager().addListener(this);
 		m_graphContainer.setUserName((String)this.getUser());
+		
 	}
 
 
@@ -136,6 +139,8 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 	@Override
 	public void init() {
 	    setTheme("topo_default");
+	    HttpSession session = ((WebApplicationContext) this.getContext()).getHttpSession();
+        m_graphContainer.setSessionId(session.getId());
 	    
 		// See if the history manager has an existing fragment stored for
 		// this user. Do this before laying out the UI because the history
@@ -689,4 +694,5 @@ public class TopologyWidgetTestApplication extends Application implements Comman
     public void selectionChanged(SelectionContext selectionManager) {
         saveHistory();
     }
+    
 }
