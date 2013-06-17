@@ -122,8 +122,9 @@ public class ShowNCSPathOperation implements Operation {
                 NCSComponent ncsComponent = m_dao.get(m_storedCriteria.get(0));
                 String foreignSource = ncsComponent.getForeignSource();
                 String foreignId = ncsComponent.getForeignId();
+                String serviceName = ncsComponent.getName();
                 try {
-                    NCSServicePath path = getNcsPathProvider().getPath(foreignId, foreignSource, deviceANodeForeignId, deviceZNodeForeignId, nodeForeignSource);
+                    NCSServicePath path = getNcsPathProvider().getPath(foreignId, foreignSource, deviceANodeForeignId, deviceZNodeForeignId, nodeForeignSource, serviceName);
                     
                     
                     NCSServicePathCriteria criteria = new NCSServicePathCriteria(path.getEdges());

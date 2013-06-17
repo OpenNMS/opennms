@@ -24,14 +24,16 @@ public class NCSServicePath {
     private String m_serviceForeignSource;
     private String m_deviceAForeignID;
     private String m_deviceZForeignID;
+    private String m_serviceName;
     
-    public NCSServicePath(Node servicePath, NCSComponentRepository dao, NodeDao nodeDao, String nodeForeignSource, String serviceForeignSource, String deviceAID, String deviceZID) {
+    public NCSServicePath(Node servicePath, NCSComponentRepository dao, NodeDao nodeDao, String nodeForeignSource, String serviceForeignSource, String deviceAID, String deviceZID, String serviceName) {
         m_dao = dao;
         m_nodeDao = nodeDao;
         m_nodeForeignSource = nodeForeignSource;
         m_serviceForeignSource = serviceForeignSource;
         m_deviceAForeignID = deviceAID;
         m_deviceZForeignID = deviceZID;
+        m_serviceName = serviceName;
         
         //Add device A to path, its not sent in the path
         m_vertices.add( getVertexRefForForeignId(m_deviceAForeignID, m_nodeForeignSource) );
@@ -89,7 +91,7 @@ public class NCSServicePath {
                 NCSVertex sourceRef = iterator.next();
                 if(iterator.hasNext()) {
                     NCSVertex targetRef = m_vertices.get(iterator.nextIndex());
-                    edges.add(new NCSPathEdge(m_serviceForeignSource, sourceRef, targetRef));
+                    edges.add(new NCSPathEdge(m_serviceName, sourceRef, targetRef));
                 }
                 
             }

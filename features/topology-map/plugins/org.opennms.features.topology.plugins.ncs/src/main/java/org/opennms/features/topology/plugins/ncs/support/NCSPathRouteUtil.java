@@ -38,6 +38,7 @@ public class NCSPathRouteUtil {
         header.put("foreignId", in.getHeader("foreignId"));
         header.put("foreignSource", in.getHeader("foreignSource"));
         header.put("nodeForeignSource", in.getHeader("nodeForeignSource"));
+        header.put("serviceName", in.getHeader("serviceName"));
         exchange.getOut().setHeaders(header);
         LoggerFactory.getLogger(this.getClass()).info("NCSPathRouteUtil send headers: " + exchange.getOut().getHeaders());
     }
@@ -51,9 +52,10 @@ public class NCSPathRouteUtil {
         
         String deviceA = (String) in.getHeader("deviceA");
         String deviceZ = (String) in.getHeader("deviceZ");
+        String serviceName = (String) in.getHeader("serviceName");
         
         LoggerFactory.getLogger(this.getClass()).info("NCSPathRouteUtil parsing nodes: " + servicePath.toString());
-        return new NCSServicePath(servicePath, m_dao, m_nodeDao, nodeForeignSource, serviceForeignSource, deviceA, deviceZ);
+        return new NCSServicePath(servicePath, m_dao, m_nodeDao, nodeForeignSource, serviceForeignSource, deviceA, deviceZ, serviceName);
 
     }
 }
