@@ -50,25 +50,23 @@ public class NCSViewContribution implements IViewContribution {
 			public void valueChange(ValueChangeEvent event) {
 				Collection<Long> selectedIds = new HashSet<Long>( (Collection<Long>) event.getProperty().getValue() );
 				
-				if(selectedIds.size() > 0) {
-    				Collection<Long> nonSelectableIds = new ArrayList<Long>();
-    				
-    				for(Long id : selectedIds) {
-    				    boolean isRoot = (Boolean) tree.getItem(id).getItemProperty("isRoot").getValue();
-    				    if(id < 0 && isRoot) {
-    				        nonSelectableIds.add(id);
-    				    }
-    				}
-    				selectedIds.removeAll(nonSelectableIds);
-    				for(Long id : nonSelectableIds) {
-    				    tree.unselect(id);
-    				}
-    				
-    				Criteria criteria = NCSEdgeProvider.createCriteria(selectedIds);
-    				
-    				m_serviceManager.registerCriteria(criteria, widgetContext.getGraphContainer().getSessionId());
-    				selectVerticesForEdge(criteria, widgetContext.getGraphContainer().getSelectionManager());
+				Collection<Long> nonSelectableIds = new ArrayList<Long>();
+				
+				for(Long id : selectedIds) {
+				    boolean isRoot = (Boolean) tree.getItem(id).getItemProperty("isRoot").getValue();
+				    if(id < 0 && isRoot) {
+				        nonSelectableIds.add(id);
+				    }
 				}
+				selectedIds.removeAll(nonSelectableIds);
+				for(Long id : nonSelectableIds) {
+				    tree.unselect(id);
+				}
+				
+				Criteria criteria = NCSEdgeProvider.createCriteria(selectedIds);
+				
+				m_serviceManager.registerCriteria(criteria, widgetContext.getGraphContainer().getSessionId());
+				selectVerticesForEdge(criteria, widgetContext.getGraphContainer().getSelectionManager());
 			}
 		});
 		
