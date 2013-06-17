@@ -28,10 +28,12 @@
 
 package org.opennms.mock.snmp;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -43,6 +45,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.mock.snmp.responder.Sleeper;
 import org.snmp4j.CommunityTarget;
 import org.snmp4j.PDU;
@@ -367,14 +370,6 @@ public class MockSnmpAgentTest  {
         doGet();
     }
 
-    public void testSnmpWalkWithStringQuotes() throws Exception {
-        // alternate property file
-        m_agent.shutDownAndWait();
-        m_agent = MockSnmpAgent.createAgentAndRun(classPathResource("walk-with-quotes.properties"), "127.0.0.1/1691");
-
-        request("1.3.6.1.4.1.9.9.23.1.2.1.1.7.52.1").andExpect("1.3.6.1.4.1.9.9.23.1.2.1.1.7.52.1", SMIConstants.SYNTAX_OCTET_STRING, new OctetString("FastEthernet2"));
-    }
-
     private void doGet() throws Exception {
         requestAndVerifyResponse(PDU.GET, m_version);
     }
@@ -429,31 +424,45 @@ public class MockSnmpAgentTest  {
         }
     }
 
-    private PDU sendRequestV1V2(PDU pdu, int version) throws Exception {
-        PDU response;
+    private PDU sendRequestV1V2(PDU pdu, int version) {
+        PDU response = null;
         CommunityTarget target = new CommunityTarget();
         target.setCommunity(new OctetString("public"));
-        target.setAddress(new UdpAddress(InetAddress.getByName("127.0.0.1"), 1691));
+        target.setAddress(new UdpAddress(InetAddressUtils.addr("127.0.0.1"), 1691));
         target.setVersion(version);
 
         TransportMapping transport = null;
+        Snmp snmp = null;
         try {
             transport = new DefaultUdpTransportMapping();
-            Snmp snmp = new Snmp(transport);
+            snmp = new Snmp(transport);
             transport.listen();
 
             ResponseEvent e = snmp.send(pdu, target);
             response = e.getResponse();
+        } catch (final IOException e) {
+            e.printStackTrace();
         } finally { 
+            if (snmp != null) {
+                try {
+                    snmp.close();
+                } catch (final IOException e) {
+                    e.printStackTrace();
+                }
+            }
             if (transport != null) {
-                transport.close();
+                try {
+                    transport.close();
+                } catch (final IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
         return response;
     }
 
-    private PDU sendRequestV3(PDU pdu) throws IOException {
-        PDU response;
+    private PDU sendRequestV3(PDU pdu) {
+        PDU response = null;
 
         OctetString userId = new OctetString("opennmsUser");
         OctetString pw = new OctetString("0p3nNMSv3");
@@ -461,16 +470,17 @@ public class MockSnmpAgentTest  {
         UserTarget target = new UserTarget();
         target.setSecurityLevel(SecurityLevel.AUTH_PRIV);
         target.setSecurityName(userId);
-        target.setAddress(new UdpAddress(InetAddress.getByName("127.0.0.1"), 1691));
+        target.setAddress(new UdpAddress(InetAddressUtils.addr("127.0.0.1"), 1691));
         target.setVersion(SnmpConstants.version3);
         target.setTimeout(DEFAULT_TIMEOUT);
 
         TransportMapping transport = null;
+        Snmp snmp = null;
         try {
             USM usm = new USM(SecurityProtocols.getInstance(), new OctetString(MPv3.createLocalEngineID()), 0);
             SecurityModels.getInstance().addSecurityModel(usm);
             transport = new DefaultUdpTransportMapping();
-            Snmp snmp = new Snmp(transport);
+            snmp = new Snmp(transport);
 
             UsmUser user = new UsmUser(userId, AuthMD5.ID, pw, PrivDES.ID, pw);
             snmp.getUSM().addUser(userId, user);
@@ -479,9 +489,22 @@ public class MockSnmpAgentTest  {
 
             ResponseEvent e = snmp.send(pdu, target);
             response = e.getResponse();
+        } catch (final IOException e) {
+            e.printStackTrace();
         } finally { 
+            if (snmp != null) {
+                try {
+                    snmp.close();
+                } catch (final IOException e) {
+                    e.printStackTrace();
+                }
+            }
             if (transport != null) {
-                transport.close();
+                try {
+                    transport.close();
+                } catch (final IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
         return response;
