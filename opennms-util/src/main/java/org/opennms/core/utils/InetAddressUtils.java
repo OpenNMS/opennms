@@ -303,7 +303,7 @@ abstract public class InetAddressUtils {
             	if (addr6.getScopeId() != 0) {
             		sb.append("%").append(addr6.getScopeId());
             	}
-            	return sb.toString();
+            	return sb.toString().intern();
             } else {
                 throw new IllegalArgumentException("Unknown type of InetAddress: " + addr.getClass().getName());
             }
@@ -318,7 +318,7 @@ abstract public class InetAddressUtils {
      */
     public static String toIpAddrString(final byte[] addr) {
         if (addr.length == 4) {
-            return getInetAddress(addr).getHostAddress();
+            return getInetAddress(addr).getHostAddress().intern();
         } else if (addr.length == 16) {
             return String.format("%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x",
                                  addr[0],
