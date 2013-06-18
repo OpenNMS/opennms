@@ -31,6 +31,7 @@
  */
 package org.opennms.netmgt.config.service;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -47,41 +48,40 @@ import org.opennms.core.xml.JaxbUtils;
  * 
  * @version $Revision$ $Date$
  */
-public class Service implements java.io.Serializable {
-	private static final long serialVersionUID = -2554947387909986065L;
+public class Service implements Serializable {
+    private static final long serialVersionUID = -2554947387909986065L;
 
-	//--------------------------/
-     //- Class/Member Variables -/
-    //--------------------------/
+    // --------------------------/
+    // - Class/Member Variables -/
+    // --------------------------/
 
     /**
      * Field _name.
      */
-	@XmlElement(name="name")
+    @XmlElement(name = "name")
     private String _name;
 
     /**
      * Field _className.
      */
-	@XmlElement(name="class-name")
+    @XmlElement(name = "class-name")
     private String _className;
 
     /**
      * Field _attributeList.
      */
-	@XmlElement(name="attribute")
+    @XmlElement(name = "attribute")
     private List<Attribute> _attributeList = new ArrayList<Attribute>(0);;
 
     /**
      * Field _invokeList.
      */
-	@XmlElement(name="invoke")
+    @XmlElement(name = "invoke")
     private List<Invoke> _invokeList = new ArrayList<Invoke>(0);
 
-
-      //----------------/
-     //- Constructors -/
-    //----------------/
+    // ----------------/
+    // - Constructors -/
+    // ----------------/
 
     public Service() {
         super();
@@ -89,27 +89,26 @@ public class Service implements java.io.Serializable {
 
     public Service(final String name, final String className,
             final List<Attribute> attributes, final List<Invoke> invokes) {
-		super();
-		setName(name);
-		setClassName(className);
-		setAttribute(attributes);
-		setInvoke(invokes);
-	}
+        super();
+        setName(name);
+        setClassName(className);
+        setAttribute(attributes);
+        setInvoke(invokes);
+    }
 
-      //-----------/
-     //- Methods -/
-    //-----------/
+    // -----------/
+    // - Methods -/
+    // -----------/
 
     /**
      * 
      * 
      * @param vAttribute
-     * @throws java.lang.IndexOutOfBoundsException if the index
-     * given is outside the bounds of the collection
+     * @throws java.lang.IndexOutOfBoundsException
+     *             if the index given is outside the bounds of the collection
      */
-    public void addAttribute(
-            final Attribute vAttribute)
-    throws IndexOutOfBoundsException {
+    public void addAttribute(final Attribute vAttribute)
+            throws IndexOutOfBoundsException {
         this._attributeList.add(vAttribute);
     }
 
@@ -118,13 +117,11 @@ public class Service implements java.io.Serializable {
      * 
      * @param index
      * @param vAttribute
-     * @throws java.lang.IndexOutOfBoundsException if the index
-     * given is outside the bounds of the collection
+     * @throws java.lang.IndexOutOfBoundsException
+     *             if the index given is outside the bounds of the collection
      */
-    public void addAttribute(
-            final int index,
-            final Attribute vAttribute)
-    throws IndexOutOfBoundsException {
+    public void addAttribute(final int index, final Attribute vAttribute)
+            throws IndexOutOfBoundsException {
         this._attributeList.add(index, vAttribute);
     }
 
@@ -132,12 +129,11 @@ public class Service implements java.io.Serializable {
      * 
      * 
      * @param vInvoke
-     * @throws java.lang.IndexOutOfBoundsException if the index
-     * given is outside the bounds of the collection
+     * @throws java.lang.IndexOutOfBoundsException
+     *             if the index given is outside the bounds of the collection
      */
-    public void addInvoke(
-            final Invoke vInvoke)
-    throws IndexOutOfBoundsException {
+    public void addInvoke(final Invoke vInvoke)
+            throws IndexOutOfBoundsException {
         this._invokeList.add(vInvoke);
     }
 
@@ -146,35 +142,29 @@ public class Service implements java.io.Serializable {
      * 
      * @param index
      * @param vInvoke
-     * @throws java.lang.IndexOutOfBoundsException if the index
-     * given is outside the bounds of the collection
+     * @throws java.lang.IndexOutOfBoundsException
+     *             if the index given is outside the bounds of the collection
      */
-    public void addInvoke(
-            final int index,
-            final Invoke vInvoke)
-    throws java.lang.IndexOutOfBoundsException {
+    public void addInvoke(final int index, final Invoke vInvoke)
+            throws java.lang.IndexOutOfBoundsException {
         this._invokeList.add(index, vInvoke);
     }
 
     /**
      * Method enumerateAttribute.
      * 
-     * @return an Enumeration over all possible elements of this
-     * collection
+     * @return an Enumeration over all possible elements of this collection
      */
-    public Enumeration<Attribute> enumerateAttribute(
-    ) {
+    public Enumeration<Attribute> enumerateAttribute() {
         return Collections.enumeration(this._attributeList);
     }
 
     /**
      * Method enumerateInvoke.
      * 
-     * @return an Enumeration over all possible elements of this
-     * collection
+     * @return an Enumeration over all possible elements of this collection
      */
-    public Enumeration<Invoke> enumerateInvoke(
-    ) {
+    public Enumeration<Invoke> enumerateInvoke() {
         return Collections.enumeration(this._invokeList);
     }
 
@@ -185,41 +175,40 @@ public class Service implements java.io.Serializable {
      * @return true if the objects are equal.
      */
     @Override()
-    public boolean equals(
-            final java.lang.Object obj) {
-        if ( this == obj )
+    public boolean equals(final java.lang.Object obj) {
+        if (this == obj)
             return true;
-        
+
         if (obj instanceof Service) {
-        
-            Service temp = (Service)obj;
+
+            Service temp = (Service) obj;
             if (this._name != null) {
-                if (temp._name == null) return false;
-                else if (!(this._name.equals(temp._name))) 
+                if (temp._name == null)
                     return false;
-            }
-            else if (temp._name != null)
+                else if (!(this._name.equals(temp._name)))
+                    return false;
+            } else if (temp._name != null)
                 return false;
             if (this._className != null) {
-                if (temp._className == null) return false;
-                else if (!(this._className.equals(temp._className))) 
+                if (temp._className == null)
                     return false;
-            }
-            else if (temp._className != null)
+                else if (!(this._className.equals(temp._className)))
+                    return false;
+            } else if (temp._className != null)
                 return false;
             if (this._attributeList != null) {
-                if (temp._attributeList == null) return false;
-                else if (!(this._attributeList.equals(temp._attributeList))) 
+                if (temp._attributeList == null)
                     return false;
-            }
-            else if (temp._attributeList != null)
+                else if (!(this._attributeList.equals(temp._attributeList)))
+                    return false;
+            } else if (temp._attributeList != null)
                 return false;
             if (this._invokeList != null) {
-                if (temp._invokeList == null) return false;
-                else if (!(this._invokeList.equals(temp._invokeList))) 
+                if (temp._invokeList == null)
                     return false;
-            }
-            else if (temp._invokeList != null)
+                else if (!(this._invokeList.equals(temp._invokeList)))
+                    return false;
+            } else if (temp._invokeList != null)
                 return false;
             return true;
         }
@@ -230,48 +219,47 @@ public class Service implements java.io.Serializable {
      * Method getAttribute.
      * 
      * @param index
-     * @throws java.lang.IndexOutOfBoundsException if the index
-     * given is outside the bounds of the collection
-     * @return the value of the
-     * org.opennms.netmgt.config.service.Attribute at the given inde
+     * @throws java.lang.IndexOutOfBoundsException
+     *             if the index given is outside the bounds of the collection
+     * @return the value of the org.opennms.netmgt.config.service.Attribute at
+     *         the given inde
      */
-    public Attribute getAttribute(
-            final int index)
-    throws IndexOutOfBoundsException {
+    public Attribute getAttribute(final int index)
+            throws IndexOutOfBoundsException {
         // check bounds for index
         if (index < 0 || index >= this._attributeList.size()) {
-            throw new IndexOutOfBoundsException("getAttribute: Index value '" + index + "' not in range [0.." + (this._attributeList.size() - 1) + "]");
+            throw new IndexOutOfBoundsException("getAttribute: Index value '"
+                    + index + "' not in range [0.."
+                    + (this._attributeList.size() - 1) + "]");
         }
-        
+
         return (Attribute) _attributeList.get(index);
     }
 
     /**
-     * Method getAttribute.Returns the contents of the collection
-     * in an Array.  <p>Note:  Just in case the collection contents
-     * are changing in another thread, we pass a 0-length Array of
-     * the correct type into the API call.  This way we <i>know</i>
-     * that the Array returned is of exactly the correct length.
+     * Method getAttribute.Returns the contents of the collection in an Array.
+     * <p>
+     * Note: Just in case the collection contents are changing in another
+     * thread, we pass a 0-length Array of the correct type into the API call.
+     * This way we <i>know</i> that the Array returned is of exactly the
+     * correct length.
      * 
      * @return this collection as an Array
      */
     @XmlTransient
-    public Attribute[] getAttribute(
-    ) {
+    public Attribute[] getAttribute() {
         Attribute[] array = new Attribute[0];
         return (Attribute[]) this._attributeList.toArray(array);
     }
 
     /**
-     * Method getAttributeCollection.Returns a reference to
-     * '_attributeList'. No type checking is performed on any
-     * modifications to the Vector.
+     * Method getAttributeCollection.Returns a reference to '_attributeList'.
+     * No type checking is performed on any modifications to the Vector.
      * 
      * @return a reference to the Vector backing this class
      */
     @XmlTransient
-    public List<Attribute> getAttributeCollection(
-    ) {
+    public List<Attribute> getAttributeCollection() {
         return this._attributeList;
     }
 
@@ -280,8 +268,7 @@ public class Service implements java.io.Serializable {
      * 
      * @return the size of this collection
      */
-    public int getAttributeCount(
-    ) {
+    public int getAttributeCount() {
         return this._attributeList.size();
     }
 
@@ -291,8 +278,7 @@ public class Service implements java.io.Serializable {
      * @return the value of field 'ClassName'.
      */
     @XmlTransient
-    public String getClassName(
-    ) {
+    public String getClassName() {
         return this._className;
     }
 
@@ -300,48 +286,46 @@ public class Service implements java.io.Serializable {
      * Method getInvoke.
      * 
      * @param index
-     * @throws java.lang.IndexOutOfBoundsException if the index
-     * given is outside the bounds of the collection
-     * @return the value of the
-     * org.opennms.netmgt.config.service.Invoke at the given index
+     * @throws java.lang.IndexOutOfBoundsException
+     *             if the index given is outside the bounds of the collection
+     * @return the value of the org.opennms.netmgt.config.service.Invoke at
+     *         the given index
      */
-    public Invoke getInvoke(
-            final int index)
-    throws IndexOutOfBoundsException {
+    public Invoke getInvoke(final int index) throws IndexOutOfBoundsException {
         // check bounds for index
         if (index < 0 || index >= this._invokeList.size()) {
-            throw new IndexOutOfBoundsException("getInvoke: Index value '" + index + "' not in range [0.." + (this._invokeList.size() - 1) + "]");
+            throw new IndexOutOfBoundsException("getInvoke: Index value '"
+                    + index + "' not in range [0.."
+                    + (this._invokeList.size() - 1) + "]");
         }
-        
+
         return (Invoke) _invokeList.get(index);
     }
 
     /**
-     * Method getInvoke.Returns the contents of the collection in
-     * an Array.  <p>Note:  Just in case the collection contents
-     * are changing in another thread, we pass a 0-length Array of
-     * the correct type into the API call.  This way we <i>know</i>
-     * that the Array returned is of exactly the correct length.
+     * Method getInvoke.Returns the contents of the collection in an Array.
+     * <p>
+     * Note: Just in case the collection contents are changing in another
+     * thread, we pass a 0-length Array of the correct type into the API call.
+     * This way we <i>know</i> that the Array returned is of exactly the
+     * correct length.
      * 
      * @return this collection as an Array
      */
     @XmlTransient
-    public Invoke[] getInvoke(
-    ) {
+    public Invoke[] getInvoke() {
         Invoke[] array = new Invoke[0];
         return (Invoke[]) this._invokeList.toArray(array);
     }
 
     /**
-     * Method getInvokeCollection.Returns a reference to
-     * '_invokeList'. No type checking is performed on any
-     * modifications to the Vector.
+     * Method getInvokeCollection.Returns a reference to '_invokeList'. No
+     * type checking is performed on any modifications to the Vector.
      * 
      * @return a reference to the Vector backing this class
      */
     @XmlTransient
-    public java.util.List<Invoke> getInvokeCollection(
-    ) {
+    public java.util.List<Invoke> getInvokeCollection() {
         return this._invokeList;
     }
 
@@ -350,8 +334,7 @@ public class Service implements java.io.Serializable {
      * 
      * @return the size of this collection
      */
-    public int getInvokeCount(
-    ) {
+    public int getInvokeCount() {
         return this._invokeList.size();
     }
 
@@ -361,58 +344,52 @@ public class Service implements java.io.Serializable {
      * @return the value of field 'Name'.
      */
     @XmlTransient
-    public String getName(
-    ) {
+    public String getName() {
         return this._name;
     }
 
     /**
      * Overrides the java.lang.Object.hashCode method.
      * <p>
-     * The following steps came from <b>Effective Java Programming
-     * Language Guide</b> by Joshua Bloch, Chapter 3
+     * The following steps came from <b>Effective Java Programming Language
+     * Guide</b> by Joshua Bloch, Chapter 3
      * 
      * @return a hash code value for the object.
      */
-    public int hashCode(
-    ) {
+    public int hashCode() {
         int result = 17;
 
         if (_name != null) {
-           result = 37 * result + _name.hashCode();
+            result = 37 * result + _name.hashCode();
         }
         if (_className != null) {
-           result = 37 * result + _className.hashCode();
+            result = 37 * result + _className.hashCode();
         }
         if (_attributeList != null) {
-           result = 37 * result + _attributeList.hashCode();
+            result = 37 * result + _attributeList.hashCode();
         }
         if (_invokeList != null) {
-           result = 37 * result + _invokeList.hashCode();
+            result = 37 * result + _invokeList.hashCode();
         }
-        
+
         return result;
     }
 
     /**
      * Method iterateAttribute.
      * 
-     * @return an Iterator over all possible elements in this
-     * collection
+     * @return an Iterator over all possible elements in this collection
      */
-    public Iterator<Attribute> iterateAttribute(
-    ) {
+    public Iterator<Attribute> iterateAttribute() {
         return this._attributeList.iterator();
     }
 
     /**
      * Method iterateInvoke.
      * 
-     * @return an Iterator over all possible elements in this
-     * collection
+     * @return an Iterator over all possible elements in this collection
      */
-    public Iterator<Invoke> iterateInvoke(
-    ) {
+    public Iterator<Invoke> iterateInvoke() {
         return this._invokeList.iterator();
     }
 
@@ -421,22 +398,19 @@ public class Service implements java.io.Serializable {
      * 
      * @param out
      */
-    public void marshal(
-            final java.io.Writer out) {
-    	JaxbUtils.marshal(this, out);
+    public void marshal(final java.io.Writer out) {
+        JaxbUtils.marshal(this, out);
     }
 
     /**
      */
-    public void removeAllAttribute(
-    ) {
+    public void removeAllAttribute() {
         this._attributeList.clear();
     }
 
     /**
      */
-    public void removeAllInvoke(
-    ) {
+    public void removeAllInvoke() {
         this._invokeList.clear();
     }
 
@@ -446,8 +420,7 @@ public class Service implements java.io.Serializable {
      * @param vAttribute
      * @return true if the object was removed from the collection.
      */
-    public boolean removeAttribute(
-            final Attribute vAttribute) {
+    public boolean removeAttribute(final Attribute vAttribute) {
         boolean removed = _attributeList.remove(vAttribute);
         return removed;
     }
@@ -458,8 +431,7 @@ public class Service implements java.io.Serializable {
      * @param index
      * @return the element removed from the collection
      */
-    public Attribute removeAttributeAt(
-            final int index) {
+    public Attribute removeAttributeAt(final int index) {
         Object obj = this._attributeList.remove(index);
         return (Attribute) obj;
     }
@@ -470,8 +442,7 @@ public class Service implements java.io.Serializable {
      * @param vInvoke
      * @return true if the object was removed from the collection.
      */
-    public boolean removeInvoke(
-            final Invoke vInvoke) {
+    public boolean removeInvoke(final Invoke vInvoke) {
         boolean removed = _invokeList.remove(vInvoke);
         return removed;
     }
@@ -482,8 +453,7 @@ public class Service implements java.io.Serializable {
      * @param index
      * @return the element removed from the collection
      */
-    public Invoke removeInvokeAt(
-            final int index) {
+    public Invoke removeInvokeAt(final int index) {
         Object obj = this._invokeList.remove(index);
         return (Invoke) obj;
     }
@@ -493,18 +463,18 @@ public class Service implements java.io.Serializable {
      * 
      * @param index
      * @param vAttribute
-     * @throws java.lang.IndexOutOfBoundsException if the index
-     * given is outside the bounds of the collection
+     * @throws java.lang.IndexOutOfBoundsException
+     *             if the index given is outside the bounds of the collection
      */
-    public void setAttribute(
-            final int index,
-            final Attribute vAttribute)
-    throws IndexOutOfBoundsException {
+    public void setAttribute(final int index, final Attribute vAttribute)
+            throws IndexOutOfBoundsException {
         // check bounds for index
         if (index < 0 || index >= this._attributeList.size()) {
-            throw new IndexOutOfBoundsException("setAttribute: Index value '" + index + "' not in range [0.." + (this._attributeList.size() - 1) + "]");
+            throw new IndexOutOfBoundsException("setAttribute: Index value '"
+                    + index + "' not in range [0.."
+                    + (this._attributeList.size() - 1) + "]");
         }
-        
+
         this._attributeList.set(index, vAttribute);
     }
 
@@ -513,37 +483,36 @@ public class Service implements java.io.Serializable {
      * 
      * @param vAttributeArray
      */
-    public void setAttribute(
-            final Attribute[] vAttributeArray) {
-        //-- copy array
+    public void setAttribute(final Attribute[] vAttributeArray) {
+        // -- copy array
         _attributeList.clear();
-        
+
         for (int i = 0; i < vAttributeArray.length; i++) {
-                this._attributeList.add(vAttributeArray[i]);
+            this._attributeList.add(vAttributeArray[i]);
         }
     }
 
     /**
-     * Sets the value of '_attributeList' by copying the given
-     * Vector. All elements will be checked for type safety.
+     * Sets the value of '_attributeList' by copying the given Vector. All
+     * elements will be checked for type safety.
      * 
-     * @param vAttributeList the Vector to copy.
+     * @param vAttributeList
+     *            the Vector to copy.
      */
-    public void setAttribute(
-            final List<Attribute> vAttributeList) {
+    public void setAttribute(final List<Attribute> vAttributeList) {
         // copy vector
         this._attributeList.clear();
-        
+
         this._attributeList.addAll(vAttributeList);
     }
 
     /**
      * Sets the value of field 'className'.
      * 
-     * @param className the value of field 'className'.
+     * @param className
+     *            the value of field 'className'.
      */
-    public void setClassName(
-            final String className) {
+    public void setClassName(final String className) {
         this._className = className;
     }
 
@@ -552,18 +521,18 @@ public class Service implements java.io.Serializable {
      * 
      * @param index
      * @param vInvoke
-     * @throws java.lang.IndexOutOfBoundsException if the index
-     * given is outside the bounds of the collection
+     * @throws java.lang.IndexOutOfBoundsException
+     *             if the index given is outside the bounds of the collection
      */
-    public void setInvoke(
-            final int index,
-            final Invoke vInvoke)
-    throws IndexOutOfBoundsException {
+    public void setInvoke(final int index, final Invoke vInvoke)
+            throws IndexOutOfBoundsException {
         // check bounds for index
         if (index < 0 || index >= this._invokeList.size()) {
-            throw new IndexOutOfBoundsException("setInvoke: Index value '" + index + "' not in range [0.." + (this._invokeList.size() - 1) + "]");
+            throw new IndexOutOfBoundsException("setInvoke: Index value '"
+                    + index + "' not in range [0.."
+                    + (this._invokeList.size() - 1) + "]");
         }
-        
+
         this._invokeList.set(index, vInvoke);
     }
 
@@ -572,37 +541,36 @@ public class Service implements java.io.Serializable {
      * 
      * @param vInvokeArray
      */
-    public void setInvoke(
-            final Invoke[] vInvokeArray) {
-        //-- copy array
+    public void setInvoke(final Invoke[] vInvokeArray) {
+        // -- copy array
         _invokeList.clear();
-        
+
         for (int i = 0; i < vInvokeArray.length; i++) {
-                this._invokeList.add(vInvokeArray[i]);
+            this._invokeList.add(vInvokeArray[i]);
         }
     }
 
     /**
-     * Sets the value of '_invokeList' by copying the given Vector.
-     * All elements will be checked for type safety.
+     * Sets the value of '_invokeList' by copying the given Vector. All
+     * elements will be checked for type safety.
      * 
-     * @param vInvokeList the Vector to copy.
+     * @param vInvokeList
+     *            the Vector to copy.
      */
-    public void setInvoke(
-            final List<Invoke> vInvokeList) {
+    public void setInvoke(final List<Invoke> vInvokeList) {
         // copy vector
         this._invokeList.clear();
-        
+
         this._invokeList.addAll(vInvokeList);
     }
 
     /**
      * Sets the value of field 'name'.
      * 
-     * @param name the value of field 'name'.
+     * @param name
+     *            the value of field 'name'.
      */
-    public void setName(
-            final java.lang.String name) {
+    public void setName(final java.lang.String name) {
         this._name = name;
     }
 }

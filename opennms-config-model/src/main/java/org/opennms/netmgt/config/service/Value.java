@@ -31,9 +31,11 @@
  */
 package org.opennms.netmgt.config.service;
 
-  //---------------------------------/
- //- Imported classes and packages -/
 //---------------------------------/
+//- Imported classes and packages -/
+//---------------------------------/
+
+import java.io.Serializable;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -46,30 +48,30 @@ import javax.xml.bind.annotation.XmlValue;
  * 
  * @version $Revision$ $Date$
  */
-@XmlRootElement(name="value")
+@XmlRootElement(name = "value")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Value implements java.io.Serializable {
-	private static final long serialVersionUID = 8678345448589083586L;
+public class Value implements Serializable {
+    private static final long serialVersionUID = 8678345448589083586L;
 
-      //--------------------------/
-     //- Class/Member Variables -/
-    //--------------------------/
+    // --------------------------/
+    // - Class/Member Variables -/
+    // --------------------------/
 
-	/**
+    /**
      * internal content storage
      */
-	@XmlValue
+    @XmlValue
     private String _content = "";
 
     /**
      * Field _type.
      */
-	@XmlAttribute(name="type")
+    @XmlAttribute(name = "type")
     private String _type;
 
-      //----------------/
-     //- Constructors -/
-    //----------------/
+    // ----------------/
+    // - Constructors -/
+    // ----------------/
 
     public Value() {
         super();
@@ -82,9 +84,9 @@ public class Value implements java.io.Serializable {
         setContent(content);
     }
 
-      //-----------/
-     //- Methods -/
-    //-----------/
+    // -----------/
+    // - Methods -/
+    // -----------/
 
     /**
      * Overrides the java.lang.Object.equals method.
@@ -93,27 +95,26 @@ public class Value implements java.io.Serializable {
      * @return true if the objects are equal.
      */
     @Override()
-    public boolean equals(
-            final Object obj) {
-        if ( this == obj )
+    public boolean equals(final Object obj) {
+        if (this == obj)
             return true;
-        
+
         if (obj instanceof Value) {
-        
-            Value temp = (Value)obj;
+
+            Value temp = (Value) obj;
             if (this._content != null) {
-                if (temp._content == null) return false;
-                else if (!(this._content.equals(temp._content))) 
+                if (temp._content == null)
                     return false;
-            }
-            else if (temp._content != null)
+                else if (!(this._content.equals(temp._content)))
+                    return false;
+            } else if (temp._content != null)
                 return false;
             if (this._type != null) {
-                if (temp._type == null) return false;
-                else if (!(this._type.equals(temp._type))) 
+                if (temp._type == null)
                     return false;
-            }
-            else if (temp._type != null)
+                else if (!(this._type.equals(temp._type)))
+                    return false;
+            } else if (temp._type != null)
                 return false;
             return true;
         }
@@ -121,13 +122,12 @@ public class Value implements java.io.Serializable {
     }
 
     /**
-     * Returns the value of field 'content'. The field 'content'
-     * has the following description: internal content storage
+     * Returns the value of field 'content'. The field 'content' has the
+     * following description: internal content storage
      * 
      * @return the value of field 'Content'.
      */
-    public String getContent(
-    ) {
+    public String getContent() {
         return this._content;
     }
 
@@ -136,51 +136,49 @@ public class Value implements java.io.Serializable {
      * 
      * @return the value of field 'Type'.
      */
-    public String getType(
-    ) {
+    public String getType() {
         return this._type;
     }
 
     /**
      * Overrides the java.lang.Object.hashCode method.
      * <p>
-     * The following steps came from <b>Effective Java Programming
-     * Language Guide</b> by Joshua Bloch, Chapter 3
+     * The following steps came from <b>Effective Java Programming Language
+     * Guide</b> by Joshua Bloch, Chapter 3
      * 
      * @return a hash code value for the object.
      */
-    public int hashCode(
-    ) {
+    public int hashCode() {
         int result = 17;
-        
+
         if (_content != null) {
-           result = 37 * result + _content.hashCode();
+            result = 37 * result + _content.hashCode();
         }
         if (_type != null) {
-           result = 37 * result + _type.hashCode();
+            result = 37 * result + _type.hashCode();
         }
-        
+
         return result;
     }
 
     /**
-     * Sets the value of field 'content'. The field 'content' has
-     * the following description: internal content storage
+     * Sets the value of field 'content'. The field 'content' has the
+     * following description: internal content storage
      * 
-     * @param content the value of field 'content'.
+     * @param content
+     *            the value of field 'content'.
      */
-    public void setContent(
-            final String content) {
+    public void setContent(final String content) {
         this._content = content;
     }
 
     /**
      * Sets the value of field 'type'.
      * 
-     * @param type the value of field 'type'.
+     * @param type
+     *            the value of field 'type'.
      */
-    public void setType(
-            final String type) {
+    public void setType(final String type) {
         this._type = type;
     }
 }

@@ -31,9 +31,11 @@
  */
 package org.opennms.netmgt.config.service;
 
-  //---------------------------------/
- //- Imported classes and packages -/
 //---------------------------------/
+//- Imported classes and packages -/
+//---------------------------------/
+
+import java.io.Serializable;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -45,45 +47,45 @@ import javax.xml.bind.annotation.XmlRootElement;
  * 
  * @version $Revision$ $Date$
  */
-@XmlRootElement(name="attribute")
+@XmlRootElement(name = "attribute")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Attribute implements java.io.Serializable {
-	private static final long serialVersionUID = -5369595993818814229L;
+public class Attribute implements Serializable {
+    private static final long serialVersionUID = -5369595993818814229L;
 
-      //--------------------------/
-     //- Class/Member Variables -/
-    //--------------------------/
+    // --------------------------/
+    // - Class/Member Variables -/
+    // --------------------------/
 
-	/**
+    /**
      * Field _name.
      */
-	@XmlElement(name="name")
+    @XmlElement(name = "name")
     private String _name;
 
     /**
      * Field _value.
      */
-	@XmlElement(name="value")
+    @XmlElement(name = "value")
     private Value _value;
 
-
-      //----------------/
-     //- Constructors -/
-    //----------------/
+    // ----------------/
+    // - Constructors -/
+    // ----------------/
 
     public Attribute() {
         super();
     }
 
-    public Attribute(final String name, final String type, final String content) {
+    public Attribute(final String name, final String type,
+            final String content) {
         super();
         setName(name);
         setValue(new Value(type, content));
     }
 
-      //-----------/
-     //- Methods -/
-    //-----------/
+    // -----------/
+    // - Methods -/
+    // -----------/
 
     /**
      * Overrides the java.lang.Object.equals method.
@@ -92,27 +94,26 @@ public class Attribute implements java.io.Serializable {
      * @return true if the objects are equal.
      */
     @Override()
-    public boolean equals(
-            final java.lang.Object obj) {
-        if ( this == obj )
+    public boolean equals(final java.lang.Object obj) {
+        if (this == obj)
             return true;
-        
+
         if (obj instanceof Attribute) {
-        
-            Attribute temp = (Attribute)obj;
+
+            Attribute temp = (Attribute) obj;
             if (this._name != null) {
-                if (temp._name == null) return false;
-                else if (!(this._name.equals(temp._name))) 
+                if (temp._name == null)
                     return false;
-            }
-            else if (temp._name != null)
+                else if (!(this._name.equals(temp._name)))
+                    return false;
+            } else if (temp._name != null)
                 return false;
             if (this._value != null) {
-                if (temp._value == null) return false;
-                else if (!(this._value.equals(temp._value))) 
+                if (temp._value == null)
                     return false;
-            }
-            else if (temp._value != null)
+                else if (!(this._value.equals(temp._value)))
+                    return false;
+            } else if (temp._value != null)
                 return false;
             return true;
         }
@@ -124,8 +125,7 @@ public class Attribute implements java.io.Serializable {
      * 
      * @return the value of field 'Name'.
      */
-    public String getName(
-    ) {
+    public String getName() {
         return this._name;
     }
 
@@ -134,50 +134,48 @@ public class Attribute implements java.io.Serializable {
      * 
      * @return the value of field 'Value'.
      */
-    public Value getValue(
-    ) {
+    public Value getValue() {
         return this._value;
     }
 
     /**
      * Overrides the java.lang.Object.hashCode method.
      * <p>
-     * The following steps came from <b>Effective Java Programming
-     * Language Guide</b> by Joshua Bloch, Chapter 3
+     * The following steps came from <b>Effective Java Programming Language
+     * Guide</b> by Joshua Bloch, Chapter 3
      * 
      * @return a hash code value for the object.
      */
-    public int hashCode(
-    ) {
+    public int hashCode() {
         int result = 17;
 
         if (_name != null) {
-           result = 37 * result + _name.hashCode();
+            result = 37 * result + _name.hashCode();
         }
         if (_value != null) {
-           result = 37 * result + _value.hashCode();
+            result = 37 * result + _value.hashCode();
         }
-        
+
         return result;
     }
 
     /**
      * Sets the value of field 'name'.
      * 
-     * @param name the value of field 'name'.
+     * @param name
+     *            the value of field 'name'.
      */
-    public void setName(
-            final String name) {
+    public void setName(final String name) {
         this._name = name;
     }
 
     /**
      * Sets the value of field 'value'.
      * 
-     * @param value the value of field 'value'.
+     * @param value
+     *            the value of field 'value'.
      */
-    public void setValue(
-            final Value value) {
+    public void setValue(final Value value) {
         this._value = value;
     }
 }

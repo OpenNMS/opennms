@@ -31,10 +31,11 @@
  */
 package org.opennms.netmgt.config.service;
 
-  //---------------------------------/
- //- Imported classes and packages -/
+//---------------------------------/
+//- Imported classes and packages -/
 //---------------------------------/
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -46,54 +47,51 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * Top-level element for the service-configuration.xml
- *  configuration file.
+ * Top-level element for the service-configuration.xml configuration file.
  * 
  * @version $Revision$ $Date$
  */
-@XmlRootElement(name="service-configuration")
+@XmlRootElement(name = "service-configuration")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class ServiceConfiguration implements java.io.Serializable {
-	private static final long serialVersionUID = 1477638002034420045L;
+public class ServiceConfiguration implements Serializable {
+    private static final long serialVersionUID = 1477638002034420045L;
 
-      //--------------------------/
-     //- Class/Member Variables -/
-    //--------------------------/
+    // --------------------------/
+    // - Class/Member Variables -/
+    // --------------------------/
 
-	/**
+    /**
      * Service to be launched by the manager.
      */
-	@XmlElement(name="service")
+    @XmlElement(name = "service")
     private List<Service> _serviceList = new ArrayList<Service>(0);;
 
-      //----------------/
-     //- Constructors -/
-    //----------------/
+    // ----------------/
+    // - Constructors -/
+    // ----------------/
 
     public ServiceConfiguration() {
         super();
     }
 
-    public ServiceConfiguration(
-            final List<Service> serviceList) {
-		super();
-		setService(serviceList);
-	}
+    public ServiceConfiguration(final List<Service> serviceList) {
+        super();
+        setService(serviceList);
+    }
 
-      //-----------/
-     //- Methods -/
-    //-----------/
+    // -----------/
+    // - Methods -/
+    // -----------/
 
     /**
      * 
      * 
      * @param vService
-     * @throws java.lang.IndexOutOfBoundsException if the index
-     * given is outside the bounds of the collection
+     * @throws java.lang.IndexOutOfBoundsException
+     *             if the index given is outside the bounds of the collection
      */
-    public void addService(
-            final Service vService)
-    throws IndexOutOfBoundsException {
+    public void addService(final Service vService)
+            throws IndexOutOfBoundsException {
         this._serviceList.add(vService);
     }
 
@@ -102,24 +100,20 @@ public class ServiceConfiguration implements java.io.Serializable {
      * 
      * @param index
      * @param vService
-     * @throws java.lang.IndexOutOfBoundsException if the index
-     * given is outside the bounds of the collection
+     * @throws java.lang.IndexOutOfBoundsException
+     *             if the index given is outside the bounds of the collection
      */
-    public void addService(
-            final int index,
-            final Service vService)
-    throws IndexOutOfBoundsException {
+    public void addService(final int index, final Service vService)
+            throws IndexOutOfBoundsException {
         this._serviceList.add(index, vService);
     }
 
     /**
      * Method enumerateService.
      * 
-     * @return an Enumeration over all possible elements of this
-     * collection
+     * @return an Enumeration over all possible elements of this collection
      */
-    public java.util.Enumeration<Service> enumerateService(
-    ) {
+    public java.util.Enumeration<Service> enumerateService() {
         return Collections.enumeration(this._serviceList);
     }
 
@@ -130,20 +124,19 @@ public class ServiceConfiguration implements java.io.Serializable {
      * @return true if the objects are equal.
      */
     @Override()
-    public boolean equals(
-            final Object obj) {
-        if ( this == obj )
+    public boolean equals(final Object obj) {
+        if (this == obj)
             return true;
-        
+
         if (obj instanceof ServiceConfiguration) {
-        
-            ServiceConfiguration temp = (ServiceConfiguration)obj;
+
+            ServiceConfiguration temp = (ServiceConfiguration) obj;
             if (this._serviceList != null) {
-                if (temp._serviceList == null) return false;
-                else if (!(this._serviceList.equals(temp._serviceList))) 
+                if (temp._serviceList == null)
                     return false;
-            }
-            else if (temp._serviceList != null)
+                else if (!(this._serviceList.equals(temp._serviceList)))
+                    return false;
+            } else if (temp._serviceList != null)
                 return false;
             return true;
         }
@@ -154,46 +147,45 @@ public class ServiceConfiguration implements java.io.Serializable {
      * Method getService.
      * 
      * @param index
-     * @throws java.lang.IndexOutOfBoundsException if the index
-     * given is outside the bounds of the collection
-     * @return the value of the
-     * org.opennms.netmgt.config.service.Service at the given index
+     * @throws java.lang.IndexOutOfBoundsException
+     *             if the index given is outside the bounds of the collection
+     * @return the value of the org.opennms.netmgt.config.service.Service at
+     *         the given index
      */
-    public Service getService(
-            final int index)
-    throws IndexOutOfBoundsException {
+    public Service getService(final int index)
+            throws IndexOutOfBoundsException {
         // check bounds for index
         if (index < 0 || index >= this._serviceList.size()) {
-            throw new IndexOutOfBoundsException("getService: Index value '" + index + "' not in range [0.." + (this._serviceList.size() - 1) + "]");
+            throw new IndexOutOfBoundsException("getService: Index value '"
+                    + index + "' not in range [0.."
+                    + (this._serviceList.size() - 1) + "]");
         }
-        
+
         return (Service) _serviceList.get(index);
     }
 
     /**
-     * Method getService.Returns the contents of the collection in
-     * an Array.  <p>Note:  Just in case the collection contents
-     * are changing in another thread, we pass a 0-length Array of
-     * the correct type into the API call.  This way we <i>know</i>
-     * that the Array returned is of exactly the correct length.
+     * Method getService.Returns the contents of the collection in an Array.
+     * <p>
+     * Note: Just in case the collection contents are changing in another
+     * thread, we pass a 0-length Array of the correct type into the API call.
+     * This way we <i>know</i> that the Array returned is of exactly the
+     * correct length.
      * 
      * @return this collection as an Array
      */
-    public Service[] getService(
-    ) {
+    public Service[] getService() {
         Service[] array = new Service[0];
         return (Service[]) this._serviceList.toArray(array);
     }
 
     /**
-     * Method getServiceCollection.Returns a reference to
-     * '_serviceList'. No type checking is performed on any
-     * modifications to the Vector.
+     * Method getServiceCollection.Returns a reference to '_serviceList'. No
+     * type checking is performed on any modifications to the Vector.
      * 
      * @return a reference to the Vector backing this class
      */
-    public java.util.List<Service> getServiceCollection(
-    ) {
+    public java.util.List<Service> getServiceCollection() {
         return this._serviceList;
     }
 
@@ -202,45 +194,40 @@ public class ServiceConfiguration implements java.io.Serializable {
      * 
      * @return the size of this collection
      */
-    public int getServiceCount(
-    ) {
+    public int getServiceCount() {
         return this._serviceList.size();
     }
 
     /**
      * Overrides the java.lang.Object.hashCode method.
      * <p>
-     * The following steps came from <b>Effective Java Programming
-     * Language Guide</b> by Joshua Bloch, Chapter 3
+     * The following steps came from <b>Effective Java Programming Language
+     * Guide</b> by Joshua Bloch, Chapter 3
      * 
      * @return a hash code value for the object.
      */
-    public int hashCode(
-    ) {
+    public int hashCode() {
         int result = 17;
 
         if (_serviceList != null) {
-           result = 37 * result + _serviceList.hashCode();
+            result = 37 * result + _serviceList.hashCode();
         }
-        
+
         return result;
     }
 
     /**
      * Method iterateService.
      * 
-     * @return an Iterator over all possible elements in this
-     * collection
+     * @return an Iterator over all possible elements in this collection
      */
-    public Iterator<Service> iterateService(
-    ) {
+    public Iterator<Service> iterateService() {
         return this._serviceList.iterator();
     }
 
     /**
      */
-    public void removeAllService(
-    ) {
+    public void removeAllService() {
         this._serviceList.clear();
     }
 
@@ -250,8 +237,7 @@ public class ServiceConfiguration implements java.io.Serializable {
      * @param vService
      * @return true if the object was removed from the collection.
      */
-    public boolean removeService(
-            final Service vService) {
+    public boolean removeService(final Service vService) {
         boolean removed = _serviceList.remove(vService);
         return removed;
     }
@@ -262,8 +248,7 @@ public class ServiceConfiguration implements java.io.Serializable {
      * @param index
      * @return the element removed from the collection
      */
-    public Service removeServiceAt(
-            final int index) {
+    public Service removeServiceAt(final int index) {
         Object obj = this._serviceList.remove(index);
         return (Service) obj;
     }
@@ -273,18 +258,18 @@ public class ServiceConfiguration implements java.io.Serializable {
      * 
      * @param index
      * @param vService
-     * @throws java.lang.IndexOutOfBoundsException if the index
-     * given is outside the bounds of the collection
+     * @throws java.lang.IndexOutOfBoundsException
+     *             if the index given is outside the bounds of the collection
      */
-    public void setService(
-            final int index,
-            final Service vService)
-    throws IndexOutOfBoundsException {
+    public void setService(final int index, final Service vService)
+            throws IndexOutOfBoundsException {
         // check bounds for index
         if (index < 0 || index >= this._serviceList.size()) {
-            throw new IndexOutOfBoundsException("setService: Index value '" + index + "' not in range [0.." + (this._serviceList.size() - 1) + "]");
+            throw new IndexOutOfBoundsException("setService: Index value '"
+                    + index + "' not in range [0.."
+                    + (this._serviceList.size() - 1) + "]");
         }
-        
+
         this._serviceList.set(index, vService);
     }
 
@@ -293,27 +278,26 @@ public class ServiceConfiguration implements java.io.Serializable {
      * 
      * @param vServiceArray
      */
-    public void setService(
-            final Service[] vServiceArray) {
-        //-- copy array
+    public void setService(final Service[] vServiceArray) {
+        // -- copy array
         _serviceList.clear();
-        
+
         for (int i = 0; i < vServiceArray.length; i++) {
-                this._serviceList.add(vServiceArray[i]);
+            this._serviceList.add(vServiceArray[i]);
         }
     }
 
     /**
-     * Sets the value of '_serviceList' by copying the given
-     * Vector. All elements will be checked for type safety.
+     * Sets the value of '_serviceList' by copying the given Vector. All
+     * elements will be checked for type safety.
      * 
-     * @param vServiceList the Vector to copy.
+     * @param vServiceList
+     *            the Vector to copy.
      */
-    public void setService(
-            final java.util.List<Service> vServiceList) {
+    public void setService(final java.util.List<Service> vServiceList) {
         // copy vector
         this._serviceList.clear();
-        
+
         this._serviceList.addAll(vServiceList);
     }
 }

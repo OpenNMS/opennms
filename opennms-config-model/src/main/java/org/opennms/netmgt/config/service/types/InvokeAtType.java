@@ -31,8 +31,8 @@
  */
 package org.opennms.netmgt.config.service.types;
 
-  //---------------------------------/
- //- Imported classes and packages -/
+//---------------------------------/
+//- Imported classes and packages -/
 //---------------------------------/
 
 import java.util.Enumeration;
@@ -44,11 +44,11 @@ import java.util.Hashtable;
  * @version $Revision$ $Date$
  */
 public class InvokeAtType implements java.io.Serializable {
-	private static final long serialVersionUID = -4284023865042615453L;
+    private static final long serialVersionUID = -4284023865042615453L;
 
-	//--------------------------/
-     //- Class/Member Variables -/
-    //--------------------------/
+    // --------------------------/
+    // - Class/Member Variables -/
+    // --------------------------/
 
     /**
      * The start type
@@ -58,7 +58,8 @@ public class InvokeAtType implements java.io.Serializable {
     /**
      * The instance of the start type
      */
-    public static final InvokeAtType START = new InvokeAtType(START_TYPE, "start");
+    public static final InvokeAtType START = new InvokeAtType(START_TYPE,
+                                                              "start");
 
     /**
      * The stop type
@@ -68,7 +69,8 @@ public class InvokeAtType implements java.io.Serializable {
     /**
      * The instance of the stop type
      */
-    public static final InvokeAtType STOP = new InvokeAtType(STOP_TYPE, "stop");
+    public static final InvokeAtType STOP = new InvokeAtType(STOP_TYPE,
+                                                             "stop");
 
     /**
      * The status type
@@ -78,12 +80,13 @@ public class InvokeAtType implements java.io.Serializable {
     /**
      * The instance of the status type
      */
-    public static final InvokeAtType STATUS = new InvokeAtType(STATUS_TYPE, "status");
+    public static final InvokeAtType STATUS = new InvokeAtType(STATUS_TYPE,
+                                                               "status");
 
     /**
      * Field _memberTable.
      */
-    private static Hashtable<Object,Object> _memberTable = init();
+    private static Hashtable<Object, Object> _memberTable = init();
 
     /**
      * Field type.
@@ -95,10 +98,9 @@ public class InvokeAtType implements java.io.Serializable {
      */
     private String stringValue = null;
 
-
-      //----------------/
-     //- Constructors -/
-    //----------------/
+    // ----------------/
+    // - Constructors -/
+    // ----------------/
 
     private InvokeAtType(final int type, final String value) {
         super();
@@ -106,19 +108,17 @@ public class InvokeAtType implements java.io.Serializable {
         this.stringValue = value;
     }
 
-      //-----------/
-     //- Methods -/
-    //-----------/
+    // -----------/
+    // - Methods -/
+    // -----------/
 
     /**
-     * Method enumerate.Returns an enumeration of all possible
-     * instances of InvokeAtType
-     * 
-     * @return an Enumeration over all possible instances of
+     * Method enumerate.Returns an enumeration of all possible instances of
      * InvokeAtType
+     * 
+     * @return an Enumeration over all possible instances of InvokeAtType
      */
-    public static Enumeration<Object> enumerate(
-    ) {
+    public static Enumeration<Object> enumerate() {
         return _memberTable.elements();
     }
 
@@ -127,8 +127,7 @@ public class InvokeAtType implements java.io.Serializable {
      * 
      * @return the type of this InvokeAtType
      */
-    public int getType(
-    ) {
+    public int getType() {
         return this.type;
     }
 
@@ -137,8 +136,7 @@ public class InvokeAtType implements java.io.Serializable {
      * 
      * @return the initialized Hashtable for the member table
      */
-    private static Hashtable<Object,Object> init(
-    ) {
+    private static Hashtable<Object, Object> init() {
         Hashtable<Object, Object> members = new Hashtable<Object, Object>();
         members.put("start", START);
         members.put("stop", STOP);
@@ -147,37 +145,32 @@ public class InvokeAtType implements java.io.Serializable {
     }
 
     /**
-     * Method readResolve. will be called during deserialization to
-     * replace the deserialized object with the correct constant
-     * instance.
+     * Method readResolve. will be called during deserialization to replace
+     * the deserialized object with the correct constant instance.
      * 
      * @return this deserialized object
      */
-    private Object readResolve(
-    ) {
+    private Object readResolve() {
         return valueOf(this.stringValue);
     }
 
     /**
-     * Method toString.Returns the String representation of this
-     * InvokeAtType
+     * Method toString.Returns the String representation of this InvokeAtType
      * 
      * @return the String representation of this InvokeAtType
      */
-    public String toString(
-    ) {
+    public String toString() {
         return this.stringValue;
     }
 
     /**
-     * Method valueOf.Returns a new InvokeAtType based on the given
-     * String value.
+     * Method valueOf.Returns a new InvokeAtType based on the given String
+     * value.
      * 
      * @param string
      * @return the InvokeAtType value of parameter 'string'
      */
-    public static InvokeAtType valueOf(
-            final String string) {
+    public static InvokeAtType valueOf(final String string) {
         Object obj = null;
         if (string != null) {
             obj = _memberTable.get(string);
