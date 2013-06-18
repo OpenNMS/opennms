@@ -24,7 +24,8 @@ public class NCSCriteriaServiceManager {
     
     public void registerCriteria(Criteria ncsCriteria, String sessionId) {
         //This is to get around an issue with the NCSPathProvider when registering a service with different namespaces
-        removeAllServicesForSession(sessionId);
+        //removeAllServicesForSession(sessionId);
+        removeServicesForSessionWithNamespace(sessionId, ncsCriteria.getNamespace());
         
         Dictionary<String, Object> properties = new Hashtable<String, Object>();
         properties.put("sessionId", sessionId);
@@ -41,6 +42,25 @@ public class NCSCriteriaServiceManager {
             m_registrationMap.put(sessionId, serviceList);
         }
         
+    }
+    
+    private void removeServicesForSessionWithNamespace(String sessionId, String namespace) {
+        if(m_registrationMap.containsKey(sessionId)) {
+            List<ServiceRegistration<Criteria>> serviceList = m_registrationMap.get(sessionId);
+            ServiceRegistration<Criteria> removedService = null;
+            for(ServiceRegistration<Criteria> serviceReg : serviceList) {
+                try {
+                    String namespaceProperty = (String) serviceReg.getReference().getProperty("namespace");
+                    if(namespaceProperty.equals(namespace) ) {
+                        serviceReg.unregister();
+                        removedService = serviceReg;
+                    }
+                } catch( IllegalStateException e) {
+                    removedService = serviceReg;
+                }
+            }
+            if(removedService != null) serviceList.remove(removedService);
+        }
     }
     
     
@@ -91,10 +111,8 @@ public class NCSCriteriaServiceManager {
             String namespaceProperty = (String) critRegistration.getReference().getProperty("namespace");
             if(namespaceProperty.equals( namespace )) {
                 return true;
-            }
-            
+            }    
         }
-        
         
         return false;
     }
