@@ -61,7 +61,7 @@ import org.springframework.core.io.Resource;
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public abstract class AbcstractXmlCollectorTest {
+public abstract class AbstractXmlCollectorTest {
 
     /** The Constant TEST_SNMP_DIRECTORY. */
     private static final String TEST_SNMP_DIRECTORY = "target/snmp/";
