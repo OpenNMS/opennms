@@ -117,9 +117,9 @@ public class IPInterfaceTableTracker extends TableTracker {
             iface.setSnmpInterface(snmpIface);
             
             iface.setIfIndex(ifIndex);
-            String hostName;
+            String hostName = null;
             try {
-                hostName = InetAddress.getByName(ipAddr).getHostName();
+                if (ipAddr != null) hostName = InetAddress.getByName(ipAddr).getHostName();
             } catch (final UnknownHostException e) {
                 hostName = InetAddressUtils.normalize(ipAddr);
             }
