@@ -163,7 +163,7 @@ abstract public class InetAddressUtils {
      */
     public static InetAddress getInetAddress(final String dottedNotation) {
         try {
-            return InetAddress.getByName(dottedNotation);
+            return dottedNotation == null? null : InetAddress.getByName(dottedNotation);
         } catch (final UnknownHostException e) {
             throw new IllegalArgumentException("Invalid IPAddress " + dottedNotation);
         }
