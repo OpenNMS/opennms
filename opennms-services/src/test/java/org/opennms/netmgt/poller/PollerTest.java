@@ -71,12 +71,12 @@ import org.opennms.netmgt.mock.MockNode;
 import org.opennms.netmgt.mock.MockOutageConfig;
 import org.opennms.netmgt.mock.MockPollerConfig;
 import org.opennms.netmgt.mock.MockService;
+import org.opennms.netmgt.mock.MockService.SvcMgmtStatus;
 import org.opennms.netmgt.mock.MockVisitor;
 import org.opennms.netmgt.mock.MockVisitorAdapter;
 import org.opennms.netmgt.mock.OutageAnticipator;
 import org.opennms.netmgt.mock.PollAnticipator;
 import org.opennms.netmgt.mock.TestCapsdConfigManager;
-import org.opennms.netmgt.mock.MockService.SvcMgmtStatus;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.poller.pollables.PollableNetwork;
@@ -265,6 +265,37 @@ public class PollerTest {
 //	}
 
     @Test
+    public void testNullInterfaceOnNodeDown() {
+        // NODE processing = true;
+        m_pollerConfig.setNodeOutageProcessingEnabled(true);
+        MockNode node = m_network.getNode(2);
+        MockService icmpService = m_network.getService(2, "192.168.1.3", "ICMP");
+        MockService smtpService = m_network.getService(2, "192.168.1.3", "SMTP");
+        MockService snmpService = m_network.getService(2, "192.168.1.3", "SNMP");
+
+        // start the poller
+        startDaemons();
+
+        anticipateDown(node);
+
+        icmpService.bringDown();
+        smtpService.bringDown();
+        snmpService.bringDown();
+
+        verifyAnticipated(10000);
+
+        // node is down at this point
+        boolean foundNodeDown = false;
+        for (final Event event : m_anticipator.getAnticipatedEventsRecieved()) {
+            if (EventConstants.NODE_DOWN_EVENT_UEI.equals(event.getUei())) {
+                foundNodeDown = true;
+                assertNull(event.getInterfaceAddress());
+            }
+        }
+        assertTrue(foundNodeDown);
+    }
+
+    @Test
     @Ignore
 	public void testBug1564() {
 		// NODE processing = true;
@@ -299,6 +330,7 @@ public class PollerTest {
 		snmpService.bringDown();
 
 		verifyAnticipated(10000);
+		
 		anticipateDown(smtpService);
 		verifyAnticipated(10000);
 		anticipateDown(snmpService);
