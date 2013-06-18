@@ -12,6 +12,7 @@ import org.opennms.features.topology.plugins.ncs.NCSServicePath;
 import org.opennms.features.topology.plugins.ncs.xpath.JuniperXPath;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.ncs.NCSComponentRepository;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -29,6 +30,7 @@ public class NCSPathRouteUtil {
     
     public void getServiceName(@JuniperXPath(value="//juniper:ServiceType") String data, Exchange exchange) throws ParserConfigurationException, SAXException, IOException {
         Message in = exchange.getIn();
+        LoggerFactory.getLogger(this.getClass()).info("NCSPathRouteUtil [getServiceName] received message: " + in.toString());
         Map<String, Object> header = new HashMap<String, Object>();
         header.put("serviceType", data);
         header.put("deviceA", in.getHeader("deviceA"));
@@ -36,17 +38,24 @@ public class NCSPathRouteUtil {
         header.put("foreignId", in.getHeader("foreignId"));
         header.put("foreignSource", in.getHeader("foreignSource"));
         header.put("nodeForeignSource", in.getHeader("nodeForeignSource"));
+        header.put("serviceName", in.getHeader("serviceName"));
         exchange.getOut().setHeaders(header);
+        LoggerFactory.getLogger(this.getClass()).info("NCSPathRouteUtil send headers: " + exchange.getOut().getHeaders());
     }
     
     public NCSServicePath createPath(@JuniperXPath("//juniper:ServicePath") NodeList pathList, Exchange exchange) {
         Message in = exchange.getIn();
+        LoggerFactory.getLogger(this.getClass()).info("NCSPathRouteUtil [createPath] received message: " + in.toString());
         String nodeForeignSource = (String) in.getHeader("nodeForeignSource");
         String serviceForeignSource = (String) in.getHeader("foreignSource");
         Node servicePath = pathList.item(0);
+        
         String deviceA = (String) in.getHeader("deviceA");
         String deviceZ = (String) in.getHeader("deviceZ");
+        String serviceName = (String) in.getHeader("serviceName");
         
-        return new NCSServicePath(servicePath, m_dao, m_nodeDao, nodeForeignSource, serviceForeignSource, deviceA, deviceZ);
+        LoggerFactory.getLogger(this.getClass()).info("NCSPathRouteUtil parsing nodes: " + servicePath.toString());
+        return new NCSServicePath(servicePath, m_dao, m_nodeDao, nodeForeignSource, serviceForeignSource, deviceA, deviceZ, serviceName);
+
     }
 }

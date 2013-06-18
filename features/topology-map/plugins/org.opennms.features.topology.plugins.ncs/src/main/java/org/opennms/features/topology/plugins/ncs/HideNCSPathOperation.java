@@ -1,29 +1,31 @@
 package org.opennms.features.topology.plugins.ncs;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.plugins.ncs.NCSPathEdgeProvider.NCSServicePathCriteria;
+import org.opennms.features.topology.plugins.ncs.internal.NCSCriteriaServiceManager;
 
 public class HideNCSPathOperation implements Operation {
 
+    private NCSCriteriaServiceManager m_serviceManager;
+    
     @Override
     public Undoer execute(List<VertexRef> targets, OperationContext operationContext) {
-        if(operationContext.getGraphContainer().getCriteria("ncsPath") != null) {
-            operationContext.getGraphContainer().setCriteria(new NCSServicePathCriteria(Collections.<Edge>emptyList()));
+        String sessionId = operationContext.getGraphContainer().getSessionId();
+        if(m_serviceManager.isCriteriaRegistered("ncsPath", sessionId)) {
+            m_serviceManager.unregisterCriteria("ncsPath", sessionId);
         }
+        
         
         return null;
     }
 
     @Override
     public boolean display(List<VertexRef> targets, OperationContext operationContext) {
-        NCSServicePathCriteria ncsPathCriteria = (NCSServicePathCriteria) operationContext.getGraphContainer().getCriteria("ncsPath");
-        if(ncsPathCriteria != null && ncsPathCriteria.size() > 0) {
+        String sessionId = operationContext.getGraphContainer().getSessionId();
+        if(m_serviceManager.isCriteriaRegistered("ncsPath", sessionId)) {
             return true;
         }
         
@@ -32,8 +34,8 @@ public class HideNCSPathOperation implements Operation {
 
     @Override
     public boolean enabled(List<VertexRef> targets, OperationContext operationContext) {
-        NCSServicePathCriteria ncsPathCriteria = (NCSServicePathCriteria) operationContext.getGraphContainer().getCriteria("ncsPath");
-        if(ncsPathCriteria != null && ncsPathCriteria.size() > 0) {
+        String sessionId = operationContext.getGraphContainer().getSessionId();
+        if(m_serviceManager.isCriteriaRegistered("ncsPath", sessionId)) {
             return true;
         }
         return false;
@@ -42,6 +44,14 @@ public class HideNCSPathOperation implements Operation {
     @Override
     public String getId() {
         return null;
+    }
+
+    public NCSCriteriaServiceManager getNcsCriteriaServiceManager() {
+        return m_serviceManager;
+    }
+
+    public void setNcsCriteriaServiceManager(NCSCriteriaServiceManager serviceManager) {
+        m_serviceManager = serviceManager;
     }
 
 }

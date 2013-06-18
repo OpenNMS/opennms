@@ -1,10 +1,10 @@
 package org.opennms.netmgt.linkd.nb;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.OnmsNode;
 
 public class Nms101NetworkBuilder extends LinkdNetworkBuilder {
@@ -110,11 +110,10 @@ public class Nms101NetworkBuilder extends LinkdNetworkBuilder {
 
     
     static {
-    	try {
-    	LAPTOP_IP_IF_MAP.put(InetAddress.getByName("172.16.8.1"), 8);
-    	LAPTOP_IP_IF_MAP.put(InetAddress.getByName("172.16.190.1"), 9);
-    	LAPTOP_IP_IF_MAP.put(InetAddress.getByName("10.1.1.2"), 10);
-    	LAPTOP_IP_IF_MAP.put(InetAddress.getByName("172.20.1.182"), 6);
+    	LAPTOP_IP_IF_MAP.put(InetAddressUtils.addr("172.16.8.1"), 8);
+    	LAPTOP_IP_IF_MAP.put(InetAddressUtils.addr("172.16.190.1"), 9);
+    	LAPTOP_IP_IF_MAP.put(InetAddressUtils.addr("10.1.1.2"), 10);
+    	LAPTOP_IP_IF_MAP.put(InetAddressUtils.addr("172.20.1.182"), 6);
     	LAPTOP_IF_IFNAME_MAP.put(5, "fw0");
     	LAPTOP_IF_IFDESCR_MAP.put(5, "fw0");
     	LAPTOP_IF_IFNAME_MAP.put(7, "utun0");
@@ -122,28 +121,28 @@ public class Nms101NetworkBuilder extends LinkdNetworkBuilder {
     	LAPTOP_IF_IFNAME_MAP.put(9, "vmnet8");
     	LAPTOP_IF_IFDESCR_MAP.put(9, "vmnet8");
     	LAPTOP_IF_MAC_MAP.put(9, "005056c00008");
-    	LAPTOP_IF_NETMASK_MAP.put(9, InetAddress.getByName("255.255.255.0"));
+    	LAPTOP_IF_NETMASK_MAP.put(9, InetAddressUtils.addr("255.255.255.0"));
     	LAPTOP_IF_IFNAME_MAP.put(8, "vmnet1");
     	LAPTOP_IF_IFDESCR_MAP.put(8, "vmnet1");
     	LAPTOP_IF_MAC_MAP.put(8, "005056c00001");
-    	LAPTOP_IF_NETMASK_MAP.put(8, InetAddress.getByName("255.255.255.0"));
+    	LAPTOP_IF_NETMASK_MAP.put(8, InetAddressUtils.addr("255.255.255.0"));
     	LAPTOP_IF_IFNAME_MAP.put(4, "en0");
     	LAPTOP_IF_IFDESCR_MAP.put(4, "en0");
     	LAPTOP_IF_MAC_MAP.put(4, "00b035eececd");
     	LAPTOP_IF_IFNAME_MAP.put(6, "en1");
     	LAPTOP_IF_IFDESCR_MAP.put(6, "en1");
     	LAPTOP_IF_MAC_MAP.put(6, "00b0356a91c7");
-    	LAPTOP_IF_NETMASK_MAP.put(6, InetAddress.getByName("255.255.255.0"));
+    	LAPTOP_IF_NETMASK_MAP.put(6, InetAddressUtils.addr("255.255.255.0"));
     	LAPTOP_IF_IFNAME_MAP.put(10, "tap0");
     	LAPTOP_IF_IFDESCR_MAP.put(10, "tap0");
     	LAPTOP_IF_MAC_MAP.put(10, "005568ae696c");
-    	LAPTOP_IF_NETMASK_MAP.put(10, InetAddress.getByName("255.255.255.0"));
+    	LAPTOP_IF_NETMASK_MAP.put(10, InetAddressUtils.addr("255.255.255.0"));
     	LAPTOP_IF_IFNAME_MAP.put(2, "gif0");
     	LAPTOP_IF_IFDESCR_MAP.put(2, "gif0");
     	LAPTOP_IF_IFNAME_MAP.put(3, "stf0");
     	LAPTOP_IF_IFDESCR_MAP.put(3, "stf0");
-    	CISCO7200A_IP_IF_MAP.put(InetAddress.getByName("10.1.1.1"), 3);
-    	CISCO7200A_IP_IF_MAP.put(InetAddress.getByName("10.1.2.1"), 2);
+    	CISCO7200A_IP_IF_MAP.put(InetAddressUtils.addr("10.1.1.1"), 3);
+    	CISCO7200A_IP_IF_MAP.put(InetAddressUtils.addr("10.1.2.1"), 2);
     	CISCO7200A_IF_IFNAME_MAP.put(1, "Fa0/0");
     	CISCO7200A_IF_IFDESCR_MAP.put(1, "FastEthernet0/0");
     	CISCO7200A_IF_MAC_MAP.put(1, "ca0497a80000");
@@ -152,19 +151,19 @@ public class Nms101NetworkBuilder extends LinkdNetworkBuilder {
     	CISCO7200A_IF_IFNAME_MAP.put(2, "Gi1/0");
     	CISCO7200A_IF_IFDESCR_MAP.put(2, "GigabitEthernet1/0");
     	CISCO7200A_IF_MAC_MAP.put(2, "ca0497a8001c");
-    	CISCO7200A_IF_NETMASK_MAP.put(2, InetAddress.getByName("255.255.255.0"));
+    	CISCO7200A_IF_NETMASK_MAP.put(2, InetAddressUtils.addr("255.255.255.0"));
     	CISCO7200A_IF_IFNAME_MAP.put(4, "Gi3/0");
     	CISCO7200A_IF_IFDESCR_MAP.put(4, "GigabitEthernet3/0");
     	CISCO7200A_IF_MAC_MAP.put(4, "ca0497a80054");
     	CISCO7200A_IF_IFNAME_MAP.put(3, "Gi2/0");
     	CISCO7200A_IF_IFDESCR_MAP.put(3, "GigabitEthernet2/0");
     	CISCO7200A_IF_MAC_MAP.put(3, "ca0497a80038");
-    	CISCO7200A_IF_NETMASK_MAP.put(3, InetAddress.getByName("255.255.255.0"));
+    	CISCO7200A_IF_NETMASK_MAP.put(3, InetAddressUtils.addr("255.255.255.0"));
     	CISCO7200A_IF_IFNAME_MAP.put(7, "SS0");
     	CISCO7200A_IF_IFDESCR_MAP.put(7, "SSLVPN-VIF0");
-    	CISCO7200B_IP_IF_MAP.put(InetAddress.getByName("10.1.3.1"), 2);
-    	CISCO7200B_IP_IF_MAP.put(InetAddress.getByName("10.1.2.2"), 4);
-    	CISCO7200B_IP_IF_MAP.put(InetAddress.getByName("10.1.4.1"), 1);
+    	CISCO7200B_IP_IF_MAP.put(InetAddressUtils.addr("10.1.3.1"), 2);
+    	CISCO7200B_IP_IF_MAP.put(InetAddressUtils.addr("10.1.2.2"), 4);
+    	CISCO7200B_IP_IF_MAP.put(InetAddressUtils.addr("10.1.4.1"), 1);
     	CISCO7200B_IF_IFNAME_MAP.put(7, "Se3/2");
     	CISCO7200B_IF_IFDESCR_MAP.put(7, "Serial3/2");
     	CISCO7200B_IF_IFNAME_MAP.put(10, "Et4/1");
@@ -175,7 +174,7 @@ public class Nms101NetworkBuilder extends LinkdNetworkBuilder {
     	CISCO7200B_IF_IFNAME_MAP.put(2, "Fa1/0");
     	CISCO7200B_IF_IFDESCR_MAP.put(2, "FastEthernet1/0");
     	CISCO7200B_IF_MAC_MAP.put(2, "ca0597a8001c");
-    	CISCO7200B_IF_NETMASK_MAP.put(2, InetAddress.getByName("255.255.255.0"));
+    	CISCO7200B_IF_NETMASK_MAP.put(2, InetAddressUtils.addr("255.255.255.0"));
     	CISCO7200B_IF_IFNAME_MAP.put(8, "Se3/3");
     	CISCO7200B_IF_IFDESCR_MAP.put(8, "Serial3/3");
     	CISCO7200B_IF_IFNAME_MAP.put(3, "Fa1/1");
@@ -195,7 +194,7 @@ public class Nms101NetworkBuilder extends LinkdNetworkBuilder {
     	CISCO7200B_IF_IFNAME_MAP.put(4, "Gi2/0");
     	CISCO7200B_IF_IFDESCR_MAP.put(4, "GigabitEthernet2/0");
     	CISCO7200B_IF_MAC_MAP.put(4, "ca0597a80038");
-    	CISCO7200B_IF_NETMASK_MAP.put(4, InetAddress.getByName("255.255.255.0"));
+    	CISCO7200B_IF_NETMASK_MAP.put(4, InetAddressUtils.addr("255.255.255.0"));
     	CISCO7200B_IF_IFNAME_MAP.put(15, "SS0");
     	CISCO7200B_IF_IFDESCR_MAP.put(15, "SSLVPN-VIF0");
     	CISCO7200B_IF_IFNAME_MAP.put(6, "Se3/1");
@@ -203,19 +202,19 @@ public class Nms101NetworkBuilder extends LinkdNetworkBuilder {
     	CISCO7200B_IF_IFNAME_MAP.put(1, "Fa0/0");
     	CISCO7200B_IF_IFDESCR_MAP.put(1, "FastEthernet0/0");
     	CISCO7200B_IF_MAC_MAP.put(1, "ca0597a80000");
-    	CISCO7200B_IF_NETMASK_MAP.put(1, InetAddress.getByName("255.255.255.0"));
-    	CISCO3700_IP_IF_MAP.put(InetAddress.getByName("10.1.3.2"), 1);
-    	CISCO3700_IP_IF_MAP.put(InetAddress.getByName("10.1.6.1"), 3);
+    	CISCO7200B_IF_NETMASK_MAP.put(1, InetAddressUtils.addr("255.255.255.0"));
+    	CISCO3700_IP_IF_MAP.put(InetAddressUtils.addr("10.1.3.2"), 1);
+    	CISCO3700_IP_IF_MAP.put(InetAddressUtils.addr("10.1.6.1"), 3);
     	CISCO3700_IF_IFNAME_MAP.put(2, "Se0/0");
     	CISCO3700_IF_IFDESCR_MAP.put(2, "Serial0/0");
     	CISCO3700_IF_IFNAME_MAP.put(3, "Fa0/1");
     	CISCO3700_IF_IFDESCR_MAP.put(3, "FastEthernet0/1");
     	CISCO3700_IF_MAC_MAP.put(3, "c20197a50001");
-    	CISCO3700_IF_NETMASK_MAP.put(3, InetAddress.getByName("255.255.255.0"));
+    	CISCO3700_IF_NETMASK_MAP.put(3, InetAddressUtils.addr("255.255.255.0"));
     	CISCO3700_IF_IFNAME_MAP.put(1, "Fa0/0");
     	CISCO3700_IF_IFDESCR_MAP.put(1, "FastEthernet0/0");
     	CISCO3700_IF_MAC_MAP.put(1, "c20197a50000");
-    	CISCO3700_IF_NETMASK_MAP.put(1, InetAddress.getByName("255.255.255.0"));
+    	CISCO3700_IF_NETMASK_MAP.put(1, InetAddressUtils.addr("255.255.255.0"));
     	CISCO3700_IF_IFNAME_MAP.put(5, "Se0/2");
     	CISCO3700_IF_IFDESCR_MAP.put(5, "Serial0/2");
     	CISCO3700_IF_IFNAME_MAP.put(8, "Nu0");
@@ -224,19 +223,19 @@ public class Nms101NetworkBuilder extends LinkdNetworkBuilder {
     	CISCO3700_IF_IFDESCR_MAP.put(4, "Serial0/1");
     	CISCO3700_IF_IFNAME_MAP.put(6, "Se0/3");
     	CISCO3700_IF_IFDESCR_MAP.put(6, "Serial0/3");
-    	CISCO2691_IP_IF_MAP.put(InetAddress.getByName("10.1.7.1"), 1);
-    	CISCO2691_IP_IF_MAP.put(InetAddress.getByName("10.1.5.1"), 2);
-    	CISCO2691_IP_IF_MAP.put(InetAddress.getByName("10.1.4.2"), 4);
+    	CISCO2691_IP_IF_MAP.put(InetAddressUtils.addr("10.1.7.1"), 1);
+    	CISCO2691_IP_IF_MAP.put(InetAddressUtils.addr("10.1.5.1"), 2);
+    	CISCO2691_IP_IF_MAP.put(InetAddressUtils.addr("10.1.4.2"), 4);
     	CISCO2691_IF_IFNAME_MAP.put(2, "Fa0/0");
     	CISCO2691_IF_IFDESCR_MAP.put(2, "FastEthernet0/0");
     	CISCO2691_IF_MAC_MAP.put(2, "c00397a70000");
-    	CISCO2691_IF_NETMASK_MAP.put(2, InetAddress.getByName("255.255.255.0"));
+    	CISCO2691_IF_NETMASK_MAP.put(2, InetAddressUtils.addr("255.255.255.0"));
     	CISCO2691_IF_IFNAME_MAP.put(3, "Se0/0");
     	CISCO2691_IF_IFDESCR_MAP.put(3, "Serial0/0");
     	CISCO2691_IF_IFNAME_MAP.put(1, "Fa1/0");
     	CISCO2691_IF_IFDESCR_MAP.put(1, "FastEthernet1/0");
     	CISCO2691_IF_MAC_MAP.put(1, "c00397a70010");
-    	CISCO2691_IF_NETMASK_MAP.put(1, InetAddress.getByName("255.255.255.0"));
+    	CISCO2691_IF_NETMASK_MAP.put(1, InetAddressUtils.addr("255.255.255.0"));
     	CISCO2691_IF_IFNAME_MAP.put(6, "Se0/2");
     	CISCO2691_IF_IFDESCR_MAP.put(6, "Serial0/2");
     	CISCO2691_IF_IFNAME_MAP.put(5, "Se0/1");
@@ -248,42 +247,39 @@ public class Nms101NetworkBuilder extends LinkdNetworkBuilder {
     	CISCO2691_IF_IFNAME_MAP.put(4, "Fa0/1");
     	CISCO2691_IF_IFDESCR_MAP.put(4, "FastEthernet0/1");
     	CISCO2691_IF_MAC_MAP.put(4, "c00397a70001");
-    	CISCO2691_IF_NETMASK_MAP.put(4, InetAddress.getByName("255.255.255.0"));
-    	CISCO1700_IP_IF_MAP.put(InetAddress.getByName("10.1.5.2"), 2);
+    	CISCO2691_IF_NETMASK_MAP.put(4, InetAddressUtils.addr("255.255.255.0"));
+    	CISCO1700_IP_IF_MAP.put(InetAddressUtils.addr("10.1.5.2"), 2);
     	CISCO1700_IF_IFNAME_MAP.put(2, "Fa0");
     	CISCO1700_IF_IFDESCR_MAP.put(2, "FastEthernet0");
     	CISCO1700_IF_MAC_MAP.put(2, "d00297a60000");
-    	CISCO1700_IF_NETMASK_MAP.put(2, InetAddress.getByName("255.255.255.0"));
+    	CISCO1700_IF_NETMASK_MAP.put(2, InetAddressUtils.addr("255.255.255.0"));
     	CISCO1700_IF_IFNAME_MAP.put(1, "Et0");
     	CISCO1700_IF_IFDESCR_MAP.put(1, "Ethernet0");
     	CISCO1700_IF_MAC_MAP.put(1, "d00297a60001");
     	CISCO1700_IF_IFNAME_MAP.put(4, "Nu0");
     	CISCO1700_IF_IFDESCR_MAP.put(4, "Null0");
-    	CISCO3600_IP_IF_MAP.put(InetAddress.getByName("10.1.6.2"), 1);
-    	CISCO3600_IP_IF_MAP.put(InetAddress.getByName("10.1.7.2"), 2);
+    	CISCO3600_IP_IF_MAP.put(InetAddressUtils.addr("10.1.6.2"), 1);
+    	CISCO3600_IP_IF_MAP.put(InetAddressUtils.addr("10.1.7.2"), 2);
     	CISCO3600_IF_IFNAME_MAP.put(1, "Fa0/0");
     	CISCO3600_IF_IFDESCR_MAP.put(1, "FastEthernet0/0");
     	CISCO3600_IF_MAC_MAP.put(1, "cc0097a30000");
-    	CISCO3600_IF_NETMASK_MAP.put(1, InetAddress.getByName("255.255.255.0"));
+    	CISCO3600_IF_NETMASK_MAP.put(1, InetAddressUtils.addr("255.255.255.0"));
     	CISCO3600_IF_IFNAME_MAP.put(2, "Fa1/0");
     	CISCO3600_IF_IFDESCR_MAP.put(2, "FastEthernet1/0");
     	CISCO3600_IF_MAC_MAP.put(2, "cc0097a30010");
-    	CISCO3600_IF_NETMASK_MAP.put(2, InetAddress.getByName("255.255.255.0"));
+    	CISCO3600_IF_NETMASK_MAP.put(2, InetAddressUtils.addr("255.255.255.0"));
     	CISCO3600_IF_IFNAME_MAP.put(4, "Nu0");
     	CISCO3600_IF_IFDESCR_MAP.put(4, "Null0");
-    	CISCO1700B_IP_IF_MAP.put(InetAddress.getByName("10.1.5.1"), 2);
+    	CISCO1700B_IP_IF_MAP.put(InetAddressUtils.addr("10.1.5.1"), 2);
     	CISCO1700B_IF_IFNAME_MAP.put(2, "Fa0");
     	CISCO1700B_IF_IFDESCR_MAP.put(2, "FastEthernet0");
     	CISCO1700B_IF_MAC_MAP.put(2, "d00297a60000");
-    	CISCO1700B_IF_NETMASK_MAP.put(2, InetAddress.getByName("255.255.255.0"));
+    	CISCO1700B_IF_NETMASK_MAP.put(2, InetAddressUtils.addr("255.255.255.0"));
     	CISCO1700B_IF_IFNAME_MAP.put(4, "Nu0");
     	CISCO1700B_IF_IFDESCR_MAP.put(4, "Null0");
     	CISCO1700B_IF_IFNAME_MAP.put(1, "Et0");
     	CISCO1700B_IF_IFDESCR_MAP.put(1, "Ethernet0");
     	CISCO1700B_IF_MAC_MAP.put(1, "d00297a60001");
-    	} catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
     }
     
     protected OnmsNode getLaptop() {

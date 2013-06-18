@@ -48,7 +48,7 @@ public class PendingPollEvent extends PollEvent {
 
     private final Event m_event;
     private Date m_date;
-    private final long m_expirationTimeInMillis;
+    private long m_expirationTimeInMillis;
     private boolean m_pending = true;
     private List<Runnable> m_pendingOutages = new LinkedList<Runnable>();
 
@@ -149,14 +149,12 @@ public class PendingPollEvent extends PollEvent {
         
     }
     
-    //TODO: string builder or don't checking ;-)
-    /**
-     * <p>toString</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    @Override
     public String toString() {
         return m_event+", uei: "+m_event.getUei()+", id: "+m_event.getDbid()+", isPending: "+m_pending+", list size: "+m_pendingOutages.size();
+    }
+
+    // for unit testing
+    void setExpirationTimeInMillis(final long time) {
+        m_expirationTimeInMillis = time;
     }
 }

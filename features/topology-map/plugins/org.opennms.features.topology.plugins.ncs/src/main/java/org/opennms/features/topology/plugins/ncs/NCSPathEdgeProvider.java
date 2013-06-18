@@ -41,10 +41,14 @@ public class NCSPathEdgeProvider implements EdgeProvider {
     
     public static class NCSPathEdge extends AbstractEdge {
         private final String m_serviceName;
+        private final String m_deviceA;
+        private final String m_deviceZ;
 
-        public NCSPathEdge (String serviceName, NCSVertex source, NCSVertex target) {
+        public NCSPathEdge (String serviceName, String deviceA, String deviceZ, NCSVertex source, NCSVertex target) {
             super("ncsPath", source.getId() + ":::" + target.getId(), source, target);
             m_serviceName = serviceName;
+            m_deviceA = deviceA;
+            m_deviceZ = deviceZ;
             setStyleName("ncs edge");
         }
 
@@ -57,11 +61,11 @@ public class NCSPathEdgeProvider implements EdgeProvider {
             toolTip.append(HTML_TOOLTIP_TAG_END);
 
             toolTip.append(HTML_TOOLTIP_TAG_OPEN);
-            toolTip.append("Source: " + getSource().getVertex().getLabel());
+            toolTip.append("Source: " + m_deviceA);
             toolTip.append(HTML_TOOLTIP_TAG_END);
 
             toolTip.append(HTML_TOOLTIP_TAG_OPEN);
-            toolTip.append("Target: " + getTarget().getVertex().getLabel());
+            toolTip.append("Target: " + m_deviceZ);
             toolTip.append(HTML_TOOLTIP_TAG_END);
 
             return toolTip.toString();
