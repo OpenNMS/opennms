@@ -84,14 +84,17 @@ public class NCSServicePath {
         List<Edge> edges = new ArrayList<Edge>();
         
         if(m_vertices.size() >= 2) {
-            
+            String deviceA = m_vertices.get(0).getLabel();
+            String deviceZ = m_vertices.get(m_vertices.size() -1).getLabel();
             ListIterator<NCSVertex> iterator = m_vertices.listIterator();
             while(iterator.hasNext()) {
                 
                 NCSVertex sourceRef = iterator.next();
                 if(iterator.hasNext()) {
                     NCSVertex targetRef = m_vertices.get(iterator.nextIndex());
-                    edges.add(new NCSPathEdge(m_serviceName, sourceRef, targetRef));
+                    NCSPathEdge ncsPathEdge = new NCSPathEdge(m_serviceName, deviceA, deviceZ, sourceRef, targetRef);
+                    ncsPathEdge.setStyleName("ncs edge direct");
+                    edges.add(ncsPathEdge);
                 }
                 
             }
