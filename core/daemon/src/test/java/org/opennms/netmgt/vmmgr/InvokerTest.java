@@ -42,6 +42,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.service.Service;
 import org.opennms.netmgt.config.service.types.InvokeAtType;
 import org.opennms.test.OpenNMSConfigurationExecutionListener;
@@ -130,12 +131,12 @@ public class InvokerTest {
     private static Service[] getServiceList() throws Exception {
         List<Service> serviceList = new ArrayList<Service>();
 
-        serviceList.add(Service.unmarshal(new StringReader("  <service>\n" + 
+        serviceList.add(JaxbUtils.unmarshal(Service.class, new StringReader("  <service>\n" + 
         		"    <name>:Name=XSLTProcessor</name>\n" + 
         		"    <class-name>mx4j.tools.adaptor.http.XSLTProcessor</class-name>\n" + 
         		"  </service>\n" + 
         		"")));
-        serviceList.add(Service.unmarshal(new StringReader("  <service>\n" + 
+        serviceList.add(JaxbUtils.unmarshal(Service.class, new StringReader("  <service>\n" + 
         		"    <name>:Name=HttpAdaptor</name>\n" + 
         		"    <class-name>mx4j.tools.adaptor.http.HttpAdaptor</class-name>\n" + 
         		"    <attribute>\n" + 
@@ -161,7 +162,7 @@ public class InvokerTest {
         		"    <invoke at=\"start\" pass=\"0\" method=\"start\"/>\n" + 
         		"  </service>\n" + 
         		"")));
-        serviceList.add(Service.unmarshal(new StringReader("  <service>\n" + 
+        serviceList.add(JaxbUtils.unmarshal(Service.class, new StringReader("  <service>\n" + 
         		"    <name>:Name=HttpAdaptorMgmt</name>\n" + 
         		"    <class-name>mx4j.tools.adaptor.http.HttpAdaptor</class-name>\n" + 
         		"    <attribute>\n" + 
