@@ -31,7 +31,6 @@ package org.opennms.netmgt.linkd;
 import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -242,15 +241,12 @@ public abstract class AbstractQueryManager implements QueryManager {
         InetAddress ospfRouterId = snmpcoll.getOspfGeneralGroup().getOspfRouterId();
 
         LogUtils.debugf(this, "processOspf: ospf node/ospfrouterid: %d/%s", node.getNodeId(), str(ospfRouterId)); 
-        try {
-            if (InetAddress.getByName("0.0.0.0").equals(ospfRouterId)) {
-                LogUtils.infof(this, "processOspf: invalid ospf ruoter id. node/ospfrouterid: %d/%s. Skipping!", node.getNodeId(), str(ospfRouterId)); 
-                return;
-            }
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
+        final InetAddress zero = InetAddressUtils.addr("0.0.0.0");
+        if (zero.equals(ospfRouterId)) {
+            LogUtils.infof(this, "processOspf: invalid ospf ruoter id. node/ospfrouterid: %d/%s. Skipping!", node.getNodeId(), str(ospfRouterId)); 
+            return;
         }
-
+        
         node.setOspfRouterId(ospfRouterId);
 
         List<OspfNbrInterface> ospfinterfaces = new ArrayList<OspfNbrInterface>();
@@ -259,13 +255,9 @@ public abstract class AbstractQueryManager implements QueryManager {
             InetAddress ospfNbrRouterId = ospfNbrTableEntry.getOspfNbrRouterId();
             InetAddress ospfNbrIpAddr = ospfNbrTableEntry.getOspfNbrIpAddress();
             LogUtils.debugf(this, "processOspf: addind ospf node/ospfnbraddress/ospfnbrrouterid: %d/%s/%s", node.getNodeId(), str(ospfNbrIpAddr),str(ospfNbrRouterId)); 
-            try {
-                if (InetAddress.getByName("0.0.0.0").equals(ospfNbrIpAddr) || InetAddress.getByName("0.0.0.0").equals(ospfNbrRouterId)) {
-                    LogUtils.infof(this, "processOspf: ospf invalid ip address for node/ospfnbraddress/ospfnbrrouterid: %d/%s/%s", node.getNodeId(), str(ospfNbrIpAddr),str(ospfNbrRouterId)); 
-                    continue;
-                }
-            } catch (UnknownHostException e) {
-                e.printStackTrace();
+            if (zero.equals(ospfNbrIpAddr) || zero.equals(ospfNbrRouterId)) {
+                LogUtils.infof(this, "processOspf: ospf invalid ip address for node/ospfnbraddress/ospfnbrrouterid: %d/%s/%s", node.getNodeId(), str(ospfNbrIpAddr),str(ospfNbrRouterId)); 
+                continue;
             }
             Integer ifIndex = ospfNbrTableEntry.getOspfNbrAddressLessIndex();
             LogUtils.debugf(this, "processOspf: ospf node/ospfnbraddress/ospfnbrrouterid/ospfnbrAddressLessIfIndex: %d/%s/%s/%d", node.getNodeId(), str(ospfNbrIpAddr),str(ospfNbrRouterId),ifIndex); 
