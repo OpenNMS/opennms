@@ -29,61 +29,60 @@
 package org.opennms.protocols.xml.collector;
 
 import java.io.File;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.junit.Assert;
 import org.junit.Test;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
 /**
- * The Test class for XML Collector for 3GPP Statistics
+ * The Test class for XML Collector for Solaris Zones Statistics
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class XmlCollectorTest3GPP extends AbstractXmlCollectorTest {
+public class XmlCollectorSolarisZonesTest extends AbstractXmlCollectorTest {
 
     /* (non-Javadoc)
      * @see org.opennms.protocols.xml.collector.AbcstractXmlCollectorTest#getXmlConfigFileName()
      */
     @Override
     public String getXmlConfigFileName() {
-        return "src/test/resources/3gpp-xml-datacollection-config.xml";
+        return "src/test/resources/solaris-zones-datacollection-config.xml";
     }
-
+    
     /* (non-Javadoc)
      * @see org.opennms.protocols.xml.collector.AbcstractXmlCollectorTest#getXmlSampleFileName()
      */
     @Override
     public String getXmlSampleFileName() {
-        return "src/test/resources/A20111025.0030-0500-0045-0500_MME00001.xml";
+        return "src/test/resources/solaris-zones.xml";
     }
 
     /**
-     * Test time parser.
+     * Test to verify XPath content.
      *
      * @throws Exception the exception
      */
     @Test
-    public void testTimeParser() throws Exception {
-        String pattern = "yyyy-MM-dd'T'HH:mm:ssZ";
-        String value = "2011-10-25T00:45:00-05:00";
-        long expectedTimestamp = 1319521500000l;
-        DateTimeFormatter dtf = DateTimeFormat.forPattern(pattern);
-        DateTime dateTime = dtf.parseDateTime(value);
-        Date date = dateTime.toDate();
-        Assert.assertEquals(expectedTimestamp, date.getTime());
-
-        MockDefaultXmlCollectionHandler handler = new MockDefaultXmlCollectionHandler();
+    public void testXpath() throws Exception {
         XPath xpath = XPathFactory.newInstance().newXPath();
-        date = handler.getTimeStamp(MockDocumentBuilder.getXmlDocument(), xpath, getConfigDao().getDataCollectionByName("3GPP").getXmlSources().get(0).getXmlGroups().get(0));
-        Assert.assertEquals(expectedTimestamp, date.getTime());
+        Document doc = MockDocumentBuilder.getXmlDocument();
+        NodeList resourceList = (NodeList) xpath.evaluate("/zones/zone", doc, XPathConstants.NODESET);
+        for (int j = 0; j < resourceList.getLength(); j++) {
+            Node resource = resourceList.item(j);
+            Node resourceName = (Node) xpath.evaluate("@name", resource, XPathConstants.NODE);
+            Assert.assertNotNull(resourceName);
+            String value = (String) xpath.evaluate("parameter[@key='nproc']/@value", resource, XPathConstants.STRING);
+            Assert.assertNotNull(Integer.valueOf(value));
+        }
     }
 
     /**
@@ -94,14 +93,18 @@ public class XmlCollectorTest3GPP extends AbstractXmlCollectorTest {
     @Test
     public void testDefaultXmlCollector() throws Exception {
         Map<String, Object> parameters = new HashMap<String, Object>();
-        parameters.put("collection", "3GPP");
+        parameters.put("collection", "Solaris");
         parameters.put("handler-class", "org.opennms.protocols.xml.collector.MockDefaultXmlCollectionHandler");
-        executeCollectorTest(parameters, 147);
-        // Test a JRB.
-        File file = new File("target/snmp/1/platformSystemResource/processor_v1_frame0_shelf0_slot4_sub-slot1/platform-system-resource.jrb");
-        String[] dsnames = new String[] { "cpuUtilization", "memoryUtilization" };
-        Double[] dsvalues = new Double[] { 1.0, 18.0 };
-        validateJrb(file, dsnames, dsvalues);
+        // Files expected: one JRB for each zone: global, zone1 and zone2 (3 in total)
+        executeCollectorTest(parameters, 3);
+        Assert.assertTrue(new File("target/snmp/1/solarisZoneStats/global/solaris-zone-stats.jrb").exists());
+        Assert.assertTrue(new File("target/snmp/1/solarisZoneStats/zone1/solaris-zone-stats.jrb").exists());
+        Assert.assertTrue(new File("target/snmp/1/solarisZoneStats/zone2/solaris-zone-stats.jrb").exists());
+        // Checking data from Global Zone.
+        File file = new File("target/snmp/1/solarisZoneStats/global/solaris-zone-stats.jrb");
+        String[] dsnames = new String[] { "nproc", "nlwp", "pr_size", "pr_rssize", "pctmem", "pctcpu" };
+        Double[] dsvalues = new Double[] { 245.0, 1455.0, 2646864.0, 1851072.0, 0.7, 0.24 };
+        validateJrb(file, dsnames, dsvalues);      
     }
 
 }
