@@ -328,8 +328,9 @@ public class HttpCollector implements ServiceCollector {
         } catch (Throwable e) {
             throw new HttpCollectorException("Unexpected exception caught during HTTP collection: " + e.getMessage(), e);
         } finally {
-            // Do we need to do any cleanup?
-            // if (method != null) method.releaseConnection();
+            if (client != null) {
+                client.getConnectionManager().shutdown();
+            }
         }
     }
 

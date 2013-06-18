@@ -193,8 +193,9 @@ public class WebPlugin extends AbstractPlugin {
             log().info(e.getMessage(), e);
             retval = false;
         } finally{
-            // Do we need to do any cleanup?
-            // getMethod.releaseConnection();
+            if (httpClient != null) {
+                httpClient.getConnectionManager().shutdown();
+            }
         }
 
         return retval;

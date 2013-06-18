@@ -711,10 +711,9 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
                 serviceStatus = PollStatus.unavailable("Invalid parameter to monitor: " + e.getMessage() + ".  See log for details.");
                 serviceStatus.setProperties(responseTimes);
             } finally {
-                // Do we need to do any cleanup?
-                //if (client != null) {
-                //    client.getHttpConnectionManager().closeIdleConnections(0);
-                //}
+                if (client != null) {
+                    client.getConnectionManager().shutdown();
+                }
             }
         }
         

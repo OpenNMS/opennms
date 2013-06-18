@@ -187,8 +187,9 @@ public class WebMonitor extends AbstractServiceMonitor {
         } catch (URISyntaxException e) {
             log().info(e.getMessage());
         } finally {
-            // Do we need to do any cleanup?
-            // getMethod.releaseConnection();
+            if (httpClient != null) {
+                httpClient.getConnectionManager().shutdown();
+            }
         }
         return pollStatus;
     }

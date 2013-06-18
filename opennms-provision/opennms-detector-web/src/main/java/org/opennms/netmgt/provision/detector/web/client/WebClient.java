@@ -91,6 +91,7 @@ public class WebClient implements Client<WebRequest, WebResponse> {
 
     @Override
     public void close() {
+        m_httpClient.getConnectionManager().shutdown();
     }
 
     @Override
