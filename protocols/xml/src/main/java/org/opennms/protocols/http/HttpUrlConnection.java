@@ -33,21 +33,15 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 
-import org.apache.http.Header;
-import org.apache.http.HeaderElement;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpException;
-import org.apache.http.HttpRequest;
-import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.HttpResponse;
-import org.apache.http.HttpResponseInterceptor;
 import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.entity.GzipDecompressingEntity;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.utils.URIUtils;
+import org.apache.http.client.protocol.RequestAcceptEncoding;
+import org.apache.http.client.protocol.ResponseContentEncoding;
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.protocol.HttpContext;
+
 import org.opennms.core.utils.ThreadCategory;
 
 /**
@@ -87,33 +81,8 @@ public class HttpUrlConnection extends URLConnection {
             return;
         }
         m_client = new DefaultHttpClient();
-        m_client.addRequestInterceptor(new HttpRequestInterceptor() {
-            @Override
-            public void process(HttpRequest request, HttpContext context)
-                    throws HttpException, IOException {
-                if (!request.containsHeader("Accept-Encoding")) {
-                    request.addHeader("Accept-Encoding", "gzip");
-                }
-            }
-        });
-        m_client.addResponseInterceptor(new HttpResponseInterceptor() {
-            public void process(final HttpResponse response, final HttpContext context)
-                    throws HttpException, IOException {
-                HttpEntity entity = response.getEntity();
-                if (entity != null) {
-                    Header ceheader = entity.getContentEncoding();
-                    if (ceheader != null) {
-                        HeaderElement[] codecs = ceheader.getElements();
-                        for (int i = 0; i < codecs.length; i++) {
-                            if (codecs[i].getName().equalsIgnoreCase("gzip")) {
-                                response.setEntity(new GzipDecompressingEntity(response.getEntity()));
-                                return;
-                            }
-                        }
-                    }
-                }
-            }
-        });
+        m_client.addRequestInterceptor(new RequestAcceptEncoding());
+        m_client.addResponseInterceptor(new ResponseContentEncoding());
     }
 
     /* (non-Javadoc)
@@ -128,7 +97,13 @@ public class HttpUrlConnection extends URLConnection {
             int port = m_url.getPort() > 0 ? m_url.getPort() : m_url.getDefaultPort();
             String[] userInfo = m_url.getUserInfo() == null ? null :  m_url.getUserInfo().split(":");
 
-            HttpGet request = new HttpGet(URIUtils.createURI(m_url.getProtocol(), m_url.getHost(), port, m_url.getPath(), m_url.getQuery(), null));
+            URIBuilder ub = new URIBuilder();
+            ub.setPort(port);
+            ub.setScheme(m_url.getProtocol());
+            ub.setHost(m_url.getHost());
+            ub.setPath(m_url.getPath());
+            ub.setQuery(m_url.getQuery());
+            HttpGet request = new HttpGet(ub.build());
             if (userInfo != null) {
                 UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(userInfo[0], userInfo[1]);
                 request.addHeader(BasicScheme.authenticate(credentials, "UTF-8", false));
