@@ -35,18 +35,18 @@ import java.util.Map;
 import org.junit.Test;
 
 /**
- * The Test class for XML Collector for Node Level Statistics
+ * The Test class for XML Collector for Juniper RPC Replay Statistics
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class XmlCollectorTestNodeLevel extends AbcstractXmlCollectorTest {
+public class XmlCollectorRpcReplyTest extends AbstractXmlCollectorTest {
 
     /* (non-Javadoc)
      * @see org.opennms.protocols.xml.collector.AbcstractXmlCollectorTest#getXmlConfigFileName()
      */
     @Override
     public String getXmlConfigFileName() {
-        return "src/test/resources/node-level-datacollection-config.xml";
+        return "src/test/resources/rpc-reply-datacollection-config.xml";
     }
     
     /* (non-Javadoc)
@@ -54,7 +54,7 @@ public class XmlCollectorTestNodeLevel extends AbcstractXmlCollectorTest {
      */
     @Override
     public String getXmlSampleFileName() {
-        return "src/test/resources/node-level.xml";
+        return "src/test/resources/rpc-reply.xml";
     }
 
     /**
@@ -65,12 +65,14 @@ public class XmlCollectorTestNodeLevel extends AbcstractXmlCollectorTest {
     @Test
     public void testDefaultXmlCollector() throws Exception {
         Map<String, Object> parameters = new HashMap<String, Object>();
-        parameters.put("collection", "NodeLevel");
+        parameters.put("collection", "RPC");
         parameters.put("handler-class", "org.opennms.protocols.xml.collector.MockDefaultXmlCollectionHandler");
         executeCollectorTest(parameters, 1);
-        File file = new File("target/snmp/1/node-level-stats.jrb");
-        String[] dsnames = new String[] { "v1", "v2", "v3", "v4", "v5", "v6" };
-        Double[] dsvalues = new Double[] { 10.0, 11.0, 12.0, 13.0, 14.0, 15.0 };
+        File file = new File("target/snmp/1/cfmEntry/D3456_ddd11/rpc-reply.jrb");
+        String[] dsnames = new String[] { "V01", "V02", "V03", "V04", "V05", "V06", "V07", "V08", "V09", "V10", "V11",
+                "V12", "V13", "V14", "V15", "V16", "V17", "V18", "V19", "V20", "V21", "V22" };
+        Double[] dsvalues = new Double[] { 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 17.0, 18.0, 19.0,
+                19.0, 20.0, 20.0, 21.0, 21.0, 22.0, 22.0, 23.0, 24.0, 25.0, 26.0 };
         validateJrb(file, dsnames, dsvalues);
     }
 

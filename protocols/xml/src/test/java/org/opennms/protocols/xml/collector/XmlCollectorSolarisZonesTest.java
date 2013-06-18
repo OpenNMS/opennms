@@ -48,7 +48,7 @@ import org.w3c.dom.NodeList;
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class XmlCollectorTestSolarisZones extends AbcstractXmlCollectorTest {
+public class XmlCollectorSolarisZonesTest extends AbstractXmlCollectorTest {
 
     /* (non-Javadoc)
      * @see org.opennms.protocols.xml.collector.AbcstractXmlCollectorTest#getXmlConfigFileName()

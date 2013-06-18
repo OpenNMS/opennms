@@ -61,7 +61,7 @@ import org.springframework.core.io.Resource;
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public abstract class AbcstractXmlCollectorTest {
+public abstract class AbstractXmlCollectorTest {
 
     /** The Constant TEST_SNMP_DIRECTORY. */
     private static final String TEST_SNMP_DIRECTORY = "target/snmp/";
@@ -92,6 +92,7 @@ public abstract class AbcstractXmlCollectorTest {
         m_collectionAgent = EasyMock.createMock(CollectionAgent.class);
         EasyMock.expect(m_collectionAgent.getNodeId()).andReturn(1).anyTimes();
         EasyMock.expect(m_collectionAgent.getHostAddress()).andReturn("127.0.0.1").anyTimes();
+        EasyMock.expect(m_collectionAgent.getStorageDir()).andReturn(new File("1")).anyTimes();
         m_eventProxy = EasyMock.createMock(EventProxy.class);
 
         m_xmlCollectionDao = new XmlDataCollectionConfigDaoJaxb();
