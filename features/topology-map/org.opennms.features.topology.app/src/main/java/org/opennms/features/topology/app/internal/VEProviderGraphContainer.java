@@ -498,7 +498,7 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
         
         try {
             m_bundleContext.removeServiceListener(this);
-            m_bundleContext.addServiceListener(this, "(&(objectClass=" + Criteria.class + ")(sessionId=" + m_sessionId + "))");
+            m_bundleContext.addServiceListener(this, "(&(objectClass=org.opennms.features.topology.api.topo.Criteria)(sessionId=" + m_sessionId + "))");
         } catch (InvalidSyntaxException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
