@@ -31,7 +31,6 @@ package org.opennms.netmgt.linkd;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.net.InetAddress;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
@@ -47,6 +46,7 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.core.utils.BeanUtils;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.LinkdConfig;
 import org.opennms.netmgt.config.linkd.Package;
@@ -119,45 +119,45 @@ public class LinkdTest extends LinkdNetworkBuilder implements InitializingBean {
         m_nodeDao.save(nb.getCurrentNode());
 
         nb.addNode("laptop").setForeignSource("linkd").setForeignId("laptop").setSysObjectId(".1.3.6.1.4.1.8072.3.2.255").setType("A");
-        nb.addInterface("10.1.1.2").setIsSnmpPrimary("P").setIsManaged("M")
-            .addSnmpInterface(10).setIfType(6).setCollectionEnabled(true).setIfSpeed(1000000000).setPhysAddr("065568ae696c");
+        nb.addSnmpInterface(10).setIfType(6).setCollectionEnabled(true).setIfSpeed(1000000000).setPhysAddr("065568ae696c")
+            .addIpInterface("10.1.1.2").setIsSnmpPrimary("P").setIsManaged("M");
         m_nodeDao.save(nb.getCurrentNode());
 
         nb.addNode("cisco7200a").setForeignSource("linkd").setForeignId("cisco7200a").setSysObjectId(".1.3.6.1.4.1.9.1.222").setType("A");
-        nb.addInterface("10.1.1.1").setIsSnmpPrimary("P").setIsManaged("M")
-            .addSnmpInterface(3).setIfType(6).setCollectionEnabled(true).setIfSpeed(1000000000).setPhysAddr("ca0497a80038");
-        nb.addInterface("10.1.2.1").setIsSnmpPrimary("S").setIsManaged("M")
-            .addSnmpInterface(2).setIfType(6).setCollectionEnabled(false).setIfSpeed(100000000).setPhysAddr("ca0497a8001c");
+        nb.addSnmpInterface(3).setIfType(6).setCollectionEnabled(true).setIfSpeed(1000000000).setPhysAddr("ca0497a80038")
+            .addIpInterface("10.1.1.1").setIsSnmpPrimary("P").setIsManaged("M");
+        nb.addSnmpInterface(2).setIfType(6).setCollectionEnabled(false).setIfSpeed(100000000).setPhysAddr("ca0497a8001c")
+            .addIpInterface("10.1.2.1").setIsSnmpPrimary("S").setIsManaged("M");
         m_nodeDao.save(nb.getCurrentNode());
 
         nb.addNode("cisco7200b").setForeignSource("linkd").setForeignId("cisco7200b").setSysObjectId(".1.3.6.1.4.1.9.1.222").setType("A");
-        nb.addInterface("10.1.2.2").setIsSnmpPrimary("P").setIsManaged("M")
-            .addSnmpInterface(4).setIfType(6).setCollectionEnabled(true).setIfSpeed(10000000).setPhysAddr("ca0597a80038");
-        nb.addInterface("10.1.3.1").setIsSnmpPrimary("S").setIsManaged("M")
-            .addSnmpInterface(2).setIfType(6).setCollectionEnabled(false).setIfSpeed(100000000).setPhysAddr("ca0597a8001c");
-        nb.addInterface("10.1.4.1").setIsSnmpPrimary("S").setIsManaged("M")
-            .addSnmpInterface(1).setIfType(6).setCollectionEnabled(false).setIfSpeed(100000000).setPhysAddr("ca0597a80000");
+        nb.addSnmpInterface(4).setIfType(6).setCollectionEnabled(true).setIfSpeed(10000000).setPhysAddr("ca0597a80038")
+            .addIpInterface("10.1.2.2").setIsSnmpPrimary("P").setIsManaged("M");
+        nb.addSnmpInterface(2).setIfType(6).setCollectionEnabled(false).setIfSpeed(100000000).setPhysAddr("ca0597a8001c")
+            .addIpInterface("10.1.3.1").setIsSnmpPrimary("S").setIsManaged("M");
+        nb.addSnmpInterface(1).setIfType(6).setCollectionEnabled(false).setIfSpeed(100000000).setPhysAddr("ca0597a80000")
+            .addIpInterface("10.1.4.1").setIsSnmpPrimary("S").setIsManaged("M");
         m_nodeDao.save(nb.getCurrentNode());
 
         nb.addNode("cisco3700").setForeignSource("linkd").setForeignId("cisco3700").setSysObjectId(".1.3.6.1.4.1.9.1.122").setType("A");
-        nb.addInterface("10.1.3.2").setIsSnmpPrimary("P").setIsManaged("M")
-            .addSnmpInterface(1).setIfType(6).setCollectionEnabled(true).setIfSpeed(10000000).setPhysAddr("c20197a50000");
-        nb.addInterface("10.1.6.1").setIsSnmpPrimary("S").setIsManaged("M")
-            .addSnmpInterface(3).setIfType(6).setCollectionEnabled(false).setIfSpeed(1000000000).setPhysAddr("c20197a50001");
+        nb.addSnmpInterface(1).setIfType(6).setCollectionEnabled(true).setIfSpeed(10000000).setPhysAddr("c20197a50000")
+            .addIpInterface("10.1.3.2").setIsSnmpPrimary("P").setIsManaged("M");
+        nb.addSnmpInterface(3).setIfType(6).setCollectionEnabled(false).setIfSpeed(1000000000).setPhysAddr("c20197a50001")
+            .addIpInterface("10.1.6.1").setIsSnmpPrimary("S").setIsManaged("M");
         m_nodeDao.save(nb.getCurrentNode());
 
         nb.addNode("cisco2691").setForeignSource("linkd").setForeignId("cisco2691").setSysObjectId(".1.3.6.1.4.1.9.1.122").setType("A");
-        nb.addInterface("10.1.4.2").setIsSnmpPrimary("P").setIsManaged("M")
-            .addSnmpInterface(4).setIfType(6).setCollectionEnabled(false).setIfSpeed(10000000).setPhysAddr("c00397a70001");
-        nb.addInterface("10.1.5.1").setIsSnmpPrimary("S").setIsManaged("M")
-            .addSnmpInterface(2).setIfType(6).setCollectionEnabled(false).setIfSpeed(100000000).setPhysAddr("c00397a70000");
-        nb.addInterface("10.1.7.1").setIsSnmpPrimary("S").setIsManaged("M")
-            .addSnmpInterface(1).setIfType(6).setCollectionEnabled(false).setIfSpeed(100000000).setPhysAddr("c00397a70010");
+        nb.addSnmpInterface(4).setIfType(6).setCollectionEnabled(false).setIfSpeed(10000000).setPhysAddr("c00397a70001")
+            .addIpInterface("10.1.4.2").setIsSnmpPrimary("P").setIsManaged("M");
+        nb.addSnmpInterface(2).setIfType(6).setCollectionEnabled(false).setIfSpeed(100000000).setPhysAddr("c00397a70000")
+            .addIpInterface("10.1.5.1").setIsSnmpPrimary("S").setIsManaged("M");
+        nb.addSnmpInterface(1).setIfType(6).setCollectionEnabled(false).setIfSpeed(100000000).setPhysAddr("c00397a70010")
+            .addIpInterface("10.1.7.1").setIsSnmpPrimary("S").setIsManaged("M");
         m_nodeDao.save(nb.getCurrentNode());
 
         nb.addNode("cisco1700").setForeignSource("linkd").setForeignId("cisco1700").setSysObjectId(".1.3.6.1.4.1.9.1.200").setType("A");
-        nb.addInterface("10.1.5.2").setIsSnmpPrimary("P").setIsManaged("M")
-            .addSnmpInterface(2).setIfType(6).setCollectionEnabled(true).setIfSpeed(100000000).setPhysAddr("d00297a60000");
+        nb.addSnmpInterface(2).setIfType(6).setCollectionEnabled(true).setIfSpeed(100000000).setPhysAddr("d00297a60000")
+            .addIpInterface("10.1.5.2").setIsSnmpPrimary("P").setIsManaged("M");
         m_nodeDao.save(nb.getCurrentNode());
 
         /*
@@ -168,10 +168,10 @@ public class LinkdTest extends LinkdNetworkBuilder implements InitializingBean {
          */
 
         nb.addNode("cisco3600").setForeignSource("linkd").setForeignId("cisco3600").setSysObjectId(".1.3.6.1.4.1.9.1.122").setType("A");
-        nb.addInterface("10.1.6.2").setIsSnmpPrimary("P").setIsManaged("M")
-            .addSnmpInterface(1).setIfType(6).setCollectionEnabled(true).setIfSpeed(100000000).setPhysAddr("cc0097a30000");
-        nb.addInterface("10.1.7.2").setIsSnmpPrimary("S").setIsManaged("M")
-            .addSnmpInterface(2).setIfType(6).setCollectionEnabled(false).setIfSpeed(100000000).setPhysAddr("cc0097a30010");
+        nb.addSnmpInterface(1).setIfType(6).setCollectionEnabled(true).setIfSpeed(100000000).setPhysAddr("cc0097a30000")
+            .addIpInterface("10.1.6.2").setIsSnmpPrimary("P").setIsManaged("M");
+        nb.addSnmpInterface(2).setIfType(6).setCollectionEnabled(false).setIfSpeed(100000000).setPhysAddr("cc0097a30010")
+            .addIpInterface("10.1.7.2").setIsSnmpPrimary("S").setIsManaged("M");
         m_nodeDao.save(nb.getCurrentNode());
 
         m_nodeDao.flush();
@@ -200,8 +200,8 @@ public class LinkdTest extends LinkdNetworkBuilder implements InitializingBean {
 
         final NetworkBuilder nb = new NetworkBuilder();
         nb.addNode("cisco1700b").setForeignSource("linkd").setForeignId("cisco1700b").setSysObjectId(".1.3.6.1.4.1.9.1.200").setType("A");
-        nb.addInterface("10.1.5.1").setIsSnmpPrimary("P").setIsManaged("M")
-            .addSnmpInterface(2).setIfType(6).setCollectionEnabled(false).setIfSpeed(100000000).setPhysAddr("c00397a70000");
+        nb.addSnmpInterface(2).setIfType(6).setCollectionEnabled(false).setIfSpeed(100000000).setPhysAddr("c00397a70000")
+            .addIpInterface("10.1.5.1").setIsSnmpPrimary("P").setIsManaged("M");
         m_nodeDao.save(nb.getCurrentNode());
         m_nodeDao.flush();
 
@@ -264,29 +264,28 @@ public class LinkdTest extends LinkdNetworkBuilder implements InitializingBean {
             printLink(link);
         }
 
-        assertEquals("we should have found 9 data links", 9, ifaces.size());
+        assertEquals("we should have found 6 data links", 6, ifaces.size());
     }
-    
+
     @Test
     public void testDiscoveryOspfGetSubNetAddress() throws Exception {
         DiscoveryLink discovery = m_linkd.getDiscoveryLink("example1");
-        OspfNbrInterface ospfinterface = new OspfNbrInterface(InetAddress.getByName("192.168.9.1"));
-        ospfinterface.setOspfNbrIpAddr(InetAddress.getByName("192.168.15.45"));
+        OspfNbrInterface ospfinterface = new OspfNbrInterface(InetAddressUtils.addr("192.168.9.1"));
+        ospfinterface.setOspfNbrIpAddr(InetAddressUtils.addr("192.168.15.45"));
 
-        ospfinterface.setOspfNbrNetMask(InetAddress.getByName("255.255.255.0"));        
-        assertEquals(InetAddress.getByName("192.168.15.0"), discovery.getSubnetAddress(ospfinterface));
+        ospfinterface.setOspfNbrNetMask(InetAddressUtils.addr("255.255.255.0"));        
+        assertEquals(InetAddressUtils.addr("192.168.15.0"), discovery.getSubnetAddress(ospfinterface));
         
-        ospfinterface.setOspfNbrNetMask(InetAddress.getByName("255.255.0.0"));
-        assertEquals(InetAddress.getByName("192.168.0.0"), discovery.getSubnetAddress(ospfinterface));
+        ospfinterface.setOspfNbrNetMask(InetAddressUtils.addr("255.255.0.0"));
+        assertEquals(InetAddressUtils.addr("192.168.0.0"), discovery.getSubnetAddress(ospfinterface));
 
-        ospfinterface.setOspfNbrNetMask(InetAddress.getByName("255.255.255.252"));
-        assertEquals(InetAddress.getByName("192.168.15.44"), discovery.getSubnetAddress(ospfinterface));
+        ospfinterface.setOspfNbrNetMask(InetAddressUtils.addr("255.255.255.252"));
+        assertEquals(InetAddressUtils.addr("192.168.15.44"), discovery.getSubnetAddress(ospfinterface));
 
-        ospfinterface.setOspfNbrNetMask(InetAddress.getByName("255.255.255.240"));
-        assertEquals(InetAddress.getByName("192.168.15.32"), discovery.getSubnetAddress(ospfinterface));
-
+        ospfinterface.setOspfNbrNetMask(InetAddressUtils.addr("255.255.255.240"));
+        assertEquals(InetAddressUtils.addr("192.168.15.32"), discovery.getSubnetAddress(ospfinterface));
     }
-    
+
     @Test
     @Transactional
     public void testDefaultConfiguration() throws Exception {

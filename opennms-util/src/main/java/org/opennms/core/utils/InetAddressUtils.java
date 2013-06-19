@@ -54,6 +54,9 @@ abstract public class InetAddressUtils {
     private static final ByteArrayComparator s_BYTE_ARRAY_COMPARATOR = new ByteArrayComparator();
     public static final InetAddress UNPINGABLE_ADDRESS;
     public static final InetAddress UNPINGABLE_ADDRESS_IPV6;
+    public static final InetAddress ZEROS = addr("0.0.0.0");
+    public static final InetAddress TWO_FIFTY_FIVES = addr("255.255.255.255");
+    public static final InetAddress ONE_TWENTY_SEVEN = addr("127.0.0.1");
 
     static {
         try {
@@ -163,7 +166,7 @@ abstract public class InetAddressUtils {
      */
     public static InetAddress getInetAddress(final String dottedNotation) {
         try {
-            return InetAddress.getByName(dottedNotation);
+            return dottedNotation == null? null : InetAddress.getByName(dottedNotation);
         } catch (final UnknownHostException e) {
             throw new IllegalArgumentException("Invalid IPAddress " + dottedNotation);
         }
