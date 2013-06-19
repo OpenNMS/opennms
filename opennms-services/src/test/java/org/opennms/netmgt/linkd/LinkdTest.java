@@ -264,7 +264,7 @@ public class LinkdTest extends LinkdNetworkBuilder implements InitializingBean {
             printLink(link);
         }
 
-        assertEquals("we should have found 9 data links", 9, ifaces.size());
+        assertEquals("we should have found 6 data links", 6, ifaces.size());
     }
 
     @Test
