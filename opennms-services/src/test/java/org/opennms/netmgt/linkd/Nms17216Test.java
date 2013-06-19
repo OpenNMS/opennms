@@ -46,6 +46,7 @@ import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.config.LinkdConfig;
+import org.opennms.netmgt.config.LinkdConfigFactory;
 import org.opennms.netmgt.config.linkd.Package;
 import org.opennms.netmgt.dao.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
@@ -56,6 +57,8 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -73,7 +76,6 @@ public class Nms17216Test extends Nms17216NetworkBuilder implements Initializing
     @Autowired
     private Linkd m_linkd;
 
-    @Autowired
     private LinkdConfig m_linkdConfig;
 
     @Autowired
@@ -101,6 +103,15 @@ public class Nms17216Test extends Nms17216NetworkBuilder implements Initializing
 
         super.setNodeDao(m_nodeDao);
         super.setSnmpInterfaceDao(m_snmpInterfaceDao);
+    }
+
+    @Before
+    public void setUpLinkdConfiguration() throws Exception {
+        LinkdConfigFactory.init();
+        final Resource config = new ClassPathResource("etc/linkd-configuration.xml");
+        final LinkdConfigFactory factory = new LinkdConfigFactory(-1L, config.getInputStream());
+        LinkdConfigFactory.setInstance(factory);
+        m_linkdConfig = LinkdConfigFactory.getInstance();
     }
 
     @After

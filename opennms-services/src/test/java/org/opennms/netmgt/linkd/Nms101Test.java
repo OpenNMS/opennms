@@ -49,6 +49,7 @@ import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.LinkdConfig;
+import org.opennms.netmgt.config.LinkdConfigFactory;
 import org.opennms.netmgt.config.linkd.Package;
 import org.opennms.netmgt.dao.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.IpInterfaceDao;
@@ -60,6 +61,8 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -90,7 +93,6 @@ public class Nms101Test extends Nms101NetworkBuilder implements InitializingBean
     @Autowired
     private DataLinkInterfaceDao m_dataLinkInterfaceDao;
 
-    @Autowired
     private LinkdConfig m_linkdConfig;
 
     @Override
@@ -115,6 +117,15 @@ public class Nms101Test extends Nms101NetworkBuilder implements InitializingBean
             pkg.setForceIpRouteDiscoveryOnEthernet(true);
         }
     }
+
+	@Before
+	public void setUpLinkdConfiguration() throws Exception {
+	    LinkdConfigFactory.init();
+	    final Resource config = new ClassPathResource("etc/linkd-configuration.xml");
+	    final LinkdConfigFactory factory = new LinkdConfigFactory(-1L, config.getInputStream());
+	    LinkdConfigFactory.setInstance(factory);
+	    m_linkdConfig = LinkdConfigFactory.getInstance();
+	}
 
     @After
     public void tearDown() throws Exception {

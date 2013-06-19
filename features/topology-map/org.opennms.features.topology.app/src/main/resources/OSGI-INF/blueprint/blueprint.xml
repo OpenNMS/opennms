@@ -19,8 +19,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
     <bean id="topologyApplication" class="org.opennms.features.topology.app.internal.TopologyWidgetTestApplication" scope="prototype">
         <argument ref="commandManager"/>
         <argument ref="historyManager"/>
-        <argument ref="topologyProvider"/>
-        <argument ref="providerManager" />
+        <argument ref="veGraphContainer" />
         <argument ref="iconRepoManager"/>
         <argument>
             <bean class="org.opennms.features.topology.app.internal.DefaultSelectionManager"/>
@@ -32,6 +31,13 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         <property name="showHeader" value="${showHeader}" />
     </bean>
     
+    <bean id="veGraphContainer" class="org.opennms.features.topology.app.internal.VEProviderGraphContainer" scope="prototype">
+        <argument ref="topologyProvider" />
+        <argument ref="providerManager" />
+        <property name="bundleContext" ref="blueprintBundleContext" />
+    </bean>
+    
+    <!--  Header reference -->
     <reference id="onmsHeaderProvider" interface="org.opennms.web.api.OnmsHeaderProvider" availability="mandatory" />
     
     <bean id="topologyWidgetTestApplicationFactory" class="org.opennms.features.topology.app.internal.TopologyWidgetTestApplicationFactory" >

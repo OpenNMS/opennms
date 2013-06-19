@@ -79,6 +79,10 @@ div.v-table-header-wrap {
 	stroke: #4D6C80;
 }
 
+.edge.ncs.direct {
+	stroke: #FFD700;
+}
+
 .edge.ncs.selected {
 	stroke: #00ffff;
 }
