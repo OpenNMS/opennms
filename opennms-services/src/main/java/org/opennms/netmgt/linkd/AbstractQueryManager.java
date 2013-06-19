@@ -75,6 +75,7 @@ import org.opennms.netmgt.model.OnmsVlan;
 
 public abstract class AbstractQueryManager implements QueryManager {
     protected Linkd m_linkd;
+    private static final InetAddress m_zeroAddress = InetAddressUtils.addr("0.0.0.0");
 
     @Override
     public void setLinkd(final Linkd linkd) {
@@ -153,8 +154,8 @@ public abstract class AbstractQueryManager implements QueryManager {
             
             final String hostAddress = InetAddressUtils.str(ipaddress);
 
-            if (ipaddress == null || ipaddress.isLoopbackAddress() || hostAddress.equals("0.0.0.0")) {
-                LogUtils.warnf(this, "processIpNetToMediaTable: invalid IP: %s", hostAddress);
+            if (ipaddress == null || ipaddress.isLoopbackAddress() || m_zeroAddress.equals(ipaddress)) {
+                LogUtils.warnf(this, "processIpNetToMediaTable: invalid IP: %s", ipaddress);
                 continue;
             }
 
@@ -241,8 +242,7 @@ public abstract class AbstractQueryManager implements QueryManager {
         InetAddress ospfRouterId = snmpcoll.getOspfGeneralGroup().getOspfRouterId();
 
         LogUtils.debugf(this, "processOspf: ospf node/ospfrouterid: %d/%s", node.getNodeId(), str(ospfRouterId)); 
-        final InetAddress zero = InetAddressUtils.addr("0.0.0.0");
-        if (zero.equals(ospfRouterId)) {
+        if (m_zeroAddress.equals(ospfRouterId)) {
             LogUtils.infof(this, "processOspf: invalid ospf ruoter id. node/ospfrouterid: %d/%s. Skipping!", node.getNodeId(), str(ospfRouterId)); 
             return;
         }
@@ -255,7 +255,7 @@ public abstract class AbstractQueryManager implements QueryManager {
             InetAddress ospfNbrRouterId = ospfNbrTableEntry.getOspfNbrRouterId();
             InetAddress ospfNbrIpAddr = ospfNbrTableEntry.getOspfNbrIpAddress();
             LogUtils.debugf(this, "processOspf: addind ospf node/ospfnbraddress/ospfnbrrouterid: %d/%s/%s", node.getNodeId(), str(ospfNbrIpAddr),str(ospfNbrRouterId)); 
-            if (zero.equals(ospfNbrIpAddr) || zero.equals(ospfNbrRouterId)) {
+            if (m_zeroAddress.equals(ospfNbrIpAddr) || m_zeroAddress.equals(ospfNbrRouterId)) {
                 LogUtils.infof(this, "processOspf: ospf invalid ip address for node/ospfnbraddress/ospfnbrrouterid: %d/%s/%s", node.getNodeId(), str(ospfNbrIpAddr),str(ospfNbrRouterId)); 
                 continue;
             }
@@ -492,7 +492,7 @@ public abstract class AbstractQueryManager implements QueryManager {
                 LogUtils.warnf(this, "processCdpCacheTable: CDP address type not ip: %d", cdpAddrType);
             } else {
                 cdpTargetIpAddrString = InetAddressUtils.str(cdpTargetIpAddr);
-                if (cdpTargetIpAddr == null || cdpTargetIpAddr.isLoopbackAddress() || cdpTargetIpAddrString.equals("0.0.0.0")) {
+                if (cdpTargetIpAddr == null || cdpTargetIpAddr.isLoopbackAddress() || m_zeroAddress.equals(cdpTargetIpAddr)) {
                     LogUtils.debugf(this, "processCdpCacheTable: IP address is not valid: %s", cdpTargetIpAddrString);
                     cdpTargetIpAddrString = null;
                 } else {
@@ -658,7 +658,7 @@ public abstract class AbstractQueryManager implements QueryManager {
                     LogUtils.warnf(this, "processRouteTable: interface has an invalid ifType (%d). Skipping.", snmpiftype);
                 } else if (nexthop.isLoopbackAddress()) {
                     LogUtils.infof(this, "processRouteTable: next hop is a loopback address. Skipping.");
-                } else if (InetAddressUtils.str(nexthop).equals("0.0.0.0")) {
+                } else if (m_zeroAddress.equals(nexthop)) {
                     LogUtils.infof(this, "processRouteTable: next hop is a broadcast address. Skipping.");
                 } else if (nexthop.isMulticastAddress()) {
                     LogUtils.infof(this, "processRouteTable: next hop is a multicast address. Skipping.");
