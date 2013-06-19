@@ -25,8 +25,9 @@ public class NCSServicePath {
     private String m_deviceAForeignID;
     private String m_deviceZForeignID;
     private String m_serviceName;
+    private int m_statusCode;
     
-    public NCSServicePath(Node servicePath, NCSComponentRepository dao, NodeDao nodeDao, String nodeForeignSource, String serviceForeignSource, String deviceAID, String deviceZID, String serviceName) {
+    public NCSServicePath(Node data, NCSComponentRepository dao, NodeDao nodeDao, String nodeForeignSource, String serviceForeignSource, String deviceAID, String deviceZID, String serviceName) {
         m_dao = dao;
         m_nodeDao = nodeDao;
         m_nodeForeignSource = nodeForeignSource;
@@ -35,9 +36,11 @@ public class NCSServicePath {
         m_deviceZForeignID = deviceZID;
         m_serviceName = serviceName;
         
+        setStatusCode(data);
+        
         //Add device A to path, its not sent in the path
         m_vertices.add( getVertexRefForForeignId(m_deviceAForeignID, m_nodeForeignSource) );
-        NodeList childNodes = servicePath.getChildNodes();
+        NodeList childNodes = getServicePath(data);
         for(int i = 0; i < childNodes.getLength(); i++) {
             Node item = childNodes.item(i);
             if(item.getNodeName().equals("LSPPath")) {
@@ -47,6 +50,28 @@ public class NCSServicePath {
         
         //Add device Z to path, its not sent in the path from the server
         m_vertices.add( getVertexRefForForeignId(m_deviceZForeignID, m_nodeForeignSource) );
+    }
+
+    private NodeList getServicePath(Node data) {
+        NodeList servicePath = data.getOwnerDocument().getElementsByTagName("ServicePath");
+        return servicePath.item(0).getChildNodes();
+    }
+
+    private void setStatusCode(Node data) {
+        NodeList childNodes = data.getChildNodes();
+        for(int i = 0; i < childNodes.getLength(); i++) {
+            Node item = childNodes.item(i);
+            if(item.getNodeName().equals("Status")) {
+                Node firstChild = item.getFirstChild();
+                String nodeValue = firstChild.getFirstChild().getNodeValue();
+                m_statusCode = Integer.valueOf(nodeValue);
+            }
+        }
+        
+    }
+    
+    public int getStatusCode() {
+        return m_statusCode;
     }
 
     private void parsePath(Node item) {

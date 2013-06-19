@@ -187,6 +187,16 @@ public class ServicePathTestServlet extends HttpServlet {
     		"</Status>" +
     		"</Data>";
     
+    private String m_responseErrorString = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?> " +
+    		"<Data xmlns=\"services.schema.networkapi.jmp.juniper.net\">" +
+    		"<ServiceResource>" +
+    		"<ServicePath/>" +
+    		"</ServiceResource>" +
+    		"<Status>" +
+    		"<Code>500</Code>" +
+    		"</Status>" +
+    		"</Data> ";
+    
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         PrintWriter out = resp.getWriter();
@@ -196,6 +206,8 @@ public class ServicePathTestServlet extends HttpServlet {
             out.write(m_responsePath1);
         } else if(req.getQueryString().equals("deviceA=688141&deviceZ=131103")) {
             out.write(m_responsePath2);
+        } else if(req.getQueryString().equals("deviceA=131103&deviceZ=error")){
+            out.write(m_responseErrorString);
         } else {
             out.write(m_responseString3);
         }
