@@ -89,7 +89,9 @@ function toggle(box, field)
  <option value="<c:out value="${formatter.name}" />" <c:out value="${formatterSelected}" />><c:out value="${formatter.name}: ${formatter.description}" /></option>
 </c:forEach>
 </select>
+<!--
 Output: <input type="text" name="output" />
+-->
 </p>
 
 <input type="hidden" name="operation" value="run" />
