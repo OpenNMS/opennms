@@ -115,25 +115,22 @@ public class TopologyWidgetTestApplication extends Application implements Comman
     private String m_headerHtml;
     private boolean m_showHeader = true;
 
-	public TopologyWidgetTestApplication(CommandManager commandManager, HistoryManager historyManager, VEProviderGraphContainer graphContainer, IconRepositoryManager iconRepoManager, SelectionManager selectionManager) {
+    public TopologyWidgetTestApplication(CommandManager commandManager, HistoryManager historyManager, GraphProvider topologyProvider, ProviderManager providerManager, IconRepositoryManager iconRepoManager, SelectionManager selectionManager, GraphContainer graphContainer) {
+        // Ensure that selection changes trigger a history save operation
+        selectionManager.addSelectionListener(this);
 
-		// Ensure that selection changes trigger a history save operation
-		selectionManager.addSelectionListener(this);
+        m_commandManager = commandManager;
+        m_commandManager.addMenuItemUpdateListener(this);
+        m_historyManager = historyManager;
+        m_iconRepositoryManager = iconRepoManager;
 
-		m_commandManager = commandManager;
-		m_commandManager.addMenuItemUpdateListener(this);
-		m_historyManager = historyManager;
-		m_iconRepositoryManager = iconRepoManager;
-
-		// Create a per-session GraphContainer instance
-		m_graphContainer = graphContainer;
-		m_graphContainer.setSelectionManager(selectionManager);
-		m_graphContainer.addChangeListener(this);
-		m_graphContainer.getMapViewManager().addListener(this);
-		m_graphContainer.setUserName((String)this.getUser());
-		
-	}
-
+        // Create a per-session GraphContainer instance
+        m_graphContainer = graphContainer;
+        m_graphContainer.setSelectionManager(selectionManager);
+        m_graphContainer.addChangeListener(this);
+        m_graphContainer.getMapViewManager().addListener(this);
+        m_graphContainer.setUserName((String)this.getUser());
+    }
 
 	@SuppressWarnings("serial")
 	@Override
