@@ -48,6 +48,7 @@ import org.opennms.features.topology.api.SelectionListener;
 import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.SelectionNotifier;
 import org.opennms.features.topology.api.WidgetContext;
+import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.app.internal.TopoContextMenu.TopoContextMenuItem;
 import org.opennms.features.topology.app.internal.TopologyComponent.VertexUpdateListener;
 import org.opennms.features.topology.app.internal.jung.FRLayoutAlgorithm;
@@ -115,7 +116,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
     private String m_headerHtml;
     private boolean m_showHeader = true;
 
-    public TopologyWidgetTestApplication(CommandManager commandManager, HistoryManager historyManager, GraphProvider topologyProvider, ProviderManager providerManager, IconRepositoryManager iconRepoManager, SelectionManager selectionManager, GraphContainer graphContainer) {
+    public TopologyWidgetTestApplication(CommandManager commandManager, HistoryManager historyManager, GraphContainer graphContainer, IconRepositoryManager iconRepoManager, SelectionManager selectionManager) {
         // Ensure that selection changes trigger a history save operation
         selectionManager.addSelectionListener(this);
 
@@ -150,6 +151,8 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 	    m_window = new Window("OpenNMS Topology");
         m_window.setContent(m_rootLayout);
         setMainWindow(m_window);
+
+
         
         m_uriFragUtil = new UriFragmentUtility();
         m_window.addComponent(m_uriFragUtil);

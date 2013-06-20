@@ -2419,10 +2419,11 @@
         <artifactId>mail</artifactId>
         <version>1.4.5</version>
       </dependency>
+      <!-- we want to use JPA 2.0. Do not add javax.persistence/persistence-api! -->
       <dependency>
-        <groupId>javax.persistence</groupId>
-        <artifactId>persistence-api</artifactId>
-        <version>1.0</version>     
+        <groupId>org.hibernate.javax.persistence</groupId>
+        <artifactId>hibernate-jpa-2.0-api</artifactId>
+        <version>1.0.1.Final</version>
       </dependency>
       <dependency>
         <groupId>javax.samples.jnlp</groupId>
