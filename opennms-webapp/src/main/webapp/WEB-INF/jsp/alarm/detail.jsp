@@ -65,10 +65,11 @@
 
 <%
     XssRequestWrapper req = new XssRequestWrapper(request);
-    Alarm alarm = (Alarm) request.getAttribute("alarm");
+    Alarm alarm = (Alarm)request.getAttribute("alarm");
+    final String alarmId = (String)request.getAttribute("alarm");
 
     if (alarm == null) {
-        throw new ServletException("Missing alarm request attribute.");
+        throw new AlarmIdNotFoundException("Missing alarm request attribute.", alarmId);
     }
 
     pageContext.setAttribute("alarm", alarm);
