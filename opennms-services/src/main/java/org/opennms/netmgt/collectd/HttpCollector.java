@@ -68,7 +68,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.params.ClientPNames;
 import org.apache.http.client.params.CookiePolicy;
-import org.apache.http.client.utils.URIUtils;
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
@@ -328,8 +328,9 @@ public class HttpCollector implements ServiceCollector {
         } catch (Throwable e) {
             throw new HttpCollectorException("Unexpected exception caught during HTTP collection: " + e.getMessage(), e);
         } finally {
-            // Do we need to do any cleanup?
-            // if (method != null) method.releaseConnection();
+            if (client != null) {
+                client.getConnectionManager().shutdown();
+            }
         }
     }
 
@@ -693,15 +694,11 @@ public class HttpCollector implements ServiceCollector {
                 }
                 query.append(uri.getQuery());
             }
-            
-            uriWithQueryString = URIUtils.createURI(
-                                         uri.getScheme(), 
-                                         uri.getHost(), 
-                                         uri.getPort(), 
-                                         uri.getPath(), 
-                                         query.length() > 0 ? query.toString() : null, 
-                                         uri.getFragment()
-            );
+            URIBuilder ub = new URIBuilder(uri);
+            if (query.length() > 0) {
+                ub.setQuery(query.toString());
+            }
+            uriWithQueryString = ub.build();
             return new HttpGet(uriWithQueryString);
         } catch (URISyntaxException e) {
             log().warn(e.getMessage(), e);
@@ -726,12 +723,14 @@ public class HttpCollector implements ServiceCollector {
         substitutions.put("ipaddr", InetAddressUtils.str(collectionSet.getAgent().getInetAddress()));
         substitutions.put("nodeid", Integer.toString(collectionSet.getAgent().getNodeId()));
 
-        return URIUtils.createURI(collectionSet.getUriDef().getUrl().getScheme(),
-                       substituteKeywords(substitutions, collectionSet.getUriDef().getUrl().getHost(), "getHost"),
-                       collectionSet.getPort(),
-                       substituteKeywords(substitutions, collectionSet.getUriDef().getUrl().getPath(), "getURL"),
-                       substituteKeywords(substitutions, collectionSet.getUriDef().getUrl().getQuery(), "getQuery"),
-                       substituteKeywords(substitutions, collectionSet.getUriDef().getUrl().getFragment(), "getFragment"));
+        URIBuilder ub = new URIBuilder();
+        ub.setScheme(collectionSet.getUriDef().getUrl().getScheme());
+        ub.setHost(substituteKeywords(substitutions, collectionSet.getUriDef().getUrl().getHost(), "getHost"));
+        ub.setPort(collectionSet.getPort());
+        ub.setPath(substituteKeywords(substitutions, collectionSet.getUriDef().getUrl().getPath(), "getURL"));
+        ub.setQuery(substituteKeywords(substitutions, collectionSet.getUriDef().getUrl().getQuery(), "getQuery"));
+        ub.setFragment(substituteKeywords(substitutions, collectionSet.getUriDef().getUrl().getFragment(), "getFragment"));
+        return ub.build();
     }
 
     private static String substituteKeywords(final HashMap<String,String> substitutions, final String urlFragment, final String desc) {
