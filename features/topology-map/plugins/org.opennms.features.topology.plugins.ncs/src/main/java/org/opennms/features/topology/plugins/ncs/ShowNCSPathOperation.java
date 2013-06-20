@@ -126,12 +126,16 @@ public class ShowNCSPathOperation implements Operation {
                 try {
                     NCSServicePath path = getNcsPathProvider().getPath(foreignId, foreignSource, deviceANodeForeignId, deviceZNodeForeignId, nodeForeignSource, serviceName);
                     
+                    if(path.getStatusCode() == 200) {
+                        NCSServicePathCriteria criteria = new NCSServicePathCriteria(path.getEdges());
+                        m_serviceManager.registerCriteria(criteria, operationContext.getGraphContainer().getSessionId());
                     
-                    NCSServicePathCriteria criteria = new NCSServicePathCriteria(path.getEdges());
-                    m_serviceManager.registerCriteria(criteria, operationContext.getGraphContainer().getSessionId());
-                    
-                    //Select only the vertices in the path
-                    selectionManager.setSelectedVertexRefs(path.getVertices());
+                        //Select only the vertices in the path
+                        selectionManager.setSelectedVertexRefs(path.getVertices());
+                    } else {
+                        LoggerFactory.getLogger(this.getClass()).warn("An error occured while retrieving the NCS Path, Juniper NetworkAppsApi send error code: " + path.getStatusCode());
+                        mainWindow.showNotification("An error occurred while retrieving the NCS Path\nStatus Code: " + path.getStatusCode(), Notification.TYPE_ERROR_MESSAGE);
+                    }
                     
                 }  catch (Exception e) {
                     

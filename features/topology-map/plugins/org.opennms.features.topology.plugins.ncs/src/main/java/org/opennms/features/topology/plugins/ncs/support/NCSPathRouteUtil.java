@@ -14,7 +14,6 @@ import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.ncs.NCSComponentRepository;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 public class NCSPathRouteUtil {
@@ -43,18 +42,19 @@ public class NCSPathRouteUtil {
         LoggerFactory.getLogger(this.getClass()).info("NCSPathRouteUtil send headers: " + exchange.getOut().getHeaders());
     }
     
-    public NCSServicePath createPath(@JuniperXPath("//juniper:ServicePath") NodeList pathList, Exchange exchange) {
+    public NCSServicePath createPath(@JuniperXPath("//juniper:Data") Node data, Exchange exchange) {
         Message in = exchange.getIn();
         LoggerFactory.getLogger(this.getClass()).info("NCSPathRouteUtil [createPath] received message: " + in.toString());
         String nodeForeignSource = (String) in.getHeader("nodeForeignSource");
         String serviceForeignSource = (String) in.getHeader("foreignSource");
-        Node servicePath = pathList.item(0);
+        Node servicePath = data;
         
         String deviceA = (String) in.getHeader("deviceA");
         String deviceZ = (String) in.getHeader("deviceZ");
         String serviceName = (String) in.getHeader("serviceName");
         
-        LoggerFactory.getLogger(this.getClass()).info("NCSPathRouteUtil parsing nodes: " + servicePath.toString());
+        String string = servicePath.getOwnerDocument().getTextContent();
+        LoggerFactory.getLogger(this.getClass()).info("NCSPathRouteUtil parsing nodes: " + string);
         return new NCSServicePath(servicePath, m_dao, m_nodeDao, nodeForeignSource, serviceForeignSource, deviceA, deviceZ, serviceName);
 
     }

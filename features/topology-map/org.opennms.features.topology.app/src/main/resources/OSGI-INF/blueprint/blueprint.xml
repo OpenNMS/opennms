@@ -46,7 +46,12 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         <argument value="topologyApplication"/>
         <property name="headerProvider" ref="onmsHeaderProvider" />
     </bean>
-    
+
+    <bean id="graphContainer" class="org.opennms.features.topology.app.internal.VEProviderGraphContainer">
+        <argument ref="topologyProvider"/>
+        <argument ref="providerManager"/>
+    </bean>
+
     <service interface="org.ops4j.pax.vaadin.ApplicationFactory" ref="topologyWidgetTestApplicationFactory">
         <service-properties>
             <entry key="alias" value="${servletAlias}"/>
@@ -69,8 +74,8 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
     <reference-list interface="org.opennms.features.topology.api.topo.StatusProvider" availability="optional">
         <reference-listener bind-method="addStatusProvider" unbind-method="removeStatusProvider" ref="statusSelector" />
     </reference-list>
-    
-    <!-- default icon repository -->    
+
+    <!-- default icon repository -->
     <service>
       <interfaces>
         <value>org.opennms.features.topology.api.IconRepository</value>

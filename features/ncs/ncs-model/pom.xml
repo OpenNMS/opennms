@@ -60,9 +60,9 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>javax.persistence</groupId>
-      <artifactId>persistence-api</artifactId>
-      <scope>provided</scope>
+	<groupId>org.hibernate.javax.persistence</groupId>
+        <artifactId>hibernate-jpa-2.0-api</artifactId>
+      	<scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>

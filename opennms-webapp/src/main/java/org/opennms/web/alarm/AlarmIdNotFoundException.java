@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,37 +26,51 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.helloworld.internal;
+package org.opennms.web.alarm;
 
-import java.util.Properties;
+/**
+ * <p>AlarmIdNotFoundException class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
+public class AlarmIdNotFoundException extends RuntimeException {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 8128966294679333327L;
 
-import javax.servlet.Servlet;
+    protected String badId;
 
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
+    protected String message;
 
-public class Activator implements BundleActivator {
+    /**
+     * <p>Constructor for AlarmIdNotFoundException.</p>
+     *
+     * @param msg a {@link java.lang.String} object.
+     * @param id a {@link java.lang.String} object.
+     */
+    public AlarmIdNotFoundException(String msg, String id) {
+        this.message = msg;
+        this.badId = id;
+    }
 
-	@Override
-	public void start(BundleContext context) throws Exception {
-		registerServlet(context, "/helloworld");
-		registerServlet(context, "/test/helloworld");
-		registerServlet(context, "/test/other/helloworld");
-	}
+    /**
+     * <p>Getter for the field <code>message</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getMessage() {
+        return this.message;
+    }
 
-	@Override
-	public void stop(BundleContext context) throws Exception {
-	}
-	
-	
-	public void registerServlet(BundleContext context, String alias) {
-		
-		Servlet s = new HelloWorldServlet(alias);
-		
-		Properties info = new Properties();
-		info.put("alias", alias);
-		
-		context.registerService(Servlet.class.getName(), s, info);
-	}
-
+    /**
+     * <p>getBadID</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getBadID() {
+        return this.badId;
+    }
 }

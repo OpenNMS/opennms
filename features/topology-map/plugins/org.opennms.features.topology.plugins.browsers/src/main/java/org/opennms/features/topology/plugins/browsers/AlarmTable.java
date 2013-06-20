@@ -101,7 +101,7 @@ public class AlarmTable extends SelectionAwareTable implements HasExtraComponent
 						// Clear the checkboxes
 						m_generator.clearSelectedIds(AlarmTable.this);
 
-						AlarmTable.this.containerItemSetChange(new ItemSetChangeEvent() {
+						AlarmTable.this.containerItemSetChange(new Container.ItemSetChangeEvent() {
 							private static final long serialVersionUID = 7086486972418241175L;
 							@Override
 							public Container getContainer() {
@@ -198,8 +198,7 @@ public class AlarmTable extends SelectionAwareTable implements HasExtraComponent
 		m_ackCombo.addItem(ACTION_UNACKNOWLEDGE);
 		m_ackCombo.addItem(ACTION_ESCALATE);
 		m_ackCombo.addItem(ACTION_CLEAR);
-		// Make "Acknowledge" the default value
-		m_ackCombo.setValue(ACTION_ACKNOWLEDGE);
+		m_ackCombo.setValue(ACTION_ACKNOWLEDGE); // Make "Acknowledge" the default value
 
 		m_submitButton = new CheckboxButton("Submit");
 		m_submitButton.setCombo(m_ackCombo);

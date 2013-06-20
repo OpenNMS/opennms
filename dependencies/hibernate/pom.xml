@@ -15,19 +15,20 @@
     can depend on to use the hibernate library.
   </description>
   <properties>
-    <annotationsVersion>3.4.0.GA</annotationsVersion>
-    <commonsAnnotationsVersion>3.1.0.GA</commonsAnnotationsVersion>
-    <ejbVersion>1.0.2.GA</ejbVersion>
-    <entityManagerVersion>3.4.0.GA</entityManagerVersion>
-    <hibernateVersion>3.3.1.GA</hibernateVersion>
+   <!-- <annotationsVersion>3.5.6-Final</annotationsVersion>
+    <commonsAnnotationsVersion>3.2.0.Final</commonsAnnotationsVersion> -->
+   <!-- <entityManagerVersion>3.6.10.Final</entityManagerVersion> -->
+<!--    <ejbVersion>3.3.2.Beta1</ejbVersion> -->
+    <hibernateVersion>3.6.10.Final</hibernateVersion> 
   </properties>
   <dependencies>
-    <dependency>
+<!--    <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>ejb3-persistence</artifactId>
       <version>${ejbVersion}</version>
     </dependency>
-    <dependency>
+-->
+   <!-- <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-annotations</artifactId>
       <version>${annotationsVersion}</version>
@@ -50,7 +51,8 @@
         </exclusion>
       </exclusions>
     </dependency>
-    <dependency>
+-->
+   <!-- <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-commons-annotations</artifactId>
       <version>${commonsAnnotationsVersion}</version>
@@ -61,11 +63,16 @@
         </exclusion>
       </exclusions>
     </dependency>
+-->
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-core</artifactId>
       <version>${hibernateVersion}</version>
       <exclusions>
+	<exclusion>
+		<groupId>org.hibernate.javax.persistence</groupId>
+		<artifactId>hibernate-jpa-2.0-api</artifactId>
+	</exclusion>
         <exclusion>
           <groupId>asm</groupId>
           <artifactId>asm</artifactId>
@@ -80,7 +87,8 @@
         </exclusion>
       </exclusions>
     </dependency>
-    <dependency>
+<!--   
+ <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-entitymanager</artifactId>
       <version>${entityManagerVersion}</version>
@@ -107,6 +115,7 @@
         </exclusion>
       </exclusions>
     </dependency>
+-->
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
