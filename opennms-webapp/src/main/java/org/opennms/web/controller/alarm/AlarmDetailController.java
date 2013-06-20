@@ -122,6 +122,7 @@ public class AlarmDetailController extends MultiActionController {
         // return to view WEB-INF/jsp/alarm/detail.jsp
         ModelAndView mv = new ModelAndView("alarm/detail");
         mv.addObject("alarm", m_alarm);
+        mv.addObject("alarmId", alarmIdString);
         mv.addObject("acknowledgments", acknowledgments);
         return mv;
     }

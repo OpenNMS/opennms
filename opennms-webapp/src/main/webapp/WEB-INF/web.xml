@@ -1162,6 +1162,10 @@
     <exception-type>java.lang.Throwable</exception-type>
     <location>/errors/unknownexception.jsp</location>
   </error-page>  
+  <error-page>
+    <error-code>500</error-code>
+    <location>/errors/unknownexception.jsp</location>
+  </error-page>  
   
   <!-- the welcome-file elements need to point at a file that exists or
        a non-wildcard url-pattern in a servlet-mapping element. -->

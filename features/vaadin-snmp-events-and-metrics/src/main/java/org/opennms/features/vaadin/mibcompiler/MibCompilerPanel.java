@@ -112,7 +112,7 @@ public class MibCompilerPanel extends Panel {
 
     /** The Events Proxy. */
     private EventProxy eventsProxy;
-    
+
     /** The Data Collection Configuration DAO. */
     private DataCollectionConfigDao dataCollectionDao;
 
@@ -175,7 +175,7 @@ public class MibCompilerPanel extends Panel {
         mibsTree = new Tree("MIB Tree");
         initMibTree(logger);
         final Label label = new Label("<p>Use the right-click context menu over the MIB tree files, to display the compiler operations.</p>"
-                                      + "<p>The file name requires to be the same as the MIB to be processed.</p>");
+                + "<p>The file name requires to be the same as the MIB to be processed.</p>");
         label.setContentMode(Label.CONTENT_XHTML);
         addComponent(label);
         addComponent(mibsTree);
@@ -265,10 +265,15 @@ public class MibCompilerPanel extends Panel {
                 }
                 if (action == ACTION_COMPILE) {
                     if (parseMib(logger, new File(MIBS_PENDING_DIR, fileName))) {
+                        String mibName = fileName;
+                        if (!fileName.contains(mibParser.getMibName())) {
+                            mibName = mibParser.getMibName() + ".mib";
+                            logger.info("Renaming file " + fileName + " to " + mibName);
+                        }
                         mibsTree.removeItem(target);
-                        addTreeItem(fileName, COMPILED);
+                        addTreeItem(mibName, COMPILED);
                         File file = new File(MIBS_PENDING_DIR, fileName);
-                        file.renameTo(new File(MIBS_COMPILED_DIR, file.getName()));
+                        file.renameTo(new File(MIBS_COMPILED_DIR, mibName));
                     }
                 }
                 if (action == ACTION_EVENTS) {
