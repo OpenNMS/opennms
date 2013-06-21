@@ -6,7 +6,7 @@
     <parent>
     <artifactId>plugins</artifactId>
     <groupId>org.opennms.features.topology</groupId>
-    <version>1.11.91</version>
+    <version>1.11.91-SNAPSHOT</version>
   </parent>
 
     <groupId>org.opennms.features.topology.plugins.topo</groupId>
@@ -30,13 +30,13 @@
         <dependency>
             <groupId>org.opennms.osgi.features.topology</groupId>
             <artifactId>opennms-topology-api</artifactId>
-            <version>1.11.91</version>
+            <version>1.11.91-SNAPSHOT</version>
             <type>pom</type>
         </dependency>
         <dependency>
             <groupId>org.opennms.osgi.features.topology</groupId>
             <artifactId>vaadin</artifactId>
-            <version>1.11.91</version>
+            <version>1.11.91-SNAPSHOT</version>
             <type>pom</type>
         </dependency>
     </dependencies>
