@@ -4,7 +4,7 @@
   <groupId>org.opennms.provisiond.utils</groupId>
   <artifactId>csv-requisition</artifactId>
   <packaging>jar</packaging>
-  <version>1.11.92</version>
+  <version>1.11.93-SNAPSHOT</version>
   <name>csv-requistion</name>
   <url>http://maven.apache.org</url>
   <build>
@@ -57,14 +57,14 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-provision-persistence</artifactId>
-      <version>1.11.92</version>
+      <version>1.11.93-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-provision-persistence</artifactId>
       <type>test-jar</type>
       <scope>test</scope>
-      <version>1.11.92</version>
+      <version>1.11.93-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
