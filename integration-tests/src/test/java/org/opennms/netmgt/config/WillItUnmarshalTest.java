@@ -478,7 +478,7 @@ public class WillItUnmarshalTest {
     }
     @Test
     public void testServiceConfiguration() throws Exception {
-        unmarshal("service-configuration.xml", ServiceConfiguration.class);
+        unmarshalJaxb("service-configuration.xml", ServiceConfiguration.class);
     }
     @Test
     public void testViewsDisplay() throws Exception {

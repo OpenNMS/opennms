@@ -42,7 +42,6 @@ import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.xml.eventconf.Events;
 
-import com.vaadin.data.util.HierarchicalContainer;
 import com.vaadin.event.Action;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Label;
@@ -101,9 +100,6 @@ public class MibCompilerPanel extends Panel {
     /** The MIBs tree. */
     private final Tree mibsTree;
 
-    /** The MIBs container. */
-    private final HierarchicalContainer mibsContainer;
-
     /** The MIB parser. */
     private final MibParser mibParser;
 
@@ -112,7 +108,7 @@ public class MibCompilerPanel extends Panel {
 
     /** The Events Proxy. */
     private EventProxy eventsProxy;
-    
+
     /** The Data Collection Configuration DAO. */
     private DataCollectionConfigDao dataCollectionDao;
 
@@ -171,11 +167,9 @@ public class MibCompilerPanel extends Panel {
 
         // Initialize MIB Tree
 
-        mibsContainer = new HierarchicalContainer();
         mibsTree = new Tree("MIB Tree");
         initMibTree(logger);
-        final Label label = new Label("<p>Use the right-click context menu over the MIB tree files, to display the compiler operations.</p>"
-                                      + "<p>The file name requires to be the same as the MIB to be processed.</p>");
+        final Label label = new Label("<p>Use the right-click context menu over the MIB tree files, to display the compiler operations.</p>");
         label.setContentMode(Label.CONTENT_XHTML);
         addComponent(label);
         addComponent(mibsTree);
@@ -206,7 +200,6 @@ public class MibCompilerPanel extends Panel {
             }
         }
 
-        mibsTree.setContainerDataSource(mibsContainer);
         mibsTree.expandItemsRecursively(COMPILED);
         mibsTree.expandItemsRecursively(PENDING);
 
@@ -217,7 +210,7 @@ public class MibCompilerPanel extends Panel {
                 if (target == null) {
                     return new Action[] {};
                 }
-                Object parent = mibsContainer.getParent(target);
+                Object parent = mibsTree.getParent(target);
                 if (parent == null) {
                     return new Action[] {};
                 }
@@ -246,7 +239,7 @@ public class MibCompilerPanel extends Panel {
                                 String source = mibsTree.getParent(fileName).toString();
                                 File file = new File(PENDING.equals(source) ? MIBS_PENDING_DIR : MIBS_COMPILED_DIR, fileName);
                                 if (file.delete()) {
-                                    mibsContainer.removeItem(fileName);
+                                    mibsTree.removeItem(fileName);
                                     logger.info("MIB " + file + " has been successfully removed.");
                                 } else {
                                     getApplication().getMainWindow().showNotification("Can't delete " + file);
@@ -265,10 +258,15 @@ public class MibCompilerPanel extends Panel {
                 }
                 if (action == ACTION_COMPILE) {
                     if (parseMib(logger, new File(MIBS_PENDING_DIR, fileName))) {
+                        String mibName = fileName;
+                        if (!fileName.contains(mibParser.getMibName())) {
+                            mibName = mibParser.getMibName() + ".mib";
+                            logger.info("Renaming file " + fileName + " to " + mibName);
+                        }
                         mibsTree.removeItem(target);
-                        addTreeItem(fileName, COMPILED);
+                        addTreeItem(mibName, COMPILED);
                         File file = new File(MIBS_PENDING_DIR, fileName);
-                        file.renameTo(new File(MIBS_COMPILED_DIR, file.getName()));
+                        file.renameTo(new File(MIBS_COMPILED_DIR, mibName));
                     }
                 }
                 if (action == ACTION_EVENTS) {
@@ -287,15 +285,16 @@ public class MibCompilerPanel extends Panel {
      * @param label the label
      * @param parent the parent
      */
+    // FIXME: It sounds reasonable to sort the tree after adding a new MIB ?
     private void addTreeItem(final String label, final String parent) {
-        mibsContainer.addItem(label);
+        mibsTree.addItem(label);
         if (parent == null) {
             LogUtils.debugf(this, "Adding root directory %s", label);
-            mibsContainer.setChildrenAllowed(parent, true);
+            mibsTree.setChildrenAllowed(parent, true);
         } else {
             LogUtils.debugf(this, "Adding item %s to %s folder", label, parent);
-            mibsContainer.setParent(label, parent);
-            mibsContainer.setChildrenAllowed(label, false);
+            mibsTree.setParent(label, parent);
+            mibsTree.setChildrenAllowed(label, false);
         }
     }
 

@@ -44,7 +44,7 @@ import org.apache.http.HttpResponseInterceptor;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.entity.GzipDecompressingEntity;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.utils.URIUtils;
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.protocol.HttpContext;
@@ -129,7 +129,13 @@ public class HttpUrlConnection extends URLConnection {
             int port = m_url.getPort() > 0 ? m_url.getPort() : m_url.getDefaultPort();
             String[] userInfo = m_url.getUserInfo() == null ? null :  m_url.getUserInfo().split(":");
 
-            HttpGet request = new HttpGet(URIUtils.createURI(m_url.getProtocol(), m_url.getHost(), port, m_url.getPath(), m_url.getQuery(), null));
+            URIBuilder ub = new URIBuilder();
+            ub.setPort(port);
+            ub.setScheme(m_url.getProtocol());
+            ub.setHost(m_url.getHost());
+            ub.setPath(m_url.getPath());
+            ub.setQuery(m_url.getQuery());
+            HttpGet request = new HttpGet(ub.build());
             if (userInfo != null) {
                 UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(userInfo[0], userInfo[1]);
                 request.addHeader(BasicScheme.authenticate(credentials, "UTF-8", false));
