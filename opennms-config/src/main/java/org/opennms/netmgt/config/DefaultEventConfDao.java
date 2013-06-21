@@ -29,7 +29,6 @@
 package org.opennms.netmgt.config;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -39,17 +38,14 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.stream.StreamSource;
-
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.netmgt.xml.eventconf.EventMatchers;
 import org.opennms.netmgt.xml.eventconf.Events;
-import org.opennms.netmgt.xml.eventconf.Field;
 import org.opennms.netmgt.xml.eventconf.Events.EventCallback;
 import org.opennms.netmgt.xml.eventconf.Events.EventCriteria;
 import org.opennms.netmgt.xml.eventconf.Events.Partition;
+import org.opennms.netmgt.xml.eventconf.Field;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessException;
@@ -241,19 +237,6 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 		m_configResource = configResource;
 	}
 	
-	private Events load(Unmarshaller unmarshaller) throws Exception {
-		InputStream stream = null;
-		try {
-			stream = m_configResource.getInputStream();
-			StreamSource source = new StreamSource(stream);
-			Events events = unmarshaller.unmarshal(source, Events.class).getValue();
-			
-			return events;
-		} finally {
-			if (stream != null) stream.close();
-		}
-	}
-
 	@Override
 	public void afterPropertiesSet() throws DataAccessException {
 		loadConfig();
@@ -277,11 +260,8 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 	
 	private synchronized void loadConfig() throws DataAccessException {
 		try {
-			Unmarshaller unmarshaller = JaxbUtils.getUnmarshallerFor(Events.class, null, true);
-
-			Events events = load(unmarshaller);
-
-			events.loadEventFiles(m_configResource, unmarshaller);
+			Events events = JaxbUtils.unmarshal(Events.class, m_configResource);
+			events.loadEventFiles(m_configResource);
 			
 			m_partition = new EnterpriseIdPartition();
 			events.initialize(m_partition);
