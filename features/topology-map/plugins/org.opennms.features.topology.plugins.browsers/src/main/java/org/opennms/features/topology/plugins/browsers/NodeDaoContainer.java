@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -74,9 +74,16 @@ public class NodeDaoContainer extends OnmsDaoContainer<OnmsNode,Integer> {
 
     @Override
 	public void selectionChanged(SelectionContext selectionContext) {
-        List<Restriction> newRestrictions = new SelectionContextToRestrictionConverter().getRestrictions(selectionContext);
+        List<Restriction> newRestrictions = new SelectionContextToRestrictionConverter() {
+
+            @Override
+            protected Restriction createRestriction(VertexRef ref) {
+                return new EqRestriction("id", Integer.valueOf(ref.getId()));
+            }
+        }.getRestrictions(selectionContext);
         if (!getRestrictions().equals(newRestrictions)) { // selection really changed
             setRestrictions(newRestrictions);
+            getCache().reload(getPage());
             fireItemSetChangedEvent();
         }
 	}
