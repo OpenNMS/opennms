@@ -2,7 +2,7 @@
  * This file is part of OpenNMS(R).
  *
  * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,26 +26,9 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.browsers;
-
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-
-import org.apache.commons.lang.ArrayUtils;
-import org.opennms.core.criteria.Order;
-import org.opennms.core.utils.InetAddressComparator;
-import org.opennms.netmgt.model.OnmsNode;
-import org.slf4j.LoggerFactory;
-
-import com.vaadin.ui.Table;
-
-@SuppressWarnings("serial")
-public class NodeTable extends SelectionAwareTable {
-
-	@SuppressWarnings("unchecked") // Because Aries Blueprint cannot handle generics
-	public NodeTable(String caption, NodeDaoContainer container) {
-		super(caption, container);
-	}
-}
+@XmlSchema(
+   namespace = "http://xmlns.opennms.org/xsd/config/vmmgr",
+   elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED
+ )
+package org.opennms.netmgt.config.service;
+import javax.xml.bind.annotation.XmlSchema;

@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,26 +26,51 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.browsers;
+package org.opennms.web.alarm;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+/**
+ * <p>AlarmIdNotFoundException class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
+public class AlarmIdNotFoundException extends RuntimeException {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 8128966294679333327L;
 
-import org.apache.commons.lang.ArrayUtils;
-import org.opennms.core.criteria.Order;
-import org.opennms.core.utils.InetAddressComparator;
-import org.opennms.netmgt.model.OnmsNode;
-import org.slf4j.LoggerFactory;
+    protected String badId;
 
-import com.vaadin.ui.Table;
+    protected String message;
 
-@SuppressWarnings("serial")
-public class NodeTable extends SelectionAwareTable {
+    /**
+     * <p>Constructor for AlarmIdNotFoundException.</p>
+     *
+     * @param msg a {@link java.lang.String} object.
+     * @param id a {@link java.lang.String} object.
+     */
+    public AlarmIdNotFoundException(String msg, String id) {
+        this.message = msg;
+        this.badId = id;
+    }
 
-	@SuppressWarnings("unchecked") // Because Aries Blueprint cannot handle generics
-	public NodeTable(String caption, NodeDaoContainer container) {
-		super(caption, container);
-	}
+    /**
+     * <p>Getter for the field <code>message</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getMessage() {
+        return this.message;
+    }
+
+    /**
+     * <p>getBadID</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getBadID() {
+        return this.badId;
+    }
 }

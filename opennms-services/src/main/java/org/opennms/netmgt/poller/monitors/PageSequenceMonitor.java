@@ -61,7 +61,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.params.ClientPNames;
 import org.apache.http.client.params.CookiePolicy;
-import org.apache.http.client.utils.URIUtils;
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
@@ -263,16 +263,9 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
             URI uriWithQueryString = null;
             try {
                 String query = URLEncodedUtils.format(parms, "UTF-8");
-                uriWithQueryString = URIUtils.createURI(
-                                             uri.getScheme(), 
-                                             uri.getHost(), 
-                                             uri.getPort(), 
-                                             uri.getPath(),
-                                             // Do we need to merge any existing query params?
-                                             // Probably not... shouldn't be any.
-                                             query, 
-                                             uri.getFragment()
-                );
+                URIBuilder ub = new URIBuilder(uri);
+                ub.setQuery(query);
+                uriWithQueryString = ub.build();
                 this.setURI(uriWithQueryString);
             } catch (URISyntaxException e) {
                 ThreadCategory.getInstance("Cannot add query parameters to URI: " + this.getClass()).warn(e.getMessage(), e);
@@ -499,7 +492,14 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
             } else {
                 // Just leave the hostname as-is, let httpclient resolve it using the platform preferences
             }
-            return URIUtils.createURI(getScheme(), host, getPort(), getPath(seqProps, svcProps), getQuery(seqProps, svcProps), getFragment(seqProps, svcProps));
+            URIBuilder ub = new URIBuilder();
+            ub.setScheme(getScheme());
+            ub.setHost(host);
+            ub.setPort(getPort());
+            ub.setPath(getPath(seqProps, svcProps));
+            ub.setQuery(getQuery(seqProps, svcProps));
+            ub.setFragment(getFragment(seqProps, svcProps));
+            return ub.build();
         }
 
         private String getFragment(Properties... p) {
@@ -714,10 +714,9 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
                 serviceStatus = PollStatus.unavailable("Invalid parameter to monitor: " + e.getMessage() + ".  See log for details.");
                 serviceStatus.setProperties(responseTimes);
             } finally {
-                // Do we need to do any cleanup?
-                //if (client != null) {
-                //    client.getHttpConnectionManager().closeIdleConnections(0);
-                //}
+                if (client != null) {
+                    client.getConnectionManager().shutdown();
+                }
             }
         }
         

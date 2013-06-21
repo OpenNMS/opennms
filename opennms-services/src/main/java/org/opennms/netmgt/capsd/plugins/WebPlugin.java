@@ -46,7 +46,7 @@ import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.params.ClientPNames;
 import org.apache.http.client.protocol.ClientContext;
-import org.apache.http.client.utils.URIUtils;
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.CoreConnectionPNames;
@@ -98,14 +98,12 @@ public class WebPlugin extends AbstractPlugin {
         DefaultHttpClient httpClient = new DefaultHttpClient();
 
         try {
-            HttpGet getMethod = new HttpGet(URIUtils.createURI(
-                                                    ParameterMap.getKeyedString(map, "scheme", DEFAULT_SCHEME), 
-                                                    InetAddressUtils.str(address), 
-                                                    ParameterMap.getKeyedInteger(map, "port", DEFAULT_PORT), 
-                                                    ParameterMap.getKeyedString(map, "path", DEFAULT_PATH), 
-                                                    null, 
-                                                    null
-            ));
+            URIBuilder ub = new URIBuilder();
+            ub.setScheme(ParameterMap.getKeyedString(map, "scheme", DEFAULT_SCHEME));
+            ub.setHost(InetAddressUtils.str(address));
+            ub.setPort(ParameterMap.getKeyedInteger(map, "port", DEFAULT_PORT));
+            ub.setPath( ParameterMap.getKeyedString(map, "path", DEFAULT_PATH));
+            HttpGet getMethod = new HttpGet(ub.build());
             httpClient.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, ParameterMap.getKeyedInteger(map,"timeout", DEFAULT_TIMEOUT));
             httpClient.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT, ParameterMap.getKeyedInteger(map,"timeout", DEFAULT_TIMEOUT));
             httpClient.getParams().setParameter(CoreProtocolPNames.USER_AGENT, ParameterMap.getKeyedString(map,"user-agent",DEFAULT_USER_AGENT));
@@ -147,8 +145,7 @@ public class WebPlugin extends AbstractPlugin {
                                 Credentials creds = credsProvider.getCredentials(authScope);
                                 // If found, generate BasicScheme preemptively
                                 if (creds != null) {
-                                    authState.setAuthScheme(new BasicScheme());
-                                    authState.setCredentials(creds);
+                                    authState.update(new BasicScheme(), creds);
                                 }
                             }
                         }
@@ -197,8 +194,9 @@ public class WebPlugin extends AbstractPlugin {
             log().info(e.getMessage(), e);
             retval = false;
         } finally{
-            // Do we need to do any cleanup?
-            // getMethod.releaseConnection();
+            if (httpClient != null) {
+                httpClient.getConnectionManager().shutdown();
+            }
         }
 
         return retval;

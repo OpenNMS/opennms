@@ -2,7 +2,7 @@
  * This file is part of OpenNMS(R).
  *
  * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,26 +26,19 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.browsers;
+package org.opennms.netmgt.config.service.types;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
 
-import org.apache.commons.lang.ArrayUtils;
-import org.opennms.core.criteria.Order;
-import org.opennms.core.utils.InetAddressComparator;
-import org.opennms.netmgt.model.OnmsNode;
-import org.slf4j.LoggerFactory;
+public class InvokeAtTypeAdapter extends XmlAdapter<String, InvokeAtType> {
 
-import com.vaadin.ui.Table;
+    @Override
+    public InvokeAtType unmarshal(String val) throws Exception {
+        return InvokeAtType.valueOf(val);
+    }
 
-@SuppressWarnings("serial")
-public class NodeTable extends SelectionAwareTable {
-
-	@SuppressWarnings("unchecked") // Because Aries Blueprint cannot handle generics
-	public NodeTable(String caption, NodeDaoContainer container) {
-		super(caption, container);
-	}
+    @Override
+    public String marshal(InvokeAtType invokeAtType) throws Exception {
+        return invokeAtType.toString();
+    }
 }
