@@ -33,6 +33,11 @@ L.MarkerClusterGroup = L.FeatureGroup.extend({
 
 		//Increase to increase the distance away that spiderfied markers appear from the center
 		spiderfyDistanceMultiplier: 1,
+		
+		//options for being a US state cluster
+		inUs: false,
+		stateID: null,
+		statePolygonBounds: null,
 
 		//Options to pass to the L.Polygon constructor
 		polygonOptions: {}
@@ -512,9 +517,20 @@ L.MarkerClusterGroup = L.FeatureGroup.extend({
 				if (shownPolygon) {
 					map.removeLayer(shownPolygon);
 				}
+				
+				if(this.options.inUs){
 				if (a.layer.getChildCount() > 2 && a.layer !== this._spiderfied) {
-					shownPolygon = new L.Polygon(a.layer.getConvexHull(), this.options.polygonOptions);
+					shownPolygon = new L.MultiPolygon(usLatLngArrays[this.options.stateId], this.options.polygonOptions);
+					
 					map.addLayer(shownPolygon);
+				}
+				}
+				else{
+					if (a.layer.getChildCount() > 2 && a.layer !== this._spiderfied) {
+						shownPolygon = new L.Polygon(a.layer.getConvexHull(), this.options.polygonOptions);
+						
+						map.addLayer(shownPolygon);
+					}
 				}
 			}, this);
 			this.on('clustermouseout', function () {
