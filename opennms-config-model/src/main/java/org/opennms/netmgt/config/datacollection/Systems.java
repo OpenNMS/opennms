@@ -329,6 +329,7 @@ public class Systems implements Serializable {
      * @param systemDefs the Vector to copy.
      */
     public void setSystemDef(final List<SystemDef> systemDefs) {
+        if (m_systemDefs == systemDefs) return;
         m_systemDefs.clear();
         m_systemDefs.addAll(systemDefs);
     }

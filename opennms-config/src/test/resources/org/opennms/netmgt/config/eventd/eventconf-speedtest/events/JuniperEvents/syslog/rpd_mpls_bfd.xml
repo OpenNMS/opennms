@@ -1,0 +1,23 @@
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">  
+  <event>
+        <uei>uei.opennms.org/vendor/Juniper/syslog/rpd_mpls_path_bfd_up</uei>
+        <event-label>RPD MPLS Path BFD Up</event-label>
+        <descr>
+            A Bi-directional Forwarding Detection session was up on LSP path
+        </descr>
+        <logmsg dest='logndisplay'>RPD MPLS Path BFD Up: lspName: %parm[#1]%</logmsg>
+        <severity>Cleared</severity>
+                <alarm-data alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" clear-key="uei.opennms.org/vendor/Juniper/syslog/rpd_mpls_path_bfd_down:%dpname%:%nodeid%:%parm[#1]%" />
+  </event>
+  <event>
+        <uei>uei.opennms.org/vendor/Juniper/syslog/rpd_mpls_path_bfd_down</uei>
+        <event-label>RPD MPLS Path BFD Down</event-label>
+        <descr>
+           A Bi-directional Forwarding Detection session was down on LSP path
+        </descr>
+        <logmsg dest='logndisplay'>RPD MPLS Path BFD Down: lspName: %parm[#1]%</logmsg>
+        <severity>Critical</severity>
+                <alarm-data alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" />
+  </event>
+</events>
+

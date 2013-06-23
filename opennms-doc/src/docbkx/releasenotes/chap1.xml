@@ -6,6 +6,17 @@
 
 	<!-- Start 1.11 -->
 
+	<section id="introduction-1.11.91">
+		<title>Release 1.11.91</title>
+
+		<para>
+			Release 1.11.91 is the second release candidate for the OpenNMS 1.12 series.
+		</para>
+		<para>
+			The codename for 1.11.91 is <emphasis>Joe Satriani</emphasis>
+		</para>
+	</section>
+
 	<section id="introduction-1.11.90">
 		<title>Release 1.11.90</title>
 
@@ -71,6 +82,18 @@
 
 
 	<!-- Start 1.10 -->
+
+	<section id="introduction-1.10.10">
+		<title>Release 1.10.10</title>
+
+		<para>
+			Release 1.10.10 is the latest in the stable series of OpenNMS releases.
+			It contains a number of bugfixes and enhancements.
+		</para>
+		<para>
+			The codename for 1.10.10 is <emphasis>Tumpong</emphasis>.
+		</para>
+	</section>
 
 	<section id="introduction-1.10.9">
 		<title>Release 1.10.9</title>

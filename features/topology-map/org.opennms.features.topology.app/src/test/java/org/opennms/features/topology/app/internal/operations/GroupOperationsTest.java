@@ -761,4 +761,61 @@ public class GroupOperationsTest {
 		}
 		EasyMock.verify(graphContainer);
 	}
+	
+	/**
+	 * This test creates two groups:
+	 * <ol>
+	 * 	<li>an empty group 'group1'</li>
+	 * <li>a group 'group2' with two nodes ('node1' and 'node2')
+	 * </ol>
+	 * We add group2 to group1 and the nodes of group2 should not be added to group1. 
+	 * They should still be assigned to group2
+	 * 
+	 */
+	@Test
+	public void testAddGroupWithNodesToAnotherGroup() {
+		 m_topologyProvider.resetContainer();
+		 Vertex node1 = m_topologyProvider.addVertex(0, 0);
+		 Vertex node2 = m_topologyProvider.addVertex(0, 0);
+		 Vertex group1 = m_topologyProvider.addGroup("group1",  "group");
+		 Vertex group2 = m_topologyProvider.addGroup("group1",  "group");
+		 m_topologyProvider.setParent(node1, group2);
+		 m_topologyProvider.setParent(node2, group2);
+	        
+		 // we try to add group2 to group1
+		 {
+			 GraphContainer graphContainer = EasyMock.createNiceMock(GraphContainer.class);
+	         EasyMock.expect(graphContainer.getBaseTopology()).andReturn(m_topologyProvider).anyTimes();
+	         SelectionManager selectionManager = EasyMock.createNiceMock(SelectionManager.class);
+	         EasyMock.expect(selectionManager.isVertexRefSelected(EasyMock.anyObject(VertexRef.class))).andReturn(true).anyTimes();
+	         EasyMock.expect(selectionManager.getSelectedVertexRefs()).andReturn(Arrays.asList((VertexRef)node1, node2, group2)).anyTimes();
+	         EasyMock.expect(graphContainer.getSelectionManager()).andReturn(selectionManager).anyTimes();
+	         graphContainer.redoLayout();
+	         EasyMock.expectLastCall().anyTimes();
+	         EasyMock.replay(graphContainer);
+	         EasyMock.replay(selectionManager);
+	            
+	         AddVertexToGroupOperation operation = new AddVertexToGroupOperation();
+	         OperationContext context = getOperationContext(graphContainer);
+	         operation.execute(Arrays.asList((VertexRef)group2), context);
+	    
+	         // Grab the window, put a value into the form field, and commit the form to complete
+	         // the operation.
+	         Form form = getForm(getPrompt(context));
+	            
+	         // we try to add the group to itself. There is no selection
+	         Field field = form.getField("Group");
+	         field.setValue(group1.getId());
+	         Assert.assertEquals(group1.getId(), field.getValue());         // Make sure that the value was set
+	         form.commit();
+	            
+	         // verify
+	         Assert.assertEquals(group1, group2.getParent()); // group2 should be child of group1
+	         Assert.assertEquals(group2, node1.getParent()); // node1 is still child of group2
+	         Assert.assertEquals(group2, node2.getParent()); // node 2 is still child of group2
+	         Assert.assertNull(group1.getParent()); 	         // group 1 has no parent
+	            
+	         EasyMock.verify(graphContainer, selectionManager);
+		 }
+	}
 }

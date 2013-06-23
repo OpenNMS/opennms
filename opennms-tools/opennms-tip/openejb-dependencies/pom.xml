@@ -140,6 +140,12 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
+      <artifactId>jaxb-dependencies</artifactId>
+      <type>pom</type>
+      <scope>${provided.by.opennms}</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
       <artifactId>spring-dependencies</artifactId>
       <type>pom</type>
       <scope>${provided.by.opennms}</scope>

@@ -136,6 +136,11 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
+      <artifactId>jaxb-dependencies</artifactId>
+      <type>pom</type>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
       <artifactId>spring-web-dependencies</artifactId>
       <version>${project.version}</version>
       <type>pom</type>

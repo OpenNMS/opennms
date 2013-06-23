@@ -1,0 +1,383 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<?meta name="GENERATOR" content="XML::Smart/1.6.9 Perl/5.008008 [linux]" ?>
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.3.2</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>1</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/mplsLspInfoUp</uei>
+    <event-label>MPLS-MIB defined trap event: mplsLspInfoUp</event-label>
+    <descr><![CDATA[
+<p>An mplsLspInfoUp trap signifies that the 
+specified LSP is up. The current active
+path for the LSP is mplsPathInfoName.</p><table>
+	<tr><td><b>
+
+	mplsLspInfoName</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	mplsPathInfoName</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			mplsLspInfoUp trap received 
+			mplsLspInfoName=%parm[#1]% 
+			mplsPathInfoName=%parm[#2]%</p>
+		]]></logmsg>
+    <severity>Cleared</severity>
+<alarm-data alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" clear-key="uei.opennms.org/vendor/Juniper/traps/mplsLspInfoDown:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.3.2</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>2</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/mplsLspInfoDown</uei>
+    <event-label>MPLS-MIB defined trap event: mplsLspInfoDown</event-label>
+    <descr><![CDATA[
+<p>An mplsLspInfoDown trap signifies that the 
+specified LSP is down, because the current
+active path mplsPathInfoName went down.</p><table>
+	<tr><td><b>
+
+	mplsLspInfoName</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	mplsPathInfoName</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			mplsLspInfoDown trap received 
+			mplsLspInfoName=%parm[#1]% 
+			mplsPathInfoName=%parm[#2]%</p>
+		]]></logmsg>
+    <severity>Major</severity>
+	<alarm-data alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.3.2</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>3</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/mplsLspInfoChange</uei>
+    <event-label>MPLS-MIB defined trap event: mplsLspInfoChange</event-label>
+    <descr><![CDATA[
+<p>An mplsLspInfoChange trap signifies that the
+the specified LSP has switched traffic to 
+	the new active path 'toLspPath'. The LSP maintains
+	up state before and after the switch over</p><table>
+	<tr><td><b>
+
+	mplsLspInfoName</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	mplsPathInfoName</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			mplsLspInfoChange trap received 
+			mplsLspInfoName=%parm[#1]% 
+			mplsPathInfoName=%parm[#2]%</p>
+		]]></logmsg>
+    <severity>Indeterminate</severity>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.3.2</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>4</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/mplsLspInfoPathDown</uei>
+    <event-label>MPLS-MIB defined trap event: mplsLspInfoPathDown</event-label>
+    <descr><![CDATA[
+<p>An mplsLspInfoPathDown trap signifies that the 
+specified path mplsPathName for the specified
+LSP mplsLspInfoName went down</p><table>
+	<tr><td><b>
+
+	mplsLspInfoName</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	mplsPathInfoName</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			mplsLspInfoPathDown trap received 
+			mplsLspInfoName=%parm[#1]% 
+			mplsPathInfoName=%parm[#2]%</p>
+		]]></logmsg>
+    <severity>Major</severity>
+    <alarm-data alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.3.2</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>5</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/mplsLspInfoPathUp</uei>
+    <event-label>MPLS-MIB defined trap event: mplsLspInfoPathUp</event-label>
+    <descr><![CDATA[
+<p>An mplsLspInfoPathUp trap signifies that the 
+specified path mplsPathName for the specified
+LSP mplsLspInfoName came up</p><table>
+	<tr><td><b>
+
+	mplsLspInfoName</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	mplsPathInfoName</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			mplsLspInfoPathUp trap received 
+			mplsLspInfoName=%parm[#1]% 
+			mplsPathInfoName=%parm[#2]%</p>
+		]]></logmsg>
+    <severity>Cleared</severity>
+    <alarm-data alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" clear-key="uei.opennms.org/vendor/Juniper/traps/mplsLspInfoPathDown:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.3.2.4</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>1</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/mplsLspUp</uei>
+    <event-label>MPLS-MIB defined trap event: mplsLspUp</event-label>
+    <descr><![CDATA[
+<p>An mplsLspUp trap signifies that the 
+specified LSP is up. The current active
+path for the LSP is mplsPathName.</p><table>
+	<tr><td><b>
+
+	mplsLspName</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	mplsPathName</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			mplsLspUp trap received 
+			mplsLspName=%parm[#1]% 
+			mplsPathName=%parm[#2]%</p>
+		]]></logmsg>
+    <severity>Indeterminate</severity>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.3.2.4</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>2</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/mplsLspDown</uei>
+    <event-label>MPLS-MIB defined trap event: mplsLspDown</event-label>
+    <descr><![CDATA[
+<p>An mplsLspDown trap signifies that the 
+specified LSP is down, because the current
+active path mplsPathName went down.</p><table>
+	<tr><td><b>
+
+	mplsLspName</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	mplsPathName</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			mplsLspDown trap received 
+			mplsLspName=%parm[#1]% 
+			mplsPathName=%parm[#2]%</p>
+		]]></logmsg>
+    <severity>Indeterminate</severity>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.3.2.4</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>3</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/mplsLspChange</uei>
+    <event-label>MPLS-MIB defined trap event: mplsLspChange</event-label>
+    <descr><![CDATA[
+<p>An mplsLspChange trap signifies that the
+the specified LSP has switched traffic to 
+	the new active path 'toLspPath'. The LSP maintains
+	up state before and after the switch over</p><table>
+	<tr><td><b>
+
+	mplsLspName</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	mplsPathName</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			mplsLspChange trap received 
+			mplsLspName=%parm[#1]% 
+			mplsPathName=%parm[#2]%</p>
+		]]></logmsg>
+    <severity>Indeterminate</severity>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.3.2.4</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>4</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/mplsLspPathDown</uei>
+    <event-label>MPLS-MIB defined trap event: mplsLspPathDown</event-label>
+    <descr><![CDATA[
+<p>An mplsLspPathDown trap signifies that the 
+specified path mplsPathName for the specified
+LSP mplsLspName went down</p><table>
+	<tr><td><b>
+
+	mplsLspName</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	mplsPathName</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			mplsLspPathDown trap received 
+			mplsLspName=%parm[#1]% 
+			mplsPathName=%parm[#2]%</p>
+		]]></logmsg>
+    <severity>Major</severity>
+    <alarm-data alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.3.2.4</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>5</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/mplsLspPathUp</uei>
+    <event-label>MPLS-MIB defined trap event: mplsLspPathUp</event-label>
+    <descr><![CDATA[
+<p>An mplsLspPathUp trap signifies that the 
+specified path mplsPathName for the specified
+LSP mplsLspName came up</p><table>
+	<tr><td><b>
+
+	mplsLspName</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	mplsPathName</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			mplsLspPathUp trap received 
+			mplsLspName=%parm[#1]% 
+			mplsPathName=%parm[#2]%</p>
+		]]></logmsg>
+    <severity>Cleared</severity>
+    <alarm-data alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" clear-key="uei.opennms.org/vendor/Juniper/traps/mplsLspPathDown:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%"/>
+  </event>
+</events>
+

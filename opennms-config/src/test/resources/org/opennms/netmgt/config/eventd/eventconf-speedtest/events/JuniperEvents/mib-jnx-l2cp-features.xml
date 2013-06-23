@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<?meta name="GENERATOR" content="XML::Smart/1.6.9 Perl/5.008008 [linux]" ?>
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.3.53.1.2</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>1</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxPortRootProtectStateChangeTrap</uei>
+    <event-label>JUNIPER-L2CP-FEATURES-MIB defined trap event: jnxPortRootProtectStateChangeTrap</event-label>
+    <descr><![CDATA[
+<p>Generated when the ports Root-protect state (no-error or root-prevented) 
+changes.</p><table>
+	<tr><td><b>
+
+	jnxDot1dStpPortRootProtectState</b></td><td>
+	%parm[#1]%;</td><td><p>
+		no-error(0)
+		root-prevented(1)
+	</p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxPortRootProtectStateChangeTrap trap received 
+			jnxDot1dStpPortRootProtectState=%parm[#1]%</p>
+		]]></logmsg>
+    <severity>Normal</severity>
+    <alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.3.53.1.2</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>2</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxPortLoopProtectStateChangeTrap</uei>
+    <event-label>JUNIPER-L2CP-FEATURES-MIB defined trap event: jnxPortLoopProtectStateChangeTrap</event-label>
+    <descr><![CDATA[
+<p>Generated when the ports Loop-protect state (no-error or loop-prevented) 
+changes.</p><table>
+	<tr><td><b>
+
+	jnxDot1dStpPortLoopProtectState</b></td><td>
+	%parm[#1]%;</td><td><p>
+		no-error(0)
+		loop-prevented(1)
+	</p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxPortLoopProtectStateChangeTrap trap received 
+			jnxDot1dStpPortLoopProtectState=%parm[#1]%</p>
+		]]></logmsg>
+    <severity>Normal</severity>
+    <alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.3.53.1.2</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>3</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxPortBpduErrorStatusChangeTrap</uei>
+    <event-label>JUNIPER-L2CP-FEATURES-MIB defined trap event: jnxPortBpduErrorStatusChangeTrap</event-label>
+    <descr><![CDATA[
+<p>Generated when the ports BPDU error state (no-error or detected) 
+changes.</p><table>
+	<tr><td><b>
+
+	jnxL2cpPortBpduError</b></td><td>
+	%parm[#1]%;</td><td><p>
+		no-error(0)
+		detected(1)
+	</p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxPortBpduErrorStatusChangeTrap trap received 
+			jnxL2cpPortBpduError=%parm[#1]%</p>
+		]]></logmsg>
+    <severity>Warning</severity>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.3.53.1.2.1</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>1</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxLacpTimeOut</uei>
+    <event-label>JUNIPER-L2CP-FEATURES-MIB defined trap event: jnxLacpTimeOut</event-label>
+    <descr><![CDATA[
+<p>Lacp times out</p><table>
+	<tr><td><b>
+
+	jnxLacpInterfaceName</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxLacpifIndex</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxLacpAggregateInterfaceName</b></td><td>
+	%parm[#3]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxLacpAggregateifIndex</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxLacpAggPortActorOperState</b></td><td>
+	%parm[#5]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxLacpTimeOut trap received 
+			jnxLacpInterfaceName=%parm[#1]% 
+			jnxLacpifIndex=%parm[#2]% 
+			jnxLacpAggregateInterfaceName=%parm[#3]% 
+			jnxLacpAggregateifIndex=%parm[#4]% 
+			jnxLacpAggPortActorOperState=%parm[#5]%</p>
+		]]></logmsg>
+    <severity>Indeterminate</severity>
+  </event>
+</events>
+

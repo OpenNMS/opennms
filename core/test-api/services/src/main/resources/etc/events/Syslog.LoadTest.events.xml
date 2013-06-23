@@ -1,4 +1,4 @@
-<events>
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <event><uei>uei.example.org/syslog/loadTest/foo0</uei><event-label>Load test event: foo0</event-label><descr>This is a load test syslog message.</descr><logmsg dest='logndisplay'>A load test has been received as a Syslog Message</logmsg><severity>Normal</severity></event>
 <event><uei>uei.example.org/syslog/loadTest/foo1</uei><event-label>Load test event: foo1</event-label><descr>This is a load test syslog message.</descr><logmsg dest='logndisplay'>A load test has been received as a Syslog Message</logmsg><severity>Normal</severity></event>
 <event><uei>uei.example.org/syslog/loadTest/foo2</uei><event-label>Load test event: foo2</event-label><descr>This is a load test syslog message.</descr><logmsg dest='logndisplay'>A load test has been received as a Syslog Message</logmsg><severity>Normal</severity></event>

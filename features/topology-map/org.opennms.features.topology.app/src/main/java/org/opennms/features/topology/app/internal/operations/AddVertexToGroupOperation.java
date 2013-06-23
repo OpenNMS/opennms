@@ -91,6 +91,27 @@ public class AddVertexToGroupOperation implements Constants, Operation {
 	    if (!selectionManager.isVertexRefSelected(target)) return Arrays.asList(target);
 	    return new ArrayList<VertexRef>(selectionManager.getSelectedVertexRefs());
 	}
+	
+	/**
+	 * This method removes all children of the given selection. This is necessary, because if a group is selected, we only want
+	 * this group to be added to the group. We do not want the children of the group to be added to the target as well.
+	 * @param selectedVertices
+	 * @param provider
+	 * @return
+	 */
+	private static Collection<VertexRef> removeChildren(GraphProvider provider, Collection<VertexRef> selectedVertices) {
+		List<VertexRef> returnList = new ArrayList<VertexRef>();
+		List<VertexRef> removeFromList = new ArrayList<VertexRef>();
+		for (VertexRef eachVertexRef : selectedVertices) {
+			if (selectedVertices.contains(provider.getVertex(eachVertexRef).getParent())) {
+				removeFromList.add(eachVertexRef);
+			}
+		}
+		returnList.addAll(selectedVertices);
+		returnList.removeAll(removeFromList);
+		return returnList;
+	}
+
 
 	@Override
 	public Undoer execute(List<VertexRef> targets, final OperationContext operationContext) {
@@ -99,7 +120,8 @@ public class AddVertexToGroupOperation implements Constants, Operation {
 		final Logger log = LoggerFactory.getLogger(this.getClass());
 		final GraphContainer graphContainer = operationContext.getGraphContainer();
 
-		final Collection<VertexRef> vertices = determineTargets(targets.get(0), operationContext.getGraphContainer().getSelectionManager());
+		final Collection<VertexRef> vertices = removeChildren(operationContext.getGraphContainer().getBaseTopology(),
+				determineTargets(targets.get(0), operationContext.getGraphContainer().getSelectionManager()));
 		final Collection<Vertex> vertexIds = graphContainer.getBaseTopology().getRootGroup();
 		final Collection<Vertex> groupIds = findGroups(graphContainer.getBaseTopology(), vertexIds);
 

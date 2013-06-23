@@ -193,7 +193,13 @@ public class HibernateCriteriaConverter implements CriteriaConverter<DetachedCri
                 aliasType = org.hibernate.Criteria.INNER_JOIN;
                 break;
             }
-            m_criteria.createAlias(alias.getAssociationPath(), alias.getAlias(), aliasType);
+            if (alias.hasJoinCondition()) { // an additional condition for the join
+                final HibernateRestrictionVisitor visitor = new HibernateRestrictionVisitor();
+                alias.getJoinCondition().visit(visitor);
+                m_criteria.createAlias(alias.getAssociationPath(), alias.getAlias(), aliasType, visitor.getCriterions().get(0));
+            } else { // no additional condition for the join
+                m_criteria.createAlias(alias.getAssociationPath(), alias.getAlias(), aliasType);
+            }
         }
 
         @Override

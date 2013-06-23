@@ -49,7 +49,7 @@
 
     String uei = StringUtils.trimToEmpty(request.getParameter("uei"));
     if (StringUtils.isBlank(uei)) {
-        response.sendRedirect("setupevent.jsp");
+        response.sendRedirect("sendevent.jsp");
         return;
     }
 

@@ -6,6 +6,63 @@
 
 	<!-- Start 1.11 -->
 
+	<section id="opennms-1.11.91">
+		<title>Changes in OpenNMS 1.11.91</title>
+
+		<section id="opennms-1.11.91-bug">
+			<title>Bug</title>
+
+			<itemizedlist>
+				<listitem><para>Release notes says Gentoo is not maintained (Issue <ulink url='http://issues.opennms.org/browse/NMS-4338'>NMS-4338</ulink>)</para></listitem>
+				<listitem><para>incorrectly translated trap contents (Issue <ulink url='http://issues.opennms.org/browse/NMS-5281'>NMS-5281</ulink>)</para></listitem>
+				<listitem><para>Password Encryption Method Needs Improvement (Issue <ulink url='http://issues.opennms.org/browse/NMS-5313'>NMS-5313</ulink>)</para></listitem>
+				<listitem><para>Linkd should persist the discovery strategy (Issue <ulink url='http://issues.opennms.org/browse/NMS-5550'>NMS-5550</ulink>)</para></listitem>
+				<listitem><para>Serial Interface Report has Incorrect Title (Issue <ulink url='http://issues.opennms.org/browse/NMS-5616'>NMS-5616</ulink>)</para></listitem>
+				<listitem><para>Invalid Delete Group Menu Option Wacks the Topology App (Issue <ulink url='http://issues.opennms.org/browse/NMS-5671'>NMS-5671</ulink>)</para></listitem>
+				<listitem><para>Bits of event-acknowledgement UI still showing (Issue <ulink url='http://issues.opennms.org/browse/NMS-5733'>NMS-5733</ulink>)</para></listitem>
+				<listitem><para>Updates on strings.properties are not propagated when using the WebUI on a different server (Issue <ulink url='http://issues.opennms.org/browse/NMS-5806'>NMS-5806</ulink>)</para></listitem>
+				<listitem><para>Change &quot;Last Capsd Poll&quot; to &quot;Last Capabilities Scan&quot; in topology map node browser (Issue <ulink url='http://issues.opennms.org/browse/NMS-5811'>NMS-5811</ulink>)</para></listitem>
+				<listitem><para>Deprecated provision requisition attributes carried over to 1.11+ will cause requisitions to show empty (Issue <ulink url='http://issues.opennms.org/browse/NMS-5814'>NMS-5814</ulink>)</para></listitem>
+				<listitem><para>Startup fails when pending foreign-source exists with no pending requisition (Issue <ulink url='http://issues.opennms.org/browse/NMS-5818'>NMS-5818</ulink>)</para></listitem>
+				<listitem><para>Current event definitions for Aruba Controllers are wrong (Issue <ulink url='http://issues.opennms.org/browse/NMS-5830'>NMS-5830</ulink>)</para></listitem>
+				<listitem><para>Get details from a specific alarmId is redirecting to the wrong page. (Issue <ulink url='http://issues.opennms.org/browse/NMS-5838'>NMS-5838</ulink>)</para></listitem>
+				<listitem><para>VMware integration not gathering statistics on VM host hardware collections such as vmware4Disk or vmware4Cpu (Issue <ulink url='http://issues.opennms.org/browse/NMS-5845'>NMS-5845</ulink>)</para></listitem>
+				<listitem><para>Uncaught exception in HostResourceSwRunMonitor when handling empty strings (Issue <ulink url='http://issues.opennms.org/browse/NMS-5852'>NMS-5852</ulink>)</para></listitem>
+				<listitem><para>Stylesheet Broken for Normal Alarms (Issue <ulink url='http://issues.opennms.org/browse/NMS-5865'>NMS-5865</ulink>)</para></listitem>
+				<listitem><para>30 second outages caused by ArrayOutOfBoundException in JNI-Ping implementation (Issue <ulink url='http://issues.opennms.org/browse/NMS-5874'>NMS-5874</ulink>)</para></listitem>
+				<listitem><para>Distributed map popup &quot;unknown map implementation:&quot; on new install (Issue <ulink url='http://issues.opennms.org/browse/NMS-5886'>NMS-5886</ulink>)</para></listitem>
+				<listitem><para>System report not working with RPMs (ClassNotFoundException on ServiceRegistry) (Issue <ulink url='http://issues.opennms.org/browse/NMS-5889'>NMS-5889</ulink>)</para></listitem>
+				<listitem><para>Outages appears to be not sorted on service.jsp (and probably interface.jsp) (Issue <ulink url='http://issues.opennms.org/browse/NMS-5892'>NMS-5892</ulink>)</para></listitem>
+				<listitem><para>LLDP Failure for non ifIndex references (Issue <ulink url='http://issues.opennms.org/browse/NMS-5904'>NMS-5904</ulink>)</para></listitem>
+				<listitem><para>Topology Map showing non-existent links/missing valid links (Issue <ulink url='http://issues.opennms.org/browse/NMS-5906'>NMS-5906</ulink>)</para></listitem>
+				<listitem><para>Remove deprecated per-instance SNMP-Informant graph definitions (Issue <ulink url='http://issues.opennms.org/browse/NMS-5924'>NMS-5924</ulink>)</para></listitem>
+				<listitem><para>Uncaught exception in webapp when viewing non-existent alarm: &quot;Missing alarm request attribute&quot; (Issue <ulink url='http://issues.opennms.org/browse/NMS-5930'>NMS-5930</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+		<section id="opennms-1.11.91-enhancement">
+			<title>Enhancement</title>
+
+			<itemizedlist>
+				<listitem><para>SSH button on node information screen (Issue <ulink url='http://issues.opennms.org/browse/NMS-699'>NMS-699</ulink>)</para></listitem>
+				<listitem><para>favicon in webui? (Issue <ulink url='http://issues.opennms.org/browse/NMS-3369'>NMS-3369</ulink>)</para></listitem>
+				<listitem><para>Add nodeID to title field on element/node.jsp (Issue <ulink url='http://issues.opennms.org/browse/NMS-3398'>NMS-3398</ulink>)</para></listitem>
+				<listitem><para>add a new capsd plugin and poller plugin to monitor the SSL Certification Expiration (Issue <ulink url='http://issues.opennms.org/browse/NMS-4142'>NMS-4142</ulink>)</para></listitem>
+				<listitem><para>Add HWg-STE SNMP Temperature Probe Info to OpenNMS (Issue <ulink url='http://issues.opennms.org/browse/NMS-5859'>NMS-5859</ulink>)</para></listitem>
+				<listitem><para>Display the Package Name and Service Parameters on the Service Page (Issue <ulink url='http://issues.opennms.org/browse/NMS-5876'>NMS-5876</ulink>)</para></listitem>
+				<listitem><para>Make optional the addition of default ports to HTTP Host Header on the PSM. (Issue <ulink url='http://issues.opennms.org/browse/NMS-5884'>NMS-5884</ulink>)</para></listitem>
+				<listitem><para>How can I know which poller packages are actively being used for the services on a given interface? (Issue <ulink url='http://issues.opennms.org/browse/NMS-5893'>NMS-5893</ulink>)</para></listitem>
+				<listitem><para>Rename MIBs after successfully compile them to minimize error with dependencies (Issue <ulink url='http://issues.opennms.org/browse/NMS-5933'>NMS-5933</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+		<section id="opennms-1.11.91-task">
+			<title>Task</title>
+
+			<itemizedlist>
+				<listitem><para>Persist Ipv6 routing table in Linkd (Issue <ulink url='http://issues.opennms.org/browse/NMS-5579'>NMS-5579</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+	</section>
+
 	<section id="opennms-1.11.90">
 		<title>Changes in OpenNMS 1.11.90</title>
 
@@ -276,6 +333,36 @@
 	</section>
 
 	<!-- Start 1.10 -->
+
+	<section id="opennms-1.10.10">
+		<title>Changes in OpenNMS 1.10.10</title>
+
+		<section id="opennms-1.10.10-bug">
+			<title>Bug</title>
+
+			<itemizedlist>
+				<listitem><para>Bits of event-acknowledgement UI still showing (Issue <ulink url='http://issues.opennms.org/browse/NMS-5733'>NMS-5733</ulink>)</para></listitem>
+				<listitem><para>Updates on strings.properties are not propagated when using the WebUI on a different server (Issue <ulink url='http://issues.opennms.org/browse/NMS-5806'>NMS-5806</ulink>)</para></listitem>
+				<listitem><para>Current event definitions for Aruba Controllers are wrong (Issue <ulink url='http://issues.opennms.org/browse/NMS-5830'>NMS-5830</ulink>)</para></listitem>
+				<listitem><para>Get details from a specific alarmId is redirecting to the wrong page. (Issue <ulink url='http://issues.opennms.org/browse/NMS-5838'>NMS-5838</ulink>)</para></listitem>
+				<listitem><para>Uncaught exception in HostResourceSwRunMonitor when handling empty strings (Issue <ulink url='http://issues.opennms.org/browse/NMS-5852'>NMS-5852</ulink>)</para></listitem>
+				<listitem><para>Outages appears to be not sorted on service.jsp (and probably interface.jsp) (Issue <ulink url='http://issues.opennms.org/browse/NMS-5892'>NMS-5892</ulink>)</para></listitem>
+				<listitem><para>SmbMonitor no longer effective, needs fixing (Issue <ulink url='http://issues.opennms.org/browse/NMS-5894'>NMS-5894</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+		<section id="opennms-1.10.10-enhancement">
+			<title>Enhancement</title>
+
+			<itemizedlist>
+				<listitem><para>SSH button on node information screen (Issue <ulink url='http://issues.opennms.org/browse/NMS-699'>NMS-699</ulink>)</para></listitem>
+				<listitem><para>favicon in webui? (Issue <ulink url='http://issues.opennms.org/browse/NMS-3369'>NMS-3369</ulink>)</para></listitem>
+				<listitem><para>Add nodeID to title field on element/node.jsp (Issue <ulink url='http://issues.opennms.org/browse/NMS-3398'>NMS-3398</ulink>)</para></listitem>
+				<listitem><para>Display the Package Name and Service Parameters on the Service Page (Issue <ulink url='http://issues.opennms.org/browse/NMS-5876'>NMS-5876</ulink>)</para></listitem>
+				<listitem><para>Make optional the addition of default ports to HTTP Host Header on the PSM. (Issue <ulink url='http://issues.opennms.org/browse/NMS-5884'>NMS-5884</ulink>)</para></listitem>
+				<listitem><para>How can I know which poller packages are actively being used for the services on a given interface? (Issue <ulink url='http://issues.opennms.org/browse/NMS-5893'>NMS-5893</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+	</section>
 
 	<section id="opennms-1.10.9">
 		<title>Changes in OpenNMS 1.10.9</title>

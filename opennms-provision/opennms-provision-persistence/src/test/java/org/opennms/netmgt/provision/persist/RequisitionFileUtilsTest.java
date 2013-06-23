@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -33,7 +34,7 @@ public class RequisitionFileUtilsTest {
     
     @Test
     public void testCreateTemporaryRequisition() throws Exception {
-        final File file = RequisitionFileUtils.createSnapshot(m_repository, "test");
+        final File file = RequisitionFileUtils.createSnapshot(m_repository, "test", new Date());
         assertNotNull(file);
         assertTrue(file.getPath().contains("target/RequisitionFileUtilsTest/imports/test"));
         assertTrue(file.getPath().matches(".*target/RequisitionFileUtilsTest/imports/test.xml.\\d+"));
@@ -41,20 +42,20 @@ public class RequisitionFileUtilsTest {
         final List<File> snapshots = RequisitionFileUtils.findSnapshots(m_repository, "test");
         assertNotNull(snapshots);
         assertEquals(1, snapshots.size());
-        RequisitionFileUtils.createSnapshot(m_repository, "test");
+        RequisitionFileUtils.createSnapshot(m_repository, "test", new Date());
         assertEquals(2, RequisitionFileUtils.findSnapshots(m_repository, "test").size());
         
         m_repository.save(new Requisition("test2"));
-        RequisitionFileUtils.createSnapshot(m_repository, "test2");
+        RequisitionFileUtils.createSnapshot(m_repository, "test2", new Date());
         assertEquals(1, RequisitionFileUtils.findSnapshots(m_repository, "test2").size());
         assertEquals(2, RequisitionFileUtils.findSnapshots(m_repository, "test").size());
     }
 
     @Test
     public void testDeleteSnapshots() throws Exception {
-        RequisitionFileUtils.createSnapshot(m_repository, "test");
-        RequisitionFileUtils.createSnapshot(m_repository, "test");
-        RequisitionFileUtils.createSnapshot(m_repository, "test");
+        RequisitionFileUtils.createSnapshot(m_repository, "test", new Date());
+        RequisitionFileUtils.createSnapshot(m_repository, "test", new Date());
+        RequisitionFileUtils.createSnapshot(m_repository, "test", new Date());
         
         List<File> snapshots = RequisitionFileUtils.findSnapshots(m_repository, "test");
         assertNotNull(snapshots);

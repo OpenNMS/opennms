@@ -359,6 +359,7 @@ public class DatacollectionConfig implements Serializable {
      * @param snmpCollections the Vector to copy.
      */
     public void setSnmpCollection(final List<SnmpCollection> snmpCollections) {
+        if (m_snmpCollections == snmpCollections) return;
         m_snmpCollections.clear();
         m_snmpCollections.addAll(snmpCollections);
     }

@@ -30,10 +30,10 @@ package org.opennms.netmgt.linkd.nb;
 
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.OnmsNode;
 
 /**
@@ -144,9 +144,8 @@ public abstract class Nms17216NetworkBuilder extends LinkdNetworkBuilder {
     protected static final Map<Integer,String> SWITCH5_IF_IFALIAS_MAP = new HashMap<Integer, String>();
 
     static {
-        try {
-        ROUTER1_IP_IF_MAP.put(InetAddress.getByName("192.168.100.249"), 13);
-        ROUTER1_IP_IF_MAP.put(InetAddress.getByName("192.168.100.245"), 7);
+        ROUTER1_IP_IF_MAP.put(InetAddressUtils.addr("192.168.100.249"), 13);
+        ROUTER1_IP_IF_MAP.put(InetAddressUtils.addr("192.168.100.245"), 7);
         ROUTER1_IF_IFNAME_MAP.put(17, "Vl1");
         ROUTER1_IF_IFDESCR_MAP.put(17, "Vlan1");
         ROUTER1_IF_MAC_MAP.put(17, "00170e4e60e0");
@@ -204,8 +203,8 @@ public abstract class Nms17216NetworkBuilder extends LinkdNetworkBuilder {
         ROUTER1_IF_IFNAME_MAP.put(8, "Fa0/1");
         ROUTER1_IF_IFDESCR_MAP.put(8, "FastEthernet0/1");
         ROUTER1_IF_MAC_MAP.put(8, "00170e4e60e1");
-        ROUTER2_IP_IF_MAP.put(InetAddress.getByName("192.168.100.241"), 13);
-        ROUTER2_IP_IF_MAP.put(InetAddress.getByName("192.168.100.250"), 12);
+        ROUTER2_IP_IF_MAP.put(InetAddressUtils.addr("192.168.100.241"), 13);
+        ROUTER2_IP_IF_MAP.put(InetAddressUtils.addr("192.168.100.250"), 12);
         ROUTER2_IF_IFNAME_MAP.put(25, "BR0/2/0:2");
         ROUTER2_IF_IFDESCR_MAP.put(25, "BRI0/2/0:2-Bearer Channel");
         ROUTER2_IF_IFNAME_MAP.put(27, "BR0/2/1");
@@ -253,9 +252,9 @@ public abstract class Nms17216NetworkBuilder extends LinkdNetworkBuilder {
         ROUTER2_IF_IFDESCR_MAP.put(1, "BRI0/2/0");
         ROUTER2_IF_IFNAME_MAP.put(29, "BR0/2/1:2");
         ROUTER2_IF_IFDESCR_MAP.put(29, "BRI0/2/1:2-Bearer Channel");
-        ROUTER3_IP_IF_MAP.put(InetAddress.getByName("192.168.100.1"), 8);
-        ROUTER3_IP_IF_MAP.put(InetAddress.getByName("192.168.100.242"), 13);
-        ROUTER3_IP_IF_MAP.put(InetAddress.getByName("172.16.50.1"), 9);
+        ROUTER3_IP_IF_MAP.put(InetAddressUtils.addr("192.168.100.1"), 8);
+        ROUTER3_IP_IF_MAP.put(InetAddressUtils.addr("192.168.100.242"), 13);
+        ROUTER3_IP_IF_MAP.put(InetAddressUtils.addr("172.16.50.1"), 9);
         ROUTER3_IF_IFNAME_MAP.put(17, "Nu0");
         ROUTER3_IF_IFDESCR_MAP.put(17, "Null0");
         ROUTER3_IF_IFNAME_MAP.put(22, "BR0/2/0");
@@ -303,8 +302,8 @@ public abstract class Nms17216NetworkBuilder extends LinkdNetworkBuilder {
         ROUTER3_IF_IFDESCR_MAP.put(1, "BRI0/2/0");
         ROUTER3_IF_IFNAME_MAP.put(14, "Se0/1/0");
         ROUTER3_IF_IFDESCR_MAP.put(14, "Serial0/1/0");
-        ROUTER4_IP_IF_MAP.put(InetAddress.getByName("192.168.100.2"), 3);
-        ROUTER4_IP_IF_MAP.put(InetAddress.getByName("10.10.10.1"), 16);
+        ROUTER4_IP_IF_MAP.put(InetAddressUtils.addr("192.168.100.2"), 3);
+        ROUTER4_IP_IF_MAP.put(InetAddressUtils.addr("10.10.10.1"), 16);
         ROUTER4_IF_IFNAME_MAP.put(10, "Vo0");
         ROUTER4_IF_IFDESCR_MAP.put(10, "VoIP-Null0");
         ROUTER4_IF_IFNAME_MAP.put(3, "Gi0/1");
@@ -334,11 +333,11 @@ public abstract class Nms17216NetworkBuilder extends LinkdNetworkBuilder {
         ROUTER4_IF_MAC_MAP.put(2, "2c542d27a9c0");
         ROUTER4_IF_IFNAME_MAP.put(11, "Nu0");
         ROUTER4_IF_IFDESCR_MAP.put(11, "Null0");
-        SWITCH1_IP_IF_MAP.put(InetAddress.getByName("172.16.40.1"), 40);
-        SWITCH1_IP_IF_MAP.put(InetAddress.getByName("192.168.100.246"), 10101);
-        SWITCH1_IP_IF_MAP.put(InetAddress.getByName("172.16.10.1"), 10);
-        SWITCH1_IP_IF_MAP.put(InetAddress.getByName("172.16.30.1"), 30);
-        SWITCH1_IP_IF_MAP.put(InetAddress.getByName("172.16.20.1"), 20);
+        SWITCH1_IP_IF_MAP.put(InetAddressUtils.addr("172.16.40.1"), 40);
+        SWITCH1_IP_IF_MAP.put(InetAddressUtils.addr("192.168.100.246"), 10101);
+        SWITCH1_IP_IF_MAP.put(InetAddressUtils.addr("172.16.10.1"), 10);
+        SWITCH1_IP_IF_MAP.put(InetAddressUtils.addr("172.16.30.1"), 30);
+        SWITCH1_IP_IF_MAP.put(InetAddressUtils.addr("172.16.20.1"), 20);
         SWITCH1_IF_IFNAME_MAP.put(10128, "Gi0/28");
         SWITCH1_IF_IFDESCR_MAP.put(10128, "GigabitEthernet0/28");
         SWITCH1_IF_MAC_MAP.put(10128, "0016c8bd4d9c");
@@ -443,7 +442,7 @@ public abstract class Nms17216NetworkBuilder extends LinkdNetworkBuilder {
         SWITCH1_IF_IFNAME_MAP.put(10114, "Gi0/14");
         SWITCH1_IF_IFDESCR_MAP.put(10114, "GigabitEthernet0/14");
         SWITCH1_IF_MAC_MAP.put(10114, "0016c8bd4d8e");
-        SWITCH2_IP_IF_MAP.put(InetAddress.getByName("172.16.10.2"), 10);
+        SWITCH2_IP_IF_MAP.put(InetAddressUtils.addr("172.16.10.2"), 10);
         SWITCH2_IF_IFNAME_MAP.put(10103, "Gi0/3");
         SWITCH2_IF_IFDESCR_MAP.put(10103, "GigabitEthernet0/3");
         SWITCH2_IF_MAC_MAP.put(10103, "0016c894aa83");
@@ -530,7 +529,7 @@ public abstract class Nms17216NetworkBuilder extends LinkdNetworkBuilder {
         SWITCH2_IF_IFNAME_MAP.put(10116, "Gi0/16");
         SWITCH2_IF_IFDESCR_MAP.put(10116, "GigabitEthernet0/16");
         SWITCH2_IF_MAC_MAP.put(10116, "0016c894aa90");
-        SWITCH3_IP_IF_MAP.put(InetAddress.getByName("172.16.10.3"), 10);
+        SWITCH3_IP_IF_MAP.put(InetAddressUtils.addr("172.16.10.3"), 10);
         SWITCH3_IF_IFNAME_MAP.put(10008, "Fa0/8");
         SWITCH3_IF_IFDESCR_MAP.put(10008, "FastEthernet0/8");
         SWITCH3_IF_MAC_MAP.put(10008, "f4ea67ebdc08");
@@ -620,7 +619,7 @@ public abstract class Nms17216NetworkBuilder extends LinkdNetworkBuilder {
         SWITCH3_IF_IFNAME_MAP.put(10004, "Fa0/4");
         SWITCH3_IF_IFDESCR_MAP.put(10004, "FastEthernet0/4");
         SWITCH3_IF_MAC_MAP.put(10004, "f4ea67ebdc04");
-        SWITCH4_IP_IF_MAP.put(InetAddress.getByName("172.16.50.2"), 50);
+        SWITCH4_IP_IF_MAP.put(InetAddressUtils.addr("172.16.50.2"), 50);
         SWITCH4_IF_IFNAME_MAP.put(10019, "Fa0/19");
         SWITCH4_IF_IFDESCR_MAP.put(10019, "FastEthernet0/19");
         SWITCH4_IF_MAC_MAP.put(10019, "a4187504e413");
@@ -707,7 +706,7 @@ public abstract class Nms17216NetworkBuilder extends LinkdNetworkBuilder {
         SWITCH4_IF_IFNAME_MAP.put(10101, "Gi0/1");
         SWITCH4_IF_IFDESCR_MAP.put(10101, "GigabitEthernet0/1");
         SWITCH4_IF_MAC_MAP.put(10101, "a4187504e419");
-        SWITCH5_IP_IF_MAP.put(InetAddress.getByName("172.16.10.4"), 10);
+        SWITCH5_IP_IF_MAP.put(InetAddressUtils.addr("172.16.10.4"), 10);
         SWITCH5_IF_IFNAME_MAP.put(10501, "Nu0");
         SWITCH5_IF_IFDESCR_MAP.put(10501, "Null0");
         SWITCH5_IF_IFNAME_MAP.put(10023, "Fa0/23");
@@ -794,10 +793,6 @@ public abstract class Nms17216NetworkBuilder extends LinkdNetworkBuilder {
         SWITCH5_IF_IFNAME_MAP.put(10020, "Fa0/20");
         SWITCH5_IF_IFDESCR_MAP.put(10020, "FastEthernet0/20");
         SWITCH5_IF_MAC_MAP.put(10020, "f4ea67f82994");
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
-
     }
 
     protected OnmsNode getRouter1() {

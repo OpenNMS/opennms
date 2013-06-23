@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<?meta name="GENERATOR" content="XML::Smart/1.6.9 Perl/5.008008 [linux]" ?>
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.3.61.61.1.3</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>1</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxJdhcpLocalServerDuplicateClient</uei>
+    <event-label>JUNIPER-JDHCP-MIB defined trap event: jnxJdhcpLocalServerDuplicateClient</event-label>
+    <descr><![CDATA[
+<p>Reports the first occurance of detection of a DHCP client that
+changed interfaces.</p><table>
+	<tr><td><b>
+
+	jnxJdhcpRouterName</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxJdhcpLocalServerMacAddress</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxJdhcpLocalServerInterfaceName</b></td><td>
+	%parm[#3]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxJdhcpLocalServerLastDetected</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxJdhcpLocalServerDuplicateClient trap received 
+			jnxJdhcpRouterName=%parm[#1]% 
+			jnxJdhcpLocalServerMacAddress=%parm[#2]% 
+			jnxJdhcpLocalServerInterfaceName=%parm[#3]% 
+			jnxJdhcpLocalServerLastDetected=%parm[#4]%</p>
+		]]></logmsg>
+    <severity>Indeterminate</severity>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.3.61.61.1.3</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>2</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxJdhcpLocalServerInterfaceLimitExceeded</uei>
+    <event-label>JUNIPER-JDHCP-MIB defined trap event: jnxJdhcpLocalServerInterfaceLimitExceeded</event-label>
+    <descr><![CDATA[
+<p>Reports when the limit of clients has been exceeded on an interface.</p><table>
+	<tr><td><b>
+
+	jnxJdhcpRouterName</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxJdhcpLocalServerInterfaceName</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxJdhcpLocalServerInterfaceLimit</b></td><td>
+	%parm[#3]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxJdhcpLocalServerInterfaceLimitExceeded trap received 
+			jnxJdhcpRouterName=%parm[#1]% 
+			jnxJdhcpLocalServerInterfaceName=%parm[#2]% 
+			jnxJdhcpLocalServerInterfaceLimit=%parm[#3]%</p>
+		]]></logmsg>
+    <severity>Indeterminate</severity>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.3.61.61.1.3</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>3</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxJdhcpLocalServerInterfaceLimitAbated</uei>
+    <event-label>JUNIPER-JDHCP-MIB defined trap event: jnxJdhcpLocalServerInterfaceLimitAbated</event-label>
+    <descr><![CDATA[
+<p>Reports when the number of clients on an interface has fallen
+below the limit allowed on that interface.</p><table>
+	<tr><td><b>
+
+	jnxJdhcpRouterName</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxJdhcpLocalServerInterfaceName</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxJdhcpLocalServerInterfaceLimit</b></td><td>
+	%parm[#3]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxJdhcpLocalServerInterfaceLimitAbated trap received 
+			jnxJdhcpRouterName=%parm[#1]% 
+			jnxJdhcpLocalServerInterfaceName=%parm[#2]% 
+			jnxJdhcpLocalServerInterfaceLimit=%parm[#3]%</p>
+		]]></logmsg>
+    <severity>Indeterminate</severity>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.3.61.61.1.3</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>4</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxJdhcpLocalServerHealth</uei>
+    <event-label>JUNIPER-JDHCP-MIB defined trap event: jnxJdhcpLocalServerHealth</event-label>
+    <descr><![CDATA[
+<p>Reports when a health event occurs in the Local Server 
+application.</p><table>
+	<tr><td><b>
+
+	jnxJdhcpRouterName</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxJdhcpLocalServerEventSeverity</b></td><td>
+	%parm[#2]%;</td><td><p>
+		debug(0)
+		warning(1)
+		critical(2)
+	</p></td></tr>
+	<tr><td><b>
+
+	jnxJdhcpLocalServerEventString</b></td><td>
+	%parm[#3]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxJdhcpLocalServerHealth trap received 
+			jnxJdhcpRouterName=%parm[#1]% 
+			jnxJdhcpLocalServerEventSeverity=%parm[#2]% 
+			jnxJdhcpLocalServerEventString=%parm[#3]%</p>
+		]]></logmsg>
+    <severity>Indeterminate</severity>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.3.61.61.2.3</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>1</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxJdhcpRelayInterfaceLimitExceeded</uei>
+    <event-label>JUNIPER-JDHCP-MIB defined trap event: jnxJdhcpRelayInterfaceLimitExceeded</event-label>
+    <descr><![CDATA[
+<p>Reports when the limit of clients has been exceeded on an interface.</p><table>
+	<tr><td><b>
+
+	jnxJdhcpRelayRouterName</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxJdhcpRelayInterfaceName</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxJdhcpRelayInterfaceLimit</b></td><td>
+	%parm[#3]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxJdhcpRelayInterfaceLimitExceeded trap received 
+			jnxJdhcpRelayRouterName=%parm[#1]% 
+			jnxJdhcpRelayInterfaceName=%parm[#2]% 
+			jnxJdhcpRelayInterfaceLimit=%parm[#3]%</p>
+		]]></logmsg>
+    <severity>Indeterminate</severity>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.3.61.61.2.3</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>2</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxJdhcpRelayInterfaceLimitAbated</uei>
+    <event-label>JUNIPER-JDHCP-MIB defined trap event: jnxJdhcpRelayInterfaceLimitAbated</event-label>
+    <descr><![CDATA[
+<p>Reports when the number of clients on an interface has fallen
+below the limit allowed on that interface.</p><table>
+	<tr><td><b>
+
+	jnxJdhcpRelayRouterName</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxJdhcpRelayInterfaceName</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxJdhcpRelayInterfaceLimit</b></td><td>
+	%parm[#3]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxJdhcpRelayInterfaceLimitAbated trap received 
+			jnxJdhcpRelayRouterName=%parm[#1]% 
+			jnxJdhcpRelayInterfaceName=%parm[#2]% 
+			jnxJdhcpRelayInterfaceLimit=%parm[#3]%</p>
+		]]></logmsg>
+    <severity>Indeterminate</severity>
+  </event>
+</events>
+

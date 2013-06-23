@@ -541,8 +541,7 @@ public class HypericAckProcessor implements AckProcessor {
                             Credentials creds = credsProvider.getCredentials(authScope);
                             // If found, generate BasicScheme preemptively
                             if (creds != null) {
-                                authState.setAuthScheme(new BasicScheme());
-                                authState.setCredentials(creds);
+                                authState.update(new BasicScheme(), creds);
                             }
                         }
                     }

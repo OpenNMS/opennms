@@ -29,6 +29,7 @@
 package org.opennms.netmgt.provision.persist;
 
 import java.net.URL;
+import java.util.Date;
 import java.util.Set;
 
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
@@ -139,6 +140,14 @@ public interface ForeignSourceRepository {
      * @throws org.opennms.netmgt.provision.persist.ForeignSourceRepositoryException if any.
      */
     public Requisition getRequisition(ForeignSource foreignSource) throws ForeignSourceRepositoryException;
+
+    /**
+     * <p>getRequisitionDate</p>
+     * @param foreignSource the Foreign Source name of the requisition.
+     * @return The date-stamp of the requisition, as a {@link java.util.Date}
+     */
+    public Date getRequisitionDate(String foreignSource);
+
     /**
      * <p>getRequisitionURL</p>
      *

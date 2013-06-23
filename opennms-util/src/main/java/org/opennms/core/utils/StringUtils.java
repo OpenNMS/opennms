@@ -34,6 +34,7 @@ import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
+import java.util.regex.Pattern;
 
 import javax.swing.filechooser.FileSystemView;
 import javax.xml.transform.OutputKeys;
@@ -44,13 +45,9 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-/**
- * <p>StringUtils class.</p>
- *
- * @author ranger
- * @version $Id: $
- */
 public abstract class StringUtils {
+    final static boolean s_headless = Boolean.getBoolean("java.awt.headless");
+    final static Pattern s_windowsDrive = Pattern.compile("^[A-Za-z]\\:\\\\");
 
     /**
      * Convenience method for creating arrays of strings suitable for use as
@@ -149,11 +146,13 @@ public abstract class StringUtils {
     	if (colon != ':') return false;
     	if (slash != '\\' && slash != '/') return false;
 
-    	final File file = new File(path.substring(0, 3));
-    	System.err.println("file = " + file);
-		if (FileSystemView.getFileSystemView().isFileSystemRoot(file)) return true;
-
-    	return false;
+    	final String drive = path.substring(0, 3);
+    	if (s_headless) {
+    		return s_windowsDrive.matcher(drive).matches();
+    	} else {
+    		final File file = new File(drive);
+        	return FileSystemView.getFileSystemView().isFileSystemRoot(file);
+    	}
     }
 
     /**

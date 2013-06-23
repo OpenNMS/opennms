@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<?meta name="GENERATOR" content="XML::Smart/1.6.9 Perl/5.008008 [linux]" ?>
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.3.36.2</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>1</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxMplsLdpInitSesThresholdExceeded</uei>
+    <event-label>JUNIPER-MPLS-LDP-MIB defined trap event: jnxMplsLdpInitSesThresholdExceeded</event-label>
+    <descr><![CDATA[
+<p>This notification is generated when the value of
+the 'jnxMplsLdpEntityInitSesThreshold' object
+is not zero, and the number of Session
+Initialization messages exceeds the value
+of the 'jnxMplsLdpEntityInitSesThreshold' object.</p><table>
+	<tr><td><b>
+
+	jnxMplsLdpEntityInitSesThreshold</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxMplsLdpInitSesThresholdExceeded trap received 
+			jnxMplsLdpEntityInitSesThreshold=%parm[#1]%</p>
+		]]></logmsg>
+    <severity>Indeterminate</severity>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.3.36.2</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>2</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxMplsLdpPathVectorLimitMismatch</uei>
+    <event-label>JUNIPER-MPLS-LDP-MIB defined trap event: jnxMplsLdpPathVectorLimitMismatch</event-label>
+    <descr><![CDATA[
+<p>If this notification is enabled to generated,
+
+then this notification is sent when the
+'jnxMplsLdpEntityPathVectorLimit' does NOT match
+the value of the 'jnxMplsLdpPeerPathVectorLimit' for
+a specific Entity.</p><table>
+	<tr><td><b>
+
+	jnxMplsLdpEntityPathVectorLimit</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxMplsLdpPeerPathVectorLimit</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxMplsLdpPathVectorLimitMismatch trap received 
+			jnxMplsLdpEntityPathVectorLimit=%parm[#1]% 
+			jnxMplsLdpPeerPathVectorLimit=%parm[#2]%</p>
+		]]></logmsg>
+    <severity>Indeterminate</severity>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.3.36.2</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>3</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxMplsLdpSessionUp</uei>
+    <event-label>JUNIPER-MPLS-LDP-MIB defined trap event: jnxMplsLdpSessionUp</event-label>
+    <descr><![CDATA[
+<p>If this notification is enabled to generated,
+then this notification is sent when the
+value of 'jnxMplsLdpSesState' enters
+the 'operational(5)' state.</p><table>
+	<tr><td><b>
+
+	jnxMplsLdpSesState</b></td><td>
+	%parm[#1]%;</td><td><p>
+		nonexistent(1)
+		initialized(2)
+		openrec(3)
+		opensent(4)
+		operational(5)
+	</p></td></tr>
+	<tr><td><b>
+
+	jnxMplsLdpSesDiscontinuityTime</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxMplsLdpSesStatsUnkMesTypeErrors</b></td><td>
+	%parm[#3]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxMplsLdpSesStatsUnkTlvErrors</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxMplsLdpSessionUp trap received 
+			jnxMplsLdpSesState=%parm[#1]% 
+			jnxMplsLdpSesDiscontinuityTime=%parm[#2]% 
+			jnxMplsLdpSesStatsUnkMesTypeErrors=%parm[#3]% 
+			jnxMplsLdpSesStatsUnkTlvErrors=%parm[#4]%</p>
+		]]></logmsg>
+    <severity>Indeterminate</severity>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.3.36.2</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>4</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxMplsLdpSessionDown</uei>
+    <event-label>JUNIPER-MPLS-LDP-MIB defined trap event: jnxMplsLdpSessionDown</event-label>
+    <descr><![CDATA[
+<p>If this notification is enabled to generated,
+then this notification is sent when the
+the value of 'jnxMplsLdpSesState' leaves
+the 'operational(5)' state.</p><table>
+	<tr><td><b>
+
+	jnxMplsLdpSesState</b></td><td>
+	%parm[#1]%;</td><td><p>
+		nonexistent(1)
+		initialized(2)
+		openrec(3)
+		opensent(4)
+		operational(5)
+	</p></td></tr>
+	<tr><td><b>
+
+	jnxMplsLdpSesDiscontinuityTime</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxMplsLdpSesStatsUnkMesTypeErrors</b></td><td>
+	%parm[#3]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxMplsLdpSesStatsUnkTlvErrors</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxMplsLdpSessionDown trap received 
+			jnxMplsLdpSesState=%parm[#1]% 
+			jnxMplsLdpSesDiscontinuityTime=%parm[#2]% 
+			jnxMplsLdpSesStatsUnkMesTypeErrors=%parm[#3]% 
+			jnxMplsLdpSesStatsUnkTlvErrors=%parm[#4]%</p>
+		]]></logmsg>
+    <severity>Indeterminate</severity>
+  </event>
+</events>
+

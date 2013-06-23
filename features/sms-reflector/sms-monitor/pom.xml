@@ -116,10 +116,10 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>javax.persistence</groupId>
-      <artifactId>persistence-api</artifactId>
-      <version>1.0</version>
-      <scope>provided</scope>
+	<groupId>org.hibernate.javax.persistence</groupId>
+        <artifactId>hibernate-jpa-2.0-api</artifactId>
+	<version>1.0.0.Final</version>
+     	<scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.smslib</groupId>

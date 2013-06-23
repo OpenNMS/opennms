@@ -1,0 +1,1216 @@
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<!-- Start of auto generated data from MIB: JUNIPER-V1-TRAPS-BGP -->
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/traps/bgpEstablishedV1</uei>
+	<event-label>JUNIPER-V1-TRAPS-BGP defined trap event: bgpEstablishedV1</event-label>
+	<descr>
+&lt;p&gt;The BGP Established event is generated when
+the BGP FSM enters the ESTABLISHED state.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bgpPeerLastError&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bgpPeerState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			bgpEstablishedV1 trap received 
+			bgpPeerLastError=%parm[#1]% 
+			bgpPeerState=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>2</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/traps/bgpBackwardTransitionV1</uei>
+	<event-label>JUNIPER-V1-TRAPS-BGP defined trap event: bgpBackwardTransitionV1</event-label>
+	<descr>
+&lt;p&gt;The BGPBackwardTransition Event is generated
+when the BGP FSM moves from a higher numbered
+state to a lower numbered state.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bgpPeerLastError&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	bgpPeerState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			bgpBackwardTransitionV1 trap received 
+			bgpPeerLastError=%parm[#1]% 
+			bgpPeerState=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<!-- End of auto generated data from MIB: JUNIPER-V1-TRAPS-BGP -->
+<!-- Start of auto generated data from MIB: JUNIPER-V1-TRAPS-CHAS -->
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/traps/jnxPowerSupplyFailureV1</uei>
+	<event-label>JUNIPER-V1-TRAPS-CHAS defined trap event: jnxPowerSupplyFailureV1</event-label>
+	<descr>
+&lt;p&gt;A jnxPowerSupplyFailure trap signifies that
+the specified power supply in the chassis has 
+been in the failure (bad DC output) condition.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxContentsContainerIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxContentsL1Index&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxContentsL2Index&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxContentsL3Index&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxContentsDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			jnxPowerSupplyFailureV1 trap received 
+			jnxContentsContainerIndex=%parm[#1]% 
+			jnxContentsL1Index=%parm[#2]% 
+			jnxContentsL2Index=%parm[#3]% 
+			jnxContentsL3Index=%parm[#4]% 
+			jnxContentsDescr=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Major</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>4</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/traps/jnxFanFailureV1</uei>
+	<event-label>JUNIPER-V1-TRAPS-CHAS defined trap event: jnxFanFailureV1</event-label>
+	<descr>
+&lt;p&gt;A jnxFanFailure trap signifies that the specified
+cooling fan or impeller in the chassis has been in
+the failure (not spinning) condition.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxContentsContainerIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxContentsL1Index&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxContentsL2Index&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxContentsL3Index&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxContentsDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			jnxFanFailureV1 trap received 
+			jnxContentsContainerIndex=%parm[#1]% 
+			jnxContentsL1Index=%parm[#2]% 
+			jnxContentsL2Index=%parm[#3]% 
+			jnxContentsL3Index=%parm[#4]% 
+			jnxContentsDescr=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Major</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>5</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/traps/jnxOverTemperatureV1</uei>
+	<event-label>JUNIPER-V1-TRAPS-CHAS defined trap event: jnxOverTemperatureV1</event-label>
+	<descr>
+&lt;p&gt;A jnxOverTemperature trap signifies that the 
+specified hardware component in the chassis has 
+experienced over temperature condition.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxContentsContainerIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxContentsL1Index&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxContentsL2Index&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxContentsL3Index&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxContentsDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			jnxOverTemperatureV1 trap received 
+			jnxContentsContainerIndex=%parm[#1]% 
+			jnxContentsL1Index=%parm[#2]% 
+			jnxContentsL2Index=%parm[#3]% 
+			jnxContentsL3Index=%parm[#4]% 
+			jnxContentsDescr=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Major</severity>
+</event>
+<!-- End of auto generated data from MIB: JUNIPER-V1-TRAPS-CHAS -->
+<!-- Start of auto generated data from MIB: JUNIPER-V1-TRAPS-MPLS -->
+<!--
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/traps/mplsLspUpV1</uei>
+	<event-label>JUNIPER-V1-TRAPS-MPLS defined trap event: mplsLspUpV1</event-label>
+	<descr>
+&lt;p&gt;An mplsLspUp trap signifies that the 
+specified LSP is up. The current active
+path for the LSP is mplsPathName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	mplsLspName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	mplsPathName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			mplsLspUpV1 trap received 
+			mplsLspName=%parm[#1]% 
+			mplsPathName=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>7</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/traps/mplsLspDownV1</uei>
+	<event-label>JUNIPER-V1-TRAPS-MPLS defined trap event: mplsLspDownV1</event-label>
+	<descr>
+&lt;p&gt;An mplsLspDown trap signifies that the 
+specified LSP is down, because the current
+active path mplsPathName went down.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	mplsLspName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	mplsPathName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			mplsLspDownV1 trap received 
+			mplsLspName=%parm[#1]% 
+			mplsPathName=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>8</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/traps/mplsLspChangeV1</uei>
+	<event-label>JUNIPER-V1-TRAPS-MPLS defined trap event: mplsLspChangeV1</event-label>
+	<descr>
+&lt;p&gt;An mplsLspChange trap signifies that the
+the specified LSP has switched traffic to 
+the new active path 'toLspPath'. The LSP maintains
+up state before and after the switch over&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	mplsLspName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	mplsPathName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			mplsLspChangeV1 trap received 
+			mplsLspName=%parm[#1]% 
+			mplsPathName=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+-->
+<!-- End of auto generated data from MIB: JUNIPER-V1-TRAPS-MPLS -->
+<!-- Start of auto generated data from MIB: JUNIPER-V1-TRAPS-OSPF -->
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>9</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/traps/ospfVirtIfStateChangeV1</uei>
+	<event-label>JUNIPER-V1-TRAPS-OSPF defined trap event: ospfVirtIfStateChangeV1</event-label>
+	<descr>
+&lt;p&gt;An ospfIfStateChange trap signifies that there
+has  been a change in the state of an OSPF vir-
+tual interface.
+This trap should be generated when  the  inter-
+face  state  regresses  (e.g., goes from Point-
+to-Point to Down) or progresses to  a  terminal
+state (i.e., Point-to-Point).&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfRouterId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfVirtIfAreaId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfVirtIfNeighbor&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfVirtIfState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ospfVirtIfStateChangeV1 trap received 
+			ospfRouterId=%parm[#1]% 
+			ospfVirtIfAreaId=%parm[#2]% 
+			ospfVirtIfNeighbor=%parm[#3]% 
+			ospfVirtIfState=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>10</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/traps/ospfNbrStateChangeV1</uei>
+	<event-label>JUNIPER-V1-TRAPS-OSPF defined trap event: ospfNbrStateChangeV1</event-label>
+	<descr>
+&lt;p&gt;An  ospfNbrStateChange  trap  signifies   that
+there  has been a change in the state of a non-
+virtual OSPF neighbor.   This  trap  should  be
+generated  when  the  neighbor  state regresses
+(e.g., goes from Attempt or Full  to  1-Way  or
+Down)  or progresses to a terminal state (e.g.,
+2-Way or Full).  When an  neighbor  transitions
+from  or  to Full on non-broadcast multi-access
+and broadcast networks, the trap should be gen-
+erated  by the designated router.  A designated
+router transitioning to Down will be  noted  by
+ospfIfStateChange.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfRouterId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfNbrIpAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfNbrAddressLessIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfNbrRtrId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfNbrState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ospfNbrStateChangeV1 trap received 
+			ospfRouterId=%parm[#1]% 
+			ospfNbrIpAddr=%parm[#2]% 
+			ospfNbrAddressLessIndex=%parm[#3]% 
+			ospfNbrRtrId=%parm[#4]% 
+			ospfNbrState=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>11</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/traps/ospfVirtNbrStateChangeV1</uei>
+	<event-label>JUNIPER-V1-TRAPS-OSPF defined trap event: ospfVirtNbrStateChangeV1</event-label>
+	<descr>
+&lt;p&gt;An ospfIfStateChange trap signifies that there
+has  been a change in the state of an OSPF vir-
+tual neighbor.  This trap should  be  generated
+when  the  neighbor state regresses (e.g., goes
+from Attempt or  Full  to  1-Way  or  Down)  or
+progresses to a terminal state (e.g., Full).&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfRouterId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfVirtNbrArea&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfVirtNbrRtrId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfVirtNbrState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ospfVirtNbrStateChangeV1 trap received 
+			ospfRouterId=%parm[#1]% 
+			ospfVirtNbrArea=%parm[#2]% 
+			ospfVirtNbrRtrId=%parm[#3]% 
+			ospfVirtNbrState=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>12</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/traps/ospfIfConfigErrorV1</uei>
+	<event-label>JUNIPER-V1-TRAPS-OSPF defined trap event: ospfIfConfigErrorV1</event-label>
+	<descr>
+&lt;p&gt;An ospfIfConfigError  trap  signifies  that  a
+packet  has  been received on a non-virtual in-
+terface  from  a  router  whose   configuration
+parameters  conflict  with this router's confi-
+guration parameters.  Note that the  event  op-
+tionMismatch  should  cause  a  trap only if it
+prevents an adjacency from forming.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfRouterId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfIfIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfAddressLessIf&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfPacketSrc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfConfigErrorType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfPacketType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ospfIfConfigErrorV1 trap received 
+			ospfRouterId=%parm[#1]% 
+			ospfIfIpAddress=%parm[#2]% 
+			ospfAddressLessIf=%parm[#3]% 
+			ospfPacketSrc=%parm[#4]% 
+			ospfConfigErrorType=%parm[#5]% 
+			ospfPacketType=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>13</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/traps/ospfVirtIfConfigErrorV1</uei>
+	<event-label>JUNIPER-V1-TRAPS-OSPF defined trap event: ospfVirtIfConfigErrorV1</event-label>
+	<descr>
+&lt;p&gt;An ospfConfigError trap signifies that a pack-
+et  has  been  received  on a virtual interface
+from a router  whose  configuration  parameters
+conflict   with   this  router's  configuration
+parameters.  Note that the event optionMismatch
+should  cause a trap only if it prevents an ad-
+jacency from forming.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfRouterId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfVirtIfAreaId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfVirtIfNeighbor&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfConfigErrorType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfPacketType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ospfVirtIfConfigErrorV1 trap received 
+			ospfRouterId=%parm[#1]% 
+			ospfVirtIfAreaId=%parm[#2]% 
+			ospfVirtIfNeighbor=%parm[#3]% 
+			ospfConfigErrorType=%parm[#4]% 
+			ospfPacketType=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>14</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/traps/ospfIfAuthFailureV1</uei>
+	<event-label>JUNIPER-V1-TRAPS-OSPF defined trap event: ospfIfAuthFailureV1</event-label>
+	<descr>
+&lt;p&gt;An ospfIfAuthFailure  trap  signifies  that  a
+packet  has  been received on a non-virtual in-
+terface from a router whose authentication  key
+or  authentication  type  conflicts  with  this
+router's authentication key  or  authentication
+type.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfRouterId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfIfIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfAddressLessIf&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfPacketSrc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfConfigErrorType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfPacketType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ospfIfAuthFailureV1 trap received 
+			ospfRouterId=%parm[#1]% 
+			ospfIfIpAddress=%parm[#2]% 
+			ospfAddressLessIf=%parm[#3]% 
+			ospfPacketSrc=%parm[#4]% 
+			ospfConfigErrorType=%parm[#5]% 
+			ospfPacketType=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>15</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/traps/ospfVirtIfAuthFailureV1</uei>
+	<event-label>JUNIPER-V1-TRAPS-OSPF defined trap event: ospfVirtIfAuthFailureV1</event-label>
+	<descr>
+&lt;p&gt;An ospfVirtIfAuthFailure trap signifies that a
+packet has been received on a virtual interface
+from a router whose authentication key  or  au-
+thentication  type conflicts with this router's
+authentication key or authentication type.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfRouterId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfVirtIfAreaId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfVirtIfNeighbor&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfConfigErrorType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfPacketType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ospfVirtIfAuthFailureV1 trap received 
+			ospfRouterId=%parm[#1]% 
+			ospfVirtIfAreaId=%parm[#2]% 
+			ospfVirtIfNeighbor=%parm[#3]% 
+			ospfConfigErrorType=%parm[#4]% 
+			ospfPacketType=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>16</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/traps/ospfIfRxBadPacketV1</uei>
+	<event-label>JUNIPER-V1-TRAPS-OSPF defined trap event: ospfIfRxBadPacketV1</event-label>
+	<descr>
+&lt;p&gt;An ospfIfRxBadPacket trap  signifies  that  an
+OSPF  packet has been received on a non-virtual
+interface that cannot be parsed.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfRouterId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfIfIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfAddressLessIf&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfPacketSrc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfPacketType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ospfIfRxBadPacketV1 trap received 
+			ospfRouterId=%parm[#1]% 
+			ospfIfIpAddress=%parm[#2]% 
+			ospfAddressLessIf=%parm[#3]% 
+			ospfPacketSrc=%parm[#4]% 
+			ospfPacketType=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>17</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/traps/ospfVirtIfRxBadPacketV1</uei>
+	<event-label>JUNIPER-V1-TRAPS-OSPF defined trap event: ospfVirtIfRxBadPacketV1</event-label>
+	<descr>
+&lt;p&gt;An ospfRxBadPacket trap signifies that an OSPF
+packet has been received on a virtual interface
+that cannot be parsed.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfRouterId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfVirtIfAreaId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfVirtIfNeighbor&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfPacketType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ospfVirtIfRxBadPacketV1 trap received 
+			ospfRouterId=%parm[#1]% 
+			ospfVirtIfAreaId=%parm[#2]% 
+			ospfVirtIfNeighbor=%parm[#3]% 
+			ospfPacketType=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>18</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/traps/ospfTxRetransmitV1</uei>
+	<event-label>JUNIPER-V1-TRAPS-OSPF defined trap event: ospfTxRetransmitV1</event-label>
+	<descr>
+&lt;p&gt;An ospfTxRetransmit  trap  signifies  than  an
+OSPF  packet  has  been retransmitted on a non-
+virtual interface.  All packets that may be re-
+transmitted  are associated with an LSDB entry.
+The LS type, LS ID, and Router ID are  used  to
+identify the LSDB entry.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfRouterId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfIfIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfAddressLessIf&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfNbrRtrId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfPacketType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfLsdbType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfLsdbLsid&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfLsdbRouterId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ospfTxRetransmitV1 trap received 
+			ospfRouterId=%parm[#1]% 
+			ospfIfIpAddress=%parm[#2]% 
+			ospfAddressLessIf=%parm[#3]% 
+			ospfNbrRtrId=%parm[#4]% 
+			ospfPacketType=%parm[#5]% 
+			ospfLsdbType=%parm[#6]% 
+			ospfLsdbLsid=%parm[#7]% 
+			ospfLsdbRouterId=%parm[#8]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>19</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/traps/ospfVirtIfTxRetransmitV1</uei>
+	<event-label>JUNIPER-V1-TRAPS-OSPF defined trap event: ospfVirtIfTxRetransmitV1</event-label>
+	<descr>
+&lt;p&gt;An ospfTxRetransmit  trap  signifies  than  an
+OSPF packet has been retransmitted on a virtual
+interface.  All packets that may be retransmit-
+ted  are  associated with an LSDB entry. The LS
+type, LS ID, and Router ID are used to identify
+the LSDB entry.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfRouterId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfVirtIfAreaId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfVirtIfNeighbor&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfPacketType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfLsdbType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfLsdbLsid&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfLsdbRouterId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ospfVirtIfTxRetransmitV1 trap received 
+			ospfRouterId=%parm[#1]% 
+			ospfVirtIfAreaId=%parm[#2]% 
+			ospfVirtIfNeighbor=%parm[#3]% 
+			ospfPacketType=%parm[#4]% 
+			ospfLsdbType=%parm[#5]% 
+			ospfLsdbLsid=%parm[#6]% 
+			ospfLsdbRouterId=%parm[#7]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>20</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/traps/ospfOriginateLsaV1</uei>
+	<event-label>JUNIPER-V1-TRAPS-OSPF defined trap event: ospfOriginateLsaV1</event-label>
+	<descr>
+&lt;p&gt;An ospfOriginateLsa trap signifies that a  new
+LSA  has  been originated by this router.  This
+trap should not be invoked for simple refreshes
+of  LSAs  (which happesn every 30 minutes), but
+instead will only be invoked  when  an  LSA  is
+(re)originated due to a topology change.  Addi-
+tionally, this trap does not include LSAs  that
+are  being  flushed  because  they have reached
+MaxAge.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfRouterId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfLsdbAreaId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfLsdbType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfLsdbLsid&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfLsdbRouterId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ospfOriginateLsaV1 trap received 
+			ospfRouterId=%parm[#1]% 
+			ospfLsdbAreaId=%parm[#2]% 
+			ospfLsdbType=%parm[#3]% 
+			ospfLsdbLsid=%parm[#4]% 
+			ospfLsdbRouterId=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>21</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/traps/ospfMaxAgeLsaV1</uei>
+	<event-label>JUNIPER-V1-TRAPS-OSPF defined trap event: ospfMaxAgeLsaV1</event-label>
+	<descr>
+&lt;p&gt;An ospfMaxAgeLsa trap signifies  that  one  of
+the LSA in the router's link-state database has
+aged to MaxAge.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfRouterId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfLsdbAreaId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfLsdbType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfLsdbLsid&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfLsdbRouterId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ospfMaxAgeLsaV1 trap received 
+			ospfRouterId=%parm[#1]% 
+			ospfLsdbAreaId=%parm[#2]% 
+			ospfLsdbType=%parm[#3]% 
+			ospfLsdbLsid=%parm[#4]% 
+			ospfLsdbRouterId=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>22</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/traps/ospfLsdbOverflowV1</uei>
+	<event-label>JUNIPER-V1-TRAPS-OSPF defined trap event: ospfLsdbOverflowV1</event-label>
+	<descr>
+&lt;p&gt;An ospfLsdbOverflow trap  signifies  that  the
+number of LSAs in the router's link-state data-
+base has exceeded ospfExtLsdbLimit.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfRouterId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfExtLsdbLimit&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ospfLsdbOverflowV1 trap received 
+			ospfRouterId=%parm[#1]% 
+			ospfExtLsdbLimit=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>23</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/traps/ospfLsdbApproachingOverflowV1</uei>
+	<event-label>JUNIPER-V1-TRAPS-OSPF defined trap event: ospfLsdbApproachingOverflowV1</event-label>
+	<descr>
+&lt;p&gt;An ospfLsdbApproachingOverflow trap  signifies
+that  the  number of LSAs in the router's link-
+state database has exceeded ninety  percent  of
+ospfExtLsdbLimit.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfRouterId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfExtLsdbLimit&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ospfLsdbApproachingOverflowV1 trap received 
+			ospfRouterId=%parm[#1]% 
+			ospfExtLsdbLimit=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>24</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/traps/ospfIfStateChangeV1</uei>
+	<event-label>JUNIPER-V1-TRAPS-OSPF defined trap event: ospfIfStateChangeV1</event-label>
+	<descr>
+&lt;p&gt;An ospfIfStateChange trap signifies that there
+has been a change in the state of a non-virtual
+OSPF interface. This trap should  be  generated
+when  the interface state regresses (e.g., goes
+from Dr to Down) or progresses  to  a  terminal
+state  (i.e.,  Point-to-Point, DR Other, Dr, or
+Backup).&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfRouterId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfIfIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfAddressLessIf&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ospfIfState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			ospfIfStateChangeV1 trap received 
+			ospfRouterId=%parm[#1]% 
+			ospfIfIpAddress=%parm[#2]% 
+			ospfAddressLessIf=%parm[#3]% 
+			ospfIfState=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<!-- End of auto generated data from MIB: JUNIPER-V1-TRAPS-OSPF -->
+</events>

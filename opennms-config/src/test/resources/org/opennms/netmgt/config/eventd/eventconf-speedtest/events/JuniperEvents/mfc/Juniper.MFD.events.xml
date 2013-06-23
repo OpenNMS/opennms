@@ -1,0 +1,732 @@
+<!-- Juniper's MFC event data generated data from MIB: MFD-ALARM-MIB -->
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.32531.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>0</mevalue>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/MFC/traps/bandwidthLimit</uei>
+	<event-label>MFD-ALARM-MIB defined trap event: bandwidthLimit</event-label>
+	<descr>
+&lt;p&gt;The Bandwidth Limit has crossed on this server&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			bandwidthLimit trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%ipaddr%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.32531.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>0</mevalue>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>2</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/MFC/traps/cacheBWusageHigh</uei>
+	<event-label>MFD-ALARM-MIB defined trap event: cacheBWusageHigh</event-label>
+	<descr>
+&lt;p&gt;The Current Cache BW Usage is High &lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cacheBWusageHigh trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%ipaddr%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.32531.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>0</mevalue>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/MFC/traps/originBWusageHigh</uei>
+	<event-label>MFD-ALARM-MIB defined trap event: originBWusageHigh</event-label>
+	<descr>
+&lt;p&gt;The Current Origin BW Usage is High&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			originBWusageHigh trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%ipaddr%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.32531.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>0</mevalue>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>4</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/MFC/traps/diskBWusageHigh</uei>
+	<event-label>MFD-ALARM-MIB defined trap event: diskBWusageHigh</event-label>
+	<descr>
+&lt;p&gt;The Disk BW Usage is High&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			diskBWusageHigh trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%ipaddr%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.32531.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>0</mevalue>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>5</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/MFC/traps/avgcacheBWusageHigh</uei>
+	<event-label>MFD-ALARM-MIB defined trap event: avgcacheBWusageHigh</event-label>
+	<descr>
+&lt;p&gt;The Avg Cache BW Usage is High&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avgcacheBWusageHigh trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Major</severity>
+	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%ipaddr%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.32531.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>0</mevalue>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/MFC/traps/avgoriginBWusageHigh</uei>
+	<event-label>MFD-ALARM-MIB defined trap event: avgoriginBWusageHigh</event-label>
+	<descr>
+&lt;p&gt;The Avg Origin BW Usage is High&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avgoriginBWusageHigh trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Major</severity>
+	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%ipaddr%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.32531.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>0</mevalue>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>7</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/MFC/traps/avgdiskBWusageHigh</uei>
+	<event-label>MFD-ALARM-MIB defined trap event: avgdiskBWusageHigh</event-label>
+	<descr>
+&lt;p&gt;The Avg Disk BW Usage is High&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			avgdiskBWusageHigh trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%ipaddr%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.32531.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>0</mevalue>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>8</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/MFC/traps/connectionRateHigh</uei>
+	<event-label>MFD-ALARM-MIB defined trap event: connectionRateHigh</event-label>
+	<descr>
+&lt;p&gt;The Connection Rate is High&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			connectionRateHigh trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Major</severity>
+	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%ipaddr%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.32531.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>0</mevalue>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>9</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/MFC/traps/transactionRateHigh</uei>
+	<event-label>MFD-ALARM-MIB defined trap event: transactionRateHigh</event-label>
+	<descr>
+&lt;p&gt;The HTTP Transaction Rate is High&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			transactionRateHigh trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Major</severity>
+	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%ipaddr%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.32531.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>0</mevalue>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>10</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/MFC/traps/portBandwidthHigh</uei>
+	<event-label>MFD-ALARM-MIB defined trap event: portBandwidthHigh</event-label>
+	<descr>
+&lt;p&gt;One or more port bandwidth usage is High&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			portBandwidthHigh trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%ipaddr%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.32531.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>0</mevalue>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>11</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/MFC/traps/resourcePoolUsageHigh</uei>
+	<event-label>MFD-ALARM-MIB defined trap event: resourcePoolUsageHigh</event-label>
+	<descr>
+&lt;p&gt;The usage of a resource pool has exceeded its defined upper limit&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	resourcePoolName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			resourcePoolUsageHigh trap received 
+			resourcePoolName=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Major</severity>
+	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%ipaddr%:%parm[#1]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.32531.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>0</mevalue>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>12</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/MFC/traps/resourcePoolHighUsageOK</uei>
+	<event-label>MFD-ALARM-MIB defined trap event: resourcePoolHighUsageOK</event-label>
+	<descr>
+&lt;p&gt;The usage of a resource pool has fallen back to its normal limit&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	resourcePoolName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			resourcePoolHighUsageOK trap received 
+			resourcePoolName=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%ipaddr%:%parm[#1]%" clear-key="uei.opennms.org/vendor/Juniper/MFC/traps/resourcePoolUsageHigh:%nodeid%:%dpname%:%ipaddr%:%parm[#1]%" alarm-type="2" auto-clean="false" />
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.32531.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>0</mevalue>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>13</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/MFC/traps/resourcePoolUsageLow</uei>
+	<event-label>MFD-ALARM-MIB defined trap event: resourcePoolUsageLow</event-label>
+	<descr>
+&lt;p&gt;The usage of a resource pool has fallen lower than its defined lower limit&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	resourcePoolName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			resourcePoolUsageLow trap received 
+			resourcePoolName=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%ipaddr%%parm[#1]%" alarm-type="1" auto-clean="false" />
+	</event>
+
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.32531.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>0</mevalue>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>14</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/MFC/traps/resourcePoolLowUsageOK</uei>
+	<event-label>MFD-ALARM-MIB defined trap event: resourcePoolLowUsageOK</event-label>
+	<descr>
+&lt;p&gt;The usage of a resource pool has come up to its normal limit&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	resourcePoolName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			resourcePoolLowUsageOK trap received 
+			resourcePoolName=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%ipaddr%:%parm[#1]%" clear-key="uei.opennms.org/vendor/Juniper/MFC/traps/resourcePoolUsageLow:%nodeid%:%dpname%:%ipaddr%:%parm[#1]%" alarm-type="2" auto-clean="false" />
+</event>
+
+
+
+<!-- End of auto generated data from MIB: MFD-ALARM-MIB -->
+<!-- New Events added by Javier on Feb/2012 for 12.1 Beta release -->
+
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.32531.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>0</mevalue>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>15</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/MFC/traps/bandwidthLimitOK</uei>
+	<event-label>MFD-ALARM-MIB defined trap event: bandwidthLimitOK</event-label>
+	<descr>
+	&lt;p&gt;The Bandwidth Limit has come down to its normal limit&lt;/p&gt;&lt;table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			bandwidthLimitOK trap received%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%ipaddr%" clear-key="uei.opennms.org/vendor/Juniper/MFC/traps/bandwidthLimit:%nodeid%:%dpname%:%ipaddr%" alarm-type="2" auto-clean="false" />
+</event>
+
+
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.32531.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>0</mevalue>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>16</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/MFC/traps/cacheBWusageOK</uei>
+	<event-label>MFD-ALARM-MIB defined trap event: cacheBWusageOK</event-label>
+	<descr>
+&lt;p&gt;The Current Cache BW Usage is back to normal&lt;/p&gt;&lt;table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			cacheBWusageOK trap received%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%ipaddr%" clear-key="uei.opennms.org/vendor/Juniper/MFC/traps/cacheBWusageHigh:%nodeid%:%dpname%:%ipaddr%" alarm-type="2" auto-clean="false" />
+</event>
+
+
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.32531.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>0</mevalue>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>17</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/MFC/traps/originBWusageOK</uei>
+	<event-label>MFD-ALARM-MIB defined trap event: originBWusageOK</event-label>
+	<descr>
+&lt;p&gt;The Current Origin BW Usage is normal&lt;/p&gt;&lt;table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			originBWusageOK trap received%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%ipaddr%" clear-key="uei.opennms.org/vendor/Juniper/MFC/traps/originBWusageHigh:%nodeid%:%dpname%:%ipaddr%" alarm-type="2" auto-clean="false" />
+</event>
+
+
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.32531.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>0</mevalue>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>18</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/MFC/traps/diskBWusageOK</uei>
+	<event-label>MFD-ALARM-MIB defined trap event: diskBWusageOK</event-label>
+	<descr>
+&lt;p&gt;The Disk BW usage is back to normal&lt;/p&gt;&lt;table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			diskBWusageOK trap received%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%ipaddr%" clear-key="uei.opennms.org/vendor/Juniper/MFC/traps/diskBWusageHigh:%nodeid%:%dpname%:%ipaddr%" alarm-type="2" auto-clean="false" />
+</event>
+
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.32531.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>0</mevalue>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>19</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/MFC/traps/connectionRateOK</uei>
+	<event-label>MFD-ALARM-MIB defined trap event: connectionRateOK</event-label>
+	<descr>
+&lt;p&gt;The Connection Rate is normal&lt;/p&gt;&lt;table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			connectionRateOK trap received%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%ipaddr%" clear-key="uei.opennms.org/vendor/Juniper/MFC/traps/connectionRateHigh:%nodeid%:%dpname%:%ipaddr%" alarm-type="2" auto-clean="false" />
+</event>
+
+
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.32531.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>0</mevalue>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>20</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/MFC/traps/transactionRateOK</uei>
+	<event-label>MFD-ALARM-MIB defined trap event: transactionRateOK</event-label>
+	<descr>
+&lt;p&gt;The HTTP Transaction Rate is back to normal&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	transactionRateOK&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			transactionRateOK trap received%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%ipaddr%" clear-key="uei.opennms.org/vendor/Juniper/MFC/traps/transactionRateHigh:%nodeid%:%dpname%:%ipaddr%" alarm-type="2" auto-clean="false" />
+</event>
+
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.32531.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>0</mevalue>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>21</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/MFC/traps/portBandwidthOK</uei>
+	<event-label>MFD-ALARM-MIB defined trap event: portBandwidthOK</event-label>
+	<descr>
+&lt;p&gt;The Port Bandwidth usage is back to normal&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	portBandwidthOK&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			portBandwidthOK trap received%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%ipaddr%" clear-key="uei.opennms.org/vendor/Juniper/MFC/traps/portBandwidthHigh:%nodeid%:%dpname%:%ipaddr%" alarm-type="2" auto-clean="false" />
+</event>
+
+
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.32531.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>0</mevalue>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>22</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/MFC/traps/mfcFanFailure</uei>
+	<event-label>MFD-ALARM-MIB defined trap event: mfcFanFailure</event-label>
+	<descr>
+	&lt;p&gt;The Fan sensor indicates that a fan has reached lower-non-recoverable state&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			mfcFanFailure trap received%&lt;/p&gt;
+		</logmsg>
+	<severity>Major</severity>
+	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%" alarm-type="1" auto-clean="false" />
+</event>
+
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.32531.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>0</mevalue>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>23</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/MFC/traps/mfcFanStatusOK</uei>
+	<event-label>MFD-ALARM-MIB defined trap event: mfcFanStatusOK</event-label>
+	<descr>
+	&lt;p&gt; The Fan sensor indicates that a fan has reached upper-non-critical state&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			mfcFanStatusOK trap received%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%ipaddr%" clear-key="uei.opennms.org/vendor/Juniper/MFC/traps/mfcFanFailure:%nodeid%:%dpname%:%ipaddr%" alarm-type="2" auto-clean="false" />
+</event>
+
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.32531.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>0</mevalue>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>24</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/MFC/traps/mfcPowerSupplyFailure</uei>
+	<event-label>MFD-ALARM-MIB defined trap event: mfcPowerSupplyFailure</event-label>
+	<descr>
+	&lt;p&gt;The Power Supply sensor indicates that a Power Supply has reached lower-non-recoverable state&lt;/p&gt;&lt;table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			mfcPowerSupplyFailure trap received%&lt;/p&gt;
+		</logmsg>
+	<severity>Major</severity>
+	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%ipaddr%" alarm-type="1" auto-clean="false" />
+</event>
+
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.32531.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>0</mevalue>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>25</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/MFC/traps/mfcPowerSupplyOK</uei>
+	<event-label>MFD-ALARM-MIB defined trap event: mfcPowerSupplyOK</event-label>
+	<descr>
+	&lt;p&gt;The Power Supply sensor indicates that a Power Supply has reached upper-non-critical state&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			mfcPowerSupplyOK trap received%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%ipaddr%" clear-key="uei.opennms.org/vendor/Juniper/MFC/traps/mfcPowerSupplyFailure:%nodeid%:%dpname%:%ipaddr%" alarm-type="2" auto-clean="false" />
+</event>
+
+<!-- New Events added by Javier on Feb/2012 for 12.1 Beta release -->
+<!-- DiskIOOK, pagingActivityOK, memUtilizationOK, netUtilizationOK, cpuUtilOK don't have the alarm codes, just the clear codes! Not added on this release yet  -->
+</events>
+

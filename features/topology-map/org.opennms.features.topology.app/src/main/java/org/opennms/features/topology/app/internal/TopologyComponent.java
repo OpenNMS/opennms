@@ -76,6 +76,8 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
     private final ContextMenuHandler m_contextMenuHandler;
     private final IconRepositoryManager m_iconRepoManager;
     private String m_activeTool = "pan";
+    private boolean blockSelectionEvents = false;
+    transient final Object changeVariableProcessingLock = new String("LOCK");
 
     private Set<VertexUpdateListener> m_vertexUpdateListeners = new CopyOnWriteArraySet<VertexUpdateListener>();
 
@@ -87,12 +89,14 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
 	    setGraph(m_graphContainer.getGraph());
 		
 		m_graphContainer.getSelectionManager().addSelectionListener(new SelectionListener() {
-			
+
 			@Override
 			public void selectionChanged(SelectionContext selectionContext) {
-			    computeBoundsForSelected(selectionContext);
-			}
-			
+                if (!blockSelectionEvents) {
+                    computeBoundsForSelected(selectionContext);
+                }
+                requestRepaint();
+            }
 		});
 		
 		m_graphContainer.getMapViewManager().addListener(this);
@@ -149,135 +153,129 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
 	@SuppressWarnings("unchecked")
 	@Override
     public void changeVariables(Object source, Map<String, Object> variables) {
-        if(variables.containsKey("graph")) {
-            String graph = (String) variables.get("graph");
-            getApplication().getMainWindow().showNotification("" + graph);
-            
-        }
-        
-        if(variables.containsKey("clickedEdge")) {
-            String edgeId = (String) variables.get("clickedEdge");
-            selectEdge(edgeId);
-        }
-        
-        if(variables.containsKey("clickedBackground")) {
-            m_graphContainer.getSelectionManager().deselectAll();
-        }
-        
-        if(variables.containsKey("clickedVertex")) {
-            String vertexKey = (String) variables.get("clickedVertex");
-            if((variables.containsKey("shiftKeyPressed") && (Boolean) variables.get("shiftKeyPressed") == true) 
-                    || variables.containsKey("metaKeyPressed") && (Boolean) variables.get("metaKeyPressed") == true
-                    || (variables.containsKey("ctrlKeyPressed") && (Boolean) variables.get("ctrlKeyPressed") == true  && !(((String)variables.get("platform")).indexOf("Mac") > 0)  )) {
-        	    addVerticesToSelection(vertexKey);
-        	}else {
-        	    selectVertices(vertexKey);
-        	}
-            
-        }
-        
-        if(variables.containsKey("marqueeSelection")) {
-            String[] vertexKeys = (String[]) variables.get("marqueeSelection");
-            if(variables.containsKey("shiftKeyPressed") && (Boolean) variables.get("shiftKeyPressed") == true) {
-            	addVerticesToSelection(vertexKeys);
-            } else {
-            	selectVertices(vertexKeys);
-            }
-            
-        }
-        
-        if(variables.containsKey("updateVertices")) {
-            String[] vertices = (String[]) variables.get("updateVertices");
-            for(String vUpdate : vertices) {
-                updateVertex(vUpdate);
-            }
-            
-            fireVertexUpdated();
-            if(vertices.length > 0) {
-                requestRepaint();
-            }
-            
-        }
-        
-        if(variables.containsKey("scrollWheel")) {
-            Map<String, Object> props = (Map<String, Object>) variables.get("scrollWheel");
-            int x = (Integer) props.get("x");
-            int y = (Integer) props.get("y");
-            double scrollVal = (Double) props.get("scrollVal");
-            getViewManager().zoomToPoint(getViewManager().getScale() + scrollVal, new Point(x, y));
-        }
-        
-        if(variables.containsKey("clientCenterPoint")) {
-            Map<String, Object> props = (Map<String, Object>) variables.get("clientCenterPoint");
-            int x = (Integer) props.get("x");
-            int y = (Integer) props.get("y"); 
-            getViewManager().setCenter(new Point(x, y));
-            
-        }
-        
-        if(variables.containsKey("contextMenu")) {
-            Map<String, Object> props = (Map<String, Object>) variables.get("contextMenu");
-            
-            
-            int x = (Integer) props.get("x");
-            int y = (Integer) props.get("y");
-            
-            String type = (String) props.get("type");
+        synchronized (changeVariableProcessingLock) {
+            blockSelectionEvents = true;
+            if(variables.containsKey("graph")) {
+                String graph = (String) variables.get("graph");
+                getApplication().getMainWindow().showNotification("" + graph);
 
-            Object target = null;
-            if (type.toLowerCase().equals("vertex")) {
-            	String targetKey = (String)props.get("target");
-            	target = getGraph().getVertexByKey(targetKey);
-            } else if (type.toLowerCase().equals("edge")) {
-            	String targetKey = (String)props.get("target");
-            	target = getGraph().getEdgeByKey(targetKey);
             }
 
-            m_contextMenuHandler.show(target, x, y);
-        }
-        
-        if(variables.containsKey("mapPhysicalBounds")) {
-            Map<String, Object> bounds = (Map<String, Object>) variables.get("mapPhysicalBounds");
-            Integer width = (Integer)bounds.get("width");
-            Integer height = (Integer)bounds.get("height");
-            
-            getViewManager().setViewPort(width, height);
-            
-        }
-        
-        if(variables.containsKey("doubleClick")) {
-            Map<String, Object> props = (Map<String, Object>) variables.get("doubleClick");
-            int x = (Integer) props.get("x");
-            int y = (Integer) props.get("y");
-            
-            double scale = getViewManager().getScale() + 0.25;
-            getViewManager().zoomToPoint(scale, new Point(x, y));
-        }
-        
+            if(variables.containsKey("clickedEdge")) {
+                String edgeId = (String) variables.get("clickedEdge");
+                selectEdge(edgeId);
+            }
+
+            if(variables.containsKey("clickedBackground")) {
+                m_graphContainer.getSelectionManager().deselectAll();
+            }
+
+            if(variables.containsKey("clickedVertex")) {
+                String vertexKey = (String) variables.get("clickedVertex");
+                boolean shiftKeyModifierPressed = (variables.containsKey("shiftKeyPressed") && (Boolean) variables.get("shiftKeyPressed") == true);
+                boolean ctrlKeyModifierPressed = (variables.containsKey("ctrlKeyPressed") && (Boolean) variables.get("ctrlKeyPressed") == true);
+                selectVertices(shiftKeyModifierPressed, ctrlKeyModifierPressed, vertexKey);
+            }
+
+            if(variables.containsKey("marqueeSelection")) {
+                String[] vertexKeys = (String[]) variables.get("marqueeSelection");
+                boolean ctrlKeyModifierPressed = (variables.containsKey("ctrlKeyPressed") && (Boolean) variables.get("ctrlKeyPressed") == true);
+                boolean shiftKeyModifierPressed = (variables.containsKey("shiftKeyPressed") && (Boolean) variables.get("shiftKeyPressed") == true);
+                selectVertices(shiftKeyModifierPressed, ctrlKeyModifierPressed, vertexKeys);
+            }
+
+            if(variables.containsKey("updateVertices")) {
+                String[] vertices = (String[]) variables.get("updateVertices");
+                for(String vUpdate : vertices) {
+                    updateVertex(vUpdate);
+                }
+
+                fireVertexUpdated();
+                if(vertices.length > 0) {
+                    requestRepaint();
+                }
+
+            }
+
+            if(variables.containsKey("scrollWheel")) {
+                Map<String, Object> props = (Map<String, Object>) variables.get("scrollWheel");
+                int x = (Integer) props.get("x");
+                int y = (Integer) props.get("y");
+                // inverse the scroll value, otherwise the expected behaviour is inverted
+                double scrollVal = -1 * (Double) props.get("scrollVal");
+                getViewManager().zoomToPoint(getViewManager().getScale() + scrollVal, new Point(x, y));
+            }
+
+            if(variables.containsKey("clientCenterPoint")) {
+                Map<String, Object> props = (Map<String, Object>) variables.get("clientCenterPoint");
+                int x = (Integer) props.get("x");
+                int y = (Integer) props.get("y");
+                getViewManager().setCenter(new Point(x, y));
+
+            }
+
+            if(variables.containsKey("contextMenu")) {
+                Map<String, Object> props = (Map<String, Object>) variables.get("contextMenu");
+
+
+                int x = (Integer) props.get("x");
+                int y = (Integer) props.get("y");
+
+                String type = (String) props.get("type");
+
+                Object target = null;
+                if (type.toLowerCase().equals("vertex")) {
+                    String targetKey = (String)props.get("target");
+                    target = getGraph().getVertexByKey(targetKey);
+                } else if (type.toLowerCase().equals("edge")) {
+                    String targetKey = (String)props.get("target");
+                    target = getGraph().getEdgeByKey(targetKey);
+                }
+
+                m_contextMenuHandler.show(target, x, y);
+            }
+
+            if(variables.containsKey("mapPhysicalBounds")) {
+                Map<String, Object> bounds = (Map<String, Object>) variables.get("mapPhysicalBounds");
+                Integer width = (Integer)bounds.get("width");
+                Integer height = (Integer)bounds.get("height");
+
+                getViewManager().setViewPort(width, height);
+
+            }
+
+    //        if(variables.containsKey("doubleClick")) {
+    //            Map<String, Object> props = (Map<String, Object>) variables.get("doubleClick");
+    //            int x = (Integer) props.get("x");
+    //            int y = (Integer) props.get("y");
+    //
+    //            double scale = getViewManager().getScale() + 0.25;
+    //            getViewManager().zoomToPoint(scale, new Point(x, y));
+    //        }
+            }
+        blockSelectionEvents = false;
         updateMenuItems();
     }
 
-	private void selectVertices(String... vertexKeys) {
-		List<VertexRef> vertexRefs = new ArrayList<VertexRef>(vertexKeys.length);
-		
-		for(String vertexKey : vertexKeys) {
-			vertexRefs.add(getGraph().getVertexByKey(vertexKey));
-		}
-
-		Collection<VertexRef> vertexTrees = m_graphContainer.getVertexRefForest(vertexRefs);
-	    m_graphContainer.getSelectionManager().setSelectedVertexRefs(vertexTrees);
-	}
-
-	private void addVerticesToSelection(String... vertexKeys) {
-		List<VertexRef> vertexRefs = new ArrayList<VertexRef>(vertexKeys.length);
-		
-		for(String vertexKey : vertexKeys) {
-			vertexRefs.add(getGraph().getVertexByKey(vertexKey));
-		}
-
-		Collection<VertexRef> vertexTrees = m_graphContainer.getVertexRefForest(vertexRefs);
-		
-		m_graphContainer.getSelectionManager().selectVertexRefs(vertexTrees);
+    private void selectVertices(boolean shiftModifierPressed, boolean ctrlModifierPressed, String... vertexKeys) {
+        List<VertexRef> vertexRefsToSelect = new ArrayList<VertexRef>(vertexKeys.length);
+        List<VertexRef> vertexRefsToDeselect = new ArrayList<VertexRef>();
+        boolean add = shiftModifierPressed || ctrlModifierPressed;
+        for (String eachVertexKey : vertexKeys) {
+            if (ctrlModifierPressed
+                    && m_graphContainer.getSelectionManager().isVertexRefSelected(m_graph.getVertexByKey(eachVertexKey))) {
+                vertexRefsToDeselect.add(getGraph().getVertexByKey(eachVertexKey)); //we want it to be unselected
+            } else {
+                vertexRefsToSelect.add(getGraph().getVertexByKey(eachVertexKey));
+            }
+        }
+        if (add) { // we want to add, so add the already selected ones (except the explicit removed ones)
+            vertexRefsToSelect.addAll(m_graphContainer.getSelectionManager().getSelectedVertexRefs());
+            vertexRefsToSelect.removeAll(vertexRefsToDeselect);
+        }
+        m_graphContainer.getSelectionManager().deselectAll();
+        m_graphContainer.getSelectionManager().selectVertexRefs(
+                m_graphContainer.getVertexRefForest(vertexRefsToSelect));
     }
     
 	private void selectEdge(String edgeKey) {

@@ -60,7 +60,6 @@
 	
 	<bean id="eventConfDao" class="org.opennms.netmgt.config.DefaultEventConfDao">
 		<property name="configResource" ref="eventConfResourceLocation"/>
-		<property name="reloadCheckInterval" value="-1" />
 	</bean>
 
     <onmsgi:service interface="org.opennms.netmgt.config.EventConfDao" ref="eventConfDao" />

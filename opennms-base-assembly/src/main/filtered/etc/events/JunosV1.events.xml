@@ -1,4 +1,4 @@
-<events>
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Start of auto generated data from MIB: JUNIPER-V1-TRAPS-BGP -->
 <event>
 	<mask>

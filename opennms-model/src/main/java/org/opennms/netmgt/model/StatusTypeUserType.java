@@ -94,7 +94,7 @@ public class StatusTypeUserType implements UserType {
 
     @Override
     public Object nullSafeGet(final ResultSet rs, final String[] names, final Object owner) throws HibernateException, SQLException {
-        return StatusType.get((String)Hibernate.CHARACTER.nullSafeGet(rs, names[0]));
+        return StatusType.get(Hibernate.CHARACTER.nullSafeGet(rs, names[0]).toString());
     }
 
     @Override

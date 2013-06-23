@@ -33,10 +33,11 @@
 		contentType="text/html"
 		session="true"
 		import="org.opennms.netmgt.config.PollerConfigFactory,
-				org.opennms.netmgt.config.PollerConfig,
-				org.opennms.netmgt.config.SnmpInterfacePollerConfigFactory,
-				org.opennms.netmgt.config.SnmpInterfacePollerConfig,
-				java.util.*,
+                org.opennms.netmgt.config.PollerConfig,
+                org.opennms.netmgt.config.SnmpInterfacePollerConfigFactory,
+                org.opennms.netmgt.config.SnmpInterfacePollerConfig,
+                org.opennms.netmgt.config.poller.Package,
+                java.util.*,
                 org.opennms.core.utils.SIUtils,
                 org.opennms.netmgt.model.OnmsResource,
                 org.opennms.web.api.Util,
@@ -97,7 +98,9 @@
     if( httpService != null  ) {
         httpIp = ipAddr;
     }
-    
+
+    Service[] services = ElementUtil.getServicesOnInterface(nodeId, ipAddr,getServletContext());
+
     PollerConfigFactory.init();
     PollerConfig pollerCfgFactory = PollerConfigFactory.getInstance();
     pollerCfgFactory.rebuildPackageIpListMap();
@@ -257,13 +260,21 @@ function doDelete() {
                 <td><%=ElementUtil.getInterfaceStatusString(intf_db)%></td>
               </tr>
               <% if(ElementUtil.getInterfaceStatusString(intf_db).equals("Managed") && request.isUserInRole( Authentication.ROLE_ADMIN )) {
-                  List inPkgs = pollerCfgFactory.getAllPackageMatches(ipAddr);
+                  List<String> inPkgs = pollerCfgFactory.getAllPackageMatches(ipAddr);
                   Collections.sort(inPkgs);
-                  Iterator pkgiter = inPkgs.iterator();
-                  while (pkgiter.hasNext()) { %>
+                  for (String pkgName : inPkgs) {
+                      Package pkg = pollerCfgFactory.getPackage(pkgName);
+                      boolean found = false;
+                      for (Service svc : services) {
+                          if (pollerCfgFactory.isServiceInPackageAndEnabled(svc.getServiceName(), pkg)) {
+                              found = true;
+                              continue;
+                          }
+                      }
+                      String pkgInfo = pkgName + (found ? " (*)" : ""); %>
                       <tr>
                           <th>Polling Package</th>
-                          <td><%= (String) pkgiter.next()%></td>
+                          <td><%= pkgInfo%></td>
                       </tr>
                   <% } %>
               <% } %>

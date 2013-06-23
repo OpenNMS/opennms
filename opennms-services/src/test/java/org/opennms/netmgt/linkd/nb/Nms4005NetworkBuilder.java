@@ -1,10 +1,10 @@
 package org.opennms.netmgt.linkd.nb;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.OnmsNode;
 
 public class Nms4005NetworkBuilder extends LinkdNetworkBuilder {
@@ -58,28 +58,25 @@ public class Nms4005NetworkBuilder extends LinkdNetworkBuilder {
     protected static final Map<Integer,InetAddress> R4_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
 
     static {
-    	try {
-	    	R1_IP_IF_MAP.put(InetAddress.getByName("10.1.2.1"), 1);
-			R1_IP_IF_MAP.put(InetAddress.getByName("10.1.3.1"), 2);
-	    	R1_IP_IF_MAP.put(InetAddress.getByName("10.1.1.2"), 3);
-	    	R1_IF_NETMASK_MAP.put(1, InetAddress.getByName("255.255.255.0"));
-	    	R1_IF_NETMASK_MAP.put(2, InetAddress.getByName("255.255.255.0"));
-	    	R1_IF_NETMASK_MAP.put(3, InetAddress.getByName("255.255.255.0"));
-	    	R2_IP_IF_MAP.put(InetAddress.getByName("10.1.2.2"), 1);
-	    	R2_IP_IF_MAP.put(InetAddress.getByName("10.1.5.1"), 2);
-	    	R2_IF_NETMASK_MAP.put(1, InetAddress.getByName("255.255.255.0"));
-	    	R2_IF_NETMASK_MAP.put(2, InetAddress.getByName("255.255.255.0"));
-	    	R3_IP_IF_MAP.put(InetAddress.getByName("10.1.3.2"), 1);
-	    	R3_IP_IF_MAP.put(InetAddress.getByName("10.1.4.1"), 2);
-	    	R3_IP_IF_MAP.put(InetAddress.getByName("10.1.5.2"), 3);
-	    	R3_IF_NETMASK_MAP.put(1, InetAddress.getByName("255.255.255.0"));
-	    	R3_IF_NETMASK_MAP.put(2, InetAddress.getByName("255.255.255.0"));
-	    	R3_IF_NETMASK_MAP.put(3, InetAddress.getByName("255.255.255.0"));
-	    	R4_IP_IF_MAP.put(InetAddress.getByName("10.1.4.2"), 1);
-	    	R4_IF_NETMASK_MAP.put(1, InetAddress.getByName("255.255.255.0"));
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		}
+        R1_IP_IF_MAP.put(InetAddressUtils.addr("10.1.2.1"), 1);
+        R1_IP_IF_MAP.put(InetAddressUtils.addr("10.1.3.1"), 2);
+        R1_IP_IF_MAP.put(InetAddressUtils.addr("10.1.1.2"), 3);
+        R1_IF_NETMASK_MAP.put(1, InetAddressUtils.addr("255.255.255.0"));
+        R1_IF_NETMASK_MAP.put(2, InetAddressUtils.addr("255.255.255.0"));
+        R1_IF_NETMASK_MAP.put(3, InetAddressUtils.addr("255.255.255.0"));
+        R2_IP_IF_MAP.put(InetAddressUtils.addr("10.1.2.2"), 1);
+        R2_IP_IF_MAP.put(InetAddressUtils.addr("10.1.5.1"), 2);
+        R2_IF_NETMASK_MAP.put(1, InetAddressUtils.addr("255.255.255.0"));
+        R2_IF_NETMASK_MAP.put(2, InetAddressUtils.addr("255.255.255.0"));
+        R3_IP_IF_MAP.put(InetAddressUtils.addr("10.1.3.2"), 1);
+        R3_IP_IF_MAP.put(InetAddressUtils.addr("10.1.4.1"), 2);
+        R3_IP_IF_MAP.put(InetAddressUtils.addr("10.1.5.2"), 3);
+        R3_IF_NETMASK_MAP.put(1, InetAddressUtils.addr("255.255.255.0"));
+        R3_IF_NETMASK_MAP.put(2, InetAddressUtils.addr("255.255.255.0"));
+        R3_IF_NETMASK_MAP.put(3, InetAddressUtils.addr("255.255.255.0"));
+        R4_IP_IF_MAP.put(InetAddressUtils.addr("10.1.4.2"), 1);
+        R4_IF_NETMASK_MAP.put(1, InetAddressUtils.addr("255.255.255.0"));
+
     	R1_IF_IFNAME_MAP.put(1, "Fa0/0");
     	R1_IF_IFDESCR_MAP.put(1, "FastEthernet0/0");
     	R1_IF_IFNAME_MAP.put(2, "Fa0/1");

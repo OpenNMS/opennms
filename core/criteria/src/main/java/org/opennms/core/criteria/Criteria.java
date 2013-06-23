@@ -133,6 +133,7 @@ public class Criteria implements Cloneable {
     }
 
     public void setOrders(final Collection<? extends Order> orderCollection) {
+        if (m_orders == orderCollection) return;
         m_orders.clear();
         if (orderCollection != null) {
             m_orders.addAll(orderCollection);
@@ -144,6 +145,7 @@ public class Criteria implements Cloneable {
     }
 
     public void setFetchTypes(final Collection<? extends Fetch> fetchTypes) {
+        if (m_fetchTypes == fetchTypes) return;
         m_fetchTypes.clear();
         m_fetchTypes.addAll(fetchTypes);
     }
@@ -153,6 +155,7 @@ public class Criteria implements Cloneable {
     }
 
     public void setAliases(final Collection<? extends Alias> aliases) {
+        if (m_aliases == aliases) return;
         m_aliases.clear();
         m_aliases.addAll(aliases);
     }
@@ -162,6 +165,7 @@ public class Criteria implements Cloneable {
     }
 
     public void setRestrictions(Collection<? extends Restriction> restrictions) {
+        if (m_restrictions == restrictions) return;
         m_restrictions.clear();
         m_restrictions.addAll(restrictions);
     }

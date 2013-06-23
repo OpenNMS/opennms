@@ -29,6 +29,7 @@
 package org.opennms.netmgt.provision.persist;
 
 import java.net.URL;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -127,6 +128,12 @@ public class MockForeignSourceRepository extends AbstractForeignSourceRepository
     @Override
     public void delete(final Requisition requisition) throws ForeignSourceRepositoryException {
         m_requisitions.remove(requisition.getForeignSource());
+    }
+
+    @Override
+    public Date getRequisitionDate(final String foreignSource) {
+        final Requisition requisition = m_requisitions.get(foreignSource);
+        return requisition == null? null : requisition.getDate();
     }
 
     @Override

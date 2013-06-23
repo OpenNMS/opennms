@@ -169,6 +169,9 @@ public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterfac
         }
     }
 
+    /**
+     * This function should be kept similar to {@link OnmsNode#getPrimaryInterface()}.
+     */
     @Override
     public OnmsIpInterface findPrimaryInterfaceByNodeId(final Integer nodeId) {
         Assert.notNull(nodeId, "nodeId cannot be null");

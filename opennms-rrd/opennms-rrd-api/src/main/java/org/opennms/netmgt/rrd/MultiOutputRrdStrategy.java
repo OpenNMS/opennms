@@ -69,7 +69,8 @@ public class MultiOutputRrdStrategy implements RrdStrategy<List<Object>,List<Obj
      *
      * @param delegates a {@link java.util.List} object.
      */
-    public void setDelegates(List<RrdStrategy<Object, Object>> delegates) {
+    public void setDelegates(final List<RrdStrategy<Object, Object>> delegates) {
+        if (m_strategies == delegates) return;
         m_strategies.clear();
         m_strategies.addAll(delegates);
     }

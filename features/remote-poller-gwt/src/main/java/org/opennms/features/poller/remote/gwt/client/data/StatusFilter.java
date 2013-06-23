@@ -56,6 +56,7 @@ public class StatusFilter implements LocationFilter {
     }
 
     public void setStatuses(Set<Status> statuses) {
+        if (m_selectedStatuses == statuses) return;
         m_selectedStatuses.clear();
         m_selectedStatuses.addAll(statuses);
         

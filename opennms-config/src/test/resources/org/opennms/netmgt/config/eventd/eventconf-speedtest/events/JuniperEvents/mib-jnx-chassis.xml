@@ -1,0 +1,1713 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<?meta name="GENERATOR" content="XML::Smart/1.6.9 Perl/5.008008 [linux]" ?>
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.4.1</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>1</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxPowerSupplyFailure</uei>
+    <event-label>JUNIPER-MIB defined trap event: jnxPowerSupplyFailure</event-label>
+    <descr><![CDATA[
+<p>A jnxPowerSupplyFailure trap signifies that
+the SNMP entity, acting in an agent role, has
+detected that the specified power supply in the
+chassis has been in the failure (bad DC output) 
+condition.</p><table>
+	<tr><td><b>
+
+	jnxContentsContainerIndex</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxContentsL1Index</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxContentsL2Index</b></td><td>
+	%parm[#3]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxContentsL3Index</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxContentsDescr</b></td><td>
+	%parm[#5]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxOperatingState</b></td><td>
+	%parm[#6]%;</td><td><p>
+		unknown(1)
+		running(2)
+		ready(3)
+		reset(4)
+		runningAtFullSpeed(5)
+		down(6)
+		standby(7)
+	</p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxPowerSupplyFailure trap received 
+			jnxContentsContainerIndex=%parm[#1]% 
+			jnxContentsL1Index=%parm[#2]% 
+			jnxContentsL2Index=%parm[#3]% 
+			jnxContentsL3Index=%parm[#4]% 
+			jnxContentsDescr=%parm[#5]% 
+			jnxOperatingState=%parm[#6]%</p>
+		]]></logmsg>
+    <severity>Critical</severity>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxPowerSupplyOK:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.4.1</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>2</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxFanFailure</uei>
+    <event-label>JUNIPER-MIB defined trap event: jnxFanFailure</event-label>
+    <descr><![CDATA[
+<p>A jnxFanFailure trap signifies that the SNMP
+entity, acting in an agent role, has detected
+that the specified cooling fan or impeller in 
+the chassis has been in the failure (not spinning) 
+condition.</p><table>
+	<tr><td><b>
+
+	jnxContentsContainerIndex</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxContentsL1Index</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxContentsL2Index</b></td><td>
+	%parm[#3]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxContentsL3Index</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxContentsDescr</b></td><td>
+	%parm[#5]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxOperatingState</b></td><td>
+	%parm[#6]%;</td><td><p>
+		unknown(1)
+		running(2)
+		ready(3)
+		reset(4)
+		runningAtFullSpeed(5)
+		down(6)
+		standby(7)
+	</p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxFanFailure trap received 
+			jnxContentsContainerIndex=%parm[#1]% 
+			jnxContentsL1Index=%parm[#2]% 
+			jnxContentsL2Index=%parm[#3]% 
+			jnxContentsL3Index=%parm[#4]% 
+			jnxContentsDescr=%parm[#5]% 
+			jnxOperatingState=%parm[#6]%</p>
+		]]></logmsg>
+    <severity>Critical</severity>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.4.1</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>3</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxOverTemperature</uei>
+    <event-label>JUNIPER-MIB defined trap event: jnxOverTemperature</event-label>
+    <descr><![CDATA[
+<p>A jnxOverTemperature trap signifies that the 
+SNMP entity, acting in an agent role, has 
+detected that the specified hardware component
+in the chassis has experienced over temperature
+condition.</p><table>
+	<tr><td><b>
+
+	jnxContentsContainerIndex</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxContentsL1Index</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxContentsL2Index</b></td><td>
+	%parm[#3]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxContentsL3Index</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxContentsDescr</b></td><td>
+	%parm[#5]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxOperatingTemp</b></td><td>
+	%parm[#6]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxOverTemperature trap received 
+			jnxContentsContainerIndex=%parm[#1]% 
+			jnxContentsL1Index=%parm[#2]% 
+			jnxContentsL2Index=%parm[#3]% 
+			jnxContentsL3Index=%parm[#4]% 
+			jnxContentsDescr=%parm[#5]% 
+			jnxOperatingTemp=%parm[#6]%</p>
+		]]></logmsg>
+    <severity>Major</severity>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.4.1</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>4</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxRedundancySwitchover</uei>
+    <event-label>JUNIPER-MIB defined trap event: jnxRedundancySwitchover</event-label>
+    <descr><![CDATA[
+<p>A jnxRedundancySwitchover trap signifies that 
+the SNMP entity, acting in an agent role, has 
+detected that the specified hardware component
+in the chassis has experienced a redundancy 
+switchover event defined as a change in state
+of jnxRedundancyState from master to backup or
+vice versa.</p><table>
+	<tr><td><b>
+
+	jnxRedundancyContentsIndex</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxRedundancyL1Index</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxRedundancyL2Index</b></td><td>
+	%parm[#3]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxRedundancyL3Index</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxRedundancyDescr</b></td><td>
+	%parm[#5]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxRedundancyConfig</b></td><td>
+	%parm[#6]%;</td><td><p>
+		unknown(1)
+		master(2)
+		backup(3)
+		disabled(4)
+		notApplicable(5)
+	</p></td></tr>
+	<tr><td><b>
+
+	jnxRedundancyState</b></td><td>
+	%parm[#7]%;</td><td><p>
+		unknown(1)
+		master(2)
+		backup(3)
+		disabled(4)
+	</p></td></tr>
+	<tr><td><b>
+
+	jnxRedundancySwitchoverCount</b></td><td>
+	%parm[#8]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxRedundancySwitchoverTime</b></td><td>
+	%parm[#9]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxRedundancySwitchoverReason</b></td><td>
+	%parm[#10]%;</td><td><p>
+		other(1)
+		neverSwitched(2)
+		userSwitched(3)
+		autoSwitched(4)
+	</p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxRedundancySwitchover trap received 
+			jnxRedundancyContentsIndex=%parm[#1]% 
+			jnxRedundancyL1Index=%parm[#2]% 
+			jnxRedundancyL2Index=%parm[#3]% 
+			jnxRedundancyL3Index=%parm[#4]% 
+			jnxRedundancyDescr=%parm[#5]% 
+			jnxRedundancyConfig=%parm[#6]% 
+			jnxRedundancyState=%parm[#7]% 
+			jnxRedundancySwitchoverCount=%parm[#8]% 
+			jnxRedundancySwitchoverTime=%parm[#9]% 
+			jnxRedundancySwitchoverReason=%parm[#10]%</p>
+		]]></logmsg>
+    <severity>Indeterminate</severity>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.4.1</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>5</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxFruRemoval</uei>
+    <event-label>JUNIPER-MIB defined trap event: jnxFruRemoval</event-label>
+    <descr><![CDATA[
+<p>A jnxFruRemoval trap signifies that the SNMP 
+entity, acting in an agent role, has detected 
+that the specified FRU (Field Replaceable Unit)
+has been removed from the chassis.</p><table>
+	<tr><td><b>
+
+	jnxFruContentsIndex</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxFruL1Index</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxFruL2Index</b></td><td>
+	%parm[#3]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxFruL3Index</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxFruName</b></td><td>
+	%parm[#5]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxFruType</b></td><td>
+	%parm[#6]%;</td><td><p>
+		other(1)
+		clockGenerator(2)
+		flexiblePicConcentrator(3)
+		switchingAndForwardingModule(4)
+		controlBoard(5)
+		routingEngine(6)
+		powerEntryModule(7)
+		frontPanelModule(8)
+		switchInterfaceBoard(9)
+		processorMezzanineBoardForSIB(10)
+		portInterfaceCard(11)
+		craftInterfacePanel(12)
+		fan(13)
+		lineCardChassis(14)
+		forwardingEngineBoard(15)
+		protectedSystemDomain(16)
+	</p></td></tr>
+	<tr><td><b>
+
+	jnxFruSlot</b></td><td>
+	%parm[#7]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxFruRemoval trap received 
+			jnxFruContentsIndex=%parm[#1]% 
+			jnxFruL1Index=%parm[#2]% 
+			jnxFruL2Index=%parm[#3]% 
+			jnxFruL3Index=%parm[#4]% 
+			jnxFruName=%parm[#5]% 
+			jnxFruType=%parm[#6]% 
+			jnxFruSlot=%parm[#7]%</p>
+		]]></logmsg>
+    <severity>Major</severity>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%:%parm[#7]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.4.1</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxFruInsertion</uei>
+    <event-label>JUNIPER-MIB defined trap event: jnxFruInsertion</event-label>
+    <descr><![CDATA[
+<p>A jnxFruInsertion trap signifies that the SNMP 
+entity,	acting in an agent role, has detected that
+the specified FRU (Field Replaceable Unit) has been 
+inserted into the chassis.</p><table>
+	<tr><td><b>
+
+	jnxFruContentsIndex</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxFruL1Index</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxFruL2Index</b></td><td>
+	%parm[#3]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxFruL3Index</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxFruName</b></td><td>
+	%parm[#5]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxFruType</b></td><td>
+	%parm[#6]%;</td><td><p>
+		other(1)
+		clockGenerator(2)
+		flexiblePicConcentrator(3)
+		switchingAndForwardingModule(4)
+		controlBoard(5)
+		routingEngine(6)
+		powerEntryModule(7)
+		frontPanelModule(8)
+		switchInterfaceBoard(9)
+		processorMezzanineBoardForSIB(10)
+		portInterfaceCard(11)
+		craftInterfacePanel(12)
+		fan(13)
+		lineCardChassis(14)
+		forwardingEngineBoard(15)
+		protectedSystemDomain(16)
+	</p></td></tr>
+	<tr><td><b>
+
+	jnxFruSlot</b></td><td>
+	%parm[#7]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxFruInsertion trap received 
+			jnxFruContentsIndex=%parm[#1]% 
+			jnxFruL1Index=%parm[#2]% 
+			jnxFruL2Index=%parm[#3]% 
+			jnxFruL3Index=%parm[#4]% 
+			jnxFruName=%parm[#5]% 
+			jnxFruType=%parm[#6]% 
+			jnxFruSlot=%parm[#7]%</p>
+		]]></logmsg>
+    <severity>Cleared</severity>
+    <alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%:%parm[#7]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxFruRemoval:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%:%parm[#7]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.4.1</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>7</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxFruPowerOff</uei>
+    <event-label>JUNIPER-MIB defined trap event: jnxFruPowerOff</event-label>
+    <descr><![CDATA[
+<p>A jnxFruPowerOff trap signifies that the SNMP 
+entity, acting in an agent role, has detected 
+that the specified FRU (Field Replaceable Unit)
+has been powered off in the chassis.</p><table>
+	<tr><td><b>
+
+	jnxFruContentsIndex</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxFruL1Index</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxFruL2Index</b></td><td>
+	%parm[#3]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxFruL3Index</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxFruName</b></td><td>
+	%parm[#5]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxFruType</b></td><td>
+	%parm[#6]%;</td><td><p>
+		other(1)
+		clockGenerator(2)
+		flexiblePicConcentrator(3)
+		switchingAndForwardingModule(4)
+		controlBoard(5)
+		routingEngine(6)
+		powerEntryModule(7)
+		frontPanelModule(8)
+		switchInterfaceBoard(9)
+		processorMezzanineBoardForSIB(10)
+		portInterfaceCard(11)
+		craftInterfacePanel(12)
+		fan(13)
+		lineCardChassis(14)
+		forwardingEngineBoard(15)
+		protectedSystemDomain(16)
+	</p></td></tr>
+	<tr><td><b>
+
+	jnxFruSlot</b></td><td>
+	%parm[#7]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxFruOfflineReason</b></td><td>
+	%parm[#8]%;</td><td><p>
+		unknown(1)
+		none(2)
+		error(3)
+		noPower(4)
+		configPowerOff(5)
+		configHoldInReset(6)
+		cliCommand(7)
+		buttonPress(8)
+		cliRestart(9)
+		overtempShutdown(10)
+		masterClockDown(11)
+		singleSfmModeChange(12)
+		packetSchedulingModeChange(13)
+		physicalRemoval(14)
+		unresponsiveRestart(15)
+		sonetClockAbsent(16)
+		rddPowerOff(17)
+		majorErrors(18)
+		minorErrors(19)
+		lccHardRestart(20)
+		lccVersionMismatch(21)
+		powerCycle(22)
+		reconnect(23)
+		overvoltage(24)
+		pfeVersionMismatch(25)
+		febRddCfgChange(26)
+		fpcMisconfig(27)
+		fruReconnectFail(28)
+		fruFwddReset(29)
+		fruFebSwitch(30)
+		fruFebOffline(31)
+		fruInServSoftUpgradeError(32)
+		fruChasdPowerRatingExceed(33)
+		fruConfigOffline(34)
+		fruServiceRestartRequest(35)
+		spuResetRequest(36)
+		spuFlowdDown(37)
+		spuSpi4Down(38)
+		spuWatchdogTimeout(39)
+		spuCoreDump(40)
+		fpgaSpi4LinkDown(41)
+		i3Spi4LinkDown(42)
+		cppDisconnect(43)
+		cpuNotBoot(44)
+		spuCoreDumpComplete(45)
+		rstOnSpcSpuFailure(46)
+		softRstOnSpcSpuFailure(47)
+		hwAuthenticationFailure(48)
+		reconnectFpcFail(49)
+		fpcAppFailed(50)
+		fpcKernelCrash(51)
+		spuFlowdDownNoCore(52)
+		spuFlowdCoreDumpIncomplete(53)
+		spuFlowdCoreDumpComplete(54)
+		spuIdpdDownNoCore(55)
+		spuIdpdCoreDumpIncomplete(56)
+		spuIdpdCoreDumpComplete(57)
+		spuCoreDumpIncomplete(58)
+		spuIdpdDown(59)
+		fruPfeReset(60)
+		fruReconnectNotReady(61)
+		fruSfLinkDown(62)
+		fruFabricDown(63)
+		antiCounterfeitRetry(64)
+		chassisClusterDisable(65)
+		spuFipsError(66)
+	</p></td></tr>
+	<tr><td><b>
+
+	jnxFruLastPowerOff</b></td><td>
+	%parm[#9]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxFruLastPowerOn</b></td><td>
+	%parm[#10]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxFruPowerOff trap received 
+			jnxFruContentsIndex=%parm[#1]% 
+			jnxFruL1Index=%parm[#2]% 
+			jnxFruL2Index=%parm[#3]% 
+			jnxFruL3Index=%parm[#4]% 
+			jnxFruName=%parm[#5]% 
+			jnxFruType=%parm[#6]% 
+			jnxFruSlot=%parm[#7]% 
+			jnxFruOfflineReason=%parm[#8]% 
+			jnxFruLastPowerOff=%parm[#9]% 
+			jnxFruLastPowerOn=%parm[#10]%</p>
+		]]></logmsg>
+    <severity>Major</severity>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%:%parm[#7]%:%parm[#8]%:%parm[#9]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.4.1</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>8</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxFruPowerOn</uei>
+    <event-label>JUNIPER-MIB defined trap event: jnxFruPowerOn</event-label>
+    <descr><![CDATA[
+<p>A jnxFruPowerOn trap signifies that the SNMP 
+entity,	acting in an agent role, has detected that
+the specified FRU (Field Replaceable Unit) has been 
+powered on in the chassis.</p><table>
+	<tr><td><b>
+
+	jnxFruContentsIndex</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxFruL1Index</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxFruL2Index</b></td><td>
+	%parm[#3]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxFruL3Index</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxFruName</b></td><td>
+	%parm[#5]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxFruType</b></td><td>
+	%parm[#6]%;</td><td><p>
+		other(1)
+		clockGenerator(2)
+		flexiblePicConcentrator(3)
+		switchingAndForwardingModule(4)
+		controlBoard(5)
+		routingEngine(6)
+		powerEntryModule(7)
+		frontPanelModule(8)
+		switchInterfaceBoard(9)
+		processorMezzanineBoardForSIB(10)
+		portInterfaceCard(11)
+		craftInterfacePanel(12)
+		fan(13)
+		lineCardChassis(14)
+		forwardingEngineBoard(15)
+		protectedSystemDomain(16)
+	</p></td></tr>
+	<tr><td><b>
+
+	jnxFruSlot</b></td><td>
+	%parm[#7]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxFruOfflineReason</b></td><td>
+	%parm[#8]%;</td><td><p>
+		unknown(1)
+		none(2)
+		error(3)
+		noPower(4)
+		configPowerOff(5)
+		configHoldInReset(6)
+		cliCommand(7)
+		buttonPress(8)
+		cliRestart(9)
+		overtempShutdown(10)
+		masterClockDown(11)
+		singleSfmModeChange(12)
+		packetSchedulingModeChange(13)
+		physicalRemoval(14)
+		unresponsiveRestart(15)
+		sonetClockAbsent(16)
+		rddPowerOff(17)
+		majorErrors(18)
+		minorErrors(19)
+		lccHardRestart(20)
+		lccVersionMismatch(21)
+		powerCycle(22)
+		reconnect(23)
+		overvoltage(24)
+		pfeVersionMismatch(25)
+		febRddCfgChange(26)
+		fpcMisconfig(27)
+		fruReconnectFail(28)
+		fruFwddReset(29)
+		fruFebSwitch(30)
+		fruFebOffline(31)
+		fruInServSoftUpgradeError(32)
+		fruChasdPowerRatingExceed(33)
+		fruConfigOffline(34)
+		fruServiceRestartRequest(35)
+		spuResetRequest(36)
+		spuFlowdDown(37)
+		spuSpi4Down(38)
+		spuWatchdogTimeout(39)
+		spuCoreDump(40)
+		fpgaSpi4LinkDown(41)
+		i3Spi4LinkDown(42)
+		cppDisconnect(43)
+		cpuNotBoot(44)
+		spuCoreDumpComplete(45)
+		rstOnSpcSpuFailure(46)
+		softRstOnSpcSpuFailure(47)
+		hwAuthenticationFailure(48)
+		reconnectFpcFail(49)
+		fpcAppFailed(50)
+		fpcKernelCrash(51)
+		spuFlowdDownNoCore(52)
+		spuFlowdCoreDumpIncomplete(53)
+		spuFlowdCoreDumpComplete(54)
+		spuIdpdDownNoCore(55)
+		spuIdpdCoreDumpIncomplete(56)
+		spuIdpdCoreDumpComplete(57)
+		spuCoreDumpIncomplete(58)
+		spuIdpdDown(59)
+		fruPfeReset(60)
+		fruReconnectNotReady(61)
+		fruSfLinkDown(62)
+		fruFabricDown(63)
+		antiCounterfeitRetry(64)
+		chassisClusterDisable(65)
+		spuFipsError(66)
+	</p></td></tr>
+	<tr><td><b>
+
+	jnxFruLastPowerOff</b></td><td>
+	%parm[#9]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxFruLastPowerOn</b></td><td>
+	%parm[#10]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxFruPowerOn trap received 
+			jnxFruContentsIndex=%parm[#1]% 
+			jnxFruL1Index=%parm[#2]% 
+			jnxFruL2Index=%parm[#3]% 
+			jnxFruL3Index=%parm[#4]% 
+			jnxFruName=%parm[#5]% 
+			jnxFruType=%parm[#6]% 
+			jnxFruSlot=%parm[#7]% 
+			jnxFruOfflineReason=%parm[#8]% 
+			jnxFruLastPowerOff=%parm[#9]% 
+			jnxFruLastPowerOn=%parm[#10]%</p>
+		]]></logmsg>
+    <severity>Cleared</severity>
+    <alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%:%parm[#7]%:%parm[#8]%:%parm[#9]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxFruPowerOff:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%:%parm[#7]%:%parm[#8]%:%parm[#9]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.4.1</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>9</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxFruFailed</uei>
+    <event-label>JUNIPER-MIB defined trap event: jnxFruFailed</event-label>
+    <descr><![CDATA[
+<p>This indicates the specified FRU (Field Replaceable Unit)
+has failed in the chassis. Most probably this is due toi
+some hard error such as fru is not powering up or not
+able to load ukernel. In these cases, fru is replaced.</p><table>
+	<tr><td><b>
+
+	jnxFruContentsIndex</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxFruL1Index</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxFruL2Index</b></td><td>
+	%parm[#3]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxFruL3Index</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxFruName</b></td><td>
+	%parm[#5]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxFruType</b></td><td>
+	%parm[#6]%;</td><td><p>
+		other(1)
+		clockGenerator(2)
+		flexiblePicConcentrator(3)
+		switchingAndForwardingModule(4)
+		controlBoard(5)
+		routingEngine(6)
+		powerEntryModule(7)
+		frontPanelModule(8)
+		switchInterfaceBoard(9)
+		processorMezzanineBoardForSIB(10)
+		portInterfaceCard(11)
+		craftInterfacePanel(12)
+		fan(13)
+		lineCardChassis(14)
+		forwardingEngineBoard(15)
+		protectedSystemDomain(16)
+	</p></td></tr>
+	<tr><td><b>
+
+	jnxFruSlot</b></td><td>
+	%parm[#7]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxFruFailed trap received 
+			jnxFruContentsIndex=%parm[#1]% 
+			jnxFruL1Index=%parm[#2]% 
+			jnxFruL2Index=%parm[#3]% 
+			jnxFruL3Index=%parm[#4]% 
+			jnxFruName=%parm[#5]% 
+			jnxFruType=%parm[#6]% 
+			jnxFruSlot=%parm[#7]%</p>
+		]]></logmsg>
+    <severity>Critical</severity>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%:%parm[#7]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.4.1</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>10</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxFruOffline</uei>
+    <event-label>JUNIPER-MIB defined trap event: jnxFruOffline</event-label>
+    <descr><![CDATA[
+<p>A jnxFruOffline trap signifies that the SNMP
+entity, acting in an agent role, has detected
+that the specified FRU (Field Replaceable Unit)
+has gone offline in the chassis.</p><table>
+	<tr><td><b>
+
+	jnxFruContentsIndex</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxFruL1Index</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxFruL2Index</b></td><td>
+	%parm[#3]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxFruL3Index</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxFruName</b></td><td>
+	%parm[#5]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxFruType</b></td><td>
+	%parm[#6]%;</td><td><p>
+		other(1)
+		clockGenerator(2)
+		flexiblePicConcentrator(3)
+		switchingAndForwardingModule(4)
+		controlBoard(5)
+		routingEngine(6)
+		powerEntryModule(7)
+		frontPanelModule(8)
+		switchInterfaceBoard(9)
+		processorMezzanineBoardForSIB(10)
+		portInterfaceCard(11)
+		craftInterfacePanel(12)
+		fan(13)
+		lineCardChassis(14)
+		forwardingEngineBoard(15)
+		protectedSystemDomain(16)
+	</p></td></tr>
+	<tr><td><b>
+
+	jnxFruSlot</b></td><td>
+	%parm[#7]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxFruOfflineReason</b></td><td>
+	%parm[#8]%;</td><td><p>
+		unknown(1)
+		none(2)
+		error(3)
+		noPower(4)
+		configPowerOff(5)
+		configHoldInReset(6)
+		cliCommand(7)
+		buttonPress(8)
+		cliRestart(9)
+		overtempShutdown(10)
+		masterClockDown(11)
+		singleSfmModeChange(12)
+		packetSchedulingModeChange(13)
+		physicalRemoval(14)
+		unresponsiveRestart(15)
+		sonetClockAbsent(16)
+		rddPowerOff(17)
+		majorErrors(18)
+		minorErrors(19)
+		lccHardRestart(20)
+		lccVersionMismatch(21)
+		powerCycle(22)
+		reconnect(23)
+		overvoltage(24)
+		pfeVersionMismatch(25)
+		febRddCfgChange(26)
+		fpcMisconfig(27)
+		fruReconnectFail(28)
+		fruFwddReset(29)
+		fruFebSwitch(30)
+		fruFebOffline(31)
+		fruInServSoftUpgradeError(32)
+		fruChasdPowerRatingExceed(33)
+		fruConfigOffline(34)
+		fruServiceRestartRequest(35)
+		spuResetRequest(36)
+		spuFlowdDown(37)
+		spuSpi4Down(38)
+		spuWatchdogTimeout(39)
+		spuCoreDump(40)
+		fpgaSpi4LinkDown(41)
+		i3Spi4LinkDown(42)
+		cppDisconnect(43)
+		cpuNotBoot(44)
+		spuCoreDumpComplete(45)
+		rstOnSpcSpuFailure(46)
+		softRstOnSpcSpuFailure(47)
+		hwAuthenticationFailure(48)
+		reconnectFpcFail(49)
+		fpcAppFailed(50)
+		fpcKernelCrash(51)
+		spuFlowdDownNoCore(52)
+		spuFlowdCoreDumpIncomplete(53)
+		spuFlowdCoreDumpComplete(54)
+		spuIdpdDownNoCore(55)
+		spuIdpdCoreDumpIncomplete(56)
+		spuIdpdCoreDumpComplete(57)
+		spuCoreDumpIncomplete(58)
+		spuIdpdDown(59)
+		fruPfeReset(60)
+		fruReconnectNotReady(61)
+		fruSfLinkDown(62)
+		fruFabricDown(63)
+		antiCounterfeitRetry(64)
+		chassisClusterDisable(65)
+		spuFipsError(66)
+	</p></td></tr>
+	<tr><td><b>
+
+	jnxFruLastPowerOff</b></td><td>
+	%parm[#9]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxFruLastPowerOn</b></td><td>
+	%parm[#10]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxFruOffline trap received 
+			jnxFruContentsIndex=%parm[#1]% 
+			jnxFruL1Index=%parm[#2]% 
+			jnxFruL2Index=%parm[#3]% 
+			jnxFruL3Index=%parm[#4]% 
+			jnxFruName=%parm[#5]% 
+			jnxFruType=%parm[#6]% 
+			jnxFruSlot=%parm[#7]% 
+			jnxFruOfflineReason=%parm[#8]% 
+			jnxFruLastPowerOff=%parm[#9]% 
+			jnxFruLastPowerOn=%parm[#10]%</p>
+		]]></logmsg>
+    <severity>Major</severity>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%:%parm[#7]%:%parm[#8]%:%parm[#9]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.4.1</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>11</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxFruOnline</uei>
+    <event-label>JUNIPER-MIB defined trap event: jnxFruOnline</event-label>
+    <descr><![CDATA[
+<p>A jnxFruOnline trap signifies that the SNMP
+entity, acting in an agent role, has detected that
+the specified FRU (Field Replaceable Unit) has
+gone online in the chassis.</p><table>
+	<tr><td><b>
+
+	jnxFruContentsIndex</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxFruL1Index</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxFruL2Index</b></td><td>
+	%parm[#3]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxFruL3Index</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxFruName</b></td><td>
+	%parm[#5]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxFruType</b></td><td>
+	%parm[#6]%;</td><td><p>
+		other(1)
+		clockGenerator(2)
+		flexiblePicConcentrator(3)
+		switchingAndForwardingModule(4)
+		controlBoard(5)
+		routingEngine(6)
+		powerEntryModule(7)
+		frontPanelModule(8)
+		switchInterfaceBoard(9)
+		processorMezzanineBoardForSIB(10)
+		portInterfaceCard(11)
+		craftInterfacePanel(12)
+		fan(13)
+		lineCardChassis(14)
+		forwardingEngineBoard(15)
+		protectedSystemDomain(16)
+	</p></td></tr>
+	<tr><td><b>
+
+	jnxFruSlot</b></td><td>
+	%parm[#7]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxFruOnline trap received 
+			jnxFruContentsIndex=%parm[#1]% 
+			jnxFruL1Index=%parm[#2]% 
+			jnxFruL2Index=%parm[#3]% 
+			jnxFruL3Index=%parm[#4]% 
+			jnxFruName=%parm[#5]% 
+			jnxFruType=%parm[#6]% 
+			jnxFruSlot=%parm[#7]%</p>
+		]]></logmsg>
+    <severity>Cleared</severity>
+    <alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%:%parm[#7]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxFruOffline:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%:%parm[#7]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.4.1</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>12</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxFruCheck</uei>
+    <event-label>JUNIPER-MIB defined trap event: jnxFruCheck</event-label>
+    <descr><![CDATA[
+<p>A jnxFruCheck trap signifies that the SNMP
+entity, acting in an agent role, has detected that
+the specified FRU (Field Replaceable Unit) has
+encountered some operational errors and gone into
+check state in the chassis.</p><table>
+	<tr><td><b>
+
+	jnxFruContentsIndex</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxFruL1Index</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxFruL2Index</b></td><td>
+	%parm[#3]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxFruL3Index</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxFruName</b></td><td>
+	%parm[#5]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxFruType</b></td><td>
+	%parm[#6]%;</td><td><p>
+		other(1)
+		clockGenerator(2)
+		flexiblePicConcentrator(3)
+		switchingAndForwardingModule(4)
+		controlBoard(5)
+		routingEngine(6)
+		powerEntryModule(7)
+		frontPanelModule(8)
+		switchInterfaceBoard(9)
+		processorMezzanineBoardForSIB(10)
+		portInterfaceCard(11)
+		craftInterfacePanel(12)
+		fan(13)
+		lineCardChassis(14)
+		forwardingEngineBoard(15)
+		protectedSystemDomain(16)
+	</p></td></tr>
+	<tr><td><b>
+
+	jnxFruSlot</b></td><td>
+	%parm[#7]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxFruCheck trap received 
+			jnxFruContentsIndex=%parm[#1]% 
+			jnxFruL1Index=%parm[#2]% 
+			jnxFruL2Index=%parm[#3]% 
+			jnxFruL3Index=%parm[#4]% 
+			jnxFruName=%parm[#5]% 
+			jnxFruType=%parm[#6]% 
+			jnxFruSlot=%parm[#7]%</p>
+		]]></logmsg>
+    <severity>Minor</severity>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%:%parm[#7]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.4.1</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>13</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxFEBSwitchover</uei>
+    <event-label>JUNIPER-MIB defined trap event: jnxFEBSwitchover</event-label>
+    <descr><![CDATA[
+<p>A jnxFEBSwitchover trap signifies that the SNMP
+entity, acting in an agent role, has detected that
+the specified FEB (Forwarding Engine Board) has
+switched over.</p><table>
+	<tr><td><b>
+
+	jnxFruContentsIndex</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxFruL1Index</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxFruL2Index</b></td><td>
+	%parm[#3]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxFruL3Index</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxFruName</b></td><td>
+	%parm[#5]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxFruType</b></td><td>
+	%parm[#6]%;</td><td><p>
+		other(1)
+		clockGenerator(2)
+		flexiblePicConcentrator(3)
+		switchingAndForwardingModule(4)
+		controlBoard(5)
+		routingEngine(6)
+		powerEntryModule(7)
+		frontPanelModule(8)
+		switchInterfaceBoard(9)
+		processorMezzanineBoardForSIB(10)
+		portInterfaceCard(11)
+		craftInterfacePanel(12)
+		fan(13)
+		lineCardChassis(14)
+		forwardingEngineBoard(15)
+		protectedSystemDomain(16)
+	</p></td></tr>
+	<tr><td><b>
+
+	jnxFruSlot</b></td><td>
+	%parm[#7]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxFEBSwitchover trap received 
+			jnxFruContentsIndex=%parm[#1]% 
+			jnxFruL1Index=%parm[#2]% 
+			jnxFruL2Index=%parm[#3]% 
+			jnxFruL3Index=%parm[#4]% 
+			jnxFruName=%parm[#5]% 
+			jnxFruType=%parm[#6]% 
+			jnxFruSlot=%parm[#7]%</p>
+		]]></logmsg>
+    <severity>Major</severity>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%:%parm[#7]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.4.1</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>14</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxHardDiskFailed</uei>
+    <event-label>JUNIPER-MIB defined trap event: jnxHardDiskFailed</event-label>
+    <descr><![CDATA[
+<p>A jnxHardDiskFailed trap signifies that the SNMP
+entity, acting in an agent role, has detected that
+the Disk in the specified Routing Engine has
+encountered some operational errors and gone into
+failed state in the chassis.</p><table>
+	<tr><td><b>
+
+	jnxFruContentsIndex</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxFruL1Index</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxFruL2Index</b></td><td>
+	%parm[#3]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxFruL3Index</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxFruName</b></td><td>
+	%parm[#5]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxFruType</b></td><td>
+	%parm[#6]%;</td><td><p>
+		other(1)
+		clockGenerator(2)
+		flexiblePicConcentrator(3)
+		switchingAndForwardingModule(4)
+		controlBoard(5)
+		routingEngine(6)
+		powerEntryModule(7)
+		frontPanelModule(8)
+		switchInterfaceBoard(9)
+		processorMezzanineBoardForSIB(10)
+		portInterfaceCard(11)
+		craftInterfacePanel(12)
+		fan(13)
+		lineCardChassis(14)
+		forwardingEngineBoard(15)
+		protectedSystemDomain(16)
+	</p></td></tr>
+	<tr><td><b>
+
+	jnxFruSlot</b></td><td>
+	%parm[#7]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxHardDiskFailed trap received 
+			jnxFruContentsIndex=%parm[#1]% 
+			jnxFruL1Index=%parm[#2]% 
+			jnxFruL2Index=%parm[#3]% 
+			jnxFruL3Index=%parm[#4]% 
+			jnxFruName=%parm[#5]% 
+			jnxFruType=%parm[#6]% 
+			jnxFruSlot=%parm[#7]%</p>
+		]]></logmsg>
+    <severity>Critical</severity>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%:%parm[#7]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.4.1</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>15</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxHardDiskMissing</uei>
+    <event-label>JUNIPER-MIB defined trap event: jnxHardDiskMissing</event-label>
+    <descr><![CDATA[
+<p>A DiskMissing trap signifies that the SNMP
+entity, acting in an agent role, has detected that
+hard disk in the specified outing Engine is missing
+from boot device list.</p><table>
+	<tr><td><b>
+
+	jnxFruContentsIndex</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxFruL1Index</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxFruL2Index</b></td><td>
+	%parm[#3]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxFruL3Index</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxFruName</b></td><td>
+	%parm[#5]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxFruType</b></td><td>
+	%parm[#6]%;</td><td><p>
+		other(1)
+		clockGenerator(2)
+		flexiblePicConcentrator(3)
+		switchingAndForwardingModule(4)
+		controlBoard(5)
+		routingEngine(6)
+		powerEntryModule(7)
+		frontPanelModule(8)
+		switchInterfaceBoard(9)
+		processorMezzanineBoardForSIB(10)
+		portInterfaceCard(11)
+		craftInterfacePanel(12)
+		fan(13)
+		lineCardChassis(14)
+		forwardingEngineBoard(15)
+		protectedSystemDomain(16)
+	</p></td></tr>
+	<tr><td><b>
+
+	jnxFruSlot</b></td><td>
+	%parm[#7]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxHardDiskMissing trap received 
+			jnxFruContentsIndex=%parm[#1]% 
+			jnxFruL1Index=%parm[#2]% 
+			jnxFruL2Index=%parm[#3]% 
+			jnxFruL3Index=%parm[#4]% 
+			jnxFruName=%parm[#5]% 
+			jnxFruType=%parm[#6]% 
+			jnxFruSlot=%parm[#7]%</p>
+		]]></logmsg>
+    <severity>Critical</severity>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%:%parm[#7]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.4.2</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>1</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxPowerSupplyOK</uei>
+    <event-label>JUNIPER-MIB defined trap event: jnxPowerSupplyOK</event-label>
+    <descr><![CDATA[
+<p>A jnxPowerSupplyOK trap signifies that the 
+SNMP entity, acting in an agent role, has
+detected that the specified power supply in the
+chassis has recovered from the failure (bad DC output) 
+condition.</p><table>
+	<tr><td><b>
+
+	jnxContentsContainerIndex</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxContentsL1Index</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxContentsL2Index</b></td><td>
+	%parm[#3]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxContentsL3Index</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxContentsDescr</b></td><td>
+	%parm[#5]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxOperatingState</b></td><td>
+	%parm[#6]%;</td><td><p>
+		unknown(1)
+		running(2)
+		ready(3)
+		reset(4)
+		runningAtFullSpeed(5)
+		down(6)
+		standby(7)
+	</p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxPowerSupplyOK trap received 
+			jnxContentsContainerIndex=%parm[#1]% 
+			jnxContentsL1Index=%parm[#2]% 
+			jnxContentsL2Index=%parm[#3]% 
+			jnxContentsL3Index=%parm[#4]% 
+			jnxContentsDescr=%parm[#5]% 
+			jnxOperatingState=%parm[#6]%</p>
+		]]></logmsg>
+    <severity>Cleared</severity>
+    <alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxPowerSupplyFailure:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.4.2</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>2</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxFanOK</uei>
+    <event-label>JUNIPER-MIB defined trap event: jnxFanOK</event-label>
+    <descr><![CDATA[
+<p>A jnxFanOK trap signifies that the SNMP
+entity, acting in an agent role, has detected that
+the specified cooling fan or impeller in the chassis
+has recovered from the failure (not spinning) condition.</p><table>
+	<tr><td><b>
+
+	jnxContentsContainerIndex</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxContentsL1Index</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxContentsL2Index</b></td><td>
+	%parm[#3]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxContentsL3Index</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxContentsDescr</b></td><td>
+	%parm[#5]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxOperatingState</b></td><td>
+	%parm[#6]%;</td><td><p>
+		unknown(1)
+		running(2)
+		ready(3)
+		reset(4)
+		runningAtFullSpeed(5)
+		down(6)
+		standby(7)
+	</p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxFanOK trap received 
+			jnxContentsContainerIndex=%parm[#1]% 
+			jnxContentsL1Index=%parm[#2]% 
+			jnxContentsL2Index=%parm[#3]% 
+			jnxContentsL3Index=%parm[#4]% 
+			jnxContentsDescr=%parm[#5]% 
+			jnxOperatingState=%parm[#6]%</p>
+		]]></logmsg>
+    <severity>Cleared</severity>
+    <alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxFanFailure:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.4.2</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>3</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxTemperatureOK</uei>
+    <event-label>JUNIPER-MIB defined trap event: jnxTemperatureOK</event-label>
+    <descr><![CDATA[
+<p>A jnxTemperatureOK trap signifies that the 
+SNMP entity, acting in an agent role, has 
+detected that the specified hardware component
+in the chassis has recovered from over temperature
+condition.</p><table>
+	<tr><td><b>
+
+	jnxContentsContainerIndex</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxContentsL1Index</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxContentsL2Index</b></td><td>
+	%parm[#3]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxContentsL3Index</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxContentsDescr</b></td><td>
+	%parm[#5]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxOperatingTemp</b></td><td>
+	%parm[#6]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxTemperatureOK trap received 
+			jnxContentsContainerIndex=%parm[#1]% 
+			jnxContentsL1Index=%parm[#2]% 
+			jnxContentsL2Index=%parm[#3]% 
+			jnxContentsL3Index=%parm[#4]% 
+			jnxContentsDescr=%parm[#5]% 
+			jnxOperatingTemp=%parm[#6]%</p>
+		]]></logmsg>
+    <severity>Cleared</severity>
+    <alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxOverTemperature:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.4.2</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>4</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxFruOK</uei>
+    <event-label>JUNIPER-MIB defined trap event: jnxFruOK</event-label>
+    <descr><![CDATA[
+<p>A jnxFruOK trap signifies that the SNMP
+entity, acting in an agent role, has detected that
+the specified FRU (Field Replaceable Unit) has
+recovered from previous operational errors and it
+is in ok state in the chassis.</p><table>
+	<tr><td><b>
+
+	jnxFruContentsIndex</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxFruL1Index</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxFruL2Index</b></td><td>
+	%parm[#3]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxFruL3Index</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxFruName</b></td><td>
+	%parm[#5]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxFruType</b></td><td>
+	%parm[#6]%;</td><td><p>
+		other(1)
+		clockGenerator(2)
+		flexiblePicConcentrator(3)
+		switchingAndForwardingModule(4)
+		controlBoard(5)
+		routingEngine(6)
+		powerEntryModule(7)
+		frontPanelModule(8)
+		switchInterfaceBoard(9)
+		processorMezzanineBoardForSIB(10)
+		portInterfaceCard(11)
+		craftInterfacePanel(12)
+		fan(13)
+		lineCardChassis(14)
+		forwardingEngineBoard(15)
+		protectedSystemDomain(16)
+	</p></td></tr>
+	<tr><td><b>
+
+	jnxFruSlot</b></td><td>
+	%parm[#7]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxFruOK trap received 
+			jnxFruContentsIndex=%parm[#1]% 
+			jnxFruL1Index=%parm[#2]% 
+			jnxFruL2Index=%parm[#3]% 
+			jnxFruL3Index=%parm[#4]% 
+			jnxFruName=%parm[#5]% 
+			jnxFruType=%parm[#6]% 
+			jnxFruSlot=%parm[#7]%</p>
+		]]></logmsg>
+    <severity>Indeterminate</severity>
+  </event>
+</events>
+

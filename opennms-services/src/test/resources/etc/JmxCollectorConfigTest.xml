@@ -71,11 +71,11 @@
                 <attrib name="Foo1" alias="Foo1" type="gauge"/>
                 
                 <attrib name="TotalSwapSpaceSize" alias="OsTotalSwapSpace" type="gauge"/>
-                <attrib name="MaxFileDescriptorCount" alias="OsMaxFileDescCo" type="gauge"/>
+                <!-- <attrib name="MaxFileDescriptorCount" alias="OsMaxFileDescCo" type="gauge"/> -->
                 
                 <attrib name="Foo2" alias="Foo2" type="gauge"/>
                 
-                <attrib name="OpenFileDescriptorCount" alias="OsOpenFileDescCo" type="gauge"/>
+                <!-- <attrib name="OpenFileDescriptorCount" alias="OsOpenFileDescCo" type="gauge"/> -->
                 <attrib name="CommittedVirtualMemorySize" alias="OsCommittVMemSize" type="gauge"/>
                 
                 <attrib name="Foo3" alias="Foo3" type="gauge"/>
@@ -147,8 +147,8 @@
                 <attrib name="TotalPhysicalMemorySize" alias="OsTotalMemory" type="gauge"/>
                 <attrib name="FreeSwapSpaceSize" alias="OsFreeSwapSpace" type="gauge"/>
                 <attrib name="TotalSwapSpaceSize" alias="OsTotalSwapSpace" type="gauge"/>
-                <attrib name="MaxFileDescriptorCount" alias="OsMaxFileDescCo" type="gauge"/>
-                <attrib name="OpenFileDescriptorCount" alias="OsOpenFileDescCo" type="gauge"/>
+                <!-- <attrib name="MaxFileDescriptorCount" alias="OsMaxFileDescCo" type="gauge"/> -->
+                <!-- <attrib name="OpenFileDescriptorCount" alias="OsOpenFileDescCo" type="gauge"/> -->
                 <attrib name="CommittedVirtualMemorySize" alias="OsCommittVMemSize" type="gauge"/>
                 <attrib name="ProcessCpuTime" alias="OsProcessCpuTime" type="gauge"/>
                 <attrib name="AvailableProcessors" alias="OsAvailableCpus" type="gauge"/>
