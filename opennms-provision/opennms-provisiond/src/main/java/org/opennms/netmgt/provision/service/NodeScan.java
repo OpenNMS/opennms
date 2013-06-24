@@ -282,7 +282,7 @@ public class NodeScan implements RunInBatch {
                     t.schedule();
                     t.waitFor();
                     
-                    debugf(NodeScan.this, "Finished scanning node %d/%s/%s", getNodeId(), getForeignSource(), getForeignId());
+                    infof(NodeScan.this, "Finished scanning node %d/%s/%s", getNodeId(), getForeignSource(), getForeignId());
                 } catch (final InterruptedException e) {
                     warnf(NodeScan.this, e, "The node scan for node %d/%s/%s was interrupted", getNodeId(), getForeignSource(), getForeignId());
                     Thread.currentThread().interrupt();

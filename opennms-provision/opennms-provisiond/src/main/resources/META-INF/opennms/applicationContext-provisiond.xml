@@ -44,10 +44,15 @@
     <property name="poolSize" ref="writeThreads" />
   </bean>
 
+  <bean id="nodeScanExecutor" class="org.springframework.scheduling.concurrent.CustomizableThreadFactory">
+    <property name="threadNamePrefix" value="nodeScanExecutor-" />
+  </bean>
+
   <bean id="scheduledExecutor" class="org.opennms.core.concurrent.PausibleScheduledThreadPoolExecutor">
     <constructor-arg ref="rescanThreads" />
+    <constructor-arg ref="nodeScanExecutor" />
   </bean>
-  
+
   <bean id="taskCoordinator" class="org.opennms.core.tasks.DefaultTaskCoordinator">
     <constructor-arg value="Provisiond" />
   	<property name="defaultExecutor" value="scan" />
