@@ -1,0 +1,3983 @@
+<?xml version='1.0'?>
+<events>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.171.10.37.20.5.7.1.1</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>1</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/dlink/trapSSHLogin</uei>
+    <event-label>DWL-3200 defined trap event: trapSSHLogin</event-label>
+    <descr>
+                Received %parm[##]% parameters:
+                &lt;table&gt;
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            Parameter
+                        &lt;/th&gt;    
+                        &lt;th&gt;
+                            Value
+                        &lt;/th&gt;
+                    &lt;/tr&gt;
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%parm[%parm[name-#1]%]%%: trapAPMACaddr
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %parm[#1]%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%parm[%parm[name-#2]%]%%: trapAlarmLevel
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %parm[#2]%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%parm[%parm[name-#3]%]%%: trapPCIPAddr
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %parm[#3]%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%parm[%parm[name-#4]%]%%: swNotiResult
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %parm[#4]%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%eventid%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %eventid%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%uei%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %uei%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%source%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %source%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%time%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %time%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%dpname%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %dpname%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%nodeid%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %nodeid%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%nodelabel%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %nodelabel%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%host%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %host%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%interface%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %interface%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%interfaceresolv%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %interfaceresolv%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%service%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %service%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%severity%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %severity%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%snmphost%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %snmphost%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%id%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %id%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%idtext%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %idtext%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%ifalias%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %ifalias%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%generic%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %generic%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%specific%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %specific%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%community%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %community%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%version%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %version%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%snmp%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %snmp%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%operinstruct%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %operinstruct%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%mouseovertext%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %mouseovertext%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                &lt;/table&gt;    
+
+    </descr>
+    <logmsg dest='logndisplay'>SSH login from %parm[#3]% on %parm[#1]%.</logmsg>
+    <severity>Normal</severity>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.171.10.37.20.5.7.1.2</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>2</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/dlink/trapWebLogin</uei>
+    <event-label>DWL-3200 defined trap event: trapWebLogin</event-label>
+    <descr>
+                Received %parm[##]% parameters:
+                &lt;table&gt;
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            Parameter
+                        &lt;/th&gt;    
+                        &lt;th&gt;
+                            Value
+                        &lt;/th&gt;
+                    &lt;/tr&gt;
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%parm[%parm[name-#1]%]%%: trapAPMACaddr
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %parm[#1]%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%parm[%parm[name-#2]%]%%: trapAlarmLevel
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %parm[#2]%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%parm[%parm[name-#3]%]%%: trapPCIPAddr
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %parm[#3]%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%parm[%parm[name-#4]%]%%: swNotiResult
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %parm[#4]%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%eventid%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %eventid%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%uei%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %uei%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%source%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %source%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%time%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %time%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%dpname%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %dpname%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%nodeid%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %nodeid%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%nodelabel%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %nodelabel%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%host%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %host%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%interface%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %interface%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%interfaceresolv%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %interfaceresolv%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%service%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %service%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%severity%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %severity%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%snmphost%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %snmphost%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%id%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %id%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%idtext%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %idtext%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%ifalias%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %ifalias%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%generic%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %generic%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%specific%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %specific%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%community%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %community%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%version%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %version%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%snmp%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %snmp%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%operinstruct%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %operinstruct%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%mouseovertext%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %mouseovertext%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                &lt;/table&gt;    
+
+    </descr>
+    <logmsg dest='logndisplay'>Web login from %parm[#3]% on %parm[#1]%.</logmsg>
+    <severity>Normal</severity>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.171.10.37.20.5.7.1.3</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>3</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/dlink/trapTelLogin</uei>
+    <event-label>DWL-3200 defined trap event: trapTelLogin</event-label>
+    <descr>
+                Received %parm[##]% parameters:
+                &lt;table&gt;
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            Parameter
+                        &lt;/th&gt;    
+                        &lt;th&gt;
+                            Value
+                        &lt;/th&gt;
+                    &lt;/tr&gt;
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%parm[%parm[name-#1]%]%%: trapAPMACaddr
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %parm[#1]%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%parm[%parm[name-#2]%]%%: trapAlarmLevel
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %parm[#2]%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%parm[%parm[name-#3]%]%%: trapPCIPAddr
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %parm[#3]%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%parm[%parm[name-#4]%]%%: swNotiResult
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %parm[#4]%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%eventid%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %eventid%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%uei%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %uei%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%source%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %source%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%time%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %time%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%dpname%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %dpname%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%nodeid%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %nodeid%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%nodelabel%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %nodelabel%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%host%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %host%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%interface%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %interface%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%interfaceresolv%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %interfaceresolv%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%service%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %service%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%severity%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %severity%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%snmphost%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %snmphost%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%id%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %id%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%idtext%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %idtext%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%ifalias%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %ifalias%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%generic%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %generic%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%specific%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %specific%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%community%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %community%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%version%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %version%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%snmp%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %snmp%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%operinstruct%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %operinstruct%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%mouseovertext%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %mouseovertext%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                &lt;/table&gt;    
+
+    </descr>
+    <logmsg dest='logndisplay'>Telnet login from %parm[#3]% on %parm[#1]%.</logmsg>
+    <severity>Normal</severity>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.171.10.37.20.5.7.1.4</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>4</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/dlink/trapCPULoad</uei>
+    <event-label>DWL-3200 defined trap event: trapCPULoad</event-label>
+    <descr>
+                Received %parm[##]% parameters:
+                &lt;table&gt;
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            Parameter
+                        &lt;/th&gt;    
+                        &lt;th&gt;
+                            Value
+                        &lt;/th&gt;
+                    &lt;/tr&gt;
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%parm[%parm[name-#1]%]%%: trapAPMACaddr
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %parm[#1]%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%parm[%parm[name-#2]%]%%: trapAlarmLevel
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %parm[#2]%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%eventid%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %eventid%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%uei%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %uei%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%source%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %source%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%time%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %time%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%dpname%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %dpname%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%nodeid%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %nodeid%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%nodelabel%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %nodelabel%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%host%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %host%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%interface%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %interface%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%interfaceresolv%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %interfaceresolv%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%service%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %service%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%severity%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %severity%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%snmphost%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %snmphost%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%id%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %id%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%idtext%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %idtext%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%ifalias%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %ifalias%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%generic%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %generic%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%specific%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %specific%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%community%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %community%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%version%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %version%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%snmp%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %snmp%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%operinstruct%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %operinstruct%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%mouseovertext%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %mouseovertext%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                &lt;/table&gt;    
+
+    </descr>
+    <logmsg dest='logndisplay'>CPU load override.</logmsg>
+    <severity>Warning</severity>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.171.10.37.20.5.7.1.5</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>5</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/dlink/trapMEMPoor</uei>
+    <event-label>DWL-3200 defined trap event: trapMEMPoor</event-label>
+    <descr>
+                Received %parm[##]% parameters:
+                &lt;table&gt;
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            Parameter
+                        &lt;/th&gt;    
+                        &lt;th&gt;
+                            Value
+                        &lt;/th&gt;
+                    &lt;/tr&gt;
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%parm[%parm[name-#1]%]%%: trapAPMACaddr
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %parm[#1]%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%parm[%parm[name-#2]%]%%: trapAlarmLevel
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %parm[#2]%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%eventid%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %eventid%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%uei%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %uei%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%source%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %source%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%time%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %time%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%dpname%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %dpname%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%nodeid%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %nodeid%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%nodelabel%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %nodelabel%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%host%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %host%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%interface%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %interface%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%interfaceresolv%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %interfaceresolv%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%service%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %service%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%severity%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %severity%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%snmphost%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %snmphost%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%id%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %id%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%idtext%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %idtext%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%ifalias%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %ifalias%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%generic%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %generic%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%specific%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %specific%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%community%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %community%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%version%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %version%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%snmp%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %snmp%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%operinstruct%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %operinstruct%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%mouseovertext%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %mouseovertext%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                &lt;/table&gt;    
+
+    </descr>
+    <logmsg dest='logndisplay'>Memory is poor.</logmsg>
+    <severity>Major</severity>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.171.10.37.20.5.7.1.6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/dlink/trapAuthFail</uei>
+    <event-label>DWL-3200 defined trap event: trapAuthFail</event-label>
+    <descr>
+                Received %parm[##]% parameters:
+                &lt;table&gt;
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            Parameter
+                        &lt;/th&gt;    
+                        &lt;th&gt;
+                            Value
+                        &lt;/th&gt;
+                    &lt;/tr&gt;
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%parm[%parm[name-#1]%]%%: trapAPMACaddr
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %parm[#1]%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%parm[%parm[name-#2]%]%%: trapAlarmLevel
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %parm[#2]%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%parm[%parm[name-#3]%]%%: trapSTAMACaddr
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %parm[#3]%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%eventid%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %eventid%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%uei%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %uei%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%source%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %source%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%time%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %time%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%dpname%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %dpname%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%nodeid%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %nodeid%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%nodelabel%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %nodelabel%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%host%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %host%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%interface%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %interface%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%interfaceresolv%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %interfaceresolv%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%service%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %service%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%severity%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %severity%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%snmphost%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %snmphost%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%id%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %id%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%idtext%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %idtext%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%ifalias%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %ifalias%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%generic%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %generic%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%specific%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %specific%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%community%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %community%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%version%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %version%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%snmp%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %snmp%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%operinstruct%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %operinstruct%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%mouseovertext%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %mouseovertext%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                &lt;/table&gt;    
+
+    </descr>
+    <logmsg dest='logndisplay'>Authentication failed from %parm[#3]% on %parm[#1]%.</logmsg>
+    <severity>Warning</severity>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.171.10.37.20.5.7.1.7</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>7</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/dlink/trapWirelessLinkUP</uei>
+    <event-label>DWL-3200 defined trap event: trapWirelessLinkUP</event-label>
+    <descr>
+                Received %parm[##]% parameters:
+                &lt;table&gt;
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            Parameter
+                        &lt;/th&gt;    
+                        &lt;th&gt;
+                            Value
+                        &lt;/th&gt;
+                    &lt;/tr&gt;
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%parm[%parm[name-#1]%]%%: trapAlarmLevel
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %parm[#1]%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%parm[%parm[name-#2]%]%%: trapBand
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %parm[#2]%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%eventid%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %eventid%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%uei%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %uei%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%source%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %source%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%time%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %time%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%dpname%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %dpname%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%nodeid%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %nodeid%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%nodelabel%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %nodelabel%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%host%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %host%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%interface%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %interface%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%interfaceresolv%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %interfaceresolv%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%service%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %service%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%severity%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %severity%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%snmphost%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %snmphost%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%id%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %id%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%idtext%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %idtext%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%ifalias%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %ifalias%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%generic%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %generic%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%specific%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %specific%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%community%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %community%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%version%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %version%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%snmp%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %snmp%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%operinstruct%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %operinstruct%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%mouseovertext%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %mouseovertext%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                &lt;/table&gt;    
+
+    </descr>
+    <logmsg dest='logndisplay'>Wireless link is up.</logmsg>
+    <severity>Normal</severity>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.171.10.37.20.5.7.1.8</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>8</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/dlink/trapDeAuthAttack</uei>
+    <event-label>DWL-3200 defined trap event: trapDeAuthAttack</event-label>
+    <descr>
+                Received %parm[##]% parameters:
+                &lt;table&gt;
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            Parameter
+                        &lt;/th&gt;    
+                        &lt;th&gt;
+                            Value
+                        &lt;/th&gt;
+                    &lt;/tr&gt;
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%parm[%parm[name-#1]%]%%: trapAPMACaddr
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %parm[#1]%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%parm[%parm[name-#2]%]%%: trapAlarmLevel
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %parm[#2]%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%eventid%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %eventid%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%uei%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %uei%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%source%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %source%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%time%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %time%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%dpname%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %dpname%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%nodeid%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %nodeid%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%nodelabel%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %nodelabel%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%host%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %host%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%interface%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %interface%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%interfaceresolv%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %interfaceresolv%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%service%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %service%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%severity%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %severity%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%snmphost%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %snmphost%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%id%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %id%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%idtext%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %idtext%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%ifalias%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %ifalias%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%generic%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %generic%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%specific%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %specific%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%community%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %community%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%version%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %version%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%snmp%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %snmp%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%operinstruct%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %operinstruct%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%mouseovertext%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %mouseovertext%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                &lt;/table&gt;    
+
+    </descr>
+    <logmsg dest='logndisplay'>De-Authentication attack attack on %parm[#1]%.</logmsg>
+    <severity>Minor</severity>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.171.10.37.20.5.7.1.9</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>9</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/dlink/trapDeAssocAttack</uei>
+    <event-label>DWL-3200 defined trap event: trapDeAssocAttack</event-label>
+    <descr>
+                Received %parm[##]% parameters:
+                &lt;table&gt;
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            Parameter
+                        &lt;/th&gt;    
+                        &lt;th&gt;
+                            Value
+                        &lt;/th&gt;
+                    &lt;/tr&gt;
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%parm[%parm[name-#1]%]%%: trapAPMACaddr
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %parm[#1]%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%parm[%parm[name-#2]%]%%: trapAlarmLevel
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %parm[#2]%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%eventid%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %eventid%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%uei%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %uei%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%source%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %source%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%time%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %time%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%dpname%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %dpname%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%nodeid%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %nodeid%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%nodelabel%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %nodelabel%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%host%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %host%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%interface%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %interface%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%interfaceresolv%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %interfaceresolv%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%service%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %service%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%severity%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %severity%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%snmphost%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %snmphost%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%id%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %id%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%idtext%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %idtext%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%ifalias%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %ifalias%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%generic%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %generic%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%specific%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %specific%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%community%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %community%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%version%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %version%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%snmp%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %snmp%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%operinstruct%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %operinstruct%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%mouseovertext%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %mouseovertext%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                &lt;/table&gt;    
+
+    </descr>
+    <logmsg dest='logndisplay'>De-association attack on %parm[#1]%.</logmsg>
+    <severity>Minor</severity>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.171.10.37.20.5.7.1.10</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>10</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/dlink/trapBCastAttack</uei>
+    <event-label>DWL-3200 defined trap event: trapBCastAttack</event-label>
+    <descr>
+                Received %parm[##]% parameters:
+                &lt;table&gt;
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            Parameter
+                        &lt;/th&gt;    
+                        &lt;th&gt;
+                            Value
+                        &lt;/th&gt;
+                    &lt;/tr&gt;
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%parm[%parm[name-#1]%]%%: trapAPMACaddr
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %parm[#1]%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%parm[%parm[name-#2]%]%%: trapAlarmLevel
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %parm[#2]%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%eventid%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %eventid%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%uei%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %uei%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%source%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %source%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%time%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %time%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%dpname%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %dpname%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%nodeid%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %nodeid%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%nodelabel%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %nodelabel%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%host%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %host%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%interface%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %interface%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%interfaceresolv%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %interfaceresolv%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%service%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %service%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%severity%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %severity%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%snmphost%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %snmphost%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%id%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %id%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%idtext%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %idtext%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%ifalias%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %ifalias%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%generic%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %generic%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%specific%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %specific%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%community%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %community%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%version%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %version%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%snmp%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %snmp%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%operinstruct%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %operinstruct%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%mouseovertext%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %mouseovertext%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                &lt;/table&gt;    
+
+    </descr>
+    <logmsg dest='logndisplay'>Broadcast attack on %parm[#1]%.</logmsg>
+    <severity>Minor</severity>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.171.10.37.20.5.7.1.11</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>11</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/dlink/trapWebLogout</uei>
+    <event-label>DWL-3200 defined trap event: trapWebLogout</event-label>
+    <descr>
+                Received %parm[##]% parameters:
+                &lt;table&gt;
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            Parameter
+                        &lt;/th&gt;    
+                        &lt;th&gt;
+                            Value
+                        &lt;/th&gt;
+                    &lt;/tr&gt;
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%parm[%parm[name-#1]%]%%: trapAPMACaddr
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %parm[#1]%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%parm[%parm[name-#2]%]%%: trapAlarmLevel
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %parm[#2]%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%parm[%parm[name-#3]%]%%: trapPCIPAddr
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %parm[#3]%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%parm[%parm[name-#4]%]%%: swNotiResult
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %parm[#4]%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%eventid%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %eventid%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%uei%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %uei%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%source%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %source%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%time%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %time%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%dpname%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %dpname%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%nodeid%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %nodeid%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%nodelabel%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %nodelabel%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%host%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %host%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%interface%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %interface%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%interfaceresolv%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %interfaceresolv%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%service%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %service%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%severity%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %severity%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%snmphost%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %snmphost%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%id%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %id%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%idtext%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %idtext%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%ifalias%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %ifalias%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%generic%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %generic%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%specific%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %specific%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%community%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %community%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%version%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %version%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%snmp%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %snmp%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%operinstruct%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %operinstruct%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%mouseovertext%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %mouseovertext%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                &lt;/table&gt;    
+
+    </descr>
+    <logmsg dest='logndisplay'>Web user from %parm[#3]% logged out from %parm[#1]%.</logmsg>
+    <severity>Normal</severity>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.171.10.37.20.5.7.1.12</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>12</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/dlink/trapFWUpdate</uei>
+    <event-label>DWL-3200 defined trap event: trapFWUpdate</event-label>
+    <descr>
+                Received %parm[##]% parameters:
+                &lt;table&gt;
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            Parameter
+                        &lt;/th&gt;    
+                        &lt;th&gt;
+                            Value
+                        &lt;/th&gt;
+                    &lt;/tr&gt;
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%parm[%parm[name-#1]%]%%: swNotiResult
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %parm[#1]%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%eventid%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %eventid%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%uei%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %uei%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%source%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %source%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%time%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %time%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%dpname%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %dpname%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%nodeid%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %nodeid%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%nodelabel%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %nodelabel%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%host%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %host%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%interface%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %interface%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%interfaceresolv%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %interfaceresolv%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%service%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %service%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%severity%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %severity%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%snmphost%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %snmphost%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%id%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %id%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%idtext%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %idtext%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%ifalias%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %ifalias%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%generic%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %generic%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%specific%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %specific%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%community%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %community%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%version%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %version%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%snmp%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %snmp%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%operinstruct%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %operinstruct%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%mouseovertext%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %mouseovertext%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                &lt;/table&gt;    
+
+    </descr>
+    <logmsg dest='logndisplay'>Firmware update.</logmsg>
+    <severity>Normal</severity>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.171.10.37.20.5.7.1.13</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>13</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/dlink/trapWirelessLinkDown</uei>
+    <event-label>DWL-3200 defined trap event: trapWirelessLinkDown</event-label>
+    <descr>
+                Received %parm[##]% parameters:
+                &lt;table&gt;
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            Parameter
+                        &lt;/th&gt;    
+                        &lt;th&gt;
+                            Value
+                        &lt;/th&gt;
+                    &lt;/tr&gt;
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%parm[%parm[name-#1]%]%%: trapAlarmLevel
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %parm[#1]%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%parm[%parm[name-#2]%]%%: trapBand
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %parm[#2]%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%eventid%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %eventid%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%uei%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %uei%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%source%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %source%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%time%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %time%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%dpname%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %dpname%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%nodeid%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %nodeid%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%nodelabel%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %nodelabel%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%host%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %host%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%interface%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %interface%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%interfaceresolv%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %interfaceresolv%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%service%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %service%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%severity%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %severity%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%snmphost%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %snmphost%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%id%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %id%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%idtext%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %idtext%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%ifalias%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %ifalias%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%generic%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %generic%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%specific%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %specific%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%community%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %community%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%version%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %version%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%snmp%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %snmp%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%operinstruct%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %operinstruct%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%mouseovertext%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %mouseovertext%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                &lt;/table&gt;    
+
+    </descr>
+    <logmsg dest='logndisplay'>Wireless link is down.</logmsg>
+    <severity>Warning</severity>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.171.10.37.20.5.7.1.14</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>14</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/dlink/trapSTALinkUP</uei>
+    <event-label>DWL-3200 defined trap event: trapSTALinkUP</event-label>
+    <descr>
+                Received %parm[##]% parameters:
+                &lt;table&gt;
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            Parameter
+                        &lt;/th&gt;    
+                        &lt;th&gt;
+                            Value
+                        &lt;/th&gt;
+                    &lt;/tr&gt;
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%parm[%parm[name-#1]%]%%: trapAPMACaddr
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %parm[#1]%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%parm[%parm[name-#2]%]%%: trapAlarmLevel
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %parm[#2]%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%parm[%parm[name-#3]%]%%: trapSTAMACaddr
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %parm[#3]%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%parm[%parm[name-#4]%]%%: swNotiResult
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %parm[#4]%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%eventid%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %eventid%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%uei%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %uei%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%source%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %source%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%time%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %time%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%dpname%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %dpname%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%nodeid%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %nodeid%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%nodelabel%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %nodelabel%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%host%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %host%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%interface%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %interface%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%interfaceresolv%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %interfaceresolv%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%service%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %service%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%severity%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %severity%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%snmphost%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %snmphost%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%id%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %id%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%idtext%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %idtext%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%ifalias%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %ifalias%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%generic%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %generic%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%specific%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %specific%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%community%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %community%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%version%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %version%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%snmp%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %snmp%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%operinstruct%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %operinstruct%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%mouseovertext%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %mouseovertext%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                &lt;/table&gt;    
+
+    </descr>
+    <logmsg dest='logndisplay'>STA %parm[#3]% associated to %parm[#1]%</logmsg>
+    <severity>Normal</severity>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.171.10.37.20.5.7.1.15</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>15</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/dlink/trapSTALinkDown</uei>
+    <event-label>DWL-3200 defined trap event: trapSTALinkDown</event-label>
+    <descr>
+                Received %parm[##]% parameters:
+                &lt;table&gt;
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            Parameter
+                        &lt;/th&gt;    
+                        &lt;th&gt;
+                            Value
+                        &lt;/th&gt;
+                    &lt;/tr&gt;
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%parm[%parm[name-#1]%]%%: trapAPMACaddr
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %parm[#1]%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%parm[%parm[name-#2]%]%%: trapAlarmLevel
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %parm[#2]%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%parm[%parm[name-#3]%]%%: trapSTAMACaddr
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %parm[#3]%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%parm[%parm[name-#4]%]%%: swNotiResult
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %parm[#4]%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%eventid%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %eventid%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%uei%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %uei%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%source%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %source%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%time%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %time%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%dpname%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %dpname%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%nodeid%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %nodeid%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%nodelabel%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %nodelabel%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%host%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %host%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%interface%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %interface%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%interfaceresolv%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %interfaceresolv%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%service%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %service%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%severity%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %severity%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%snmphost%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %snmphost%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%id%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %id%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%idtext%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %idtext%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%ifalias%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %ifalias%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%generic%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %generic%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%specific%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %specific%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%community%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %community%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%version%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %version%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%snmp%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %snmp%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%operinstruct%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %operinstruct%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    &lt;tr&gt;
+                        &lt;th&gt;
+                            %%mouseovertext%%
+                        &lt;/th&gt;
+                        &lt;td&gt;
+                            %mouseovertext%
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                &lt;/table&gt;    
+
+    </descr>
+    <logmsg dest='logndisplay'>STA %parm[#3]% de-associated to %parm[#1]%</logmsg>
+    <severity>Normal</severity>
+  </event>
+</events>
+
+
