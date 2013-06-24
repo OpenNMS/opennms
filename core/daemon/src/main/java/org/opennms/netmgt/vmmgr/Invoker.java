@@ -34,18 +34,21 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import javax.management.Attribute;
 import javax.management.MBeanServer;
 import javax.management.ObjectInstance;
 import javax.management.ObjectName;
 
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.ServiceConfigFactory;
 import org.opennms.netmgt.config.service.Argument;
 import org.opennms.netmgt.config.service.Invoke;
 import org.opennms.netmgt.config.service.Service;
 import org.opennms.netmgt.config.service.types.InvokeAtType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 /**
  * <p>
@@ -76,6 +79,9 @@ import org.opennms.netmgt.config.service.types.InvokeAtType;
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj</a>
  */
 public class Invoker {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(Invoker.class);
+	
     private MBeanServer m_server;
     private InvokeAtType m_atType;
     private boolean m_reverse = false;
@@ -116,31 +122,25 @@ public class Invoker {
             Service service = invokerService.getService();
             try {
                 // preload the class
-                if (log().isDebugEnabled()) {
-                    log().debug("loading class " + service.getClassName());
-                }
+            	LOG.debug("loading class {}", service.getClassName());
+                
 
                 Class<?> clazz = Class.forName(service.getClassName());
 
                 // Get a new instance of the class
-                if (log().isDebugEnabled()) {
-                    log().debug("create new instance of "
-                            + service.getClassName());
-                }
-
-                String log4jPrefix = ThreadCategory.getPrefix();
+                LOG.debug("create new instance of {}", service.getClassName());
+                
+                Map<?,?> mdc = MDC.getCopyOfContextMap();
                 Object bean;
                 try {
                     bean = clazz.newInstance();
                 } finally {
-                    ThreadCategory.setPrefix(log4jPrefix);
+                	MDC.setContextMap(mdc);
                 }
 
                 // Register the mbean
-                if (log().isDebugEnabled()) {
-                    log().debug("registering mbean instance "
-                            + service.getName());
-                }
+                LOG.debug("registering mbean instance {}", service.getName());
+                
                 ObjectName name = new ObjectName(service.getName());
                 invokerService.setMbean(getServer().registerMBean(bean, name));
 
@@ -149,18 +149,15 @@ public class Invoker {
                     service.getAttribute();
                 if (attribs != null) {
                     for (org.opennms.netmgt.config.service.Attribute attrib : attribs) {
-                        if (log().isDebugEnabled()) {
-                            log().debug("setting attribute "
-                                    + attrib.getName());
-                        }
-
+                    	LOG.debug("setting attribute {}", attrib.getName());
                         getServer().setAttribute(name, getAttribute(attrib));
                     }
                 }
             } catch (Throwable t) {
-                log().error("An error occurred loading the mbean "
-                          + service.getName() + " of type "
-                          + service.getClassName() + ": " + t,
+            	LOG.error("An error occurred loading the mbean {} of type {}: {}",
+                          service.getName(),
+                          service.getClassName(),
+                          t,
                           t);
                 invokerService.setBadThrowable(t);
             }
@@ -175,16 +172,14 @@ public class Invoker {
             Service service = invokerService.getService();
             try {
                 // find the mbean
-                if (log().isDebugEnabled()) {
-                    log().debug("finding mbean instance " + service.getName());
-                }
+            	LOG.debug("finding mbean instance {}", service.getName());
 
                 ObjectName name = new ObjectName(service.getName());
                 invokerService.setMbean(getServer().getObjectInstance(name));
             } catch (Throwable t) {
-                log().error("An error occurred loading the mbean "
-                          + service.getName() + " of type "
-                          + service.getClassName() + " it will be skipped",
+            	LOG.error("An error occurred loading the mbean {} of type {} it will be skipped",
+                          service.getName(),
+                          service.getClassName(),
                           t);
                 invokerService.setBadThrowable(t);
             }
@@ -208,9 +203,8 @@ public class Invoker {
         
         List<InvokerResult> resultInfo = new ArrayList<InvokerResult>(invokerServicesOrdered.size());
         for (int pass = 0, end = getLastPass(); pass <= end; pass++) {
-            if (log().isDebugEnabled()) {
-                log().debug("starting pass " + pass);
-            }
+        	LOG.debug("starting pass {}", pass);
+            
 
             for (InvokerService invokerService : invokerServicesOrdered) {
                 Service service = invokerService.getService();
@@ -229,11 +223,8 @@ public class Invoker {
                         continue;
                     }
 
-                    if (log().isDebugEnabled()) {
-                        log().debug("pass " + pass + " on service " + name
-                                + " will invoke method \""
-                                + invoke.getMethod() + "\""); 
-                    }
+                    LOG.debug("pass {} on service {} will invoke method \"{}\"", pass, name, invoke.getMethod()); 
+                    
 
                     try {
                         Object result = invoke(invoke, mbean);
@@ -247,9 +238,8 @@ public class Invoker {
                 }
             }
             
-            if (log().isDebugEnabled()) {
-                log().debug("completed pass " + pass);
-            }
+            LOG.debug("completed pass {}", pass);
+           
         }
 
         return resultInfo;
@@ -294,37 +284,31 @@ public class Invoker {
                 try {
                     parms[k] = getArgument(args[k]);
                 } catch (Throwable t) {
-                    log().error("An error occurred building argument "
-                            + k + " for operation "+ invoke.getMethod()
-                            + " on MBean " + mbean.getObjectName() + ": " + t,
-                            t);
+                	LOG.error("An error occurred building argument {} for operation {} on MBean {}: {}",
+                            k, invoke.getMethod(), mbean.getObjectName(), t, t);
                   throw t;
                 }
                 sig[k] = parms[k].getClass().getName();
             }
         }
 
-        if (log().isDebugEnabled()) {
-            log().debug("Invoking " + invoke.getMethod()
-                      + " on object " + mbean.getObjectName());
-        }
+        LOG.debug("Invoking {} on object {}", invoke.getMethod(), mbean.getObjectName());
+        
 
         Object object;
         try {
-            String log4jPrefix = ThreadCategory.getPrefix(); 
+        	Map<?,?> mdc = MDC.getCopyOfContextMap();
             try {
                 object = getServer().invoke(mbean.getObjectName(), invoke.getMethod(), parms, sig);
             } finally {
-                ThreadCategory.setPrefix(log4jPrefix);
+            	MDC.setContextMap(mdc);
             }
         } catch (Throwable t) {
-            log().error("An error occurred invoking operation "
-                      + invoke.getMethod() + " on MBean "
-                      + mbean.getObjectName() + ": " + t, t);
+        	LOG.error("An error occurred invoking operation {} on MBean {}: {}", invoke.getMethod(), mbean.getObjectName(), t);
             throw t;
         }
 
-        log().debug("Invocation successful.");
+        LOG.debug("Invocation successful.");
 
         return object;
     }
@@ -334,11 +318,11 @@ public class Invoker {
         Constructor<?> construct = attribClass.getConstructor(new Class[] { String.class });
 
         Object value;
-        String log4jPrefix = ThreadCategory.getPrefix(); 
+        Map<?,?> mdc = MDC.getCopyOfContextMap();
         try {
             value = construct.newInstance(new Object[] { attrib.getValue().getContent() });
         } finally {
-            ThreadCategory.setPrefix(log4jPrefix);
+        	MDC.setContextMap(mdc);
         }
 
         return new Attribute(attrib.getName(), value);
@@ -348,16 +332,12 @@ public class Invoker {
         Class<?> argClass = Class.forName(arg.getType());
         Constructor<?> construct = argClass.getConstructor(new Class[] { String.class });
 
-        String log4jPrefix = ThreadCategory.getPrefix(); 
+        Map<?,?> mdc = MDC.getCopyOfContextMap();
         try {
             return construct.newInstance(new Object[] { arg.getContent() });
         } finally {
-            ThreadCategory.setPrefix(log4jPrefix);
+        	MDC.setContextMap(mdc);
         }
-    }
-
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
     }
 
     /**

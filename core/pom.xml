@@ -31,6 +31,8 @@
     <module>doc</module>
     <module>icmp-jna</module>
     <module>lib</module>
+    <module>logging-api</module>
+    <module>logging-log4j</module>
     <module>runtime</module>
     <module>schema</module>
     <module>snmp</module>
