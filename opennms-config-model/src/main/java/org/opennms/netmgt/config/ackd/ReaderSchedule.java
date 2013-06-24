@@ -54,6 +54,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class ReaderSchedule implements Serializable {
     private static final long serialVersionUID = 3113838261541036911L;
 
+    public static final long DEFAULT_INTERVAL = 1L;
+
+    public static final String DEFAULT_UNIT = "m";
+
     // --------------------------/
     // - Class/Member Variables -/
     // --------------------------/
@@ -62,13 +66,13 @@ public class ReaderSchedule implements Serializable {
      * Field _interval.
      */
     @XmlAttribute(name = "interval")
-    private Long _interval = 1L;
+    private Long _interval;
 
     /**
      * Field _unit.
      */
     @XmlAttribute(name = "unit")
-    private String _unit = "m";
+    private String _unit;
 
     // ----------------/
     // - Constructors -/
@@ -94,26 +98,26 @@ public class ReaderSchedule implements Serializable {
      * @param obj
      * @return true if the objects are equal.
      */
-    @Override()
-    public boolean equals(final Object obj) {
+    @Override
+    public boolean equals(Object obj) {
         if (this == obj)
             return true;
-
-        if (obj instanceof ReaderSchedule) {
-
-            ReaderSchedule temp = (ReaderSchedule) obj;
-            if (this._interval != temp._interval)
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        ReaderSchedule other = (ReaderSchedule) obj;
+        if (_interval == null) {
+            if (other._interval != null)
                 return false;
-            if (this._unit != null) {
-                if (temp._unit == null)
-                    return false;
-                else if (!(this._unit.equals(temp._unit)))
-                    return false;
-            } else if (temp._unit != null)
+        } else if (!_interval.equals(other._interval))
+            return false;
+        if (_unit == null) {
+            if (other._unit != null)
                 return false;
-            return true;
-        }
-        return false;
+        } else if (!_unit.equals(other._unit))
+            return false;
+        return true;
     }
 
     /**
@@ -122,7 +126,7 @@ public class ReaderSchedule implements Serializable {
      * @return the value of field 'Interval'.
      */
     public long getInterval() {
-        return this._interval;
+        return _interval == null ? DEFAULT_INTERVAL : _interval;
     }
 
     /**
@@ -131,7 +135,7 @@ public class ReaderSchedule implements Serializable {
      * @return the value of field 'Unit'.
      */
     public java.lang.String getUnit() {
-        return this._unit;
+        return _unit == null ? DEFAULT_UNIT : _unit;
     }
 
     /**
@@ -142,14 +146,13 @@ public class ReaderSchedule implements Serializable {
      * 
      * @return a hash code value for the object.
      */
+    @Override
     public int hashCode() {
-        int result = 17;
-
-        result = 37 * result + (int) (_interval ^ (_interval >>> 32));
-        if (_unit != null) {
-            result = 37 * result + _unit.hashCode();
-        }
-
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((_interval == null) ? 0 : _interval.hashCode());
+        result = prime * result + ((_unit == null) ? 0 : _unit.hashCode());
         return result;
     }
 

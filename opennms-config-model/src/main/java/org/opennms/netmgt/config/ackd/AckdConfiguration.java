@@ -54,6 +54,20 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class AckdConfiguration implements Serializable {
     private static final long serialVersionUID = -8269227735655606782L;
 
+    public static final boolean DEFAULT_ALARM_SYNC_FLAG = true;
+
+    public static final String DEFAULT_ACK_EXPRESSION = "~(?i)^ack$";
+
+    public static final String DEFAULT_UNACK_EXPRESSION = "~(?i)^unack$";
+
+    public static final String DEFAULT_ESCALATE_EXPRESSION = "~(?i)^esc$";
+
+    public static final String DEFAULT_CLEAR_EXPRESSION = "~(?i)^(resolve|clear)$";
+
+    public static final String DEFAULT_NOTIFYID_MATCH_EXPRESSION = "~(?i).*Re:.*Notice #([0-9]+).*";
+
+    public static final String DEFAULT_ALARMID_MATCH_EXPRESSION = "~(?i).*alarmid:([0-9]+).*";
+
     // --------------------------/
     // - Class/Member Variables -/
     // --------------------------/
@@ -62,43 +76,43 @@ public class AckdConfiguration implements Serializable {
      * Field _alarmSync.
      */
     @XmlAttribute(name = "alarm-sync")
-    private Boolean _alarmSync = true;
+    private Boolean _alarmSync;
 
     /**
      * Field _ackExpression.
      */
     @XmlAttribute(name = "ack-expression")
-    private String _ackExpression = "~(?i)^ack$";
+    private String _ackExpression;
 
     /**
      * Field _unackExpression.
      */
     @XmlAttribute(name = "unack-expression")
-    private String _unackExpression = "~(?i)^unack$";
+    private String _unackExpression;
 
     /**
      * Field _escalateExpression.
      */
     @XmlAttribute(name = "escalate-expression")
-    private String _escalateExpression = "~(?i)^esc$";
+    private String _escalateExpression;
 
     /**
      * Field _clearExpression.
      */
     @XmlAttribute(name = "clear-expression")
-    private String _clearExpression = "~(?i)^(resolve|clear)$";
+    private String _clearExpression;
 
     /**
      * Field _notifyidMatchExpression.
      */
     @XmlAttribute(name = "notifyid-match-expression")
-    private String _notifyidMatchExpression = "~(?i).*Re:.*Notice #([0-9]+).*";
+    private String _notifyidMatchExpression;
 
     /**
      * Field _alarmidMatchExpression.
      */
     @XmlAttribute(name = "alarmid-match-expression")
-    private String _alarmidMatchExpression = "~(?i).*alarmid:([0-9]+).*";
+    private String _alarmidMatchExpression;
 
     /**
      * Location for user to define readers and they're schedules.
@@ -141,68 +155,56 @@ public class AckdConfiguration implements Serializable {
      * @param obj
      * @return true if the objects are equal.
      */
-    @Override()
-    public boolean equals(final Object obj) {
+    @Override
+    public boolean equals(Object obj) {
         if (this == obj)
             return true;
-
-        if (obj instanceof AckdConfiguration) {
-
-            AckdConfiguration temp = (AckdConfiguration) obj;
-            if (this._alarmSync != temp._alarmSync)
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        AckdConfiguration other = (AckdConfiguration) obj;
+        if (_ackExpression == null) {
+            if (other._ackExpression != null)
                 return false;
-            if (this._ackExpression != null) {
-                if (temp._ackExpression == null)
-                    return false;
-                else if (!(this._ackExpression.equals(temp._ackExpression)))
-                    return false;
-            } else if (temp._ackExpression != null)
+        } else if (!_ackExpression.equals(other._ackExpression))
+            return false;
+        if (_alarmSync == null) {
+            if (other._alarmSync != null)
                 return false;
-            if (this._unackExpression != null) {
-                if (temp._unackExpression == null)
-                    return false;
-                else if (!(this._unackExpression.equals(temp._unackExpression)))
-                    return false;
-            } else if (temp._unackExpression != null)
+        } else if (!_alarmSync.equals(other._alarmSync))
+            return false;
+        if (_alarmidMatchExpression == null) {
+            if (other._alarmidMatchExpression != null)
                 return false;
-            if (this._escalateExpression != null) {
-                if (temp._escalateExpression == null)
-                    return false;
-                else if (!(this._escalateExpression.equals(temp._escalateExpression)))
-                    return false;
-            } else if (temp._escalateExpression != null)
+        } else if (!_alarmidMatchExpression.equals(other._alarmidMatchExpression))
+            return false;
+        if (_clearExpression == null) {
+            if (other._clearExpression != null)
                 return false;
-            if (this._clearExpression != null) {
-                if (temp._clearExpression == null)
-                    return false;
-                else if (!(this._clearExpression.equals(temp._clearExpression)))
-                    return false;
-            } else if (temp._clearExpression != null)
+        } else if (!_clearExpression.equals(other._clearExpression))
+            return false;
+        if (_escalateExpression == null) {
+            if (other._escalateExpression != null)
                 return false;
-            if (this._notifyidMatchExpression != null) {
-                if (temp._notifyidMatchExpression == null)
-                    return false;
-                else if (!(this._notifyidMatchExpression.equals(temp._notifyidMatchExpression)))
-                    return false;
-            } else if (temp._notifyidMatchExpression != null)
+        } else if (!_escalateExpression.equals(other._escalateExpression))
+            return false;
+        if (_notifyidMatchExpression == null) {
+            if (other._notifyidMatchExpression != null)
                 return false;
-            if (this._alarmidMatchExpression != null) {
-                if (temp._alarmidMatchExpression == null)
-                    return false;
-                else if (!(this._alarmidMatchExpression.equals(temp._alarmidMatchExpression)))
-                    return false;
-            } else if (temp._alarmidMatchExpression != null)
+        } else if (!_notifyidMatchExpression.equals(other._notifyidMatchExpression))
+            return false;
+        if (_readers == null) {
+            if (other._readers != null)
                 return false;
-            if (this._readers != null) {
-                if (temp._readers == null)
-                    return false;
-                else if (!(this._readers.equals(temp._readers)))
-                    return false;
-            } else if (temp._readers != null)
+        } else if (!_readers.equals(other._readers))
+            return false;
+        if (_unackExpression == null) {
+            if (other._unackExpression != null)
                 return false;
-            return true;
-        }
-        return false;
+        } else if (!_unackExpression.equals(other._unackExpression))
+            return false;
+        return true;
     }
 
     /**
@@ -211,7 +213,8 @@ public class AckdConfiguration implements Serializable {
      * @return the value of field 'AckExpression'.
      */
     public String getAckExpression() {
-        return this._ackExpression;
+        return _ackExpression == null ? DEFAULT_ACK_EXPRESSION
+                                     : _ackExpression;
     }
 
     /**
@@ -220,7 +223,7 @@ public class AckdConfiguration implements Serializable {
      * @return the value of field 'AlarmSync'.
      */
     public boolean getAlarmSync() {
-        return this._alarmSync;
+        return _alarmSync == null ? DEFAULT_ALARM_SYNC_FLAG : _alarmSync;
     }
 
     /**
@@ -229,7 +232,8 @@ public class AckdConfiguration implements Serializable {
      * @return the value of field 'AlarmidMatchExpression'.
      */
     public String getAlarmidMatchExpression() {
-        return this._alarmidMatchExpression;
+        return _alarmidMatchExpression == null ? DEFAULT_ALARMID_MATCH_EXPRESSION
+                                              : _alarmidMatchExpression;
     }
 
     /**
@@ -238,7 +242,8 @@ public class AckdConfiguration implements Serializable {
      * @return the value of field 'ClearExpression'.
      */
     public String getClearExpression() {
-        return this._clearExpression;
+        return _clearExpression == null ? DEFAULT_CLEAR_EXPRESSION
+                                       : _clearExpression;
     }
 
     /**
@@ -247,7 +252,8 @@ public class AckdConfiguration implements Serializable {
      * @return the value of field 'EscalateExpression'.
      */
     public String getEscalateExpression() {
-        return this._escalateExpression;
+        return _escalateExpression == null ? DEFAULT_ESCALATE_EXPRESSION
+                                          : _escalateExpression;
     }
 
     /**
@@ -256,7 +262,8 @@ public class AckdConfiguration implements Serializable {
      * @return the value of field 'NotifyidMatchExpression'.
      */
     public String getNotifyidMatchExpression() {
-        return this._notifyidMatchExpression;
+        return _notifyidMatchExpression == null ? DEFAULT_NOTIFYID_MATCH_EXPRESSION
+                                               : _notifyidMatchExpression;
     }
 
     /**
@@ -277,7 +284,8 @@ public class AckdConfiguration implements Serializable {
      * @return the value of field 'UnackExpression'.
      */
     public String getUnackExpression() {
-        return this._unackExpression;
+        return _unackExpression == null ? DEFAULT_UNACK_EXPRESSION
+                                       : _unackExpression;
     }
 
     /**
@@ -288,32 +296,36 @@ public class AckdConfiguration implements Serializable {
      * 
      * @return a hash code value for the object.
      */
+    @Override
     public int hashCode() {
-        int result = 17;
-
-        result = 37 * result + (_alarmSync ? 0 : 1);
-        if (_ackExpression != null) {
-            result = 37 * result + _ackExpression.hashCode();
-        }
-        if (_unackExpression != null) {
-            result = 37 * result + _unackExpression.hashCode();
-        }
-        if (_escalateExpression != null) {
-            result = 37 * result + _escalateExpression.hashCode();
-        }
-        if (_clearExpression != null) {
-            result = 37 * result + _clearExpression.hashCode();
-        }
-        if (_notifyidMatchExpression != null) {
-            result = 37 * result + _notifyidMatchExpression.hashCode();
-        }
-        if (_alarmidMatchExpression != null) {
-            result = 37 * result + _alarmidMatchExpression.hashCode();
-        }
-        if (_readers != null) {
-            result = 37 * result + _readers.hashCode();
-        }
-
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((_ackExpression == null) ? 0 : _ackExpression.hashCode());
+        result = prime * result
+                + ((_alarmSync == null) ? 0 : _alarmSync.hashCode());
+        result = prime
+                * result
+                + ((_alarmidMatchExpression == null) ? 0
+                                                    : _alarmidMatchExpression.hashCode());
+        result = prime
+                * result
+                + ((_clearExpression == null) ? 0
+                                             : _clearExpression.hashCode());
+        result = prime
+                * result
+                + ((_escalateExpression == null) ? 0
+                                                : _escalateExpression.hashCode());
+        result = prime
+                * result
+                + ((_notifyidMatchExpression == null) ? 0
+                                                     : _notifyidMatchExpression.hashCode());
+        result = prime * result
+                + ((_readers == null) ? 0 : _readers.hashCode());
+        result = prime
+                * result
+                + ((_unackExpression == null) ? 0
+                                             : _unackExpression.hashCode());
         return result;
     }
 

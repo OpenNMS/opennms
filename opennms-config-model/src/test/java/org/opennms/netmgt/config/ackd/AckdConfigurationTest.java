@@ -62,19 +62,22 @@ public class AckdConfigurationTest extends XmlTestNoCastor<AckdConfiguration> {
                                                              "~.*Re:.*Notice #([0-9]+).*",
                                                              "~.*alarmid:([0-9]+).*",
                                                              readers);
-        return Arrays.asList(new Object[][] { {
-                ackdConfig,
-                "<ackd-configuration alarm-sync=\"true\" ack-expression=\"~^ack$\""
-                        + " unack-expression=\"~^unack$\" escalate-expression=\"~^esc$\""
-                        + " clear-expression=\"~^(resolve|clear)$\""
-                        + " notifyid-match-expression=\"~.*Re:.*Notice #([0-9]+).*\""
-                        + " alarmid-match-expression=\"~.*alarmid:([0-9]+).*\">"
-                        + "<readers>"
-                        + "<reader enabled=\"false\" reader-name=\"JavaMailReader\">"
-                        + "<reader-schedule interval=\"60\" unit=\"s\"/>"
-                        + "<parameter key=\"readmail-config\" value=\"localhost\" />"
-                        + "</reader>" + "</readers>"
-                        + "</ackd-configuration>",
-                "target/classes/xsds/ackd-configuration.xsd", }, });
+        return Arrays.asList(new Object[][] {
+                {
+                        ackdConfig,
+                        "<ackd-configuration alarm-sync=\"true\" ack-expression=\"~^ack$\""
+                                + " unack-expression=\"~^unack$\" escalate-expression=\"~^esc$\""
+                                + " clear-expression=\"~^(resolve|clear)$\""
+                                + " notifyid-match-expression=\"~.*Re:.*Notice #([0-9]+).*\""
+                                + " alarmid-match-expression=\"~.*alarmid:([0-9]+).*\">"
+                                + "<readers>"
+                                + "<reader enabled=\"false\" reader-name=\"JavaMailReader\">"
+                                + "<reader-schedule interval=\"60\" unit=\"s\"/>"
+                                + "<parameter key=\"readmail-config\" value=\"localhost\" />"
+                                + "</reader>" + "</readers>"
+                                + "</ackd-configuration>",
+                        "target/classes/xsds/ackd-configuration.xsd", },
+                { new AckdConfiguration(), "<ackd-configuration/>",
+                        "target/classes/xsds/ackd-configuration.xsd" } });
     }
 }

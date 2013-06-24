@@ -58,6 +58,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class Reader implements Serializable {
     private static final long serialVersionUID = -7392047026243024472L;
 
+    public static final boolean DEFAULT_ENABLED_FLAG = true;
+
     // --------------------------/
     // - Class/Member Variables -/
     // --------------------------/
@@ -75,7 +77,7 @@ public class Reader implements Serializable {
      * Field _enabled.
      */
     @XmlAttribute(name = "enabled")
-    private Boolean _enabled = true;
+    private Boolean _enabled;
 
     /**
      * A very basic configuration for defining simple input to a schedule
@@ -153,40 +155,36 @@ public class Reader implements Serializable {
      * @param obj
      * @return true if the objects are equal.
      */
-    @Override()
-    public boolean equals(final Object obj) {
+    @Override
+    public boolean equals(Object obj) {
         if (this == obj)
             return true;
-
-        if (obj instanceof Reader) {
-
-            Reader temp = (Reader) obj;
-            if (this._readerName != null) {
-                if (temp._readerName == null)
-                    return false;
-                else if (!(this._readerName.equals(temp._readerName)))
-                    return false;
-            } else if (temp._readerName != null)
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Reader other = (Reader) obj;
+        if (_enabled == null) {
+            if (other._enabled != null)
                 return false;
-            if (this._enabled != temp._enabled)
+        } else if (!_enabled.equals(other._enabled))
+            return false;
+        if (_parameterList == null) {
+            if (other._parameterList != null)
                 return false;
-            if (this._readerSchedule != null) {
-                if (temp._readerSchedule == null)
-                    return false;
-                else if (!(this._readerSchedule.equals(temp._readerSchedule)))
-                    return false;
-            } else if (temp._readerSchedule != null)
+        } else if (!_parameterList.equals(other._parameterList))
+            return false;
+        if (_readerName == null) {
+            if (other._readerName != null)
                 return false;
-            if (this._parameterList != null) {
-                if (temp._parameterList == null)
-                    return false;
-                else if (!(this._parameterList.equals(temp._parameterList)))
-                    return false;
-            } else if (temp._parameterList != null)
+        } else if (!_readerName.equals(other._readerName))
+            return false;
+        if (_readerSchedule == null) {
+            if (other._readerSchedule != null)
                 return false;
-            return true;
-        }
-        return false;
+        } else if (!_readerSchedule.equals(other._readerSchedule))
+            return false;
+        return true;
     }
 
     /**
@@ -195,7 +193,7 @@ public class Reader implements Serializable {
      * @return the value of field 'Enabled'.
      */
     public boolean getEnabled() {
-        return this._enabled;
+        return _enabled == null ? DEFAULT_ENABLED_FLAG : _enabled;
     }
 
     /**
@@ -286,20 +284,19 @@ public class Reader implements Serializable {
      * 
      * @return a hash code value for the object.
      */
+    @Override
     public int hashCode() {
-        int result = 17;
-
-        if (_readerName != null) {
-            result = 37 * result + _readerName.hashCode();
-        }
-        result = 37 * result + (_enabled ? 0 : 1);
-        if (_readerSchedule != null) {
-            result = 37 * result + _readerSchedule.hashCode();
-        }
-        if (_parameterList != null) {
-            result = 37 * result + _parameterList.hashCode();
-        }
-
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((_enabled == null) ? 0 : _enabled.hashCode());
+        result = prime * result
+                + ((_parameterList == null) ? 0 : _parameterList.hashCode());
+        result = prime * result
+                + ((_readerName == null) ? 0 : _readerName.hashCode());
+        result = prime
+                * result
+                + ((_readerSchedule == null) ? 0 : _readerSchedule.hashCode());
         return result;
     }
 
@@ -309,7 +306,7 @@ public class Reader implements Serializable {
      * @return the value of field 'Enabled'.
      */
     public boolean isEnabled() {
-        return this._enabled;
+        return _enabled == null ? DEFAULT_ENABLED_FLAG : _enabled;
     }
 
     /**
