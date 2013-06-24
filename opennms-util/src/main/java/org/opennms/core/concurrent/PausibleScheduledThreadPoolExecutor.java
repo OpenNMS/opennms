@@ -28,6 +28,7 @@
 
 package org.opennms.core.concurrent;
 
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Condition;
@@ -46,13 +47,12 @@ public class PausibleScheduledThreadPoolExecutor extends
     private ReentrantLock pauseLock = new ReentrantLock();
     private Condition unpaused = pauseLock.newCondition();
 
-    /**
-     * <p>Constructor for PausibleScheduledThreadPoolExecutor.</p>
-     *
-     * @param corePoolSize a int.
-     */
-    public PausibleScheduledThreadPoolExecutor(int corePoolSize) {
+    public PausibleScheduledThreadPoolExecutor(final int corePoolSize) {
         super(corePoolSize);
+    }
+    
+    public PausibleScheduledThreadPoolExecutor(final int corePoolSize, final ThreadFactory threadFactory) {
+        super(corePoolSize, threadFactory);
     }
     
     /**
