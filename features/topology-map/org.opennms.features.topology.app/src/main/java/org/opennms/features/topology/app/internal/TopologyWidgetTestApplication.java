@@ -164,7 +164,7 @@ public class TopologyWidgetTestApplication extends UI implements CommandUpdateLi
         m_layout = new AbsoluteLayout();
         m_layout.setSizeFull();
         // Set expand ratio so that all extra space is allocated to this vertical component
-        m_rootLayout.addComponent(m_layout, 1);
+        m_rootLayout.addComponent(m_layout);
         m_rootLayout.setExpandRatio(m_layout, 1);
         
         //Refresher refresher = new Refresher();
