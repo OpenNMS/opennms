@@ -574,6 +574,4 @@ public abstract class AbstractSpringJerseyRestTestCase {
     public ServletContainer getDispatcher() {
         return dispatcher;
     }
-
-
 }

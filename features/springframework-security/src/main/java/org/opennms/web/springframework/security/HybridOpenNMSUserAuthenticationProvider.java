@@ -28,10 +28,11 @@
 
 package org.opennms.web.springframework.security;
 
+
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.model.OnmsUser;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -68,55 +69,51 @@ public class HybridOpenNMSUserAuthenticationProvider implements AuthenticationPr
     
     @Override
     public Authentication authenticate(final Authentication authentication) throws AuthenticationException {
-        final String username = authentication.getPrincipal().toString();
-        final String password = authentication.getCredentials().toString();
-        final OnmsUser user = m_userDao.getByUsername(username);
-
-        boolean hasUser = false;
+        final String authUsername = authentication.getPrincipal().toString();
+        final String authPassword = authentication.getCredentials().toString();
+        final OnmsUser user = m_userDao.getByUsername(authUsername);
 
         if (user == null) {
             throw new BadCredentialsException("Bad credentials");
         }
 
         try {
-            hasUser = m_userManager.hasUser(user.getUsername());
-        } catch (final Exception e) {
-            throw new AuthenticationServiceException("An error occurred while checking for " + username + " in the UserManager", e);
-        }
-        if (hasUser) {
-            if (!m_userManager.comparePasswords(username, password)) {
-                throw new BadCredentialsException("Bad credentials");
+            checkUserPassword(authUsername, authPassword, user);
+        } catch (final AuthenticationException e) {
+            // if we fail, try refreshing the user manager and re-authenticate
+            try {
+                m_userManager.reload();
+            } catch (final Exception reloadException) {
+                LogUtils.debugf(this, reloadException, "Failed to reload UserManager.");
             }
-        } else {
-            if (!m_userManager.checkSaltedPassword(password, user.getPassword())) {
-                throw new BadCredentialsException("Bad credentials");
-            }
+            checkUserPassword(authUsername, authPassword, user);
         }
 
         if (user.getAuthorities().size() == 0) {
             user.addAuthority(SpringSecurityUserDao.ROLE_USER);
         }
 
-        final AbstractAuthenticationToken token = new AbstractAuthenticationToken(user.getAuthorities()) {
-            private static final long serialVersionUID = 3659409846867741010L;
+        return new OnmsAuthenticationToken(user);
+    }
 
-            /**
-             * This should always be a UserDetails. Java-Spec allows this,
-             * spring can handle it nad it's easier for us this way.
-             */
-            @Override
-            public Object getPrincipal() {
-                return user;
+    protected void checkUserPassword(final String authUsername, final String authPassword, final OnmsUser user) throws AuthenticationException {
+        final String existingPassword = user.getPassword();
+        boolean hasUser = false;
+        try {
+            hasUser = m_userManager.hasUser(user.getUsername());
+        } catch (final Exception e) {
+            throw new AuthenticationServiceException("An error occurred while checking for " + authUsername + " in the UserManager", e);
+        }
+
+        if (hasUser) {
+            if (!m_userManager.comparePasswords(authUsername, authPassword)) {
+                throw new BadCredentialsException("Bad credentials");
             }
-
-            @Override
-            public Object getCredentials() {
-                return user.getPassword();
+        } else {
+            if (!m_userManager.checkSaltedPassword(authPassword, existingPassword)) {
+                throw new BadCredentialsException("Bad credentials");
             }
-        };
-        token.setAuthenticated(true);
-
-        return token;
+        }
     }
 
     @Override

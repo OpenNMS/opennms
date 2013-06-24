@@ -119,4 +119,8 @@ public class Global implements Serializable {
 		return true;
 	}
 
+	public boolean isSecureTag(String tag) {
+		return m_security == null ? false : m_security.isSecureTag(tag);
+	}
+
 }

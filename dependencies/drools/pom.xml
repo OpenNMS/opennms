@@ -28,6 +28,13 @@
       <artifactId>drools-compiler</artifactId>
       <version>${droolsVersion}</version>
     </dependency>
+    <!-- *shudder* -->
+    <!-- unfortunately, this is needed for JDK 1.7 compatibility until we can update Drools to something newer than 5.1.1 -->
+    <dependency>
+       <groupId>org.eclipse.jdt.core.compiler</groupId>
+       <artifactId>ecj</artifactId>
+       <version>4.2.2</version>
+    </dependency>
   </dependencies>
   <repositories>
     <repository>

@@ -80,6 +80,7 @@ public class OnmsAlarmCollection extends LinkedList<OnmsAlarm> {
      * @param events a {@link java.util.List} object.
      */
     public void setEvents(List<OnmsAlarm> events) {
+        if (events == this) return;
         clear();
         addAll(events);
     }

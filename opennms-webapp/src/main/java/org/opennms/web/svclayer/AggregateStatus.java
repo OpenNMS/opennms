@@ -112,7 +112,8 @@ public class AggregateStatus implements SurveillanceStatus {
         return Collections.unmodifiableList(m_downNodes);
     }
 
-    private void setDownNodes(Collection<OnmsNode> downNodes) {
+    private void setDownNodes(final Collection<OnmsNode> downNodes) {
+        if (m_downNodes == downNodes) return;
         m_downNodes.clear();
         m_downNodes.addAll(downNodes);
     }

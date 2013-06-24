@@ -37,6 +37,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.io.File;
 import java.io.FileReader;
@@ -44,6 +45,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.net.InetAddress;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
@@ -53,12 +55,21 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.test.ConfigurationTestUtils;
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.model.events.snmp.SyntaxToEvent;
+import org.opennms.netmgt.snmp.SnmpObjId;
+import org.opennms.netmgt.snmp.SnmpValue;
+import org.opennms.netmgt.snmp.TrapIdentity;
+import org.opennms.netmgt.snmp.TrapProcessor;
 import org.opennms.netmgt.xml.eventconf.AlarmData;
 import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.netmgt.xml.eventconf.Events;
@@ -120,6 +131,192 @@ public class EventconfFactoryTest {
         Event eventConf = m_eventConfDao.findByEvent(bldr.getEvent());
         assertNotNull("returned event configuration for event with known UEI '" + knownUEI1 + "' should not be null", eventConf);
         assertEquals("UEI", bldr.getEvent().getUei(), eventConf.getUei());
+    }
+
+    @Test
+    public void testFindByEventUeiKnown1000Times() throws Exception {
+    	
+    	final int ATTEMPTS = 10000;
+    	
+        EventBuilder bldr = new EventBuilder(knownUEI1, "testFindByEventUeiKnown");
+
+    	DefaultEventConfDao eventConfDao = loadConfiguration("eventconf-speedtest/eventconf.xml");
+
+    	Event eventConf = null;
+		org.opennms.netmgt.xml.event.Event event = bldr.getEvent();
+        long start = System.currentTimeMillis();
+        for(int i = 0; i < ATTEMPTS; i++) {
+			eventConf = eventConfDao.findByEvent(event);
+        }
+        long end = System.currentTimeMillis();
+        long elapsed = end - start;
+        System.err.printf("%d Attempts: Elapsed: %d ms: events per second %f.%n", ATTEMPTS, elapsed, ATTEMPTS*1000.0/elapsed);
+
+        
+        assertNotNull("returned event configuration for event with known UEI '" + knownUEI1 + "' should not be null", eventConf);
+        assertEquals("UEI", bldr.getEvent().getUei(), eventConf.getUei());
+    }
+
+    public class EventCreator  {
+        
+        private EventBuilder m_eventBuilder;
+
+        
+        public EventCreator() {
+            setEventBuilder(new EventBuilder(null, "trapd"));
+        }
+        
+        public void setCommunity(String community) {
+            getEventBuilder().setCommunity(community);
+        }
+
+        public void setTimeStamp(long timeStamp) {
+            getEventBuilder().setSnmpTimeStamp(timeStamp);
+        }
+
+        public void setVersion(String version) {
+            getEventBuilder().setSnmpVersion(version);
+        }
+
+        private void setGeneric(int generic) {
+            getEventBuilder().setGeneric(generic);
+        }
+
+        private void setSpecific(int specific) {
+            getEventBuilder().setSpecific(specific);
+        }
+
+        private void setEnterpriseId(String enterpriseId) {
+            getEventBuilder().setEnterpriseId(enterpriseId);
+        }
+
+        public void setAgentAddress(InetAddress agentAddress) {
+            getEventBuilder().setHost(InetAddressUtils.toIpAddrString(agentAddress));
+        }
+
+        public void processVarBind(SnmpObjId name, SnmpValue value) {
+            getEventBuilder().addParam(SyntaxToEvent.processSyntax(name.toString(), value));
+            if (EventConstants.OID_SNMP_IFINDEX.isPrefixOf(name)) {
+                getEventBuilder().setIfIndex(value.toInt());
+            }
+        }
+
+        public void setTrapAddress(InetAddress trapAddress) {
+            getEventBuilder().setSnmpHost(str(trapAddress));
+            getEventBuilder().setInterface(trapAddress);
+            long nodeId = 27;
+            if (nodeId != -1) {
+                getEventBuilder().setNodeid(nodeId);
+            }
+        }
+
+        public void setTrapIdentity(TrapIdentity trapIdentity) {
+            setGeneric(trapIdentity.getGeneric());
+            setSpecific(trapIdentity.getSpecific());
+            setEnterpriseId(trapIdentity.getEnterpriseId().toString());
+        
+            if (log().isDebugEnabled()) {
+                log().debug("setTrapIdentity: SNMP trap "+trapIdentity);
+            }
+        
+        }
+
+        public org.opennms.netmgt.xml.event.Event getEvent() {
+            return getEventBuilder().getEvent();
+        }
+        
+        private ThreadCategory log() {
+            return ThreadCategory.getInstance(getClass());
+        }
+
+		private EventBuilder getEventBuilder() {
+			return m_eventBuilder;
+		}
+
+		private void setEventBuilder(EventBuilder eventBuilder) {
+			m_eventBuilder = eventBuilder;
+		}
+    }
+    @Test
+    public void testFindByTrap() throws Exception {
+        String enterpriseId = ".1.3.6.1.4.1.5813.1";
+		int generic = 6;
+		int specific = 1;
+        String ip = "127.0.0.1";
+
+        EventBuilder bldr = new EventBuilder(null, "trapd");
+		bldr.setSnmpVersion("v2");
+        bldr.setCommunity("public");
+		bldr.setHost(ip);
+        bldr.setSnmpHost(ip);
+		bldr.setInterface(InetAddress.getByName("127.0.0.1"));
+    
+        // time-stamp (units is hundreths of a second
+		bldr.setSnmpTimeStamp(System.currentTimeMillis()/10);
+    
+        bldr.setGeneric(generic);
+		bldr.setSpecific(specific);
+		bldr.setEnterpriseId(enterpriseId);
+		
+		for(int i = 0; i < 19; i++) {
+			bldr.addParam(".1.3.6."+(i+1), "parm" + (i+1) );
+		}
+		
+		
+    	DefaultEventConfDao eventConfDao = loadConfiguration("eventconf-speedtest/eventconf.xml");
+
+        
+		org.opennms.netmgt.xml.event.Event event = bldr.getEvent();
+		Event eventConf = eventConfDao.findByEvent(event);
+
+        
+        assertNotNull("returned event configuration for event with known UEI '" + knownUEI1 + "' should not be null", eventConf);
+        assertEquals("uei.opennms.org/traps/eventTrap", eventConf.getUei());
+    }
+    @Test
+    public void testFindByTrap1000Times() throws Exception {
+        String enterpriseId = ".1.3.6.1.4.1.5813.1";
+		int generic = 6;
+		int specific = 1;
+        String ip = "127.0.0.1";
+
+        EventBuilder bldr = new EventBuilder(null, "trapd");
+		bldr.setSnmpVersion("v2");
+        bldr.setCommunity("public");
+		bldr.setHost(ip);
+        bldr.setSnmpHost(ip);
+		bldr.setInterface(InetAddress.getByName("127.0.0.1"));
+    
+        // time-stamp (units is hundreths of a second
+		bldr.setSnmpTimeStamp(System.currentTimeMillis()/10);
+    
+        bldr.setGeneric(generic);
+		bldr.setSpecific(specific);
+		bldr.setEnterpriseId(enterpriseId);
+		
+		for(int i = 0; i < 19; i++) {
+			bldr.addParam(".1.3.6."+(i+1), "parm" + (i+1) );
+		}
+		
+		
+    	DefaultEventConfDao eventConfDao = loadConfiguration("eventconf-speedtest/eventconf.xml");
+
+    	final int ATTEMPTS = 10000;
+    	
+        Event eventConf = null;
+        
+		org.opennms.netmgt.xml.event.Event event = bldr.getEvent();
+        long start = System.currentTimeMillis();
+        for(int i = 0; i < ATTEMPTS; i++) {
+			eventConf = eventConfDao.findByEvent(event);
+        }
+        long end = System.currentTimeMillis();
+        long elapsed = end - start;
+        System.err.printf("%d Attempts: Elapsed: %d ms: events per second %f.%n", ATTEMPTS, elapsed, ATTEMPTS*1000.0/elapsed);
+
+        
+        assertNotNull("returned event configuration for event with known UEI '" + knownUEI1 + "' should not be null", eventConf);
+        assertEquals("uei.opennms.org/traps/eventTrap", eventConf.getUei());
     }
 
     @Test
@@ -407,11 +604,11 @@ public class EventconfFactoryTest {
         dao.afterPropertiesSet();
     }
 
-    private void loadConfiguration(String relativeResourcePath) throws DataAccessException, IOException {
-        loadConfiguration(relativeResourcePath, true);
+    private DefaultEventConfDao loadConfiguration(String relativeResourcePath) throws DataAccessException, IOException {
+        return loadConfiguration(relativeResourcePath, true);
     }
     
-    private void loadConfiguration(String relativeResourcePath, boolean passFile) throws DataAccessException, IOException {
+    private DefaultEventConfDao loadConfiguration(String relativeResourcePath, boolean passFile) throws DataAccessException, IOException {
         DefaultEventConfDao dao = new DefaultEventConfDao();
         
         if (passFile) {
@@ -422,6 +619,7 @@ public class EventconfFactoryTest {
         }
         
         dao.afterPropertiesSet();
+        return dao;
     }
 
     private InputStream getFilteredInputStreamForConfig(String resourceSuffix) throws IOException {

@@ -1,0 +1,433 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<?meta name="GENERATOR" content="XML::Smart/1.6.9 Perl/5.008008 [linux]" ?>
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.4.12</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>1</mevalue>
+      </maskelement>
+      <varbind>
+        <vbnumber>3</vbnumber>
+        <vbvalue>~[123]</vbvalue>
+      </varbind>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxSyslogTrap</uei>
+    <event-label>JUNIPER-SYSLOG-MIB defined trap event: jnxSyslogTrap</event-label>
+    <descr><![CDATA[
+<p>Notification of a generated syslog message. Apart from
+the jnxSyslogTrap objects, this notification can include 
+ one or more attribute-value pairs. The attribute-value 
+ pairs shall be identified by objects jnxSyslogAvAttribute 
+ and jnxSyslogAvValue.</p><table>
+	<tr><td><b>
+
+	jnxSyslogEventName</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxSyslogTimestamp</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxSyslogSeverity</b></td><td>
+	%parm[#3]%;</td><td><p>
+		emergency(1)
+		alert(2)
+		critical(3)
+		error(4)
+		warning(5)
+		notice(6)
+		info(7)
+		debug(8)
+	</p></td></tr>
+	<tr><td><b>
+
+	jnxSyslogFacility</b></td><td>
+	%parm[#4]%;</td><td><p>
+		kernel(1)
+		user(2)
+		mail(3)
+		daemon(4)
+		auth(5)
+		syslog(6)
+		lpr(7)
+		news(8)
+		uucp(9)
+		cron(10)
+		authPriv(11)
+		ftp(12)
+		ntp(13)
+		security(14)
+		console(15)
+		local0(17)
+		dfc(18)
+		local2(19)
+		firewall(20)
+		pfe(21)
+		conflict(22)
+		change(23)
+		interact(24)
+	</p></td></tr>
+	<tr><td><b>
+
+	jnxSyslogProcessId</b></td><td>
+	%parm[#5]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxSyslogProcessName</b></td><td>
+	%parm[#6]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxSyslogHostName</b></td><td>
+	%parm[#7]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxSyslogMessage</b></td><td>
+	%parm[#8]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxSyslogTrap trap received 
+			jnxSyslogEventName=%parm[#1]% 
+			jnxSyslogTimestamp=%parm[#2]% 
+			jnxSyslogSeverity=%parm[#3]% 
+			jnxSyslogFacility=%parm[#4]% 
+			jnxSyslogProcessId=%parm[#5]% 
+			jnxSyslogProcessName=%parm[#6]% 
+			jnxSyslogHostName=%parm[#7]% 
+			jnxSyslogMessage=%parm[#8]%</p>
+		]]></logmsg>
+    <severity>Critical</severity>
+    <alarm-data alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%:%parm[#7]%:%parm[#8]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.4.12</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>1</mevalue>
+      </maskelement>
+      <varbind>
+        <vbnumber>3</vbnumber>
+        <vbvalue>4</vbvalue>
+      </varbind>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxSyslogTrap</uei>
+    <event-label>JUNIPER-SYSLOG-MIB defined trap event: jnxSyslogTrap</event-label>
+    <descr><![CDATA[
+<p>Notification of a generated syslog message. Apart from
+the jnxSyslogTrap objects, this notification can include 
+ one or more attribute-value pairs. The attribute-value 
+ pairs shall be identified by objects jnxSyslogAvAttribute 
+ and jnxSyslogAvValue.</p><table>
+	<tr><td><b>
+
+	jnxSyslogEventName</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxSyslogTimestamp</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxSyslogSeverity</b></td><td>
+	%parm[#3]%;</td><td><p>
+		emergency(1)
+		alert(2)
+		critical(3)
+		error(4)
+		warning(5)
+		notice(6)
+		info(7)
+		debug(8)
+	</p></td></tr>
+	<tr><td><b>
+
+	jnxSyslogFacility</b></td><td>
+	%parm[#4]%;</td><td><p>
+		kernel(1)
+		user(2)
+		mail(3)
+		daemon(4)
+		auth(5)
+		syslog(6)
+		lpr(7)
+		news(8)
+		uucp(9)
+		cron(10)
+		authPriv(11)
+		ftp(12)
+		ntp(13)
+		security(14)
+		console(15)
+		local0(17)
+		dfc(18)
+		local2(19)
+		firewall(20)
+		pfe(21)
+		conflict(22)
+		change(23)
+		interact(24)
+	</p></td></tr>
+	<tr><td><b>
+
+	jnxSyslogProcessId</b></td><td>
+	%parm[#5]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxSyslogProcessName</b></td><td>
+	%parm[#6]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxSyslogHostName</b></td><td>
+	%parm[#7]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxSyslogMessage</b></td><td>
+	%parm[#8]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxSyslogTrap trap received 
+			jnxSyslogEventName=%parm[#1]% 
+			jnxSyslogTimestamp=%parm[#2]% 
+			jnxSyslogSeverity=%parm[#3]% 
+			jnxSyslogFacility=%parm[#4]% 
+			jnxSyslogProcessId=%parm[#5]% 
+			jnxSyslogProcessName=%parm[#6]% 
+			jnxSyslogHostName=%parm[#7]% 
+			jnxSyslogMessage=%parm[#8]%</p>
+		]]></logmsg>
+    <severity>Major</severity>
+    <alarm-data alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%:%parm[#7]%:%parm[#8]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.4.12</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>1</mevalue>
+      </maskelement>
+      <varbind>
+        <vbnumber>3</vbnumber>
+        <vbvalue>5</vbvalue>
+      </varbind>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxSyslogTrap</uei>
+    <event-label>JUNIPER-SYSLOG-MIB defined trap event: jnxSyslogTrap</event-label>
+    <descr><![CDATA[
+<p>Notification of a generated syslog message. Apart from
+the jnxSyslogTrap objects, this notification can include 
+ one or more attribute-value pairs. The attribute-value 
+ pairs shall be identified by objects jnxSyslogAvAttribute 
+ and jnxSyslogAvValue.</p><table>
+	<tr><td><b>
+
+	jnxSyslogEventName</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxSyslogTimestamp</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxSyslogSeverity</b></td><td>
+	%parm[#3]%;</td><td><p>
+		emergency(1)
+		alert(2)
+		critical(3)
+		error(4)
+		warning(5)
+		notice(6)
+		info(7)
+		debug(8)
+	</p></td></tr>
+	<tr><td><b>
+
+	jnxSyslogFacility</b></td><td>
+	%parm[#4]%;</td><td><p>
+		kernel(1)
+		user(2)
+		mail(3)
+		daemon(4)
+		auth(5)
+		syslog(6)
+		lpr(7)
+		news(8)
+		uucp(9)
+		cron(10)
+		authPriv(11)
+		ftp(12)
+		ntp(13)
+		security(14)
+		console(15)
+		local0(17)
+		dfc(18)
+		local2(19)
+		firewall(20)
+		pfe(21)
+		conflict(22)
+		change(23)
+		interact(24)
+	</p></td></tr>
+	<tr><td><b>
+
+	jnxSyslogProcessId</b></td><td>
+	%parm[#5]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxSyslogProcessName</b></td><td>
+	%parm[#6]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxSyslogHostName</b></td><td>
+	%parm[#7]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxSyslogMessage</b></td><td>
+	%parm[#8]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxSyslogTrap trap received 
+			jnxSyslogEventName=%parm[#1]% 
+			jnxSyslogTimestamp=%parm[#2]% 
+			jnxSyslogSeverity=%parm[#3]% 
+			jnxSyslogFacility=%parm[#4]% 
+			jnxSyslogProcessId=%parm[#5]% 
+			jnxSyslogProcessName=%parm[#6]% 
+			jnxSyslogHostName=%parm[#7]% 
+			jnxSyslogMessage=%parm[#8]%</p>
+		]]></logmsg>
+    <severity>Warning</severity>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%:%parm[#7]%:%parm[#8]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.4.12</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>1</mevalue>
+      </maskelement>
+      <varbind>
+        <vbnumber>3</vbnumber>
+        <vbvalue>~[6-8]</vbvalue>
+      </varbind>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxSyslogTrap</uei>
+    <event-label>JUNIPER-SYSLOG-MIB defined trap event: jnxSyslogTrap</event-label>
+    <descr><![CDATA[
+<p>Notification of a generated syslog message. Apart from
+the jnxSyslogTrap objects, this notification can include 
+ one or more attribute-value pairs. The attribute-value 
+ pairs shall be identified by objects jnxSyslogAvAttribute 
+ and jnxSyslogAvValue.</p><table>
+	<tr><td><b>
+
+	jnxSyslogEventName</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxSyslogTimestamp</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxSyslogSeverity</b></td><td>
+	%parm[#3]%;</td><td><p>
+		emergency(1)
+		alert(2)
+		critical(3)
+		error(4)
+		warning(5)
+		notice(6)
+		info(7)
+		debug(8)
+	</p></td></tr>
+	<tr><td><b>
+
+	jnxSyslogFacility</b></td><td>
+	%parm[#4]%;</td><td><p>
+		kernel(1)
+		user(2)
+		mail(3)
+		daemon(4)
+		auth(5)
+		syslog(6)
+		lpr(7)
+		news(8)
+		uucp(9)
+		cron(10)
+		authPriv(11)
+		ftp(12)
+		ntp(13)
+		security(14)
+		console(15)
+		local0(17)
+		dfc(18)
+		local2(19)
+		firewall(20)
+		pfe(21)
+		conflict(22)
+		change(23)
+		interact(24)
+	</p></td></tr>
+	<tr><td><b>
+
+	jnxSyslogProcessId</b></td><td>
+	%parm[#5]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxSyslogProcessName</b></td><td>
+	%parm[#6]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxSyslogHostName</b></td><td>
+	%parm[#7]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxSyslogMessage</b></td><td>
+	%parm[#8]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxSyslogTrap trap received 
+			jnxSyslogEventName=%parm[#1]% 
+			jnxSyslogTimestamp=%parm[#2]% 
+			jnxSyslogSeverity=%parm[#3]% 
+			jnxSyslogFacility=%parm[#4]% 
+			jnxSyslogProcessId=%parm[#5]% 
+			jnxSyslogProcessName=%parm[#6]% 
+			jnxSyslogHostName=%parm[#7]% 
+			jnxSyslogMessage=%parm[#8]%</p>
+		]]></logmsg>
+    <severity>Normal</severity>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%:%parm[#7]%:%parm[#8]%"/>
+  </event>
+</events>
+

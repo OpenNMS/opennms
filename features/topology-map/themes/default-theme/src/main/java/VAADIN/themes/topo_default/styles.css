@@ -79,6 +79,10 @@ div.v-table-header-wrap {
 	stroke: #4D6C80;
 }
 
+.edge.ncs.direct {
+	stroke: #FFD700;
+}
+
 .edge.ncs.selected {
 	stroke: #00ffff;
 }
@@ -304,4 +308,8 @@ div.v-table-header-wrap {
   background-image: linear-gradient(to bottom, #e8616c, #dd202f);
   -webkit-box-shadow: inset 0 0 1px 1px rgba(255, 255, 255, 0.1), 0 1px rgba(0, 0, 0, 0.12);
   box-shadow: inset 0 0 1px 1px rgba(255, 255, 255, 0.1), 0 1px rgba(0, 0, 0, 0.12);
+}
+
+.node-status-counter {
+  overflow: visible;
 }

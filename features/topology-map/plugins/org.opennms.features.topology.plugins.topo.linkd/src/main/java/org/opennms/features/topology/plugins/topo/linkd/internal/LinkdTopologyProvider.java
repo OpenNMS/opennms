@@ -64,6 +64,150 @@ import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.slf4j.LoggerFactory;
 
 public class LinkdTopologyProvider extends AbstractTopologyProvider implements GraphProvider {
+    
+    private class LinkStateMachine {
+        LinkState m_upState;
+        LinkState m_downState;
+        LinkState m_unknownState;
+        LinkState m_state;
+        
+        public LinkStateMachine() {
+            m_upState = new LinkUpState(this);
+            m_downState = new LinkDownState(this);
+            m_unknownState = new LinkUnknownState(this);
+            m_state = m_upState;
+        }
+        
+        public void setParentInterfaces(OnmsSnmpInterface sourceInterface, OnmsSnmpInterface targetInterface) {
+            m_state.setParentInterfaces(sourceInterface, targetInterface);
+        }
+        
+        public String getLinkStatus() {
+            return m_state.getLinkStatus();
+        }
+
+        public LinkState getUpState() {
+            return m_upState;
+        }
+
+        public LinkState getDownState() {
+            return m_downState;
+        }
+
+        public LinkState getUnknownState() {
+            return m_unknownState;
+        }
+
+        public void setState(LinkState state) {
+            m_state = state;
+        }
+    }
+    
+    private interface LinkState{
+        void setParentInterfaces(OnmsSnmpInterface sourceInterface, OnmsSnmpInterface targetInterface);
+        String getLinkStatus();
+    }
+    
+    private abstract class AbstractLinkState implements LinkState {
+        
+        private LinkStateMachine m_linkStateMachine;
+
+        public AbstractLinkState(LinkStateMachine linkStateMachine) {
+            m_linkStateMachine = linkStateMachine;
+        }
+        
+        protected LinkStateMachine getLinkStateMachine() {
+            return m_linkStateMachine;
+        }
+    }
+    
+    private class LinkUpState extends AbstractLinkState{
+
+        public LinkUpState(LinkStateMachine linkStateMachine) {
+            super(linkStateMachine);
+        }
+
+        @Override
+        public void setParentInterfaces(OnmsSnmpInterface sourceInterface, OnmsSnmpInterface targetInterface) {
+            if(sourceInterface != null && sourceInterface.getIfOperStatus() != null) {
+                if(sourceInterface.getIfOperStatus() != 1) {
+                    getLinkStateMachine().setState( getLinkStateMachine().getDownState() );
+                }
+            }
+            
+            if(targetInterface != null && targetInterface.getIfOperStatus() != null) {
+                if(targetInterface.getIfOperStatus() != 1) {
+                    getLinkStateMachine().setState( getLinkStateMachine().getDownState() );
+                }
+            }
+            
+            if(sourceInterface == null && targetInterface == null) {
+                getLinkStateMachine().setState( getLinkStateMachine().getUnknownState() );
+            }
+            
+        }
+
+        @Override
+        public String getLinkStatus() {
+            return OPER_ADMIN_STATUS[1];
+        }
+        
+    }
+    private class LinkDownState extends AbstractLinkState {
+
+        public LinkDownState(LinkStateMachine linkStateMachine) {
+            super(linkStateMachine);
+        }
+
+        @Override
+        public void setParentInterfaces(OnmsSnmpInterface sourceInterface, OnmsSnmpInterface targetInterface) {
+            if(targetInterface != null && targetInterface.getIfOperStatus() != null) {
+                if(sourceInterface != null) {
+                    if(sourceInterface.getIfOperStatus() == 1 && targetInterface.getIfOperStatus() == 1) {
+                        getLinkStateMachine().setState( getLinkStateMachine().getUpState() );
+                    }
+                }
+            } else if(sourceInterface == null) {
+                getLinkStateMachine().setState( getLinkStateMachine().getUnknownState() );
+            }
+        }
+
+        @Override
+        public String getLinkStatus() {
+            return OPER_ADMIN_STATUS[2];
+        }
+
+    }
+    
+    private class LinkUnknownState extends AbstractLinkState{
+
+
+        public LinkUnknownState(LinkStateMachine linkStateMachine) {
+            super(linkStateMachine);
+        }
+
+        
+        @Override
+        public void setParentInterfaces(OnmsSnmpInterface sourceInterface, OnmsSnmpInterface targetInterface) {
+            if(targetInterface != null && targetInterface.getIfOperStatus() != null) {
+                if(sourceInterface != null) {
+                    if(sourceInterface.getIfOperStatus() == 1 && targetInterface.getIfOperStatus() == 1) {
+                        getLinkStateMachine().setState( getLinkStateMachine().getUpState() );
+                    } else {
+                        getLinkStateMachine().setState( getLinkStateMachine().getDownState() );
+                    }
+                }
+            }
+            
+        }
+
+        @Override
+        public String getLinkStatus() {
+            return OPER_ADMIN_STATUS[4];
+        }
+
+    }
+    
     public static final String TOPOLOGY_NAMESPACE_LINKD = "nodes";
     public static final String GROUP_ICON_KEY = "linkd:group";
     public static final String SERVER_ICON_KEY = "linkd:system";
@@ -341,26 +485,23 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         tooltipText.append("&gt;");
         tooltipText.append(HTML_TOOLTIP_TAG_END);
         
+        LinkStateMachine stateMachine = new LinkStateMachine();
+        stateMachine.setParentInterfaces(sourceInterface, targetInterface);
+        tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
+        tooltipText.append("Link status: " + stateMachine.getLinkStatus());
+        tooltipText.append(HTML_TOOLTIP_TAG_END);
+        
+        
         if ( targetInterface != null) {
             if (targetInterface.getIfSpeed() != null) {
                 tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
                 tooltipText.append( "Bandwidth: " + getHumanReadableIfSpeed(targetInterface.getIfSpeed()));
                 tooltipText.append(HTML_TOOLTIP_TAG_END);
             }
-            if (targetInterface.getIfOperStatus() != null) {
-                tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-                tooltipText.append( "Link status: " + getIfStatusString(targetInterface.getIfOperStatus()));
-                tooltipText.append(HTML_TOOLTIP_TAG_END);
-            }
         } else if (sourceInterface != null) {
             if (sourceInterface.getIfSpeed() != null) {
                 tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
                 tooltipText.append( "Bandwidth: " + getHumanReadableIfSpeed(sourceInterface.getIfSpeed()));
-                tooltipText.append(HTML_TOOLTIP_TAG_END);
-            }
-            if (sourceInterface.getIfOperStatus() != null) {
-                tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-                tooltipText.append( "Link status: " + getIfStatusString(sourceInterface.getIfOperStatus()));
                 tooltipText.append(HTML_TOOLTIP_TAG_END);
             }
         }

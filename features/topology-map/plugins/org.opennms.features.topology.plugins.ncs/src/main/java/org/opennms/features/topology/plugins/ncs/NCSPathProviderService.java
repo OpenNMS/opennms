@@ -26,13 +26,14 @@ public class NCSPathProviderService {
         
     }
     
-    public NCSServicePath getPath(String foreignId, String foreignSource, String deviceAForeignId, String deviceZForeignId, String nodeForeignSource) throws Exception {
+    public NCSServicePath getPath(String foreignId, String foreignSource, String deviceAForeignId, String deviceZForeignId, String nodeForeignSource, String serviceName) throws Exception {
         Map<String, Object> headers = new HashMap<String,Object>();
         headers.put("foreignId", foreignId);
         headers.put("foreignSource", foreignSource);
         headers.put("deviceA", deviceAForeignId);
         headers.put("deviceZ", deviceZForeignId);
         headers.put("nodeForeignSource", nodeForeignSource);
+        headers.put("serviceName", serviceName);
         
         return m_template.requestBodyAndHeaders("direct:start", null, headers, NCSServicePath.class);
     }

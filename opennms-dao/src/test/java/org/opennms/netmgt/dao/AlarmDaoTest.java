@@ -274,6 +274,16 @@ public class AlarmDaoTest implements InitializingBean {
             Assert.assertNotSame("N/A", sum.getFuzzyTimeDown());
 	}
 
+    @Test
+    @Transactional
+    public void testAlarmSummary_WithEmptyNodeIdsArray() {
+        List<AlarmSummary> summary = m_alarmDao.getNodeAlarmSummaries(new Integer[0]);
+        Assert.assertNotNull(summary); // the result does not really matter, as long as we get a result
+        summary = null;
+        summary = m_alarmDao.getNodeAlarmSummaries(null);
+        Assert.assertNotNull(summary);
+    }
+
         @Test
         @Transactional
         public void testAlarmSummary_AlarmWithNoEvent() {

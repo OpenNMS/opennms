@@ -110,6 +110,7 @@ public class OnmsSnmpInterfaceList extends LinkedList<OnmsSnmpInterface> {
      * @param interfaces a {@link java.util.List} object.
      */
     public void setInterfaces(List<OnmsSnmpInterface> interfaces) {
+        if (interfaces == this) return;
         clear();
         addAll(interfaces);
     }

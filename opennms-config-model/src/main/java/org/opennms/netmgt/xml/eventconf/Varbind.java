@@ -28,6 +28,11 @@
 
 package org.opennms.netmgt.xml.eventconf;
 
+import static org.opennms.netmgt.xml.eventconf.EventMatchers.varbind;
+import static org.opennms.netmgt.xml.eventconf.EventMatchers.valueEqualsMatcher;
+import static org.opennms.netmgt.xml.eventconf.EventMatchers.valueMatchesRegexMatcher;
+import static org.opennms.netmgt.xml.eventconf.EventMatchers.valueStartsWithMatcher;
+
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Serializable;
@@ -222,5 +227,30 @@ public class Varbind implements Serializable {
 		}
 		return true;
 	}
+
+	public EventMatcher constructMatcher() {
+		// ignore this is vbnumber is null
+		if (m_vbnumber == null) return EventMatchers.trueMatcher();
+		
+		List<EventMatcher> valueMatchers = new ArrayList<EventMatcher>(m_values.size());
+		for(String value : m_values) {
+			if (value == null) continue;
+			if (value.startsWith("~")) {
+				valueMatchers.add(valueMatchesRegexMatcher(varbind(m_vbnumber), value));
+			} else if (value.endsWith("%")) {
+				valueMatchers.add(valueStartsWithMatcher(varbind(m_vbnumber), value));
+			} else {
+				valueMatchers.add(valueEqualsMatcher(varbind(m_vbnumber), value));
+			}
+		}
+		
+		if (valueMatchers.size() == 1) {
+			return valueMatchers.get(0);
+		} else {
+			EventMatcher[] matchers = valueMatchers.toArray(new EventMatcher[valueMatchers.size()]);
+			return EventMatchers.or(matchers);
+		}
+
+	}	
 
 }

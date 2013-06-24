@@ -35,8 +35,8 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.Alias.JoinType;
+import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
@@ -53,12 +53,12 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(locations={
-        "classpath:/META-INF/opennms/applicationContext-soa.xml",
-        "classpath:/META-INF/opennms/applicationContext-dao.xml",
-        "classpath*:/META-INF/opennms/component-dao.xml",
-        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
-        "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml"
+@ContextConfiguration(locations = {
+    "classpath:/META-INF/opennms/applicationContext-soa.xml",
+    "classpath:/META-INF/opennms/applicationContext-dao.xml",
+    "classpath*:/META-INF/opennms/component-dao.xml",
+    "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
+    "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(dirtiesContext=false)
@@ -66,11 +66,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class HibernateCriteriaConverterTest implements InitializingBean {
     @Autowired
     DatabasePopulator m_populator;
-    
+
     @Autowired
     NodeDao m_nodeDao;
-
-    private static boolean m_populated = false;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -79,16 +77,8 @@ public class HibernateCriteriaConverterTest implements InitializingBean {
 
     @Before
     public void setUp() {
-    	MockLogAppender.setupLogging(true);
-        try {
-            if (!m_populated) {
-                m_populator.populateDatabase();
-            }
-        } catch (final Throwable e) {
-            e.printStackTrace(System.err);
-        } finally {
-            m_populated = true;
-        }
+        MockLogAppender.setupLogging(true);
+        m_populator.populateDatabase();
     }
 
 	@Test
@@ -127,12 +117,12 @@ public class HibernateCriteriaConverterTest implements InitializingBean {
 	public void testDistinctQuery() {
 		List<OnmsNode> nodes = null;
 
-		final CriteriaBuilder cb = new CriteriaBuilder(OnmsNode.class);
-		cb.isNotNull("id").distinct();
-		cb.eq("label", "node1").join("ipInterfaces", "ipInterface", JoinType.LEFT_JOIN).eq("ipInterface.ipAddress", "192.168.1.1");
+        final CriteriaBuilder cb = new CriteriaBuilder(OnmsNode.class);
+        cb.isNotNull("id").distinct();
+        cb.eq("label", "node1").join("ipInterfaces", "ipInterface", JoinType.LEFT_JOIN).eq("ipInterface.ipAddress", "192.168.1.1");
 
-		nodes = m_nodeDao.findMatching(cb.toCriteria());
-		assertEquals(1, nodes.size());
-		assertEquals(Integer.valueOf(1), nodes.get(0).getId());
-	}
+        nodes = m_nodeDao.findMatching(cb.toCriteria());
+        assertEquals(1, nodes.size());
+        assertEquals(Integer.valueOf(1), nodes.get(0).getId());
+    }
 }

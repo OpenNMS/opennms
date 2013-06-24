@@ -20,6 +20,7 @@
   	<qualifier value="deployed" />
   	<property name="requisitionPath" value="target/opennms-home/etc/imports" />
   	<property name="foreignSourcePath" value="target/opennms-home/etc/foreign-sources" />
+  	<property name="updateDateStamps" value="false" />
   </bean>
 
   <bean id="fusedForeignSourceRepository" class="org.opennms.netmgt.provision.persist.FusedForeignSourceRepository">

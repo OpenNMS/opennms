@@ -37,7 +37,9 @@ public class MapPageTest extends OpenNMSSeleniumTestCase {
     @Before
     public void setUp() throws Exception {
     	super.setUp();
-        selenium.click("link=Map");
+        selenium.click("//a[@href='maps.htm']");
+        waitForPageToLoad();
+        selenium.click("//div[@id='content']//a[contains(@href,'map/index.jsp')]");
         waitForPageToLoad();
     }
 

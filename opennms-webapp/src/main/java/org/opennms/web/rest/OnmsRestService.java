@@ -305,7 +305,7 @@ public class OnmsRestService {
         if (pathComponents != null && pathComponents.length == 0) {
             final URI requestUri = m_uriInfo.getRequestUri();
             try {
-                return new URI(requestUri.getScheme(), requestUri.getHost(), requestUri.getPath().replaceAll("/$", ""), null);
+                return new URI(requestUri.getScheme(), requestUri.getUserInfo(), requestUri.getHost(), requestUri.getPort(), requestUri.getPath().replaceAll("/$", ""), null, null);
             } catch (final URISyntaxException e) {
                 return requestUri;
             }

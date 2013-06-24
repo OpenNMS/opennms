@@ -361,6 +361,7 @@ public class PersistenceSelectorStrategy implements Serializable {
      * @param parameters the Vector to copy.
      */
     public void setParameter(final List<Parameter> parameters) {
+        if (m_parameters == parameters) return;
         m_parameters.clear();
         m_parameters.addAll(parameters);
     }

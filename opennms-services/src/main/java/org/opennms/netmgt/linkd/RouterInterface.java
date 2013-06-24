@@ -51,7 +51,7 @@ public class RouterInterface {
 	RouterInterface(final int nextHopNodeId, final int nextHopIfIndex) {
 		m_nextHopNodeId = nextHopNodeId;
 		m_nextHopIfIndex = nextHopIfIndex;
-		m_nextHopNetmask = InetAddressUtils.getInetAddress("255.255.255.255");
+		m_nextHopNetmask = InetAddressUtils.TWO_FIFTY_FIVES;
 	}
 
 	/**

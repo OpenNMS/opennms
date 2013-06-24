@@ -69,6 +69,7 @@ import org.opennms.netmgt.model.OnmsUserList;
  *
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @author <a href="mailto:brozow@opennms.org">Matt Brozowski</a>
+ * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
  */
 public abstract class UserManager {
     private static final char[] HEX = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
@@ -1315,14 +1316,9 @@ public abstract class UserManager {
             m_readLock.unlock();
         }
     }
-    /**
-     * <p>isUpdateNeeded</p>
-     *
-     * @return a boolean.
-     */
-    public abstract boolean isUpdateNeeded();
 
+    public abstract boolean isUpdateNeeded();
     public abstract long getLastModified();
     public abstract long getFileSize();
-
+    public abstract void reload() throws IOException, FileNotFoundException, MarshalException, ValidationException;
 }

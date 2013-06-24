@@ -163,10 +163,9 @@ public class Linkd extends AbstractServiceDaemon {
         m_activepackages = new ArrayList<String>();
 
         // initialize the ipaddrsentevents
-        m_newSuspectEventsIpAddr = new TreeSet<InetAddress>(
-                                                            new InetAddressComparator());
-        m_newSuspectEventsIpAddr.add(addr("127.0.0.1"));
-        m_newSuspectEventsIpAddr.add(addr("0.0.0.0"));
+        m_newSuspectEventsIpAddr = new TreeSet<InetAddress>(new InetAddressComparator());
+        m_newSuspectEventsIpAddr.add(InetAddressUtils.ONE_TWENTY_SEVEN);
+        m_newSuspectEventsIpAddr.add(InetAddressUtils.ZEROS);
 
         m_nodes = m_queryMgr.getSnmpNodeList();
         m_queryMgr.updateDeletedNodes();

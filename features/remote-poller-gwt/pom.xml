@@ -133,6 +133,17 @@
       <groupId>geoGoogle</groupId>
       <artifactId>geoGoogle</artifactId>
       <scope>provided</scope>
+      <exclusions>
+        <exclusion><groupId>javax.xml.bind</groupId><artifactId>jaxb-api</artifactId></exclusion>
+        <exclusion><groupId>com.sun.xml.bind</groupId><artifactId>jaxb-impl</artifactId></exclusion>
+      </exclusions>
+    </dependency>
+    <!-- for geoGoogle -->
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>jaxb-dependencies</artifactId>
+      <type>pom</type>
+      <scope>provided</scope>
     </dependency>
     <!-- GWT -->
     <dependency>

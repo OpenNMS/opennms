@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<?meta name="GENERATOR" content="XML::Smart/1.6.9 Perl/5.008008 [linux]" ?>
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.4.3</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>1</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxRmonAlarmGetFailure</uei>
+    <event-label>JUNIPER-RMON-MIB defined trap event: jnxRmonAlarmGetFailure</event-label>
+    <descr><![CDATA[
+<p>The SNMP trap that is generated when the get request for an alarm
+variable returns an error.  The specific error is identified by
+jnxRmonAlarmGetFailReason.</p><table>
+	<tr><td><b>
+
+	alarmIndex</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	alarmVariable</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxRmonAlarmGetFailReason</b></td><td>
+	%parm[#3]%;</td><td><p>
+		other(1)
+		noError(2)
+		noSuchObject(3)
+		outOfView(4)
+		noSuchInstance(5)
+		badReqId(6)
+		oidMatchErr(7)
+		oidBindErr(8)
+		createPktErr(9)
+		badObjType(10)
+		processRestarted(11)
+		lostInstance(12)
+	</p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxRmonAlarmGetFailure trap received 
+			alarmIndex=%parm[#1]% 
+			alarmVariable=%parm[#2]% 
+			jnxRmonAlarmGetFailReason=%parm[#3]%</p>
+		]]></logmsg>
+    <severity>Warning</severity>
+    <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.4.3</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>2</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxRmonGetOk</uei>
+    <event-label>JUNIPER-RMON-MIB defined trap event: jnxRmonGetOk</event-label>
+    <descr><![CDATA[
+<p>The SNMP trap that is generated when the get request for an alarm
+variable is successful.  This is only sent after previous attempts
+were unsuccessful.</p><table>
+	<tr><td><b>
+
+	alarmIndex</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	alarmVariable</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxRmonGetOk trap received 
+			alarmIndex=%parm[#1]% 
+			alarmVariable=%parm[#2]%</p>
+		]]></logmsg>
+    <severity>Cleared</severity>
+    <alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxRmonAlarmGetFailure:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%"/>
+  </event>
+</events>
+

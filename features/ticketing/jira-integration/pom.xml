@@ -69,7 +69,10 @@
             <artifactId>jira-rest-java-client</artifactId>
             <version>1.0</version>
             <exclusions>
-                <!-- Exclude JAXB dependencies -->
+                <exclusion>
+                    <groupId>javax.xml.bind</groupId>
+                    <artifactId>jaxb-api</artifactId>
+                </exclusion>
                 <exclusion>
                     <groupId>com.sun.xml.bind</groupId>
                     <artifactId>jaxb-impl</artifactId>

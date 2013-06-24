@@ -19,8 +19,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
     <bean id="topologyApplication" class="org.opennms.features.topology.app.internal.TopologyWidgetTestApplication" scope="prototype">
         <argument ref="commandManager"/>
         <argument ref="historyManager"/>
-        <argument ref="topologyProvider"/>
-        <argument ref="providerManager" />
+        <argument ref="veGraphContainer" />
         <argument ref="iconRepoManager"/>
         <argument>
             <bean class="org.opennms.features.topology.app.internal.DefaultSelectionManager"/>
@@ -31,6 +30,13 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         <property name="showHeader" value="${showHeader}" />
     </bean>
     
+    <bean id="veGraphContainer" class="org.opennms.features.topology.app.internal.VEProviderGraphContainer" scope="prototype">
+        <argument ref="topologyProvider" />
+        <argument ref="providerManager" />
+        <property name="bundleContext" ref="blueprintBundleContext" />
+    </bean>
+    
+    <!--  Header reference -->
     <reference id="onmsHeaderProvider" interface="org.opennms.web.api.OnmsHeaderProvider" availability="mandatory" />
     
     <bean id="topologyWidgetTestApplicationFactory" class="org.opennms.features.topology.app.internal.TopologyWidgetTestApplicationFactory" >
@@ -40,7 +46,12 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         <argument value="topologyApplication"/>
         <property name="headerProvider" ref="onmsHeaderProvider" />
     </bean>
-    
+
+    <bean id="graphContainer" class="org.opennms.features.topology.app.internal.VEProviderGraphContainer">
+        <argument ref="topologyProvider"/>
+        <argument ref="providerManager"/>
+    </bean>
+
     <service interface="org.ops4j.pax.vaadin.ApplicationFactory" ref="topologyWidgetTestApplicationFactory">
         <service-properties>
             <entry key="alias" value="${servletAlias}"/>
@@ -64,7 +75,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         <reference-listener bind-method="addStatusProvider" unbind-method="removeStatusProvider" ref="statusSelector" />
     </reference-list>
 
-    <!-- default icon repository -->    
+    <!-- default icon repository -->
     <service>
       <interfaces>
         <value>org.opennms.features.topology.api.IconRepository</value>
@@ -264,7 +275,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         <service-properties>
             <!-- <entry key="operation.menuLocation" value="View"/> -->
             <entry key="operation.contextMenuLocation" value=""/>
-            <entry key="operation.label" value="Remove This Item From a Group"/>
+            <entry key="operation.label" value="Remove item from this Group"/>
         </service-properties>
         <bean class="org.opennms.features.topology.app.internal.operations.RemoveVertexFromGroupOperation"/>
     </service>

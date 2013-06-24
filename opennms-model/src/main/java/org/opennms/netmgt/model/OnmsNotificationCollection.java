@@ -83,6 +83,7 @@ public class OnmsNotificationCollection extends LinkedList<OnmsNotification> {
      * @param events a {@link java.util.List} object.
      */
     public void setEvents(List<OnmsNotification> events) {
+        if (events == this) return;
         clear();
         addAll(events);
     }

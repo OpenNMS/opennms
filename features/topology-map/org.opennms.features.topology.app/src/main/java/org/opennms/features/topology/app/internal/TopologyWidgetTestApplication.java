@@ -34,6 +34,8 @@ import java.io.InputStream;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.servlet.http.HttpSession;
+
 import org.opennms.core.utils.LogUtils;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.HasExtraComponents;
@@ -58,10 +60,13 @@ import com.vaadin.Application;
 import com.vaadin.data.Property;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.terminal.ThemeResource;
+import com.vaadin.terminal.gwt.server.WebApplicationContext;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.HorizontalLayout;
@@ -69,21 +74,19 @@ import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.MenuBar;
+import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.Slider;
 import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
+import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UriFragmentUtility;
+import com.vaadin.ui.UriFragmentUtility.FragmentChangedEvent;
+import com.vaadin.ui.UriFragmentUtility.FragmentChangedListener;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.VerticalSplitPanel;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.MenuBar.MenuItem;
-import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
-import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
-import com.vaadin.ui.UriFragmentUtility.FragmentChangedEvent;
-import com.vaadin.ui.UriFragmentUtility.FragmentChangedListener;
 
 
 public class TopologyWidgetTestApplication extends Application implements CommandUpdateListener, MenuItemUpdateListener, ContextMenuHandler, WidgetUpdateListener, WidgetContext, FragmentChangedListener, GraphContainer.ChangeListener, MapViewManagerListener, VertexUpdateListener, SelectionListener {
@@ -113,29 +116,29 @@ public class TopologyWidgetTestApplication extends Application implements Comman
     private String m_headerHtml;
     private boolean m_showHeader = true;
 
-	public TopologyWidgetTestApplication(CommandManager commandManager, HistoryManager historyManager, GraphProvider topologyProvider, ProviderManager providerManager, IconRepositoryManager iconRepoManager, SelectionManager selectionManager) {
+    public TopologyWidgetTestApplication(CommandManager commandManager, HistoryManager historyManager, GraphContainer graphContainer, IconRepositoryManager iconRepoManager, SelectionManager selectionManager) {
+        // Ensure that selection changes trigger a history save operation
+        selectionManager.addSelectionListener(this);
 
-		// Ensure that selection changes trigger a history save operation
-		selectionManager.addSelectionListener(this);
+        m_commandManager = commandManager;
+        m_commandManager.addMenuItemUpdateListener(this);
+        m_historyManager = historyManager;
+        m_iconRepositoryManager = iconRepoManager;
 
-		m_commandManager = commandManager;
-		m_commandManager.addMenuItemUpdateListener(this);
-		m_historyManager = historyManager;
-		m_iconRepositoryManager = iconRepoManager;
-
-		// Create a per-session GraphContainer instance
-		m_graphContainer = new VEProviderGraphContainer(topologyProvider, providerManager);
-		m_graphContainer.setSelectionManager(selectionManager);
-		m_graphContainer.addChangeListener(this);
-		m_graphContainer.getMapViewManager().addListener(this);
-		m_graphContainer.setUserName((String)this.getUser());
-	}
-
+        // Create a per-session GraphContainer instance
+        m_graphContainer = graphContainer;
+        m_graphContainer.setSelectionManager(selectionManager);
+        m_graphContainer.addChangeListener(this);
+        m_graphContainer.getMapViewManager().addListener(this);
+        m_graphContainer.setUserName((String)this.getUser());
+    }
 
 	@SuppressWarnings("serial")
 	@Override
 	public void init() {
 	    setTheme("topo_default");
+	    HttpSession session = ((WebApplicationContext) this.getContext()).getHttpSession();
+        m_graphContainer.setSessionId(session.getId());
 	    
 		// See if the history manager has an existing fragment stored for
 		// this user. Do this before laying out the UI because the history
@@ -148,11 +151,13 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 	    m_window = new Window("OpenNMS Topology");
         m_window.setContent(m_rootLayout);
         setMainWindow(m_window);
+
+
         
         m_uriFragUtil = new UriFragmentUtility();
         m_window.addComponent(m_uriFragUtil);
         m_uriFragUtil.addListener(this);
-
+        
 		m_layout = new AbsoluteLayout();
 		m_layout.setSizeFull();
 		m_rootLayout.addComponent(m_layout);
@@ -689,4 +694,5 @@ public class TopologyWidgetTestApplication extends Application implements Comman
     public void selectionChanged(SelectionContext selectionManager) {
         saveHistory();
     }
+    
 }
