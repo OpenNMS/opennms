@@ -134,26 +134,22 @@ public class SmsMessenger implements Messenger<MobileMsgRequest, MobileMsgRespon
         }
     }
 
-    /** {@inheritDoc} */
     @Override
-    public void process(String gatewayId, USSDResponse ussdResponse) {
+    public void process(AGateway gateway, USSDResponse ussdResponse) {
         long receiveTime = System.currentTimeMillis();
-        
+
         debugf("SmsMessenger.processUSSDResponse");
-        
+
         if (m_replyQueue != null) {
-            m_replyQueue.add(new UssdResponse(gatewayId, ussdResponse, receiveTime));
+            m_replyQueue.add(new UssdResponse(gateway.getGatewayId(), ussdResponse, receiveTime));
         }
     }
-
 
     private void debugf(String fmt, Object... args) {
         if (log.isDebugEnabled()) {
             log.debug(String.format(fmt, args));
         }
     }
-
-
 
 
 }
