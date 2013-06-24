@@ -471,10 +471,17 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Cont
 
     @Override
     public Collection<?> getItemIds() {
-        int overallSize = size();
+        return getItemIds(0, size());
+    }
+
+    @Override
+    public List<?> getItemIds(int startIndex, int numberOfItems) {
+        int endIndex = startIndex + numberOfItems;
+        if (endIndex >= size()) endIndex = size() - 1;
         Page page = new Page(1000, size);  // only get 10000 items at once
+        page.offset = startIndex;
         List<K> itemIds = new ArrayList<K>();
-        for (int i=0; i<overallSize; i+=page.length) {
+        for (int i=startIndex; i<endIndex; i+=page.length) {
             List<T> tmpItems = m_dao.findMatching(getCriteria(page, false));
             for (T eachItem : tmpItems) {
                 itemIds.add(getId(eachItem));
@@ -482,10 +489,6 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Cont
             page.updateOffset(page.offset + page.length);
         }
         return itemIds;
-    }
-    
-    public List<?> getItemIds(int startIndex, int numberOfItems){
-         throw new UnhandledException("Markus Prime needs to fix this", new NullPointerException());
     }
 
     @Override
