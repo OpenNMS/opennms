@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -103,13 +103,17 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Cont
             value = reloadStrategy.reload();
             lastUpdate = new Date();
         }
+
+        private void setOutdated() {
+            lastUpdate = null;
+        }
     }
 
     protected static interface SizeReloadStrategy {
         int reload();
     }
 
-    private static class SortEntry implements Comparable<SortEntry> {
+    protected static class SortEntry implements Comparable<SortEntry> {
         private final String propertyId;
         private final boolean ascending;
 
@@ -124,7 +128,7 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Cont
         }
     }
 
-	private class Cache {
+	protected class Cache {
         // Maps each itemId to a item.
         private Map<K, BeanItem<T>> cacheContent = new HashMap<K, BeanItem<T>>();
 
@@ -172,6 +176,7 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Cont
         }
 
         public void reload(Page page) {
+            size.setOutdated(); // force to be outdated
             reset();
             List<T> beans = getItemsForCache(m_dao, page);
             if (beans == null) return;
@@ -577,6 +582,14 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Cont
 
     protected List<T> getItemsForCache(final OnmsDao<T, K> dao, final Page page) {
         return dao.findMatching(getCriteria(page, true));
+    }
+
+    protected Cache getCache() {
+        return cache;
+    }
+
+    protected Page getPage() {
+        return page;
     }
 
     private synchronized void loadPropertiesIfNull() {

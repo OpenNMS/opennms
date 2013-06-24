@@ -52,8 +52,9 @@ public interface AlarmDao extends OnmsDao<OnmsAlarm, Integer> {
      * ordered by the oldest.</p>
      * 
      * @return A list of alarm summaries.
+     * @param nodeIds If you want to restrict the NodeAlarmSummaries to specific nodes (optional)
      */
-    List<AlarmSummary> getNodeAlarmSummaries();
+    List<AlarmSummary> getNodeAlarmSummaries(Integer... nodeIds);
 	
 	 /**
      * <p>deleteAlarmById</p>

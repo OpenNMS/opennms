@@ -86,7 +86,7 @@ new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianC
 	</parameter>
 	<parameter name="rrdDir" class="java.lang.String" isForPrompting="false">
 		<parameterDescription><![CDATA[]]></parameterDescription>
-		<defaultValueExpression><![CDATA["${install.dir}/share/rrd"]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA["${install.dir}/share/rrd/snmp"]]></defaultValueExpression>
 	</parameter>
 	<queryString>
 		<![CDATA[SELECT
