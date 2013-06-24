@@ -37,7 +37,8 @@ L.MarkerClusterGroup = L.FeatureGroup.extend({
 		//options for being a US state cluster
 		inUs: false,
 		stateID: null,
-		statePolygonBounds: null,
+		stateData: null,
+		statePolygon: null,
 
 		//Options to pass to the L.Polygon constructor
 		polygonOptions: {}
@@ -55,6 +56,40 @@ L.MarkerClusterGroup = L.FeatureGroup.extend({
 		this._needsClustering = [];
 		//The bounds of the currently shown area (from _getExpandedVisibleBounds) Updated on zoom/move
 		this._currentShownBounds = null;
+		
+		//creates the MultiPolygon used for showing state bounds
+		if(inUs){
+			var latLngArray = [];
+			latLngArray.push([]);
+			if(statesDataLarge.features[stateId].geometry.type === "MultiPolygon"){
+				for(var i = 0; i < stateData.features[stateId].geometry.coordinates.length; i++){
+					latLngArray[0].push([]);
+					for(var j = 0; j < stateData.features[stateId].geometry.coordinates[i][0].length - 1; j++){
+						
+						latLngArray[0][i].push(new L.LatLng(stateData.features[stateId].geometry.coordinates[i][0][j][1], stateData.features[stateId].geometry.coordinates[i][0][j][0]));
+						
+					}
+					
+				}
+				
+			}
+			else{
+				latLngArray[0].push([]);
+				for(var j = 0; j < stateData.features[stateId].geometry.coordinates[0].length - 1; j++){
+
+					latLngArray[0][0].push(new L.LatLng(stateData.features[stateId].geometry.coordinates[0][j][1], stateData.features[stateId].geometry.coordinates[0][j][0]));
+
+			}
+			
+			}
+			
+			//this.statePolygon = new L.MultiPolygon(latLngArray, this.options.polygonOptions);
+		
+		
+		
+		
+		//this.statePolygon = new L.Polygon(ncLatLngArray, this.options.polygonOptions);
+		}
 	},
 
 	addLayer: function (layer) {
@@ -486,6 +521,7 @@ L.MarkerClusterGroup = L.FeatureGroup.extend({
 
 		return new L.DivIcon({ html: '<div><span>' + childCount + '</span></div>', className: 'marker-cluster' + c, iconSize: new L.Point(40, 40) });
 	},
+	
 
 	_bindEvents: function () {
 		var shownPolygon = null,
@@ -518,12 +554,13 @@ L.MarkerClusterGroup = L.FeatureGroup.extend({
 					map.removeLayer(shownPolygon);
 				}
 				
+				
 				if(this.options.inUs){
-				if (a.layer.getChildCount() > 2 && a.layer !== this._spiderfied) {
-					shownPolygon = new L.MultiPolygon(usLatLngArrays[this.options.stateId], this.options.polygonOptions);
-					
-					map.addLayer(shownPolygon);
-				}
+					if (a.layer.getChildCount() > 2 && a.layer !== this._spiderfied) {
+						shownPolygon = new L.Polygon(a.layer.getConvexHull(), this.options.polygonOptions);
+						
+						map.addLayer(shownPolygon);
+					}
 				}
 				else{
 					if (a.layer.getChildCount() > 2 && a.layer !== this._spiderfied) {

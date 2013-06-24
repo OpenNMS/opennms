@@ -420,38 +420,13 @@ public class GWTMapWidget extends Widget implements MarkerProvider, SearchConsum
 	return inUs;
     	 }-*/;
     	
-    	public static native JSObject getPolygon()
+    	public static native JSObject getPolygonInfo(int k, JSObject statesDataLarge)
     	/*-{
-    	var usLatLngArrays = [];
-		var polygonArray = [];
-
-for(var k = 0; k < statesDataLarge.features.length; k++){
-	usLatLngArrays.push([]);
-	if(statesDataLarge.features[k].geometry.type === "MultiPolygon"){
-		for(var i = 0; i < statesDataLarge.features[k].geometry.coordinates.length; i++){
-			usLatLngArrays[k].push([]);
-			for(var j = 0; j < statesDataLarge.features[k].geometry.coordinates[i][0].length - 1; j++){
-				
-				usLatLngArrays[k][i].push(new L.LatLng(statesDataLarge.features[k].geometry.coordinates[i][0][j][1], statesDataLarge.features[k].geometry.coordinates[i][0][j][0]));
-				
-			}
-			
-		}
+    	var state;
+    	
+    	state = statesDataLarge.features[k];
 		
-	}
-	else{
-		usLatLngArrays[k].push([]);
-		for(var j = 0; j < statesDataLarge.features[k].geometry.coordinates[0].length - 1; j++){
-
-			usLatLngArrays[k][0].push(new L.LatLng(statesDataLarge.features[k].geometry.coordinates[0][j][1], statesDataLarge.features[k].geometry.coordinates[0][j][0]));
-
-		
-
-	}
-	
-	}
-	polygonArray.push(new L.MultiPolygon(usLatLngArrays[k]), {});
-}
+		return state;
     	 }-*/;
     	
     }
@@ -472,10 +447,10 @@ for(var k = 0; k < statesDataLarge.features.length; k++){
         m_stateClusterGroups = new MarkerClusterGroup[52];
         Options[] stateClusterOptions = new Options[52];
         for(int i = 0; i < stateClusterOptions.length; i++){
-        	stateClusterOptions[i] = new Options();
-        	stateClusterOptions[i].setProperty("inUs", true);
-        	stateClusterOptions[i].setProperty("stateId", i);
-        	//stateClusterOptions[i].setProperty("statePolygonBounds", StatesData.getPolygon(i));
+        	stateClusterOptions[i] = markerClusterOptions;
+        	//stateClusterOptions[i].setProperty("inUs", true);
+        	//stateClusterOptions[i].setProperty("stateId", i);
+        	//stateClusterOptions[i].setProperty("stateData", StatesData.getPolygonInfo(i, StatesData.getInstance()));
         }
         for(int i = 0; i < m_stateClusterGroups.length; i++){
         	m_stateClusterGroups[i] = new MarkerClusterGroup(stateClusterOptions[i]);
