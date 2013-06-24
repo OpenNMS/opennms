@@ -34,8 +34,10 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReading;
 
 /**
@@ -45,6 +47,8 @@ import org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReading;
  * @version $Id: $
  */
 public class RrdOutputSocket {
+    private static final Logger LOG = LoggerFactory.getLogger(RrdOutputSocket.class);
+
     // private final RrdDefinition m_def;
     private final String m_host;
     private final int m_port;
@@ -95,13 +99,13 @@ public class RrdOutputSocket {
             // m_messages.build().writeTo(out);
             out.flush();
         } catch (Throwable e) {
-            ThreadCategory.getInstance(this.getClass()).warn("Error when trying to open connection to " + m_host + ":" + m_port + ", dropping " + m_messageCount + " performance messages: " + e.getMessage());
+            LOG.warn("Error when trying to open connection to {}:{}, dropping {} performance messages: {}", m_host, m_port, m_messageCount, e.getMessage());
         } finally {
             if (socket != null) {
                 try { 
                     socket.close(); 
                 } catch (IOException e) {
-                    ThreadCategory.getInstance(this.getClass()).warn("IOException when closing TCP performance data socket: " + e.getMessage());
+                    LOG.warn("IOException when closing TCP performance data socket: {}", e.getMessage());
                 }
             }
         }
