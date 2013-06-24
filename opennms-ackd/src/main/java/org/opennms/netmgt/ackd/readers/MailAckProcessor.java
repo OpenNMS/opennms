@@ -45,7 +45,6 @@ import javax.mail.Flags.Flag;
 import javax.mail.internet.InternetAddress;
 
 import org.opennms.core.utils.StringUtils;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.javamail.JavaMailerException;
 import org.opennms.javamail.JavaReadMailer;
 import org.opennms.netmgt.config.ackd.Parameter;
@@ -57,6 +56,9 @@ import org.opennms.netmgt.model.AckAction;
 import org.opennms.netmgt.model.AckType;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * This class uses the JavaMail API to connect to a mail store and retrieve messages, using
  * the configured host and user details, and detects replies to notifications that have
@@ -66,7 +68,8 @@ import org.opennms.netmgt.model.OnmsAcknowledgment;
  *
  */
 class MailAckProcessor implements AckProcessor {
-    
+    private static final Logger LOG = LoggerFactory.getLogger(MailAckProcessor.class);
+
     private static final int LOG_FIELD_WIDTH = 128;
     
     private AckdConfigurationDao m_ackdDao;
@@ -93,7 +96,7 @@ class MailAckProcessor implements AckProcessor {
      */
     protected void findAndProcessAcks() {
         
-        log().debug("findAndProcessAcks: checking for acknowledgments...");
+        LOG.debug("findAndProcessAcks: checking for acknowledgments...");
         Collection<OnmsAcknowledgment> acks;
 
         try {
@@ -101,19 +104,15 @@ class MailAckProcessor implements AckProcessor {
             acks = createAcks(msgs);
             
             if (acks != null) {
-                log().debug("findAndProcessAcks: Found "+acks.size()+" acks.  Processing...");
+                LOG.debug("findAndProcessAcks: Found {} acks.  Processing...", acks.size());
                 m_ackDao.processAcks(acks);
-                log().debug("findAndProcessAcks: acks processed.");
+                LOG.debug("findAndProcessAcks: acks processed.");
             }
         } catch (JavaMailerException e) {
-            log().error("findAndProcessAcks: Exception thrown in JavaMail: "+e, e);
+            LOG.error("findAndProcessAcks: Exception thrown in JavaMail", e);
         }
         
-        log().debug("findAndProcessAcks: completed checking for and processing acknowledgments.");
-    }
-
-    private static ThreadCategory log() {
-        return ThreadCategory.getInstance(MailAckProcessor.class);
+        LOG.debug("findAndProcessAcks: completed checking for and processing acknowledgments.");
     }
 
     //should probably be static
@@ -126,7 +125,7 @@ class MailAckProcessor implements AckProcessor {
      */
     protected List<OnmsAcknowledgment> createAcks(final List<Message> msgs) {
         
-        log().info("createAcks: Detecting and possibly creating acknowledgments from "+msgs.size()+" messages...");
+        LOG.info("createAcks: Detecting and possibly creating acknowledgments from {} messages...", msgs.size());
         List<OnmsAcknowledgment> acks = null;
         
         if (msgs != null && msgs.size() > 0) {
@@ -137,7 +136,7 @@ class MailAckProcessor implements AckProcessor {
                 Message msg = (Message) it.next();
                 try {
                     
-                    log().debug("createAcks: detecting acks in message: "+msg.getSubject());
+                    LOG.debug("createAcks: detecting acks in message: {}", msg.getSubject());
                     Integer id = detectId(msg.getSubject(), m_ackdDao.getConfig().getNotifyidMatchExpression());
                     
                     if (id != null) {
@@ -146,7 +145,7 @@ class MailAckProcessor implements AckProcessor {
                         ack.setLog(createLog(msg));
                         acks.add(ack);
                         msg.setFlag(Flag.DELETED, true);
-                        log().debug("createAcks: found notification acknowledgment: "+ack);
+                        LOG.debug("createAcks: found notification acknowledgment: {}", ack);
                         continue;
                     }
                     
@@ -158,22 +157,22 @@ class MailAckProcessor implements AckProcessor {
                         ack.setLog(createLog(msg));
                         acks.add(ack);
                         msg.setFlag(Flag.DELETED, true);
-                        log().debug("createAcks: found alarm acknowledgment."+ack);
+                        LOG.debug("createAcks: found alarm acknowledgment: {}", ack);
                         continue;
                     }
                     
                 } catch (MessagingException e) {
-                    log().error("createAcks: messaging error: "+e);
+                    LOG.error("createAcks: messaging error", e);
                 } catch (IOException e) {
-                    log().error("createAcks: IO problem: "+e);
+                    LOG.error("createAcks: IO problem", e);
                 }
             }
         } else {
-            log().debug("createAcks: No messages for acknowledgment processing.");
+            LOG.debug("createAcks: No messages for acknowledgment processing.");
         }
         
-        log().info("createAcks: Completed detecting and possibly creating acknowledgments.  Created "+
-                   (acks == null? 0 : acks.size())+" acknowledgments.");
+        LOG.info("createAcks: Completed detecting and possibly creating acknowledgments.  Created {} acknowledgments.",
+                 (acks == null? 0 : acks.size()));
         return acks;
     }
 
