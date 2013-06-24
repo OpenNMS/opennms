@@ -197,8 +197,8 @@
                     <c:param name="report" value="${resultSet.graphs[0].name}"/>
                     <c:param name="start" value="${results.start.time}"/>
                     <c:param name="end" value="${results.end.time}"/>
-                    <c:param name="graph_width" value="${resultSet.graphs[0].graphWidth}"/>
-                    <c:param name="graph_height" value="${resultSet.graphs[0].graphHeight}"/>
+                    <c:param name="width" value="${resultSet.graphs[0].graphWidth}"/>
+                    <c:param name="height" value="${resultSet.graphs[0].graphHeight}"/>
                 </c:url>
 
                 <script type="text/javascript">

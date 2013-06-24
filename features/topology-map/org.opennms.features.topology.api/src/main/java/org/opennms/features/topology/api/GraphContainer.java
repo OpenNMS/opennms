@@ -74,4 +74,8 @@ public interface GraphContainer extends DisplayState {
     String getUserName();
 
     void setUserName(String userName);
+    
+    String getSessionId();
+    
+    void setSessionId(String sessionId);
 }

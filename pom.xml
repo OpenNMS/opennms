@@ -559,7 +559,7 @@
      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>2.3.2</version>
+        <version>3.1</version>
         <configuration>
           <source>1.6</source>
           <target>1.6</target>
@@ -606,7 +606,8 @@
             <runPingTests>${runPingTests}</runPingTests>
             <proxy.port>${proxy.port}</proxy.port>
           </systemPropertyVariables>
-          <forkMode>pertest</forkMode>
+          <forkCount>1</forkCount>
+          <reuseForks>false</reuseForks>
           <argLine>-Xmx1024m</argLine>
           <includes>
             <include>**/*Test.java</include>
@@ -740,8 +741,8 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
     <!-- maven surefire version added here so it could be overridden -->
-    <maven.surefire.plugin.version>2.14.1</maven.surefire.plugin.version>
-    <maven.surefire.report.plugin.version>2.14.1</maven.surefire.report.plugin.version>
+    <maven.surefire.plugin.version>2.15</maven.surefire.plugin.version>
+    <maven.surefire.report.plugin.version>2.15</maven.surefire.report.plugin.version>
     <maven.eclipse.plugin.version>2.8</maven.eclipse.plugin.version>
     <maven.pax.plugin.version>1.5</maven.pax.plugin.version>
     <antlr.version>2.7.6</antlr.version>
@@ -835,8 +836,8 @@
     <commonsValidatorVersion>1.3.1</commonsValidatorVersion>
     <gwtVersion>2.3.0</gwtVersion>
     <gwtPluginVersion>2.3.0-1</gwtPluginVersion>
-    <httpcoreVersion>4.1.4</httpcoreVersion>
-    <httpclientVersion>4.1.3</httpclientVersion>
+    <httpcoreVersion>4.2.4</httpcoreVersion>
+    <httpclientVersion>4.2.5</httpclientVersion>
     <jasperreportsVersion>3.7.6</jasperreportsVersion>
     <jettyVersion>7.6.10.v20130312</jettyVersion>
     <karafVersion>2.3.1</karafVersion>
@@ -1463,6 +1464,12 @@
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
         <artifactId>javamail-dependencies</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>jaxb-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
       </dependency>
@@ -2264,16 +2271,12 @@
             <artifactId>commons-logging</artifactId>
           </exclusion>
           <exclusion>
-            <groupId>javax.xml</groupId>
+            <groupId>javax.xml.bind</groupId>
             <artifactId>jaxb-api</artifactId>
           </exclusion>
           <exclusion>
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-impl</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>javax.xml</groupId>
-            <artifactId>jaxb-api</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -2438,10 +2441,11 @@
         <artifactId>mail</artifactId>
         <version>1.4.5</version>
       </dependency>
+      <!-- we want to use JPA 2.0. Do not add javax.persistence/persistence-api! -->
       <dependency>
-        <groupId>javax.persistence</groupId>
-        <artifactId>persistence-api</artifactId>
-        <version>1.0</version>     
+        <groupId>org.hibernate.javax.persistence</groupId>
+        <artifactId>hibernate-jpa-2.0-api</artifactId>
+        <version>1.0.1.Final</version>
       </dependency>
       <dependency>
         <groupId>javax.samples.jnlp</groupId>

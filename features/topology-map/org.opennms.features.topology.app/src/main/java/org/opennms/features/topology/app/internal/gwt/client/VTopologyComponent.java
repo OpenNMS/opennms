@@ -890,14 +890,8 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 	
     @Override
     public void setVertexSelection(List<String> vertIds) {
-//        m_client.updateVariable(getPaintableId(), "marqueeSelection", vertIds.toArray(new String[]{}), false);
-//        m_client.updateVariable(m_paintableId, "shiftKeyPressed", D3.getEvent().getShiftKey(), false);
-//        m_client.sendPendingVariableChanges();
-        
         final MouseEventDetails mouseDetails  = MouseEventDetailsBuilder.buildMouseEventDetails(D3.getEvent(), getElement());
         m_serverRpc.marqueeSelection(vertIds.toArray(new String[] {}), mouseDetails);
-        
-        
     }
 
     /**

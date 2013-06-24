@@ -1,0 +1,966 @@
+<!-- Start of auto generated data from MIB: JUNIPER-MOBILE-GATEWAY-AAA-MIB -->
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+	<event>
+		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgAAARadiusServerDown</uei>
+		<event-label>JUNIPER-MOBILE-GATEWAY-AAA-MIB defined trap event: jnxMbgAAARadiusServerDown</event-label>
+		<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.3.66.3</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>8</mevalue>
+		</maskelement>
+		</mask>
+		<descr>
+&lt;p&gt;This notification signifies that the specified server has been
+marked dead. The ServerName identifies the server and the 
+SPIdentfier identifies the session-pic which originated this
+notification.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgGwIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgGwName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgAAAServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgSPIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+		</descr>
+			<logmsg dest='logndisplay'>&lt;p&gt;
+			jnxMbgAAARadiusServerDown trap received 
+				jnxMbgGwIndex=%parm[#1]% 
+				jnxMbgGwName=%parm[#2]% 
+				jnxMbgAAAServerName=%parm[#3]% 
+				jnxMbgSPIdentifier=%parm[#4]%&lt;/p&gt;
+			</logmsg>
+		<severity>Major</severity>
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
+	</event>
+	<event>
+		<uei>uei.opennms.org/vendor/Juniper/traps/clear/jnxMbgAAARadiusServerUp</uei>
+		<event-label>JUNIPER-MOBILE-GATEWAY-AAA-MIB defined trap event: jnxMbgAAARadiusServerUp</event-label>
+		<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.3.66.3</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>7</mevalue>
+		</maskelement>
+		</mask>
+		<descr>
+&lt;p&gt;This notification signifies that the specified server has been
+marked active again. This could be because the server started to
+respond again. The ServerName identifies the server and the 
+SPIdentfier identifies the session-pic which originated this
+notification.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgGwIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgGwName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgAAAServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgSPIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+		</descr>
+			<logmsg dest='logndisplay'>&lt;p&gt;
+			jnxMbgAAARadiusServerUp trap received 
+				jnxMbgGwIndex=%parm[#1]% 
+				jnxMbgGwName=%parm[#2]% 
+				jnxMbgAAAServerName=%parm[#3]% 
+				jnxMbgSPIdentifier=%parm[#4]%&lt;/p&gt;
+			</logmsg>
+		<severity>Cleared</severity>
+		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgAAARadiusServerDown:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
+	</event>
+	<event>
+		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgAAARadiusNetworkElementDown</uei>
+		<event-label>JUNIPER-MOBILE-GATEWAY-AAA-MIB defined trap event: jnxMbgAAARadiusNetworkElementDown</event-label>
+		<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.3.66.3</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>10</mevalue>
+		</maskelement>
+		</mask>
+		<descr>
+&lt;p&gt;This notification signifies that the specified Network Element has 
+been marked DOWN. This could be because none of the servers  in the 
+network element is active.  SPIdentfier identifies the session-pic 
+which originated this notification.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgGwIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgGwName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgAAANetworkElementName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgSPIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+		</descr>
+			<logmsg dest='logndisplay'>&lt;p&gt;
+			jnxMbgAAARadiusNetworkElementDown trap received 
+				jnxMbgGwIndex=%parm[#1]% 
+				jnxMbgGwName=%parm[#2]% 
+				jnxMbgAAANetworkElementName=%parm[#3]% 
+				jnxMbgSPIdentifier=%parm[#4]%&lt;/p&gt;
+			</logmsg>
+		<severity>Critical</severity>
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
+	</event>
+	<event>
+		<uei>uei.opennms.org/vendor/Juniper/traps/clear/jnxMbgAAARadiusNetworkElementUp</uei>
+		<event-label>JUNIPER-MOBILE-GATEWAY-AAA-MIB defined trap event: jnxMbgAAARadiusNetworkElementUp</event-label>
+		<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.3.66.3</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>9</mevalue>
+		</maskelement>
+		</mask>
+		<descr>
+&lt;p&gt;This notification signifies that the specified Network Element
+has been marked UP. This could be because atleast one server in 
+the network element is active. SPIdentfier identifies the session-pic 
+which originated this notification.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgGwIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgGwName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgAAANetworkElementName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgSPIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+		</descr>
+			<logmsg dest='logndisplay'>&lt;p&gt;
+			jnxMbgAAARadiusNetworkElementUp trap received 
+				jnxMbgGwIndex=%parm[#1]% 
+				jnxMbgGwName=%parm[#2]% 
+				jnxMbgAAANetworkElementName=%parm[#3]% 
+				jnxMbgSPIdentifier=%parm[#4]%&lt;/p&gt;
+			</logmsg>
+		<severity>Cleared</severity>
+		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgAAARadiusNetworkElementDown:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
+	</event>
+	<event>
+		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgAAARadiusNEPendAuthQStatus</uei>
+		<event-label>JUNIPER-MOBILE-GATEWAY-AAA-MIB defined trap event: jnxMbgAAARadiusNEPendAuthQStatus</event-label>
+		<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.3.66.3</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>11</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>5</vbnumber>
+			<vbvalue>1</vbvalue>
+		</varbind>
+		</mask>
+		<descr>
+&lt;p&gt;This notification signifies the crossing-over of a  watermark 
+(High or Low) of the pending authentication queue length of network 
+element. The NetworkElementName identifies the network element and 
+SPIdentfier identifies the session-pic which originated this notification.
+jnxMbgPendQWaterMarkType identifies the water mark type (High/Low). 
+jnxMbgPendQWaterMarkValue is the value that has been crossed over.
+jnxMbgPendQLength is the size of the queue after crossing over.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgGwIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgGwName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgAAANetworkElementName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgSPIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPendQWaterMarkType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+			unknown(0)
+			high(1)
+			low(2)
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPendQWaterMarkValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPendQLength&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+		</descr>
+			<logmsg dest='logndisplay'>&lt;p&gt;
+			jnxMbgAAARadiusNEPendAuthQStatus trap received 
+				jnxMbgGwIndex=%parm[#1]% 
+				jnxMbgGwName=%parm[#2]% 
+				jnxMbgAAANetworkElementName=%parm[#3]% 
+				jnxMbgSPIdentifier=%parm[#4]% 
+				jnxMbgPendQWaterMarkType=%parm[#5]% 
+				jnxMbgPendQWaterMarkValue=%parm[#6]% 
+				jnxMbgPendQLength=%parm[#7]%&lt;/p&gt;
+			</logmsg>
+		<severity>Warning</severity>
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
+	</event>
+	<event>
+		<uei>uei.opennms.org/vendor/Juniper/traps/clear/jnxMbgAAARadiusNEPendAuthQStatus</uei>
+		<event-label>JUNIPER-MOBILE-GATEWAY-AAA-MIB defined trap event: jnxMbgAAARadiusNEPendAuthQStatus</event-label>
+		<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.3.66.3</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>11</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>5</vbnumber>
+			<vbvalue>2</vbvalue>
+		</varbind>
+		</mask>
+		<descr>
+&lt;p&gt;This notification signifies the crossing-over of a  watermark 
+(High or Low) of the pending authentication queue length of network 
+element. The NetworkElementName identifies the network element and 
+SPIdentfier identifies the session-pic which originated this notification.
+jnxMbgPendQWaterMarkType identifies the water mark type (High/Low). 
+jnxMbgPendQWaterMarkValue is the value that has been crossed over.
+jnxMbgPendQLength is the size of the queue after crossing over.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgGwIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgGwName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgAAANetworkElementName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgSPIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPendQWaterMarkType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+			unknown(0)
+			high(1)
+			low(2)
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPendQWaterMarkValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPendQLength&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+		</descr>
+			<logmsg dest='logndisplay'>&lt;p&gt;
+			jnxMbgAAARadiusNEPendAuthQStatus trap received 
+				jnxMbgGwIndex=%parm[#1]% 
+				jnxMbgGwName=%parm[#2]% 
+				jnxMbgAAANetworkElementName=%parm[#3]% 
+				jnxMbgSPIdentifier=%parm[#4]% 
+				jnxMbgPendQWaterMarkType=%parm[#5]% 
+				jnxMbgPendQWaterMarkValue=%parm[#6]% 
+				jnxMbgPendQLength=%parm[#7]%&lt;/p&gt;
+			</logmsg>
+		<severity>Cleared</severity>
+		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgAAARadiusNEPendAuthQStatus:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:1" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
+	</event>
+	<event>
+		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgAAARadiusNEPendAcctQStatus</uei>
+		<event-label>JUNIPER-MOBILE-GATEWAY-AAA-MIB defined trap event: jnxMbgAAARadiusNEPendAcctQStatus</event-label>
+		<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.3.66.3</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>12</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>5</vbnumber>
+			<vbvalue>1</vbvalue>
+		</varbind>
+		</mask>
+		<descr>
+&lt;p&gt;This notification signifies the crossing-over of a  watermark 
+(High or Low) of the pending accounting queue length of network 
+element. The NetworkElementName identifies the network element and 
+SPIdentfier identifies the session-pic which originated this notification.
+jnxMbgPendQWaterMarkType identifies the water mark type (High/Low). 
+jnxMbgPendQWaterMarkValue is the value that has been crossed over.
+jnxMbgPendQLength is the size of the queue after crossing over.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgGwIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgGwName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgAAANetworkElementName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgSPIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPendQWaterMarkType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+			unknown(0)
+			high(1)
+			low(2)
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPendQWaterMarkValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPendQLength&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+		</descr>
+			<logmsg dest='logndisplay'>&lt;p&gt;
+			jnxMbgAAARadiusNEPendAcctQStatus trap received 
+				jnxMbgGwIndex=%parm[#1]% 
+				jnxMbgGwName=%parm[#2]% 
+				jnxMbgAAANetworkElementName=%parm[#3]% 
+				jnxMbgSPIdentifier=%parm[#4]% 
+				jnxMbgPendQWaterMarkType=%parm[#5]% 
+				jnxMbgPendQWaterMarkValue=%parm[#6]% 
+				jnxMbgPendQLength=%parm[#7]%&lt;/p&gt;
+			</logmsg>
+		<severity>Warning</severity>
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
+	</event>
+	<event>
+		<uei>uei.opennms.org/vendor/Juniper/traps/clear/jnxMbgAAARadiusNEPendAcctQStatus</uei>
+		<event-label>JUNIPER-MOBILE-GATEWAY-AAA-MIB defined trap event: jnxMbgAAARadiusNEPendAcctQStatus</event-label>
+		<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.3.66.3</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>12</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>5</vbnumber>
+			<vbvalue>2</vbvalue>
+		</varbind>
+		</mask>
+		<descr>
+&lt;p&gt;This notification signifies the crossing-over of a  watermark 
+(High or Low) of the pending accounting queue length of network 
+element. The NetworkElementName identifies the network element and 
+SPIdentfier identifies the session-pic which originated this notification.
+jnxMbgPendQWaterMarkType identifies the water mark type (High/Low). 
+jnxMbgPendQWaterMarkValue is the value that has been crossed over.
+jnxMbgPendQLength is the size of the queue after crossing over.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgGwIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgGwName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgAAANetworkElementName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgSPIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPendQWaterMarkType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+			unknown(0)
+			high(1)
+			low(2)
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPendQWaterMarkValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPendQLength&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+		</descr>
+			<logmsg dest='logndisplay'>&lt;p&gt;
+			jnxMbgAAARadiusNEPendAcctQStatus trap received 
+				jnxMbgGwIndex=%parm[#1]% 
+				jnxMbgGwName=%parm[#2]% 
+				jnxMbgAAANetworkElementName=%parm[#3]% 
+				jnxMbgSPIdentifier=%parm[#4]% 
+				jnxMbgPendQWaterMarkType=%parm[#5]% 
+				jnxMbgPendQWaterMarkValue=%parm[#6]% 
+				jnxMbgPendQLength=%parm[#7]%&lt;/p&gt;
+			</logmsg>
+		<severity>Cleared</severity>
+		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgAAARadiusNEPendAcctQStatus:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:1" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
+	</event>
+	<event>
+		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgAAAServerDown</uei>
+		<event-label>JUNIPER-MOBILE-GATEWAY-AAA-MIB defined trap event: jnxMbgAAAServerDown</event-label>
+		<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.3.66.3</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>2</mevalue>
+		</maskelement>
+		</mask>
+		<descr>
+&lt;p&gt;This notification signifies that the specified server has been
+marked dead. The ServerName identifies the server and the 
+SPIdentfier identifies the session-pic which originated this
+notification.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgAAAServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgSPIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+		</descr>
+			<logmsg dest='logndisplay'>&lt;p&gt;
+			jnxMbgAAAServerDown trap received 
+				jnxMbgAAAServerName=%parm[#1]% 
+				jnxMbgSPIdentifier=%parm[#2]%&lt;/p&gt;
+			</logmsg>
+		<severity>Major</severity>
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
+	</event>
+	<event>
+		<uei>uei.opennms.org/vendor/Juniper/traps/clear/jnxMbgAAAServerUp</uei>
+		<event-label>JUNIPER-MOBILE-GATEWAY-AAA-MIB defined trap event: jnxMbgAAAServerUp</event-label>
+		<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.3.66.3</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+		</mask>
+		<descr>
+&lt;p&gt;This notification signifies that the specified server has been
+marked active again. This could be because the server started to
+respond again. The ServerName identifies the server and the 
+SPIdentfier identifies the session-pic which originated this
+notification.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgAAAServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgSPIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+		</descr>
+			<logmsg dest='logndisplay'>&lt;p&gt;
+			jnxMbgAAAServerUp trap received 
+				jnxMbgAAAServerName=%parm[#1]% 
+				jnxMbgSPIdentifier=%parm[#2]%&lt;/p&gt;
+			</logmsg>
+		<severity>Cleared</severity>
+		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgAAAServerDown:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
+	</event>
+	<event>
+		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgAAANetworkElementDown</uei>
+		<event-label>JUNIPER-MOBILE-GATEWAY-AAA-MIB defined trap event: jnxMbgAAANetworkElementDown</event-label>
+		<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.3.66.3</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>4</mevalue>
+		</maskelement>
+		</mask>
+		<descr>
+&lt;p&gt;This notification signifies that the specified Network Element has 
+been marked DOWN. This could be because none of the servers  in the 
+network element is active.  SPIdentfier identifies the session-pic 
+which originated this notification.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgAAANetworkElementName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgSPIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+		</descr>
+			<logmsg dest='logndisplay'>&lt;p&gt;
+			jnxMbgAAANetworkElementDown trap received 
+				jnxMbgAAANetworkElementName=%parm[#1]% 
+				jnxMbgSPIdentifier=%parm[#2]%&lt;/p&gt;
+			</logmsg>
+		<severity>Critical</severity>
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
+	</event>
+	<event>
+		<uei>uei.opennms.org/vendor/Juniper/traps/clear/jnxMbgAAANetworkElementUp</uei>
+		<event-label>JUNIPER-MOBILE-GATEWAY-AAA-MIB defined trap event: jnxMbgAAANetworkElementUp</event-label>
+		<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.3.66.3</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3</mevalue>
+		</maskelement>
+		</mask>
+		<descr>
+&lt;p&gt;This notification signifies that the specified Network Element
+has been marked UP. This could be because atleast one server in 
+the network element is active. SPIdentfier identifies the session-pic 
+which originated this notification.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgAAANetworkElementName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgSPIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+		</descr>
+			<logmsg dest='logndisplay'>&lt;p&gt;
+			jnxMbgAAANetworkElementUp trap received 
+				jnxMbgAAANetworkElementName=%parm[#1]% 
+				jnxMbgSPIdentifier=%parm[#2]%&lt;/p&gt;
+			</logmsg>
+		<severity>Cleared</severity>
+		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgAAANetworkElementDown:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
+	</event>
+	<event>
+		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgAAANEPendAuthQStatus</uei>
+		<event-label>JUNIPER-MOBILE-GATEWAY-AAA-MIB defined trap event: jnxMbgAAANEPendAuthQStatus</event-label>
+		<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.3.66.3</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>5</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>3</vbnumber>
+			<vbvalue>1</vbvalue>
+		</varbind>
+		</mask>
+		<descr>
+&lt;p&gt;This notification signifies the crossing-over of a  watermark 
+(High or Low) of the pending authentication queue length of network 
+element. The NetworkElementName identifies the network element and 
+SPIdentfier identifies the session-pic which originated this notification.
+jnxMbgPendQWaterMarkType identifies the water mark type (High/Low). 
+jnxMbgPendQWaterMarkValue is the value that has been crossed over.
+jnxMbgPendQLength is the size of the queue after crossing over.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgAAANetworkElementName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgSPIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPendQWaterMarkType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+			unknown(0)
+			high(1)
+			low(2)
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPendQWaterMarkValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPendQLength&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+		</descr>
+			<logmsg dest='logndisplay'>&lt;p&gt;
+			jnxMbgAAANEPendAuthQStatus trap received 
+				jnxMbgAAANetworkElementName=%parm[#1]% 
+				jnxMbgSPIdentifier=%parm[#2]% 
+				jnxMbgPendQWaterMarkType=%parm[#3]% 
+				jnxMbgPendQWaterMarkValue=%parm[#4]% 
+				jnxMbgPendQLength=%parm[#5]%&lt;/p&gt;
+			</logmsg>
+		<severity>Warning</severity>
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
+	</event>
+	<event>
+		<uei>uei.opennms.org/vendor/Juniper/traps/clear/jnxMbgAAANEPendAuthQStatus</uei>
+		<event-label>JUNIPER-MOBILE-GATEWAY-AAA-MIB defined trap event: jnxMbgAAANEPendAuthQStatus</event-label>
+		<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.3.66.3</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>5</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>3</vbnumber>
+			<vbvalue>2</vbvalue>
+		</varbind>
+		</mask>
+		<descr>
+&lt;p&gt;This notification signifies the crossing-over of a  watermark 
+(High or Low) of the pending authentication queue length of network 
+element. The NetworkElementName identifies the network element and 
+SPIdentfier identifies the session-pic which originated this notification.
+jnxMbgPendQWaterMarkType identifies the water mark type (High/Low). 
+jnxMbgPendQWaterMarkValue is the value that has been crossed over.
+jnxMbgPendQLength is the size of the queue after crossing over.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgAAANetworkElementName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgSPIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPendQWaterMarkType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+			unknown(0)
+			high(1)
+			low(2)
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPendQWaterMarkValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPendQLength&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+		</descr>
+			<logmsg dest='logndisplay'>&lt;p&gt;
+			jnxMbgAAANEPendAuthQStatus trap received 
+				jnxMbgAAANetworkElementName=%parm[#1]% 
+				jnxMbgSPIdentifier=%parm[#2]% 
+				jnxMbgPendQWaterMarkType=%parm[#3]% 
+				jnxMbgPendQWaterMarkValue=%parm[#4]% 
+				jnxMbgPendQLength=%parm[#5]%&lt;/p&gt;
+			</logmsg>
+		<severity>Cleared</severity>
+		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgAAANEPendAuthQStatus:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:1" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
+	</event>
+	<event>
+		<uei>uei.opennms.org/vendor/Juniper/traps/jnxMbgAAANEPendAcctQStatus</uei>
+		<event-label>JUNIPER-MOBILE-GATEWAY-AAA-MIB defined trap event: jnxMbgAAANEPendAcctQStatus</event-label>
+		<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.3.66.3</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>3</vbnumber>
+			<vbvalue>1</vbvalue>
+		</varbind>
+		</mask>
+		<descr>
+&lt;p&gt;This notification signifies the crossing-over of a  watermark 
+(High or Low) of the pending accounting queue length of network 
+element. The NetworkElementName identifies the network element and 
+SPIdentfier identifies the session-pic which originated this notification.
+jnxMbgPendQWaterMarkType identifies the water mark type (High/Low). 
+jnxMbgPendQWaterMarkValue is the value that has been crossed over.
+jnxMbgPendQLength is the size of the queue after crossing over.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgAAANetworkElementName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgSPIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPendQWaterMarkType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+			unknown(0)
+			high(1)
+			low(2)
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPendQWaterMarkValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPendQLength&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+		</descr>
+			<logmsg dest='logndisplay'>&lt;p&gt;
+			jnxMbgAAANEPendAcctQStatus trap received 
+				jnxMbgAAANetworkElementName=%parm[#1]% 
+				jnxMbgSPIdentifier=%parm[#2]% 
+				jnxMbgPendQWaterMarkType=%parm[#3]% 
+				jnxMbgPendQWaterMarkValue=%parm[#4]% 
+				jnxMbgPendQLength=%parm[#5]%&lt;/p&gt;
+			</logmsg>
+		<severity>Warning</severity>
+		<alarm-data auto-clean="false" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
+	</event>
+	<event>
+		<uei>uei.opennms.org/vendor/Juniper/traps/clear/jnxMbgAAANEPendAcctQStatus</uei>
+		<event-label>JUNIPER-MOBILE-GATEWAY-AAA-MIB defined trap event: jnxMbgAAANEPendAcctQStatus</event-label>
+		<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.3.66.3</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<varbind>
+			<vbnumber>3</vbnumber>
+			<vbvalue>2</vbvalue>
+		</varbind>
+		</mask>
+		<descr>
+&lt;p&gt;This notification signifies the crossing-over of a  watermark 
+(High or Low) of the pending accounting queue length of network 
+element. The NetworkElementName identifies the network element and 
+SPIdentfier identifies the session-pic which originated this notification.
+jnxMbgPendQWaterMarkType identifies the water mark type (High/Low). 
+jnxMbgPendQWaterMarkValue is the value that has been crossed over.
+jnxMbgPendQLength is the size of the queue after crossing over.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgAAANetworkElementName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgSPIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPendQWaterMarkType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+			unknown(0)
+			high(1)
+			low(2)
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPendQWaterMarkValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMbgPendQLength&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+		</descr>
+			<logmsg dest='logndisplay'>&lt;p&gt;
+			jnxMbgAAANEPendAcctQStatus trap received 
+				jnxMbgAAANetworkElementName=%parm[#1]% 
+				jnxMbgSPIdentifier=%parm[#2]% 
+				jnxMbgPendQWaterMarkType=%parm[#3]% 
+				jnxMbgPendQWaterMarkValue=%parm[#4]% 
+				jnxMbgPendQLength=%parm[#5]%&lt;/p&gt;
+			</logmsg>
+		<severity>Cleared</severity>
+		<alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxMbgAAANEPendAcctQStatus:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:1" >
+			<update-field field-name="severity" update-on-reduction="true"/>
+			<update-field field-name="descr" update-on-reduction="true"/>
+		</alarm-data>
+	</event>
+</events>
+<!-- End of auto generated data from MIB: JUNIPER-MOBILE-GATEWAY-AAA-MIB -->

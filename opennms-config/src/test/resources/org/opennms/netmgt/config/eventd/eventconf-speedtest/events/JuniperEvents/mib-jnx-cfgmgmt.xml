@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<?meta name="GENERATOR" content="XML::Smart/1.6.9 Perl/5.008008 [linux]" ?>
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.4.5</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>1</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxCmCfgChange</uei>
+    <event-label>JUNIPER-CFGMGMT-MIB defined trap event: jnxCmCfgChange</event-label>
+    <descr><![CDATA[
+<p>Notification of a configuration management event as
+recorded in jnxCmCfgChgEventTable.</p><table>
+	<tr><td><b>
+
+	jnxCmCfgChgEventTime</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxCmCfgChgEventDate</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxCmCfgChgEventSource</b></td><td>
+	%parm[#3]%;</td><td><p>
+		other(1)
+		cli(2)
+		junoscript(3)
+		synchronize(4)
+		snmp(5)
+		button(6)
+		autoinstall(7)
+		unknown(8)
+	</p></td></tr>
+	<tr><td><b>
+
+	jnxCmCfgChgEventUser</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxCmCfgChgEventLog</b></td><td>
+	%parm[#5]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxCmCfgChange trap received 
+			jnxCmCfgChgEventTime=%parm[#1]% 
+			jnxCmCfgChgEventDate=%parm[#2]% 
+			jnxCmCfgChgEventSource=%parm[#3]% 
+			jnxCmCfgChgEventUser=%parm[#4]% 
+			jnxCmCfgChgEventLog=%parm[#5]%</p>
+		]]></logmsg>
+    <severity>Normal</severity>
+    <alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#3]%:%parm[#4]%:%parm[#5]%"/>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.4.5</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>2</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxCmRescueChange</uei>
+    <event-label>JUNIPER-CFGMGMT-MIB defined trap event: jnxCmRescueChange</event-label>
+    <descr><![CDATA[
+<p>Notification of the latest rescue configuration 
+change.</p><table>
+	<tr><td><b>
+
+	jnxCmRescueChgTime</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxCmRescueChgDate</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxCmRescueChgSource</b></td><td>
+	%parm[#3]%;</td><td><p>
+		other(1)
+		cli(2)
+		junoscript(3)
+		synchronize(4)
+		snmp(5)
+		button(6)
+		autoinstall(7)
+		unknown(8)
+	</p></td></tr>
+	<tr><td><b>
+
+	jnxCmRescueChgUser</b></td><td>
+	%parm[#4]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxCmRescueChgState</b></td><td>
+	%parm[#5]%;</td><td><p>
+		nonexistant(1)
+		updated(2)
+	</p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxCmRescueChange trap received 
+			jnxCmRescueChgTime=%parm[#1]% 
+			jnxCmRescueChgDate=%parm[#2]% 
+			jnxCmRescueChgSource=%parm[#3]% 
+			jnxCmRescueChgUser=%parm[#4]% 
+			jnxCmRescueChgState=%parm[#5]%</p>
+		]]></logmsg>
+    <severity>Normal</severity>
+    <alarm-data auto-clean="true" alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%"/>
+  </event>
+</events>
+

@@ -30,6 +30,7 @@
         <module>quickbase-troubleticketer</module>
         <module>jrobin-spike-hunter</module>
         <module>scriptd-event-proxy</module>
+        <module>jrb-to-rrd-converter</module>
       </modules>
     </profile>
   </profiles>

@@ -43,6 +43,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.mock.MockMonitoredService;
@@ -84,7 +85,7 @@ public class PageSequenceMonitorOpenNMSTest /* implements SystemReportPlugin */ 
     }
 
     protected MonitoredService getHttpService(String hostname) throws Exception {
-        return getHttpService(hostname, InetAddress.getByName(hostname));
+        return getHttpService(hostname, InetAddressUtils.addr(hostname));
     }
 
     protected MonitoredService getHttpService(String hostname, InetAddress inetAddress) throws Exception {

@@ -302,19 +302,19 @@
         <property name="alarmRepository" ref="alarmRepository"/>
     </bean>
 
-    <bean name="/alarm/saveSticky.htm" class="org.opennms.web.controller.alarm.AlarmDetailController">
+    <bean name="/alarm/saveStickyMemo.htm" class="org.opennms.web.controller.alarm.AlarmDetailController">
         <property name="alarmRepository" ref="alarmRepository"/>
     </bean>
     
-    <bean name="/alarm/clearSticky.htm" class="org.opennms.web.controller.alarm.AlarmDetailController">
+    <bean name="/alarm/removeStickyMemo.htm" class="org.opennms.web.controller.alarm.AlarmDetailController">
         <property name="alarmRepository" ref="alarmRepository"/>
     </bean>
 
-    <bean name="/alarm/saveJournal.htm" class="org.opennms.web.controller.alarm.AlarmDetailController">
+    <bean name="/alarm/saveJournalMemo.htm" class="org.opennms.web.controller.alarm.AlarmDetailController">
         <property name="alarmRepository" ref="alarmRepository"/>
     </bean>
     
-    <bean name="/alarm/clearJournal.htm" class="org.opennms.web.controller.alarm.AlarmDetailController">
+    <bean name="/alarm/removeJournalMemo.htm" class="org.opennms.web.controller.alarm.AlarmDetailController">
         <property name="alarmRepository" ref="alarmRepository"/>
     </bean>
     

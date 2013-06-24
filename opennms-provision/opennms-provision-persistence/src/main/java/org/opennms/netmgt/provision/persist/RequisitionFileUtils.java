@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -51,7 +52,7 @@ public class RequisitionFileUtils {
         return encodeFileName(path, requisition.getForeignSource());
     }
 
-    public static File createSnapshot(final ForeignSourceRepository repository, final String foreignSource) {
+    public static File createSnapshot(final ForeignSourceRepository repository, final String foreignSource, final Date date) {
         final URL url = repository.getRequisitionURL(foreignSource);
         if (url == null) {
             LogUtils.warnf(RequisitionFileUtils.class, "Unable to get requisition URL for foreign source %s", foreignSource);
@@ -70,7 +71,7 @@ public class RequisitionFileUtils {
             return null;
         }
 
-        final String targetFileName = sourceFileName + '.' + System.currentTimeMillis();
+        final String targetFileName = sourceFileName + '.' + date.getTime();
         final File targetFile = new File(targetFileName);
         try {
             FileUtils.copyFile(sourceFile, targetFile, true);

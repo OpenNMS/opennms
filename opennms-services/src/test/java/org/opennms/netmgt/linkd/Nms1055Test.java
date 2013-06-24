@@ -31,8 +31,6 @@ package org.opennms.netmgt.linkd;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Properties;
 
@@ -46,7 +44,9 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.core.utils.BeanUtils;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.LinkdConfig;
+import org.opennms.netmgt.config.LinkdConfigFactory;
 import org.opennms.netmgt.config.linkd.Package;
 import org.opennms.netmgt.dao.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
@@ -57,6 +57,8 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -74,7 +76,6 @@ public class Nms1055Test extends Nms1055NetworkBuilder implements InitializingBe
     @Autowired
     private Linkd m_linkd;
 
-    @Autowired
     private LinkdConfig m_linkdConfig;
 
     @Autowired
@@ -106,6 +107,15 @@ public class Nms1055Test extends Nms1055NetworkBuilder implements InitializingBe
 
     }
 
+    @Before
+    public void setUpLinkdConfiguration() throws Exception {
+        LinkdConfigFactory.init();
+        final Resource config = new ClassPathResource("etc/linkd-configuration.xml");
+        final LinkdConfigFactory factory = new LinkdConfigFactory(-1L, config.getInputStream());
+        LinkdConfigFactory.setInstance(factory);
+        m_linkdConfig = LinkdConfigFactory.getInstance();
+    }
+
     @After
     public void tearDown() throws Exception {
         for (final OnmsNode node : m_nodeDao.findAll()) {
@@ -132,13 +142,9 @@ public class Nms1055Test extends Nms1055NetworkBuilder implements InitializingBe
          */
         assertEquals(585, queryManager.getFromSysnameMacAddress(DELAWARE_NAME, "0022830951f5").intValue());
         /*
-         * DELAWARE_IP_IF_MAP.put(InetAddress.getByName("10.155.69.17"), 13);
+         * DELAWARE_IP_IF_MAP.put(InetAddressUtils.addr("10.155.69.17"), 13);
          */
-        try {
-            assertEquals(13, queryManager.getFromSysnameIpAddress(DELAWARE_NAME, InetAddress.getByName("10.155.69.17")).intValue());
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
+        assertEquals(13, queryManager.getFromSysnameIpAddress(DELAWARE_NAME, InetAddressUtils.addr("10.155.69.17")).intValue());
    
         /*
          * DELAWARE_IF_IFALIAS_MAP.put(574, "<To_Penrose>");

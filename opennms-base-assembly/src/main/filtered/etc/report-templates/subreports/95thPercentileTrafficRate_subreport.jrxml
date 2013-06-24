@@ -28,10 +28,10 @@
 		<defaultValueExpression><![CDATA[new org.opennms.netmgt.jasper.helper.JRobinDirectoryUtil().getInterfaceDirectory($P{snmpifname}, $P{snmpifdescr}, $P{snmpphysaddr})]]></defaultValueExpression>
 	</parameter>
 	<parameter name="inOctets" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA[new java.io.File("$P{rrdDir}/snmp/$P{nodeid}/$P{interface}/ifHCInOctets.jrb").exists() ? "ifHCInOctets" : "ifInOctets"]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA[new org.opennms.netmgt.jasper.helper.JRobinDirectoryUtil().getIfInOctetsDataSource($P{rrdDir}, String.valueOf($P{nodeid}), $P{interface})]]></defaultValueExpression>
 	</parameter>
 	<parameter name="outOctets" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA[new java.io.File("$P{rrdDir}/snmp/$P{nodeid}/$P{interface}/ifHCOutOctets.jrb").exists() ? "ifHCOutOctets" : "ifOutOctets"]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA[new org.opennms.netmgt.jasper.helper.JRobinDirectoryUtil().getIfOutOctetsDataSource($P{rrdDir}, String.valueOf($P{nodeid}), $P{interface})]]></defaultValueExpression>
 	</parameter>
 	<parameter name="ifInOctets_PATH" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA[new org.opennms.netmgt.jasper.helper.JRobinDirectoryUtil().getIfInOctetsJrb($P{rrdDir}, String.valueOf($P{nodeid}), $P{interface})]]></defaultValueExpression>
@@ -84,9 +84,6 @@
 	</variable>
 	<variable name="transmitted_RATE_BITS" class="java.lang.Double">
 		<variableExpression><![CDATA[$V{transmitted_RATE_BYTES} * 8.0]]></variableExpression>
-	</variable>
-	<variable name="file" class="java.lang.String">
-		<variableExpression><![CDATA[new File("$P{rrdDir}/snmp/$P{nodeid}/$P{interface}/ifHCInOctets.jrb") == null ? "$P{rrdDir}/snmp/$P{nodeid}/$P{interface}/ifHCInOctets.jrb" : "$P{rrdDir}/snmp/$P{nodeid}/$P{interface}/ifInOctets.jrb"]]></variableExpression>
 	</variable>
 	<filterExpression><![CDATA[!$F{IfInOctets}.isNaN() || !$F{IfOutOctets}.isNaN()]]></filterExpression>
 	<background>

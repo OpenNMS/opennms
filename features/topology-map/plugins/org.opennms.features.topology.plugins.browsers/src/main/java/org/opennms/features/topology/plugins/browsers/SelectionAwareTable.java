@@ -60,12 +60,6 @@ public class SelectionAwareTable extends Table implements SelectionListener, Sel
 	}
 
 	@Override
-	public void containerItemSetChange(Container.ItemSetChangeEvent event) {
-		refreshRowCache();
-		super.containerItemSetChange(event);
-	}
-
-	@Override
 	public void selectionChanged(SelectionContext selectionManager) {
 		m_container.selectionChanged(selectionManager);
 	}

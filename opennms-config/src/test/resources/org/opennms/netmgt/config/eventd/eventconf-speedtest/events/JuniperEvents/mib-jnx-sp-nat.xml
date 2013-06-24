@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<?meta name="GENERATOR" content="XML::Smart/1.6.9 Perl/5.008008 [linux]" ?>
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.3.59.1</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>1</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/jnxNatAddrPoolThresholdStatus</uei>
+    <event-label>JUNIPER-NAT-MIB defined trap event: jnxNatAddrPoolThresholdStatus</event-label>
+    <descr><![CDATA[
+<p>The Source NAT address pool utilization threshold status
+trap signifies that the address pool utilization
+is either exceeds certain percentage, or clear of 
+that percentage.
+				
+		  jnxNatTrapPoolName is the name of the resource pool
+		  jnxNatAddrPoolUtil is the percentage of utilization 
+of the address pool.</p><table>
+	<tr><td><b>
+
+	jnxNatTrapSrcPoolName</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	jnxNatAddrPoolUtil</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			jnxNatAddrPoolThresholdStatus trap received 
+			jnxNatTrapSrcPoolName=%parm[#1]% 
+			jnxNatAddrPoolUtil=%parm[#2]%</p>
+		]]></logmsg>
+    <severity>Indeterminate</severity>
+  </event>
+</events>
+

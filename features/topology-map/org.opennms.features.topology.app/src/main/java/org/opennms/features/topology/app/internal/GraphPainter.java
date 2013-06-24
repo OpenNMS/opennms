@@ -61,7 +61,7 @@ public class GraphPainter extends BaseGraphVisitor {
 	}
 
     private String getStatus(Vertex vertex) {
-        return m_statusProvider != null ? m_statusProvider.getStatusForVertex(vertex).computeStatus() : "";
+        return m_statusProvider != null && m_statusProvider.getStatusForVertex(vertex) != null ? m_statusProvider.getStatusForVertex(vertex).computeStatus() : "";
     }
 
     private static String getTooltipText(Vertex vertex) {

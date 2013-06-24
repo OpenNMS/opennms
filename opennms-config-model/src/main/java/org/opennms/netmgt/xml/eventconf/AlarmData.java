@@ -196,7 +196,8 @@ public class AlarmData implements Serializable {
         return Collections.unmodifiableList(m_updateFields);
     }
 
-    public void setUpdateFieldList(List<UpdateField> updateFields) {
+    public void setUpdateFieldList(final List<UpdateField> updateFields) {
+    	if (m_updateFields == updateFields) return;
     	m_updateFields.clear();
     	m_updateFields.addAll(updateFields);
     }

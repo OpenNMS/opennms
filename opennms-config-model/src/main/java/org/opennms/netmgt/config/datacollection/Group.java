@@ -591,10 +591,9 @@ public class Group implements Serializable {
      * @param includeGroups the Vector to copy.
      */
     public void setIncludeGroup(final List<String> includeGroups) {
+        if (m_includeGroups == includeGroups) return;
         m_includeGroups.clear();
-        for (final String includeGroup : includeGroups) {
-            m_includeGroups.add(includeGroup.intern());
-        }
+        m_includeGroups.addAll(includeGroups);
     }
 
     /**
@@ -645,6 +644,7 @@ public class Group implements Serializable {
      * @param mibObjs the Vector to copy.
      */
     public void setMibObj(final List<MibObj> mibObjs) {
+        if (m_mibObjects == mibObjs) return;
         m_mibObjects.clear();
         m_mibObjects.addAll(mibObjs);
     }

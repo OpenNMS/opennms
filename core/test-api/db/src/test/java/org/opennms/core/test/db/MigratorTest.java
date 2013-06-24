@@ -228,12 +228,12 @@ public class MigratorTest {
         while (rs.next()) {
             ids.add(rs.getString(1));
         }
-        
+
         assertTrue(ids.size() > 0);
         assertTrue(ids.contains("test-api.schema.a"));
         assertTrue(ids.contains("test-api.schema.b"));
     }
-    
+
     @Test
     @JUnitTemporaryDatabase(createSchema=false)
     public void testUpdateTwice() throws Exception {

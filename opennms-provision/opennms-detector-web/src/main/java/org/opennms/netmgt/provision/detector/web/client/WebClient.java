@@ -45,7 +45,7 @@ import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.params.ClientPNames;
 import org.apache.http.client.protocol.ClientContext;
-import org.apache.http.client.utils.URIUtils;
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.CoreConnectionPNames;
@@ -80,19 +80,18 @@ public class WebClient implements Client<WebRequest, WebResponse> {
 
     @Override
     public void connect(InetAddress address, int port, int timeout) throws IOException, Exception {
-        m_httpMethod = new HttpGet(URIUtils.createURI(
-                schema, // I get an exception without it 
-                InetAddressUtils.str(address), 
-                port, 
-                path, 
-                null, 
-                null
-        ));
+        URIBuilder ub = new URIBuilder();
+        ub.setScheme(schema);
+        ub.setHost(InetAddressUtils.str(address));
+        ub.setPort(port);
+        ub.setPath(path);
+        m_httpMethod = new HttpGet(ub.build());
         setTimeout(timeout);
     }
 
     @Override
     public void close() {
+        m_httpClient.getConnectionManager().shutdown();
     }
 
     @Override
@@ -168,8 +167,7 @@ public class WebClient implements Client<WebRequest, WebResponse> {
                     Credentials creds = credsProvider.getCredentials(authScope);
                     // If found, generate BasicScheme preemptively
                     if (creds != null) {
-                        authState.setAuthScheme(new BasicScheme());
-                        authState.setCredentials(creds);
+                        authState.update(new BasicScheme(), creds);
                     }
                 }
             }

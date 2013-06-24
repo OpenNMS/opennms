@@ -41,11 +41,14 @@ import org.opennms.netmgt.xml.event.Event;
  * Represents a PendingPollEvent
  *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @version $Id: $
  */
 public class PendingPollEvent extends PollEvent {
-    
-    private Event m_event;
+    // how long to wait, in milliseconds, before giving up on waiting for a poll event to get an event ID, defaults to 10 minutes
+    private static final long PENDING_EVENT_TIMEOUT = Long.getLong("org.opennms.netmgt.poller.pendingEventTimeout", 1000L * 60L * 10L);
+
+    private final Event m_event;
+    private Date m_date;
+    private long m_expirationTimeInMillis;
     private boolean m_pending = true;
     private List<Runnable> m_pendingOutages = new LinkedList<Runnable>();
 
@@ -54,9 +57,16 @@ public class PendingPollEvent extends PollEvent {
      *
      * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
      */
-    public PendingPollEvent(Event event) {
+    public PendingPollEvent(final Event event) {
         super(Scope.fromUei(event.getUei()));
         m_event = event;
+        try {
+            m_date = EventConstants.parseToDate(m_event.getTime());
+        } catch (final ParseException e) {
+            ThreadCategory.getInstance(getClass()).error("Unable to convert event time to date", e);
+            m_date = new Date();
+        }
+        m_expirationTimeInMillis = m_date.getTime() + PENDING_EVENT_TIMEOUT;
     }
 
     /**
@@ -66,12 +76,7 @@ public class PendingPollEvent extends PollEvent {
      */
     @Override
     public Date getDate() {
-        try {
-            return EventConstants.parseToDate(m_event.getTime());
-        } catch (ParseException e) {
-            ThreadCategory.getInstance(getClass()).error("Unable to convert event time to date", e);
-            return new Date();
-        }
+        return m_date;
     }
     
     /**
@@ -111,7 +116,17 @@ public class PendingPollEvent extends PollEvent {
      * @return a boolean.
      */
     public boolean isPending() {
+        if (m_pending) {
+            // still pending, check if we've timed out
+            if (isTimedOut()) {
+                m_pending = false;
+            }
+        }
         return m_pending;
+    }
+
+    boolean isTimedOut() {
+        return System.currentTimeMillis() > m_expirationTimeInMillis;
     }
 
     /**
@@ -134,14 +149,12 @@ public class PendingPollEvent extends PollEvent {
         
     }
     
-    //TODO: string builder or don't checking ;-)
-    /**
-     * <p>toString</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    @Override
     public String toString() {
         return m_event+", uei: "+m_event.getUei()+", id: "+m_event.getDbid()+", isPending: "+m_pending+", list size: "+m_pendingOutages.size();
+    }
+
+    // for unit testing
+    void setExpirationTimeInMillis(final long time) {
+        m_expirationTimeInMillis = time;
     }
 }

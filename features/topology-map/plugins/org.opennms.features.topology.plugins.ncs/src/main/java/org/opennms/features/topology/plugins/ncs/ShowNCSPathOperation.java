@@ -1,9 +1,12 @@
 package org.opennms.features.topology.plugins.ncs;
 
+import java.net.ConnectException;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import org.apache.camel.component.http.HttpOperationFailedException;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.SelectionManager;
@@ -12,6 +15,7 @@ import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.plugins.ncs.NCSEdgeProvider.NCSServiceCriteria;
 import org.opennms.features.topology.plugins.ncs.NCSPathEdgeProvider.NCSServicePathCriteria;
+import org.opennms.features.topology.plugins.ncs.internal.NCSCriteriaServiceManager;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.ncs.NCSComponent;
@@ -22,6 +26,8 @@ import com.vaadin.data.Item;
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.data.util.PropertysetItem;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.Form;
@@ -30,8 +36,6 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.Select;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
 
 public class ShowNCSPathOperation implements Operation {
     
@@ -41,6 +45,7 @@ public class ShowNCSPathOperation implements Operation {
     private NCSComponentRepository m_dao;
     private NodeDao m_nodeDao;
     private NCSServiceCriteria m_storedCriteria;
+    private NCSCriteriaServiceManager m_serviceManager;
     
     @Override
     public Undoer execute(List<VertexRef> targets, final OperationContext operationContext) {
@@ -53,7 +58,7 @@ public class ShowNCSPathOperation implements Operation {
         
         final VertexRef defaultVertRef = targets.get(0);
         final SelectionManager selectionManager = operationContext.getGraphContainer().getSelectionManager();
-        final Collection<VertexRef> vertexRefs = selectionManager.getSelectedVertexRefs();
+        final Collection<VertexRef> vertexRefs = getVertexRefsForNCSService(m_storedCriteria); //selectionManager.getSelectedVertexRefs();
         
         final UI mainWindow = operationContext.getMainWindow();
         
@@ -100,6 +105,7 @@ public class ShowNCSPathOperation implements Operation {
         
         final Form promptForm = new Form() {
 
+
             @Override
             public void commit() {
                 String deviceA = (String)getField("Device A").getValue();
@@ -117,18 +123,42 @@ public class ShowNCSPathOperation implements Operation {
                 NCSComponent ncsComponent = m_dao.get(m_storedCriteria.get(0));
                 String foreignSource = ncsComponent.getForeignSource();
                 String foreignId = ncsComponent.getForeignId();
+                String serviceName = ncsComponent.getName();
                 try {
-                    NCSServicePath path = getNcsPathProvider().getPath(foreignId, foreignSource, deviceANodeForeignId, deviceZNodeForeignId, nodeForeignSource);
+                    NCSServicePath path = getNcsPathProvider().getPath(foreignId, foreignSource, deviceANodeForeignId, deviceZNodeForeignId, nodeForeignSource, serviceName);
                     
-                    operationContext.getGraphContainer().setCriteria(NCSEdgeProvider.createCriteria(Collections.<Long>emptyList()));
-                    operationContext.getGraphContainer().setCriteria(new NCSServicePathCriteria(path.getEdges()));
+                    if(path.getStatusCode() == 200) {
+                        NCSServicePathCriteria criteria = new NCSServicePathCriteria(path.getEdges());
+                        m_serviceManager.registerCriteria(criteria, operationContext.getGraphContainer().getSessionId());
                     
-                    //Select only the vertices in the path
-                    selectionManager.setSelectedVertexRefs(path.getVertices());
+                        //Select only the vertices in the path
+                        selectionManager.setSelectedVertexRefs(path.getVertices());
+                    } else {
+                        LoggerFactory.getLogger(this.getClass()).warn("An error occured while retrieving the NCS Path, Juniper NetworkAppsApi send error code: " + path.getStatusCode());
+                        mainWindow.showNotification("An error occurred while retrieving the NCS Path\nStatus Code: " + path.getStatusCode(), Notification.TYPE_ERROR_MESSAGE);
+                    }
+                    
                     
                 } catch (Exception e) {
                     LoggerFactory.getLogger(this.getClass()).warn("Exception Occurred while retreiving path {}", e);
                     Notification.show("An error occurred while calculating the path please check the karaf.log file for the exception: \n" + e.getMessage(), Notification.Type.ERROR_MESSAGE);
+                    if(e.getCause() instanceof ConnectException ) {
+                        LoggerFactory.getLogger(this.getClass()).warn("Connection Exception Occurred while retreiving path {}", e);
+                        mainWindow.showNotification("Connection Refused when attempting to reach the NetworkAppsApi", Notification.TYPE_ERROR_MESSAGE);
+                    } else if(e.getCause() instanceof HttpOperationFailedException) {
+                        HttpOperationFailedException httpException = (HttpOperationFailedException) e.getCause();
+                        if(httpException.getStatusCode() == 401) {
+                            LoggerFactory.getLogger(this.getClass()).warn("Authentication error when connecting to NetworkAppsApi {}", httpException);
+                            mainWindow.showNotification("Authentication error when connecting to NetworkAppsApi, please check the username and password", Notification.TYPE_ERROR_MESSAGE);
+                        } else {
+                            LoggerFactory.getLogger(this.getClass()).warn("An error occured while retrieving the NCS Path {}", httpException);
+                            mainWindow.showNotification("An error occurred while retrieving the NCS Path\n" + httpException.getMessage(), Notification.TYPE_ERROR_MESSAGE);
+                        }
+                    } else {
+                    
+                        LoggerFactory.getLogger(this.getClass()).warn("Exception Occurred while retreiving path {}", e);
+                        mainWindow.showNotification("An error occurred while calculating the path please check the karaf.log file for the exception: \n" + e.getMessage(), Notification.TYPE_ERROR_MESSAGE);
+                    }
                 }
             }
             
@@ -169,6 +199,16 @@ public class ShowNCSPathOperation implements Operation {
         return null;
     }
 
+    private Collection<VertexRef> getVertexRefsForNCSService( NCSServiceCriteria storedCriteria ) {
+        List<Edge> edges = m_ncsEdgeProvider.getEdges(storedCriteria);
+        Set<VertexRef> vertRefList = new HashSet<VertexRef>();
+        for(Edge edge : edges) {
+            vertRefList.add(edge.getSource().getVertex());
+            vertRefList.add(edge.getTarget().getVertex());
+        }
+        return vertRefList;
+    }
+
     protected void highlightEdgePaths(NCSServicePath path, GraphProvider graphProvider) {
         // TODO Auto-generated method stub
         Edge edge = graphProvider.getEdge("nodes", path.getEdges().iterator().next().getId());
@@ -182,12 +222,13 @@ public class ShowNCSPathOperation implements Operation {
             String namespace = targetRef.getNamespace();
             if(!namespace.equals("nodes")) {
                 return false;
+            }else {
+                NCSServiceCriteria criteria = (NCSServiceCriteria) operationContext.getGraphContainer().getCriteria("ncs");
+                return criteria != null && criteria.size() == 1;
             }
         }
         
-        return true;
-        //NCSServiceCriteria criteria = (NCSServiceCriteria) operationContext.getGraphContainer().getCriteria("ncs");
-        //return criteria != null && criteria.size() == 1;
+        return false;
     }
 
     @Override
@@ -196,12 +237,13 @@ public class ShowNCSPathOperation implements Operation {
             String namespace = targetRef.getNamespace();
             if(!namespace.equals("nodes")) {
                 return false;
+            }else {
+                NCSServiceCriteria criteria = (NCSServiceCriteria) operationContext.getGraphContainer().getCriteria("ncs");
+                return criteria != null && criteria.size() == 1;
             }
         }
         
-        return true;
-        //NCSServiceCriteria criteria = (NCSServiceCriteria) operationContext.getGraphContainer().getCriteria("ncs");
-        //return criteria != null && criteria.size() == 1;
+        return false;
     }
 
     @Override
@@ -239,6 +281,10 @@ public class ShowNCSPathOperation implements Operation {
 
     public void setNodeDao(NodeDao nodeDao) {
         m_nodeDao = nodeDao;
+    }
+    
+    public void setNcsCriteriaServiceManager(NCSCriteriaServiceManager manager) {
+        m_serviceManager = manager;
     }
 
 }

@@ -7,4 +7,4 @@ if [ -f "$OPENNMS_HOME/etc/opennms.conf" ]; then
 fi
 
 exec ${install.bin.dir}/runjava -r -- \
-     $ADDITIONAL_MANAGER_OPTIONS -Dopennms.home="$OPENNMS_HOME" -jar $OPENNMS_HOME/lib/opennms_system_report.jar "$@"
+     $ADDITIONAL_MANAGER_OPTIONS -Dopennms.home="$OPENNMS_HOME" -cp "${OPENNMS_HOME}"/lib/org.opennms.core.soa*.jar -jar "${OPENNMS_HOME}/lib/opennms_system_report.jar" "$@"

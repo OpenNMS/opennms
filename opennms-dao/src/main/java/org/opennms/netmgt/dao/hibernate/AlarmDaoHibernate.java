@@ -56,17 +56,29 @@ public class AlarmDaoHibernate extends AbstractDaoHibernate<OnmsAlarm, Integer> 
         return super.findUnique(hql, reductionKey);
     }
 
-        @Override
-    public List<AlarmSummary> getNodeAlarmSummaries() {
-        return findObjects(
-            AlarmSummary.class,
-            "SELECT DISTINCT new org.opennms.netmgt.model.alarm.AlarmSummary(node.id, node.label, min(alarm.lastEventTime), max(alarm.severity), count(*)) " +
-            "FROM OnmsAlarm AS alarm " +
-            "LEFT JOIN alarm.node AS node " +
-            "WHERE node.id IS NOT NULL AND alarm.alarmAckTime IS NULL AND alarm.severity > 3 " +
-            "GROUP BY node.id, node.label " +
-            "ORDER BY min(alarm.lastEventTime) DESC, node.label ASC"
-        );
-    }
+    @Override
+    public List<AlarmSummary> getNodeAlarmSummaries(Integer... nodeIds) {
+        StringBuilder sql = new StringBuilder();
+        sql.append("SELECT DISTINCT new org.opennms.netmgt.model.alarm.AlarmSummary(node.id, node.label, min(alarm.lastEventTime), max(alarm.severity), count(*)) ");
+        sql.append("FROM OnmsAlarm AS alarm ");
+        sql.append ("LEFT JOIN alarm.node AS node ");
+        sql.append("WHERE node.id IS NOT NULL AND alarm.alarmAckTime IS NULL AND alarm.severity > 3 ");
 
+        // optional
+        if (nodeIds != null && nodeIds.length > 0) {
+            if (nodeIds.length == 1) {
+                sql.append("AND node.id = " + nodeIds[0] + " ");
+            } else {
+                sql.append("AND node.id in (");
+                for (int i=0; i<nodeIds.length; i++) {
+                    sql.append(nodeIds[i]);
+                    if (i < nodeIds.length -1) sql.append(",");
+                }
+                sql.append(") ");
+            }
+        }
+        sql.append("GROUP BY node.id, node.label ");
+        sql.append("ORDER BY min(alarm.lastEventTime) DESC, node.label ASC");
+        return findObjects(AlarmSummary.class,sql.toString());
+    }
 }

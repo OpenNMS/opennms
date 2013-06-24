@@ -29,6 +29,7 @@
 package org.opennms.netmgt.provision.persist;
 
 import java.net.URL;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -358,6 +359,11 @@ public class CachingForeignSourceRepository extends AbstractForeignSourceReposit
 		} finally {
 			readUnlock();
 		}
+	}
+
+	@Override
+	public Date getRequisitionDate(final String foreignSource) {
+	    return m_foreignSourceRepository.getRequisitionDate(foreignSource);
 	}
 
 	@Override

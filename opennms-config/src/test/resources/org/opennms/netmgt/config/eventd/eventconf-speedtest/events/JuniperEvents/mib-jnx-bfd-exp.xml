@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<?meta name="GENERATOR" content="XML::Smart/1.6.9 Perl/5.008008 [linux]" ?>
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.5.3.1</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>1</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/bfdSessUp</uei>
+    <event-label>BFD-STD-MIB defined trap event: bfdSessUp</event-label>
+    <descr><![CDATA[
+<p>This notification is generated when the 
+bfdSessState object for one or more contiguous 
+entries in bfdSessTable are about to enter the up(2) 
+state from some other state. The included values of 
+bfdSessDiag MUST both be set equal to this 
+new state (i.e: up(1)).  The two instances of  
+bfdSessDiag in this notification indicate the range  
+of indexes that are affected.  Note that all the indexes  
+of the two ends of the range can be derived from the 
+instance identifiers of these two objects.  For the 
+cases where a contiguous range of sessions 
+have transitioned into the up(1) state at roughly 
+the same time, the device SHOULD issue a single 
+notification for each range of contiguous indexes in 
+an effort to minimize the emission of a large number 
+of notifications.  If a notification has to be 
+issued for just a single bfdSessEntry, then 
+the instance identifier (and values) of the two 
+bfdSessDiag objects MUST be the identical.</p><table>
+	<tr><td><b>
+
+	bfdSessDiag</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bfdSessDiag</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			bfdSessUp trap received 
+			bfdSessDiag=%parm[#1]% 
+			bfdSessDiag=%parm[#2]%</p>
+		]]></logmsg>
+    <severity>Indeterminate</severity>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.2636.5.3.1</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>2</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/Juniper/traps/bfdSessDown</uei>
+    <event-label>BFD-STD-MIB defined trap event: bfdSessDown</event-label>
+    <descr><![CDATA[
+<p>This notification is generated when the 
+bfdSessState object for one or more contiguous 
+entries in bfdSessTable are about to enter the down(4) 
+or adminDown(5) states from some other state. The included  
+values of bfdSessDiag MUST both be set equal to this 
+new state (i.e: down(4) or adminDown(5)).  The two instances  
+of bfdSessDiag in this notification indicate the range  
+of indexes that are affected.  Note that all the indexes  
+of the two ends of the range can be derived from the 
+instance identifiers of these two objects.  For 
+cases where a contiguous range of sessions 
+have transitioned into the down(4) or adminDown(5) states  
+at roughly the same time, the device SHOULD issue a single 
+notification for each range of contiguous indexes in 
+an effort to minimize the emission of a large number 
+of notifications.  If a notification has to be 
+issued for just a single bfdSessEntry, then 
+the instance identifier (and values) of the two 
+bfdSessDiag objects MUST be the identical.</p><table>
+	<tr><td><b>
+
+	bfdSessDiag</b></td><td>
+	%parm[#1]%;</td><td><p></p></td></tr>
+	<tr><td><b>
+
+	bfdSessDiag</b></td><td>
+	%parm[#2]%;</td><td><p></p></td></tr></table>
+	]]></descr>
+    <logmsg dest="logndisplay" notify="true"><![CDATA[<p>
+			bfdSessDown trap received 
+			bfdSessDiag=%parm[#1]% 
+			bfdSessDiag=%parm[#2]%</p>
+		]]></logmsg>
+    <severity>Indeterminate</severity>
+  </event>
+</events>
+

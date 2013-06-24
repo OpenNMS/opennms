@@ -90,6 +90,7 @@ public class DefaultOutageServiceIntegrationTest implements InitializingBean {
 
     @Test
     @Transactional
+    @JUnitTemporaryDatabase
     public void testGetRangeOutages() {
         Collection<OnmsOutage> outages = m_outageService.getOutagesByRange(1,RANGE_LIMIT,"iflostservice","asc", new OnmsCriteria(OnmsOutage.class));
         assertFalse("Collection should not be emtpy", outages.isEmpty());
@@ -101,6 +102,7 @@ public class DefaultOutageServiceIntegrationTest implements InitializingBean {
     @Test
     @Transactional
     @Ignore
+    @JUnitTemporaryDatabase
     public void testGetSupressedOutages() {
         Collection<OnmsOutage> outages = m_outageService.getSuppressedOutages();
         assertTrue("Collection should be emtpy ", outages.isEmpty());
@@ -108,7 +110,7 @@ public class DefaultOutageServiceIntegrationTest implements InitializingBean {
     }
 
     @Test
-    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
+    @JUnitTemporaryDatabase
     public void testLoadOneOutage() {
         OnmsOutage outage = m_outageService.load(1);
         assertTrue("We loaded one outage ",outage.getId().equals(1));
@@ -117,6 +119,7 @@ public class DefaultOutageServiceIntegrationTest implements InitializingBean {
     @Test
     @Transactional
     @Ignore
+    @JUnitTemporaryDatabase
     public void testNoOfSuppressedOutages(){
         Integer outages = m_outageService.getSuppressedOutageCount();
         assertTrue("We should find suppressed messages ", outages == 0);
@@ -124,7 +127,7 @@ public class DefaultOutageServiceIntegrationTest implements InitializingBean {
 
     @Test
     @Transactional
-    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
+    @JUnitTemporaryDatabase
     public void testSuppression() {
         Date time = new Date();
         //Load Outage manipulate and save it.

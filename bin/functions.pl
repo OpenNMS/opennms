@@ -40,7 +40,7 @@ $GIT = $ENV{'GIT'};
 if (not defined $GIT or not -x $GIT) {
 	for my $dir (File::Spec->path()) {
 		my $git = File::Spec->catfile($dir, 'git');
-		if ($^O =~ /mswin/i) {
+		if ($^O =~ /(mswin|msys)/i) {
 			$git .= '.exe';
 		}
 		if (-x $git) {
@@ -58,7 +58,7 @@ if ($GIT eq "" or ! -x "$GIT") {
 $MVN = $ENV{'MVN'};
 if (not defined $MVN or not -x $MVN) {
 	$MVN = File::Spec->catfile($PREFIX, 'maven', 'bin', 'mvn');
-	if ($^O =~ /mswin/i) {
+	if ($^O =~ /(mswin|msys)/i) {
 		$MVN .= '.bat';
 	}
 }
