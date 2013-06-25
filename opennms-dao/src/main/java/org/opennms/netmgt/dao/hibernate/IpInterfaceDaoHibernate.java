@@ -74,7 +74,7 @@ public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterfac
     
     /** {@inheritDoc} */
     @Override
-    public List<OnmsIpInterface> findByNodeId(Long nodeId) {
+    public List<OnmsIpInterface> findByNodeId(Integer nodeId) {
         Assert.notNull(nodeId, "nodeId cannot be null");
         return find("from OnmsIpInterface ipInterface where ipInterface.node.id = ?", nodeId);
     }

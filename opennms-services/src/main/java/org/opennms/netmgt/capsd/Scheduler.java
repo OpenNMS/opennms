@@ -30,8 +30,6 @@ package org.opennms.netmgt.capsd;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Collections;
@@ -51,6 +49,8 @@ import org.opennms.netmgt.dao.hibernate.IpInterfaceDaoHibernate;
 import org.opennms.netmgt.dao.hibernate.NodeDaoHibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 /**
  * This class implements a simple scheduler to ensure that Capsd rescans occurs
@@ -118,9 +118,9 @@ final class Scheduler implements Runnable, PausableFiber {
 
     private RescanProcessorFactory m_rescanProcessorFactory;
 
-    private NodeDaoHibernate m_nodeDaoHibernate;
+    private NodeDaoHibernate m_nodeDao;
 
-    private IpInterfaceDaoHibernate m_ipInterfaceDaoHibernate;
+    private IpInterfaceDaoHibernate m_ipInterfaceDao;
     /**
      * This class encapsulates the information about a node necessary to
      * schedule the node for rescans.
@@ -199,16 +199,19 @@ final class Scheduler implements Runnable, PausableFiber {
      * @param rescanProcessorFactory TODO
      * 
      */
-    Scheduler(ExecutorService rescanQ, RescanProcessorFactory rescanProcessorFactory) throws SQLException {
+    @Autowired
+    Scheduler(ExecutorService rescanQ, RescanProcessorFactory rescanProcessorFactory, NodeDaoHibernate m_nodeDao, IpInterfaceDaoHibernate m_ipInterfaceDao) throws SQLException {
 
         m_rescanQ = rescanQ;
         m_rescanProcessorFactory = rescanProcessorFactory;
 
         m_status = START_PENDING;
         m_worker = null;
-
+        this.m_nodeDao = m_nodeDao;
+        this.m_ipInterfaceDao = m_ipInterfaceDao;
+        
         m_knownNodes = Collections.synchronizedList(new LinkedList<NodeInfo>());
-
+        
         // Get rescan interval from configuration factory
         //
         m_interval = CapsdConfigFactory.getInstance().getRescanFrequency();
@@ -240,12 +243,6 @@ final class Scheduler implements Runnable, PausableFiber {
             log().debug("Scheduler: done loading known nodes, node count: " + m_knownNodes.size());
     }
 
-    @Autowired
-    public Scheduler(NodeDaoHibernate m_nodeDaoHibernate, IpInterfaceDaoHibernate m_ipInterfaceDaoHibernate) {
-        this.m_nodeDaoHibernate = m_nodeDaoHibernate;
-        this.m_ipInterfaceDaoHibernate = m_ipInterfaceDaoHibernate;
-    }
-
     private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
@@ -261,7 +258,7 @@ final class Scheduler implements Runnable, PausableFiber {
         final DBUtils d = new DBUtils(getClass());
         try {
 
-            List<Integer> nodeIdList = (List<Integer>) m_nodeDaoHibernate.getNodeIds();
+            List<Integer> nodeIdList = (List<Integer>) m_nodeDao.getNodeIds();
             // Retrieve non-deleted nodes from the node table in the database
             //
             for (Integer nodeId : nodeIdList ) {
@@ -271,7 +268,7 @@ final class Scheduler implements Runnable, PausableFiber {
                 if (log().isDebugEnabled())
                     log().debug("loadKnownNodes: retrieved nodeid " + nodeId + ", now getting last poll time.");
 
-                Date lastPolled = m_ipInterfaceDaoHibernate.findLastPollTimeByNodeId(nodeId);
+                Date lastPolled = m_ipInterfaceDao.findLastPollTimeByNodeId(nodeId);
                 if (lastPolled != null ) {
                     if (log().isDebugEnabled())
                         log().debug("loadKnownNodes: adding node " + nodeId + " with last poll time " + lastPolled);
@@ -302,7 +299,7 @@ final class Scheduler implements Runnable, PausableFiber {
         // table.
         final DBUtils d = new DBUtils(getClass());
         try {
-            Date lastPolled = m_ipInterfaceDaoHibernate.findLastPollTimeByNodeId(nodeId);
+            Date lastPolled = m_ipInterfaceDao.findLastPollTimeByNodeId(nodeId);
             if (lastPolled != null) {
                 if (log().isDebugEnabled())
                     log().debug("scheduleNode: adding node " + nodeId + " with last poll time " + lastPolled);
@@ -606,13 +603,13 @@ final class Scheduler implements Runnable, PausableFiber {
     } // end run
     
     @Autowired
-    public void setNodeDao(NodeDaoHibernate m_nodeDaoHibernate) {
-        this.m_nodeDaoHibernate = m_nodeDaoHibernate;
+    public void setNodeDao(NodeDaoHibernate m_nodeDao) {
+        this.m_nodeDao = m_nodeDao;
     }
 
     @Autowired
     public void setIpInterfaceDao(
-            IpInterfaceDaoHibernate m_ipInterfaceDaoHibernate) {
-        this.m_ipInterfaceDaoHibernate = m_ipInterfaceDaoHibernate;
+            IpInterfaceDaoHibernate m_ipInterfaceDao) {
+        this.m_ipInterfaceDao = m_ipInterfaceDao;
     }
 }

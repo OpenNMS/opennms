@@ -1911,7 +1911,7 @@ public class BroadcastEventProcessor implements InitializingBean {
     private List<Event> markInterfacesAndServicesDeleted(Connection dbConn, String source, long nodeId, long txNo) throws SQLException {
         List<Event> eventsToSend = new LinkedList<Event>();
 
-        List<OnmsIpInterface> ipInterfaceList = m_ipInterfaceDao.findByNodeId(nodeId);
+        List<OnmsIpInterface> ipInterfaceList = m_ipInterfaceDao.findByNodeId((int)nodeId);
         for(OnmsIpInterface ipInterface : ipInterfaceList) {
             if(ipInterface.getIsManaged() == "D") {
                 ipInterfaceList.remove(ipInterface);
@@ -1960,7 +1960,6 @@ public class BroadcastEventProcessor implements InitializingBean {
                 count++;
             }
         }
-
         log().debug("markServicesDeleted: marked service deleted: " + nodeId);
 
         if (count > 0)
