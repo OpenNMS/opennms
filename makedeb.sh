@@ -19,9 +19,9 @@ function use_git() {
 function run()
 {
     if exists $1; then
-	"$@"
+        "$@"
     else
-	die "Command not found: $1"
+        die "Command not found: $1"
     fi
 }    
 
@@ -53,9 +53,9 @@ function usage()
 function calcMinor()
 {
     if use_git; then
-	git log --pretty='format:%cd' --date=short -1 | head -n 1 | sed -e 's,^Date: *,,' -e 's,-,,g'
+        git log --pretty='format:%cd' --date=short | sort -u -r | head -n 1 | sed -e 's,^Date: *,,' -e 's,-,,g'
     else
-	date '+%Y%m%d'
+        date '+%Y%m%d'
     fi
 }
 
@@ -102,14 +102,14 @@ function extraInfo2()
 function version()
 {
     grep '<version>' pom.xml | \
-    sed -e 's,^[^>]*>,,' -e 's,<.*$,,' -e 's,-[^-]*-SNAPSHOT$,,' -e 's,-SNAPSHOT$,,' -e 's,-testing$,,' -e 's,-,.,g' | \
-    head -n 1
+        sed -e 's,^[^>]*>,,' -e 's,<.*$,,' -e 's,-[^-]*-SNAPSHOT$,,' -e 's,-SNAPSHOT$,,' -e 's,-testing$,,' -e 's,-,.,g' | \
+        head -n 1
 }
 
 function setJavaHome()
 {
     if [ -z "$JAVA_HOME" ]; then
-	# hehe
+        # hehe
         for dir in /usr/lib/jvm/java-{1.5.0,6,7,8,9}-sun; do
             if [ -x "$dir/bin/java" ]; then
                 export JAVA_HOME="$dir"
@@ -119,7 +119,7 @@ function setJavaHome()
     fi
 
     if [ -z $JAVA_HOME ]; then
-	die "*** JAVA_HOME must be set ***"
+        die "*** JAVA_HOME must be set ***"
     fi
 }
 
@@ -150,32 +150,32 @@ function main()
 
 
     while getopts adhrs:g:M:m:u: OPT; do
-	case $OPT in
-	    a)  ASSEMBLY_ONLY=true
-		;;
-	    d)  ENABLE_SNAPSHOTS=false
-		;;
-	    s)  SIGN=true
-		SIGN_PASSWORD="$OPTARG"
-		;;
+        case $OPT in
+            a)  ASSEMBLY_ONLY=true
+                ;;
+            d)  ENABLE_SNAPSHOTS=false
+                ;;
+            s)  SIGN=true
+                SIGN_PASSWORD="$OPTARG"
+                ;;
             r)  BUILD_DEB=false
                 ;;
-	    g)  SIGN_ID="$OPTARG"
-		;;
-	    M)  RELEASE_MAJOR="$OPTARG"
-		;;
-	    m)  RELEASE_MINOR="$OPTARG"
-		;;
-	    u)  RELEASE_MICRO="$OPTARG"
-		;;
-	    *)  usage
-		;;
-	esac
+            g)  SIGN_ID="$OPTARG"
+                ;;
+            M)  RELEASE_MAJOR="$OPTARG"
+                ;;
+            m)  RELEASE_MINOR="$OPTARG"
+                ;;
+            u)  RELEASE_MICRO="$OPTARG"
+                ;;
+            *)  usage
+                ;;
+        esac
     done
 
     RELEASE=$RELEASE_MAJOR
     if [ "$RELEASE_MAJOR" = 0 ] ; then
-	RELEASE=${RELEASE_MAJOR}.${RELEASE_MINOR}.${RELEASE_MICRO}
+        RELEASE=${RELEASE_MAJOR}.${RELEASE_MINOR}.${RELEASE_MICRO}
     fi
 
     EXTRA_INFO=$(extraInfo)
@@ -192,37 +192,37 @@ function main()
         echo "Release: " $RELEASE
         echo
 
-	dch -b -v "$VERSION-$RELEASE" "${EXTRA_INFO}${EXTRA_INFO2}" || die "failed to update debian/changelog"
+        dch -b -v "$VERSION-$RELEASE" "${EXTRA_INFO}${EXTRA_INFO2}" || die "failed to update debian/changelog"
 
-	# prime the local ~/.m2/repository
-	if [ -d core/build ]; then
-		nice ./compile.pl -N install || die "unable to build top-level POM"
-		pushd core
-			nice ../compile.pl -N install || die "unable to build core POM"
-		popd
-		pushd core/build
-			nice ../../compile.pl install || die "unable to build build tools"
-		popd
-	fi
+        # prime the local ~/.m2/repository
+        if [ -d core/build ]; then
+            nice ./compile.pl -N install || die "unable to build top-level POM"
+            pushd core
+                nice ../compile.pl -N install || die "unable to build core POM"
+            popd
+            pushd core/build
+                nice ../../compile.pl install || die "unable to build build tools"
+            popd
+        fi
 
-	if [ -f "${HOME}/.m2/settings.xml" ]; then
-		export OPENNMS_SETTINGS_XML="${HOME}/.m2/settings.xml"
-	fi
-	export OPENNMS_SKIP_COMPILE=$(skipCompile)
-	export OPENNMS_ENABLE_SNAPSHOTS=$(enableSnapshots)
+        if [ -f "${HOME}/.m2/settings.xml" ]; then
+            export OPENNMS_SETTINGS_XML="${HOME}/.m2/settings.xml"
+        fi
+        export OPENNMS_SKIP_COMPILE=$(skipCompile)
+        export OPENNMS_ENABLE_SNAPSHOTS=$(enableSnapshots)
 
-	dpkg-buildpackage -p/bin/true -us -uc
+        dpkg-buildpackage -p/bin/true -us -uc
     fi
 
     if $SIGN; then
 
-	DEBS=$(echo "$TOPDIR"/../*.deb)
-	which dpkg-sig >/dev/null 2>&1 || die "unable to locate dpkg-sig"
+        DEBS=$(echo "$TOPDIR"/../*.deb)
+        which dpkg-sig >/dev/null 2>&1 || die "unable to locate dpkg-sig"
 
-	for DEB in $(echo "$TOPDIR"/../*.deb); do
-		run expect -c "set timeout -1; spawn dpkg-sig --sign builder -k \"$SIGN_ID\" \"$DEB\"; match_max 100000; expect \"Enter passphrase: \"; send -- \"${SIGN_PASSWORD}\r\"; expect eof" || \
-	    die "Debian package signing of $DEB failed for $(branch)"
-	done
+        for DEB in $(echo "$TOPDIR"/../*.deb); do
+            run expect -c "set timeout -1; spawn dpkg-sig --sign builder -k \"$SIGN_ID\" \"$DEB\"; match_max 100000; expect \"Enter passphrase: \"; send -- \"${SIGN_PASSWORD}\r\"; expect eof" || \
+            die "Debian package signing of $DEB failed for $(branch)"
+        done
 
     fi
 
