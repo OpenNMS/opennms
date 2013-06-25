@@ -28,29 +28,6 @@
 
 package org.opennms.features.topology.app.internal;
 
-import java.util.Iterator;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.opennms.features.topology.api.GraphContainer;
-import org.opennms.features.topology.api.HasExtraComponents;
-import org.opennms.features.topology.api.HistoryManager;
-import org.opennms.features.topology.api.IViewContribution;
-import org.opennms.features.topology.api.MapViewManager;
-import org.opennms.features.topology.api.MapViewManagerListener;
-import org.opennms.features.topology.api.SelectionContext;
-import org.opennms.features.topology.api.SelectionListener;
-import org.opennms.features.topology.api.SelectionManager;
-import org.opennms.features.topology.api.SelectionNotifier;
-import org.opennms.features.topology.api.WidgetContext;
-import org.opennms.features.topology.app.internal.TopoContextMenu.TopoContextMenuItem;
-import org.opennms.features.topology.app.internal.TopologyComponent.VertexUpdateListener;
-import org.opennms.features.topology.app.internal.jung.FRLayoutAlgorithm;
-import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
-import org.opennms.web.api.OnmsHeaderProvider;
-import org.slf4j.LoggerFactory;
-
 import com.vaadin.annotations.JavaScript;
 import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Theme;
@@ -61,27 +38,24 @@ import com.vaadin.server.Page.UriFragmentChangedListener;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.shared.ui.slider.SliderOrientation;
-import com.vaadin.ui.AbsoluteLayout;
-import com.vaadin.ui.Accordion;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
+import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.HorizontalSplitPanel;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Layout;
-import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.MenuItem;
-import com.vaadin.ui.Slider;
-import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.VerticalSplitPanel;
+import org.opennms.features.topology.api.*;
+import org.opennms.features.topology.app.internal.TopoContextMenu.TopoContextMenuItem;
+import org.opennms.features.topology.app.internal.TopologyComponent.VertexUpdateListener;
+import org.opennms.features.topology.app.internal.jung.FRLayoutAlgorithm;
+import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
+import org.opennms.web.api.OnmsHeaderProvider;
+import org.slf4j.LoggerFactory;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.Iterator;
+import java.util.List;
 
 @SuppressWarnings("serial")
 @Theme("topo_default")
@@ -497,7 +471,6 @@ public class TopologyWidgetTestApplication extends UI implements CommandUpdateLi
 	@Override
 	public void updateMenuItems() {
 		updateMenuItems(m_menuBar.getItems());
-		m_menuBar.requestRepaint();
 	}
 
 	private void updateContextMenuItems(Object target, List<TopoContextMenuItem> items) {
@@ -529,14 +502,12 @@ public class TopologyWidgetTestApplication extends UI implements CommandUpdateLi
 
 		if(m_contextMenu != null) {
 			m_contextMenu.detach();
-
 		}
 
 		m_menuBar = commandManager.getMenuBar(m_graphContainer, this);
 		m_menuBar.setWidth(100, Unit.PERCENTAGE);
 		// Set expand ratio so that extra space is not allocated to this vertical component
-		m_rootLayout.addComponent(m_menuBar, 1);
-		m_rootLayout.setExpandRatio(m_menuBar, 0);
+		m_rootLayout.addComponent(m_menuBar, 0);
 
 		m_contextMenu = commandManager.getContextMenu(m_graphContainer, this);
 		m_contextMenu.setAsContextMenuOf(this);

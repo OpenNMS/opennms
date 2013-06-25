@@ -26,7 +26,7 @@ public class TopologyComponentConnector extends AbstractComponentConnector{
        super.onStateChanged(event);
        
        getWidget().updateGraph(getConnection(), getState());
-       
+
    }
 
 }

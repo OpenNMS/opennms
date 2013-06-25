@@ -23,42 +23,40 @@
 
   <build>
     <plugins>
-      <plugin>
-          <groupId>com.vaadin</groupId>
-          <artifactId>vaadin-maven-plugin</artifactId>
-          <version>${vaadin.plugin.version}</version>
-          <configuration>
-              <extraJvmArgs>-Xmx512M -Xss1024k</extraJvmArgs>
-              <!-- <runTarget>mobilemail</runTarget> -->
-              <!-- We are doing "inplace" but into subdir VAADIN/widgetsets. This
-               way compatible with Vaadin eclipse plugin. -->
-              <webappDirectory>${basedir}/target/gwt/VAADIN/widgetsets
-              </webappDirectory>
-              <hostedWebapp>${basedir}/target/gwt/VAADIN/widgetsets
-              </hostedWebapp>
-              <noServer>true</noServer>
-              <!-- Remove draftCompile when project is ready -->
-              <draftCompile>true</draftCompile>
-              <compileReport>true</compileReport>
-              <style>OBF</style>
-              <strict>false</strict>
-              <runTarget>http://localhost:8080/</runTarget>
-          </configuration>
-          <executions>
-              <execution>
-                  <configuration>
-                      <!-- if you don't specify any modules, the plugin will find them -->
-                      <!-- <modules> <module>com.vaadin.demo.mobilemail.gwt.ColorPickerWidgetSet</module>
-                       </modules> -->
-                  </configuration>
-                  <goals>
-                      <goal>resources</goal>
-                      <goal>update-widgetset</goal>
-                      <goal>compile</goal>
-                  </goals>
-              </execution>
-          </executions>
-      </plugin>
+        <plugin>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-maven-plugin</artifactId>
+            <version>${vaadin.plugin.version}</version>
+            <configuration>
+                <extraJvmArgs>-Xmx512M -Xss1024k</extraJvmArgs>
+                <webappDirectory>${basedir}/target/gwt/VAADIN/widgetsets
+                </webappDirectory>
+                <hostedWebapp>${basedir}/target/gwt/VAADIN/widgetsets
+                </hostedWebapp>
+                <noServer>true</noServer>
+                <!-- Remove draftCompile when project is ready -->
+                <draftCompile>true</draftCompile>
+                <compileReport>true</compileReport>
+                <style>OBF</style>
+                <strict>true</strict>
+                <runTarget>http://localhost:8980/opennms/topology</runTarget>
+                <gwtSdkFirstInClasspath>true</gwtSdkFirstInClasspath>
+            </configuration>
+            <executions>
+                <execution>
+                    <configuration>
+                        <!-- if you don't specify any modules, the plugin will find them -->
+                        <!-- <modules> <module>com.vaadin.demo.mobilemail.gwt.ColorPickerWidgetSet</module>
+                            </modules> -->
+                    </configuration>
+                    <goals>
+                        <goal>resources</goal>
+                        <goal>update-widgetset</goal>
+                        <goal>compile</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
       
     </plugins>
 

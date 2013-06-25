@@ -24,4 +24,8 @@
     <stylesheet src="topologywidget/styles.css"/>
 <!--     <script src="topologywidget/js/d3.v3.js"/> -->
 <!--     <script src="topologywidget/js/d3.interpolate-zoom.v0.js"/> -->
+
+    <inherits name="com.github.wolfie.refresher.RefresherWidgetset" />
+
+    <inherits name="org.vaadin.peter.contextmenu.ContextmenuWidgetset" />
 </module>
