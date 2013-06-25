@@ -762,7 +762,7 @@
     <install.version>${project.version}</install.version>
     <display.version>${install.version}</display.version>
     <opennms.home>${dist.dir}/${dist.name}</opennms.home>
-    <opennms.osgi.version>1.13.0.A</opennms.osgi.version>
+    <opennms.osgi.version>1.13.0.SNAPSHOT</opennms.osgi.version>
     <maven.metadata.legacy>true</maven.metadata.legacy>
     <root.dir>${project.basedir}</root.dir>
     <dist.dir>${root.dir}/target</dist.dir>
@@ -836,8 +836,8 @@
     <commonsValidatorVersion>1.3.1</commonsValidatorVersion>
     <gwtVersion>2.3.0</gwtVersion>
     <gwtPluginVersion>2.3.0-1</gwtPluginVersion>
-    <httpcoreVersion>4.1.4</httpcoreVersion>
-    <httpclientVersion>4.1.3</httpclientVersion>
+    <httpcoreVersion>4.2.4</httpcoreVersion>
+    <httpclientVersion>4.2.5</httpclientVersion>
     <jasperreportsVersion>3.7.6</jasperreportsVersion>
     <jettyVersion>7.6.10.v20130312</jettyVersion>
     <karafVersion>2.3.1</karafVersion>
@@ -2419,10 +2419,11 @@
         <artifactId>mail</artifactId>
         <version>1.4.5</version>
       </dependency>
+      <!-- we want to use JPA 2.0. Do not add javax.persistence/persistence-api! -->
       <dependency>
-        <groupId>javax.persistence</groupId>
-        <artifactId>persistence-api</artifactId>
-        <version>1.0</version>     
+        <groupId>org.hibernate.javax.persistence</groupId>
+        <artifactId>hibernate-jpa-2.0-api</artifactId>
+        <version>1.0.1.Final</version>
       </dependency>
       <dependency>
         <groupId>javax.samples.jnlp</groupId>

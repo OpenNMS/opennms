@@ -193,7 +193,7 @@ Description: Enterprise-grade Open-source Network Management Platform (Contrib)
 
 Package: opennms-plugins
 Architecture: all
-Depends: opennms-plugin-provisioning-dns (=${binary:Version}), opennms-plugin-provisioning-link (=${binary:Version}), opennms-plugin-provisioning-map (=${binary:Version}), opennms-plugin-provisioning-rancid (=${binary:Version}), opennms-plugin-protocol-cifs (=${binary:Version}), opennms-plugin-protocol-dhcp (=${binary:Version}), opennms-plugin-protocol-nsclient (=${binary:Version}), opennms-plugin-protocol-radius (=${binary:Version}), opennms-plugin-protocol-xml (=${binary:Version}), opennms-plugin-protocol-xmp (=${binary:Version})
+Depends: opennms-plugin-provisioning-dns (=${binary:Version}), opennms-plugin-provisioning-link (=${binary:Version}), opennms-plugin-provisioning-map (=${binary:Version}), opennms-plugin-provisioning-rancid (=${binary:Version}), opennms-plugin-protocol-cifs (=${binary:Version}), opennms-plugin-protocol-dhcp (=${binary:Version}), opennms-plugin-protocol-nsclient (=${binary:Version}), opennms-plugin-protocol-radius (=${binary:Version}), opennms-plugin-protocol-xml (=${binary:Version}), opennms-plugin-protocol-xmp (=${binary:Version}), opennms-plugin-ticketer-jira (=${binary:Version}), opennms-plugin-ticketer-otrs (=${binary:Version}), opennms-plugin-ticketer-rt (=${binary:Version})
 Description: Enterprise-grade Open-source Network Management Platform (All Plugins)
  OpenNMS is an enterprise-grade network management system written in Java.
  .
@@ -392,3 +392,49 @@ Description: Enterprise-grade Open-source Network Management Platform (Juniper T
  events (such as SNMP traps), and generates notices via email, pager, SMS, etc.
  .
  This package provides support for data collection from Juniper TCA devices.
+
+Package: opennms-plugin-ticketer-jira
+Architecture: all
+Depends: opennms-server (=${binary:Version})
+Replaces: libopennms-java (<<${binary:Version}), opennms-common (<<${binary:Version})
+Description: Enterprise-grade Open-source Network Management Platform (JIRA Ticketer Support)
+ OpenNMS is an enterprise-grade network management system written in Java.
+ .
+ OpenNMS can monitor various network services to determine status and service
+ level availability.  Data collection is performed using protocols such as SNMP
+ to generate reports and alert on thresholds.  An extensible event management
+ and notification system handles both internally and externally generated
+ events (such as SNMP traps), and generates notices via email, pager, SMS, etc.
+ .
+ This package provides support for opening JIRA issues from OpenNMS alarms.
+
+Package: opennms-plugin-ticketer-otrs
+Architecture: all
+Depends: opennms-server (=${binary:Version})
+Replaces: libopennms-java (<<${binary:Version}), opennms-common (<<${binary:Version})
+Description: Enterprise-grade Open-source Network Management Platform (OTRS Ticketer Support)
+ OpenNMS is an enterprise-grade network management system written in Java.
+ .
+ OpenNMS can monitor various network services to determine status and service
+ level availability.  Data collection is performed using protocols such as SNMP
+ to generate reports and alert on thresholds.  An extensible event management
+ and notification system handles both internally and externally generated
+ events (such as SNMP traps), and generates notices via email, pager, SMS, etc.
+ .
+ This package provides support for opening OTRS tickets from OpenNMS alarms.
+
+Package: opennms-plugin-ticketer-rt
+Architecture: all
+Depends: opennms-server (=${binary:Version})
+Replaces: libopennms-java (<<${binary:Version}), opennms-common (<<${binary:Version})
+Description: Enterprise-grade Open-source Network Management Platform (RT Ticketer Support)
+ OpenNMS is an enterprise-grade network management system written in Java.
+ .
+ OpenNMS can monitor various network services to determine status and service
+ level availability.  Data collection is performed using protocols such as SNMP
+ to generate reports and alert on thresholds.  An extensible event management
+ and notification system handles both internally and externally generated
+ events (such as SNMP traps), and generates notices via email, pager, SMS, etc.
+ .
+ This package provides support for opening RT tickets from OpenNMS alarms.
+

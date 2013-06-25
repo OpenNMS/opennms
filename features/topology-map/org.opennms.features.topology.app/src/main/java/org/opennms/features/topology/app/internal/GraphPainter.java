@@ -63,14 +63,16 @@ public class GraphPainter extends BaseGraphVisitor {
 	}
 
     private void addStatusProviderProperties(StatusProvider statusProvider, Vertex vertex, PaintTarget target) throws PaintException {
+        if (statusProvider.getStatusForVertex(vertex) == null) return;
         Map<String, String> statusProps = statusProvider.getStatusForVertex(vertex).getStatusProperties();
+        if (statusProps == null) return;
         for(String key : statusProps.keySet()) {
             target.addAttribute(key, statusProps.get(key));
         }
     }
 
     private String getStatus(Vertex vertex) {
-        return m_statusProvider != null ? m_statusProvider.getStatusForVertex(vertex).computeStatus() : "";
+        return m_statusProvider != null && m_statusProvider.getStatusForVertex(vertex) != null ? m_statusProvider.getStatusForVertex(vertex).computeStatus() : "";
     }
 
     private static String getTooltipText(Vertex vertex) {

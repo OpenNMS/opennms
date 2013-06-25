@@ -210,7 +210,7 @@
                 <configuration>
                     <artifacts>
                         <artifact>
-                            <file>target/opennms-webapp-1.13.0-SNAPSHOT/WEB-INF/lib/opennms-webapp-1.13.0-SNAPSHOT.jar</file>
+                            <file>target/opennms-webapp-${project.version}/WEB-INF/lib/opennms-webapp-${project.version}.jar</file>
                             <type>jar</type>
                         </artifact>
                     </artifacts>

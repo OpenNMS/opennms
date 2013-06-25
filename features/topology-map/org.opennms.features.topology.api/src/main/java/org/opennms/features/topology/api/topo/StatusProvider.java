@@ -36,4 +36,10 @@ public interface StatusProvider {
     public Status getStatusForVertex(VertexRef vertex);
     public Collection<Status> getStatusForVertices(Collection<VertexRef> vertices);
     public String getNamespace();
+
+    StatusProvider NULL = new StatusProvider() {
+            @Override public Status getStatusForVertex(VertexRef vertex) { return null; }
+            @Override public Collection<Status> getStatusForVertices(Collection<VertexRef> vertices) { return null; }
+            @Override public String getNamespace() { return null; }
+        };
 }

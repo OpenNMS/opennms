@@ -56,7 +56,7 @@ public class NCSEdgeProvider implements EdgeProvider {
 
 	public static class NCSEdge extends AbstractEdge {
 		private final String m_serviceName;
-
+		
 		public NCSEdge (String serviceName, NCSVertex source, NCSVertex target) {
 			super("ncs", source.getId() + ":::" + target.getId(), source, target);
 			m_serviceName = serviceName;

@@ -539,6 +539,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
             .append("snmpifalias", getIfAlias())
             .append("snmpCollect", getCollect())
             .append("snmpPoll", getPoll())
+            .append("nodeId", getNode() == null ? null : getNode().getId())
             .append("lastCapsdPoll", getLastCapsdPoll())
             .append("lastSnmpPoll", getLastSnmpPoll())
             .toString();

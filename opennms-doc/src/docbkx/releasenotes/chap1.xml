@@ -6,6 +6,30 @@
 
 	<!-- Start 1.11 -->
 
+	<section id="introduction-1.11.92">
+		<title>Release 1.11.92</title>
+
+		<para>
+			Release 1.11.92 is the third release candidate for the OpenNMS 1.12 series.
+			It is identical to 1.11.91 except for a fix for reading eventconf.xml files
+			that don't have an XML namespace attribute.
+		</para>
+		<para>
+			The codename for 1.11.92 is <emphasis>Steve Vai</emphasis>
+		</para>
+	</section>
+
+	<section id="introduction-1.11.91">
+		<title>Release 1.11.91</title>
+
+		<para>
+			Release 1.11.91 is the second release candidate for the OpenNMS 1.12 series.
+		</para>
+		<para>
+			The codename for 1.11.91 is <emphasis>Joe Satriani</emphasis>
+		</para>
+	</section>
+
 	<section id="introduction-1.11.90">
 		<title>Release 1.11.90</title>
 

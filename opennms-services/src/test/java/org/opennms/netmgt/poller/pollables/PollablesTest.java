@@ -322,10 +322,10 @@ public class PollablesTest {
         PollableNode node = m_network.createNode(nodeId, "WebServer99");
         assertNotNull("node is null", node);
 
+        assertEquals(0, node.getMemberCount());
         assertEquals(99, node.getNodeId());
         assertEquals("WebServer99", node.getNodeLabel());
         assertEquals(node, m_network.getNode(nodeId));
-        
         assertEquals(m_network, node.getNetwork());
     }
     
@@ -627,7 +627,7 @@ public class PollablesTest {
 
     }
     
-    @Test
+    @Test(timeout=30000)
     public void testReparentStatusChanges() {
         
 

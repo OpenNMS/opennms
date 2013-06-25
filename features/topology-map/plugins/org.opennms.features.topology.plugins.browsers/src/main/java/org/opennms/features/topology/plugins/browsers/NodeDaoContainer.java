@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,56 +28,30 @@
 
 package org.opennms.features.topology.plugins.browsers;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-
+import org.opennms.core.criteria.Alias;
 import org.opennms.core.criteria.Criteria;
-import org.opennms.core.criteria.Order;
-import org.opennms.core.criteria.restrictions.AnyRestriction;
+import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.core.criteria.Fetch;
 import org.opennms.core.criteria.restrictions.EqRestriction;
 import org.opennms.core.criteria.restrictions.Restriction;
 import org.opennms.features.topology.api.SelectionContext;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.OnmsDao;
+import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.PrimaryType;
 import org.slf4j.LoggerFactory;
 
-import com.vaadin.data.util.BeanItem;
+import java.util.*;
 
 public class NodeDaoContainer extends OnmsDaoContainer<OnmsNode,Integer> {
 
 	private static final long serialVersionUID = -5697472655705494537L;
 
-	private Map<Object,Class<?>> m_properties;
-
 	public NodeDaoContainer(NodeDao dao) {
-		super(dao);
-	}
-
-	@Override
-	public Class<OnmsNode> getItemClass() {
-		return OnmsNode.class;
-	}
-
-	private synchronized void loadPropertiesIfNull() {
-		if (m_properties == null) {
-			m_properties = new TreeMap<Object,Class<?>>();
-			BeanItem<OnmsNode> item = new BeanItem<OnmsNode>(new OnmsNode());
-			for (Object key : item.getItemPropertyIds()) {
-				m_properties.put(key, item.getItemProperty(key).getType());
-			}
-		}
-	}
-
-	@Override
-	public Collection<?> getContainerPropertyIds() {
-		loadPropertiesIfNull();
-
-		return Collections.unmodifiableCollection(m_properties.keySet());
+		super(OnmsNode.class, dao);
+        addBeanToHibernatePropertyMapping("primaryInterface", "ipInterfaces.ipAddress");
 	}
 
 	@Override
@@ -85,46 +59,34 @@ public class NodeDaoContainer extends OnmsDaoContainer<OnmsNode,Integer> {
 		return bean == null ? null : bean.getId();
 	}
 
-	@Override
-	public Class<?> getType(Object propertyId) {
-		return m_properties.get(propertyId);
-	}
+    @Override
+    protected void addAdditionalCriteriaOptions(Criteria criteria, Page page, boolean doOrder) {
+        if (!doOrder) return;
+        criteria.setAliases(Arrays.asList(new Alias[] {
+                new Alias("ipInterfaces", "ipInterfaces", Alias.JoinType.LEFT_JOIN, new EqRestriction("ipInterfaces.isSnmpPrimary", PrimaryType.PRIMARY))
+        }));
+    }
 
-	@Override
-	public Collection<?> getSortableContainerPropertyIds() {
-		loadPropertiesIfNull();
+    @Override
+    protected void doItemAddedCallBack(int rowNumber, Integer id, OnmsNode eachBean) {
+        eachBean.getPrimaryInterface();
+    }
 
-		Collection<Object> propertyIds = new HashSet<Object>();
-		propertyIds.addAll(m_properties.keySet());
-
-		// We have to have special handling inside the NodeTable for this field to be sortable
-		// since it is not a database field. We must sort using Comparators instead of Criteria 
-		// ordering.
-		//propertyIds.remove("primaryInterface");
-
-		return Collections.unmodifiableCollection(propertyIds);
-	}
-
-	@Override
+    @Override
 	public void selectionChanged(SelectionContext selectionContext) {
-		Collection<Order> oldOrders = m_criteria.getOrders();
-		Set<Restriction> restrictions = new HashSet<Restriction>();
-		for (VertexRef ref : selectionContext.getSelectedVertexRefs()) {
-			if ("nodes".equals(ref.getNamespace())) {
-				try {
-					restrictions.add(new EqRestriction("id", Integer.valueOf(ref.getId())));
-				} catch (NumberFormatException e) {
-					LoggerFactory.getLogger(this.getClass()).warn("Cannot filter nodes with ID: {}", ref.getId());
-				}
-			}
-		}
+        List<Restriction> newRestrictions = new SelectionContextToRestrictionConverter() {
 
-		m_criteria = new Criteria(getItemClass());
-		if (restrictions.size() > 0) {
-			AnyRestriction any = new AnyRestriction(restrictions.toArray(new Restriction[0]));
-			m_criteria.addRestriction(any);
-		}
-		m_criteria.setOrders(oldOrders);
-		fireItemSetChangedEvent();
+            @Override
+            protected Restriction createRestriction(VertexRef ref) {
+                return new EqRestriction("id", Integer.valueOf(ref.getId()));
+            }
+        }.getRestrictions(selectionContext);
+        if (!getRestrictions().equals(newRestrictions)) { // selection really changed
+            setRestrictions(newRestrictions);
+            getCache().reload(getPage());
+            fireItemSetChangedEvent();
+        }
 	}
 }
+
+

@@ -199,7 +199,7 @@ public class VmwareCimMonitor extends AbstractServiceMonitor {
             if ("poweredOn".equals(powerState)) {
                 List<CIMObject> cimObjects = null;
                 try {
-                    cimObjects = vmwareViJavaAccess.queryCimObjects(hostSystem, "CIM_NumericSensor");
+                    cimObjects = vmwareViJavaAccess.queryCimObjects(hostSystem, "CIM_NumericSensor", svc.getIpAddr());
                 } catch (RemoteException e) {
                     logger.warn("Error retrieving CIM values from host system '{}'", vmwareManagedObjectId, e.getMessage());
 

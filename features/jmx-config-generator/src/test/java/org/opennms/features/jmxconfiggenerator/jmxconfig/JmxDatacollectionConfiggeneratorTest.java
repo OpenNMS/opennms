@@ -37,6 +37,9 @@ import java.util.Map;
 import javax.management.MBeanServer;
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
+import javax.management.remote.JMXConnector;
+import javax.management.remote.JMXServiceURL;
+
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -101,8 +104,7 @@ public class JmxDatacollectionConfiggeneratorTest {
 
     //@Test
     public void testGenerateJmxConfigCassandraLocal() throws MalformedURLException, IOException {
-        MBeanServerConnection mBeanServerConnection = jmxConfiggenerator.createMBeanServerConnection("localhost", "7199", null, null, false, false);
-        JmxDatacollectionConfig jmxConfigModel = jmxConfiggenerator.generateJmxConfigModel(mBeanServerConnection, "cassandra", false, false, dictionary);
+        JmxDatacollectionConfig jmxConfigModel = jmxConfiggenerator.generateJmxConfigModel(platformMBeanServer, "cassandra", false, false, dictionary);
         Assert.assertEquals(1, jmxConfigModel.getJmxCollection().size());
         Assert.assertEquals(35, jmxConfigModel.getJmxCollection().get(0).getMbeans().getMbean().size());
         Assert.assertEquals("org.apache.cassandra.internal.MemtablePostFlusher", jmxConfigModel.getJmxCollection().get(0).getMbeans().getMbean().get(0).getName());
@@ -110,7 +112,10 @@ public class JmxDatacollectionConfiggeneratorTest {
 
     //@Test
     public void testGenerateJmxConfigJmxMp() throws MalformedURLException, IOException {
-        MBeanServerConnection mBeanServerConnection = jmxConfiggenerator.createMBeanServerConnection("connect.opennms-edu.net", "9998", null, null, false, true);
+    	
+    	JMXServiceURL url = jmxConfiggenerator.getJmxServiceURL(false, "connect.opennms-edu.net", "9998");
+    	JMXConnector jmxConnector = jmxConfiggenerator.getJmxConnector(null, null, url);
+        MBeanServerConnection mBeanServerConnection = jmxConfiggenerator.createMBeanServerConnection(jmxConnector);
         logger.debug("MBeanServerConnection: '{}'",mBeanServerConnection);
         JmxDatacollectionConfig jmxConfigModel = jmxConfiggenerator.generateJmxConfigModel(mBeanServerConnection, "RemoteRepository", true, true, dictionary);
         Assert.assertEquals(1, jmxConfigModel.getJmxCollection().size());

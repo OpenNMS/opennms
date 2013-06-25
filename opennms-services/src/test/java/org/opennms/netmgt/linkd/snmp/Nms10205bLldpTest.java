@@ -28,12 +28,17 @@
 
 package org.opennms.netmgt.linkd.snmp;
 
+import static org.junit.Assert.assertEquals;
+
+import java.util.Collection;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.core.utils.BeanUtils;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.linkd.nb.Nms10205bNetworkBuilder;
 import org.opennms.netmgt.snmp.CollectionTracker;
@@ -43,11 +48,6 @@ import org.opennms.netmgt.snmp.SnmpWalker;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.test.context.ContextConfiguration;
-
-import java.net.InetAddress;
-import java.util.Collection;
-
-import static org.junit.Assert.assertEquals;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -68,10 +68,10 @@ public class Nms10205bLldpTest extends Nms10205bNetworkBuilder implements Initia
     public void testNetwork10205bJ63542LldpLocalBaseCollection() throws Exception {
 
         String name = "lldpLocGroup";
-        LldpLocalGroup m_lLldpLocalGroup = new LldpLocalGroup(InetAddress.getByName(J6350_42_IP));
+        LldpLocalGroup m_lLldpLocalGroup = new LldpLocalGroup(InetAddressUtils.addr(J6350_42_IP));
         CollectionTracker[] tracker = new CollectionTracker[0];
         tracker = new CollectionTracker[]{m_lLldpLocalGroup};
-        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(J6350_42_IP));
+        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(J6350_42_IP));
         SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
         walker.start();
 
@@ -94,10 +94,10 @@ public class Nms10205bLldpTest extends Nms10205bNetworkBuilder implements Initia
     public void testNetwork10205bJ63542LldpRemTableCollection() throws Exception {
 
         String name = "lldpRemTable";
-        LldpRemTable m_lldpRemTable = new LldpRemTable(InetAddress.getByName(J6350_42_IP));
+        LldpRemTable m_lldpRemTable = new LldpRemTable(InetAddressUtils.addr(J6350_42_IP));
         CollectionTracker[] tracker = new CollectionTracker[0];
         tracker = new CollectionTracker[]{m_lldpRemTable};
-        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(J6350_42_IP));
+        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(J6350_42_IP));
         SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
         walker.start();
 
@@ -118,10 +118,10 @@ public class Nms10205bLldpTest extends Nms10205bNetworkBuilder implements Initia
     public void testNetwork10205bJ63542LldpLocTableCollection() throws Exception {
 
         String name = "lldpLocTable";
-        LldpLocTable m_lldpLocTable = new LldpLocTable(InetAddress.getByName(J6350_42_IP));
+        LldpLocTable m_lldpLocTable = new LldpLocTable(InetAddressUtils.addr(J6350_42_IP));
         CollectionTracker[] tracker = new CollectionTracker[0];
         tracker = new CollectionTracker[]{m_lldpLocTable};
-        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(J6350_42_IP));
+        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(J6350_42_IP));
         SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
         walker.start();
 

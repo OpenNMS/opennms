@@ -117,6 +117,11 @@ install: build
 	install -d -m 755 debian/opennms-plugin-collector-juniper-tca/var/lib/opennms/xsds
 	install -d -m 755 debian/opennms-plugin-collector-juniper-tca/etc/opennms/{datacollection,snmp-graph.properties.d}
 	
+	# Setup ticketers
+	install -d -m 755 debian/opennms-plugin-ticketer-{jira,otrs,rt}/usr/share/java/opennms
+	install -d -m 755 debian/opennms-plugin-ticketer-{jira,otrs,rt}/etc/opennms
+	install -d -m 755 debian/opennms-plugin-ticketer-{jira,otrs,rt}/var/lib/opennms/etc-pristine
+	
 	# Setup NCS
 	install -d -m 755 debian/opennms-ncs/usr/share/java/opennms
 	install -d -m 755 debian/opennms-ncs/etc/opennms/drools-engine.d
@@ -176,6 +181,21 @@ install: build
 	mv debian/opennms-common/var/lib/opennms/etc-pristine/tca*-config.xml                      debian/opennms-plugin-collector-juniper-tca/var/lib/opennms/etc-pristine/
 	mv debian/opennms-common/var/lib/opennms/etc-pristine/datacollection/juniper-tca*          debian/opennms-plugin-collector-juniper-tca/var/lib/opennms/etc-pristine/datacollection/
 	mv debian/opennms-common/var/lib/opennms/etc-pristine/snmp-graph.properties.d/juniper-tca* debian/opennms-plugin-collector-juniper-tca/var/lib/opennms/etc-pristine/snmp-graph.properties.d/
+	
+	# JIRA
+	mv debian/temp/lib/jira-*.jar                                                              debian/opennms-plugin-ticketer-jira/usr/share/java/opennms/
+	mv debian/temp/etc/jira.properties                                                         debian/opennms-plugin-ticketer-jira/etc/opennms/
+	mv debian/opennms-common/var/lib/opennms/etc-pristine/jira.properties                      debian/opennms-plugin-ticketer-jira/var/lib/opennms/etc-pristine/
+	
+	# OTRS
+	mv debian/temp/lib/opennms-integration-otrs*.jar                                           debian/opennms-plugin-ticketer-otrs/usr/share/java/opennms/
+	mv debian/temp/etc/otrs.properties                                                         debian/opennms-plugin-ticketer-otrs/etc/opennms/
+	mv debian/opennms-common/var/lib/opennms/etc-pristine/otrs.properties                      debian/opennms-plugin-ticketer-otrs/var/lib/opennms/etc-pristine/
+	
+	# RT
+	mv debian/temp/lib/opennms-integration-rt*.jar                                             debian/opennms-plugin-ticketer-rt/usr/share/java/opennms/
+	mv debian/temp/etc/rt.properties                                                           debian/opennms-plugin-ticketer-rt/etc/opennms/
+	mv debian/opennms-common/var/lib/opennms/etc-pristine/rt.properties                        debian/opennms-plugin-ticketer-rt/var/lib/opennms/etc-pristine/
 	
 	# NCS
 	mv debian/temp/lib/ncs-*.jar                                                               debian/opennms-ncs/usr/share/java/opennms/

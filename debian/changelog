@@ -1,3 +1,16 @@
+opennms (1.11.92-1) unstable; urgency=high
+
+  * New upstream release.  This release contains a fix for reading
+    eventconf.xml when it does not contain an XML namespace attribute.
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Fri, 21 Jun 2013 14:53:00 -0400
+
+opennms (1.11.91-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Fri, 21 Jun 2013 10:46:00 -0400
+
 opennms (1.11.90-1) unstable; urgency=low
 
   * New upstream release.
