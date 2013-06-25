@@ -35,13 +35,14 @@
 package org.opennms.sms.reflector.commands.internal;
 
 import org.opennms.core.utils.ThreadCategory;
+import org.smslib.AGateway;
 import org.smslib.IUSSDNotification;
 import org.smslib.USSDResponse;
 public class USSDNotification implements IUSSDNotification {
     /** {@inheritDoc} */
     @Override
-    public void process(String gatewayId, USSDResponse ussdResponse) {
-        debugf(">>> Inbound USSD detected from gateway %s : %s",  gatewayId, ussdResponse.getContent());
+    public void process(AGateway gateway, USSDResponse ussdResponse) {
+        debugf(">>> Inbound USSD detected from gateway %s : %s",  gateway.getGatewayId(), ussdResponse.getContent());
         debugf(">>> USSD session status: %s", ussdResponse.getSessionStatus());
     }
     
@@ -52,5 +53,5 @@ public class USSDNotification implements IUSSDNotification {
             log.debug(String.format(format, args));
         }
     }
-    
+
 }

@@ -28,6 +28,7 @@
 
 package org.opennms.sms.reflector.smsservice.internal;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -38,11 +39,7 @@ import org.opennms.sms.reflector.smsservice.GatewayGroup;
 import org.opennms.sms.reflector.smsservice.OnmsInboundMessageNotification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.smslib.AGateway;
-import org.smslib.GatewayException;
-import org.smslib.IGatewayStatusNotification;
-import org.smslib.IOutboundMessageNotification;
-import org.smslib.IUSSDNotification;
+import org.smslib.*;
 import org.smslib.Service.ServiceStatus;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
@@ -92,7 +89,7 @@ public class GatewayGroupListener implements InitializingBean {
                 }
                 smsService.addGateway(gateways[i]);
 
-            } catch (final GatewayException e) {
+            } catch (final Exception e) {
                 LogUtils.warnf(this, e, "Unable to add gateway (%s) to SMS service", gateways[i]);
             }
         }
@@ -118,7 +115,11 @@ public class GatewayGroupListener implements InitializingBean {
 
         service.unregister(m_smsServiceRegistrar);
 
-        service.stop();
+        try {
+            service.stop();
+        } catch (Exception e) {
+            LogUtils.warnf(this, e, "Unable to stop SMS service", gatewayGroup);
+        }
 
     }
 

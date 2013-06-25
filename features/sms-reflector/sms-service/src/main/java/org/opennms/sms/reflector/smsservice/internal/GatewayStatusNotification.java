@@ -31,6 +31,7 @@ package org.opennms.sms.reflector.smsservice.internal;
 import java.util.Collection;
 import java.util.List;
 
+import org.smslib.AGateway;
 import org.smslib.IGatewayStatusNotification;
 import org.smslib.AGateway.GatewayStatuses;
 import org.springframework.beans.BeansException;
@@ -62,16 +63,15 @@ public class GatewayStatusNotification implements IGatewayStatusNotification, Ap
 	public GatewayStatusNotification(List<IGatewayStatusNotification> listeners) {
 	    m_listenerList = listeners;
 	}
-	
-	/** {@inheritDoc} */
-        @Override
-	public void process(String gtwId, GatewayStatuses oldStatus, GatewayStatuses newStatus) {
-		for(IGatewayStatusNotification listener : getListeners()){
-			if (listener != this) {
-				listener.process(gtwId, oldStatus, newStatus);
-			}
-		}
-	}
+
+    @Override
+    public void process(AGateway gateway, GatewayStatuses oldStatus, GatewayStatuses newStatus) {
+        for(IGatewayStatusNotification listener : getListeners()){
+            if (listener != this) {
+                listener.process(gateway, oldStatus, newStatus);
+            }
+        }
+    }
 
 	private Collection<IGatewayStatusNotification> getListeners() {
 		if ( m_listenerList == null ) {
