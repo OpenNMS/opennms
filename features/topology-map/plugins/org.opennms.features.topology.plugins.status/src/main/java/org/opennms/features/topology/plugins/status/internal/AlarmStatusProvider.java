@@ -6,7 +6,6 @@ import org.hibernate.HibernateException;
 import org.hibernate.criterion.CriteriaQuery;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.DetachedCriteria;
-import org.hibernate.engine.TypedValue;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.features.topology.api.topo.Status;
