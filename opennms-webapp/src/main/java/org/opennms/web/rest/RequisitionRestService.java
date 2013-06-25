@@ -48,8 +48,7 @@ import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.ValidationException;
 
-import org.opennms.core.utils.LogUtils;
-import org.opennms.core.utils.ThreadCategory;
+
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionAsset;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionAssetCollection;
@@ -62,6 +61,8 @@ import org.opennms.netmgt.provision.persist.requisition.RequisitionMonitoredServ
 import org.opennms.netmgt.provision.persist.requisition.RequisitionMonitoredServiceCollection;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionNodeCollection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -124,6 +125,9 @@ import com.sun.jersey.spi.resource.PerRequest;
 @Scope("prototype")
 @Path("requisitions")
 public class RequisitionRestService extends OnmsRestService {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(RequisitionRestService.class);
+
 
     @Autowired
     private RequisitionAccessService m_accessService;
@@ -149,10 +153,8 @@ public class RequisitionRestService extends OnmsRestService {
         return Integer.toString(m_accessService.getDeployedCount());
     }
 
-    @Override
-    protected ThreadCategory log() {
-        return super.log();
-    }
+   
+   
 
     /**
      * Get all the deployed requisitions
@@ -436,7 +438,7 @@ public class RequisitionRestService extends OnmsRestService {
         try {
             requisition.validate();
         } catch (final ValidationException e) {
-            LogUtils.debugf(this, e, "error validating incoming requisition with foreign source '%s'", requisition.getForeignSource());
+            LOG.debug("error validating incoming requisition with foreign source '{}'", requisition.getForeignSource(), e);
             throw getException(Status.BAD_REQUEST, e.getMessage());
         }
 
@@ -718,6 +720,6 @@ public class RequisitionRestService extends OnmsRestService {
     }
 
     void debug(final String format, final Object... values) {
-        LogUtils.debugf(this, format, values);
+        LOG.debug(format, values);
     }
 }

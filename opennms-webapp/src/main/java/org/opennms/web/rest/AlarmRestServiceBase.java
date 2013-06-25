@@ -38,11 +38,15 @@ import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.Fetch.FetchType;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsSeverity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class AlarmRestServiceBase extends OnmsRestService {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(AlarmRestServiceBase.class);
+
 
     protected static final Pattern m_severityPattern;
 
@@ -55,7 +59,7 @@ public class AlarmRestServiceBase extends OnmsRestService {
     	final CriteriaBuilder cb = getCriteriaBuilder(params, stripOrdering);
 
     	final Criteria criteria = cb.toCriteria();
-    	LogUtils.debugf(this, "criteria = %s", criteria);
+    	LOG.debug("criteria = {}", criteria);
 		return criteria;
     }
 

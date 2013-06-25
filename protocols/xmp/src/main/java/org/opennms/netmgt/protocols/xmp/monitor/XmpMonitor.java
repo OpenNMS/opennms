@@ -44,8 +44,9 @@ import org.krupczak.xmp.SocketOpts;
 import org.krupczak.xmp.Xmp;
 import org.krupczak.xmp.XmpSession;
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.ThreadCategory;
+
 import org.opennms.netmgt.config.xmpConfig.XmpConfig;
+
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
@@ -53,6 +54,8 @@ import org.opennms.netmgt.poller.monitors.AbstractServiceMonitor;
 import org.opennms.netmgt.protocols.xmp.XmpUtil;
 import org.opennms.netmgt.protocols.xmp.XmpUtilException;
 import org.opennms.netmgt.protocols.xmp.config.XmpConfigFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>XmpMonitor class.</p>
@@ -61,6 +64,8 @@ import org.opennms.netmgt.protocols.xmp.config.XmpConfigFactory;
  * @version $Id: $
  */
 public class XmpMonitor extends AbstractServiceMonitor {
+	
+
     
     /**
      * The default port to use for XMP
@@ -146,7 +151,7 @@ public class XmpMonitor extends AbstractServiceMonitor {
         PollStatus status = PollStatus.unavailable();
         InetAddress ipaddr = (InetAddress) iface.getAddress();
 
-        ThreadCategory log = ThreadCategory.getInstance(getClass());
+        
         XmpConfig protoConfig = XmpConfigFactory.getInstance().getXmpConfig();
         XmpSession session;
         SocketOpts sockopts = new SocketOpts();
@@ -233,13 +238,13 @@ public class XmpMonitor extends AbstractServiceMonitor {
         boolean result = false;
         if (requestType.equalsIgnoreCase("SelectTableRequest")) {
             try {
-                result = XmpUtil.handleTableQuery(session, mib, table, object, instance, instanceRegex, valueOperator, valueOperand, minMatches, maxMatches, maxMatchesUnbounded, log, valueCaseSensitive);
+                result = XmpUtil.handleTableQuery(session, mib, table, object, instance, instanceRegex, valueOperator, valueOperand, minMatches, maxMatches, maxMatchesUnbounded, valueCaseSensitive);
             } catch (XmpUtilException e) {
                 status = PollStatus.unavailable(e.getMessage());
             }
         } else if (requestType.equalsIgnoreCase("GetRequest")) {
             try {
-                result = XmpUtil.handleScalarQuery(session, mib, object, valueOperator, valueOperand, log, valueCaseSensitive);
+                result = XmpUtil.handleScalarQuery(session, mib, object, valueOperator, valueOperand, valueCaseSensitive);
             } catch (XmpUtilException e) {
                 status = PollStatus.unavailable(e.getMessage());
             }

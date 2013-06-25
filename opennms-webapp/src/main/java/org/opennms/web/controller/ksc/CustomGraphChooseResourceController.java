@@ -35,10 +35,11 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.web.servlet.MissingParameterException;
 import org.opennms.web.svclayer.ResourceService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
@@ -52,6 +53,9 @@ import org.springframework.web.servlet.mvc.AbstractController;
  * @since 1.8.1
  */
 public class CustomGraphChooseResourceController extends AbstractController implements InitializingBean {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(CustomGraphChooseResourceController.class);
+
 
     public enum Parameters {
         resourceId,
@@ -81,7 +85,7 @@ public class CustomGraphChooseResourceController extends AbstractController impl
                 r = r.getParent();
             }
             
-            log().debug("handleRequestInternal: addObject " + selectedResourceAndParents.toString());
+            LOG.debug("handleRequestInternal: addObject {}", selectedResourceAndParents.toString());
             modelAndView.addObject("selectedResourceAndParents", selectedResourceAndParents);
         }
         
@@ -91,7 +95,7 @@ public class CustomGraphChooseResourceController extends AbstractController impl
         modelAndView.addObject("parentResourcePrefabGraphs", m_resourceService.findPrefabGraphsForResource(resource));
 
         List<OnmsResource> childResources = getResourceService().findChildResources(resource);
-        log().debug("handleRequestInternal: addObject " + childResources.toString());
+        LOG.debug("handleRequestInternal: addObject {}", childResources.toString());
         modelAndView.addObject("resources", childResources);
         
         return modelAndView;
@@ -125,7 +129,4 @@ public class CustomGraphChooseResourceController extends AbstractController impl
         Assert.state(m_resourceService != null, "property resourceService must be set");
     }
 
-    private static ThreadCategory log() {
-       return ThreadCategory.getInstance(CustomGraphChooseResourceController.class);
-    }
 }

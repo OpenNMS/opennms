@@ -46,7 +46,6 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.dao.ApplicationDao;
 import org.opennms.netmgt.dao.GraphDao;
@@ -69,6 +68,8 @@ import org.opennms.web.svclayer.DistributedStatusService;
 import org.opennms.web.svclayer.SimpleWebTable;
 import org.opennms.web.svclayer.SimpleWebTable.Cell;
 import org.opennms.web.svclayer.support.DistributedStatusHistoryModel.ServiceGraph;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.util.Assert;
@@ -83,6 +84,9 @@ import org.springframework.validation.Errors;
  * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
  */
 public class DefaultDistributedStatusService implements DistributedStatusService, InitializingBean {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(DefaultDistributedStatusService.class);
+
     private MonitoredServiceDao m_monitoredServiceDao;
     private LocationMonitorDao m_locationMonitorDao;
     private ApplicationDao m_applicationDao;
@@ -441,9 +445,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         return table;
     }
     
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
+   
 
     /**
      * Filter a collection of OnmsLocationSpecificStatus based on a
@@ -548,9 +550,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
             }
             if (!foundIt) {
                 pollStatuses.add(PollStatus.unknown("No status found for this service"));
-                if (log().isDebugEnabled()) {
-                    log().debug("Did not find status for service " + service + " in application.  Setting status for it to unknown.");
-                }
+                LOG.debug("Did not find status for service {} in application.  Setting status for it to unknown.", service);
             }
         }
         
