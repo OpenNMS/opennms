@@ -68,6 +68,7 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -196,7 +197,7 @@ public class NotificationManagerTest implements TemporaryDatabaseAware<Temporary
     }
     
     @Test
-    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
+    @Transactional
     public void testNoElement() {
         doTestNodeInterfaceServiceWithRule("node/interface/service match",
                                            0, null, null,
@@ -209,7 +210,7 @@ public class NotificationManagerTest implements TemporaryDatabaseAware<Temporary
      * the IP address is in the database on *some* node.
      */
     @Test
-    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
+    @Transactional
     public void testNoNodeIdWithIpAddr() {
         doTestNodeInterfaceServiceWithRule("node/interface/service match",
                                            0, "192.168.1.1", null,
@@ -223,7 +224,7 @@ public class NotificationManagerTest implements TemporaryDatabaseAware<Temporary
      * database.  This shouldn't send an event.
      */
     @Test
-    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
+    @Transactional
     public void testNoNodeIdWithIpAddrNotInDb() {
         doTestNodeInterfaceServiceWithRule("node/interface/service match",
                                            0, "192.168.1.2", null,
@@ -236,7 +237,7 @@ public class NotificationManagerTest implements TemporaryDatabaseAware<Temporary
      * the IP address and service is in the database on *some* node.
      */
     @Test
-    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
+    @Transactional
     public void testNoNodeIdWithService() {
         doTestNodeInterfaceServiceWithRule("node/interface/service match",
                                            0, null, "HTTP",
@@ -246,7 +247,7 @@ public class NotificationManagerTest implements TemporaryDatabaseAware<Temporary
 
     // FIXME... do we really want to return true if the rule is wrong?????
     @Test
-    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
+    @Transactional
     public void testRuleBogus() {
         try {
             doTestNodeInterfaceServiceWithRule("node/interface/service match",
@@ -260,7 +261,7 @@ public class NotificationManagerTest implements TemporaryDatabaseAware<Temporary
     }
     
     @Test
-    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
+    @Transactional
     public void testIplikeAllStars() {
         doTestNodeInterfaceServiceWithRule("node/interface/service match",
                                            1, "192.168.1.1", "HTTP",
@@ -269,7 +270,7 @@ public class NotificationManagerTest implements TemporaryDatabaseAware<Temporary
     }
 
     @Test
-    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
+    @Transactional
     public void testNodeOnlyMatch() {
         doTestNodeInterfaceServiceWithRule("node/interface/service match",
                                            1, null, null,
@@ -278,7 +279,7 @@ public class NotificationManagerTest implements TemporaryDatabaseAware<Temporary
     }
     
     @Test
-    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
+    @Transactional
     public void testNodeOnlyMatchZeroesIpAddr() {
         doTestNodeInterfaceServiceWithRule("node/interface/service match",
                                            1, "0.0.0.0", null,
@@ -287,7 +288,7 @@ public class NotificationManagerTest implements TemporaryDatabaseAware<Temporary
     }
     
     @Test
-    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
+    @Transactional
     public void testNodeOnlyNoMatch() {
         doTestNodeInterfaceServiceWithRule("node/interface/service match",
                                            3, null, null,
@@ -296,7 +297,7 @@ public class NotificationManagerTest implements TemporaryDatabaseAware<Temporary
     }
     
     @Test
-    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
+    @Transactional
     public void testWrongNodeId() throws InterruptedException {
         doTestNodeInterfaceServiceWithRule("node/interface/service match",
                                            2, "192.168.1.1", "HTTP",
@@ -305,7 +306,7 @@ public class NotificationManagerTest implements TemporaryDatabaseAware<Temporary
     }
     
     @Test
-    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
+    @Transactional
     public void testIpAddrSpecificPass() throws InterruptedException {
         doTestNodeInterfaceServiceWithRule("node/interface/service match",
                                            1, "192.168.1.1", null,
@@ -314,7 +315,7 @@ public class NotificationManagerTest implements TemporaryDatabaseAware<Temporary
     }
     
     @Test
-    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
+    @Transactional
     public void testIpAddrSpecificFail() {
         doTestNodeInterfaceServiceWithRule("node/interface/service match",
                                            1, "192.168.1.1", null,
@@ -324,7 +325,7 @@ public class NotificationManagerTest implements TemporaryDatabaseAware<Temporary
     
 
     @Test
-    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
+    @Transactional
     public void testIpAddrServiceSpecificPass() throws InterruptedException {
         doTestNodeInterfaceServiceWithRule("node/interface/service match",
                                            1, "192.168.1.1", "HTTP",
@@ -333,7 +334,7 @@ public class NotificationManagerTest implements TemporaryDatabaseAware<Temporary
     }
     
     @Test
-    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
+    @Transactional
     public void testIpAddrServiceSpecificFail() {
         doTestNodeInterfaceServiceWithRule("node/interface/service match",
                                            1, "192.168.1.1", "HTTP",
@@ -342,7 +343,7 @@ public class NotificationManagerTest implements TemporaryDatabaseAware<Temporary
     }
     
     @Test
-    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
+    @Transactional
     public void testIpAddrServiceSpecificWrongService() {
         doTestNodeInterfaceServiceWithRule("node/interface/service match",
                                            1, "192.168.1.1", "ICMP",
@@ -351,7 +352,7 @@ public class NotificationManagerTest implements TemporaryDatabaseAware<Temporary
     }
 
     @Test
-    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
+    @Transactional
     public void testIpAddrServiceSpecificWrongIP() {
         doTestNodeInterfaceServiceWithRule("node/interface/service match",
                                            1, "192.168.1.2", "HTTP",
@@ -360,7 +361,7 @@ public class NotificationManagerTest implements TemporaryDatabaseAware<Temporary
     }
     
     @Test
-    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
+    @Transactional
     public void testMultipleCategories() {
         doTestNodeInterfaceServiceWithRule("node/interface/service match",
                                            1, "192.168.1.1", "HTTP",
@@ -369,7 +370,7 @@ public class NotificationManagerTest implements TemporaryDatabaseAware<Temporary
     }
     
     @Test
-    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
+    @Transactional
     public void testMultipleCategoriesNotMember() throws InterruptedException {
         doTestNodeInterfaceServiceWithRule("node/interface/service match",
                                            2, "192.168.1.1", "HTTP",
@@ -378,7 +379,7 @@ public class NotificationManagerTest implements TemporaryDatabaseAware<Temporary
     }
 
     @Test
-    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
+    @Transactional
     public void testIpAddrMatchWithNoServiceOnInterface() {
         doTestNodeInterfaceServiceWithRule("node/interface/service match",
                                            4, null, null,
@@ -393,7 +394,7 @@ public class NotificationManagerTest implements TemporaryDatabaseAware<Temporary
      * it isn't referenced in the filter query.  Sucky, huh?
      */
     @Test
-    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
+    @Transactional
     public void testNodeMatchWithNoInterfacesOnNode() {
         doTestNodeInterfaceServiceWithRule("node/interface/service match",
                                            5, null, null,
@@ -408,7 +409,7 @@ public class NotificationManagerTest implements TemporaryDatabaseAware<Temporary
      * the user's filter (if any) is an AND, but it is if it's an OR.
      */
     @Test
-    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
+    @Transactional
     public void testRuleWithOrNoMatch() {
         /*
          * Note: the nodeLabel for nodeId=3/ipAddr=192.168.1.2 is 'node 3'

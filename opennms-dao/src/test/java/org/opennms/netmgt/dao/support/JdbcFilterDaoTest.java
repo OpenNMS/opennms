@@ -185,7 +185,7 @@ public class JdbcFilterDaoTest implements InitializingBean, TemporaryDatabaseAwa
     }
 
     @Test
-    @JUnitTemporaryDatabase // Not sure exactly why this test requires a fresh database but it fails without it :/
+    @Transactional
     public void testWithManyCatIncAndServiceIdentifiersInRules() throws Exception {
 
         // node1 has all the categories and an 192.168.1.1
@@ -243,7 +243,7 @@ public class JdbcFilterDaoTest implements InitializingBean, TemporaryDatabaseAwa
     }
 
     @Test
-    @JUnitTemporaryDatabase // This test manages its own transactions so use a fresh database
+    @Transactional
     public void testGetActiveIPListWithDeletedNode() throws Exception {
         m_transTemplate.execute(new TransactionCallback<Object>() {
             @Override
@@ -296,7 +296,7 @@ public class JdbcFilterDaoTest implements InitializingBean, TemporaryDatabaseAwa
     }
 
     @Test
-    @JUnitTemporaryDatabase // Not sure exactly why this test requires a fresh database but it fails without it :/
+    @Transactional
     public void testWalkNodes() throws Exception {
         final List<OnmsNode> nodes = new ArrayList<OnmsNode>();
         EntityVisitor visitor = new AbstractEntityVisitor() {
