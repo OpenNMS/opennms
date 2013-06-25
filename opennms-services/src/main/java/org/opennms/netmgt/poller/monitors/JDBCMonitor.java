@@ -185,11 +185,10 @@ public class JDBCMonitor extends AbstractServiceMonitor {
 		try {
 			String driverClass = ParameterMap.getKeyedString(parameters, "driver", DBTools.DEFAULT_JDBC_DRIVER);
 			driver = (Driver)Class.forName(driverClass).newInstance();
+			log().debug("Loaded JDBC driver: " + driverClass);
 		} catch (Throwable exp) {
 			throw new RuntimeException("Unable to load driver class: "+exp.toString(), exp);
 		}
-
-		log().info("Loaded JDBC driver");
 
 		// Get the JDBC url host part
 		InetAddress ipv4Addr = (InetAddress) iface.getAddress();

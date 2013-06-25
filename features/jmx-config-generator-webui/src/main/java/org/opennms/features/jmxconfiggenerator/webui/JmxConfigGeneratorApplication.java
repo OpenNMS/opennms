@@ -57,6 +57,7 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import javax.management.remote.JMXServiceURL;
 
 @SuppressWarnings("serial")
 public class JmxConfigGeneratorApplication extends com.vaadin.Application implements ModelChangeListener<UiModel> {
@@ -206,7 +207,8 @@ public class JmxConfigGeneratorApplication extends com.vaadin.Application implem
 
                 // TODO loading of the dictionary should not be done via the Starter class and not in a static way!
                 JmxDatacollectionConfiggenerator jmxConfigGenerator = new JmxDatacollectionConfiggenerator();
-                JMXConnector connector = jmxConfigGenerator.getJmxConnector(config.getHost(), config.getPort(), config.getUser(), config.getPassword(), config.isSsl(), config.isJmxmp());
+                JMXServiceURL jmxServiceURL = jmxConfigGenerator.getJmxServiceURL(config.isJmxmp(), config.getHost(), config.getPort());
+                JMXConnector connector = jmxConfigGenerator.getJmxConnector(config.getUser(), config.getPassword(), jmxServiceURL);
                 JmxDatacollectionConfig generateJmxConfigModel = jmxConfigGenerator.generateJmxConfigModel(connector.getMBeanServerConnection(), "anyservice", !config.isSkipDefaultVM(), config.isRunWritableMBeans(), Starter.loadInternalDictionary());
                 connector.close();
 

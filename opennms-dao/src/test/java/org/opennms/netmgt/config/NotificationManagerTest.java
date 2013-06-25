@@ -43,8 +43,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.core.test.db.TemporaryDatabase;
-import org.opennms.core.test.db.TemporaryDatabaseAware;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.config.mock.MockNotifdConfigManager;
@@ -77,8 +75,8 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath*:/META-INF/opennms/component-dao.xml"
 })
 @JUnitConfigurationEnvironment
-@JUnitTemporaryDatabase
-public class NotificationManagerTest implements TemporaryDatabaseAware<TemporaryDatabase>, InitializingBean {
+@JUnitTemporaryDatabase(reuseDatabase=false)
+public class NotificationManagerTest implements InitializingBean {
 	@Autowired
 	private DataSource m_dataSource;
 
@@ -100,13 +98,6 @@ public class NotificationManagerTest implements TemporaryDatabaseAware<Temporary
     private NotificationManagerImpl m_notificationManager;
     private NotifdConfigManager m_configManager;
 
-    private TemporaryDatabase m_database;
-
-    @Override
-    public void setTemporaryDatabase(TemporaryDatabase database) {
-        m_database = database;
-    }
-
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
@@ -117,7 +108,7 @@ public class NotificationManagerTest implements TemporaryDatabaseAware<Temporary
         // Initialize Filter DAO
         DatabaseSchemaConfigFactory.init();
         JdbcFilterDao jdbcFilterDao = new JdbcFilterDao();
-        jdbcFilterDao.setDataSource(m_database);
+        jdbcFilterDao.setDataSource(m_dataSource);
         jdbcFilterDao.setDatabaseSchemaConfigFactory(DatabaseSchemaConfigFactory.getInstance());
         jdbcFilterDao.afterPropertiesSet();
         FilterDaoFactory.setInstance(jdbcFilterDao);
@@ -150,7 +141,7 @@ public class NotificationManagerTest implements TemporaryDatabaseAware<Temporary
 		node.addCategory(category2);
 		node.addCategory(category3);
 		
-		ipInterface = new OnmsIpInterface("192.168.1.1", node);
+		ipInterface = new OnmsIpInterface(addr("192.168.1.1"), node);
         service = new OnmsMonitoredService(ipInterface, serviceType);
 		m_nodeDao.save(node);
 
@@ -161,19 +152,19 @@ public class NotificationManagerTest implements TemporaryDatabaseAware<Temporary
 		node.addCategory(category4);
 		m_nodeDao.save(node);
         
-        ipInterface = new OnmsIpInterface("192.168.1.1", node);
+        ipInterface = new OnmsIpInterface(addr("192.168.1.1"), node);
         m_ipInterfaceDao.save(ipInterface);
         service = new OnmsMonitoredService(ipInterface, serviceType);
         m_serviceDao.save(service);
         
-        ipInterface = new OnmsIpInterface("0.0.0.0", node);
+        ipInterface = new OnmsIpInterface(addr("0.0.0.0"), node);
         m_ipInterfaceDao.save(ipInterface);
         
         // node 3
         node = new OnmsNode(distPoller, "node 3");
         m_nodeDao.save(node);
         
-        ipInterface = new OnmsIpInterface("192.168.1.2", node);
+        ipInterface = new OnmsIpInterface(addr("192.168.1.2"), node);
         m_ipInterfaceDao.save(ipInterface);
         service = new OnmsMonitoredService(ipInterface, serviceType);
         m_serviceDao.save(service);
@@ -182,7 +173,7 @@ public class NotificationManagerTest implements TemporaryDatabaseAware<Temporary
         node = new OnmsNode(distPoller, "node 4");
         m_nodeDao.save(node);
 
-        ipInterface = new OnmsIpInterface("192.168.1.3", node);
+        ipInterface = new OnmsIpInterface(addr("192.168.1.3"), node);
         m_ipInterfaceDao.save(ipInterface);
         
         // node 5 has no interfaces
