@@ -29,7 +29,8 @@ import javax.oss.fm.monitor.AlarmValue;
 import javax.oss.fm.monitor.JVTAlarmMonitorHome;
 import javax.oss.fm.monitor.JVTAlarmMonitorSession;
 import javax.rmi.PortableRemoteObject;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openoss.opennms.spring.qosd.AlarmListConnectionManager;
 import org.openoss.opennms.spring.qosd.PropertiesLoader;
 import org.openoss.opennms.spring.qosd.QoSDimpl2;
@@ -48,6 +49,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  */
 public class AlarmListJ2eeConnectionManagerThread extends Thread implements AlarmListConnectionManager 
 {
+    private static final Logger LOG = LoggerFactory.getLogger(AlarmListJ2eeConnectionManagerThread.class);
 	private int status = DISCONNECTED;
 	private PropertiesLoader props;
 	public Properties env;
@@ -59,8 +61,6 @@ public class AlarmListJ2eeConnectionManagerThread extends Thread implements Alar
 	private int send_status = SENT;
 	private boolean init = false;
 	private String rebuilt_message="not set";
-	
-	ThreadCategory log;
 	
 	/* (non-Javadoc)
 	 * @see org.openoss.opennms.spring.qosd.ejb.ConnectionManager#reset_list(java.lang.String)
@@ -97,7 +97,7 @@ public class AlarmListJ2eeConnectionManagerThread extends Thread implements Alar
         @Override
 	public void run() throws IllegalStateException
 	{
-		//log.info("Thread started");
+		//LOG.info("Thread started");
 		/* if the init variable is false then the thread has not been initialised
 		 * yet so throw an IllegalStateException to indicate this.
 		 */
@@ -106,8 +106,8 @@ public class AlarmListJ2eeConnectionManagerThread extends Thread implements Alar
 		
 		while(true)
 		{
-			//log.debug("Status = " + status);
-			//log.debug("Send_status = " + send_status);
+			//LOG.debug("Status = {}", status);
+			//LOG.debug("Send_status = {}", send_status);
 			
 			/* If we are connected to the bean and we need to 
 			 * send some alarms then try to send them. If the
@@ -115,35 +115,35 @@ public class AlarmListJ2eeConnectionManagerThread extends Thread implements Alar
 			 */
 			if((status == CONNECTED) && ((send_status == SEND) || (send_status == REBUILD)) )
 			{
-				if (log.isDebugEnabled()) log.debug("AlarmListJ2eeConnectionManagerThread.run() Sending alarms");
+				LOG.debug("AlarmListJ2eeConnectionManagerThread.run() Sending alarms");
 				try
 				{
 					if(alarmInternals == null)
-						log.error("AlarmListJ2eeConnectionManagerThread.run() alarmInternals is null");
+						LOG.error("AlarmListJ2eeConnectionManagerThread.run() alarmInternals is null");
 					
 					if (send_status == REBUILD) {
 						if(alarmInternals == null) {
-							log.error("AlarmListJ2eeConnectionManagerThread.run() rebuilt_message is null");
+							LOG.error("AlarmListJ2eeConnectionManagerThread.run() rebuilt_message is null");
 						}
 						alarmInternals.rebuildAlarmList(rebuilt_message);
 					}
 					else {
 						if(alarmList == null)
-							log.error("AlarmListJ2eeConnectionManagerThread.run() alarmList is null");
+							LOG.error("AlarmListJ2eeConnectionManagerThread.run() alarmList is null");
 						alarmInternals.updateAlarmList(alarmList);
 					}
 					send_status = SENT;
 				}
 				catch(RemoteException remote_ex)
 				{
-					log.error("Could not contact bean - reconnection attempt started");
+					LOG.error("Could not contact bean - reconnection attempt started");
 					status = DISCONNECTED;
 					send_status = SEND;
 				}
 				catch(NullPointerException np_ex)
 				{
-					log.error("alarmInternals is null, JBoss server may be down", np_ex);
-					log.info("Attempting reconnect");
+					LOG.error("alarmInternals is null, JBoss server may be down", np_ex);
+					LOG.info("Attempting reconnect");
 					status = DISCONNECTED;
 					send_status = SEND;
 				}
@@ -157,7 +157,7 @@ public class AlarmListJ2eeConnectionManagerThread extends Thread implements Alar
 			 */
 			if(status == CONNECTED && send_status == SENT)
 			{
-				if (log.isDebugEnabled()) log.debug("AlarmListJ2eeConnectionManagerThread.run() - Polling connection");
+				LOG.debug("AlarmListJ2eeConnectionManagerThread.run() - Polling connection");
 				/* test if the connection has been lost
 				 * by polling the getVersion method of the 
 				 * bean periodically. If the call throws a
@@ -170,7 +170,7 @@ public class AlarmListJ2eeConnectionManagerThread extends Thread implements Alar
 				}
 				catch(RemoteException remote_ex)
 				{
-					log.error("AlarmListJ2eeConnectionManagerThread.run() Could not contact bean - reconnection attempt started");
+					LOG.error("AlarmListJ2eeConnectionManagerThread.run() Could not contact bean - reconnection attempt started");
 					status = DISCONNECTED;
 				}
 			}
@@ -179,21 +179,21 @@ public class AlarmListJ2eeConnectionManagerThread extends Thread implements Alar
 			 */			
 			if(status == DISCONNECTED)
 			{
-				if (log.isDebugEnabled()) log.debug("AlarmListJ2eeConnectionManagerThread.run() Attempting Connecting to bean");
+				LOG.debug("AlarmListJ2eeConnectionManagerThread.run() Attempting Connecting to bean");
 				try
 				{
 					lookupBean();
 					status = CONNECTED;
-					log.info("AlarmListJ2eeConnectionManagerThread.run() Connected to bean");
+					LOG.info("AlarmListJ2eeConnectionManagerThread.run() Connected to bean");
 				}
 				catch(NamingException name_ex)
 				{
 					status = DISCONNECTED;
-					log.error("AlarmListJ2eeConnectionManagerThread.run() NamingException caught, Could not connect to bean", name_ex);
+					LOG.error("AlarmListJ2eeConnectionManagerThread.run() NamingException caught, Could not connect to bean", name_ex);
 				}
 				catch(RemoteException remote_ex)
 				{
-					log.error("AlarmListJ2eeConnectionManagerThread.run() RemoteException caught, cannot connect to bean", remote_ex);
+					LOG.error("AlarmListJ2eeConnectionManagerThread.run() RemoteException caught, cannot connect to bean", remote_ex);
 					status = DISCONNECTED;
 					
 				}
@@ -203,7 +203,7 @@ public class AlarmListJ2eeConnectionManagerThread extends Thread implements Alar
 			/*routine to halt thread excecution*/ 
 			if(status == STOP)
 			{
-				log.info("AlarmListJ2eeConnectionManagerThread.run() Stopping thread");
+				LOG.info("AlarmListJ2eeConnectionManagerThread.run() Stopping thread");
 				cleanUp();			
 				return;
 			}
@@ -214,17 +214,17 @@ public class AlarmListJ2eeConnectionManagerThread extends Thread implements Alar
 			 */
 			try
 			{
-				if (log.isDebugEnabled()) log.debug("AlarmListJ2eeConnectionManagerThread.run() AlarmListJ2eeConnectionManagerThread.run() Going to sleep for 1 minute");
+				LOG.debug("AlarmListJ2eeConnectionManagerThread.run() AlarmListJ2eeConnectionManagerThread.run() Going to sleep for 1 minute");
 				sleep(60000);	//wait for 1 minute before trying to reconnect;
 			}
 			catch(InterruptedException int_ex)
 			{
-				if (log.isDebugEnabled()) log.debug("AlarmListJ2eeConnectionManagerThread.run() Thread interrupted");
+				LOG.debug("AlarmListJ2eeConnectionManagerThread.run() Thread interrupted");
 			}
-			if (log.isDebugEnabled()) {
-				log.debug("AlarmListJ2eeConnectionManagerThread.run() Waking up");
-				log.debug("AlarmListJ2eeConnectionManagerThread.run() Connection State = " + status);
-				log.debug("AlarmListJ2eeConnectionManagerThread.run() send_status = " + send_status);
+			if (LOG.isDebugEnabled()) {
+				LOG.debug("AlarmListJ2eeConnectionManagerThread.run() Waking up");
+				LOG.debug("AlarmListJ2eeConnectionManagerThread.run() Connection State = {}", status);
+				LOG.debug("AlarmListJ2eeConnectionManagerThread.run() send_status = {}", send_status);
 			}
 			
 		}
@@ -239,7 +239,6 @@ public class AlarmListJ2eeConnectionManagerThread extends Thread implements Alar
 	{
 		this.props = props;
 		this.env = env;
-		log = QoSDimpl2.getLog();	//Get a reference to the QoSD logger
 		init = true;		//inform the thread that it has been initialised 
 		//and can execute the run() method.
 	}
@@ -285,30 +284,30 @@ public class AlarmListJ2eeConnectionManagerThread extends Thread implements Alar
 		/* Create a new InitialContext with the properties paramters - 
 		 * The starting point of naming resolution
 		 */
-		log.info("AlarmListJ2eeConnectionManagerThread.lookupBean() Looking up QoS bean");
+		LOG.info("AlarmListJ2eeConnectionManagerThread.lookupBean() Looking up QoS bean");
 		InitialContext ic = new InitialContext(env);
-		log.info("AlarmListJ2eeConnectionManagerThread.lookupBean() InitialContext created");
+		LOG.info("AlarmListJ2eeConnectionManagerThread.lookupBean() InitialContext created");
 		try
 		{
 			ref = ic.lookup(props.getProperty("org.openoss.opennms.spring.qosd.jvthome"));
-			log.info("AlarmListJ2eeConnectionManagerThread.lookupBean() QoS Bean found");
+			LOG.info("AlarmListJ2eeConnectionManagerThread.lookupBean() QoS Bean found");
 			home = (JVTAlarmMonitorHome) PortableRemoteObject.narrow( ref, 
 					JVTAlarmMonitorHome.class );
 			
-			if (log.isDebugEnabled()) log.debug("AlarmListJ2eeConnectionManagerThread.lookupBean() home initialised");
+			LOG.debug("AlarmListJ2eeConnectionManagerThread.lookupBean() home initialised");
 			
 			session = home.create();
 			
-			if (log.isDebugEnabled()) log.debug("AlarmListJ2eeConnectionManagerThread.lookupBean() Session created");
+			LOG.debug("AlarmListJ2eeConnectionManagerThread.lookupBean() Session created");
 			
 			alarmInternals = (AlarmMonitor) PortableRemoteObject.narrow(
 					session.getHandle().getEJBObject(), AlarmMonitor.class );
 			if(alarmInternals == null)
-				log.error("AlarmListJ2eeConnectionManagerThread.lookupBean() AlarmMonitor alarmInternals is null line 244");
+				LOG.error("AlarmListJ2eeConnectionManagerThread.lookupBean() AlarmMonitor alarmInternals is null line 244");
 		}
 		catch(IllegalArgumentException iae_ex)
 		{
-			log.error("AlarmListJ2eeConnectionManagerThread.lookupBean() jvthome property does not exist", iae_ex);
+			LOG.error("AlarmListJ2eeConnectionManagerThread.lookupBean() jvthome property does not exist", iae_ex);
 		}
 		/*catch(RemoteException remote_ex)
 		 {
@@ -318,18 +317,18 @@ public class AlarmListJ2eeConnectionManagerThread extends Thread implements Alar
 		 }*/
 		catch(CreateException create_ex)
 		{
-			log.error("AlarmListJ2eeConnectionManagerThread.lookupBean() Cannot create new session", create_ex);
+			LOG.error("AlarmListJ2eeConnectionManagerThread.lookupBean() Cannot create new session", create_ex);
 		}
 		catch(NullPointerException np_ex)
 		{
-			log.error("AlarmListJ2eeConnectionManagerThread.lookupBean() NullPointerException caught", np_ex);
+			LOG.error("AlarmListJ2eeConnectionManagerThread.lookupBean() NullPointerException caught", np_ex);
 		}
 		finally
 		{
 			ic.close();
 		}
 		
-		log.info("AlarmListJ2eeConnectionManagerThread.lookupBean() New bean session started");
+		LOG.info("AlarmListJ2eeConnectionManagerThread.lookupBean() New bean session started");
 	}
 	
 	/**
@@ -343,11 +342,11 @@ public class AlarmListJ2eeConnectionManagerThread extends Thread implements Alar
 		}
 		catch(RemoveException remove_ex)
 		{
-			log.error("AlarmListJ2eeConnectionManagerThread.lookupBean() Cannot remove session", remove_ex);
+			LOG.error("AlarmListJ2eeConnectionManagerThread.lookupBean() Cannot remove session", remove_ex);
 		}
 		catch(RemoteException remote_ex)
 		{
-			log.error("AlarmListJ2eeConnectionManagerThread.lookupBean() Connection to bean lost", remote_ex);
+			LOG.error("AlarmListJ2eeConnectionManagerThread.lookupBean() Connection to bean lost", remote_ex);
 		}
 	}
 
