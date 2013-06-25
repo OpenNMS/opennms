@@ -65,6 +65,7 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.test.ThrowableAnticipator;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
@@ -125,7 +126,9 @@ public class JdbcFilterDaoTest implements InitializingBean {
         System.setProperty("opennms.home", "src/test/resources");
         DatabaseSchemaConfigFactory.init();
         m_dao = new JdbcFilterDao();
-        m_dao.setDataSource(m_dataSource);
+        // You must wrap the data source in Spring's TransactionAwareDataSourceProxy so that it
+        // executes its queries inside the current transaction.
+        m_dao.setDataSource(new TransactionAwareDataSourceProxy(m_dataSource));
         m_dao.setDatabaseSchemaConfigFactory(DatabaseSchemaConfigFactory.getInstance());
         m_dao.afterPropertiesSet();
         FilterDaoFactory.setInstance(m_dao);
