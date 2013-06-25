@@ -40,13 +40,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.sql.DataSource;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.core.test.db.TemporaryDatabase;
-import org.opennms.core.test.db.TemporaryDatabaseAware;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
@@ -85,7 +85,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class JdbcFilterDaoTest implements InitializingBean, TemporaryDatabaseAware<TemporaryDatabase> {
+public class JdbcFilterDaoTest implements InitializingBean {
     @Autowired
     NodeDao m_nodeDao;
     
@@ -103,12 +103,8 @@ public class JdbcFilterDaoTest implements InitializingBean, TemporaryDatabaseAwa
     @Autowired
     TransactionTemplate m_transTemplate;
 
-    private TemporaryDatabase m_database;
-
-    @Override
-    public void setTemporaryDatabase(TemporaryDatabase database) {
-        m_database = database;
-    }
+    @Autowired
+    DataSource m_dataSource;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -129,7 +125,7 @@ public class JdbcFilterDaoTest implements InitializingBean, TemporaryDatabaseAwa
         System.setProperty("opennms.home", "src/test/resources");
         DatabaseSchemaConfigFactory.init();
         m_dao = new JdbcFilterDao();
-        m_dao.setDataSource(m_database);
+        m_dao.setDataSource(m_dataSource);
         m_dao.setDatabaseSchemaConfigFactory(DatabaseSchemaConfigFactory.getInstance());
         m_dao.afterPropertiesSet();
         FilterDaoFactory.setInstance(m_dao);
@@ -145,7 +141,7 @@ public class JdbcFilterDaoTest implements InitializingBean, TemporaryDatabaseAwa
     @Transactional
     public void testAfterPropertiesSetValid() throws Exception {
         JdbcFilterDao dao = new JdbcFilterDao();
-        dao.setDataSource(m_database);
+        dao.setDataSource(m_dataSource);
         InputStream is = ConfigurationTestUtils.getInputStreamForConfigFile("database-schema.xml");
         dao.setDatabaseSchemaConfigFactory(new DatabaseSchemaConfigFactory(is));
         is.close();
@@ -156,7 +152,7 @@ public class JdbcFilterDaoTest implements InitializingBean, TemporaryDatabaseAwa
     @Transactional
     public void testAfterPropertiesSetNoNodeDao() throws Exception {
         JdbcFilterDao dao = new JdbcFilterDao();
-        dao.setDataSource(m_database);
+        dao.setDataSource(m_dataSource);
         InputStream is = ConfigurationTestUtils.getInputStreamForConfigFile("database-schema.xml");
         dao.setDatabaseSchemaConfigFactory(new DatabaseSchemaConfigFactory(is));
         is.close();
@@ -207,7 +203,7 @@ public class JdbcFilterDaoTest implements InitializingBean, TemporaryDatabaseAwa
         ThrowableAnticipator ta = new ThrowableAnticipator();
 
         JdbcFilterDao dao = new JdbcFilterDao();
-        dao.setDataSource(m_database);
+        dao.setDataSource(m_dataSource);
 
         ta.anticipate(new IllegalStateException("property databaseSchemaConfigFactory cannot be null"));
         try {
