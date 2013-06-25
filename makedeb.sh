@@ -53,7 +53,7 @@ function usage()
 function calcMinor()
 {
     if use_git; then
-	git log --pretty='format:%cd' --date=short -1 | head -n 1 | sed -e 's,^Date: *,,' -e 's,-,,g'
+        git log --pretty='format:%cd' --date=short | sort -u -r | head -n 1 | sed -e 's,^Date: *,,' -e 's,-,,g'
     else
 	date '+%Y%m%d'
     fi
