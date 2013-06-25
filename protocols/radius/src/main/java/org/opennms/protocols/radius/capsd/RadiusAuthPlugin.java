@@ -48,9 +48,10 @@ import net.jradius.packet.RadiusPacket;
 import net.jradius.packet.attribute.AttributeFactory;
 import net.jradius.packet.attribute.AttributeList;
 
-import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.capsd.AbstractPlugin;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This plugin is used to check a host for Radius Authentication support.
@@ -63,6 +64,9 @@ import org.opennms.netmgt.capsd.AbstractPlugin;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public final class RadiusAuthPlugin extends AbstractPlugin {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(RadiusAuthPlugin.class);
+
     /**
      * <P>
      * The protocol name that is tested by this plugin.
@@ -171,15 +175,15 @@ public final class RadiusAuthPlugin extends AbstractPlugin {
             } else if (authType.equalsIgnoreCase("eapmschapv2")) {
                 auth = new EAPMSCHAPv2Authenticator();
             } else {
-                LogUtils.warnf(this, "Unknown authenticator type '%s'", authType);
+                LOG.warn("Unknown authenticator type '{}'", authType);
                 return isRadiusServer;
             }
 
             RadiusPacket reply = rc.authenticate(accessRequest, auth, retry);
             isRadiusServer = reply instanceof AccessAccept;
-            LogUtils.debugf(this, "Discovered RADIUS service on %s", host.getCanonicalHostName());
+            LOG.debug("Discovered RADIUS service on {}", host.getCanonicalHostName());
         } catch (final Throwable e) {
-            LogUtils.debugf(this, e, "Error while attempting to discover RADIUS service on %s", host.getCanonicalHostName());
+            LOG.debug("Error while attempting to discover RADIUS service on {}", host.getCanonicalHostName(), e);
             isRadiusServer = false;
         }
 

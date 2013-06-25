@@ -48,7 +48,6 @@ import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.protocol.HttpContext;
-import org.opennms.core.utils.ThreadCategory;
 
 /**
  * The class for managing HTTP URL Connection using Apache HTTP Client
@@ -161,8 +160,5 @@ public class HttpUrlConnection extends URLConnection {
      *
      * @return the thread category
      */
-    protected ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
 
 }

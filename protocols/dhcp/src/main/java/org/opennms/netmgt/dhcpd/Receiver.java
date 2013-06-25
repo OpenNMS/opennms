@@ -36,11 +36,15 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.opennms.core.fiber.Fiber;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import edu.bucknell.net.JDHCP.DHCPMessage;
 
 final class Receiver implements Runnable, Fiber {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(Receiver.class);
+
     private final static short DHCP_TARGET_PORT = 68;
 
     private DatagramSocket m_receiver;
@@ -111,7 +115,6 @@ final class Receiver implements Runnable, Fiber {
      */
     @Override
     public void run() {
-        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         // set the state
         //
@@ -127,25 +130,25 @@ final class Receiver implements Runnable, Fiber {
             try {
                 DatagramPacket pkt = new DatagramPacket(dgbuf, dgbuf.length);
                 m_receiver.receive(pkt);
-                log.debug("got a DHCP response.");
+                LOG.debug("got a DHCP response.");
                 Message msg = new Message(pkt.getAddress(), new DHCPMessage(pkt.getData()));
 
                 synchronized (m_clients) {
                     Iterator<Client> iter = m_clients.iterator();
                     if(!iter.hasNext()) {
-                        log.debug("No client waiting for response.");
+                        LOG.debug("No client waiting for response.");
                     }
                     while (iter.hasNext()) {
                         Client c = iter.next();
                         if (c.getStatus() == RUNNING) {
                             try {
-                                log.debug("sending DHCP response pkt to client " + c.getName());
+                                LOG.debug("sending DHCP response pkt to client {}", c.getName());
                                 c.sendMessage(msg);
                             } catch (IOException ex) {
-                                log.warn("Error sending response to client " + c.getName());
+                                LOG.warn("Error sending response to client {}", c.getName());
                             }
                         } else if (c.getStatus() == STOPPED) {
-                            log.debug("Removing stale client " + c.getName());
+                            LOG.debug("Removing stale client {}", c.getName());
                             iter.remove();
                         }
                     }
@@ -154,17 +157,17 @@ final class Receiver implements Runnable, Fiber {
             } catch (InterruptedIOException ex) {
                 // ignore
             } catch (ArrayIndexOutOfBoundsException ex) {
-                log.warn("An error occurred when reading DHCP response. Ignoring exception: ", ex);
+                LOG.warn("An error occurred when reading DHCP response. Ignoring exception: ", ex);
             } catch (IOException ex) {
                 synchronized (this) {
                     if (m_status == RUNNING)
-                        log.warn("Failed to read message, I/O error", ex);
+                        LOG.warn("Failed to read message, I/O error", ex);
                 }
                 break;
             } catch (Throwable t) {
                 synchronized (this) {
                     if (m_status == RUNNING)
-                        log.warn("Undeclared throwable caught", t);
+                        LOG.warn("Undeclared throwable caught", t);
                 }
                 break;
             }

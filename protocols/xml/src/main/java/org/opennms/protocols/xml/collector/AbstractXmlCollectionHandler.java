@@ -52,7 +52,6 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import org.opennms.core.utils.BeanUtils;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.collectd.CollectionAgent;
 import org.opennms.netmgt.collectd.PersistAllSelectorStrategy;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
@@ -66,6 +65,8 @@ import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.protocols.xml.config.XmlGroup;
 import org.opennms.protocols.xml.config.XmlObject;
 import org.opennms.protocols.xml.config.XmlSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 
@@ -80,6 +81,9 @@ import org.w3c.dom.NodeList;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandler {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(AbstractXmlCollectionHandler.class);
+
 
     /** The Service Name associated with this Collection Handler. */
     private String m_serviceName;
@@ -137,13 +141,13 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
     protected void fillCollectionSet(CollectionAgent agent, XmlCollectionSet collectionSet, XmlSource source, Document doc) throws XPathExpressionException, ParseException {
         XPath xpath = XPathFactory.newInstance().newXPath();
         for (XmlGroup group : source.getXmlGroups()) {
-            log().debug("fillCollectionSet: getting resources for XML group " + group.getName() + " using XPATH " + group.getResourceXpath());
+            LOG.debug("fillCollectionSet: getting resources for XML group {} using XPATH {}", group.getName(), group.getResourceXpath());
             Date timestamp = getTimeStamp(doc, xpath, group);
             NodeList resourceList = (NodeList) xpath.evaluate(group.getResourceXpath(), doc, XPathConstants.NODESET);
             for (int j = 0; j < resourceList.getLength(); j++) {
                 Node resource = resourceList.item(j);
                 String resourceName = getResourceName(xpath, group, resource);
-                log().debug("fillCollectionSet: processing XML resource " + resourceName);
+                LOG.debug("fillCollectionSet: processing XML resource {}", resourceName);
                 XmlCollectionResource collectionResource = getCollectionResource(agent, resourceName, group.getResourceType(), timestamp);
                 AttributeGroupType attribGroupType = new AttributeGroupType(group.getName(), group.getIfType());
                 for (XmlObject object : group.getXmlObjects()) {
@@ -171,7 +175,7 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
         if (group.hasMultipleResourceKey()) {
             List<String> keys = new ArrayList<String>();
             for (String key : group.getXmlResourceKey().getKeyXpathList()) {
-                log().debug("getResourceName: getting key for resource's name using " + key);
+                LOG.debug("getResourceName: getting key for resource's name using {}", key);
                 Node keyNode = (Node) xpath.evaluate(key, resource, XPathConstants.NODE);
                 keys.add(keyNode.getNodeValue() == null ? keyNode.getTextContent() : keyNode.getNodeValue());
             }
@@ -182,7 +186,7 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
             return "node";
         }
         // Processing single-key resource name.
-        log().debug("getResourceName: getting key for resource's name using " + group.getKeyXpath());
+        LOG.debug("getResourceName: getting key for resource's name using {}", group.getKeyXpath());
         Node keyNode = (Node) xpath.evaluate(group.getKeyXpath(), resource, XPathConstants.NODE);
         return keyNode.getNodeValue() == null ? keyNode.getTextContent() : keyNode.getNodeValue();
     }
@@ -213,7 +217,7 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
             resource = new XmlMultiInstanceCollectionResource(agent, instance, type);
         }
         if (timestamp != null) {
-            log().debug("getCollectionResource: the date that will be used when updating the RRDs is " + timestamp);
+            LOG.debug("getCollectionResource: the date that will be used when updating the RRDs is {}", timestamp);
             resource.setTimeKeeper(new ConstantTimeKeeper(timestamp));
         }
         return resource;
@@ -233,10 +237,10 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
             return null;
         }
         String pattern = group.getTimestampFormat() == null ? "yyyy-MM-dd HH:mm:ss" : group.getTimestampFormat();
-        log().debug("getTimeStamp: retrieving custom timestamp to be used when updating RRDs using XPATH " + group.getTimestampXpath() + " and pattern " + pattern);
+        LOG.debug("getTimeStamp: retrieving custom timestamp to be used when updating RRDs using XPATH {} and pattern {}", group.getTimestampXpath(), pattern);
         Node tsNode = (Node) xpath.evaluate(group.getTimestampXpath(), doc, XPathConstants.NODE);
         if (tsNode == null) {
-            log().warn("getTimeStamp: can't find the custom timestamp using XPATH " +  group.getTimestampXpath());
+            LOG.warn("getTimeStamp: can't find the custom timestamp using XPATH {}",  group.getTimestampXpath());
             return null;
         }
         Date date = null;
@@ -246,7 +250,7 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
             DateTime dateTime = dtf.parseDateTime(value);
             date = dateTime.toDate();
         } catch (Exception e) {
-            log().warn("getTimeStamp: can't convert custom timetime " + value + " using pattern " + pattern);
+            LOG.warn("getTimeStamp: can't convert custom timetime {} using pattern {}", value,  pattern);
         }
         return date;
     }
@@ -333,7 +337,7 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
         if (!m_resourceTypeList.containsKey(resourceType)) {
             ResourceType rt = DataCollectionConfigFactory.getInstance().getConfiguredResourceTypes().get(resourceType);
             if (rt == null) {
-                log().debug("getXmlResourceType: using default XML resource type strategy.");
+                LOG.debug("getXmlResourceType: using default XML resource type strategy.");
                 rt = new ResourceType();
                 rt.setName(resourceType);
                 rt.setStorageStrategy(new StorageStrategy());
@@ -352,8 +356,5 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
      *
      * @return the thread category
      */
-    protected ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
 
 }

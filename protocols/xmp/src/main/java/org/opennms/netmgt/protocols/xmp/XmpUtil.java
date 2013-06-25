@@ -43,7 +43,6 @@ import org.krupczak.xmp.Xmp;
 import org.krupczak.xmp.XmpMessage;
 import org.krupczak.xmp.XmpSession;
 import org.krupczak.xmp.XmpVar;
-import org.opennms.core.utils.LogUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,7 +75,7 @@ public class XmpUtil {
 	            	valueRegex.setMatchFlags(RE.MATCH_CASEINDEPENDENT);
 	            }
             } catch (final RESyntaxException e) {
-            	LogUtils.debugf(XmpUtil.class, e, "Unable to initialize regular expression.");
+            	LOG.debug("Unable to initialize regular expression.", e);
             }
         }
         

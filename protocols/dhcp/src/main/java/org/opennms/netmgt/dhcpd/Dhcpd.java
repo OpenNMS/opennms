@@ -40,12 +40,12 @@ import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
-import org.apache.log4j.Category;
-import org.apache.log4j.Logger;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.dhcpd.DhcpdConfigFactory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.utils.IpValidator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <P>
@@ -93,6 +93,9 @@ import org.opennms.netmgt.utils.IpValidator;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public final class Dhcpd extends AbstractServiceDaemon implements Runnable, Observer {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(Dhcpd.class);
+
 
     /**
      * The singular instance of the DHCP server.
@@ -179,7 +182,7 @@ public final class Dhcpd extends AbstractServiceDaemon implements Runnable, Obse
             m_server = new ServerSocket(dFactory.getPort(), 0, InetAddressUtils.addr("127.0.0.1"));
         } catch (IOException ex) {
             if (ex instanceof java.net.BindException) {
-                managerLog().error("Failed to listen on DHCP port, perhaps something else is already listening?", ex);
+                LOG.error("Failed to listen on DHCP port, perhaps something else is already listening?", ex);
                 log().error("Failed to listen on DHCP port, perhaps something else is already listening?", ex);
             } else {
                 log().error("Failed to initialize DHCP socket", ex);
@@ -408,8 +411,6 @@ public final class Dhcpd extends AbstractServiceDaemon implements Runnable, Obse
     	
     }
 
-    private Category managerLog() {
-        return Logger.getLogger("OpenNMS.Manager");
-    }
+
 
 }

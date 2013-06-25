@@ -34,7 +34,6 @@ import java.util.Map;
 
 import org.apache.log4j.Level;
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dhcpd.Dhcpd;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;
@@ -43,6 +42,8 @@ import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
 import org.opennms.netmgt.poller.monitors.AbstractServiceMonitor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class is designed to be used by the service poller framework to test the
@@ -59,6 +60,9 @@ import org.opennms.netmgt.poller.monitors.AbstractServiceMonitor;
  */
 @Distributable(DistributionContext.DAEMON)
 final public class DhcpMonitor extends AbstractServiceMonitor {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(DhcpMonitor.class);
+
     /**
      * Default retries.
      */
@@ -87,7 +91,6 @@ final public class DhcpMonitor extends AbstractServiceMonitor {
 
         // Process parameters
         //
-        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         // Retries
         //
@@ -98,8 +101,7 @@ final public class DhcpMonitor extends AbstractServiceMonitor {
         //
         InetAddress ipv4Addr = (InetAddress) iface.getAddress();
 
-        if (log.isDebugEnabled())
-            log.debug("DhcpMonitor.poll: address: " + ipv4Addr + " timeout: " + timeout + " retry: " + retry);
+            LOG.debug("DhcpMonitor.poll: address: {} timeout: {} retry: {}", ipv4Addr, timeout,  retry);
 
         PollStatus serviceStatus = PollStatus.unavailable();
         long responseTime = -1;

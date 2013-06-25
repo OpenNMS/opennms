@@ -49,7 +49,6 @@ import net.jradius.packet.attribute.AttributeFactory;
 import net.jradius.packet.attribute.AttributeList;
 
 import org.apache.log4j.Level;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.model.PollStatus;
@@ -57,6 +56,8 @@ import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.monitors.AbstractServiceMonitor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -72,6 +73,9 @@ import org.opennms.netmgt.poller.monitors.AbstractServiceMonitor;
 
 @Distributable
 final public class RadiusAuthMonitor extends AbstractServiceMonitor {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(RadiusAuthMonitor.class);
+
     /**
      * Number of milliseconds to wait before timing out a radius AUTH request
      */
@@ -126,7 +130,7 @@ final public class RadiusAuthMonitor extends AbstractServiceMonitor {
      * @throws java.lang.IllegalAccessException if any.
      */
     public RadiusAuthMonitor() throws ClassNotFoundException, InstantiationException, IllegalAccessException {
-        LogUtils.infof(this, "RadiusAuthMonitor class loaded");
+        LOG.info("RadiusAuthMonitor class loaded");
     }
 
 
@@ -207,11 +211,11 @@ final public class RadiusAuthMonitor extends AbstractServiceMonitor {
                 if (reply instanceof AccessAccept) {
                     double responseTime = tracker.elapsedTimeInMillis();
                     status = PollStatus.available(responseTime);
-                    LogUtils.debugf(this, "Radius service is AVAILABLE on: %s", addr.getCanonicalHostName());
-                    LogUtils.debugf(this, "poll: responseTime= %fms", responseTime);
+                    LOG.debug("Radius service is AVAILABLE on: {}", addr.getCanonicalHostName());
+                    LOG.debug("poll: responseTime= {}", responseTime);
                     break;
                 } else if (reply != null) {
-                    LogUtils.debugf(this, "response returned, but request was not accepted: %s", reply);
+                    LOG.debug("response returned, but request was not accepted: {}", reply);
                 }
                 status = logDown(Level.ERROR, "Invalid RADIUS reply: " + reply);
             }
