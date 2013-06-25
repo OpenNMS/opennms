@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
  * @version $Id: $
  */
 public class ReadNoticeDetailsAgiScript extends BaseOnmsAgiScript {
-    private static final Logger LOG = LoggerFactory.getLogger(LouieLouieLyricsAgiScript.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ReadNoticeDetailsAgiScript.class);
 
     /** {@inheritDoc} */
     @Override
