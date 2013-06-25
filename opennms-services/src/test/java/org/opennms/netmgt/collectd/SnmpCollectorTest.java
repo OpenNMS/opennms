@@ -200,6 +200,7 @@ public class SnmpCollectorTest implements InitializingBean, TestContextAware {
             }
     )
     @JUnitSnmpAgent(resource = "/org/opennms/netmgt/snmp/snmpTestData1.properties")
+    @Transactional
     public void testCollect() throws Exception {
         System.setProperty("org.opennms.netmgt.collectd.SnmpCollector.limitCollectionToInstances", "true");
 
