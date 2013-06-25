@@ -34,13 +34,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.WmiPeerFactory;
 import org.opennms.netmgt.config.wmi.WmiAgentConfig;
 import org.opennms.protocols.wmi.IWmiClient;
 import org.opennms.protocols.wmi.WmiClient;
 import org.opennms.protocols.wmi.WmiException;
 import org.opennms.protocols.wmi.WmiManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <P>
@@ -56,6 +57,9 @@ import org.opennms.protocols.wmi.WmiManager;
  * @author <a href="http://www.opennms.org">OpenNMS</a>
  */
 public class WmiAgentState {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(WmiAgentState.class);
+
     private WmiManager m_manager;
     private IWmiClient m_wmiClient;
 
@@ -77,7 +81,7 @@ public class WmiAgentState {
         try {
             m_wmiClient = new WmiClient(m_address);
         } catch(final WmiException e) {
-            LogUtils.errorf(this, e, "Failed to create WMI client.");
+            LOG.error("Failed to create WMI client.", e);
         }
     }
 
@@ -88,7 +92,7 @@ public class WmiAgentState {
         try {
             m_wmiClient.connect(m_agentConfig.getDomain(), m_agentConfig.getUsername(), m_agentConfig.getPassword());
         } catch(final WmiException e) {
-            LogUtils.errorf(this, e, "Failed to connect to host.");
+            LOG.error("Failed to connect to host.", e);
         }
     }
 
@@ -168,7 +172,7 @@ public class WmiAgentState {
         final WmiGroupState groupState = m_groupStates.get(groupName);
         if (groupState == null) {
             // Probably an error - log it as a warning, and give up
-            LogUtils.warnf(this, "didCheckGroupAvailability called on a group without state - this is odd.");
+            LOG.warn("didCheckGroupAvailability called on a group without state - this is odd.");
             return;
         }
         groupState.setLastChecked(new Date());

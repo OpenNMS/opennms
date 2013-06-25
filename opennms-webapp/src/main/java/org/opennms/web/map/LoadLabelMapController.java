@@ -41,11 +41,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 
-import org.opennms.core.utils.ThreadCategory;
 
+import org.slf4j.MDC;
 import org.opennms.web.map.MapsConstants;
 import org.opennms.web.map.view.*;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 
@@ -60,7 +62,9 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
  */
 @SuppressWarnings("deprecation")
 public class LoadLabelMapController extends SimpleFormController {
-	ThreadCategory log; 
+	
+	private static final Logger LOG = LoggerFactory.getLogger(LoadLabelMapController.class);
+
 
 	private Manager manager;
 		
@@ -87,17 +91,17 @@ public class LoadLabelMapController extends SimpleFormController {
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response.getOutputStream(), "UTF-8"));
-		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
-		log = ThreadCategory.getInstance(this.getClass());
+        MDC.put("prefix", MapsConstants.LOG4J_CATEGORY);
+		
 		
 		try{
 	        String user = request.getRemoteUser();
 
-            log.debug("Loading Label Map for user:" + user);
+            LOG.debug("Loading Label Map for user:{}", user);
 
 			bw.write(ResponseAssembler.getLoadLabelMapResponse(manager.getNodeLabelToMaps(user)));
 		} catch (Throwable e) {
-			log.error("Error in map's startup",e);
+			LOG.error("Error in map's startup",e);
 			bw.write(ResponseAssembler.getMapErrorResponse(MapsConstants.LOADLABELMAP_ACTION));
 		} finally {
 			bw.close();

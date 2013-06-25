@@ -35,10 +35,11 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.opennms.core.utils.LogUtils;
 import org.opennms.systemreport.SystemReport;
 import org.opennms.systemreport.SystemReportFormatter;
 import org.opennms.systemreport.SystemReportPlugin;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -52,6 +53,9 @@ import org.springframework.web.servlet.mvc.AbstractController;
  * @since 1.8.6
  */
 public class SystemReportController extends AbstractController implements InitializingBean {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(SystemReportController.class);
+
     private SystemReport m_systemReport;
 
     /** {@inheritDoc} */
@@ -63,7 +67,7 @@ public class SystemReportController extends AbstractController implements Initia
             operation = "list";
         }
         
-        LogUtils.debugf(this, "Calling operation %s in SystemReportController", operation);
+        LOG.debug("Calling operation {} in SystemReportController", operation);
         
         if ("run".equalsIgnoreCase(operation)){
             SystemReportFormatter formatter = null;

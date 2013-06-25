@@ -47,8 +47,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
-import org.opennms.core.utils.LogUtils;
-import org.opennms.core.utils.ThreadCategory;
+
 import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.OnmsSeverityEditor;
@@ -57,6 +56,8 @@ import org.opennms.netmgt.model.PrimaryTypeEditor;
 import org.opennms.netmgt.model.StatusTypeEditor;
 import org.opennms.netmgt.provision.persist.StringXmlCalendarPropertyEditor;
 import org.opennms.web.rest.support.InetAddressTypeEditor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 
@@ -70,6 +71,9 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
  * @since 1.8.1
  */
 public class OnmsRestService {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(OnmsRestService.class);
+
     private final ReentrantReadWriteLock m_globalLock = new ReentrantReadWriteLock();
     private final Lock m_readLock = m_globalLock.readLock();
     private final Lock m_writeLock = m_globalLock.writeLock();
@@ -180,21 +184,21 @@ public class OnmsRestService {
                     try {
                         type = currentCriteria.getType(key);
                     } catch (final IntrospectionException e) {
-                        LogUtils.debugf(this, "Unable to determine type for key %s", key);
+                        LOG.debug("Unable to determine type for key {}", key);
                     }
                     if (type == null) {
                         type = Object.class;
                     }
-                    LogUtils.warnf(this, "comparator = %s, key = %s, propertyType = %s", comparatorParam, key, type);
+                    LOG.warn("comparator = {}, key = {}, propertyType = {}", comparatorParam, key, type);
 
                     if (comparatorParam.equals("contains") || comparatorParam.equals("iplike") || comparatorParam.equals("ilike") || comparatorParam.equals("like")) {
 						value = paramValue;
 					} else {
-				        LogUtils.debugf(this, "convertIfNecessary(%s, %s)", key, paramValue);
+				        LOG.debug("convertIfNecessary({}, {})", key, paramValue);
 				        try {
                             value = wrapper.convertIfNecessary(paramValue, type);
                         } catch (final Throwable t) {
-                            LogUtils.debugf(this, t, "failed to introspect (key = %s, value = %s)", key, paramValue);
+                            LOG.debug("failed to introspect (key = {}, value = {})", key, paramValue, t);
                             value = paramValue;
                         }
 					}
@@ -203,7 +207,7 @@ public class OnmsRestService {
 	    				final Method m = builder.getClass().getMethod(comparatorParam, String.class, Object.class);
 						m.invoke(builder, new Object[] { key, value });
 					} catch (final Throwable t) {
-    					LogUtils.warnf(this, t, "Unable to find method for comparator: %s, key: %s, value: %s", comparatorParam, key, value);
+    					LOG.warn("Unable to find method for comparator: {}, key: {}, value: {}", comparatorParam, key, value, t);
 					}
 				}
 			}
@@ -250,23 +254,17 @@ public class OnmsRestService {
      * @return a T object.
      */
     protected <T> WebApplicationException getException(final Status status, final String msg) throws WebApplicationException {
-        log().error(msg);
+        LOG.error(msg);
         return new WebApplicationException(Response.status(status).type(MediaType.TEXT_PLAIN).entity(msg).build());
     }
 
     protected <T> WebApplicationException getException(Status status, Throwable t) throws WebApplicationException {
-        log().error(t.getMessage(), t);
+        LOG.error(t.getMessage(), t);
         return new WebApplicationException(Response.status(status).type(MediaType.TEXT_PLAIN).entity(t.getMessage()).build());
     }
 
-    /**
-     * <p>log</p>
-     *
-     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
-     */
-    protected ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
+    
+    
 
     /**
      * Convert a column name with underscores to the corresponding property name using "camel case".  A name

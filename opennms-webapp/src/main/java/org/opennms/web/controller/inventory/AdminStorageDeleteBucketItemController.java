@@ -33,10 +33,11 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.web.springframework.security.Authentication;
 import org.opennms.web.svclayer.inventory.InventoryService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 
@@ -49,6 +50,9 @@ import org.springframework.web.servlet.mvc.Controller;
  * @since 1.8.1
  */
 public class AdminStorageDeleteBucketItemController implements Controller {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(AdminStorageDeleteBucketItemController.class);
+
 
     InventoryService m_inventoryService;
     
@@ -83,7 +87,7 @@ public class AdminStorageDeleteBucketItemController implements Controller {
         if (bucket != null && filename != null && request.isUserInRole(Authentication.ROLE_ADMIN)) {
             boolean done = m_inventoryService.deleteBucketItem(bucket, filename);
             if (!done){
-                log().debug("AdminStorageDeleteBucketItemController ModelAndView onSubmit error while deleting status for: "+ bucket);
+                LOG.debug("AdminStorageDeleteBucketItemController ModelAndView onSubmit error while deleting status for: {}", bucket);
             }
      }
         Map<String, Object> model  = m_inventoryService.getBuckets(nodeid);
@@ -91,9 +95,7 @@ public class AdminStorageDeleteBucketItemController implements Controller {
         return modelAndView;
     }
     
-    private static Logger log() {
-        return Logger.getLogger("Rancid");
-    }
+    
 
 
 }

@@ -64,16 +64,21 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.core.utils.ThreadCategory;
+
 import org.opennms.netmgt.config.xmpDataCollection.XmpCollection;
 import org.opennms.netmgt.config.xmpDataCollection.XmpDatacollectionConfig;
 import org.opennms.netmgt.model.RrdRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 public class XmpCollectionFactory {
 
     /* class variables and methods *********************** */
     private static XmpCollectionFactory instance;
 
     private static XmpDatacollectionConfig config;
+    
+	private static final Logger LOG = LoggerFactory.getLogger(XmpCollectionFactory.class);
+
 
     // initialize our class for the creation of instances
     /**
@@ -128,7 +133,7 @@ public class XmpCollectionFactory {
         XmpCollection[] collections = config.getXmpCollection();
         for (XmpCollection coll: collections) {
 
-            log().debug("XmpCollectionFactory: found collection "+
+            LOG.debug("XmpCollectionFactory: found collection {}",
                         coll.getName());
 
             //System.out.println("XmpCollectionFactory: found collection "+
@@ -157,9 +162,7 @@ public class XmpCollectionFactory {
     }
 
     /* private methods *********************************** */
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
+   
 
     /* public methods ************************************ */
 

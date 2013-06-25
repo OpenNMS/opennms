@@ -39,9 +39,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.web.api.Util;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>RTCPostServlet class.</p>
@@ -51,6 +52,9 @@ import org.opennms.web.api.Util;
  * @since 1.8.1
  */
 public class RTCPostServlet extends HttpServlet {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(RTCPostServlet.class);
+
     /**
      * 
      */
@@ -58,7 +62,6 @@ public class RTCPostServlet extends HttpServlet {
 
     protected CategoryModel model;
 
-    protected ThreadCategory log = ThreadCategory.getInstance("RTC");
 
     /**
      * <p>init</p>
@@ -87,7 +90,7 @@ public class RTCPostServlet extends HttpServlet {
         // send 400 Bad Request if they did not specify a category in the path
         // info
         if (pathInfo == null) {
-            this.log.error("Request with no path info");
+            LOG.error("Request with no path info");
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "No Category name given in path");
             return;
         }
@@ -116,11 +119,11 @@ public class RTCPostServlet extends HttpServlet {
             // at a time anyway
             category = level.getCategory(0);
         } catch (MarshalException ex) {
-            this.log.error("Failed to load configuration", ex);
+            LOG.error("Failed to load configuration", ex);
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid XML input: MarshalException: " + ex.getMessage());
             return;
         } catch (ValidationException ex) {
-            this.log.error("Failed to load configuration", ex);
+            LOG.error("Failed to load configuration", ex);
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid XML input: ValidationException" + ex.getMessage());
             return;
         }
@@ -129,7 +132,7 @@ public class RTCPostServlet extends HttpServlet {
         // send 400 Bad Request if they did not supply category information
         // for the categoryname in the path info
         if (!categoryName.equals(category.getCatlabel())) {
-            this.log.error("Request did not supply information for category specified in path info");
+            LOG.error("Request did not supply information for category specified in path info");
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "No category info found for " + categoryName);
             return;
         }
@@ -143,7 +146,7 @@ public class RTCPostServlet extends HttpServlet {
         out.println("Category data parsed successfully.");
         out.close();
 
-        this.log.info("Successfully received information for " + categoryName);
+        LOG.info("Successfully received information for {}", categoryName);
     }
 
 }
