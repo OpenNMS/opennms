@@ -31,8 +31,8 @@ package org.opennms.netmgt.daemon;
 import java.lang.reflect.UndeclaredThrowableException;
 
 import org.opennms.core.fiber.Fiber;
+import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.BeanUtils;
-import org.opennms.core.utils.ThreadCategory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -226,6 +226,6 @@ public abstract class AbstractSpringContextJmxServiceDaemon<T extends SpringServ
     }
 
     private void setLoggingCategory() {
-        ThreadCategory.setPrefix(getLoggingPrefix());
+    	MDC.put(Logging.PREFIX_KEY, getLoggingPrefix());
     }
 }
