@@ -33,7 +33,6 @@ import java.io.IOException;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.resource.Vault;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.ViewsDisplayFactory;
 import org.opennms.netmgt.config.viewsdisplay.Section;
@@ -42,6 +41,8 @@ import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.model.events.EventProxyException;
 import org.opennms.web.api.Util;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>RTCPostSubscriber class.</p>
@@ -53,6 +54,9 @@ import org.opennms.web.api.Util;
  * @version $Id: $
  */
 public class RTCPostSubscriber extends Object {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(RTCPostSubscriber.class);
+
     protected EventProxy m_proxy;
 
     protected String m_url;
@@ -60,7 +64,6 @@ public class RTCPostSubscriber extends Object {
     protected String m_password = "rtc";
 
     /** Constant <code>log</code> */
-    protected static ThreadCategory log = ThreadCategory.getInstance("RTC");
 
     /**
      * <p>Constructor for RTCPostSubscriber.</p>
@@ -99,7 +102,7 @@ public class RTCPostSubscriber extends Object {
 
         proxy.send(bldr.getEvent());
 
-        log.info("Subscription requested for " + username + " to " + url);
+        LOG.info("Subscription requested for {} to {}", username, url);
     }
 
     /**
@@ -122,7 +125,7 @@ public class RTCPostSubscriber extends Object {
 
         proxy.send(bldr.getEvent());
 
-        log.info("Unsubscription sent for " + url);
+        LOG.info("Unsubscription sent for {}", url);
     }
 
     /**
@@ -192,7 +195,7 @@ public class RTCPostSubscriber extends Object {
             m_url = baseUrl + "/" + Util.encode(categoryName);
         }
 
-        log.debug("RTCPostSubscriber initialized: url=" + m_url + ", user=" + m_username);
+        LOG.debug("RTCPostSubscriber initialized: url={}, user={}", m_url, m_username);
     }
 
     /**
@@ -227,7 +230,7 @@ public class RTCPostSubscriber extends Object {
 
                 for (int j = 0; j < categories.length; j++) {
                     subscriber.subscribe(categories[j]);
-                    log.info("Sent subscription event to RTC for " + "category: " + categories[j]);
+                    LOG.info("Sent subscription event to RTC for category: {}",  categories[j]);
                 }
             }
 

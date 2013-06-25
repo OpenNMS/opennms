@@ -28,13 +28,14 @@
 
 package org.opennms.netmgt.model.events;
 
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.model.AbstractEntityVisitor;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.xml.event.Event;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>UpdateEventVisitor class.</p>
@@ -43,6 +44,9 @@ import org.opennms.netmgt.xml.event.Event;
  * @version $Id: $
  */
 public class UpdateEventVisitor extends AbstractEntityVisitor {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(UpdateEventVisitor.class);
+
     
     private static final String m_eventSource = "Provisiond";
     private EventForwarder m_eventForwarder;
@@ -59,7 +63,7 @@ public class UpdateEventVisitor extends AbstractEntityVisitor {
     /** {@inheritDoc} */
     @Override
     public void visitNode(OnmsNode node) {
-        LogUtils.infof(this, "Sending nodeAdded Event for %s\n", node);
+        LOG.info("Sending nodeAdded Event for {}\n", node);
         m_eventForwarder.sendNow(createNodeUpdatedEvent(node));
     }
 

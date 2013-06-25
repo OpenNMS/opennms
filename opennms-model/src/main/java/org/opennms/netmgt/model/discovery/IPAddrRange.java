@@ -37,7 +37,8 @@ import java.util.NoSuchElementException;
 
 import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <P>
@@ -51,6 +52,9 @@ import org.opennms.core.utils.ThreadCategory;
  * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
  */
 public final class IPAddrRange implements Iterable<InetAddress> {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(IPAddrRange.class);
+
     /**
      * The starting address for the object.
      */
@@ -252,7 +256,7 @@ public final class IPAddrRange implements Iterable<InetAddress> {
         byte[] to = end.getAddress();
 
         if (new ByteArrayComparator().compare(from, to) > 0) {
-            ThreadCategory.getInstance(this.getClass()).warn("The beginning of the address range is greater than the end of the address range (" +  InetAddressUtils.str(start) + " - " + InetAddressUtils.str(end) + "), swapping values to create a valid IP address range");
+            LOG.warn("The beginning of the address range is greater than the end of the address range ({} - {}), swapping values to create a valid IP address range", InetAddressUtils.str(start), InetAddressUtils.str(end));
             m_end = from;
             m_begin = to;
         } else {

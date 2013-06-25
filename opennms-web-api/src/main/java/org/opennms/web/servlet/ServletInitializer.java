@@ -39,9 +39,11 @@ import java.util.Properties;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
+import org.slf4j.MDC;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.resource.Vault;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Encapsulates all initialization and configuration needed by the OpenNMS
@@ -51,6 +53,9 @@ import org.opennms.core.utils.ThreadCategory;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public class ServletInitializer extends Object {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(ServletInitializer.class);
+
     /**
      * Private, empty constructor so that this class cannot be instantiated
      * outside of itself.
@@ -84,7 +89,8 @@ public class ServletInitializer extends Object {
          * All ThreadCategory instances in the WebUI should use this as their
          * category prefix
          */
-        ThreadCategory.setPrefix("OpenNMS.WEB");
+        
+        MDC.put("prefix", "OpenNMS.WEB");
 
         Properties properties = new Properties(System.getProperties());
 

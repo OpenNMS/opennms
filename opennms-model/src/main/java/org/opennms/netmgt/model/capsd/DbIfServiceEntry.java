@@ -41,8 +41,9 @@ import java.util.Date;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -65,6 +66,9 @@ import org.opennms.netmgt.EventConstants;
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
 public final class DbIfServiceEntry {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(DbIfServiceEntry.class);
+
     /** Constant <code>STATUS_UNMANAGED='U'</code> */
     public final static char STATUS_UNMANAGED = 'U';
 
@@ -242,8 +246,7 @@ public final class DbIfServiceEntry {
 
         names.append(") VALUES (").append(values).append(')');
 
-        if (log().isDebugEnabled())
-            log().debug("DbIfServiceEntry.insert: SQL insert statment = " + names.toString());
+            LOG.debug("DbIfServiceEntry.insert: SQL insert statment = {}", names.toString());
 
         // create the Prepared statement and then
         // start setting the result values
@@ -306,9 +309,7 @@ public final class DbIfServiceEntry {
                 if (noRollback) {
                     throw e;
                 } else {
-                    log().warn("ifServices DB insert got exception; will retry after "
-                            + "deletion of any existing records for this ifService "
-                            + "that are marked for deletion.",
+                    LOG.warn("ifServices DB insert got exception; will retry after deletion of any existing records for this ifService that are marked for deletion.",
                             e);
 
                     /*
@@ -329,7 +330,7 @@ public final class DbIfServiceEntry {
                     rc = stmt.executeUpdate();
                 }
             }
-            log().debug("insert(): SQL update result = " + rc);
+            LOG.debug("insert(): SQL update result = {}", rc);
         } finally {
             d.cleanUp();
         }
@@ -392,7 +393,7 @@ public final class DbIfServiceEntry {
 
         sqlText.append(" WHERE nodeID = ? AND ipAddr = ? AND serviceID = ? and status <> 'D'");
 
-        log().debug("DbIfServiceEntry.update: SQL update statment = " + sqlText.toString());
+        LOG.debug("DbIfServiceEntry.update: SQL update statment = {}", sqlText.toString());
 
         // create the Prepared statement and then
         // start setting the result values
@@ -453,7 +454,7 @@ public final class DbIfServiceEntry {
 
             // Run the insert
             int rc = stmt.executeUpdate();
-            log().debug("DbIfServiceEntry.update: update result = " + rc);
+            LOG.debug("DbIfServiceEntry.update: update result = {}", rc);
         } finally {
             d.cleanUp();
         }
@@ -923,7 +924,7 @@ public final class DbIfServiceEntry {
                     if (db != null)
                         db.close();
                 } catch (SQLException e) {
-                    log().warn("Exception closing JDBC connection", e);
+                    LOG.warn("Exception closing JDBC connection", e);
                 }
             }
         }
@@ -996,7 +997,7 @@ public final class DbIfServiceEntry {
                     db.close();
                 }
             } catch (SQLException e) {
-                ThreadCategory.getInstance(DbIfServiceEntry.class).warn("Exception closing JDBC connection", e);
+                LOG.warn("Exception closing JDBC connection", e);
             }
         }
     }
@@ -1061,10 +1062,6 @@ public final class DbIfServiceEntry {
         } catch (Throwable t) {
             t.printStackTrace();
         }
-    }
-
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
     }
 
 }
