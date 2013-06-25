@@ -563,10 +563,13 @@ find $RPM_BUILD_ROOT%{instprefix}/etc ! -type d | \
 	grep -v '3gpp' | \
 	grep -v 'dhcpd-configuration.xml' | \
 	grep -v 'endpoint-configuration.xml' | \
+	grep -v 'jira.properties' | \
 	grep -v 'link-adapter-configuration.xml' | \
 	grep -v 'mapsadapter-configuration.xml' | \
 	grep -v 'nsclient-config.xml' | \
 	grep -v 'nsclient-datacollection-config.xml' | \
+	grep -v 'otrs.properties' | \
+	grep -v 'rt.properties' | \
 	grep -v 'snmp-asset-adapter-configuration.xml' | \
 	grep -v 'xml-datacollection-config.xml' | \
 	grep -v 'xmp-config.xml' | \
@@ -584,10 +587,13 @@ find $RPM_BUILD_ROOT%{sharedir}/etc-pristine ! -type d | \
 	grep -v '3gpp' | \
 	grep -v 'dhcpd-configuration.xml' | \
 	grep -v 'endpoint-configuration.xml' | \
+	grep -v 'jira.properties' | \
 	grep -v 'link-adapter-configuration.xml' | \
 	grep -v 'mapsadapter-configuration.xml' | \
 	grep -v 'nsclient-config.xml' | \
 	grep -v 'nsclient-datacollection-config.xml' | \
+	grep -v 'otrs.properties' | \
+	grep -v 'rt.properties' | \
 	grep -v 'snmp-asset-adapter-configuration.xml' | \
 	grep -v 'xml-datacollection-config.xml' | \
 	grep -v 'xmp-config.xml' | \
@@ -623,10 +629,13 @@ find $RPM_BUILD_ROOT%{instprefix}/lib ! -type d | \
 	grep -v 'org.opennms.protocols.cifs' | \
 	grep -v 'org.opennms.protocols.dhcp' | \
 	grep -v 'jdhcp' | \
+	grep -v 'jira' | \
 	grep -v 'org.opennms.protocols.nsclient' | \
 	grep -v 'org.opennms.protocols.radius' | \
 	grep -v 'gnu-crypto' | \
 	grep -v 'jradius' | \
+	grep -v 'opennms-integration-otrs' | \
+	grep -v 'opennms-integration-rt' | \
 	grep -v 'org.opennms.protocols.xml' | \
 	grep -v 'org.opennms.protocols.xmp' | \
 	grep -v 'xmp' | \
