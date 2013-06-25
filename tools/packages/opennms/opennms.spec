@@ -203,6 +203,12 @@ Requires(pre):	opennms-plugin-provisioning-snmp-asset
 Requires:	opennms-plugin-provisioning-snmp-asset
 Requires(pre):	opennms-plugin-ticketer-centric
 Requires:	opennms-plugin-ticketer-centric
+Requires(pre):	opennms-plugin-ticketer-jira
+Requires:	opennms-plugin-ticketer-jira
+Requires(pre):	opennms-plugin-ticketer-otrs
+Requires:	opennms-plugin-ticketer-otrs
+Requires(pre):	opennms-plugin-ticketer-rt
+Requires:	opennms-plugin-ticketer-rt
 Requires(pre):	opennms-plugin-protocol-cifs
 Requires:	opennms-plugin-protocol-cifs
 Requires(pre):	opennms-plugin-protocol-dhcp
@@ -289,6 +295,48 @@ Requires:	opennms-core = %{version}-%{release}
 %description plugin-provisioning-snmp-asset
 The SNMP asset provisioning adapter responds to provisioning events by updating asset
 fields with data fetched from SNMP GET requests.
+
+%{extrainfo}
+%{extrainfo2}
+
+
+%package plugin-ticketer-jira
+Summary:	JIRA Ticketer Plugin for OpenNMS
+Group:		Applications/System
+Requires(pre):	opennms-core = %{version}-%{release}
+Requires:	opennms-core = %{version}-%{release}
+
+%description plugin-ticketer-jira
+The JIRA ticketer plugin provides the ability to automatically create JIRA
+issues from OpenNMS alarms.
+
+%{extrainfo}
+%{extrainfo2}
+
+
+%package plugin-ticketer-otrs
+Summary:	OTRS Ticketer Plugin for OpenNMS
+Group:		Applications/System
+Requires(pre):	opennms-core = %{version}-%{release}
+Requires:	opennms-core = %{version}-%{release}
+
+%description plugin-ticketer-otrs
+The OTRS ticketer plugin provides the ability to automatically create OTRS
+issues from OpenNMS alarms.
+
+%{extrainfo}
+%{extrainfo2}
+
+
+%package plugin-ticketer-rt
+Summary:	RT Ticketer Plugin for OpenNMS
+Group:		Applications/System
+Requires(pre):	opennms-core = %{version}-%{release}
+Requires:	opennms-core = %{version}-%{release}
+
+%description plugin-ticketer-rt
+The RT ticketer plugin provides the ability to automatically create RT
+tickets from OpenNMS alarms.
 
 %{extrainfo}
 %{extrainfo2}
@@ -698,6 +746,21 @@ rm -rf $RPM_BUILD_ROOT
 %files plugin-protocol-cifs
 %defattr(664 root root 775)
 %{instprefix}/lib/org.opennms.protocols.cifs*.jar
+
+%files plugin-ticketer-jira
+%defattr(664 root root 775)
+%{instprefix}/lib/jira-*.jar
+%config(noreplace) %{instprefix}/etc/jira.properties
+
+%files plugin-ticketer-otrs
+%defattr(664 root root 775)
+%{instprefix}/lib/opennms-integration-otrs-*.jar
+%config(noreplace) %{instprefix}/etc/otrs.properties
+
+%files plugin-ticketer-rt
+%defattr(664 root root 775)
+%{instprefix}/lib/opennms-integration-rt-*.jar
+%config(noreplace) %{instprefix}/etc/rt.properties
 
 %files plugin-protocol-dhcp
 %defattr(664 root root 775)
