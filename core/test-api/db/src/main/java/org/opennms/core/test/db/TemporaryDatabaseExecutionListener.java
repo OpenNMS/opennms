@@ -43,7 +43,8 @@ import javax.sql.DataSource;
 import org.junit.Test;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.datasource.DelegatingDataSource;
 import org.springframework.jdbc.datasource.LazyConnectionDataSourceProxy;
 import org.springframework.test.context.TestContext;
@@ -66,6 +67,8 @@ import com.mchange.v2.c3p0.PooledDataSource;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
 public class TemporaryDatabaseExecutionListener extends AbstractTestExecutionListener {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(TemporaryDatabaseExecutionListener.class);
 
 	private boolean m_createNewDatabases = false;
 	private TemporaryDatabase m_database;
@@ -222,7 +225,7 @@ public class TemporaryDatabaseExecutionListener extends AbstractTestExecutionLis
 		    @Override
 		    public void run() {
 		        try { pooledDataSource.close(); }
-		        catch (final Throwable t) { LogUtils.debugf(this, t, "failed to close pooled data source"); }
+		        catch (final Throwable t) { LOG.debug("failed to close pooled data source", t); }
 		    }
 		});
 

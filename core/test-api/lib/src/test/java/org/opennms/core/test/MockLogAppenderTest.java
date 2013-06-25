@@ -35,12 +35,14 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
 import org.opennms.core.test.MockLogAppender;
-import org.opennms.core.utils.LogUtils;
 
 /**
  * @author brozow
  */
 public class MockLogAppenderTest extends TestCase {
+	
+	private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(MockLogAppenderTest.class);
+	
     @Override
     protected void setUp() throws Exception {
         super.setUp();
@@ -54,33 +56,33 @@ public class MockLogAppenderTest extends TestCase {
     }
 	
     public void testInfo() {
-        LogUtils.infof(this, "An Info message");
+        LOG.info("An Info message");
         assertTrue("Messages were logged with a warning level or higher", MockLogAppender.noWarningsOrHigherLogged());
     }
     
     public void testWarn() {
-        LogUtils.warnf(this, "A warn message");
+    	LOG.warn("A warn message");
         assertFalse("Messages were not logged with a warning level or higher", MockLogAppender.noWarningsOrHigherLogged());
     }
     
     public void testError() {
-        LogUtils.errorf(this, "An error message");
+    	LOG.error("An error message");
         assertFalse("Messages were not logged with a warning level or higher", MockLogAppender.noWarningsOrHigherLogged());
         
     }
     
     public void testInfoWithException() {
-        LogUtils.infof(this, new NullPointerException(), "An info message with exception");
+    	LOG.info("An info message with exception", new NullPointerException());
         assertTrue("Messages were logged with a warning level or higher", MockLogAppender.noWarningsOrHigherLogged());
     }
     
     public void testErrorWithException() {
-        LogUtils.errorf(this, new NullPointerException(), "An error message with exception");
+    	LOG.error("An error message with exception", new NullPointerException());
         assertFalse("Messages were not logged with a warning level or higher", MockLogAppender.noWarningsOrHigherLogged());
     }
 	
 	public void xtestInfoMessage() throws InterruptedException {
-        LogUtils.infof(this, "An Info message");
+        LOG.info("An Info message");
 		
         assertTrue("Messages were logged with a warning level or higher", MockLogAppender.noWarningsOrHigherLogged());
 
@@ -93,8 +95,8 @@ public class MockLogAppenderTest extends TestCase {
 	}
 	
 	public void testWarnLimit() throws InterruptedException {
-		LogUtils.infof(this, "An Info message");
-		LogUtils.warnf(this, "A warn message");
+		LOG.info("An Info message");
+		LOG.warn("A warn message");
 		
         assertFalse("Messages were not logged with a warning level or higher", MockLogAppender.noWarningsOrHigherLogged());
 
@@ -107,8 +109,8 @@ public class MockLogAppenderTest extends TestCase {
 	}
 	
 	public void testWarnAssert() throws InterruptedException {
-		LogUtils.infof(this, "An Info message");
-		LogUtils.warnf(this, "A warn message");
+		LOG.info("An Info message");
+		LOG.warn("A warn message");
  
 		try {
 			MockLogAppender.assertNotGreaterOrEqual(Level.WARN);
@@ -120,8 +122,8 @@ public class MockLogAppenderTest extends TestCase {
 	}
 	
 	public void testErrorAssert() throws InterruptedException {
-		LogUtils.infof(this, "An Info message");
-		LogUtils.warnf(this, "A warn message");
+		LOG.info("An Info message");
+		LOG.warn("A warn message");
 
 		try {
 			MockLogAppender.assertNotGreaterOrEqual(Level.ERROR);
@@ -131,7 +133,7 @@ public class MockLogAppenderTest extends TestCase {
 	}
         
 	public void testDiscardHibernateAnnotationBinderWarnings() {
-		final Logger log = Logger.getLogger("org.hibernate.cfg.AnnotationBinder");
+		org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger("org.hibernate.cfg.AnnotationBinder");
 		log.info("An Info message");
 		log.warn("A warn message");
 
