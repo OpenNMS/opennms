@@ -28,7 +28,9 @@
 
 package org.opennms.core.tasks;
 
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 /**
  * SyncTask
@@ -37,6 +39,8 @@ import org.opennms.core.utils.LogUtils;
  * @version $Id: $
  */
 public class SyncTask extends Task {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(SyncTask.class);
     
     /** Constant <code>DEFAULT_EXECUTOR="default"</code> */
     public static final String DEFAULT_EXECUTOR = "default";
@@ -100,7 +104,7 @@ public class SyncTask extends Task {
               try {
                   SyncTask.this.run();
               } catch (Throwable t) {
-                  LogUtils.debugf(this, t, "Exception occurred executing task %s", SyncTask.this);
+                  LOG.debug("Exception occurred executing task {}", SyncTask.this, t);
               }
           }
           @Override
