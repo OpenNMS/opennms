@@ -36,7 +36,10 @@ import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.util.List;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.apache.log4j.MDC;
+import org.opennms.core.logging.Logging;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -45,6 +48,9 @@ import org.opennms.core.utils.ThreadCategory;
  * 
  */
 class UdpReceiver implements Runnable {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(UdpReceiver.class);
+    
     /**
      * The list of incoming events.
      */
@@ -86,14 +92,14 @@ class UdpReceiver implements Runnable {
     void stop() throws InterruptedException {
         m_stop = true;
         if (m_context != null) {
-            if (log().isDebugEnabled()) {
-                log().debug("Stopping and joining thread context " + m_context.getName());
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Stopping and joining thread context " + m_context.getName());
             }
 
             m_context.interrupt();
             m_context.join();
 
-            log().debug("Thread context stopped and joined");
+            LOG.debug("Thread context stopped and joined");
         }
     }
 
@@ -113,13 +119,13 @@ class UdpReceiver implements Runnable {
         m_context = Thread.currentThread();
 
         // Get a log instance
-        ThreadCategory.setPrefix(m_logPrefix);
+        MDC.put(Logging.PREFIX_KEY, m_logPrefix);
         
         if (m_stop) {
-            log().debug("Stop flag set before thread started, exiting");
+            LOG.debug("Stop flag set before thread started, exiting");
             return;
         } else {
-            log().debug("Thread context started");
+            LOG.debug("Thread context started");
         }
 
         // allocate a buffer
@@ -129,22 +135,22 @@ class UdpReceiver implements Runnable {
 
         // Set an SO timout to make sure we don't block forever if a socket is closed.
         try {
-            log().debug("Setting socket timeout to 500ms");
+            LOG.debug("Setting socket timeout to 500ms");
 
             m_dgSock.setSoTimeout(500);
         } catch (SocketException e) {
-            log().warn("An I/O error occured while trying to set the socket timeout: " + e, e);
+            LOG.warn("An I/O error occured while trying to set the socket timeout: " + e, e);
         }
 
         // Increase the receive buffer for the socket
         try {
-            if (log().isDebugEnabled()) {
-                log().debug("Setting receive buffer size to " + length);
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Setting receive buffer size to " + length);
             }
 
             m_dgSock.setReceiveBufferSize(length);
         } catch (SocketException e) {
-            log().info("Failed to set the receive buffer to " + length + ": " + e, e);
+            LOG.info("Failed to set the receive buffer to " + length + ": " + e, e);
         }
 
         // set to avoid numerious tracing message
@@ -153,14 +159,14 @@ class UdpReceiver implements Runnable {
         // now start processing incoming request
         while (!m_stop) {
             if (m_context.isInterrupted()) {
-                log().debug("Thread context interrupted");
+                LOG.debug("Thread context interrupted");
 
                 break;
             }
 
             try {
-                if (log().isDebugEnabled() && !ioInterrupted) {
-                    log().debug("Wating on a datagram to arrive");
+                if (LOG.isDebugEnabled() && !ioInterrupted) {
+                    LOG.debug("Wating on a datagram to arrive");
                 }
 
                 m_dgSock.receive(pkt);
@@ -169,12 +175,12 @@ class UdpReceiver implements Runnable {
                 ioInterrupted = true;
                 continue;
             } catch (IOException e) {
-                log().error("An I/O exception occured on the datagram receipt port, exiting: " + e, e);
+                LOG.error("An I/O exception occured on the datagram receipt port, exiting: " + e, e);
                 break;
             }
 
             try {
-                log().debug("Sending received packet to processor");
+                LOG.debug("Sending received packet to processor");
 
                 UdpReceivedEvent re = UdpReceivedEvent.make(pkt);
                 synchronized (m_eventsIn) {
@@ -182,22 +188,18 @@ class UdpReceiver implements Runnable {
                     m_eventsIn.notify();
                 }
             } catch (UnsupportedEncodingException e) {
-                log().warn("Failed to convert received XML event, discarding: " + e, e);
+                LOG.warn("Failed to convert received XML event, discarding: " + e, e);
             }
 
             pkt = new DatagramPacket(buffer, length);
 
         }
 
-        log().debug("Thread context exiting");
+        LOG.debug("Thread context exiting");
 
     }
 
     void setLogPrefix(String prefix) {
         m_logPrefix = prefix;
-    }
-
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
     }
 }

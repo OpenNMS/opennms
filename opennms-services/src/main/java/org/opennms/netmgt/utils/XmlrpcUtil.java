@@ -29,10 +29,11 @@
 package org.opennms.netmgt.utils;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>XmlrpcUtil class.</p>
@@ -41,7 +42,10 @@ import org.opennms.netmgt.model.events.EventBuilder;
  * @version $Id: $
  */
 public final class XmlrpcUtil {
-    /**
+
+	private static final Logger LOG = LoggerFactory.getLogger(XmlrpcUtil.class);
+
+	/**
      * This method is responsible for generating an xmlrpcNotification event and
      * sending it to eventd..
      *
@@ -57,11 +61,8 @@ public final class XmlrpcUtil {
      *            openNMS daemon where this event is produced.
      */
     public static void createAndSendXmlrpcNotificationEvent(final long txNo, final String sourceUei, final String message, final int status, final String generator) {
-        ThreadCategory log = ThreadCategory.getInstance("XmlrpcUtil");
-        if (log.isDebugEnabled())
-            log.debug("createAndSendXmlrpcNotificationEvent:  txNo= " + txNo + "\n" + " uei = " + sourceUei + "\n" + " message = " + message + "\n" + " status = " + status);
 
-
+    	LOG.debug("createAndSendXmlrpcNotificationEvent:  txNo= {}\n uei = {}\n message = {}\n status = {}", txNo, sourceUei, message, status);
 
         String hostAddress = InetAddressUtils.getLocalHostAddressAsString();
 
@@ -76,10 +77,9 @@ public final class XmlrpcUtil {
         try {
             EventIpcManagerFactory.getIpcManager().sendNow(bldr.getEvent());
 
-            if (log.isDebugEnabled())
-                log.debug("createdAndSendXmlrpcNotificationEvent: successfully sent " + "XMLRPC notification event for txno: " + txNo + " / " + sourceUei + " " + status);
+            LOG.debug("createdAndSendXmlrpcNotificationEvent: successfully sent XMLRPC notification event for txno: {} / {} {}", txNo ,sourceUei, status);
         } catch (Throwable t) {
-            log.warn("run: unexpected throwable exception caught during send to middleware", t);
+            LOG.warn("run: unexpected throwable exception caught during send to middleware", t);
 
             int failureFlag = 2;
 
@@ -93,10 +93,9 @@ public final class XmlrpcUtil {
             try {
                 EventIpcManagerFactory.getIpcManager().sendNow(bldr2.getEvent());
 
-                if (log.isDebugEnabled())
-                    log.debug("createdAndSendXmlrpcNotificationEvent: successfully sent " + "XMLRPC notification event for txno: " + txNo + " / " + sourceUei + " " + failureFlag);
+                LOG.debug("createdAndSendXmlrpcNotificationEvent: successfully sent XMLRPC notification event for txno: {} / {} {}", txNo, sourceUei, failureFlag);
             } catch (Throwable te) {
-                log.warn("run: unexpected throwable exception caught during send to middleware", te);
+                LOG.warn("run: unexpected throwable exception caught during send to middleware", te);
             }
         }
     }
