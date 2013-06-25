@@ -29,25 +29,26 @@
 package org.opennms.core.concurrent;
 
 import java.util.BitSet;
+import java.util.Map;
 import java.util.concurrent.ThreadFactory;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.MDC;
 
 public class LogPreservingThreadFactory implements ThreadFactory {
     private final BitSet m_slotNumbers;
     private final String m_name;
     private final int m_poolSize;
-    private String m_logPrefix = null;
+    private Map m_mdc = null;
     private int m_counter = 0;
 
-    public LogPreservingThreadFactory(String poolName, int poolSize, boolean preserveLogPrefix) {
+    public LogPreservingThreadFactory(String poolName, int poolSize, boolean preserveMDC) {
          m_name = poolName;
          m_poolSize = poolSize;
          // Make the bitset of thread numbers one larger so that we can 1-index it.
          // If pool size is Integer.MAX_VALUE, then the BitSet will not be used.
          m_slotNumbers = poolSize < Integer.MAX_VALUE ? new BitSet(poolSize + 1) : new BitSet(1);
-         if (preserveLogPrefix) {
-             m_logPrefix = ThreadCategory.getPrefix();
+         if (preserveMDC) {
+        	 m_mdc = MDC.getCopyOfContextMap();
          }
     }
 
@@ -68,8 +69,8 @@ public class LogPreservingThreadFactory implements ThreadFactory {
             @Override
             public void run() {
                 // Set the logging prefix if it was stored during creation
-                if (m_logPrefix != null) {
-                    ThreadCategory.setPrefix(m_logPrefix);
+            	if (m_mdc != null) {
+            		MDC.setContextMap(m_mdc);
                 }
                 // Run the delegate Runnable
                 r.run();
@@ -83,8 +84,8 @@ public class LogPreservingThreadFactory implements ThreadFactory {
             @Override
             public void run() {
                 // Set the logging prefix if it was stored during creation
-                if (m_logPrefix != null) {
-                    ThreadCategory.setPrefix(m_logPrefix);
+            	if (m_mdc != null) {
+            		MDC.setContextMap(m_mdc);
                 }
                 // Run the delegate Runnable
                 r.run();
@@ -100,8 +101,8 @@ public class LogPreservingThreadFactory implements ThreadFactory {
             public void run() {
                 try {
                     // Set the logging prefix if it was stored during creation
-                    if (m_logPrefix != null) {
-                        ThreadCategory.setPrefix(m_logPrefix);
+                	if (m_mdc != null) {
+                		MDC.setContextMap(m_mdc);
                     }
                     // Run the delegate Runnable
                     r.run();
