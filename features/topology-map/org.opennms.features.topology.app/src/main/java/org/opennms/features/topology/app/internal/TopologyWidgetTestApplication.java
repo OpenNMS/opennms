@@ -36,7 +36,6 @@ import java.util.List;
 
 import javax.servlet.http.HttpSession;
 
-import org.opennms.core.utils.LogUtils;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.HasExtraComponents;
 import org.opennms.features.topology.api.HistoryManager;
@@ -53,6 +52,7 @@ import org.opennms.features.topology.app.internal.TopoContextMenu.TopoContextMen
 import org.opennms.features.topology.app.internal.TopologyComponent.VertexUpdateListener;
 import org.opennms.features.topology.app.internal.jung.FRLayoutAlgorithm;
 import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.wolfie.refresher.Refresher;
@@ -90,7 +90,7 @@ import com.vaadin.ui.Window;
 
 
 public class TopologyWidgetTestApplication extends Application implements CommandUpdateListener, MenuItemUpdateListener, ContextMenuHandler, WidgetUpdateListener, WidgetContext, FragmentChangedListener, GraphContainer.ChangeListener, MapViewManagerListener, VertexUpdateListener, SelectionListener {
-
+    private static final Logger LOG = LoggerFactory.getLogger(TopologyWidgetTestApplication.class);
 	private static final long serialVersionUID = 6837501987137310938L;
 	private static int HEADER_HEIGHT = 100;
 	private static final int MENU_BAR_HEIGHT = 23;
@@ -293,7 +293,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
 
 		// If there was existing history, then restore that history snapshot.
 		if (fragment != null) {
-			LoggerFactory.getLogger(this.getClass()).info("Restoring history for user {}: {}", (String)this.getUser(), fragment);
+			LOG.info("Restoring history for user {}: {}", (String)this.getUser(), fragment);
 			m_uriFragUtil.setFragment(fragment);
 		}
 	}
@@ -307,7 +307,7 @@ public class TopologyWidgetTestApplication extends Application implements Comman
             CustomLayout customLayout = new CustomLayout(getHeaderLayout());
             header.setContent(customLayout);
         } catch (IOException e) {
-            LogUtils.errorf(this, e, "Could not load header file");
+            LOG.error("Could not load header file", e);
         }
         return header;
     }
