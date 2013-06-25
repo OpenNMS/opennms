@@ -54,13 +54,14 @@ import org.apache.commons.io.IOUtils;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.resource.Vault;
 import org.opennms.core.utils.DBUtils;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.NotificationFactory;
 import org.opennms.netmgt.model.capsd.DbIfServiceEntry;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.api.Util;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A servlet that handles managing or unmanaging interfaces and services on a
@@ -71,6 +72,9 @@ import org.opennms.web.api.Util;
  * @since 1.8.1
  */
 public class ManageNodeServlet extends HttpServlet {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(ManageNodeServlet.class);
+
     private static final long serialVersionUID = -544260517139205801L;
 
     // FIXME: Should this be deleted?
@@ -188,7 +192,7 @@ public class ManageNodeServlet extends HttpServlet {
                             stmt.setString(2, curInterface.getAddress());
                             stmt.setInt(3, curInterface.getNodeid());
                             stmt.setInt(4, curService.getId());
-                            log().debug("doPost: executing manage service update for " + curInterface.getAddress() + " " + curService.getName());
+                            LOG.debug("doPost: executing manage service update for {} {}", curInterface.getAddress(), curService.getName());
                             stmt.executeUpdate();
                         } else if (!serviceList.contains(serviceKey) && curService.getStatus().equals("managed")) {
                             
@@ -205,7 +209,7 @@ public class ManageNodeServlet extends HttpServlet {
                             outagesstmt.setString(1, curInterface.getAddress());
                             outagesstmt.setInt(2, curInterface.getNodeid());
                             outagesstmt.setInt(3, curService.getId());
-                            log().debug("doPost: executing unmanage service update for " + curInterface.getAddress() + " " + curService.getName());
+                            LOG.debug("doPost: executing unmanage service update for {} {}", curInterface.getAddress(), curService.getName());
                             stmt.executeUpdate();
                             outagesstmt.executeUpdate();
                         }
@@ -261,7 +265,7 @@ public class ManageNodeServlet extends HttpServlet {
         }
         query.append(")");
 
-        log().debug("manageInterfaces: query string: " + query);
+        LOG.debug("manageInterfaces: query string: {}", query);
         Statement update = connection.createStatement();
         update.executeUpdate(query.toString());
         update.close();
@@ -281,7 +285,7 @@ public class ManageNodeServlet extends HttpServlet {
         }
         query.append(")");
 
-        log().debug("unmanageInterfaces: query: " + query);
+        LOG.debug("unmanageInterfaces: query: {}", query);
         Statement update = connection.createStatement();
         update.executeUpdate(query.toString());
         update.close();
@@ -347,7 +351,4 @@ public class ManageNodeServlet extends HttpServlet {
         }
     }
 
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
 }
