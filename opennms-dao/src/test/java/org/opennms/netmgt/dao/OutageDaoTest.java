@@ -110,8 +110,14 @@ public class OutageDaoTest implements InitializingBean {
 
     @Before
     public void setUp() throws Exception {
-        OnmsServiceType t = new OnmsServiceType("ICMP");
-        m_serviceTypeDao.save(t);
+        m_transTemplate.execute(new TransactionCallback<Object>() {
+            @Override
+            public Object doInTransaction(TransactionStatus status) {
+                OnmsServiceType t = new OnmsServiceType("ICMP");
+                m_serviceTypeDao.save(t);
+                return null;
+            }
+        });
     }
 
     @Test
