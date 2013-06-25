@@ -35,8 +35,8 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
@@ -48,7 +48,6 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -61,7 +60,7 @@ import org.springframework.transaction.annotation.Transactional;
     "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml"
 })
 @JUnitConfigurationEnvironment
-@JUnitTemporaryDatabase(dirtiesContext=false)
+@JUnitTemporaryDatabase
 @Transactional
 public class HibernateCriteriaConverterTest implements InitializingBean {
     @Autowired
@@ -82,8 +81,8 @@ public class HibernateCriteriaConverterTest implements InitializingBean {
     }
 
 	@Test
-	@Rollback(false)
 	public void testNodeQuery() throws Exception {
+
 		List<OnmsNode> nodes;
 
 		// first, try with OnmsCriteria
@@ -104,7 +103,6 @@ public class HibernateCriteriaConverterTest implements InitializingBean {
 	}
 
     @Test
-    @Rollback(false)
     public void testNodeIlikeQuery() {
         final CriteriaBuilder cb = new CriteriaBuilder(OnmsNode.class);
         cb.isNotNull("id").eq("label", "node1").alias("ipInterfaces", "ipInterface", JoinType.LEFT_JOIN).ilike("ipInterface.ipAddress", "1%");
@@ -113,7 +111,7 @@ public class HibernateCriteriaConverterTest implements InitializingBean {
     }
 
 	@Test
-    @Rollback(false)
+	@JUnitTemporaryDatabase // Relies on specific IDs so we need a new database
 	public void testDistinctQuery() {
 		List<OnmsNode> nodes = null;
 
