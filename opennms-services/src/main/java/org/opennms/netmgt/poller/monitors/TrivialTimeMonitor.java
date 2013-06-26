@@ -43,7 +43,6 @@ import java.nio.ByteBuffer;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.apache.log4j.Level;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.TimeoutTracker;
@@ -246,13 +245,21 @@ final public class TrivialTimeMonitor extends AbstractServiceMonitor {
                 gotTime = true;
                 serviceStatus = qualifyTime(remoteTime, localTime, allowedSkew, serviceStatus, tracker.elapsedTimeInMillis(), persistSkew);
             } catch (NoRouteToHostException e) {
-                serviceStatus = logDown(Level.WARN, "No route to host exception for address " + InetAddressUtils.str(ipv4Addr), e);
+                String reason = "No route to host exception for address " + InetAddressUtils.str(ipv4Addr);
+                LOG.debug(reason, e);
+                serviceStatus = PollStatus.unavailable(reason);
             } catch (InterruptedIOException e) {
-                serviceStatus = logDown(Level.DEBUG, "did not connect to host with " + tracker);
+                String reason = "did not connect to host with " + tracker;
+                LOG.debug(reason);
+                serviceStatus = PollStatus.unavailable(reason);
             } catch (ConnectException e) {
-                serviceStatus = logDown(Level.DEBUG, "Connection exception for address: " + ipv4Addr, e);
+                String reason = "Connection exception for address: " + ipv4Addr;
+                LOG.debug(reason, e);
+                serviceStatus = PollStatus.unavailable(reason);
             } catch (IOException e) {
-                serviceStatus = logDown(Level.DEBUG, "IOException while polling address: " + ipv4Addr, e);
+                String reason = "IOException while polling address: " + ipv4Addr;
+                LOG.debug(reason, e);
+                serviceStatus = PollStatus.unavailable(reason);
             } finally {
                 try {
                     // Close the socket
@@ -327,13 +334,21 @@ final public class TrivialTimeMonitor extends AbstractServiceMonitor {
                 gotTime = true;
                 serviceStatus = qualifyTime(remoteTime, localTime, allowedSkew, serviceStatus, tracker.elapsedTimeInMillis(), persistSkew);
             } catch (PortUnreachableException e) {
-                serviceStatus = logDown(Level.DEBUG, "Port unreachable exception for address " + hostAddress, e);
+                String reason = "Port unreachable exception for address " + hostAddress;
+                LOG.debug(reason, e);
+                serviceStatus = PollStatus.unavailable(reason);
             } catch (NoRouteToHostException e) {
-                serviceStatus = logDown(Level.WARN, "No route to host exception for address " + hostAddress, e);
+                String reason = "No route to host exception for address " + hostAddress;
+                LOG.debug(reason, e);
+                serviceStatus = PollStatus.unavailable(reason);
             } catch (InterruptedIOException e) {
-                serviceStatus = logDown(Level.DEBUG, "did not connect to host with " + tracker);
+                String reason = "did not connect to host with " + tracker;
+                LOG.debug(reason);
+                serviceStatus = PollStatus.unavailable(reason);
             } catch (IOException e) {
-                serviceStatus = logDown(Level.DEBUG, "IOException while polling address: " + ipv4Addr, e);
+                String reason = "IOException while polling address: " + ipv4Addr;
+                LOG.debug(reason, e);
+                serviceStatus = PollStatus.unavailable(reason);
             } finally {
                 if (socket != null)
                     socket.close();
@@ -345,12 +360,18 @@ final public class TrivialTimeMonitor extends AbstractServiceMonitor {
     private PollStatus qualifyTime(int remoteTime, int localTime, int allowedSkew, PollStatus serviceStatus, double responseTime, boolean persistSkew) {
         LOG.debug("qualifyTime: checking remote time " + remoteTime + " against local time " + localTime + " with max skew of " + allowedSkew);
         if ((localTime - remoteTime > allowedSkew) || (remoteTime - localTime > allowedSkew)) {
-            serviceStatus = logDown(Level.DEBUG, "Remote time is " + (localTime > remoteTime ? ""+(localTime-remoteTime)+" seconds slow" : ""+(remoteTime-localTime)+" seconds fast"));
+            String reason = "Remote time is " + (localTime > remoteTime ? ""+(localTime-remoteTime)+" seconds slow" : ""+(remoteTime-localTime)+" seconds fast");
+            LOG.debug(reason);
+            serviceStatus = PollStatus.unavailable(reason);
         }
         if ((localTime > remoteTime) && (localTime - remoteTime > allowedSkew)) {
-            serviceStatus = logDown(Level.DEBUG, "Remote time is " + (localTime - remoteTime) + " seconds behind local, more than the allowable " + allowedSkew);
+            String reason = "Remote time is " + (localTime - remoteTime) + " seconds behind local, more than the allowable " + allowedSkew;
+            LOG.debug(reason);
+            serviceStatus = PollStatus.unavailable(reason);
         } else if ((remoteTime > localTime) && (remoteTime - localTime > allowedSkew)) {
-            serviceStatus = logDown(Level.DEBUG, "Remote time is " + (remoteTime - localTime) + " seconds ahead of local, more than the allowable " + allowedSkew);
+            String reason = "Remote time is " + (remoteTime - localTime) + " seconds ahead of local, more than the allowable " + allowedSkew;
+            LOG.debug(reason);
+            serviceStatus = PollStatus.unavailable(reason);
         } else {
             serviceStatus = PollStatus.available();
         }

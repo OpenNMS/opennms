@@ -39,7 +39,6 @@ import java.net.NoRouteToHostException;
 import java.net.Socket;
 import java.util.Map;
 
-import org.apache.log4j.Level;
 import org.opennms.core.utils.ParameterMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -217,15 +216,23 @@ final public class ImapMonitor extends AbstractServiceMonitor {
 
             } catch (NoRouteToHostException e) {
             	
-            	serviceStatus = logDown(Level.WARN,"No route to host exception for address: " + ipv4Addr, e);
+            	String reason = "No route to host exception for address: " + ipv4Addr;
+                LOG.debug(reason, e);
+                serviceStatus = PollStatus.unavailable(reason);
 
             } catch (ConnectException e) {
                 // Connection refused. Continue to retry.
-            	serviceStatus = logDown(Level.DEBUG, "Connection exception for address: " + ipv4Addr, e);
+            	String reason = "Connection exception for address: " + ipv4Addr;
+                LOG.debug(reason, e);
+                serviceStatus = PollStatus.unavailable(reason);
             } catch (InterruptedIOException e) {
-            	serviceStatus = logDown(Level.DEBUG, "did not connect to host with " + tracker);
+            	String reason = "did not connect to host with " + tracker;
+                LOG.debug(reason);
+                serviceStatus = PollStatus.unavailable(reason);
             } catch (IOException e) {
-            	serviceStatus = logDown(Level.DEBUG, "IOException while polling address: " + ipv4Addr, e);
+            	String reason = "IOException while polling address: " + ipv4Addr;
+                LOG.debug(reason, e);
+                serviceStatus = PollStatus.unavailable(reason);
             } finally {
                 try {
                     // Close the socket

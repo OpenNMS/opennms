@@ -48,7 +48,6 @@ import net.jradius.packet.RadiusPacket;
 import net.jradius.packet.attribute.AttributeFactory;
 import net.jradius.packet.attribute.AttributeList;
 
-import org.apache.log4j.Level;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.model.PollStatus;
@@ -201,7 +200,9 @@ final public class RadiusAuthMonitor extends AbstractServiceMonitor {
                 } else if (authType.equalsIgnoreCase("eapmschapv2") || authType.equalsIgnoreCase("eap-mschapv2")) {
                     auth = new EAPMSCHAPv2Authenticator();
                 } else {
-                    return logDown(Level.ERROR, "Unknown authenticator type '" + authType + "'");
+                    String reason = "Unknown authenticator type '" + authType + "'";
+                    this.LOG.debug(reason);
+                    return PollStatus.unavailable(reason);
                 }
 
                 tracker.startAttempt();
@@ -217,10 +218,14 @@ final public class RadiusAuthMonitor extends AbstractServiceMonitor {
                 } else if (reply != null) {
                     LOG.debug("response returned, but request was not accepted: {}", reply);
                 }
-                status = logDown(Level.ERROR, "Invalid RADIUS reply: " + reply);
+                String reason = "Invalid RADIUS reply: " + reply;
+                this.LOG.debug(reason);
+                status = PollStatus.unavailable(reason);
             }
         } catch (final Throwable e) {
-            status = logDown(Level.ERROR, "Error while attempting to connect to the RADIUS service on " + addr.getCanonicalHostName(), e);
+            String reason = "Error while attempting to connect to the RADIUS service on " + addr.getCanonicalHostName();
+            this.LOG.debug(reason, e);
+            status = PollStatus.unavailable(reason);
         }
 
         return status;

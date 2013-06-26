@@ -145,7 +145,7 @@ final public class NrpeMonitor extends AbstractServiceMonitor {
         InetAddress ipv4Addr = (InetAddress) iface.getAddress();
 
         final String hostAddress = InetAddressUtils.str(ipv4Addr);
-		if (log().isDebugEnabled()) {
+		if (LOG.isDebugEnabled()) {
             LOG.debug("poll: address = {}, port = {}, {}", tracker, hostAddress, port);
         }
 
@@ -226,11 +226,8 @@ final public class NrpeMonitor extends AbstractServiceMonitor {
 						" and message: " + response.getBuffer();
                 }
             } catch (NoRouteToHostException e) {
-				reason = "No route to host exception for address " + hostAddress;
-                if (log().isEnabledFor(ThreadCategory.Level.WARN)) {
-	                e.fillInStackTrace();
-                    LOG.warn("poll: " + reason, e);
-                }
+                   reason = "No route to host exception for address " + hostAddress;
+                   LOG.warn("poll: " + reason, e);
             } catch (InterruptedIOException e) {
                 reason = "did not connect to host within " + tracker;
                 LOG.debug("NrpeMonitor: did not connect to host within {}", tracker);
@@ -238,20 +235,20 @@ final public class NrpeMonitor extends AbstractServiceMonitor {
 				reason = "Connection exception for address: " + ipv4Addr;
                 // Connection refused. Continue to retry.
                 //
-                if (log().isDebugEnabled()) {
+                if (LOG.isDebugEnabled()) {
 	                e.fillInStackTrace();
                     LOG.debug("poll: " + reason, e);
                 }
             } catch (NrpeException e) {
 				reason = "NrpeException while polling address: " + ipv4Addr;
-                if (log().isDebugEnabled()) {
+                if (LOG.isDebugEnabled()) {
 	                e.fillInStackTrace();
                     LOG.debug("poll: " + reason, e);
                 }
             } catch (IOException e) {
                 // Ignore
 				reason = "IOException while polling address: " + ipv4Addr;
-                if (log().isDebugEnabled()) {
+                if (LOG.isDebugEnabled()) {
 	                e.fillInStackTrace();
                     LOG.debug("poll: " + reason, e);
                 }
@@ -262,7 +259,7 @@ final public class NrpeMonitor extends AbstractServiceMonitor {
                         socket.close();
                     }
                 } catch (IOException e) {
-                    if (log().isDebugEnabled()) {
+                    if (LOG.isDebugEnabled()) {
 	                    e.fillInStackTrace();
                         LOG.debug("poll: Error closing socket.", e);
                     }

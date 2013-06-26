@@ -212,17 +212,18 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
             }
 
             for (HttpPage page : getPages()) {
-                if (log().isDebugEnabled()) {
-                    log().debug("Executing HttpPage: " + page.toString());
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Executing HttpPage: " + page.toString());
                 }
                 page.execute(client, svc, m_sequenceProperties);
                 if (page.getDsName() != null) {
-                    if (log().isDebugEnabled()) {
-                        log().debug("Recording response time " + page.getResponseTime() + " for ds " + page.getDsName());
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("Recording response time " + page.getResponseTime() + " for ds " + page.getDsName());
                     }
                     responseTimes.put(page.getDsName(), page.getResponseTime());
                 }
             }
+            
         }
 
         protected Properties getSequenceProperties() {
@@ -370,7 +371,7 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
                     if (streetCred.length == 2) {
                         client.getCredentialsProvider().setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(streetCred[0], streetCred[1]));
                     } else { 
-                        log().warn("Illegal value found for username/password HTTP credentials: " + userInfo);
+                        LOG.warn("Illegal value found for username/password HTTP credentials: " + userInfo);
                     }
                 }
 
@@ -389,15 +390,15 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
                 if (getLocationPattern() != null) {
                     Header locationHeader = response.getFirstHeader("location");
                     if (locationHeader == null) {
-                        if (log().isDebugEnabled()) {
-                            log().debug("locationMatch was set, but no Location: header was returned at " + uri, new Exception());
+                        if (LOG.isDebugEnabled()) {
+                            LOG.debug("locationMatch was set, but no Location: header was returned at " + uri, new Exception());
                         }
                         throw new PageSequenceMonitorException("locationMatch was set, but no Location: header was returned at " + uri);
                     }
                     Matcher matcher = getLocationPattern().matcher(locationHeader.getValue());
                     if (!matcher.find()) {
-                        if (log().isDebugEnabled()) {
-                            log().debug("failed to find '" + getLocationPattern() + "' in Location: header at " + uri + ":\n" + locationHeader.getValue(), new Exception());
+                        if (LOG.isDebugEnabled()) {
+                            LOG.debug("failed to find '" + getLocationPattern() + "' in Location: header at " + uri + ":\n" + locationHeader.getValue(), new Exception());
                         }
                         throw new PageSequenceMonitorException("failed to find '" + getLocationPattern() + "' in Location: header at " + uri);
                     }
@@ -413,8 +414,8 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
                 if (getSuccessPattern() != null) {
                     Matcher matcher = getSuccessPattern().matcher(responseString);
                     if (!matcher.find()) {
-                        if (log().isDebugEnabled()) {
-                            log().debug("failed to find '" + getSuccessPattern() + "' in page content at " + uri + ":\n" + responseString.trim(), new Exception());
+                        if (LOG.isDebugEnabled()) {
+                            LOG.debug("failed to find '" + getSuccessPattern() + "' in page content at " + uri + ":\n" + responseString.trim(), new Exception());
                         }
                         throw new PageSequenceMonitorException("failed to find '" + getSuccessPattern() + "' in page content at " + uri);
                     }
@@ -427,8 +428,8 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
             } catch (URISyntaxException e) {
                 throw new IllegalArgumentException("unable to construct URL for page: " + e, e);
             } catch (IOException e) {
-                if (log().isDebugEnabled()) {
-                    log().debug("I/O Error " + e, e);
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("I/O Error " + e, e);
                 }
                 throw new PageSequenceMonitorException("I/O Error " + e, e);
             }
@@ -437,18 +438,18 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
         private List<NameValuePair> expandParms(MonitoredService svc) {
             List<NameValuePair> expandedParms = new ArrayList<NameValuePair>();
             Properties svcProps = getServiceProperties(svc);
-            if (svcProps != null && log().isDebugEnabled()) {
-                log().debug("I have " + svcProps.size() + " service properties.");
+            if (svcProps != null && LOG.isDebugEnabled()) {
+                LOG.debug("I have " + svcProps.size() + " service properties.");
             }
             Properties seqProps = getSequenceProperties();
-            if (seqProps != null && log().isDebugEnabled()) {
-                log().debug("I have " + seqProps.size() + " sequence properties.");
+            if (seqProps != null && LOG.isDebugEnabled()) {
+                LOG.debug("I have " + seqProps.size() + " sequence properties.");
             }
             for (NameValuePair nvp : m_parms) {
                 String value = PropertiesUtils.substitute((String)nvp.getValue(), getServiceProperties(svc), getSequenceProperties());
                 expandedParms.add(new BasicNameValuePair(nvp.getName(), value));
-                if (log().isDebugEnabled() && !nvp.getValue().equals(value) ) {
-                    log().debug("Expanded parm with name '" + nvp.getName() + "' from '" + nvp.getValue() + "' to '" + value + "'");
+                if (LOG.isDebugEnabled() && !nvp.getValue().equals(value) ) {
+                    LOG.debug("Expanded parm with name '" + nvp.getName() + "' from '" + nvp.getValue() + "' to '" + value + "'");
                 }
             }
             return expandedParms;
@@ -461,8 +462,8 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
                 if (vbValue == null)
                     vbValue = "";
                 props.put(vbName, vbValue);
-                if (log().isDebugEnabled()) {
-                    log().debug("Just set session variable '" + vbName + "' to '" + vbValue + "'");
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Just set session variable '" + vbName + "' to '" + vbValue + "'");
                 }
             }
 
@@ -713,7 +714,7 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
                 serviceStatus = PollStatus.unavailable(e.getMessage());
                 serviceStatus.setProperties(responseTimes);
             } catch (IllegalArgumentException e) {
-                log().error("Invalid parameters to monitor: " + e.getMessage(), e);
+                LOG.error("Invalid parameters to monitor: " + e.getMessage(), e);
                 serviceStatus = PollStatus.unavailable("Invalid parameter to monitor: " + e.getMessage() + ".  See log for details.");
                 serviceStatus.setProperties(responseTimes);
             } finally {

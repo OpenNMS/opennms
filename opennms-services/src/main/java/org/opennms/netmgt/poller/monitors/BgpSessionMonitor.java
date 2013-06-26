@@ -34,7 +34,6 @@ import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Level;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.config.SnmpPeerFactory;
@@ -47,6 +46,8 @@ import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>
@@ -61,6 +62,9 @@ import org.opennms.netmgt.snmp.SnmpValue;
  */
 @Distributable(DistributionContext.DAEMON)
 final public class BgpSessionMonitor extends SnmpMonitorStrategy {
+    
+    public static final Logger LOG = LoggerFactory.getLogger(BgpSessionMonitor.class);
+    
     /**
      * Name of monitored service.
      */
@@ -154,7 +158,7 @@ final public class BgpSessionMonitor extends SnmpMonitorStrategy {
         try {
             SnmpPeerFactory.init();
         } catch (IOException ex) {
-            log().fatal("initialize: Failed to load SNMP configuration", ex);
+            LOG.error("initialize: Failed to load SNMP configuration", ex);
             throw new UndeclaredThrowableException(ex);
         }
 
@@ -210,14 +214,14 @@ final public class BgpSessionMonitor extends SnmpMonitorStrategy {
         SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(ipaddr);
         if (agentConfig == null) throw new RuntimeException("SnmpAgentConfig object not available for interface " + ipaddr);
         final String hostAddress = InetAddressUtils.str(ipaddr);
-		log().debug("poll: setting SNMP peer attribute for interface " + hostAddress);
+		LOG.debug("poll: setting SNMP peer attribute for interface " + hostAddress);
 
         // Get configuration parameters
         //
         // This should never need to be overridden, but it can be in order to be used with similar tables.
         String bgpPeerIp = ParameterMap.getKeyedString(parameters, "bgpPeerIp", null);
         if (bgpPeerIp == null) {
-            log().warn("poll: No BGP-Peer IP Defined! ");
+            LOG.warn("poll: No BGP-Peer IP Defined! ");
             return status;
         }
 
@@ -230,8 +234,8 @@ final public class BgpSessionMonitor extends SnmpMonitorStrategy {
         // Establish SNMP session with interface
         //
         try {
-            if (log().isDebugEnabled()) {
-                log().debug("poll: SnmpAgentConfig address: " +agentConfig);
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("poll: SnmpAgentConfig address: " +agentConfig);
             }
     
             // Get the BGP peer state
@@ -240,11 +244,11 @@ final public class BgpSessionMonitor extends SnmpMonitorStrategy {
             
             // If no peer state is received or SNMP is not possible, service is down
             if (bgpPeerState == null) {
-                log().warn("No BGP peer state received!");
+                LOG.warn("No BGP peer state received!");
                 return status;
             } else {
-                if (log().isDebugEnabled()) {
-                    log().debug("poll: bgpPeerState: " + bgpPeerState);
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("poll: bgpPeerState: " + bgpPeerState);
                 }
                 peerStateMsg = resolvePeerState(bgpPeerState.toInt());
             }
@@ -254,8 +258,8 @@ final public class BgpSessionMonitor extends SnmpMonitorStrategy {
              *  service available and go away.
              */
             if (bgpPeerState.toInt() == BGP_PEER_STATE.ESTABLISHED.value()) {
-                if (log().isDebugEnabled()) {
-                    log().debug("poll: bgpPeerState: " + BGP_PEER_STATE.ESTABLISHED.name());
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("poll: bgpPeerState: " + BGP_PEER_STATE.ESTABLISHED.name());
                 }
                 return PollStatus.available();
             }
@@ -266,10 +270,10 @@ final public class BgpSessionMonitor extends SnmpMonitorStrategy {
             // Check correct MIB-Support
             if (bgpPeerAdminState == null)
             {
-                log().warn("Cannot receive bgpAdminState");
+                LOG.warn("Cannot receive bgpAdminState");
             } else {
-                if (log().isDebugEnabled()) {
-                    log().debug("poll: bgpPeerAdminState: " + bgpPeerAdminState);
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("poll: bgpPeerAdminState: " + bgpPeerAdminState);
                 }
                 adminStateMsg = resolveAdminState(bgpPeerAdminState.toInt());
             }
@@ -279,10 +283,10 @@ final public class BgpSessionMonitor extends SnmpMonitorStrategy {
             // Check correct MIB-Support
             if (bgpPeerRemoteAs == null)
             {
-                log().warn("Cannot receive bgpPeerRemoteAs");
+                LOG.warn("Cannot receive bgpPeerRemoteAs");
             } else {
-                if (log().isDebugEnabled()) {
-                    log().debug("poll: bgpPeerRemoteAs: " + bgpPeerRemoteAs);
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("poll: bgpPeerRemoteAs: " + bgpPeerRemoteAs);
                 }
                 remoteAsMsg = bgpPeerRemoteAs.toString();
             }
@@ -292,10 +296,10 @@ final public class BgpSessionMonitor extends SnmpMonitorStrategy {
             // Check correct MIB-Support
             if (bgpPeerLastError == null)
             {
-                log().warn("Cannot receive bgpPeerLastError");
+                LOG.warn("Cannot receive bgpPeerLastError");
             } else {
-                if (log().isDebugEnabled()) {
-                    log().debug("poll: bgpPeerLastError: " + bgpPeerLastError);
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("poll: bgpPeerLastError: " + bgpPeerLastError);
                 }
                 lastErrorMsg = resolveBgpErrorCode(bgpPeerLastError.toHexString());
             }
@@ -305,10 +309,10 @@ final public class BgpSessionMonitor extends SnmpMonitorStrategy {
             // Check correct MIB-Support
             if (bgpPeerFsmEstTime == null)
             {
-                log().warn("Cannot receive bgpPeerFsmEstTime");
+                LOG.warn("Cannot receive bgpPeerFsmEstTime");
             } else {
-                if (log().isDebugEnabled()) {
-                    log().debug("poll: bgpPeerFsmEsmTime: " + bgpPeerFsmEstTime);
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("poll: bgpPeerFsmEsmTime: " + bgpPeerFsmEstTime);
                 }
                 estTimeMsg = bgpPeerFsmEstTime.toString();
             }
@@ -322,13 +326,21 @@ final public class BgpSessionMonitor extends SnmpMonitorStrategy {
             status = PollStatus.unavailable(returnValue);
                 
         } catch (NullPointerException e) {
-            status = logDown(Level.WARN, "Unexpected error during SNMP poll of interface " + hostAddress, e);
+            String reason = "Unexpected error during SNMP poll of interface " + hostAddress;
+            LOG.debug(reason, e);
+            status = PollStatus.unavailable(reason);
         } catch (NumberFormatException e) {
-            status = logDown(Level.WARN, "Number operator used on a non-number " + e.getMessage());
+            String reason = "Number operator used on a non-number " + e.getMessage();
+            LOG.debug(reason);
+            status = PollStatus.unavailable(reason);
         } catch (IllegalArgumentException e) {
-            status = logDown(Level.WARN, "Invalid SNMP Criteria: " + e.getMessage());
+            String reason = "Invalid SNMP Criteria: " + e.getMessage();
+            LOG.debug(reason);
+            status = PollStatus.unavailable(reason);
         } catch (Throwable t) {
-            status = logDown(Level.WARN, "Unexpected exception during SNMP poll of interface " + hostAddress, t);
+            String reason = "Unexpected exception during SNMP poll of interface " + hostAddress;
+            LOG.debug(reason, t);
+            status = PollStatus.unavailable(reason);
         }
 
         // If matchAll is set to true, then the status is set to available above with a single match.

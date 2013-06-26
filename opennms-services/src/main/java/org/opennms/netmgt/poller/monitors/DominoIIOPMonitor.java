@@ -37,7 +37,6 @@ import java.net.NoRouteToHostException;
 import java.net.Socket;
 import java.util.Map;
 
-import org.apache.log4j.Level;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.slf4j.Logger;
@@ -136,7 +135,9 @@ final public class DominoIIOPMonitor extends AbstractServiceMonitor {
         try {
             retrieveIORText(hostAddress, IORport);
         } catch (Throwable e) {
-            return logDown(Level.DEBUG, "failed to get the corba IOR from " + ipv4Addr, e);
+            String reason = "failed to get the corba IOR from " + ipv4Addr;
+            LOG.debug(reason, e);
+            return PollStatus.unavailable(reason);
         }
 
         PollStatus status = null;
@@ -161,13 +162,21 @@ final public class DominoIIOPMonitor extends AbstractServiceMonitor {
                 return PollStatus.up(tracker.elapsedTimeInMillis());
                 
             } catch (NoRouteToHostException e) {
-                status = logDown(Level.WARN, " No route to host exception for address " + hostAddress, e);
+                String reason = " No route to host exception for address " + hostAddress;
+                LOG.debug(reason, e);
+                status = PollStatus.unavailable(reason);
             } catch (InterruptedIOException e) {
-                status = logDown(Level.DEBUG, "did not connect to host with " + tracker);
+                String reason = "did not connect to host with " + tracker;
+                LOG.debug(reason);
+                status = PollStatus.unavailable(reason);
             } catch (ConnectException e) {
-                status = logDown(Level.DEBUG, "Connection exception for address: " + ipv4Addr+" : "+e.getMessage());
+                String reason = "Connection exception for address: " + ipv4Addr+" : "+e.getMessage();
+                LOG.debug(reason);
+                status = PollStatus.unavailable(reason);
             } catch (IOException e) {
-                status = logDown(Level.DEBUG, "IOException while polling address: " + ipv4Addr+" : "+e.getMessage());
+                String reason = "IOException while polling address: " + ipv4Addr+" : "+e.getMessage();
+                LOG.debug(reason);
+                status = PollStatus.unavailable(reason);
             } finally {
                 try {
                     // Close the socket

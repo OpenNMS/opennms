@@ -32,7 +32,6 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.util.Map;
 
-import org.apache.log4j.Level;
 import org.opennms.core.utils.ExecRunner;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
@@ -167,11 +166,15 @@ final public class GpMonitor extends AbstractServiceMonitor {
                 
                 if (exitStatus != 0) {
                         scriptoutput = er.getOutString();
-                        serviceStatus = logDown(Level.DEBUG, script + " failed with exit code " + exitStatus + ". Standard out: " + scriptoutput);
+                        String reason = script + " failed with exit code " + exitStatus + ". Standard out: " + scriptoutput;
+                        LOG.debug(reason);
+                        serviceStatus = PollStatus.unavailable(reason);
                 }
                 if (er.isMaxRunTimeExceeded()) {
                 	
-                	serviceStatus = logDown(Level.DEBUG, script + " failed. Timeout exceeded");
+                	String reason = script + " failed. Timeout exceeded";
+                    LOG.debug(reason);
+                    serviceStatus = PollStatus.unavailable(reason);
 
                 } else {
                     if (exitStatus == 0) {
@@ -199,15 +202,21 @@ final public class GpMonitor extends AbstractServiceMonitor {
 
             } catch (ArrayIndexOutOfBoundsException e) {
             	
-            	serviceStatus = logDown(Level.DEBUG, script + " ArrayIndexOutOfBoundsException", e);
+            	String reason = script + " ArrayIndexOutOfBoundsException";
+                LOG.debug(reason, e);
+                serviceStatus = PollStatus.unavailable(reason);
             	
             } catch (IOException e) {
             	
-            	serviceStatus = logDown(Level.DEBUG, "IOException occurred. Check for proper operation of " + script, e);
+            	String reason = "IOException occurred. Check for proper operation of " + script;
+                LOG.debug(reason, e);
+                serviceStatus = PollStatus.unavailable(reason);
             	
             } catch (Throwable e) {
             	
-            	serviceStatus = logDown(Level.DEBUG, script + "Exception occurred", e);
+            	String reason = script + "Exception occurred";
+                LOG.debug(reason, e);
+                serviceStatus = PollStatus.unavailable(reason);
             	
             }
         }
