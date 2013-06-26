@@ -34,7 +34,8 @@
  */
 package org.opennms.netmgt.provision.adapters.link;
 
-import static org.opennms.core.utils.LogUtils.debugf;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.InetAddress;
 
@@ -44,6 +45,7 @@ import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
 public class EndPointImpl implements EndPoint {
+    private static final Logger LOG = LoggerFactory.getLogger(EndPointImpl.class);
     private SnmpAgentConfig m_agentConfig;
     private InetAddress m_address;
     private String m_sysOid;
@@ -123,7 +125,7 @@ public class EndPointImpl implements EndPoint {
                 return true;
             }
         } catch (Throwable e) {
-            debugf(this, e, "Ping failed for address %s", getAddress());
+            LOG.debug("Ping failed for address {}", getAddress(), e);
         }
         return false;
     }
