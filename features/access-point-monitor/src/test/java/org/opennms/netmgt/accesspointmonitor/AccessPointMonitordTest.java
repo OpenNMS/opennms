@@ -29,7 +29,6 @@
 package org.opennms.netmgt.accesspointmonitor;
 
 import static org.junit.Assert.assertEquals;
-
 import static org.junit.Assert.assertNotNull;
 
 import java.io.ByteArrayInputStream;
@@ -42,33 +41,33 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.db.TemporaryDatabase;
+import org.opennms.core.test.db.TemporaryDatabaseAware;
+import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.accesspointmonitor.AccessPointMonitord;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
+import org.opennms.netmgt.config.accesspointmonitor.AccessPointMonitorConfigFactory;
 import org.opennms.netmgt.dao.AccessPointDao;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.ServiceTypeDao;
-import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
-import org.opennms.core.test.db.TemporaryDatabase;
-import org.opennms.core.test.db.TemporaryDatabaseAware;
-import org.opennms.netmgt.filter.JdbcFilterDao;
-import org.opennms.test.JUnitConfigurationEnvironment;
-import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.eventd.mock.EventAnticipator;
 import org.opennms.netmgt.eventd.mock.MockEventIpcManager;
+import org.opennms.netmgt.filter.FilterDaoFactory;
+import org.opennms.netmgt.filter.JdbcFilterDao;
+import org.opennms.netmgt.model.AccessPointStatus;
 import org.opennms.netmgt.model.NetworkBuilder;
+import org.opennms.netmgt.model.OnmsAccessPoint;
 import org.opennms.netmgt.model.events.AnnotationBasedEventListenerAdapter;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.AccessPointStatus;
-import org.opennms.netmgt.model.OnmsAccessPoint;
+import org.opennms.test.JUnitConfigurationEnvironment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.opennms.netmgt.config.accesspointmonitor.AccessPointMonitorConfigFactory;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:/META-INF/opennms/applicationContext-soa.xml", "classpath:/META-INF/opennms/applicationContext-dao.xml",
@@ -78,6 +77,7 @@ import org.opennms.netmgt.config.accesspointmonitor.AccessPointMonitorConfigFact
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase()
 public class AccessPointMonitordTest implements InitializingBean, TemporaryDatabaseAware<TemporaryDatabase> {
+    private static final Logger LOG = LoggerFactory.getLogger(AccessPointMonitordTest.class);
 
     @Autowired
     private PlatformTransactionManager m_transactionManager;
@@ -149,7 +149,7 @@ public class AccessPointMonitordTest implements InitializingBean, TemporaryDatab
     public void tearDown() throws Exception {
         if (m_apm.getStatus() == AccessPointMonitord.RUNNING) {
             m_apm.stop();
-            LogUtils.debugf(this, "AccessPointMonitord stopped");
+            LOG.debug("AccessPointMonitord stopped");
         }
     }
 
