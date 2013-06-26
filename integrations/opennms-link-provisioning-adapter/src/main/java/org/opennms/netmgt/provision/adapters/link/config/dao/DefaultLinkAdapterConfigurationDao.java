@@ -139,7 +139,6 @@ public class DefaultLinkAdapterConfigurationDao extends AbstractJaxbConfigDao<Li
         try {
             LinkAdapterConfiguration config = JaxbUtils.unmarshal(LinkAdapterConfiguration.class, resource);
             long endTime = System.currentTimeMillis();
-            LOG.info(createLoadedLogMessage(config, (endTime - startTime)));
             LOG.info(config.toString());
             return config;
         } catch (Throwable e) {
