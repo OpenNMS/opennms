@@ -170,7 +170,6 @@ public class OpenNMSEventHandlerThread extends Thread {
 	 * in only one update when the previous one completes
 	 */
 	synchronized public void updateNodeCache(){
-		//XXX: ThreadCategory log = getLog();	
 		LOG.debug("OpenNMSEventHandlerThread.updateNodeCache() request received to update node list");
 		updateNCache=true;
 		//instance.notify();

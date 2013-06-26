@@ -525,7 +525,6 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
         @Override
 	public void onNotifyAckStateChangedEvent(NotifyAckStateChangedEvent nasce, OssBeanAlarmEventReceiver callingAer) {
 		//	Get a reference to the QoSD logger instance assigned by OpenNMS
-		//XXX: ThreadCategory log = getLog();	
 		String logheader="RX:"+callingAer.getName()+":"+this.getClass().getSimpleName()+".onNotifyAckStateChangedEvent(): ";
 
 		LOG.debug("{} Statistics: {}", logheader, callingAer.getRuntimeStatistics());
@@ -598,7 +597,6 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
         @Override
 	public void onNotifyAlarmCommentsEvent(NotifyAlarmCommentsEvent nace, OssBeanAlarmEventReceiver callingAer) {
 		//	Get a reference to the QoSD logger instance assigned by OpenNMS
-		//XXX: ThreadCategory log = getLog();	
 		String logheader="RX:"+callingAer.getName()+":"+this.getClass().getSimpleName()+".onNotifyAlarmCommentsEvent(): ";
 
 		LOG.debug("{} Statistics: {}", logheader, callingAer.getRuntimeStatistics());
@@ -613,7 +611,6 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
         @Override
 	public void onNotifyAlarmListRebuiltEvent(NotifyAlarmListRebuiltEvent nalre, OssBeanAlarmEventReceiver callingAer) {
 		//	Get a reference to the QoSD logger instance assigned by OpenNMS
-		//XXX: ThreadCategory log = getLog();	
 		String logheader="RX:"+callingAer.getName()+":"+this.getClass().getSimpleName()+".onNotifyAlarmListRebuiltEvent(): ";
 
 		LOG.debug("{} Statistics: {}", logheader, callingAer.getRuntimeStatistics());
@@ -628,7 +625,6 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
         @Override
 	public void onNotifyChangedAlarmEvent(NotifyChangedAlarmEvent nchae, OssBeanAlarmEventReceiver callingAer) {
 		//	Get a reference to the QoSD logger instance assigned by OpenNMS
-		//XXX: ThreadCategory log = getLog();	
 		String logheader="RX:"+callingAer.getName()+":"+this.getClass().getSimpleName()+".onNotifyChangedAlarmEvent(): ";
 
 		LOG.debug("{} Statistics: {}", logheader, callingAer.getRuntimeStatistics());
@@ -643,7 +639,6 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
         @Override
 	public void onUnknownIRPEvt(IRPEvent irpevt, OssBeanAlarmEventReceiver callingAer) {
 		//	Get a reference to the QoSD logger instance assigned by OpenNMS
-		//XXX: ThreadCategory log = getLog();	
 		String logheader="RX:"+callingAer.getName()+":"+this.getClass().getSimpleName()+".onUnknownIRPEvt(): ";
 
 		LOG.debug("{} Statistics: {}", logheader, callingAer.getRuntimeStatistics());
@@ -658,7 +653,6 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
         @Override
 	public void onunknownObjectMessage(Object objectMessage, OssBeanAlarmEventReceiver callingAer) {
 		//	Get a reference to the QoSD logger instance assigned by OpenNMS
-		//XXX: ThreadCategory log = getLog();	
 		String logheader="RX:"+callingAer.getName()+":"+this.getClass().getSimpleName()+".onunknownObjectMessage(): ";
 
 		LOG.debug("{} Statistics: {}", logheader, callingAer.getRuntimeStatistics());
