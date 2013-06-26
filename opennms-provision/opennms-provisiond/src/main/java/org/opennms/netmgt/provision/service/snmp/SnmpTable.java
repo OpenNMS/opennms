@@ -35,7 +35,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.snmp.AggregateTracker;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
@@ -113,7 +114,7 @@ abstract public class SnmpTable<T extends SnmpTableEntry> extends AggregateTrack
     /** {@inheritDoc} */
     @Override
     protected void reportGenErr(String msg) {
-        log().warn("Error retrieving "+m_tableName+" from "+m_address+". "+msg);
+        LOG.warn("Error retrieving {} from {}. {}", msg, m_tableName, m_address);
     }
     
     /**
@@ -142,7 +143,7 @@ abstract public class SnmpTable<T extends SnmpTableEntry> extends AggregateTrack
     /** {@inheritDoc} */
     @Override
     protected void reportNoSuchNameErr(String msg) {
-        log().info("Error retrieving "+m_tableName+" from "+m_address+". "+msg);
+        LOG.info("Error retrieving {} from {}. {}", msg, m_tableName, m_address);
     }
     
     private final ThreadCategory log() {

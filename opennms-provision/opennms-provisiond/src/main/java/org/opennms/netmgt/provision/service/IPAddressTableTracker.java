@@ -36,7 +36,8 @@ import java.net.InetAddress;
 import java.util.Arrays;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.snmp.RowCallback;
@@ -54,6 +55,7 @@ import org.opennms.netmgt.snmp.TableTracker;
  * @version $Id: $
  */
 public class IPAddressTableTracker extends TableTracker {
+    private static final Logger LOG = LoggerFactory.getLogger(IPAddressTableTracker.class);
     
 	public static final SnmpObjId IP_ADDRESS_PREFIX_TABLE_ENTRY = SnmpObjId.get(".1.3.6.1.2.1.4.32.1");
     public static final SnmpObjId IP_ADDRESS_TABLE_ENTRY = SnmpObjId.get(".1.3.6.1.2.1.4.34.1");
@@ -88,7 +90,7 @@ public class IPAddressTableTracker extends TableTracker {
 
         public IPAddressRow(final int columnCount, final SnmpInstId instance) {
             super(columnCount, instance);
-            LogUtils.debugf(this, "column count = %d, instance = %s", columnCount, instance);
+            LOG.debug("column count = {}, instance = {}", columnCount, instance);
         }
         
         public Integer getIfIndex() {
@@ -106,12 +108,12 @@ public class IPAddressTableTracker extends TableTracker {
             int addressLength = instanceIds[1];
             // Begin NMS-4906 Lame Force 10 agent!
             if (addressType == TYPE_IPV4 && instanceIds.length != 6) {
-                LogUtils.warnf(this, "BAD AGENT: Does not conform to RFC 4001 Section 4.1 Table Indexing!!! Report them immediately.  Making a best guess!");
+                LOG.warn("BAD AGENT: Does not conform to RFC 4001 Section 4.1 Table Indexing!!! Report them immediately.  Making a best guess!");
                 addressIndex = instanceIds.length - 4;
                 addressLength = 4;
             }
             if (addressType == TYPE_IPV6 && instanceIds.length != 18) {
-                LogUtils.warnf(this, "BAD AGENT: Does not conform to RFC 4001 Section 4.1 Table Indexing!!! Report them immediately.  Making a best guess!");
+                LOG.warn("BAD AGENT: Does not conform to RFC 4001 Section 4.1 Table Indexing!!! Report them immediately.  Making a best guess!");
                 addressIndex = instanceIds.length - 16;
                 addressLength = 16;
             }
@@ -125,7 +127,7 @@ public class IPAddressTableTracker extends TableTracker {
             }
 
             if (addressIndex < 0 || addressIndex + addressLength > instanceIds.length) {
-                LogUtils.warnf(this, "BAD AGENT: Returned instanceId %s does not enough bytes to contain address!. Skipping.", instance);
+                LOG.warn("BAD AGENT: Returned instanceId {} does not enough bytes to contain address!. Skipping.", instance);
                 return null;
             }
 
@@ -134,7 +136,7 @@ public class IPAddressTableTracker extends TableTracker {
                     final InetAddress address = getInetAddress(instanceIds, addressIndex, addressLength);
                     return str(address);
                 } catch (final IllegalArgumentException e) {
-                    LogUtils.warnf(this, e, "Failed to parse address: %s, index %d, length %d", Arrays.toString(instanceIds), addressIndex, addressLength);
+                    LOG.warn("Failed to parse address: {}, index {}, length {}", Arrays.toString(instanceIds), addressIndex, addressLength, e);
                 }
             }
             return null;
@@ -153,7 +155,7 @@ public class IPAddressTableTracker extends TableTracker {
             // See bug NMS-5036
             // {@see http://issues.opennms.org/browse/NMS-5036}
             if (netmaskRef == null) {
-                LogUtils.warnf(this, "BAD AGENT: Null netmask instanceId");
+                LOG.warn("BAD AGENT: Null netmask instanceId");
                 return null;
             }
 
@@ -165,19 +167,19 @@ public class IPAddressTableTracker extends TableTracker {
 
             // Begin NMS-4906 Lame Force 10 agent!
             if (addressType == TYPE_IPV4 && rawIds.length != 1+6+1) {
-                LogUtils.warnf(this, "BAD AGENT: Does not conform to RFC 4001 Section 4.1 Table Indexing!!! Report them immediately.  Making a best guess!");
+                LOG.warn("BAD AGENT: Does not conform to RFC 4001 Section 4.1 Table Indexing!!! Report them immediately.  Making a best guess!");
                 addressIndex = rawIds.length - (4+1);
                 addressLength = 4;
             }
             if (addressType == TYPE_IPV6 && rawIds.length != 1+18+1) {
-                LogUtils.warnf(this, "BAD AGENT: Does not conform to RFC 4001 Section 4.1 Table Indexing!!! Report them immediately.  Making a best guess!");
+                LOG.warn("BAD AGENT: Does not conform to RFC 4001 Section 4.1 Table Indexing!!! Report them immediately.  Making a best guess!");
                 addressIndex = rawIds.length - (16 + 1);
                 addressLength = 16;
             }
             // End NMS-4906 Lame Force 10 agent!
 
             if (addressIndex < 0 || addressIndex + addressLength > rawIds.length) {
-                LogUtils.warnf(this, "BAD AGENT: Returned instanceId %s does not enough bytes to contain address!. Skipping.", netmaskRef);
+                LOG.warn("BAD AGENT: Returned instanceId {} does not enough bytes to contain address!. Skipping.", netmaskRef);
                 return null;
             }
 
@@ -188,7 +190,7 @@ public class IPAddressTableTracker extends TableTracker {
             } else if (addressType == TYPE_IPV6) {
                 return InetAddressUtils.convertCidrToInetAddressV6(mask);
             } else {
-                LogUtils.warnf(this, "unknown address type, expected 1 (IPv4) or 2 (IPv6), but got %d", addressType);
+                LOG.warn("unknown address type, expected 1 (IPv4) or 2 (IPv6), but got {}", addressType);
                 return null;
             }
         }
@@ -200,7 +202,7 @@ public class IPAddressTableTracker extends TableTracker {
             final Integer type = getType();
             final InetAddress netMask = getNetMask();
 
-            LogUtils.debugf(this, "createInterfaceFromRow: ifIndex = %s, ipAddress = %s, type = %s, netmask = %s", ifIndex, ipAddr, type, netMask);
+            LOG.debug("createInterfaceFromRow: ifIndex = {}, ipAddress = {}, type = {}, netmask = {}", ifIndex, ipAddr, type, netMask);
 
             if (type != IP_ADDRESS_TYPE_UNICAST || ipAddr == null) {
                 return null;
@@ -215,7 +217,7 @@ public class IPAddressTableTracker extends TableTracker {
 
             iface.setIfIndex(ifIndex);
             final String hostName = normalize(ipAddr);
-            LogUtils.debugf(this, "setIpHostName: %s", hostName);
+            LOG.debug("setIpHostName: {}", hostName);
             iface.setIpHostName(hostName == null? ipAddr : hostName);
 
             return iface;

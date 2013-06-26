@@ -28,10 +28,12 @@
 
 package org.opennms.netmgt.provision.service.operations;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.provision.service.ProvisionService;
 
 public abstract class ImportOperation {
+    private static final Logger LOG = LoggerFactory.getLogger(ImportOperation.class);
     
     final private ProvisionService m_provisionService;
     
@@ -81,12 +83,12 @@ public abstract class ImportOperation {
     
         final ImportOperation oper = this;
     
-        log().info("Persist: "+oper);
+        LOG.info("Persist: {}", oper);
     
         doPersist();
     	
     
-        log().info("Clear cache: "+this);
+        LOG.info("Clear cache: {}", this);
     
         // clear the cache to we don't use up all the memory
     	getProvisionService().clearCache();

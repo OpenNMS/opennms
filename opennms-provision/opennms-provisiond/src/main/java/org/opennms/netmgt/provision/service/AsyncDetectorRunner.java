@@ -28,7 +28,8 @@
 
 package org.opennms.netmgt.provision.service;
 
-import static org.opennms.core.utils.LogUtils.infof;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.opennms.core.tasks.Async;
 import org.opennms.core.tasks.Callback;
@@ -38,6 +39,7 @@ import org.opennms.netmgt.provision.DetectFuture;
 import org.opennms.netmgt.provision.DetectFutureListener;
 
 class AsyncDetectorRunner implements Async<Boolean> {
+    private static final Logger LOG = LoggerFactory.getLogger(AsyncDetectorRunner.class);
     
     private final IpInterfaceScan m_ifaceScan;
     private final AsyncServiceDetector m_detector;
@@ -57,7 +59,7 @@ class AsyncDetectorRunner implements Async<Boolean> {
     @Override
     public void submit(Callback<Boolean> cb) {
         try {
-            infof(this, "Attemping to detect service %s on address %s", m_detector.getServiceName(), getHostAddress());
+            LOG.info("Attemping to detect service {} on address {}", m_detector.getServiceName(), getHostAddress());
             DetectFuture future = m_detector.isServiceDetected(m_ifaceScan.getAddress());
             future.addListener(listener(cb));
         } catch (Throwable e) {

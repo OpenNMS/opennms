@@ -29,13 +29,15 @@
 package org.opennms.netmgt.provision.service.snmp;
 
 
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.snmp.AbstractSnmpStore;
 import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.SnmpValueType;
 
 public class SnmpStore extends AbstractSnmpStore {
+    private static final Logger LOG = LoggerFactory.getLogger(SnmpStore.class);
     
     /**
      * <P>
@@ -93,12 +95,12 @@ public class SnmpStore extends AbstractSnmpStore {
         for (NamedSnmpVar var : ms_elemList) {
             if (res.getBase().equals(var.getSnmpObjId())) {
                 if (res.getValue().isError()) {
-                    log().error("storeResult: got an error for alias "+var.getAlias()+" ["+res.getBase()+"].["+res.getInstance()+"], but we should only be getting non-errors: " + res.getValue());
+                    LOG.error("storeResult: got an error for alias {} [{}].[{}], but we should only be getting non-errors: {}", res.getValue(), var.getAlias(), res.getBase(), res.getInstance());
                 } else if (res.getValue().isEndOfMib()) {
-                    log().debug("storeResult: got endOfMib for alias "+var.getAlias()+" ["+res.getBase()+"].["+res.getInstance()+"], not storing");
+                    LOG.debug("storeResult: got endOfMib for alias {} [{}].[{}], not storing", var.getAlias(), res.getBase(), res.getInstance());
                 } else {
                     SnmpValueType type = SnmpValueType.valueOf(res.getValue().getType());
-                    log().debug("Storing Result: alias: "+var.getAlias()+" ["+res.getBase()+"].["+res.getInstance()+"] = " + (type == null ? "Unknown" : type.getDisplayString()) + ": "+toLogString(res.getValue()));
+                    LOG.debug("Storing Result: alias: {} [{}].[{}] = {}: {}", toLogString(res.getValue()), var.getAlias(), res.getBase(), res.getInstance(), (type == null ? "Unknown" : type.getDisplayString()));
                     putValue(var.getAlias(), res.getValue());
                 }
             }

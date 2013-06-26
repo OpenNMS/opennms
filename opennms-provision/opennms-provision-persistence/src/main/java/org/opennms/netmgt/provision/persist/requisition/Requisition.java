@@ -61,7 +61,8 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.core.xml.ValidateUsing;
 import org.opennms.netmgt.provision.persist.OnmsNodeRequisition;
 import org.opennms.netmgt.provision.persist.RequisitionVisitor;
@@ -77,6 +78,7 @@ import org.springframework.core.io.Resource;
 @XmlRootElement(name="model-import")
 @ValidateUsing("model-import.xsd")
 public class Requisition implements Serializable, Comparable<Requisition> {
+    private static final Logger LOG = LoggerFactory.getLogger(Requisition.class);
     private static final long serialVersionUID = 1629774241824443273L;
 
     @XmlTransient
@@ -108,7 +110,7 @@ public class Requisition implements Serializable, Comparable<Requisition> {
         if (m_nodes != null) {
             for (RequisitionNode n : m_nodes) {
                 if (n.getForeignId().equals(foreignId)) {
-                	LogUtils.debugf(this, "returning node '%s' for foreign id '%s'", n, foreignId);
+                	LOG.debug("returning node '{}' for foreign id '{}'", n, foreignId);
                     return n;
                 }
             }
@@ -237,7 +239,7 @@ public class Requisition implements Serializable, Comparable<Requisition> {
         try {
             m_dateStamp = DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar());
         } catch (final DatatypeConfigurationException e) {
-            LogUtils.warnf(this, e, "unable to update datestamp");
+            LOG.warn("unable to update datestamp", e);
         }
     }
 
@@ -288,7 +290,7 @@ public class Requisition implements Serializable, Comparable<Requisition> {
         try {
             m_lastImport = DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar());
         } catch (final DatatypeConfigurationException e) {
-            LogUtils.warnf(this, e, "unable to update last import datestamp");
+            LOG.warn("unable to update last import datestamp", e);
         }
     }
 
@@ -348,7 +350,7 @@ public class Requisition implements Serializable, Comparable<Requisition> {
         updateNodeCacheIfNecessary();
 
         if (visitor == null) {
-            LogUtils.warnf(this, "no visitor specified!");
+            LOG.warn("no visitor specified!");
             return;
         }
 
@@ -494,7 +496,7 @@ public class Requisition implements Serializable, Comparable<Requisition> {
         try {
             setDateStamp(DatatypeFactory.newInstance().newXMLGregorianCalendar(calendar));
         } catch (final DatatypeConfigurationException e) {
-            LogUtils.warnf(this, "Failed to turn %s into an XML date.", date);
+            LOG.warn("Failed to turn {} into an XML date.", date);
         }
     }
 }

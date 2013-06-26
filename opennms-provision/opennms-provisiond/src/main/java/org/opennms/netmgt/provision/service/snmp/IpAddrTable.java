@@ -34,7 +34,8 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
@@ -56,6 +57,7 @@ import org.opennms.netmgt.snmp.SnmpObjId;
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213 </A>
  */
 public class IpAddrTable extends SnmpTable<IpAddrTableEntry> {
+    private static final Logger LOG = LoggerFactory.getLogger(IpAddrTable.class);
 
     /**
      * <P>
