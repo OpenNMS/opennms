@@ -83,7 +83,6 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.MatchTable;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.PropertiesUtils;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.config.pagesequence.Page;
@@ -93,6 +92,15 @@ import org.opennms.netmgt.config.pagesequence.SessionVariable;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
+import org.opennms.netmgt.poller.monitors.PageSequenceMonitor.HttpPageSequence;
+import org.opennms.netmgt.poller.monitors.PageSequenceMonitor.PageSequenceHttpGet;
+import org.opennms.netmgt.poller.monitors.PageSequenceMonitor.PageSequenceHttpPost;
+import org.opennms.netmgt.poller.monitors.PageSequenceMonitor.PageSequenceHttpUriRequest;
+import org.opennms.netmgt.poller.monitors.PageSequenceMonitor.PageSequenceMonitorException;
+import org.opennms.netmgt.poller.monitors.PageSequenceMonitor.PageSequenceMonitorParameters;
+import org.opennms.netmgt.poller.monitors.PageSequenceMonitor.SequenceTracker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class is designed to be used by the service poller framework to test the availability
@@ -104,6 +112,9 @@ import org.opennms.netmgt.poller.MonitoredService;
  */
 @Distributable
 public class PageSequenceMonitor extends AbstractServiceMonitor {
+    
+    
+    private static final Logger LOG = LoggerFactory.getLogger(PageSequenceMonitor.class);
     
     protected class SequenceTracker{
         
@@ -225,10 +236,6 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
         protected void clearSequenceProperties() {
             m_sequenceProperties.clear();
         }
-
-        private ThreadCategory log() {
-            return ThreadCategory.getInstance(getClass());
-        }
     }
 
     public interface PageSequenceHttpUriRequest extends HttpUriRequest {
@@ -268,7 +275,7 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
                 uriWithQueryString = ub.build();
                 this.setURI(uriWithQueryString);
             } catch (URISyntaxException e) {
-                ThreadCategory.getInstance("Cannot add query parameters to URI: " + this.getClass()).warn(e.getMessage(), e);
+                LOG.warn(e.getMessage(), e);
             }
         }
     }
@@ -582,10 +589,6 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
 
         public String getDsName() {
             return m_page.getDsName();
-        }
-
-        private ThreadCategory log() {
-            return ThreadCategory.getInstance(getClass());
         }
     }
 
