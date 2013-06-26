@@ -40,7 +40,8 @@ import java.util.Map;
 import org.apache.log4j.Level;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;
@@ -62,6 +63,7 @@ import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
  */
 @Distributable
 final public class DominoIIOPMonitor extends AbstractServiceMonitor {
+    private static final Logger LOG = LoggerFactory.getLogger(DominoIIOPMonitor.class);
 
     /**
      * Default port.
@@ -103,7 +105,6 @@ final public class DominoIIOPMonitor extends AbstractServiceMonitor {
         //
         // Process parameters
         //
-        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         //
         // Get interface address from NetworkInterface
@@ -124,8 +125,8 @@ final public class DominoIIOPMonitor extends AbstractServiceMonitor {
         InetAddress ipv4Addr = (InetAddress) iface.getAddress();
 
         final String hostAddress = InetAddressUtils.str(ipv4Addr);
-		if (log.isDebugEnabled())
-            log.debug("poll: address = " + hostAddress + ", port = " + port + ", "+tracker);
+
+		LOG.debug("poll: address = {}, port = {}, {}", tracker, hostAddress, port);
 
 
         // Lets first try to the the IOR via HTTP, if we can't get that then any
@@ -153,7 +154,7 @@ final public class DominoIIOPMonitor extends AbstractServiceMonitor {
                 socket.connect(new InetSocketAddress(ipv4Addr, port), tracker.getConnectionTimeout());
                 socket.setSoTimeout(tracker.getSoTimeout());
 
-                log.debug("DominoIIOPMonitor: connected to host: " + ipv4Addr + " on port: " + port);
+                LOG.debug("DominoIIOPMonitor: connected to host: {} on port: {}", port, ipv4Addr);
 
                 // got here so its up...
                 
@@ -174,8 +175,8 @@ final public class DominoIIOPMonitor extends AbstractServiceMonitor {
                         socket.close();
                 } catch (IOException e) {
                     e.fillInStackTrace();
-                    if (log.isDebugEnabled())
-                        log.debug("DominoIIOPMonitor: Error closing socket.", e);
+
+                    LOG.debug("DominoIIOPMonitor: Error closing socket.", e);
                 }
             }
         }

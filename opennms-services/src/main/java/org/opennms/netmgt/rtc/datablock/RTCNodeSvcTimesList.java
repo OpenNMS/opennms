@@ -32,7 +32,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.config.RTCConfigFactory;
 
 /**
@@ -53,6 +54,7 @@ import org.opennms.netmgt.config.RTCConfigFactory;
  * @version $Id: $
  */
 public class RTCNodeSvcTimesList extends LinkedList<RTCNodeSvcTime> {
+    private static final Logger LOG = LoggerFactory.getLogger(RTCNodeSvcTimesList.class);
     private static final long serialVersionUID = 2606739258065019820L;
 
     /**
@@ -130,8 +132,7 @@ public class RTCNodeSvcTimesList extends LinkedList<RTCNodeSvcTime> {
         removeExpiredOutages();
 
         if (regainedtime > 0 && regainedtime < losttime) {
-            ThreadCategory log = ThreadCategory.getInstance(getClass());
-            log.warn("RTCNodeSvcTimesList: Rejecting service time pair since regained time " + "less than lost time -> losttime in milliseconds: " + losttime + "\tregainedtime in milliseconds: " + regainedtime);
+            LOG.warn("RTCNodeSvcTimesList: Rejecting service time pair since regained time {}\tregainedtime in milliseconds: {}", regainedtime, "less than lost time -> losttime in milliseconds: {}", losttime);
 
             return;
         }

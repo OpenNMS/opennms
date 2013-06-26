@@ -41,7 +41,8 @@ import java.util.Map;
 
 import org.apache.log4j.Level;
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;
@@ -77,6 +78,7 @@ import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
  */
 @Distributable
 final public class ImapMonitor extends AbstractServiceMonitor {
+    private static final Logger LOG = LoggerFactory.getLogger(ImapMonitor.class);
 
     /**
      * Default IMAP port.
@@ -143,7 +145,6 @@ final public class ImapMonitor extends AbstractServiceMonitor {
 
         // Process parameters
         //
-        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         
         TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
@@ -155,8 +156,8 @@ final public class ImapMonitor extends AbstractServiceMonitor {
         //
         InetAddress ipv4Addr = (InetAddress) iface.getAddress();
 
-        if (log.isDebugEnabled())
-            log.debug("ImapMonitor.poll: address: " + ipv4Addr + " port: " + port + tracker);
+
+        LOG.debug("ImapMonitor.poll: address: {} port: " + port + tracker, ipv4Addr);
 
         PollStatus serviceStatus = PollStatus.unavailable();
 
@@ -185,8 +186,8 @@ final public class ImapMonitor extends AbstractServiceMonitor {
                 
                 double responseTime = tracker.elapsedTimeInMillis();
 
-                if (log.isDebugEnabled())
-                    log.debug("ImapMonitor.Poll(): banner: " + banner);
+
+                LOG.debug("ImapMonitor.Poll(): banner: {}", banner);
 
                 if (banner != null && banner.startsWith(IMAP_START_RESPONSE_PREFIX)) {
                     //
@@ -232,7 +233,7 @@ final public class ImapMonitor extends AbstractServiceMonitor {
                         socket.close();
                 } catch (IOException e) {
                     e.fillInStackTrace();
-                    log.debug("ImapMonitor.poll: Error closing socket.", e);
+                    LOG.debug("ImapMonitor.poll: Error closing socket.", e);
                 }
             }
         }

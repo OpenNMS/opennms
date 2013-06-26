@@ -34,6 +34,8 @@ import java.util.Map;
 
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.xml.event.Event;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
 /**
@@ -43,7 +45,7 @@ import org.springframework.util.Assert;
  * @version $Id: $
  */
 public class ThresholdEvaluatorHighLow implements ThresholdEvaluator {
-
+    private static final Logger LOG = LoggerFactory.getLogger(ThresholdEvaluatorHighLow.class);
     /**
      * <p>Constructor for ThresholdEvaluatorHighLow.</p>
      */
@@ -138,12 +140,10 @@ public class ThresholdEvaluatorHighLow implements ThresholdEvaluator {
                 if (isArmed()) {
                     setExceededCount(getExceededCount() + 1);
 
-                    if (log().isDebugEnabled()) {
-                        log().debug("evaluate: " + getType() + " threshold exceeded, count=" + getExceededCount());
-                    }
+                    LOG.debug("evaluate: {} threshold exceeded, count={}", getType(), getExceededCount());
 
                     if (isTriggerCountExceeded()) {
-                        log().debug("evaluate: " + getType() + " threshold triggered");
+                        LOG.debug("evaluate: {} threshold triggered", getType());
                         setExceededCount(1);
                         setArmed(false);
                         return Status.TRIGGERED;
@@ -151,17 +151,17 @@ public class ThresholdEvaluatorHighLow implements ThresholdEvaluator {
                 }
             } else if (isRearmExceeded(dsValue)) {
                 if (!isArmed()) {
-                    log().debug("evaluate: " + getType() + " threshold rearmed");
+                    LOG.debug("evaluate: {} threshold rearmed", getType());
                     setArmed(true);
                     setExceededCount(0);
                     return Status.RE_ARMED;
                 }
                 if (getExceededCount() > 0) {
-                    log().debug("evaluate: resetting " + getType() + " threshold count to 0, because the current value indicates that the in-progress threshold has been rearmed, but it doesn't triggered yet.");
+                    LOG.debug("evaluate: resetting {} threshold count to 0, because the current value indicates that the in-progress threshold has been rearmed, but it doesn't triggered yet.", getType());
                     setExceededCount(0);
                 }
             } else {
-                log().debug("evaluate: resetting " + getType() + " threshold count to 0");
+                LOG.debug("evaluate: resetting {} threshold count to 0", getType());
                 setExceededCount(0);
             }
 

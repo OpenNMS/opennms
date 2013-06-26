@@ -37,7 +37,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.opennms.core.utils.DBUtils;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.eventd.EventdConstants;
 import org.opennms.netmgt.eventd.db.AutoAction;
 import org.opennms.netmgt.eventd.db.OperatorAction;
@@ -86,6 +87,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
 public final class JdbcEventWriter extends AbstractJdbcPersister implements EventProcessor, InitializingBean {
+    private static final Logger LOG = LoggerFactory.getLogger(JdbcEventWriter.class);
     /**
      * {@inheritDoc}
      *
@@ -97,7 +99,7 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
             return;
         }
 
-        LogUtils.debugf(this, "JdbcEventWriter: processing %s nodeid: %d ipaddr: %s serviceid: %s time: %s", event.getUei(), event.getNodeid(), event.getInterface(), event.getService(), event.getTime());
+        LOG.debug("JdbcEventWriter: processing {} nodeid: {} ipaddr: {} serviceid: {} time: {}", event.getUei(), event.getNodeid(), event.getInterface(), event.getService(), event.getTime());
 
         final Connection connection = getDataSource().getConnection();
 
@@ -109,20 +111,20 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
 
                 connection.commit();
             } catch (final SQLException e) {
-                LogUtils.warnf(this, e, "Error inserting event into the datastore.");
+                LOG.warn("Error inserting event into the datastore.", e);
                 try {
                     connection.rollback();
                 } catch (final Throwable e2) {
-                    LogUtils.warnf(this, e2, "Rollback of transaction failed.");
+                    LOG.warn("Rollback of transaction failed.", e2);
                 }
 
                 throw e;
             } catch (final DataAccessException e) {
-                LogUtils.warnf(this, e, "Error inserting event into the datastore.");
+                LOG.warn("Error inserting event into the datastore.", e);
                 try {
                     connection.rollback();
                 } catch (final Throwable e2) {
-                    LogUtils.warnf(this, e2, "Rollback of transaction failed.");
+                    LOG.warn("Rollback of transaction failed.", e2);
                 }
 
                 throw e;
@@ -131,11 +133,11 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
             try {
                 connection.close();
             } catch (final SQLException e) {
-                LogUtils.warnf(this, e, "SQLException while closing database connection.");
+                LOG.warn("SQLException while closing database connection.", e);
             }
         }
 
-        LogUtils.debugf(this, "EventWriter finished for : %s", event.getUei());
+        LOG.debug("EventWriter finished for : {}", event.getUei());
     }
 
     /**
@@ -152,7 +154,7 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
         // Execute the statement to get the next event id
         final int eventID = getNextId();
 
-        LogUtils.debugf(this, "DBID: %d", eventID);
+        LOG.debug("DBID: {}", eventID);
 
         synchronized (event) {
             event.setDbid(eventID);
@@ -340,7 +342,7 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
             d.cleanUp();
         }
 
-        LogUtils.debugf(this, "SUCCESSFULLY added %s related  data into the EVENTS table.", event.getUei());
+        LOG.debug("SUCCESSFULLY added {} related  data into the EVENTS table.", event.getUei());
     }
 
 
@@ -384,7 +386,7 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
         try {
             return getServiceID(event.getService());
         } catch (final Throwable t) {
-            LogUtils.warnf(this, t, "Error converting service name \"%s\" to an integer identifier, storing -1.", event.getService());
+            LOG.warn("Error converting service name \"{}\" to an integer identifier, storing -1.", event.getService(), t);
             return -1;
         }
     }
@@ -409,7 +411,7 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
         try {
             return getHostName(event.getNodeid().intValue(), event.getHost());
         } catch (final Throwable t) {
-            LogUtils.warnf(this, t, "Error converting host IP \"%s\" to a hostname, storing the IP.", event.getHost());
+            LOG.warn("Error converting host IP \"{}\" to a hostname, storing the IP.", event.getHost(), t);
             return event.getHost();
         }
     }

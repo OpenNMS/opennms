@@ -52,6 +52,8 @@ import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class is designed to be used by the service poller framework to test the
@@ -65,7 +67,8 @@ import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
 
 @Distributable
 final public class TrivialTimeMonitor extends AbstractServiceMonitor {
-    
+    private static final Logger LOG = LoggerFactory.getLogger(TrivialTimeMonitor.class);
+
     /**
      * Default layer-4 protocol to use
      */
@@ -139,8 +142,7 @@ final public class TrivialTimeMonitor extends AbstractServiceMonitor {
         //
         InetAddress ipv4Addr = (InetAddress) iface.getAddress();
 
-        if (log().isDebugEnabled())
-            log().debug("poll: address = " + InetAddressUtils.str(ipv4Addr) + ", port = " + port + ", " + tracker);
+        LOG.debug("poll: address = {}, port = {}, tracker = {}", InetAddressUtils.str(ipv4Addr), port, tracker);
         
         // Get the permissible amount of skew.
         //
@@ -158,7 +160,7 @@ final public class TrivialTimeMonitor extends AbstractServiceMonitor {
             throw new  IllegalArgumentException("Unsupported protocol, only TCP and UDP currently supported");
         } else if (protocol.equalsIgnoreCase("udp")) {
             // TODO test UDP support
-            log().warn("UDP support is largely untested");
+            LOG.warn("UDP support is largely untested");
         }
         
         if (protocol.equalsIgnoreCase("tcp")) {
@@ -185,9 +187,7 @@ final public class TrivialTimeMonitor extends AbstractServiceMonitor {
         Map<String,Number> skewProps = new LinkedHashMap<String,Number>();
         if (persistSkew) {
             skewProps.put("skew", skew);
-	    if (log().isDebugEnabled()) {
-                log().debug("persistSkew: Persisting time skew (value = " + skew + ") for this node");
-            }
+	    LOG.debug("persistSkew: Persisting time skew (value = " + skew + ") for this node");
         }
         skewProps.put("response-time", responseTime);
         serviceStatus.setProperties(skewProps);
@@ -220,7 +220,7 @@ final public class TrivialTimeMonitor extends AbstractServiceMonitor {
                 socket = new Socket();
                 socket.connect(new InetSocketAddress(ipv4Addr, port), tracker.getConnectionTimeout());
                 socket.setSoTimeout(tracker.getSoTimeout());
-                log().debug("Connected to host: " + ipv4Addr + " on TCP port: " + port);
+                LOG.debug("Connected to host: " + ipv4Addr + " on TCP port: " + port);
 
                 //
                 // Try to read from the socket
@@ -231,14 +231,12 @@ final public class TrivialTimeMonitor extends AbstractServiceMonitor {
 
                 if (bytesRead != 4)
                     continue;
-                if (log().isDebugEnabled()) {
-                    log().debug("pollTimeTcp: bytes read = " + bytesRead);
-                }
+                LOG.debug("pollTimeTcp: bytes read = {}", bytesRead);
                 
                 try {
                     remoteTime = timeByteBuffer.getInt();
                 } catch (BufferUnderflowException bue) {
-                    log().error("Encountered buffer underflow while reading time from remote socket.");
+                    LOG.error("Encountered buffer underflow while reading time from remote socket.");
                     remoteTime = 0;
                     serviceStatus = PollStatus.unavailable("Failed to read a valid time from remote host.");
                     continue; // to next iteration of for() loop
@@ -262,8 +260,7 @@ final public class TrivialTimeMonitor extends AbstractServiceMonitor {
                         socket.close();
                 } catch (IOException e) {
                     e.fillInStackTrace();
-                    if (log().isDebugEnabled())
-                        log().debug("pollTimeTcp: Error closing socket.", e);
+                    LOG.debug("pollTimeTcp: Error closing socket.", e);
                 }
             }
         }
@@ -297,7 +294,7 @@ final public class TrivialTimeMonitor extends AbstractServiceMonitor {
     
                 socket = new DatagramSocket();
                 socket.setSoTimeout(tracker.getSoTimeout());
-                log().debug("Requesting time from host: " + ipv4Addr + " on UDP port: " + port);
+                LOG.debug("Requesting time from host: {} on UDP port: {}", ipv4Addr, port);
     
                 //
                 // Send an empty datagram per RFC868
@@ -315,14 +312,12 @@ final public class TrivialTimeMonitor extends AbstractServiceMonitor {
     
                 if (bytesRead != 4)
                     continue;
-                if (log().isDebugEnabled()) {
-                    log().debug("pollTimeUdp: bytes read = " + bytesRead);
-                }
+                LOG.debug("pollTimeUdp: bytes read = {}", bytesRead);
                 
                 try {
                     remoteTime = timeByteBuffer.getInt();
                 } catch (BufferUnderflowException bue) {
-                    log().error("Encountered buffer underflow while reading time from remote socket.");
+                    LOG.error("Encountered buffer underflow while reading time from remote socket.");
                     remoteTime = 0;
                     serviceStatus = PollStatus.unavailable("Failed to read a valid time from remote host.");
                     continue; // to next iteration of for() loop
@@ -348,9 +343,7 @@ final public class TrivialTimeMonitor extends AbstractServiceMonitor {
     }
     
     private PollStatus qualifyTime(int remoteTime, int localTime, int allowedSkew, PollStatus serviceStatus, double responseTime, boolean persistSkew) {
-        if (log().isDebugEnabled()) {
-            log().debug("qualifyTime: checking remote time " + remoteTime + " against local time " + localTime + " with max skew of " + allowedSkew);
-        }
+        LOG.debug("qualifyTime: checking remote time " + remoteTime + " against local time " + localTime + " with max skew of " + allowedSkew);
         if ((localTime - remoteTime > allowedSkew) || (remoteTime - localTime > allowedSkew)) {
             serviceStatus = logDown(Level.DEBUG, "Remote time is " + (localTime > remoteTime ? ""+(localTime-remoteTime)+" seconds slow" : ""+(remoteTime-localTime)+" seconds fast"));
         }

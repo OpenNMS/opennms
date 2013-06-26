@@ -35,7 +35,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.snmp.AggregateTracker;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
@@ -51,8 +52,6 @@ import org.slf4j.LoggerFactory;
  * @version $Id: $
  */
 public abstract class SnmpTable<T extends SnmpStore> extends AggregateTracker implements Collection<T> {
-    
-    
     private static final Logger LOG = LoggerFactory.getLogger(SnmpTable.class);
 
     private final Map<SnmpInstId, T> m_results = new TreeMap<SnmpInstId, T>();

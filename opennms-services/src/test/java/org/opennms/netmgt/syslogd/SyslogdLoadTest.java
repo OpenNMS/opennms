@@ -61,7 +61,8 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.config.SyslogdConfigFactory;
 import org.opennms.netmgt.config.syslogd.HideMessage;
 import org.opennms.netmgt.config.syslogd.Match;
@@ -97,6 +98,7 @@ import org.springframework.transaction.annotation.Transactional;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 public class SyslogdLoadTest implements InitializingBean {
+    private static final Logger LOG = LoggerFactory.getLogger(SyslogdLoadTest.class);
 
     private EventCounter m_eventCounter;
     private static final String MATCH_PATTERN = "^.*\\s(19|20)\\d\\d([-/.])(0[1-9]|1[012])\\2(0[1-9]|[12][0-9]|3[01])(\\s+)(\\S+)(\\s)(\\S.+)";
@@ -181,7 +183,7 @@ public class SyslogdLoadTest implements InitializingBean {
             m_syslogd.start();
         } catch (UndeclaredThrowableException ute) {
             if (ute.getCause() instanceof BindException) {
-                LogUtils.warnf(this, ute, "received a bind exception");
+                LOG.warn("received a bind exception", ute);
                 // continue, this was expected
             } else {
                 throw ute;
@@ -298,7 +300,7 @@ public class SyslogdLoadTest implements InitializingBean {
                 .setLogDest("logndisplay")
                 .setLogMessage("A load test has been received as a Syslog Message")
                 .getEvent();
-//            LogUtils.debugf(this, "event = %s", thisEvent);
+//            LOG.debug("event = {}", thisEvent);
             events.addEvent(thisEvent);
         }
 
@@ -350,13 +352,13 @@ public class SyslogdLoadTest implements InitializingBean {
             final long start = System.currentTimeMillis();
             while (this.getCount() < m_expectedCount) {
                 if (System.currentTimeMillis() - start > time) {
-                    LogUtils.warnf(this, "waitForFinish timeout (%s) reached", time);
+                    LOG.warn("waitForFinish timeout ({}) reached", time);
                     break;
                 }
                 try {
                     Thread.sleep(50);
                 } catch (final InterruptedException e) {
-                    LogUtils.warnf(this, e, "thread was interrupted while sleeping");
+                    LOG.warn("thread was interrupted while sleeping", e);
                     Thread.currentThread().interrupt();
                 }
             }

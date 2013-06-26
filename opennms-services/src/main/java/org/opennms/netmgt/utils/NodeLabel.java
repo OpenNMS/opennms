@@ -694,9 +694,4 @@ public class NodeLabel {
 
         return buffer.toString();
     }
-
-    private static ThreadCategory log() {
-        return ThreadCategory.getInstance(NodeLabel.class);
-    }
-
 }

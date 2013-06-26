@@ -34,6 +34,8 @@ import java.util.Map;
 
 import org.opennms.netmgt.config.StorageStrategy;
 import org.opennms.netmgt.snmp.SnmpInstId;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.util.Assert;
 
@@ -44,6 +46,7 @@ import org.springframework.util.Assert;
  * @version $Id: $
  */
 public class GenericIndexResourceType extends ResourceType {
+    private static final Logger LOG = LoggerFactory.getLogger(GenericIndexResourceType.class);
     private String m_name;
     private PersistenceSelectorStrategy m_persistenceSelectorStrategy;
     private StorageStrategy m_storageStrategy;
@@ -125,7 +128,7 @@ public class GenericIndexResourceType extends ResourceType {
     public SnmpCollectionResource findAliasedResource(SnmpInstId inst, String ifAlias) {
         // This is here for completeness but it should not get called from here.
         // findResource should be called instead
-        log().debug("findAliasedResource: Should not get called from GenericIndexResourceType");
+        LOG.debug("findAliasedResource: Should not get called from GenericIndexResourceType");
         return null;
     }
 

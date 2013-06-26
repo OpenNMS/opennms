@@ -38,9 +38,11 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SyslogClient {
+    private static final Logger LOG = LoggerFactory.getLogger(SyslogClient.class);
 
     // Priorities.
     public static final int LOG_EMERG = 0; // system is unusable
@@ -105,7 +107,7 @@ public class SyslogClient {
         try {
             socket = new DatagramSocket();
         } catch (SocketException e) {
-            LogUtils.warnf(this, e, "Unable to create datagram socket.");
+            LOG.warn("Unable to create datagram socket.", e);
         }
     }
 
@@ -120,7 +122,7 @@ public class SyslogClient {
             socket.send(packet);
         }
         catch (IOException e) {
-            LogUtils.warnf(this, e, "Exception sending data.");
+            LOG.warn("Exception sending data.", e);
         }
     }
 

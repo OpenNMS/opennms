@@ -30,7 +30,8 @@ package org.opennms.netmgt.eventd.db;
 
 import java.io.StringWriter;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.model.events.Constants;
 import org.springframework.dao.DataAccessException;
@@ -45,6 +46,7 @@ import org.springframework.dao.DataAccessException;
  * @see org.opennms.netmgt.model.events.Constants#VALUE_TRUNCATE_INDICATOR
  */
 public class Correlation {
+    private static final Logger LOG = LoggerFactory.getLogger(Correlation.class);
     /**
      * Format the correlation block to have the xml
      *
@@ -60,7 +62,7 @@ public class Correlation {
         try {
             JaxbUtils.marshal(ec, out);
         } catch (DataAccessException e) {
-            ThreadCategory.getInstance(Correlation.class).error("Failed to convert new event to XML", e);
+            LOG.error("Failed to convert new event to XML", e);
             return null;
         }
 

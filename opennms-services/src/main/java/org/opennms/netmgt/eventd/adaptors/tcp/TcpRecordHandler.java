@@ -39,7 +39,8 @@ import java.net.Socket;
 import java.util.List;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class is used to do the initial read of data from the input stream and
@@ -52,6 +53,7 @@ import org.opennms.core.utils.LogUtils;
  * 
  */
 final class TcpRecordHandler implements Runnable {
+    private static final Logger LOG = LoggerFactory.getLogger(TcpRecordHandler.class);
     /**
      * When set the runnable should exit as fast as possible.
      */
@@ -149,7 +151,7 @@ final class TcpRecordHandler implements Runnable {
      * Allocates a new stream
      */
     private void newStream() throws IOException {
-        LogUtils.debugf(this, "Opening new PipedOutputStream and adding it to the queue");
+        LOG.debug("Opening new PipedOutputStream and adding it to the queue");
 
         // create a new piped writer
         final PipedOutputStream pipeOut = new PipedOutputStream();
@@ -159,18 +161,18 @@ final class TcpRecordHandler implements Runnable {
                     m_xchange.add(pipeOut);
                     m_xchange.notify();
                 }
-                LogUtils.debugf(this, "Added pipe to the xchange list");
+                LOG.debug("Added pipe to the xchange list");
 
                 pipeOut.wait();
 
-                LogUtils.debugf(this, "Pipe Signaled");
+                LOG.debug("Pipe Signaled");
             }
         } catch (final InterruptedException e) {
-        	LogUtils.debugf(this, e, "An I/O error occured.");
+		LOG.debug("An I/O error occured.", e);
             throw new IOException("The thread was interrupted");
         }
 
-        LogUtils.debugf(this, "PipedOutputStream connected");
+        LOG.debug("PipedOutputStream connected");
 
         m_out = pipeOut;
     }
@@ -184,7 +186,7 @@ final class TcpRecordHandler implements Runnable {
                 m_out.write((int) ch);
             }
         } catch (final IOException e) {
-        	LogUtils.debugf(this, e, "An I/O error occured.");
+		LOG.debug("An I/O error occured.", e);
             throw e;
         }
     }
@@ -320,11 +322,11 @@ final class TcpRecordHandler implements Runnable {
     void stop() throws InterruptedException {
         m_stop = true;
         if (m_context != null) {
-        	LogUtils.debugf(this, "Interrupting thread %s", m_context.getName());
+		LOG.debug("Interrupting thread {}", m_context.getName());
             m_context.interrupt();
-            LogUtils.debugf(this, "Joining Thread %s", m_context.getName());
+            LOG.debug("Joining Thread {}", m_context.getName());
             m_context.join();
-            LogUtils.debugf(this, "Thread %s Joined", m_context.getName());
+            LOG.debug("Thread {} Joined", m_context.getName());
         }
     }
 
@@ -344,11 +346,11 @@ final class TcpRecordHandler implements Runnable {
          * before doing any work on the socket
          */
         if (m_stop) {
-            LogUtils.debugf(this, "Stop flag set before thread startup, thread exiting");
+            LOG.debug("Stop flag set before thread startup, thread exiting");
 
             return;
         } else {
-            LogUtils.debugf(this, "Thread started, remote is %s", InetAddressUtils.str(m_connection.getInetAddress()));
+            LOG.debug("Thread started, remote is {}", InetAddressUtils.str(m_connection.getInetAddress()));
         }
 
         // get the input stream
@@ -358,11 +360,11 @@ final class TcpRecordHandler implements Runnable {
             socketIn = new BufferedInputStream(m_connection.getInputStream());
         } catch (final IOException e) {
             if (!m_stop) {
-                LogUtils.warnf(this, e, "An I/O Exception occured.");
+                LOG.warn("An I/O Exception occured.", e);
             }
             m_xchange.add(e);
 
-            LogUtils.debugf(this, "Thread exiting due to socket exception, stop flag = %s", Boolean.valueOf(m_stop));
+            LOG.debug("Thread exiting due to socket exception, stop flag = {}", Boolean.valueOf(m_stop));
 
             return;
         }
@@ -373,7 +375,7 @@ final class TcpRecordHandler implements Runnable {
         while (moreInput) {
             // check to see if the thread is interrupted
             if (Thread.interrupted()) {
-                LogUtils.debugf(this, "Thread Interrupted");
+                LOG.debug("Thread Interrupted");
                 break;
             }
 
@@ -394,7 +396,7 @@ final class TcpRecordHandler implements Runnable {
             } catch (final IOException e) {
                 m_xchange.add(e);
                 if (!m_stop) {
-                    LogUtils.warnf(this, e, "An I/O error occured reading from the remote host.");
+                    LOG.warn("An I/O error occured reading from the remote host.", e);
                 }
                 moreInput = false;
                 continue;
@@ -404,8 +406,8 @@ final class TcpRecordHandler implements Runnable {
                 level = m_tokenizer[level].next((char) ch);
             } catch (final IOException e) {
                 if (!m_stop) {
-                    LogUtils.warnf(this, e, "An I/O error occured writing to the processor stream.");
-                    LogUtils.warnf(this, "Discarding the remainder of the event contents");
+                    LOG.warn("An I/O error occured writing to the processor stream.", e);
+                    LOG.warn("Discarding the remainder of the event contents");
                     try {
                         /*
                          * this will discard current stream
@@ -428,13 +430,13 @@ final class TcpRecordHandler implements Runnable {
             }
         } catch (final IOException e) {
             if (!m_stop) {
-                LogUtils.warnf(this, e, "An I/O Error occured closing the processor stream.");
+                LOG.warn("An I/O Error occured closing the processor stream.", e);
             }
         }
 
         m_xchange.add(new EOFException("No More Input"));
 
-        LogUtils.debugf(this, "Thread Terminated");
+        LOG.debug("Thread Terminated");
 
     }
 }

@@ -40,7 +40,8 @@ import java.util.Map;
 
 import org.apache.log4j.Level;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.model.PollStatus;
@@ -68,6 +69,7 @@ import org.xbill.DNS.Type;
  */
 @Distributable
 final public class DnsMonitor extends AbstractServiceMonitor {
+    private static final Logger LOG = LoggerFactory.getLogger(DnsMonitor.class);
     /**
      * Default DNS port.
      */
@@ -175,7 +177,7 @@ final public class DnsMonitor extends AbstractServiceMonitor {
                 double responseTime = timeoutTracker.elapsedTimeInMillis();
 
                 final Integer rcode = response.getHeader().getRcode();
-                LogUtils.debugf(this, "received response code: %s", rcode);
+                LOG.debug("received response code: {}", rcode);
 
                 if (fatalCodes.contains(rcode)) {
                     return logDown(Level.DEBUG, "Received an invalid DNS response for address: " + addr);

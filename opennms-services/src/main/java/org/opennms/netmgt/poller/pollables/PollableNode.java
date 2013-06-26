@@ -31,7 +31,8 @@ package org.opennms.netmgt.poller.pollables;
 import java.net.InetAddress;
 import java.util.Date;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.xml.event.Event;
@@ -43,6 +44,7 @@ import org.opennms.netmgt.xml.event.Event;
  * @version $Id: $
  */
 public class PollableNode extends PollableContainer {
+    private static final Logger LOG = LoggerFactory.getLogger(PollableNode.class);
 
     /**
      * Represents a Lock 
@@ -54,24 +56,22 @@ public class PollableNode extends PollableContainer {
         private int m_obtainCount = 0;
         
         public synchronized void obtain() {
-            ThreadCategory log = ThreadCategory.getInstance(getClass());
             
             if (m_owner != Thread.currentThread()) {
-                log.debug("Trying to obtain lock for "+PollableNode.this);
+                LOG.debug("Trying to obtain lock for {}", PollableNode.this);
                 while (m_owner != null) {
                     try { wait();} catch (InterruptedException e) { throw new ThreadInterrupted("Lock for "+PollableNode.this+" is unavailable", e);}
                 }
                 m_owner = Thread.currentThread();
-                log.debug("Obtained lock for "+PollableNode.this);
+                LOG.debug("Obtained lock for {}", PollableNode.this);
             }
             m_obtainCount++;
         }
         
         public synchronized void obtain(long timeout) {
-            ThreadCategory log = ThreadCategory.getInstance(getClass());
             
             if (m_owner != Thread.currentThread()) {
-                log.debug("Trying to obtain lock for "+PollableNode.this);
+                LOG.debug("Trying to obtain lock for {}", PollableNode.this);
                 long now = System.currentTimeMillis();
                 long endTime = (timeout == 0 ? Long.MAX_VALUE : now+timeout);
                 while (m_owner != null) {
@@ -81,7 +81,7 @@ public class PollableNode extends PollableContainer {
                         throw new LockUnavailable("Unable to obtain lock for "+PollableNode.this+" before timeout");
                 }
                 m_owner = Thread.currentThread();
-                log.debug("Obtained lock for "+PollableNode.this);
+                LOG.debug("Obtained lock for {}", PollableNode.this);
             }
             m_obtainCount++;
         }
@@ -90,7 +90,7 @@ public class PollableNode extends PollableContainer {
             if (m_owner == Thread.currentThread()) {
                 m_obtainCount--;
                 if (m_obtainCount == 0) {
-                    ThreadCategory.getInstance(getClass()).debug("Releasing lock for "+PollableNode.this);
+                    LOG.debug("Releasing lock for {}", PollableNode.this);
                     m_owner = null;
                     notifyAll();
                 }

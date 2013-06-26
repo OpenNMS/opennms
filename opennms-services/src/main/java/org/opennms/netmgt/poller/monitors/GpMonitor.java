@@ -36,7 +36,8 @@ import org.apache.log4j.Level;
 import org.opennms.core.utils.ExecRunner;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;
@@ -60,6 +61,7 @@ import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
 // this is marked not distributable because it relieds on the dhcpd deamon of opennms
 @Distributable(DistributionContext.DAEMON)
 final public class GpMonitor extends AbstractServiceMonitor {
+    private static final Logger LOG = LoggerFactory.getLogger(GpMonitor.class);
     /**
      * Default retries.
      */
@@ -94,7 +96,6 @@ final public class GpMonitor extends AbstractServiceMonitor {
         //
         // Process parameters
         //
-        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         //
         // Get interface address from NetworkInterface
@@ -135,8 +136,8 @@ final public class GpMonitor extends AbstractServiceMonitor {
         InetAddress ipv4Addr = (InetAddress) iface.getAddress();
 
         final String hostAddress = InetAddressUtils.str(ipv4Addr);
-		if (log.isDebugEnabled())
-            log.debug("poll: address = " + hostAddress + ", script = " + script + ", arguments = " + args + ", " + tracker);
+
+		LOG.debug("poll: address = {}, script = {}, arguments = {}, {}", tracker, hostAddress, script, args);
 
         // Give it a whirl
         //
@@ -177,11 +178,11 @@ final public class GpMonitor extends AbstractServiceMonitor {
                         scriptoutput = er.getOutString();
                         scripterror = er.getErrString();
                         if (!scriptoutput.equals(""))
-                            log.debug(script + " output  = " + scriptoutput);
+                            LOG.debug(script + " output  = " + scriptoutput);
                         else
-                            log.debug(script + " returned no output");
+                            LOG.debug(script + " returned no output");
                         if (!scripterror.equals(""))
-                            log.debug(script + " error = " + scripterror);
+                            LOG.debug(script + " error = " + scripterror);
                         if (strBannerMatch == null || strBannerMatch.equals("*")) {
                         	
                             serviceStatus = PollStatus.available(responseTime);
@@ -214,7 +215,7 @@ final public class GpMonitor extends AbstractServiceMonitor {
         //
         // return the status of the service
         //
-        log.debug("poll: GP - serviceStatus= " + serviceStatus + "  " + hostAddress);
+        LOG.debug("poll: GP - serviceStatus= {} {}", hostAddress, serviceStatus);
         return serviceStatus;
     }
     

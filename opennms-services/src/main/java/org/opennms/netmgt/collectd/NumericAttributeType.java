@@ -33,6 +33,8 @@ import org.opennms.netmgt.config.MibObject;
 import org.opennms.netmgt.config.collector.AttributeGroupType;
 import org.opennms.netmgt.config.collector.CollectionAttribute;
 import org.opennms.netmgt.config.collector.Persister;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>NumericAttributeType class.</p>
@@ -41,6 +43,7 @@ import org.opennms.netmgt.config.collector.Persister;
  * @version $Id: $
  */
 public class NumericAttributeType extends SnmpAttributeType {
+    private static final Logger LOG = LoggerFactory.getLogger(NumericAttributeType.class);
     
     private static String[] s_supportedTypes = new String[] { "counter", "gauge", "timeticks", "integer", "octetstring" };
     
@@ -75,12 +78,7 @@ public class NumericAttributeType extends SnmpAttributeType {
         super(resourceType, collectionName, mibObj, groupType);
         
             // Assign the data source object identifier and instance
-            if (log().isDebugEnabled()) {
-                log().debug(
-                        "buildDataSourceList: ds_name: "+ getName()
-                        + " ds_oid: " + getOid()
-                        + "." + getInstance());
-            }
+            LOG.debug("buildDataSourceList: ds_name: {} ds_oid: {}.{}", getName(), getOid(), getInstance());
             
             String alias = getAlias();
             if (alias.length() > PersistOperationBuilder.MAX_DS_NAME_LENGTH) {
@@ -97,9 +95,6 @@ public class NumericAttributeType extends SnmpAttributeType {
     }
 
     void logNameTooLong() {
-        log().warn(
-                "buildDataSourceList: Mib object name/alias '"
-                + getAlias()
-                + "' exceeds 19 char maximum for RRD data source names, truncating.");
+        LOG.warn("buildDataSourceList: Mib object name/alias '{}' exceeds 19 char maximum for RRD data source names, truncating.", getAlias());
    }
 }

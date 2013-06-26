@@ -33,7 +33,8 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.RejectedExecutionException;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.model.events.EventListener;
@@ -47,6 +48,7 @@ import org.opennms.netmgt.xml.event.Event;
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
  */
 final class BroadcastEventProcessor implements EventListener {
+    private static final Logger LOG = LoggerFactory.getLogger(BroadcastEventProcessor.class);
     /**
      * The location where incoming events of interest are enqueued
      */
@@ -133,10 +135,9 @@ final class BroadcastEventProcessor implements EventListener {
         if (event == null)
             return;
 
-        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
-        if (log.isDebugEnabled())
-            log.debug("About to start processing recd. event");
+
+        LOG.debug("About to start processing recd. event");
 
         try {
             // check on timertasks and events counter
@@ -148,16 +149,16 @@ final class BroadcastEventProcessor implements EventListener {
 
             m_updater.execute(new DataUpdater(event));
 
-            if (log.isDebugEnabled())
-                log.debug("Event " + uei + " added to updater queue");
+
+            LOG.debug("Event {} added to updater queue", uei);
 
             // Reset the user timer
             RTCManager.getInstance().resetUserTimer();
         } catch (RejectedExecutionException ex) {
-            log.error("Failed to process event", ex);
+            LOG.error("Failed to process event", ex);
             return;
         } catch (Throwable t) {
-            log.error("Failed to process event", t);
+            LOG.error("Failed to process event", t);
             return;
         }
 
