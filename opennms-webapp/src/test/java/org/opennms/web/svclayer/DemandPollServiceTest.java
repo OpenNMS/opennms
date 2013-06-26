@@ -164,8 +164,14 @@ public class DemandPollServiceTest extends TestCase {
 		}
 
                 @Override
-                public void lock() {
+                public boolean lock() {
+                    return false;
 		}
+
+        @Override
+        public String getLockName() {
+            return this.getClass().getSimpleName();
+        }
 
                 @Override
         public List<DemandPoll> findMatching(Criteria criteria) {

@@ -17,9 +17,13 @@ import org.opennms.netmgt.model.SurveillanceStatus;
 public class MockNodeDao implements NodeDao {
 
     @Override
-    public void lock() {
-        // TODO Auto-generated method stub
+    public boolean lock() {
+        return false;
+    }
 
+    @Override
+    public String getLockName() {
+        return this.getClass().getSimpleName();
     }
 
     @Override
