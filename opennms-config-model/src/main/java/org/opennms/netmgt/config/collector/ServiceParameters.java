@@ -33,7 +33,8 @@ import java.util.Map;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 
 /**
@@ -43,6 +44,7 @@ import org.opennms.netmgt.snmp.SnmpAgentConfig;
  * @version $Id: $
  */
 public class ServiceParameters {
+    private static final Logger LOG = LoggerFactory.getLogger(ServiceParameters.class);
     
     Map<String, Object> m_parameters;
 
@@ -112,13 +114,9 @@ public class ServiceParameters {
     }
 
     public void logIfAliasConfig() {
-    	log().info(this.toString());
+	LOG.info("logIfAliasConfig: {}", this);
     }
 
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
-    
     public boolean forceStoreByAlias(String alias) {
     	if(alias == null || alias.equals("")) {
     		return false;
@@ -189,7 +187,7 @@ public class ServiceParameters {
         if (address != null) {
         	addr = InetAddressUtils.addr(address);
         	if (addr == null) {
-        		log().error("determineProxyHost: Problem converting proxy host string to InetAddress");
+			LOG.error("determineProxyHost: Problem converting proxy host string to InetAddress");
             }
         }
         return addr == null? current : addr;
