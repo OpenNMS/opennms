@@ -37,7 +37,7 @@ public interface NCSComponentRepository {
     /**
      * This is used to lock the table in order to implement upsert type operations
      */
-    void lock();
+    boolean lock();
 
     
     /**
