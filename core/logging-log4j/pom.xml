@@ -16,6 +16,10 @@
       <artifactId>org.opennms.core.logging</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+    </dependency>
+    <dependency>
       <groupId>log4j</groupId>
       <artifactId>log4j</artifactId>
     </dependency>
@@ -36,7 +40,7 @@
             <Bundle-RequiredExecutionEnvironment>JavaSE-1.6</Bundle-RequiredExecutionEnvironment>
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
-            <Export-Package>org.opennms.core.logging.*;version="${project.version}"</Export-Package>
+            <Export-Package>org.opennms.core.logging.log4j.*;version="${project.version}"</Export-Package>
           </instructions>
         </configuration>
       </plugin>

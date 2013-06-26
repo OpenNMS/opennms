@@ -46,14 +46,14 @@ public class Logging {
         if (m_strategy == null) {
             ServiceLoader<LoggingStrategy> loader = ServiceLoader.load(LoggingStrategy.class);
             for (LoggingStrategy strategy : loader) {
-                if (m_strategy != null) {
+                System.err.println("LoggingStrategy: " + strategy);
+                if (m_strategy == null) {
                     m_strategy = strategy;
                 }
             }
 
             if (m_strategy == null) {
-                throw new IllegalStateException(
-                                                "Unable to locate a logging strategy");
+                throw new IllegalStateException("Unable to locate a logging strategy");
             }
         }
         return m_strategy;
