@@ -29,7 +29,7 @@ package org.opennms.features.vaadin.mibcompiler;
 
 import java.util.Date;
 
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.LoggerFactory;
 import org.opennms.features.vaadin.api.Logger;
 
 import com.vaadin.ui.Alignment;
@@ -47,6 +47,7 @@ import com.vaadin.ui.themes.Runo;
  */
 @SuppressWarnings("serial")
 public class MibConsolePanel extends Panel implements Logger {
+    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(MibConsolePanel.class);
 
     /** The Constant ERROR. */
     private static final String ERROR = "<b><font color='red'>&nbsp;[ERROR]&nbsp;</font></b>";
@@ -100,7 +101,7 @@ public class MibConsolePanel extends Panel implements Logger {
         Label error = new Label(msg, Label.CONTENT_XHTML);
         logContent.addComponent(error);
         scrollIntoView();
-        LogUtils.infof(this, message);
+        LOG.info(message);
     }
 
     /**

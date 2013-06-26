@@ -31,7 +31,6 @@ import java.io.File;
 import java.util.List;
 
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.features.vaadin.api.Logger;
 import org.opennms.features.vaadin.datacollection.DataCollectionWindow;
 import org.opennms.features.vaadin.events.EventWindow;
@@ -56,6 +55,8 @@ import de.steinwedel.vaadin.MessageBox;
 import de.steinwedel.vaadin.MessageBox.ButtonType;
 import de.steinwedel.vaadin.MessageBox.EventListener;
 
+import org.slf4j.LoggerFactory;
+
 /**
  * The Class MIB Compiler Panel.
  * 
@@ -63,6 +64,7 @@ import de.steinwedel.vaadin.MessageBox.EventListener;
  */
 @SuppressWarnings("serial")
 public class MibCompilerPanel extends Panel {
+    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(MibCompilerPanel.class);
 
     /** The Constant PENDING. */
     private static final String PENDING = "pending";
@@ -289,10 +291,10 @@ public class MibCompilerPanel extends Panel {
     private void addTreeItem(final String label, final String parent) {
         mibsTree.addItem(label);
         if (parent == null) {
-            LogUtils.debugf(this, "Adding root directory %s", label);
+            LOG.debug("Adding root directory {}", label);
             mibsTree.setChildrenAllowed(parent, true);
         } else {
-            LogUtils.debugf(this, "Adding item %s to %s folder", label, parent);
+            LOG.debug("Adding item {} to {} folder", label, parent);
             mibsTree.setParent(label, parent);
             mibsTree.setChildrenAllowed(label, false);
         }
