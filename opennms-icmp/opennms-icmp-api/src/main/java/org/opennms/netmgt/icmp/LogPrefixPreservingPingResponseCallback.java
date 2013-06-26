@@ -29,12 +29,21 @@
 package org.opennms.netmgt.icmp;
 
 import java.net.InetAddress;
+import java.util.Map;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
+
 
 public class LogPrefixPreservingPingResponseCallback implements PingResponseCallback {
+	
+	
+	private static final Logger LOG = LoggerFactory
+			.getLogger(LogPrefixPreservingPingResponseCallback.class);
+	
     private final PingResponseCallback m_cb;
-    private final String m_prefix = ThreadCategory.getPrefix();
+    private final Map m_mdc = MDC.getCopyOfContextMap();
     
     public LogPrefixPreservingPingResponseCallback(PingResponseCallback cb) {
         m_cb = cb;
@@ -42,34 +51,36 @@ public class LogPrefixPreservingPingResponseCallback implements PingResponseCall
 
     @Override
     public void handleError(InetAddress address, EchoPacket request, Throwable t) {
-        String oldPrefix = ThreadCategory.getPrefix();
+    	
+    	Map mdc = MDC.getCopyOfContextMap();
         try {
-            ThreadCategory.setPrefix(m_prefix);
+        	MDC.setContextMap(m_mdc);
             m_cb.handleError(address, request, t);
         } finally {
-            ThreadCategory.setPrefix(oldPrefix);
+        	
+        	MDC.setContextMap(mdc);
         }
     }
 
     @Override
     public void handleResponse(InetAddress address, EchoPacket response) {
-        String oldPrefix = ThreadCategory.getPrefix();
+    	Map mdc = MDC.getCopyOfContextMap();
         try {
-            ThreadCategory.setPrefix(m_prefix);
+        	MDC.setContextMap(m_mdc);
             m_cb.handleResponse(address, response);
         } finally {
-            ThreadCategory.setPrefix(oldPrefix);
+        	MDC.setContextMap(mdc);
         }
     }
 
     @Override
     public void handleTimeout(InetAddress address, EchoPacket request) {
-        String oldPrefix = ThreadCategory.getPrefix();
+    	Map mdc = MDC.getCopyOfContextMap();
         try {
-            ThreadCategory.setPrefix(m_prefix);
+        	MDC.setContextMap(m_mdc);
             m_cb.handleTimeout(address, request);
         } finally {
-            ThreadCategory.setPrefix(oldPrefix);
+        	MDC.setContextMap(mdc);
         }
     }
 }
