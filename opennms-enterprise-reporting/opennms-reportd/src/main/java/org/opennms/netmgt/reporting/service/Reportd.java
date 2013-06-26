@@ -29,10 +29,13 @@
 package org.opennms.netmgt.reporting.service;
 
 import java.util.List;
+import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.util.Assert;
 import org.opennms.core.utils.LogUtils;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.reportd.Report;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
@@ -52,6 +55,9 @@ import org.opennms.netmgt.xml.event.Parm;
  */
 @EventListener(name="Reportd:EventListener")
 public class Reportd implements SpringServiceDaemon {
+	
+	
+	private static final Logger LOG = LoggerFactory.getLogger(Reportd.class);
 
     /** Constant <code>NAME="Reportd"</code> */
     public static final String NAME = "Reportd";
@@ -115,9 +121,9 @@ public class Reportd implements SpringServiceDaemon {
      * @param report a {@link org.opennms.netmgt.config.reportd.Report} object.
      */
     public void runReport(Report report) {
-        String originalName = ThreadCategory.getPrefix();
+    	Map mdc = MDC.getCopyOfContextMap();
         try {
-            ThreadCategory.setPrefix(NAME);
+        	MDC.put("prefix", NAME);
             LogUtils.debugf(this, "reportd -- running job %s", report.getReportName() );
             String fileName = m_reportService.runReport(report,reportDirectory);
             if (report.getRecipientCount() > 0) {
@@ -131,8 +137,8 @@ public class Reportd implements SpringServiceDaemon {
             createAndSendReportingEvent(EventConstants.REPORT_RUN_FAILED_UEI, report.getReportName(), e.getMessage());
         } catch (ReportDeliveryException e) {
             createAndSendReportingEvent(EventConstants.REPORT_DELIVERY_FAILED_UEI, report.getReportName(), e.getMessage());
-        } finally {
-            ThreadCategory.setPrefix(originalName);
+        } finally {        
+        	MDC.setContextMap(mdc);
         }
     }
     
