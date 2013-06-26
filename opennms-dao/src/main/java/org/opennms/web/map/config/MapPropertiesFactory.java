@@ -44,6 +44,8 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.TreeMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.BundleLists;
 import org.opennms.core.utils.ConfigFileConstants;
@@ -55,6 +57,8 @@ import org.opennms.web.map.MapsException;
  * @since 1.8.1
  */
 public class MapPropertiesFactory {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(MapPropertiesFactory.class);
 
     private boolean m_loaded = false;
 
@@ -233,42 +237,41 @@ public class MapPropertiesFactory {
      *
      * @param mapPropertiesFileString a {@link java.lang.String} object.
      */
-    public MapPropertiesFactory(String mapPropertiesFileString) {
-        ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
-        log = ThreadCategory.getInstance(this.getClass());
+    public MapPropertiesFactory(final String mapPropertiesFileString) {
+        Logging.withPrefix(MapsConstants.LOG4J_CATEGORY, new Runnable() {
+            @Override
+            public void run() {
+                LOG.debug("Map Properties Configuration file: {}", mapPropertiesFileString);
 
-        this.mapPropertiesFileString = mapPropertiesFileString;
-
-        if (log.isDebugEnabled())
-            log.debug("Map Properties Configuration file: " + mapPropertiesFileString);
-
-        try {
-            init();
-        } catch (FileNotFoundException e) {
-            log.error("Cannot found configuration file",e);
-        } catch (IOException e) {
-            log.error("Cannot load configuration file",e);
-        }
-        if(log.isDebugEnabled())
-            log.debug("Instantiating MapPropertiesFactory with properties file: "+mapPropertiesFileString);
+                try {
+                    init();
+                } catch (FileNotFoundException e) {
+                    LOG.error("Cannot found configuration file", e);
+                } catch (IOException e) {
+                    LOG.error("Cannot load configuration file", e);
+                }
+                LOG.debug("Instantiating MapPropertiesFactory with properties file: {}", mapPropertiesFileString);
+            }
+        });
     }
 
     /**
      * Create a new instance.
      */
     public MapPropertiesFactory() {
-        ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
-        log = ThreadCategory.getInstance(this.getClass());
-
-        try {
-            init();
-        } catch (FileNotFoundException e) {
-            log.error("Cannot found configuration file",e);
-        } catch (IOException e) {
-            log.error("Cannot load configuration file",e);
-        }
-        if(log.isDebugEnabled())
-            log.debug("Instantiating MapPropertiesFactory");
+        Logging.withPrefix(MapsConstants.LOG4J_CATEGORY, new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    init();
+                } catch (FileNotFoundException e) {
+                    LOG.error("Cannot found configuration file",e);
+                } catch (IOException e) {
+                    LOG.error("Cannot load configuration file",e);
+                }
+                LOG.debug("Instantiating MapPropertiesFactory");
+            }
+        });
     }
 
 
@@ -282,13 +285,13 @@ public class MapPropertiesFactory {
     public synchronized void init() throws FileNotFoundException,
     IOException {
 
-        log.info("Init");
+        LOG.info("Init");
         if (mapPropertiesFileString == null) {
             mapPropertiesFile = ConfigFileConstants.getFile(ConfigFileConstants.MAP_PROPERTIES_FILE_NAME);
-            log.info("Using default map properties file: "+mapPropertiesFile.getPath());
+            LOG.info("Using default map properties file: {}", mapPropertiesFile.getPath());
         }else{ 		
             mapPropertiesFile = new File(mapPropertiesFileString);
-            log.info("Using map properties file: "+mapPropertiesFile.getPath());
+            LOG.info("Using map properties file: {}", mapPropertiesFile.getPath());
         }
 
         if (m_loaded) {
@@ -483,7 +486,7 @@ public class MapPropertiesFactory {
      */
     protected void parseMapProperties() throws FileNotFoundException,
     IOException {
-        log.debug("Parsing map.properties...");
+        LOG.debug("Parsing map.properties...");
         severitiesMap = new HashMap<String,Severity>();
         statusesMap = new HashMap<String,Status>();
         availsMap = new HashMap<String,Avail>();
@@ -502,8 +505,7 @@ public class MapPropertiesFactory {
         String cntxtmenu = props.getProperty("enable.contextmenu");
         if(cntxtmenu!=null && cntxtmenu.equalsIgnoreCase("false"))
             contextMenuEnabled=false;
-        if (log.isDebugEnabled())
-            log.debug("enable.contextmenu=" + cntxtmenu);			
+        LOG.debug("enable.contextmenu={}", cntxtmenu);			
         // load context menu object only if context menu is enabled
 
         cmenu = new ContextMenu();
@@ -518,22 +520,20 @@ public class MapPropertiesFactory {
                         if(!commands[j].equals("-")){
                             //load the link to open for the command
                             link = props.getProperty("cmenu."+commands[j]+".link");
-                            if (log.isDebugEnabled())
-                                log.debug("cmenu."+commands[j]+".link="+link);
+                            LOG.debug("cmenu.{}.link={}", commands[j], link);
                             if(link==null){
-                                log.warn("link is null! skipping..");
+                                LOG.warn("link is null! skipping..");
                                 continue;
                             }
                             params = props.getProperty("cmenu."+commands[j]+".params");						
-                            if (log.isDebugEnabled())
-                                log.debug("cmenu."+commands[j]+".params="+params);
+                            LOG.debug("cmenu.{}.params={}", commands[j], params);
                             if(params==null) params="";
                         }
                         cmenu.addEntry(commands[j], link, params);
                     }
                 }
             }else{
-                log.warn("Context Menu enabled but No command found!");
+                LOG.warn("Context Menu enabled but No command found!");
             }
 
         }
@@ -542,16 +542,14 @@ public class MapPropertiesFactory {
         String doubleclick = props.getProperty("enable.doubleclick");
         if(doubleclick!=null && doubleclick.equalsIgnoreCase("false"))
             doubleClickEnabled=false;
-        if (log.isDebugEnabled())
-            log.debug("enable.doubleclick=" + doubleclick);			
+        LOG.debug("enable.doubleclick={}", doubleclick);			
 
         // load reload flag
         String reloadStr = props.getProperty("enable.reload");
         if(reloadStr!=null && reloadStr.equalsIgnoreCase("true"))
             reload=true;
 
-        if (log.isDebugEnabled())
-            log.debug("enable.reload=" + reloadStr);			
+        LOG.debug("enable.reload={}", reloadStr);			
 
         // look up severities and their properties
         severityMapAs=props.getProperty("severity.map", "avg");
@@ -572,8 +570,7 @@ public class MapPropertiesFactory {
             Severity sev = new Severity(Integer.parseInt(id), label, color);
             if (flash != null && flash.equalsIgnoreCase("true"))
                 sev.setFlash(true);
-            log.debug("found severity " + severities[i] + " with id=" + id
-                      + ", label=" + label + ", color=" + color + ". Adding it.");
+            LOG.debug("found severity {} with id={}, label={}, color={}. Adding it.", severities[i], id, label, color);
             severitiesMap.put(label, sev);
         }
         orderedSeverities = new Severity[severitiesMap.size()];
@@ -615,7 +612,7 @@ public class MapPropertiesFactory {
 
         String defaultLinkStr = props.getProperty("link.default");
         if(defaultLinkStr==null){
-            log.error("Mandatory property 'link.default' not found!");
+            LOG.error("Mandatory property 'link.default' not found!");
             throw new IllegalStateException("The property 'link.default' is mandatory");
         }
         defaultLink = Integer.parseInt(defaultLinkStr);
@@ -630,19 +627,19 @@ public class MapPropertiesFactory {
             String multilinkwidth = props.getProperty("link." + links[i]+ ".multilink.width");
             String multilinkdasharray = props.getProperty("link." + links[i]+ ".multilink.dash-array");            
             if(id==null){
-                log.error("param id for link cannot be null in map.properties: skipping link...");
+                LOG.error("param id for link cannot be null in map.properties: skipping link...");
                 continue;
             }
             if(text==null){
-                log.error("param text for link cannot be null in map.properties: skipping link...");
+                LOG.error("param text for link cannot be null in map.properties: skipping link...");
                 continue;
             }
             if(width==null){
-                log.error("param width for link cannot be null in map.properties: skipping link...");
+                LOG.error("param width for link cannot be null in map.properties: skipping link...");
                 continue;
             }
             if(speed==null){
-                log.info("param speed for link cannot be null in map.properties: skipping link...");
+                LOG.info("param speed for link cannot be null in map.properties: skipping link...");
                 speed="Unknown";
             }
 
@@ -665,8 +662,7 @@ public class MapPropertiesFactory {
 
             Link lnk = new Link(Integer.parseInt(id), speed,text,width,dash_arr,snmp_type,multilinkwidth,multilink_dasharray);
 
-            log.debug("found link " + links[i] + " with id=" + id
-                      + ", text=" + text+ ", speed=" + speed+ ", width=" + width+ ", dash-array=" + dasharray+ "snmp-type=" + snmp_type+". Adding it.");
+            LOG.debug("found link {} with id={}, text={}, speed={}, width={}, dash-array={}, snmp-type={}. Adding it.", links[i], id, text, speed, width, dasharray, snmp_type);
             linksMap.put(new Integer(id), lnk);
             Set<Link> linkbysnmptypeSet = linksBySnmpTypeMap.get(new Integer(snmp_type));
             if(linkbysnmptypeSet==null)
@@ -684,13 +680,13 @@ public class MapPropertiesFactory {
             String color = props.getProperty("linkstatus." + linkStatuses[i] + ".color");
             String flash = props.getProperty("linkstatus." + linkStatuses[i]+ ".flash");
             if(color==null){
-                log.error("param color for linkstatus cannot be null in map.properties: skipping linkstatus...");
+                LOG.error("param color for linkstatus cannot be null in map.properties: skipping linkstatus...");
                 continue;
             }
             boolean flashBool = false;
             if(flash!=null && flash.equalsIgnoreCase("false"))
                 flashBool=false;			
-            log.debug("found linkstatus " + linkStatuses[i] + " with color=" + color
+            LOG.debug("found linkstatus " + linkStatuses[i] + " with color=" + color
                       + ", flash=" + flashBool+ ". Adding it.");
             LinkStatus ls = new LinkStatus(linkStatuses[i],color,flashBool);
             linkStatusesMap.put(linkStatuses[i], ls);
@@ -699,32 +695,32 @@ public class MapPropertiesFactory {
         if(props.getProperty("summarylink.id")!=null){
             summaryLink = Integer.parseInt(props.getProperty("summarylink.id"));    
         }
-        log.debug("found summarylink.id: "+summaryLink);
+        LOG.debug("found summarylink.id: {}", summaryLink);
 
         if(props.getProperty("summarylink.color")!=null){
             summaryLinkColor = props.getProperty("summarylink.color");    
         }
-        log.debug("found summarylink.color: "+summaryLinkColor);
+        LOG.debug("found summarylink.color: {}", summaryLinkColor);
 
         if(props.getProperty("max.links")!=null){
             maxLinks = Integer.parseInt(props.getProperty("max.links"));    
         }
-        log.debug("found max.links: "+maxLinks);
+        LOG.debug("found max.links: {}", maxLinks);
 
 
         if(props.getProperty("multilink.status")!=null){
             multilinkStatus = props.getProperty("multilink.status"); 	
         }
         if(!multilinkStatus.equals(MULTILINK_BEST_STATUS) && !multilinkStatus.equals(MULTILINK_IGNORE_STATUS) && !multilinkStatus.equals(MULTILINK_WORST_STATUS)){
-            log.error("multilink.status property must be 'best' or 'worst' or 'ignore' ... using default ('best')");
+            LOG.error("multilink.status property must be 'best' or 'worst' or 'ignore' ... using default ('best')");
             multilinkStatus=MULTILINK_BEST_STATUS;
         }
-        log.debug("found multilink.status:"+multilinkStatus);
+        LOG.debug("found multilink.status:{}", multilinkStatus);
 
         if(props.getProperty("multilink.ignore.color")!=null){
             multilinkIgnoreColor = props.getProperty("multilink.ignore.color");    
         }
-        log.debug("found multilink.ignore.color:"+multilinkIgnoreColor);
+        LOG.debug("found multilink.ignore.color:{}", multilinkIgnoreColor);
 
         // look up statuses and their properties
         String[] statuses = BundleLists.parseBundleList(props
@@ -736,9 +732,7 @@ public class MapPropertiesFactory {
             String color = props
                     .getProperty("status." + statuses[i] + ".color");
             String text = props.getProperty("status." + statuses[i] + ".text");
-            log.debug("found status " + statuses[i] + " with id=" + id
-                      + ", uei=" + uei + ", color=" + color + ", text=" + text
-                      + ". Adding it.");
+            LOG.debug("found status {} with id={}, uei={}, color={}, text={}. Adding it.", statuses[i], id, uei, color, text);
             Status status = new Status(Integer.parseInt(id), uei, color, text);
             statusesMap.put(uei, status);
         }
@@ -782,8 +776,7 @@ public class MapPropertiesFactory {
             String min = props.getProperty("avail." + availes[i] + ".min");
             String color = props.getProperty("avail." + availes[i] + ".color");
             String flash = props.getProperty("avail." + availes[i] + ".flash");
-            log.debug("found avail " + availes[i] + " with id=" + id + ", min="
-                    + min + ", color=" + color + ". Adding it.");
+            LOG.debug("found avail {} with id={}, min={}, color={}. Adding it.", availes[i], id, min, color);
             Avail avail = new Avail(Integer.parseInt(id),
                                     Integer.parseInt(min), color);
             if (flash != null && flash.equalsIgnoreCase("true"))
@@ -838,8 +831,7 @@ public class MapPropertiesFactory {
             String baseProperty = "icon." + icons[i] + ".";
 
             String filename =  props.getProperty(baseProperty + "filename");
-            log.debug("found icon " + icons[i] + " with filename=" + filename
-                      + ". Adding it.");
+            LOG.debug("found icon {} with filename={}. Adding it.", icons[i], filename);
             iconsMap.put(icons[i], filename);
         }
 
@@ -849,14 +841,13 @@ public class MapPropertiesFactory {
 
             for (int i = 0; i < sysoids.length; i++) {
                 String iconName = props.getProperty("sysoid." + sysoids[i] + ".iconName");
-                log.debug("found sysoid " + sysoids[i] + " with iconName=" + iconName
-                          + ". Adding it.");
+                LOG.debug("found sysoid {} with iconName={}. Adding it.", sysoids[i], iconName);
                 iconsBySysoidMap.put(sysoids[i], iconName);
             }
         }
 
         defaultMapIcon = props.getProperty("icon.default.map");
-        log.debug("default map icon: "+defaultMapIcon);
+        LOG.debug("default map icon: {}", defaultMapIcon);
         if (defaultMapIcon == null) {
             throw new IllegalStateException(
                     "Required Default Map Icon not found.");
@@ -866,19 +857,19 @@ public class MapPropertiesFactory {
             throw new IllegalStateException(
                     "Required Default Icon Node not found.");
         }
-        log.debug("default node icon: "+defaultNodeIcon);
+        LOG.debug("default node icon: {}", defaultNodeIcon);
 
         String defaultMapElementDimensionString = props.getProperty("icon.default.mapelementdimension");
         if (defaultMapElementDimensionString != null) {
             defaultMapElementDimension = Integer.parseInt(defaultMapElementDimensionString);
         }
-        log.debug("default map element dimension: "+defaultMapElementDimension);
+        LOG.debug("default map element dimension: {}", defaultMapElementDimension);
 
         String useSemaphoreString = props.getProperty("use.semaphore");
         if (useSemaphoreString != null && useSemaphoreString.equalsIgnoreCase("false"))
             useSemaphore=false;
         else useSemaphore = true;
-        log.debug("use semaphore: "+useSemaphoreString);
+        LOG.debug("use semaphore: {}", useSemaphoreString);
 
         // look up background filenames
         String[] bg = BundleLists
@@ -887,8 +878,7 @@ public class MapPropertiesFactory {
         for (int i = 0; i < bg.length; i++) {
             String filename = props.getProperty("bgimage." + bg[i]
                     + ".filename");
-            log.debug("found bgimage " + bg[i] + " with filename=" + filename
-                      + ". Adding it.");
+            LOG.debug("found bgimage {} with filename={}. Adding it.", bg[i], filename);
             bgImagesMap.put(bg[i], filename);
         }
     }
