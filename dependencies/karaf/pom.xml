@@ -9,7 +9,7 @@
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>karaf-dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Apache Karaf Dependencies</name>
+  <name>OpenNMS Dependencies Apache Karaf</name>
   <!--
   Other JARs that come with the installer for Karaf... do we need them?
 

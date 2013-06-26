@@ -8,7 +8,7 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-rrd</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS RRD Module</name>
+  <name>OpenNMS RRD</name>
   <modules>
     <module>opennms-rrd-api</module>
     <module>opennms-rrd-jrobin</module>

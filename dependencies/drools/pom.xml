@@ -9,7 +9,7 @@
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>drools-dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Drools Dependencies</name>
+  <name>OpenNMS Dependencies Drools</name>
   <description>
     This module is used to provide a single artifact that the opennms project
     can depend on to use the drools library.

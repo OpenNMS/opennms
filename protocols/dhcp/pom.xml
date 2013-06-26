@@ -8,7 +8,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.protocols</groupId>
   <artifactId>org.opennms.protocols.dhcp</artifactId>
-  <name>OpenNMS DHCP Monitoring</name>
+  <name>OpenNMS Protocols DHCP Monitoring</name>
   <description>
     This module provides DHCP discovery and monitoring to opennms.
   </description>
@@ -99,19 +99,4 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-  <repositories>
-    <repository>
-      <snapshots>
-        <enabled>false</enabled>
-        <updatePolicy>${updatePolicy}</updatePolicy>
-      </snapshots>
-      <releases>
-        <enabled>true</enabled>
-        <updatePolicy>${updatePolicy}</updatePolicy>
-      </releases>
-      <id>opennms-repo</id>
-      <name>OpenNMS Maven Repository</name>
-      <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
-    </repository>
-  </repositories>
 </project>
