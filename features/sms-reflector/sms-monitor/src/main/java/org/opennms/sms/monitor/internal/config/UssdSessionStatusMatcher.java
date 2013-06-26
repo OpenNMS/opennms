@@ -28,9 +28,12 @@
 
 package org.opennms.sms.monitor.internal.config;
 
+import java.util.Arrays;
+
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.sms.monitor.MobileSequenceSession;
 import org.opennms.sms.reflector.smsservice.MobileMsgRequest;
 import org.opennms.sms.reflector.smsservice.MobileMsgResponse;
@@ -45,6 +48,7 @@ import org.smslib.USSDSessionStatus;
  */
 @XmlRootElement(name="session-status")
 public class UssdSessionStatusMatcher extends SequenceResponseMatcher {
+    private static final Logger LOG = LoggerFactory.getLogger(UssdSessionStatusMatcher.class);
 
 	/**
 	 * <p>Constructor for UssdSessionStatusMatcher.</p>
@@ -73,7 +77,7 @@ public class UssdSessionStatusMatcher extends SequenceResponseMatcher {
 	/** {@inheritDoc} */
 	@Override
     public boolean matches(MobileSequenceSession session, MobileMsgRequest request, MobileMsgResponse response) {
-        LogUtils.tracef(this, "ussdStatusIs(%s, %s)", getText(), request, response);
+        LOG.trace("ussdStatusIs({}, {})", Arrays.asList(getText(), request, response));
         return response instanceof UssdResponse && session.ussdStatusMatches(getText(), ((UssdResponse)response).getSessionStatus());
     }
 
