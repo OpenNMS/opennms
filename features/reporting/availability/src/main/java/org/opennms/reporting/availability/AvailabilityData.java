@@ -38,9 +38,11 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.TreeMap;
 
+import org.apache.log4j.MDC;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.config.CategoryFactory;
 import org.opennms.netmgt.config.categories.CatFactory;
 import org.opennms.netmgt.config.categories.Categorygroup;
@@ -55,6 +57,7 @@ import org.opennms.reporting.datablock.Node;
  * @author <A HREF="mailto:jacinta@oculan.com">Jacinta Remedios </A>
  */
 public class AvailabilityData {
+    private static final Logger LOG = LoggerFactory.getLogger(AvailabilityData.class);
     /**
      * The log4j category used to log debug messsages and statements.
      */
@@ -163,10 +166,8 @@ public class AvailabilityData {
             Date periodEndDate)
             throws IOException, MarshalException, ValidationException,
             Exception {
-        String oldPrefix = ThreadCategory.getPrefix();
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
-        ThreadCategory log = ThreadCategory.getInstance(this.getClass());
-        log.debug("Inside AvailabilityData");
+        MDC.put("prefix", LOG4J_CATEGORY);
+        LOG.debug("Inside AvailabilityData");
 
         m_nodes = new ArrayList<Node>();
         
@@ -178,50 +179,39 @@ public class AvailabilityData {
             m_catFactory = CategoryFactory.getInstance();
             config = m_catFactory.getConfig();
         } catch (IOException e) {
-            log.fatal("Initializing CategoryFactory", e);
+            LOG.error("Initializing CategoryFactory", e);
             throw e;
         } catch (MarshalException e) {
-            log.fatal("Initializing CategoryFactory", e);
+            LOG.error("Initializing CategoryFactory", e);
             throw e;
         } catch (ValidationException e) {
-            log.fatal("Initializing CategoryFactory", e);
+            LOG.error("Initializing CategoryFactory", e);
             throw e;
         }
         
         // FIXME There's some magic in here regarding multiple categories in a report
 
-        if (log.isDebugEnabled()) {
-            log.debug("CATEGORY " + categoryName);
-        }
+        LOG.debug("CATEGORY {}", categoryName);
         
         m_catFactory.getReadLock().lock();
         try {
             if (categoryName.equals("") || categoryName.equals("all")) {
                 int catCount = 0;
-                if (log.isDebugEnabled()) {
-                    log.debug("catCount " + catCount);
-                }
+                LOG.debug("catCount {}", catCount);
                 
                 for(final Categorygroup cg : config.getCategorygroupCollection()) {
                 
                     for(org.opennms.netmgt.config.categories.Category cat : cg.getCategories().getCategoryCollection()) {
     
-                        if (log.isDebugEnabled()) {
-                            log.debug("CATEGORY " + cat.getLabel());
-                        }
+                        LOG.debug("CATEGORY {}", cat.getLabel());
                         catCount++;
                         populateDataStructures(cat, report, format, monthFormat, catCount);
                     }
                 }
-                if (log.isDebugEnabled()) {
-                    log.debug("catCount " + catCount);
-                }
+                LOG.debug("catCount {}", catCount);
             } else {
                 org.opennms.netmgt.config.categories.Category cat = (org.opennms.netmgt.config.categories.Category) m_catFactory.getCategory(categoryName);
-                if (log.isDebugEnabled()) {
-                    log.debug("CATEGORY - now populating data structures "
-                            + cat.getLabel());
-                }
+                LOG.debug("CATEGORY - now populating data structures {}", cat.getLabel());
                 populateDataStructures(cat, report, format, monthFormat, 1);
             }
     
@@ -237,10 +227,8 @@ public class AvailabilityData {
             m_catFactory.getReadLock().unlock();
         }
 
-        if (log.isDebugEnabled()) {
-            log.debug("After availCalculations");
-        }
-        ThreadCategory.setPrefix(oldPrefix);
+        LOG.debug("After availCalculations");
+        MDC.remove("prefix");
     }
 
     /**
@@ -257,24 +245,21 @@ public class AvailabilityData {
     private void populateDataStructures(
             org.opennms.netmgt.config.categories.Category cat, Report report,
             String format, String monthFormat, int catIndex) throws Exception {
-        ThreadCategory log = ThreadCategory.getInstance(this.getClass());
-        if (log.isDebugEnabled())
-            log.debug("Inside populate data Structures" + catIndex);
+
+        LOG.debug("Inside populate data Structures {}", catIndex);
         report.setCatCount(catIndex);
-        log.debug("Inside populate data Structures");
+        LOG.debug("Inside populate data Structures");
         try {
 
             List<String> monitoredServices = new ArrayList<String>(cat.getServiceCollection());
 
             if (m_availabilityDataService == null) {
-                log.debug("DATA SERVICE IS NULL");
+                LOG.debug("DATA SERVICE IS NULL");
                 throw new IllegalStateException("Data service is null");
             }
             m_nodes = m_availabilityDataService.getNodes(cat, m_startTime, m_endTime);
             
-            if (log.isDebugEnabled()) {
-                log.debug("Nodes " + m_nodes);
-            }
+            LOG.debug("Nodes {}", m_nodes);
             
             // remove all the nodes that do not have outages
             
@@ -282,21 +267,15 @@ public class AvailabilityData {
             while (cleanNodes.hasNext()) {
                 Node node = (Node) cleanNodes.next();
                 if (node != null && !node.hasOutages()) {
-                    if (log.isDebugEnabled()) {
-                        log.debug("Removing node: " + node);
-                    }
+                    LOG.debug("Removing node: {}", node);
                     cleanNodes.remove();
                 }
             }
-            if (log.isDebugEnabled()) {
-                log.debug("Cleaned Nodes " + m_nodes);
-            }
+            LOG.debug("Cleaned Nodes {}", m_nodes);
             
             TreeMap<Double, List<String>> topOffenders = getPercentNode();
 
-            if (log.isDebugEnabled()) {
-                log.debug("TOP OFFENDERS " + topOffenders);
-            }
+            LOG.debug("TOP OFFENDERS {}", topOffenders);
             if (m_nodes.size() <= 0) {
                 m_nodes = null;
             }
@@ -338,7 +317,7 @@ public class AvailabilityData {
                 m_sectionIndex++;
             }
         } catch (Throwable e) {
-            log.fatal("Exception has occurred", e);
+            LOG.error("Exception has occurred", e);
             throw new Exception(e);
         }
     }
@@ -407,7 +386,6 @@ public class AvailabilityData {
      * @return a {@link java.util.TreeMap} object.
      */
     public TreeMap<Double, List<String>> getPercentNode() {
-        ThreadCategory log = ThreadCategory.getInstance(this.getClass());
         int days = m_daysInLastMonth;
         long endTime = m_lastMonthEndTime;
         Calendar cal = new GregorianCalendar();
@@ -415,21 +393,15 @@ public class AvailabilityData {
         cal.add(Calendar.DATE, -1 * days);
         long rollingWindow = endTime - cal.getTime().getTime();
         long startTime = cal.getTime().getTime();
-        if (log.isDebugEnabled()) {
-            log.debug("getPercentNode: Start time "
-                    + new java.util.Date(startTime));
-            log.debug("getPercentNode: End time "
-                    + new java.util.Date(endTime));
-        }
+        LOG.debug("getPercentNode: Start time " + new java.util.Date(startTime));
+        LOG.debug("getPercentNode: End time " + new java.util.Date(endTime));
         TreeMap<Double, List<String>> percentNode = new TreeMap<Double, List<String>>();
         
         for(Node node : m_nodes) {
             if (node != null) {
                 double percent = node.getPercentAvail(endTime, rollingWindow);
                 String nodeName = node.getName();
-                if (log.isDebugEnabled()) {
-                    log.debug("Node " + nodeName + " " + percent + "%");
-                }
+                LOG.debug("Node {} {} %", nodeName, percent);
                 if (percent < 100.0) {
                     List<String> nodeNames = percentNode.get(new Double(percent));
                     if (nodeNames == null) {
@@ -440,9 +412,7 @@ public class AvailabilityData {
                 }
             }
         }
-        if (log.isDebugEnabled()) {
-            log.debug("Percent node " + percentNode);
-        }
+        LOG.debug("Percent node {}", percentNode);
         return percentNode;
     }
 
@@ -454,9 +424,7 @@ public class AvailabilityData {
      */
     public void setAvailabilityDataService(
             AvailabilityDataService availabilityDataService) {
-        ThreadCategory log = ThreadCategory.getInstance(this.getClass());
-        log.debug("setting m_availabilityDataService");
+        LOG.debug("setting m_availabilityDataService");
         m_availabilityDataService = availabilityDataService;
     }
-    
 }

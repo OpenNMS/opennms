@@ -42,16 +42,14 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.apache.log4j.MDC;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.core.utils.LogUtils;
-import org.opennms.core.utils.ThreadCategory;
+
 import org.opennms.reporting.availability.render.HTMLReportRenderer;
 import org.opennms.reporting.availability.render.PDFReportRenderer;
 import org.springframework.util.StringUtils;
@@ -62,6 +60,7 @@ import org.springframework.util.StringUtils;
  * @author <A HREF="mailto:jacinta@oculan.com">Jacinta Remedios </A>
  */
 public class AvailabilityReport extends Object {
+    private static final Logger LOG = LoggerFactory.getLogger(AvailabilityReport.class);
     /**
      * The log4j category used to log debug messsages and statements.
      */
@@ -97,11 +96,8 @@ public class AvailabilityReport extends Object {
      */
     public AvailabilityReport(String author, String startMonth,
             String startDate, String startYear) {
-        String oldPrefix = ThreadCategory.getPrefix();
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
-        if (log().isDebugEnabled()) {
-            log().debug("Inside AvailabilityReport");
-        }
+        MDC.put("prefix", LOG4J_CATEGORY);
+        LOG.debug("Inside AvailabilityReport");
 
         Calendar today = new GregorianCalendar();
         int day = Integer.parseInt(startDate);
@@ -130,10 +126,8 @@ public class AvailabilityReport extends Object {
         m_report.setCreated(created);
         m_report.setAuthor(author);
 
-        if (log().isDebugEnabled()) {
-            log().debug("Leaving AvailabilityReport");
-        }
-        ThreadCategory.setPrefix(oldPrefix);
+        LOG.debug("Leaving AvailabilityReport");
+        MDC.remove("prefix");
     }
 
     /**
@@ -155,19 +149,19 @@ public class AvailabilityReport extends Object {
             String reportFormat, String monthFormat, String startMonth,
             String startDate, String startYear) {
 
-        if (log().isDebugEnabled()) {
-            log().debug("inside getReportData");
-            log().debug("Category name  " + categoryName);
-            log().debug("Report format   " + reportFormat);
-            log().debug("logo  " + logourl);
-            log().debug("monthFormat " + monthFormat);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("inside getReportData");
+            LOG.debug("Category name {}", categoryName);
+            LOG.debug("Report format {}", reportFormat);
+            LOG.debug("logo {}", logourl);
+            LOG.debug("monthFormat {}", monthFormat);
         }
         populateReport(logourl, categoryName, reportFormat, monthFormat,
                        startMonth, startDate, startYear);
         try {
             marshalReport();
         } catch (Throwable e) {
-            log().fatal("Exception: " + e, e);
+            LOG.error("Exception", e);
         }
     }
 
@@ -201,7 +195,7 @@ public class AvailabilityReport extends Object {
                                  monthFormat, startMonth,
                                  startDate, startYear);
         } catch (Throwable e) {
-            log().fatal("Exception: " + e, e);
+            LOG.error("Exception", e);
         }
     }
 
@@ -223,15 +217,10 @@ public class AvailabilityReport extends Object {
             Marshaller marshaller = new Marshaller(fileWriter);
             marshaller.setSuppressNamespaces(true);
             marshaller.marshal(m_report);
-            if (log().isDebugEnabled()) {
-                log().debug(
-                            "The xml marshalled from the castor classes is saved in "
-                                    + ConfigFileConstants.getHome()
-                                    + "/share/reports/AvailReport.xml");
-            }
+            LOG.debug("The xml marshalled from the castor classes is saved in {}/share/reports/AvailReport.xml", ConfigFileConstants.getHome());
             fileWriter.close();
         } catch (Throwable e) {
-            log().fatal("Exception: " + e, e);
+            LOG.error("Exception", e);
         }
     }
 
@@ -245,20 +234,12 @@ public class AvailabilityReport extends Object {
      */
     public void generatePDF(String xsltFileName, OutputStream out,
             String format) throws Exception {
-        String oldPrefix = ThreadCategory.getPrefix();
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
-        if (log().isDebugEnabled()) {
-            log().debug("inside generatePDF");
-        }
+        MDC.put("prefix", LOG4J_CATEGORY);
+        LOG.debug("inside generatePDF");
         File file = new File(ConfigFileConstants.getHome()
                 + "/share/reports/AvailReport.xml");
         try {
-            if (log().isDebugEnabled()) {
-                log().debug(
-                            "The xml marshalled from the castor classes is saved in "
-                                    + ConfigFileConstants.getHome()
-                                    + "/share/reports/AvailReport.xml");
-            }
+            LOG.debug("The xml marshalled from the castor classes is saved in {}/share/reports/AvailReport.xml", ConfigFileConstants.getHome());
             Reader fileReader = new InputStreamReader(new FileInputStream(file), "UTF-8");
             if (!format.equals("HTML")) {
                 new PDFReportRenderer().render(fileReader, out, new InputStreamReader(new FileInputStream(xsltFileName), "UTF-8"));
@@ -266,12 +247,10 @@ public class AvailabilityReport extends Object {
                 new HTMLReportRenderer().render(fileReader, out, new InputStreamReader(new FileInputStream(xsltFileName), "UTF-8"));
             }
         } catch (Throwable e) {
-            log().fatal("Exception: " + e, e);
+            LOG.error("Exception", e);
         }
-        if (log().isInfoEnabled()) {
-            log().info("leaving generatePDF");
-        }
-        ThreadCategory.setPrefix(oldPrefix);
+        LOG.info("leaving generatePDF");
+        MDC.remove("prefix");
     }
 
     /**
@@ -281,18 +260,13 @@ public class AvailabilityReport extends Object {
      */
     public static void main(String args[]) {
         // Spit warning level and higher messages out to the console
-        ConsoleAppender consoleAppender = new ConsoleAppender(
-                                                              new PatternLayout(
-                                                                                "%m%n"),
-                                                              ConsoleAppender.SYSTEM_ERR);
+        ConsoleAppender consoleAppender = new ConsoleAppender(new PatternLayout("%m%n"), ConsoleAppender.SYSTEM_ERR);
         consoleAppender.setThreshold(Level.WARN);
         Logger logger = Logger.getLogger(LOG4J_CATEGORY);
         logger.addAppender(consoleAppender);
 
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
-        log().debug(
-                    "main() called with args: "
-                            + StringUtils.arrayToDelimitedString(args, ", "));
+        MDC.put("prefix", LOG4J_CATEGORY);
+        LOG.debug("main() called with args: "+ StringUtils.arrayToDelimitedString(args, ", "));
 
         System.setProperty("java.awt.headless", "true");
 
@@ -320,7 +294,7 @@ public class AvailabilityReport extends Object {
         try {
             generateReport(logourl, categoryName, format, monthFormat, startMonth, startDate, startYear);
         } catch (final Exception e) {
-            LogUtils.warnf(AvailabilityReport.class, e, "Error while generating report.");
+            LOG.warn("Error while generating report.", e);
         }
     }
 
@@ -367,10 +341,7 @@ public class AvailabilityReport extends Object {
             xslFileName = ConfigFileConstants.getFilePathString()
                     + ConfigFileConstants.getFileName(ConfigFileConstants.REPORT_HTML_XSL);
         } else {
-            log().fatal(
-                        "Format '"
-                                + format
-                                + "' is unsupported.  Must be one of: SVG, PDF, or HTML.");
+            LOG.error("Format '{}' is unsupported.  Must be one of: SVG, PDF, or HTML.", format);
             return;
         }
 
@@ -381,24 +352,14 @@ public class AvailabilityReport extends Object {
                                                                startYear);
             report.getReportData(logourl, categoryName, format, monthFormat,
                                  startMonth, startDate, startYear);
-            if (log().isInfoEnabled()) {
-                log().info("Generated Report Data... ");
-            }
+            LOG.info("Generated Report Data... ");
             File file = new File(pdfFileName);
             FileOutputStream pdfFileWriter = new FileOutputStream(file);
             report.generatePDF(xslFileName, pdfFileWriter, format);
-            if (log().isInfoEnabled()) {
-                log().debug(
-                            "xsl -> " + xslFileName + " pdfFileName -> "
-                                    + pdfFileName + " format -> " + format);
-                log().info("Generated Report ... and saved as " + pdfFileName);
-            }
+            LOG.debug("xsl -> {} pdfFileName -> {} format -> {}", xslFileName, pdfFileName, format);
+            LOG.info("Generated Report ... and saved as {}", pdfFileName);
         } catch (Throwable e) {
-            log().fatal("Exception " + e, e);
+            LOG.error("Exception", e);
         }
-    }
-
-    private static ThreadCategory log() {
-        return ThreadCategory.getInstance(AvailabilityReport.class);
     }
 }

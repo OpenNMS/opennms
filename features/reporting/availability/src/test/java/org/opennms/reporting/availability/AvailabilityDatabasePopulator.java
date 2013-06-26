@@ -35,7 +35,8 @@ import java.util.Date;
 import junit.framework.Assert;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.dao.AcknowledgmentDao;
 import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.dao.AssetRecordDao;
@@ -92,6 +93,7 @@ import org.opennms.netmgt.model.OnmsServiceType;
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
 public class AvailabilityDatabasePopulator {
+    private static final Logger LOG = LoggerFactory.getLogger(AvailabilityDatabasePopulator.class);
     private DistPollerDao m_distPollerDao;
     private NodeDao m_nodeDao;
     private IpInterfaceDao m_ipInterfaceDao;
@@ -260,7 +262,7 @@ public class AvailabilityDatabasePopulator {
             getOutageDao().flush();
             
         } catch (final ParseException e) {
-            LogUtils.warnf(this, e, "populating database failed");
+            LOG.warn("populating database failed", e);
         }
         
   
