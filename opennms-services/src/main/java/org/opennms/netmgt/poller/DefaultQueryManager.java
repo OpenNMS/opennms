@@ -42,7 +42,6 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
-import org.eclipse.jetty.util.log.Log;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.Querier;
 import org.opennms.core.utils.SingleResultQuerier;
