@@ -376,6 +376,11 @@
       <artifactId>cglib-nodep</artifactId>
     </dependency>
     <dependency>
+      <!-- Needed for spring-context-support -->
+      <groupId>commons-collections</groupId>
+      <artifactId>commons-collections</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>hibernate-dependencies</artifactId>
       <type>pom</type>
