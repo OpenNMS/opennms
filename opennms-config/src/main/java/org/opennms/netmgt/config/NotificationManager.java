@@ -131,8 +131,8 @@ public abstract class NotificationManager {
     /** Constant <code>PARAM_MICROBLOG_USERNAME="-ublog"</code> */
     public static final String PARAM_MICROBLOG_USERNAME = "-ublog";
     
-    NotifdConfigManager m_configManager;
-    private DataSource m_dataSource;
+    private final NotifdConfigManager m_configManager;
+    private final DataSource m_dataSource;
     
     /**
      * A regular expression for matching an expansion parameter delimited by
@@ -429,6 +429,10 @@ public abstract class NotificationManager {
      */
     private Connection getConnection() throws SQLException {
         return m_dataSource.getConnection();
+    }
+
+    public DataSource getDataSource() {
+        return m_dataSource;
     }
 
     /**
