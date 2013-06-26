@@ -65,7 +65,9 @@ public class NCSServiceContainerTest {
         }
 
         @Override
-        public void lock() {}
+        public boolean lock() {
+            return false;
+        }
 
         @Override
         public void initialize(Object obj) {}
