@@ -298,10 +298,4 @@ public class OutageAnticipator implements EventListener {
     public void anticipateReparent(String ipAddr, int nodeId, int nodeId2) {
         
     }
-    
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(OutageAnticipator.class);
-    }
-
-    
 }

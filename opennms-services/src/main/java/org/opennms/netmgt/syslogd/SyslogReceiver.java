@@ -111,7 +111,6 @@ class SyslogReceiver implements Runnable {
         m_discardUei = discardUei;
         m_UeiList = ueiList;
         m_HideMessages = hideMessages;
-        m_logPrefix = LOG4J_CATEGORY;
 
         m_executors.add(new ThreadPoolExecutor(
             1,
@@ -239,6 +238,5 @@ class SyslogReceiver implements Runnable {
      * @param prefix a {@link java.lang.String} object.
      */
     protected void setLogPrefix(String prefix) {
-        m_logPrefix = prefix;
     }
 }

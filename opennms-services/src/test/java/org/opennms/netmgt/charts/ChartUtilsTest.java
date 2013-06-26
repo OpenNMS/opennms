@@ -199,8 +199,4 @@ public class ChartUtilsTest {
 //        m_config = ChartConfigFactory.getInstance().getConfiguration();
     }
 
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
-
 }

@@ -432,11 +432,6 @@ public class BaseImporter implements ImportOperationFactory {
 		specFile.visitImport(new NodeRelator(specFile.getForeignSource()));
 	}
 
-    /**
-     * <p>log</p>
-     *
-     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
-     */
 
 	private Map<String, Integer> getForeignIdToNodeMap(final String foreignSource) {
         return m_transTemplate.execute(new TransactionCallback<Map<String, Integer>>() {

@@ -1968,8 +1968,4 @@ public class ThresholdingVisitorTest {
 		};
     }
 
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
-
 }

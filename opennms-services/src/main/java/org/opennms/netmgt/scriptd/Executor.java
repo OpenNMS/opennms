@@ -413,7 +413,7 @@ final class Executor implements Runnable, PausableFiber {
         }
 
         m_mgr = new BSFManager();
-        m_mgr.registerBean("log", ThreadCategory.getInstance(Executor.class));
+        m_mgr.registerBean("log", LOG);
 
         StartScript[] startScripts = m_config.getStartScripts();
 
