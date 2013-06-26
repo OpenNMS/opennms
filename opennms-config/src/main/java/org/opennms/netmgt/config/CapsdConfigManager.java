@@ -48,7 +48,8 @@ import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.config.capsd.CapsdConfiguration;
 import org.opennms.netmgt.config.capsd.IpManagement;
@@ -66,6 +67,7 @@ import org.opennms.netmgt.config.capsd.SmbConfig;
  * @version $Id: $
  */
 public abstract class CapsdConfigManager implements CapsdConfig {
+    private static final Logger LOG = LoggerFactory.getLogger(CapsdConfigManager.class);
     /**
      * The string indicating the start of the comments in a line containing the
      * IP address in a file URL
@@ -178,7 +180,7 @@ public abstract class CapsdConfigManager implements CapsdConfig {
      */
     @Override
     public synchronized void save() throws MarshalException, IOException, ValidationException {
-        log().debug("Saving capsd configuration");
+        LOG.debug("Saving capsd configuration");
         
         // marshall to a string first, then write the string to the file. This
         // way the original config
@@ -187,7 +189,7 @@ public abstract class CapsdConfigManager implements CapsdConfig {
         Marshaller.marshal(m_config, stringWriter);
         saveXml(stringWriter.toString());
     
-        log().info("Saved capsd configuration");
+        LOG.info("Saved capsd configuration");
 
         update();
     }
@@ -264,7 +266,7 @@ public abstract class CapsdConfigManager implements CapsdConfig {
                 InetAddress addr;
                 addr = InetAddressUtils.addr(saddr);
                 if (addr == null) {
-                    log().info("Failed to convert specific address '" + saddr + "' to an InetAddress.");
+                    LOG.info("Failed to convert specific address '{}' to an InetAddress.", saddr);
                     continue;
                 }
                 
@@ -288,14 +290,14 @@ public abstract class CapsdConfigManager implements CapsdConfig {
                 InetAddress saddr;
                 saddr = InetAddressUtils.addr(range.getBegin());
                 if (saddr == null) {
-                    log().info("Failed to convert begin address '" + range.getBegin() + "' to an InetAddress.");
+                    LOG.info("Failed to convert begin address '{}' to an InetAddress.", range.getBegin());
                     continue;
                 }
 
                 InetAddress eaddr;
                 eaddr = InetAddressUtils.addr(range.getEnd());
                 if (eaddr == null) {
-                    log().info("Failed to convert end address '" + range.getEnd() + "' to an InetAddress.");
+                    LOG.info("Failed to convert end address '{}' to an InetAddress.", range.getEnd());
                     continue;
                 }
 
@@ -327,7 +329,7 @@ public abstract class CapsdConfigManager implements CapsdConfig {
                     InetAddress addr;
                     addr = InetAddressUtils.addr(saddr);
                     if (addr == null) {
-                        log().info("Failed to convert address '" + saddr + "' from include URL '" + url + "' to an InetAddress.");
+                        LOG.info("Failed to convert address '{}' from include URL '{}' to an InetAddress.", saddr, url);
                         continue;
                     }
 
@@ -409,14 +411,14 @@ public abstract class CapsdConfigManager implements CapsdConfig {
     
                 buffer.close();
             } else {
-                log().warn("URL does not exist: " + url.toString());
+                LOG.warn("URL does not exist: {}", url);
             }
         } catch (MalformedURLException e) {
-            log().error("Error reading URL: " + url.toString() + ": " + e.getLocalizedMessage());
+            LOG.error("Error reading URL: {}: {}", e.getLocalizedMessage(), url);
         } catch (FileNotFoundException e) {
-            log().error("Error reading URL: " + url.toString() + ": " + e.getLocalizedMessage());
+            LOG.error("Error reading URL: {}: {}", e.getLocalizedMessage(), url);
         } catch (IOException e) {
-            log().error("Error reading URL: " + url.toString() + ": " + e.getLocalizedMessage());
+            LOG.error("Error reading URL: {}: {}", e.getLocalizedMessage(), url);
         }
     
         return addrList;
@@ -434,7 +436,7 @@ public abstract class CapsdConfigManager implements CapsdConfig {
         if (m_config.hasRescanFrequency()) {
             frequency = m_config.getRescanFrequency();
         } else {
-            log().warn("Capsd configuration file is missing rescan interval, defaulting to 24 hour interval.");
+            LOG.warn("Capsd configuration file is missing rescan interval, defaulting to 24 hour interval.");
             frequency = 86400000; // default is 24 hours
         }
     
@@ -453,7 +455,7 @@ public abstract class CapsdConfigManager implements CapsdConfig {
         if (m_config.hasInitialSleepTime()) {
             sleep = m_config.getInitialSleepTime();
         } else {
-            log().warn("Capsd configuration file is missing rescan interval, defaulting to 24 hour interval.");
+            LOG.warn("Capsd configuration file is missing rescan interval, defaulting to 24 hour interval.");
             sleep = 300000; // default is 5 minutes
         }
     
@@ -642,20 +644,14 @@ public abstract class CapsdConfigManager implements CapsdConfig {
 		 * Iterate over interface list and test each interface
 		 */
 		for (InetAddress ipAddr : addressList) {
-			if (log().isDebugEnabled()) {
-				log().debug("determinePrimarySnmpIf: checking interface "
-						+ InetAddressUtils.str(ipAddr));
-            }
+			LOG.debug("determinePrimarySnmpIf: checking interface {}", InetAddressUtils.str(ipAddr));
 			primaryIf = compareAndSelectPrimaryCollectionInterface("SNMP", ipAddr, primaryIf, method, strict);
 		}
 	
-		if (log().isDebugEnabled()) {
-			if (primaryIf != null) {
-				log().debug("determinePrimarySnmpInterface: candidate primary SNMP interface: "
-								+ InetAddressUtils.str(primaryIf));
-            } else {
-				log().debug("determinePrimarySnmpInterface: no candidate primary SNMP interface found");
-            }
+		if (primaryIf != null) {
+			LOG.debug("determinePrimarySnmpInterface: candidate primary SNMP interface: {}", InetAddressUtils.str(primaryIf));
+		} else {
+			LOG.debug("determinePrimarySnmpInterface: no candidate primary SNMP interface found");
 		}
 		return primaryIf;
 	}
@@ -672,10 +668,6 @@ public abstract class CapsdConfigManager implements CapsdConfig {
             protocols.add(plugin.getProtocol());
         }
         return protocols;
-    }
-
-    private static ThreadCategory log() {
-        return ThreadCategory.getInstance(CapsdConfigManager.class);
     }
 
     /**

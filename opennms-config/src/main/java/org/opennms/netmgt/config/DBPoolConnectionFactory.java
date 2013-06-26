@@ -35,14 +35,14 @@ import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
-import java.util.logging.Logger;
 
 import javax.sql.DataSource;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.db.BaseConnectionFactory;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
 
 import snaq.db.DBPoolDataSource;
@@ -51,6 +51,7 @@ import snaq.db.DBPoolDataSource;
  * <p>C3P0ConnectionFactory class.</p>
  */
 public class DBPoolConnectionFactory extends BaseConnectionFactory {
+    private static final Logger LOG = LoggerFactory.getLogger(DBPoolConnectionFactory.class);
 
 	private DBPoolDataSource m_dataSource;
 
@@ -129,14 +130,14 @@ public class DBPoolConnectionFactory extends BaseConnectionFactory {
     }
 
     /** {@inheritDoc} */
-    public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+    public java.util.logging.Logger getParentLogger() throws SQLFeatureNotSupportedException {
         throw new SQLFeatureNotSupportedException("getParentLogger not supported");
     }
 
     @Override
     public void close() throws SQLException {
     	super.close();
-    	LogUtils.infof(this, "Closing DBPool pool.");
+    	LOG.info("Closing DBPool pool.");
     	m_dataSource.release();
     }
 

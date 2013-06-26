@@ -36,7 +36,8 @@ import java.util.Map;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.config.notificationCommands.Command;
 import org.opennms.netmgt.config.notificationCommands.NotificationCommands;
@@ -48,6 +49,7 @@ import org.opennms.netmgt.config.notificationCommands.NotificationCommands;
  * @version $Id: $
  */
 public abstract class NotificationCommandManager {
+    private static final Logger LOG = LoggerFactory.getLogger(NotificationCommandManager.class);
     /**
      * List of all configuration notification commands.  parseXml must be called to populate this.
      */
@@ -68,7 +70,7 @@ public abstract class NotificationCommandManager {
             if (curCommand != null && curCommand.getName() != null) {
                 commands.put(curCommand.getName(), curCommand);
             } else {
-                log().warn("invalid notification command: " + curCommand);
+                LOG.warn("invalid notification command: {}", curCommand);
             }
         }
 
@@ -77,7 +79,7 @@ public abstract class NotificationCommandManager {
 
     private static List<Command> getCommandsFromConfig(NotificationCommands config) {
         if (config == null) {
-            log().warn("no notification commands found");
+            LOG.warn("no notification commands found");
             return Collections.emptyList();
         }
         return config.getCommandCollection();
@@ -89,10 +91,6 @@ public abstract class NotificationCommandManager {
      * @throws java.lang.Exception if any.
      */
     public abstract void update() throws Exception;
-
-    private static ThreadCategory log() {
-        return ThreadCategory.getInstance(NotificationCommandManager.class);
-    }
 
     /**
      * Gets a notification command for a particular command name.
