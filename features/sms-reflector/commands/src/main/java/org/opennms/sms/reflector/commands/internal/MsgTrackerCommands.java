@@ -77,7 +77,7 @@ public class MsgTrackerCommands implements CommandProvider {
 
         @Override
         public void handleTimeout(MobileMsgRequest request) {
-           LOG.debug("Request {} timed out!", request); 
+           LOG.trace("Request {} timed out!", request); 
             m_latch.countDown();
         }
         
@@ -101,9 +101,9 @@ public class MsgTrackerCommands implements CommandProvider {
 
         @Override
         public boolean matches(MobileMsgRequest request, MobileMsgResponse response) {
-            LOG.debug("Using regex: {} to match response: {}", m_regex, response );
+            LOG.trace("Using regex: {} to match response: {}", m_regex, response );
             boolean retVal = response.getText().matches(m_regex);
-            LOG.debug("Matching: {} for regex {} response {}", retVal, m_regex, response);
+            LOG.trace("Matching: {} for regex {} response {}", retVal, m_regex, response);
             return retVal;
         }
 

@@ -52,7 +52,7 @@ public class MobileMsgResponseMatchers {
 			
                         @Override
 			public boolean matches(MobileMsgRequest request, MobileMsgResponse response) {
-				LOG.debug("smsFrom.matches({}, {}, {})", originator, request, response);
+				LOG.trace("smsFrom.matches({}, {}, {})", originator, request, response);
 				if (response instanceof SmsResponse) {
 					SmsResponse resp = (SmsResponse)response;
 					return isAMatch(originator, resp.getOriginator());
@@ -77,7 +77,7 @@ public class MobileMsgResponseMatchers {
 			
                         @Override
 			public boolean matches(MobileMsgRequest request, MobileMsgResponse response) {
-				LOG.debug("smsFromRecipient.matches({}, {})", request, response);
+				LOG.trace("smsFromRecipient.matches({}, {})", request, response);
 				if (request instanceof SmsRequest && response instanceof SmsResponse) {
 					SmsRequest req = (SmsRequest)request;
 					SmsResponse resp = (SmsResponse)response;
@@ -111,7 +111,7 @@ public class MobileMsgResponseMatchers {
 			
                         @Override
 			public boolean matches(MobileMsgRequest request, MobileMsgResponse response) {
-				LOG.debug("and.matches({})", (Object)matchers);
+				LOG.trace("and.matches({})", (Object)matchers);
 				for (MobileMsgResponseMatcher matcher : matchers) {
 					if (!matcher.matches(request, response)) {
 						return false;
@@ -151,7 +151,7 @@ public class MobileMsgResponseMatchers {
 			
                         @Override
 			public boolean matches(MobileMsgRequest request, MobileMsgResponse response) {
-				LOG.debug("or.matches({})", (Object)matchers);
+				LOG.trace("or.matches({})", (Object)matchers);
 				for (MobileMsgResponseMatcher matcher : matchers) {
 					if (matcher.matches(request, response)) {
 						return true;
@@ -190,7 +190,7 @@ public class MobileMsgResponseMatchers {
 			
                         @Override
 			public boolean matches(MobileMsgRequest request, MobileMsgResponse response) {
-				LOG.debug("textMatches({}, {}, {})", regex, request, response);
+				LOG.trace("textMatches({}, {}, {})", regex, request, response);
 				String text = response.getText() == null ? "" : response.getText();
 				return text.matches(regex);
 			}
@@ -212,7 +212,7 @@ public class MobileMsgResponseMatchers {
 			
                         @Override
 			public boolean matches(MobileMsgRequest request, MobileMsgResponse response) {
-				LOG.debug("sms({}, {})", request, response);
+				LOG.trace("sms({}, {})", request, response);
 				if (response instanceof SmsResponse) {
 					return true;
 				}
@@ -236,7 +236,7 @@ public class MobileMsgResponseMatchers {
 			
                         @Override
 			public boolean matches(MobileMsgRequest request, MobileMsgResponse response) {
-				LOG.debug("ussd({}, {})", request, response);
+				LOG.trace("ussd({}, {})", request, response);
 				if (response instanceof UssdResponse) {
 					return true;
 				}
@@ -261,7 +261,7 @@ public class MobileMsgResponseMatchers {
 			
                         @Override
 			public boolean matches(MobileMsgRequest request, MobileMsgResponse response) {
-				LOG.debug("ussdStatusIs({}, {})", status, request, response);
+				LOG.trace("ussdStatusIs({}, {})", status, request, response);
 				if (response instanceof UssdResponse) {
 					UssdResponse resp = (UssdResponse)response;
 					

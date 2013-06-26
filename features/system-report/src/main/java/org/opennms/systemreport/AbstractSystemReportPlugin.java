@@ -225,7 +225,7 @@ public abstract class AbstractSystemReportPlugin implements SystemReportPlugin {
         executor.setStreamHandler(streamHandler);
     
         try {
-            LOG.debug("executing '{}'", command);
+            LOG.trace("executing '{}'", command);
             pis = new PipedInputStream(output);
             input = new DataInputStream(pis);
             parser = new OutputSuckingParser(input);
@@ -238,7 +238,7 @@ public abstract class AbstractSystemReportPlugin implements SystemReportPlugin {
             } else {
                 topOutput = parser.getOutput();
             }
-            LOG.debug("finished '{}'", command);
+            LOG.trace("finished '{}'", command);
         } catch (final Exception e) {
             LOG.debug("Failed to run '{}'", command, e);
         } finally {
@@ -287,7 +287,7 @@ public abstract class AbstractSystemReportPlugin implements SystemReportPlugin {
             PumpStreamHandler streamHandler = new PumpStreamHandler(output, System.err);
     
             try {
-            LOG.debug("executing '{}'", command);
+            LOG.trace("executing '{}'", command);
                 pis = new PipedInputStream(output);
                 input = new DataInputStream(pis);
                 parser = new PsParser(input, "opennms_bootstrap.jar", "status", 0);
@@ -297,7 +297,7 @@ public abstract class AbstractSystemReportPlugin implements SystemReportPlugin {
                 IOUtils.closeQuietly(output);
                 parser.join();
                 processes.addAll(parser.getProcesses());
-                LOG.debug("finished '{}'", command);
+                LOG.trace("finished '{}'", command);
                 
                 if (exitValue != 0) {
                     LOG.debug("error running '{}': exit value was {}", command, exitValue);
@@ -311,7 +311,7 @@ public abstract class AbstractSystemReportPlugin implements SystemReportPlugin {
             }
         }
     
-        LOG.debug("looking for ps");
+        LOG.trace("looking for ps");
         final String ps = findBinary("ps");
         if (ps != null) {
             
@@ -331,7 +331,7 @@ public abstract class AbstractSystemReportPlugin implements SystemReportPlugin {
                 IOUtils.closeQuietly(output);
                 parser.join(MAX_PROCESS_WAIT);
                 processes.addAll(parser.getProcesses());
-                LOG.debug("finished '{}'", command);
+                LOG.trace("finished '{}'", command);
                 
                 if (exitValue != 0) {
                     LOG.debug("error running '{}': exit value was {}", command, exitValue);
@@ -361,7 +361,7 @@ public abstract class AbstractSystemReportPlugin implements SystemReportPlugin {
                     IOUtils.closeQuietly(output);
                     parser.join(MAX_PROCESS_WAIT);
                     processes.addAll(parser.getProcesses());
-                    LOG.debug("finished '{}'", command);
+                    LOG.trace("finished '{}'", command);
                     
                     if (exitValue != 0) {
                         LOG.debug("error running '{}': exit value was {}", command, exitValue);
@@ -390,7 +390,7 @@ public abstract class AbstractSystemReportPlugin implements SystemReportPlugin {
         ports.add(18980);
         ports.add(1099);
         for (final Integer port : ports) {
-            LOG.debug("Trying JMX at localhost:{}/jmxrmi", port);
+            LOG.trace("Trying JMX at localhost:{}/jmxrmi", port);
             try {
                 JMXServiceURL url = new JMXServiceURL(String.format("service:jmx:rmi:///jndi/rmi://localhost:%d/jmxrmi", port));
                 JMXConnector jmxc = JMXConnectorFactory.connect(url, null);

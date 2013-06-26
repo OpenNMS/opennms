@@ -91,7 +91,7 @@ public class OSReportPlugin extends AbstractSystemReportPlugin {
             osBean = ManagementFactory.getOperatingSystemMXBean();
         }
 
-        LOG.debug("bean = {}", osBean);
+        LOG.trace("bean = {}", osBean);
         addGetters(osBean, map);
 
         File lsb = new File("/bin/lsb_release");

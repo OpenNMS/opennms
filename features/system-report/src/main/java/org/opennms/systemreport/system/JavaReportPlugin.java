@@ -99,7 +99,7 @@ public class JavaReportPlugin extends AbstractSystemReportPlugin {
             beans = ManagementFactory.getGarbageCollectorMXBeans();
         }
 
-        LOG.debug("beans = {}", beans);
+        LOG.trace("beans = {}", beans);
         int collectorNum = 1;
         for (final GarbageCollectorMXBean bean : beans) {
             final Map<String,Resource> temp = new TreeMap<String,Resource>();
