@@ -46,7 +46,11 @@ import org.opennms.netmgt.junit.runner.SeleniumComputer;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class SeleniumMonitor extends AbstractServiceMonitor {
+    private static final Logger LOG = LoggerFactory.getLogger(SeleniumMonitor.class);
 
     public static class BaseUrlUtils{
         private static Pattern s_ipAddrPattern = Pattern.compile("\\$\\{ipAddr\\}");
