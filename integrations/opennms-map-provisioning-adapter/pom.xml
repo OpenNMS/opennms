@@ -7,7 +7,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-map-provisioning-adapter</artifactId>
-  <name>OpenNMS Map Provisioning Adaptor</name>
+  <name>OpenNMS Integrations Map Provisioning Adaptor</name>
   <build>
     <plugins>
       <plugin>

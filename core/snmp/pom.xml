@@ -9,7 +9,7 @@
   <groupId>org.opennms.core</groupId>
   <artifactId>org.opennms.core.snmp</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS SNMP</name>
+  <name>OpenNMS Core SNMP</name>
   <modules>
     <module>joesnmp</module>
     <module>api</module>

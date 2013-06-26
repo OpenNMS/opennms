@@ -9,7 +9,7 @@
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>jradius-dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS RADIUS Dependencies</name>
+  <name>OpenNMS Dependencies RADIUS</name>
   <description>
     This module is used to provide a single artifact that the opennms project
     can depend on to use the JRadius library

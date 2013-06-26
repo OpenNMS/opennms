@@ -9,7 +9,7 @@
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>pax-exam-dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Apache Pax Exam Dependencies</name>
+  <name>OpenNMS Dependencies Apache Pax Exam</name>
   
   <dependencies>
     <!--

@@ -8,7 +8,7 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Complex Dependencies</name>
+  <name>OpenNMS Dependencies</name>
   <modules>
     <module>activemq</module>
     <module>activemq-web</module>

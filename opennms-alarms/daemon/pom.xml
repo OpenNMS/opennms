@@ -7,7 +7,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-alarmd</artifactId>
-  <name>OpenNMS Alarm Daemon</name>
+  <name>OpenNMS Alarms Daemon</name>
   <packaging>jar</packaging>
   <build>
     <plugins>

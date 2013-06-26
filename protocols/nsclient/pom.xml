@@ -8,7 +8,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.protocols</groupId>
   <artifactId>org.opennms.protocols.nsclient</artifactId>
-  <name>OpenNMS NSClient Monitoring</name>
+  <name>OpenNMS Protocols NSClient Monitoring</name>
   <description>
     This module provides NSClient discovery and monitoring to opennms.
   </description>

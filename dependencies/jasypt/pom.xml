@@ -9,7 +9,7 @@
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>jasypt-dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Jasypt Dependencies</name>
+  <name>OpenNMS Dependencies Jasypt</name>
   <description>
     This module is used to provide a single artifact that the opennms project
     can depend on to use the Jasypt encryption library.

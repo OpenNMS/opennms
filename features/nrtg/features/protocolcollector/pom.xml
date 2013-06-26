@@ -8,7 +8,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.osgi.features.nrtg</groupId>
   <artifactId>osgi-nrtg-protocolcollector</artifactId>
-  <name>NRTG Karaf ProtocolCollectors Features</name>
+  <name>OpenNMS Features NRTG Features ProtocolCollectors Features</name>
   <description>
     The ProctcolCollector module contains ProtocolCollectors. This
     ProtocolCollectors are able to request values for metrics from agents on nodes.

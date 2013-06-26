@@ -9,7 +9,7 @@
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>tracker-dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Tracker Dependencies</name>
+  <name>OpenNMS Dependencies Tracker</name>
   <dependencies>
     <dependency>
       <groupId>org.opennms.lib</groupId>

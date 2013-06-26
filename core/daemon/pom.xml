@@ -9,7 +9,7 @@
   <groupId>org.opennms.core</groupId>
   <artifactId>org.opennms.core.daemon</artifactId>
   <packaging>bundle</packaging>
-  <name>OpenNMS Daemon</name>
+  <name>OpenNMS Core Daemon</name>
   <description>
   The OpenNMS Daemon launches and acts as a container for OpenNMS Services such as the poller or collector.
   </description>

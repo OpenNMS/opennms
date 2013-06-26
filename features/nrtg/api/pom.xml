@@ -14,7 +14,7 @@
     <!-- TODO refactor code so namespace matches symbolic name -->
     <bundle.namespace>org.opennms.nrtg.api</bundle.namespace>
   </properties>
-  <name>NRTG API</name>
+  <name>OpenNMS Features NRTG API</name>
   <description>The API contains the models for the NRTG projects. It has models for collection jobs, measurements and protocol collectors.</description>
   <dependencies>
     <!-- Logging -->

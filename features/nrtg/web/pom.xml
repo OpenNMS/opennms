@@ -13,7 +13,7 @@
     <bundle.symbolicName>org.opennms.features.nrtg.web</bundle.symbolicName>
     <bundle.namespace>org.opennms.nrtg.web</bundle.namespace>
   </properties>
-  <name>NRTG Web Interface</name>
+  <name>OpenNMS Features NRTG Web Interface</name>
   <description>
     The Web Interfaces for NRTG data collection.  This provides the
     servlets used to generate the web ui.  This provides two
