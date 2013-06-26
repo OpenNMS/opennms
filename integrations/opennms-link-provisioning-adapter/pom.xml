@@ -7,7 +7,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-link-provisioning-adapter</artifactId>
-  <name>OpenNMS Link Provisioning Adaptor</name>
+  <name>OpenNMS Integrations Link Provisioning Adaptor</name>
   <packaging>bundle</packaging>
   <build>
    <plugins>

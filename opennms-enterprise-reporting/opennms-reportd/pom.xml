@@ -7,7 +7,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-reportd</artifactId>
-  <name>OpenNMS Enterprise Report Daemon</name>
+  <name>OpenNMS Enterprise Reporting Daemon</name>
   <dependencies>
     <dependency>
       <groupId>org.opennms.core</groupId>

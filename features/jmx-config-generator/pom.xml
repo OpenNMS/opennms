@@ -11,7 +11,7 @@
     <groupId>org.opennms.features</groupId>
     <artifactId>jmxconfiggenerator</artifactId>
     <packaging>bundle</packaging>
-    <name>Jmx Config Generator</name>
+    <name>OpenNMS Features - Jmx Config Generator</name>
     <url>http://www.opennms.org</url>
 
     <properties>

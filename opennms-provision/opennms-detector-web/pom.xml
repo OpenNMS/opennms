@@ -7,7 +7,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-detector-web</artifactId>
-  <name>OpenNMS Web Detector (httpclient)</name>
+  <name>OpenNMS Provision Web Detector (httpclient)</name>
   <url>http://www.opennms.org</url>
   <packaging>bundle</packaging>
   <build>
