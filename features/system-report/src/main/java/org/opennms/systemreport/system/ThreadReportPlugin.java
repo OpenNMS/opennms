@@ -65,9 +65,9 @@ public class ThreadReportPlugin extends AbstractSystemReportPlugin {
     public TreeMap<String, Resource> getEntries() {
         final TreeMap<String,Resource> map = new TreeMap<String,Resource>();
 
-        LOG.debug("starting thread dump");
+        LOG.trace("starting thread dump");
         triggerThreadDump();
-        LOG.debug("thread dump finished");
+        LOG.trace("thread dump finished");
 
         final String outputLog = System.getProperty("opennms.home") + File.separator + "logs" + File.separator + "daemon" + File.separator + "output.log";
         LOG.debug("reading file " + outputLog);
@@ -133,11 +133,11 @@ public class ThreadReportPlugin extends AbstractSystemReportPlugin {
                 LOG.debug("pid = " + pid);
                 CommandLine command = CommandLine.parse(kill + " -3 " + pid.toString());
                 try {
-                    LOG.debug("running '{}'", command);
+                    LOG.trace("running '{}'", command);
                     DefaultExecutor executor = new DefaultExecutor();
                     executor.setWatchdog(new ExecuteWatchdog(5000));
                     int exitValue = executor.execute(command);
-                    LOG.debug("finished '{}'", command);
+                    LOG.trace("finished '{}'", command);
                     if (exitValue != 0) {
                         LOG.warn("'{}' exited non-zero: {}", command, exitValue);
                     }
