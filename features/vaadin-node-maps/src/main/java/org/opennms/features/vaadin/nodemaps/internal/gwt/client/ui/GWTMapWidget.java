@@ -422,11 +422,9 @@ public class GWTMapWidget extends Widget implements MarkerProvider, SearchConsum
     	
     	public static native JSObject getPolygonInfo(int k, JSObject statesDataLarge)
     	/*-{
-    	var state;
     	
-    	state = statesDataLarge.features[k];
 		
-		return state;
+		return statesDataLarge.features[k];
     	 }-*/;
     	
     }

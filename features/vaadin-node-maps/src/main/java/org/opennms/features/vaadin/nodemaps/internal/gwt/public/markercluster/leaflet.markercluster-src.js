@@ -33,6 +33,11 @@ L.MarkerClusterGroup = L.FeatureGroup.extend({
 
 		//Increase to increase the distance away that spiderfied markers appear from the center
 		spiderfyDistanceMultiplier: 1,
+		
+		//options for being a US state
+		inUs: false,
+		stateID: null,
+		stateData: null,
 
 		//Options to pass to the L.Polygon constructor
 		polygonOptions: {}
