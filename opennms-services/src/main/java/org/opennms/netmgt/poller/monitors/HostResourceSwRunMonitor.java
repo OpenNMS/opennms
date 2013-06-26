@@ -30,7 +30,6 @@ package org.opennms.netmgt.poller.monitors;
 
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
-import java.lang.StringIndexOutOfBoundsException;
 import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
@@ -53,6 +52,8 @@ import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.SnmpWalker;
 import org.opennms.netmgt.snmp.TableTracker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import antlr.StringUtils;
 
@@ -79,6 +80,9 @@ import antlr.StringUtils;
  */
 @Distributable(DistributionContext.DAEMON)
 public class HostResourceSwRunMonitor extends SnmpMonitorStrategy {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(HostResourceSwRunMonitor.class);
+    
     /**
      * Name of monitored service.
      */

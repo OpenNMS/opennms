@@ -52,6 +52,8 @@ import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.NotificationManager;
 import org.opennms.netmgt.model.notifd.NotificationStrategy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 /**
@@ -61,6 +63,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
  * @version $Id: $
  */
 public class HttpNotificationStrategy implements NotificationStrategy {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(HttpNotificationStrategy.class);
 
     private List<Argument> m_arguments;
 
@@ -262,9 +266,4 @@ public class HttpNotificationStrategy implements NotificationStrategy {
         
         return value;
     }
-    
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(this.getClass());
-    }
-
 }

@@ -37,6 +37,8 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import org.opennms.netmgt.snmp.SnmpInstId;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>IfResourceType class.</p>
@@ -45,7 +47,9 @@ import org.opennms.netmgt.snmp.SnmpInstId;
  * @version $Id: $
  */
 public class IfResourceType extends ResourceType {
-
+    
+    private static final Logger LOG = LoggerFactory.getLogger(IfResourceType.class);
+    
     private TreeMap<Integer, IfInfo> m_ifMap;
 
     /**
@@ -99,7 +103,7 @@ public class IfResourceType extends ResourceType {
     public SnmpCollectionResource findAliasedResource(SnmpInstId inst, String ifAlias) {
         // This is here for completeness but it should not get called from here.
         // findResource should be called instead
-        log().debug("findAliasedResource: Should not get called from IfResourceType");
+        LOG.debug("findAliasedResource: Should not get called from IfResourceType");
         return null;
     }
 

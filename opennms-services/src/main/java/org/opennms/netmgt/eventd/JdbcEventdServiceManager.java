@@ -35,7 +35,8 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
@@ -50,6 +51,9 @@ import org.springframework.util.Assert;
  * @version $Id: $
  */
 public class JdbcEventdServiceManager implements InitializingBean, EventdServiceManager {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(JdbcEventdServiceManager.class);
+    
     private DataSource m_dataSource;
 
     /**
@@ -74,14 +78,14 @@ public class JdbcEventdServiceManager implements InitializingBean, EventdService
         if (m_serviceMap.containsKey(serviceName)) {
             return m_serviceMap.get(serviceName).intValue();
         } else {
-            log().debug("Could not find entry for '" + serviceName + "' in service name cache.  Looking up in database.");
+            LOG.debug("Could not find entry for '" + serviceName + "' in service name cache.  Looking up in database.");
             
             int serviceId;
             try {
                 serviceId = new JdbcTemplate(m_dataSource).queryForInt("SELECT serviceID FROM service WHERE serviceName = ?", new Object[] { serviceName });
             } catch (IncorrectResultSizeDataAccessException e) {
                 if (e.getActualSize() == 0) {
-                    log().debug("Did not find entry for '" + serviceName + "' in database.");
+                    LOG.debug("Did not find entry for '" + serviceName + "' in database.");
                     return -1; // not found
                 } else {
                     throw e; // more than one found... WTF?!?!
@@ -90,7 +94,7 @@ public class JdbcEventdServiceManager implements InitializingBean, EventdService
             
             m_serviceMap.put(serviceName, serviceId);
             
-            log().debug("Found entry for '" + serviceName + "' (ID " + serviceId + ") in database.  Adding to service name cache.");
+            LOG.debug("Found entry for '" + serviceName + "' (ID " + serviceId + ") in database.  Adding to service name cache.");
             
             return serviceId;
         }
@@ -112,10 +116,6 @@ public class JdbcEventdServiceManager implements InitializingBean, EventdService
                 m_serviceMap.put(resultSet.getString(2), resultSet.getInt(1));
             }
         });
-    }
-
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
     }
 
     /**
