@@ -34,7 +34,8 @@ import static org.junit.Assert.assertTrue;
 import java.util.List;
 import java.util.Properties;
 
-import org.junit.After;
+import javax.sql.DataSource;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -44,12 +45,15 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.core.utils.BeanUtils;
+import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.LinkdConfig;
 import org.opennms.netmgt.config.LinkdConfigFactory;
 import org.opennms.netmgt.config.linkd.Package;
 import org.opennms.netmgt.dao.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.SnmpInterfaceDao;
+import org.opennms.netmgt.filter.FilterDaoFactory;
+import org.opennms.netmgt.filter.JdbcFilterDao;
 import org.opennms.netmgt.linkd.nb.Nms10205bNetworkBuilder;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsNode;
@@ -58,12 +62,14 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations= {
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
@@ -73,6 +79,9 @@ import org.springframework.transaction.annotation.Transactional;
 @JUnitTemporaryDatabase
 @Transactional
 public class Nms10205bTest extends Nms10205bNetworkBuilder implements InitializingBean {
+
+    @Autowired
+    DataSource m_dataSource;
 
     @Autowired
     private Linkd m_linkd;
@@ -102,6 +111,16 @@ public class Nms10205bTest extends Nms10205bNetworkBuilder implements Initializi
         p.setProperty("log4j.logger.com.mchange.v2.resourcepool", "WARN");
 
         MockLogAppender.setupLogging(p);
+
+        // Initialize Filter DAO
+        DatabaseSchemaConfigFactory.init();
+        JdbcFilterDao jdbcFilterDao = new JdbcFilterDao();
+        // You must wrap the data source in Spring's TransactionAwareDataSourceProxy so that it
+        // executes its queries inside the current transaction.
+        jdbcFilterDao.setDataSource(new TransactionAwareDataSourceProxy(m_dataSource));
+        jdbcFilterDao.setDatabaseSchemaConfigFactory(DatabaseSchemaConfigFactory.getInstance());
+        jdbcFilterDao.afterPropertiesSet();
+        FilterDaoFactory.setInstance(jdbcFilterDao);
 
         super.setNodeDao(m_nodeDao);
         super.setSnmpInterfaceDao(m_snmpInterfaceDao);
