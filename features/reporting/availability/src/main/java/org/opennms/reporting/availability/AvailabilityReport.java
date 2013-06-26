@@ -48,6 +48,7 @@ import org.apache.log4j.MDC;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.ConfigFileConstants;
 
 import org.opennms.reporting.availability.render.HTMLReportRenderer;
@@ -259,11 +260,9 @@ public class AvailabilityReport extends Object {
      * @param args an array of {@link java.lang.String} objects.
      */
     public static void main(String args[]) {
-        // Spit warning level and higher messages out to the console
-        ConsoleAppender consoleAppender = new ConsoleAppender(new PatternLayout("%m%n"), ConsoleAppender.SYSTEM_ERR);
-        consoleAppender.setThreshold(Level.WARN);
-        Logger logger = Logger.getLogger(LOG4J_CATEGORY);
-        logger.addAppender(consoleAppender);
+        
+
+        Logging.availabilityReportConfigureLogging(LOG4J_CATEGORY);
 
         MDC.put("prefix", LOG4J_CATEGORY);
         LOG.debug("main() called with args: "+ StringUtils.arrayToDelimitedString(args, ", "));
@@ -297,6 +296,7 @@ public class AvailabilityReport extends Object {
             LOG.warn("Error while generating report.", e);
         }
     }
+
 
     /**
      * <p>generateReport</p>
