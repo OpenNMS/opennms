@@ -67,12 +67,6 @@ abstract public class PollOutagesConfigManager extends AbstractJaxbConfigDao<Out
 
     /** {@inheritDoc} */
     @Override
-    protected String createLoadedLogMessage(final Outages config, final long diffTime) {
-        return "Loaded " + getDescription() + " with " + config.getOutageCount() + " outages in " + diffTime + "ms";
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public void afterPropertiesSet() throws DataAccessException {
         /**
          * It sucks to duplicate this first test from AbstractCastorConfigDao,

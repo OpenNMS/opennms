@@ -128,7 +128,7 @@ public class Queued extends AbstractServiceDaemon implements EventListener {
         }
         
         for(String file : files) {
-            debugf("Promoting file: %s", file);
+            LOG.debug("Promoting file: {}", file);
         }
     }
 
