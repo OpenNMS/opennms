@@ -59,6 +59,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations= {
@@ -70,6 +71,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
+@Transactional
 public class Nms10205bTest extends Nms10205bNetworkBuilder implements InitializingBean {
 
     @Autowired
@@ -112,14 +114,6 @@ public class Nms10205bTest extends Nms10205bNetworkBuilder implements Initializi
         final LinkdConfigFactory factory = new LinkdConfigFactory(-1L, config.getInputStream());
         LinkdConfigFactory.setInstance(factory);
         m_linkdConfig = LinkdConfigFactory.getInstance();
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        for (final OnmsNode node : m_nodeDao.findAll()) {
-            m_nodeDao.delete(node);
-        }
-        m_nodeDao.flush();
     }
 
     /*

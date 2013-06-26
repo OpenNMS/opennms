@@ -52,7 +52,6 @@ import org.opennms.netmgt.config.LinkdConfig;
 import org.opennms.netmgt.config.LinkdConfigFactory;
 import org.opennms.netmgt.config.linkd.Package;
 import org.opennms.netmgt.dao.DataLinkInterfaceDao;
-import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.SnmpInterfaceDao;
 import org.opennms.netmgt.linkd.nb.Nms101NetworkBuilder;
@@ -76,6 +75,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
+@Transactional
 public class Nms101Test extends Nms101NetworkBuilder implements InitializingBean {
 
     @Autowired
@@ -86,9 +86,6 @@ public class Nms101Test extends Nms101NetworkBuilder implements InitializingBean
 
     @Autowired
     private SnmpInterfaceDao m_snmpInterfaceDao;
-
-    @Autowired
-    private IpInterfaceDao m_ipInterfaceDao;
 
     @Autowired
     private DataLinkInterfaceDao m_dataLinkInterfaceDao;

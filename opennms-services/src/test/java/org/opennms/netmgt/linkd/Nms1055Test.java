@@ -34,7 +34,6 @@ import static org.junit.Assert.assertTrue;
 import java.util.List;
 import java.util.Properties;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -60,6 +59,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations= {
@@ -71,6 +71,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
+@Transactional
 public class Nms1055Test extends Nms1055NetworkBuilder implements InitializingBean {
 
     @Autowired
@@ -116,14 +117,6 @@ public class Nms1055Test extends Nms1055NetworkBuilder implements InitializingBe
         m_linkdConfig = LinkdConfigFactory.getInstance();
     }
 
-    @After
-    public void tearDown() throws Exception {
-        for (final OnmsNode node : m_nodeDao.findAll()) {
-            m_nodeDao.delete(node);
-        }
-        m_nodeDao.flush();
-    }
-    
     @Test
     public void testAbstractQueryManagerforLldp() {
         m_nodeDao.save(getDelaware());

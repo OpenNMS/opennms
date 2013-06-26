@@ -43,7 +43,6 @@ import java.util.Properties;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.hibernate.criterion.Restrictions;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -92,6 +91,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
+@Transactional
 public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBean {
 
     @Autowired
@@ -151,14 +151,6 @@ public class Nms7467Test extends Nms7467NetworkBuilder implements InitializingBe
         final LinkdConfigFactory factory = new LinkdConfigFactory(-1L, config.getInputStream());
         LinkdConfigFactory.setInstance(factory);
         m_linkdConfig = LinkdConfigFactory.getInstance();
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        for (final OnmsNode node : m_nodeDao.findAll()) {
-            m_nodeDao.delete(node);
-        }
-        m_nodeDao.flush();
     }
 
     @Test

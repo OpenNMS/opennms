@@ -28,11 +28,9 @@
 
 package org.opennms.netmgt.linkd;
 
-import static org.opennms.core.utils.InetAddressUtils.addr;
 import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.net.InetAddress;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -58,7 +56,10 @@ import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.Assert;
 
 /**
@@ -75,6 +76,9 @@ public class Linkd extends AbstractServiceDaemon {
      * The log4j category used to log messages.
      */
     private static final String LOG4J_CATEGORY = "OpenNMS.Linkd";
+
+    @Autowired
+    private TransactionTemplate m_transTemplate;
 
     /**
      * Rescan scheduler thread
@@ -167,8 +171,14 @@ public class Linkd extends AbstractServiceDaemon {
         m_newSuspectEventsIpAddr.add(InetAddressUtils.ONE_TWENTY_SEVEN);
         m_newSuspectEventsIpAddr.add(InetAddressUtils.ZEROS);
 
-        m_nodes = m_queryMgr.getSnmpNodeList();
-        m_queryMgr.updateDeletedNodes();
+        m_transTemplate.execute(new TransactionCallback<Object>() {
+            @Override
+            public Object doInTransaction(TransactionStatus status) {
+                m_nodes = m_queryMgr.getSnmpNodeList();
+                m_queryMgr.updateDeletedNodes();
+                return null;
+            }
+        });
 
         Assert.notNull(m_nodes);
         scheduleCollection();
