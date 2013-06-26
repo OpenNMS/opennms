@@ -164,16 +164,16 @@ public class PollableSnmpInterface implements ReadyRunnable {
     	
     	m_snmpinterfaces.clear();
         for (OnmsSnmpInterface iface: snmpinterfaces) {
-        	log().debug("setting snmpinterface:" + iface.toString());
         	if (iface != null && iface.getIfIndex() != null && iface.getIfIndex() > 0) {
         		final Integer oldStatus = oldStatuses.get(iface.getIfIndex());
-        		
-                m_snmpinterfaces.put(iface.getIfIndex(), iface);            
+                        log().debug("setting snmpinterface (oldStatus=" + oldStatus + "):" + iface.toString());
+                        // Note: If OpenNMS is restarted, the event is going to be sent no matter if it was sent before, if the current status of the interface is down.        
+                        m_snmpinterfaces.put(iface.getIfIndex(), iface);
         		if (iface.getIfAdminStatus() != null &&
         				iface.getIfAdminStatus().equals(SnmpMinimalPollInterface.IF_UP) && 
         				iface.getIfOperStatus() != null &&
         				iface.getIfOperStatus().equals(SnmpMinimalPollInterface.IF_DOWN) &&
-        				iface.getIfOperStatus() != oldStatus) {
+        				(oldStatus == null || (iface.getIfOperStatus().intValue() != oldStatus.intValue()))) {
         			sendOperDownEvent(iface);
         		}
         	}

@@ -203,6 +203,12 @@ Requires(pre):	opennms-plugin-provisioning-snmp-asset
 Requires:	opennms-plugin-provisioning-snmp-asset
 Requires(pre):	opennms-plugin-ticketer-centric
 Requires:	opennms-plugin-ticketer-centric
+Requires(pre):	opennms-plugin-ticketer-jira
+Requires:	opennms-plugin-ticketer-jira
+Requires(pre):	opennms-plugin-ticketer-otrs
+Requires:	opennms-plugin-ticketer-otrs
+Requires(pre):	opennms-plugin-ticketer-rt
+Requires:	opennms-plugin-ticketer-rt
 Requires(pre):	opennms-plugin-protocol-cifs
 Requires:	opennms-plugin-protocol-cifs
 Requires(pre):	opennms-plugin-protocol-dhcp
@@ -289,6 +295,48 @@ Requires:	opennms-core = %{version}-%{release}
 %description plugin-provisioning-snmp-asset
 The SNMP asset provisioning adapter responds to provisioning events by updating asset
 fields with data fetched from SNMP GET requests.
+
+%{extrainfo}
+%{extrainfo2}
+
+
+%package plugin-ticketer-jira
+Summary:	JIRA Ticketer Plugin for OpenNMS
+Group:		Applications/System
+Requires(pre):	opennms-core = %{version}-%{release}
+Requires:	opennms-core = %{version}-%{release}
+
+%description plugin-ticketer-jira
+The JIRA ticketer plugin provides the ability to automatically create JIRA
+issues from OpenNMS alarms.
+
+%{extrainfo}
+%{extrainfo2}
+
+
+%package plugin-ticketer-otrs
+Summary:	OTRS Ticketer Plugin for OpenNMS
+Group:		Applications/System
+Requires(pre):	opennms-core = %{version}-%{release}
+Requires:	opennms-core = %{version}-%{release}
+
+%description plugin-ticketer-otrs
+The OTRS ticketer plugin provides the ability to automatically create OTRS
+issues from OpenNMS alarms.
+
+%{extrainfo}
+%{extrainfo2}
+
+
+%package plugin-ticketer-rt
+Summary:	RT Ticketer Plugin for OpenNMS
+Group:		Applications/System
+Requires(pre):	opennms-core = %{version}-%{release}
+Requires:	opennms-core = %{version}-%{release}
+
+%description plugin-ticketer-rt
+The RT ticketer plugin provides the ability to automatically create RT
+tickets from OpenNMS alarms.
 
 %{extrainfo}
 %{extrainfo2}
@@ -515,10 +563,13 @@ find $RPM_BUILD_ROOT%{instprefix}/etc ! -type d | \
 	grep -v '3gpp' | \
 	grep -v 'dhcpd-configuration.xml' | \
 	grep -v 'endpoint-configuration.xml' | \
+	grep -v 'jira.properties' | \
 	grep -v 'link-adapter-configuration.xml' | \
 	grep -v 'mapsadapter-configuration.xml' | \
 	grep -v 'nsclient-config.xml' | \
 	grep -v 'nsclient-datacollection-config.xml' | \
+	grep -v 'otrs.properties' | \
+	grep -v '/rt.properties' | \
 	grep -v 'snmp-asset-adapter-configuration.xml' | \
 	grep -v 'xml-datacollection-config.xml' | \
 	grep -v 'xmp-config.xml' | \
@@ -536,10 +587,13 @@ find $RPM_BUILD_ROOT%{sharedir}/etc-pristine ! -type d | \
 	grep -v '3gpp' | \
 	grep -v 'dhcpd-configuration.xml' | \
 	grep -v 'endpoint-configuration.xml' | \
+	grep -v 'jira.properties' | \
 	grep -v 'link-adapter-configuration.xml' | \
 	grep -v 'mapsadapter-configuration.xml' | \
 	grep -v 'nsclient-config.xml' | \
 	grep -v 'nsclient-datacollection-config.xml' | \
+	grep -v 'otrs.properties' | \
+	grep -v '/rt.properties' | \
 	grep -v 'snmp-asset-adapter-configuration.xml' | \
 	grep -v 'xml-datacollection-config.xml' | \
 	grep -v 'xmp-config.xml' | \
@@ -575,10 +629,13 @@ find $RPM_BUILD_ROOT%{instprefix}/lib ! -type d | \
 	grep -v 'org.opennms.protocols.cifs' | \
 	grep -v 'org.opennms.protocols.dhcp' | \
 	grep -v 'jdhcp' | \
+	grep -v 'jira' | \
 	grep -v 'org.opennms.protocols.nsclient' | \
 	grep -v 'org.opennms.protocols.radius' | \
 	grep -v 'gnu-crypto' | \
 	grep -v 'jradius' | \
+	grep -v 'opennms-integration-otrs' | \
+	grep -v 'opennms-integration-rt' | \
 	grep -v 'org.opennms.protocols.xml' | \
 	grep -v 'org.opennms.protocols.xmp' | \
 	grep -v 'xmp' | \
@@ -698,6 +755,24 @@ rm -rf $RPM_BUILD_ROOT
 %files plugin-protocol-cifs
 %defattr(664 root root 775)
 %{instprefix}/lib/org.opennms.protocols.cifs*.jar
+
+%files plugin-ticketer-jira
+%defattr(664 root root 775)
+%{instprefix}/lib/jira-*.jar
+%config(noreplace) %{instprefix}/etc/jira.properties
+%{sharedir}/etc-pristine/jira.properties
+
+%files plugin-ticketer-otrs
+%defattr(664 root root 775)
+%{instprefix}/lib/opennms-integration-otrs-*.jar
+%config(noreplace) %{instprefix}/etc/otrs.properties
+%{sharedir}/etc-pristine/otrs.properties
+
+%files plugin-ticketer-rt
+%defattr(664 root root 775)
+%{instprefix}/lib/opennms-integration-rt-*.jar
+%config(noreplace) %{instprefix}/etc/rt.properties
+%{sharedir}/etc-pristine/rt.properties
 
 %files plugin-protocol-dhcp
 %defattr(664 root root 775)
