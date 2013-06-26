@@ -8,4 +8,6 @@ public interface LoggingStrategy {
 
     public void availabilityReportConfigureLogging(String prefix);
 
+    public void configureInstallerLogging();
+
 }

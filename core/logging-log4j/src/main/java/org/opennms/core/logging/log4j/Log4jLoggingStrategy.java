@@ -2,6 +2,7 @@ package org.opennms.core.logging.log4j;
 
 import java.io.File;
 
+import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
@@ -47,6 +48,13 @@ public class Log4jLoggingStrategy implements LoggingStrategy {
     @Override
     public void shutdownLogging() {
         LogManager.shutdown();
+    }
+
+    @Override
+    public void configureInstallerLogging() {
+        BasicConfigurator.configure();
+        Logger.getRootLogger().setLevel(Level.WARN);
+        
     }
 
 }

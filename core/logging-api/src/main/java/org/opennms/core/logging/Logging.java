@@ -90,4 +90,8 @@ public class Logging {
         }
     }
 
+    public static void configureInstallerLogging() {
+        getStrategy().configureInstallerLogging();
+    }
+
 }

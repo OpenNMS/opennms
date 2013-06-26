@@ -55,8 +55,7 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.PosixParser;
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.Level;
+import org.opennms.core.logging.Logging;
 import org.opennms.bootstrap.Bootstrap;
 import org.opennms.core.db.ConnectionFactoryUtil;
 import org.opennms.core.db.install.InstallerDb;
@@ -947,9 +946,7 @@ public class Installer {
      * @throws java.lang.Exception if any.
      */
     public static void main(String[] argv) throws Exception {
-        BasicConfigurator.configure();
-        Logger.getRootLogger().setLevel(Level.WARN);
-        
+        Logging.configureInstallerLogging();
         new Installer().install(argv);
     }
 
