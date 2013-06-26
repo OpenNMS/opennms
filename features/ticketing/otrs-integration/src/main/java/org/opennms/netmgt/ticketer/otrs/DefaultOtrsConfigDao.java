@@ -36,7 +36,8 @@ import java.util.List;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>DefaultOtrsConfigDao class.</p>
@@ -45,6 +46,7 @@ import org.opennms.core.utils.LogUtils;
  * @version $Id: $
  */
 public class DefaultOtrsConfigDao {
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultOtrsConfigDao.class);
 
 	/**
 	 * Retrieves the properties defined in the otrs.properties file.
@@ -59,12 +61,12 @@ public class DefaultOtrsConfigDao {
 		String propsFile = null;
 		try {
 			propsFile = new File(new File(System.getProperty("opennms.home"), "etc"), "otrs.properties").getCanonicalPath();
-			LogUtils.debugf(this, "loading properties from: %s", propsFile);
+			LOG.debug("loading properties from: {}", propsFile);
 			config = new PropertiesConfiguration(propsFile);
 		} catch (final ConfigurationException e) {
-			LogUtils.errorf(this, e, "Unable to load properties from %s", propsFile);
+			LOG.error("Unable to load properties from {}", propsFile, e);
 		} catch (final IOException e) {
-			LogUtils.errorf(this, e, "Exception when trying to find OTRS configuration properties from %s", propsFile);
+			LOG.error("Exception when trying to find OTRS configuration properties from {}", propsFile, e);
 		}
 		return config;
 	}
@@ -160,7 +162,7 @@ public class DefaultOtrsConfigDao {
 	}
 	
 	Integer getClosedStateId() {
-		LogUtils.debugf(this, "getting closed state ID: %d", getProperties().getInteger("otrs.closedstateid", 2)); 
+		LOG.debug("getting closed state ID: {}", getProperties().getInteger("otrs.closedstateid", 2));
 		return getProperties().getInteger("otrs.closedstateid", 2);
 	}
 	
