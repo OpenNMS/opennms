@@ -34,7 +34,8 @@ import java.util.Properties;
 import java.util.TreeMap;
 
 import org.opennms.core.utils.BeanUtils;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.dao.EventDao;
 import org.opennms.netmgt.dao.IpInterfaceDao;
@@ -46,6 +47,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 
 public class OpenNMSReportPlugin extends AbstractSystemReportPlugin implements InitializingBean {
+    private static final Logger LOG = LoggerFactory.getLogger(OpenNMSReportPlugin.class);
     @Autowired
     public NodeDao m_nodeDao;
 
@@ -91,7 +93,7 @@ public class OpenNMSReportPlugin extends AbstractSystemReportPlugin implements I
                 p.load(is);
                 map.put("Version", getResource(p.getProperty("version.display")));
             } catch (final IOException e) {
-                LogUtils.warnf(this, e, "Unable to load from version.properties");
+                LOG.warn("Unable to load from version.properties", e);
             }
         }
         

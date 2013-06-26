@@ -53,10 +53,12 @@ import org.apache.commons.io.IOUtils;
 import org.apache.log4j.PropertyConfigurator;
 import org.opennms.bootstrap.Bootstrap;
 import org.opennms.core.soa.ServiceRegistry;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class SystemReport extends Bootstrap {
+    private static final Logger LOG = LoggerFactory.getLogger(SystemReport.class);
     final static Pattern m_pattern = Pattern.compile("^-D(.*?)=(.*)$");
 
     public static void main(String[] args) throws Exception {
@@ -168,7 +170,7 @@ public class SystemReport extends Bootstrap {
             }
         }
         if (formatter == null) {
-            LogUtils.errorf(this, "Unknown format '%s'!", m_format);
+            LOG.error("Unknown format '{}'!", m_format);
             System.exit(1);
         }
 
@@ -184,13 +186,13 @@ public class SystemReport extends Bootstrap {
                     f.delete();
                     stream = new FileOutputStream(f, false);
                 } catch (final FileNotFoundException e) {
-                    LogUtils.errorf(SystemReport.class, e, "Unable to write to '%s'", m_output);
+                    LOG.error("Unable to write to '{}'", m_output, e);
                     System.exit(1);
                 }
             }
 
             if (m_output.equals("-") && !formatter.canStdout()) {
-                LogUtils.errorf(this, "%s formatter does not support writing to STDOUT!", formatter.getName());
+                LOG.error("{} formatter does not support writing to STDOUT!", formatter.getName());
                 System.exit(1);
             }
 
@@ -211,12 +213,12 @@ public class SystemReport extends Bootstrap {
             for (final String pluginName : plugins) {
                 final SystemReportPlugin plugin = pluginMap.get(pluginName);
                 if (plugin == null) {
-                    LogUtils.warnf(this, "No plugin named '%s' found, skipping.", pluginName);
+                    LOG.warn("No plugin named '{}' found, skipping.", pluginName);
                 } else {
                     try {
                         formatter.write(plugin);
                     } catch (final Exception e) {
-                        LogUtils.errorf(this, e, "An error occurred calling plugin '%s'", plugin.getName());
+                        LOG.error("An error occurred calling plugin '{}'", plugin.getName(), e);
                     }
                     if (stream != null) stream.flush();
                 }
@@ -224,7 +226,7 @@ public class SystemReport extends Bootstrap {
             formatter.end();
             if (stream != null) stream.flush();
         } catch (final Exception e) {
-            LogUtils.errorf(this, e, "An error occurred writing plugin data to output.");
+            LOG.error("An error occurred writing plugin data to output.", e);
             System.exit(1);
         }
 
