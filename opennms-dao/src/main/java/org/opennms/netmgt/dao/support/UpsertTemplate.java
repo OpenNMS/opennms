@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.dao.support;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.dao.OnmsDao;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
@@ -161,7 +162,9 @@ public abstract class UpsertTemplate<T, D extends OnmsDao<T, ?>> {
         }
 
         // lock the table since we are about to insert and don't want it inserted 
-        m_dao.lock();
+        if (!m_dao.lock()) {
+            LogUtils.warnf(this, "Unable to acquire lock for table: %s", m_dao.getLockName());
+        }
 
         // make sure it wasn't inserted while we waited for the lock
         dbObj = query();
@@ -170,7 +173,7 @@ public abstract class UpsertTemplate<T, D extends OnmsDao<T, ?>> {
             return update(dbObj);
         }
         
-        // now it is save to insert it
+        // now it is safe to insert it
         return insert();
     }
 

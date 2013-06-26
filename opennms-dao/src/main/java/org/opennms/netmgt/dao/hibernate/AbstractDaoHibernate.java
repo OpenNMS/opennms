@@ -100,11 +100,16 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> implements
         this.sessionFactory = sessionFactory;
     }
 
+    public String getLockName() {
+        return m_lockName;
+    }
+
     protected void initDao() throws Exception {
         Session session = null;
         try {
             session = sessionFactory.openSession();
             session.saveOrUpdate(new AccessLock(m_lockName));
+            session.flush();
         } finally {
             if (session != null) {
                 session.close();
@@ -117,8 +122,8 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> implements
      * This is used to lock the table in order to implement upsert type operations
      */
     @Override
-    public void lock() {
-        sessionFactory.getCurrentSession().get(AccessLock.class, m_lockName, LockOptions.UPGRADE);
+    public boolean lock() {
+        return (sessionFactory.getCurrentSession().get(AccessLock.class, m_lockName, LockOptions.UPGRADE) != null);
     }
 
 

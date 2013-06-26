@@ -42,7 +42,12 @@ public interface OnmsDao<T, K extends Serializable> {
     /**
      * This is used to lock the table in order to implement upsert type operations
      */
-    void lock();
+    boolean lock();
+
+    /**
+     * Get the name of the access lock.
+     */
+    String getLockName();
 
     
     /**

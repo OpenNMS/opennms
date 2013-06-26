@@ -152,6 +152,7 @@ public class DatabasePopulator {
         builder.addCategory(catRouter); 
         builder.setBuilding("HQ");
         builder.addInterface("192.168.1.1").setIsManaged("M").setIsSnmpPrimary("P").addSnmpInterface(1)
+            .setIfName("atm0")
             .setCollectionEnabled(true)
             .setIfOperStatus(1)
             .setIfSpeed(10000000)
