@@ -35,9 +35,11 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class RTTicket implements Serializable {
+    private static final Logger LOG = LoggerFactory.getLogger(RTTicket.class);
     /**
      * 
      */
@@ -191,7 +193,7 @@ public class RTTicket implements Serializable {
             if (m_customFields.size() > 0) {
                 for (CustomField field : m_customFields) {
                     if (field.getValues().size() == 0) continue;
-                    if (field.getValues().size() > 1) LogUtils.warnf(this, "Field %s has %d values, using only the first one", field.getName(), field.getValues().size());
+                    if (field.getValues().size() > 1) LOG.warn("Field {} has {} values, using only the first one", field.getName(), field.getValues().size());
                     String value = field.getValues().get(0).getValue();
                     contentBuilder.append("CF.{").append(field.getName()).append("}: ").append(value).append("\n");
                 }

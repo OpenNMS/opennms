@@ -34,9 +34,11 @@ import java.util.List;
 import junit.framework.TestCase;
 
 import org.opennms.core.test.MockLogAppender;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class RequestTrackerTest extends TestCase {
+    private static final Logger LOG = LoggerFactory.getLogger(RequestTrackerTest.class);
 
     /**
      * Test Cases for RtTicketerPlugin
@@ -81,7 +83,7 @@ public class RequestTrackerTest extends TestCase {
         final String testHome = System.getProperty("user.home") + File.separatorChar + ".opennms" + File.separatorChar + "test-home";
         final File testProp = new File(testHome + File.separatorChar + "etc" + File.separatorChar + "rt.properties");
         if (testProp.exists()) {
-            LogUtils.debugf(this, "%s exists, using it instead of src/test/opennms-home", testHome);
+            LOG.debug("{} exists, using it instead of src/test/opennms-home", testHome);
             System.setProperty("opennms.home", testHome);
         } else {
             System.setProperty("opennms.home", "src" + File.separatorChar + "test" + File.separatorChar + "opennms-home");
@@ -137,13 +139,13 @@ public class RequestTrackerTest extends TestCase {
     
     public void testGetQueuesForUser() throws Exception {
         List<RTQueue> queues = m_tracker.getQueuesForUser("root");
-        LogUtils.debugf(this, "queues = %s", queues);
+        LOG.debug("queues = {}", queues);
         assertTrue("there must be at least one queue", queues.size() > 0);
     }
 
     public void testGetTicketsForQueue() throws Exception {
         List<RTTicket> tickets = m_tracker.getTicketsForQueue("General", 10);
-        LogUtils.debugf(this, "tickets = %s", tickets);
+        LOG.debug("tickets = {}", tickets);
         assertTrue("there must be at least one ticket", tickets.size() > 0);
     }
 
