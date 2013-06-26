@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -33,9 +33,9 @@ import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.LogUtils;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.provision.annotations.Require;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.ConversionNotSupportedException;
@@ -49,6 +49,8 @@ import org.springframework.beans.PropertyAccessorFactory;
  * @version $Id: $
  */
 public abstract class BasePolicy<T> {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(BasePolicy.class);
     
     public static enum Match { ANY_PARAMETER, ALL_PARAMETERS, NO_PARAMETERS }
 
@@ -224,7 +226,7 @@ public abstract class BasePolicy<T> {
         try {
             value = bean.getPropertyValue(propertyName);
         } catch (BeansException e) {
-            ThreadCategory.getInstance(BasePolicy.class).warn("Could not find property \"" + propertyName + "\" on object of type " + bean.getWrappedClass().getName() + ", returning null", e);
+            LOG.warn("Could not find property \"{}\" on object of type {}, returning null", propertyName, bean.getWrappedClass().getName(), e);
             return null;
         }
         try {
@@ -260,11 +262,13 @@ public abstract class BasePolicy<T> {
         }
         
         if (matches(iface)) {
-            LogUtils.debugf(this, "Found Match %s for %s", iface, this);
+            // TODO add MDC log info for resource at hand
+            LOG.debug("Found Match {} for {}", iface, this);
             return act(iface);
         }
         
-        LogUtils.debugf(this, "No Match Found: %s for %s", iface, this);
+        // TODO add MDC log info for resource at hand
+        LOG.debug("No Match Found: {} for {}", iface, this);
         return iface;
     }
 }
