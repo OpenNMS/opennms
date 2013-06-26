@@ -223,7 +223,6 @@ public class XmpUtil {
      * @param minMatches a int.
      * @param maxMatches a int.
      * @param maxMatchesUnbounded a boolean.
-     * @param log a {@link org.opennms.core.utils.ThreadCategory} object.
      * @param caseSensitive a boolean.
      * @return a boolean.
      * @throws org.opennms.netmgt.protocols.xmp.XmpUtilException if any.
