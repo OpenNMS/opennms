@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -34,9 +34,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LazySet;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.ResourceDao;
 import org.opennms.netmgt.model.OnmsAttribute;
@@ -50,6 +51,9 @@ import org.springframework.orm.ObjectRetrievalFailureException;
  * <p>ResponseTimeResourceType class.</p>
  */
 public class ResponseTimeResourceType implements OnmsResourceType {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(ResponseTimeResourceType.class);
+    
     private ResourceDao m_resourceDao;
     private NodeDao m_nodeDao;
     
@@ -162,7 +166,7 @@ public class ResponseTimeResourceType implements OnmsResourceType {
 
         @Override
         public Set<OnmsAttribute> load() {
-            LogUtils.debugf(this, "lazy-loading attributes for response time resource '%s'", m_intf);
+            LOG.debug("lazy-loading attributes for response time resource '{}'", m_intf);
             return ResourceTypeUtils.getAttributesAtRelativePath(m_resourceDao.getRrdDirectory(), getRelativeInterfacePath(m_intf));
         }
     }

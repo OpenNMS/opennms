@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2013 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -41,11 +41,12 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.Map.Entry;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.utils.BundleLists;
 import org.opennms.core.utils.FileReloadCallback;
 import org.opennms.core.utils.FileReloadContainer;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.GraphDao;
 import org.opennms.netmgt.model.AdhocGraphType;
 import org.opennms.netmgt.model.OnmsAttribute;
@@ -62,6 +63,9 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 public class PropertiesGraphDao implements GraphDao, InitializingBean {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(PropertiesGraphDao.class);
+    
     /** Constant <code>DEFAULT_GRAPH_LIST_KEY="reports"</code> */
     public static final String DEFAULT_GRAPH_LIST_KEY = "reports";
 
@@ -193,7 +197,7 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
                 this.scanIncludeDirectory(type);
             }
         } catch (IOException e) {
-            log().error("Unable to rescan the include directory '"
+            LOG.error("Unable to rescan the include directory '"
                                 + type.getIncludeDirectory() + "' of type "
                                 + type.getName() + " because:", e);
         }
@@ -229,7 +233,7 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
             }
 
         } catch (DataAccessResourceFailureException e) {
-            log().error("Problem while attempting to load " + file + ":", e);
+            LOG.error("Problem while attempting to load " + file + ":", e);
             type.addMalformedFile(file); //Record that the file was completely broken
         }
     }
@@ -348,7 +352,7 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
                     t.setIncludeDirectoryResource(includeDirectoryResource);
                 } else {
                     // Just warn; no need to throw a hissy fit or otherwise fail to load
-                    log().warn("includeDirectory '"
+                    LOG.warn("includeDirectory '"
                                        + includeDirectoryFile.getAbsolutePath()
                                        + "' specified in '"
                                        + sourceResource.getFilename()
@@ -365,7 +369,7 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
             } catch (NumberFormatException e) {
                 // Default value if one was specified but it wasn't an integer
                 interval = 300000;
-                log().warn("The property 'include.directory.rescan' in "
+                LOG.warn("The property 'include.directory.rescan' in "
                                    + sourceResource
                                    + " was not able to be parsed as an integer.  Defaulting to "
                                    + interval + "ms", e);
@@ -398,7 +402,7 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
             return t;
 
         } catch (IOException e) {
-            log().error("Failed to load prefab graph configuration of type "
+            LOG.error("Failed to load prefab graph configuration of type "
                                 + type + " from " + sourceResource, e);
             return null;
         } finally {
@@ -536,7 +540,7 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
                                                     type.getNextOrdering());
                 result.add(graph);
             } catch (DataAccessResourceFailureException e) {
-                log().error("Failed to load report '" + name + "' because:",
+                LOG.error("Failed to load report '" + name + "' because:",
                             e);
                 result.add(null); //Add a null, indicating a broken graph
             }
@@ -675,10 +679,6 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
         }
     }
 
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(PropertiesGraphDao.class);
-    }
-
     private class PrefabGraphTypeCallback implements
             FileReloadCallback<PrefabGraphTypeDao> {
         @Override
@@ -687,7 +687,7 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
             try {
                 return createPrefabGraphType(object.getName(), resource);
             } catch (Throwable e) {
-                log().error("Could not reload configuration '" + resource
+                LOG.error("Could not reload configuration '" + resource
                                     + "'; nested exception: " + e, e);
                 return null;
             }
@@ -725,7 +725,7 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
                 }
                 return result;
             } catch (Throwable e) {
-                log().error("Could not reload configuration '" + resource
+                LOG.error("Could not reload configuration '" + resource
                                     + "'; nested exception: " + e, e);
                 return null;
             }
@@ -773,13 +773,13 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
     @Override
     public PrefabGraph[] getPrefabGraphsForResource(OnmsResource resource) {
         if (resource == null) {
-            log().warn("returning empty graph list for resource because it is null");
+            LOG.warn("returning empty graph list for resource because it is null");
             return new PrefabGraph[0];
         }
         Set<OnmsAttribute> attributes = resource.getAttributes();
         // Check if there are no attributes
         if (attributes.size() == 0) {
-            log().debug("returning empty graph list for resource " + resource
+            LOG.debug("returning empty graph list for resource " + resource
                                 + " because its attribute list is empty");
             return new PrefabGraph[0];
         }
@@ -790,7 +790,7 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
 
         // Check if there are no RRD attributes
         if (availableRrdAttributes.size() == 0) {
-            log().debug("returning empty graph list for resource " + resource
+            LOG.debug("returning empty graph list for resource " + resource
                                 + " because it has no RRD attributes");
             return new PrefabGraph[0];
         }
@@ -800,8 +800,8 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
         Map<String, PrefabGraph> returnList = new LinkedHashMap<String, PrefabGraph>();
         for (PrefabGraph query : getAllPrefabGraphs()) {
             if (resourceType != null && !query.hasMatchingType(resourceType)) {
-                if (log().isDebugEnabled()) {
-                    log().debug("skipping "
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("skipping "
                                         + query.getName()
                                         + " because its types \""
                                         + StringUtils.arrayToDelimitedString(query.getTypes(),
@@ -830,20 +830,20 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
                 continue;
             }
 
-            if (log().isDebugEnabled()) {
-                log().debug("adding " + query.getName() + " to query list");
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("adding " + query.getName() + " to query list");
             }
 
             returnList.put(query.getName(), query);
         }
 
-        if (log().isDebugEnabled()) {
+        if (LOG.isDebugEnabled()) {
             ArrayList<String> nameList = new ArrayList<String>(
                                                                returnList.size());
             for (PrefabGraph graph : returnList.values()) {
                 nameList.add(graph.getName());
             }
-            log().debug("found "
+            LOG.debug("found "
                                 + nameList.size()
                                 + " prefabricated graphs for resource "
                                 + resource
@@ -858,8 +858,8 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
         }
 
         suppressReports.retainAll(returnList.keySet());
-        if (suppressReports.size() > 0 && log().isDebugEnabled()) {
-            log().debug("suppressing "
+        if (suppressReports.size() > 0 && LOG.isDebugEnabled()) {
+            LOG.debug("suppressing "
                                 + suppressReports.size()
                                 + " prefabricated graphs for resource "
                                 + resource
@@ -880,9 +880,9 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
         if (availableRrdAttributes.containsAll(requiredList)) {
             return true;
         } else {
-            if (log().isDebugEnabled()) {
+            if (LOG.isDebugEnabled()) {
                 String name = query.getName();
-                log().debug("not adding "
+                LOG.debug("not adding "
                                     + name
                                     + " to prefab graph list because the required list of "
                                     + type
@@ -909,7 +909,7 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
                 in = resource.getInputStream();
                 return createAdhocGraphType(object.getName(), in);
             } catch (Throwable e) {
-                log().error("Could not reload configuration from '"
+                LOG.error("Could not reload configuration from '"
                                     + resource + "'; nested exception: " + e,
                             e);
                 return null;
