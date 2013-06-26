@@ -58,7 +58,6 @@ import org.springframework.mock.web.MockHttpServletRequest;
  * 1. Need to figure it out how to create a Mock for EventProxy to validate events sent by RESTful service
  */
 public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
-
     private static final Logger LOG = LoggerFactory.getLogger(NodeRestServiceTest.class);
 
     private static int m_nodeCounter = 0;

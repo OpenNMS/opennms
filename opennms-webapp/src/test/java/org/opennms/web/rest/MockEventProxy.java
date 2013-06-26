@@ -31,18 +31,20 @@ package org.opennms.web.rest;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.model.events.EventProxyException;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
 
 public class MockEventProxy implements EventProxy {
+    private static final Logger LOG = LoggerFactory.getLogger(MockEventProxy.class);
     private List<Event> m_events = new ArrayList<Event>();
 
     @Override
     public void send(final Event event) throws EventProxyException {
-        LogUtils.debugf(this, "Received event: %s", event);
+        LOG.debug("Received event: {}", event);
         m_events.add(event);
     }
 
@@ -50,7 +52,7 @@ public class MockEventProxy implements EventProxy {
     public void send(final Log eventLog) throws EventProxyException {
         if (eventLog.getEvents() != null) {
             final List<Event> events = eventLog.getEvents().getEventCollection();
-            LogUtils.debugf(this, "Received events: %s", events);
+            LOG.debug("Received events: {}", events);
             m_events.addAll(events);
         }
     }
