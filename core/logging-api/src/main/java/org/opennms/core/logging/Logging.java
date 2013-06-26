@@ -1,5 +1,6 @@
 package org.opennms.core.logging;
 
+import java.io.File;
 import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.concurrent.Callable;
@@ -11,7 +12,28 @@ public class Logging {
 	public static final String PREFIX_KEY = "prefix";
 	
 	private static LoggingStrategy m_strategy;
-	
+
+	// FIXME: please
+	public static void remotePollerInitializeLogging(String pollerHome) throws Exception {
+		String logFile;
+        logFile = System.getProperty("poller.logfile", pollerHome + File.separator + "opennms-remote-poller.log");
+        File logDirectory = new File(logFile).getParentFile();
+        if (!logDirectory.exists()) {
+            if (!logDirectory.mkdirs()) {
+                throw new IllegalStateException("Could not create parent directory for log file '" + logFile + "'");
+            }
+        }
+        if (Boolean.getBoolean("debug")) {
+        	//LogUtils.logToConsole();
+        } else {
+        	//LogUtils.logToFile(logFile);
+        }
+	}
+
+	public static void remotePollerEnableDebugging() {
+		// FIXME: Stubbed
+	}
+
 	private static synchronized LoggingStrategy getStrategy() {
 		if (m_strategy == null) {
 			ServiceLoader<LoggingStrategy> loader = ServiceLoader.load(LoggingStrategy.class);
