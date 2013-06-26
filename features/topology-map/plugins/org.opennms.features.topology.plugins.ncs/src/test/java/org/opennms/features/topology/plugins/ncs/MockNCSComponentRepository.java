@@ -8,7 +8,7 @@ import org.opennms.netmgt.model.ncs.NCSComponentRepository;
 
 public class MockNCSComponentRepository implements NCSComponentRepository {
     @Override
-    public void lock() {}
+    public boolean lock() { return false; }
     @Override
     public void initialize(Object obj) {}
     @Override
