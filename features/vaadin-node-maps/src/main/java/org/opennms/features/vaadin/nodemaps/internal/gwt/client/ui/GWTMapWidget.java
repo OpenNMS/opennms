@@ -60,7 +60,7 @@ public class GWTMapWidget extends Widget implements MarkerProvider, SearchConsum
 
     private MarkerClusterGroup m_markerClusterGroup;
     
-    private MarkerClusterGroup[] m_stateClusterGroups;
+    //private MarkerClusterGroup[] m_stateClusterGroups;
 
     private boolean m_firstUpdate = true;
 
@@ -182,7 +182,7 @@ public class GWTMapWidget extends Widget implements MarkerProvider, SearchConsum
         createMap(divId);
         // createGoogleLayer();
         addTileLayer();
-        addMarkerLayer();
+        //addMarkerLayer();
 
         // overlay controls
         addSearchControl();
@@ -444,20 +444,20 @@ public class GWTMapWidget extends Widget implements MarkerProvider, SearchConsum
         m_markerClusterGroup.on("clusterclick", callback);
         m_markerClusterGroup.on("clustertouchend", callback);
         m_map.addLayer(m_markerClusterGroup);
-        m_stateClusterGroups = new MarkerClusterGroup[52];
-        Options[] stateClusterOptions = new Options[52];
-        for(int i = 0; i < stateClusterOptions.length; i++){
-        	stateClusterOptions[i] = markerClusterOptions;
-        	//stateClusterOptions[i].setProperty("inUs", true);
-        	//stateClusterOptions[i].setProperty("stateId", i);
-        	//stateClusterOptions[i].setProperty("stateData", StatesData.getPolygonInfo(i, StatesData.getInstance()));
-        }
-        for(int i = 0; i < m_stateClusterGroups.length; i++){
-        	m_stateClusterGroups[i] = new MarkerClusterGroup(stateClusterOptions[i]);
-        	m_stateClusterGroups[i].on("clusterclick", callback);
-        	m_stateClusterGroups[i].on("clustertouchend", callback);
-        	m_map.addLayer(m_stateClusterGroups[i]);
-        }
+        //m_stateClusterGroups = new MarkerClusterGroup[52];
+//        Options[] stateClusterOptions = new Options[52];
+//        for(int i = 0; i < stateClusterOptions.length; i++){
+//        	stateClusterOptions[i] = markerClusterOptions;
+//        	stateClusterOptions[i].setProperty("inUs", true);
+//        	stateClusterOptions[i].setProperty("stateId", i);
+//        	//stateClusterOptions[i].setProperty("stateData", StatesData.getPolygonInfo(i, StatesData.getInstance()));
+//        }
+//        for(int i = 0; i < m_stateClusterGroups.length; i++){
+//        	m_stateClusterGroups[i] = new MarkerClusterGroup(stateClusterOptions[i]);
+//        	m_stateClusterGroups[i].on("clusterclick", callback);
+//        	m_stateClusterGroups[i].on("clustertouchend", callback);
+//        	m_map.addLayer(m_stateClusterGroups[i]);
+//        }
     }
 
     private void addSearchControl() {
@@ -517,18 +517,18 @@ public class GWTMapWidget extends Widget implements MarkerProvider, SearchConsum
             public boolean execute() {
                 if (m_markerIterator.hasNext()) {
                     final NodeMarker marker = m_markerIterator.next();
-                    if(StatesData.inUs(marker.getLatLng().lat(), marker.getLatLng().lng(), StatesData.getUsShape())){
-                    	int stateId = StatesData.getStateId(marker.getLatLng().lat(), marker.getLatLng().lng(), StatesData.getInstance());
-                    	if(!m_stateClusterGroups[stateId].hasLayer(marker)){
-                    			m_stateClusterGroups[stateId].addLayer(marker);
-                    	}
-                    }
-                    
-                    else{
+//                    if(StatesData.inUs(marker.getLatLng().lat(), marker.getLatLng().lng(), StatesData.getUsShape())){
+//                    	int stateId = StatesData.getStateId(marker.getLatLng().lat(), marker.getLatLng().lng(), StatesData.getInstance());
+//                    	if(!m_stateClusterGroups[stateId].hasLayer(marker)){
+//                    			m_stateClusterGroups[stateId].addLayer(marker);
+//                    	}
+//                    }
+//                    
+//                    else{
                     	if (!m_markerClusterGroup.hasLayer(marker)) {
                     		m_markerClusterGroup.addLayer(marker);
                     	}
-                    }
+                    //}
                     return true;
                 }
 
@@ -548,18 +548,18 @@ public class GWTMapWidget extends Widget implements MarkerProvider, SearchConsum
                 if (m_markerIterator.hasNext()) {
                     final NodeMarker marker = m_markerIterator.next();
                     marker.closePopup();
-                    if(StatesData.inUs(marker.getLatLng().lat(), marker.getLatLng().lng(), StatesData.getUsShape())){
-                    	int stateId = StatesData.getStateId(marker.getLatLng().lat(), marker.getLatLng().lng(), StatesData.getInstance());
-                    	
-                    		m_stateClusterGroups[stateId].removeLayer(marker);
-                    	
-                    }
-                    
-                    else{
+//                    if(StatesData.inUs(marker.getLatLng().lat(), marker.getLatLng().lng(), StatesData.getUsShape())){
+//                    	int stateId = StatesData.getStateId(marker.getLatLng().lat(), marker.getLatLng().lng(), StatesData.getInstance());
+//                    	
+//                    		m_stateClusterGroups[stateId].removeLayer(marker);
+//                    	
+//                    }
+//                    
+//                    else{
                 
                     	m_markerClusterGroup.removeLayer(marker);
                     	
-                    }
+                    //}
                     return true;
                 }
 
@@ -599,9 +599,9 @@ public class GWTMapWidget extends Widget implements MarkerProvider, SearchConsum
 
         VConsole.log("clearing existing markers");
         m_markerClusterGroup.clearLayers();
-        for(int i = 0; i < m_stateClusterGroups.length; i++){
-        	m_stateClusterGroups[i].clearLayers();
-        }
+//        for(int i = 0; i < m_stateClusterGroups.length; i++){
+//        	m_stateClusterGroups[i].clearLayers();
+//        }
 
         refresh();
     }
@@ -643,13 +643,13 @@ public class GWTMapWidget extends Widget implements MarkerProvider, SearchConsum
 
     private final void destroyMap() {
         m_markerClusterGroup.clearLayers();
-        for(int i = 0; i < m_stateClusterGroups.length; i++){
-        	m_stateClusterGroups[i].clearLayers();
-        }
+//        for(int i = 0; i < m_stateClusterGroups.length; i++){
+//        	m_stateClusterGroups[i].clearLayers();
+//        }
         m_map.removeLayer(m_markerClusterGroup);
-        for(int i = 0; i < m_stateClusterGroups.length; i++){
-        	m_map.removeLayer(m_stateClusterGroups[i]);
-        }
+//        for(int i = 0; i < m_stateClusterGroups.length; i++){
+//        	m_map.removeLayer(m_stateClusterGroups[i]);
+//        }
         m_map.removeLayer(m_layer);
         m_map = null;
     }
