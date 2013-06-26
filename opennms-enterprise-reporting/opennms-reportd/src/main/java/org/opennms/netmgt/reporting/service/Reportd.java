@@ -35,7 +35,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.springframework.util.Assert;
-import org.opennms.core.utils.LogUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.reportd.Report;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
@@ -55,9 +56,7 @@ import org.opennms.netmgt.xml.event.Parm;
  */
 @EventListener(name="Reportd:EventListener")
 public class Reportd implements SpringServiceDaemon {
-	
-	
-	private static final Logger LOG = LoggerFactory.getLogger(Reportd.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Reportd.class);
 
     /** Constant <code>NAME="Reportd"</code> */
     public static final String NAME = "Reportd";
@@ -111,7 +110,7 @@ public class Reportd implements SpringServiceDaemon {
      * @param reportName a {@link java.lang.String} object.
      */
     public void runReport(String reportName){
-        LogUtils.infof(this, "Running report by name: (%s).", reportName);
+        LOG.info("Running report by name: ({}).", reportName);
         runReport(m_reportConfigurationDao.getReport(reportName));
     }
       
@@ -124,15 +123,15 @@ public class Reportd implements SpringServiceDaemon {
     	Map mdc = MDC.getCopyOfContextMap();
         try {
         	MDC.put("prefix", NAME);
-            LogUtils.debugf(this, "reportd -- running job %s", report.getReportName() );
+            LOG.debug("reportd -- running job {}", report.getReportName());
             String fileName = m_reportService.runReport(report,reportDirectory);
             if (report.getRecipientCount() > 0) {
-                LogUtils.debugf(this,"reportd -- delivering report %s to %d recipients", report.getReportName(), report.getRecipientCount());
+                LOG.debug("reportd -- delivering report {} to {} recipients", report.getReportName(), report.getRecipientCount());
                 m_reportDeliveryService.deliverReport(report, fileName);
             } else {
-                LogUtils.infof(this, "Skipped delivery of report %s because it has no recipients", report.getReportName());
+                LOG.info("Skipped delivery of report {} because it has no recipients", report.getReportName());
             }
-            LogUtils.debugf(this,"reportd -- done running job %s",report.getReportName() );
+            LOG.debug("reportd -- done running job {}",report.getReportName());
         } catch (ReportRunException e) {
             createAndSendReportingEvent(EventConstants.REPORT_RUN_FAILED_UEI, report.getReportName(), e.getMessage());
         } catch (ReportDeliveryException e) {
@@ -150,7 +149,7 @@ public class Reportd implements SpringServiceDaemon {
      * @param reason an explanation of why this event was sent
      */
     private void createAndSendReportingEvent(String uei, String reportName, String reason) {
-        LogUtils.debugf(this, "Crafting reporting event with UEI '%s' for report '%s' with reason '%s'", uei, reportName, reason);
+        LOG.debug("Crafting reporting event with UEI '{}' for report '{}' with reason '{}'", uei, reportName, reason);
         
         EventBuilder bldr = new EventBuilder(uei, NAME);
         bldr.addParam(EventConstants.PARM_REPORT_NAME, reportName);
@@ -174,17 +173,17 @@ public class Reportd implements SpringServiceDaemon {
                reportName = parm.getValue().getContent();
            
            else 
-               LogUtils.infof(this,"Unknown Event Constant: %s",parm.getParmName());
+               LOG.info("Unknown Event Constant: {}",parm.getParmName());
                
            }
            
            if (reportName != ""){
-              LogUtils.debugf(this, "running report %s", reportName);
+              LOG.debug("running report {}", reportName);
               runReport(reportName);
                
            }
            else {
-               LogUtils.errorf(this, "Can not run report -- reportName not specified");
+               LOG.error("Can not run report -- reportName not specified");
            }
        }
  
@@ -198,25 +197,25 @@ public class Reportd implements SpringServiceDaemon {
     public void handleReloadConfigEvent(Event e) {
 
         if (isReloadConfigEventTarget(e)) {
-            LogUtils.infof(this,"handleReloadConfigEvent: reloading configuration...");
+            LOG.info("handleReloadConfigEvent: reloading configuration...");
             EventBuilder ebldr = null;
 
             try {
                 
                 reportDirectory = m_reportConfigurationDao.getStorageDirectory();
                 
-                LogUtils.debugf(this,"handleReloadConfigEvent: lock acquired, unscheduling current reports...");
+                LOG.debug("handleReloadConfigEvent: lock acquired, unscheduling current reports...");
 
                 m_reportScheduler.rebuildReportSchedule();
 
-                LogUtils.debugf(this,"handleRelodConfigEvent: reports rescheduled.");
+                LOG.debug("handleRelodConfigEvent: reports rescheduled.");
 
                 ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, "Reportd");
                 ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Reportd");
 
             } catch (Throwable ex) {
 
-                LogUtils.errorf(this, ex, "handleReloadConfigurationEvent: Error reloading configuration: %s", ex.getMessage());
+                LOG.error("handleReloadConfigurationEvent: Error reloading configuration: {}", ex.getMessage(), ex);
                 ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, "Reportd");
                 ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Reportd");
                 ebldr.addParam(EventConstants.PARM_REASON, ex.getLocalizedMessage().substring(1, 128));
@@ -226,7 +225,7 @@ public class Reportd implements SpringServiceDaemon {
             if (ebldr != null) {
                 getEventForwarder().sendNow(ebldr.getEvent());
             }
-            LogUtils.infof(this,"handleReloadConfigEvent: configuration reloaded.");
+            LOG.info("handleReloadConfigEvent: configuration reloaded.");
         }
 
     }
@@ -243,7 +242,7 @@ public class Reportd implements SpringServiceDaemon {
             }
         }
 
-        LogUtils.debugf(this,"isReloadConfigEventTarget: Reportd was target of reload event: "+isTarget);
+        LOG.debug("isReloadConfigEventTarget: Reportd was target of reload event: "+isTarget);
         return isTarget;
     }
   
