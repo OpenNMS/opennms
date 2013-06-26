@@ -38,7 +38,8 @@ import javax.management.remote.JMXServiceURL;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.ThreadCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 //import mx4j.tools.remote.*;
 
@@ -51,9 +52,9 @@ import org.opennms.core.utils.ThreadCategory;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public class Jsr160ConnectionFactory {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(Jsr160ConnectionFactory.class);
     
-    static ThreadCategory log = ThreadCategory.getInstance(Jsr160ConnectionFactory.class);
-
     public static Jsr160ConnectionWrapper getMBeanServerConnection(Map<String, ?> propertiesMap, InetAddress address) {
         Jsr160ConnectionWrapper connectionWrapper = null;
         JMXServiceURL url = null;
@@ -64,7 +65,7 @@ public class Jsr160ConnectionFactory {
         String protocol = ParameterMap.getKeyedString( propertiesMap, "protocol", "rmi");
         String urlPath =  ParameterMap.getKeyedString( propertiesMap, "urlPath",  "/jmxrmi");
         
-        log.debug("JMX: " + factory + " - service:" + protocol + "//" + InetAddressUtils.str(address) + ":" + port + urlPath);
+        LOG.debug("JMX: {} - service:{}//{}:{}{}", factory, protocol, InetAddressUtils.str(address), port, urlPath);
 
         if (factory == null || factory.equals("STANDARD")) {
             try {
@@ -77,7 +78,7 @@ public class Jsr160ConnectionFactory {
                 
                 connectionWrapper = new Jsr160ConnectionWrapper(connector, connection);
             } catch(Throwable e) {
-                log.warn("Unable to get MBeanServerConnection: " + url);
+            	LOG.warn("Unable to get MBeanServerConnection: {}", url);
             }
         }
         else if (factory.equals("PASSWORD-CLEAR")) {
@@ -110,7 +111,7 @@ public class Jsr160ConnectionFactory {
                 catch (SecurityException x)
                 {
                     // Uh-oh ! Bad credentials 
-                    log.error("Security exception: bad credentials");
+                    LOG.error("Security exception: bad credentials");
                     throw x;
                 }
 
@@ -119,7 +120,7 @@ public class Jsr160ConnectionFactory {
                 connectionWrapper = new Jsr160ConnectionWrapper(connector, connection);
                 
             } catch(Throwable e) {
-                log.error("Unable to get MBeanServerConnection: " + url, e);
+                LOG.error("Unable to get MBeanServerConnection: {}", url, e);
             }
         }
         /*

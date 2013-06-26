@@ -30,13 +30,14 @@ package org.opennms.netmgt.snmpinterfacepoller;
 
 import java.util.List;
 
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmpinterfacepoller.pollable.PollableSnmpInterface.SnmpMinimalPollInterface;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <P>
@@ -50,6 +51,8 @@ import org.opennms.netmgt.snmpinterfacepoller.pollable.PollableSnmpInterface.Snm
  * @version $Id: $
  */
 public class SnmpPollInterfaceMonitor {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(SnmpPollInterfaceMonitor.class);
 
     /**
      * ifAdminStatus table from MIB-2.
@@ -72,11 +75,11 @@ public class SnmpPollInterfaceMonitor {
 			List<SnmpMinimalPollInterface> mifaces) {
 
 		if (mifaces == null) {
-			log().error("Null Interfaces passed to Monitor, exiting");
+			LOG.error("Null Interfaces passed to Monitor, exiting");
 			return null;
 		}
 
-		log().debug("Got " + mifaces.size() + " interfaces to poll");
+		LOG.debug("Got " + mifaces.size() + " interfaces to poll");
 
 		// Retrieve this interface's SNMP peer object
 		//
@@ -93,7 +96,7 @@ public class SnmpPollInterfaceMonitor {
 					+ miface.getIfindex());
 			operooids[i] = SnmpObjId.get(IF_OPER_STATUS_OID
 					+ miface.getIfindex());
-			log().debug(
+			LOG.debug(
 					"Adding Admin/Oper oids: " + adminoids[i] + "/"
 							+ operooids[i]);
 		}
@@ -101,20 +104,20 @@ public class SnmpPollInterfaceMonitor {
 		SnmpValue[] adminresults = new SnmpValue[mifaces.size()];
 		SnmpValue[] operoresults = new SnmpValue[mifaces.size()];
 
-		log().debug("try to get admin statuses");
+		LOG.debug("try to get admin statuses");
 		adminresults = SnmpUtils.get(agentConfig, adminoids);
-		log().debug("got admin status " + adminresults.length + " SnmpValues");
+		LOG.debug("got admin status " + adminresults.length + " SnmpValues");
 		if (adminresults.length != mifaces.size()) {
-			log().warn("Snmp Interface Admin statuses collection failed");
+			LOG.warn("Snmp Interface Admin statuses collection failed");
 			return mifaces;
 		}
 
-		log().debug("try to get operational statuses");
+		LOG.debug("try to get operational statuses");
 		operoresults = SnmpUtils.get(agentConfig, operooids);
-		log().debug(
+		LOG.debug(
 				"got operational status " + operoresults.length + " SnmpValues");
 		if (operoresults.length != mifaces.size()) {
-			log().warn("Snmp Interface Operational statuses collection failed");
+			LOG.warn("Snmp Interface Operational statuses collection failed");
 			return mifaces;
 		}
 
@@ -126,41 +129,30 @@ public class SnmpPollInterfaceMonitor {
 					miface.setAdminstatus(adminresults[i].toInt());
 					miface.setOperstatus(operoresults[i].toInt());
 					miface.setStatus(PollStatus.up());
-					log().debug(
+					LOG.debug(
 							"SNMP Value is " + adminresults[i].toInt()
 									+ " for oid: " + adminoids[i]);
-					log().debug(
+					LOG.debug(
 							"SNMP Value is " + operoresults[i].toInt()
 									+ " for oid: " + operooids[i]);
 				} catch (Exception e) {
-					log().warn(
+					LOG.warn(
 							"SNMP Value is "
 									+ adminresults[i].toDisplayString()
 									+ " for oid: " + adminoids[i]);
-					log().warn(
+					LOG.warn(
 							"SNMP Value is "
 									+ operoresults[i].toDisplayString()
 									+ " for oid: " + operooids[i]);
 				}
 			} else {
-				log().info(
+				LOG.info(
 						"SNMP Value is null for oid: " + adminoids[i] + "/"
 								+ operooids[i]);
 			}
 		}
 
 		return mifaces;
-	}
-
-	/**
-	 * <p>
-	 * log
-	 * </p>
-	 * 
-	 * @return a {@link org.opennms.core.utils.ThreadCategory} object.
-	 */
-	protected ThreadCategory log() {
-		return ThreadCategory.getInstance(getClass());
 	}
 
 }

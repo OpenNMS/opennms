@@ -1,6 +1,10 @@
 package org.opennms.core.logging;
 
+import java.util.Map;
 import java.util.ServiceLoader;
+import java.util.concurrent.Callable;
+
+import org.slf4j.MDC;
 
 public class Logging {
 	
@@ -31,6 +35,28 @@ public class Logging {
 
 	public static void configureLogging() {
 		getStrategy().configureLogging();
+	}
+	
+	public static <T> T withPrefix(String prefix, Callable<T> callable) throws Exception {
+	    Map mdc = MDC.getCopyOfContextMap();
+	    try {
+	        mdc.put(PREFIX_KEY, prefix);
+	        return callable.call();
+	    } finally {
+	        MDC.setContextMap(mdc);
+	    }
+	    
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static void withPrefix(String prefix, Runnable runnable) {
+            Map mdc = MDC.getCopyOfContextMap();
+            try {
+                mdc.put(PREFIX_KEY, prefix);
+                runnable.run();
+            } finally {
+                MDC.setContextMap(mdc);
+            }
 	}
 
 }

@@ -30,9 +30,10 @@ package org.opennms.netmgt.capsd.snmp;
 
 import java.net.InetAddress;
 
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <P>
@@ -61,7 +62,9 @@ import org.opennms.netmgt.snmp.SnmpObjId;
  */
 public final class IfTable extends SnmpTable<IfTableEntry> {
     
-
+    
+    private static final Logger LOG = LoggerFactory.getLogger(IfTable.class);
+    
     /**
      * <P>
      * Constructs an IfTable object that is used to collect the interface
@@ -84,15 +87,6 @@ public final class IfTable extends SnmpTable<IfTableEntry> {
     }
 
 
-    /**
-     * <p>log</p>
-     *
-     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
-     */
-    protected final ThreadCategory log() {
-        return ThreadCategory.getInstance(IfTable.class);
-    }
-    
     /**
      * <p>getEntry</p>
      *
