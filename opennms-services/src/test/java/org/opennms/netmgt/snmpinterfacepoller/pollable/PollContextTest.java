@@ -48,6 +48,7 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations= {
@@ -119,21 +120,13 @@ public class PollContextTest {
         m_nodeDao.flush();
     }
 
-    @After
-    public void tearDown() throws Exception {
-        for (final OnmsNode node : m_nodeDao.findAll()) {
-            m_nodeDao.delete(node);
-        }
-        m_nodeDao.flush();
-        MockLogAppender.assertNoWarningsOrGreater();
-    }
-
     /*
      * This test has been designed to verify the workaround for using the IP address on the SNMP
      * Interface based Criteria, because in 1.8, the ipaddr was a valid column of the snmpinterface
      * table, and that column has been removed in order to promote the usage of the ipinterface table.
      */
     @Test
+    @Transactional
     public void testCriterias() throws Exception {
         Assert.assertNotNull(m_pollContext);
 
