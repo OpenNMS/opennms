@@ -569,7 +569,7 @@ find $RPM_BUILD_ROOT%{instprefix}/etc ! -type d | \
 	grep -v 'nsclient-config.xml' | \
 	grep -v 'nsclient-datacollection-config.xml' | \
 	grep -v 'otrs.properties' | \
-	grep -v 'rt.properties' | \
+	grep -v '/rt.properties' | \
 	grep -v 'snmp-asset-adapter-configuration.xml' | \
 	grep -v 'xml-datacollection-config.xml' | \
 	grep -v 'xmp-config.xml' | \
@@ -593,7 +593,7 @@ find $RPM_BUILD_ROOT%{sharedir}/etc-pristine ! -type d | \
 	grep -v 'nsclient-config.xml' | \
 	grep -v 'nsclient-datacollection-config.xml' | \
 	grep -v 'otrs.properties' | \
-	grep -v 'rt.properties' | \
+	grep -v '/rt.properties' | \
 	grep -v 'snmp-asset-adapter-configuration.xml' | \
 	grep -v 'xml-datacollection-config.xml' | \
 	grep -v 'xmp-config.xml' | \
@@ -760,16 +760,19 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(664 root root 775)
 %{instprefix}/lib/jira-*.jar
 %config(noreplace) %{instprefix}/etc/jira.properties
+%{sharedir}/etc-pristine/jira.properties
 
 %files plugin-ticketer-otrs
 %defattr(664 root root 775)
 %{instprefix}/lib/opennms-integration-otrs-*.jar
 %config(noreplace) %{instprefix}/etc/otrs.properties
+%{sharedir}/etc-pristine/otrs.properties
 
 %files plugin-ticketer-rt
 %defattr(664 root root 775)
 %{instprefix}/lib/opennms-integration-rt-*.jar
 %config(noreplace) %{instprefix}/etc/rt.properties
+%{sharedir}/etc-pristine/rt.properties
 
 %files plugin-protocol-dhcp
 %defattr(664 root root 775)
