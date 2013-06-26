@@ -140,7 +140,6 @@ public abstract class UpsertTemplate<T, D extends OnmsDao<T, ?>> {
      */
     public T execute() {
         TransactionTemplate template = new TransactionTemplate(m_transactionManager);
-        template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
         return template.execute(new TransactionCallback<T>() {
 
             @Override
