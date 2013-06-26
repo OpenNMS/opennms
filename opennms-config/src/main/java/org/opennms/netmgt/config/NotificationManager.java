@@ -385,6 +385,8 @@ public abstract class NotificationManager {
          */
         if (event.getNodeid() == 0 && event.getInterface() == null && event.getService() == null) {
             if ("MATCH-ANY-UEI".equals(notif.getUei())) {
+               // TODO: Trim parentheses from the filter and trim whitespace from inside the
+               // filter statement. This comparison is very brittle as it is.
                if ("ipaddr != '0.0.0.0'".equals(notif.getRule().toLowerCase()) || "ipaddr iplike *.*.*.*".equals(notif.getRule().toLowerCase())) {
                    return true;
                } else {
