@@ -227,13 +227,4 @@ public class CoreImportActivities {
     protected void warn(String format, Object... args) {
         LOG.warn(format, args);
     }
-
-    /**
-     * <p>log</p>
-     *
-     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
-     */
-    protected ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
 }

@@ -278,10 +278,6 @@ public final class SystemGroup extends AggregateTracker {
         LOG.info("Error retrieving systemGroup from {}. {}", msg, m_address);
     }
 
-    private final ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
-
     /**
      * <p>updateSnmpDataForResource</p>
      *

@@ -409,15 +409,6 @@ public class Provisioner implements SpringServiceDaemon {
     }
 
     /**
-     * <p>log</p>
-     *
-     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
-     */
-    public ThreadCategory log() {
-    	return ThreadCategory.getInstance(getClass());
-	}
-
-    /**
      * <p>setEventForwarder</p>
      *
      * @param eventForwarder a {@link org.opennms.netmgt.model.events.EventForwarder} object.

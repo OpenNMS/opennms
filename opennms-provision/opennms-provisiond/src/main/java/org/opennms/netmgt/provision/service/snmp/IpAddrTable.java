@@ -181,15 +181,6 @@ public class IpAddrTable extends SnmpTable<IpAddrTableEntry> {
     }
 
     /**
-     * <p>log</p>
-     *
-     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
-     */
-    protected final ThreadCategory log() {
-        return ThreadCategory.getInstance(IpAddrTable.class);
-    }
-
-    /**
      * <p>updateIpInterfaceData</p>
      *
      * @param node a {@link org.opennms.netmgt.model.OnmsNode} object.

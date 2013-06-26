@@ -98,16 +98,6 @@ public final class IfTable extends SnmpTable<IfTableEntry> {
         return new IfTableEntry();
     }
 
-
-    /**
-     * <p>log</p>
-     *
-     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
-     */
-    protected final ThreadCategory log() {
-        return ThreadCategory.getInstance(IfTable.class);
-    }
-    
     /**
      * <p>getOperStatus</p>
      *

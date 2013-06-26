@@ -62,15 +62,6 @@ public abstract class ImportOperation {
     }
 
     /**
-     * <p>log</p>
-     *
-     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
-     */
-    public ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
-
-    /**
      * <p>doPersist</p>
      */
     protected abstract void doPersist();
