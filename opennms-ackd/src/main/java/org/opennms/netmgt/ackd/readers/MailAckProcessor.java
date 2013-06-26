@@ -69,7 +69,7 @@ import org.slf4j.LoggerFactory;
  */
 class MailAckProcessor implements AckProcessor {
     private static final Logger LOG = LoggerFactory.getLogger(MailAckProcessor.class);
-
+    
     private static final int LOG_FIELD_WIDTH = 128;
     
     private AckdConfigurationDao m_ackdDao;
@@ -184,7 +184,7 @@ class MailAckProcessor implements AckProcessor {
      * @return a {@link java.lang.Integer} object.
      */
     protected static Integer detectId(final String subject, final String expression) {
-        log().debug("detectId: Detecting aknowledgable ID from subject: "+subject+" using expression: "+expression);
+        LOG.debug("detectId: Detecting aknowledgable ID from subject: "+subject+" using expression: "+expression);
         Integer id = null;
 
         //TODO: force opennms config '~' style regex attribute identity because this is the only way for this to work
@@ -200,9 +200,9 @@ class MailAckProcessor implements AckProcessor {
 
         if (matcher.matches() && matcher.groupCount() > 0) {
             id = Integer.valueOf(matcher.group(1));
-            log().debug("detectId: found acknowledgable ID: "+id);
+            LOG.debug("detectId: found acknowledgable ID: "+id);
         } else {
-            log().debug("detectId: no acknowledgable ID found.");
+            LOG.debug("detectId: no acknowledgable ID found.");
         }
 
         return id;
@@ -236,14 +236,14 @@ class MailAckProcessor implements AckProcessor {
      * @throws javax.mail.MessagingException if any.
      */
     protected AckAction determineAckAction(final Message msg) throws IOException, MessagingException {
-        log().info("determineAckAcktion: evaluating message looking for user specified acktion...");
+        LOG.info("determineAckAcktion: evaluating message looking for user specified acktion...");
         
         List<String> messageText = JavaReadMailer.getText(msg);
         
         AckAction action = AckAction.UNSPECIFIED;
         if (messageText != null && messageText.size() > 0) {
             
-            log().debug("determineAction: message text: "+messageText);
+            LOG.debug("determineAction: message text: "+messageText);
             
             if (m_ackdDao.acknowledgmentMatch(messageText)) {
                 action = AckAction.ACKNOWLEDGE;
@@ -260,10 +260,10 @@ class MailAckProcessor implements AckProcessor {
         } else {
             String concern = "determineAckAction: a reply message to a notification has no text to evaluate.  " +
             		"No action can be determined.";
-            log().warn(concern);
+            LOG.warn(concern);
             throw new MessagingException(concern);
         }
-        log().info("determineAckAcktion: evaluated message, "+action+" action determined from message.");
+        LOG.info("determineAckAcktion: evaluated message, "+action+" action determined from message.");
         return action;
     }
 
@@ -274,11 +274,11 @@ class MailAckProcessor implements AckProcessor {
      * @throws org.opennms.javamail.JavaMailerException if any.
      */
     protected List<Message> retrieveAckMessages() throws JavaMailerException {
-        log().debug("retrieveAckMessages: Retrieving messages...");
+        LOG.debug("retrieveAckMessages: Retrieving messages...");
         
         ReadmailConfig readMailConfig = determineMailReaderConfig();
         
-        log().debug("retrieveAckMessages: creating JavaReadMailer with config: " +
+        LOG.debug("retrieveAckMessages: creating JavaReadMailer with config: " +
         		"host: " + readMailConfig.getReadmailHost().getHost() + 
         		" port: " + readMailConfig.getReadmailHost().getPort() +
         		" ssl: " + readMailConfig.getReadmailHost().getReadmailProtocol().getSslEnable() +
@@ -300,7 +300,7 @@ class MailAckProcessor implements AckProcessor {
         Pattern alarmPattern = Pattern.compile(alarmRe);
         
         List<Message> msgs = readMailer.retrieveMessages();
-        log().info("retrieveAckMessages: Iterating "+msgs.size()+" messages with notif expression: "+notifRe+
+        LOG.info("retrieveAckMessages: Iterating "+msgs.size()+" messages with notif expression: "+notifRe+
                    " and alarm expression: "+alarmRe);
         
         for (Iterator<Message> iterator = msgs.iterator(); iterator.hasNext();) {
@@ -311,22 +311,22 @@ class MailAckProcessor implements AckProcessor {
                 Matcher alarmMatcher = alarmPattern.matcher(subject);
                 Matcher notifMatcher = notifPattern.matcher(subject);
                 
-                log().debug("retrieveAckMessages: comparing the subject: "+subject);
+                LOG.debug("retrieveAckMessages: comparing the subject: "+subject);
                 if (!(notifMatcher.matches() || alarmMatcher.matches())) {
                     
-                    log().debug("retrieveAckMessages: Subject doesn't match either expression.");
+                    LOG.debug("retrieveAckMessages: Subject doesn't match either expression.");
                     iterator.remove();
                 } else {
                     //TODO: this just looks wrong
                     //delete this non-ack message because the acks will get deleted later and the config
                     //indicates delete all mail from mailbox
-                    log().debug("retrieveAckMessages: Subject matched, setting deleted flag");
+                    LOG.debug("retrieveAckMessages: Subject matched, setting deleted flag");
                     if (readMailConfig.isDeleteAllMail()) {
                         msg.setFlag(Flag.DELETED, true);
                     }
                 }
             } catch (Throwable t) {
-                log().error("retrieveAckMessages: Problem processing message: "+t);
+                LOG.error("retrieveAckMessages: Problem processing message: "+t);
             }
         }
         return msgs;
@@ -360,13 +360,13 @@ class MailAckProcessor implements AckProcessor {
     @Override
     public void run() {
         try {
-            log().info("run: Processing mail acknowledgments (opposed to femail acks ;)..." );
+            LOG.info("run: Processing mail acknowledgments (opposed to femail acks ;)..." );
             findAndProcessAcks();
-            log().info("run: Finished processing mail acknowledgments." );
+            LOG.info("run: Finished processing mail acknowledgments." );
         } catch (Throwable e) {
-            log().debug("run: threw exception: "+e, e);
+            LOG.debug("run: threw exception: "+e, e);
         } finally {
-            log().debug("run: method completed.");
+            LOG.debug("run: method completed.");
         }
         
     }
@@ -378,7 +378,7 @@ class MailAckProcessor implements AckProcessor {
      */
     public ReadmailConfig determineMailReaderConfig() {
     	
-    	log().info("determineMailReaderConfig: determining mail reader configuration...");
+    	LOG.info("determineMailReaderConfig: determining mail reader configuration...");
     	
         List<Parameter> parms = m_ackdDao.getParametersForReader("JavaMailReader");
         ReadmailConfig config = m_jmConfigDao.getDefaultReadmailConfig();
@@ -389,7 +389,7 @@ class MailAckProcessor implements AckProcessor {
             }
         }
         
-    	log().info("determinedMailReaderConfig: "+config);
+    	LOG.info("determinedMailReaderConfig: "+config);
         return config;
     }
     
@@ -414,9 +414,9 @@ class MailAckProcessor implements AckProcessor {
      */
     @Override
     public synchronized void reloadConfigs() {
-        log().debug("reloadConfigs: lock acquired; reloading configuration...");
+        LOG.debug("reloadConfigs: lock acquired; reloading configuration...");
         m_jmConfigDao.reloadConfiguration();
-        log().debug("reloadConfigs: configuration reloaded");
+        LOG.debug("reloadConfigs: configuration reloaded");
     }
     
     /**
