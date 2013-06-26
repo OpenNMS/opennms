@@ -179,7 +179,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
      * @return a boolean.
      */
     public boolean isDiscoveryEnabled() {
-        return System.getProperty("org.opennms.provisiond.enableDiscovery", "false").equalsIgnoreCase("true");
+        return System.getProperty("org.opennms.provisiond.enableDiscovery", "true").equalsIgnoreCase("true");
     }
 
     public boolean isRequisitionedEntityDeletionEnabled() {

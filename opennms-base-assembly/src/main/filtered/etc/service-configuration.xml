@@ -110,6 +110,7 @@ maintained
     <invoke at="status" pass="0" method="status"/>
     <invoke at="stop" pass="0" method="stop"/>
   </service>
+  <!--
   <service>
     <name>OpenNMS:Name=Capsd</name>
     <class-name>org.opennms.netmgt.capsd.jmx.Capsd</class-name>
@@ -118,6 +119,7 @@ maintained
     <invoke at="status" pass="0" method="status"/>
     <invoke at="stop" pass="0" method="stop"/>
   </service>
+  -->
   <service>
     <name>OpenNMS:Name=Notifd</name>
     <class-name>org.opennms.netmgt.notifd.jmx.Notifd</class-name>
