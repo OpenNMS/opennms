@@ -372,8 +372,7 @@ public class DnsRequisitionUrlConnection extends URLConnection {
                     matches = true;
                 } else {
                     // include the IP address and try again
-                    log().debug("matchingRecord: attempting to match record: ["+rec.getName().toString()
-                                +" "+rec.rdataToString()+"] with expression: ["+expression+"]");
+                    LOG.debug("matchingRecord: attempting to match record: ["+rec.getName().toString()+" "+rec.rdataToString()+"] with expression: ["+expression+"]");
                     m = p.matcher(rec.getName().toString() + " " + rec.rdataToString());
                     if (m.matches()) {
                         matches = true;
@@ -669,11 +668,6 @@ public class DnsRequisitionUrlConnection extends URLConnection {
         return args;
     }  
     
-    private static ThreadCategory log() {
-        return ThreadCategory.getInstance(DnsRequisitionUrlConnection.class);
-    }
-
-
     /**
      * <p>setForeignSource</p>
      *

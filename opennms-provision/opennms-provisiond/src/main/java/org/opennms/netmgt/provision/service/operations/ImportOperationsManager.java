@@ -291,10 +291,6 @@ public class ImportOperationsManager {
         };
     }
 
-	private ThreadCategory log() {
-		return ThreadCategory.getInstance(getClass());
-	}
-
     /**
      * <p>setForeignSource</p>
      *

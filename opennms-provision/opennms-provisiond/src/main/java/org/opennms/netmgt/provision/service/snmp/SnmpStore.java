@@ -79,15 +79,6 @@ public class SnmpStore extends AbstractSnmpStore {
         return ms_elemList;
     }
     
-    /**
-     * <p>log</p>
-     *
-     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
-     */
-    protected ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
-
     /** {@inheritDoc} */
     @Override
     public void storeResult(SnmpResult res) {

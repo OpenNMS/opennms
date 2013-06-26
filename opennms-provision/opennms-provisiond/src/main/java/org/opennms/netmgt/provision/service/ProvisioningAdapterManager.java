@@ -191,10 +191,6 @@ public class ProvisioningAdapterManager implements InitializingBean {
         }
     }
 
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
-
     /**
      * <p>setEventForwarder</p>
      *

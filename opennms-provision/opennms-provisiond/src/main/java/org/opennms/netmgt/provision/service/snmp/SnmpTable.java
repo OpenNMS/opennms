@@ -43,7 +43,7 @@ import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpResult;
 
 abstract public class SnmpTable<T extends SnmpTableEntry> extends AggregateTracker {
-    
+    private static final Logger LOG = LoggerFactory.getLogger(SnmpTable.class);
     private Map<SnmpInstId, T> m_results = new TreeMap<SnmpInstId, T>();
     private InetAddress m_address;
     private String m_tableName;
@@ -145,10 +145,4 @@ abstract public class SnmpTable<T extends SnmpTableEntry> extends AggregateTrack
     protected void reportNoSuchNameErr(String msg) {
         LOG.info("Error retrieving {} from {}. {}", msg, m_tableName, m_address);
     }
-    
-    private final ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
-
-
 }

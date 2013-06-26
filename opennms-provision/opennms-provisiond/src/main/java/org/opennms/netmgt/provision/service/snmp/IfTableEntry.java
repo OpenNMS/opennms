@@ -254,7 +254,7 @@ public final class IfTableEntry extends SnmpTableEntry {
                 return normalizeMacAddress(getDisplayString(IfTableEntry.IF_PHYS_ADDR));
             }
         } catch (IllegalArgumentException e) {
-            LOG.warn(e, e.getMessage());
+            LOG.warn(e.getMessage(), e);
             return getDisplayString(IfTableEntry.IF_PHYS_ADDR);
         }
     }

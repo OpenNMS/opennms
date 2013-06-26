@@ -284,12 +284,12 @@ public class NodeScan implements RunInBatch {
                     t.schedule();
                     t.waitFor();
                     
-                    LOG.debug(NodeScan.this, "Finished scanning node {}/{}/{}", getNodeId(), getForeignSource(), getForeignId());
+                    LOG.debug("Finished scanning node {}/{}/{}", getNodeId(), getForeignSource(), getForeignId());
                 } catch (final InterruptedException e) {
-                    LOG.warn(NodeScan.this, e, "The node scan for node {}/{}/{} was interrupted", getNodeId(), getForeignSource(), getForeignId());
+                    LOG.warn("The node scan for node {}/{}/{} was interrupted", getNodeId(), getForeignSource(), getForeignId(), e);
                     Thread.currentThread().interrupt();
                 } catch (final ExecutionException e) {
-                    LOG.warn(NodeScan.this, e, "An error occurred while scanning node {}/{}/{}", getNodeId(), getForeignSource(), getForeignId());
+                    LOG.warn("An error occurred while scanning node {}/{}/{}", getNodeId(), getForeignSource(), getForeignId(), e);
                 }
             }
         };

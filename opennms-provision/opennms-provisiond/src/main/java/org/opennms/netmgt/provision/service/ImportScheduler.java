@@ -318,7 +318,7 @@ public class ImportScheduler implements InitializingBean {
                 sb.append(t.getTimeZone());
                 sb.append(", priority: ");
                 sb.append(t.getPriority());
-                LOG.info(sb);
+                LOG.info(sb.toString());
             }
             
         } catch (Throwable e) {
@@ -326,10 +326,4 @@ public class ImportScheduler implements InitializingBean {
         }
         
     }
-
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(this.getClass());
-    }
-
-
 }
