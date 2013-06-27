@@ -70,7 +70,7 @@ public class ThreadReportPlugin extends AbstractSystemReportPlugin {
         LOG.trace("thread dump finished");
 
         final String outputLog = System.getProperty("opennms.home") + File.separator + "logs" + File.separator + "daemon" + File.separator + "output.log";
-        LOG.debug("reading file " + outputLog);
+        LOG.debug("reading file {}", outputLog);
         final File outputLogFile = new File(outputLog);
         FileReader fr = null;
         BufferedReader bfr = null;
@@ -130,7 +130,7 @@ public class ThreadReportPlugin extends AbstractSystemReportPlugin {
         
         if (kill != null) {
             for (final Integer pid : getOpenNMSProcesses()) {
-                LOG.debug("pid = " + pid);
+                LOG.debug("pid = {}", pid);
                 CommandLine command = CommandLine.parse(kill + " -3 " + pid.toString());
                 try {
                     LOG.trace("running '{}'", command);
