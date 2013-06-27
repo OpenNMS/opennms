@@ -785,9 +785,7 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
         Map<String, PrefabGraph> returnList = new LinkedHashMap<String, PrefabGraph>();
         for (PrefabGraph query : getAllPrefabGraphs()) {
             if (resourceType != null && !query.hasMatchingType(resourceType)) {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("skipping " + query.getName() + " because its types \"" + StringUtils.arrayToDelimitedString(query.getTypes(), ", ") + "\" does not match resourceType \"" + resourceType + "\"");
-                }
+                LOG.debug("skipping " + query.getName() + " because its types \"" + StringUtils.arrayToDelimitedString(query.getTypes(), ", ") + "\" does not match resourceType \"" + resourceType + "\"");
                 continue;
             }
 
@@ -809,9 +807,7 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
                 continue;
             }
 
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("adding " + query.getName() + " to query list");
-            }
+            LOG.debug("adding " + query.getName() + " to query list");
 
             returnList.put(query.getName(), query);
         }
@@ -831,7 +827,7 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
         }
 
         suppressReports.retainAll(returnList.keySet());
-        if (suppressReports.size() > 0 && LOG.isDebugEnabled()) {
+        if (suppressReports.size() > 0) {
             LOG.debug("suppressing " + suppressReports.size() + " prefabricated graphs for resource " + resource + ": " + StringUtils.collectionToDelimitedString(suppressReports, ", "));
         }
 
@@ -847,10 +843,7 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
         if (availableRrdAttributes.containsAll(requiredList)) {
             return true;
         } else {
-            if (LOG.isDebugEnabled()) {
-                String name = query.getName();
-                LOG.debug("not adding " + name + " to prefab graph list because the required list of " + type + " attributes (" + StringUtils.collectionToDelimitedString(requiredList, ", ") + ") is not in the list of " + type + " attributes on the resource (" + StringUtils.collectionToDelimitedString(availableRrdAttributes, ", ") + ")");
-            }
+            LOG.debug("not adding " + query.getName() + " to prefab graph list because the required list of " + type + " attributes (" + StringUtils.collectionToDelimitedString(requiredList, ", ") + ") is not in the list of " + type + " attributes on the resource (" + StringUtils.collectionToDelimitedString(availableRrdAttributes, ", ") + ")");
             return false;
         }
     }

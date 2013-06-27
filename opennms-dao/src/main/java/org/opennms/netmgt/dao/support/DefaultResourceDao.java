@@ -458,9 +458,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
      * @return a {@link java.util.List} object.
      */
     protected List<OnmsResource> getChildResourceList(OnmsResource parentResource) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("DefaultResourceDao: getChildResourceList for " + parentResource.toString());
-        }
+        LOG.debug("DefaultResourceDao: getChildResourceList for " + parentResource.toString());
         return parentResource.getChildResources();
     }
     

@@ -89,9 +89,7 @@ public abstract class AbstractCastorConfigDao<K, V> implements InitializingBean 
     protected V loadConfig(final Resource resource) {
         long startTime = System.currentTimeMillis();
         
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Loading " + m_description + " configuration from " + resource);
-        }
+        LOG.debug("Loading " + m_description + " configuration from " + resource);
 
         V config = translateConfig(CastorUtils.unmarshalWithTranslatedExceptions(m_castorClass, resource));
         
