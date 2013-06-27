@@ -372,7 +372,7 @@ public class Collectd extends AbstractServiceDaemon implements
     private void scheduleInterfacesWithService(String svcName) {
         instrumentation().beginScheduleInterfacesWithService(svcName);
         try {
-        LOG.info("scheduleInterfacesWithService: svcName = " + svcName);
+        LOG.info("scheduleInterfacesWithService: svcName = {}", svcName);
 
         Collection<OnmsIpInterface> ifsWithServices = findInterfacesWithService(svcName);
         for (OnmsIpInterface iface : ifsWithServices) {
@@ -678,7 +678,7 @@ public class Collectd extends AbstractServiceDaemon implements
     private void onEventInTransaction(Event event) {
         // print out the uei
         //
-        LOG.debug("received event, uei = " + event.getUei());
+        LOG.debug("received event, uei = {}", event.getUei());
 
         try {
             if (event.getUei().equals(EventConstants.SCHEDOUTAGES_CHANGED_EVENT_UEI)) {
@@ -753,21 +753,21 @@ public class Collectd extends AbstractServiceDaemon implements
      *            The event to process.
      */
     private void handleConfigureSNMP(final Event event) {
-        LOG.debug("configureSNMPHandler: processing configure SNMP event..."+event);
+        LOG.debug("configureSNMPHandler: processing configure SNMP event...", event);
         
         SnmpEventInfo info = null;
         try {
             info = new SnmpEventInfo(event);
             
             if (StringUtils.isBlank(info.getFirstIPAddress())) {				
-                LOG.error("configureSNMPHandler: event contained invalid firstIpAddress.  "+event);
+                LOG.error("configureSNMPHandler: event contained invalid firstIpAddress. {}", event);
                 return;
             }
             
-            LOG.debug("configureSNMPHandler: processing configure SNMP event: "+info);
+            LOG.debug("configureSNMPHandler: processing configure SNMP event: {}", info);
             SnmpPeerFactory.getInstance().define(info);
             SnmpPeerFactory.saveCurrent();
-            LOG.debug("configureSNMPHandler: process complete. "+info);
+            LOG.debug("configureSNMPHandler: process complete. {}", info);
             
         } catch (Throwable e) {
             LOG.error("configureSNMPHandler: ",e);
@@ -850,7 +850,7 @@ public class Collectd extends AbstractServiceDaemon implements
         EventUtils.checkNodeId(event);
         EventUtils.checkInterface(event);
 
-        LOG.debug("interfaceReparentedHandler:  processing interfaceReparented event for " + event.getInterface());
+        LOG.debug("interfaceReparentedHandler:  processing interfaceReparented event for {}", event.getInterface());
 
         // Verify that the event has an interface associated with it
         if (event.getInterface() == null)
@@ -911,7 +911,7 @@ public class Collectd extends AbstractServiceDaemon implements
 				if (addr.equals(event.getInterfaceAddress())) {
                     synchronized (cSvc) {
                         // Got a match!
-                        LOG.debug("interfaceReparentedHandler: got a CollectableService match for " + event.getInterface());
+                        LOG.debug("interfaceReparentedHandler: got a CollectableService match for {}", event.getInterface());
 
                         // Retrieve the CollectorUpdates object associated
                         // with

@@ -323,7 +323,7 @@ public final class IfCollector implements Runnable {
      */
     @Override
     public void run() {
-        LOG.debug("IfCollector.run: run method invoked to collect information for address " + InetAddressUtils.str(m_target));
+        LOG.debug("IfCollector.run: run method invoked to collect information for address {}", InetAddressUtils.str(m_target));
 
         // Now go throught the successful plugin checks
         // and see if either SMB, MSExchange, or SNMP is
@@ -449,7 +449,7 @@ public final class IfCollector implements Runnable {
                             //
                             List<SupportedProtocol> probelist = new ArrayList<SupportedProtocol>();
                             LOG.debug("----------------------------------------------------------------------------------------");
-                            LOG.debug("ifCollector.run: probing subtarget " + InetAddressUtils.str(subtarget));
+                            LOG.debug("ifCollector.run: probing subtarget {}", InetAddressUtils.str(subtarget));
                             probe(subtarget, probelist);
                             m_previouslyProbed.add(subtarget);
 
@@ -489,7 +489,7 @@ public final class IfCollector implements Runnable {
                         //
                         List<SupportedProtocol> probelist = new ArrayList<SupportedProtocol>();
                         LOG.debug("----------------------------------------------------------------------------------------");
-                        LOG.debug("ifCollector.run: probing subtarget " + InetAddressUtils.str(subtarget));
+                        LOG.debug("ifCollector.run: probing subtarget {}", InetAddressUtils.str(subtarget));
                         probe(subtarget, probelist);
                         m_previouslyProbed.add(subtarget);
                         
@@ -507,6 +507,6 @@ public final class IfCollector implements Runnable {
             LOG.debug("IfCollector.run: SNMP collection completed");
         } // end if(SNMP supported)
 
-        LOG.debug("IfCollector.run: run method exiting after collecting information from address " + InetAddressUtils.str(m_target));
+        LOG.debug("IfCollector.run: run method exiting after collecting information from address {}", InetAddressUtils.str(m_target));
     }
 }

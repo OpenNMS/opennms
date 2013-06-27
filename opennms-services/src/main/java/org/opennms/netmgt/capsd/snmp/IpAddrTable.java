@@ -108,7 +108,7 @@ public class IpAddrTable extends SnmpTable<IpAddrTableEntry> {
      * @return a int.
      */
     public int getIfIndex(InetAddress address) {
-        LOG.debug("getIfIndex: num ipAddrTable entries: " + this.size());
+        LOG.debug("getIfIndex: num ipAddrTable entries: {}", this.size());
 
         for(IpAddrTableEntry entry : this) {
 
@@ -123,7 +123,7 @@ public class IpAddrTable extends SnmpTable<IpAddrTableEntry> {
                     return ndx.intValue();
             }
         }
-        LOG.debug("getIfIndex: no matching ipAddrTable entry for " + InetAddressUtils.str(address));
+        LOG.debug("getIfIndex: no matching ipAddrTable entry for {}", InetAddressUtils.str(address));
         return -1;
     }
 

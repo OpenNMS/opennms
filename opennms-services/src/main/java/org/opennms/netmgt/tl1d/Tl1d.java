@@ -138,7 +138,7 @@ public class Tl1d extends AbstractServiceDaemon {
             }
         }
         
-        LOG.debug("isReloadConfigEventTarget: Tl1d was target of reload event: "+isTarget);
+        LOG.debug("isReloadConfigEventTarget: Tl1d was target of reload event: {}", isTarget);
         return isTarget;
     }
 
@@ -155,7 +155,7 @@ public class Tl1d extends AbstractServiceDaemon {
      */
     @Override
     public synchronized void onStart() {
-        LOG.info("onStart: Initializing Tl1d message processing." );
+        LOG.info("onStart: Initializing Tl1d message processing.");
         
         m_tl1MesssageProcessor = new Thread("Tl1-Message-Processor") {
             @Override
@@ -177,7 +177,7 @@ public class Tl1d extends AbstractServiceDaemon {
         LOG.info("startClients: starting clients...");
         
         for (Tl1Client client : m_tl1Clients) {
-            LOG.debug("startClients: starting client: "+client);
+            LOG.debug("startClients: starting client: {}", client);
             client.start();
             LOG.debug("startClients: started client.");
         }
@@ -203,7 +203,7 @@ public class Tl1d extends AbstractServiceDaemon {
 	    while (it.hasNext()) {
             Tl1Client client = it.next();
             
-            LOG.debug("removeClients: removing client: "+client);
+            LOG.debug("removeClients: removing client: {}", client);
             
             client = null;
             it.remove();
@@ -216,7 +216,7 @@ public class Tl1d extends AbstractServiceDaemon {
         LOG.info("stopListeners: calling stop on all clients...");
         
         for (Tl1Client client : m_tl1Clients) {
-            LOG.debug("stopListeners: calling stop on client: "+client);
+            LOG.debug("stopListeners: calling stop on client: {}", client);
 			client.stop();
 		}
         
@@ -224,7 +224,7 @@ public class Tl1d extends AbstractServiceDaemon {
     }
 
     private void initializeTl1Connections() {
-        LOG.info("onInit: Initializing Tl1d connections..." );
+        LOG.info("onInit: Initializing Tl1d connections...");
     
         List<Tl1Element> configElements = m_configurationDao.getElements();
     
@@ -232,7 +232,7 @@ public class Tl1d extends AbstractServiceDaemon {
             try {
                 Tl1Client client = (Tl1Client) Class.forName(element.getTl1ClientApi()).newInstance();
                 
-                LOG.debug("initializeTl1Connections: initializing client: "+client);
+                LOG.debug("initializeTl1Connections: initializing client: {}", client);
                 
                 client.setHost(element.getHost());
                 client.setPort(element.getPort());
@@ -256,7 +256,7 @@ public class Tl1d extends AbstractServiceDaemon {
 
     private void processMessage(Tl1AutonomousMessage message) {
         
-        LOG.debug("processMessage: Processing message: "+message);
+        LOG.debug("processMessage: Processing message: {}", message);
 
         EventBuilder bldr = new EventBuilder(Tl1AutonomousMessage.UEI, "Tl1d");
         bldr.setHost(message.getHost());
@@ -275,7 +275,7 @@ public class Tl1d extends AbstractServiceDaemon {
         
         m_eventForwarder.sendNow(bldr.getEvent());
         
-        LOG.debug("processMessage: Message processed: "+ message);
+        LOG.debug("processMessage: Message processed: {}", message);
     }
 
 
@@ -298,7 +298,7 @@ public class Tl1d extends AbstractServiceDaemon {
                 
                 Tl1AutonomousMessage message = m_tl1Queue.take();
                 
-                LOG.debug("doMessageProcessing: message taken: "+message);
+                LOG.debug("doMessageProcessing: message taken: {}", message);
                 
                 processMessage(message);
             } catch (InterruptedException e) {

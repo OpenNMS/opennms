@@ -260,7 +260,7 @@ public class NotificationTask extends Thread {
                             } else {
                                 strategy = new ClassExecutor();
                             }
-                            LOG.debug("Class created is: " + command.getClass());
+                            LOG.debug("Class created is: {}", command.getClass());
 
                             int returnCode = strategy.execute(command.getExecute(), getArgumentList(command));
                             LOG.debug("command " + command.getName() + " return code = " + returnCode);
@@ -354,7 +354,7 @@ public class NotificationTask extends Thread {
                 value = m_params.get(aSwitch);
             }
         } catch (Throwable e) {
-            LOG.error("unable to get value for parameter " + aSwitch);
+            LOG.error("unable to get value for parameter {}", aSwitch);
         }
 
         return value;

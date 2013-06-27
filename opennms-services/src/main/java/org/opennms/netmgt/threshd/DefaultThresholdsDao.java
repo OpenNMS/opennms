@@ -165,7 +165,7 @@ public class DefaultThresholdsDao implements ThresholdsDao, InitializingBean {
                         }
                     }
                     if (!found) {
-                        LOG.info("fillThresholdStateMap(merge): deleting entity " + entity);
+                        LOG.info("fillThresholdStateMap(merge): deleting entity {}", entity);
                         entity.delete();
                         i.remove();
                     }

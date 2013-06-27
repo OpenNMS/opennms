@@ -101,7 +101,7 @@ public class IfLabel extends Object {
                 " WHERE nodeid = "+nodeId+
                 "   AND (snmpifdescr ILIKE '"+queryDesc+"'" +
                 "    OR snmpifname ilike '"+queryDesc+"')";
-        LOG.debug("getInterfaceInfoFromLabel: query is: "+query);
+        LOG.debug("getInterfaceInfoFromLabel: query is: {}", query);
         
         Querier q = new Querier(Vault.getDataSource(), query, new RowProcessor() {
 
@@ -138,7 +138,7 @@ public class IfLabel extends Object {
             
         });
         q.execute();
-        LOG.debug("getInterfaceInfoFromLabel: Querier result count is: "+q.getCount());
+        LOG.debug("getInterfaceInfoFromLabel: Querier result count is: {}", q.getCount());
         
         // The map will remain empty if the information was not located in the
         // DB.

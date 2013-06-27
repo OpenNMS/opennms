@@ -164,7 +164,7 @@ public class DefaultQueryManager implements QueryManager {
             stmt.setString(1, ipaddr);
             rs = stmt.executeQuery();
             d.watch(rs);
-            LOG.debug("restartPollingInterfaceHandler: retrieve active service to poll on interface: " + ipaddr);
+            LOG.debug("restartPollingInterfaceHandler: retrieve active service to poll on interface: {}", ipaddr);
 
             while (rs.next()) {
                 serviceIds.add(rs.getInt(1));
@@ -255,7 +255,7 @@ public class DefaultQueryManager implements QueryManager {
             d.watch(rs);
             while (rs.next()) {
                 count = rs.getInt(1);
-                LOG.debug("restartPollingInterfaceHandler: count active ifservices to poll for interface: " + ipaddr);
+                LOG.debug("restartPollingInterfaceHandler: count active ifservices to poll for interface: {}", ipaddr);
             }
         } finally {
             d.cleanUp();
@@ -342,7 +342,7 @@ public class DefaultQueryManager implements QueryManager {
             if (outagesResult.next()) {
                 regainedDate = outagesResult.getTimestamp(1);
                 lostDate = outagesResult.getTimestamp(2);
-                LOG.debug("getServiceLastKnownStatus: lostDate: " + lostDate);
+                LOG.debug("getServiceLastKnownStatus: lostDate: {}", lostDate);
             }
             // the service has never been down, need to use current date for
             // both
@@ -367,7 +367,7 @@ public class DefaultQueryManager implements QueryManager {
             // assign the svc lost date.
             if (regainedDate == null) {
                 svcLostDate = new Date(lostDate.getTime());
-                LOG.debug("getServiceLastKnownStatus: svcLostDate: " + svcLostDate);
+                LOG.debug("getServiceLastKnownStatus: svcLostDate: {}", svcLostDate);
             }
         }
 

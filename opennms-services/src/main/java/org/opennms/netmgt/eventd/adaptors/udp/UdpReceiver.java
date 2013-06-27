@@ -92,7 +92,7 @@ class UdpReceiver implements Runnable {
     void stop() throws InterruptedException {
         m_stop = true;
         if (m_context != null) {
-            LOG.debug("Stopping and joining thread context " + m_context.getName());
+            LOG.debug("Stopping and joining thread context {}", m_context.getName());
 
             m_context.interrupt();
             m_context.join();
@@ -142,7 +142,7 @@ class UdpReceiver implements Runnable {
 
         // Increase the receive buffer for the socket
         try {
-            LOG.debug("Setting receive buffer size to " + length);
+            LOG.debug("Setting receive buffer size to {}", length);
 
             m_dgSock.setReceiveBufferSize(length);
         } catch (SocketException e) {

@@ -73,12 +73,12 @@ public class Transaction {
 	 */
 	public static void begin() {
         
-        LOG.debug("About to begin Transaction for "+Thread.currentThread());
+        LOG.debug("About to begin Transaction for {}", Thread.currentThread());
 		Transaction tx = s_threadTX.get();
 		if (tx != null) {
 			throw new IllegalStateException("Cannot begin a transaction.. one has already been begun");
 		}
-        LOG.debug("Began Transaction for "+Thread.currentThread());
+        LOG.debug("Began Transaction for {}", Thread.currentThread());
 		s_threadTX.set(new Transaction());
 		
 	}
@@ -127,7 +127,7 @@ public class Transaction {
      * @throws java.sql.SQLException if any.
      */
     public static void end() throws SQLException {
-        LOG.debug("Ending transaction for "+Thread.currentThread());
+        LOG.debug("Ending transaction for {}", Thread.currentThread());
         try {
             Transaction tx = getTX();
             tx.doEnd();

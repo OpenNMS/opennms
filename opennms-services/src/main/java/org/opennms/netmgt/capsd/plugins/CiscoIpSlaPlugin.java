@@ -180,7 +180,7 @@ public class CiscoIpSlaPlugin extends SnmpPlugin {
                 }
 
                 // Establish SNMP session with interface
-                LOG.debug("poll: SnmpAgentConfig address: " + agentConfig);
+                LOG.debug("poll: SnmpAgentConfig address: {}", agentConfig);
 
                 /*
                  * Get two maps one with all configured admin tags and one of
@@ -223,9 +223,9 @@ public class CiscoIpSlaPlugin extends SnmpPlugin {
         } catch (NullPointerException e) {
             LOG.warn("SNMP not available or CISCO-RTT-MON-MIB not supported!");
         } catch (NumberFormatException e) {
-            LOG.warn("Number operator used on a non-number " + e.getMessage());
+            LOG.warn("Number operator used on a non-number {}", e.getMessage());
         } catch (IllegalArgumentException e) {
-            LOG.warn("Invalid SNMP Criteria: " + e.getMessage());
+            LOG.warn("Invalid SNMP Criteria: {}", e.getMessage());
         } catch (Throwable t) {
             LOG.warn("Unexpected exception during SNMP poll of interface " + InetAddressUtils.str(ipaddr), t);
         }

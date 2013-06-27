@@ -889,7 +889,7 @@ public class BroadcastEventProcessor implements InitializingBean {
                 // no services on this interface or any other interface on this
                 // node so delete
                 // node
-                LOG.debug("Propagating service delete to node " + nodeid);
+                LOG.debug("Propagating service delete to node {}", nodeid);
                 eventsToSend.addAll(doDeleteNode(dbConn, source, nodeid, txNo));
             } else if (otherSvcsOnIfCnt == 0) {
                 // no services on this interface so delete interface
@@ -1146,7 +1146,7 @@ public class BroadcastEventProcessor implements InitializingBean {
         EventUtils.requireParm(event, EventConstants.PARM_NODE_LABEL);
         if (isXmlRpcEnabled())
             EventUtils.requireParm(event, EventConstants.PARM_TRANSACTION_NO);
-        LOG.debug("addInterfaceHandler:  processing addInterface event for " + event.getInterface());
+        LOG.debug("addInterfaceHandler:  processing addInterface event for {}", event.getInterface());
 
         String nodeLabel = EventUtils.getParm(event, EventConstants.PARM_NODE_LABEL);
         long txNo = EventUtils.getLongParm(event, EventConstants.PARM_TRANSACTION_NO, -1L);
@@ -1215,7 +1215,7 @@ public class BroadcastEventProcessor implements InitializingBean {
         String ipaddr = event.getInterface();
         String nodeLabel = EventUtils.getParm(event, EventConstants.PARM_NODE_LABEL);
         long txNo = EventUtils.getLongParm(event, EventConstants.PARM_TRANSACTION_NO, -1L);
-        LOG.debug("addNodeHandler:  processing addNode event for " + ipaddr);
+        LOG.debug("addNodeHandler:  processing addNode event for {}", ipaddr);
         Connection dbConn = null;
         List<Event> eventsToSend = null;
         try {
@@ -1274,7 +1274,7 @@ public class BroadcastEventProcessor implements InitializingBean {
         String action = EventUtils.getParm(event, EventConstants.PARM_ACTION);
         long txNo = EventUtils.getLongParm(event, EventConstants.PARM_TRANSACTION_NO, -1L);
 
-        LOG.debug("changeServiceHandler:  processing changeService event on: " + event.getInterface());
+        LOG.debug("changeServiceHandler:  processing changeService event on: {}", event.getInterface());
 
         Connection dbConn = null;
         List<Event> eventsToSend = null;
@@ -1305,7 +1305,7 @@ public class BroadcastEventProcessor implements InitializingBean {
                         try {
                             dbConn.close();
                         } catch (SQLException ex) {
-                            LOG.error("handleChangeService: Exception thrown closing connection: "+ex);
+                            LOG.error("handleChangeService: Exception thrown closing connection: {}", ex);
                         }
                 }
         }
@@ -1608,7 +1608,7 @@ public class BroadcastEventProcessor implements InitializingBean {
         
         // new suspect event
         try {
-            LOG.debug("onMessage: Adding interface to suspectInterface Q: " + interfaceValue);
+            LOG.debug("onMessage: Adding interface to suspectInterface Q: {}", interfaceValue);
             m_suspectQ.execute(m_suspectEventProcessorFactory.createSuspectEventProcessor(interfaceValue));
         } catch (final Throwable ex) {
             LOG.error("onMessage: Failed to add interface to suspect queue", ex);
@@ -2037,7 +2037,7 @@ public class BroadcastEventProcessor implements InitializingBean {
             stmt.setLong(1, nodeId);
             int count = stmt.executeUpdate();
 
-            LOG.debug("markServicesDeleted: marked service deleted: " + nodeId);
+            LOG.debug("markServicesDeleted: marked service deleted: {}", nodeId);
 
             if (count > 0)
                 return Collections.singletonList(EventUtils.createNodeDeletedEvent(source, nodeId, txNo));
@@ -2189,7 +2189,7 @@ public class BroadcastEventProcessor implements InitializingBean {
             d.watch(rs);
             int serviceId = -1;
             while (rs.next()) {
-                LOG.debug("verifyServiceExists: retrieve serviceid for service " + serviceName);
+                LOG.debug("verifyServiceExists: retrieve serviceid for service {}", serviceName);
                 serviceId = rs.getInt(1);
             }
 

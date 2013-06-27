@@ -63,7 +63,7 @@ public class DiscoveryPingResponseCallback implements PingResponseCallback {
         try {
             EventIpcManagerFactory.getIpcManager().sendNow(eb.getEvent());
 
-            LOG.debug("Sent event: " + EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI);
+            LOG.debug("Sent event: {}", EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI);
         } catch (Throwable t) {
             LOG.warn("run: unexpected throwable exception caught during send to middleware", t);
         }
@@ -73,7 +73,7 @@ public class DiscoveryPingResponseCallback implements PingResponseCallback {
     /** {@inheritDoc} */
     @Override
     public void handleTimeout(InetAddress address, EchoPacket request) {
-        LOG.debug("request timed out: " + address);
+        LOG.debug("request timed out: {}", address);
     }
 
     /** {@inheritDoc} */

@@ -205,7 +205,7 @@ public final class SmtpMonitor extends AbstractServiceMonitor {
                     }
                 }
 
-                LOG.debug("poll: banner = " + banner);
+                LOG.debug("poll: banner = {}", banner);
 
                 StringTokenizer t = new StringTokenizer(banner);
                 int rc = Integer.parseInt(t.nextToken());

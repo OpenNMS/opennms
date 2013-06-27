@@ -182,7 +182,7 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
     /** {@inheritDoc} */
     @Override
     public void persistStringAttribute(CollectionAttribute attribute) {
-            LOG.debug("Persisting "+attribute);
+            LOG.debug("Persisting {}", attribute);
             CollectionResource resource = attribute.getResource();
             String value = attribute.getStringValue();
     
@@ -267,7 +267,7 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
     protected void storeAttribute(CollectionAttribute attribute) {
         if (shouldPersist()) {
             attribute.storeAttribute(this);
-            LOG.debug("Storing attribute "+attribute);
+            LOG.debug("Storing attribute {}", attribute);
         } else {
             LOG.debug("Not persisting attribute "+attribute + "because shouldPersist is false");
         }
@@ -293,7 +293,7 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
     /** {@inheritDoc} */
     @Override
     public void visitResource(CollectionResource resource) {
-        LOG.info("Persisting data for resource "+resource);
+        LOG.info("Persisting data for resource {}", resource);
         pushShouldPersist(resource);
     }
 

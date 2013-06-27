@@ -152,7 +152,7 @@ public class AliasedResource extends SnmpCollectionResource {
     @Override
     public boolean shouldPersist(final ServiceParameters serviceParameters) {
         boolean shdPrsist = (serviceParameters.aliasesEnabled() && getAliasDir() != null && !getAliasDir().equals("")) && (isScheduledForCollection() || serviceParameters.forceStoreByAlias(getAliasDir()));
-        LOG.debug("shouldPersist = " + shdPrsist);
+        LOG.debug("shouldPersist = {}", shdPrsist);
         return shdPrsist;
     }
 

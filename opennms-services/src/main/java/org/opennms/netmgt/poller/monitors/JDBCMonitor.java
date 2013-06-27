@@ -201,7 +201,7 @@ public class JDBCMonitor extends AbstractServiceMonitor {
 		InetAddress ipv4Addr = (InetAddress) iface.getAddress();
 		String url = null;
 		url = DBTools.constructUrl(ParameterMap.getKeyedString(parameters, "url", DBTools.DEFAULT_URL), ipv4Addr.getCanonicalHostName());
-		LOG.debug("JDBC url: " + url);
+		LOG.debug("JDBC url: {}", url);
 		
 		TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
 
@@ -232,7 +232,7 @@ public class JDBCMonitor extends AbstractServiceMonitor {
 						double responseTime = tracker.elapsedTimeInMillis();
 						status = PollStatus.available(responseTime);
 
-						LOG.debug("JDBC service is AVAILABLE on: " + ipv4Addr.getCanonicalHostName());
+						LOG.debug("JDBC service is AVAILABLE on: {}", ipv4Addr.getCanonicalHostName());
 						LOG.debug("poll: responseTime= " + responseTime + "ms");
 
 						break;

@@ -85,7 +85,7 @@ public final class JDBCStoredProcedurePlugin extends JDBCPlugin {
 			cs.registerOutParameter(1, java.sql.Types.BIT);
 			cs.executeUpdate();
 			status = cs.getBoolean(1);
-			LOG.debug("Stored procedure returned: " + status);
+			LOG.debug("Stored procedure returned: {}", status);
 		} catch (final SQLException sqlEx) {
 		    LOG.debug("JDBC stored procedure call not functional: {}", sqlEx.getSQLState(), sqlEx);
 		} finally {

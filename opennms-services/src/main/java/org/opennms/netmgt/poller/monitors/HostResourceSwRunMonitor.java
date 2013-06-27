@@ -171,7 +171,7 @@ public class HostResourceSwRunMonitor extends SnmpMonitorStrategy {
         SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(ipaddr);
         if (agentConfig == null) throw new RuntimeException("SnmpAgentConfig object not available for interface " + ipaddr);
         final String hostAddress = InetAddressUtils.str(ipaddr);
-		LOG.debug("poll: setting SNMP peer attribute for interface " + hostAddress);
+		LOG.debug("poll: setting SNMP peer attribute for interface {}", hostAddress);
 
         // Get configuration parameters
         //
@@ -206,14 +206,14 @@ public class HostResourceSwRunMonitor extends SnmpMonitorStrategy {
         agentConfig.setRetries(ParameterMap.getKeyedInteger(parameters, "retry", ParameterMap.getKeyedInteger(parameters, "retries", agentConfig.getRetries())));
         agentConfig.setPort(ParameterMap.getKeyedInteger(parameters, "port", agentConfig.getPort()));
 
-        LOG.debug("poll: service= SNMP address= " + agentConfig);
+        LOG.debug("poll: service= SNMP address= {}", agentConfig);
         PollStatus status = PollStatus.unavailable("HostResourceSwRunMonitor service not found, addr=" + hostAddress + ", service-name=" + serviceName);
 
         // Establish SNMP session with interface
         //
         int matches = 0;
         try {
-            LOG.debug("HostResourceSwRunMonitor.poll: SnmpAgentConfig address: " +agentConfig);
+            LOG.debug("HostResourceSwRunMonitor.poll: SnmpAgentConfig address: {}", agentConfig);
 
             if (serviceName == null) {
                 status.setReason("HostResourceSwRunMonitor no service-name defined, addr=" + hostAddress);

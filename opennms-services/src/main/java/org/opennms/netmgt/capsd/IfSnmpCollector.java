@@ -270,7 +270,7 @@ public final class IfSnmpCollector implements Runnable {
      * @return a int.
      */
     public int getIfIndex(InetAddress address) {
-        LOG.debug("getIfIndex: retrieving ifIndex for " + InetAddressUtils.str(address));
+        LOG.debug("getIfIndex: retrieving ifIndex for {}", InetAddressUtils.str(address));
         if (!hasIpAddrTable()) {
             LOG.debug("getIfIndex: Illegal index, no table present.");
             throw new IndexOutOfBoundsException("Illegal Index, no table present");
@@ -296,7 +296,7 @@ public final class IfSnmpCollector implements Runnable {
         if (snmpIfName != null) {
             LOG.debug("getIfName: ifIndex " + ifIndex + " has ifName '" + snmpIfName);
         } else {
-            LOG.debug("getIfName: no ifName found for ifIndex " + ifIndex);
+            LOG.debug("getIfName: no ifName found for ifIndex {}", ifIndex);
         }
 
         return snmpIfName;
@@ -337,7 +337,7 @@ public final class IfSnmpCollector implements Runnable {
             }
             
         } catch(Throwable e) {
-            LOG.warn("getInterfaceSpeed: exception retrieving interface speed for ifIndex " + ifIndex);
+            LOG.warn("getInterfaceSpeed: exception retrieving interface speed for ifIndex {}", ifIndex);
         }
         return ifSpeed;
     }
@@ -373,11 +373,11 @@ public final class IfSnmpCollector implements Runnable {
                 if (snmpIfAlias != null) {
                     LOG.debug("getIfAlias: ifIndex " + ifIndex + " has ifAlias '" + snmpIfAlias + "'");
                 } else {
-                    LOG.debug("getIfAlias: no ifAlias found for ifIndex " + ifIndex);
+                    LOG.debug("getIfAlias: no ifAlias found for ifIndex {}", ifIndex);
                 }
             }
         } else {
-            LOG.debug("getIfAlias: no ifXTable retrieved from " + m_address);
+            LOG.debug("getIfAlias: no ifXTable retrieved from {}", m_address);
         }
 
         return snmpIfAlias;
@@ -426,18 +426,18 @@ public final class IfSnmpCollector implements Runnable {
         }
 
         if (walker.failed()) {
-            LOG.info("IfSnmpCollector: walker failed with error message:" + walker.getErrorMessage());
+            LOG.info("IfSnmpCollector: walker failed with error message:", walker.getErrorMessage());
         }
 
         // Log any failures
         //
         if (!this.hasSystemGroup())
-            LOG.info("IfSnmpCollector: failed to collect System group for " + InetAddressUtils.str(m_address));
+            LOG.info("IfSnmpCollector: failed to collect System group for {}", InetAddressUtils.str(m_address));
         if (!this.hasIfTable())
-            LOG.info("IfSnmpCollector: failed to collect ifTable for " + InetAddressUtils.str(m_address));
+            LOG.info("IfSnmpCollector: failed to collect ifTable for {}", InetAddressUtils.str(m_address));
         if (!this.hasIpAddrTable())
-            LOG.info("IfSnmpCollector: failed to collect ipAddrTable for " + InetAddressUtils.str(m_address));
+            LOG.info("IfSnmpCollector: failed to collect ipAddrTable for {}", InetAddressUtils.str(m_address));
         if (!this.hasIfXTable())
-            LOG.info("IfSnmpCollector: failed to collect ifXTable for " + InetAddressUtils.str(m_address));
+            LOG.info("IfSnmpCollector: failed to collect ifXTable for {}", InetAddressUtils.str(m_address));
     }
 }

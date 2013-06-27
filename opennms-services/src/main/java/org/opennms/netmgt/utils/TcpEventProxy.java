@@ -161,7 +161,7 @@ public final class TcpEventProxy implements EventProxy {
             m_sock = new Socket();
             m_sock.connect(m_address, m_timeout);
             m_sock.setSoTimeout(500);
-            LOG.debug("Default Charset:" + Charset.defaultCharset().displayName());
+            LOG.debug("Default Charset:", Charset.defaultCharset().displayName());
             LOG.debug("Setting Charset: UTF-8");
             m_writer = new OutputStreamWriter(new BufferedOutputStream(m_sock.getOutputStream()), Charset.forName("UTF-8"));
             m_input = m_sock.getInputStream();

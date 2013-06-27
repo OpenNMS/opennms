@@ -262,11 +262,11 @@ final class IfSmbCollector implements Runnable {
             // does not support SMB
             //
             if (m_addr.getHostName().equals(InetAddressUtils.str(m_target))) {
-                LOG.debug("IfSmbCollector: failed to retrieve SMB name for " + InetAddressUtils.str(m_target));
+                LOG.debug("IfSmbCollector: failed to retrieve SMB name for {}", InetAddressUtils.str(m_target));
                 m_addr = null;
             }
         } catch (UnknownHostException e) {
-            LOG.debug("IfSmbCollector: UnknownHostException: failed to retrieve SMB name, reason:" + e.getMessage());
+            LOG.debug("IfSmbCollector: UnknownHostException: failed to retrieve SMB name, reason:", e.getMessage());
             m_addr = null;
         }
 
@@ -311,7 +311,7 @@ final class IfSmbCollector implements Runnable {
             if (authentication == null)
                 authentication = CapsdConfigFactory.getInstance().getSmbAuth(m_addr.getHostName());
 
-            LOG.debug("IfSmbCollector: SMB authenticator: " + authentication);
+            LOG.debug("IfSmbCollector: SMB authenticator: {}", authentication);
 
             // If SMB is not set in capsd-configuration, authentication could be
             // null. Then stop
@@ -334,7 +334,7 @@ final class IfSmbCollector implements Runnable {
             //
             try {
                 String smbUrl = SmbUtils.getSmbURL(authentication, m_addr.getHostName());
-                LOG.debug("IfSmbCollector: smbUrl = " + smbUrl);
+                LOG.debug("IfSmbCollector: smbUrl = {}", smbUrl);
                 SmbFile sfile = new SmbFile(smbUrl);
                 LOG.debug("IfSmbCollector: got SmbFile object, retrieving share list...");
                 m_shares = sfile.list();
@@ -343,9 +343,9 @@ final class IfSmbCollector implements Runnable {
             } catch (MalformedURLException e) {
                 LOG.debug("IfSmbCollector: failed to get SMB resource and OS name for host " + InetAddressUtils.str(m_target), e);
             } catch (SmbAuthException e) {
-                LOG.debug("IfSmbCollector: unable to list SMB shares, authentication failed, reason: " + e.getMessage());
+                LOG.debug("IfSmbCollector: unable to list SMB shares, authentication failed, reason: {}", e.getMessage());
             } catch (SmbException e) {
-                LOG.debug("IfSmbCollector: unable to list SMB shares, reason: " + e.getMessage());
+                LOG.debug("IfSmbCollector: unable to list SMB shares, reason: {}", e.getMessage());
             }
             /*---------------------------------------------------------------------*/
 

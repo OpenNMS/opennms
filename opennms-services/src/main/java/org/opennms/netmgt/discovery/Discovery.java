@@ -338,7 +338,7 @@ public class Discovery extends AbstractServiceDaemon {
     		}
     		m_alreadyDiscovered = newAlreadyDiscovered;
     	} catch (SQLException sqle) {
-    		LOG.warn("Caught SQLException while trying to query for all IP addresses: " + sqle.getMessage());
+		LOG.warn("Caught SQLException while trying to query for all IP addresses: {}", sqle.getMessage());
     	} finally {
     	    d.cleanUp();
     	}
@@ -409,7 +409,7 @@ public class Discovery extends AbstractServiceDaemon {
             }
         }
         
-        LOG.debug("isReloadConfigEventTarget: discovery was target of reload event: "+isTarget);
+        LOG.debug("isReloadConfigEventTarget: discovery was target of reload event: {}", isTarget);
         return isTarget;
     }
 

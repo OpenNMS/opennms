@@ -397,7 +397,7 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
 
 	private PollStatus doRun(int timeout) {
 		long startDate = System.currentTimeMillis();
-        LOG.debug("Start Scheduled Poll of service "+this);
+        LOG.debug("Start Scheduled Poll of service {}", this);
         PollStatus status;
         if (getContext().isNodeProcessingEnabled()) {
             PollRunner r = new PollRunner();

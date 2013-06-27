@@ -265,7 +265,7 @@ public class HttpCollector implements ServiceCollector {
 	    if (port == 80 && m_parameters.containsKey("port")) {
 	        try {
 	            port = Integer.parseInt(m_parameters.get("port").toString());
-	            LOG.debug("getPort: using service provided HTTP port " + port);
+	            LOG.debug("getPort: using service provided HTTP port {}", port);
 	        } catch (Exception e) {
 	            LOG.warn("Malformed HTTP port on service definition.");
 	        }
@@ -454,8 +454,8 @@ public class HttpCollector implements ServiceCollector {
 
     private List<HttpCollectionAttribute> processResponse(final Locale responseLocale, final String responseBodyAsString, final HttpCollectionSet collectionSet, HttpCollectionResource collectionResource) {
         LOG.debug("processResponse:");
-        LOG.debug("responseBody = " + responseBodyAsString);
-        LOG.debug("getmatches = " + collectionSet.getUriDef().getUrl().getMatches());
+        LOG.debug("responseBody = {}", responseBodyAsString);
+        LOG.debug("getmatches = {}", collectionSet.getUriDef().getUrl().getMatches());
         List<HttpCollectionAttribute> butes = new LinkedList<HttpCollectionAttribute>();
         int flags = 0;
         if (collectionSet.getUriDef().getUrl().getCanonicalEquivalence()) {
@@ -482,13 +482,13 @@ public class HttpCollector implements ServiceCollector {
         if (collectionSet.getUriDef().getUrl().getUnixLines()) {
             flags |= Pattern.UNIX_LINES;
         }
-        LOG.debug("flags = " + flags);
+        LOG.debug("flags = {}", flags);
         Pattern p = Pattern.compile(collectionSet.getUriDef().getUrl().getMatches(), flags);
         Matcher m = p.matcher(responseBodyAsString);
 
         final boolean matches = m.matches();
         if (matches) {
-            LOG.debug("processResponse: found matching attributes: "+matches);
+            LOG.debug("processResponse: found matching attributes: {}", matches);
             final List<Attrib> attribDefs = collectionSet.getUriDef().getAttributes().getAttribCollection();
             final AttributeGroupType groupType = new AttributeGroupType(collectionSet.getUriDef().getName(),"all");
 
@@ -507,8 +507,8 @@ public class HttpCollector implements ServiceCollector {
                 try {
                     value = m.group(attribDef.getMatchGroup());
                 } catch (final IndexOutOfBoundsException e) {
-                    LOG.error("IndexOutOfBoundsException thrown while trying to find regex group, your regex does not contain the following group index: " + attribDef.getMatchGroup());
-                    LOG.error("Regex statement: " + collectionSet.getUriDef().getUrl().getMatches());
+                    LOG.error("IndexOutOfBoundsException thrown while trying to find regex group, your regex does not contain the following group index: {}", attribDef.getMatchGroup());
+                    LOG.error("Regex statement: {}", collectionSet.getUriDef().getUrl().getMatches());
                     continue;
                 }
 
@@ -525,7 +525,7 @@ public class HttpCollector implements ServiceCollector {
                     }
 
                     if (num == null) {
-                        LOG.error("processResponse: gave up attempting to parse numeric value, skipping group " + attribDef.getMatchGroup());
+                        LOG.error("processResponse: gave up attempting to parse numeric value, skipping group {}", attribDef.getMatchGroup());
                         continue;
                     }
                     
@@ -536,7 +536,7 @@ public class HttpCollector implements ServiceCollector {
                          type, 
                          num
                      );
-                     LOG.debug("processResponse: adding found numeric attribute: "+bute);
+                     LOG.debug("processResponse: adding found numeric attribute: {}", bute);
                      butes.add(bute);
                 } else {
                     HttpCollectionAttribute bute =
@@ -546,12 +546,12 @@ public class HttpCollector implements ServiceCollector {
                                                     attribDef.getAlias(),
                                                     type,
                                                     value);
-                    LOG.debug("processResponse: adding found string attribute: " + bute);
+                    LOG.debug("processResponse: adding found string attribute: {}", bute);
                     butes.add(bute);
                 }
             }
         } else {
-            LOG.debug("processResponse: found matching attributes: "+matches);
+            LOG.debug("processResponse: found matching attributes: {}", matches);
         }
         return butes;
     }
@@ -588,7 +588,7 @@ public class HttpCollector implements ServiceCollector {
                 if (headers.length == 1) {
                     if (headers[0].getValue().split(",").length == 1) {
                         final String[] values = headers[0].getValue().split("-");
-                        LOG.debug("doCollection: Found one Content-Language header with value: " + headers[0].getValue());
+                        LOG.debug("doCollection: Found one Content-Language header with value: {}", headers[0].getValue());
                         switch (values.length) {
                             case 1:
                                 responseLocale = new Locale(values[0]);
@@ -610,7 +610,7 @@ public class HttpCollector implements ServiceCollector {
             List<HttpCollectionAttribute> attributes = processResponse(responseLocale, responseString, collectionSet, collectionResource);
 
             if (attributes.isEmpty()) {
-                LOG.warn("doCollection: no attributes defined by the response: " + responseString.trim());
+                LOG.warn("doCollection: no attributes defined by the response: {}", responseString.trim());
                 throw new HttpCollectorException("No attributes specified were found: ");
             }
 
@@ -626,7 +626,7 @@ public class HttpCollector implements ServiceCollector {
             if (streetCred.length == 2) {
                 client.getCredentialsProvider().setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(streetCred[0], streetCred[1]));
             } else { 
-                LOG.warn("Illegal value found for username/password HTTP credentials: " + userInfo);
+                LOG.warn("Illegal value found for username/password HTTP credentials: {}", userInfo);
             }
         }
     }
@@ -765,7 +765,7 @@ public class HttpCollector implements ServiceCollector {
 
     private static void initHttpCollectionConfig() {
         try {
-            LOG.debug("initialize: Initializing collector: " + HttpCollector.class.getSimpleName());
+            LOG.debug("initialize: Initializing collector: {}", HttpCollector.class.getSimpleName());
             HttpCollectionConfigFactory.init();
         } catch (MarshalException e) {
             LOG.error("initialize: Error marshalling configuration.", e);
@@ -832,7 +832,7 @@ public class HttpCollector implements ServiceCollector {
     /** {@inheritDoc} */
     @Override
     public void initialize(CollectionAgent agent, Map<String, Object> parameters) {
-        LOG.debug("initialize: Initializing HTTP collection for agent: "+agent);
+        LOG.debug("initialize: Initializing HTTP collection for agent: {}", agent);
 
         // Add any initialization here
     }

@@ -244,7 +244,7 @@ final public class CiscoIpSlaMonitor extends SnmpMonitorStrategy {
         SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(ipaddr);
         if (agentConfig == null) throw new RuntimeException("SnmpAgentConfig object not available for interface " + ipaddr);
         final String hostAddress = InetAddressUtils.str(ipaddr);
-		LOG.debug("poll: setting SNMP peer attribute for interface " + hostAddress);
+		LOG.debug("poll: setting SNMP peer attribute for interface {}", hostAddress);
 
         // Get configuration parameters for tag to monitor
         String adminTag = ParameterMap.getKeyedString(parameters,"admin-tag", null);
@@ -278,7 +278,7 @@ final public class CiscoIpSlaMonitor extends SnmpMonitorStrategy {
 
         // Establish SNMP session with interface
         try {
-            LOG.debug("poll: SnmpAgentConfig address: " + agentConfig);
+            LOG.debug("poll: SnmpAgentConfig address: {}", agentConfig);
 
             // Get all configured ip sla tags
             Map<SnmpInstId, SnmpValue> tagResults = SnmpUtils.getOidValues(agentConfig,"CiscoIpSlaMonitor",SnmpObjId.get(RTT_ADMIN_TAG_OID));
@@ -366,7 +366,7 @@ final public class CiscoIpSlaMonitor extends SnmpMonitorStrategy {
                          */
                         if (operSenseResults.get(ipslaInstance).toInt() == RTT_MON_OPER_SENSE.OK.value()
                                 || operSenseResults.get(ipslaInstance).toInt() == RTT_MON_OPER_SENSE.OVER_THRESHOLD.value()) {
-                            LOG.debug("Threshold is ignored rttMonLatestOperSense: " + operSenseResults.get(ipslaInstance).toInt());
+                            LOG.debug("Threshold is ignored rttMonLatestOperSense: {}", operSenseResults.get(ipslaInstance).toInt());
                             LOG.debug(returnValue);
                             status = PollStatus.available(Double.parseDouble(latestRttResults.get(ipslaInstance).toString()));
                             // No error or connection timeout, service available

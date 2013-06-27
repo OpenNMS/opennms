@@ -281,7 +281,7 @@ public final class ThresholdEntity implements Cloneable {
                 }
 
                 if (!rrdFile.canRead()) {
-                    LOG.error("Unable to read existing rrd file "+rrdFile);
+                    LOG.error("Unable to read existing rrd file {}", rrdFile);
                     return null;
                 }
 
@@ -390,7 +390,7 @@ public final class ThresholdEntity implements Cloneable {
                     v.setContent("Configuration has been changed");
                     p.setValue(v);
                     e.addParm(p);
-                    LOG.info("sendRearmForTriggeredStates: sending rearm for " + e);
+                    LOG.info("sendRearmForTriggeredStates: sending rearm for {}", e);
                     ThresholdingEventProxyFactory.getFactory().getProxy().add(e);
                     state.clearState();
                 }

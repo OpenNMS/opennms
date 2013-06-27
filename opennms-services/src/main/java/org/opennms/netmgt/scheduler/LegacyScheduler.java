@@ -432,7 +432,7 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
                         try {
                             readyRun = in.peek();
                             if (readyRun != null && readyRun.isReady()) {
-                                LOG.debug("run: found ready runnable "+readyRun);
+                                LOG.debug("run: found ready runnable {}", readyRun);
 
                                 /*
                                  * Pop the interface/readyRunnable from the

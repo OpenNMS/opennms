@@ -128,10 +128,10 @@ public class HostResourceSwRunPlugin extends AbstractPlugin {
         agentConfig.setRetries(ParameterMap.getKeyedInteger(parameters, "retry", ParameterMap.getKeyedInteger(parameters, "retries", agentConfig.getRetries())));
         agentConfig.setPort(ParameterMap.getKeyedInteger(parameters, "port", agentConfig.getPort()));
 
-        LOG.debug("capsd: service= SNMP address= " + agentConfig);
+        LOG.debug("capsd: service= SNMP address= {}", agentConfig);
 
         try {
-            LOG.debug("HostResourceSwRunMonitor.poll: SnmpAgentConfig address: " +agentConfig);
+            LOG.debug("HostResourceSwRunMonitor.poll: SnmpAgentConfig address: {}", agentConfig);
 
             if (serviceName == null) {
                 LOG.warn("HostResourceSwRunMonitor.poll: No Service Name Defined! ");
@@ -153,9 +153,9 @@ public class HostResourceSwRunPlugin extends AbstractPlugin {
             }
 
         } catch (NumberFormatException e) {
-            LOG.warn("Number operator used on a non-number " + e.getMessage());
+            LOG.warn("Number operator used on a non-number {}", e.getMessage());
         } catch (IllegalArgumentException e) {
-            LOG.warn("Invalid SNMP Criteria: " + e.getMessage());
+            LOG.warn("Invalid SNMP Criteria: {}", e.getMessage());
         } catch (Throwable t) {
             LOG.warn("Unexpected exception during SNMP poll of interface " + InetAddressUtils.str(ipaddr), t);
         }

@@ -97,7 +97,7 @@ public class Tl1ClientImpl implements Tl1Client {
     @Override
     public void start() {
         LOG.info("start: TL1 client: "+m_host+":"+String.valueOf(m_port));
-        LOG.info("start:Connection delay = " + m_reconnectionDelay );
+        LOG.info("start:Connection delay = {}", m_reconnectionDelay);
         setStarted(true);
 
         m_socketReader = new Thread("TL1-Socket-Reader") {
@@ -169,7 +169,7 @@ public class Tl1ClientImpl implements Tl1Client {
     }
 
     private void waitUntilNextConnectTime() throws InterruptedException {
-        LOG.debug("waitUntilNextConnectTime: current connection attempts: "+m_reconnectAttempts);
+        LOG.debug("waitUntilNextConnectTime: current connection attempts: {}", m_reconnectAttempts);
         
         if (isStarted()) {
             
@@ -242,7 +242,7 @@ public class Tl1ClientImpl implements Tl1Client {
     }
 
     private void createAndQueueTl1Message(StringBuilder rawMessageBuilder) {
-        LOG.debug("readMessages: offering message to queue: "+rawMessageBuilder.toString());
+        LOG.debug("readMessages: offering message to queue: {}", rawMessageBuilder.toString());
         Tl1AutonomousMessage message = detectMessageType(rawMessageBuilder);
         if (message != null) {
             m_tl1Queue.offer(message);

@@ -288,7 +288,7 @@ final class CollectableService implements ReadyRunnable {
     public void run() {
         // Process any outstanding updates.
         if (processUpdates() == ABORT_COLLECTION) {
-            LOG.debug("run: Aborting because processUpdates returned ABORT_COLLECTION (probably marked for deletion) for "+this);
+            LOG.debug("run: Aborting because processUpdates returned ABORT_COLLECTION (probably marked for deletion) for {}", this);
             return;
         }
 
@@ -434,7 +434,7 @@ final class CollectableService implements ReadyRunnable {
                 // Reinitialization flag is set, call initialize() to
                 // reinit the collector for this interface
                 //
-                LOG.debug("ReinitializationFlag set for " + getHostAddress());
+                LOG.debug("ReinitializationFlag set for {}", getHostAddress());
 
                 try {
                     reinitialize(newIface);
@@ -449,7 +449,7 @@ final class CollectableService implements ReadyRunnable {
             // Update: reparenting flag
             //
             if (m_updates.isReparentingFlagSet()) {
-                LOG.debug("ReparentingFlag set for " + getHostAddress());
+                LOG.debug("ReparentingFlag set for {}", getHostAddress());
 
                 // The interface has been reparented under a different node
                 // (with
@@ -525,7 +525,7 @@ final class CollectableService implements ReadyRunnable {
                 try {
                     newNodeId = Integer.parseInt(m_updates.getReparentNewNodeId());
                 } catch (NumberFormatException nfE) {
-                    LOG.warn("Unable to convert new nodeId value to an int while processing reparenting update: " + m_updates.getReparentNewNodeId());
+                    LOG.warn("Unable to convert new nodeId value to an int while processing reparenting update: {}", m_updates.getReparentNewNodeId());
                 }
 
                 // Set this collector's nodeId to the value of the interface's
@@ -567,7 +567,7 @@ final class CollectableService implements ReadyRunnable {
      */
     public void reinitializeThresholding() {
         if(m_thresholdVisitor!=null) {
-            LOG.debug("reinitializeThresholding on "+this);
+            LOG.debug("reinitializeThresholding on {}", this);
             m_thresholdVisitor.reload();
         }
     }

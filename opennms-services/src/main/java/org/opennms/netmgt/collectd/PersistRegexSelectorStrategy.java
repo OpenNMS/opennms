@@ -79,7 +79,7 @@ public class PersistRegexSelectorStrategy implements PersistenceSelectorStrategy
 
     @Override
     public boolean shouldPersist(CollectionResource resource) {
-        LOG.debug("shouldPersist: checking resource " + resource);
+        LOG.debug("shouldPersist: checking resource {}", resource);
         if (m_parameterCollection == null) {
             LOG.warn("shouldPersist: no parameters defined; the resource will be persisted.");
             return true;

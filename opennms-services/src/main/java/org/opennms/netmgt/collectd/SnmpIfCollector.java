@@ -110,7 +110,7 @@ public class SnmpIfCollector extends AggregateTracker {
         super(SnmpAttributeType.getCollectionTrackers(objList));
         
         LOG.debug("COLLECTING on list of "+objList.size()+" items");
-        LOG.debug("List is "+objList);
+        LOG.debug("List is {}", objList);
         // Process parameters
         //
         m_primaryIf = InetAddressUtils.str(address);

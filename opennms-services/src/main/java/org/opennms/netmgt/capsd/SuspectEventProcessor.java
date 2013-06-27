@@ -158,7 +158,7 @@ final class SuspectEventProcessor implements Runnable {
      */
     private DbNodeEntry getExistingNodeEntry(java.sql.Connection dbc,
             IfCollector collector) throws SQLException {
-        LOG.debug("getExistingNodeEntry: checking for current target: " + collector.getTarget());
+        LOG.debug("getExistingNodeEntry: checking for current target: {}", collector.getTarget());
 
         // Do we have any additional interface information collected via SNMP?
         // If not simply return, there is nothing to check
@@ -242,7 +242,7 @@ final class SuspectEventProcessor implements Runnable {
 
         // Prepare the db statement in advance
         //
-        LOG.debug("getExistingNodeEntry: issuing SQL command: " + sqlBuffer.toString());
+        LOG.debug("getExistingNodeEntry: issuing SQL command: {}", sqlBuffer.toString());
 
         int nodeID = -1;
         PreparedStatement stmt;
@@ -284,7 +284,7 @@ final class SuspectEventProcessor implements Runnable {
         }
 
         if (ipaddrsOfNewNode.containsAll(ipaddrsOfOldNode)) {
-            LOG.debug("getExistingNodeEntry: found one of the addrs under existing node: " + nodeID);
+            LOG.debug("getExistingNodeEntry: found one of the addrs under existing node: {}", nodeID);
             return DbNodeEntry.get(nodeID);
         } else {
             String dupIpaddr = getDuplicateIpaddress(ipaddrsOfOldNode, ipaddrsOfNewNode);
@@ -313,7 +313,7 @@ final class SuspectEventProcessor implements Runnable {
         while (iter.hasNext()) {
             ipaddr = iter.next();
             if (ipListB.contains(ipaddr)) {
-                LOG.debug("getDuplicateIpaddress: get duplicate ip address: " + ipaddr);
+                LOG.debug("getDuplicateIpaddress: get duplicate ip address: {}", ipaddr);
                 break;
             } else
                 ipaddr = null;
@@ -644,7 +644,7 @@ final class SuspectEventProcessor implements Runnable {
         Map<InetAddress, List<SupportedProtocol>> extraTargets = collector.getAdditionalTargets();
         for(InetAddress xifaddr : extraTargets.keySet()) {
 
-            LOG.debug("addInterfaces: adding interface " + str(xifaddr));
+            LOG.debug("addInterfaces: adding interface {}", str(xifaddr));
 
             DbIpInterfaceEntry xipIfEntry = DbIpInterfaceEntry.create(nodeId,
                                                                       xifaddr);
@@ -1104,7 +1104,7 @@ final class SuspectEventProcessor implements Runnable {
 
         // Verify that SNMP info is available
         if (collector.getSnmpCollector() == null) {
-            LOG.debug("buildLBSnmpAddressList: no SNMP info for " + collector.getTarget());
+            LOG.debug("buildLBSnmpAddressList: no SNMP info for {}", collector.getTarget());
             return addresses;
         }
 
@@ -1112,7 +1112,7 @@ final class SuspectEventProcessor implements Runnable {
         // successfully collected.
         IfSnmpCollector snmpc = collector.getSnmpCollector();
         if (!snmpc.hasIfTable() || !snmpc.hasIpAddrTable()) {
-            LOG.info("buildLBSnmpAddressList: missing SNMP info for " + collector.getTarget());
+            LOG.info("buildLBSnmpAddressList: missing SNMP info for {}", collector.getTarget());
             return addresses;
         }
 
@@ -1164,7 +1164,7 @@ final class SuspectEventProcessor implements Runnable {
 
         // Verify that SNMP info is available
         if (collector.getSnmpCollector() == null) {
-            LOG.debug("buildSnmpAddressList: no SNMP info for " + collector.getTarget());
+            LOG.debug("buildSnmpAddressList: no SNMP info for {}", collector.getTarget());
             return addresses;
         }
 
@@ -1172,7 +1172,7 @@ final class SuspectEventProcessor implements Runnable {
         // successfully collected.
         IfSnmpCollector snmpc = collector.getSnmpCollector();
         if (!snmpc.hasIfTable() || !snmpc.hasIpAddrTable()) {
-            LOG.info("buildSnmpAddressList: missing SNMP info for " + collector.getTarget());
+            LOG.info("buildSnmpAddressList: missing SNMP info for {}", collector.getTarget());
             return addresses;
         }
 
@@ -1239,7 +1239,7 @@ final class SuspectEventProcessor implements Runnable {
         } // end if (Collector.hasAdditionalTargets())
 
         if (primaryIf != null)
-            LOG.debug("determinePrimaryInterface: selected primary interface: " + str(primaryIf));
+            LOG.debug("determinePrimaryInterface: selected primary interface: {}", str(primaryIf));
         else
             LOG.debug("determinePrimaryInterface: no primary interface found");
         return primaryIf;
@@ -1262,7 +1262,7 @@ final class SuspectEventProcessor implements Runnable {
 
         // collect the information
         //
-        LOG.debug("SuspectEventProcessor: running collection for " + str(ifaddr));
+        LOG.debug("SuspectEventProcessor: running collection for {}", str(ifaddr));
 
         IfCollector collector = new IfCollector(m_pluginManager, ifaddr, true);
         collector.run();
@@ -1448,7 +1448,7 @@ final class SuspectEventProcessor implements Runnable {
         }
 
         // send suspectScanCompleted event regardless of scan outcome
-	LOG.debug("sendInterfaceEvents: sending suspect scan completed event for " + str(ifaddr));
+	LOG.debug("sendInterfaceEvents: sending suspect scan completed event for {}", str(ifaddr));
 	LOG.debug("SuspectEventProcessor for " + m_suspectIf + " completed.");
     	createAndSendSuspectScanCompletedEvent(ifaddr);
     } // end run
@@ -1472,7 +1472,7 @@ final class SuspectEventProcessor implements Runnable {
             throws SQLException {
         List<InetAddress> priSnmpAddrs = new ArrayList<InetAddress>();
 
-        LOG.debug("getPrimarySnmpInterfaceFromDb: retrieving primary SNMP interface(s) from DB for node " + node.getNodeId());
+        LOG.debug("getPrimarySnmpInterfaceFromDb: retrieving primary SNMP interface(s) from DB for node {}", node.getNodeId());
         InetAddress oldPrimarySnmpIf = null;
 
         final DBUtils d = new DBUtils(getClass());
@@ -1485,15 +1485,15 @@ final class SuspectEventProcessor implements Runnable {
             d.watch(rs);
             while (rs.next()) {
                 String oldPrimaryAddr = rs.getString(1);
-                LOG.debug("getPrimarySnmpInterfaceFromDb: String oldPrimaryAddr = " + oldPrimaryAddr);
+                LOG.debug("getPrimarySnmpInterfaceFromDb: String oldPrimaryAddr = {}", oldPrimaryAddr);
                 if (oldPrimaryAddr != null) {
                     oldPrimarySnmpIf = addr(oldPrimaryAddr);
-                    LOG.debug("getPrimarySnmpInterfaceFromDb: old primary SNMP interface is " + oldPrimaryAddr);
+                    LOG.debug("getPrimarySnmpInterfaceFromDb: old primary SNMP interface is {}", oldPrimaryAddr);
                     priSnmpAddrs.add(oldPrimarySnmpIf);
                 }
             }
         } catch (SQLException sqlE) {
-            LOG.warn("getPrimarySnmpInterfaceFromDb: Exception: " + sqlE);
+            LOG.warn("getPrimarySnmpInterfaceFromDb: Exception: {}", sqlE);
             throw sqlE;
         } finally {
             d.cleanUp();
@@ -1525,7 +1525,7 @@ final class SuspectEventProcessor implements Runnable {
             LOG.debug("setPrimarySnmpInterface: newSnmpPrimary is null, nothing to set, returning.");
             return;
         } else {
-            LOG.debug("setPrimarySnmpInterface: newSnmpPrimary = " + newPrimarySnmpIf);
+            LOG.debug("setPrimarySnmpInterface: newSnmpPrimary = {}", newPrimarySnmpIf);
         }
 
         // Verify that old and new primary interfaces are different
@@ -1539,7 +1539,7 @@ final class SuspectEventProcessor implements Runnable {
         // Set primary SNMP interface 'isSnmpPrimary' field to 'P' for primary
         //
         if (newPrimarySnmpIf != null) {
-            LOG.debug("setPrimarySnmpInterface: Updating primary SNMP interface " + str(newPrimarySnmpIf));
+            LOG.debug("setPrimarySnmpInterface: Updating primary SNMP interface {}", str(newPrimarySnmpIf));
 
             // Update the appropriate entry in the 'ipInterface' table
             //
@@ -1639,7 +1639,7 @@ final class SuspectEventProcessor implements Runnable {
         // can be refreshed based on the most up to date information
         // in the database.
         else {
-            LOG.debug("generateSnmpDataCollectionEvents: Generating reinitializeSnmpInterface event for interface " + str(newPrimary));
+            LOG.debug("generateSnmpDataCollectionEvents: Generating reinitializeSnmpInterface event for interface {}", str(newPrimary));
             createAndSendReinitializePrimarySnmpInterfaceEvent(
                                                                nodeEntry.getNodeId(),
                                                                newPrimary);
@@ -1719,15 +1719,15 @@ final class SuspectEventProcessor implements Runnable {
             boolean useExistingNode, InetAddress ifaddr, IfCollector collector) {
         // nodeGainedInterface
         //
-        LOG.debug("sendInterfaceEvents: sending node gained interface event for " + str(ifaddr));
+        LOG.debug("sendInterfaceEvents: sending node gained interface event for {}", str(ifaddr));
 
         createAndSendNodeGainedInterfaceEvent(node.getNodeId(), ifaddr);
 
         // nodeGainedService
         //
-        LOG.debug("sendInterfaceEvents: processing supported services for " + str(ifaddr));
+        LOG.debug("sendInterfaceEvents: processing supported services for {}", str(ifaddr));
         for(SupportedProtocol p : collector.getSupportedProtocols()) {
-            LOG.debug("sendInterfaceEvents: sending event for service: " + p.getProtocolName());
+            LOG.debug("sendInterfaceEvents: sending event for service: {}", p.getProtocolName());
             createAndSendNodeGainedServiceEvent(node, ifaddr,
                                                 p.getProtocolName(), null);
         }
@@ -1797,7 +1797,7 @@ final class SuspectEventProcessor implements Runnable {
         try {
             EventIpcManagerFactory.getIpcManager().sendNow(newEvent);
 
-            LOG.debug("sendEvent: successfully sent: "+toString(newEvent));
+            LOG.debug("sendEvent: successfully sent: {}", toString(newEvent));
         } catch (Throwable t) {
             LOG.warn("run: unexpected throwable exception caught during send to middleware", t);
         }

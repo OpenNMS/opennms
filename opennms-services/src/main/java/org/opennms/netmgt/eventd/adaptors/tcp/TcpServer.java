@@ -185,12 +185,12 @@ final class TcpServer implements Runnable {
         // Stop this context
         m_stop = true;
         if (m_context != null) {
-            LOG.debug("Interrupting and joining context thread " + m_context.getName());
+            LOG.debug("Interrupting and joining context thread {}", m_context.getName());
 
             m_context.interrupt();
             m_context.join();
 
-            LOG.debug("Thread context stopped and joined " + m_context.getName());
+            LOG.debug("Thread context stopped and joined {}", m_context.getName());
 
             m_context = null;
         }
@@ -204,11 +204,11 @@ final class TcpServer implements Runnable {
         while (i.hasNext()) {
             TcpStreamHandler t = i.next();
             if (t.isAlive()) {
-                LOG.debug("Calling stop on handler index " + ndx);
+                LOG.debug("Calling stop on handler index {}", ndx);
 
                 t.stop();
 
-                LOG.debug("Stopped handler index " + ndx);
+                LOG.debug("Stopped handler index {}", ndx);
             }
             ndx++;
             i.remove();
@@ -314,7 +314,7 @@ final class TcpServer implements Runnable {
                 StringBuffer connection = new StringBuffer(InetAddressUtils.str(newbie.getInetAddress()));
                 connection.append(":").append(newbie.getPort());
 
-                LOG.debug("New connection accepted from " + connection);
+                LOG.debug("New connection accepted from {}", connection);
 
                 // start a new handler
                 TcpStreamHandler handler = new TcpStreamHandler(m_parent, newbie, m_handlers, m_recsPerConn);

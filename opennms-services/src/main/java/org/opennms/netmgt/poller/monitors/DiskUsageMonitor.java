@@ -159,7 +159,7 @@ final public class DiskUsageMonitor extends SnmpMonitorStrategy {
         SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(ipaddr);
         if (agentConfig == null) throw new RuntimeException("SnmpAgentConfig object not available for interface " + ipaddr);
         final String hostAddress = InetAddressUtils.str(ipaddr);
-		LOG.debug("poll: setting SNMP peer attribute for interface " + hostAddress);
+		LOG.debug("poll: setting SNMP peer attribute for interface {}", hostAddress);
         
         agentConfig.setTimeout(ParameterMap.getKeyedInteger(parameters, "timeout", agentConfig.getTimeout()));
         agentConfig.setRetries(ParameterMap.getKeyedInteger(parameters, "retry", ParameterMap.getKeyedInteger(parameters, "retries", agentConfig.getRetries())));
@@ -181,15 +181,15 @@ final public class DiskUsageMonitor extends SnmpMonitorStrategy {
             throw new RuntimeException("Unknown value '" + matchTypeStr + "' for parameter 'match-type'");
         }
         
-        LOG.debug("diskName=" + diskName);
-        LOG.debug("percentfree=" + percentFree);
-        LOG.debug("matchType=" + matchTypeStr);
+        LOG.debug("diskName=", diskName);
+        LOG.debug("percentfree=", percentFree);
+        LOG.debug("matchType=", matchTypeStr);
         
-        LOG.debug("poll: service= SNMP address= " + agentConfig);
+        LOG.debug("poll: service= SNMP address= {}", agentConfig);
 
         
         try {
-            LOG.debug("DiskUsageMonitor.poll: SnmpAgentConfig address: " +agentConfig);
+            LOG.debug("DiskUsageMonitor.poll: SnmpAgentConfig address: {}", agentConfig);
             SnmpObjId hrStorageDescrSnmpObject = SnmpObjId.get(hrStorageDescr);
             
             
@@ -205,7 +205,7 @@ final public class DiskUsageMonitor extends SnmpMonitorStrategy {
                 LOG.debug("poll: SNMPwalk poll succeeded, addr=" + hostAddress + " oid=" + hrStorageDescrSnmpObject + " instance=" + e.getKey() + " value=" + e.getValue());
                 
                 if (isMatch(e.getValue().toString(), diskName, matchType)) {
-                	LOG.debug("DiskUsageMonitor.poll: found disk=" + diskName);
+			LOG.debug("DiskUsageMonitor.poll: found disk=", diskName);
                 	
                 	SnmpObjId hrStorageSizeSnmpObject = SnmpObjId.get(hrStorageSize + "." + e.getKey().toString());
                 	SnmpObjId hrStorageUsedSnmpObject = SnmpObjId.get(hrStorageUsed + "." + e.getKey().toString());

@@ -127,7 +127,7 @@ public class Statsd implements SpringServiceDaemon {
             }
         }
         
-        LOG.debug("isReloadConfigEventTarget: Statsd was target of reload event: "+isTarget);
+        LOG.debug("isReloadConfigEventTarget: Statsd was target of reload event: {}", isTarget);
         return isTarget;
     }
 
@@ -200,7 +200,7 @@ public class Statsd implements SpringServiceDaemon {
             cronReportTrigger.afterPropertiesSet();
             
             m_scheduler.scheduleJob(cronReportTrigger.getJobDetail(), cronReportTrigger);
-            LOG.debug("Schedule report " + cronReportTrigger);
+            LOG.debug("Schedule report {}", cronReportTrigger);
             
         }
     }
@@ -223,9 +223,9 @@ public class Statsd implements SpringServiceDaemon {
         getTransactionTemplate().execute(new TransactionCallbackWithoutResult() {
             @Override
             public void doInTransactionWithoutResult(TransactionStatus status) {
-                LOG.debug("Starting report " + report);
+                LOG.debug("Starting report {}", report);
                 report.walk();
-                LOG.debug("Completed report " + report);
+                LOG.debug("Completed report {}", report);
                 
                 m_reportPersister.persist(report);
                 LOG.debug("Report " + report + " persisted");

@@ -209,12 +209,12 @@ final class Scheduler implements Runnable, PausableFiber {
         // Get rescan interval from configuration factory
         //
         m_interval = CapsdConfigFactory.getInstance().getRescanFrequency();
-        LOG.debug("Scheduler: rescan interval(millis): " + m_interval);
+        LOG.debug("Scheduler: rescan interval(millis): {}", m_interval);
 
         // Get initial rescan sleep time from configuration factory
         //
         m_initialSleep = CapsdConfigFactory.getInstance().getInitialSleepTime();
-        LOG.debug("Scheduler: initial rescan sleep time(millis): " + m_initialSleep);
+        LOG.debug("Scheduler: initial rescan sleep time(millis): {}", m_initialSleep);
 
         // Schedule SMB Reparenting using special nodeId (-1)
         //
@@ -230,7 +230,7 @@ final class Scheduler implements Runnable, PausableFiber {
         // Load actual known nodes from the database
         //
         loadKnownNodes();
-        LOG.debug("Scheduler: done loading known nodes, node count: " + m_knownNodes.size());
+        LOG.debug("Scheduler: done loading known nodes, node count: {}", m_knownNodes.size());
     }
 
     /**
@@ -321,7 +321,7 @@ final class Scheduler implements Runnable, PausableFiber {
                     m_knownNodes.add(new NodeInfo(nodeId, lastPolled, m_interval));
                 }
             } else
-                LOG.warn("scheduleNode: Failed to retrieve last polled time from database for nodeid " + nodeId);
+                LOG.warn("scheduleNode: Failed to retrieve last polled time from database for nodeid {}", nodeId);
         } finally {
             d.cleanUp();
         }

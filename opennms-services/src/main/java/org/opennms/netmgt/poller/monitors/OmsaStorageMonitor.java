@@ -127,11 +127,11 @@ final public class OmsaStorageMonitor extends SnmpMonitorStrategy {
 
         Integer virtualDiskNumber = ParameterMap.getKeyedInteger(parameters, "virtualDiskNumber", 1);
         
-        LOG.debug("poll: service= SNMP address= " + agentConfig);
+        LOG.debug("poll: service= SNMP address= {}", agentConfig);
         
         final String hostAddress = InetAddressUtils.str(ipaddr);
 		try {
-            LOG.debug("OMSAStorageMonitor.poll: SnmpAgentConfig address: " +agentConfig);
+            LOG.debug("OMSAStorageMonitor.poll: SnmpAgentConfig address: {}", agentConfig);
             SnmpObjId virtualDiskRollUpStatusSnmpObject = SnmpObjId.get(virtualDiskRollUpStatus + "." + virtualDiskNumber);
             SnmpValue virtualDiskRollUpStatus = SnmpUtils.get(agentConfig, virtualDiskRollUpStatusSnmpObject);
             
@@ -158,18 +158,18 @@ final public class OmsaStorageMonitor extends SnmpMonitorStrategy {
             	for (Map.Entry<SnmpInstId, SnmpValue> disk: arrayDisks.entrySet()) {
             		
             		
-					LOG.debug("OMSAStorageMonitor :: arrayDiskNembers=" + disk.getValue());
+					LOG.debug("OMSAStorageMonitor :: arrayDiskNembers=", disk.getValue());
             		if(disk.getValue().toInt()==virtualDiskNumber){
             			LOG.debug("OMSAStorageMonitor :: Disk Found! ");
             			          					
             			
-            			LOG.debug("OMSAStorageMonitor :: Found This Array Disk Value " + disk.getKey());
+				LOG.debug("OMSAStorageMonitor :: Found This Array Disk Value {}", disk.getKey());
             			
             			SnmpObjId arrayDiskStateSnmpObject = SnmpObjId.get(arrayDiskState + "." + arrayDiskConnectionNumber.get(disk.getKey()));
             			
             			SnmpValue diskValue = SnmpUtils.get(agentConfig,arrayDiskStateSnmpObject);
             			
-            			LOG.debug("OmsaStorageMonitor :: Disk State=" + diskValue );
+				LOG.debug("OmsaStorageMonitor :: Disk State=", diskValue);
             			if(diskValue.toInt() != 3) {
             				
             			String arrayDiskState = getArrayDiskStatus(diskValue);
@@ -209,7 +209,7 @@ final public class OmsaStorageMonitor extends SnmpMonitorStrategy {
         //
         SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(ipaddr);
         if (agentConfig == null) throw new RuntimeException("SnmpAgentConfig object not available for interface " + ipaddr);
-        LOG.debug("poll: setting SNMP peer attribute for interface " + InetAddressUtils.str(ipaddr));
+        LOG.debug("poll: setting SNMP peer attribute for interface {}", InetAddressUtils.str(ipaddr));
         agentConfig.setTimeout(ParameterMap.getKeyedInteger(parameters, "timeout", agentConfig.getTimeout()));
         agentConfig.setRetries(ParameterMap.getKeyedInteger(parameters, "retry", ParameterMap.getKeyedInteger(parameters, "retries", agentConfig.getRetries())));
         agentConfig.setPort(ParameterMap.getKeyedInteger(parameters, "port", agentConfig.getPort()));

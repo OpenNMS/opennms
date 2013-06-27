@@ -161,7 +161,7 @@ public class SnmpTrapNotificationStrategy implements NotificationStrategy {
             LOG.info("getHostInetAddress: trapHost not specified, defaulting to: \"127.0.0.1\".");
             switchValue = "127.0.0.1";
         } else {
-            LOG.debug("getHostInetAddress: trapHost argument: "+switchValue);
+            LOG.debug("getHostInetAddress: trapHost argument: {}", switchValue);
         }
         return InetAddressUtils.addr(switchValue);
     }
@@ -177,7 +177,7 @@ public class SnmpTrapNotificationStrategy implements NotificationStrategy {
             LOG.info("getPort: trapPort argument not specified, defaulting to: \"162\".");
             return 162;
         } else {
-            LOG.debug("getPort: trapPort argument: "+Integer.parseInt(switchValue));
+            LOG.debug("getPort: trapPort argument: {}", Integer.parseInt(switchValue));
         }
         return Integer.parseInt(switchValue);
     }
@@ -193,7 +193,7 @@ public class SnmpTrapNotificationStrategy implements NotificationStrategy {
             LOG.info("getCommunity: trapCommunity not specified, defaulting to: \"public\".");
             switchValue = "public";
         } else {
-            LOG.debug("getCommunity: trapCommunity argument: "+switchValue);
+            LOG.debug("getCommunity: trapCommunity argument: {}", switchValue);
         }
         return switchValue;
     }
@@ -209,7 +209,7 @@ public class SnmpTrapNotificationStrategy implements NotificationStrategy {
             LOG.info("getEnterpriseId: trapEnterprise not specified, defaulting to: \".1.3.6.1.4.1.5813\".");
             switchValue = ".1.3.6.1.4.1.5813";
         } else {
-            LOG.debug("getEnterpriseId: trapEnterprise argument: "+switchValue);
+            LOG.debug("getEnterpriseId: trapEnterprise argument: {}", switchValue);
         }
         return switchValue;
     }
@@ -225,7 +225,7 @@ public class SnmpTrapNotificationStrategy implements NotificationStrategy {
             LOG.info("getGenericId: trapGeneric argument not specified, defaulting to: \"6\".");
             return 6;
         } else {
-            LOG.debug("getGenericId: trapGeneric argument: "+switchValue);
+            LOG.debug("getGenericId: trapGeneric argument: {}", switchValue);
         }
         return Integer.parseInt(switchValue);
     }
@@ -241,7 +241,7 @@ public class SnmpTrapNotificationStrategy implements NotificationStrategy {
             LOG.info("getSpecificId: trapSpecific argument not specified, defaulting to: \"1\".");
             return 1;
         } else {
-            LOG.debug("getSpecificId: trapSpecific argument: "+Integer.parseInt(switchValue));
+            LOG.debug("getSpecificId: trapSpecific argument: {}", Integer.parseInt(switchValue));
         }
         return Integer.parseInt(switchValue);
     }
@@ -257,7 +257,7 @@ public class SnmpTrapNotificationStrategy implements NotificationStrategy {
             LOG.info("getVarbind: trapVarbind argument not specified, defaulting to: \"OpenNMS Trap Notification\".");
             return "OpenNMS Trap Notification";
         } else {
-            LOG.debug("getVarbind: trapVarbind argument: "+switchValue);
+            LOG.debug("getVarbind: trapVarbind argument: {}", switchValue);
         }
         return switchValue;
     }

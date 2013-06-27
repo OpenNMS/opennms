@@ -357,7 +357,7 @@ public abstract class JMXThresholder implements ServiceThresholder {
             }
         }
 
-        LOG.debug("initialize: initialization completed for " + hostAddress);
+        LOG.debug("initialize: initialization completed for {}", hostAddress);
         
         return;
     }
@@ -401,7 +401,7 @@ public abstract class JMXThresholder implements ServiceThresholder {
 
         // RRD Repository attribute
         String repository = iface.getAttribute(RRD_REPOSITORY_KEY);
-        LOG.debug("check: rrd repository=" + repository);
+        LOG.debug("check: rrd repository=", repository);
 
         // Nodeid attribute
         Integer nodeId = iface.getAttribute(NODE_ID_KEY);
@@ -537,7 +537,7 @@ public abstract class JMXThresholder implements ServiceThresholder {
             throw new IllegalArgumentException("Null parameters not permitted.");
         }
 
-        LOG.debug("checkNodeDir: threshold checking node dir: " + directory.getAbsolutePath());
+        LOG.debug("checkNodeDir: threshold checking node dir: {}", directory.getAbsolutePath());
         
         for(Object threshKey  :thresholdMap.keySet()) {
             ThresholdEntity threshold = thresholdMap.get(threshKey);
@@ -592,10 +592,10 @@ public abstract class JMXThresholder implements ServiceThresholder {
             throw new IllegalArgumentException("Null parameters not permitted.");
         }
 
-        LOG.debug("checkIfDir: threshold checking interface dir: " + directory.getAbsolutePath());
+        LOG.debug("checkIfDir: threshold checking interface dir: {}", directory.getAbsolutePath());
 
         String ifLabel = directory.getName();
-        LOG.debug("checkIfDir: ifLabel=" + ifLabel);
+        LOG.debug("checkIfDir: ifLabel=", ifLabel);
 
         // This is an interface directory extract the
         // interface label from the full path name of the file

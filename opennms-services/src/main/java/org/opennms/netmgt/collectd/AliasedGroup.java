@@ -141,7 +141,7 @@ public class AliasedGroup extends AttributeGroup {
 		
 		for(CollectionAttribute attr : getAttributes()) {
 		    AliasedAttribute aliased = new AliasedAttribute(getResource(), (SnmpAttribute)attr);
-		    LOG.debug("visiting at aliased  = " + aliased);
+		    LOG.debug("visiting at aliased  = {}", aliased);
 		    aliased.visit(visitor);
 		}
 		

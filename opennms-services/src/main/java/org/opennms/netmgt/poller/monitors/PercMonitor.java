@@ -163,7 +163,7 @@ final public class PercMonitor extends SnmpMonitorStrategy {
         SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(ipaddr);
         if (agentConfig == null) throw new RuntimeException("SnmpAgentConfig object not available for interface " + ipaddr);
         final String hostAddress = InetAddressUtils.str(ipaddr);
-		LOG.debug("poll: setting SNMP peer attribute for interface " + hostAddress);
+		LOG.debug("poll: setting SNMP peer attribute for interface {}", hostAddress);
 
         // Get configuration parameters
         //
@@ -175,12 +175,12 @@ final public class PercMonitor extends SnmpMonitorStrategy {
         
         String arrayNumber = ParameterMap.getKeyedString(parameters,"array","0.0");
 
-        LOG.debug("poll: service= SNMP address= " + agentConfig);
+        LOG.debug("poll: service= SNMP address= {}", agentConfig);
 
         // Establish SNMP session with interface
         //
         try {
-            LOG.debug("PercMonitor.poll: SnmpAgentConfig address: " +agentConfig);
+            LOG.debug("PercMonitor.poll: SnmpAgentConfig address: {}", agentConfig);
             SnmpObjId snmpObjectId = SnmpObjId.get(LOGICAL_BASE_OID + "." + arrayNumber);
 
             // First walk the physical OID Tree and check the returned values 

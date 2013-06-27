@@ -206,7 +206,7 @@ public final class BroadcastEventProcessor implements EventListener {
                 }
             }
 
-            LOG.debug("isReloadConfigEventTarget: Notifd was target of reload event: "+isTarget);
+            LOG.debug("isReloadConfigEventTarget: Notifd was target of reload event: {}", isTarget);
         }
         return isTarget;
     }
@@ -310,7 +310,7 @@ public final class BroadcastEventProcessor implements EventListener {
             if(notifId < 0) {
                 notifId *= -1;
                 wa = true;
-                LOG.debug("Conditional autoNotify for notifId " + notifId);
+                LOG.debug("Conditional autoNotify for notifId {}", notifId);
             }
             final boolean wasAcked = wa;
             final Map<String, String> parmMap = rebuildParameterMap(notifId, resolutionPrefix, skipNumericPrefix);
@@ -497,13 +497,13 @@ public final class BroadcastEventProcessor implements EventListener {
                         String queueID = (notification.getNoticeQueue() != null ? notification.getNoticeQueue() : "default");
 
                         if (LOG.isDebugEnabled()) {
-                            LOG.debug("destination : " + notification.getDestinationPath());
-                            LOG.debug("text message: " + paramMap.get(NotificationManager.PARAM_TEXT_MSG));
-                            LOG.debug("num message : " + paramMap.get(NotificationManager.PARAM_NUM_MSG));
-                            LOG.debug("subject     : " + paramMap.get(NotificationManager.PARAM_SUBJECT));
-                            LOG.debug("node        : " + paramMap.get(NotificationManager.PARAM_NODE));
-                            LOG.debug("interface   : " + paramMap.get(NotificationManager.PARAM_INTERFACE));
-                            LOG.debug("service     : " + paramMap.get(NotificationManager.PARAM_SERVICE));
+                            LOG.debug("destination : {}", notification.getDestinationPath());
+                            LOG.debug("text message: {}", paramMap.get(NotificationManager.PARAM_TEXT_MSG));
+                            LOG.debug("num message : {}", paramMap.get(NotificationManager.PARAM_NUM_MSG));
+                            LOG.debug("subject     : {}", paramMap.get(NotificationManager.PARAM_SUBJECT));
+                            LOG.debug("node        : {}", paramMap.get(NotificationManager.PARAM_NODE));
+                            LOG.debug("interface   : {}", paramMap.get(NotificationManager.PARAM_INTERFACE));
+                            LOG.debug("service     : {}", paramMap.get(NotificationManager.PARAM_SERVICE));
                         }
 
                         // get the target and escalation information
@@ -587,7 +587,7 @@ public final class BroadcastEventProcessor implements EventListener {
                 }
             }
         } else {
-            LOG.debug("No notice match for uei: " + event.getUei());
+            LOG.debug("No notice match for uei: {}", event.getUei());
         }
     }
 
@@ -783,7 +783,7 @@ public final class BroadcastEventProcessor implements EventListener {
         
         // There are no users in the group
         if (users == null || users.length == 0) {
-            LOG.debug("Not sending notice, no users specified for group " + group.getName());
+            LOG.debug("Not sending notice, no users specified for group {}", group.getName());
             return null;
         }
 
@@ -810,7 +810,7 @@ public final class BroadcastEventProcessor implements EventListener {
         
         // There are no users in the group
         if (users == null || users.length == 0) {
-            LOG.debug("Not sending notice, no users scheduled for role  " + targetName);
+            LOG.debug("Not sending notice, no users scheduled for role {}", targetName);
             return null;
         }
         
@@ -977,7 +977,7 @@ public final class BroadcastEventProcessor implements EventListener {
         bldr.addParam(EventConstants.PARM_CRITICAL_PATH_NOTICE_SUPRESSED, noticeSupressed);
 
         // Send the event
-        LOG.debug("Creating pathOutageEvent for nodeid: " + nodeid);
+        LOG.debug("Creating pathOutageEvent for nodeid: {}", nodeid);
         
 	try {
             EventIpcManagerFactory.getIpcManager().sendNow(bldr.getEvent());

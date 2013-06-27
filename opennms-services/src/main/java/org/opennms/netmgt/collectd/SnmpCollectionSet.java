@@ -409,7 +409,7 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
         }
 
         if (checkDisableForceRescan("ifnumber")) {
-            LOG.info("checkForNewInterfaces: check rescan is disabled for node " + m_agent.getNodeId());
+            LOG.info("checkForNewInterfaces: check rescan is disabled for node {}", m_agent.getNodeId());
             return;
         }
 
@@ -429,7 +429,7 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
         }
 
         if (checkDisableForceRescan("sysuptime")) {
-            LOG.info("checkForSystemRestart: check rescan is disabled for node " + m_agent.getNodeId());
+            LOG.info("checkForSystemRestart: check rescan is disabled for node {}", m_agent.getNodeId());
             return;
         }
 
@@ -476,7 +476,7 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
 
             @Override
             public void visitResource(CollectionResource resource) {
-                LOG.debug("rescanNeeded: Visiting resource " + resource);
+                LOG.debug("rescanNeeded: Visiting resource {}", resource);
                 if (resource.rescanNeeded()) {
                     LOG.debug("Sending rescan event for "+getCollectionAgent()+" because resource "+resource+" indicated it was needed");
                     rescanNeeded.rescanIndicated();

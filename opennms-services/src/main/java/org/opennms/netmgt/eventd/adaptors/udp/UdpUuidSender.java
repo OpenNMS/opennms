@@ -111,7 +111,7 @@ final class UdpUuidSender implements Runnable {
     void stop() throws InterruptedException {
         m_stop = true;
         if (m_context != null) {
-            LOG.debug("Stopping and joining thread context " + m_context.getName());
+            LOG.debug("Stopping and joining thread context {}", m_context.getName());
 
             m_context.interrupt();
             m_context.join();

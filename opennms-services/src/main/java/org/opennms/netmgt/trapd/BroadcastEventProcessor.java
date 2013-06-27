@@ -136,7 +136,7 @@ public final class BroadcastEventProcessor implements EventListener, Initializin
             return;
         }
 
-        LOG.debug("Received event: " + eventUei);
+        LOG.debug("Received event: {}", eventUei);
 
         if (eventUei.equals(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI)
             || eventUei.equals(EventConstants.INTERFACE_REPARENTED_EVENT_UEI)) {

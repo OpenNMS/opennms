@@ -137,7 +137,7 @@ public class Poller implements InitializingBean, PollObserver, ConfigurationChan
             if (m_scheduler.deleteJob(jobName, PollJobDetail.GROUP)) {
                 LOG.debug(String.format("Job for %s already scheduled.  Rescheduling", polledService));
             } else {
-                LOG.debug("Scheduling job for "+polledService);
+                LOG.debug("Scheduling job for {}", polledService);
             }
 			
 			Date initialPollTime = new Date(startTime);
@@ -174,7 +174,7 @@ public class Poller implements InitializingBean, PollObserver, ConfigurationChan
 	/** {@inheritDoc} */
         @Override
 	public void pollStarted(String pollId) {
-		LOG.info("Begin Poll for "+pollId);
+		LOG.info("Begin Poll for {}", pollId);
 		
 	}
 

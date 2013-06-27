@@ -212,7 +212,7 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
             }
 
             for (HttpPage page : getPages()) {
-                LOG.debug("Executing HttpPage: " + page.toString());
+                LOG.debug("Executing HttpPage: {}", page.toString());
                 page.execute(client, svc, m_sequenceProperties);
                 if (page.getDsName() != null) {
                     LOG.debug("Recording response time " + page.getResponseTime() + " for ds " + page.getDsName());
@@ -367,7 +367,7 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
                     if (streetCred.length == 2) {
                         client.getCredentialsProvider().setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(streetCred[0], streetCred[1]));
                     } else { 
-                        LOG.warn("Illegal value found for username/password HTTP credentials: " + userInfo);
+                        LOG.warn("Illegal value found for username/password HTTP credentials: {}", userInfo);
                     }
                 }
 

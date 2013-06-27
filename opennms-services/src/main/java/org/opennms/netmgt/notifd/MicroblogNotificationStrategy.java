@@ -99,7 +99,7 @@ public class MicroblogNotificationStrategy implements NotificationStrategy {
             return 1;
         }
         
-        LOG.info("Microblog notification succeeded: update posted with ID " + response.getId());
+        LOG.info("Microblog notification succeeded: update posted with ID {}", response.getId());
         return 0;
     }
     
@@ -185,7 +185,7 @@ public class MicroblogNotificationStrategy implements NotificationStrategy {
     protected String findDestName(List<Argument> arguments) {
         for (Argument arg : arguments) {
             if (NotificationManager.PARAM_MICROBLOG_USERNAME.equals(arg.getSwitch())) {
-                LOG.debug("Found destination microblog name: " + arg.getSwitch());
+                LOG.debug("Found destination microblog name: {}", arg.getSwitch());
                 return arg.getValue();
             }
         }

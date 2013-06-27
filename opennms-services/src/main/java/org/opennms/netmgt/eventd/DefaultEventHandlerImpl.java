@@ -105,10 +105,10 @@ public final class DefaultEventHandlerImpl implements InitializingBean, EventHan
                     final String uuid = event.getUuid();
                     LOG.debug("Event {");
                     LOG.debug("  uuid  = " + (uuid != null && uuid.length() > 0 ? uuid : "<not-set>"));
-                    LOG.debug("  uei   = " + event.getUei());
-                    LOG.debug("  src   = " + event.getSource());
-                    LOG.debug("  iface = " + event.getInterface());
-                    LOG.debug("  time  = " + event.getTime());
+                    LOG.debug("  uei   = {}", event.getUei());
+                    LOG.debug("  src   = {}", event.getSource());
+                    LOG.debug("  iface = {}", event.getInterface());
+                    LOG.debug("  time  = {}", event.getTime());
                     if (event.getParmCollection().size() > 0) {
                         LOG.debug("  parms {");
                         for (final Parm parm : event.getParmCollection()) {

@@ -280,7 +280,7 @@ public class DefaultCollectionAgentService implements CollectionAgentService {
     	Set<OnmsSnmpInterface> snmpIfs = node.getSnmpInterfaces();
     	
     	if (snmpIfs.size() == 0) {
-            LOG.debug("no known SNMP interfaces for node " + node);
+            LOG.debug("no known SNMP interfaces for node {}", node);
     	}
         return snmpIfs;
     }

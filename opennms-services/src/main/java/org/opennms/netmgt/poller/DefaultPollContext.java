@@ -244,7 +244,7 @@ public class DefaultPollContext implements PollContext, EventListener {
             
             if (criticalPath[0] != null && !criticalPath[0].equals("")) {
                 if (!this.testCriticalPath(criticalPath)) {
-                    LOG.debug("Critical path test failed for node " + nodeId);
+                    LOG.debug("Critical path test failed for node {}", nodeId);
                     
                     // add eventReason, criticalPathIp, criticalPathService
                     // parms
@@ -254,10 +254,10 @@ public class DefaultPollContext implements PollContext, EventListener {
                     bldr.addParam(EventConstants.PARM_CRITICAL_PATH_SVC, criticalPath[1]);
                     
                 } else {
-                    LOG.debug("Critical path test passed for node " + nodeId);
+                    LOG.debug("Critical path test passed for node {}", nodeId);
                 }
             } else {
-                LOG.debug("No Critical path to test for node " + nodeId);
+                LOG.debug("No Critical path to test for node {}", nodeId);
             }
         }
         
@@ -365,22 +365,22 @@ public class DefaultPollContext implements PollContext, EventListener {
             LOG.debug("onEvent: Received event: "+e+" uei: "+e.getUei()+", dbid: "+e.getDbid());
             for (final Iterator<PendingPollEvent> it = m_pendingPollEvents .iterator(); it.hasNext();) {
                 final PendingPollEvent pollEvent = it.next();
-                LOG.debug("onEvent: comparing events to poll event: "+pollEvent);
+                LOG.debug("onEvent: comparing events to poll event: {}", pollEvent);
                 if (e.equals(pollEvent.getEvent())) {
-                    LOG.debug("onEvent: completing pollevent: "+pollEvent);
+                    LOG.debug("onEvent: completing pollevent: {}", pollEvent);
                     pollEvent.complete(e);
                 }
             }
             
             for (Iterator<PendingPollEvent> it = m_pendingPollEvents.iterator(); it.hasNext(); ) {
                 PendingPollEvent pollEvent = it.next();
-                LOG.debug("onEvent: determining if pollEvent is pending: "+pollEvent);
+                LOG.debug("onEvent: determining if pollEvent is pending: {}", pollEvent);
                 if (pollEvent.isPending()) continue;
                 
-                LOG.debug("onEvent: processing pending pollEvent...: "+pollEvent);
+                LOG.debug("onEvent: processing pending pollEvent...: {}", pollEvent);
                 pollEvent.processPending();
                 it.remove();
-                LOG.debug("onEvent: processing of pollEvent completed.: "+pollEvent);
+                LOG.debug("onEvent: processing of pollEvent completed.: {}", pollEvent);
             }
         }
         
@@ -391,10 +391,10 @@ public class DefaultPollContext implements PollContext, EventListener {
         InetAddress addr = null;
         boolean result = true;
     
-        LOG.debug("Test critical path IP " + criticalPath[0]);
+        LOG.debug("Test critical path IP {}", criticalPath[0]);
         addr = InetAddressUtils.addr(criticalPath[0]);
         if (addr == null) {
-            LOG.error("failed to convert string address to InetAddress " + criticalPath[0]);
+            LOG.error("failed to convert string address to InetAddress {}", criticalPath[0]);
             return true;
         }
         IcmpPlugin p = new IcmpPlugin();

@@ -82,13 +82,13 @@ final public class JDBCStoredProcedureMonitor extends JDBCMonitor
          String procedureCall = "{ ? = call " + schemaName + "." + storedProcedure + "()}";
          cs = con.prepareCall( procedureCall );
          
-         LOG.debug("Calling stored procedure: " + procedureCall );
+         LOG.debug("Calling stored procedure: {}", procedureCall);
          
          cs.registerOutParameter(1, java.sql.Types.BIT );
          cs.executeUpdate();
          bPass = cs.getBoolean( 1 );
 
-         LOG.debug("Stored procedure returned: " + bPass );
+         LOG.debug("Stored procedure returned: {}", bPass);
 
          // If the query worked, assume than the server is ok
          if (bPass)

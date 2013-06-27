@@ -185,7 +185,7 @@ public class HttpMonitor extends AbstractServiceMonitor {
                     portIndex = determinePorts(httpClient.getParameters()).length; // Will cause outer for(;;) to terminate
                     httpClient.setReason("No route to host exception");
                 } catch (SocketTimeoutException e) {
-                    LOG.info("checkStatus: HTTP socket connection timed out with " + httpClient.getTimeoutTracker().toString());
+                    LOG.info("checkStatus: HTTP socket connection timed out with {}", httpClient.getTimeoutTracker().toString());
                     httpClient.setReason("HTTP connection timeout");
                 } catch (InterruptedIOException e) {
                     LOG.info(String.format("checkStatus: HTTP connection interrupted after %d bytes transferred with %s", e.bytesTransferred, httpClient.getTimeoutTracker().toString()), e);
@@ -210,7 +210,7 @@ public class HttpMonitor extends AbstractServiceMonitor {
     }
 
     private void logResponseTimes(Double responseTime, String line) {
-        LOG.debug("poll: response= " + line);
+        LOG.debug("poll: response= {}", line);
         LOG.debug("poll: responseTime= " + responseTime + "ms");
     }
 
@@ -514,7 +514,7 @@ public class HttpMonitor extends AbstractServiceMonitor {
             m_currentLine = m_lineRdr.readLine();
             
             if (determineVerbosity(m_parameters) && HttpMonitor.LOG.isDebugEnabled()) {
-                HttpMonitor.LOG.debug("\t<<: "+m_currentLine);
+                HttpMonitor.LOG.debug("\t<<: {}", m_currentLine);
             }
             
             m_html.append(m_currentLine);
@@ -537,13 +537,13 @@ public class HttpMonitor extends AbstractServiceMonitor {
 
         public void sendHttpCommand() throws IOException {
             if (determineVerbosity(m_parameters) && HttpMonitor.LOG.isDebugEnabled()) {
-                HttpMonitor.LOG.debug("Sending HTTP command: "+m_httpCmd);
+                HttpMonitor.LOG.debug("Sending HTTP command: {}", m_httpCmd);
             }
             m_httpSocket.getOutputStream().write(m_httpCmd.getBytes());
             m_lineRdr = new BufferedReader(new InputStreamReader(m_httpSocket.getInputStream()));
             readLine();
             if (determineVerbosity(m_parameters)) {
-                HttpMonitor.LOG.debug("Server response: "+m_currentLine);
+                HttpMonitor.LOG.debug("Server response: {}", m_currentLine);
             }
             determineServerInitialResponse();
             m_headerFinished = false; // Clean header flag for each HTTP request.
@@ -573,7 +573,7 @@ public class HttpMonitor extends AbstractServiceMonitor {
             sb.append("\r\n");
             final String cmd = sb.toString();
             if (HttpMonitor.LOG.isDebugEnabled()) {
-                HttpMonitor.LOG.debug("checkStatus: cmd:\n" + cmd);
+                HttpMonitor.LOG.debug("checkStatus: cmd:\n", cmd);
             }
             m_httpCmd = cmd;
         }

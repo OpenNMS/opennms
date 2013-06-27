@@ -121,7 +121,7 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
             alarm.setTTicketState(TroubleTicketState.CANCELLED);
         } catch (PluginException e) {
             alarm.setTTicketState(TroubleTicketState.CANCEL_FAILED);
-            LOG.error("Unable to cancel ticket for alarm: " + e.getMessage());
+            LOG.error("Unable to cancel ticket for alarm: {}", e.getMessage());
             m_eventIpcManager.sendNow(createEvent(e.getMessage()));
         }
 
@@ -155,7 +155,7 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
             alarm.setTTicketState(TroubleTicketState.CLOSED);
         } catch (PluginException e) {
             alarm.setTTicketState(TroubleTicketState.CLOSE_FAILED);
-            LOG.error("Unable to close ticket for alarm: " + e.getMessage());
+            LOG.error("Unable to close ticket for alarm: {}", e.getMessage());
             m_eventIpcManager.sendNow(createEvent(e.getMessage()));
         }
 
@@ -183,7 +183,7 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
             alarm.setTTicketState(TroubleTicketState.OPEN);
         } catch (PluginException e) {
             alarm.setTTicketState(TroubleTicketState.CREATE_FAILED);
-            LOG.error("Unable to create ticket for alarm: "  + e.getMessage());
+            LOG.error("Unable to create ticket for alarm: {}", e.getMessage());
             m_eventIpcManager.sendNow(createEvent(e.getMessage()));
         }
 
@@ -241,7 +241,7 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
             }
         } catch (PluginException e) {
             alarm.setTTicketState(TroubleTicketState.UPDATE_FAILED);
-            LOG.error("Unable to update ticket for alarm: " + e.getMessage());
+            LOG.error("Unable to update ticket for alarm: {}", e.getMessage());
             m_eventIpcManager.sendNow(createEvent(e.getMessage()));
         }
 

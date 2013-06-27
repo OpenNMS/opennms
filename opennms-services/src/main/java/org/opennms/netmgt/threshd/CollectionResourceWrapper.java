@@ -159,7 +159,7 @@ public class CollectionResourceWrapper {
             if (m_ifInfo != null) {
                 m_ifindex = m_ifInfo.get("snmpifindex");
             } else {
-                LOG.info("Can't find ifInfo for " + resource);
+                LOG.info("Can't find ifInfo for {}", resource);
             }
         }
     }    

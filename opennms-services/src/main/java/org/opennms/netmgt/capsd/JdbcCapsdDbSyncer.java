@@ -600,7 +600,7 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
         //
         String managementPolicy = getCapsdConfig().getConfiguration().getManagementPolicy();
         boolean managedByDefault = (managementPolicy == null || managementPolicy.equalsIgnoreCase("managed"));
-        LOG.debug("syncManagementState: managed_by_default: " + managedByDefault);
+        LOG.debug("syncManagementState: managed_by_default: {}", managedByDefault);
     
         //
         // Retrieve list of interfaces and their managed status from the
@@ -959,12 +959,12 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
          * interfaces whose primary SNMP interface state has changed so that
          * the database can be updated accordingly.
          */
-        LOG.debug("syncSnmpPrimaryState: iterating over nodes in map and checking primary SNMP interface, node count: " + nodes.size());
+        LOG.debug("syncSnmpPrimaryState: iterating over nodes in map and checking primary SNMP interface, node count: {}", nodes.size());
         Iterator<Integer> niter = nodes.keySet().iterator();
         while (niter.hasNext()) {
             // Get the nodeid (key)
             Integer nId = niter.next();
-            LOG.debug("building SNMP address list for node " + nId);
+            LOG.debug("building SNMP address list for node {}", nId);
     
             // Lookup the interface list (value)
             List<LightWeightIfEntry> ifEntries = nodes.get(nId);
@@ -1023,7 +1023,7 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
     
             if (LOG.isDebugEnabled()) {
                 if(primarySnmpIf == null) {
-                    LOG.debug("syncSnmpPrimaryState: No primary SNMP interface found for node " + nId);
+                    LOG.debug("syncSnmpPrimaryState: No primary SNMP interface found for node {}", nId);
                 } else {
                     LOG.debug("syncSnmpPrimaryState: primary SNMP interface for node " + nId + " is: " + primarySnmpIf + ", selected from " + psiType);
                 }

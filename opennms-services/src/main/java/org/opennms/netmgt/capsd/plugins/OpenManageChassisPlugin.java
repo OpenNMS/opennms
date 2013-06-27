@@ -160,7 +160,7 @@ public final class OpenManageChassisPlugin extends SnmpPlugin {
                     LOG.warn("Cannot receive chassis status");
                     return false;
                 } else {
-                    LOG.debug("poll: OpenManageChassis: " + chassisStatus);
+                    LOG.debug("poll: OpenManageChassis: {}", chassisStatus);
                 }
 
                 // Validate chassis status, check status is somewhere between OTHER and NON_RECOVERABLE
@@ -175,9 +175,9 @@ public final class OpenManageChassisPlugin extends SnmpPlugin {
         } catch (NullPointerException e) {
             LOG.warn("SNMP not available!");
         } catch (NumberFormatException e) {
-            LOG.warn("Number operator used on a non-number " + e.getMessage());
+            LOG.warn("Number operator used on a non-number {}", e.getMessage());
         } catch (IllegalArgumentException e) {
-            LOG.warn("Invalid SNMP Criteria: " + e.getMessage());
+            LOG.warn("Invalid SNMP Criteria: {}", e.getMessage());
         } catch (Throwable t) {
             LOG.warn("Unexpected exception during SNMP poll of interface " + ipaddr, t);
         }

@@ -167,7 +167,7 @@ final public class TcpMonitor extends AbstractServiceMonitor {
 
                 if (response == null)
                     continue;
-                LOG.debug("poll: banner = " + response);
+                LOG.debug("poll: banner = {}", response);
                 LOG.debug("poll: responseTime= " + responseTime + "ms");
 
                 if (response.indexOf(strBannerMatch) > -1) {

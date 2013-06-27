@@ -170,7 +170,7 @@ public final class IfInfo extends SnmpCollectionResource {
     }
 
     void logAlias(String ifAlias) {
-        LOG.debug("Alias for RRD directory name = " + ifAlias);
+        LOG.debug("Alias for RRD directory name = {}", ifAlias);
     }
 
     String getAliasDir(String ifAlias, String ifAliasComment) {
@@ -199,11 +199,11 @@ public final class IfInfo extends SnmpCollectionResource {
 
     public boolean isScheduledForCollection() {
         LOG.debug(this+".collectionEnabled = "+isCollectionEnabled());
-        LOG.debug("selectCollectionOnly = "+getCollection().isSelectCollectionOnly());
+        LOG.debug("selectCollectionOnly = {}", getCollection().isSelectCollectionOnly());
 
         boolean isScheduled = isCollectionEnabled() || !getCollection().isSelectCollectionOnly();
         
-        LOG.debug("isScheduled = "+isScheduled);
+        LOG.debug("isScheduled = {}", isScheduled);
 
         return isScheduled;
 
@@ -244,7 +244,7 @@ public final class IfInfo extends SnmpCollectionResource {
     public boolean shouldPersist(ServiceParameters serviceParameters) {
 
         boolean shdprsist = shouldStore(serviceParameters) && (isScheduledForCollection() || serviceParameters.forceStoreByAlias(getCurrentIfAlias()));
-        LOG.debug("shouldPersist = " + shdprsist);
+        LOG.debug("shouldPersist = {}", shdprsist);
         return shdprsist;
     }
     

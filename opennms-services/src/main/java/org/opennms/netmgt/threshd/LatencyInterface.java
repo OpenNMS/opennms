@@ -123,7 +123,7 @@ public class LatencyInterface {
 
 	File getLatencyDir() throws ThresholdingException {
 		String repository = getNetworkInterface().getAttribute(LatencyThresholder.RRD_REPOSITORY_KEY);
-	    LOG.debug("check: rrd repository=" + repository);
+	    LOG.debug("check: rrd repository=", repository);
 	    // Get File object representing the
 	    // '/opt/OpenNMS/share/rrd/<svc_name>/<ipAddress>/' directory
 	    File latencyDir = new File(repository + File.separator + getHostAddress());

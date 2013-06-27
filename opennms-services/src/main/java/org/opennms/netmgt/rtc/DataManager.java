@@ -158,7 +158,7 @@ public class DataManager extends Object {
 		
 				Set<Integer> nodeIds = FilterDaoFactory.getInstance().getNodeMap(filterRule).keySet();
 				
-		        LOG.debug("Number of nodes satisfying rule: " + nodeIds.size());
+		        LOG.debug("Number of nodes satisfying rule: {}", nodeIds.size());
 		
 		        return nodeIds;
 		        
@@ -373,7 +373,7 @@ public class DataManager extends Object {
     		throw new RTCException("No categories found in categories.xml");
     	}
 
-	LOG.debug("Number of categories read: " + m_categories.size());
+	LOG.debug("Number of categories read: {}", m_categories.size());
 
     	// create data holder
     	m_map = new RTCHashMap(30000);
@@ -451,7 +451,7 @@ public class DataManager extends Object {
             // 
             // This is mainly useful when SNMP is discovered on a node.
 
-            LOG.debug("rtcN : Rescanning services on : " + ip);
+            LOG.debug("rtcN : Rescanning services on : {}", ip);
             try {
                 rtcNodeRescan(nodeid);
             } catch (FilterParseException ex) {
@@ -487,7 +487,7 @@ public class DataManager extends Object {
         RTCNode rtcN = m_map.getRTCNode(key);
         if (rtcN == null) {
             // oops! got a lost/regained service for a node that is not known?
-            LOG.info("Received a nodeLostService event for an unknown/irrelevant node: " + key.toString());
+            LOG.info("Received a nodeLostService event for an unknown/irrelevant node: {}", key.toString());
             return;
         }
 
@@ -573,7 +573,7 @@ public class DataManager extends Object {
         RTCNode rtcN = m_map.getRTCNode(key);
         if (rtcN == null) {
             // oops! got a lost/regained service for a node that is not known?
-            LOG.info("Received a nodeRegainedService event for an unknown/irrelevant node: " + key.toString());
+            LOG.info("Received a nodeRegainedService event for an unknown/irrelevant node: {}", key.toString());
             return;
         }
 
@@ -624,7 +624,7 @@ public class DataManager extends Object {
                 // remove from the category if it is the only service left.
                 if (m_map.getServiceCount(nodeid, catlabel) == 1) {
                     catNodes.remove(nIndex);
-                    LOG.info("Removing node from category: " + catlabel);
+                    LOG.info("Removing node from category: {}", catlabel);
                 }
 
                 // let the node know that this category is out

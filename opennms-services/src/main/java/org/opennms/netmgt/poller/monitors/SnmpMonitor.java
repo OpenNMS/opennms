@@ -161,7 +161,7 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
         SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(ipaddr);
         if (agentConfig == null) throw new RuntimeException("SnmpAgentConfig object not available for interface " + ipaddr);
         final String hostAddress = InetAddressUtils.str(ipaddr);
-		LOG.debug("poll: setting SNMP peer attribute for interface " + hostAddress);
+		LOG.debug("poll: setting SNMP peer attribute for interface {}", hostAddress);
 
         // Get configuration parameters
         //
@@ -198,12 +198,12 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
         svcParams.setProperty("port", String.valueOf(agentConfig.getPort()));
         svcParams.setProperty("hex", hexstr);
 
-        LOG.debug("poll: service= SNMP address= " + agentConfig);
+        LOG.debug("poll: service= SNMP address= {}", agentConfig);
 
         // Establish SNMP session with interface
         //
         try {
-            LOG.debug("SnmpMonitor.poll: SnmpAgentConfig address: " +agentConfig);
+            LOG.debug("SnmpMonitor.poll: SnmpAgentConfig address: {}", agentConfig);
             SnmpObjId snmpObjectId = SnmpObjId.get(oid);
 
             // This if block will count the number of matches within a walk and mark the service

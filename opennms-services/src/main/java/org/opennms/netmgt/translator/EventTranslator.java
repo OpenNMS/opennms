@@ -157,11 +157,11 @@ public class EventTranslator extends AbstractServiceDaemon implements EventListe
         }
 
         if (!m_config.isTranslationEvent(e)) {
-            LOG.debug("onEvent: received event that matches no translations: \n"+EventUtils.toString(e));
+            LOG.debug("onEvent: received event that matches no translations: \n", EventUtils.toString(e));
             return;
         }
 
-        LOG.debug("onEvent: received valid registered translation event: \n"+EventUtils.toString(e));
+        LOG.debug("onEvent: received valid registered translation event: \n", EventUtils.toString(e));
         
         List<Event> translated = m_config.translateEvent(e);
         if (translated != null) {
@@ -170,7 +170,7 @@ public class EventTranslator extends AbstractServiceDaemon implements EventListe
             for (Iterator<Event> iter = translated.iterator(); iter.hasNext();) {
                 Event event = iter.next();
                 events.addEvent(event);
-                LOG.debug("onEvent: sended translated event: \n"+EventUtils.toString(event));
+                LOG.debug("onEvent: sended translated event: \n", EventUtils.toString(event));
             }
             log.setEvents(events);
             getEventManager().sendNow(log);
@@ -226,7 +226,7 @@ public class EventTranslator extends AbstractServiceDaemon implements EventListe
                 }
             }
 
-            LOG.debug("isReloadConfigEventTarget: Event Translator was target of reload event: "+isTarget);
+            LOG.debug("isReloadConfigEventTarget: Event Translator was target of reload event: {}", isTarget);
         }
         return isTarget;
     }

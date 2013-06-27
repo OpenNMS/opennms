@@ -105,7 +105,7 @@ public final class JDBCQueryMonitor extends JDBCMonitor {
         String operator = ParameterMap.getKeyedString(parameters, "operator", ">=");
         String message = ParameterMap.getKeyedString(parameters, "message", null );
         
-        LOG.debug("Query: " + query);
+        LOG.debug("Query: {}", query);
         
         if (query == null) {
             ps = PollStatus.unavailable("Null Query, ensure query value set in poller configuration.");

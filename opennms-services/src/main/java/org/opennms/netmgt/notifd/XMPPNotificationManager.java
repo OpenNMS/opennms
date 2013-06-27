@@ -183,7 +183,7 @@ public class XMPPNotificationManager {
 				xmppConfig.setTruststorePassword(TRUST_STORE_PASSWORD);
 			}
 
-			LOG.debug("XMPP Manager connection config: " + xmppConfig.toString());
+			LOG.debug("XMPP Manager connection config: {}", xmppConfig.toString());
 
 			xmpp = new XMPPConnection(xmppConfig);
 
@@ -290,7 +290,7 @@ public class XMPPNotificationManager {
 		try {
 		    ChatManager cm = xmpp.getChatManager();
 			cm.createChat(xmppTo, new NullMessageListener()).sendMessage(xmppMessage);
-			LOG.debug("XMPP Manager sent message to: " + xmppTo);
+			LOG.debug("XMPP Manager sent message to: {}", xmppTo);
 		} catch (XMPPException e) {
 			LOG.error("XMPP Exception Sending message ", e);
 			return false;
@@ -316,13 +316,13 @@ public class XMPPNotificationManager {
 		if (rooms.containsKey(xmppChatRoom)) {
 			groupChat = rooms.get(xmppChatRoom);
 		} else {
-			LOG.debug("Adding room: " + xmppChatRoom);
+			LOG.debug("Adding room: {}", xmppChatRoom);
 			groupChat = new MultiUserChat(xmpp, xmppChatRoom);
 			rooms.put(xmppChatRoom, groupChat);
 		}
 
 		if (!groupChat.isJoined()) {
-			LOG.debug("Joining room: " + xmppChatRoom);
+			LOG.debug("Joining room: {}", xmppChatRoom);
 			try {
 				groupChat.join(xmppUser);
 			} catch (XMPPException e) {
@@ -333,7 +333,7 @@ public class XMPPNotificationManager {
 
 		try {
 			groupChat.sendMessage(xmppMessage);
-			LOG.debug("XMPP Manager sent message to: " + xmppChatRoom);
+			LOG.debug("XMPP Manager sent message to: {}", xmppChatRoom);
 		} catch (XMPPException e) {
 			LOG.error("XMPP Exception sending message to Chat room", e);
 			return false;

@@ -186,7 +186,7 @@ public final class BgpSessionPlugin extends SnmpPlugin {
                     LOG.warn("Cannot receive bgpAdminState");
                     return false;
                 } else {
-                    LOG.debug("poll: bgpPeerAdminState: " + bgpPeerAdminState);
+                    LOG.debug("poll: bgpPeerAdminState: {}", bgpPeerAdminState);
                 }
                 
                 // If BGP peer session administratively STOP do not detect
@@ -204,7 +204,7 @@ public final class BgpSessionPlugin extends SnmpPlugin {
                     LOG.warn("No BGP peer state received!");
                     return false;
                 } else {
-                    LOG.debug("poll: bgpPeerState: " + bgpPeerState);
+                    LOG.debug("poll: bgpPeerState: {}", bgpPeerState);
                 }
 
                 // Validate sessions, check state is somewhere between IDLE and ESTABLISHED
@@ -219,9 +219,9 @@ public final class BgpSessionPlugin extends SnmpPlugin {
         } catch (NullPointerException e) {
             LOG.warn("SNMP not available or RFC1269-MIB not supported!");
         } catch (NumberFormatException e) {
-            LOG.warn("Number operator used on a non-number " + e.getMessage());
+            LOG.warn("Number operator used on a non-number {}", e.getMessage());
         } catch (IllegalArgumentException e) {
-            LOG.warn("Invalid SNMP Criteria: " + e.getMessage());
+            LOG.warn("Invalid SNMP Criteria: {}", e.getMessage());
         } catch (Throwable t) {
             LOG.warn("Unexpected exception during SNMP poll of interface " + ipaddr, t);
         }

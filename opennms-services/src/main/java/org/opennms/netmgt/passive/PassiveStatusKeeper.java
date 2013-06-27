@@ -213,7 +213,7 @@ public class PassiveStatusKeeper extends AbstractServiceDaemon implements EventL
     public void onEvent(Event e) {
         
         if (isPassiveStatusEvent(e)) {
-            LOG.debug("onEvent: received valid registered passive status event: \n"+EventUtils.toString(e));
+            LOG.debug("onEvent: received valid registered passive status event: \n", EventUtils.toString(e));
             PassiveStatusValue statusValue = getPassiveStatusValue(e);
             setStatus(statusValue.getKey(), statusValue.getStatus());
             LOG.debug("onEvent: passive status for: "+statusValue.getKey()+ "is: "+m_statusTable.get(statusValue.getKey()));
@@ -221,7 +221,7 @@ public class PassiveStatusKeeper extends AbstractServiceDaemon implements EventL
         
         if (!isPassiveStatusEvent(e))
         {
-            LOG.debug("onEvent: received Invalid registered passive status event: \n"+EventUtils.toString(e));
+            LOG.debug("onEvent: received Invalid registered passive status event: \n", EventUtils.toString(e));
         }
     }
 

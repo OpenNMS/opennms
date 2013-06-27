@@ -122,7 +122,7 @@ public final class Notifd extends AbstractServiceDaemon {
         m_eventReader = new BroadcastEventProcessor();
 
         try {
-            LOG.info("Notification status = " + getConfigManager().getNotificationStatus());
+            LOG.info("Notification status = {}", getConfigManager().getNotificationStatus());
 
             Queue queues[] = getConfigManager().getConfiguration().getQueue();
             for (Queue queue : queues) {

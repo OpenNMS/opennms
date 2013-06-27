@@ -189,13 +189,13 @@ public class Tl1AutonomousMessageProcessor implements Tl1MessageProcessor {
 
         StringTokenizer autoBlockParser = new StringTokenizer(line,",");
         
-        LOG.debug("parseAutoBlock: Autoblock: " + line);
+        LOG.debug("parseAutoBlock: Autoblock: {}", line);
         
         // should count tokens and see if only aid:code;
         // for now I am assuming more than one parm.
         // Also we could have muliple messages in this block. Need to handle later.
         String aidAndCode = autoBlockParser.nextToken().trim();
-        LOG.debug("parseAutoBlock: aidAndCode: " + aidAndCode);
+        LOG.debug("parseAutoBlock: aidAndCode: {}", aidAndCode);
         
         StringTokenizer aidParser = new StringTokenizer(aidAndCode,":");
         //get the aid. Trimoff the begining "
@@ -210,18 +210,18 @@ public class Tl1AutonomousMessageProcessor implements Tl1MessageProcessor {
             if(codeParser.countTokens() >= 2) {
                 codeParser.nextToken();
                 ntfcncde = codeParser.nextToken().trim();
-                LOG.debug("Determined NTFCNCDE is " + ntfcncde);
+                LOG.debug("Determined NTFCNCDE is {}", ntfcncde);
             } else {
-                LOG.warn("NTFCNCDE could not be determined from auto block: " + ntfcncde);
+                LOG.warn("NTFCNCDE could not be determined from auto block: {}", ntfcncde);
             }
         } else if (ntfcncde.matches("^(CL|CR|MJ|MN|NA|NR),")) {
             LOG.info("NTFCNCDE appears to be of form: <CODE>");
             codeParser = new StringTokenizer(ntfcncde, ",");
             if (codeParser.hasMoreTokens()) {
                 ntfcncde = codeParser.nextToken().trim();
-                LOG.debug("Determined NTFCNCDE is " + ntfcncde);
+                LOG.debug("Determined NTFCNCDE is {}", ntfcncde);
             } else {
-                LOG.warn("NTFCNCDE could not be determined from auto block: " + ntfcncde);
+                LOG.warn("NTFCNCDE could not be determined from auto block: {}", ntfcncde);
             }
 
         }

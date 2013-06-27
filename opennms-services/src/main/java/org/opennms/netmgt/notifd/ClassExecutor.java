@@ -56,7 +56,7 @@ public class ClassExecutor implements ExecutorStrategy {
      */
     @Override
     public int execute(String className, List<Argument> arguments) {
-        LOG.debug("Going for the class instance: " + className);
+        LOG.debug("Going for the class instance: {}", className);
         NotificationStrategy ns;
         try {
             ns = (NotificationStrategy) Class.forName(className).newInstance();

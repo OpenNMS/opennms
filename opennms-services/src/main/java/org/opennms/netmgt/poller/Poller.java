@@ -563,7 +563,7 @@ public class Poller extends AbstractServiceDaemon {
 
         ServiceMonitor monitor = m_pollerConfig.getServiceMonitor(serviceName);
         if (monitor == null) {
-            LOG.info("Could not find service monitor associated with service "+serviceName);
+            LOG.info("Could not find service monitor associated with service {}", serviceName);
             return false;
         }
         

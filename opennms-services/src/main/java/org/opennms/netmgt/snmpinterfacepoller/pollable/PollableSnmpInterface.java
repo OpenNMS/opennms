@@ -166,11 +166,10 @@ public class PollableSnmpInterface implements ReadyRunnable {
     	
     	m_snmpinterfaces.clear();
         for (OnmsSnmpInterface iface: snmpinterfaces) {
-        	LOG.debug("setting snmpinterface:" + iface.toString());
-
+		LOG.debug("setting snmpinterface:", iface.toString());
         	if (iface != null && iface.getIfIndex() != null && iface.getIfIndex() > 0) {
         		final Integer oldStatus = oldStatuses.get(iface.getIfIndex());
-                        log().debug("setting snmpinterface (oldStatus=" + oldStatus + "):" + iface.toString());
+                        LOG.debug("setting snmpinterface (oldStatus=" + oldStatus + "):" + iface.toString());
                         // Note: If OpenNMS is restarted, the event is going to be sent no matter if it was sent before, if the current status of the interface is down.        
                         m_snmpinterfaces.put(iface.getIfIndex(), iface);
         		if (iface.getIfAdminStatus() != null &&
@@ -294,7 +293,7 @@ public class PollableSnmpInterface implements ReadyRunnable {
             	SnmpPollInterfaceMonitor pollMonitor = new SnmpPollInterfaceMonitor();
         		int maxiface = getMaxInterfacePerPdu();
         		if (maxiface == 0) maxiface=m_snmpinterfaces.size();
-        		LOG.debug("Max Interface Per Pdu is: " + maxiface);
+			LOG.debug("Max Interface Per Pdu is: {}", maxiface);
         		List<SnmpMinimalPollInterface> mifaces = getSnmpMinimalPollInterface();
         		int start =0;
         		while (start + maxiface< m_snmpinterfaces.size()) {
@@ -305,13 +304,13 @@ public class PollableSnmpInterface implements ReadyRunnable {
             }
             
         }  else {
-            LOG.info("not polling: " + getParent().getIpaddress());
+            LOG.info("not polling: {}", getParent().getIpaddress());
         } // End if polling
     } //end Run method
         
     private void doPoll(SnmpPollInterfaceMonitor pollMonitor, List<SnmpMinimalPollInterface> mifaces) {
         
-        LOG.info("doPoll: input interfaces number: " + mifaces.size());
+        LOG.info("doPoll: input interfaces number: {}", mifaces.size());
     	
         mifaces = pollMonitor.poll(getAgentConfig(), mifaces);
         
@@ -320,10 +319,10 @@ public class PollableSnmpInterface implements ReadyRunnable {
         Date now = getDate();
         
         if (mifaces != null) {
-            LOG.info("doPoll: PollerMonitor return interfaces number: " + mifaces.size());
+            LOG.info("doPoll: PollerMonitor return interfaces number: {}", mifaces.size());
             for (SnmpMinimalPollInterface miface : mifaces) {
-                LOG.debug("Working on interface with ifindex: " + miface.getIfindex());
-                LOG.debug("Interface PollStatus is " + miface.getStatus().getStatusName());
+                LOG.debug("Working on interface with ifindex: {}", miface.getIfindex());
+                LOG.debug("Interface PollStatus is {}", miface.getStatus().getStatusName());
                 if (miface.getStatus().isUp()) {
                     OnmsSnmpInterface iface = m_snmpinterfaces.get(Integer.valueOf(miface.getIfindex()));
 

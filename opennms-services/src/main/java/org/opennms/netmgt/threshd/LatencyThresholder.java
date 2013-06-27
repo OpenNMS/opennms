@@ -311,7 +311,7 @@ final class LatencyThresholder implements ServiceThresholder {
                 LOG.debug(iter.next().toString());
         }
 
-        LOG.debug("initialize: initialization completed for " + hostAddress);
+        LOG.debug("initialize: initialization completed for {}", hostAddress);
         return;
     }
 

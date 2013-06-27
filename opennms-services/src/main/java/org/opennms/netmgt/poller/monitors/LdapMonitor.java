@@ -252,7 +252,7 @@ public class LdapMonitor extends AbstractServiceMonitor {
         	LOG.debug("No route to host " + address, e);
         	reason = "No route to host " + address;
         } catch (InterruptedIOException e) {
-        	LOG.debug("did not connect to host with "+tracker);
+		LOG.debug("did not connect to host with {}", tracker);
         	reason = "did not connect to host with "+tracker;
         } catch (Throwable t) {
         	LOG.debug("An undeclared throwable exception caught contacting host " + address, t);

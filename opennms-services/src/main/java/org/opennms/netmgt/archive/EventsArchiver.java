@@ -236,12 +236,12 @@ public class EventsArchiver {
         if (LOG.isInfoEnabled()) {
             // get this in readable format
             archAgeStr = new java.util.Date(m_archAge).toString();
-            LOG.info("Events archive age specified = " + archAgeStr);
-            LOG.info("Events archive age in millisconds = " + archAge);
+            LOG.info("Events archive age specified = {}", archAgeStr);
+            LOG.info("Events archive age in millisconds = {}", archAge);
 
             LOG.info("Events created before \'" + archAgeStr + " \' will be deleted");
 
-            LOG.info("Separator to be used in archive: " + m_archSeparator);
+            LOG.info("Separator to be used in archive: {}", m_archSeparator);
         }
 
         // Make sure we can connect to the database
@@ -386,8 +386,8 @@ public class EventsArchiver {
 
             }
 
-            LOG.info("Number of events removed from the event table: " + remCount);
-            LOG.info("Number of events sent to the archive: " + archCount);
+            LOG.info("Number of events removed from the event table: {}", remCount);
+            LOG.info("Number of events sent to the archive: {}", archCount);
         } catch (Throwable oe) {
             LOG.error("EventsArchiver: Error reading events for archival: ");
             LOG.error(oe.getMessage());
