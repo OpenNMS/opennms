@@ -328,12 +328,10 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements EventListener, Q
 						
 		} catch(MarshalException mrshl_ex) {
 			//write an error message to the log file
-			LOG.error("Qosd.start(): Marshal Exception thrown whilst getting QoSD configuration\n" +
-					"\t\t\t\tEnsure tags have correct names: {}", mrshl_ex);
+			LOG.error("Qosd.start(): Marshal Exception thrown whilst getting QoSD configuration\n" + "\t\t\t\tEnsure tags have correct names: {}", mrshl_ex);
 			throw new UndeclaredThrowableException(mrshl_ex);
 		} catch(ValidationException vldtn_ex){
-			LOG.error("Qosd.start(): Validation Exception thrown whilst getting QoSD configuration\n" +
-					"\t\t\t\tMake sure all the tags are formatted correctly within QoSD-configuration.xml {}", vldtn_ex);
+			LOG.error("Qosd.start(): Validation Exception thrown whilst getting QoSD configuration\n" + "\t\t\t\tMake sure all the tags are formatted correctly within QoSD-configuration.xml {}", vldtn_ex);
 			throw new UndeclaredThrowableException(vldtn_ex);
 		} catch(IOException io_ex){
 			//Get the OpenNMS home directory
@@ -344,8 +342,7 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements EventListener, Q
 				configFile = configFile.substring(0, configFile.length() - 1);
 			}
 			configFile += java.io.File.separator + "etc" + java.io.File.separator + "QoSD-configuration.xml";
-			LOG.error("Qosd.start(): Failed to load configuration file: {}\n" +
-					"\t\t\t\tMake sure that it exists", configFile, io_ex);
+			LOG.error("Qosd.start(): Failed to load configuration file: {}\n" + "\t\t\t\tMake sure that it exists", configFile, io_ex);
 			throw new UndeclaredThrowableException(io_ex);
 		}
 
@@ -365,8 +362,7 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements EventListener, Q
 		catch(IOException io_ex) {
 			//record in log that the properties file could not be read
 			String propertiesFilename = System.getProperty("propertiesFile");
-			LOG.error("Qosd.start(): Could not read from properties file: {}\n" + 
-					"\t\t\t\tPlease check the file permissions", propertiesFilename, io_ex);
+			LOG.error("Qosd.start(): Could not read from properties file: {}\n" + "\t\t\t\tPlease check the file permissions", propertiesFilename, io_ex);
 			throw new UndeclaredThrowableException(io_ex);
 		}
 
