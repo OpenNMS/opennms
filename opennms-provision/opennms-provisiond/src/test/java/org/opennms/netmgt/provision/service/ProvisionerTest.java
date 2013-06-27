@@ -134,7 +134,7 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
         "classpath:/importerServiceTest.xml"
 })
-@JUnitConfigurationEnvironment
+@JUnitConfigurationEnvironment(systemProperties="org.opennms.provisiond.enableDiscovery=false")
 @JUnitTemporaryDatabase
 @DirtiesContext
 public class ProvisionerTest implements InitializingBean, MockSnmpDataProviderAware {
