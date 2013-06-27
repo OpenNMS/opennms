@@ -20,6 +20,7 @@ import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
@@ -66,14 +67,9 @@ import org.w3c.dom.Node;
     /**
      * Field _anyObject.
      */
-	@XmlTransient
-    private java.lang.Object _anyObject;
-
-	/**
-     * Field _elements.
-     */
 	@XmlAnyElement(lax=true)
-    private List<Element> _elements;
+	@XmlJavaTypeAdapter(AnyObjectAdapter.class)
+    private java.lang.Object _anyObject;
 
 
       //----------------/
@@ -118,12 +114,12 @@ import org.w3c.dom.Node;
             }
             else if (temp._value != null)
                 return false;
-            if (this._elements != null) {
-                if (temp._elements == null) return false;
-                else if (!(this._elements.equals(temp._elements))) 
+            if (this._anyObject != null) {
+                if (temp._anyObject == null) return false;
+                else if (!(this._anyObject.equals(temp._anyObject))) 
                     return false;
             }
-            else if (temp._elements != null)
+            else if (temp._anyObject != null)
                 return false;
             return true;
         }
@@ -137,31 +133,7 @@ import org.w3c.dom.Node;
      */
     public java.lang.Object getAnyObject(
     ) {
-    	if (_elements == null)
-    		return _anyObject;
-    	try {
-            StringBuilder builder = new StringBuilder();
-            for (Node node: _elements) {
-                StringWriter writer = new StringWriter();
-                Transformer transformer = TransformerFactory.newInstance().newTransformer();
-                transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-                transformer.transform(new DOMSource(node), new StreamResult(writer));
-                builder.append(writer.toString());
-            }
-            return builder.toString();
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    /**
-     * Returns the value of field 'elements'.
-     * 
-     * @return the value of field 'elements'.
-     */
-    public List<Element> getElements(
-    ) {
-        return this._elements;
+    	return this._anyObject;
     }
 
     /**
@@ -203,8 +175,8 @@ import org.w3c.dom.Node;
         if (_value != null) {
            result = 37 * result + _value.hashCode();
         }
-        if (_elements != null) {
-           result = 37 * result + _elements.hashCode();
+        if (_anyObject != null) {
+           result = 37 * result + _anyObject.hashCode();
         }
         
         return result;
@@ -267,16 +239,6 @@ import org.w3c.dom.Node;
     	this._anyObject = anyObject;
     }
 
-    /**
-     * Sets the value of field 'elements'.
-     * 
-     * @param key the value of field 'elements'.
-     */
-    public void setElements(
-            final List<Element> elements) {
-        this._elements = elements;
-    }
-    
     /**
      * Sets the value of field 'key'.
      * 

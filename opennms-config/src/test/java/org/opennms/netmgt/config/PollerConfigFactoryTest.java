@@ -71,13 +71,11 @@ public class PollerConfigFactoryTest extends TestCase {
             "       </rrd>\n" +
             "       <service name=\"ICMP\" interval=\"300000\">\n" +
             "         <parameter key=\"test-key\" value=\"test-value\"/>\n" +
-            /* FIXME: For some reason, this is not working properly.
             "         <parameter key=\"any-parm\">" +
             "            <config>" +
             "              <data/>" +
             "            </config>" +
             "         </parameter>" +
-            */
             "       </service>\n" +
             "       <downtime begin=\"0\" end=\"30000\"/>\n" + 
             "   </package>\n" +

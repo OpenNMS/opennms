@@ -138,14 +138,13 @@ public class PollerConfigurationTest extends XmlTest<PollerConfiguration> {
 				"    </rrd>\n" +
 				"    <service name='ICMP' interval='300000' user-defined='false' status='on'>\n" +
 				"      <parameter key='test-key' value='test-value'/>\n" +
-		    //	"  <parameter key='person'><person name='alejandro'/></parameter>\n" +
- 			//	"      <parameter key='any-parm'><config><data/></config></parameter>\n" +
+ 				"      <parameter key='any-parm'><config><data/></config></parameter>\n" +
 				"    </service>\n" +
 				"    <downtime begin='0' end='30000' interval='30000'/>\n" +
 				"</package>\n" +
 				"<monitor service='ICMP' class-name='org.opennms.netmgt.mock.MockMonitor'/>\n" +
 				"</poller-configuration>";
-		PollerConfiguration cfg = JaxbUtils.unmarshal(PollerConfiguration.class, xml);
+		PollerConfiguration cfg = JaxbUtils.unmarshal(PollerConfiguration.class, xml, false);
 		Assert.assertNotNull(cfg);
 		Assert.assertEquals("default", cfg.getPackageCollection().get(0).getName());
 	}
