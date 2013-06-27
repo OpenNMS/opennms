@@ -145,16 +145,12 @@ public final class NrpePlugin extends AbstractPlugin {
 						if (r.match(response_msg)) {
 							isAServer = true;
 						} else {
-							LOG.info("received 1-2 return code, " +
-									response.getResultCode() + ", with message: " + 
-									response.getBuffer());
+							LOG.info("received 1-2 return code, " + response.getResultCode() + ", with message: " + response.getBuffer());
 							isAServer = false;
 							break;
 						}
 				} else {
-						LOG.info("received 3+ return code, " +
-								response.getResultCode() + ", with message: " +
-								response.getBuffer());
+						LOG.info("received 3+ return code, " + response.getResultCode() + ", with message: " + response.getBuffer());
                         isAServer = false;
 						break;
                 }

@@ -96,9 +96,7 @@ public class SnmpPollInterfaceMonitor {
 					+ miface.getIfindex());
 			operooids[i] = SnmpObjId.get(IF_OPER_STATUS_OID
 					+ miface.getIfindex());
-			LOG.debug(
-					"Adding Admin/Oper oids: " + adminoids[i] + "/"
-							+ operooids[i]);
+			LOG.debug("Adding Admin/Oper oids: " + adminoids[i] + "/" + operooids[i]);
 		}
 
 		SnmpValue[] adminresults = new SnmpValue[mifaces.size()];
@@ -114,8 +112,7 @@ public class SnmpPollInterfaceMonitor {
 
 		LOG.debug("try to get operational statuses");
 		operoresults = SnmpUtils.get(agentConfig, operooids);
-		LOG.debug(
-				"got operational status " + operoresults.length + " SnmpValues");
+		LOG.debug("got operational status " + operoresults.length + " SnmpValues");
 		if (operoresults.length != mifaces.size()) {
 			LOG.warn("Snmp Interface Operational statuses collection failed");
 			return mifaces;
@@ -129,26 +126,14 @@ public class SnmpPollInterfaceMonitor {
 					miface.setAdminstatus(adminresults[i].toInt());
 					miface.setOperstatus(operoresults[i].toInt());
 					miface.setStatus(PollStatus.up());
-					LOG.debug(
-							"SNMP Value is " + adminresults[i].toInt()
-									+ " for oid: " + adminoids[i]);
-					LOG.debug(
-							"SNMP Value is " + operoresults[i].toInt()
-									+ " for oid: " + operooids[i]);
+					LOG.debug("SNMP Value is " + adminresults[i].toInt() + " for oid: " + adminoids[i]);
+					LOG.debug("SNMP Value is " + operoresults[i].toInt() + " for oid: " + operooids[i]);
 				} catch (Exception e) {
-					LOG.warn(
-							"SNMP Value is "
-									+ adminresults[i].toDisplayString()
-									+ " for oid: " + adminoids[i]);
-					LOG.warn(
-							"SNMP Value is "
-									+ operoresults[i].toDisplayString()
-									+ " for oid: " + operooids[i]);
+					LOG.warn("SNMP Value is " + adminresults[i].toDisplayString() + " for oid: " + adminoids[i]);
+					LOG.warn("SNMP Value is " + operoresults[i].toDisplayString() + " for oid: " + operooids[i]);
 				}
 			} else {
-				LOG.info(
-						"SNMP Value is null for oid: " + adminoids[i] + "/"
-								+ operooids[i]);
+				LOG.info("SNMP Value is null for oid: " + adminoids[i] + "/" + operooids[i]);
 			}
 		}
 

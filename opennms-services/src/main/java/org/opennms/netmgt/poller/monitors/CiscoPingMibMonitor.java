@@ -461,8 +461,7 @@ public class CiscoPingMibMonitor extends SnmpMonitorStrategy {
         agentConfig.setRetries(ParameterMap.getKeyedInteger(parameters, "retry", ParameterMap.getKeyedInteger(parameters, "retries", agentConfig.getRetries())));
         agentConfig.setPort(ParameterMap.getKeyedInteger(parameters, "port", agentConfig.getPort()));
 
-        LOG.debug("Setting up CISCO-PING-MIB proxy poll for service {} on interface {} -- {}", 
-        							 svc.getSvcName(), targetIpAddr, pingEntry);
+        LOG.debug("Setting up CISCO-PING-MIB proxy poll for service {} on interface {} -- {}", svc.getSvcName(), targetIpAddr, pingEntry);
 
         PollStatus serviceStatus = null;
         TimeoutTracker timeoutTracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);

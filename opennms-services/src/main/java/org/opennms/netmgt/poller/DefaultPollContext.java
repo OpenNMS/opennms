@@ -419,8 +419,7 @@ public class DefaultPollContext implements PollContext, EventListener {
             nodeLabel = getQueryManager().getNodeLabel(nodeId);
         } catch (SQLException sqlE) {
             // Log a warning
-            LOG.warn("Failed to retrieve node label for nodeid " + nodeId,
-                     sqlE);
+            LOG.warn("Failed to retrieve node label for nodeid " + nodeId, sqlE);
         }
     
         if (nodeLabel == null) {

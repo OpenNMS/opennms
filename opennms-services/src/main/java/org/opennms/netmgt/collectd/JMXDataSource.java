@@ -221,9 +221,7 @@ public class JMXDataSource implements Cloneable {
                 this.m_max = "U";
 
                 // Assign the data source object identifier and instance
-                LOG.debug("buildDataSourceList: ds_name: {} ds_oid: {}.{} ds_max: {} ds_min: {}",
-                          this.getName(), this.getOid(), this.getInstance(),
-                          this.getMax(), this.getMin());
+                LOG.debug("buildDataSourceList: ds_name: {} ds_oid: {}.{} ds_max: {} ds_min: {}", this.getName(), this.getOid(), this.getInstance(), this.getMax(), this.getMin());
         }
 
 

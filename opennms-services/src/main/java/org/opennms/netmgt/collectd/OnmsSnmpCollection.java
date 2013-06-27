@@ -291,9 +291,7 @@ public class OnmsSnmpCollection {
         String collectionName = getName();
         String storageFlag = getDataCollectionConfigDao().getSnmpStorageFlag(collectionName);
         if (storageFlag == null) {
-            LOG.warn("getStorageFlag: Configuration error, failed to "
-                    + "retrieve SNMP storage flag for collection: "
-                    + collectionName);
+            LOG.warn("getStorageFlag: Configuration error, failed to " + "retrieve SNMP storage flag for collection: " + collectionName);
             storageFlag = SnmpCollector.SNMP_STORAGE_PRIMARY;
         }
         return storageFlag;

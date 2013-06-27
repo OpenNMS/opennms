@@ -120,8 +120,7 @@ public class ForceRescanState {
     	try {
             getEventProxy().send(createForceResanEvent());
     	} catch (EventProxyException e) {
-    		LOG.error("generateForceRescanEvent: Unable to send "
-    				+ "forceRescan event.", e);
+		LOG.error("generateForceRescanEvent: Unable to send forceRescan event.", e);
     	}
     }
     

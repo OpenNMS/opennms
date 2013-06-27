@@ -410,10 +410,7 @@ public final class SnmpCollection implements ReadyRunnable {
 		
 
 		LOG.debug("run: collecting : {}", m_agentConfig);
-		LOG.debug("run: collectVlan/collectIpRoute/collectStp/m_collectBridge/m_collectCdp/m_collectLldp/m_collectOspf: {}/{}/{}/{}/{}/{}/{}",
-                        m_collectVlan, m_collectIpRoute,
-                        m_collectStp, m_collectBridge,
-                        m_collectCdp,m_collectLldp,m_collectOspf);
+		LOG.debug("run: collectVlan/collectIpRoute/collectStp/m_collectBridge/m_collectCdp/m_collectLldp/m_collectOspf: {}/{}/{}/{}/{}/{}/{}", m_collectVlan, m_collectIpRoute, m_collectStp, m_collectBridge, m_collectCdp,m_collectLldp,m_collectOspf);
 
         SnmpWalker walker = null;
 
@@ -564,8 +561,7 @@ public final class SnmpCollection implements ReadyRunnable {
         if (snmpvlancollection.failed()) {
             LOG.debug("runAndSaveSnmpVlanCollection: no bridge info found for {}", m_agentConfig);
         } else {
-            LOG.debug("runAndSaveSnmpVlanCollection: adding bridge info to snmpcollection, VLAN = {}, SnmpVlanCollection = {}",
-                      vlan, snmpvlancollection);
+            LOG.debug("runAndSaveSnmpVlanCollection: adding bridge info to snmpcollection, VLAN = {}, SnmpVlanCollection = {}", vlan, snmpvlancollection);
             m_snmpVlanCollection.put(vlan, snmpvlancollection);
         }
     }

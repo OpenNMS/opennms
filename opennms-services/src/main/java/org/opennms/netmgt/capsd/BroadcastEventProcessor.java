@@ -843,8 +843,7 @@ public class BroadcastEventProcessor implements InitializingBean {
             int count = stmt.executeUpdate();
 
             if (LOG.isDebugEnabled()) {
-                LOG.debug("deleteAlarmsForSnmpInterace: deleted: "+count+" alarms for node " + nodeId
-                            + "ifIndex: "+ifIndex);
+                LOG.debug("deleteAlarmsForSnmpInterace: deleted: "+count+" alarms for node " + nodeId + "ifIndex: "+ifIndex);
             }
 
         } finally {
@@ -1365,11 +1364,7 @@ public class BroadcastEventProcessor implements InitializingBean {
 
         // log the event
         if (LOG.isDebugEnabled())
-            LOG.debug("handleDeleteInterface: Event\n" + "uei\t\t" + event.getUei()
-                        + "\neventid\t\t" + event.getDbid() + "\nnodeId\t\t" + event.getNodeid()
-                        + "\nipaddr\t\t" + (event.getInterface() != null ? event.getInterface() : "N/A" )
-                        + "\nifIndex\t\t" + (ifIndex > -1 ? ifIndex : "N/A" )
-                        + "\neventtime\t" + (event.getTime() != null ? event.getTime() : "<null>"));
+            LOG.debug("handleDeleteInterface: Event\n" + "uei\t\t" + event.getUei() + "\neventid\t\t" + event.getDbid() + "\nnodeId\t\t" + event.getNodeid() + "\nipaddr\t\t" + (event.getInterface() != null ? event.getInterface() : "N/A" ) + "\nifIndex\t\t" + (ifIndex > -1 ? ifIndex : "N/A" ) + "\neventtime\t" + (event.getTime() != null ? event.getTime() : "<null>"));
 
         long txNo = EventUtils.getLongParm(event, EventConstants.PARM_TRANSACTION_NO, -1L);
 
@@ -1385,9 +1380,7 @@ public class BroadcastEventProcessor implements InitializingBean {
             eventsToSend = doDeleteInterface(dbConn, source, event.getNodeid(), event.getInterface(), ifIndex, txNo);
 
         } catch (SQLException ex) {
-            LOG.error("handleDeleteInterface:  Database error deleting interface on node " + event.getNodeid()
-                        + " with ip address " + (event.getInterface() != null ? event.getInterface() : "null")
-                        + " and ifIndex "+ (event.hasIfIndex() ? event.getIfIndex() : "null"), ex);
+            LOG.error("handleDeleteInterface:  Database error deleting interface on node " + event.getNodeid() + " with ip address " + (event.getInterface() != null ? event.getInterface() : "null") + " and ifIndex "+ (event.hasIfIndex() ? event.getIfIndex() : "null"), ex);
             throw new FailedOperationException("database error: " + ex.getMessage(), ex);
         } finally {
             if (dbConn != null)
@@ -1995,9 +1988,7 @@ public class BroadcastEventProcessor implements InitializingBean {
                 return Collections.singletonList(EventUtils.createInterfaceDeletedEvent(source, nodeId, ipAddr, ifIndex, txNo));
             } else {
                 if (LOG.isDebugEnabled()) {
-                    LOG.debug("markInterfaceDeleted: Interface not found: node = " + nodeId
-                                            + ", with ip address " + (ipAddr != null ? ipAddr : "null")
-                                            + ", and ifIndex " + (ifIndex > -1 ? ifIndex : "N/A"));
+                    LOG.debug("markInterfaceDeleted: Interface not found: node = " + nodeId + ", with ip address " + (ipAddr != null ? ipAddr : "null") + ", and ifIndex " + (ifIndex > -1 ? ifIndex : "N/A"));
 
                 }
                 return Collections.emptyList();

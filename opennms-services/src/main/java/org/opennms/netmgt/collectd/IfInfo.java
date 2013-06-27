@@ -197,10 +197,7 @@ public final class IfInfo extends SnmpCollectionResource {
     void logForceRescan(String ifAlias) {
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Forcing rescan.  IfAlias " + ifAlias
-                        + " for index " + getIndex()
-                        + " does not match DB value: "
-                        + getCurrentIfAlias());
+            LOG.debug("Forcing rescan.  IfAlias " + ifAlias + " for index " + getIndex() + " does not match DB value: " + getCurrentIfAlias());
         }
     }
 

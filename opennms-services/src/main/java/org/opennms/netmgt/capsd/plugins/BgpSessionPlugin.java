@@ -217,9 +217,7 @@ public final class BgpSessionPlugin extends SnmpPlugin {
                 {
                     // Session detected
                     if (LOG.isDebugEnabled()) {
-                        LOG.debug("poll: bgpPeerState: "
-                                    + bgpPeerState
-                                    + " is valid, protocol supported.");
+                        LOG.debug("poll: bgpPeerState: " + bgpPeerState + " is valid, protocol supported.");
                     }
                     return true;
                 }

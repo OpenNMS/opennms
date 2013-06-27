@@ -78,28 +78,20 @@ final class SyslogProcessor implements EndOfTheWaterfall {
                 LOG.trace("Processing a syslog to event dispatch" + m_event.toString());
                 String uuid = m_event.getEvent().getUuid();
                 LOG.trace("Event {");
-                LOG.trace("  uuid  = "
-                        + (uuid != null && uuid.length() > 0 ? uuid
-                        : "<not-set>"));
+                LOG.trace("  uuid  = " + (uuid != null && uuid.length() > 0 ? uuid : "<not-set>"));
                 LOG.trace("  uei   = " + m_event.getEvent().getUei());
                 LOG.trace("  src   = " + m_event.getEvent().getSource());
                 LOG.trace("  iface = " + m_event.getEvent().getInterface());
                 LOG.trace("  time  = " + m_event.getEvent().getTime());
-                LOG.trace("  Msg   = "
-                        + m_event.getEvent().getLogmsg().getContent());
-                LOG.trace("  Dst   = "
-                        + m_event.getEvent().getLogmsg().getDest());
+                LOG.trace("  Msg   = " + m_event.getEvent().getLogmsg().getContent());
+                LOG.trace("  Dst   = " + m_event.getEvent().getLogmsg().getDest());
                 List<Parm> parms = (m_event.getEvent().getParmCollection() == null ? null : m_event.getEvent().getParmCollection());
                 if (parms != null) {
                     LOG.trace("  parms {");
                     for (Parm parm : parms) {
                         if ((parm.getParmName() != null)
                                 && (parm.getValue().getContent() != null)) {
-                            LOG.trace("    ("
-                                    + parm.getParmName().trim()
-                                    + ", "
-                                    + parm.getValue().getContent().trim()
-                                    + ")");
+                            LOG.trace("    (" + parm.getParmName().trim() + ", " + parm.getValue().getContent().trim() + ")");
                         }
                     }
                     LOG.trace("  }");

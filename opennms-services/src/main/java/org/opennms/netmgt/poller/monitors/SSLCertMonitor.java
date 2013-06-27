@@ -179,9 +179,7 @@ final public class SSLCertMonitor extends AbstractServiceMonitor {
                 for (int i = 0; i < certs.length && !serviceStatus.isAvailable(); i++) {
                     if (certs[i] instanceof X509Certificate) {
                         X509Certificate certx = (X509Certificate) certs[i];
-                        LOG.debug("Checking validity against dates: [current: " + calCurrent.getTime() +
-                                    ", valid: " + calValid.getTime() +"], NotBefore: " + certx.getNotBefore() +
-                                    ", NotAfter: " + certx.getNotAfter());
+                        LOG.debug("Checking validity against dates: [current: " + calCurrent.getTime() + ", valid: " + calValid.getTime() +"], NotBefore: " + certx.getNotBefore() + ", NotAfter: " + certx.getNotAfter());
                         calBefore.setTime(certx.getNotBefore());
                         calAfter.setTime(certx.getNotAfter());
                         if (calCurrent.before(calBefore)) {

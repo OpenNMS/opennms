@@ -538,8 +538,7 @@ public abstract class AbstractQueryManager implements QueryManager {
 	                cdpTargetIpAddr = getIpInterfaceDao().findPrimaryInterfaceByNodeId(targetCdpNodeId).getIpAddress();
 	            }
 	            if (cdpTargetIpAddr != null && !m_linkd.isInterfaceInPackage(cdpTargetIpAddr, snmpcoll.getPackageName())) {
-	                LOG.debug("processCdp: target IP address {} Not in package: {}.  Skipping.",
-	                                str(cdpTargetIpAddr), snmpcoll.getPackageName());
+	                LOG.debug("processCdp: target IP address {} Not in package: {}.  Skipping.", str(cdpTargetIpAddr), snmpcoll.getPackageName());
 	                continue;
 	            }
 	            
@@ -602,8 +601,7 @@ public abstract class AbstractQueryManager implements QueryManager {
                 LOG.info("processRouteTable: next hop is a multicast address. Skipping.");
                 continue;
             } else if (!getLinkd().isInterfaceInPackage(nexthop, snmpcoll.getPackageName())) {
-                LOG.info("processRouteTable: nexthop address {} is not in package {}. Skipping.",
-                         str(nexthop), snmpcoll.getPackageName());
+                LOG.info("processRouteTable: nexthop address {} is not in package {}. Skipping.", str(nexthop), snmpcoll.getPackageName());
                 continue;
             }
 
@@ -675,16 +673,13 @@ public abstract class AbstractQueryManager implements QueryManager {
                     LOG.debug("run: Ethernet interface for nexthop {}. Skipping.", nexthop);
                     continue;
                 } else if (snmpiftype == SNMP_IF_TYPE_PROP_VIRTUAL) {
-                    LOG.debug("run: PropVirtual interface for nodeid {}. Skipping.",
-                                    nexthop);
+                    LOG.debug("run: PropVirtual interface for nodeid {}. Skipping.", nexthop);
                     continue;
                 } else if (snmpiftype == SNMP_IF_TYPE_L2_VLAN) {
-                    LOG.debug("run: Layer2 VLAN interface for nodeid {}. Skipping.",
-                                    nexthop);
+                    LOG.debug("run: Layer2 VLAN interface for nodeid {}. Skipping.", nexthop);
                     continue;
                 } else if (snmpiftype == SNMP_IF_TYPE_L3_VLAN) {
-                    LOG.debug("run: Layer3 VLAN interface for nodeid {}. Skipping.",
-                                    nexthop);
+                    LOG.debug("run: Layer3 VLAN interface for nodeid {}. Skipping.", nexthop);
                     continue;
                 }
             }
@@ -697,8 +692,7 @@ public abstract class AbstractQueryManager implements QueryManager {
             }
             for (RouterInterface routeIface: routeIfaces) {
                 if (node.getNodeId() == routeIface.getNextHopNodeid()) {
-                    LOG.debug("processRouteTable: node for IP next hop address {} is itself. Skipping.",
-                                    str(nexthop));
+                    LOG.debug("processRouteTable: node for IP next hop address {} is itself. Skipping.", str(nexthop));
                     continue;
                 }
  	            routeInterfaces.add(routeIface);
@@ -805,8 +799,7 @@ public abstract class AbstractQueryManager implements QueryManager {
 		        LOG.debug("processDot1dBasePortAndStpPortTables: portdesignatedBridge is bridge itself {}. Nothing to add to linkable node ", snmpVlanColl.getDot1dBase().getBridgeAddress());
     			continue;
     		}
-		LOG.debug("processDot1dBasePortAndStpPortTables: portdesignatedBridge/port {}/{} added to linkable node skipped",
-	        		stpInterface.getStpPortDesignatedBridge(),stpInterface.getBridgePort());
+		LOG.debug("processDot1dBasePortAndStpPortTables: portdesignatedBridge/port {}/{} added to linkable node skipped", stpInterface.getStpPortDesignatedBridge(),stpInterface.getBridgePort());
     		node.addStpInterface(stpInterface);
     	}
 	}
@@ -953,9 +946,7 @@ public abstract class AbstractQueryManager implements QueryManager {
 
             final OnmsStpInterface stpInterface = dot1dstpptentry.getOnmsStpInterface(stpinterfaces.get(stpport));
 
-            LOG.debug("processDot1StpPortTable: found stpport/designatedbridge/designatedport {}/{}/{}", stpport
-            		,stpInterface.getStpPortDesignatedBridge(),
-            		stpInterface.getStpPortDesignatedPort());
+            LOG.debug("processDot1StpPortTable: found stpport/designatedbridge/designatedport {}/{}/{}", stpport ,stpInterface.getStpPortDesignatedBridge(), stpInterface.getStpPortDesignatedPort());
         }
         return stpinterfaces;
     }

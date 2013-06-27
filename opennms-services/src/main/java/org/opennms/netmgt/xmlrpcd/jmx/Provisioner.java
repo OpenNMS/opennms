@@ -68,7 +68,7 @@ public class Provisioner implements ProvisionerMBean {
     @Override
     public void start() {
         m_status = Fiber.STARTING;
-        LOG.debug("SPRING: thread.classLoader="+Thread.currentThread().getContextClassLoader());;
+        LOG.debug("SPRING: thread.classLoader="+Thread.currentThread().getContextClassLoader());
         m_context = BeanUtils.getFactory("provisionerContext", ClassPathXmlApplicationContext.class);
         LOG.debug("SPRING: context.classLoader="+m_context.getClassLoader());
         m_status = Fiber.RUNNING;

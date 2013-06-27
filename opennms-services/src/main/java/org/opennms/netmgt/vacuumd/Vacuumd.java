@@ -354,8 +354,7 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
             stop();
             ExecutorService runner = m_scheduler.getRunner();
             while (!runner.isShutdown() || m_scheduler.getStatus() != STOPPED) {
-                LOG.debug("onEvent: waiting for scheduler to stop." +
-                        " Current status of scheduler: "+m_scheduler.getStatus()+"; Current status of runner: "+(runner.isTerminated() ? "TERMINATED" : (runner.isShutdown() ? "SHUTDOWN" : "RUNNING")));
+                LOG.debug("onEvent: waiting for scheduler to stop." + " Current status of scheduler: "+m_scheduler.getStatus()+"; Current status of runner: "+(runner.isTerminated() ? "TERMINATED" : (runner.isShutdown() ? "SHUTDOWN" : "RUNNING")));
                 Thread.sleep(500);
             }
             LOG.debug("onEvent: Current status of scheduler: "+m_scheduler.getStatus()+"; Current status of runner: "+(runner.isTerminated() ? "TERMINATED" : (runner.isShutdown() ? "SHUTDOWN" : "RUNNING")));

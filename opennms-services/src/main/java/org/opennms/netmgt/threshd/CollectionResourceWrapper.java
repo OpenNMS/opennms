@@ -343,9 +343,7 @@ public class CollectionResourceWrapper {
             // Atomically replace the CacheEntry with the new value
             CacheEntry last = s_cache.put(id, new CacheEntry(m_collectionTimestamp, current));
             if (LOG.isDebugEnabled()) {
-                LOG.debug("getCounterValue: id=" + id + ", last=" + 
-                		(last==null ? last : last.value +"@"+last.timestamp) + 
-                		", current=" + current);
+                LOG.debug("getCounterValue: id=" + id + ", last=" + (last==null ? last : last.value +"@"+last.timestamp) + ", current=" + current);
             }
             if (last == null) {
                 LOG.info("getCounterValue: unknown last value, ignoring current");
@@ -362,12 +360,7 @@ public class CollectionResourceWrapper {
                         // try 64-bit adjustment
                         newDelta += Math.pow(2, 64) - Math.pow(2, 32);
                     }
-                    LOG.info("getCounterValue: " + id + 
-                    		"(counter) wrapped counter adjusted last=" + 
-                    		last.value +"@"+last.timestamp +
-                    		", current=" + current + 
-                    		", olddelta=" + delta + 
-                    		", newdelta=" + newDelta);
+                    LOG.info("getCounterValue: " + id + "(counter) wrapped counter adjusted last=" + last.value +"@"+last.timestamp + ", current=" + current + ", olddelta=" + delta + ", newdelta=" + newDelta);
                     delta = newDelta;
                 }
                 // Get the interval between when this current collection was taken, and the last time this

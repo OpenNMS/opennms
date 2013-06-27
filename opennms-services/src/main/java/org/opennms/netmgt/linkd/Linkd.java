@@ -215,9 +215,7 @@ public class Linkd extends AbstractServiceDaemon {
             if (snmpcoll.getScheduler() == null) {
                 snmpcoll.setScheduler(m_scheduler);
             }
-            LOG.debug("ScheduleCollectionForNode: Scheduling SNMP Collection for Package/NodeId: {}/{}/{}",
-                            snmpcoll.getPackageName(), node.getNodeId(),
-                            snmpcoll.getInfo());
+            LOG.debug("ScheduleCollectionForNode: Scheduling SNMP Collection for Package/NodeId: {}/{}/{}", snmpcoll.getPackageName(), node.getNodeId(), snmpcoll.getInfo());
             snmpcoll.schedule();
         }
     }
@@ -554,8 +552,7 @@ public class Linkd extends AbstractServiceDaemon {
             Collection<SnmpCollection> collections = getSnmpCollections(nodeid,
                                                                         node.getSnmpPrimaryIpAddr(),
                                                                         node.getSysoid());
-            LOG.debug("wakeUpNodeCollection: fetched SnmpCollections from scratch, iterating over {} objects to wake them up",
-                            collections.size());
+            LOG.debug("wakeUpNodeCollection: fetched SnmpCollections from scratch, iterating over {} objects to wake them up", collections.size());
             for (SnmpCollection collection : collections) {
                 ReadyRunnable rr = getReadyRunnable(collection);
                 if (rr == null) {
@@ -581,8 +578,7 @@ public class Linkd extends AbstractServiceDaemon {
             Collection<SnmpCollection> collections = getSnmpCollections(nodeid,
                                                                         node.getSnmpPrimaryIpAddr(),
                                                                         node.getSysoid());
-            LOG.debug("deleteNode: fetched SnmpCollections from scratch, iterating over %d objects to wake them up",
-                            collections.size());
+            LOG.debug("deleteNode: fetched SnmpCollections from scratch, iterating over %d objects to wake them up", collections.size());
             for (SnmpCollection collection : collections) {
                 ReadyRunnable rr = getReadyRunnable(collection);
 
@@ -614,8 +610,7 @@ public class Linkd extends AbstractServiceDaemon {
      */
     void deleteInterface(int nodeid, String ipAddr, int ifIndex) {
 
-        LOG.debug("deleteInterface: marking table entries as deleted for node {} with IP address {} and ifIndex {}",
-                        nodeid, ipAddr, (ifIndex > -1 ? "" + ifIndex : "N/A"));
+        LOG.debug("deleteInterface: marking table entries as deleted for node {} with IP address {} and ifIndex {}", nodeid, ipAddr, (ifIndex > -1 ? "" + ifIndex : "N/A"));
 
             m_queryMgr.updateForInterface(nodeid, ipAddr, ifIndex,
                                           StatusType.DELETED);
@@ -641,8 +636,7 @@ public class Linkd extends AbstractServiceDaemon {
             Collection<SnmpCollection> collections = getSnmpCollections(nodeid,
                                                                         node.getSnmpPrimaryIpAddr(),
                                                                         node.getSysoid());
-            LOG.debug("suspendNodeCollection: fetched SnmpCollections from scratch, iterating over {} objects to suspend them down",
-                            collections.size());
+            LOG.debug("suspendNodeCollection: fetched SnmpCollections from scratch, iterating over {} objects to suspend them down", collections.size());
             for (SnmpCollection collection : collections) {
                 ReadyRunnable rr = getReadyRunnable(collection);
                 if (rr == null) {
@@ -672,8 +666,7 @@ public class Linkd extends AbstractServiceDaemon {
      */
     @Transactional
     public void updateNodeSnmpCollection(final SnmpCollection snmpcoll) {
-        LOG.debug("Updating SNMP collection for {}",
-                        InetAddressUtils.str(snmpcoll.getTarget()));
+        LOG.debug("Updating SNMP collection for {}", InetAddressUtils.str(snmpcoll.getTarget()));
         LinkableNode node = removeNode(snmpcoll.getTarget());
         if (node == null) {
             LOG.error("No node found for SNMP collection: {} unscheduling!", snmpcoll.getInfo());
@@ -724,12 +717,10 @@ public class Linkd extends AbstractServiceDaemon {
     	}
 
     	if (m_newSuspectEventsIpAddr.contains(ipaddress)) {
-    	    LOG.info("sendNewSuspectEvent: nothing to send, suspect event previously sent for IP address: {}",
-                           str(ipaddress));
+	    LOG.info("sendNewSuspectEvent: nothing to send, suspect event previously sent for IP address: {}", str(ipaddress));
             return;
         } else if (!isInterfaceInPackageRange(ipaddress, pkgName)) {
-            LOG.info("sendNewSuspectEvent: nothing to send for IP address: {}, not in package: {}",
-                           str(ipaddress), pkgName);
+            LOG.info("sendNewSuspectEvent: nothing to send for IP address: {}, not in package: {}", str(ipaddress), pkgName);
             return;
         }
 
@@ -904,11 +895,7 @@ public class Linkd extends AbstractServiceDaemon {
             	}
             }
             if (add) {
-                LOG.debug("addAtInterface: add ip/mac/ifindex {}/{}/{} on package {}.", 
-            			atinterface.getIpAddress().getHostAddress(),
-            			atinterface.getMacAddress(),
-            			atinterface.getIfIndex(),
-            			packageName);
+                LOG.debug("addAtInterface: add ip/mac/ifindex {}/{}/{} on package {}.", atinterface.getIpAddress().getHostAddress(), atinterface.getMacAddress(), atinterface.getIfIndex(), packageName);
                 atis.add(atinterface);
                 m_macToAtinterface.get(packageName).put(atinterface.getMacAddress(),
                                                         atis);

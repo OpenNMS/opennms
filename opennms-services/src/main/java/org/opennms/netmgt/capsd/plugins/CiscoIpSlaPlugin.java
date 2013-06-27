@@ -181,9 +181,7 @@ public class CiscoIpSlaPlugin extends SnmpPlugin {
 
                 // Establish SNMP session with interface
                 if (LOG.isDebugEnabled()) {
-                    LOG.debug(
-                                "poll: SnmpAgentConfig address: "
-                                        + agentConfig);
+                    LOG.debug("poll: SnmpAgentConfig address: " + agentConfig);
                 }
 
                 /*
@@ -211,12 +209,7 @@ public class CiscoIpSlaPlugin extends SnmpPlugin {
                 // Iterate over the list of configured IP SLAs
                 for (SnmpInstId ipslaInstance : tagResults.keySet()) {
 
-                    LOG.debug(
-                                "poll: " + "admin tag=" + adminTag
-                                        + " value="
-                                        + tagResults.get(ipslaInstance)
-                                        + " oper state="
-                                        + operStateResults.get(ipslaInstance));
+                    LOG.debug("poll: " + "admin tag=" + adminTag + " value=" + tagResults.get(ipslaInstance) + " oper state=" + operStateResults.get(ipslaInstance));
                     /*
                      *  Check if a configured ip sla with specific tag exist
                      *  and is the operational state active 
@@ -230,18 +223,13 @@ public class CiscoIpSlaPlugin extends SnmpPlugin {
                 }
             }
         } catch (NullPointerException e) {
-            LOG.warn(
-                       "SNMP not available or CISCO-RTT-MON-MIB not supported!");
+            LOG.warn("SNMP not available or CISCO-RTT-MON-MIB not supported!");
         } catch (NumberFormatException e) {
-            LOG.warn(
-                       "Number operator used on a non-number "
-                               + e.getMessage());
+            LOG.warn("Number operator used on a non-number " + e.getMessage());
         } catch (IllegalArgumentException e) {
             LOG.warn("Invalid SNMP Criteria: " + e.getMessage());
         } catch (Throwable t) {
-            LOG.warn(
-                       "Unexpected exception during SNMP poll of interface "
-                               + InetAddressUtils.str(ipaddr), t);
+            LOG.warn("Unexpected exception during SNMP poll of interface " + InetAddressUtils.str(ipaddr), t);
         }
         return status;
     }

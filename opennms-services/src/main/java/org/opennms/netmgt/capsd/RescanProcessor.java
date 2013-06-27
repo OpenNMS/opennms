@@ -548,8 +548,7 @@ public final class RescanProcessor implements Runnable {
             DbNodeEntry node, int ifIndex, IfSnmpCollector snmpc)
     throws SQLException {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("updateNonIpInterface: node= " + node.getNodeId()
-                      + " ifIndex= " + ifIndex);
+            LOG.debug("updateNonIpInterface: node= " + node.getNodeId() + " ifIndex= " + ifIndex);
         }
 
         // Sanity Check
@@ -572,9 +571,7 @@ public final class RescanProcessor implements Runnable {
             DbNodeEntry node, int ifIndex, IfSnmpCollector snmpc,
             InetAddress ifAddr) throws SQLException {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("updateNonIpInterface: updating non-IP SNMP interface "
-                      + "with nodeId=" + node.getNodeId() + " and ifIndex="
-                      + ifIndex);
+            LOG.debug("updateNonIpInterface: updating non-IP SNMP interface " + "with nodeId=" + node.getNodeId() + " and ifIndex=" + ifIndex);
         }
 
         // Create and load SNMP Interface entry from the database
@@ -586,9 +583,7 @@ public final class RescanProcessor implements Runnable {
              * interface
              */
             if (LOG.isDebugEnabled()) {
-                LOG.debug("updateNonIpInterface: non-IP SNMP interface with "
-                          + "ifIndex " + ifIndex+ " not in database, creating "
-                          + "new snmpInterface object.");
+                LOG.debug("updateNonIpInterface: non-IP SNMP interface with " + "ifIndex " + ifIndex+ " not in database, creating " + "new snmpInterface object.");
             }
             dbSnmpIfEntry = DbSnmpInterfaceEntry.create(node.getNodeId(), ifIndex);
             newSnmpIfTableEntry = true;
@@ -815,13 +810,9 @@ public final class RescanProcessor implements Runnable {
          */
         final String ifaddrString = str(ifaddr);
 		if (LOG.isDebugEnabled()) {
-            LOG.debug("updateInterface: updating interface "
-                      + ifaddrString + "(targetIf="
-                      + str(target) + ")");
+            LOG.debug("updateInterface: updating interface " + ifaddrString + "(targetIf=" + str(target) + ")");
             if (doesSnmp) {
-                LOG.debug("updateInterface: the SNMP collection passed in is "
-                          + "collected via "
-                          + (snmpc ==  null ? "No SnmpCollection passed in (snmpc == null)" : str(snmpc.getCollectorTargetAddress())));
+                LOG.debug("updateInterface: the SNMP collection passed in is collected via {}", (snmpc ==  null ? "No SnmpCollection passed in (snmpc == null)" : str(snmpc.getCollectorTargetAddress())));
             }
         }
 
@@ -836,9 +827,7 @@ public final class RescanProcessor implements Runnable {
             // Attempt to load IP Interface entry from the database
             ifIndex = snmpc.getIfIndex(ifaddr);
             if (LOG.isDebugEnabled()) {
-                LOG.debug("updateInterface: interface = "
-                          + ifaddrString + " ifIndex = " + ifIndex
-                          + ". Checking for this address on other nodes.");
+                LOG.debug("updateInterface: interface = " + ifaddrString + " ifIndex = " + ifIndex + ". Checking for this address on other nodes.");
             }
 
             /*
@@ -857,20 +846,15 @@ public final class RescanProcessor implements Runnable {
             ipAddrTable = snmpc.getIpAddrTable();
 
             if (ipAddrTable == null) {
-                LOG.error("updateInterface: null ipAddrTable in the SNMP "
-                          + "collection");
+                LOG.error("updateInterface: null ipAddrTable in the SNMP " + "collection");
             } else {
                 if (ifaddrString.equals("0.0.0.0") || ifaddr.isLoopbackAddress()) {
                     if (LOG.isDebugEnabled()) {
-                        LOG.debug("updateInterface: Skipping address from "
-                                  + "snmpc ipAddrTable "
-                                  + ifaddrString);
+                        LOG.debug("updateInterface: Skipping address from " + "snmpc ipAddrTable " + ifaddrString);
                     }
                 } else {
                     if (LOG.isDebugEnabled()) {
-                        LOG.debug("updateInterface: Checking address from "
-                                  + "snmpc ipAddrTable "
-                                  + ifaddrString);
+                        LOG.debug("updateInterface: Checking address from " + "snmpc ipAddrTable " + ifaddrString);
                     }
                     
                     PreparedStatement stmt = null;
@@ -886,10 +870,7 @@ public final class RescanProcessor implements Runnable {
                         while (rs.next()) {
                             int existingNodeId = rs.getInt(1);
                             if (LOG.isDebugEnabled()) {
-                                LOG.debug("updateInterface: ckecking for "
-                                          + ifaddrString
-                                          + " on existing nodeid  "
-                                          + existingNodeId);
+                                LOG.debug("updateInterface: ckecking for " + ifaddrString + " on existing nodeid  " + existingNodeId);
                             }
                             
                             DbNodeEntry suspectNodeEntry = DbNodeEntry.get(dbc, existingNodeId);
@@ -924,13 +905,7 @@ public final class RescanProcessor implements Runnable {
                                     }
                                     
                                     if (LOG.isDebugEnabled()) {
-                                        LOG.debug("updateInterface: "
-                                                  + "reparenting interface "
-                                                  + addrString
-                                                  + " under node: "
-                                                  + node.getNodeId()
-                                                  + " from existing node: "
-                                                  + existingNodeId);
+                                        LOG.debug("updateInterface: " + "reparenting interface " + addrString + " under node: " + node.getNodeId() + " from existing node: " + existingNodeId);
                                     }
                                     
                                     reparentInterface(dbc, addr, index, node.getNodeId(), existingNodeId);
@@ -940,12 +915,7 @@ public final class RescanProcessor implements Runnable {
                                 }
                                 
                                 if (LOG.isDebugEnabled()) {
-                                    LOG.debug("updateInterface: interface "
-                                              + ifaddrString
-                                              + " is added to node: "
-                                              + node.getNodeId()
-                                              + " by reparenting from existing "
-                                              + "node: " + existingNodeId);
+                                    LOG.debug("updateInterface: interface " + ifaddrString + " is added to node: " + node.getNodeId() + " by reparenting from existing " + "node: " + existingNodeId);
                                 }
                                 dbIpIfEntry = DbIpInterfaceEntry.get(dbc, node.getNodeId(), ifaddr);
                                 reparentFlag = true;
@@ -977,10 +947,7 @@ public final class RescanProcessor implements Runnable {
              * entry
              */
             if (LOG.isDebugEnabled()) {
-                LOG.debug("updateInterface: interface " + ifaddr + " ifIndex "
-                          + ifIndex + " not in database under nodeid "
-                          + node.getNodeId()
-                          + ", creating new interface object.");
+                LOG.debug("updateInterface: interface " + ifaddr + " ifIndex " + ifIndex + " not in database under nodeid " + node.getNodeId() + ", creating new interface object.");
             }
 
             /*
@@ -1201,8 +1168,7 @@ public final class RescanProcessor implements Runnable {
 
         // InterfaceIndexChanged event
         if (LOG.isDebugEnabled()) {
-            LOG.debug("updateInterfaceInfo: ifIndex changed: "
-                      + ifIndexChangedFlag);
+            LOG.debug("updateInterfaceInfo: ifIndex changed: " + ifIndexChangedFlag);
         }
         if (ifIndexChangedFlag) {
             m_eventList.add(createInterfaceIndexChangedEvent(dbIpIfEntry, originalIpIfEntry));
@@ -1211,8 +1177,7 @@ public final class RescanProcessor implements Runnable {
 
         // IPHostNameChanged event
         if (LOG.isDebugEnabled()) {
-            LOG.debug("updateInterfaceInfo: hostname changed: "
-                      + ipHostnameChangedFlag);
+            LOG.debug("updateInterfaceInfo: hostname changed: " + ipHostnameChangedFlag);
         }
         if (ipHostnameChangedFlag) {
             m_eventList.add(createIpHostNameChangedEvent(dbIpIfEntry, originalIpIfEntry));
@@ -1225,8 +1190,7 @@ public final class RescanProcessor implements Runnable {
              */
             boolean ipToBePolled = false;
             final String ifaddrString = str(ifaddr);
-			LOG.debug("updateInterfaceInfo: rebuilding PackageIpListMap for "
-                      + "new interface " + ifaddrString);
+            LOG.debug("updateInterfaceInfo: rebuilding PackageIpListMap for " + "new interface " + ifaddrString);
             PollerConfigFactory.getInstance().rebuildPackageIpListMap();
             org.opennms.netmgt.config.poller.Package ipPkg = ifaddrString == null? null : pollerCfgFactory.getFirstPackageMatch(ifaddrString);
             if (ipPkg != null) {
@@ -1245,10 +1209,7 @@ public final class RescanProcessor implements Runnable {
                     stmt.setString(3, ifaddrString);
                     stmt.executeUpdate();
                     if (LOG.isDebugEnabled()) {
-                        LOG.debug("updateInterfaceInfo: updated managed state "
-                                  + "for new interface "
-                                  + ifaddrString + " on node "
-                                  + dbIpIfEntry.getNodeId() + " to managed");
+                        LOG.debug("updateInterfaceInfo: updated managed state " + "for new interface " + ifaddrString + " on node " + dbIpIfEntry.getNodeId() + " to managed");
                     }
                 } finally {
                     d.cleanUp();
@@ -1279,10 +1240,7 @@ public final class RescanProcessor implements Runnable {
             }
             if (ifIndex == -1) {
                 if (LOG.isDebugEnabled()) {
-                    LOG.debug("updateInterfaceInfo: interface "
-                              + ifaddrString
-                              + " has no valid ifIndex. Assuming this is a "
-                              + "lame SNMP host with no ipAddrTable");
+                    LOG.debug("updateInterfaceInfo: interface " + ifaddrString + " has no valid ifIndex. Assuming this is a " + "lame SNMP host with no ipAddrTable");
                 }
                 ifIndex = CapsdConfig.LAME_SNMP_HOST_IFINDEX;
             }
@@ -1326,9 +1284,7 @@ public final class RescanProcessor implements Runnable {
             }
 
             if (LOG.isDebugEnabled()) {
-                LOG.debug("updateInterfaceInfo: interface "
-                          + ifaddrString + " to be polled = "
-                          + ipToBePolled);
+                LOG.debug("updateInterfaceInfo: interface " + ifaddrString + " to be polled = " + ipToBePolled);
             }
         }
 
@@ -1352,9 +1308,7 @@ public final class RescanProcessor implements Runnable {
                 }
             } else {
                 // No ifIndex found
-                LOG.debug("updateInterfaceInfo:  No ifIndex found for "
-                          + ifaddrString
-                          + ". Not eligible for primary SNMP interface.");
+                LOG.debug("updateInterfaceInfo:  No ifIndex found for " + ifaddrString + ". Not eligible for primary SNMP interface.");
             }
             currIpIfEntry.setPrimaryState(DbIpInterfaceEntry.SNMP_NOT_ELIGIBLE);
         } else if (doesSnmp) {
@@ -1410,8 +1364,7 @@ public final class RescanProcessor implements Runnable {
          * in the database, so package filter evaluation should go through OK
          */
         if (LOG.isDebugEnabled()) {
-            LOG.debug("updateServiceInfo: Checking for new services on host "
-                      + dbIpIfEntry.getHostname());
+            LOG.debug("updateServiceInfo: Checking for new services on host " + dbIpIfEntry.getHostname());
         }
 
         Iterator<SupportedProtocol> iproto = protocols.iterator();
@@ -1709,9 +1662,7 @@ public final class RescanProcessor implements Runnable {
          */		
         if (snmpc != null && !snmpc.failed() && ifIndex != -1) {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("updateSnmpInfo: updating SNMP interface for "
-                          + "nodeId/ifIndex="
-                          + node.getNodeId() + "/" + ifIndex);
+                LOG.debug("updateSnmpInfo: updating SNMP interface for " + "nodeId/ifIndex=" + node.getNodeId() + "/" + ifIndex);
             }
 
             // Create and load SNMP Interface entry from the database
@@ -1724,9 +1675,7 @@ public final class RescanProcessor implements Runnable {
                  * interface
                  */
                 if (LOG.isDebugEnabled()) {
-                    LOG.debug("updateSnmpInfo: SNMP interface index " + ifIndex
-                              + " not in database, creating new interface "
-                              + "object.");
+                    LOG.debug("updateSnmpInfo: SNMP interface index " + ifIndex + " not in database, creating new interface " + "object.");
                 }
                 dbSnmpIfEntry = DbSnmpInterfaceEntry.create(node.getNodeId(),
                                                             ifIndex);
@@ -1758,9 +1707,7 @@ public final class RescanProcessor implements Runnable {
             if (ifte == null
                     && ifIndex == CapsdConfig.LAME_SNMP_HOST_IFINDEX) {
                  if (LOG.isDebugEnabled()) {
-                    LOG.debug("updateSnmpInfo: interface "
-                              + str(snmpc.getCollectorTargetAddress())
-                              + " appears to be a lame SNMP host");
+                    LOG.debug("updateSnmpInfo: interface " + str(snmpc.getCollectorTargetAddress()) + " appears to be a lame SNMP host");
                  }
             } else if (ifte != null) {
                 /*
@@ -1783,10 +1730,7 @@ public final class RescanProcessor implements Runnable {
                     // netmask
                     if (aaddrs[1] != null) {
                         if (LOG.isDebugEnabled()) {
-                            LOG.debug("updateSnmpInfo: interface "
-                                        + str(aaddrs[0])
-                                        + " has netmask: "
-                                        + str(aaddrs[1]));
+                            LOG.debug("updateSnmpInfo: interface " + str(aaddrs[0]) + " has netmask: " + str(aaddrs[1]));
                         }
                         currSnmpIfEntry.setNetmask(aaddrs[1]);
                     }
@@ -1800,8 +1744,7 @@ public final class RescanProcessor implements Runnable {
                 // description
                 String str = ifte.getIfDescr();
                 if (LOG.isDebugEnabled()) {
-                    LOG.debug("updateSnmpInfo: " + ifaddr
-                              + " has ifDescription: " + str);
+                    LOG.debug("updateSnmpInfo: " + ifaddr + " has ifDescription: " + str);
                 }
                 if (str != null && str.length() > 0) {
                     currSnmpIfEntry.setDescription(str);
@@ -1810,8 +1753,7 @@ public final class RescanProcessor implements Runnable {
                 String physAddr = ifte.getPhysAddr();
 
                 if (LOG.isDebugEnabled()) {
-                    LOG.debug("updateSnmpInfo: " + ifaddr
-                              + " has phys address: -" + physAddr + "-");
+                    LOG.debug("updateSnmpInfo: " + ifaddr + " has phys address: -" + physAddr + "-");
                 }
 
                 if (physAddr != null && physAddr.length() == 12) {
@@ -1885,11 +1827,7 @@ public final class RescanProcessor implements Runnable {
             // end if complete snmp info available
         } else if (snmpc != null && snmpc.hasIpAddrTable() && ifIndex != -1) {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("updateSnmpInfo: updating SNMP interface for "
-                          + "nodeId/ifIndex/ipAddr="
-                          + node.getNodeId() + "/" + ifIndex + "/" + ifaddr
-                          + " based on ipAddrTable only - No ifTable "
-                          + "available");
+                LOG.debug("updateSnmpInfo: updating SNMP interface for " + "nodeId/ifIndex/ipAddr=" + node.getNodeId() + "/" + ifIndex + "/" + ifaddr + " based on ipAddrTable only - No ifTable " + "available");
             }
 
             // Create and load SNMP Interface entry from the database
@@ -1901,9 +1839,7 @@ public final class RescanProcessor implements Runnable {
                  * interface
                  */
                 if (LOG.isDebugEnabled()) {
-                    LOG.debug("updateSnmpInfo: SNMP interface index " + ifIndex
-                              + " not in database, creating new interface "
-                              + "object.");
+                    LOG.debug("updateSnmpInfo: SNMP interface index " + ifIndex + " not in database, creating new interface " + "object.");
                 }
                 dbSnmpIfEntry = DbSnmpInterfaceEntry.create(node.getNodeId(),
                                                             ifIndex);
@@ -1922,10 +1858,7 @@ public final class RescanProcessor implements Runnable {
             // allow for lame snmp hosts with no ipAddrTable
             ifIndex = CapsdConfig.LAME_SNMP_HOST_IFINDEX;
             if (LOG.isDebugEnabled()) {
-                LOG.debug("updateSnmpInfo: updating SNMP interface for "
-                          + "nodeId/ipAddr=" + node.getNodeId() + "/" + ifaddr
-                          + " based on ip address only - No ipAddrTable "
-                          + "available");
+                LOG.debug("updateSnmpInfo: updating SNMP interface for " + "nodeId/ipAddr=" + node.getNodeId() + "/" + ifaddr + " based on ip address only - No ipAddrTable " + "available");
             }
 
             // Create and load SNMP Interface entry from the database
@@ -1938,9 +1871,7 @@ public final class RescanProcessor implements Runnable {
                  * interface
                  */
                 if (LOG.isDebugEnabled()) {
-                    LOG.debug("updateSnmpInfo: SNMP interface index " + ifIndex
-                              + " not in database, creating new interface "
-                              + "object.");
+                    LOG.debug("updateSnmpInfo: SNMP interface index " + ifIndex + " not in database, creating new interface " + "object.");
                 }
                 dbSnmpIfEntry = DbSnmpInterfaceEntry.create(node.getNodeId(),
                                                             ifIndex);
@@ -2680,8 +2611,7 @@ public final class RescanProcessor implements Runnable {
         DbIpInterfaceEntry[] dbInterfaces = getInterfaces(dbNodeEntry);
         
         if (dbInterfaces == null) {
-            LOG.debug("no interfaces found in the database to rescan for node: "
-                      + getNodeId());
+            LOG.debug("no interfaces found in the database to rescan for node: " + getNodeId());
             return;
         }
 
@@ -2748,11 +2678,8 @@ public final class RescanProcessor implements Runnable {
                         collectorMap.put(ifaddrString, collector);
                         gotSnmpCollection = true;
                         if (LOG.isDebugEnabled()) {
-                            LOG.debug("SNMP data collected via "
-                                      + ifaddrString);
-                            LOG.debug("Adding " + ifaddrString
-                                      + " to collectorMap for node: "
-                                      + getNodeId());
+                            LOG.debug("SNMP data collected via " + ifaddrString);
+                            LOG.debug("Adding " + ifaddrString + " to collectorMap for node: " + getNodeId());
                         }
                         snmpcAgree = false;
                         break;
@@ -2763,11 +2690,7 @@ public final class RescanProcessor implements Runnable {
                         prevAddrList = ipAddTable.getIpAddresses();
 
                         if (LOG.isDebugEnabled()) {
-                            LOG.debug("SNMP data collected via "
-                                      + ifaddrString
-                                      + " does not agree with database.  "
-                                      + "Tentatively adding to the "
-                                      + "collectorMap and continuing");
+                            LOG.debug("SNMP data collected via " + ifaddrString + " does not agree with database.  " + "Tentatively adding to the " + "collectorMap and continuing");
                             for(InetAddress a : prevAddrList) {
                                 LOG.debug("IP address in list = " + a);
                             }
@@ -2805,18 +2728,14 @@ public final class RescanProcessor implements Runnable {
                         if (listMatch) {
                             LOG.debug("Current and previous address lists match");
                         } else {
-                            LOG.debug("Current and previous address lists "
-                                      + "DO NOT match");
+                            LOG.debug("Current and previous address lists " + "DO NOT match");
                             snmpcAgree = false;
                         }
                         collector.deleteSnmpCollector();
                     }
                     if (snmpcAgree == false) {
                         if (LOG.isDebugEnabled()) {
-                            LOG.debug("SNMP data collected via "
-                                      + ifaddrString
-                                      + " does not agree with database or with "
-                                      + "other interface(s) on this node.");
+                            LOG.debug("SNMP data collected via " + ifaddrString + " does not agree with database or with " + "other interface(s) on this node.");
                         }
                     }
                 } else {
@@ -2826,9 +2745,7 @@ public final class RescanProcessor implements Runnable {
                      */
                     nonSnmpCollectorMap.put(ifaddrString, collector);
                     if (LOG.isDebugEnabled()) {
-                        LOG.debug("Adding " + ifaddrString
-                                  + " to nonSnmpCollectorMap for node: "
-                                  + getNodeId());
+                        LOG.debug("Adding " + ifaddrString + " to nonSnmpCollectorMap for node: " + getNodeId());
                     }
                 }
             }
@@ -2846,20 +2763,15 @@ public final class RescanProcessor implements Runnable {
             if (nonSnmpCollectorMap.size() == 1 && gotSnmpc) {
                 doesSnmp = true;
                 if (LOG.isDebugEnabled()) {
-                    LOG.debug("node " + getNodeId()
-                              + " appears to be a lame SNMP host... "
-                              + "Proceeding");
+                    LOG.debug("node " + getNodeId() + " appears to be a lame SNMP host... " + "Proceeding");
                 }
             } else {
                 doesSnmp = false;
                 if (LOG.isDebugEnabled()) {
                     if (gotSnmpc == false) {
-                        LOG.debug("Could not collect SNMP data for node: "
-                                  + getNodeId());
+                        LOG.debug("Could not collect SNMP data for node: " + getNodeId());
                     } else {
-                        LOG.debug("Not using SNMP data for node: "
-                                  + getNodeId() + ".  "
-                                  + "Collection does not agree with database.");
+                        LOG.debug("Not using SNMP data for node: " + getNodeId() + ".  " + "Collection does not agree with database.");
                     }
                 }
             }
@@ -2871,11 +2783,7 @@ public final class RescanProcessor implements Runnable {
              * May want to create an event here
              */
             if (LOG.isDebugEnabled()) {
-                LOG.debug("SNMP collection for node: "
-                          + getNodeId()
-                          + " does not agree with database, but there is no "
-                          + "conflict among the interfaces on this node which "
-                          + "respond to SNMP. Proceeding...");
+                LOG.debug("SNMP collection for node: " + getNodeId() + " does not agree with database, but there is no " + "conflict among the interfaces on this node which " + "respond to SNMP. Proceeding...");
             }
             m_eventList.add(createSnmpConflictsWithDbEvent(dbNodeEntry));
         }
@@ -2893,11 +2801,9 @@ public final class RescanProcessor implements Runnable {
              * The SuspectEventProcessor class is also synchronizing on this
              * lock prior to performing database inserts or updates.
              */
-            LOG.debug("Waiting for capsd dbLock to process "
-                      + getNodeId());
+            LOG.debug("Waiting for capsd dbLock to process " + getNodeId());
             synchronized (Capsd.getDbSyncLock()) {
-                LOG.debug("Got capsd dbLock. processing "
-                          + getNodeId());
+                LOG.debug("Got capsd dbLock. processing " + getNodeId());
                 // Get database connection
                 dbc = DataSourceFactory.getInstance().getConnection();
 
@@ -2955,16 +2861,13 @@ public final class RescanProcessor implements Runnable {
                 try {
                     EventIpcManagerFactory.getIpcManager().sendNow(event);
                 } catch (Throwable t) {
-                    LOG.warn("run: unexpected throwable exception caught "
-                             + "while sending event: " + t, t);
+                    LOG.warn("run: unexpected throwable exception caught " + "while sending event: " + t, t);
                 }
             }
         }
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug((m_forceRescan ? "Forced r" : "R") + "escan "
-                      + "for node w/ nodeid " + getNodeId()
-                      + " completed.");
+            LOG.debug("{}escan for node w/ nodeid {} completed.", (m_forceRescan ? "Forced r" : "R"), getNodeId());
         }
     }
 
@@ -3170,10 +3073,8 @@ public final class RescanProcessor implements Runnable {
         try {
             dbNodeEntry = DbNodeEntry.get(getNodeId());
         } catch (SQLException e) {
-            LOG.error("RescanProcessor: unable to load node info for nodeId "
-                      + getNodeId() + " from the database.", e);
-            LOG.error("Rescan failed for node w/ nodeid "
-                      + getNodeId());
+            LOG.error("RescanProcessor: unable to load node info for nodeId " + getNodeId() + " from the database.", e);
+            LOG.error("Rescan failed for node w/ nodeid " + getNodeId());
         }
         return dbNodeEntry;
     }

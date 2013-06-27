@@ -287,11 +287,7 @@ public class DefaultCollectionAgentService implements CollectionAgentService {
 
     private void logInitializeSnmpIf(OnmsSnmpInterface snmpIface) {
         if (LOG.isDebugEnabled()) {
-        	LOG.debug(
-        			"initialize: snmpifindex = " + snmpIface.getIfIndex().intValue()
-        			+ ", snmpifname = " + snmpIface.getIfName()
-        			+ ", snmpifdescr = " + snmpIface.getIfDescr()
-        			+ ", snmpphysaddr = -"+ snmpIface.getPhysAddr() + "-");
+		LOG.debug("initialize: snmpifindex = " + snmpIface.getIfIndex().intValue() + ", snmpifname = " + snmpIface.getIfName() + ", snmpifdescr = " + snmpIface.getIfDescr() + ", snmpphysaddr = -"+ snmpIface.getPhysAddr() + "-");
         	LOG.debug("initialize: ifLabel = '" + snmpIface.computeLabelForRRD() + "'");
         }
     }

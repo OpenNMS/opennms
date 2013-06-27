@@ -222,8 +222,7 @@ public class DefaultCollectionAgent extends InetNetworkInterface implements Coll
                File fsDir = new File(DefaultResourceDao.FOREIGN_SOURCE_DIRECTORY, m_foreignSource);
                dir = new File(fsDir, m_foreignId);
        }
-        LOG.debug("getStorageDir: isStoreByForeignSource = {}, foreignSource = {}, foreignId = {}, dir = {}",
-                  isStoreByForeignSource(), m_foreignSource, m_foreignId, dir);
+        LOG.debug("getStorageDir: isStoreByForeignSource = {}, foreignSource = {}, foreignId = {}, dir = {}", isStoreByForeignSource(), m_foreignSource, m_foreignId, dir);
        return dir;
     }
     
@@ -262,9 +261,7 @@ public class DefaultCollectionAgent extends InetNetworkInterface implements Coll
     }
 
     private void logCompletion() {
-        LOG.debug("initialize: initialization completed: nodeid = {}, address = {}, primaryIfIndex = {}, isSnmpPrimary = {}, sysoid = {}",
-                  getNodeId(), getHostAddress(), getIfIndex(),
-                  getIsSnmpPrimary(), getSysObjectId());
+        LOG.debug("initialize: initialization completed: nodeid = {}, address = {}, primaryIfIndex = {}, isSnmpPrimary = {}, sysoid = {}", getNodeId(), getHostAddress(), getIfIndex(), getIsSnmpPrimary(), getSysObjectId());
     }
 
     private void validateSysObjId() throws CollectionInitializationException {
@@ -276,9 +273,7 @@ public class DefaultCollectionAgent extends InetNetworkInterface implements Coll
     }
 
     private void logCollectionParms() {
-        LOG.debug("initialize: db retrieval info: nodeid = {}, address = {}, primaryIfIndex = {}, isSnmpPrimary = {}, sysoid = {}",
-                  getNodeId(), getHostAddress(), getIfIndex(),
-                  getIsSnmpPrimary(), getSysObjectId());
+        LOG.debug("initialize: db retrieval info: nodeid = {}, address = {}, primaryIfIndex = {}, isSnmpPrimary = {}, sysoid = {}", getNodeId(), getHostAddress(), getIfIndex(), getIsSnmpPrimary(), getSysObjectId());
     }
 
     private void validateIsSnmpPrimary() throws CollectionInitializationException {
