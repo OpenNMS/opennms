@@ -77,18 +77,12 @@ public class JDBCClient implements Client<JDBCRequest, JDBCResponse> {
     @Override
     public void connect(InetAddress address, int port, int timeout) throws IOException, Exception {
         LOG.info("connecting to JDBC on " + address);
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Loading JDBC driver: '" + getDbDriver() + "'");
-        }
+        LOG.debug("Loading JDBC driver: '" + getDbDriver() + "'");
         Driver driver = (Driver)Class.forName(getDbDriver()).newInstance();
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("JDBC driver loaded: '" + getDbDriver() + "'");
-        }
+        LOG.debug("JDBC driver loaded: '" + getDbDriver() + "'");
 
         String url = DBTools.constructUrl(getUrl(), address.getCanonicalHostName());
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Constructed JDBC url: '" + url + "'");
-        }
+        LOG.debug("Constructed JDBC url: '" + url + "'");
 
         Properties props = new Properties();
         props.setProperty("user", getUser());
@@ -96,9 +90,7 @@ public class JDBCClient implements Client<JDBCRequest, JDBCResponse> {
         props.setProperty("timeout", String.valueOf(timeout/1000));
         m_connection = driver.connect(url, props);
 
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Got database connection: '" + m_connection + "' (" + url + ", " + getUser() + ", " + getPassword() + ")");
-        }
+        LOG.debug("Got database connection: '" + m_connection + "' (" + url + ", " + getUser() + ", " + getPassword() + ")");
     }
 
     /**

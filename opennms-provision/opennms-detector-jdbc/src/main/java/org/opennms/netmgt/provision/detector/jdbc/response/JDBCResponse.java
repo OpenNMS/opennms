@@ -74,9 +74,7 @@ public class JDBCResponse {
             while (m_result.next())
             {
                 m_result.getString(1);
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("Metadata catalog: '" + m_result.getString(1) + "'");
-                }
+                LOG.debug("Metadata catalog: '" + m_result.getString(1) + "'");
             }
             
             m_result.close();
