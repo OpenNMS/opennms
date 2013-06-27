@@ -26,9 +26,39 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-@XmlSchema(
-	namespace = "http://xmlns.opennms.org/xsd/config/poller",
-	elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED
-)
 package org.opennms.netmgt.config.poller;
-import javax.xml.bind.annotation.XmlSchema;
+
+import java.text.ParseException;
+import java.util.Arrays;
+import java.util.Collection;
+
+import org.junit.runners.Parameterized.Parameters;
+import org.opennms.core.test.xml.XmlTest;
+
+public class NodeOutageTest extends XmlTest<NodeOutage> {
+
+	public NodeOutageTest(final NodeOutage sampleObject, final String sampleXml, final String schemaFile) {
+		super(sampleObject, sampleXml, schemaFile);
+	}
+
+	@Parameters
+	public static Collection<Object[]> data() throws ParseException {
+		final NodeOutage no = new NodeOutage();
+		final CriticalService cs = new CriticalService();
+		cs.setName("ICMP");
+		no.setCriticalService(cs);
+		no.setStatus("on");
+		no.setPollAllIfNoCriticalServiceDefined("true");
+
+        return Arrays.asList(new Object[][] {
+            {
+            	no,
+                "<node-outage status='on' pollAllIfNoCriticalServiceDefined='true'>\n" +
+                "    <critical-service name='ICMP'/>\n" +
+                "</node-outage>",
+                "target/classes/xsds/poller-configuration.xsd"
+            }
+        });
+    }
+
+}

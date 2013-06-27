@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config.poller;
+package org.opennms.netmgt.config.poller.outages;
 
 import java.io.IOException;
 import java.io.Reader;

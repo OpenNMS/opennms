@@ -33,10 +33,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringReader;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
@@ -51,7 +49,6 @@ import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.db.MockDatabase;
-import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.JdbcCapsdDbSyncer;
 import org.opennms.netmgt.config.CapsdConfigFactory;
@@ -61,7 +58,6 @@ import org.opennms.netmgt.config.OpennmsServerConfigFactory;
 import org.opennms.netmgt.config.PollerConfigFactory;
 import org.opennms.netmgt.config.PollerConfigManager;
 import org.opennms.netmgt.config.poller.Package;
-import org.opennms.netmgt.config.poller.PollerConfiguration;
 import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.eventd.mock.MockEventIpcManager;
 import org.opennms.netmgt.mock.MockEventUtil;
@@ -69,6 +65,7 @@ import org.opennms.netmgt.mock.TestCapsdConfigManager;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.test.mock.EasyMockUtils;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 public class OpenNMSProvisionerTest {
@@ -196,13 +193,12 @@ public class OpenNMSProvisionerTest {
         String m_xml;
 
         public TestPollerConfigManager(String xml, String localServer, boolean verifyServer) throws MarshalException, ValidationException, IOException {
-            super(new ByteArrayInputStream(xml.getBytes("UTF-8")), localServer, verifyServer);
+            super(new ByteArrayResource(xml.getBytes("UTF-8")), localServer, verifyServer);
             save();
         }
 
-        @SuppressWarnings("deprecation")
         public void update() throws IOException, MarshalException, ValidationException {
-            m_config = CastorUtils.unmarshal(PollerConfiguration.class, new StringReader(m_xml));
+        	getContainer().reload();
             setUpInternalData();
         }
 

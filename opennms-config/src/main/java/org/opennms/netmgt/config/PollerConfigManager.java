@@ -32,7 +32,6 @@ import static org.opennms.core.utils.InetAddressUtils.addr;
 import static org.opennms.core.utils.InetAddressUtils.toIpAddrBytes;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.StringWriter;
 import java.net.InetAddress;
 import java.util.ArrayList;
@@ -51,13 +50,11 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.IpListFromUrl;
 import org.opennms.core.utils.LogUtils;
-import org.opennms.core.xml.CastorUtils;
+import org.opennms.core.xml.AbstractJaxbConfigDao;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.core.xml.MarshallingResourceFailureException;
 import org.opennms.netmgt.config.poller.CriticalService;
 import org.opennms.netmgt.config.poller.ExcludeRange;
@@ -73,6 +70,7 @@ import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
+import org.springframework.core.io.Resource;
 
 /**
  * <p>Abstract PollerConfigManager class.</p>
@@ -80,7 +78,7 @@ import org.opennms.netmgt.poller.ServiceMonitorLocator;
  * @author <a href="mailto:brozow@openms.org">Mathew Brozowski</a>
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  */
-abstract public class PollerConfigManager implements PollerConfig {
+abstract public class PollerConfigManager extends AbstractJaxbConfigDao<PollerConfiguration,PollerConfiguration> implements PollerConfig {
     private final ReadWriteLock m_globalLock = new ReentrantReadWriteLock();
     private final Lock m_readLock = m_globalLock.readLock();
     private final Lock m_writeLock = m_globalLock.writeLock();
@@ -88,16 +86,16 @@ abstract public class PollerConfigManager implements PollerConfig {
     /**
      * <p>Constructor for PollerConfigManager.</p>
      *
-     * @param stream a {@link java.io.InputStream} object.
+     * @param configResource a {@link org.springframework.core.io.Resource} object.
      * @param localServer a {@link java.lang.String} object.
      * @param verifyServer a boolean.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public PollerConfigManager(final InputStream stream, final String localServer, final boolean verifyServer) throws MarshalException, ValidationException {
+    public PollerConfigManager(final Resource configResource, final String localServer, final boolean verifyServer) {
+    	super(PollerConfiguration.class, "poller configuration");
+    	setConfigResource(configResource);
+    	afterPropertiesSet();
         m_localServer = localServer;
         m_verifyServer = verifyServer;
-        m_config = CastorUtils.unmarshal(PollerConfiguration.class, stream);
         setUpInternalData();
     }
 
@@ -121,14 +119,30 @@ abstract public class PollerConfigManager implements PollerConfig {
     }
 
     /**
-     * <p>update</p>
+     * <p>translateConfig</p>
+     */
+	@Override
+	protected PollerConfiguration translateConfig(PollerConfiguration castorConfig) {
+		// FIXME Add the split feature
+		return castorConfig;
+	}
+
+    /**
+     * Reload the config from the default config file
      *
+     * @exception java.io.IOException
+     *                Thrown if the specified config file cannot be read/loaded
+     * @exception org.exolab.castor.xml.MarshalException
+     *                Thrown if the file does not conform to the schema.
+     * @exception org.exolab.castor.xml.ValidationException
+     *                Thrown if the contents do not match the required schema.
      * @throws java.io.IOException if any.
      * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    @Override
-    public abstract void update() throws IOException, MarshalException, ValidationException;
+    public synchronized void reload() throws IOException {
+    	getContainer().reload();
+    }
 
     /**
      * <p>saveXml</p>
@@ -138,10 +152,6 @@ abstract public class PollerConfigManager implements PollerConfig {
      */
     protected abstract void saveXml(String xml) throws IOException;
 
-    /**
-     * The config class loaded from the config file
-     */
-    protected PollerConfiguration m_config;
     /**
      * A mapping of the configured URLs to a list of the specific IPs configured
      * in each - so as to avoid file reads
@@ -193,17 +203,15 @@ abstract public class PollerConfigManager implements PollerConfig {
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
     @Override
-    public void save() throws MarshalException, IOException, ValidationException {
+    public void save() throws IOException {
         getWriteLock().lock();
         try {
             // marshal to a string first, then write the string to the file. This
             // way the original config
             // isn't lost if the XML from the marshal is hosed.
             final StringWriter stringWriter = new StringWriter();
-            Marshaller.marshal(m_config, stringWriter);
+            JaxbUtils.marshal(getContainer().getObject(), stringWriter);
             saveXml(stringWriter.toString());
-        
-            update();
         } finally {
             getWriteLock().unlock();
         }
@@ -218,7 +226,7 @@ abstract public class PollerConfigManager implements PollerConfig {
     public PollerConfiguration getConfiguration() {
         getReadLock().lock();
         try {
-            return m_config;
+            return getContainer().getObject();
         } finally {
             getReadLock().unlock();
         }
@@ -262,7 +270,7 @@ abstract public class PollerConfigManager implements PollerConfig {
     public void addPackage(final Package pkg) {
         getWriteLock().lock();
         try {
-            m_config.addPackage(pkg);
+        	getContainer().getObject().addPackage(pkg);
         } finally {
             getWriteLock().unlock();
         }
@@ -276,7 +284,7 @@ abstract public class PollerConfigManager implements PollerConfig {
             final Monitor monitor = new Monitor();
             monitor.setService(svcName);
             monitor.setClassName(className);
-            m_config.addMonitor(monitor);
+            getContainer().getObject().addMonitor(monitor);
         } finally {
             getWriteLock().unlock();
         }
@@ -332,7 +340,7 @@ abstract public class PollerConfigManager implements PollerConfig {
     public boolean shouldNotifyXmlrpc() {
         getReadLock().lock();
         try {
-            return Boolean.valueOf(m_config.getXmlrpc());
+            return Boolean.valueOf(getContainer().getObject().getXmlrpc());
         } finally {
             getReadLock().unlock();
         }
@@ -348,7 +356,7 @@ abstract public class PollerConfigManager implements PollerConfig {
     public boolean isPathOutageEnabled() {
         getReadLock().lock();
         try {
-            return Boolean.valueOf(m_config.getPathOutageEnabled());
+            return Boolean.valueOf(getContainer().getObject().getPathOutageEnabled());
         } finally {
             getReadLock().unlock();
         }
@@ -364,7 +372,7 @@ abstract public class PollerConfigManager implements PollerConfig {
     public String getCriticalService() {
         getReadLock().lock();
         try {
-            CriticalService service = m_config.getNodeOutage().getCriticalService();
+            CriticalService service = getContainer().getObject().getNodeOutage().getCriticalService();
             return service == null ? null : service.getName();
         } finally {
             getReadLock().unlock();
@@ -389,7 +397,7 @@ abstract public class PollerConfigManager implements PollerConfig {
     public boolean shouldPollAllIfNoCriticalServiceDefined() {
         getReadLock().lock();
         try {
-            return Boolean.valueOf(m_config.getNodeOutage().getPollAllIfNoCriticalServiceDefined());
+            return Boolean.valueOf(getContainer().getObject().getNodeOutage().getPollAllIfNoCriticalServiceDefined());
         } finally {
             getReadLock().unlock();
         }
@@ -404,7 +412,7 @@ abstract public class PollerConfigManager implements PollerConfig {
     public boolean isNodeOutageProcessingEnabled() {
         getReadLock().lock();
         try {
-            return m_config.getNodeOutage().getStatus().equals("on");
+            return getContainer().getObject().getNodeOutage().getStatus().equals("on");
         } finally {
             getReadLock().unlock();
         }
@@ -423,7 +431,7 @@ abstract public class PollerConfigManager implements PollerConfig {
     public boolean isServiceUnresponsiveEnabled() {
         getReadLock().lock();
         try {
-            return Boolean.valueOf(m_config.getServiceUnresponsiveEnabled());
+            return Boolean.valueOf(getContainer().getObject().getServiceUnresponsiveEnabled());
         } finally {
             getReadLock().unlock();
         }
@@ -868,7 +876,7 @@ abstract public class PollerConfigManager implements PollerConfig {
     public Enumeration<Package> enumeratePackage() {
         getReadLock().lock();
         try {
-            return getConfiguration().enumeratePackage();
+            return getContainer().getObject().enumeratePackage();
         } finally {
             getReadLock().unlock();
         }
@@ -928,7 +936,7 @@ abstract public class PollerConfigManager implements PollerConfig {
     private Iterable<Package> packages() {
         getReadLock().lock();
         try {
-            return getConfiguration().getPackageCollection();
+            return getContainer().getObject().getPackageCollection();
         } finally {
             getReadLock().unlock();
         }
@@ -942,7 +950,7 @@ abstract public class PollerConfigManager implements PollerConfig {
     private Iterable<Monitor> monitors() {
         getReadLock().lock();
         try {
-            return getConfiguration().getMonitorCollection();
+            return getContainer().getObject().getMonitorCollection();
         } finally {
             getReadLock().unlock();
         }
@@ -957,7 +965,7 @@ abstract public class PollerConfigManager implements PollerConfig {
     public int getThreads() {
         getReadLock().lock();
         try {
-            return getConfiguration().getThreads();
+            return getContainer().getObject().getThreads();
         } finally {
             getReadLock().unlock();
         }
@@ -1075,7 +1083,7 @@ abstract public class PollerConfigManager implements PollerConfig {
     public String getNextOutageIdSql() {
         getReadLock().lock();
         try {
-            return m_config.getNextOutageId();
+            return getContainer().getObject().getNextOutageId();
         } finally {
             getReadLock().unlock();
         }

@@ -46,7 +46,7 @@ import org.opennms.netmgt.config.NotifdConfigFactory;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.PollerConfigFactory;
 import org.opennms.netmgt.config.ThreshdConfigFactory;
-import org.opennms.netmgt.config.poller.Outage;
+import org.opennms.netmgt.config.poller.outages.Outage;
 import org.opennms.netmgt.filter.FilterDao;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.springframework.core.io.FileSystemResource;
@@ -117,7 +117,7 @@ public class ScheduledOutagesRestServiceTest extends AbstractSpringJerseyRestTes
                 + "</package>"
                 + "<monitor service=\"ICMP\" class-name=\"org.opennms.netmgt.poller.monitors.IcmpMonitor\"/>"
                 + "</poller-configuration>");
-        PollerConfigFactory.setInstance(new PollerConfigFactory(1, new FileInputStream(pollerdConfig), "localserver", false));
+        PollerConfigFactory.setInstance(new PollerConfigFactory(new FileSystemResource(pollerdConfig), "localserver", false));
 
         // Setup Threshd Configuration
         File threshdConfig = new File(etc, "threshd-configuration.xml");

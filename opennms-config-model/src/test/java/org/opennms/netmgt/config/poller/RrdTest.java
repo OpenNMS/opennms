@@ -26,9 +26,35 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-@XmlSchema(
-	namespace = "http://xmlns.opennms.org/xsd/config/poller",
-	elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED
-)
 package org.opennms.netmgt.config.poller;
-import javax.xml.bind.annotation.XmlSchema;
+
+import java.text.ParseException;
+import java.util.Arrays;
+import java.util.Collection;
+
+import org.junit.runners.Parameterized.Parameters;
+import org.opennms.core.test.xml.XmlTest;
+
+public class RrdTest extends XmlTest<Rrd> {
+
+	public RrdTest(final Rrd sampleObject, final String sampleXml, final String schemaFile) {
+		super(sampleObject, sampleXml, schemaFile);
+	}
+
+	@Parameters
+	public static Collection<Object[]> data() throws ParseException {
+		final Rrd rrd = new Rrd();
+		rrd.setStep(300);
+		rrd.addRra("RRA:AVERAGE:0.5:1:2016");
+		rrd.addRra("RRA:AVERAGE:0.5:12:1488");
+
+        return Arrays.asList(new Object[][] {
+            {
+                rrd,
+                "<rrd step='300'><rra>RRA:AVERAGE:0.5:1:2016</rra><rra>RRA:AVERAGE:0.5:12:1488</rra></rrd>",
+                "target/classes/xsds/poller-configuration.xsd"
+            }
+        });
+    }
+
+}

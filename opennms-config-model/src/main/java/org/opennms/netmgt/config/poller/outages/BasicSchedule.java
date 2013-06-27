@@ -26,10 +26,10 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config.poller;
+package org.opennms.netmgt.config.poller.outages;
 
 import java.io.IOException;
-import java.io.Serializable;
+import java.io.Reader;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -39,6 +39,7 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -47,65 +48,75 @@ import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.exolab.castor.xml.Validator;
-
 import org.opennms.core.xml.ValidateUsing;
 import org.xml.sax.ContentHandler;
 
-
 /**
- * Top-level element for the poll-outages.xml configuration file.
+ * Class BasicSchedule.
  * 
  */
 
-@XmlRootElement(name="outages", namespace="http://xmlns.opennms.org/xsd/config/poller/outages")
+@XmlRootElement(name="basicSchedule", namespace="http://xmlns.opennms.org/xsd/config/poller/outages")
 @XmlAccessorType(XmlAccessType.FIELD)
 @ValidateUsing("poll-outages.xsd")
-public class Outages implements Serializable {
-    private static final long serialVersionUID = 2135204624761990598L;
+public class BasicSchedule implements java.io.Serializable {
+    private static final long serialVersionUID = 8140458365613931426L;
 
     /**
-     * A scheduled outage
+     * outage name
      */
-    @XmlElement(name="outage")
-    private List<Outage> _outageList;
+    @XmlAttribute(name="name")
+    private String _name;
+
+    /**
+     * outage type
+     */
+    @XmlAttribute(name="type")
+    private String _type;
+
+    /**
+     * defines start/end time for the outage
+     */
+    @XmlElement(name="time")
+    private List<Time> _timeList;
 
 
-    public Outages() {
+    public BasicSchedule() {
         super();
-        this._outageList = new ArrayList<Outage>();
+        this._timeList = new ArrayList<Time>();
     }
 
     /**
-     * Adds a new Scheduled Outage
      * 
-     * @param vOutage
+     * 
+     * @param vTime
      * @throws java.lang.IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
      */
-    public void addOutage(final Outage vOutage) throws IndexOutOfBoundsException {
-        this._outageList.add(vOutage);
+    public void addTime(final Time vTime) throws IndexOutOfBoundsException {
+        this._timeList.add(vTime);
     }
 
     /**
-     * Adds a new Scheduled Outage
+     * 
      * 
      * @param index
-     * @param vOutage
+     * @param vTime
      * @throws java.lang.IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
      */
-    public void addOutage( final int index, final Outage vOutage) throws IndexOutOfBoundsException {
-        this._outageList.add(index, vOutage);
+    public void addTime(final int index, final Time vTime) throws IndexOutOfBoundsException {
+        this._timeList.add(index, vTime);
     }
 
     /**
-     * Method enumerateOutage.
+     * Method enumerateTime.
      * 
      * @return an Enumeration over all possible elements of this
      * collection
      */
-    public Enumeration<Outage> enumerateOutage() {
-        return Collections.enumeration(this._outageList);
+    public Enumeration<Time> enumerateTime() {
+        return Collections.enumeration(this._timeList);
     }
 
     /**
@@ -115,19 +126,34 @@ public class Outages implements Serializable {
      * @return true if the objects are equal.
      */
     @Override
-    public boolean equals(final Object obj) {
+    public boolean equals(
+            final java.lang.Object obj) {
         if ( this == obj )
             return true;
 
-        if (obj instanceof Outages) {
+        if (obj instanceof BasicSchedule) {
 
-            Outages temp = (Outages)obj;
-            if (this._outageList != null) {
-                if (temp._outageList == null) return false;
-                else if (!(this._outageList.equals(temp._outageList))) 
+            BasicSchedule temp = (BasicSchedule)obj;
+            if (this._name != null) {
+                if (temp._name == null) return false;
+                else if (!(this._name.equals(temp._name))) 
                     return false;
             }
-            else if (temp._outageList != null)
+            else if (temp._name != null)
+                return false;
+            if (this._type != null) {
+                if (temp._type == null) return false;
+                else if (!(this._type.equals(temp._type))) 
+                    return false;
+            }
+            else if (temp._type != null)
+                return false;
+            if (this._timeList != null) {
+                if (temp._timeList == null) return false;
+                else if (!(this._timeList.equals(temp._timeList))) 
+                    return false;
+            }
+            else if (temp._timeList != null)
                 return false;
             return true;
         }
@@ -135,55 +161,75 @@ public class Outages implements Serializable {
     }
 
     /**
-     * Method getOutage.
+     * Returns the value of field 'name'. The field 'name' has the
+     * following description: outage name
+     * 
+     * @return the value of field 'Name'.
+     */
+    public String getName() {
+        return this._name;
+    }
+
+    /**
+     * Method getTime.
      * 
      * @param index
      * @throws java.lang.IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
      * @return the value of the
-     * org.opennms.netmgt.config.poller.Outage at the given index
+     * org.opennms.netmgt.config.poller.Time at the given index
      */
-    public Outage getOutage(final int index) throws IndexOutOfBoundsException {
+    public Time getTime(final int index) throws IndexOutOfBoundsException {
         // check bounds for index
-        if (index < 0 || index >= this._outageList.size()) {
-            throw new IndexOutOfBoundsException("getOutage: Index value '" + index + "' not in range [0.." + (this._outageList.size() - 1) + "]");
+        if (index < 0 || index >= this._timeList.size()) {
+            throw new IndexOutOfBoundsException("getTime: Index value '" + index + "' not in range [0.." + (this._timeList.size() - 1) + "]");
         }
 
-        return _outageList.get(index);
+        return _timeList.get(index);
     }
 
     /**
-     * Method getOutage.Returns the contents of the collection in
-     * an Array.  <p>Note:  Just in case the collection contents
-     * are changing in another thread, we pass a 0-length Array of
-     * the correct type into the API call.  This way we <i>know</i>
+     * Method getTime.Returns the contents of the collection in an
+     * Array.  <p>Note:  Just in case the collection contents are
+     * changing in another thread, we pass a 0-length Array of the
+     * correct type into the API call.  This way we <i>know</i>
      * that the Array returned is of exactly the correct length.
      * 
      * @return this collection as an Array
      */
-    public Outage[] getOutage() {
-        Outage[] array = new Outage[0];
-        return this._outageList.toArray(array);
+    public Time[] getTime() {
+        Time[] array = new Time[0];
+        return this._timeList.toArray(array);
     }
 
     /**
-     * Method getOutageCollection.Returns a reference to
-     * '_outageList'. No type checking is performed on any
-     * modifications to the Vector.
+     * Method getTimeCollection.Returns a reference to '_timeList'.
+     * No type checking is performed on any modifications to the
+     * Vector.
      * 
      * @return a reference to the Vector backing this class
      */
-    public List<Outage> getOutageCollection() {
-        return this._outageList;
+    public List<Time> getTimeCollection() {
+        return this._timeList;
     }
 
     /**
-     * Method getOutageCount.
+     * Method getTimeCount.
      * 
      * @return the size of this collection
      */
-    public int getOutageCount() {
-        return this._outageList.size();
+    public int getTimeCount() {
+        return this._timeList.size();
+    }
+
+    /**
+     * Returns the value of field 'type'. The field 'type' has the
+     * following description: outage type
+     * 
+     * @return the value of field 'Type'.
+     */
+    public String getType() {
+        return this._type;
     }
 
     /**
@@ -197,8 +243,14 @@ public class Outages implements Serializable {
     public int hashCode() {
         int result = 17;
 
-        if (_outageList != null) {
-            result = 37 * result + _outageList.hashCode();
+        if (_name != null) {
+            result = 37 * result + _name.hashCode();
+        }
+        if (_type != null) {
+            result = 37 * result + _type.hashCode();
+        }
+        if (_timeList != null) {
+            result = 37 * result + _timeList.hashCode();
         }
 
         return result;
@@ -209,7 +261,6 @@ public class Outages implements Serializable {
      * 
      * @return true if this object is valid according to the schema
      */
-    @Deprecated
     public boolean isValid() {
         try {
             validate();
@@ -220,13 +271,13 @@ public class Outages implements Serializable {
     }
 
     /**
-     * Method iterateOutage.
+     * Method iterateTime.
      * 
      * @return an Iterator over all possible elements in this
      * collection
      */
-    public Iterator<Outage> iterateOutage() {
-        return this._outageList.iterator();
+    public Iterator<Time> iterateTime() {
+        return this._timeList.iterator();
     }
 
     /**
@@ -261,84 +312,103 @@ public class Outages implements Serializable {
 
     /**
      */
-    public void removeAllOutage() {
-        this._outageList.clear();
+    public void removeAllTime() {
+        this._timeList.clear();
     }
 
     /**
-     * Method removeOutage.
+     * Method removeTime.
      * 
-     * @param vOutage
+     * @param vTime
      * @return true if the object was removed from the collection.
      */
-    public boolean removeOutage(final Outage vOutage) {
-        boolean removed = _outageList.remove(vOutage);
-        return removed;
+    public boolean removeTime(final Time vTime) {
+        return _timeList.remove(vTime);
     }
 
     /**
-     * Method removeOutageAt.
+     * Method removeTimeAt.
      * 
      * @param index
      * @return the element removed from the collection
      */
-    public Outage removeOutageAt(final int index) {
-        return this._outageList.remove(index);
+    public Time removeTimeAt(final int index) {
+        return this._timeList.remove(index);
+    }
+
+    /**
+     * Sets the value of field 'name'. The field 'name' has the
+     * following description: outage name
+     * 
+     * @param name the value of field 'name'.
+     */
+    public void setName(final String name) {
+        this._name = name;
     }
 
     /**
      * 
      * 
      * @param index
-     * @param vOutage
+     * @param vTime
      * @throws java.lang.IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
      */
-    public void setOutage(final int index, final Outage vOutage) throws IndexOutOfBoundsException {
+    public void setTime(final int index, final Time vTime) throws IndexOutOfBoundsException {
         // check bounds for index
-        if (index < 0 || index >= this._outageList.size()) {
-            throw new IndexOutOfBoundsException("setOutage: Index value '" + index + "' not in range [0.." + (this._outageList.size() - 1) + "]");
+        if (index < 0 || index >= this._timeList.size()) {
+            throw new IndexOutOfBoundsException("setTime: Index value '" + index + "' not in range [0.." + (this._timeList.size() - 1) + "]");
         }
 
-        this._outageList.set(index, vOutage);
+        this._timeList.set(index, vTime);
     }
 
     /**
      * 
      * 
-     * @param vOutageArray
+     * @param vTimeArray
      */
-    public void setOutage(final Outage[] vOutageArray) {
+    public void setTime(final Time[] vTimeArray) {
         //-- copy array
-        _outageList.clear();
+        _timeList.clear();
 
-        for (int i = 0; i < vOutageArray.length; i++) {
-            this._outageList.add(vOutageArray[i]);
+        for (int i = 0; i < vTimeArray.length; i++) {
+            this._timeList.add(vTimeArray[i]);
         }
     }
 
     /**
-     * Sets the value of '_outageList' by copying the given Vector.
+     * Sets the value of '_timeList' by copying the given Vector.
      * All elements will be checked for type safety.
      * 
-     * @param vOutageList the Vector to copy.
+     * @param vTimeList the Vector to copy.
      */
-    public void setOutage(final List<Outage> vOutageList) {
+    public void setTime(final List<Time> vTimeList) {
         // copy vector
-        this._outageList.clear();
+        this._timeList.clear();
 
-        this._outageList.addAll(vOutageList);
+        this._timeList.addAll(vTimeList);
     }
 
     /**
-     * Sets the value of '_outageList' by setting it to the given
+     * Sets the value of '_timeList' by setting it to the given
      * Vector. No type checking is performed.
      * @deprecated
      * 
-     * @param outageList the Vector to set.
+     * @param timeList the Vector to set.
      */
-    public void setOutageCollection(final List<Outage> outageList) {
-        this._outageList = outageList;
+    public void setTimeCollection(final List<Time> timeList) {
+        this._timeList = timeList;
+    }
+
+    /**
+     * Sets the value of field 'type'. The field 'type' has the
+     * following description: outage type
+     * 
+     * @param type the value of field 'type'.
+     */
+    public void setType(final String type) {
+        this._type = type;
     }
 
     /**
@@ -350,11 +420,11 @@ public class Outages implements Serializable {
      * @throws org.exolab.castor.xml.ValidationException if this
      * object is an invalid instance according to the schema
      * @return the unmarshaled
-     * org.opennms.netmgt.config.poller.Outages
+     * org.opennms.netmgt.config.poller.BasicSchedule
      */
     @Deprecated
-    public static Outages unmarshal(final java.io.Reader reader) throws MarshalException, ValidationException {
-        return (Outages) Unmarshaller.unmarshal(Outages.class, reader);
+    public static BasicSchedule unmarshal(final Reader reader) throws MarshalException, ValidationException {
+        return (BasicSchedule) Unmarshaller.unmarshal(BasicSchedule.class, reader);
     }
 
     /**

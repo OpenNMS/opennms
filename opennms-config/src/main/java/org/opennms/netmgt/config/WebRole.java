@@ -146,7 +146,7 @@ public abstract class WebRole {
      *
      * @param schedIndex a int.
      * @param timeIndex a int.
-     * @return a {@link org.opennms.netmgt.config.common.Time} object.
+     * @return a {@link org.opennms.netmgt.config.poller.outages.common.Time} object.
      */
     abstract public Time getTime(int schedIndex, int timeIndex);
 

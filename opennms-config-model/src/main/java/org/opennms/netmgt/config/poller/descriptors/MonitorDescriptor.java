@@ -1,31 +1,3 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
- *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
- *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
- *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
 /*
  * This class was automatically generated with 
  * <a href="http://www.castor.org">Castor 1.1.2.1</a>, using an XML
@@ -39,14 +11,14 @@ package org.opennms.netmgt.config.poller.descriptors;
  //- Imported classes and packages -/
 //---------------------------------/
 
-import org.opennms.netmgt.config.poller.Outage;
+import org.opennms.netmgt.config.poller.Monitor;
 
 /**
- * Class OutageDescriptor.
+ * Class MonitorDescriptor.
  * 
  * @version $Revision$ $Date$
  */
-@SuppressWarnings("all") public class OutageDescriptor extends org.opennms.netmgt.config.poller.descriptors.BasicScheduleDescriptor {
+@SuppressWarnings("all") public class MonitorDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
 
       //--------------------------/
@@ -83,11 +55,10 @@ import org.opennms.netmgt.config.poller.Outage;
      //- Constructors -/
     //----------------/
 
-    public OutageDescriptor() {
+    public MonitorDescriptor() {
         super();
-        setExtendsWithoutFlatten(new org.opennms.netmgt.config.poller.descriptors.BasicScheduleDescriptor());
-        _nsURI = "http://xmlns.opennms.org/xsd/config/poller/outages";
-        _xmlName = "outage";
+        _nsURI = "http://xmlns.opennms.org/xsd/config/poller";
+        _xmlName = "monitor";
         _elementDefinition = true;
         
         //-- set grouping compositor
@@ -97,33 +68,24 @@ import org.opennms.netmgt.config.poller.Outage;
         org.exolab.castor.xml.FieldValidator               fieldValidator = null;
         //-- initialize attribute descriptors
         
-        //-- initialize element descriptors
-        
-        //-- _interfaceList
-        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(org.opennms.netmgt.config.poller.Interface.class, "_interfaceList", "interface", org.exolab.castor.xml.NodeType.Element);
+        //-- _service
+        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(java.lang.String.class, "_service", "service", org.exolab.castor.xml.NodeType.Attribute);
+        desc.setImmutable(true);
         handler = new org.exolab.castor.xml.XMLFieldHandler() {
             @Override
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
-                Outage target = (Outage) object;
-                return target.getInterface();
+                Monitor target = (Monitor) object;
+                return target.getService();
             }
             @Override
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
-                    Outage target = (Outage) object;
-                    target.addInterface( (org.opennms.netmgt.config.poller.Interface) value);
-                } catch (java.lang.Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
-                try {
-                    Outage target = (Outage) object;
-                    target.removeAllInterface();
+                    Monitor target = (Monitor) object;
+                    target.setService( (java.lang.String) value);
                 } catch (java.lang.Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }
@@ -131,47 +93,43 @@ import org.opennms.netmgt.config.poller.Outage;
             @Override
             @SuppressWarnings("unused")
             public java.lang.Object newInstance(java.lang.Object parent) {
-                return new org.opennms.netmgt.config.poller.Interface();
+                return null;
             }
         };
-        desc.setSchemaType("org.opennms.netmgt.config.poller.Interface");
+        desc.setSchemaType("string");
         desc.setHandler(handler);
-        desc.setNameSpaceURI("http://xmlns.opennms.org/xsd/config/poller/outages");
-        desc.setMultivalued(true);
+        desc.setRequired(true);
+        desc.setMultivalued(false);
         addFieldDescriptor(desc);
-        addSequenceElement(desc);
         
-        //-- validation code for: _interfaceList
+        //-- validation code for: _service
         fieldValidator = new org.exolab.castor.xml.FieldValidator();
-        fieldValidator.setMinOccurs(0);
+        fieldValidator.setMinOccurs(1);
         { //-- local scope
+            org.exolab.castor.xml.validators.StringValidator typeValidator;
+            typeValidator = new org.exolab.castor.xml.validators.StringValidator();
+            fieldValidator.setValidator(typeValidator);
+            typeValidator.setWhiteSpace("preserve");
         }
         desc.setValidator(fieldValidator);
-        //-- _nodeList
-        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(org.opennms.netmgt.config.poller.Node.class, "_nodeList", "node", org.exolab.castor.xml.NodeType.Element);
+        //-- _className
+        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(java.lang.String.class, "_className", "class-name", org.exolab.castor.xml.NodeType.Attribute);
+        desc.setImmutable(true);
         handler = new org.exolab.castor.xml.XMLFieldHandler() {
             @Override
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
-                Outage target = (Outage) object;
-                return target.getNode();
+                Monitor target = (Monitor) object;
+                return target.getClassName();
             }
             @Override
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
-                    Outage target = (Outage) object;
-                    target.addNode( (org.opennms.netmgt.config.poller.Node) value);
-                } catch (java.lang.Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
-                try {
-                    Outage target = (Outage) object;
-                    target.removeAllNode();
+                    Monitor target = (Monitor) object;
+                    target.setClassName( (java.lang.String) value);
                 } catch (java.lang.Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }
@@ -179,17 +137,70 @@ import org.opennms.netmgt.config.poller.Outage;
             @Override
             @SuppressWarnings("unused")
             public java.lang.Object newInstance(java.lang.Object parent) {
-                return new org.opennms.netmgt.config.poller.Node();
+                return null;
             }
         };
-        desc.setSchemaType("org.opennms.netmgt.config.poller.Node");
+        desc.setSchemaType("string");
         desc.setHandler(handler);
-        desc.setNameSpaceURI("http://xmlns.opennms.org/xsd/config/poller/outages");
+        desc.setRequired(true);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _className
+        fieldValidator = new org.exolab.castor.xml.FieldValidator();
+        fieldValidator.setMinOccurs(1);
+        { //-- local scope
+            org.exolab.castor.xml.validators.StringValidator typeValidator;
+            typeValidator = new org.exolab.castor.xml.validators.StringValidator();
+            fieldValidator.setValidator(typeValidator);
+            typeValidator.setWhiteSpace("preserve");
+        }
+        desc.setValidator(fieldValidator);
+        //-- initialize element descriptors
+        
+        //-- _parameterList
+        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(org.opennms.netmgt.config.poller.Parameter.class, "_parameterList", "parameter", org.exolab.castor.xml.NodeType.Element);
+        handler = new org.exolab.castor.xml.XMLFieldHandler() {
+            @Override
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                Monitor target = (Monitor) object;
+                return target.getParameter();
+            }
+            @Override
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    Monitor target = (Monitor) object;
+                    target.addParameter( (org.opennms.netmgt.config.poller.Parameter) value);
+                } catch (java.lang.Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
+                try {
+                    Monitor target = (Monitor) object;
+                    target.removeAllParameter();
+                } catch (java.lang.Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            @Override
+            @SuppressWarnings("unused")
+            public java.lang.Object newInstance(java.lang.Object parent) {
+                return new org.opennms.netmgt.config.poller.Parameter();
+            }
+        };
+        desc.setSchemaType("org.opennms.netmgt.config.poller.Parameter");
+        desc.setHandler(handler);
+        desc.setNameSpaceURI("http://xmlns.opennms.org/xsd/config/poller");
         desc.setMultivalued(true);
         addFieldDescriptor(desc);
         addSequenceElement(desc);
         
-        //-- validation code for: _nodeList
+        //-- validation code for: _parameterList
         fieldValidator = new org.exolab.castor.xml.FieldValidator();
         fieldValidator.setMinOccurs(0);
         { //-- local scope
@@ -222,9 +233,6 @@ import org.opennms.netmgt.config.poller.Outage;
     @Override()
     public org.exolab.castor.mapping.FieldDescriptor getIdentity(
     ) {
-        if (_identity == null) {
-            return super.getIdentity();
-        }
         return _identity;
     }
 
@@ -236,7 +244,7 @@ import org.opennms.netmgt.config.poller.Outage;
     @Override()
     public java.lang.Class<?> getJavaClass(
     ) {
-        return org.opennms.netmgt.config.poller.Outage.class;
+        return org.opennms.netmgt.config.poller.Monitor.class;
     }
 
     /**

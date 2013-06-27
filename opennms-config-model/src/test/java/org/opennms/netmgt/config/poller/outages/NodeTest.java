@@ -26,9 +26,34 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-@XmlSchema(
-	namespace = "http://xmlns.opennms.org/xsd/config/poller",
-	elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED
-)
-package org.opennms.netmgt.config.poller;
-import javax.xml.bind.annotation.XmlSchema;
+package org.opennms.netmgt.config.poller.outages;
+
+import java.text.ParseException;
+import java.util.Arrays;
+import java.util.Collection;
+
+import org.junit.runners.Parameterized.Parameters;
+import org.opennms.core.test.xml.XmlTest;
+import org.opennms.netmgt.config.poller.outages.Node;
+
+public class NodeTest extends XmlTest<Node> {
+
+    public NodeTest(final Node sampleObject, final String sampleXml, final String schemaFile) {
+        super(sampleObject, sampleXml, schemaFile);
+    }
+    
+    @Parameters
+    public static Collection<Object[]> data() throws ParseException {
+        final Node node = new Node();
+        node.setId(10);
+        
+        return Arrays.asList(new Object[][] {
+            {
+                node,
+                "<node id='10'/>\n",
+                "target/classes/xsds/poll-outages.xsd"
+            }
+        });
+    }
+
+}

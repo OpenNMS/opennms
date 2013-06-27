@@ -51,9 +51,9 @@ import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.core.xml.CastorUtils;
-import org.opennms.netmgt.config.poller.BasicSchedule;
-import org.opennms.netmgt.config.poller.Outage;
-import org.opennms.netmgt.config.poller.Outages;
+import org.opennms.netmgt.config.poller.outages.BasicSchedule;
+import org.opennms.netmgt.config.poller.outages.Outage;
+import org.opennms.netmgt.config.poller.outages.Outages;
 
 /**
  * <p>ScheduleEditorServlet class.</p>

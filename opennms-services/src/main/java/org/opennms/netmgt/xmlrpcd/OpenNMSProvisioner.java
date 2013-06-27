@@ -501,9 +501,9 @@ public class OpenNMSProvisioner implements Provisioner {
         for(int i = 0; i < pkg.getDowntimeCount(); i++) {
             final Downtime dt = pkg.getDowntime(i);
             final String suffix = (i == 0 ? "" : ""+i);
-            if ((dt.hasEnd()) || (dt.getDelete() != null && !"false".equals(dt.getDelete()))) {
+            if ((dt.getEnd() > 0) || (dt.getDelete() != null && !"false".equals(dt.getDelete()))) {
                 m.put("downtime_interval"+suffix, Integer.valueOf((int)dt.getInterval()));
-                int duration = (!dt.hasEnd() ? Integer.MAX_VALUE : (int)(dt.getEnd() - dt.getBegin()));
+                int duration = (dt.getEnd() > 0 ? (int)(dt.getEnd() - dt.getBegin()) : Integer.MAX_VALUE);
                 m.put("downtime_duration"+suffix, Integer.valueOf(duration));
             }   
         }

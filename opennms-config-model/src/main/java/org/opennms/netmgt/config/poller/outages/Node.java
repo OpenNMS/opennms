@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config.poller;
+package org.opennms.netmgt.config.poller.outages;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -47,24 +47,30 @@ import org.opennms.core.xml.ValidateUsing;
 import org.xml.sax.ContentHandler;
 
 /**
- * Interface to which the outage applies.
+ * Node to which the outage applies.
  * 
  */
 
-@XmlRootElement(name="interface", namespace="http://xmlns.opennms.org/xsd/config/poller/outages")
+@XmlRootElement(name="node", namespace="http://xmlns.opennms.org/xsd/config/poller/outages")
 @XmlAccessorType(XmlAccessType.FIELD)
 @ValidateUsing("poll-outages.xsd")
-public class Interface implements Serializable {
-    private static final long serialVersionUID = -90255076329128075L;
+public class Node implements Serializable {
+    private static final long serialVersionUID = -3839620822068533737L;
 
     /**
-     * IP address
+     * Field _id.
      */
-    @XmlAttribute(name="address")
-    private String _address;
+    @XmlAttribute(name="id")
+    private Integer _id;
 
-    public Interface() {
+    public Node() {
         super();
+    }
+
+    /**
+     */
+    public void deleteId() {
+        _id = null;
     }
 
     /**
@@ -77,16 +83,11 @@ public class Interface implements Serializable {
     public boolean equals(final Object obj) {
         if ( this == obj )
             return true;
-
-        if (obj instanceof Interface) {
-
-            Interface temp = (Interface)obj;
-            if (this._address != null) {
-                if (temp._address == null) return false;
-                else if (!(this._address.equals(temp._address))) 
-                    return false;
-            }
-            else if (temp._address != null)
+        
+        if (obj instanceof Node) {
+        
+            Node temp = (Node)obj;
+            if (this._id != temp._id)
                 return false;
             return true;
         }
@@ -94,13 +95,21 @@ public class Interface implements Serializable {
     }
 
     /**
-     * Returns the value of field 'address'. The field 'address'
-     * has the following description: IP address
+     * Returns the value of field 'id'.
      * 
-     * @return the value of field 'Address'.
+     * @return the value of field 'Id'.
      */
-    public String getAddress() {
-        return this._address;
+    public Integer getId() {
+        return _id == null? 0 : _id;
+    }
+
+    /**
+     * Method hasId.
+     * 
+     * @return true if at least one Id has been added
+     */
+    public boolean hasId() {
+        return _id != null;
     }
 
     /**
@@ -113,11 +122,9 @@ public class Interface implements Serializable {
      */
     public int hashCode() {
         int result = 17;
-
-        if (_address != null) {
-            result = 37 * result + _address.hashCode();
-        }
-
+        
+        result = 37 * result + _id;
+        
         return result;
     }
 
@@ -167,13 +174,12 @@ public class Interface implements Serializable {
     }
 
     /**
-     * Sets the value of field 'address'. The field 'address' has
-     * the following description: IP address
+     * Sets the value of field 'id'.
      * 
-     * @param address the value of field 'address'.
+     * @param id the value of field 'id'.
      */
-    public void setAddress(final String address) {
-        this._address = address;
+    public void setId(final Integer id) {
+        this._id = id;
     }
 
     /**
@@ -184,12 +190,11 @@ public class Interface implements Serializable {
      * null or if any SAXException is thrown during marshaling
      * @throws org.exolab.castor.xml.ValidationException if this
      * object is an invalid instance according to the schema
-     * @return the unmarshaled
-     * org.opennms.netmgt.config.poller.Interface
+     * @return the unmarshaled org.opennms.netmgt.config.poller.Node
      */
     @Deprecated
-    public static Interface unmarshal(final Reader reader) throws MarshalException, ValidationException {
-        return (Interface) Unmarshaller.unmarshal(Interface.class, reader);
+    public static Node unmarshal(final Reader reader) throws MarshalException, ValidationException {
+        return (Node) Unmarshaller.unmarshal(Node.class, reader);
     }
 
     /**

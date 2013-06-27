@@ -35,36 +35,24 @@ import java.util.Collection;
 import org.junit.runners.Parameterized.Parameters;
 import org.opennms.core.test.xml.XmlTest;
 
-public class InterfaceTest extends XmlTest<Interface> {
+public class DowntimeTest extends XmlTest<Downtime> {
 
-    public InterfaceTest(final Interface sampleObject, final String sampleXml, final String schemaFile) {
-        super(sampleObject, sampleXml, schemaFile);
-    }
-    
-    @Parameters
-    public static Collection<Object[]> data() throws ParseException {
-        final Interface intf1 = new Interface();
-        intf1.setAddress("100.10.0.1");
-        final Interface intf2 = new Interface();
-        intf2.setAddress("2001:100::1");
-        final Interface intf3 = new Interface();
-        intf3.setAddress("match-any");
-        
+	public DowntimeTest(final Downtime sampleObject, final String sampleXml, final String schemaFile) {
+		super(sampleObject, sampleXml, schemaFile);
+	}
+
+	@Parameters
+	public static Collection<Object[]> data() throws ParseException {
+		final Downtime downtime = new Downtime();
+		downtime.setBegin(0);
+		downtime.setEnd(300000);
+		downtime.setInterval(30000);
+
         return Arrays.asList(new Object[][] {
             {
-                intf1,
-                "<interface address='100.10.0.1'/>\n",
-                "target/classes/xsds/poll-outages.xsd"
-            },
-            {
-                intf2,
-                "<interface address='2001:100::1'/>\n",
-                "target/classes/xsds/poll-outages.xsd"
-            },
-            {
-                intf3,
-                "<interface address='match-any'/>\n",
-                "target/classes/xsds/poll-outages.xsd"
+            	downtime,
+                "<downtime begin='0' end='300000' interval='30000'/>",
+                "target/classes/xsds/poller-configuration.xsd"
             }
         });
     }

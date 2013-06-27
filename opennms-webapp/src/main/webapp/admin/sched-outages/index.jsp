@@ -191,13 +191,13 @@ div.nodeintbox {
 		<td><%=pollFactory.getOutageType(outageName)%></td>
 		<td><div class="nodeintbox">
 		<%
-			org.opennms.netmgt.config.poller.Node[] nodeList = pollFactory.getNodeIds(outageName);
+			org.opennms.netmgt.config.poller.outages.Node[] nodeList = pollFactory.getNodeIds(outageName);
 				for (int j = 0; j < nodeList.length; j++) {
 					OnmsNode elementNode = NetworkElementFactory.getInstance(getServletContext()).getNode(nodeList[j].getId());
 		%> <%=elementNode == null || elementNode.getType().charAt(0) == 'D' ? "Node: Node ID " + nodeList[j].getId() + " Not Found" : "Node: " + elementNode.getLabel()%><br/>
 		<%
 			}
-				org.opennms.netmgt.config.poller.Interface[] interfaceList = pollFactory.getInterfaces(outageName);
+				org.opennms.netmgt.config.poller.outages.Interface[] interfaceList = pollFactory.getInterfaces(outageName);
 				for (int j = 0; j < interfaceList.length; j++) {
 					StringBuffer display;
 					String rawAddress = interfaceList[j].getAddress();
@@ -235,9 +235,9 @@ div.nodeintbox {
 		</td>
 		<td><div class="nodeintbox">
 		<%
-			org.opennms.netmgt.config.poller.Time[] outageTimes = pollFactory.getOutageTimes(outageName);
+			org.opennms.netmgt.config.poller.outages.Time[] outageTimes = pollFactory.getOutageTimes(outageName);
 				for (int j = 0; j < outageTimes.length; j++) {
-					org.opennms.netmgt.config.poller.Time thisOutageTime = outageTimes[j];
+					org.opennms.netmgt.config.poller.outages.Time thisOutageTime = outageTimes[j];
 					String rawDay = thisOutageTime.getDay();
 					String day = rawDay;
 					if ("daily".equals(pollFactory.getOutageType(outageName)))

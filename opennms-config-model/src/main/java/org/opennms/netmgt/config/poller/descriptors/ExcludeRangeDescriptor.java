@@ -1,31 +1,3 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
- *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
- *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
- *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
 /*
  * This class was automatically generated with 
  * <a href="http://www.castor.org">Castor 1.1.2.1</a>, using an XML
@@ -39,14 +11,14 @@ package org.opennms.netmgt.config.poller.descriptors;
  //- Imported classes and packages -/
 //---------------------------------/
 
-import org.opennms.netmgt.config.poller.BasicSchedule;
+import org.opennms.netmgt.config.poller.ExcludeRange;
 
 /**
- * Class BasicScheduleDescriptor.
+ * Class ExcludeRangeDescriptor.
  * 
  * @version $Revision$ $Date$
  */
-@SuppressWarnings("all") public class BasicScheduleDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
+@SuppressWarnings("all") public class ExcludeRangeDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
 
       //--------------------------/
@@ -83,37 +55,34 @@ import org.opennms.netmgt.config.poller.BasicSchedule;
      //- Constructors -/
     //----------------/
 
-    public BasicScheduleDescriptor() {
+    public ExcludeRangeDescriptor() {
         super();
-        _nsURI = "http://xmlns.opennms.org/xsd/config/poller/outages";
-        _xmlName = "basicSchedule";
-        _elementDefinition = false;
-        
-        //-- set grouping compositor
-        setCompositorAsSequence();
+        _nsURI = "http://xmlns.opennms.org/xsd/config/poller";
+        _xmlName = "exclude-range";
+        _elementDefinition = true;
         org.exolab.castor.xml.util.XMLFieldDescriptorImpl  desc           = null;
         org.exolab.castor.mapping.FieldHandler             handler        = null;
         org.exolab.castor.xml.FieldValidator               fieldValidator = null;
         //-- initialize attribute descriptors
         
-        //-- _name
-        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(java.lang.String.class, "_name", "name", org.exolab.castor.xml.NodeType.Attribute);
+        //-- _begin
+        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(java.lang.String.class, "_begin", "begin", org.exolab.castor.xml.NodeType.Attribute);
         desc.setImmutable(true);
         handler = new org.exolab.castor.xml.XMLFieldHandler() {
             @Override
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
-                BasicSchedule target = (BasicSchedule) object;
-                return target.getName();
+                ExcludeRange target = (ExcludeRange) object;
+                return target.getBegin();
             }
             @Override
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
-                    BasicSchedule target = (BasicSchedule) object;
-                    target.setName( (java.lang.String) value);
+                    ExcludeRange target = (ExcludeRange) object;
+                    target.setBegin( (java.lang.String) value);
                 } catch (java.lang.Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }
@@ -130,7 +99,7 @@ import org.opennms.netmgt.config.poller.BasicSchedule;
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _name
+        //-- validation code for: _begin
         fieldValidator = new org.exolab.castor.xml.FieldValidator();
         fieldValidator.setMinOccurs(1);
         { //-- local scope
@@ -140,24 +109,24 @@ import org.opennms.netmgt.config.poller.BasicSchedule;
             typeValidator.setWhiteSpace("preserve");
         }
         desc.setValidator(fieldValidator);
-        //-- _type
-        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(java.lang.String.class, "_type", "type", org.exolab.castor.xml.NodeType.Attribute);
+        //-- _end
+        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(java.lang.String.class, "_end", "end", org.exolab.castor.xml.NodeType.Attribute);
         desc.setImmutable(true);
         handler = new org.exolab.castor.xml.XMLFieldHandler() {
             @Override
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
-                BasicSchedule target = (BasicSchedule) object;
-                return target.getType();
+                ExcludeRange target = (ExcludeRange) object;
+                return target.getEnd();
             }
             @Override
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
-                    BasicSchedule target = (BasicSchedule) object;
-                    target.setType( (java.lang.String) value);
+                    ExcludeRange target = (ExcludeRange) object;
+                    target.setEnd( (java.lang.String) value);
                 } catch (java.lang.Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }
@@ -174,68 +143,18 @@ import org.opennms.netmgt.config.poller.BasicSchedule;
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _type
+        //-- validation code for: _end
         fieldValidator = new org.exolab.castor.xml.FieldValidator();
         fieldValidator.setMinOccurs(1);
         { //-- local scope
             org.exolab.castor.xml.validators.StringValidator typeValidator;
             typeValidator = new org.exolab.castor.xml.validators.StringValidator();
             fieldValidator.setValidator(typeValidator);
-            typeValidator.addPattern("(specific|daily|weekly|monthly)");
             typeValidator.setWhiteSpace("preserve");
         }
         desc.setValidator(fieldValidator);
         //-- initialize element descriptors
         
-        //-- _timeList
-        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(org.opennms.netmgt.config.poller.Time.class, "_timeList", "time", org.exolab.castor.xml.NodeType.Element);
-        handler = new org.exolab.castor.xml.XMLFieldHandler() {
-            @Override
-            public java.lang.Object getValue( java.lang.Object object ) 
-                throws IllegalStateException
-            {
-                BasicSchedule target = (BasicSchedule) object;
-                return target.getTime();
-            }
-            @Override
-            public void setValue( java.lang.Object object, java.lang.Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    BasicSchedule target = (BasicSchedule) object;
-                    target.addTime( (org.opennms.netmgt.config.poller.Time) value);
-                } catch (java.lang.Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
-                try {
-                    BasicSchedule target = (BasicSchedule) object;
-                    target.removeAllTime();
-                } catch (java.lang.Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            @Override
-            @SuppressWarnings("unused")
-            public java.lang.Object newInstance(java.lang.Object parent) {
-                return new org.opennms.netmgt.config.poller.Time();
-            }
-        };
-        desc.setSchemaType("org.opennms.netmgt.config.poller.Time");
-        desc.setHandler(handler);
-        desc.setNameSpaceURI("http://xmlns.opennms.org/xsd/config/poller/outages");
-        desc.setRequired(true);
-        desc.setMultivalued(true);
-        addFieldDescriptor(desc);
-        addSequenceElement(desc);
-        
-        //-- validation code for: _timeList
-        fieldValidator = new org.exolab.castor.xml.FieldValidator();
-        fieldValidator.setMinOccurs(1);
-        { //-- local scope
-        }
-        desc.setValidator(fieldValidator);
     }
 
 
@@ -274,7 +193,7 @@ import org.opennms.netmgt.config.poller.BasicSchedule;
     @Override()
     public java.lang.Class<?> getJavaClass(
     ) {
-        return org.opennms.netmgt.config.poller.BasicSchedule.class;
+        return org.opennms.netmgt.config.poller.ExcludeRange.class;
     }
 
     /**

@@ -35,34 +35,23 @@ import java.util.Collection;
 import org.junit.runners.Parameterized.Parameters;
 import org.opennms.core.test.xml.XmlTest;
 
-public class OutageTest extends XmlTest<Outage> {
+public class MonitorTest extends XmlTest<Monitor> {
 
-    public OutageTest(final Outage sampleObject, final String sampleXml, final String schemaFile) {
-        super(sampleObject, sampleXml, schemaFile);
-    }
-    
-    @Parameters
-    public static Collection<Object[]> data() throws ParseException {
-        final Outage outage = new Outage();
-        outage.setName("junit test");
-        outage.setType("weekly");
-        final Interface intf = new Interface();
-        intf.setAddress("match-any");
-        outage.addInterface(intf);
-        final Time time = new Time();
-        time.setDay("monday");
-        time.setBegins("13:30:00");
-        time.setEnds("14:45:00");
-        outage.addTime(time);
-        
+	public MonitorTest(final Monitor sampleObject, final String sampleXml, final String schemaFile) {
+		super(sampleObject, sampleXml, schemaFile);
+	}
+
+	@Parameters
+	public static Collection<Object[]> data() throws ParseException {
+		final Monitor monitor = new Monitor();
+		monitor.setService("SNMP");
+		monitor.setClassName("org.opennms.netmgt.poller.monitors.SnmpMonitor");
+
         return Arrays.asList(new Object[][] {
             {
-                outage,
-                "<outage name='junit test' type='weekly'>\n" +
-                "    <time day='monday' begins='13:30:00' ends='14:45:00'/>\n" +
-                "    <interface address='match-any'/>\n" +
-                "</outage>\n",
-                "target/classes/xsds/poll-outages.xsd"
+            	monitor,
+                "<monitor service='SNMP' class-name='org.opennms.netmgt.poller.monitors.SnmpMonitor'/>",
+                "target/classes/xsds/poller-configuration.xsd"
             }
         });
     }

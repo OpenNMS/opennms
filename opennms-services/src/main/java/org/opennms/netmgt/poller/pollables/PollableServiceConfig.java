@@ -205,7 +205,7 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
                         when = -1;
                         matched = true;
                     }
-                    else if (dt.hasEnd() && dt.getEnd() > downSince) {
+                    else if (dt.getEnd() > downSince) {
                         // in this interval
                         //
                         when = dt.getInterval();

@@ -29,12 +29,11 @@
 package org.opennms.netmgt.config;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 
 import org.opennms.core.utils.ThreadCategory;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 
@@ -72,9 +71,6 @@ public class DefaultPollerConfigDao implements InitializingBean {
     }
 
     private void loadConfig() throws Exception {
-        InputStream stream = null;
-        long lastModified;
-        
         File file = null;
         try {
             file = getConfigResource().getFile();
@@ -82,15 +78,7 @@ public class DefaultPollerConfigDao implements InitializingBean {
             log().info("Resource '" + getConfigResource() + "' does not seem to have an underlying File object; using ");
         }
         
-        if (file != null) {
-            lastModified = file.lastModified();
-            stream = new FileInputStream(file);
-        } else {
-            lastModified = System.currentTimeMillis();
-            stream = getConfigResource().getInputStream();
-        }
-
-        setPollerConfig(new PollerConfigFactory(lastModified, stream, getLocalServer(), isVerifyServer()));
+        setPollerConfig(new PollerConfigFactory(new FileSystemResource(file), getLocalServer(), isVerifyServer()));
     }
     
     private ThreadCategory log() {
