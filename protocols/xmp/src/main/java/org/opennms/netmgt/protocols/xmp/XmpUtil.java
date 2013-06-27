@@ -251,9 +251,7 @@ public class XmpUtil {
         }
         
         replyVars = reply.getMIBVars();
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("handleTableQuery: Got reply with " + replyVars.length + " variables"); 
-        }
+        LOG.debug("handleTableQuery: Got reply with " + replyVars.length + " variables");
         
         
         /* Since we're constrained to a single object, we know that there's
