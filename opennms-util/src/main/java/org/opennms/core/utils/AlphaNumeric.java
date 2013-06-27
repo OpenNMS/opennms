@@ -103,7 +103,7 @@ public class AlphaNumeric extends Object {
     		// Log4j category
     		//
     		if (replacedChar) {
-    			LOG.debug("parseAndReplace: original='{}'" + " new='{}'", str, temp);
+			LOG.debug("parseAndReplace: original='{}' new='{}'", str, temp);
     		}
 
     		return temp;
