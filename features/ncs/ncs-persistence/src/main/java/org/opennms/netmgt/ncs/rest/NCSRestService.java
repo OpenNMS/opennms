@@ -176,12 +176,7 @@ public class NCSRestService {
     	afterPropertiesSet();
     	writeLock();
     	try {
-	    	LOG.debug(
-	    			"addComponent: type = {}, foreignSource = {}, foreignId = {} (deleteOrphans={})",
-	    			type,
-	    			foreignSource,
-	    			foreignId,
-	    			Boolean.valueOf(deleteOrphans));
+		LOG.debug("addComponent: type = {}, foreignSource = {}, foreignId = {} (deleteOrphans={})", type, foreignSource, foreignId, Boolean.valueOf(deleteOrphans));
 	
 	    	if (m_componentService == null) {
 	    		throw new IllegalStateException("component service is null");
@@ -208,12 +203,7 @@ public class NCSRestService {
     	writeLock();
     	
     	try {
-	        LOG.info(
-	        		"deleteComponent: Deleting component of type {} and foreignIdentity {}:{} (deleteOrphans={})",
-	        		type,
-	        		foreignSource,
-	        		foreignId,
-	        		Boolean.valueOf(deleteOrphans));
+	        LOG.info("deleteComponent: Deleting component of type {} and foreignIdentity {}:{} (deleteOrphans={})", type, foreignSource, foreignId, Boolean.valueOf(deleteOrphans));
 	
 	    	if (m_componentService == null) {
 	    		throw new IllegalStateException("component service is null");

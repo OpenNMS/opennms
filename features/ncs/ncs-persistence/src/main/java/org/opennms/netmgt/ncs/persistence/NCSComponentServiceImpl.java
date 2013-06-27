@@ -113,13 +113,7 @@ public class NCSComponentServiceImpl implements NCSComponentService {
 	public NCSComponent addSubcomponent(final String type, final String foreignSource, final String foreignId, final NCSComponent subComponent, final boolean deleteOrphans) {
 		final ComponentIdentifier subComponentId = getIdentifier(subComponent);
 		
-		LOG.debug(
-				"addSubcomponent({}, {}, {}, {}, {})",
-				type,
-				foreignSource,
-				foreignId,
-				subComponentId,
-				Boolean.valueOf(deleteOrphans));
+		LOG.debug("addSubcomponent({}, {}, {}, {}, {})", type, foreignSource, foreignId, subComponentId, Boolean.valueOf(deleteOrphans));
 
 		final NCSComponent component = getComponent(type, foreignSource, foreignId);
 		final ComponentIdentifier id = getIdentifier(component);
@@ -138,11 +132,7 @@ public class NCSComponentServiceImpl implements NCSComponentService {
 		try {
 			ceq.sendAll(m_eventProxy);
 		} catch (final EventProxyException e) {
-			LOG.warn(
-					"Component {} added to {}, but an error occured while sending add/delete/update events.",
-					subComponentId,
-					id,
-					e);
+			LOG.warn("Component {} added to {}, but an error occured while sending add/delete/update events.", subComponentId, id, e);
 		}
 
 		return getComponent(id);
@@ -289,22 +279,14 @@ public class NCSComponentServiceImpl implements NCSComponentService {
 		if (childParents.size() == 1) {
 			final ComponentIdentifier childParent = childParents.iterator().next();
 			if (childParent.equals(parentId)) {
-				LOG.trace(
-						"handleOrphanedComponents: child ({}) has only one parent ({}) and it's being deleted.",
-						child,
-						childParent);
+				LOG.trace("handleOrphanedComponents: child ({}) has only one parent ({}) and it's being deleted.", child, childParent);
 				deleteComponent(child, ceq, deleteOrphans);
 			} else {
-				LOG.trace(
-						"handleOrphanedComponents: child ({}) has only one parent ({}) but it's not the one we expected. This is weird.",
-						child,
-						childParent);
+				LOG.trace("handleOrphanedComponents: child ({}) has only one parent ({}) but it's not the one we expected. This is weird.", child, childParent);
 				ceq.componentUpdated(childParent);
 			}
 		} else {
-			LOG.trace(
-					"handleOrphanedComponents: child ({}) has more than one parent, sending updates for remaining parents.",
-					child);
+			LOG.trace("handleOrphanedComponents: child ({}) has more than one parent, sending updates for remaining parents.", child);
 			for (final ComponentIdentifier childParent : childParents) {
 				ceq.componentUpdated(childParent);
 			}
