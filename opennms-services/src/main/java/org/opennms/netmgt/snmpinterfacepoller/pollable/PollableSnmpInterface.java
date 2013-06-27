@@ -289,7 +289,7 @@ public class PollableSnmpInterface implements ReadyRunnable {
             if (m_snmpinterfaces == null || m_snmpinterfaces.isEmpty()) {
                 LOG.debug("No Interface found. Doing nothing");
             } else {
-                LOG.debug(m_snmpinterfaces.size() + " Interfaces found. Getting Statutes....");
+                LOG.debug("{} Interfaces found. Getting Statutes....", m_snmpinterfaces.size());
             	SnmpPollInterfaceMonitor pollMonitor = new SnmpPollInterfaceMonitor();
         		int maxiface = getMaxInterfacePerPdu();
         		if (maxiface == 0) maxiface=m_snmpinterfaces.size();

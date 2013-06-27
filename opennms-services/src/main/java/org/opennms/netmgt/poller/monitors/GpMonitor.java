@@ -183,7 +183,7 @@ final public class GpMonitor extends AbstractServiceMonitor {
                         if (!scriptoutput.equals(""))
                             LOG.debug(script + " output  = " + scriptoutput);
                         else
-                            LOG.debug(script + " returned no output");
+                            LOG.debug("{} returned no output", script);
                         if (!scripterror.equals(""))
                             LOG.debug(script + " error = " + scripterror);
                         if (strBannerMatch == null || strBannerMatch.equals("*")) {

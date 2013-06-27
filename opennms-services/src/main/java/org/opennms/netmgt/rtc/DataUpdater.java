@@ -264,7 +264,7 @@ final class DataUpdater implements Runnable {
     private void handleRtcSubscribe(List<Parm> list) {
 
         if (list == null) {
-            LOG.warn(m_event.getUei() + " ignored - info incomplete (null event parms)");
+            LOG.warn("{} ignored - info incomplete (null event parms)", m_event.getUei());
             return;
         }
 
@@ -320,7 +320,7 @@ final class DataUpdater implements Runnable {
     private void handleRtcUnsubscribe(List<Parm> list) {
 
         if (list == null) {
-            LOG.warn(m_event.getUei() + " ignored - info incomplete (null event parms)");
+            LOG.warn("{} ignored - info incomplete (null event parms)", m_event.getUei());
             return;
         }
 

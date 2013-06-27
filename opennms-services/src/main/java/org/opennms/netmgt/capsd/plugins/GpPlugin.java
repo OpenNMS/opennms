@@ -125,7 +125,7 @@ public final class GpPlugin extends AbstractPlugin {
                     isAServer = false;
                 }
                 if (er.isMaxRunTimeExceeded()) {
-                    LOG.debug(script + " failed. Timeout exceeded");
+                    LOG.debug("{} failed. Timeout exceeded", script);
                     isAServer = false;
                 } else {
                     if (exitStatus == 0) {
@@ -134,7 +134,7 @@ public final class GpPlugin extends AbstractPlugin {
                         response = er.getOutString();
                         error = er.getErrString();
                         if (response.equals(""))
-                            LOG.debug(script + " returned no output");
+                            LOG.debug("{} returned no output", script);
                         if (!error.equals(""))
                             LOG.debug(script + " error = " + error);
                         if (regex == null || regex.match(response)) {
@@ -153,7 +153,7 @@ public final class GpPlugin extends AbstractPlugin {
             } catch (ArrayIndexOutOfBoundsException e) {
                 isAServer = false;
                 e.fillInStackTrace();
-                LOG.debug(script + " ArrayIndexOutOfBoundsException");
+                LOG.debug("{} ArrayIndexOutOfBoundsException", script);
             } catch (InterruptedIOException e) {
                 // This is an expected exception
                 //
@@ -165,7 +165,7 @@ public final class GpPlugin extends AbstractPlugin {
             } catch (Throwable e) {
                 isAServer = false;
                 e.fillInStackTrace();
-                LOG.debug(script + " Exception occurred");
+                LOG.debug("{} Exception occurred", script);
             }
         }
 
