@@ -159,7 +159,7 @@ public class NodeResourceType implements OnmsResourceType {
                 for (OnmsResource resource : resourceType.getResourcesForNode(m_nodeId)) {
                     resource.setParent(m_parent);
                     children.add(resource);
-                    LOG.debug("load: adding resource " + resource.toString());
+                    LOG.debug("load: adding resource {}", resource.toString());
                 }
             }
 

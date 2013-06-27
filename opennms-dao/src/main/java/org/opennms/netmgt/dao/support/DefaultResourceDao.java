@@ -442,7 +442,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
         for (OnmsResource r : parentResource.getChildResources()) {
             if (resourceType.equals(r.getResourceType().getName())
                     && resource.equals(r.getName())) {
-                LOG.debug("getChildResource: returning resource " + r);
+                LOG.debug("getChildResource: returning resource {}", r);
                 return r;
             }
         }
@@ -458,7 +458,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
      * @return a {@link java.util.List} object.
      */
     protected List<OnmsResource> getChildResourceList(OnmsResource parentResource) {
-        LOG.debug("DefaultResourceDao: getChildResourceList for " + parentResource.toString());
+        LOG.debug("DefaultResourceDao: getChildResourceList for {}", parentResource.toString());
         return parentResource.getChildResources();
     }
     

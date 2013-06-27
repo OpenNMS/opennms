@@ -172,7 +172,7 @@ public class NodeSourceResourceType implements OnmsResourceType {
                 for (OnmsResource resource : resourceType.getResourcesForNodeSource(m_nodeSource, nodeSourceToNodeId())) {
                     resource.setParent(m_parent);
                     children.add(resource);
-                    LOG.debug("load: adding resource " + resource.toString());
+                    LOG.debug("load: adding resource {}", resource.toString());
                 }
             }
 
@@ -184,7 +184,7 @@ public class NodeSourceResourceType implements OnmsResourceType {
             for (OnmsResourceType resourceType : m_resourceDao.getResourceTypes()) {
                 if (resourceType.isResourceTypeOnNodeSource(nodeSource, nodeSourceToNodeId())) {
                     resourceTypes.add(resourceType);
-                    LOG.debug("getResourceTypesForNodeSource: adding type " + resourceType.getName());
+                    LOG.debug("getResourceTypesForNodeSource: adding type {}", resourceType.getName());
                 }
             }
             return resourceTypes;

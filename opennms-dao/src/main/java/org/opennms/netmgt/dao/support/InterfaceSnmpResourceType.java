@@ -272,7 +272,7 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
             } else {
                 LOG.debug("populateResourceList: snmpInterface is null");
             }
-            LOG.debug("populateResourceList: adding resource toString " + resource.toString());
+            LOG.debug("populateResourceList: adding resource toString {}", resource.toString());
             resources.add(resource);
         }
         
