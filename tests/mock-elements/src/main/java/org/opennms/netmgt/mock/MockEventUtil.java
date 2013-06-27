@@ -674,11 +674,7 @@ public abstract class MockEventUtil {
         if (prefix == null) {
             prefix = "Event";
         }
-        LOG.info("{}: {}/{}/{}/{}", 
-        		prefix, event.getUei(), 
-        		event.getNodeid(), 
-        		event.getInterface(), 
-        		event.getService());
+        LOG.info("{}: {}/{}/{}/{}", prefix, event.getUei(), event.getNodeid(), event.getInterface(), event.getService());
     }
 
     /**
