@@ -404,7 +404,7 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
             try {
 				withTreeLock(r, timeout);
             } catch (LockUnavailable e) {
-                LOG.info("Postponing poll for "+this+" because "+e);
+                LOG.info("Postponing poll for {}", this, e);
                 throw new PostponeNecessary("LockUnavailable postpone poll");
             }
             status = r.getPollStatus();

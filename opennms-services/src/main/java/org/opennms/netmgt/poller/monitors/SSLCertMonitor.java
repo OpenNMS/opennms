@@ -230,7 +230,7 @@ final public class SSLCertMonitor extends AbstractServiceMonitor {
                     }
                 } catch (IOException e) {
                     e.fillInStackTrace();
-                    LOG.debug("poll: Error closing socket." + e);
+                    LOG.debug("poll: Error closing socket.", e);
                 }
             }
         }

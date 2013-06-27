@@ -90,19 +90,19 @@ public abstract class ChartUtils {
             DataSourceFactory.init();
             ChartConfigFactory.init();
         } catch (MarshalException e) {
-            LOG.error("static initializer: Error marshalling chart configuration. "+e);
+            LOG.error("static initializer: Error marshalling chart configuration", e);
         } catch (ValidationException e) {
-            LOG.error("static initializer: Error validating chart configuration. "+e);
+            LOG.error("static initializer: Error validating chart configuration.", e);
         } catch (FileNotFoundException e) {
-            LOG.error("static initializer: Error finding chart configuration. "+e);
+            LOG.error("static initializer: Error finding chart configuration.", e);
         } catch (IOException e) {
-            LOG.error("static initializer: IO error while marshalling chart configuration file. "+e);
+            LOG.error("static initializer: IO error while marshalling chart configuration file.", e);
         } catch (ClassNotFoundException e) {
-            LOG.error("static initializer: Error initializing database connection factory. "+e);
+            LOG.error("static initializer: Error initializing database connection factory.", e);
         } catch (PropertyVetoException e) {
-            LOG.error("static initializer: Error initializing database connection factory. "+e);
+            LOG.error("static initializer: Error initializing database connection factory.", e);
         } catch (SQLException e) {
-            LOG.error("static initializer: Error initializing database connection factory. "+e);
+            LOG.error("static initializer: Error initializing database connection factory.", e);
         }
         // XXX why don't we throw an exception here or something?
     }

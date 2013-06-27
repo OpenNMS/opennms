@@ -222,11 +222,11 @@ public class DefaultPollingContext implements PollingContext {
                     apsUp.addAll(future.get());
                     succesfullyPolledAController = true;
                 } catch (ExecutionException e) {
-                    LOG.error("An error occurred while polling :" + e);
+                    LOG.error("An error occurred while polling", e);
                 }
             }
         } catch (InterruptedException e) {
-            LOG.error("I was interrupted :" + e);
+            LOG.error("I was interrupted", e);
         }
 
         // Remove the APs from the list that are ONLINE
