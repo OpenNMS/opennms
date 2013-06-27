@@ -111,7 +111,7 @@ public class ActionDiscoveryServlet extends HttpServlet {
         config = GeneralSettingsLoader.load(request,config);
         
         String action = request.getParameter("action");
-        LOG.debug("action: "+action);
+        LOG.debug("action: {}", action);
         
 
         
