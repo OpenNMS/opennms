@@ -130,14 +130,11 @@ public class XmpCollectionFactory {
         rrdPath = null;
 
         // list out the collections I've found
-        XmpCollection[] collections = config.getXmpCollection();
-        for (XmpCollection coll: collections) {
-
-            LOG.debug("XmpCollectionFactory: found collection {}",
-                        coll.getName());
-
-            //System.out.println("XmpCollectionFactory: found collection "+
-            //                    coll.getName());
+        if (LOG.isDebugEnabled()) {
+            XmpCollection[] collections = config.getXmpCollection();
+            for (XmpCollection coll: collections) {
+                LOG.debug("XmpCollectionFactory: found collection {}", coll.getName());
+            }
         }
 
         return; 
