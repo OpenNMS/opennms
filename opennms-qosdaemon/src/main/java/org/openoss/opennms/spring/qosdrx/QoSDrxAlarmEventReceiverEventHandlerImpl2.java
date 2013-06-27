@@ -547,10 +547,10 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 				alarm.setId(null);  // must be done to do update
 			}
 			catch (IllegalStateException ise) {
-				LOG.error("QoSDrxAlarmEventReceiverEventHandlerImpl().onNotifyAckStateChangedEvent():: nasce alarm key set in illegal state"+ ise);
+				LOG.error("QoSDrxAlarmEventReceiverEventHandlerImpl().onNotifyAckStateChangedEvent():: nasce alarm key set in illegal state", ise);
 			}
 			catch (java.lang.IllegalArgumentException iae){
-				LOG.error("QoSDrxAlarmEventReceiverEventHandlerImpl().onNotifyAckStateChangedEvent(): "+ iae);
+				LOG.error("QoSDrxAlarmEventReceiverEventHandlerImpl().onNotifyAckStateChangedEvent(): {}", iae);
 			}
 
 			if(nasce.getAlarmAckState() == AlarmAckState.ACKNOWLEDGED) {
@@ -562,11 +562,11 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 						LOG.debug("QoSDrxAlarmEventReceiverEventHandlerImpl().onNotifyAckStateChangedEvent(): Acknowledging Alarm: " + nasce.getAlarmKey().getAlarmPrimaryKey() +" New Ack State: " + nasce.getAlarmAckState());
 					}
 					catch ( Exception ex ) {
-						LOG.error("QoSDrxAlarmEventReceiverEventHandlerImpl().onNotifyAckStateChangedEvent():: problem updating alarm ack state"+ ex);
+						LOG.error("QoSDrxAlarmEventReceiverEventHandlerImpl().onNotifyAckStateChangedEvent():: problem updating alarm ack state", ex);
 					}
 				}
 				else {  //if opennms does not have an alarm with this id to update
-					LOG.debug("QoSDrxAlarmEventReceiverEventHandlerImpl().onNotifyAckStateChangedEvent(): Alarm cannot be acknowledged - not in database: " + nasce.getAlarmKey().getAlarmPrimaryKey());
+					LOG.debug("QoSDrxAlarmEventReceiverEventHandlerImpl().onNotifyAckStateChangedEvent(): Alarm cannot be acknowledged - not in database: {}", nasce.getAlarmKey().getAlarmPrimaryKey());
 				}
 			} else { // unacknowledge alarm
 				if (alarm != null ) { // if opennms has an alarm with this id to update
@@ -577,11 +577,11 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 						LOG.debug("QoSDrxAlarmEventReceiverEventHandlerImpl().onNotifyAckStateChangedEvent(): UnAcknowledging Alarm: " + nasce.getAlarmKey().getAlarmPrimaryKey() +" New Ack State: " + nasce.getAlarmAckState());
 					}
 					catch ( Exception ex ) {
-						LOG.error("QoSDrxAlarmEventReceiverEventHandlerImpl().onNotifyAckStateChangedEvent():: problem updating alarm ack state"+ ex);
+						LOG.error("QoSDrxAlarmEventReceiverEventHandlerImpl().onNotifyAckStateChangedEvent():: problem updating alarm ack state", ex);
 					}
 				}
 				else {  //if opennms does not have an alarm with this id to update
-					LOG.debug("QoSDrxAlarmEventReceiverEventHandlerImpl().onNotifyAckStateChangedEvent(): Alarm cannot be Unacknowledged - not in database: " + nasce.getAlarmKey().getAlarmPrimaryKey());
+					LOG.debug("QoSDrxAlarmEventReceiverEventHandlerImpl().onNotifyAckStateChangedEvent(): Alarm cannot be Unacknowledged - not in database: {}", nasce.getAlarmKey().getAlarmPrimaryKey());
 				}
 			}
 		}
