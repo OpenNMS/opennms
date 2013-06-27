@@ -101,9 +101,7 @@ public class DefaultNodeProvisionService implements NodeProvisionService, Initia
             String deviceUsername, String devicePassword, String enablePassword,
             String accessMethod, String autoEnable, String noSNMP) throws NodeProvisionException {
 
-        if (LOG.isDebugEnabled()) {
-            LOG.debug(String.format("adding SNMP community %s (%s)", snmpCommunity, snmpVersion));
-        }
+        LOG.debug(String.format("adding SNMP community %s (%s)", snmpCommunity, snmpVersion));
         // Set the SNMP community name (if necessary)
         if (noSNMP == null &&  snmpCommunity != null && !snmpCommunity.equals("") && snmpVersion != null && !snmpVersion.equals("")) {
             try {
