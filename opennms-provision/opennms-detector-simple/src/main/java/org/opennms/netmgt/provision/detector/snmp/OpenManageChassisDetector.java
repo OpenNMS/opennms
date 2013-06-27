@@ -114,9 +114,7 @@ public class OpenManageChassisDetector extends SnmpDetector {
             if  (Integer.parseInt(chassisStatus.toString()) >= DELL_STATUS.OTHER.value() && 
                     Integer.parseInt(chassisStatus.toString()) <= DELL_STATUS.NON_RECOVERABLE.value()) {
                 // OpenManage chassis status detected
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("isServiceDetected: OpenManageChassis: is valid, protocol supported.");
-                }
+                LOG.debug("isServiceDetected: OpenManageChassis: is valid, protocol supported.");
                 return true;
             }
         } catch (Throwable t) {
