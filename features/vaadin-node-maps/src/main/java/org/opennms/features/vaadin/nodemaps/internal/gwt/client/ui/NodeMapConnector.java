@@ -29,6 +29,7 @@
 package org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.AbstractComponentConnector;
@@ -51,8 +52,6 @@ import java.util.Map;
 @Connect(NodeMap.class)
 public class NodeMapConnector extends AbstractComponentConnector {
 
-    private String m_uidlId;
-    private boolean m_firstRun = true;
     private Map<String, Icon> m_icons;
 
 
@@ -80,6 +79,10 @@ public class NodeMapConnector extends AbstractComponentConnector {
     }
 
     private void updateNodes() {
+        if (getState().nodes.isEmpty()) {
+            return;
+        }
+
         final List<NodeMarker> featureCollection = new ArrayList<NodeMarker>();
 
         for (MapNode node : getState().nodes) {
@@ -111,7 +114,6 @@ public class NodeMapConnector extends AbstractComponentConnector {
 
             featureCollection.add(marker);
         }
-
         getWidget().setMarkers(featureCollection);
     }
 
@@ -122,7 +124,7 @@ public class NodeMapConnector extends AbstractComponentConnector {
 
     @Override
     protected Widget createWidget() {
-        return new NodeMapWidget();
+        return GWT.create(NodeMapWidget.class);
     }
 
     @Override
@@ -139,7 +141,7 @@ public class NodeMapConnector extends AbstractComponentConnector {
                 options.setIconAnchor(new Point(12, 41));
                 options.setPopupAnchor(new Point(1, -34));
                 options.setShadowUrl(new Point(41, 41));
-                String basePath = GWT.getModuleBaseForStaticFiles() + "/images/";
+                String basePath = GWT.getModuleBaseForStaticFiles() + "images/";
                 if (isRetina()) {
                     options.setIconUrl(basePath + severity + "@2x.png");
                 } else {

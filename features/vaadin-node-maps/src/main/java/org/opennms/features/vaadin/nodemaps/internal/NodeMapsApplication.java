@@ -101,12 +101,16 @@ public class NodeMapsApplication extends UI {
 
     private Logger m_log = LoggerFactory.getLogger(getClass());
 
-    private MapWidgetComponent m_mapPanel;
+    private MapWidgetComponent m_mapWidgetComponent;
     private OnmsHeaderProvider m_headerProvider;
     private String m_headerHtml;
 
     public void setHeaderProvider(final OnmsHeaderProvider headerProvider) {
         m_headerProvider = headerProvider;
+    }
+
+    public void setMapWidgetComponent(MapWidgetComponent m_mapWidgetComponent) {
+        this.m_mapWidgetComponent = m_mapWidgetComponent;
     }
 
     public void setHeaderHtml(final String headerHtml) {
@@ -123,9 +127,8 @@ public class NodeMapsApplication extends UI {
     }
 
     private void createMapPanel(String searchString) {
-        m_mapPanel = new MapWidgetComponent();
-        m_mapPanel.setSearchString(searchString);
-        m_mapPanel.setSizeFull();
+        m_mapWidgetComponent.setSearchString(searchString);
+        m_mapWidgetComponent.setSizeFull();
     }
 
     private void createRootLayout(VaadinRequest request) {
@@ -134,8 +137,8 @@ public class NodeMapsApplication extends UI {
         setContent(m_rootLayout);
 
         addHeader(request);
-        m_rootLayout.addComponent(m_mapPanel);
-        m_rootLayout.setExpandRatio(m_mapPanel, 1.0f);
+        m_rootLayout.addComponent(m_mapWidgetComponent);
+        m_rootLayout.setExpandRatio(m_mapWidgetComponent, 1.0f);
     }
 
     private void addHeader(VaadinRequest request) {
@@ -155,12 +158,10 @@ public class NodeMapsApplication extends UI {
                 headerLayout.addStyleName("onmsheader");
                 m_rootLayout.addComponent(headerLayout);
             } catch (final IOException e) {
-                if (is != null) {
-                    try {
-                        is.close();
-                    } catch (final IOException closeE) {
-                        m_log.debug("failed to close HTML input stream", closeE);
-                    }
+                try {
+                    is.close();
+                } catch (final IOException closeE) {
+                    m_log.debug("failed to close HTML input stream", closeE);
                 }
                 m_log.debug("failed to get header layout data", e);
             }

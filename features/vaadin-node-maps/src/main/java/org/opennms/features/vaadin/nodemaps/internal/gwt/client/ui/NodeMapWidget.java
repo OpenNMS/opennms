@@ -16,6 +16,7 @@
 
 package org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JsArrayString;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.RepeatingCommand;
@@ -407,10 +408,14 @@ public class NodeMapWidget extends Widget implements MarkerProvider, SearchConsu
     }
 
     private final void destroyMap() {
-        m_markerClusterGroup.clearLayers();
-        m_map.removeLayer(m_markerClusterGroup);
-        m_map.removeLayer(m_layer);
-        m_map = null;
+        if (m_markerClusterGroup != null) {
+            m_markerClusterGroup.clearLayers();
+        }
+        if (m_map != null) {
+            m_map.removeLayer(m_markerClusterGroup);
+            m_map.removeLayer(m_layer);
+            m_map = null;
+        }
     }
 
     private enum MatchType {

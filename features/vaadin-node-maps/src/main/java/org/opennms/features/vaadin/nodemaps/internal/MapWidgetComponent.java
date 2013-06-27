@@ -81,7 +81,8 @@ public class MapWidgetComponent extends NodeMap {
         m_transaction = tx;
     }
 
-    public MapWidgetComponent() {
+
+    public void init() {
         showNodes(getNodeData());
     }
 
