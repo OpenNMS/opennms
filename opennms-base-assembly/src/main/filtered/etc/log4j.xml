@@ -395,7 +395,7 @@
         <param value="100MB" name="MaxFileSize"/>
         <filter class="org.opennms.core.logging.log4j.MDCFilter">
           <param name="KeyToMatch" value="prefix"/>
-          <param name="ValueToMatch" value="OpenNMS.Manager"/>
+          <param name="ValueToMatch" value="OpenNMS.Scriptd"/>
           <param name="OnMatch" value="ACCEPT" />
         </filter>
         <layout class="org.apache.log4j.PatternLayout">
@@ -434,7 +434,7 @@
         <param value="50MB" name="MaxFileSize"/>
         <filter class="org.opennms.core.logging.log4j.MDCFilter">
           <param name="KeyToMatch" value="prefix"/>
-          <param name="ValueToMatch" value="OpenNMS.Manager"/>
+          <param name="ValueToMatch" value="OpenNMS.Spring"/>
           <param name="OnMatch" value="ACCEPT" />
         </filter>
         <layout class="org.apache.log4j.PatternLayout">
@@ -447,7 +447,7 @@
         <param value="100MB" name="MaxFileSize"/>
         <filter class="org.opennms.core.logging.log4j.MDCFilter">
           <param name="KeyToMatch" value="prefix"/>
-          <param name="ValueToMatch" value="OpenNMS.Manager"/>
+          <param name="ValueToMatch" value="OpenNMS.Statsd"/>
           <param name="OnMatch" value="ACCEPT" />
         </filter>
         <layout class="org.apache.log4j.PatternLayout">
@@ -460,7 +460,7 @@
         <param value="50MB" name="MaxFileSize"/>
         <filter class="org.opennms.core.logging.log4j.MDCFilter">
           <param name="KeyToMatch" value="prefix"/>
-          <param name="ValueToMatch" value="OpenNMS.Manager"/>
+          <param name="ValueToMatch" value="OpenNMS.Stds"/>
           <param name="OnMatch" value="ACCEPT" />
         </filter>
         <layout class="org.apache.log4j.PatternLayout">
@@ -473,7 +473,7 @@
         <param value="100MB" name="MaxFileSize"/>
         <filter class="org.opennms.core.logging.log4j.MDCFilter">
           <param name="KeyToMatch" value="prefix"/>
-          <param name="ValueToMatch" value="OpenNMS.Manager"/>
+          <param name="ValueToMatch" value="OpenNMS.Syslogd"/>
           <param name="OnMatch" value="ACCEPT" />
         </filter>
         <layout class="org.apache.log4j.PatternLayout">
@@ -486,7 +486,7 @@
         <param value="100MB" name="MaxFileSize"/>
         <filter class="org.opennms.core.logging.log4j.MDCFilter">
           <param name="KeyToMatch" value="prefix"/>
-          <param name="ValueToMatch" value="OpenNMS.Manager"/>
+          <param name="ValueToMatch" value="OpenNMS.Threshd"/>
           <param name="OnMatch" value="ACCEPT" />
         </filter>
         <layout class="org.apache.log4j.PatternLayout">
@@ -499,7 +499,7 @@
         <param value="100MB" name="MaxFileSize"/>
         <filter class="org.opennms.core.logging.log4j.MDCFilter">
           <param name="KeyToMatch" value="prefix"/>
-          <param name="ValueToMatch" value="OpenNMS.Manager"/>
+          <param name="ValueToMatch" value="OpenNMS.TroubleTicketer"/>
           <param name="OnMatch" value="ACCEPT" />
         </filter>
         <layout class="org.apache.log4j.PatternLayout">
@@ -512,7 +512,7 @@
         <param value="100MB" name="MaxFileSize"/>
         <filter class="org.opennms.core.logging.log4j.MDCFilter">
           <param name="KeyToMatch" value="prefix"/>
-          <param name="ValueToMatch" value="OpenNMS.Manager"/>
+          <param name="ValueToMatch" value="OpenNMS.Tl1d"/>
           <param name="OnMatch" value="ACCEPT" />
         </filter>
         <layout class="org.apache.log4j.PatternLayout">
@@ -538,7 +538,7 @@
         <param value="100MB" name="MaxFileSize"/>
         <filter class="org.opennms.core.logging.log4j.MDCFilter">
           <param name="KeyToMatch" value="prefix"/>
-          <param name="ValueToMatch" value="OpenNMS.Manager"/>
+          <param name="ValueToMatch" value="OpenNMS.EventTranslator"/>
           <param name="OnMatch" value="ACCEPT" />
         </filter>
         <layout class="org.apache.log4j.PatternLayout">
@@ -551,7 +551,7 @@
         <param value="100MB" name="MaxFileSize"/>
         <filter class="org.opennms.core.logging.log4j.MDCFilter">
           <param name="KeyToMatch" value="prefix"/>
-          <param name="ValueToMatch" value="OpenNMS.Manager"/>
+          <param name="ValueToMatch" value="OpenNMS.Trapd"/>
           <param name="OnMatch" value="ACCEPT" />
         </filter>
         <layout class="org.apache.log4j.PatternLayout">
@@ -577,7 +577,7 @@
         <param value="100MB" name="MaxFileSize"/>
         <filter class="org.opennms.core.logging.log4j.MDCFilter">
           <param name="KeyToMatch" value="prefix"/>
-          <param name="ValueToMatch" value="OpenNMS.Manager"/>
+          <param name="ValueToMatch" value="OpenNMS.Vacuumd"/>
           <param name="OnMatch" value="ACCEPT" />
         </filter>
         <layout class="org.apache.log4j.PatternLayout">
@@ -590,7 +590,7 @@
         <param value="1MB" name="MaxFileSize"/>
         <filter class="org.opennms.core.logging.log4j.MDCFilter">
           <param name="KeyToMatch" value="prefix"/>
-          <param name="ValueToMatch" value="OpenNMS.Manager"/>
+          <param name="ValueToMatch" value="OpenNMS.VMware"/>
           <param name="OnMatch" value="ACCEPT" />
         </filter>
         <layout class="org.apache.log4j.PatternLayout">
@@ -603,7 +603,7 @@
         <param value="50MB" name="MaxFileSize"/>
         <filter class="org.opennms.core.logging.log4j.MDCFilter">
           <param name="KeyToMatch" value="prefix"/>
-          <param name="ValueToMatch" value="OpenNMS.Manager"/>
+          <param name="ValueToMatch" value="OpenNMS.Vulnscand"/>
           <param name="OnMatch" value="ACCEPT" />
         </filter>
         <layout class="org.apache.log4j.PatternLayout">
@@ -616,7 +616,7 @@
         <param value="100MB" name="MaxFileSize"/>
         <filter class="org.opennms.core.logging.log4j.MDCFilter">
           <param name="KeyToMatch" value="prefix"/>
-          <param name="ValueToMatch" value="OpenNMS.Manager"/>
+          <param name="ValueToMatch" value="OpenNMS.WEB"/>
           <param name="OnMatch" value="ACCEPT" />
         </filter>
         <layout class="org.apache.log4j.PatternLayout">
@@ -629,7 +629,7 @@
         <param value="2MB" name="MaxFileSize"/>
         <filter class="org.opennms.core.logging.log4j.MDCFilter">
           <param name="KeyToMatch" value="prefix"/>
-          <param name="ValueToMatch" value="OpenNMS.Manager"/>
+          <param name="ValueToMatch" value="OpenNMS.WEB.AUTH"/>
           <param name="OnMatch" value="ACCEPT" />
         </filter>
         <layout class="org.apache.log4j.PatternLayout">
@@ -642,7 +642,7 @@
         <param value="2MB" name="MaxFileSize"/>
         <filter class="org.opennms.core.logging.log4j.MDCFilter">
           <param name="KeyToMatch" value="prefix"/>
-          <param name="ValueToMatch" value="OpenNMS.Manager"/>
+          <param name="ValueToMatch" value="OpenNMS.WEB.RTC"/>
           <param name="OnMatch" value="ACCEPT" />
         </filter>
         <layout class="org.apache.log4j.PatternLayout">
@@ -655,7 +655,7 @@
         <param value="100MB" name="MaxFileSize"/>
         <filter class="org.opennms.core.logging.log4j.MDCFilter">
           <param name="KeyToMatch" value="prefix"/>
-          <param name="ValueToMatch" value="OpenNMS.Manager"/>
+          <param name="ValueToMatch" value="OpenNMS.Xmlrpcd"/>
           <param name="OnMatch" value="ACCEPT" />
         </filter>
         <layout class="org.apache.log4j.PatternLayout">
@@ -694,90 +694,6 @@
     <logger additivity="false" name="net.sf.jasperreports">
         <level value="debug"/>
         <appender-ref ref="REPORT"/>
-    </logger>
-    <logger additivity="false" name="OpenNMS.EventTranslator">
-        <level value="debug"/>
-        <appender-ref ref="TRANSLATOR"/>
-    </logger>
-    <logger additivity="false" name="OpenNMS.Manager">
-        <level value="debug"/>
-        <appender-ref ref="MANAGER"/>
-    </logger>
-    <logger additivity="false" name="OpenNMS.Map">
-        <level value="debug"/>
-        <appender-ref ref="MAP"/>
-    </logger>
-    <logger additivity="false" name="OpenNMS.Miscellaneous">
-        <level value="info"/>
-        <appender-ref ref="MISC"/>
-    </logger>
-    <logger additivity="false" name="OpenNMS.Scriptd">
-        <level value="debug"/>
-        <appender-ref ref="SCRIPTD"/>
-    </logger>
-    <logger additivity="false" name="OpenNMS.SnmpPoller">
-        <level value="debug"/>
-        <appender-ref ref="SIPOLLERS"/>
-    </logger>
-    <logger additivity="false" name="OpenNMS.Spring">
-        <level value="debug"/>
-        <appender-ref ref="SPRING"/>
-    </logger>
-    <logger additivity="false" name="OpenNMS.Statsd">
-        <level value="debug"/>
-        <appender-ref ref="STATSD"/>
-    </logger>
-    <logger additivity="false" name="OpenNMS.Stds">
-        <level value="debug"/>
-        <appender-ref ref="STDS"/>
-    </logger>
-    <logger additivity="false" name="OpenNMS.Syslogd">
-        <level value="debug"/>
-        <appender-ref ref="SYSLOGD"/>
-    </logger>
-    <logger additivity="false" name="OpenNMS.Threshd">
-        <level value="debug"/>
-        <appender-ref ref="THRESHD"/>
-    </logger>
-    <logger additivity="false" name="OpenNMS.Tl1d">
-        <level value="debug"/>
-        <appender-ref ref="TL1D"/>
-    </logger>
-    <logger additivity="false" name="OpenNMS.Trapd">
-        <level value="debug"/>
-        <appender-ref ref="TRAPD"/>
-    </logger>
-    <logger additivity="false" name="OpenNMS.TroubleTicketer">
-        <level value="debug"/>
-        <appender-ref ref="TICKETER"/>
-    </logger>
-    <logger additivity="false" name="OpenNMS.Vacuumd">
-        <level value="debug"/>
-        <appender-ref ref="VACUUM"/>
-    </logger>
-    <logger additivity="false" name="OpenNMS.VMware">
-        <level value="debug"/>
-        <appender-ref ref="VMWARE"/>
-    </logger>
-    <logger additivity="false" name="OpenNMS.Vulnscand">
-        <level value="debug"/>
-        <appender-ref ref="VULNSCAND"/>
-    </logger>
-    <logger additivity="false" name="OpenNMS.WEB">
-        <level value="debug"/>
-        <appender-ref ref="WEB"/>
-    </logger>
-    <logger additivity="false" name="OpenNMS.WEB.AUTH">
-        <level value="debug"/>
-        <appender-ref ref="WEBAUTH"/>
-    </logger>
-    <logger additivity="false" name="OpenNMS.WEB.RTC">
-        <level value="debug"/>
-        <appender-ref ref="WEBRTC"/>
-    </logger>
-    <logger additivity="false" name="OpenNMS.Xmlrpcd">
-        <level value="debug"/>
-        <appender-ref ref="XMLRPCD"/>
     </logger>
     <logger additivity="false" name="org.apache.bsf">
         <level value="info"/>
