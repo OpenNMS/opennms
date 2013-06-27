@@ -215,10 +215,8 @@ public class AsteriskOriginator {
         LOG.info("Successfully logged in Asterisk manager connection");
         
         LOG.info("Originating a call to extension " + m_legAExtension);
-        if (LOG.isDebugEnabled()) {
-            LOG.debug(createCallLogMsg());    
-            LOG.debug("Originate action:\n\n{}", m_originateAction.toString());
-        }
+        LOG.debug(createCallLogMsg());
+        LOG.debug("Originate action:\n\n{}", m_originateAction.toString());
         
         try {
             m_managerResponse = m_managerConnection.sendAction(m_originateAction);
