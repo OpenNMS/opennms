@@ -694,7 +694,7 @@ public class TopologyWidgetTestApplication extends UI implements CommandUpdateLi
 
     @Override
     public void detach() {
-        //m_commandManager.removeCommandUpdateListener(this);
+        m_commandManager.removeCommandUpdateListener(this);
         m_commandManager.removeMenuItemUpdateListener(this);
         super.detach();    //To change body of overridden methods use File | Settings | File Templates.
     }
