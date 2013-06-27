@@ -183,7 +183,7 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
                 LOG.debug("schedule: queue element added, notification not performed");
             }
         } catch (InterruptedException e) {
-            LOG.info("schedule: failed to add new ready runnable instance " + runnable + " to scheduler: " + e, e);
+            LOG.info("schedule: failed to add new ready runnable instance " + runnable + " to scheduler", e);
             Thread.currentThread().interrupt();
         }
     }

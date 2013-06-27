@@ -218,7 +218,7 @@ public final class UdpEventReceiver implements EventReceiver, UdpEventReceiverMB
             m_processor.stop();
             m_output.stop();
         } catch (InterruptedException e) {
-            LOG.warn("The thread was interrupted while attempting to join sub-threads: " + e, e);
+            LOG.warn("The thread was interrupted while attempting to join sub-threads", e);
         }
 
         m_dgSock.close();

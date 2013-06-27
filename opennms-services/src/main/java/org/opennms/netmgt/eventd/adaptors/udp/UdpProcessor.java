@@ -166,10 +166,10 @@ final class UdpProcessor implements Runnable {
                 LOG.debug("Unmarshalling Event text {" + System.getProperty("line.separator") + re.getXmlData() + System.getProperty("line.separator") + "}");
                 events = re.unmarshal().getEvents().getEvent();
             } catch (MarshalException e) {
-                LOG.warn("Failed to unmarshal the event from " + InetAddressUtils.str(re.getSender()) + ":" + re.getPort() + ": " + e, e);
+                LOG.warn("Failed to unmarshal the event from " + InetAddressUtils.str(re.getSender()) + ":" + re.getPort(), e);
                 continue;
             } catch (ValidationException e) {
-                LOG.warn("Failed to validate the event from " + InetAddressUtils.str(re.getSender()) + ":" + re.getPort() + ": " + e, e);
+                LOG.warn("Failed to validate the event from " + InetAddressUtils.str(re.getSender()) + ":" + re.getPort(), e);
                 continue;
             }
 

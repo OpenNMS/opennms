@@ -298,7 +298,7 @@ public final class ThresholdEntity implements Cloneable {
         } catch (NumberFormatException nfe) {
             LOG.warn("Unable to convert retrieved value for datasource '" + datasource + "' to a double, skipping evaluation.");
         } catch (RrdException e) {
-            LOG.error("An error occurred retriving the last value for datasource '" + datasource + "': " + e, e);
+            LOG.error("An error occurred retriving the last value for datasource '" + datasource + "'", e);
         }
 
         return dsValue;

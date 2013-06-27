@@ -259,7 +259,7 @@ final class TcpServer implements Runnable {
 
                 LOG.debug("The socket has been closed");
             } catch (Throwable e) {
-                LOG.warn("An exception occured closing the socket: " + e, e);
+                LOG.warn("An exception occured closing the socket", e);
             }
 
             LOG.debug("Thread exiting");
@@ -279,10 +279,10 @@ final class TcpServer implements Runnable {
             m_tcpSock.setSoTimeout(500);
         } catch (SocketException e) {
             if (!m_stop) {
-                LOG.warn("An I/O exception occured setting the socket timeout: " + e, e);
+                LOG.warn("An I/O exception occured setting the socket timeout", e);
             }
 
-            LOG.debug("Thread exiting due to socket error: " + e, e);
+            LOG.debug("Thread exiting due to socket error", e);
 
             return;
         }
@@ -324,7 +324,7 @@ final class TcpServer implements Runnable {
                     try {
                         processor.wait();
                     } catch (InterruptedException e) {
-                        LOG.warn("The thread was interrupted: " + e, e);
+                        LOG.warn("The thread was interrupted", e);
                     }
                 }
 
@@ -340,7 +340,7 @@ final class TcpServer implements Runnable {
                  */
                 ioInterrupted = true;
             } catch (IOException e) {
-                LOG.error("Server Socket I/O Error: " + e, e);
+                LOG.error("Server Socket I/O Error", e);
                 break;
             }
 

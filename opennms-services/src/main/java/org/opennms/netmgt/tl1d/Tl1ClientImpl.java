@@ -129,7 +129,7 @@ public class Tl1ClientImpl implements Tl1Client {
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
-            LOG.error("stop: {}", e, e);
+            LOG.error("stop: {}", e);
         }
     }
 
@@ -280,7 +280,7 @@ public class Tl1ClientImpl implements Tl1Client {
             m_reader.close();
             
         } catch (IOException e) {
-            LOG.warn("resetReader: "+e, e);
+            LOG.warn("resetReader", e);
             
         } finally {
             m_reader = null;
@@ -290,7 +290,7 @@ public class Tl1ClientImpl implements Tl1Client {
             m_tl1Socket.close();
             
         } catch (IOException e) {
-            LOG.warn("resetReader: "+e, e);
+            LOG.warn("resetReader", e);
             m_tl1Socket = null;
         }
         

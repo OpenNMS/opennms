@@ -131,7 +131,7 @@ public class BroadcastEventProcessor implements EventListener {
                 ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Eventd");
                 
             } catch (Throwable e) {
-                LOG.error("onEvent: Could not reload events config: " + e, e);
+                LOG.error("onEvent: Could not reload events config", e);
                 ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, getName());
                 ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Eventd");
                 ebldr.addParam(EventConstants.PARM_REASON, e.getLocalizedMessage().substring(0, 128));

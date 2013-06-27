@@ -250,22 +250,22 @@ public class SnmpCollector implements ServiceCollector {
         try {
             DataSourceFactory.init();
         } catch (IOException e) {
-            LOG.error("initDatabaseConnectionFactory: IOException getting database connection: " + e, e);
+            LOG.error("initDatabaseConnectionFactory: IOException getting database connection", e);
             throw new UndeclaredThrowableException(e);
         } catch (MarshalException e) {
-            LOG.error("initDatabaseConnectionFactory: Marshall Exception getting database connection: " + e, e);
+            LOG.error("initDatabaseConnectionFactory: Marshall Exception getting database connection", e);
             throw new UndeclaredThrowableException(e);
         } catch (ValidationException e) {
-            LOG.error("initDatabaseConnectionFactory: Validation Exception getting database connection: " + e, e);
+            LOG.error("initDatabaseConnectionFactory: Validation Exception getting database connection", e);
             throw new UndeclaredThrowableException(e);
         } catch (SQLException e) {
-            LOG.error("initDatabaseConnectionFactory: Failed getting connection to the database: " + e, e);
+            LOG.error("initDatabaseConnectionFactory: Failed getting connection to the database", e);
             throw new UndeclaredThrowableException(e);
         } catch (PropertyVetoException e) {
-            LOG.error("initDatabaseConnectionFactory: Failed getting connection to the database: " + e, e);
+            LOG.error("initDatabaseConnectionFactory: Failed getting connection to the database", e);
             throw new UndeclaredThrowableException(e);
         } catch (ClassNotFoundException e) {
-            LOG.error("initDatabaseConnectionFactory: Failed loading database driver: " + e, e);
+            LOG.error("initDatabaseConnectionFactory: Failed loading database driver", e);
             throw new UndeclaredThrowableException(e);
         }
     }
@@ -275,7 +275,7 @@ public class SnmpCollector implements ServiceCollector {
         try {
             DataCollectionConfigFactory.init();
         } catch (Throwable e) {
-            log().fatal("initDataCollectionConfig: Failed to load data collection configuration: " + e, e);
+            log().fatal("initDataCollectionConfig: Failed to load data collection configuration", e);
             throw new UndeclaredThrowableException(e);
         }
     }
@@ -285,7 +285,7 @@ public class SnmpCollector implements ServiceCollector {
         try {
             SnmpPeerFactory.init();
         } catch (IOException e) {
-            LOG.error("initSnmpPeerFactory: Failed to load SNMP configuration: " + e, e);
+            LOG.error("initSnmpPeerFactory: Failed to load SNMP configuration", e);
             throw new UndeclaredThrowableException(e);
         }
     }
@@ -385,7 +385,7 @@ public class SnmpCollector implements ServiceCollector {
             
             throw e;
         } catch (Throwable t) {
-            throw new CollectionException("Unexpected error during node SNMP collection for: " + agent.getHostAddress() + ": " + t, t);
+            throw new CollectionException("Unexpected error during node SNMP collection for: " + agent.getHostAddress(), t);
         }
     }
 

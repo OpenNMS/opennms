@@ -302,7 +302,7 @@ public class Tl1d extends AbstractServiceDaemon {
                 
                 processMessage(message);
             } catch (InterruptedException e) {
-                LOG.warn("doMessageProcessing: received interrupt: "+e, e);
+                LOG.warn("doMessageProcessing: received interrupt", e);
             }
         }
         

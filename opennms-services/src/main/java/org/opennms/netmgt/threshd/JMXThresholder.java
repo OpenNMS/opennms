@@ -266,7 +266,7 @@ public abstract class JMXThresholder implements ServiceThresholder {
                         }
                     }
                 } catch (ThresholdExpressionException e) {
-                    LOG.warn("Could not parse threshold expression: "+e.getMessage(), e);
+                    LOG.warn("Could not parse threshold expression", e);
                 }
 
             }
@@ -294,7 +294,7 @@ public abstract class JMXThresholder implements ServiceThresholder {
             dbConn = DataSourceFactory.getInstance().getConnection();
             d.watch(dbConn);
         } catch (SQLException e) {
-            LOG.error("initialize: Failed getting connection to the database: " + e, e);
+            LOG.error("initialize: Failed getting connection to the database", e);
             throw new UndeclaredThrowableException(e);
         }
 
@@ -321,8 +321,8 @@ public abstract class JMXThresholder implements ServiceThresholder {
                     }
                 }
             } catch (SQLException e) {
-                LOG.debug("initialize: SQL exception!!: " + e, e);
-                throw new RuntimeException("SQL exception while attempting to retrieve node id for interface " + hostAddress + ": " + e, e);
+                LOG.debug("initialize: SQL exception!!", e);
+                throw new RuntimeException("SQL exception while attempting to retrieve node id for interface " + hostAddress, e);
             }
 
             // RuntimeException is thrown if any of the following are true:
@@ -434,7 +434,7 @@ public abstract class JMXThresholder implements ServiceThresholder {
         try {
             checkNodeDir(nodeDirectory, nodeId, primary, range, interval, dateStamp, nodeMap, events);
         } catch (IllegalArgumentException e) {
-            LOG.info("check: Threshold checking failed for primary " + serviceName + " interface " + hostAddress + ": " + e, e);
+            LOG.info("check: Threshold checking failed for primary " + serviceName + " interface " + hostAddress, e);
             return THRESHOLDING_FAILED;
         }
 
@@ -454,7 +454,7 @@ public abstract class JMXThresholder implements ServiceThresholder {
                     // Found interface directory...
                     checkIfDir(files[i], nodeId, primary, interval, range, dateStamp, baseIfMap, allIfMap, events);
                 } catch (IllegalArgumentException e) {
-                    LOG.info("check: Threshold checking failed for primary " + serviceName + " interface " + hostAddress + ": " + e, e);
+                    LOG.info("check: Threshold checking failed for primary " + serviceName + " interface " + hostAddress, e);
                     return THRESHOLDING_FAILED;
                 }
             }
@@ -467,7 +467,7 @@ public abstract class JMXThresholder implements ServiceThresholder {
                 eventLog.setEvents(events);
                 eproxy.send(eventLog);
             } catch (EventProxyException e) {
-                LOG.warn("check: Failed sending threshold events via event proxy: " + e, e);
+                LOG.warn("check: Failed sending threshold events via event proxy", e);
                 return THRESHOLDING_FAILED;
             }
         }
@@ -494,7 +494,7 @@ public abstract class JMXThresholder implements ServiceThresholder {
                 } catch (NumberFormatException e) {
                     LOG.warn("Unable to convert retrieved value for datasource '" + ds + "' to a double, skipping evaluation.");
                 } catch (RrdException e) {
-                    LOG.info("An error occurred retriving the last value for datasource '" + ds + "': " + e, e);
+                    LOG.info("An error occurred retriving the last value for datasource '" + ds, e);
                 }
             }
         

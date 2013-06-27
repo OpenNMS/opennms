@@ -173,7 +173,7 @@ public final class BroadcastEventProcessor implements EventListener {
                 ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, getName());
                 ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Notifd");
             } catch (Throwable e) {
-                LOG.debug("onEvent: could not reload notifd configuration: "+e, e);
+                LOG.debug("onEvent: could not reload notifd configuration", e);
                 ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, getName());
                 ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Notifd");
                 ebldr.addParam(EventConstants.PARM_REASON, e.getLocalizedMessage().substring(0, 128));

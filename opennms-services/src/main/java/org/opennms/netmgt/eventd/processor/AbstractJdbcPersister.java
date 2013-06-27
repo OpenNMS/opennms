@@ -298,7 +298,7 @@ public abstract class AbstractJdbcPersister implements InitializingBean, EventPr
         try {
             return new Timestamp(EventConstants.parseToDate(event.getTime()).getTime());
         } catch (ParseException e) {
-            LOG.warn("Failed to convert time " + event.getTime() + " to Timestamp, setting current time instead.  Exception: " + e, e);
+            LOG.warn("Failed to convert time " + event.getTime() + " to Timestamp, setting current time instead.", e);
             return new Timestamp(System.currentTimeMillis());
         }
     }

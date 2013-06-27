@@ -260,7 +260,7 @@ public final class SnmpThresholder implements ServiceThresholder {
         try {
         	checkNodeDir(nodeDirectory, snmpThresholdNetworkInterface, date, events);
         } catch (IllegalArgumentException e) {
-            LOG.info("check: Threshold checking failed for primary SNMP interface " + snmpThresholdNetworkInterface.getIpAddress() + ": " + e, e);
+            LOG.info("check: Threshold checking failed for primary SNMP interface " + snmpThresholdNetworkInterface.getIpAddress(), e);
             return THRESHOLDING_FAILED;
         }
 
@@ -284,7 +284,7 @@ public final class SnmpThresholder implements ServiceThresholder {
                     // Found interface directory...
                     checkIfDir(file, snmpThresholdNetworkInterface, date, events);
                 } catch (IllegalArgumentException e) {
-                    LOG.info("check: Threshold checking failed for primary SNMP interface " + snmpThresholdNetworkInterface.getIpAddress() + ": " + e, e);
+                    LOG.info("check: Threshold checking failed for primary SNMP interface " + snmpThresholdNetworkInterface.getIpAddress(), e);
                     return THRESHOLDING_FAILED;
                 }
             }
@@ -310,7 +310,7 @@ public final class SnmpThresholder implements ServiceThresholder {
                     // Found resource directory...
                     checkResourceDir(file, snmpThresholdNetworkInterface, date, events);
                 } catch (IllegalArgumentException e) {
-                    LOG.info("check: Threshold checking failed for primary SNMP interface " + snmpThresholdNetworkInterface.getIpAddress() + ": " + e, e);
+                    LOG.info("check: Threshold checking failed for primary SNMP interface " + snmpThresholdNetworkInterface.getIpAddress(), e);
                     return THRESHOLDING_FAILED;
                 }
             }
@@ -324,7 +324,7 @@ public final class SnmpThresholder implements ServiceThresholder {
                 eventLog.setEvents(events);
                 eproxy.send(eventLog);
             } catch (EventProxyException e) {
-                LOG.info("check: Failed sending threshold events: " + e, e);
+                LOG.info("check: Failed sending threshold events", e);
                 return THRESHOLDING_FAILED;
             }
         }
@@ -671,10 +671,10 @@ public final class SnmpThresholder implements ServiceThresholder {
         		dsValue = RrdUtils.fetchLastValue(file.getAbsolutePath(), datasource, thresholdConfiguration.getInterval());
         	}
         } catch (NumberFormatException e) {
-            LOG.warn("Unable to convert retrieved value for datasource '" + datasource + "' to a double: " + e);
+            LOG.warn("Unable to convert retrieved value for datasource '" + datasource + "' to a double", e);
             return null;
         } catch (RrdException e) {
-            LOG.info("An error occurred retriving the last value for datasource '" + datasource + "': " + e, e);
+            LOG.info("An error occurred retriving the last value for datasource '" + datasource + "'", e);
             return null;
         }
 
@@ -727,7 +727,7 @@ public final class SnmpThresholder implements ServiceThresholder {
                 value = ResourceTypeUtils.getStringProperty(resourceDirectory, attribute);
             }
         } catch (Throwable e) {
-            LOG.warn("Can't get value for attribute " + attribute + ". " + e, e);
+            LOG.warn("Can't get value for attribute " + attribute + ".", e);
         }
         return value;
     }
@@ -742,7 +742,7 @@ public final class SnmpThresholder implements ServiceThresholder {
             String key = threshold.getDatasourceLabel();
             dsLabelValue = (key == null ? null : ResourceTypeUtils.getStringProperty(directory, key));
         } catch (DataAccessException e) {
-            LOG.debug ("getDataSourceLabel: I/O exception when looking for strings.properties file for node id: " + snmpIface.getNodeId() + " looking here: " + directory + ": " + e, e);
+            LOG.debug ("getDataSourceLabel: I/O exception when looking for strings.properties file for node id: " + snmpIface.getNodeId() + " looking here: " + directory, e);
         }
         
         return (dsLabelValue == null ? "Unknown" : dsLabelValue);

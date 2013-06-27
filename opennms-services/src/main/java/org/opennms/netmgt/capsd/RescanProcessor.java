@@ -722,7 +722,7 @@ public final class RescanProcessor implements Runnable {
         try {
             speed = getInterfaceSpeed(ifte, ifxte);
         } catch (Throwable e) {
-            LOG.warn("updateNonIpInterface: ifSpeed '" + ifte.getDisplayString(IfTableEntry.IF_SPEED) + "' for ifIndex " + ifIndex + " is invalid, inserting 0: " + e, e);
+            LOG.warn("updateNonIpInterface: ifSpeed '" + ifte.getDisplayString(IfTableEntry.IF_SPEED) + "' for ifIndex " + ifIndex + " is invalid, inserting 0", e);
             speed = 0;
         }
 
@@ -2725,7 +2725,7 @@ public final class RescanProcessor implements Runnable {
                     dbc.close();
                 }
             } catch (SQLException e) {
-                LOG.error("Error closing connection: " + e, e);
+                LOG.error("Error closing connection", e);
             }
             
             // Remove the node we just scanned from the tracker set

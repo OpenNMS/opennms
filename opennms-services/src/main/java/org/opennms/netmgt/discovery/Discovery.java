@@ -173,7 +173,7 @@ public class Discovery extends AbstractServiceDaemon {
             initializeConfiguration();
             EventIpcManagerFactory.init();
         } catch (Throwable e) {
-            LOG.debug("onInit: initialization failed: "+e, e);
+            LOG.debug("onInit: initialization failed", e);
             throw new IllegalStateException("Could not initialize discovery configuration.", e);
         }
     }
@@ -189,7 +189,7 @@ public class Discovery extends AbstractServiceDaemon {
         try {
             initializeConfiguration();
         } catch (Throwable e) {
-            LOG.error("doPings: could not re-init configuration, continuing with in memory configuration."+e, e);
+            LOG.error("doPings: could not re-init configuration, continuing with in memory configuration.", e);
         }
 
 

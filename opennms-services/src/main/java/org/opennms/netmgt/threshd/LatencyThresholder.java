@@ -283,7 +283,7 @@ final class LatencyThresholder implements ServiceThresholder {
                     try {
                         thresholdEntity.addThreshold(wrapper);
                     } catch (IllegalStateException e) {
-                        LOG.warn("Encountered duplicate " + thresh.getType() + " for datasource " + wrapper.getDatasourceExpression() + ": " + e, e);
+                        LOG.warn("Encountered duplicate " + thresh.getType() + " for datasource " + wrapper.getDatasourceExpression(), e);
                     }
 
                     // Add new entity to the map
@@ -291,7 +291,7 @@ final class LatencyThresholder implements ServiceThresholder {
                         thresholdMap.put(wrapper.getDatasourceExpression(), thresholdEntity);
                     }
                 } catch (ThresholdExpressionException e) {
-                    LOG.warn("Could not parse threshold expression: "+e.getMessage(), e);
+                    LOG.warn("Could not parse threshold expression", e);
                 }
             }
         } catch (IllegalArgumentException e) {

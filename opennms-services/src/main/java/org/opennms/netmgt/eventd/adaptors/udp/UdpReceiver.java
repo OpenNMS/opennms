@@ -137,7 +137,7 @@ class UdpReceiver implements Runnable {
 
             m_dgSock.setSoTimeout(500);
         } catch (SocketException e) {
-            LOG.warn("An I/O error occured while trying to set the socket timeout: " + e, e);
+            LOG.warn("An I/O error occured while trying to set the socket timeout", e);
         }
 
         // Increase the receive buffer for the socket
@@ -146,7 +146,7 @@ class UdpReceiver implements Runnable {
 
             m_dgSock.setReceiveBufferSize(length);
         } catch (SocketException e) {
-            LOG.info("Failed to set the receive buffer to " + length + ": " + e, e);
+            LOG.info("Failed to set the receive buffer to " + length, e);
         }
 
         // set to avoid numerious tracing message
@@ -171,7 +171,7 @@ class UdpReceiver implements Runnable {
                 ioInterrupted = true;
                 continue;
             } catch (IOException e) {
-                LOG.error("An I/O exception occured on the datagram receipt port, exiting: " + e, e);
+                LOG.error("An I/O exception occured on the datagram receipt port, exiting", e);
                 break;
             }
 
@@ -184,7 +184,7 @@ class UdpReceiver implements Runnable {
                     m_eventsIn.notify();
                 }
             } catch (UnsupportedEncodingException e) {
-                LOG.warn("Failed to convert received XML event, discarding: " + e, e);
+                LOG.warn("Failed to convert received XML event, discarding", e);
             }
 
             pkt = new DatagramPacket(buffer, length);

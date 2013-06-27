@@ -137,11 +137,11 @@ public class DefaultThresholdsDao implements ThresholdsDao, InitializingBean {
                             thresholdEntitySet.add(thresholdEntity);
                         }
                     } catch (IllegalStateException e) {
-                        LOG.warn("fillThresholdStateMap: Encountered duplicate " + thresh.getType() + " for datasource " + wrapper.getDatasourceExpression() + ": " + e, e);
+                        LOG.warn("fillThresholdStateMap: Encountered duplicate " + thresh.getType() + " for datasource " + wrapper.getDatasourceExpression(), e);
                     } 
                 }
                 catch (ThresholdExpressionException e) {
-                    LOG.warn("fillThresholdStateMap: Could not parse threshold expression: "+e.getMessage(), e);
+                    LOG.warn("fillThresholdStateMap: Could not parse threshold expression", e);
                 }
             }
         }
@@ -157,7 +157,7 @@ public class DefaultThresholdsDao implements ThresholdsDao, InitializingBean {
                         try {
                             newConfig = BaseThresholdDefConfigWrapper.getConfigWrapper(thresh);
                         } catch (ThresholdExpressionException e) {
-                            LOG.warn("fillThresholdStateMap: Could not parse threshold expression: " + e.getMessage(), e);
+                            LOG.warn("fillThresholdStateMap: Could not parse threshold expression", e);
                         }
                         if (newConfig.equals(entity.getThresholdConfig())) {
                             found = true;

@@ -414,12 +414,12 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
 
             } catch (NoSuchAlgorithmException e) {
                 // Should never happen
-                throw new PageSequenceMonitorException("Could not find appropriate SSL context provider: " + e.getMessage(), e);
+                throw new PageSequenceMonitorException("Could not find appropriate SSL context provider", e);
             } catch (URISyntaxException e) {
-                throw new IllegalArgumentException("unable to construct URL for page: " + e, e);
+                throw new IllegalArgumentException("unable to construct URL for page", e);
             } catch (IOException e) {
-                LOG.debug("I/O Error " + e, e);
-                throw new PageSequenceMonitorException("I/O Error " + e, e);
+                LOG.debug("I/O Error", e);
+                throw new PageSequenceMonitorException("I/O Error", e);
             }
         }
 
@@ -700,7 +700,7 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
                 serviceStatus = PollStatus.unavailable(e.getMessage());
                 serviceStatus.setProperties(responseTimes);
             } catch (IllegalArgumentException e) {
-                LOG.error("Invalid parameters to monitor: " + e.getMessage(), e);
+                LOG.error("Invalid parameters to monitor", e);
                 serviceStatus = PollStatus.unavailable("Invalid parameter to monitor: " + e.getMessage() + ".  See log for details.");
                 serviceStatus.setProperties(responseTimes);
             } finally {

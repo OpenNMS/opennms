@@ -250,7 +250,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
         try {
             m_eventHandlerPool.execute(m_eventHandler.createRunnable(eventLog));
         } catch (RejectedExecutionException e) {
-            LOG.warn("Unable to queue event log to the event handler pool queue: " + e, e);
+            LOG.warn("Unable to queue event log to the event handler pool queue", e);
             throw new UndeclaredEventException(e);
         }
     }

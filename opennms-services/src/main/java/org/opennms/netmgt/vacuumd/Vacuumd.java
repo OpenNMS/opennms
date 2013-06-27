@@ -198,7 +198,7 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
                 m_startTime = System.currentTimeMillis();
 
             } catch (Throwable e) {
-                LOG.error("Unexpected exception: ", e);
+                LOG.error("Unexpected exception", e);
             }
         }
     }
@@ -286,7 +286,7 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
             LOG.debug("init: Creating Vacuumd scheduler");
             m_scheduler = new LegacyScheduler("Vacuumd", 2);
         } catch (RuntimeException e) {
-            LOG.error("init: Failed to create Vacuumd scheduler: " + e, e);
+            LOG.error("init: Failed to create Vacuumd scheduler", e);
             throw e;
         }
     }
@@ -372,22 +372,22 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
             ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Vacuumd");
             
         } catch (MarshalException e) {
-            LOG.error("onEvent: problem marshaling vacuumd configuration: " + e, e);
+            LOG.error("onEvent: problem marshaling vacuumd configuration", e);
             ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, getName());
             ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Vacuumd");
             ebldr.addParam(EventConstants.PARM_REASON, e.getLocalizedMessage().substring(0, 128));
         } catch (ValidationException e) {
-            LOG.error("onEvent: problem validating vacuumd configuration: " + e, e);
+            LOG.error("onEvent: problem validating vacuumd configuration", e);
             ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, getName());
             ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Vacuumd");
             ebldr.addParam(EventConstants.PARM_REASON, e.getLocalizedMessage().substring(0, 128));
         } catch (IOException e) {
-            LOG.error("onEvent: IO problem reading vacuumd configuration: " + e, e);
+            LOG.error("onEvent: IO problem reading vacuumd configuration", e);
             ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, getName());
             ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Vacuumd");
             ebldr.addParam(EventConstants.PARM_REASON, e.getLocalizedMessage().substring(0, 128));
         } catch (InterruptedException e) {
-            LOG.error("onEvent: Problem interrupting current Vacuumd Thread: " + e, e);
+            LOG.error("onEvent: Problem interrupting current Vacuumd Thread", e);
             ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, getName());
             ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Vacuumd");
             ebldr.addParam(EventConstants.PARM_REASON, e.getLocalizedMessage().substring(0, 128));

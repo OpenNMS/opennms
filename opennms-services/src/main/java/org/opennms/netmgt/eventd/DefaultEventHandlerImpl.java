@@ -125,10 +125,10 @@ public final class DefaultEventHandlerImpl implements InitializingBean, EventHan
                     try {
                         eventProcessor.process(m_eventLog.getHeader(), event);
                     } catch (SQLException e) {
-                        LOG.warn("Unable to process event using processor " + eventProcessor + "; not processing with any later processors.  Exception: " + e, e);
+                        LOG.warn("Unable to process event using processor " + eventProcessor + "; not processing with any later processors.", e);
                         break;
                     } catch (Throwable t) {
-                        LOG.warn("Unknown exception processing event with processor " + eventProcessor + "; not processing with any later processors.  Exception: " + t, t);
+                        LOG.warn("Unknown exception processing event with processor " + eventProcessor + "; not processing with any later processors.", t);
                         break;
                     }
                 }

@@ -228,7 +228,7 @@ final public class FtpMonitor extends AbstractServiceMonitor {
                         socket.close();
                     }
                 } catch (IOException e) {
-                    LOG.debug("FtpMonitor.poll: Error closing socket: " + e, e);
+                    LOG.debug("FtpMonitor.poll: Error closing socket", e);
                 }
             }
         }

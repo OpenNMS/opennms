@@ -200,7 +200,7 @@ public class HttpCollector implements ServiceCollector {
                     doCollection(this, collectionResource);
                     m_collectionResourceList.add(collectionResource);
                 } catch (HttpCollectorException e) {
-                    LOG.error("collect: http collection failed: " + e, e);
+                    LOG.error("collect: http collection failed", e);
 
                     /*
                      * FIXME: This doesn't make sense since everything is SNMP
@@ -329,9 +329,9 @@ public class HttpCollector implements ServiceCollector {
         } catch (NoSuchAlgorithmException e) {
             throw new HttpCollectorException("Could not find EmptyKeyRelaxedTrustSSLContext to allow connection to untrusted HTTPS hosts", e);
         } catch (PatternSyntaxException e) {
-            throw new HttpCollectorException("Invalid regex specified in HTTP collection configuration: " + e.getMessage(), e);
+            throw new HttpCollectorException("Invalid regex specified in HTTP collection configuration", e);
         } catch (Throwable e) {
-            throw new HttpCollectorException("Unexpected exception caught during HTTP collection: " + e.getMessage(), e);
+            throw new HttpCollectorException("Unexpected exception caught during HTTP collection", e);
         } finally {
             if (client != null) {
                 client.getConnectionManager().shutdown();

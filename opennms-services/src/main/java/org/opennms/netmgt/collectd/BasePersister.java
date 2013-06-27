@@ -93,7 +93,7 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
             m_builder.commit();
             m_builder = null;
         } catch (RrdException e) {
-            LOG.error("Unable to persist data for " + name + ": " + e, e);
+            LOG.error("Unable to persist data for " + name, e);
     
         }
     }
@@ -198,7 +198,7 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
             try {
                 ResourceTypeUtils.updateStringProperty(resourceDir, value, attrName);
             } catch(IOException e) {
-                LOG.error("Unable to save string attribute " + attribute + ": " + e, e);
+                LOG.error("Unable to save string attribute " + attribute, e);
             }
     }
 

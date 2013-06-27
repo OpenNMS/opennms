@@ -67,7 +67,7 @@ public class IrcCatNotificationStrategy implements NotificationStrategy {
             stream.println(message);
             stream.close();
         } catch (Throwable e) {
-            LOG.error("send: Error sending IRCcat notification: " + e, e);
+            LOG.error("send: Error sending IRCcat notification", e);
             return 1;
         }
         return 0;

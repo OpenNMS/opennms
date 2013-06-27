@@ -269,7 +269,7 @@ final class CollectableService implements ReadyRunnable {
 
             LOG.debug("sendEvent: Sent event " + uei + " for " + m_nodeId + "/" + getHostAddress() + "/" + getServiceName());
         } catch (Throwable e) {
-            LOG.error("Failed to send the event " + uei + " for interface " + getHostAddress() + ": " + e, e);
+            LOG.error("Failed to send the event " + uei + " for interface " + getHostAddress(), e);
         }
     }
 
